@@ -33,7 +33,10 @@ function FileEntry({
 }) {
   const displayAsList = displayType === displayTypeParameter.list
   return (
-    <div onMouseEnter={async () => await runPrefetch()}>
+    <div
+      className="flex items-center"
+      onMouseEnter={async () => await runPrefetch()}
+    >
       <A
         to={{
           pageName,

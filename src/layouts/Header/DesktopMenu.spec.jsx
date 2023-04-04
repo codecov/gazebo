@@ -1,35 +1,22 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { MemoryRouter, Route, useParams } from 'react-router-dom'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { useAccountDetails } from 'services/account'
-import { useUser } from 'services/user'
-
 import DesktopMenu, { LoginPrompt } from './DesktopMenu'
 
-jest.mock('services/user')
-jest.mock('services/account')
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
-  useParams: jest.fn(() => {}),
-}))
 jest.mock('./RequestButton', () => () => 'Request Button')
 jest.mock('config')
 
 const loggedInUser = {
-  user: {
-    username: 'p',
-    avatarUrl: '',
-  },
-}
-
-const accountDetails = {
-  plan: {
-    value: 'users-free',
+  me: {
+    user: {
+      username: 'p',
+      avatarUrl: '',
+    },
   },
 }
 
@@ -49,8 +36,29 @@ const mockSelfHostedUser = {
   username: 'codecov',
 }
 
+// silence console errors
+console.error = () => {}
+
 const queryClient = new QueryClient()
 const server = setupServer()
+
+const wrapper =
+  (
+    { initialEntries = '/gh', path = '/:provider' } = {
+      initialEntries: '/gh',
+      path: '/:provider',
+    }
+  ) =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path={path} exact>
+            <DesktopMenu />
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
 beforeAll(() => server.listen())
 beforeEach(() => {
@@ -60,193 +68,288 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('DesktopMenu', () => {
-  function setup({ provider }) {
+  function setup({ hasLoggedInUser = true } = { hasLoggedInUser: true }) {
     server.use(
       graphql.query('Seats', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockSeatData))
       ),
+      graphql.query('CurrentUser', (req, res, ctx) => {
+        if (hasLoggedInUser) {
+          return res(ctx.status(200), ctx.data(loggedInUser))
+        }
+        return res(ctx.status(200), ctx.data({}))
+      }),
       rest.get('/internal/users/current', (req, res, ctx) =>
         res(ctx.status(200), ctx.json(mockSelfHostedUser))
       )
     )
-
-    render(
-      <MemoryRouter initialEntries={[`/${provider}`]}>
-        <Route path="/:provider" exact>
-          <QueryClientProvider client={queryClient}>
-            <DesktopMenu />
-          </QueryClientProvider>
-        </Route>
-      </MemoryRouter>
-    )
   }
 
-  it('renders static links', () => {
-    const provider = 'gh'
+  describe('rendering logo button', () => {
+    describe('when provider is present', () => {
+      it('directs user to provider endpoint', async () => {
+        setup()
 
-    useUser.mockReturnValue({ data: loggedInUser })
-    useParams.mockReturnValue({ owner: 'fjord', provider })
-    useAccountDetails.mockReturnValue({ data: accountDetails })
-    setup({ provider })
+        render(<DesktopMenu />, {
+          wrapper: wrapper({
+            initialEntries: '/gh/codecov',
+            path: '/:provider/:owner',
+          }),
+        })
 
-    const expectedStaticLinks = [
-      { label: 'Docs', to: 'https://docs.codecov.io/' },
-      { label: 'Support', to: 'https://codecov.freshdesk.com/support/home' },
-      { label: 'Blog', to: 'https://about.codecov.io/blog' },
-    ]
+        const link = await screen.findByTestId('homepage-link')
+        expect(link).toBeInTheDocument()
+        expect(link).toHaveAttribute('href', '/gh')
+      })
+    })
 
-    expectedStaticLinks.forEach((expectedLink) => {
-      const a = within(screen.getByTestId('desktop-menu')).getByText(
-        expectedLink.label
-      )
-      expect(a).toHaveAttribute('href', expectedLink.to)
+    describe('when provider is not present', () => {
+      it('directs user to about codecov io', async () => {
+        setup()
+
+        render(<DesktopMenu />, {
+          wrapper: wrapper({
+            initialEntries: '/',
+            path: '',
+          }),
+        })
+
+        const link = await screen.findByTestId('homepage-link')
+        expect(link).toBeInTheDocument()
+        expect(link).toHaveAttribute('href', 'https://about.codecov.io')
+      })
     })
   })
 
-  it('renders the seat count when user is logged in', async () => {
-    config.IS_SELF_HOSTED = true
-    const provider = 'gh'
-    useUser.mockReturnValue({ data: loggedInUser })
-    useParams.mockReturnValue({ owner: 'fjord', provider })
-    useAccountDetails.mockReturnValue({ data: accountDetails })
-    setup({ provider })
+  it('renders static links', async () => {
+    setup()
 
-    const seatCount = await screen.findByText(/available seats/)
-    expect(seatCount).toBeInTheDocument()
+    render(<DesktopMenu />, {
+      wrapper: wrapper({
+        initialEntries: '/gh/codecov',
+        path: '/:provider/:owner',
+      }),
+    })
+
+    const desktopMenu = await screen.findByTestId('desktop-menu')
+
+    const docsLink = await within(desktopMenu).findByRole('link', {
+      name: 'Docs',
+    })
+    expect(docsLink).toBeInTheDocument()
+    expect(docsLink).toHaveAttribute('href', 'https://docs.codecov.io/')
+
+    const supportLink = await within(desktopMenu).findByRole('link', {
+      name: 'Support',
+    })
+    expect(supportLink).toBeInTheDocument()
+    expect(supportLink).toHaveAttribute(
+      'href',
+      'https://codecov.freshdesk.com/support/home'
+    )
+
+    const blogLink = await within(desktopMenu).findByRole('link', {
+      name: 'Blog',
+    })
+    expect(blogLink).toBeInTheDocument()
+    expect(blogLink).toHaveAttribute('href', 'https://about.codecov.io/blog')
   })
 
-  it('renders the admin link when user is logged in', async () => {
-    config.IS_SELF_HOSTED = true
-    const provider = 'gh'
-    useUser.mockReturnValue({ data: loggedInUser })
-    useParams.mockReturnValue({ owner: 'fjord', provider })
-    useAccountDetails.mockReturnValue({ data: accountDetails })
-    setup({ provider })
+  it('renders the dropdown when user is logged in', async () => {
+    setup()
 
-    const adminLink = await screen.findByText(/Admin/)
-    expect(adminLink).toBeInTheDocument()
-  })
+    render(<DesktopMenu />, {
+      wrapper: wrapper({
+        initialEntries: '/gh/codecov',
+        path: '/:provider/:owner',
+      }),
+    })
 
-  it('renders the dropdown when user is logged in', () => {
-    const provider = 'gh'
-    useUser.mockReturnValue({ data: loggedInUser })
-    useParams.mockReturnValue({ owner: 'fjord', provider })
-    useAccountDetails.mockReturnValue({ data: accountDetails })
-    setup({ provider })
-
-    const dropdown = screen.getByTestId('dropdown')
+    const dropdown = await screen.findByTestId('dropdown')
     expect(dropdown).toBeInTheDocument()
   })
 
-  it('renders request demo button when there is owner with free plan is logged in', () => {
-    const provider = 'gh'
-    useUser.mockReturnValue({ data: loggedInUser })
-    useParams.mockReturnValue({ owner: 'fjord', provider })
-    useAccountDetails.mockReturnValue({ data: accountDetails })
-    setup({ provider })
+  it('renders request demo button when there is owner with free plan is logged in', async () => {
+    setup()
 
-    const requestDemoButton = screen.getByText('Request Button')
+    render(<DesktopMenu />, {
+      wrapper: wrapper({
+        initialEntries: '/gh/codecov',
+        path: '/:provider/:owner',
+      }),
+    })
+
+    const requestDemoButton = await screen.findByText('Request Button')
     expect(requestDemoButton).toBeInTheDocument()
   })
 
-  it('does not render request demo button when owner is undefined', () => {
-    const provider = 'gh'
-    useUser.mockReturnValue({ data: loggedInUser })
-    useParams.mockReturnValue({ owner: undefined, provider: provider })
-    useAccountDetails.mockReturnValue({ data: accountDetails })
-    setup({ provider })
-    expect(screen.queryByText(/Request demo/)).toBeNull()
+  it('does not render request demo button when owner is undefined', async () => {
+    setup({ hasLoggedInUser: false })
+
+    render(<DesktopMenu />, {
+      wrapper: wrapper({
+        initialEntries: '/gh/',
+        path: '/:provider/:owner',
+      }),
+    })
+
+    await waitFor(() => queryClient.isFetching)
+    await waitFor(() => !queryClient.isFetching)
+
+    const requestDemo = screen.queryByText(/Request demo/)
+    expect(requestDemo).toBeNull()
   })
 
-  it('renders the login prompt when user not logged in', () => {
-    const provider = 'gh'
-    useUser.mockReturnValue({ data: null })
-    useParams.mockReturnValue({ owner: undefined, provider })
-    setup({ provider })
+  it('renders the login prompt when user not logged in', async () => {
+    setup({ hasLoggedInUser: false })
+
+    render(<DesktopMenu />, {
+      wrapper: wrapper({
+        initialEntries: '/gh/',
+        path: '/:provider/',
+      }),
+    })
+
+    await waitFor(() => queryClient.isFetching)
+    await waitFor(() => !queryClient.isFetching)
+
     const login = screen.getByTestId('login-prompt')
     expect(login).toBeInTheDocument()
   })
 
-  it('does not render the feedback link when user is not logged in', () => {
-    const provider = 'gh'
-    useUser.mockReturnValue({ data: undefined })
-    useParams.mockReturnValue({ owner: undefined, provider })
-    setup({ provider })
+  it('does not render the feedback link when user is not logged in', async () => {
+    setup({ hasLoggedInUser: false })
 
-    expect(screen.queryByText('feedback')).toBeNull()
+    render(<DesktopMenu />, {
+      wrapper: wrapper({
+        initialEntries: '/gh/',
+        path: '/:provider/',
+      }),
+    })
+
+    await waitFor(() => queryClient.isFetching)
+    await waitFor(() => !queryClient.isFetching)
+
+    const feedbackLink = screen.queryByText('feedback')
+    expect(feedbackLink).toBeNull()
   })
 
-  it('renders the feedback link when user is logged in', () => {
-    config.IS_SELF_HOSTED = false
-    const provider = 'gh'
-    useUser.mockReturnValue({ data: loggedInUser })
-    useParams.mockReturnValue({ owner: undefined, provider })
-    useAccountDetails.mockReturnValue({ data: accountDetails })
-    setup({ provider })
+  it('renders the feedback link when user is logged in', async () => {
+    setup()
 
-    const feedback = screen.getByText('Feedback')
+    render(<DesktopMenu />, {
+      wrapper: wrapper({
+        initialEntries: '/gh/',
+        path: '/:provider/',
+      }),
+    })
+
+    const feedback = await screen.findByText('Feedback')
     expect(feedback).toBeInTheDocument()
+    expect(feedback).toHaveAttribute('href', '/gh/feedback')
+  })
+
+  describe('when running in self hosted mode', () => {
+    it('renders the seat count when user is logged in', async () => {
+      config.IS_SELF_HOSTED = true
+      setup()
+
+      render(<DesktopMenu />, {
+        wrapper: wrapper({
+          initialEntries: '/gh/',
+          path: '/:provider/',
+        }),
+      })
+
+      const seatCount = await screen.findByText(/available seats/)
+      expect(seatCount).toBeInTheDocument()
+    })
+
+    it('renders the admin link when user is logged in', async () => {
+      config.IS_SELF_HOSTED = true
+      setup()
+
+      render(<DesktopMenu />, {
+        wrapper: wrapper({
+          initialEntries: '/gh/',
+          path: '/:provider/',
+        }),
+      })
+
+      const adminLink = await screen.findByText(/Admin/)
+      expect(adminLink).toBeInTheDocument()
+    })
   })
 })
 
 describe('LoginPrompt', () => {
   describe('with a provider available', () => {
     it('renders a login button and a sign up button', () => {
-      useParams.mockReturnValue({ provider: 'gh' })
-      render(<LoginPrompt />, { wrapper: MemoryRouter })
+      render(<LoginPrompt />, { wrapper: wrapper() })
 
-      const expectedLinks = [
-        {
-          label: 'Log in',
-          to: 'https://stage-web.codecov.dev/login/gh?to=http%3A%2F%2Flocalhost%2F',
-        },
-        { label: 'Sign up', to: 'https://about.codecov.io/sign-up/' },
-      ]
+      const loginPrompt = screen.getByTestId('login-prompt')
 
-      expectedLinks.forEach((expectedLink) => {
-        const a = within(screen.getByTestId('login-prompt')).getByText(
-          expectedLink.label
-        )
-        expect(a).toHaveAttribute('href', expectedLink.to)
-      })
+      const loginLink = within(loginPrompt).getByText('Log in')
+      expect(loginLink).toBeInTheDocument()
+      expect(loginLink).toHaveAttribute(
+        'href',
+        'https://stage-web.codecov.dev/login/gh?to=http%3A%2F%2Flocalhost%2F'
+      )
+
+      const signUpLink = within(loginPrompt).getByText('Sign up')
+      expect(signUpLink).toBeInTheDocument()
+      expect(signUpLink).toHaveAttribute(
+        'href',
+        'https://about.codecov.io/sign-up/'
+      )
     })
 
     it('renders link to marketing if url starts with /login', () => {
-      useParams.mockReturnValue({ provider: 'gh' })
-      render(
-        <MemoryRouter initialEntries={['/login']}>
-          <LoginPrompt />
-        </MemoryRouter>
-      )
-      expect(screen.getByText(/new to codecov\?/i)).toBeInTheDocument()
-      expect(
-        screen.getByRole('link', {
-          name: /learn more/i,
-        })
-      ).toBeInTheDocument()
+      render(<LoginPrompt />, {
+        wrapper: wrapper({
+          initialEntries: '/login/gh',
+          path: '/login/:provider',
+        }),
+      })
+
+      const newToCodecov = screen.getByText(/new to codecov\?/i)
+      expect(newToCodecov).toBeInTheDocument()
+
+      const learnMore = screen.getByRole('link', {
+        name: /learn more/i,
+      })
+      expect(learnMore).toBeInTheDocument()
     })
   })
+
   describe('without a provider', () => {
     it('does not render a login button and a sign up button', () => {
-      useParams.mockReturnValue({ provider: undefined })
-      render(<LoginPrompt />, { wrapper: MemoryRouter })
+      render(<LoginPrompt />, {
+        wrapper: wrapper({
+          initialEntries: '/login',
+          path: '/login',
+        }),
+      })
 
-      expect(screen.queryByTestId('login-prompt')).not.toBeInTheDocument()
+      const loginPrompt = screen.queryByTestId('login-prompt')
+      expect(loginPrompt).not.toBeInTheDocument()
     })
 
     it('does not render a link to marketing if url starts with /login', () => {
-      useParams.mockReturnValue({ provider: undefined })
-      render(
-        <MemoryRouter initialEntries={['/login']}>
-          <LoginPrompt />
-        </MemoryRouter>
-      )
-      expect(screen.queryByText(/new to codecov\?/i)).not.toBeInTheDocument()
-      expect(
-        screen.queryByRole('link', {
-          name: /learn more/i,
-        })
-      ).not.toBeInTheDocument()
+      render(<LoginPrompt />, {
+        wrapper: wrapper({
+          initialEntries: '/login',
+          path: '/login',
+        }),
+      })
+
+      const newToCodecov = screen.queryByText(/new to codecov\?/i)
+      expect(newToCodecov).not.toBeInTheDocument()
+
+      const learnMoreLink = screen.queryByRole('link', {
+        name: /learn more/i,
+      })
+      expect(learnMoreLink).not.toBeInTheDocument()
     })
   })
 })
