@@ -89,6 +89,7 @@ export const useCoverage = ({ params, options = {} }) => {
     owner,
     query,
     opts: {
+      enabled: !analyticsPageTimeSeries,
       select: (data) => {
         const coverage = data.coverage.map((coverage) => ({
           ...coverage,
