@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import CommitsTable from './CommitsTable'
 
@@ -114,9 +114,11 @@ const queryClient = new QueryClient()
 const server = setupServer()
 
 const wrapper = ({ children }) => (
-  <MemoryRouter>
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  </MemoryRouter>
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh/codecov/cool-repo/commits']}>
+      <Route path="/:provider/:owner/:repo/commits">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
 )
 
 beforeAll(() => {
@@ -153,28 +155,28 @@ describe('CommitsTable', () => {
     })
 
     it('renders commit table Name header', async () => {
-      render(<CommitsTable branch="main" paramCIStatus={false} />, { wrapper })
+      render(<CommitsTable branch="main" selectedStates={[]} />, { wrapper })
 
       const name = await screen.findByText('Name')
       expect(name).toBeInTheDocument()
     })
 
     it('renders commit table Change header', async () => {
-      render(<CommitsTable branch="main" paramCIStatus={false} />, { wrapper })
+      render(<CommitsTable branch="main" selectedStates={[]} />, { wrapper })
 
       const change = await screen.findByText('Change')
       expect(change).toBeInTheDocument()
     })
 
     it('renders commit table Patch header', async () => {
-      render(<CommitsTable branch="main" paramCIStatus={false} />, { wrapper })
+      render(<CommitsTable branch="main" selectedStates={[]} />, { wrapper })
 
       const patch = await screen.findByText('Patch %')
       expect(patch).toBeInTheDocument()
     })
 
     it('renders commit table Coverage header', async () => {
-      render(<CommitsTable branch="main" paramCIStatus={false} />, { wrapper })
+      render(<CommitsTable branch="main" selectedStates={[]} />, { wrapper })
 
       const coverage = await screen.findByText('Coverage')
       expect(coverage).toBeInTheDocument()
@@ -189,10 +191,12 @@ describe('CommitsTable', () => {
     })
 
     it('renders an empty table', async () => {
-      render(<CommitsTable branch="main" paramCIStatus={false} />, { wrapper })
+      render(<CommitsTable branch="main" selectedStates={[]} />, { wrapper })
 
-      const table = await screen.findByTestId('body-row')
-      expect(table).toBeEmptyDOMElement()
+      const errorMessage = await screen.findByText(
+        'No commits detected on branch'
+      )
+      expect(errorMessage).toBeInTheDocument()
     })
   })
 
@@ -204,9 +208,9 @@ describe('CommitsTable', () => {
     })
 
     it('renders on null message', async () => {
-      render(<CommitsTable branch="main" paramCIStatus={false} />, { wrapper })
+      render(<CommitsTable branch="main" selectedStates={[]} />, { wrapper })
 
-      const text = await screen.findByText(/we can't find this commit/)
+      const text = await screen.findByText(/We can't find this commit/)
       expect(text).toBeInTheDocument()
     })
   })
@@ -217,7 +221,7 @@ describe('CommitsTable', () => {
     })
 
     it('render - for missing patch', async () => {
-      render(<CommitsTable branch="main" paramCIStatus={false} />, { wrapper })
+      render(<CommitsTable branch="main" selectedStates={[]} />, { wrapper })
 
       const changeValue = await screen.findByTestId('patch-value')
       expect(changeValue).toHaveTextContent('-')
@@ -230,7 +234,7 @@ describe('CommitsTable', () => {
     })
 
     it('shows loading spinner', async () => {
-      render(<CommitsTable branch="main" paramCIStatus={false} />, {
+      render(<CommitsTable branch="main" selectedStates={[]} />, {
         wrapper,
       })
 
@@ -243,7 +247,7 @@ describe('CommitsTable', () => {
     describe('hasNextPage is set to true', () => {
       it('displays the loadMore button', async () => {
         setup({ commitData: mockCommits({ hasNextPage: true }) })
-        render(<CommitsTable branch="main" paramCIStatus={false} />, {
+        render(<CommitsTable branch="main" selectedStates={[]} />, {
           wrapper,
         })
 
@@ -257,7 +261,7 @@ describe('CommitsTable', () => {
           const { fetchesNextPage } = setup({
             commitData: mockCommits({ hasNextPage: true }),
           })
-          render(<CommitsTable branch="main" paramCIStatus={false} />, {
+          render(<CommitsTable branch="main" selectedStates={[]} />, {
             wrapper,
           })
 
@@ -277,7 +281,7 @@ describe('CommitsTable', () => {
       })
 
       it('does not display the loadMore button', async () => {
-        render(<CommitsTable branch="main" paramCIStatus={false} />, {
+        render(<CommitsTable branch="main" selectedStates={[]} />, {
           wrapper,
         })
 

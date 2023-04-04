@@ -18,14 +18,14 @@ const MissingDesignatedAdmins = () => {
   const { provider } = useParams()
   const { data: hasAdmins, isFetching } = useSelfHostedHasAdmins(
     { provider },
-    { enabled: !!provider && config.IS_SELF_HOSTED }
+    { enabled: !!provider && !!config.IS_SELF_HOSTED }
   )
   // This hook is purely side stepping the complexity rule here.
   const hideBanner = useHideBanner({
     provider,
     hasAdmins,
     isFetching,
-    isSelfHosted: config.IS_SELF_HOSTED,
+    isSelfHosted: !!config.IS_SELF_HOSTED,
   })
 
   if (hideBanner) {

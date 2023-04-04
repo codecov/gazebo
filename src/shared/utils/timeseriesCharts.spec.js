@@ -1,6 +1,6 @@
 import {
+  analyticsQuery,
   calculateDayDifference,
-  chartQuery,
   getTrendEnum,
   timeseriesRepoCoverageQuery,
   Trend,
@@ -48,47 +48,78 @@ describe.each`
 
 describe('chartQuery', () => {
   // Craft the query to be sent to graphql
-  describe('groupingUnit', () => {
-    it('when the range of dates is more then 180 days have past render the chart by weeks', () => {
-      const startDate = '2019-12-31T14'
-      const endDate = '2020-08-31'
-      expect(chartQuery({ startDate, endDate }).groupingUnit).toBe('week')
+  describe('interval', () => {
+    describe('when the day difference is greater then one', () => {
+      describe('day difference is less then day threshold', () => {
+        it('returns single day interval', () => {
+          const startDate = '2020-01-01'
+          const endDate = '2020-01-03'
+
+          const { interval } = analyticsQuery({ startDate, endDate })
+          expect(interval).toBe('INTERVAL_1_DAY')
+        })
+      })
+
+      describe('day difference is between day and month threshold', () => {
+        it('returns week interval', () => {
+          const startDate = '2020-01-01'
+          const endDate = '2020-07-19'
+
+          const { interval } = analyticsQuery({ startDate, endDate })
+          expect(interval).toBe('INTERVAL_7_DAY')
+        })
+      })
+
+      describe('when day difference is greater then month threshold', () => {
+        it('returns month interval', () => {
+          const startDate = '2020-01-01'
+          const endDate = '2020-12-31'
+
+          const { interval } = analyticsQuery({ startDate, endDate })
+          expect(interval).toBe('INTERVAL_30_DAY')
+        })
+      })
     })
-    it('when the range of dates is less then 180 days have past render the chart by days', () => {
-      const startDate = '2019-12-31T14'
-      const endDate = '2019-09-15'
-      expect(chartQuery({ startDate, endDate }).groupingUnit).toBe('day')
+
+    describe('when the day difference is less than one', () => {
+      it('returns week interval', () => {
+        const startDate = '2020-01-01'
+        const endDate = '2020-01-01'
+
+        const { interval } = analyticsQuery({ startDate, endDate })
+        expect(interval).toBe('INTERVAL_7_DAY')
+      })
     })
   })
   describe('startDate', () => {
     it('correct param is passed', () => {
       const startDate = '2019-12-31T14'
-      expect(chartQuery({ startDate }).startDate).toBe(startDate)
+      expect(analyticsQuery({ startDate }).startDate).toBe(startDate)
     })
     it('incorrect param is passed', () => {
-      expect(chartQuery({}).startDate).toBe(undefined)
+      expect(analyticsQuery({}).startDate).toBe(undefined)
     })
   })
   describe('endDate', () => {
     it('correct param is passed', () => {
       const endDate = '2019-12-31T14'
-      expect(chartQuery({ endDate }).endDate).toBe(endDate)
+      expect(analyticsQuery({ endDate }).endDate).toBe(endDate)
     })
     it('incorrect param is passed', () => {
-      expect(chartQuery({}).endDate).toBe(undefined)
+      expect(analyticsQuery({}).endDate).toBe(undefined)
     })
   })
   describe('repositories', () => {
     it('An array is passed', () => {
       const repositories = ['gazebo']
-      expect(chartQuery({ repositories }).repositories).toBe(repositories)
+      expect(analyticsQuery({ repositories }).repositories).toBe(repositories)
     })
     it('An empty array', () => {
       const repositories = []
-      expect(chartQuery({ repositories }).repositories).toBe(undefined)
+      expect(analyticsQuery({ repositories }).repositories).toBe(undefined)
     })
     it('nothing is passed', () => {
-      expect(chartQuery({}).repositories).toBe(undefined)
+      expect(analyticsQuery({}).repositories).toBe(undefined)
     })
   })
 })

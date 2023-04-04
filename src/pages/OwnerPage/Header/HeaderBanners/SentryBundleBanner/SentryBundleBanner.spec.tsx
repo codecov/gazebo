@@ -77,6 +77,10 @@ describe('SentryBundleBanner', () => {
 
       const heading = await screen.findByText(/Sentry Bundle Benefit/)
       expect(heading).toBeInTheDocument()
+
+      const link = await screen.findByRole('link', { name: 'plans tab' })
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute('href', '/plan/gh/codecov')
     })
   })
 

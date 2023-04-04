@@ -11,6 +11,8 @@ import CIStatus from './CIStatus'
 import Coverage from './Coverage'
 import Title from './Title'
 
+import { statusNames } from '../enums'
+
 const headers = [
   {
     id: 'title',
@@ -56,7 +58,7 @@ const headers = [
 
 const handleOnNull = () => {
   return {
-    title: <span className="text-sm">we can&apos;t find this commit</span>,
+    title: <span className="text-sm">We can&apos;t find this commit</span>,
     ciStatus: null,
     coverage: null,
     patch: null,
@@ -119,16 +121,15 @@ const Loader = () => (
   </div>
 )
 
-function CommitsTable({ branch, paramCIStatus }) {
+function CommitsTable({ branch, states }) {
   const { provider, owner, repo, pullId } = useParams()
-
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useCommits({
       provider,
       owner,
       repo,
       filters: {
-        hideFailedCI: paramCIStatus,
+        states,
         branchName: branch,
         pullId: +pullId,
       },
@@ -154,13 +155,18 @@ function CommitsTable({ branch, paramCIStatus }) {
           </Button>
         </div>
       )}
+      {dataTable?.length === 0 && !isLoading && (
+        <p className="flex flex-1 justify-center">
+          No commits detected on branch
+        </p>
+      )}
     </>
   )
 }
 
 CommitsTable.propTypes = {
   branch: PropTypes.string,
-  paramCIStatus: PropTypes.bool,
+  states: PropTypes.arrayOf(PropTypes.oneOf(Object.keys(statusNames))),
 }
 
 export default CommitsTable

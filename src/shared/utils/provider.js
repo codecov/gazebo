@@ -1,4 +1,6 @@
 /* eslint-disable camelcase */
+import config from 'config'
+
 import bitbucketLogo from 'assets/providers/bitbucket-icon.svg'
 import githubLogo from 'assets/providers/github-icon.svg'
 import gitlabLogo from 'assets/providers/gitlab-icon.svg'
@@ -52,6 +54,9 @@ export function getProviderCommitURL({ provider, owner, repo, commit }) {
     Github: `https://github.com/${owner}/${repo}/commit/${commit}`,
     BitBucket: `https://bitbucket.org/${owner}/${repo}/commits/${commit}`,
     Gitlab: `https://gitlab.com/${owner}/${repo}/-/commit/${commit}`,
+    'Github Enterprise': `${config.GHE_URL}/${owner}/${repo}/commit/${commit}`,
+    'Gitlab Enterprise': `${config.GLE_URL}/${owner}/${repo}/-/commit/${commit}`,
+    'BitBucket Server': `${config.BBS_URL}/${owner}/${repo}/commits/${commit}`,
   }[providerToName(provider)]
 }
 
@@ -60,5 +65,8 @@ export function getProviderPullURL({ provider, owner, repo, pullId }) {
     Github: `https://github.com/${owner}/${repo}/pull/${pullId}`,
     BitBucket: `https://bitbucket.org/${owner}/${repo}/pull-requests/${pullId}`,
     Gitlab: `https://gitlab.com/${owner}/${repo}/-/merge_requests/${pullId}`,
+    'Github Enterprise': `${config.GHE_URL}/${owner}/${repo}/pull/${pullId}`,
+    'Gitlab Enterprise': `${config.GLE_URL}/${owner}/${repo}/-/merge_requests/${pullId}`,
+    'BitBucket Server': `${config.BBS_URL}/${owner}/${repo}/pull-requests/${pullId}`,
   }[providerToName(provider)]
 }
