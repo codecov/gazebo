@@ -1,33 +1,44 @@
-import { useLayoutEffect } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
-import Checkbox from 'ui/Checkbox'
 import Icon from 'ui/Icon'
+import MultiSelect from 'ui/MultiSelect'
 import Select from 'ui/Select'
 
 import CommitsTable from './CommitsTable'
+import { filterItems, statusEnum, statusNames } from './enums'
 import { useCommitsTabBranchSelector } from './hooks'
 
 import { useSetCrumbs } from '../context'
 
-const useParamsFilters = (defaultBranch) => {
+const useControlParams = ({ defaultBranch }) => {
   const defaultParams = {
     branch: defaultBranch,
-    hideFailedCI: false,
+    states: [],
   }
-  const { params, updateParams } = useLocationParams(defaultParams)
-  const { branch: selectedBranch, hideFailedCI } = params
 
-  const paramCIStatus = hideFailedCI === true || hideFailedCI === 'true'
+  const { params, updateParams } = useLocationParams(defaultParams)
+  const { branch: selectedBranch, states } = params
+
+  const paramStatesNames = states.map((filter) => statusNames[filter])
+
+  const [selectedStates, setSelectedStates] = useState(paramStatesNames)
 
   let branch = selectedBranch
   if (branch === 'All commits') {
     branch = ''
   }
 
-  return { branch, selectedBranch, paramCIStatus, updateParams }
+  return {
+    params,
+    branch,
+    selectedBranch,
+    updateParams,
+    selectedStates,
+    setSelectedStates,
+  }
 }
 
 function CommitsTab() {
@@ -39,8 +50,13 @@ function CommitsTab() {
     owner,
   })
 
-  const { branch, selectedBranch, paramCIStatus, updateParams } =
-    useParamsFilters(overview?.defaultBranch)
+  const {
+    branch,
+    selectedBranch,
+    updateParams,
+    selectedStates,
+    setSelectedStates,
+  } = useControlParams({ defaultBranch: overview?.defaultBranch })
 
   const {
     branchList,
@@ -58,8 +74,6 @@ function CommitsTab() {
     isAllCommits: selectedBranch === 'All commits',
   })
 
-  const newBranches = [...(isSearching ? [] : ['All commits']), ...branchList]
-
   useLayoutEffect(() => {
     setCrumbs([
       {
@@ -75,9 +89,19 @@ function CommitsTab() {
     ])
   }, [currentBranchSelected?.name, setCrumbs])
 
+  const newBranches = [...(isSearching ? [] : ['All commits']), ...branchList]
+
+  const handleStatusChange = (selectStates) => {
+    const commitStates = selectStates?.map(
+      (filter) => statusEnum[filter].status
+    )
+    setSelectedStates(commitStates)
+    updateParams({ states: commitStates })
+  }
+
   return (
     <div className="flex flex-1 flex-col gap-4">
-      <div className="flex justify-between gap-2 px-2 sm:px-0">
+      <div className="flex gap-2 px-2 sm:px-0">
         <div className="flex flex-col gap-1">
           <h2 className="flex flex-initial items-center gap-1 font-semibold">
             <span className="text-ds-gray-quinary">
@@ -91,6 +115,7 @@ function CommitsTab() {
               dataMarketing="branch-selector-commits-page"
               ariaName="Select branch"
               variant="gray"
+              resourceName="branch"
               isLoading={branchListIsFetching}
               onChange={(branch) => {
                 updateParams({ branch: branch })
@@ -106,17 +131,24 @@ function CommitsTab() {
             />
           </div>
         </div>
-        <Checkbox
-          dataMarketing="hide-commits-with-failed-CI"
-          label="Hide commits with failed CI"
-          name="filter commits"
-          onChange={(e) => {
-            updateParams({ hideFailedCI: e.target.checked })
-          }}
-          checked={paramCIStatus}
-        />
+        <div className="flex flex-col gap-1">
+          <h2 className="font-semibold">CI status</h2>
+          <div className="min-w-[16rem]">
+            <MultiSelect
+              dataMarketing="commits-filter-by-status"
+              ariaName="Filter by CI states"
+              value={selectedStates}
+              items={filterItems}
+              resourceName="CI States"
+              onChange={handleStatusChange}
+            />
+          </div>
+        </div>
       </div>
-      <CommitsTable branch={branch} paramCIStatus={paramCIStatus} />
+      <CommitsTable
+        branch={branch}
+        states={selectedStates?.map((state) => state?.toUpperCase())}
+      />
     </div>
   )
 }
