@@ -65,10 +65,11 @@ function _renderActivationStatus({
   ownerid,
   student,
 }) {
-  let disabled = maxSeatsReached && !activated
+  let disabled = maxSeatsReached
   if (!!student) {
-    disabled = false && !activated
+    disabled = false
   }
+  const disableToggle = disabled && !activated
 
   return (
     <Toggle
@@ -76,7 +77,7 @@ function _renderActivationStatus({
       label={activated ? 'Activated' : 'Non-Active'}
       value={activated}
       onClick={() => handleActivate({ ownerid, activated })}
-      disabled={disabled}
+      disabled={disableToggle}
     />
   )
 }

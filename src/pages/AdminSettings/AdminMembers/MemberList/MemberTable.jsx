@@ -51,11 +51,11 @@ const createTable = ({ tableData, mutate, seatData }) =>
   tableData?.length > 0
     ? tableData?.map(
         ({ activated, email, isAdmin, name, ownerid, student, username }) => {
-          let disabled =
-            seatData?.seatsUsed === seatData?.seatsLimit && !activated
+          let maxSeats = seatData?.seatsUsed === seatData?.seatsLimit
           if (!!student) {
-            disabled = false && !activated
+            maxSeats = false
           }
+          const disableToggle = maxSeats && !activated
 
           return {
             userName: <p>{name || username}</p>,
@@ -69,7 +69,7 @@ const createTable = ({ tableData, mutate, seatData }) =>
                 onClick={() => {
                   mutate({ ownerid, activated: !activated })
                 }}
-                disabled={disabled}
+                disabled={disableToggle}
               />
             ),
           }
