@@ -1,3 +1,4 @@
+import isString from 'lodash/isString'
 import pick from 'lodash/pick'
 import qs from 'qs'
 
@@ -26,4 +27,18 @@ export function getFilenameFromFilePath(path) {
 
 export function getFilePathParts(path) {
   return path?.split('/') ?? []
+}
+
+export function getFilenameFromPath(path) {
+  if (!isString(path)) {
+    return null
+  }
+  return path.split('/').at(-1)
+}
+
+export function getFileExtension(fileName) {
+  if (!fileName?.includes('.')) {
+    return null
+  }
+  return fileName?.split('.')?.at(-1)?.toLowerCase()
 }
