@@ -11,6 +11,8 @@ import CIStatus from './CIStatus'
 import Coverage from './Coverage'
 import Title from './Title'
 
+import { statusNames } from '../enums'
+
 const headers = [
   {
     id: 'title',
@@ -164,7 +166,7 @@ function CommitsTable({ branch, states }) {
 
 CommitsTable.propTypes = {
   branch: PropTypes.string,
-  states: PropTypes.arrayOf(PropTypes.string),
+  states: PropTypes.arrayOf(PropTypes.oneOf(Object.keys(statusNames))),
 }
 
 export default CommitsTable
