@@ -4,12 +4,13 @@ import Button from 'ui/Button'
 import Modal from 'ui/Modal'
 
 const RegenerateProfilingTokenModal = ({
-  closeModal,
+  showModal,
   regenerateToken,
   isLoading,
+  closeModal,
 }) => (
   <Modal
-    isOpen={true}
+    isOpen={showModal}
     onClose={closeModal}
     title="New impact analysis token"
     body={
@@ -44,9 +45,10 @@ const RegenerateProfilingTokenModal = ({
 )
 
 RegenerateProfilingTokenModal.propTypes = {
-  closeModal: PropTypes.func.isRequired,
+  showModal: PropTypes.bool.isRequired,
   regenerateToken: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
+  closeModal: PropTypes.func.isRequired,
 }
 
 export default RegenerateProfilingTokenModal

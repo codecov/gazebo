@@ -15,8 +15,7 @@ import useGenerateProfilingToken from './useGenerateProfilingToken'
 
 function ImpactAnalysisToken({ profilingToken }) {
   const [showModal, setShowModal] = useState(false)
-  const { regenerateToken, data, isLoading } = useGenerateProfilingToken()
-  const token = data?.regenerateProfilingToken?.profilingToken || profilingToken
+  const { regenerateToken, isLoading } = useGenerateProfilingToken()
   const { data: user } = useUser()
   const { owner, repo } = useParams()
 
@@ -47,7 +46,7 @@ function ImpactAnalysisToken({ profilingToken }) {
               the repository upload token above.
             </p>
             <TokenWrapper
-              token={token}
+              token={profilingToken}
               onClick={() => {
                 trackSegmentEvent(
                   snakeifyKeys({
@@ -71,13 +70,12 @@ function ImpactAnalysisToken({ profilingToken }) {
             >
               Regenerate
             </Button>
-            {showModal && (
-              <RegenerateProfilingTokenModal
-                closeModal={() => setShowModal(false)}
-                regenerateToken={regenerateToken}
-                isLoading={isLoading}
-              />
-            )}
+            <RegenerateProfilingTokenModal
+              showModal={showModal}
+              closeModal={() => setShowModal(false)}
+              regenerateToken={regenerateToken}
+              isLoading={isLoading}
+            />
           </div>
         </div>
       }

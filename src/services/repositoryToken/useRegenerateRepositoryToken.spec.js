@@ -4,7 +4,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useRegenerateProfilingToken } from './useRegenerateProfilingToken'
+import { useRegenerateRepositoryToken } from './useRegenerateRepositoryToken'
 
 const data = {
   data: {
@@ -29,18 +29,21 @@ const wrapper = ({ children }) => (
   </MemoryRouter>
 )
 
-describe('useRegenerateProfilingToken', () => {
+describe('useRegenerateRepositoryToken', () => {
   let hookData
 
   function setup() {
     server.use(
-      graphql.mutation('regenerateProfilingToken', (req, res, ctx) => {
+      graphql.mutation('regenerateRepositoryToken', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data({ data }))
       })
     )
-    hookData = renderHook(() => useRegenerateProfilingToken(), {
-      wrapper,
-    })
+    hookData = renderHook(
+      () => useRegenerateRepositoryToken({ tokenType: 'profiling' }),
+      {
+        wrapper,
+      }
+    )
   }
 
   describe('when called', () => {

@@ -1,12 +1,16 @@
-import { useRegenerateProfilingToken } from 'services/profilingToken'
+import { useRegenerateRepositoryToken } from 'services/repositoryToken'
 import { useAddNotification } from 'services/toastNotification'
 
 export default function useGenerateProfilingToken() {
   const addToast = useAddNotification()
-  const { mutate, data: res, ...rest } = useRegenerateProfilingToken()
+  const {
+    mutate,
+    data: res,
+    ...rest
+  } = useRegenerateRepositoryToken({ tokenType: 'PROFILING' })
 
   async function regenerateToken() {
-    const err = res?.data?.regenerateProfilingToken?.error
+    const err = res?.data?.regenerateRepositoryToken?.error
     mutate()
     if (err) {
       addToast({
@@ -15,5 +19,5 @@ export default function useGenerateProfilingToken() {
       })
     }
   }
-  return { regenerateToken, data: res?.data, ...rest }
+  return { regenerateToken, ...rest }
 }

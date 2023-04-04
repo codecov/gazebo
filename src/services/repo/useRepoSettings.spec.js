@@ -46,6 +46,7 @@ describe('useRepoSettings', () => {
             private: true,
             uploadToken: 'token',
             profilingToken: 'token',
+            staticAnalysisToken: 'static token',
             graphToken: 'token',
             yaml: 'yaml',
             bot: {
@@ -74,6 +75,7 @@ describe('useRepoSettings', () => {
               private: true,
               uploadToken: 'token',
               profilingToken: 'token',
+              staticAnalysisToken: 'static token',
               graphToken: 'token',
               yaml: 'yaml',
               bot: {
