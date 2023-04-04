@@ -5,7 +5,7 @@ import CoverageAreaChart from 'ui/CoverageAreaChart'
 
 import { useCoverage } from './useCoverage'
 
-const makeDesc = ({ data, first, last, repos = [] }) => {
+const makeDesc = ({ data, first, last, repos }) => {
   if (!data || data?.length === 0) return ''
   const firstDateFormatted = format(new Date(first.date), 'MMM dd, yyy')
   const lastDateFormatted = format(new Date(last.date), 'MMM dd, yyy')
@@ -26,18 +26,20 @@ function Chart({ params }) {
     },
   })
 
+  const repos = params?.repositories ?? []
+
   const desc = makeDesc({
     data: data?.coverage,
-    first: data?.coverage[0],
-    last: data?.coverage[data?.coverage.length - 1],
-    repos: params?.repositories ?? [],
+    first: data?.coverage?.[0],
+    last: data?.coverage?.[data?.coverage?.length - 1],
+    repos,
   })
 
   return (
     <CoverageAreaChart
       axisLabelFunc={data?.coverageAxisLabel}
       data={data?.coverage}
-      title={`${params?.repositories.join(', ')} coverage chart`}
+      title={`${repos?.join(', ')} coverage chart`}
       desc={desc}
       renderAreaChart={isPreviousData || isSuccess}
       aproxWidth={260.5}
