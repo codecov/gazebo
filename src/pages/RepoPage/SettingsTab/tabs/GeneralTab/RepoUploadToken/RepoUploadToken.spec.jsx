@@ -88,7 +88,7 @@ describe('RepoUploadToken', () => {
     it('renders body', () => {
       render(<RepoUploadToken uploadToken="old token" />, { wrapper })
 
-      const p = screen.getByText('Token is used for uploading coverage reports')
+      const p = screen.getByText('Used for uploading coverage reports')
       expect(p).toBeInTheDocument()
       const note = screen.getByText('Note:')
       expect(note).toBeInTheDocument()

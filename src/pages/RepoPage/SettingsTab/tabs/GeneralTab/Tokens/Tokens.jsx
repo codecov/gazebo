@@ -11,6 +11,7 @@ function Tokens() {
   return (
     <>
       <h2 className="text-lg font-semibold">Tokens</h2>
+      <hr />
       <RepoUploadToken uploadToken={repository?.uploadToken} />
       <ImpactAnalysisToken profilingToken={repository?.profilingToken} />
       <GraphToken graphToken={repository?.graphToken} />

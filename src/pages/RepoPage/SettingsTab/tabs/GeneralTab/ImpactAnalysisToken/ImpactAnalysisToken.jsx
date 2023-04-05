@@ -8,7 +8,6 @@ import { useUser } from 'services/user'
 import { snakeifyKeys } from 'shared/utils/snakeifyKeys'
 import A from 'ui/A'
 import Button from 'ui/Button'
-import SettingsDescriptor from 'ui/SettingsDescriptor'
 import TokenWrapper from 'ui/TokenWrapper'
 
 import { TokenType } from './enums'
@@ -27,66 +26,55 @@ function ImpactAnalysisToken({ profilingToken }) {
   }
 
   return (
-    <SettingsDescriptor
-      title={
-        <div className="flex gap-2">
-          <span>Impact analysis token</span>
-          <p className="mt-1 flex items-center rounded bg-ds-pink-tertiary px-4 text-sm font-semibold text-white">
+    <div className="flex flex-col gap-2 border-2 border-ds-gray-primary p-4 sm:flex-row xl:w-4/5 2xl:w-3/5">
+      <div className="flex flex-1 flex-col">
+        <div className="flex items-center gap-2">
+          <h3 className="font-semibold">Impact analysis token</h3>
+          <p className="mt-1 flex rounded bg-ds-pink-tertiary px-4 text-sm font-semibold text-white">
             BETA
           </p>
         </div>
-      }
-      description={
         <span>
-          Token is used for impact analysis feature only{' '}
+          Used for impact analysis only{' '}
           <A to={{ pageName: 'runtimeInsights' }} isExternal>
             learn more
           </A>
         </span>
-      }
-      content={
-        <div className="flex flex-col gap-4 sm:flex-row">
-          <div className="flex flex-1 flex-col gap-4">
-            <p>
-              If you are not using this feature, you do not need the token. If
-              you are uploading coverage reports to Codecov, you should be using
-              the repository upload token above.
-            </p>
-            <TokenWrapper
-              token={profilingToken}
-              onClick={() => {
-                trackSegmentEvent(
-                  snakeifyKeys({
-                    event: 'Impact Analysis Profiling Token Copied',
-                    data: {
-                      id: user?.trackingMetadata?.ownerid,
-                      userOwnerid: user?.trackingMetadata?.ownerid,
-                      ownerSlug: owner,
-                      repoSlug: repo,
-                    },
-                  })
-                )
-              }}
-            />
-          </div>
-          <div>
-            <Button
-              hook="show-modal"
-              onClick={() => setShowModal(true)}
-              disabled={isLoading}
-            >
-              Regenerate
-            </Button>
-            <RegenerateProfilingTokenModal
-              showModal={showModal}
-              closeModal={() => setShowModal(false)}
-              regenerateToken={mutate}
-              isLoading={isLoading}
-            />
-          </div>
+        <div className="mt-4">
+          <TokenWrapper
+            token={profilingToken}
+            onClick={() => {
+              trackSegmentEvent(
+                snakeifyKeys({
+                  event: 'Impact Analysis Profiling Token Copied',
+                  data: {
+                    id: user?.trackingMetadata?.ownerid,
+                    userOwnerid: user?.trackingMetadata?.ownerid,
+                    ownerSlug: owner,
+                    repoSlug: repo,
+                  },
+                })
+              )
+            }}
+          />
         </div>
-      }
-    />
+      </div>
+      <div>
+        <Button
+          hook="show-modal"
+          onClick={() => setShowModal(true)}
+          disabled={isLoading}
+        >
+          Regenerate
+        </Button>
+        <RegenerateProfilingTokenModal
+          showModal={showModal}
+          closeModal={() => setShowModal(false)}
+          regenerateToken={mutate}
+          isLoading={isLoading}
+        />
+      </div>
+    </div>
   )
 }
 

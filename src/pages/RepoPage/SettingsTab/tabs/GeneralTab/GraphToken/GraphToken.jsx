@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 
 import A from 'ui/A'
-import SettingsDescriptor from 'ui/SettingsDescriptor'
 import TokenWrapper from 'ui/TokenWrapper'
 
 function GraphToken({ graphToken }) {
@@ -10,23 +9,18 @@ function GraphToken({ graphToken }) {
   }
 
   return (
-    <SettingsDescriptor
-      title="Repository graphing token"
-      description={
-        <span>
-          Token is used for viewing graphs{' '}
-          <A to={{ pageName: 'graphAuthorization' }} isExternal>
-            learn more
-          </A>
-        </span>
-      }
-      content={
-        <>
-          <p>Use this token in API request to repository graphs</p>
-          <TokenWrapper token={graphToken} />
-        </>
-      }
-    />
+    <div className="flex flex-col border-2 border-ds-gray-primary p-4 xl:w-4/5 2xl:w-3/5">
+      <h3 className="font-semibold">Graphing token</h3>
+      <p>
+        Use token in API request to repository graphs{' '}
+        <A to={{ pageName: 'graphAuthorization' }} isExternal>
+          learn more
+        </A>
+      </p>
+      <div className="mt-4">
+        <TokenWrapper token={graphToken} />
+      </div>
+    </div>
   )
 }
 

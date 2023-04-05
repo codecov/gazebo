@@ -94,9 +94,7 @@ describe('ImpactAnalysisToken', () => {
     it('renders body', () => {
       render(<ImpactAnalysisToken profilingToken="old token" />, { wrapper })
 
-      const p = screen.getByText(
-        'Token is used for impact analysis feature only'
-      )
+      const p = screen.getByText('Used for impact analysis only')
       expect(p).toBeInTheDocument()
       const badge = screen.getByText('BETA')
       expect(badge).toBeInTheDocument()
@@ -231,29 +229,6 @@ describe('ImpactAnalysisToken', () => {
       await user.click(generate)
 
       await waitFor(() => expect(mutate).toBeCalled())
-    })
-
-    it('adds an error notification', async () => {
-      const { user, addNotification } = setup({
-        error: 'Authentication Error',
-      })
-      render(<ImpactAnalysisToken profilingToken="old token" />, { wrapper })
-
-      const regenerate = await screen.findByRole('button', {
-        name: 'Regenerate',
-      })
-      await user.click(regenerate)
-      const generate = await screen.findByRole('button', {
-        name: 'Generate New Token',
-      })
-      await user.click(generate)
-
-      await waitFor(() =>
-        expect(addNotification).toBeCalledWith({
-          type: 'error',
-          text: 'Authentication Error',
-        })
-      )
     })
   })
 

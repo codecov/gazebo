@@ -19,18 +19,16 @@ describe('DefaultBranch', () => {
     it('renders title', () => {
       render(<GraphToken graphToken="graph token" />, { wrapper })
 
-      const title = screen.getByText(/Repository graphing token/)
+      const title = screen.getByText(/Graphing token/)
       expect(title).toBeInTheDocument()
     })
     it('renders body', () => {
       render(<GraphToken graphToken="graph token" />, { wrapper })
 
-      const p = screen.getByText('Token is used for viewing graphs')
-      const p2 = screen.getByText(
-        'Use this token in API request to repository graphs'
+      const p = screen.getByText(
+        'Use token in API request to repository graphs'
       )
       expect(p).toBeInTheDocument()
-      expect(p2).toBeInTheDocument()
     })
     it('renders token copy', () => {
       render(<GraphToken graphToken="graph token" />, { wrapper })
