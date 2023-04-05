@@ -160,9 +160,26 @@ describe('getSchema', () => {
     }
     const schema = getSchema({ accountDetails, minSeats: 5 })
 
-    const response = schema.safeParse({ seats: 10 })
+    const response = schema.safeParse({ seats: 10, newPlan: 'users-inappy' })
     expect(response.success).toEqual(true)
     expect(response.error).toBeUndefined()
+  })
+
+  it('fails to parse when newPlan is not a string', () => {
+    const accountDetails = {
+      activatedUserCount: 2,
+    }
+    const schema = getSchema({ accountDetails, minSeats: 5 })
+
+    const response = schema.safeParse({ seats: 5, newPlan: 5 })
+    expect(response.success).toEqual(false)
+
+    const [issue] = response.error.issues
+    expect(issue).toEqual(
+      expect.objectContaining({
+        message: 'Plan type is required to be a string',
+      })
+    )
   })
 
   it('fails to parse when seats is not a number', () => {

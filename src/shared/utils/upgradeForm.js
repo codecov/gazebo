@@ -52,7 +52,13 @@ export const getSchema = ({ accountDetails, minSeats }) =>
             message: 'Must deactivate more users before downgrading plans',
           })
         }
+
+        return val
       }),
+    newPlan: z.string({
+      required_error: 'Plan type is required',
+      invalid_type_error: 'Plan type is required to be a string',
+    }),
   })
 
 export const calculatePrice = ({
