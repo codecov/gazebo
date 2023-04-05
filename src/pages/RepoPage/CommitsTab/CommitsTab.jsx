@@ -29,7 +29,7 @@ const useControlParams = ({ defaultBranch }) => {
   const [selectedStates, setSelectedStates] = useState(paramStatesNames)
 
   let branch = selectedBranch
-  if (branch === 'All commits') {
+  if (branch === 'All branches') {
     branch = ''
   }
 
@@ -75,7 +75,7 @@ function CommitsTab() {
   } = useCommitsTabBranchSelector({
     passedBranch: branch,
     defaultBranch: overview?.defaultBranch,
-    isAllCommits: selectedBranch === 'All commits',
+    isAllCommits: selectedBranch === 'All branches',
   })
 
   useLayoutEffect(() => {
@@ -93,7 +93,7 @@ function CommitsTab() {
     ])
   }, [currentBranchSelected?.name, setCrumbs])
 
-  const newBranches = [...(isSearching ? [] : ['All commits']), ...branchList]
+  const newBranches = [...(isSearching ? [] : ['All branches']), ...branchList]
 
   const handleStatusChange = (selectStates) => {
     const commitStates = selectStates?.map(
