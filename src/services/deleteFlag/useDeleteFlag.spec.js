@@ -4,7 +4,11 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useAddNotification } from 'services/toastNotification'
+
 import { useDeleteFlag } from './useDeleteFlag'
+
+jest.mock('services/toastNotification')
 
 const server = setupServer()
 
@@ -34,24 +38,23 @@ describe('useDeleteFlag', () => {
     server.use(
       graphql.mutation('deleteFlag', (req, res, ctx) => {
         if (triggerError) {
-          return res(ctx.status(200), ctx.data(data))
+          return res(ctx.status(500), ctx.data(data))
         } else {
           return res(ctx.status(200), ctx.data(data))
         }
       })
     )
+
+    const addNotification = jest.fn()
+
+    useAddNotification.mockReturnValue(addNotification)
+
+    return { addNotification }
   }
 
   describe('when called without an error', () => {
     beforeEach(() => {
       setup({ deleteFlag: { ownerUsername, repoName, flagName: 'flag-123' } })
-    })
-
-    it('returns isLoading false', () => {
-      const { result } = renderHook(() => useDeleteFlag(), {
-        wrapper,
-      })
-      expect(result.current.isLoading).toBeFalsy()
     })
 
     describe('When mutation is a success', () => {
@@ -67,29 +70,51 @@ describe('useDeleteFlag', () => {
   })
 
   describe('when called with a validation error', () => {
-    const mockData = {
-      deleteFlag: {
-        error: {
-          __typename: 'ValidationError',
-        },
-      },
-    }
-    beforeEach(() => {
-      const triggerError = true
-      setup(mockData, triggerError)
-    })
-
     describe('When mutation is a success w/ a validation error', () => {
-      it('returns isSuccess true', async () => {
+      it('adds an error notification', async () => {
+        const mockData = {
+          deleteFlag: {
+            error: {
+              __typename: 'ValidationError',
+            },
+          },
+        }
+        const { addNotification } = setup(mockData)
         const { result, waitFor } = renderHook(() => useDeleteFlag(), {
           wrapper,
         })
         result.current.mutate({ flagName: 'random-flag-123' })
 
         await waitFor(() =>
-          expect(result.current.error).toEqual(
-            new Error('There was an error deleting your flag')
-          )
+          expect(addNotification).toHaveBeenCalledWith({
+            type: 'error',
+            text: 'There was an error deleting your flag',
+          })
+        )
+      })
+    })
+
+    describe('When mutation is not successful', () => {
+      it('adds an error notification', async () => {
+        const mockData = {
+          deleteFlag: {
+            error: {
+              __typename: 'ValidationError',
+            },
+          },
+        }
+        const triggerError = true
+        const { addNotification } = setup(mockData, triggerError)
+        const { result, waitFor } = renderHook(() => useDeleteFlag(), {
+          wrapper,
+        })
+        result.current.mutate({ flagName: 'random-flag-123' })
+
+        await waitFor(() =>
+          expect(addNotification).toHaveBeenCalledWith({
+            type: 'error',
+            text: 'There was an error deleting your flag',
+          })
         )
       })
     })

@@ -44,32 +44,30 @@ function FlagsTab() {
 
   return (
     <div className="mx-4 flex flex-col gap-4 md:mx-0">
-      <>
-        <Header
-          controlsDisabled={isDisabled({
-            flagsMeasurementsActive,
-            isRepoBackfilling,
-          })}
-        >
-          <BackfillBanners />
-        </Header>
-        <div className="flex flex-1 flex-col gap-4">
-          {showFlagsTable({
-            flagsMeasurementsActive,
-            flagsMeasurementsBackfilled,
-          }) ? (
-            <SentryRoute path="/:provider/:owner/:repo/flags" exact>
-              <FlagsTable />
-            </SentryRoute>
-          ) : (
-            <img
-              alt="Blurred flags table"
-              src={blurredTable}
-              className="h-auto max-w-full"
-            />
-          )}
-        </div>
-      </>
+      <Header
+        controlsDisabled={isDisabled({
+          flagsMeasurementsActive,
+          isRepoBackfilling,
+        })}
+      >
+        <BackfillBanners />
+      </Header>
+      <div className="flex flex-1 flex-col gap-4">
+        {showFlagsTable({
+          flagsMeasurementsActive,
+          flagsMeasurementsBackfilled,
+        }) ? (
+          <SentryRoute path="/:provider/:owner/:repo/flags" exact>
+            <FlagsTable />
+          </SentryRoute>
+        ) : (
+          <img
+            alt="Blurred flags table"
+            src={blurredTable}
+            className="h-auto max-w-full"
+          />
+        )}
+      </div>
     </div>
   )
 }

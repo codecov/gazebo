@@ -35,15 +35,19 @@ export function useDeleteFlag() {
     onSuccess: ({ data }) => {
       const error = data?.deleteFlag?.error?.__typename
       if (error) {
-        throw new Error('There was an error deleting your flag')
+        // TODO: adjust backend to provide a message so wacn tailor the message here
+        addToast({
+          type: 'error',
+          text: 'There was an error deleting your flag',
+        })
       } else {
         queryClient.invalidateQueries('RepoFlags')
       }
     },
     onError: (e) => {
-      return addToast({
+      addToast({
         type: 'error',
-        text: e.message,
+        text: 'There was an error deleting your flag',
       })
     },
   })

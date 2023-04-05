@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -84,11 +85,19 @@ function createTableData({ tableData, indicationRange, setModalInfo }) {
     : []
 }
 
-const Loader = () => (
-  <div className="flex flex-1 justify-center">
-    <Spinner size={60} />
-  </div>
-)
+const Loader = ({ isLoading }) => {
+  return (
+    isLoading && (
+      <div className="flex flex-1 justify-center">
+        <Spinner size={60} />
+      </div>
+    )
+  )
+}
+
+Loader.propTypes = {
+  isLoading: PropTypes.bool,
+}
 
 const getEmptyStateText = ({ isSearching }) =>
   isSearching ? 'No results found' : 'There was a problem getting flags data'
@@ -130,8 +139,8 @@ function FlagsTable() {
         />
       )}
       <Table data={tableData} columns={headers} onSort={handleSort} />
-      {isLoading && <Loader />}
-      {tableData?.length === 0 && (
+      <Loader isLoading={isLoading} />
+      {tableData?.length === 0 && !isLoading && (
         <p className="flex flex-1 justify-center">
           {getEmptyStateText({ isSearching })}
         </p>

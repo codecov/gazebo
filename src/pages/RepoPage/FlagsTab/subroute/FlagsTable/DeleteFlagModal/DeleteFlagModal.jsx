@@ -36,7 +36,7 @@ const DeleteFlagModal = ({ flagName, closeModal }) => {
               hook="update-default-org"
               variant="danger"
               onClick={() => {
-                mutate({ flagName })
+                mutate({ flagName: 'asdfasdf' })
                 closeModal()
               }}
             >
