@@ -4,10 +4,15 @@ import Api from 'shared/api'
 
 import { extractCoverageFromResponse } from './utils'
 
-export function useCoverageWithFlags(
-  { provider, owner, repo, ref, path, flags },
-  options = {}
-) {
+export function useCoverageWithFlags({
+  provider,
+  owner,
+  repo,
+  ref,
+  path,
+  flags,
+  opts,
+}) {
   const query = `
   query CoverageForFileWithFlags($owner: String!, $repo: String!, $ref: String!, $path: String!, $flags: [String]) {
     owner(username: $owner) {
@@ -76,6 +81,6 @@ export function useCoverageWithFlags(
         },
       }).then(extractCoverageFromResponse)
     },
-    ...options,
+    ...(!!opts && opts),
   })
 }

@@ -9,22 +9,25 @@ import { useCompareTotals } from './useCompareTotals'
 const comparisonFragment = `
   fragment ComparisonFragment on Commit {
     compareWithParent {
-      indirectChangedFilesCount
-      directChangedFilesCount
-      state
-      patchTotals {
-        coverage
-      }
-      impactedFiles(filters:$filters) {
-        patchCoverage {
+      __typename
+      ... on Comparison {
+        indirectChangedFilesCount
+        directChangedFilesCount
+        state
+        patchTotals {
           coverage
         }
-        headName
-        baseCoverage {
-          coverage
-        }
-        headCoverage {
-          coverage
+        impactedFiles(filters:$filters) {
+          patchCoverage {
+            coverage
+          }
+          headName
+          baseCoverage {
+            coverage
+          }
+          headCoverage {
+            coverage
+          }
         }
       }
     }

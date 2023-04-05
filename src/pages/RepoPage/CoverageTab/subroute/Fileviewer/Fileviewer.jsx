@@ -1,8 +1,8 @@
 import { useParams } from 'react-router-dom'
 
-import FileBreadcrumb from 'shared/ContentsTable/FileBreadcrumb'
 import RawFileviewer from 'shared/RawFileviewer'
 import { useTreePaths } from 'shared/treePaths'
+import Breadcrumb from 'ui/Breadcrumb'
 
 function FileView() {
   const { treePaths } = useTreePaths()
@@ -12,7 +12,7 @@ function FileView() {
     <RawFileviewer
       title={
         <div className="text-sm font-normal">
-          <FileBreadcrumb paths={[...treePaths]} />
+          <Breadcrumb paths={treePaths} />
         </div>
       }
       commit={commit}

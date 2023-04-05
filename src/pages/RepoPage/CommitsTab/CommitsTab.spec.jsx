@@ -91,7 +91,8 @@ describe('CommitsTab', () => {
   function setup({ hasNextPage, hasBranches, returnBranch = '' }) {
     const user = userEvent.setup()
     const fetchNextPage = jest.fn()
-    const searches = jest.fn()
+    const branchSearch = jest.fn()
+    const commitSearch = jest.fn()
     const branchName = jest.fn()
 
     server.use(
@@ -101,7 +102,7 @@ describe('CommitsTab', () => {
         }
 
         if (!!req?.variables?.filters?.searchValue) {
-          searches(req?.variables?.filters?.searchValue)
+          branchSearch(req?.variables?.filters?.searchValue)
         }
 
         if (hasBranches) {
@@ -114,7 +115,13 @@ describe('CommitsTab', () => {
         return res(ctx.status(200), ctx.data(mockBranches(hasNextPage)))
       }),
       graphql.query('GetCommits', (req, res, ctx) => {
-        branchName(req?.variables?.filters?.branchName)
+        if (!!req?.variables?.filters?.branchName) {
+          branchName(req?.variables?.filters?.branchName)
+        }
+
+        if (!!req?.variables?.filters?.search) {
+          commitSearch(req?.variables?.filters?.search)
+        }
 
         return res(ctx.status(200), ctx.data(mockCommits))
       }),
@@ -133,7 +140,7 @@ describe('CommitsTab', () => {
       )
     )
 
-    return { fetchNextPage, searches, user, branchName }
+    return { fetchNextPage, branchSearch, user, branchName, commitSearch }
   }
 
   afterEach(() => {
@@ -274,7 +281,7 @@ describe('CommitsTab', () => {
   })
 
   describe('user selects from the branch selector', () => {
-    describe('user selects all commits', () => {
+    describe('user selects All branches', () => {
       it('updates the button with the selected branch', async () => {
         const { user } = setup({ hasNextPage: false, returnBranch: 'main' })
         repoPageRender({
@@ -291,7 +298,7 @@ describe('CommitsTab', () => {
         })
         await user.click(select)
 
-        const branch = await screen.findByText('All commits')
+        const branch = await screen.findByText('All branches')
         await user.click(branch)
 
         const allCommitsBtn = await screen.findByRole('button', {
@@ -299,7 +306,7 @@ describe('CommitsTab', () => {
         })
         expect(allCommitsBtn).toBeInTheDocument()
 
-        const selectedBranch = within(allCommitsBtn).getByText(/All commits/)
+        const selectedBranch = within(allCommitsBtn).getByText(/All branches/)
         expect(selectedBranch).toBeInTheDocument()
       })
     })
@@ -363,7 +370,7 @@ describe('CommitsTab', () => {
 
   describe('user searches for branch', () => {
     it('fetches request with search term', async () => {
-      const { searches, user } = setup({ hasNextPage: false })
+      const { branchSearch, user } = setup({ hasNextPage: false })
 
       repoPageRender({
         renderCommits: () => (
@@ -380,14 +387,14 @@ describe('CommitsTab', () => {
       const search = await screen.findByPlaceholderText('Search for branches')
       await user.type(search, 'searching for a branch')
 
-      await waitFor(() => expect(searches).toBeCalled())
+      await waitFor(() => expect(branchSearch).toBeCalled())
       await waitFor(() =>
-        expect(searches).toBeCalledWith('searching for a branch')
+        expect(branchSearch).toBeCalledWith('searching for a branch')
       )
     })
 
-    it('hides all commits from list', async () => {
-      const { searches, user } = setup({ hasNextPage: false })
+    it('hides All branches from list', async () => {
+      const { branchSearch, user } = setup({ hasNextPage: false })
 
       repoPageRender({
         renderCommits: () => (
@@ -406,10 +413,33 @@ describe('CommitsTab', () => {
       const search = await screen.findByPlaceholderText('Search for branches')
       await user.type(search, 'searching for a branch')
 
-      await waitFor(() => expect(searches).toBeCalled())
+      await waitFor(() => expect(branchSearch).toBeCalled())
 
-      const allCommits = screen.queryByText('All commits')
+      const allCommits = screen.queryByText('All branches')
       expect(allCommits).not.toBeInTheDocument()
+    })
+  })
+
+  describe('user searches for commit', () => {
+    it('fetches commits request with search term', async () => {
+      const { commitSearch, user } = setup({ hasNextPage: false })
+
+      repoPageRender({
+        renderCommits: () => (
+          <Wrapper>
+            <CommitsTab />
+          </Wrapper>
+        ),
+        initialEntries: ['/gh/codecov/gazebo/commits'],
+      })
+
+      const search = await screen.findByPlaceholderText('Search commits')
+      await user.type(search, 'searching for a commit')
+
+      await waitFor(() => expect(commitSearch).toBeCalled())
+      await waitFor(() =>
+        expect(commitSearch).toBeCalledWith('searching for a commit')
+      )
     })
   })
 })

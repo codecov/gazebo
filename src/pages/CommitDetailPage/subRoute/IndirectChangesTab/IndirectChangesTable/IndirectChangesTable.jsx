@@ -2,7 +2,7 @@ import cs from 'classnames'
 import isEmpty from 'lodash/isEmpty'
 import isNumber from 'lodash/isNumber'
 import PropTypes from 'prop-types'
-import { Suspense, useMemo } from 'react'
+import { lazy, Suspense, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useCommit } from 'services/commit'
@@ -12,7 +12,7 @@ import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
 
-import CommitFileView from './CommitFileView'
+const CommitFileDiff = lazy(() => import('./CommitFileDiff'))
 
 const getFileData = (row, commit) => {
   const headCov = row?.headCoverage?.coverage
@@ -92,7 +92,7 @@ function createTable({ tableData }) {
         <div className="flex flex-col break-all">
           <A
             to={{
-              pageName: 'commitFileView',
+              pageName: 'commitFileDiff',
               options: { commit: commit?.commitid, tree: headName },
             }}
           >
@@ -129,7 +129,7 @@ const RenderSubComponent = ({ row }) => {
 
   return (
     <Suspense fallback={<Loader />}>
-      <CommitFileView path={path} />
+      <CommitFileDiff path={path} />
     </Suspense>
   )
 }
