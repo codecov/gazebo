@@ -162,13 +162,37 @@ describe('ImpactAnalysisToken', () => {
     describe('when user clicks on Cancel button', () => {
       it('does not call the mutation', async () => {
         const { user, mutate } = setup()
-        render(<ImpactAnalysisToken profilingToken="old token" />, { wrapper })
+        render(<ImpactAnalysisToken profilingToken="old token" />, {
+          wrapper,
+        })
 
         await user.click(
           await screen.findByRole('button', { name: 'Regenerate' })
         )
 
         expect(mutate).not.toHaveBeenCalled()
+      })
+
+      it('does not render the modal', async () => {
+        const { user } = setup()
+        render(<ImpactAnalysisToken profilingToken="old token" />, {
+          wrapper,
+        })
+
+        await user.click(
+          await screen.findByRole('button', { name: 'Regenerate' })
+        )
+
+        const modal = await screen.findByText('New impact analysis token')
+        expect(modal).toBeInTheDocument()
+
+        const cancelButton = await screen.findByRole('button', {
+          name: 'Cancel',
+        })
+        await user.click(cancelButton)
+
+        const afterCancel = screen.queryByText('New impact analysis token')
+        expect(afterCancel).not.toBeInTheDocument()
       })
     })
   })
