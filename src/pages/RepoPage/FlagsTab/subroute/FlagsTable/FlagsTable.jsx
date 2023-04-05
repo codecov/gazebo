@@ -73,6 +73,7 @@ function createTableData({ tableData, indicationRange, setModalInfo }) {
           ),
           delete: (
             <button
+              data-testid="delete-flag"
               onClick={() => setModalInfo({ flagName: name, showModal: true })}
             >
               <Icon size="md" name="trash" variant="outline" />
