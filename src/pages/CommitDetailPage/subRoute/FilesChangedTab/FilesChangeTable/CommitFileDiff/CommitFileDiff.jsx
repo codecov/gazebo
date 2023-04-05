@@ -1,10 +1,10 @@
-import uniqueId from 'lodash/uniqueId'
 import PropTypes from 'prop-types'
 import { Fragment } from 'react'
 import { useParams } from 'react-router-dom'
 
+import { useComparisonForCommitAndParent } from 'services/comparison/useComparisonForCommitAndParent'
+import { transformImpactedFileData } from 'services/comparison/utils'
 import { useNavLinks } from 'services/navigation'
-import { useSingularImpactedFileComparison } from 'services/pull'
 import { CODE_RENDERER_TYPE } from 'shared/utils/fileviewer'
 import A from 'ui/A'
 import CodeRenderer from 'ui/CodeRenderer'
@@ -13,29 +13,48 @@ import CriticalFileLabel from 'ui/CodeRenderer/CriticalFileLabel'
 import DiffLine from 'ui/CodeRenderer/DiffLine'
 import Spinner from 'ui/Spinner'
 
+function ErrorDisplayMessage() {
+  return (
+    <p className="border border-solid border-ds-gray-tertiary p-4">
+      There was a problem getting the source code from your provider. Unable to
+      show line by line coverage.
+    </p>
+  )
+}
+
 const Loader = () => (
   <div className="flex items-center justify-center py-16">
     <Spinner />
   </div>
 )
 
-function FileDiff({ path }) {
-  const { provider, owner, repo, pullId } = useParams()
-  const { pullFileView } = useNavLinks()
-  const { data, isLoading } = useSingularImpactedFileComparison({
+function CommitFileDiff({ path }) {
+  const { owner, repo, provider, commit } = useParams()
+  const { commitFileDiff } = useNavLinks()
+  const { data: comparisonData, isLoading } = useComparisonForCommitAndParent({
     provider,
     owner,
     repo,
-    pullId,
+    commitid: commit,
     path,
-    filters: { hasUnintendedChanges: true },
+    filters: { hasUnintendedChanges: false },
+    opts: {
+      select: (res) =>
+        transformImpactedFileData(
+          res?.data?.owner?.repository?.commit?.compareWithParent?.impactedFile
+        ),
+    },
   })
 
   if (isLoading) {
     return <Loader />
   }
 
-  const { fileLabel, headName, isCriticalFile, segments } = data
+  if (!comparisonData) {
+    return <ErrorDisplayMessage />
+  }
+
+  const { fileLabel, headName, isCriticalFile, segments } = comparisonData
 
   return (
     <>
@@ -53,9 +72,9 @@ function FileDiff({ path }) {
                   )}
                 </div>
                 <A
-                  href={pullFileView.path({ pullId, tree: path })}
+                  href={commitFileDiff.path({ commit, tree: path })}
                   isExternal
-                  hook="pull full file"
+                  hook="commit full file"
                 >
                   View full file
                 </A>
@@ -68,10 +87,10 @@ function FileDiff({ path }) {
               LineComponent={({ i, line, ...props }) => (
                 <DiffLine
                   // If this line one of the first 3 or last three lines of the segment
-                  key={uniqueId(i)}
+                  key={i + 1}
                   lineContent={line}
                   edgeOfFile={i <= 2 || i >= segment.lines.length - 3}
-                  path={data?.hashedPath}
+                  path={comparisonData?.hashedPath}
                   {...props}
                   {...segment.lines[i]}
                 />
@@ -84,8 +103,8 @@ function FileDiff({ path }) {
   )
 }
 
-FileDiff.propTypes = {
+CommitFileDiff.propTypes = {
   path: PropTypes.string,
 }
 
-export default FileDiff
+export default CommitFileDiff

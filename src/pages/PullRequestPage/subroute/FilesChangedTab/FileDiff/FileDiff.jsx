@@ -1,3 +1,4 @@
+import uniqueId from 'lodash/uniqueId'
 import PropTypes from 'prop-types'
 import { Fragment } from 'react'
 import { useParams } from 'react-router-dom'
@@ -67,7 +68,7 @@ function FileDiff({ path }) {
               LineComponent={({ i, line, ...props }) => (
                 <DiffLine
                   // If this line one of the first 3 or last three lines of the segment
-                  key={i + 1}
+                  key={uniqueId(i)}
                   lineContent={line}
                   edgeOfFile={i <= 2 || i >= segment.lines.length - 3}
                   path={data?.hashedPath}
