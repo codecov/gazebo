@@ -1,13 +1,15 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useRepoConfig } from 'services/repo/useRepoConfig'
 import { determineProgressColor } from 'shared/utils/determineProgressColor'
 import Button from 'ui/Button'
 import CoverageProgress from 'ui/CoverageProgress'
+import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 
+import DeleteFlagModal from './DeleteFlagModal'
 import useRepoFlagsTable from './hooks'
 import TableSparkline from './TableEntries/TableSparkline'
 
@@ -22,10 +24,10 @@ const headers = [
   },
   {
     id: 'coverage',
-    header: 'Coverage %',
+    header: <span className="w-full text-right">Coverage %</span>,
     accessorKey: 'coverage',
     cell: (info) => info.getValue(),
-    width: 'w-3/12',
+    width: 'w-4/12',
     enableSorting: false,
     justifyStart: true,
   },
@@ -34,12 +36,20 @@ const headers = [
     header: 'Trend',
     accessorKey: 'trend',
     cell: (info) => info.getValue(),
-    width: 'w-3/12',
+    width: 'w-4/12',
+    enableSorting: false,
+  },
+  {
+    id: 'delete',
+    header: '',
+    accessorKey: 'delete',
+    cell: (info) => info.getValue(),
+    width: 'w-1/12',
     enableSorting: false,
   },
 ]
 
-function createTableData({ tableData, indicationRange }) {
+function createTableData({ tableData, indicationRange, setModalInfo }) {
   return tableData?.length > 0
     ? tableData.map(
         ({ name, percentCovered, percentChange, measurements }) => ({
@@ -61,6 +71,13 @@ function createTableData({ tableData, indicationRange }) {
               name={name}
             />
           ),
+          delete: (
+            <button
+              onClick={() => setModalInfo({ flagName: name, showModal: true })}
+            >
+              <Icon size="md" name="trash" variant="outline" />
+            </button>
+          ),
         })
       )
     : []
@@ -78,6 +95,10 @@ const getEmptyStateText = ({ isSearching }) =>
 function FlagsTable() {
   const { provider, owner, repo } = useParams()
   const { data: repoConfigData } = useRepoConfig({ provider, owner, repo })
+  const [modalInfo, setModalInfo] = useState({
+    flagName: null,
+    showModal: false,
+  })
 
   const {
     data,
@@ -94,19 +115,26 @@ function FlagsTable() {
       createTableData({
         tableData: data,
         indicationRange: repoConfigData?.indicationRange,
+        setModalInfo,
       }),
     [data, repoConfigData]
   )
 
   return (
     <>
+      {modalInfo?.showModal && (
+        <DeleteFlagModal
+          flagName={modalInfo?.flagName}
+          closeModal={() => setModalInfo({ flag: null, showModal: false })}
+        />
+      )}
       <Table data={tableData} columns={headers} onSort={handleSort} />
-      {tableData?.length === 0 && !isLoading && (
+      {isLoading && <Loader />}
+      {tableData?.length === 0 && (
         <p className="flex flex-1 justify-center">
           {getEmptyStateText({ isSearching })}
         </p>
       )}
-      {isLoading && <Loader />}
       {hasNextPage && (
         <div className="mt-4 flex flex-1 justify-center">
           <Button
