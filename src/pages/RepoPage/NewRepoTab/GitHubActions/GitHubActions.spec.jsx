@@ -184,7 +184,7 @@ describe('GitHubActions', () => {
       expect(gitHubActionsWorkflowLink).toBeInTheDocument()
       expect(gitHubActionsWorkflowLink).toHaveAttribute(
         'href',
-        'https://github.com/codecov/cool-repo/settings/actions'
+        'https://github.com/codecov/cool-repo/actions'
       )
     })
 
