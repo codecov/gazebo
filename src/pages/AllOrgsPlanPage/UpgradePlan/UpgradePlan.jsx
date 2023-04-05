@@ -10,7 +10,6 @@ import {
 } from 'services/account'
 import { useMyContexts } from 'services/user'
 import {
-  canApplySentryUpgrade,
   findSentryPlans,
   isEnterprisePlan,
   useProPlans,
@@ -19,7 +18,6 @@ import A from 'ui/A'
 import Card from 'ui/Card'
 import Select from 'ui/Select'
 
-import SentryUpgradeForm from './SentryUpgradeForm'
 import UpgradeDetails from './UpgradeDetails'
 import UpgradeForm from './UpgradeForm'
 
@@ -35,7 +33,6 @@ const FormDetails = ({
   accountDetails,
   organizationName,
   plan,
-  plans,
   proPlanMonth,
   proPlanYear,
   sentryPlanMonth,
@@ -52,22 +49,13 @@ const FormDetails = ({
     )
   }
 
-  if (canApplySentryUpgrade({ plan, plans })) {
-    return (
-      <SentryUpgradeForm
-        accountDetails={accountDetails}
-        sentryPlanYear={sentryPlanYear}
-        sentryPlanMonth={sentryPlanMonth}
-        organizationName={organizationName}
-      />
-    )
-  }
-
   return (
     <UpgradeForm
       accountDetails={accountDetails}
       proPlanYear={proPlanYear}
       proPlanMonth={proPlanMonth}
+      sentryPlanYear={sentryPlanYear}
+      sentryPlanMonth={sentryPlanMonth}
       organizationName={organizationName}
     />
   )
@@ -79,7 +67,6 @@ FormDetails.propTypes = {
   plan: PropTypes.shape({
     value: PropTypes.string,
   }),
-  plans: PropTypes.arrayOf(planPropType),
   proPlanMonth: planPropType,
   proPlanYear: planPropType,
   sentryPlanMonth: planPropType,
@@ -138,7 +125,6 @@ function UpgradePlan() {
             accountDetails={accountDetails}
             organizationName={organizationName}
             plan={plan}
-            plans={plans}
             proPlanMonth={proPlanMonth}
             proPlanYear={proPlanYear}
             sentryPlanYear={sentryPlanYear}
