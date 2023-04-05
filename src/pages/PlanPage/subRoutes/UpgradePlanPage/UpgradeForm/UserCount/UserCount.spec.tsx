@@ -2,6 +2,12 @@ import { render, screen } from '@testing-library/react'
 
 import UserCount from './UserCount'
 
+/*
+ * Something weird is going on with the coverage uploads with this file where
+ * the coverage is not coming back as fully covered on Codecov even though all
+ * the test cases are explicitly tests and coming up as fully covered locally
+ */
+
 describe('UserCount', () => {
   it('renders user information', () => {
     render(<UserCount activatedUserCount={10} inactiveUserCount={10} />)
