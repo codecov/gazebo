@@ -130,19 +130,27 @@ describe('UpgradeForm', () => {
   ) {
     const addNotification = jest.fn()
     const user = userEvent.setup()
+    const patchRequest = jest.fn()
 
     useAddNotification.mockReturnValue(addNotification)
 
     server.use(
-      rest.patch('/internal/gh/codecov/account-details/', (req, res, ctx) => {
-        if (!successfulRequest) {
-          if (errorDetails) {
-            return res(ctx.status(500), ctx.json({ detail: errorDetails }))
+      rest.patch(
+        '/internal/gh/codecov/account-details/',
+        async (req, res, ctx) => {
+          if (!successfulRequest) {
+            if (errorDetails) {
+              return res(ctx.status(500), ctx.json({ detail: errorDetails }))
+            }
+            return res(ctx.status(500), ctx.json({ success: false }))
           }
-          return res(ctx.status(500), ctx.json({ success: false }))
+          const body = await req.json()
+
+          patchRequest(body)
+
+          return res(ctx.status(200), ctx.json({ success: true }))
         }
-        return res(ctx.status(200), ctx.json({ success: true }))
-      }),
+      ),
       rest.get('internal/plans', (req, res, ctx) => {
         return res(
           ctx.status(200),
@@ -156,7 +164,7 @@ describe('UpgradeForm', () => {
       })
     )
 
-    return { addNotification, user }
+    return { addNotification, user, patchRequest }
   }
 
   describe('user does not have access to sentry upgrade', () => {
@@ -806,6 +814,29 @@ describe('UpgradeForm', () => {
     }
 
     describe('when mutation is successful', () => {
+      it('makes a patch request with the correct values', async () => {
+        const { patchRequest, user } = setup()
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const input = await screen.findByRole('spinbutton')
+        await user.type(input, '{backspace}{backspace}{backspace}')
+        await user.type(input, '20')
+
+        const updateButton = await screen.findByRole('button', {
+          name: 'Update',
+        })
+        await user.click(updateButton)
+
+        await waitFor(() =>
+          expect(patchRequest).toHaveBeenCalledWith({
+            plan: {
+              quantity: 20,
+              value: 'users-pr-inappy',
+            },
+          })
+        )
+      })
+
       it('adds a success notification', async () => {
         const { addNotification, user } = setup()
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
@@ -818,11 +849,6 @@ describe('UpgradeForm', () => {
           name: 'Update',
         })
         await user.click(updateButton)
-
-        await waitFor(() => queryClient.isMutating())
-        await waitFor(() => queryClient.isFetching())
-        await waitFor(() => !queryClient.isMutating())
-        await waitFor(() => !queryClient.isFetching())
 
         await waitFor(() =>
           expect(addNotification).toHaveBeenCalledWith({
