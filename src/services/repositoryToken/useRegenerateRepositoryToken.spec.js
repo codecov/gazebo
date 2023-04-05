@@ -1,15 +1,23 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { waitFor } from '@testing-library/react'
 import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useAddNotification } from 'services/toastNotification'
+
 import { useRegenerateRepositoryToken } from './useRegenerateRepositoryToken'
+
+jest.mock('services/toastNotification')
 
 const data = {
   data: {
-    regenerateProfilingToken: {
-      profilingToken: 'new token',
+    regenerateRepositoryToken: {
+      error: {
+        __typename: 'Error',
+      },
+      token: 'new token',
     },
   },
 }
@@ -30,11 +38,14 @@ const wrapper = ({ children }) => (
 )
 
 describe('useRegenerateRepositoryToken', () => {
-  let hookData
-
   function setup() {
+    const addNotification = jest.fn()
+    let hookData
+
+    useAddNotification.mockReturnValue(addNotification)
+
     server.use(
-      graphql.mutation('regenerateRepositoryToken', (req, res, ctx) => {
+      graphql.mutation('RegenerateRepositoryToken', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data({ data }))
       })
     )
@@ -44,38 +55,49 @@ describe('useRegenerateRepositoryToken', () => {
         wrapper,
       }
     )
+    return { addNotification, hookData }
   }
 
   describe('when called', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('returns isLoading false', () => {
+      const { hookData } = setup()
+
       expect(hookData.result.current.isLoading).toBeFalsy()
     })
 
     describe('when calling the mutation', () => {
-      beforeEach(() => {
-        hookData.result.current.mutate()
-        return hookData.waitFor(() => hookData.result.current.status !== 'idle')
-      })
+      it('returns isLoading true', async () => {
+        const { hookData } = setup()
 
-      it('returns isLoading true', () => {
+        hookData.result.current.mutate()
+        await hookData.waitFor(() => hookData.result.current.status !== 'idle')
+
         expect(hookData.result.current.isLoading).toBeTruthy()
       })
     })
 
     describe('When mutation is a success', () => {
-      beforeEach(async () => {
+      it('returns isSuccess true', async () => {
+        const { hookData } = setup()
+
         hookData.result.current.mutate()
         await hookData.waitFor(() => hookData.result.current.isLoading)
         await hookData.waitFor(() => !hookData.result.current.isLoading)
-      })
 
-      it('returns isSuccess true', () => {
         expect(hookData.result.current.isSuccess).toBeTruthy()
       })
+    })
+  })
+
+  describe('mutations has an error type', () => {
+    it('fires toast message', async () => {
+      const { addNotification, hookData } = setup()
+
+      hookData.result.current.mutate()
+      await hookData.waitFor(() => hookData.result.current.isLoading)
+      await hookData.waitFor(() => !hookData.result.current.isLoading)
+
+      await waitFor(() => expect(addNotification).toBeCalled())
     })
   })
 })

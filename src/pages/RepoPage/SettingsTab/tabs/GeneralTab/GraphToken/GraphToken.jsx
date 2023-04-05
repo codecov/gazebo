@@ -5,6 +5,10 @@ import SettingsDescriptor from 'ui/SettingsDescriptor'
 import TokenWrapper from 'ui/TokenWrapper'
 
 function GraphToken({ graphToken }) {
+  if (!graphToken) {
+    return null
+  }
+
   return (
     <SettingsDescriptor
       title="Repository graphing token"
@@ -27,7 +31,7 @@ function GraphToken({ graphToken }) {
 }
 
 GraphToken.propTypes = {
-  graphToken: PropTypes.string.isRequired,
+  graphToken: PropTypes.string,
 }
 
 export default GraphToken

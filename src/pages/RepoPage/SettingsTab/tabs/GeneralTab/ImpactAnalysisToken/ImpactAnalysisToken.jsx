@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
+import { useRegenerateRepositoryToken } from 'services/repositoryToken'
 import { trackSegmentEvent } from 'services/tracking/segment'
 import { useUser } from 'services/user'
 import { snakeifyKeys } from 'shared/utils/snakeifyKeys'
@@ -10,14 +11,20 @@ import Button from 'ui/Button'
 import SettingsDescriptor from 'ui/SettingsDescriptor'
 import TokenWrapper from 'ui/TokenWrapper'
 
+import { TokenType } from './enums'
 import RegenerateProfilingTokenModal from './RegenerateProfilingTokenModal'
-import useGenerateProfilingToken from './useGenerateProfilingToken'
 
 function ImpactAnalysisToken({ profilingToken }) {
   const [showModal, setShowModal] = useState(false)
-  const { regenerateToken, isLoading } = useGenerateProfilingToken()
+  const { mutate, isLoading } = useRegenerateRepositoryToken({
+    tokenType: TokenType.PROFILING,
+  })
   const { data: user } = useUser()
   const { owner, repo } = useParams()
+
+  if (!profilingToken) {
+    return null
+  }
 
   return (
     <SettingsDescriptor
@@ -73,7 +80,7 @@ function ImpactAnalysisToken({ profilingToken }) {
             <RegenerateProfilingTokenModal
               showModal={showModal}
               closeModal={() => setShowModal(false)}
-              regenerateToken={regenerateToken}
+              regenerateToken={mutate}
               isLoading={isLoading}
             />
           </div>
@@ -84,7 +91,7 @@ function ImpactAnalysisToken({ profilingToken }) {
 }
 
 ImpactAnalysisToken.propTypes = {
-  profilingToken: PropTypes.string.isRequired,
+  profilingToken: PropTypes.string,
 }
 
 export default ImpactAnalysisToken

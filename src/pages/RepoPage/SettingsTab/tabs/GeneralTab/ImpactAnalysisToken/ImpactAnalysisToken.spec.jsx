@@ -1,4 +1,4 @@
-import { render, screen } from 'custom-testing-library'
+import { render, screen, waitFor } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
@@ -20,7 +20,7 @@ const queryClient = new QueryClient()
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings']}>
     <QueryClientProvider client={queryClient}>
-      <Route path="/:provider/:owner/:repo/settings">){children}</Route>
+      <Route path="/:provider/:owner/:repo/settings">{children}</Route>
     </QueryClientProvider>
   </MemoryRouter>
 )
@@ -70,7 +70,10 @@ describe('ImpactAnalysisToken', () => {
           ctx.data({
             data: {
               regenerateRepositoryToken: {
-                error,
+                profilingToken: 'new token',
+                error: {
+                  __typename: error,
+                },
               },
             },
           })
@@ -177,7 +180,7 @@ describe('ImpactAnalysisToken', () => {
       const { user, trackSegmentMock } = setup()
       render(<ImpactAnalysisToken profilingToken="old token" />, { wrapper })
 
-      const button = await await screen.findByRole('button', { name: /copy/i })
+      const button = await screen.findByRole('button', { name: /copy/i })
       await user.click(button)
 
       expect(trackSegmentMock).toHaveBeenCalledTimes(1)
@@ -207,7 +210,7 @@ describe('ImpactAnalysisToken', () => {
       })
       await user.click(generate)
 
-      expect(mutate).toHaveBeenCalled()
+      expect(mutate).toBeCalled()
     })
   })
 
@@ -227,7 +230,7 @@ describe('ImpactAnalysisToken', () => {
       })
       await user.click(generate)
 
-      expect(mutate).toBeCalled()
+      await waitFor(() => expect(mutate).toBeCalled())
     })
 
     it('adds an error notification', async () => {
@@ -245,7 +248,21 @@ describe('ImpactAnalysisToken', () => {
       })
       await user.click(generate)
 
-      expect(addNotification).toBeCalled()
+      await waitFor(() =>
+        expect(addNotification).toBeCalledWith({
+          type: 'error',
+          text: 'Authentication Error',
+        })
+      )
+    })
+  })
+
+  describe('when render with no token', () => {
+    it('renders title', () => {
+      render(<ImpactAnalysisToken profilingToken={null} />, { wrapper })
+
+      const title = screen.queryByText(/Impact analysis token/)
+      expect(title).not.toBeInTheDocument()
     })
   })
 })

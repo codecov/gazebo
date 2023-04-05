@@ -34,8 +34,11 @@ function useRegenerateToken() {
 
 function RepoUploadToken({ uploadToken }) {
   const [showModal, setShowModal] = useState(false)
-  const { regenerateToken, isLoading, data } = useRegenerateToken()
-  const token = data?.uploadToken || uploadToken
+  const { regenerateToken, isLoading } = useRegenerateToken()
+
+  if (!uploadToken) {
+    return null
+  }
 
   return (
     <SettingsDescriptor
@@ -65,12 +68,12 @@ function RepoUploadToken({ uploadToken }) {
               </A>
               .
             </p>
-            <TokenWrapper token={TokenFormatEnum.FIRST_FORMAT + token} />
+            <TokenWrapper token={TokenFormatEnum.FIRST_FORMAT + uploadToken} />
             <span className="font-semibold ">OR</span>
             <p>
               If you’d like to add the token directly to your CI/CD Environment:
             </p>
-            <TokenWrapper token={TokenFormatEnum.SECOND_FORMAT + token} />
+            <TokenWrapper token={TokenFormatEnum.SECOND_FORMAT + uploadToken} />
           </div>
           <div>
             <Button
@@ -80,13 +83,12 @@ function RepoUploadToken({ uploadToken }) {
             >
               Regenerate
             </Button>
-            {showModal && (
-              <RegenerateTokenModal
-                closeModal={() => setShowModal(false)}
-                regenerateToken={regenerateToken}
-                isLoading={isLoading}
-              />
-            )}
+            <RegenerateTokenModal
+              showModal={showModal}
+              closeModal={() => setShowModal(false)}
+              regenerateToken={regenerateToken}
+              isLoading={isLoading}
+            />
           </div>
         </div>
       }
@@ -95,6 +97,6 @@ function RepoUploadToken({ uploadToken }) {
 }
 
 RepoUploadToken.propTypes = {
-  uploadToken: PropTypes.string.isRequired,
+  uploadToken: PropTypes.string,
 }
 export default RepoUploadToken

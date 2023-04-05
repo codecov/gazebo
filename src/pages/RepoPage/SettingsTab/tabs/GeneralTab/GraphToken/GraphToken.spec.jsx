@@ -6,28 +6,25 @@ import GraphToken from './GraphToken'
 
 const queryClient = new QueryClient()
 
-describe('DefaultBranch', () => {
-  function setup() {
-    render(
-      <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings']}>
-        <QueryClientProvider client={queryClient}>
-          <Route path="/:provider/:owner/:repo/settings">
-            <GraphToken graphToken="random" />
-          </Route>
-        </QueryClientProvider>
-      </MemoryRouter>
-    )
-  }
+const wrapper = ({ children }) => (
+  <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings']}>
+    <QueryClientProvider client={queryClient}>
+      <Route path="/:provider/:owner/:repo/settings">{children}</Route>
+    </QueryClientProvider>
+  </MemoryRouter>
+)
 
-  describe('renders GraphToken componenet', () => {
-    beforeEach(() => {
-      setup()
-    })
+describe('DefaultBranch', () => {
+  describe('renders GraphToken component', () => {
     it('renders title', () => {
+      render(<GraphToken graphToken="graph token" />, { wrapper })
+
       const title = screen.getByText(/Repository graphing token/)
       expect(title).toBeInTheDocument()
     })
     it('renders body', () => {
+      render(<GraphToken graphToken="graph token" />, { wrapper })
+
       const p = screen.getByText('Token is used for viewing graphs')
       const p2 = screen.getByText(
         'Use this token in API request to repository graphs'
@@ -36,7 +33,19 @@ describe('DefaultBranch', () => {
       expect(p2).toBeInTheDocument()
     })
     it('renders token copy', () => {
-      expect(screen.getByText('random')).toBeInTheDocument()
+      render(<GraphToken graphToken="graph token" />, { wrapper })
+
+      expect(screen.getByText('graph token')).toBeInTheDocument()
+    })
+  })
+
+  describe('render with no graph token', () => {
+    it('renders null', () => {
+      render(<GraphToken graphToken={null} />, { wrapper })
+
+      expect(
+        screen.queryByText(/Repository graphing token/)
+      ).not.toBeInTheDocument()
     })
   })
 })

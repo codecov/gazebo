@@ -231,4 +231,15 @@ describe('RepoUploadToken', () => {
       )
     })
   })
+
+  describe('when render with no token', () => {
+    afterEach(() => jest.resetAllMocks())
+
+    it('does not render competent', () => {
+      render(<RepoUploadToken uploadToken={null} />, { wrapper })
+
+      const title = screen.queryByText(/Repository upload token/)
+      expect(title).not.toBeInTheDocument()
+    })
+  })
 })

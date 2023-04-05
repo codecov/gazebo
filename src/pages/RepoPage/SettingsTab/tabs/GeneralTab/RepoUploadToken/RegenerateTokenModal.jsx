@@ -3,9 +3,14 @@ import PropTypes from 'prop-types'
 import Button from 'ui/Button'
 import Modal from 'ui/Modal'
 
-const RegenerateTokenModal = ({ closeModal, regenerateToken, isLoading }) => (
+const RegenerateTokenModal = ({
+  closeModal,
+  regenerateToken,
+  isLoading,
+  showModal,
+}) => (
   <Modal
-    isOpen={true}
+    isOpen={showModal}
     onClose={closeModal}
     title="New repository upload token"
     body={
@@ -43,6 +48,7 @@ RegenerateTokenModal.propTypes = {
   closeModal: PropTypes.func.isRequired,
   regenerateToken: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
+  showModal: PropTypes.bool.isRequired,
 }
 
 export default RegenerateTokenModal
