@@ -1,5 +1,4 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { waitFor } from '@testing-library/react'
 import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
@@ -38,66 +37,112 @@ const wrapper = ({ children }) => (
 )
 
 describe('useRegenerateRepositoryToken', () => {
-  function setup() {
+  function setup({ triggerError = false } = { triggerError: false }) {
     const addNotification = jest.fn()
-    let hookData
 
     useAddNotification.mockReturnValue(addNotification)
 
     server.use(
       graphql.mutation('RegenerateRepositoryToken', (req, res, ctx) => {
+        if (triggerError) {
+          return res(ctx.status(500), ctx.data({ data: null }))
+        }
         return res(ctx.status(200), ctx.data({ data }))
       })
     )
-    hookData = renderHook(
-      () => useRegenerateRepositoryToken({ tokenType: 'profiling' }),
-      {
-        wrapper,
-      }
-    )
-    return { addNotification, hookData }
+
+    return { addNotification }
   }
 
   describe('when called', () => {
     it('returns isLoading false', () => {
-      const { hookData } = setup()
+      setup()
+      const { result } = renderHook(
+        () => useRegenerateRepositoryToken({ tokenType: 'profiling' }),
+        {
+          wrapper,
+        }
+      )
 
-      expect(hookData.result.current.isLoading).toBeFalsy()
+      expect(result.current.isLoading).toBeFalsy()
     })
 
     describe('when calling the mutation', () => {
       it('returns isLoading true', async () => {
-        const { hookData } = setup()
+        setup()
+        const { result, waitFor } = renderHook(
+          () => useRegenerateRepositoryToken({ tokenType: 'profiling' }),
+          {
+            wrapper,
+          }
+        )
 
-        hookData.result.current.mutate()
-        await hookData.waitFor(() => hookData.result.current.status !== 'idle')
+        result.current.mutate()
+        await waitFor(() => result.current.status !== 'idle')
 
-        expect(hookData.result.current.isLoading).toBeTruthy()
+        expect(result.current.isLoading).toBeTruthy()
       })
     })
 
     describe('When mutation is a success', () => {
       it('returns isSuccess true', async () => {
-        const { hookData } = setup()
+        setup()
+        const { result, waitFor } = renderHook(
+          () => useRegenerateRepositoryToken({ tokenType: 'profiling' }),
+          {
+            wrapper,
+          }
+        )
 
-        hookData.result.current.mutate()
-        await hookData.waitFor(() => hookData.result.current.isLoading)
-        await hookData.waitFor(() => !hookData.result.current.isLoading)
+        result.current.mutate()
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
 
-        expect(hookData.result.current.isSuccess).toBeTruthy()
+        expect(result.current.isSuccess).toBeTruthy()
       })
     })
   })
 
-  describe('mutations has an error type', () => {
+  describe('when mutations has an error type', () => {
     it('fires toast message', async () => {
-      const { addNotification, hookData } = setup()
+      const { addNotification } = setup()
+      const { result, waitFor } = renderHook(
+        () => useRegenerateRepositoryToken({ tokenType: 'profiling' }),
+        {
+          wrapper,
+        }
+      )
 
-      hookData.result.current.mutate()
-      await hookData.waitFor(() => hookData.result.current.isLoading)
-      await hookData.waitFor(() => !hookData.result.current.isLoading)
+      result.current.mutate()
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
 
-      await waitFor(() => expect(addNotification).toBeCalled())
+      await waitFor(() =>
+        expect(addNotification).toBeCalledWith({
+          type: 'error',
+          text: 'Error',
+        })
+      )
+    })
+  })
+
+  describe('when mutation has a network error', () => {
+    it('adds an error notification', async () => {
+      const { addNotification } = setup({ triggerError: true })
+      const { result, waitFor } = renderHook(
+        () => useRegenerateRepositoryToken({ tokenType: 'profiling' }),
+        {
+          wrapper,
+        }
+      )
+
+      result.current.mutate()
+
+      await waitFor(() =>
+        expect(addNotification).toBeCalledWith({
+          type: 'error',
+        })
+      )
     })
   })
 })
