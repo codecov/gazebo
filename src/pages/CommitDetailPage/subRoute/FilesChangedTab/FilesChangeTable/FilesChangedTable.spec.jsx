@@ -8,7 +8,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import FilesChangedTable from './FilesChangedTable'
 
-jest.mock('./CommitFileView', () => () => 'CommitFileView')
+jest.mock('./CommitFileDiff', () => () => 'CommitFileDiff')
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -215,15 +215,15 @@ describe('FilesChangedTable', () => {
       ])
     })
 
-    it('renders the CommitFileView component', async () => {
+    it('renders the CommitFileDiff component', async () => {
       const user = userEvent.setup()
       render(<FilesChangedTable />, { wrapper })
 
       const nameExpander = await screen.findByText('src/index2.py')
       await user.click(nameExpander)
 
-      const commitFileView = await screen.findByText('CommitFileView')
-      expect(commitFileView).toBeInTheDocument()
+      const commitFileDiff = await screen.findByText('CommitFileDiff')
+      expect(commitFileDiff).toBeInTheDocument()
     })
   })
 })

@@ -24,10 +24,13 @@ function fetchRepoCommits({ provider, owner, repo, variables, after, signal }) {
           }
         }
         compareWithParent{
+          __typename
+          ... on Comparison {
             patchTotals{
                 coverage
             }
-        }     
+          }
+        }
     }
   `
   const query = `

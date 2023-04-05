@@ -5,20 +5,23 @@ import Api from 'shared/api'
 const comparisonFragment = `
   fragment ComparisonFragment on Commit {
     compareWithParent {
-      state
-      patchTotals {
-        coverage
-      }
-      impactedFiles {
-        patchCoverage {
+      __typename
+      ... on Comparison {
+        state
+        patchTotals {
           coverage
         }
-        headName
-        baseCoverage {
-          coverage
-        }
-        headCoverage {
-          coverage
+        impactedFiles {
+          patchCoverage {
+            coverage
+          }
+          headName
+          baseCoverage {
+            coverage
+          }
+          headCoverage {
+            coverage
+          }
         }
       }
     }

@@ -281,7 +281,7 @@ describe('CommitsTab', () => {
   })
 
   describe('user selects from the branch selector', () => {
-    describe('user selects all commits', () => {
+    describe('user selects All branches', () => {
       it('updates the button with the selected branch', async () => {
         const { user } = setup({ hasNextPage: false, returnBranch: 'main' })
         repoPageRender({
@@ -298,7 +298,7 @@ describe('CommitsTab', () => {
         })
         await user.click(select)
 
-        const branch = await screen.findByText('All commits')
+        const branch = await screen.findByText('All branches')
         await user.click(branch)
 
         const allCommitsBtn = await screen.findByRole('button', {
@@ -306,7 +306,7 @@ describe('CommitsTab', () => {
         })
         expect(allCommitsBtn).toBeInTheDocument()
 
-        const selectedBranch = within(allCommitsBtn).getByText(/All commits/)
+        const selectedBranch = within(allCommitsBtn).getByText(/All branches/)
         expect(selectedBranch).toBeInTheDocument()
       })
     })
@@ -393,7 +393,7 @@ describe('CommitsTab', () => {
       )
     })
 
-    it('hides all commits from list', async () => {
+    it('hides All branches from list', async () => {
       const { branchSearch, user } = setup({ hasNextPage: false })
 
       repoPageRender({
@@ -415,7 +415,7 @@ describe('CommitsTab', () => {
 
       await waitFor(() => expect(branchSearch).toBeCalled())
 
-      const allCommits = screen.queryByText('All commits')
+      const allCommits = screen.queryByText('All branches')
       expect(allCommits).not.toBeInTheDocument()
     })
   })
