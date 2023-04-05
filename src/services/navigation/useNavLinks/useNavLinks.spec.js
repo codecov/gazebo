@@ -1199,16 +1199,16 @@ describe('useNavLinks', () => {
 
     it('Returns the correct link with nothing passed', () => {
       expect(hookData.result.current.githubRepoActions.path()).toBe(
-        'https://github.com/codecov/cool-repo/settings/actions'
+        'https://github.com/codecov/cool-repo/actions'
       )
     })
     it('can override the params', () => {
       expect(
         hookData.result.current.githubRepoActions.path({ repo: 'test-repo' })
-      ).toBe('https://github.com/codecov/test-repo/settings/actions')
+      ).toBe('https://github.com/codecov/test-repo/actions')
       expect(
         hookData.result.current.githubRepoActions.path({ owner: 'cat' })
-      ).toBe('https://github.com/cat/cool-repo/settings/actions')
+      ).toBe('https://github.com/cat/cool-repo/actions')
     })
   })
 })
