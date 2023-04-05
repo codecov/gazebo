@@ -496,7 +496,7 @@ export function useNavLinks() {
           owner: o,
           repo: r,
         }
-      ) => `https://github.com/${owner}/${repo}/settings/actions`,
+      ) => `https://github.com/${owner}/${repo}/actions`,
       isExternalLink: true,
       openNewTab: true,
     },
