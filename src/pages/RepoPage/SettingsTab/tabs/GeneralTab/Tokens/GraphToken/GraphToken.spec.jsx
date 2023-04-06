@@ -41,9 +41,8 @@ describe('DefaultBranch', () => {
     it('renders null', () => {
       render(<GraphToken graphToken={null} />, { wrapper })
 
-      expect(
-        screen.queryByText(/Repository graphing token/)
-      ).not.toBeInTheDocument()
+      const title = screen.queryByText(/Graphing token/)
+      expect(title).not.toBeInTheDocument()
     })
   })
 })
