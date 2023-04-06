@@ -14,6 +14,7 @@ import RegenerateProfilingTokenModal from './RegenerateProfilingTokenModal'
 
 import { TokenType } from '../enums'
 
+
 function ImpactAnalysisToken({ profilingToken }) {
   const [showModal, setShowModal] = useState(false)
   const { mutate, isLoading } = useRegenerateRepositoryToken({

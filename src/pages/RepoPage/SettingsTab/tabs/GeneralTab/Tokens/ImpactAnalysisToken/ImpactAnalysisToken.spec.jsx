@@ -166,9 +166,10 @@ describe('ImpactAnalysisToken', () => {
           wrapper,
         })
 
-        await user.click(
-          await screen.findByRole('button', { name: 'Regenerate' })
-        )
+        const regenerateButton = await screen.findByRole('button', {
+          name: 'Regenerate',
+        })
+        await user.click(regenerateButton)
 
         expect(mutate).not.toHaveBeenCalled()
       })
@@ -179,9 +180,10 @@ describe('ImpactAnalysisToken', () => {
           wrapper,
         })
 
-        await user.click(
-          await screen.findByRole('button', { name: 'Regenerate' })
-        )
+        const regenerateButton = await screen.findByRole('button', {
+          name: 'Regenerate',
+        })
+        await user.click(regenerateButton)
 
         const modal = await screen.findByText('New impact analysis token')
         expect(modal).toBeInTheDocument()
