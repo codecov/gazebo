@@ -88,7 +88,7 @@ describe('RepoUploadToken', () => {
     it('renders body', () => {
       render(<RepoUploadToken uploadToken="old token" />, { wrapper })
 
-      const p = screen.getByText('Token is used for uploading coverage reports')
+      const p = screen.getByText('Used for uploading coverage reports')
       expect(p).toBeInTheDocument()
       const note = screen.getByText('Note:')
       expect(note).toBeInTheDocument()
@@ -229,6 +229,17 @@ describe('RepoUploadToken', () => {
           text: 'Something went wrong',
         })
       )
+    })
+  })
+
+  describe('when render with no token', () => {
+    afterEach(() => jest.resetAllMocks())
+
+    it('does not render component', () => {
+      render(<RepoUploadToken uploadToken={null} />, { wrapper })
+
+      const title = screen.queryByText(/Repository upload token/)
+      expect(title).not.toBeInTheDocument()
     })
   })
 })

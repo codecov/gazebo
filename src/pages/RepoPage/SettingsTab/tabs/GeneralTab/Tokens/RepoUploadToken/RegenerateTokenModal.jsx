@@ -3,19 +3,20 @@ import PropTypes from 'prop-types'
 import Button from 'ui/Button'
 import Modal from 'ui/Modal'
 
-const RegenerateProfilingTokenModal = ({
+const RegenerateTokenModal = ({
   closeModal,
   regenerateToken,
   isLoading,
+  showModal,
 }) => (
   <Modal
-    isOpen={true}
+    isOpen={showModal}
     onClose={closeModal}
-    title="New impact analysis token"
+    title="New repository upload token"
     body={
       <div className="flex  flex-col gap-4">
-        <h2 className="font-semibold">Impact Analysis</h2>
-        <p>If you save the new token, make sure to update your CI yml</p>
+        <h2 className="font-semibold">Repository API token</h2>
+        <span>If you save the new token, make sure to update your CI yml</span>
       </div>
     }
     footer={
@@ -30,8 +31,8 @@ const RegenerateProfilingTokenModal = ({
             isLoading={isLoading}
             hook="generate-token"
             variant="primary"
-            onClick={async () => {
-              await regenerateToken()
+            onClick={() => {
+              regenerateToken()
               closeModal()
             }}
           >
@@ -43,10 +44,11 @@ const RegenerateProfilingTokenModal = ({
   />
 )
 
-RegenerateProfilingTokenModal.propTypes = {
+RegenerateTokenModal.propTypes = {
   closeModal: PropTypes.func.isRequired,
   regenerateToken: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
+  showModal: PropTypes.bool.isRequired,
 }
 
-export default RegenerateProfilingTokenModal
+export default RegenerateTokenModal

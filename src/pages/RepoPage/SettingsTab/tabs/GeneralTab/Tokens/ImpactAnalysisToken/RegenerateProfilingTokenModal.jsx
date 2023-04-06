@@ -3,15 +3,20 @@ import PropTypes from 'prop-types'
 import Button from 'ui/Button'
 import Modal from 'ui/Modal'
 
-const RegenerateTokenModal = ({ closeModal, regenerateToken, isLoading }) => (
+const RegenerateProfilingTokenModal = ({
+  showModal,
+  regenerateToken,
+  isLoading,
+  closeModal,
+}) => (
   <Modal
-    isOpen={true}
+    isOpen={showModal}
     onClose={closeModal}
-    title="New repository upload token"
+    title="New impact analysis token"
     body={
       <div className="flex  flex-col gap-4">
-        <h2 className="font-semibold">Repository API token</h2>
-        <span>If you save the new token, make sure to update your CI yml</span>
+        <h2 className="font-semibold">Impact Analysis</h2>
+        <p>If you save the new token, make sure to update your CI yml</p>
       </div>
     }
     footer={
@@ -26,8 +31,8 @@ const RegenerateTokenModal = ({ closeModal, regenerateToken, isLoading }) => (
             isLoading={isLoading}
             hook="generate-token"
             variant="primary"
-            onClick={() => {
-              regenerateToken()
+            onClick={async () => {
+              await regenerateToken()
               closeModal()
             }}
           >
@@ -39,10 +44,11 @@ const RegenerateTokenModal = ({ closeModal, regenerateToken, isLoading }) => (
   />
 )
 
-RegenerateTokenModal.propTypes = {
-  closeModal: PropTypes.func.isRequired,
+RegenerateProfilingTokenModal.propTypes = {
+  showModal: PropTypes.bool.isRequired,
   regenerateToken: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
+  closeModal: PropTypes.func.isRequired,
 }
 
-export default RegenerateTokenModal
+export default RegenerateProfilingTokenModal
