@@ -235,7 +235,7 @@ describe('RepoUploadToken', () => {
   describe('when render with no token', () => {
     afterEach(() => jest.resetAllMocks())
 
-    it('does not render competent', () => {
+    it('does not render component', () => {
       render(<RepoUploadToken uploadToken={null} />, { wrapper })
 
       const title = screen.queryByText(/Repository upload token/)
