@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 
 function SettingsDescriptor({ title, description, content }) {
   return (
-    <div className="mx-4 flex flex-col gap-4 sm:mx-0">
+    <div className="m-4 flex flex-col gap-4 sm:mx-0">
       <div className="flex flex-col gap-2">
         <div className="text-lg font-semibold">{title}</div>
         <p>{description}</p>

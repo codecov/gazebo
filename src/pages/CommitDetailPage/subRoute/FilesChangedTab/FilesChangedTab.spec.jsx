@@ -2,7 +2,10 @@ import { render, screen } from '@testing-library/react'
 
 import FilesChangedTab from './FilesChangedTab'
 
-jest.mock('./FilesChangedTable', () => () => 'FilesChangedTable')
+jest.mock(
+  './FilesChangeTable/FilesChangedTable',
+  () => () => 'FilesChangedTable'
+)
 
 describe('FilesChangedTab', () => {
   it('renders commits table', async () => {
