@@ -1,8 +1,8 @@
 import { useRepoSettings } from 'services/repo'
 
-import GraphToken from '../GraphToken'
-import ImpactAnalysisToken from '../ImpactAnalysisToken'
-import RepoUploadToken from '../RepoUploadToken'
+import GraphToken from './GraphToken'
+import ImpactAnalysisToken from './ImpactAnalysisToken'
+import RepoUploadToken from './RepoUploadToken'
 
 function Tokens() {
   const { data } = useRepoSettings()
