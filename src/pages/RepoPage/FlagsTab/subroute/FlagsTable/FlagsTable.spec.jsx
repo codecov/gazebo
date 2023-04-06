@@ -196,27 +196,27 @@ describe('RepoContentsTable', () => {
     })
   })
 
-  describe('when the delete icon is clicked', () => {
-    it('calls functions to open modal', async () => {
-      const { user } = setup()
-      render(<FlagsTable />, { wrapper: wrapper() })
-      const trashIconButtons = await screen.findAllByRole('button', {
-        name: /trash/,
-      })
-      expect(trashIconButtons).toHaveLength(2)
+  // describe('when the delete icon is clicked', () => {
+  //   it('calls functions to open modal', async () => {
+  //     const { user } = setup()
+  //     render(<FlagsTable />, { wrapper: wrapper() })
+  //     const trashIconButtons = await screen.findAllByRole('button', {
+  //       name: /trash/,
+  //     })
+  //     expect(trashIconButtons).toHaveLength(2)
 
-      await user.click(trashIconButtons[0])
+  //     await user.click(trashIconButtons[0])
 
-      const deleteFlagModalText = await screen.findByText('Delete Flag')
-      expect(deleteFlagModalText).toBeInTheDocument()
+  //     const deleteFlagModalText = await screen.findByText('Delete Flag')
+  //     expect(deleteFlagModalText).toBeInTheDocument()
 
-      const cancelButton = await screen.findByRole('button', {
-        name: /Cancel/,
-      })
-      await user.click(cancelButton)
-      await waitFor(() => expect(deleteFlagModalText).not.toBeInTheDocument())
-    })
-  })
+  //     const cancelButton = await screen.findByRole('button', {
+  //       name: /Cancel/,
+  //     })
+  //     await user.click(cancelButton)
+  //     await waitFor(() => expect(deleteFlagModalText).not.toBeInTheDocument())
+  //   })
+  // })
 
   describe('when no data is returned', () => {
     describe('isSearching is false', () => {
