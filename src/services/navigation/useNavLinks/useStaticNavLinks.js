@@ -245,5 +245,11 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    staticAnalysisDoc: {
+      text: 'Static Analysis',
+      path: () => 'https://docs.codecov.com/docs/automated-test-selection',
+      isExternalLink: true,
+      openNewTab: true,
+    },
   }
 }

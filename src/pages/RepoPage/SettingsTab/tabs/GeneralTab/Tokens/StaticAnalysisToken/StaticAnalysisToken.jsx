@@ -37,7 +37,7 @@ function StaticAnalysisToken({ staticAnalysisToken }) {
         </div>
         <span>
           Required for static analysis only{' '}
-          <A to={{ pageName: 'runtimeInsights' }} isExternal>
+          <A to={{ pageName: 'staticAnalysisDoc' }} isExternal>
             learn more
           </A>
         </span>

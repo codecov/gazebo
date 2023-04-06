@@ -61,6 +61,7 @@ describe('useStaticNavLinks', () => {
       ${links.oauthEnabling}           | ${'https://docs.github.com/en/organizations/restricting-access-to-your-organizations-data/enabling-oauth-app-access-restrictions-for-your-organization'}
       ${links.github}                  | ${'https://github.com/marketplace/codecov'}
       ${links.repoConfigFeedback}      | ${'https://github.com/codecov/Codecov-user-feedback/issues/18'}
+      ${links.staticAnalysisDoc}       | ${'https://docs.codecov.com/docs/automated-test-selection'}
     `('static links return path', ({ link, outcome }) => {
       it(`${link.text}: Returns the correct link`, () => {
         expect(link.path()).toBe(outcome)
