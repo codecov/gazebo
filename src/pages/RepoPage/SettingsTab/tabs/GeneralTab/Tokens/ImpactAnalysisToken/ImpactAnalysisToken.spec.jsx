@@ -1,4 +1,4 @@
-import { render, screen } from 'custom-testing-library'
+import { render, screen, waitFor } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
@@ -232,7 +232,7 @@ describe('ImpactAnalysisToken', () => {
       })
       await user.click(generate)
 
-      expect(mutate).toBeCalled()
+      await waitFor(() => expect(mutate).toBeCalled())
     })
   })
 
@@ -252,7 +252,7 @@ describe('ImpactAnalysisToken', () => {
       })
       await user.click(generate)
 
-      expect(mutate).toBeCalled()
+      await waitFor(() => expect(mutate).toBeCalled())
     })
   })
 
