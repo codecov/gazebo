@@ -10,19 +10,19 @@ import A from 'ui/A'
 import Button from 'ui/Button'
 import TokenWrapper from 'ui/TokenWrapper'
 
-import RegenerateProfilingTokenModal from './RegenerateProfilingTokenModal'
+import RegenerateStaticTokenModal from './RegenerateStaticTokenModal'
 
 import { TokenType } from '../enums'
 
-function ImpactAnalysisToken({ profilingToken }) {
+function StaticAnalysisToken({ staticAnalysisToken }) {
   const [showModal, setShowModal] = useState(false)
   const { mutate, isLoading } = useRegenerateRepositoryToken({
-    tokenType: TokenType.PROFILING,
+    tokenType: TokenType.STATIC_ANALYSIS,
   })
   const { data: user } = useUser()
   const { owner, repo } = useParams()
 
-  if (!profilingToken) {
+  if (!staticAnalysisToken) {
     return null
   }
 
@@ -30,24 +30,24 @@ function ImpactAnalysisToken({ profilingToken }) {
     <div className="flex flex-col gap-2 border-2 border-ds-gray-primary p-4 sm:flex-row xl:w-4/5 2xl:w-3/5">
       <div className="flex flex-1 flex-col">
         <div className="flex items-center gap-2">
-          <h3 className="font-semibold">Impact analysis token</h3>
+          <h3 className="font-semibold">Static analysis token</h3>
           <p className="mt-1 flex rounded bg-ds-pink-tertiary px-4 text-sm font-semibold text-white">
             BETA
           </p>
         </div>
         <span>
-          Used for impact analysis only{' '}
+          Required for static analysis only
           <A to={{ pageName: 'runtimeInsights' }} isExternal>
             learn more
           </A>
         </span>
         <div className="mt-4">
           <TokenWrapper
-            token={profilingToken}
+            token={staticAnalysisToken}
             onClick={() => {
               trackSegmentEvent(
                 snakeifyKeys({
-                  event: 'Impact Analysis Profiling Token Copied',
+                  event: 'Static Analysis Token Copied',
                   data: {
                     id: user?.trackingMetadata?.ownerid,
                     userOwnerid: user?.trackingMetadata?.ownerid,
@@ -68,7 +68,7 @@ function ImpactAnalysisToken({ profilingToken }) {
         >
           Regenerate
         </Button>
-        <RegenerateProfilingTokenModal
+        <RegenerateStaticTokenModal
           showModal={showModal}
           closeModal={() => setShowModal(false)}
           regenerateToken={mutate}
@@ -79,8 +79,8 @@ function ImpactAnalysisToken({ profilingToken }) {
   )
 }
 
-ImpactAnalysisToken.propTypes = {
-  profilingToken: PropTypes.string,
+StaticAnalysisToken.propTypes = {
+  staticAnalysisToken: PropTypes.string,
 }
 
-export default ImpactAnalysisToken
+export default StaticAnalysisToken

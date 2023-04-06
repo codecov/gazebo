@@ -13,6 +13,7 @@ function fetchRepoSettingsDetails({ provider, owner, repo, signal }) {
           uploadToken
           defaultBranch
           profilingToken
+          staticAnalysisToken
           graphToken
           yaml
           bot {
