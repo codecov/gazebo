@@ -297,7 +297,7 @@ describe('UpgradePlan', () => {
         render(<UpgradePlan />, { wrapper })
 
         const note = await screen.findByText(
-          '*$12 per user / month if paid monthly'
+          '$12 per user / month if paid monthly'
         )
 
         await waitFor(() => expect(note).toBeInTheDocument())
@@ -429,7 +429,7 @@ describe('UpgradePlan', () => {
         await user.click(org1)
 
         const note = await screen.findByText(
-          '*$12 per user / month if paid monthly'
+          '$12 per user / month if paid monthly'
         )
         expect(note).toBeInTheDocument()
       })
@@ -627,7 +627,7 @@ describe('UpgradePlan', () => {
         const org1 = await screen.findByText('org1')
         await user.click(org1)
 
-        const note = screen.queryByText('*$12 per user / month if paid monthly')
+        const note = screen.queryByText('$12 per user / month if paid monthly')
         expect(note).toBeInTheDocument()
       })
 
@@ -758,7 +758,7 @@ describe('UpgradePlan', () => {
         const org1 = await screen.findByText('org1')
         await user.click(org1)
 
-        const note = screen.queryByText('*$12 per user / month if paid monthly')
+        const note = screen.queryByText('$12 per user / month if paid monthly')
         expect(note).toBeInTheDocument()
       })
 
