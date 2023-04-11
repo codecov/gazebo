@@ -12,17 +12,10 @@ const defaultQueryParams = {
 }
 
 function FileExplorer() {
-  const {
-    data,
-    headers,
-    handleSort,
-    isSearching,
-    isMissingHeadReport,
-    isLoading,
-  } = useRepoBranchContentsTable()
+  const { data, isLoading } = useRepoBranchContentsTable()
 
   const { params, updateParams } = useLocationParams(defaultQueryParams)
-  const isCodeTreeDisplay = params?.displayType === 'tree'
+  const isFileListDisplay = params?.displayType === 'list'
 
   return (
     <>
@@ -39,25 +32,7 @@ function FileExplorer() {
         />
       </div>
       <div className=" grid flex-1 grid-cols-12 gap-8">
-        {isCodeTreeDisplay ? (
-          <CodeTreeTable
-            data={data}
-            headers={headers}
-            handleSort={handleSort}
-            isSearching={isSearching}
-            isMissingHeadReport={isMissingHeadReport}
-            isLoading={isLoading}
-          />
-        ) : (
-          <FileListTable
-            data={data}
-            headers={headers}
-            handleSort={handleSort}
-            isSearching={isSearching}
-            isMissingHeadReport={isMissingHeadReport}
-            isLoading={isLoading}
-          />
-        )}
+        {isFileListDisplay ? <FileListTable /> : <CodeTreeTable />}
       </div>
     </>
   )

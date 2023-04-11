@@ -1,18 +1,18 @@
-import PropType from 'prop-types'
-
 import Table from 'ui/Table'
 
-import Loader from './Loader'
-import RepoContentsResult from './RepoContentsResult'
+import { useRepoBranchContentsTable } from '../hooks'
+import { Loader, RepoContentsResult } from '../shared'
 
-function CodeTreeTable({
-  data,
-  headers,
-  handleSort,
-  isSearching,
-  isMissingHeadReport,
-  isLoading,
-}) {
+function CodeTreeTable() {
+  const {
+    data,
+    headers,
+    handleSort,
+    isSearching,
+    isMissingHeadReport,
+    isLoading,
+  } = useRepoBranchContentsTable()
+
   return (
     <div className="col-span-12 flex flex-col md:col-span-12">
       <Table
@@ -33,15 +33,6 @@ function CodeTreeTable({
       </div>
     </div>
   )
-}
-
-CodeTreeTable.propTypes = {
-  data: PropType.array,
-  headers: PropType.array,
-  handleSort: PropType.func,
-  isSearching: PropType.bool,
-  isMissingHeadReport: PropType.bool,
-  isLoading: PropType.bool,
 }
 
 export default CodeTreeTable
