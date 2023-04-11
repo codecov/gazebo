@@ -5,7 +5,6 @@ import config from 'config'
 
 import { useAccountDetails } from 'services/account'
 import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
-import { useFlags } from 'shared/featureFlags'
 
 import AccountSettings from './AccountSettings'
 
@@ -28,7 +27,6 @@ describe('AccountSettings', () => {
     url = [],
     isAdmin = false,
     isSelfHosted = false,
-    showOrgUploadToken = false,
     planValue = 'users-free',
   }) {
     config.IS_SELF_HOSTED = isSelfHosted
@@ -39,7 +37,6 @@ describe('AccountSettings', () => {
         },
       },
     })
-    useFlags.mockReturnValue({ orgUploadToken: showOrgUploadToken })
 
     useIsCurrentUserAnAdmin.mockReturnValue(isAdmin)
     useAccountDetails.mockReturnValue({
@@ -164,8 +161,7 @@ describe('AccountSettings', () => {
   describe('when navigating to the org upload token tab', () => {
     beforeEach(() => {
       setup({
-        url: '/account/gh/codecov/orgUploadToken',
-        showOrgUploadToken: true,
+        url: '/account/gh/codecov/org-upload-token',
         planValue: 'users-enterprisem',
       })
     })

@@ -4,7 +4,6 @@ import config from 'config'
 
 import { useAccountDetails } from 'services/account'
 import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
-import { useFlags } from 'shared/featureFlags'
 import { isEnterprisePlan } from 'shared/utils/billing'
 import Sidemenu from 'ui/Sidemenu'
 
@@ -59,14 +58,11 @@ function AccountSettingsSideMenu() {
     currentUser?.user?.username?.toLowerCase() === owner?.toLowerCase()
 
   const { data: accountDetails } = useAccountDetails({ owner, provider })
-  const { orgUploadToken } = useFlags({ orgUploadToken: false })
-  const showOrgUploadToken =
-    orgUploadToken && isEnterprisePlan(accountDetails?.plan?.value)
 
   const links = generateLinks({
     isAdmin,
     isPersonalSettings,
-    showOrgUploadToken,
+    showOrgUploadToken: isEnterprisePlan(accountDetails?.plan?.value),
   })
 
   return <Sidemenu links={links} />

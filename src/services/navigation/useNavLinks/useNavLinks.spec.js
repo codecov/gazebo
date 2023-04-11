@@ -1159,16 +1159,16 @@ describe('useNavLinks', () => {
 
     it('Returns the correct link with nothing passed', () => {
       expect(hookData.result.current.orgUploadToken.path()).toBe(
-        '/account/gh/codecov/orgUploadToken'
+        '/account/gh/codecov/org-upload-token'
       )
     })
     it('can override the params', () => {
       expect(
         hookData.result.current.orgUploadToken.path({ provider: 'bb' })
-      ).toBe('/account/bb/codecov/orgUploadToken')
+      ).toBe('/account/bb/codecov/org-upload-token')
       expect(
         hookData.result.current.orgUploadToken.path({ owner: 'cat' })
-      ).toBe('/account/gh/cat/orgUploadToken')
+      ).toBe('/account/gh/cat/org-upload-token')
     })
   })
 
