@@ -140,12 +140,11 @@ function FlagsTable() {
 
   return (
     <>
-      {modalInfo?.showModal && (
-        <DeleteFlagModal
-          flagName={modalInfo?.flagName}
-          closeModal={() => setModalInfo({ flag: null, showModal: false })}
-        />
-      )}
+      <DeleteFlagModal
+        flagName={modalInfo?.flagName}
+        closeModal={() => setModalInfo({ flag: null, showModal: false })}
+        isOpen={modalInfo?.showModal}
+      />
       <Table data={tableData} columns={headers} onSort={handleSort} />
       <Loader isLoading={isLoading} />
       {tableData?.length === 0 && !isLoading && (
