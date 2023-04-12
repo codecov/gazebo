@@ -9,7 +9,6 @@ import SidebarLayout from 'layouts/SidebarLayout'
 import LogoSpinner from 'old_ui/LogoSpinner'
 import { useAccountDetails } from 'services/account'
 import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
-import { useFlags } from 'shared/featureFlags'
 import { isEnterprisePlan } from 'shared/utils/billing'
 
 import AccountSettingsSideMenu from './AccountSettingsSideMenu'
@@ -38,11 +37,8 @@ function AccountSettings() {
     currentUser?.user?.username?.toLowerCase() === owner?.toLowerCase()
 
   const yamlTab = `/account/${provider}/${owner}/yaml/`
-  const { orgUploadToken } = useFlags({ orgUploadToken: false })
 
   const { data: accountDetails } = useAccountDetails({ owner, provider })
-  const showOrgUploadToken =
-    orgUploadToken && isEnterprisePlan(accountDetails?.plan?.value)
 
   return (
     <div className="mt-2 flex flex-col gap-4">
@@ -67,9 +63,9 @@ function AccountSettings() {
                 <AccessTab provider={provider} />
               </SentryRoute>
             )}
-            {showOrgUploadToken && (
+            {isEnterprisePlan(accountDetails?.plan?.value) && (
               <SentryRoute
-                path="/account/:provider/:owner/orgUploadToken"
+                path="/account/:provider/:owner/org-upload-token"
                 exact
               >
                 <OrgUploadToken />
