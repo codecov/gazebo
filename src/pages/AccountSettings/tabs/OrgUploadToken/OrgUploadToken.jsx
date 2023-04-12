@@ -19,7 +19,7 @@ function OrgUploadToken() {
           Global repository upload token
         </h1>
         <div className="mt-2 text-xs">
-          <A to={{ pageName: 'orgUploadToken' }}>learn more</A>
+          <A to={{ pageName: 'orgUploadTokenDoc' }}>learn more</A>
         </div>
       </div>
       <hr />
