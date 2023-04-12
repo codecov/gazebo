@@ -5,7 +5,14 @@ describe('transformData', () => {
     const subscriptionDetailMock = null
     expect(transformData(subscriptionDetailMock)).toStrictEqual({
       daysLeftInTrial: undefined,
-      shouldHideBanner: true,
+      shouldShowBanner: false,
+    })
+  })
+
+  it('returns undefined daysLeftInTrial and banner should hide when subscription undefined', () => {
+    expect(transformData(undefined)).toStrictEqual({
+      daysLeftInTrial: undefined,
+      shouldShowBanner: false,
     })
   })
 
@@ -19,7 +26,7 @@ describe('transformData', () => {
     }
     expect(transformData(subscriptionDetailMock)).toStrictEqual({
       daysLeftInTrial: undefined,
-      shouldHideBanner: true,
+      shouldShowBanner: false,
     })
   })
 
@@ -32,7 +39,7 @@ describe('transformData', () => {
     }
     expect(transformData(subscriptionDetailMock)).toStrictEqual({
       daysLeftInTrial: undefined,
-      shouldHideBanner: true,
+      shouldShowBanner: false,
     })
   })
 
@@ -44,7 +51,7 @@ describe('transformData', () => {
     }
     expect(transformData(subscriptionDetailMock)).toStrictEqual({
       daysLeftInTrial: 7,
-      shouldHideBanner: false,
+      shouldShowBanner: true,
     })
   })
 })
