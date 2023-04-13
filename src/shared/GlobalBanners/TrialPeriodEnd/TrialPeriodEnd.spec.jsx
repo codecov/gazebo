@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { rest } from 'msw'
+import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -32,23 +32,67 @@ const wrapper =
     )
 
 describe('TrialPeriodEnd', () => {
-  function setup(data) {
+  function setup(accountData, ownerData) {
     server.use(
       rest.all('/internal/gh/test-org/account-details', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json(data))
+        res(ctx.status(200), ctx.json(accountData))
+      ),
+      graphql.query('DetailOwner', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(ownerData))
       )
     )
   }
 
-  describe('when modal should hide', () => {
+  describe('when there arent account details', () => {
     beforeEach(() => {
       const mockDetailsNull = {
         subscriptionDetail: null,
       }
-      setup(mockDetailsNull)
+      const mockOwnerData = { owner: null }
+      setup(mockDetailsNull, mockOwnerData)
     })
 
-    it('does not render anything related to the trial period end', async () => {
+    it('should not render trial period end banner', async () => {
+      render(<TrialPeriodEnd />, { wrapper: wrapper() })
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+
+      const bannerTitle = screen.queryByText(/Trial expiring soon/)
+      expect(bannerTitle).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when the users current org is undefined', () => {
+    beforeEach(() => {
+      const mockDetailsNull = {
+        subscriptionDetail: null,
+      }
+      const mockOwnerData = { owner: { isCurrentUserPartOfOrg: undefined } }
+      setup(mockDetailsNull, mockOwnerData)
+    })
+
+    it('should not render trial period end banner', async () => {
+      render(<TrialPeriodEnd />, { wrapper: wrapper() })
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+
+      const bannerTitle = screen.queryByText(/Trial expiring soon/)
+      expect(bannerTitle).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when the user is not part of the current org', () => {
+    beforeEach(() => {
+      const mockDetailsNull = {
+        subscriptionDetail: null,
+      }
+      const mockOwnerData = { owner: { isCurrentUserPartOfOrg: false } }
+      setup(mockDetailsNull, mockOwnerData)
+    })
+
+    it('should not render trial period end banner', async () => {
       render(<TrialPeriodEnd />, { wrapper: wrapper() })
 
       await waitFor(() => queryClient.isFetching)
@@ -61,15 +105,17 @@ describe('TrialPeriodEnd', () => {
 
   describe('when modal should show', () => {
     beforeEach(() => {
-      jest.useFakeTimers().setSystemTime(new Date('2023-04-11'))
+      // Today plus 4 days
+      const trialEnd = Math.floor(Date.now() / 1000) + 86401 * 4
 
       const mockDetails = {
         subscriptionDetail: {
-          trialEnd: 1681551394,
+          trialEnd,
           defaultPaymentMethod: null,
         },
       }
-      setup(mockDetails)
+      const mockOwnerData = { owner: { isCurrentUserPartOfOrg: true } }
+      setup(mockDetails, mockOwnerData)
     })
 
     it('renders banner', async () => {
@@ -104,3 +150,14 @@ describe('TrialPeriodEnd', () => {
     })
   })
 })
+
+// {
+//   owner: {
+//     orgUploadToken: 'token',
+//     ownerid: 123,
+//     username: 'cool-user',
+//     avatarUrl: 'url',
+//     isCurrentUserPartOfOrg: true,
+//     isAdmin: true,
+//   },
+// }

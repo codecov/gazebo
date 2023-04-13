@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom'
 
 import { useAccountDetails } from 'services/account'
+import { useOwner } from 'services/user'
 import A from 'ui/A'
 import Banner from 'ui/Banner'
 import BannerContent from 'ui/Banner/BannerContent'
@@ -10,16 +11,18 @@ import { transformData } from './transformData'
 
 const TrialPeriodEnd = () => {
   const { provider, owner } = useParams()
-  const { data, isFetching } = useAccountDetails({
+  const { data: ownerData } = useOwner({ username: owner })
+
+  const { data: accountDetails, isFetching } = useAccountDetails({
     owner: owner,
     provider,
     opts: {
-      enabled: !!owner,
+      enabled: !!owner && !!ownerData?.isCurrentUserPartOfOrg,
       select: (res) => transformData(res?.subscriptionDetail),
     },
   })
 
-  if (!data?.shouldShowBanner || isFetching) {
+  if (!accountDetails?.shouldShowBanner || isFetching) {
     return null
   }
 
@@ -30,9 +33,9 @@ const TrialPeriodEnd = () => {
       </BannerHeading>
       <BannerContent>
         <p>
-          Your trial is set to run out in {data?.daysLeftInTrial} days. If
-          you&apos;d like to continue utilizing Codecov at a discounted rate,
-          please input your payment info{' '}
+          Your trial is set to run out in {accountDetails?.daysLeftInTrial}{' '}
+          days. If you&apos;d like to continue utilizing Codecov at a discounted
+          rate, please input your payment info{' '}
           <A
             isExternal
             href="https://billing.stripe.com/p/login/aEU00i9by3V4caQ6oo"
