@@ -41,6 +41,7 @@ function useRepoFlagsTable() {
     owner,
     repo,
   })
+  const isAdmin = repoData?.isAdmin
   const isSearching = Boolean(params?.search)
   const [sortBy, setSortBy] = useState(SortingDirection.ASC)
   const { afterDate, interval } = useMeasurementVariables(
@@ -70,6 +71,7 @@ function useRepoFlagsTable() {
 
   return {
     data,
+    isAdmin,
     isLoading,
     handleSort,
     isSearching,

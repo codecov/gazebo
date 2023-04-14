@@ -6,11 +6,11 @@ import { useRepoConfig } from 'services/repo/useRepoConfig'
 import { determineProgressColor } from 'shared/utils/determineProgressColor'
 import Button from 'ui/Button'
 import CoverageProgress from 'ui/CoverageProgress'
-// import Icon from 'ui/Icon'
+import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 
-// import DeleteFlagModal from './DeleteFlagModal'
+import DeleteFlagModal from './DeleteFlagModal'
 import useRepoFlagsTable from './hooks'
 import TableSparkline from './TableEntries/TableSparkline'
 
@@ -40,17 +40,22 @@ const headers = [
     width: 'w-4/12',
     enableSorting: false,
   },
-  // {
-  //   id: 'delete',
-  //   header: '',
-  //   accessorKey: 'delete',
-  //   cell: (info) => info.getValue(),
-  //   width: 'w-1/12',
-  //   enableSorting: false,
-  // },
+  {
+    id: 'delete',
+    header: '',
+    accessorKey: 'delete',
+    cell: (info) => info.getValue(),
+    width: 'w-1/12',
+    enableSorting: false,
+  },
 ]
 
-function createTableData({ tableData, indicationRange, setModalInfo }) {
+function createTableData({
+  tableData,
+  indicationRange,
+  setModalInfo,
+  isAdmin,
+}) {
   return tableData?.length > 0
     ? tableData.map(
         ({ name, percentCovered, percentChange, measurements }) => ({
@@ -72,14 +77,15 @@ function createTableData({ tableData, indicationRange, setModalInfo }) {
               name={name}
             />
           ),
-          // delete: (
-          //   <button
-          //     data-testid="delete-flag"
-          //     onClick={() => setModalInfo({ flagName: name, showModal: true })}
-          //   >
-          //     <Icon size="md" name="trash" variant="outline" />
-          //   </button>
-          // ),
+          delete: isAdmin && (
+            <button
+              data-testid="delete-flag"
+              onClick={() => setModalInfo({ flagName: name, showModal: true })}
+              className="text-ds-gray-tertiary hover:text-ds-gray-senary"
+            >
+              <Icon size="md" name="trash" variant="outline" />
+            </button>
+          ),
         })
       )
     : []
@@ -105,7 +111,6 @@ const getEmptyStateText = ({ isSearching }) =>
 function FlagsTable() {
   const { provider, owner, repo } = useParams()
   const { data: repoConfigData } = useRepoConfig({ provider, owner, repo })
-  // eslint-disable-next-line no-unused-vars
   const [modalInfo, setModalInfo] = useState({
     flagName: null,
     showModal: false,
@@ -113,6 +118,7 @@ function FlagsTable() {
 
   const {
     data,
+    isAdmin,
     isLoading,
     handleSort,
     isSearching,
@@ -124,21 +130,21 @@ function FlagsTable() {
   const tableData = useMemo(
     () =>
       createTableData({
+        isAdmin,
         tableData: data,
         indicationRange: repoConfigData?.indicationRange,
         setModalInfo,
       }),
-    [data, repoConfigData]
+    [data, repoConfigData, isAdmin]
   )
 
   return (
     <>
-      {/* {modalInfo?.showModal && (
-        <DeleteFlagModal
-          flagName={modalInfo?.flagName}
-          closeModal={() => setModalInfo({ flag: null, showModal: false })}
-        />
-      )} */}
+      <DeleteFlagModal
+        flagName={modalInfo?.flagName}
+        closeModal={() => setModalInfo({ flag: null, showModal: false })}
+        isOpen={modalInfo?.showModal}
+      />
       <Table data={tableData} columns={headers} onSort={handleSort} />
       <Loader isLoading={isLoading} />
       {tableData?.length === 0 && !isLoading && (

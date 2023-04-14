@@ -4,12 +4,12 @@ import { useDeleteFlag } from 'services/deleteFlag'
 import Button from 'ui/Button'
 import Modal from 'ui/Modal'
 
-const DeleteFlagModal = ({ flagName, closeModal }) => {
+const DeleteFlagModal = ({ flagName, closeModal, isOpen }) => {
   const { mutate } = useDeleteFlag()
 
   return (
     <Modal
-      isOpen={true}
+      isOpen={isOpen}
       onClose={closeModal}
       hasCloseButton={true}
       size="small"
@@ -50,8 +50,9 @@ const DeleteFlagModal = ({ flagName, closeModal }) => {
 }
 
 DeleteFlagModal.propTypes = {
-  flagName: PropTypes.string.isRequired,
-  closeModal: PropTypes.func.isRequired,
+  flagName: PropTypes.string,
+  closeModal: PropTypes.func,
+  isOpen: PropTypes.bool.isRequired,
 }
 
 export default DeleteFlagModal
