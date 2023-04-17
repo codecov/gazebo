@@ -28,35 +28,37 @@ const mockImpactedFile = {
   isCriticalFile: false,
   headName: 'flag1/file.js',
   hashedPath: 'hashedFilePath',
-  segmentsDeprecated: [
-    {
-      header: '-0,0 +1,45',
-      hasUnintendedChanges: false,
-      lines: [
-        {
-          baseNumber: null,
-          headNumber: '1',
-          baseCoverage: null,
-          headCoverage: 'H',
-          content: '+export default class Calculator {',
-        },
-        {
-          baseNumber: null,
-          headNumber: '2',
-          baseCoverage: null,
-          headCoverage: 'H',
-          content: '+  private value = 0;',
-        },
-        {
-          baseNumber: null,
-          headNumber: '3',
-          baseCoverage: null,
-          headCoverage: 'H',
-          content: '+  private calcMode = ""',
-        },
-      ],
-    },
-  ],
+  segments: {
+    results: [
+      {
+        header: '-0,0 +1,45',
+        hasUnintendedChanges: false,
+        lines: [
+          {
+            baseNumber: null,
+            headNumber: '1',
+            baseCoverage: null,
+            headCoverage: 'H',
+            content: '+export default class Calculator {',
+          },
+          {
+            baseNumber: null,
+            headNumber: '2',
+            baseCoverage: null,
+            headCoverage: 'H',
+            content: '+  private value = 0;',
+          },
+          {
+            baseNumber: null,
+            headNumber: '3',
+            baseCoverage: null,
+            headCoverage: 'H',
+            content: '+  private calcMode = ""',
+          },
+        ],
+      },
+    ],
+  },
 }
 
 const queryClient = new QueryClient()
@@ -138,7 +140,7 @@ describe('CommitFileDiff', () => {
       const impactedFile = {
         isCriticalFile: false,
         headName: 'flag1/file.js',
-        segmentsDeprecated: [],
+        segments: [],
       }
 
       setup({ impactedFile })
@@ -163,9 +165,9 @@ describe('CommitFileDiff', () => {
         isCriticalFile: false,
         isNewFile: true,
         headName: 'flag1/file.js',
-        segmentsDeprecated: [
-          { lines: [{ content: 'abc' }, { content: 'def' }] },
-        ],
+        segments: {
+          results: [{ lines: [{ content: 'abc' }, { content: 'def' }] }],
+        },
       }
       setup({ impactedFile })
     })
@@ -184,9 +186,9 @@ describe('CommitFileDiff', () => {
         isCriticalFile: false,
         isRenamedFile: true,
         headName: 'flag1/file.js',
-        segmentsDeprecated: [
-          { lines: [{ content: 'abc' }, { content: 'def' }] },
-        ],
+        segments: {
+          results: [{ lines: [{ content: 'abc' }, { content: 'def' }] }],
+        },
       }
       setup({ impactedFile })
     })
@@ -204,9 +206,9 @@ describe('CommitFileDiff', () => {
         isCriticalFile: false,
         isDeletedFile: true,
         headName: 'flag1/file.js',
-        segmentsDeprecated: [
-          { lines: [{ content: 'abc' }, { content: 'def' }] },
-        ],
+        segments: {
+          results: [{ lines: [{ content: 'abc' }, { content: 'def' }] }],
+        },
       }
       setup({ impactedFile })
     })
@@ -224,9 +226,9 @@ describe('CommitFileDiff', () => {
         isCriticalFile: true,
         fileLabel: null,
         headName: 'flag1/file.js',
-        segmentsDeprecated: [
-          { lines: [{ content: 'abc' }, { content: 'def' }] },
-        ],
+        segments: {
+          results: [{ lines: [{ content: 'abc' }, { content: 'def' }] }],
+        },
       }
       setup({ impactedFile })
     })

@@ -6,7 +6,7 @@ describe('transformImpactedFileData', () => {
       isNewFile: true,
       headName: 'name',
       isCriticalFile: false,
-      segmentsDeprecated: [{ segment: true }],
+      segments: { results: [{ segment: true }] },
     })
 
     expect(data).toStrictEqual({

@@ -23,7 +23,7 @@ export function transformImpactedFileData(impactedFile) {
     fileLabel,
     headName: impactedFile?.headName,
     isCriticalFile: impactedFile?.isCriticalFile,
-    segments: impactedFile?.segmentsDeprecated,
+    segments: impactedFile?.segments?.results,
     ...(!!hashedPath && { hashedPath }),
   }
 }
