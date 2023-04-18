@@ -38,6 +38,7 @@ describe('Tokens', () => {
               repository: {
                 uploadToken: 'upload token',
                 profilingToken: 'profiling token',
+                staticAnalysisToken: 'static analysis token',
                 graphToken: 'graph token',
               },
             },
@@ -70,6 +71,13 @@ describe('Tokens', () => {
       render(<Tokens />, { wrapper })
 
       const title = await screen.findByText(/Graphing token/)
+      expect(title).toBeInTheDocument()
+    })
+
+    it('renders static token component', async () => {
+      render(<Tokens />, { wrapper })
+
+      const title = await screen.findByText(/Static analysis token/)
       expect(title).toBeInTheDocument()
     })
   })
