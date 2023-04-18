@@ -150,15 +150,19 @@ fragment FileComparisonWithBase on Pull {
           percentCovered
         }
         changeCoverage
-        segmentsDeprecated (filters: $filters) {
-          header
-          hasUnintendedChanges
-          lines {
-            baseNumber
-            headNumber
-            baseCoverage
-            headCoverage
-            content
+        segments (filters: $filters) {
+          ... on SegmentComparisons {
+            results {
+              header
+              hasUnintendedChanges
+              lines {
+                baseNumber
+                headNumber
+                baseCoverage
+                headCoverage
+                content
+              }
+            }
           }
         }
       }

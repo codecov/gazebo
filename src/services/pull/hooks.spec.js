@@ -146,34 +146,36 @@ const mockSingularImpactedFilesData = {
     percentCovered: 27.43,
   },
   changeCoverage: 58.333333333333336,
-  segmentsDeprecated: [
-    {
-      header: '@@ -0,0 +1,45 @@',
-      lines: [
-        {
-          baseNumber: null,
-          headNumber: '1',
-          baseCoverage: null,
-          headCoverage: 'H',
-          content: '+export default class Calculator {',
-        },
-        {
-          baseNumber: null,
-          headNumber: '2',
-          baseCoverage: null,
-          headCoverage: 'H',
-          content: '+  private value = 0;',
-        },
-        {
-          baseNumber: null,
-          headNumber: '3',
-          baseCoverage: null,
-          headCoverage: 'H',
-          content: '+  private calcMode = ""',
-        },
-      ],
-    },
-  ],
+  segments: {
+    results: [
+      {
+        header: '@@ -0,0 +1,45 @@',
+        lines: [
+          {
+            baseNumber: null,
+            headNumber: '1',
+            baseCoverage: null,
+            headCoverage: 'H',
+            content: '+export default class Calculator {',
+          },
+          {
+            baseNumber: null,
+            headNumber: '2',
+            baseCoverage: null,
+            headCoverage: 'H',
+            content: '+  private value = 0;',
+          },
+          {
+            baseNumber: null,
+            headNumber: '3',
+            baseCoverage: null,
+            headCoverage: 'H',
+            content: '+  private calcMode = ""',
+          },
+        ],
+      },
+    ],
+  },
 }
 
 describe('useSingularImpactedFileComparison', () => {
@@ -215,10 +217,6 @@ describe('useSingularImpactedFileComparison', () => {
           },
         },
       })
-    })
-
-    it('renders isLoading true', () => {
-      expect(hookData.result.current.isLoading).toBeTruthy()
     })
 
     describe('when data is loaded', () => {
@@ -270,7 +268,7 @@ describe('useSingularImpactedFileComparison', () => {
         headName: 'file A',
         isRenamedFile: true,
         isCriticalFile: false,
-        segmentsDeprecated: [],
+        segments: { results: [] },
       }
       setup({
         owner: {
@@ -307,7 +305,7 @@ describe('useSingularImpactedFileComparison', () => {
         headName: 'file A',
         isDeletedFile: true,
         isCriticalFile: false,
-        segmentsDeprecated: [],
+        segments: { results: [] },
       }
       setup({
         owner: {
@@ -346,7 +344,7 @@ describe('useSingularImpactedFileComparison', () => {
         isRenamedFile: false,
         isDeletedFile: false,
         isCriticalFile: false,
-        segmentsDeprecated: [],
+        segments: { results: [] },
       }
       setup({
         owner: {

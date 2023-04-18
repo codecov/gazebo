@@ -26,7 +26,7 @@ const mockImpactedFile = {
   isCriticalFile: false,
   headName: 'flag1/file.js',
   hashedPath: 'hashedFilePath',
-  segmentsDeprecated: [
+  segments: [
     {
       header: '-0,0 +1,45',
       hasUnintendedChanges: false,
