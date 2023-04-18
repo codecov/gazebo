@@ -55,7 +55,7 @@ describe('useStaticNavLinks', () => {
       ${links.missingComparisonCommit} | ${'https://docs.codecov.com/docs/error-reference#section-missing-head-commit'}
       ${links.missingComparisonReport} | ${'https://docs.codecov.com/docs/error-reference#missing-base-report'}
       ${links.flagsFeedback}           | ${'https://github.com/codecov/Codecov-user-feedback/issues/27'}
-      ${links.orgUploadTokenDoc}       | ${'https://docs.codecov.com/codecov-uploader#organization-upload-token'}
+      ${links.orgUploadTokenDoc}       | ${'https://docs.codecov.com/docs/codecov-uploader#organization-upload-token'}
       ${links.selfHostedLicensing}     | ${'https://docs.codecov.com/docs/self-hosted-dependency-licensing'}
       ${links.repoYaml}                | ${'https://docs.codecov.com/docs/codecov-yaml#repository-yaml'}
       ${links.oauthEnabling}           | ${'https://docs.github.com/en/organizations/restricting-access-to-your-organizations-data/enabling-oauth-app-access-restrictions-for-your-organization'}

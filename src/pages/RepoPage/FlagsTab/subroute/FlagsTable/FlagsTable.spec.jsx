@@ -20,6 +20,7 @@ const mockRepoConfig = {
 
 const mockGetRepo = {
   owner: {
+    isAdmin: true,
     isCurrentUserPartOfOrg: true,
     repository: {
       private: false,

@@ -6,6 +6,7 @@ function fetchRepoDetails({ provider, owner, repo, signal }) {
   const query = `
     query GetRepo($name: String!, $repo: String!){
       owner(username:$name){
+        isAdmin
         isCurrentUserPartOfOrg
         isCurrentUserActivated
         repository(name:$repo){
@@ -31,6 +32,7 @@ function fetchRepoDetails({ provider, owner, repo, signal }) {
     },
   }).then((res) => {
     return {
+      isAdmin: res?.data?.owner?.isAdmin,
       repository: res?.data?.owner?.repository,
       isCurrentUserPartOfOrg: res?.data?.owner?.isCurrentUserPartOfOrg,
       isCurrentUserActivated: res?.data?.owner?.isCurrentUserActivated,
