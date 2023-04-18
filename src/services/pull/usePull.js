@@ -24,6 +24,7 @@ export function usePull({
         owner(username: $owner) {
           isCurrentUserPartOfOrg
           repository(name: $repo) {
+            defaultBranch
             private
             pull(id: $pullId) {
               ...CommitsOnPullFragment
@@ -63,6 +64,7 @@ export function usePull({
             privateRepo: res?.data?.owner?.repository?.private,
             isCurrentUserPartOfOrg: res?.data?.owner?.isCurrentUserPartOfOrg,
           }),
+          defaultBranch: res?.data?.owner?.repository?.defaultBranch,
           pull: res?.data?.owner?.repository?.pull,
         }
       })

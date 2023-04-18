@@ -57,6 +57,9 @@ const pullData = {
       totalCount: 1,
     },
   },
+  behindBy: 8,
+  behindByCommit: '123asbaf893uhndfow8hb',
+  defaultBranch: 'main',
 }
 
 describe('CompareSummary', () => {
@@ -168,7 +171,7 @@ describe('CompareSummary', () => {
 
       const sourceCardTitle = screen.getByText('Source')
       expect(sourceCardTitle).toBeInTheDocument()
-      expect(screen.getByText(/Coverage data based on/i)).toBeInTheDocument()
+      expect(screen.getByText(/Coverage data is based on/i)).toBeInTheDocument()
       expect(
         screen.getAllByText(pull.head.commitid.slice(0, 7))[1]
       ).toBeInTheDocument()
