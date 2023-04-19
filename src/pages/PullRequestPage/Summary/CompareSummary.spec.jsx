@@ -126,7 +126,10 @@ describe('CompareSummary', () => {
       setup({
         owner: {
           repository: {
+            defaultBranch: 'main',
             pull: {
+              behindBy: 82367894,
+              behindByCommit: '1798hvs8ofhn',
               commits: {
                 edges: [{ node: { state: 'complete', commitid: 'abc' } }],
               },
@@ -146,6 +149,7 @@ describe('CompareSummary', () => {
                 },
               },
               compareWithBase: {
+                hasDifferentNumberOfHeadAndBaseReports: false,
                 patchTotals: {
                   percentCovered: 92.12,
                 },
@@ -187,6 +191,27 @@ describe('CompareSummary', () => {
 
       const baseCommitIds = await screen.findAllByText('2d6c42f')
       expect(baseCommitIds).toHaveLength(1)
+    })
+
+    it('renders a card with the behind by information', async () => {
+      render(<CompareSummary />, { wrapper: wrapper() })
+      const baseCommitText = await screen.findByText(/BASE commit is/)
+      expect(baseCommitText).toBeInTheDocument()
+
+      const behindByNumber = await screen.findByText(/82367894/)
+      expect(behindByNumber).toBeInTheDocument()
+
+      const headBehindBy = await screen.findByText(/commits behind HEAD on/)
+      expect(headBehindBy).toBeInTheDocument()
+
+      const behindByCommitLink = screen.getByRole('link', {
+        name: /1798hvs/i,
+      })
+      expect(behindByCommitLink).toBeInTheDocument()
+      expect(behindByCommitLink).toHaveAttribute(
+        'href',
+        'https://github.com/test-org/test-repo/commit/1798hvs8ofhn'
+      )
     })
   })
 
