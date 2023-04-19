@@ -123,7 +123,7 @@ const Loader = () => (
 
 // eslint-disable-next-line complexity
 function CommitsTable({ branch, states, search }) {
-  const { provider, owner, repo, pullId } = useParams()
+  const { provider, owner, repo } = useParams()
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useCommits({
       provider,
@@ -132,7 +132,6 @@ function CommitsTable({ branch, states, search }) {
       filters: {
         states,
         branchName: branch,
-        pullId: pullId ? +pullId : null,
         search,
       },
       opts: { suspense: false },
