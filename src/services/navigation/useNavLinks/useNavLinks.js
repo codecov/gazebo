@@ -228,7 +228,7 @@ export function useNavLinks() {
       isExternalLink: false,
       text: 'Commit Tree View',
     },
-    commitFileView: {
+    commitFileDiff: {
       path: (
         { provider = p, owner = o, repo = r, tree, commit } = {
           provider: p,
@@ -377,7 +377,7 @@ export function useNavLinks() {
     orgUploadToken: {
       text: 'Global Upload Token',
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
-        `/account/${provider}/${owner}/orgUploadToken`,
+        `/account/${provider}/${owner}/org-upload-token`,
       isExternalLink: false,
     },
     access: {
@@ -496,7 +496,7 @@ export function useNavLinks() {
           owner: o,
           repo: r,
         }
-      ) => `https://github.com/${owner}/${repo}/settings/actions`,
+      ) => `https://github.com/${owner}/${repo}/actions`,
       isExternalLink: true,
       openNewTab: true,
     },

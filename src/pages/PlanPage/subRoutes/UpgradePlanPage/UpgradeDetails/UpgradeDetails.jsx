@@ -43,7 +43,7 @@ const determineDetails = ({
     ),
     priceDisclaimer: (
       <p className="text-ds-gray-quaternary">
-        *${proPlanMonth?.baseUnitPrice} per user / month if paid monthly
+        ${proPlanMonth?.baseUnitPrice} per user / month if paid monthly
       </p>
     ),
     benefits: proPlanYear?.benefits,
@@ -53,7 +53,7 @@ const determineDetails = ({
     details = {
       img: (
         <div>
-          <img src={sentryCodecov} alt="sentry codecov logos" />
+          <img src={sentryCodecov} alt="sentry codecov logos" width="110px" />
         </div>
       ),
       marketingName: sentryPlanYear?.marketingName,
@@ -65,7 +65,7 @@ const determineDetails = ({
       ),
       priceDisclaimer: (
         <p className="text-ds-gray-quaternary">
-          *${sentryPlanMonth?.baseUnitPrice} per user / month if paid monthly
+          ${sentryPlanMonth?.baseUnitPrice} per user / month if paid monthly
         </p>
       ),
       benefits: sentryPlanYear?.benefits,

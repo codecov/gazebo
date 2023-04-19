@@ -655,14 +655,14 @@ describe('useNavLinks', () => {
     })
   })
 
-  describe('commitFileView link', () => {
+  describe('commitFileDiff link', () => {
     beforeAll(() => {
       setup(['/gh/codecov-owner/another-test/blob/main/index.js'])
     })
 
     it('Returns the correct link with nothing passed', () => {
       expect(
-        hookData.result.current.commitFileView.path({
+        hookData.result.current.commitFileDiff.path({
           commit: 'sha256',
           tree: 'index.js',
         })
@@ -671,7 +671,7 @@ describe('useNavLinks', () => {
 
     it('can override the params', () => {
       expect(
-        hookData.result.current.commitFileView.path({
+        hookData.result.current.commitFileDiff.path({
           provider: 'bb',
           commit: 'sha256',
           tree: 'index.js',
@@ -679,7 +679,7 @@ describe('useNavLinks', () => {
       ).toBe('/bb/codecov-owner/another-test/commit/sha256/blob/index.js')
 
       expect(
-        hookData.result.current.commitFileView.path({
+        hookData.result.current.commitFileDiff.path({
           owner: 'cat',
           commit: 'sha256',
           tree: 'index.js',
@@ -687,7 +687,7 @@ describe('useNavLinks', () => {
       ).toBe('/gh/cat/another-test/commit/sha256/blob/index.js')
 
       expect(
-        hookData.result.current.commitFileView.path({
+        hookData.result.current.commitFileDiff.path({
           repo: 'cool-new-repo',
           commit: 'sha256',
           tree: 'flags1/mafs.js',
@@ -1159,16 +1159,16 @@ describe('useNavLinks', () => {
 
     it('Returns the correct link with nothing passed', () => {
       expect(hookData.result.current.orgUploadToken.path()).toBe(
-        '/account/gh/codecov/orgUploadToken'
+        '/account/gh/codecov/org-upload-token'
       )
     })
     it('can override the params', () => {
       expect(
         hookData.result.current.orgUploadToken.path({ provider: 'bb' })
-      ).toBe('/account/bb/codecov/orgUploadToken')
+      ).toBe('/account/bb/codecov/org-upload-token')
       expect(
         hookData.result.current.orgUploadToken.path({ owner: 'cat' })
-      ).toBe('/account/gh/cat/orgUploadToken')
+      ).toBe('/account/gh/cat/org-upload-token')
     })
   })
 
@@ -1199,16 +1199,16 @@ describe('useNavLinks', () => {
 
     it('Returns the correct link with nothing passed', () => {
       expect(hookData.result.current.githubRepoActions.path()).toBe(
-        'https://github.com/codecov/cool-repo/settings/actions'
+        'https://github.com/codecov/cool-repo/actions'
       )
     })
     it('can override the params', () => {
       expect(
         hookData.result.current.githubRepoActions.path({ repo: 'test-repo' })
-      ).toBe('https://github.com/codecov/test-repo/settings/actions')
+      ).toBe('https://github.com/codecov/test-repo/actions')
       expect(
         hookData.result.current.githubRepoActions.path({ owner: 'cat' })
-      ).toBe('https://github.com/cat/cool-repo/settings/actions')
+      ).toBe('https://github.com/cat/cool-repo/actions')
     })
   })
 })

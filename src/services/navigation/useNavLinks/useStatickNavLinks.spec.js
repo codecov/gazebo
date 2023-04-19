@@ -55,12 +55,13 @@ describe('useStaticNavLinks', () => {
       ${links.missingComparisonCommit} | ${'https://docs.codecov.com/docs/error-reference#section-missing-head-commit'}
       ${links.missingComparisonReport} | ${'https://docs.codecov.com/docs/error-reference#missing-base-report'}
       ${links.flagsFeedback}           | ${'https://github.com/codecov/Codecov-user-feedback/issues/27'}
-      ${links.orgUploadTokenDoc}       | ${'https://docs.codecov.com/codecov-uploader#organization-upload-token'}
+      ${links.orgUploadTokenDoc}       | ${'https://docs.codecov.com/docs/codecov-uploader#organization-upload-token'}
       ${links.selfHostedLicensing}     | ${'https://docs.codecov.com/docs/self-hosted-dependency-licensing'}
       ${links.repoYaml}                | ${'https://docs.codecov.com/docs/codecov-yaml#repository-yaml'}
       ${links.oauthEnabling}           | ${'https://docs.github.com/en/organizations/restricting-access-to-your-organizations-data/enabling-oauth-app-access-restrictions-for-your-organization'}
       ${links.github}                  | ${'https://github.com/marketplace/codecov'}
       ${links.repoConfigFeedback}      | ${'https://github.com/codecov/Codecov-user-feedback/issues/18'}
+      ${links.staticAnalysisDoc}       | ${'https://docs.codecov.com/docs/automated-test-selection'}
     `('static links return path', ({ link, outcome }) => {
       it(`${link.text}: Returns the correct link`, () => {
         expect(link.path()).toBe(outcome)

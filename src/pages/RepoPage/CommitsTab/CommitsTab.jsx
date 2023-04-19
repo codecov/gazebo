@@ -1,57 +1,82 @@
 import { useLayoutEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useBranches } from 'services/branches'
 import { useLocationParams } from 'services/navigation'
-import { useRepo } from 'services/repo'
-import Checkbox from 'ui/Checkbox'
+import { useRepoOverview } from 'services/repo'
 import Icon from 'ui/Icon'
+import MultiSelect from 'ui/MultiSelect'
+import SearchField from 'ui/SearchField'
 import Select from 'ui/Select'
 
 import CommitsTable from './CommitsTable'
+import { filterItems, statusEnum, statusNames } from './enums'
+import { useCommitsTabBranchSelector } from './hooks'
 
 import { useSetCrumbs } from '../context'
 
-const useParamsFilters = (defaultBranch) => {
+const useControlParams = ({ defaultBranch }) => {
   const defaultParams = {
     branch: defaultBranch,
-    hideFailedCI: false,
+    states: [],
+    search: '',
   }
+
   const { params, updateParams } = useLocationParams(defaultParams)
-  const { branch, hideFailedCI } = params
+  const { branch: selectedBranch, states, search } = params
 
-  const paramCIStatus = hideFailedCI === true || hideFailedCI === 'true'
+  const paramStatesNames = states.map((filter) => statusNames[filter])
 
-  return { branch, paramCIStatus, updateParams }
+  const [selectedStates, setSelectedStates] = useState(paramStatesNames)
+
+  let branch = selectedBranch
+  if (branch === 'All branches') {
+    branch = ''
+  }
+
+  return {
+    params,
+    branch,
+    selectedBranch,
+    updateParams,
+    selectedStates,
+    setSelectedStates,
+    search,
+  }
 }
 
 function CommitsTab() {
-  const [branchSearchTerm, setBranchSearchTerm] = useState()
   const setCrumbs = useSetCrumbs()
-  const { provider, owner, repo } = useParams()
-
-  const {
-    data: branchesData,
-    isFetching: branchesIsFetching,
-    fetchNextPage: branchesFetchNextPage,
-    hasNextPage: branchesHasNextPage,
-  } = useBranches({
+  const { repo, owner, provider } = useParams()
+  const { data: overview } = useRepoOverview({
     provider,
-    owner,
     repo,
-    filters: { searchValue: branchSearchTerm },
-    opts: {
-      suspense: false,
-    },
+    owner,
   })
 
-  const { data: repoData } = useRepo({ provider, owner, repo })
-  const branchesNames =
-    branchesData?.branches?.map((branch) => branch?.name) || []
+  const {
+    branch,
+    selectedBranch,
+    updateParams,
+    selectedStates,
+    setSelectedStates,
+    search,
+  } = useControlParams({ defaultBranch: overview?.defaultBranch })
 
-  const { branch, paramCIStatus, updateParams } = useParamsFilters(
-    repoData?.repository?.defaultBranch
-  )
+  const {
+    branchList,
+    branchSelectorProps,
+    currentBranchSelected,
+    branchesFetchNextPage,
+    branchListIsFetching,
+    branchListHasNextPage,
+    branchListFetchNextPage,
+    setBranchSearchTerm,
+    isSearching,
+  } = useCommitsTabBranchSelector({
+    passedBranch: branch,
+    defaultBranch: overview?.defaultBranch,
+    isAllCommits: selectedBranch === 'All branches',
+  })
 
   useLayoutEffect(() => {
     setCrumbs([
@@ -61,53 +86,85 @@ function CommitsTab() {
         children: (
           <span className="inline-flex items-center gap-1">
             <Icon name="branch" variant="developer" size="sm" />
-            {branch}
+            {currentBranchSelected?.name}
           </span>
         ),
       },
     ])
-  }, [branch, setCrumbs])
+  }, [currentBranchSelected?.name, setCrumbs])
+
+  const newBranches = [...(isSearching ? [] : ['All branches']), ...branchList]
+
+  const handleStatusChange = (selectStates) => {
+    const commitStates = selectStates?.map(
+      (filter) => statusEnum[filter].status
+    )
+    setSelectedStates(commitStates)
+    updateParams({ states: commitStates })
+  }
 
   return (
     <div className="flex flex-1 flex-col gap-4">
-      <div className="flex justify-between gap-2 px-2 sm:px-0">
-        <div className="flex flex-col gap-1">
-          <h2 className="flex flex-initial items-center gap-1 font-semibold">
-            <span className="text-ds-gray-quinary">
-              <Icon name="branch" variant="developer" size="sm" />
-            </span>
-            Branch Context
-          </h2>
-          <div className="min-w-[16rem]">
-            <Select
-              dataMarketing="branch-selector-commits-page"
-              ariaName="Select branch"
-              variant="gray"
-              items={branchesNames}
-              isLoading={branchesIsFetching}
-              onChange={(branch) => {
-                updateParams({ branch })
-              }}
-              onLoadMore={() => {
-                branchesHasNextPage && branchesFetchNextPage()
-              }}
-              value={branch}
-              onSearch={(term) => setBranchSearchTerm(term)}
-            />
+      <div className="grid grid-cols-1 justify-between gap-4 md:grid-cols-2 md:items-end md:gap-0">
+        <div className="flex flex-col gap-2 px-2 sm:px-0 md:flex-row">
+          <div className="flex flex-col gap-1">
+            <h2 className="flex flex-initial items-center gap-1 font-semibold">
+              <span className="text-ds-gray-quinary">
+                <Icon name="branch" variant="developer" size="sm" />
+              </span>
+              Branch Context
+            </h2>
+            <div className="min-w-[13rem] lg:min-w-[16rem]">
+              <Select
+                {...branchSelectorProps}
+                dataMarketing="branch-selector-commits-page"
+                ariaName="Select branch"
+                variant="gray"
+                resourceName="branch"
+                isLoading={branchListIsFetching}
+                onChange={(branch) => {
+                  updateParams({ branch: branch })
+                }}
+                onLoadMore={() => {
+                  if (branchListHasNextPage) {
+                    branchesFetchNextPage()
+                    branchListFetchNextPage()
+                  }
+                }}
+                onSearch={(term) => setBranchSearchTerm(term)}
+                items={newBranches}
+              />
+            </div>
+          </div>
+          <div className="flex flex-col gap-1">
+            <h2 className="font-semibold">CI status</h2>
+            <div className="min-w-[13rem] lg:min-w-[16rem]">
+              <MultiSelect
+                dataMarketing="commits-filter-by-status"
+                ariaName="Filter by CI states"
+                value={selectedStates}
+                items={filterItems}
+                resourceName="CI States"
+                onChange={handleStatusChange}
+              />
+            </div>
           </div>
         </div>
-
-        <Checkbox
-          dataMarketing="hide-commits-with-failed-CI"
-          label="Hide commits with failed CI"
-          name="filter commits"
-          onChange={(e) => {
-            updateParams({ hideFailedCI: e.target.checked })
-          }}
-          checked={paramCIStatus}
-        />
+        <div className="flex px-2 sm:px-0 md:flex-row-reverse">
+          <SearchField
+            dataMarketing="commits-tab-search"
+            placeholder="Search commits"
+            searchValue={search || ''}
+            setSearchValue={(search) => updateParams({ search })}
+            data-testid="search-input-members"
+          />
+        </div>
       </div>
-      <CommitsTable branch={branch} paramCIStatus={paramCIStatus} />
+      <CommitsTable
+        branch={branch}
+        states={selectedStates?.map((state) => state?.toUpperCase())}
+        search={search}
+      />
     </div>
   )
 }

@@ -234,7 +234,7 @@ export function useStaticNavLinks() {
     orgUploadTokenDoc: {
       text: 'Organization Upload Token',
       path: () =>
-        'https://docs.codecov.com/codecov-uploader#organization-upload-token',
+        'https://docs.codecov.com/docs/codecov-uploader#organization-upload-token',
       isExternalLink: true,
       openNewTab: true,
     },
@@ -242,6 +242,12 @@ export function useStaticNavLinks() {
       text: 'Licensing',
       path: () =>
         'https://docs.codecov.com/docs/self-hosted-dependency-licensing',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    staticAnalysisDoc: {
+      text: 'Static Analysis',
+      path: () => 'https://docs.codecov.com/docs/automated-test-selection',
       isExternalLink: true,
       openNewTab: true,
     },

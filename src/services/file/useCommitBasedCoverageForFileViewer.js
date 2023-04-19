@@ -9,6 +9,7 @@ export function useCommitBasedCoverageForFileViewer({
   commit,
   path,
   selectedFlags,
+  opts,
 }) {
   const { data } = useFileWithMainCoverage({
     provider,
@@ -16,25 +17,24 @@ export function useCommitBasedCoverageForFileViewer({
     repo,
     ref: commit,
     path,
+    opts,
   })
 
   const coverageForAllFlags = selectedFlags.length === 0
 
-  const queryPerFlag = useCoverageWithFlags(
-    {
-      provider,
-      owner,
-      repo,
-      ref: commit,
-      path,
-      flags: selectedFlags,
-    },
-    {
-      // only run the query if we are filtering per flag
-      enabled: !coverageForAllFlags,
+  const queryPerFlag = useCoverageWithFlags({
+    provider,
+    owner,
+    repo,
+    ref: commit,
+    path,
+    flags: selectedFlags,
+    // only run the query if we are filtering per flag
+    opts: {
+      enabled: !coverageForAllFlags && opts?.enabled,
       suspense: false,
-    }
-  )
+    },
+  })
 
   if (coverageForAllFlags) {
     // no flag selected, we can return the default coverage

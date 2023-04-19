@@ -28,7 +28,7 @@ export interface UseBranchArgs {
   opts?: UseQueryOptions<BranchConfigData>
 }
 
-const query = `
+export const query = `
   query GetBranch($owner: String!, $repo: String!, $branch: String!) {
     owner(username: $owner) {
       repository(name: $repo) {
