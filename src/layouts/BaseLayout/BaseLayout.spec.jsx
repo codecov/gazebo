@@ -13,10 +13,10 @@ import BaseLayout from './BaseLayout'
 
 jest.mock('services/image')
 jest.mock('shared/featureFlags')
-jest.spyOn(console, 'error') // Suppress unauthorized error
 
 const mockOwner = {
   owner: {
+    me: {},
     isCurrentUserPartOfOrg: true,
   },
 }
@@ -25,7 +25,7 @@ const userSignedInIdentity = {
   username: 'CodecovUser',
   email: 'codecov@codecov.io',
   name: 'codecov',
-  avatarUrl: 'photo',
+  avatarUrl: 'http://photo.com/codecov.png',
 }
 
 const loggedInLegacyUser = {
@@ -103,7 +103,11 @@ describe('BaseLayout', () => {
       currentUser: loggedInUser,
     }
   ) {
-    useImage.mockReturnValue({ src: 'imageUrl', isLoading: false, error: null })
+    useImage.mockReturnValue({
+      src: 'http://photo.com/codecov.png',
+      isLoading: false,
+      error: null,
+    })
     useFlags.mockReturnValue({
       termsOfServicePage,
     })
@@ -123,6 +127,12 @@ describe('BaseLayout', () => {
         res(ctx.status(200), ctx.data({}))
       ),
       graphql.query('Seats', (_, res, ctx) =>
+        res(ctx.status(200), ctx.data({}))
+      ),
+      graphql.query('TermsOfService', (_, res, ctx) =>
+        res(ctx.status(200), ctx.data({}))
+      ),
+      graphql.query('UseMyOrganizations', (_, res, ctx) =>
         res(ctx.status(200), ctx.data({}))
       ),
       rest.get('/internal/users/current', (_, res, ctx) =>

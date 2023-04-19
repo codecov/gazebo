@@ -14,19 +14,19 @@ import { useUserAccessGate } from './hooks/useUserAccessGate'
 const TermsOfService = lazy(() => import('pages/TermsOfService'))
 const LimitedHeader = lazy(() => import('layouts/LimitedHeader'))
 
+const FullPageLoader = () => (
+  <div className="mt-16 flex flex-1 items-center justify-center">
+    <LogoSpinner />
+  </div>
+)
+
 function BaseLayout({ children }) {
   const { isFullExperience, isLoading } = useUserAccessGate()
 
   useTracking()
 
-  const fullPageLoader = (
-    <div className="mt-16 flex flex-1 items-center justify-center">
-      <LogoSpinner />
-    </div>
-  )
-
   // Pause rendering of a page till we know if the user is logged in or not
-  if (isLoading) return fullPageLoader
+  if (isLoading) return <FullPageLoader />
 
   return (
     <>
@@ -37,7 +37,7 @@ function BaseLayout({ children }) {
           <LimitedHeader />
         </Suspense>
       )}
-      <Suspense fallback={fullPageLoader}>
+      <Suspense fallback={<FullPageLoader />}>
         <ErrorBoundary sentryScopes={[['layout', 'base']]}>
           <NetworkErrorBoundary>
             <main className="container mt-2 mb-8 flex grow flex-col gap-2 md:p-0">
