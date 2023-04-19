@@ -132,7 +132,7 @@ function CommitsTable({ branch, states, search }) {
       filters: {
         states,
         branchName: branch,
-        pullId: +pullId,
+        pullId: pullId ? +pullId : null,
         search,
       },
       opts: { suspense: false },
