@@ -6,10 +6,10 @@ function ComponentsNotConfigured() {
     <div className="mt-8 flex min-w-[60%] flex-col items-center justify-center gap-1 text-center text-base text-ds-gray-octonary">
       <img
         alt="Components feature not configured"
-        className="w-screen"
+        className="h-96 w-screen object-cover"
         src={frontendAndBackend}
       />
-      <span className="font-semibold">
+      <span className="mt-4 font-semibold">
         See how components can help you today!
       </span>
       <span className="w-1/2">
