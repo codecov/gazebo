@@ -20,6 +20,7 @@ const query = `
               indirectChangedFilesCount
               directChangedFilesCount
               flagComparisonsCount
+              componentComparisonsCount
             }
             __typename
           }

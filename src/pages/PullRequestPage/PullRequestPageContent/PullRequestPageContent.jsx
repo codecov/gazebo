@@ -17,6 +17,7 @@ const CommitsTab = lazy(() => import('../subroute/CommitsTab'))
 const FlagsTab = lazy(() => import('../subroute/FlagsTab'))
 const FileExplorer = lazy(() => import('../subroute/FileExplorer'))
 const FileViewer = lazy(() => import('../subroute/FileViewer'))
+const Components = lazy(() => import('../subroute/ComponentsTab'))
 
 const Loader = () => (
   <div className="flex items-center justify-center py-16">
@@ -68,6 +69,13 @@ function PullRequestPageContent() {
         <SilentNetworkErrorWrapper>
           <Suspense fallback={<Loader />}>
             <FlagsTab />
+          </Suspense>
+        </SilentNetworkErrorWrapper>
+      </SentryRoute>
+      <SentryRoute path="/:provider/:owner/:repo/pull/:pullId/components" exact>
+        <SilentNetworkErrorWrapper>
+          <Suspense fallback={<Loader />}>
+            <Components />
           </Suspense>
         </SilentNetworkErrorWrapper>
       </SentryRoute>

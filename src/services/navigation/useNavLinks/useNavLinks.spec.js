@@ -21,6 +21,9 @@ describe('useNavLinks', () => {
             {children}
           </Route>
           <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
+          <Route path="/:provider/:owner/:repo/pull/:pullId/components">
+            {children}
+          </Route>
           <Route path="/admin/:provider/access">{children}</Route>
           <Route path="/admin/:provider/users">{children}</Route>
           <Route path="/admin/:provider/:owner/access">{children}</Route>
@@ -995,6 +998,32 @@ describe('useNavLinks', () => {
       ).toBe(`/gl/doggo/tennis-ball/pull/409/flags`)
       expect(hookData.result.current.pullFlags.path({ pullId: 888 })).toBe(
         `/gl/doggo/squirrel-locator/pull/888/flags`
+      )
+    })
+  })
+
+  describe.only('pull components', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo/squirrel-locator/pull/409/components'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.pullComponents.path()).toBe(
+        `/gl/doggo/squirrel-locator/pull/409/components`
+      )
+    })
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.pullComponents.path({ provider: 'bb' })
+      ).toBe(`/bb/doggo/squirrel-locator/pull/409/components`)
+      expect(
+        hookData.result.current.pullComponents.path({ owner: 'cat' })
+      ).toBe(`/gl/cat/squirrel-locator/pull/409/components`)
+      expect(
+        hookData.result.current.pullComponents.path({ repo: 'tennis-ball' })
+      ).toBe(`/gl/doggo/tennis-ball/pull/409/components`)
+      expect(hookData.result.current.pullComponents.path({ pullId: 888 })).toBe(
+        `/gl/doggo/squirrel-locator/pull/888/components`
       )
     })
   })
