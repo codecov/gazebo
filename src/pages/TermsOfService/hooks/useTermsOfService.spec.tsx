@@ -1,4 +1,3 @@
-// TODO: This test is missing a lot of the edge cases, sticking with converting to TS for now.
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook } from '@testing-library/react-hooks'
 import { graphql } from 'msw'

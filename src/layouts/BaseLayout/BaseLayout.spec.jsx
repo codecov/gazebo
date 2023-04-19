@@ -133,7 +133,19 @@ describe('BaseLayout', () => {
         res(ctx.status(200), ctx.data({}))
       ),
       graphql.query('UseMyOrganizations', (_, res, ctx) =>
-        res(ctx.status(200), ctx.data({}))
+        res(
+          ctx.status(200),
+          ctx.data({
+            myOrganizationsData: {
+              me: {
+                myOrganizations: {
+                  edges: [],
+                  pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
+                },
+              },
+            },
+          })
+        )
       ),
       rest.get('/internal/users/current', (_, res, ctx) =>
         res(ctx.status(200), ctx.json({}))
@@ -147,11 +159,13 @@ describe('BaseLayout', () => {
   ])('%s', (_, isSelfHosted, expectedPage, expectedMatcher) => {
     beforeEach(() => {
       config.IS_SELF_HOSTED = isSelfHosted
+      jest.resetAllMocks()
     })
     afterAll(() => (config.IS_SELF_HOSTED = undefined))
 
     describe('user is guest', () => {
       beforeEach(() => {
+        jest.spyOn(console, 'error').mockImplementation(() => {})
         setup({ termsOfServicePage: false, currentUser: guestUser })
       })
 

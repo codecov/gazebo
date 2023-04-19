@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -35,6 +34,7 @@ function isDisabled({ isValid, isDirty }) {
   return (!isValid && isDirty) || !isDirty
 }
 
+// eslint-disable-next-line complexity
 export default function TermsOfService() {
   const { register, control, handleSubmit, formState, setValue, setError } =
     useForm({
@@ -48,7 +48,7 @@ export default function TermsOfService() {
       }
       if (data?.saveTermsAgreement?.error) {
         setError('apiError', data?.saveTermsAgreement?.error)
-        throw new Error({ message: 'validation error' })
+        console.error('validation error')
       }
     },
     onError: (error) => setError('apiError', error),
@@ -144,7 +144,7 @@ export default function TermsOfService() {
           </p>
           {/* Prompt user for an email if their email is not shared through the provider, needed for marketing consent */}
           {!currentUser?.email && (
-            <div className="mt-3">
+            <div className="mt-3 flex flex-col gap-1">
               <label htmlFor="marketingEmail" className="cursor-pointer">
                 <span className="font-semibold">Contact email</span> required
               </label>

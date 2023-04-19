@@ -17,8 +17,8 @@ jest.mock('services/tracking/segment')
 
 const wrapper =
   (initialEntries = ['/gh/codecov/cool-repo']) =>
-  ({ children }) => {
-    return (
+  ({ children }) =>
+    (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={initialEntries}>
           <Route path="/:provider/:owner/:repo">
@@ -27,7 +27,6 @@ const wrapper =
         </MemoryRouter>
       </QueryClientProvider>
     )
-  }
 
 beforeAll(() => {
   server.listen({
@@ -579,7 +578,7 @@ describe('TermsOfService', () => {
       [expectPageIsReady],
       [expectUserSignsTOS],
       [expectClickSubmit],
-      [expectRendersServerFailureResult, { message: 'validation error' }],
+      [expectRendersServerFailureResult, 'validation error'],
     ],
   ])('form validation, %s', (_, initializeTest, ...steps) => {
     afterEach(() => jest.resetAllMocks())
