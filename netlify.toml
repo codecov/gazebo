@@ -8,3 +8,4 @@
   for = "/*"
   [headers.values]
     Access-Control-Allow-Origin = "events.launchdarkly.com"
+    X-Frame-Options = "DENY"
