@@ -21,9 +21,6 @@ describe('useNavLinks', () => {
             {children}
           </Route>
           <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
-          <Route path="/:provider/:owner/:repo/pull/:pullId/components">
-            {children}
-          </Route>
           <Route path="/admin/:provider/access">{children}</Route>
           <Route path="/admin/:provider/users">{children}</Route>
           <Route path="/admin/:provider/:owner/access">{children}</Route>
@@ -1002,7 +999,7 @@ describe('useNavLinks', () => {
     })
   })
 
-  describe.only('pull components', () => {
+  describe('pull components', () => {
     beforeAll(() => {
       setup(['/gl/doggo/squirrel-locator/pull/409/components'])
     })

@@ -99,16 +99,15 @@ function ComponentsTab() {
   const tableData = getTableData(componentComparisons)
   const isTableDataEmpty = tableData && tableData?.length <= 0
 
+  if (isLoading) {
+    return <Loader isLoading={isLoading} />
+  }
+
   if (isTableDataEmpty) {
     return <ComponentsNotConfigured />
   }
 
-  return (
-    <>
-      <Loader isLoading={isLoading} />
-      <Table data={tableData} columns={tableColumns} />
-    </>
-  )
+  return <Table data={tableData} columns={tableColumns} />
 }
 
 export default ComponentsTab
