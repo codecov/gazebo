@@ -88,7 +88,7 @@ function getTableData(data) {
 
 function ComponentsTab() {
   const { data, isLoading } = useComponentComparison({
-    opts: {
+    options: {
       select: ({ data }) =>
         data?.owner?.repository?.pull?.compareWithBase?.componentComparisons,
     },

@@ -5,7 +5,7 @@ import Api from 'shared/api'
 
 import { query } from './query'
 
-export function useComponentComparison({ opts = {} }) {
+export function useComponentComparison({ options = {} }) {
   const { owner, repo, pullId, provider } = useParams()
   return useQuery({
     queryKey: ['PullComponentComparison', provider, owner, repo, pullId, query],
@@ -21,6 +21,6 @@ export function useComponentComparison({ opts = {} }) {
           pullId: parseInt(pullId, 10),
         },
       }),
-    ...opts,
+    ...options,
   })
 }

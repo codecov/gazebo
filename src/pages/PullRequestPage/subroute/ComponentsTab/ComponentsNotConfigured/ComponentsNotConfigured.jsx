@@ -3,7 +3,7 @@ import A from 'ui/A'
 
 function ComponentsNotConfigured() {
   return (
-    <div className="mt-8 flex min-w-[60%] flex-col items-center justify-center gap-1 text-center text-base text-ds-gray-octonary">
+    <div className="mt-8 flex flex-col items-center justify-center gap-1 text-center text-base text-ds-gray-octonary">
       <img
         alt="Components feature not configured"
         className="h-96 w-screen object-cover"
