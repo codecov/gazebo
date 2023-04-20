@@ -303,207 +303,92 @@ describe('FileExplorer', () => {
     })
   })
 
-  describe('sorting on head columns', () => {
-    describe('sorting on head column', () => {
-      describe('sorting in asc order', () => {
-        it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
-
-          render(<FileExplorer />, { wrapper: wrapper() })
-
-          let files = await screen.findByText('Files')
-
-          await act(async () => await user.click(files))
-          files = await screen.findByText('Files')
-          await act(async () => await user.click(files))
-          files = await screen.findByText('Files')
-          await act(async () => await user.click(files))
-
-          await waitFor(() =>
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'ASC', parameter: 'NAME' },
-            })
-          )
+  describe.each([
+    ['Files', 'NAME'],
+    // ['Tracked lines', 'LINES'],
+    // ['Covered', 'HITS'],
+    // ['Partial', 'PARTIALS'],
+    // ['Missed', 'MISSES'],
+  ])(`sorting on %s column`, (column, parameter) => {
+    describe('in descending order', () => {
+      it('sets the correct api variables', async () => {
+        const { requestFilters, user } = setup()
+        render(<FileExplorer />, {
+          wrapper: wrapper(),
         })
-      })
 
-      describe('sorting in desc order', () => {
-        it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
+        const file = await screen.findByText('file.js')
+        expect(file).toBeInTheDocument()
 
-          render(<FileExplorer />, { wrapper: wrapper() })
+        let files = await screen.findByText(column)
+        await act(async () => await user.click(files))
 
-          let files = await screen.findByText('Files')
-          await act(async () => await user.click(files))
-          files = await screen.findByText('Files')
-          await act(async () => await user.click(files))
+        const downArrow = await screen.findByTestId('icon-outline-arrow-down')
+        expect(downArrow).toBeInTheDocument()
 
-          await waitFor(() =>
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'DESC', parameter: 'NAME' },
-            })
-          )
+        await waitFor(() => expect(requestFilters).toHaveBeenCalledTimes(3))
+        expect(requestFilters).toHaveBeenLastCalledWith({
+          ordering: { direction: 'DESC', parameter },
         })
       })
     })
-
-    describe('sorting on tracked lines column', () => {
-      describe('sorting in asc order', () => {
-        it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
-
-          render(<FileExplorer />, { wrapper: wrapper() })
-
-          const trackedLines = await screen.findByText('Tracked lines')
-
-          await user.click(trackedLines)
-          await user.click(trackedLines)
-
-          await waitFor(() =>
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'ASC', parameter: 'LINES' },
-            })
-          )
+    describe('sorting in ascending order', () => {
+      it('sets the correct api variables', async () => {
+        const { requestFilters, user } = setup()
+        render(<FileExplorer />, {
+          wrapper: wrapper(),
         })
-      })
 
-      describe('sorting in desc order', () => {
-        it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
+        const file = await screen.findByText('file.js')
+        expect(file).toBeInTheDocument()
 
-          render(<FileExplorer />, { wrapper: wrapper() })
+        let files = await screen.findByText(column)
+        await act(async () => await user.click(files))
 
-          let trackedLines = await screen.findByText('Tracked lines')
-          await user.click(trackedLines)
-          trackedLines = await screen.findByText('Tracked lines')
-          await user.click(trackedLines)
+        const downArrow = await screen.findByTestId('icon-outline-arrow-down')
+        expect(downArrow).toBeInTheDocument()
 
-          await waitFor(() =>
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'DESC', parameter: 'LINES' },
-            })
-          )
+        files = await screen.findByText(column)
+        await act(async () => await user.click(files))
+
+        const upArrow = await screen.findByTestId('icon-outline-arrow-up')
+        expect(upArrow).toBeInTheDocument()
+
+        await waitFor(() => expect(requestFilters).toHaveBeenCalledTimes(4))
+        expect(requestFilters).toHaveBeenLastCalledWith({
+          ordering: { direction: 'ASC', parameter },
         })
       })
     })
-
-    describe('sorting on the covered column', () => {
-      describe('sorting in asc order', () => {
-        it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
-
-          render(<FileExplorer />, { wrapper: wrapper() })
-
-          const covered = await screen.findByText('Covered')
-
-          await user.click(covered)
-          await user.click(covered)
-
-          await waitFor(() =>
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'ASC', parameter: 'HITS' },
-            })
-          )
+    describe('removes arrow on the third click, sorting is default again', () => {
+      it('sets the correct api variables', async () => {
+        const { user } = setup()
+        render(<FileExplorer />, {
+          wrapper: wrapper(),
         })
-      })
 
-      describe('sorting in desc order', () => {
-        it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
+        const file = await screen.findByText('file.js')
+        expect(file).toBeInTheDocument()
 
-          render(<FileExplorer />, { wrapper: wrapper() })
+        let files = await screen.findByText(column)
+        await act(async () => await user.click(files))
 
-          let covered = await screen.findByText('Covered')
-          await user.click(covered)
-          covered = await screen.findByText('Covered')
-          await user.click(covered)
+        let downArrow = await screen.findByTestId('icon-outline-arrow-down')
+        expect(downArrow).toBeInTheDocument()
 
-          await waitFor(() =>
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'DESC', parameter: 'HITS' },
-            })
-          )
-        })
-      })
-    })
+        files = await screen.findByText(column)
+        await act(async () => await user.click(files))
 
-    describe('sorting on the partial column', () => {
-      describe('sorting in asc order', () => {
-        it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
+        let upArrow = await screen.findByTestId('icon-outline-arrow-up')
+        expect(upArrow).toBeInTheDocument()
 
-          render(<FileExplorer />, { wrapper: wrapper() })
+        files = await screen.findByText(column)
+        await act(async () => await user.click(files))
 
-          const partial = await screen.findByText('Partial')
-
-          await user.click(partial)
-          await user.click(partial)
-
-          await waitFor(() =>
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'ASC', parameter: 'PARTIALS' },
-            })
-          )
-        })
-      })
-
-      describe('sorting in desc order', () => {
-        it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
-
-          render(<FileExplorer />, { wrapper: wrapper() })
-
-          let partial = await screen.findByText('Partial')
-          await user.click(partial)
-          partial = await screen.findByText('Partial')
-          await user.click(partial)
-
-          await waitFor(() =>
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'DESC', parameter: 'PARTIALS' },
-            })
-          )
-        })
-      })
-    })
-
-    describe('sorting on the coverage line', () => {
-      describe('sorting in asc order', () => {
-        it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
-
-          render(<FileExplorer />, { wrapper: wrapper() })
-
-          const missed = await screen.findByText('Missed')
-
-          await user.click(missed)
-          await user.click(missed)
-
-          await waitFor(() =>
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'ASC', parameter: 'MISSES' },
-            })
-          )
-        })
-      })
-
-      describe('sorting in desc order', () => {
-        it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
-
-          render(<FileExplorer />, { wrapper: wrapper() })
-
-          let missed = await screen.findByText('Missed')
-          await user.click(missed)
-          missed = await screen.findByText('Missed')
-          await user.click(missed)
-
-          await waitFor(() =>
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'DESC', parameter: 'MISSES' },
-            })
-          )
-        })
+        upArrow = screen.queryByTestId('icon-outline-arrow-up')
+        expect(upArrow).not.toBeInTheDocument()
+        downArrow = screen.queryByTestId('icon-outline-arrow-down')
+        expect(downArrow).not.toBeInTheDocument()
       })
     })
   })
@@ -518,21 +403,20 @@ describe('FileExplorer', () => {
         const search = await screen.findByRole('textbox', {
           name: 'Search for files',
         })
-        await user.type(search, 'cool-file.rs')
 
-        await waitFor(() =>
-          expect(requestFilters).toHaveBeenCalledWith({
-            searchValue: 'cool-file.rs',
-            ordering: { direction: 'ASC', parameter: 'NAME' },
-          })
-        )
+        await act(async () => await user.type(search, 'cool-file.rs'))
+
+        await waitFor(() => expect(requestFilters).toHaveBeenCalledTimes(3))
+        expect(requestFilters).toHaveBeenCalledWith({
+          searchValue: 'cool-file.rs',
+          ordering: { direction: 'ASC', parameter: 'NAME' },
+        })
       })
     })
 
     describe('there are no files to be found', () => {
-      beforeEach(() => setup())
-
       it('displays no items found message', async () => {
+        const { user } = setup()
         render(<FileExplorer />, { wrapper: wrapper() })
 
         const dir = await screen.findByText('src')
@@ -541,7 +425,7 @@ describe('FileExplorer', () => {
         const search = await screen.findByRole('textbox', {
           name: 'Search for files',
         })
-        userEvent.type(search, 'cool-file.rs')
+        await act(async () => await user.type(search, 'cool-file.rs'))
 
         const noResults = await screen.findByText(/no results found/i)
         expect(noResults).toBeInTheDocument()

@@ -22,7 +22,12 @@ const IconCollection = {
 function Icon({ name, variant = 'outline', size = 'md' }) {
   const IconSvg = get(IconCollection, `${variant}.${camelCase(name)}`, null)
   if (!IconSvg) return null
-  return <IconSvg className={IconClasses[size]} />
+  return (
+    <IconSvg
+      data-testid={`icon-${variant}-${name}`}
+      className={IconClasses[size]}
+    />
+  )
 }
 
 Icon.propTypes = {
