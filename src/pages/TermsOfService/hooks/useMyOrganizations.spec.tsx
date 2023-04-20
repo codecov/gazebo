@@ -199,4 +199,115 @@ describe('useMyOrganizations', () => {
       expect(result.current).toEqual(undefined)
     })
   })
+
+  describe('with next page', () => {
+    it('returns a next cursor with next page', async () => {
+      const { thrownMock } = setup({
+        MyOrganizationsData: {
+          me: {
+            myOrganizations: {
+              edges: [
+                {
+                  node: {
+                    avatarUrl:
+                      'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+                    username: 'codecov',
+                    ownerid: 1,
+                  },
+                },
+              ],
+              pageInfo: { hasNextPage: true, endCursor: 'MTI=' },
+            },
+          },
+        },
+      })
+
+      const { result, waitFor } = renderHook(() => useMyOrganizations(), {
+        wrapper: wrapper(),
+      })
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
+      expect(thrownMock).not.toBeCalled()
+
+      expect(result.current.data).toEqual({
+        pageParams: [undefined],
+        pages: [
+          {
+            me: {
+              myOrganizations: {
+                edges: [
+                  {
+                    node: {
+                      avatarUrl:
+                        'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+                      ownerid: 1,
+                      username: 'codecov',
+                    },
+                  },
+                ],
+                pageInfo: {
+                  endCursor: 'MTI=',
+                  hasNextPage: true,
+                },
+              },
+            },
+          },
+        ],
+      })
+    })
+    it('does not return a next cursor with no next page', async () => {
+      const { thrownMock } = setup({
+        MyOrganizationsData: {
+          me: {
+            myOrganizations: {
+              edges: [
+                {
+                  node: {
+                    avatarUrl:
+                      'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+                    username: 'codecov',
+                    ownerid: 1,
+                  },
+                },
+              ],
+              pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
+            },
+          },
+        },
+      })
+
+      const { result, waitFor } = renderHook(() => useMyOrganizations(), {
+        wrapper: wrapper(),
+      })
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
+      expect(thrownMock).not.toBeCalled()
+
+      expect(result.current.data).toEqual({
+        pageParams: [undefined],
+        pages: [
+          {
+            me: {
+              myOrganizations: {
+                edges: [
+                  {
+                    node: {
+                      avatarUrl:
+                        'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+                      ownerid: 1,
+                      username: 'codecov',
+                    },
+                  },
+                ],
+                pageInfo: {
+                  endCursor: 'MTI=',
+                  hasNextPage: false,
+                },
+              },
+            },
+          },
+        ],
+      })
+    })
+  })
 })

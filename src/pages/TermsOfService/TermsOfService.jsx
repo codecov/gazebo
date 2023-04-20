@@ -18,16 +18,7 @@ const FormSchema = z.object({
   select: z.string().nullish(),
   marketingEmail: z.string().email('This is not a valid email.').nullish(),
   marketingConsent: z.boolean().nullish(),
-  tos: z.literal(true, {
-    errorMap: (issue, _ctx) => {
-      switch (issue.code) {
-        case 'invalid_literal':
-          return { message: 'You must accept Terms and Conditions.' }
-        default:
-          return { message: 'You must accept Terms and Conditions.' }
-      }
-    },
-  }),
+  tos: z.literal(true),
 })
 
 function isDisabled({ isValid, isDirty }) {
@@ -61,15 +52,11 @@ export default function TermsOfService() {
     fetchNextPage,
     isFetching,
   } = useMyOrganizations({
-    select: (data) => {
-      const { pages } = data
-      if (Array.isArray(pages)) {
-        const [organizations] = pages.map((org) => {
-          return mapEdges(org?.me?.myOrganizations)
-        })
-        return organizations
-      }
-      return []
+    select: ({ pages }) => {
+      const [organizations] = pages.map((org) =>
+        mapEdges(org?.me?.myOrganizations)
+      )
+      return organizations
     },
   })
 
@@ -221,7 +208,7 @@ export default function TermsOfService() {
             </div>
             {formState.errors?.tos && (
               <p className="text-codecov-red">
-                {formState.errors?.tos.message}
+                You must accept Terms and Conditions.
               </p>
             )}
           </div>
