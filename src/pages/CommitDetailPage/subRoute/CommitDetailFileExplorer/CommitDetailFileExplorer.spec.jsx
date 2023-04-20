@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
@@ -298,7 +298,7 @@ describe('CommitDetailFileExplorer', () => {
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           const files = await screen.findByText('Files')
-          await user.click(files)
+          await act(async () => await user.click(files))
 
           await waitFor(() => {
             expect(requestFilters).toHaveBeenCalledWith({
@@ -314,9 +314,9 @@ describe('CommitDetailFileExplorer', () => {
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           let files = await screen.findByText('Files')
-          await user.click(files)
+          await act(async () => await user.click(files))
           files = await screen.findByText('Files')
-          await user.click(files)
+          await act(async () => await user.click(files))
 
           await waitFor(() => {
             expect(requestFilters).toHaveBeenCalledWith({
@@ -334,7 +334,7 @@ describe('CommitDetailFileExplorer', () => {
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           const trackedLines = await screen.findByText('Tracked lines')
-          await user.click(trackedLines)
+          await act(async () => await user.click(trackedLines))
 
           await waitFor(() => {
             expect(requestFilters).toHaveBeenCalledWith({
@@ -350,9 +350,9 @@ describe('CommitDetailFileExplorer', () => {
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           let trackedLines = await screen.findByText('Tracked lines')
-          await user.click(trackedLines)
+          await act(async () => await user.click(trackedLines))
           trackedLines = await screen.findByText('Tracked lines')
-          await user.click(trackedLines)
+          await act(async () => await user.click(trackedLines))
 
           await waitFor(() => {
             expect(requestFilters).toHaveBeenCalledWith({
@@ -371,7 +371,7 @@ describe('CommitDetailFileExplorer', () => {
 
           const covered = await screen.findByText('Covered')
 
-          await user.click(covered)
+          await act(async () => await user.click(covered))
 
           await waitFor(() => {
             expect(requestFilters).toHaveBeenCalledWith({
@@ -387,9 +387,9 @@ describe('CommitDetailFileExplorer', () => {
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           let covered = await screen.findByText('Covered')
-          await user.click(covered)
+          await act(async () => await user.click(covered))
           covered = await screen.findByText('Covered')
-          await user.click(covered)
+          await act(async () => await user.click(covered))
 
           await waitFor(() => {
             expect(requestFilters).toHaveBeenCalledWith({
@@ -408,7 +408,7 @@ describe('CommitDetailFileExplorer', () => {
 
           const partial = await screen.findByText('Partial')
 
-          await user.click(partial)
+          await act(async () => await user.click(partial))
 
           await waitFor(() => {
             expect(requestFilters).toHaveBeenCalledWith({
@@ -424,9 +424,9 @@ describe('CommitDetailFileExplorer', () => {
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           let partial = await screen.findByText('Partial')
-          await user.click(partial)
+          await act(async () => await user.click(partial))
           partial = await screen.findByText('Partial')
-          await user.click(partial)
+          await act(async () => await user.click(partial))
 
           await waitFor(() => {
             expect(requestFilters).toHaveBeenCalledWith({
@@ -445,7 +445,7 @@ describe('CommitDetailFileExplorer', () => {
 
           const missed = await screen.findByText('Missed')
 
-          await user.click(missed)
+          await act(async () => await user.click(missed))
 
           await waitFor(() => {
             expect(requestFilters).toHaveBeenCalledWith({
@@ -461,9 +461,9 @@ describe('CommitDetailFileExplorer', () => {
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           let missed = await screen.findByText('Missed')
-          await user.click(missed)
+          await act(async () => await user.click(missed))
           missed = await screen.findByText('Missed')
-          await user.click(missed)
+          await act(async () => await user.click(missed))
 
           await waitFor(() => {
             expect(requestFilters).toHaveBeenCalledWith({
@@ -484,7 +484,7 @@ describe('CommitDetailFileExplorer', () => {
         const search = await screen.findByRole('textbox', {
           name: 'Search for files',
         })
-        await user.type(search, 'cool-file.rs')
+        await act(async () => await user.type(search, 'cool-file.rs'))
 
         await waitFor(() => {
           expect(requestFilters).toHaveBeenCalledWith({
@@ -507,7 +507,7 @@ describe('CommitDetailFileExplorer', () => {
         const search = await screen.findByRole('textbox', {
           name: 'Search for files',
         })
-        await user.type(search, 'cool-file.rs')
+        await act(async () => await user.type(search, 'cool-file.rs'))
 
         const noResults = await screen.findByText(/no results found/i)
         expect(noResults).toBeInTheDocument()
