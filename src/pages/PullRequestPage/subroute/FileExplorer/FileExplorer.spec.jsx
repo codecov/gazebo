@@ -305,10 +305,10 @@ describe('FileExplorer', () => {
 
   describe.each([
     ['Files', 'NAME'],
-    // ['Tracked lines', 'LINES'],
-    // ['Covered', 'HITS'],
-    // ['Partial', 'PARTIALS'],
-    // ['Missed', 'MISSES'],
+    ['Tracked lines', 'LINES'],
+    ['Covered', 'HITS'],
+    ['Partial', 'PARTIALS'],
+    ['Missed', 'MISSES'],
   ])(`sorting on %s column`, (column, parameter) => {
     describe('in descending order', () => {
       it('sets the correct api variables', async () => {
