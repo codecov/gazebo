@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
@@ -313,11 +313,11 @@ describe('FileExplorer', () => {
 
           let files = await screen.findByText('Files')
 
-          await user.click(files)
+          await act(async () => await user.click(files))
           files = await screen.findByText('Files')
-          await user.click(files)
+          await act(async () => await user.click(files))
           files = await screen.findByText('Files')
-          await user.click(files)
+          await act(async () => await user.click(files))
 
           await waitFor(() =>
             expect(requestFilters).toHaveBeenCalledWith({
@@ -334,9 +334,9 @@ describe('FileExplorer', () => {
           render(<FileExplorer />, { wrapper: wrapper() })
 
           let files = await screen.findByText('Files')
-          await user.click(files)
+          await act(async () => await user.click(files))
           files = await screen.findByText('Files')
-          await user.click(files)
+          await act(async () => await user.click(files))
 
           await waitFor(() =>
             expect(requestFilters).toHaveBeenCalledWith({

@@ -95,10 +95,7 @@ describe('useRegenerateRepositoryToken', () => {
         )
 
         result.current.mutate()
-        await waitFor(() => result.current.isLoading)
-        await waitFor(() => !result.current.isLoading)
-
-        expect(result.current.isSuccess).toBeTruthy()
+        await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
       })
     })
   })
@@ -114,8 +111,6 @@ describe('useRegenerateRepositoryToken', () => {
       )
 
       result.current.mutate()
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
 
       await waitFor(() =>
         expect(addNotification).toBeCalledWith({
