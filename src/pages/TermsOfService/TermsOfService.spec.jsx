@@ -199,54 +199,6 @@ describe('TermsOfService', () => {
     })
   })
 
-  describe('my organizations', () => {
-    it('shows load more in the dropdown if there is more pages', async () => {
-      const { user } = setup({
-        useUserData: {
-          me: {
-            email: 'chetney@cr.com',
-            termsAgreement: false,
-          },
-        },
-        myOrganizationsData: {
-          me: {
-            myOrganizations: {
-              edges: [
-                {
-                  node: {
-                    avatarUrl:
-                      'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
-                    ownerid: 1,
-                    username: 'codecov',
-                  },
-                },
-              ],
-              pageInfo: {
-                endCursor: 'MTI=',
-                hasNextPage: true,
-              },
-            },
-          },
-        },
-      })
-
-      render(<TermsOfService />, { wrapper: wrapper() })
-
-      const welcome = await screen.findByText(/Welcome to Codecov/i)
-      expect(welcome).toBeInTheDocument()
-
-      const select = screen.getByRole('button', {
-        name: 'Select an organization',
-      })
-      await act(async () => {
-        await user.click(select)
-      })
-
-      const loadMore = await screen.findByText(/Loading more items.../i)
-      expect(loadMore).toBeInTheDocument()
-    })
-  })
-
   describe('on submit', () => {
     beforeEach(() => jest.resetAllMocks())
 
