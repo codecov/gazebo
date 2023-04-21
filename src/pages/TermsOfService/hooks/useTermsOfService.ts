@@ -21,13 +21,13 @@ const ResolverError = z.object({
   message: z.string(),
 })
 const SaveTermsAgreementPayloadConfig = z.object({
-  error: z.union([ResolverError, ResolverError]).nullable(),
+  error: z.union([ResolverError, ResolverError]).nullish(),
 })
 export type SaveTermsAgreementPayload = z.infer<
   typeof SaveTermsAgreementPayloadConfig
 >
 
-interface ParamTypes {
+interface Params {
   provider?: string
 }
 interface SaveTermsAgreementOptions {
@@ -35,7 +35,7 @@ interface SaveTermsAgreementOptions {
   onError?: () => void
 }
 export function useSaveTermsAgreement(options: SaveTermsAgreementOptions = {}) {
-  const { provider } = useParams<ParamTypes>()
+  const { provider } = useParams<Params>()
   const queryClient = useQueryClient()
   const { onSuccess, ...rest } = options
   return useMutation({
@@ -96,6 +96,7 @@ export function useSaveTermsAgreement(options: SaveTermsAgreementOptions = {}) {
       queryClient.invalidateQueries(['currentUser', provider])
       onSuccess && onSuccess(data)
     },
+    retry: 3,
     ...rest,
   })
 }
