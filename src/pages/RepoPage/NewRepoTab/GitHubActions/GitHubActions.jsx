@@ -24,7 +24,7 @@ function GitHubActions() {
             repository secret
           </A>
         </h2>
-        <pre className="flex items-center gap-2 overflow-auto rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary py-2 px-4 font-mono">
+        <pre className="flex items-center gap-2 overflow-auto rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
           CODECOV_TOKEN={data?.repository?.uploadToken}
           <CopyClipboard
             string={data?.repository?.uploadToken}
@@ -50,7 +50,7 @@ function GitHubActions() {
             GitHub Actions workflow
           </A>
         </h2>
-        <div className="flex items-start justify-between overflow-auto whitespace-pre-line rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary py-2 px-4 font-mono">
+        <div className="flex items-start justify-between overflow-auto whitespace-pre-line rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
           <pre>
             - name: Upload coverage reports to Codecov
             <br />
@@ -83,7 +83,7 @@ function GitHubActions() {
         </p>
       </div>
       <div className="mt-6 border-l-2 border-ds-gray-secondary">
-        <p className="pl-3 pb-2 text-base">
+        <p className="pb-2 pl-3 text-base">
           &#127881; Once steps are complete, you should see the coverage
           dashboard
         </p>

@@ -43,7 +43,7 @@ function Access({ provider }) {
         )}
       </div>
       <TokensTable tokens={data?.tokens} />
-      <h2 className="mt-8 mb-4 text-lg font-semibold">Login Sessions</h2>
+      <h2 className="mb-4 mt-8 text-lg font-semibold">Login Sessions</h2>
       <div className="max-w-screen-md">
         <SessionsTable sessions={data?.sessions} />
       </div>
