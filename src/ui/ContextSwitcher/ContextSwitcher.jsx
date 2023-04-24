@@ -151,7 +151,7 @@ function ContextSwitcher({
           </MenuLink>
           {contexts.map(renderContext)}
           {isLoading && (
-            <span className="flex justify-center pt-1 pb-2">
+            <span className="flex justify-center pb-2 pt-1">
               <Spinner />
             </span>
           )}

@@ -28,7 +28,7 @@ export default function TermsOfService() {
 
   return (
     <div className="mx-auto w-full max-w-[38rem] text-sm text-ds-gray-octonary">
-      <h1 className="pt-20 pb-3 text-2xl font-semibold">Welcome to Codecov</h1>
+      <h1 className="pb-3 pt-20 text-2xl font-semibold">Welcome to Codecov</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-4 border-y border-ds-gray-tertiary pt-6">
           <p className="font-semibold">Select organization</p>

@@ -27,7 +27,7 @@ function GithubIntegrationCard({ provider, owner }) {
       </div>
       {accountDetails.integrationId ? (
         <div>
-          <p className="mt-6 mb-8">
+          <p className="mb-8 mt-6">
             This account is configured via the GitHub App. <br />
             You can manage the app on Github.
           </p>
@@ -35,9 +35,9 @@ function GithubIntegrationCard({ provider, owner }) {
         </div>
       ) : (
         <div>
-          <p className="mt-6 mb-8">
+          <p className="mb-8 mt-6">
             Integrate with Codecov through the GitHub App to strengthen
-            Codecov’s integration with your team.
+            Codecov&apos;s integration with your team.
             <br />
             This will replace the team bot account and post pull request
             comments on behalf of Codecov.
