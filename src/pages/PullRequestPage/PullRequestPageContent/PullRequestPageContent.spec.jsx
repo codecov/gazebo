@@ -11,6 +11,7 @@ jest.mock('../subroute/FilesChangedTab', () => () => 'FilesChangedTab')
 jest.mock('../subroute/IndirectChangesTab', () => () => 'IndirectChangesTab')
 jest.mock('../subroute/CommitsTab', () => () => 'CommitsTab')
 jest.mock('../subroute/FlagsTab', () => () => 'FlagsTab')
+jest.mock('../subroute/ComponentsTab', () => () => 'ComponentsTab')
 jest.mock('../subroute/FileExplorer', () => () => 'FileExplorer')
 jest.mock('../subroute/FileViewer', () => () => 'FileViewer')
 
@@ -27,6 +28,7 @@ const mockPullData = (resultType) => ({
           indirectChangedFilesCount: 3,
           directChangedFilesCount: 4,
           flagComparisonsCount: 5,
+          componentComparisonCount: 6,
         },
       },
     },
@@ -122,6 +124,17 @@ describe('PullRequestPageContent', () => {
 
         const flagsTab = await screen.findByText('FlagsTab')
         expect(flagsTab).toBeInTheDocument()
+      })
+    })
+
+    describe('on the components path', () => {
+      it('renders the components tab', async () => {
+        render(<PullRequestPageContent />, {
+          wrapper: wrapper('/gh/codecov/test-repo/pull/1/components'),
+        })
+
+        const componentsTab = await screen.findByText('ComponentsTab')
+        expect(componentsTab).toBeInTheDocument()
       })
     })
 

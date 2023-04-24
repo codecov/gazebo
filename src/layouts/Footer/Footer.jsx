@@ -41,7 +41,7 @@ function Footer() {
 
   return (
     <footer className="flex-none">
-      <nav className="container flex flex-col flex-wrap items-center justify-center border-t border-ds-gray-tertiary py-6 px-3 text-white sm:justify-between lg:flex-row">
+      <nav className="container flex flex-col flex-wrap items-center justify-center border-t border-ds-gray-tertiary px-3 py-6 text-white sm:justify-between lg:flex-row">
         <ul className="flex flex-1 items-center justify-center gap-4 lg:justify-start">
           {leftMenu.map((props, i) => (
             <FooterItem key={`footer-left-${i}`} {...props} />
