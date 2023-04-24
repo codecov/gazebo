@@ -999,6 +999,32 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('pull components', () => {
+    beforeAll(() => {
+      setup(['/gl/doggo/squirrel-locator/pull/409/components'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.pullComponents.path()).toBe(
+        `/gl/doggo/squirrel-locator/pull/409/components`
+      )
+    })
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.pullComponents.path({ provider: 'bb' })
+      ).toBe(`/bb/doggo/squirrel-locator/pull/409/components`)
+      expect(
+        hookData.result.current.pullComponents.path({ owner: 'cat' })
+      ).toBe(`/gl/cat/squirrel-locator/pull/409/components`)
+      expect(
+        hookData.result.current.pullComponents.path({ repo: 'tennis-ball' })
+      ).toBe(`/gl/doggo/tennis-ball/pull/409/components`)
+      expect(hookData.result.current.pullComponents.path({ pullId: 888 })).toBe(
+        `/gl/doggo/squirrel-locator/pull/888/components`
+      )
+    })
+  })
+
   describe('pull indirect changes', () => {
     beforeAll(() => {
       setup(['/gl/doggo/squirrel-locator/pull/409/indirect-changes'])
