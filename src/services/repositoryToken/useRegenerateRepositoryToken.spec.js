@@ -25,8 +25,6 @@ const queryClient = new QueryClient()
 const server = setupServer()
 
 beforeAll(() => {
-  // silence console errors for failed requests
-  console.error = () => {}
   server.listen()
 })
 afterEach(() => {
@@ -101,6 +99,11 @@ describe('useRegenerateRepositoryToken', () => {
   })
 
   describe('when mutation has a network error', () => {
+    beforeEach(() => {
+      // silence console errors for failed requests
+      console.error = () => {}
+    })
+
     it('adds an error notification', async () => {
       const { addNotification } = setup({ triggerError: true })
       const { result, waitFor } = renderHook(
