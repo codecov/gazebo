@@ -40,7 +40,7 @@ function BaseLayout({ children }) {
       <Suspense fallback={fullPageLoader}>
         <ErrorBoundary sentryScopes={[['layout', 'base']]}>
           <NetworkErrorBoundary>
-            <main className="container mt-2 mb-8 flex grow flex-col gap-2 md:p-0">
+            <main className="container mb-8 mt-2 flex grow flex-col gap-2 md:p-0">
               <GlobalBanners />
               {isFullExperience ? (
                 children

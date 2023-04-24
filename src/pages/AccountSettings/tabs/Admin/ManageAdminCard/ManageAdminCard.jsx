@@ -11,7 +11,7 @@ function ManageAdminCard() {
   return (
     <Card className="p-10">
       <h2 className="text-2xl">Account administrators</h2>
-      <p className="mt-2 mb-4">
+      <p className="mb-4 mt-2">
         Admins are able to: Add other admins, activate deactivate other users,
         view billing and modify the team yaml.
       </p>

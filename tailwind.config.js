@@ -16,7 +16,6 @@ module.exports = {
     './public/*.html',
   ],
   mode: 'jit',
-  plugins: [require('@tailwindcss/line-clamp')],
   theme: {
     container: {
       center: true,
