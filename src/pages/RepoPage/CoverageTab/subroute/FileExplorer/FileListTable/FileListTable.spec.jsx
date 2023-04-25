@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { act } from 'react-test-renderer'
 
 import FileListTable from './FileListTable'
 
@@ -376,8 +377,12 @@ describe('FileListTable', () => {
           render(<FileListTable />, { wrapper: wrapper() })
 
           const partial = await screen.findByText('Partial')
-          await user.click(partial)
-          await user.click(partial)
+          await act(async () => {
+            await user.click(partial)
+          })
+          await act(async () => {
+            await user.click(partial)
+          })
 
           await waitFor(() => {
             expect(requestFilters).toHaveBeenCalledWith({
