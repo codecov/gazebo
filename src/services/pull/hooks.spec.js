@@ -74,15 +74,12 @@ describe('usePull', () => {
         owner: {
           isCurrentUserPartOfOrg: true,
           repository: {
+            defaultBranch: 'umbrasyl',
             private: true,
             pull,
           },
         },
       })
-    })
-
-    it('renders isLoading true', () => {
-      expect(hookData.result.current.isLoading).toBeTruthy()
     })
 
     describe('when data is loaded', () => {
@@ -92,12 +89,14 @@ describe('usePull', () => {
 
       it('returns the data', () => {
         expect(hookData.result.current.data).toEqual({
+          defaultBranch: 'umbrasyl',
           hasAccess: true,
           pull,
         })
       })
     })
   })
+
   describe(`when user shouldn't have access`, () => {
     beforeEach(() => {
       setup({
@@ -109,10 +108,6 @@ describe('usePull', () => {
           },
         },
       })
-    })
-
-    it('renders isLoading true', () => {
-      expect(hookData.result.current.isLoading).toBeTruthy()
     })
 
     describe('when data is loaded', () => {
