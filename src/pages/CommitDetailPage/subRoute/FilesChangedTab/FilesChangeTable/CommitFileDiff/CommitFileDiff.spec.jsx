@@ -40,6 +40,8 @@ const mockImpactedFile = {
             baseCoverage: null,
             headCoverage: 'H',
             content: '+export default class Calculator {',
+            hitCount: null,
+            hitUploadIds: null,
           },
           {
             baseNumber: null,
@@ -47,6 +49,8 @@ const mockImpactedFile = {
             baseCoverage: null,
             headCoverage: 'H',
             content: '+  private value = 0;',
+            hitCount: 18,
+            hitUploadIds: [1],
           },
           {
             baseNumber: null,
@@ -54,6 +58,8 @@ const mockImpactedFile = {
             baseCoverage: null,
             headCoverage: 'H',
             content: '+  private calcMode = ""',
+            hitCount: null,
+            hitUploadIds: null,
           },
         ],
       },
@@ -121,6 +127,13 @@ describe('CommitFileDiff', () => {
 
       const calcMode = await screen.findByText(/calcMode/)
       expect(calcMode).toBeInTheDocument()
+    })
+
+    it('renders hit count icon', async () => {
+      render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
+
+      const hitCount = await screen.findByText('18')
+      expect(hitCount).toBeInTheDocument()
     })
 
     it('renders the commit redirect url', async () => {
