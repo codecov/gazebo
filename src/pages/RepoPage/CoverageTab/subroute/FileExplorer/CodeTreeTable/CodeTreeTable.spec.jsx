@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { act } from 'react-test-renderer'
 
 import CodeTreeTable from './CodeTreeTable'
 
@@ -277,7 +278,10 @@ describe('CodeTreeTable', () => {
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
           let files = await screen.findByText('Files')
-          await user.click(files)
+
+          await act(async () => {
+            await user.click(files)
+          })
 
           expect(requestFilters).toHaveBeenCalledWith({
             ordering: { direction: 'ASC', parameter: 'NAME' },
