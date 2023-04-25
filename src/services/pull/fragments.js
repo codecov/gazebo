@@ -15,6 +15,8 @@ fragment HeaderOnPullFragment on Pull {
 
 export const SummaryOnPullFragment = `
 fragment SummaryOnPullFragment on Pull {
+  behindBy
+  behindByCommit
   head {
     commitid
     totals {
