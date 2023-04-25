@@ -31,6 +31,8 @@ fragment ComparisonFragment on Comparison {
               baseCoverage
               headCoverage
               content
+              hitCount
+              hitUploadIds
             }
           }
         }
