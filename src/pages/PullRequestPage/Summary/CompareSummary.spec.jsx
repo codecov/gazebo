@@ -34,7 +34,7 @@ const pull = {
     patchTotals: {
       coverage: 92.12,
     },
-    changeWithParent: 38.94,
+    changeCoverage: 38.94,
   },
 }
 
@@ -161,7 +161,7 @@ describe('CompareSummary', () => {
       const changeCardTitle = screen.getByText('Change')
       expect(changeCardTitle).toBeInTheDocument()
       const changeCardValue = screen.getByText(
-        `${pull.compareWithBase.changeWithParent}%`
+        `${pull.compareWithBase.changeCoverage}%`
       )
       expect(changeCardValue).toBeInTheDocument()
       expect(changeCardValue).toHaveClass("before:content-['+']")
