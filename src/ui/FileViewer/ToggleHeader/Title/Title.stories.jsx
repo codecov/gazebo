@@ -1,6 +1,6 @@
 import { LINE_STATE } from 'shared/utils/fileviewer'
 
-import Title, { TitleCoverage, TitleFlags } from './Title'
+import Title, { TitleCoverage, TitleFlags, TitleHitCount } from './Title'
 
 const Template = (args) => {
   return (
@@ -13,6 +13,7 @@ const Template = (args) => {
         onFlagsChange={() => {}}
         flagsIsLoading={false}
       />
+      <TitleHitCount showHitCount={true} />
     </Title>
   )
 }
