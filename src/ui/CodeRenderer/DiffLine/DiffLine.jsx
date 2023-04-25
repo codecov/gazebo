@@ -8,7 +8,7 @@ import {
   LINE_TYPE,
   lineStateToLabel,
 } from 'shared/utils/fileviewer'
-import CoverageSelectIcon from 'ui/Icon/CoverageSelectIcon'
+import CoverageLineIndicator from 'ui/CodeRenderer/CoverageLineIndicator'
 
 import { useScrollToLine } from '../hooks'
 
@@ -93,7 +93,7 @@ function DiffLine({
               <span key={key} {...getTokenProps({ token, key })} />
             ))}
           </div>
-          <CoverageSelectIcon coverage={headLineState} hitCount={hitCount} />
+          <CoverageLineIndicator coverage={headLineState} hitCount={hitCount} />
         </div>
       </td>
     </tr>
