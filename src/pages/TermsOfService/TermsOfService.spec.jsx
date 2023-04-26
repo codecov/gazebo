@@ -253,15 +253,15 @@ describe('TermsOfService', () => {
       const submit = await screen.findByRole('button', { name: /Continue/ })
       await act(async () => {
         await user.click(submit)
+      })
 
-        expect(trackSegmentEvent).toHaveBeenLastCalledWith({
-          event: 'Onboarding email opt in',
-          data: {
-            email: 'personal@cr.com',
-            ownerid: '1234',
-            username: 'chetney',
-          },
-        })
+      expect(trackSegmentEvent).toHaveBeenLastCalledWith({
+        event: 'Onboarding email opt in',
+        data: {
+          email: 'personal@cr.com',
+          ownerid: '1234',
+          username: 'chetney',
+        },
       })
     })
 
@@ -305,13 +305,13 @@ describe('TermsOfService', () => {
       const submit = await screen.findByRole('button', { name: /Continue/ })
       await act(async () => {
         await user.click(submit)
+      })
 
-        expect(mockMutationVariables).toHaveBeenLastCalledWith({
-          tosInput: {
-            businessEmail: 'personal@cr.com',
-            termsAgreement: true,
-          },
-        })
+      expect(mockMutationVariables).toHaveBeenLastCalledWith({
+        tosInput: {
+          businessEmail: 'personal@cr.com',
+          termsAgreement: true,
+        },
       })
     })
 
@@ -603,7 +603,7 @@ describe('TermsOfService', () => {
     ],
   ])('form validation, %s', (_, initializeTest, ...steps) => {
     beforeEach(() => jest.resetModules())
-    describe.only(`
+    describe(`
       Has signed in: ${!!initializeTest.useUserData.me}
       Has a email via oauth: ${initializeTest.useUserData.me?.email}
     `, () => {
