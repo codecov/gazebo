@@ -10,7 +10,7 @@ function Header() {
   return (
     <header
       className={cs('text-white', {
-        'bg-ds-gray-octonary': !isImpersonating,
+        'bg-ds-primary-base': !isImpersonating,
         'bg-ds-pink-tertiary': isImpersonating,
       })}
     >

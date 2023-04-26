@@ -34,8 +34,8 @@ describe('OrgControlTable', () => {
         name: /Inactive/i,
       })
       // no better way to assert the button is selected yet
-      expect(buttonEnabled).toHaveClass('bg-ds-blue-darker')
-      expect(buttonDisabled).not.toHaveClass('bg-ds-blue-darker')
+      expect(buttonEnabled).toHaveClass('bg-ds-primary-base')
+      expect(buttonDisabled).not.toHaveClass('bg-ds-primary-base')
     })
 
     describe('when clicking on inactive button', () => {
@@ -83,8 +83,8 @@ describe('OrgControlTable', () => {
         name: /Inactive/,
       })
       // no better way to assert the button is selected yet
-      expect(buttonEnabled).not.toHaveClass('bg-ds-blue-darker')
-      expect(buttonDisabled).toHaveClass('bg-ds-blue-darker')
+      expect(buttonEnabled).not.toHaveClass('bg-ds-primary-base')
+      expect(buttonDisabled).toHaveClass('bg-ds-primary-base')
     })
 
     describe('when clicking on Active button', () => {
