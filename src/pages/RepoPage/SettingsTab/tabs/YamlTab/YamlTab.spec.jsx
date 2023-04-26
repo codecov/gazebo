@@ -7,7 +7,9 @@ import { useEncodeString, useRepoSettings } from 'services/repo'
 import YamlTab from './YamlTab'
 
 jest.mock('services/repo')
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
 describe('YamlTab', () => {
   function setup() {

@@ -10,7 +10,9 @@ jest.mock('react-router-dom', () => ({
   useParams: () => ({}),
 }))
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 )

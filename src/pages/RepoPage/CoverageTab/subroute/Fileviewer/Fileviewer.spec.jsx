@@ -60,7 +60,9 @@ const mockCoverage = {
   branch: null,
 }
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const server = setupServer()
 
 const wrapper =

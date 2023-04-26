@@ -30,7 +30,9 @@ const freeAccountDetails = {
   activatedUserCount: 2,
 }
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

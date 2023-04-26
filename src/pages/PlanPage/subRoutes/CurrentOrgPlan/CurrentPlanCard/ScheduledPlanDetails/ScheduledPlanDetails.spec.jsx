@@ -4,7 +4,9 @@ import { MemoryRouter } from 'react-router-dom'
 
 import ScheduledPlanDetails from './ScheduledPlanDetails'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
 describe('ScheduledPlanDetails', () => {
   function setup(scheduledPhase) {

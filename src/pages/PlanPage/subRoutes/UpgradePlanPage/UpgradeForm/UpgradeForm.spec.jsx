@@ -88,6 +88,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       suspense: true,
+      retry: false,
     },
   },
   logger: {
