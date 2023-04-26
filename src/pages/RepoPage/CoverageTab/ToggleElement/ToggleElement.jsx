@@ -17,7 +17,7 @@ function ToggleElement({
   return (
     <div className="hidden lg:block">
       <button
-        className="mt-2 flex cursor-pointer items-center text-ds-blue hover:underline"
+        className="mt-2 flex cursor-pointer items-center text-ds-primary-base hover:underline"
         onClick={() => {
           setIsHidden(!isHidden)
           localStorage.setItem(localStorageKey, !isHidden)
