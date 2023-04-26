@@ -44,7 +44,7 @@ export default function TermsOfService() {
     },
     onError: (error) => setError('apiError', error),
   })
-  const { data: currentUser, isLoading } = useUser()
+  const { data: currentUser, isLoading: userIsLoading } = useUser()
 
   const {
     data: myOrganizations,
@@ -85,7 +85,7 @@ export default function TermsOfService() {
     mutate(input)
   }
 
-  if (isLoading) return null
+  if (userIsLoading) return null
 
   return (
     <div className="mx-auto w-full max-w-[38rem] text-sm text-ds-gray-octonary">

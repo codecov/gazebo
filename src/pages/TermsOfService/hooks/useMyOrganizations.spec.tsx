@@ -7,7 +7,9 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { useMyOrganizations } from './useMyOrganizations'
 import type { MyOrganizationsData } from './useMyOrganizations'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
 type WrapperClosure = (
   initialEntries?: string[]

@@ -6,7 +6,9 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useUpdateYaml, useYamlConfig } from './index'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh']}>
     <Route path="/:provider">

@@ -7,7 +7,9 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { useAutoActivate } from './useAutoActivate'
 
 const server = setupServer()
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const wrapper =
   (initialEntries = '/gh') =>
   ({ children }) =>

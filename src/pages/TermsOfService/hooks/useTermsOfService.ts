@@ -79,16 +79,24 @@ export function useSaveTermsAgreement(options: SaveTermsAgreementOptions = {}) {
         }
       `
 
-      const tosInput = { businessEmail, termsAgreement }
-      const variables = {
-        tosInput,
-        ...(defaultOrg && { defaultOrgInput: { username: defaultOrg } }),
+      if (defaultOrg) {
+        const variables = {
+          tosInput: { businessEmail, termsAgreement },
+          defaultOrgInput: { username: defaultOrg },
+        }
+        return Api.graphqlMutation({
+          mutationPath: 'saveTermsAgreement',
+          provider,
+          query: queryWithDefaultOrg,
+          variables,
+        })
       }
 
+      const variables = { tosInput: { businessEmail, termsAgreement } }
       return Api.graphqlMutation({
         mutationPath: 'saveTermsAgreement',
         provider,
-        query: defaultOrg ? queryWithDefaultOrg : querySignAgreement,
+        query: querySignAgreement,
         variables,
       })
     },
@@ -96,7 +104,6 @@ export function useSaveTermsAgreement(options: SaveTermsAgreementOptions = {}) {
       queryClient.invalidateQueries(['currentUser', provider])
       onSuccess && onSuccess(data)
     },
-    retry: 3,
     ...rest,
   })
 }

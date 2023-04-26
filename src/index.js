@@ -37,7 +37,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       suspense: true,
-      retry: false,
+      retry: 3,
       refetchOnWindowFocus: false,
     },
   },

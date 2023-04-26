@@ -6,7 +6,13 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useSaveTermsAgreement } from './useTermsOfService'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+})
 
 type WrapperClosure = (
   initialEntries?: string[]
@@ -120,9 +126,9 @@ describe('useSaveTermsAgreement', () => {
       it('throws an error', async () => {
         setup({ apiError: true })
         const spy = jest.spyOn(console, 'error')
-        const thrownErrorMock = jest.fn()
+        const spyErrorMock = jest.fn()
+        spy.mockImplementation(spyErrorMock)
         const errorFn = jest.fn()
-        spy.mockImplementation(thrownErrorMock)
         const { result, waitFor } = renderHook(
           () =>
             useSaveTermsAgreement({
@@ -139,11 +145,14 @@ describe('useSaveTermsAgreement', () => {
           businessEmail: 'test@test.com',
           termsAgreement: true,
         })
-        await waitFor(() => expect(errorFn).toBeCalledWith('error'))
 
-        expect(thrownErrorMock).toBeCalledWith(
-          'POST /graphql/gh net::ERR_FAILED'
+        await waitFor(() =>
+          expect(spyErrorMock).toBeCalledWith(
+            'POST /graphql/gh net::ERR_FAILED'
+          )
         )
+
+        expect(errorFn).toBeCalledWith('error')
       })
     })
   })

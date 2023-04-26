@@ -21,7 +21,9 @@ const mundo = {
   lastseen: '2020-12-17T00:08:16.398263Z',
 }
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const server = setupServer()
 const wrapper =
   (initialEntries = '/gh') =>

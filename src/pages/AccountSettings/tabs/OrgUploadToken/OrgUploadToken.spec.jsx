@@ -14,7 +14,9 @@ jest.mock('services/toastNotification')
 jest.mock('services/orgUploadToken')
 jest.mock('services/toastNotification')
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
 describe('OrgUploadToken', () => {
   const mutate = jest.fn()

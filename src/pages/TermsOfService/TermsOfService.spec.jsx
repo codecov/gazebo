@@ -10,7 +10,9 @@ import { trackSegmentEvent } from 'services/tracking/segment'
 
 import TermsOfService from './TermsOfService'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const server = setupServer()
 
 jest.mock('services/tracking/segment')
@@ -39,6 +41,7 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 describe('TermsOfService', () => {
+  beforeEach(() => jest.resetModules())
   function setup({
     myOrganizationsData,
     useUserData,
@@ -138,7 +141,7 @@ describe('TermsOfService', () => {
       })
     )
 
-    it('delays rendering till we know a user is authed', async () => {
+    it('only renders the component after a valid user is returned from the useUser hook', async () => {
       render(<TermsOfService />, { wrapper: wrapper() })
 
       let welcome = screen.queryByText(/Welcome to Codecov/i)
@@ -385,14 +388,12 @@ describe('TermsOfService', () => {
 
   /*
    * This is to test the various form validation edge cases case with different data.
-   * The describe.each function takes an array of arrays as, each array is a test case.
+   * The describe.each function takes an array of arrays, each array is a test case.
    *
    * The first element of each array is the test case name (mostly for identifying broken tests
    * in the future), the second element is the test setup data. Any following arguments is an array
    * of async test assertion functions that will be called in order.
    *
-   * The first argument is the user object returned from the setup function, the second argument
-   * is the args object which can be anything you want to pass to the assertion function.
    */
   describe.each([
     [
@@ -601,11 +602,14 @@ describe('TermsOfService', () => {
       [expectRendersServerFailureResult, 'validation error'],
     ],
   ])('form validation, %s', (_, initializeTest, ...steps) => {
-    afterEach(() => jest.resetAllMocks())
-    describe(`
+    beforeEach(() => jest.resetModules())
+    describe.only(`
       Has signed in: ${!!initializeTest.useUserData.me}
       Has a email via oauth: ${initializeTest.useUserData.me?.email}
     `, () => {
+      jest.mock('./hooks/useTermsOfService', () => ({
+        useSaveTermsAgreement: jest.fn(() => ({ data: 'mocked' })),
+      }))
       it(`scenario: ${initializeTest.validationDescription}`, async () => {
         const { user } = setup({
           isUnknownError: initializeTest.isUnknownError,

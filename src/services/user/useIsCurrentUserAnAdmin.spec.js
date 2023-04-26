@@ -6,7 +6,9 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useIsCurrentUserAnAdmin } from './useIsCurrentUserAnAdmin'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const server = setupServer()
 
 const wrapper =

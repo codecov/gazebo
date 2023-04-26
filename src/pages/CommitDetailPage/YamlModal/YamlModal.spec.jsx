@@ -9,7 +9,9 @@ import YamlModal from './YamlModal'
 
 jest.mock('./YAMLViewer', () => () => 'YAMLViewer')
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const server = setupServer()
 
 const wrapper = ({ children }) => (

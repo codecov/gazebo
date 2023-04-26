@@ -76,6 +76,7 @@ const mockNextBranches = (hasNextPage) => ({
 })
 
 const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
   logger: {
     error: () => {},
   },

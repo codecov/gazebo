@@ -6,7 +6,9 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { usePrefetchCommitDirEntry } from './usePrefetchCommitDirEntry'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov/test-repo/tree/main/src']}>
     <Route path="/:provider/:owner/:repo/tree/:branch/:path+">

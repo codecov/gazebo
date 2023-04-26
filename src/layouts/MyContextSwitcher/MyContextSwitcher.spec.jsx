@@ -14,7 +14,9 @@ import MyContextSwitcher from './MyContextSwitcher'
 jest.mock('services/image')
 jest.mock('react-use/lib/useIntersection')
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const server = setupServer()
 
 const org1 = {
