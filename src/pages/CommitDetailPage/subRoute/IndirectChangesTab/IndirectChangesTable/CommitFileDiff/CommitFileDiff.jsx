@@ -91,6 +91,7 @@ function CommitFileDiff({ path }) {
                   lineContent={line}
                   edgeOfFile={i <= 2 || i >= segment.lines.length - 3}
                   path={comparisonData?.hashedPath}
+                  hitCount={segment?.lines?.[i]?.coverageInfo?.hitCount}
                   {...props}
                   {...segment.lines[i]}
                 />

@@ -40,8 +40,10 @@ const mockImpactedFile = {
             baseCoverage: null,
             headCoverage: 'H',
             content: '+export default class Calculator {',
-            hitCount: null,
-            hitUploadIds: null,
+            coverageInfo: {
+              hitCount: null,
+              hitUploadIds: null,
+            },
           },
           {
             baseNumber: null,
@@ -49,8 +51,10 @@ const mockImpactedFile = {
             baseCoverage: null,
             headCoverage: 'H',
             content: '+  private value = 0;',
-            hitCount: 18,
-            hitUploadIds: [0],
+            coverageInfo: {
+              hitCount: 18,
+              hitUploadIds: [0],
+            },
           },
           {
             baseNumber: null,
@@ -58,8 +62,10 @@ const mockImpactedFile = {
             baseCoverage: null,
             headCoverage: 'H',
             content: '+  private calcMode = ""',
-            hitCount: null,
-            hitUploadIds: null,
+            coverageInfo: {
+              hitCount: null,
+              hitUploadIds: null,
+            },
           },
         ],
       },
