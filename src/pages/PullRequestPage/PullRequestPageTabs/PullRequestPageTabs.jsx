@@ -12,6 +12,7 @@ import { useTabsCounts } from './hooks'
 function PullRequestPageTabs() {
   const {
     flagsCount,
+    componentsCount,
     indirectChangesCount,
     directChangedFilesCount,
     commitsCount,
@@ -72,6 +73,15 @@ function PullRequestPageTabs() {
             <>
               Flags
               <sup className="text-xs">{flagsCount}</sup>
+            </>
+          ),
+        },
+        {
+          pageName: 'pullComponents',
+          children: (
+            <>
+              Components
+              <sup className="text-xs">{componentsCount}</sup>
             </>
           ),
         },

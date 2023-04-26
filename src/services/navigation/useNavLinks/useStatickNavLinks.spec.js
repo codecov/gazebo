@@ -36,6 +36,7 @@ describe('useStaticNavLinks', () => {
       ${links.demo}                    | ${`${config.MARKETING_BASE_URL}/demo`}
       ${links.oauthTroubleshoot}       | ${'https://docs.codecov.com/docs/github-oauth-application-authorization#troubleshooting'}
       ${links.flags}                   | ${'https://docs.codecov.com/docs/flags'}
+      ${links.components}              | ${'https://docs.codecov.com/docs/components'}
       ${links.unexpectedChanges}       | ${'https://docs.codecov.com/docs/unexpected-coverage-changes'}
       ${links.userAppManagePage}       | ${'https://github.com/settings/connections/applications/c68c81cbfd179a50784a'}
       ${links.deployingFlagsSupport}   | ${'https://docs.codecov.com/docs/implementing-flags-with-timescaledb'}

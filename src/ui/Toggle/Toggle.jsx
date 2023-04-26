@@ -39,7 +39,7 @@ function Toggle({
       <button
         id={ID}
         className={cs(ToggleClasses.button, {
-          'bg-ds-blue-darker': value,
+          'bg-ds-primary-base': value,
           'bg-ds-gray-quinary': !value && !disabled,
           'bg-ds-gray-quaternary': disabled,
           'cursor-not-allowed': disabled,
@@ -59,7 +59,7 @@ function Toggle({
         >
           <div
             className={cs({
-              'text-ds-blue-darker': value,
+              'text-ds-primary-base': value,
               'text-ds-gray-quinary': !value && !disabled,
               'text-ds-gray-quaternary': disabled,
             })}

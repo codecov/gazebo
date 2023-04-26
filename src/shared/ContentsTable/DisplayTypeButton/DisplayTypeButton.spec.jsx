@@ -87,10 +87,10 @@ describe('Coverage Tab', () => {
       )
 
       const codeTree = screen.getByText(/Code tree/)
-      expect(codeTree).toHaveClass('bg-ds-blue-darker')
+      expect(codeTree).toHaveClass('bg-ds-primary-base')
 
       const fileList = screen.getByText(/File list/)
-      expect(fileList).not.toHaveClass('bg-ds-blue-darker')
+      expect(fileList).not.toHaveClass('bg-ds-primary-base')
     })
   })
 
@@ -109,9 +109,9 @@ describe('Coverage Tab', () => {
       await user.click(fileList)
 
       const codeTree = screen.getByText(/Code tree/)
-      expect(codeTree).not.toHaveClass('bg-ds-blue-darker')
+      expect(codeTree).not.toHaveClass('bg-ds-primary-base')
 
-      expect(fileList).toHaveClass('bg-ds-blue-darker')
+      expect(fileList).toHaveClass('bg-ds-primary-base')
     })
 
     it('renders length of files if data is not empty', async () => {
@@ -153,8 +153,8 @@ describe('Coverage Tab', () => {
       })
       await user.click(codeTree)
 
-      expect(codeTree).toHaveClass('bg-ds-blue-darker')
-      expect(fileList).not.toHaveClass('bg-ds-blue-darker')
+      expect(codeTree).toHaveClass('bg-ds-primary-base')
+      expect(fileList).not.toHaveClass('bg-ds-primary-base')
     })
   })
 
@@ -173,10 +173,10 @@ describe('Coverage Tab', () => {
       )
 
       const codeTree = screen.getByText(/Code tree/)
-      expect(codeTree).not.toHaveClass('bg-ds-blue-darker')
+      expect(codeTree).not.toHaveClass('bg-ds-primary-base')
 
       const fileList = screen.getByText(/File list/)
-      expect(fileList).toHaveClass('bg-ds-blue-darker')
+      expect(fileList).toHaveClass('bg-ds-primary-base')
     })
   })
 })

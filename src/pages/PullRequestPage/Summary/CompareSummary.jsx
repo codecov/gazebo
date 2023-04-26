@@ -1,3 +1,7 @@
+import PropTypes from 'prop-types'
+import { useParams } from 'react-router-dom'
+
+import { getProviderCommitURL } from 'shared/utils'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Summary from 'ui/Summary'
@@ -46,7 +50,148 @@ function totalsCards({
   ]
 }
 
-function compareCards({ head, base, hasDifferentNumberOfHeadAndBaseReports }) {
+function CardWithDifferentNumberOfUploads({
+  head,
+  base,
+  headCommit,
+  baseCommit,
+  behindBy,
+  behindByCommit,
+  defaultBranch,
+}) {
+  const { owner, repo, provider } = useParams()
+  return (
+    <div className="flex flex-col gap-1">
+      <p className="text-sm text-ds-gray-octonary">
+        Coverage data is based on{' '}
+        <span className="font-medium uppercase">head</span>{' '}
+        <A to={{ pageName: 'commit', options: { commit: headCommit } }}>
+          {headCommit?.slice(0, 7)}
+          <span>({head?.uploads?.totalCount} uploads)</span>
+        </A>{' '}
+        compared to <span className="font-medium uppercase">base</span>{' '}
+        <A to={{ pageName: 'commit', options: { commit: baseCommit } }}>
+          {baseCommit?.slice(0, 7)}
+          <span>({base?.uploads?.totalCount} uploads)</span>
+        </A>{' '}
+      </p>
+      <div className="flex gap-1 text-sm">
+        <div className="text-warning-500">
+          <Icon name="exclamation-triangle" size="sm" variant="outline" />
+        </div>
+        <p className="text-xs">
+          Commits have different number of coverage report uploads{' '}
+          <A
+            variant="semibold"
+            hook="learn-more"
+            href={
+              'https://docs.codecov.com/docs/unexpected-coverage-changes#mismatching-base-and-head-commit-upload-counts'
+            }
+            isExternal
+          >
+            learn more
+          </A>{' '}
+        </p>
+      </div>
+      {behindBy && behindByCommit && (
+        <p className="text-xs text-ds-gray-quinary">
+          BASE commit is <span>{behindBy}</span> commits behind HEAD on{' '}
+          <span>{defaultBranch}</span>{' '}
+          <A
+            variant="code"
+            href={getProviderCommitURL({
+              provider,
+              owner,
+              repo,
+              commit: behindByCommit,
+            })}
+            hook="provider commit url"
+            isExternal={true}
+          >
+            {behindByCommit?.slice(0, 7)}
+          </A>
+        </p>
+      )}
+    </div>
+  )
+}
+
+CardWithDifferentNumberOfUploads.propTypes = {
+  head: PropTypes.shape({
+    uploads: PropTypes.shape({
+      totalCount: PropTypes.number,
+    }),
+  }),
+  base: PropTypes.shape({
+    uploads: PropTypes.shape({
+      totalCount: PropTypes.number,
+    }),
+  }),
+  headCommit: PropTypes.string,
+  baseCommit: PropTypes.string,
+  behindBy: PropTypes.number,
+  behindByCommit: PropTypes.string,
+  defaultBranch: PropTypes.string,
+}
+
+function CardWithSameNumberOfUploads({
+  headCommit,
+  baseCommit,
+  behindBy,
+  behindByCommit,
+  defaultBranch,
+}) {
+  const { owner, repo, provider } = useParams()
+  return (
+    <p className="text-sm text-ds-gray-octonary">
+      Coverage data is based on{' '}
+      <span className="font-medium uppercase">head</span>{' '}
+      <A to={{ pageName: 'commit', options: { commit: headCommit } }}>
+        {headCommit?.slice(0, 7)}
+      </A>{' '}
+      compared to <span className="font-medium uppercase">base</span>{' '}
+      <A to={{ pageName: 'commit', options: { commit: baseCommit } }}>
+        {baseCommit?.slice(0, 7)}
+      </A>{' '}
+      {behindBy && behindByCommit && (
+        <p className="text-xs text-ds-gray-quinary">
+          BASE commit is <span>{behindBy}</span> commits behind HEAD on{' '}
+          <span>{defaultBranch}</span>{' '}
+          <A
+            variant="code"
+            href={getProviderCommitURL({
+              provider,
+              owner,
+              repo,
+              commit: behindByCommit,
+            })}
+            hook="provider commit url"
+            isExternal={true}
+          >
+            {behindByCommit?.slice(0, 7)}
+          </A>
+        </p>
+      )}
+    </p>
+  )
+}
+
+CardWithSameNumberOfUploads.propTypes = {
+  headCommit: PropTypes.string,
+  baseCommit: PropTypes.string,
+  behindBy: PropTypes.number,
+  behindByCommit: PropTypes.string,
+  defaultBranch: PropTypes.string,
+}
+
+function compareCards({
+  head,
+  base,
+  hasDifferentNumberOfHeadAndBaseReports,
+  behindBy,
+  behindByCommit,
+  defaultBranch,
+}) {
   const headCommit = head?.commitid
   const baseCommit = base?.commitid
   return [
@@ -57,60 +202,23 @@ function compareCards({ head, base, hasDifferentNumberOfHeadAndBaseReports }) {
         headCommit && baseCommit ? (
           <>
             {hasDifferentNumberOfHeadAndBaseReports ? (
-              <>
-                <p className="text-sm text-ds-gray-octonary">
-                  Coverage data based on{' '}
-                  <span className="font-medium uppercase">head</span>{' '}
-                  <A
-                    to={{ pageName: 'commit', options: { commit: headCommit } }}
-                  >
-                    {headCommit?.slice(0, 7)}
-                    <span>({head?.uploads?.totalCount} uploads)</span>
-                  </A>{' '}
-                  compared to{' '}
-                  <span className="font-medium uppercase">base</span>{' '}
-                  <A
-                    to={{ pageName: 'commit', options: { commit: baseCommit } }}
-                  >
-                    {baseCommit?.slice(0, 7)}
-                    <span>({base?.uploads?.totalCount} uploads)</span>
-                  </A>{' '}
-                </p>
-                <div className="flex gap-1 text-sm">
-                  <div className="text-warning-500">
-                    <Icon
-                      name="exclamation-circle"
-                      size="sm"
-                      variant="outline"
-                    />
-                  </div>
-                  <p className="text-xs">
-                    Commits have different number of coverage report uploads{' '}
-                    <A
-                      variant="semibold"
-                      hook="learn-more"
-                      href={
-                        'https://docs.codecov.com/docs/unexpected-coverage-changes#mismatching-base-and-head-commit-upload-counts'
-                      }
-                      isExternal
-                    >
-                      learn more
-                    </A>{' '}
-                  </p>
-                </div>
-              </>
+              <CardWithDifferentNumberOfUploads
+                head={head}
+                base={base}
+                headCommit={headCommit}
+                baseCommit={baseCommit}
+                behindBy={behindBy}
+                behindByCommit={behindByCommit}
+                defaultBranch={defaultBranch}
+              />
             ) : (
-              <p className="text-sm text-ds-gray-octonary">
-                Coverage data based on{' '}
-                <span className="font-medium uppercase">head</span>{' '}
-                <A to={{ pageName: 'commit', options: { commit: headCommit } }}>
-                  {headCommit?.slice(0, 7)}
-                </A>{' '}
-                compared to <span className="font-medium uppercase">base</span>{' '}
-                <A to={{ pageName: 'commit', options: { commit: baseCommit } }}>
-                  {baseCommit?.slice(0, 7)}
-                </A>{' '}
-              </p>
+              <CardWithSameNumberOfUploads
+                headCommit={headCommit}
+                baseCommit={baseCommit}
+                behindBy={behindBy}
+                behindByCommit={behindByCommit}
+                defaultBranch={defaultBranch}
+              />
             )}
           </>
         ) : (
@@ -176,6 +284,9 @@ function CompareSummary() {
     head,
     base,
     hasDifferentNumberOfHeadAndBaseReports,
+    behindBy,
+    behindByCommit,
+    defaultBranch,
   } = usePullForCompareSummary()
 
   const fields = [
@@ -185,7 +296,14 @@ function CompareSummary() {
       patchCoverage,
       changeCoverage,
     }),
-    ...compareCards({ head, base, hasDifferentNumberOfHeadAndBaseReports }),
+    ...compareCards({
+      head,
+      base,
+      hasDifferentNumberOfHeadAndBaseReports,
+      behindBy,
+      behindByCommit,
+      defaultBranch,
+    }),
     ...pendingCard({ patchCoverage, headCoverage, changeCoverage }),
     ...lastCommitErrorCard({ recentCommit }),
   ]

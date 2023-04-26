@@ -61,7 +61,7 @@ describe('GithubIntegrationCard', () => {
     it('renders the copy to explain the integration', () => {
       expect(
         screen.getByText(
-          /integrate with codecov through the github app to strengthen codecov’s integration with your team\.this will replace the team bot account and post pull request comments on behalf of codecov\./i
+          /integrate with codecov through the github app to strengthen codecov's integration with your team\.this will replace the team bot account and post pull request comments on behalf of codecov\./i
         )
       ).toBeInTheDocument()
     })

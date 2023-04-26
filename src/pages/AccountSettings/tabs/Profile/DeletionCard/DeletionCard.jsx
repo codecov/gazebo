@@ -11,7 +11,7 @@ function DeletionCard({ provider, owner }) {
         Delete account
       </h2>
       <>
-        <p className="mt-4 mb-6">
+        <p className="mb-6 mt-4">
           Erase all my personal content and personal projects.
         </p>
         <ErasePersonalAccountButton provider={provider} owner={owner} />

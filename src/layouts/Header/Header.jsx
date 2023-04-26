@@ -10,11 +10,11 @@ function Header() {
   return (
     <header
       className={cs('text-white', {
-        'bg-ds-gray-octonary': !isImpersonating,
+        'bg-ds-primary-base': !isImpersonating,
         'bg-ds-pink-tertiary': isImpersonating,
       })}
     >
-      <nav className="container mx-auto flex flex-wrap items-center justify-between gap-2 py-4 px-3 sm:px-0">
+      <nav className="container mx-auto flex flex-wrap items-center justify-between gap-2 px-3 py-4 sm:px-0">
         <DesktopMenu />
       </nav>
     </header>

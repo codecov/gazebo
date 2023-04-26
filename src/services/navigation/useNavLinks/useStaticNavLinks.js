@@ -156,6 +156,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    components: {
+      text: 'Components',
+      path: () => 'https://docs.codecov.com/docs/components',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     runtimeInsights: {
       text: 'Runtime Insights',
       path: () => 'https://docs.codecov.com/docs/runtime-insights',
