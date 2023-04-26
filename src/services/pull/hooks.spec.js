@@ -152,8 +152,10 @@ const mockSingularImpactedFilesData = {
             baseCoverage: null,
             headCoverage: 'H',
             content: '+export default class Calculator {',
-            hitCount: null,
-            hitUploadIds: null,
+            coverageInfo: {
+              hitCount: null,
+              hitUploadIds: null,
+            },
           },
           {
             baseNumber: null,
@@ -161,8 +163,10 @@ const mockSingularImpactedFilesData = {
             baseCoverage: null,
             headCoverage: 'H',
             content: '+  private value = 0;',
-            hitCount: 18,
-            hitUploadIds: [0],
+            coverageInfo: {
+              hitCount: 18,
+              hitUploadIds: [0],
+            },
           },
           {
             baseNumber: null,
@@ -170,8 +174,10 @@ const mockSingularImpactedFilesData = {
             baseCoverage: null,
             headCoverage: 'H',
             content: '+  private calcMode = ""',
-            hitCount: null,
-            hitUploadIds: null,
+            coverageInfo: {
+              hitCount: null,
+              hitUploadIds: null,
+            },
           },
         ],
       },
@@ -240,8 +246,10 @@ describe('useSingularImpactedFileComparison', () => {
                   content: '+export default class Calculator {',
                   headCoverage: 'H',
                   headNumber: '1',
-                  hitCount: null,
-                  hitUploadIds: null,
+                  coverageInfo: {
+                    hitCount: null,
+                    hitUploadIds: null,
+                  },
                 },
                 {
                   baseCoverage: null,
@@ -249,8 +257,10 @@ describe('useSingularImpactedFileComparison', () => {
                   content: '+  private value = 0;',
                   headCoverage: 'H',
                   headNumber: '2',
-                  hitCount: 18,
-                  hitUploadIds: [0],
+                  coverageInfo: {
+                    hitCount: 18,
+                    hitUploadIds: [0],
+                  },
                 },
                 {
                   baseCoverage: null,
@@ -258,8 +268,10 @@ describe('useSingularImpactedFileComparison', () => {
                   content: '+  private calcMode = ""',
                   headCoverage: 'H',
                   headNumber: '3',
-                  hitCount: null,
-                  hitUploadIds: null,
+                  coverageInfo: {
+                    hitCount: null,
+                    hitUploadIds: null,
+                  },
                 },
               ],
             },
