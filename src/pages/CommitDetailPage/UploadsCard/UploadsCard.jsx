@@ -46,6 +46,7 @@ function UploadsCard() {
                     uploadType,
                     state,
                     name,
+                    id,
                   },
                   i
                 ) => (
@@ -60,6 +61,7 @@ function UploadsCard() {
                     uploadType={uploadType}
                     state={state}
                     name={name}
+                    id={id}
                   />
                 )
               )}
