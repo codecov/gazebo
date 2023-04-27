@@ -31,7 +31,7 @@ fragment ComparisonFragment on Comparison {
               baseCoverage
               headCoverage
               content
-              coverageInfo {
+              coverageInfo (ignoredUploadIds: $ignoredUploadIds) {
                 hitCount
                 hitUploadIds
               }
