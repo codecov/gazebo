@@ -14,8 +14,17 @@ afterEach(() => {
 })
 
 describe('useIgnoredIds', () => {
-  it('returns an empty array when called', async () => {
+  it('sets the initial data to an empty array', async () => {
     const { result, waitFor } = renderHook(() => useIgnoredIds(), { wrapper })
+
+    await waitFor(() => expect(result.current.data).toStrictEqual([]))
+  })
+  it('returns an empty array when called a second time', async () => {
+    const { result, waitFor } = renderHook(() => useIgnoredIds(), { wrapper })
+
+    await waitFor(() => expect(result.current.data).toStrictEqual([]))
+
+    result.current.refetch()
 
     await waitFor(() => expect(result.current.data).toStrictEqual([]))
   })

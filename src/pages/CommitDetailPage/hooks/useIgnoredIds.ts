@@ -6,5 +6,5 @@ export const useIgnoredIds = () =>
     queryFn: () => Promise.resolve([]),
     suspense: false,
     staleTime: Infinity,
-    placeholderData: [],
+    initialData: [],
   })
