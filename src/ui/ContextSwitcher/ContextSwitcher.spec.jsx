@@ -82,7 +82,7 @@ describe('ContextSwitcher', () => {
         }
       )
 
-      expect(screen.queryByRole('listbox')).toHaveClass('opacity-0')
+      expect(screen.queryByRole('listbox')).toHaveClass('hidden')
     })
   })
 
