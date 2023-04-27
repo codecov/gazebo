@@ -7,7 +7,6 @@ export const query = `
     $commitid: String!
     $path: String!
     $filters: SegmentsFilters
-    $ignoredUploadIds: [Int!]
   ) {
     owner(username: $owner) {
       repository(name: $repo) {

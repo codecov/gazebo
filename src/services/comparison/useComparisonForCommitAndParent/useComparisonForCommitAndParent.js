@@ -12,7 +12,6 @@ export function useComparisonForCommitAndParent({
   commitid,
   path,
   filters = {},
-  ignoredUploadIds = [],
   opts = {},
 }) {
   return useQuery({
@@ -24,7 +23,6 @@ export function useComparisonForCommitAndParent({
       commitid,
       path,
       filters,
-      ignoredUploadIds,
       query,
     ],
     queryFn: ({ signal }) =>
@@ -39,7 +37,6 @@ export function useComparisonForCommitAndParent({
           commitid,
           path,
           filters,
-          ignoredUploadIds,
         },
       }),
     suspense: false,
