@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
@@ -247,6 +247,24 @@ describe('CommitPage', () => {
 
         const yamlError = await screen.findByText('Commit YAML is invalid')
         expect(yamlError).toBeInTheDocument()
+      })
+    })
+
+    describe('testing setting of query cache', () => {
+      beforeEach(() => {
+        setup({ hasYamlErrors: true })
+      })
+
+      it('sets ignore upload ids to empty array', async () => {
+        render(<CommitPage />, {
+          wrapper: wrapper(),
+        })
+
+        await waitFor(() =>
+          expect(queryClient.getQueryData(['IgnoredUploadIds'])).toStrictEqual(
+            []
+          )
+        )
       })
     })
   })
