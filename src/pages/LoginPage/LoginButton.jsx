@@ -1,55 +1,74 @@
+import cs from 'classnames'
 import PropTypes from 'prop-types'
+import { useRef, useState } from 'react'
+import useClickAway from 'react-use/lib/useClickAway'
 
 import { useNavLinks } from 'services/navigation'
 import { providerImage, providerToName } from 'shared/utils/provider'
 import Icon from 'ui/Icon'
 
-const styles = {
-  box: 'h-14 shadow flex items-center text-left bg-ds-gray-primary border border-ds-gray-quaternary rounded-sm',
-  link: 'h-full grow flex items-center font-semibold hover:bg-ds-gray-secondary',
-  dropdownGithub:
-    'flex justify-center items-center h-full w-12 border-l border-ds-gray-quaternary hover:bg-ds-gray-secondary',
-  logo: 'block mx-4 h-6 w-6',
-  dropdownList:
-    'bg-ds-gray-primary mt-1 border border-ds-gray-quaternary rounded-sm py-2',
-  dropdownLink: 'hover:text-ds-gray-octonary hover:bg-ds-gray-secondary',
+function useCloseOnLooseFocus({ setToggle }) {
+  const ref = useRef(null)
+  useClickAway(ref, () => setToggle((toggle) => (!toggle ? toggle : false)))
+
+  return ref
 }
 
 function LoginButton({ provider }) {
+  const [toggle, setToggle] = useState(false)
   const { signIn } = useNavLinks()
   const to = `${window.location.protocol}//${window.location.host}/${provider}`
 
+  const ref = useCloseOnLooseFocus({ setToggle })
+
   return (
-    <div className={styles.box}>
+    <div
+      ref={ref}
+      className="flex h-14 items-center rounded-sm border border-ds-gray-quaternary bg-ds-gray-primary text-left shadow"
+    >
       <a
-        className={styles.link}
+        className="flex h-full grow items-center font-semibold hover:bg-ds-gray-secondary"
         href={signIn.path({ to, provider, privateScope: true })}
         data-cy={'login-button'}
       >
         <img
           alt={`Logo of ${providerToName(provider)}`}
-          className={styles.logo}
+          className="mx-4 block h-6 w-6"
           src={providerImage(provider)}
         />
         Login with {providerToName(provider)}
       </a>
       {provider === 'gh' && (
-        <div id="scope-dropdown">
-          <button className={styles.dropdownGithub}>
+        <div id="scope-dropdown" className="relative h-full">
+          <button
+            className="flex h-full w-12 items-center justify-center border-l border-ds-gray-quaternary hover:bg-ds-gray-secondary"
+            aria-haspopup="listbox"
+            aria-expanded={toggle}
+            onClick={() => setToggle((toggle) => !toggle)}
+          >
             <Icon name="chevron-down" />
           </button>
-          <ul className={styles.dropdownList}>
-            <li
-              className={styles.dropdownLink}
-              href={signIn.path({ to, provider, privateScope: true })}
-            >
-              All repos
+          <ul
+            className={cs(
+              ' min-w-[10rem] right-0 bg-ds-gray-primary border border-ds-gray-quaternary rounded-sm absolute z-10  shadow-md ring-1 ring-black ring-opacity-5 focus:outline-none',
+              { hidden: !toggle }
+            )}
+          >
+            <li>
+              <a
+                className="block px-4 pb-1 pt-2 hover:bg-ds-gray-secondary hover:text-ds-gray-octonary"
+                href={signIn.path({ to, provider, privateScope: true })}
+              >
+                All repos
+              </a>
             </li>
-            <li
-              className={styles.dropdownLink}
-              href={signIn.path({ to, provider })}
-            >
-              Public repos only
+            <li>
+              <a
+                className="block px-4 pb-2 pt-1 hover:bg-ds-gray-secondary hover:text-ds-gray-octonary"
+                href={signIn.path({ to, provider })}
+              >
+                Public repos only
+              </a>
             </li>
           </ul>
         </div>
