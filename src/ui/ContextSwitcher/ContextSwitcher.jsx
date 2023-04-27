@@ -63,12 +63,11 @@ function ContextItem({ context, currentContext, currentUser }) {
   const isActiveContext = context === currentContext
   return (
     <li
-      className="grid cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900"
+      className="grid cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-ds-gray-secondary"
       id="listbox-option-0"
     >
       <A
         to={{ pageName: pageName, options: { owner: owner?.username } }}
-        key={owner.username}
         variant="black"
       >
         <Avatar user={owner} bordered />
@@ -192,7 +191,7 @@ function ContextSwitcher({
           />
         </li>
         <li
-          className="relative grid cursor-pointer select-none py-3 pl-4 pr-9 text-xs text-gray-900"
+          className="relative grid cursor-pointer select-none py-3 pl-4 pr-9 text-xs text-gray-900  hover:bg-ds-gray-secondary"
           id="listbox-option-0"
         >
           <A to={{ pageName: allOrgsPageName ?? 'provider' }} variant="black">
@@ -202,10 +201,10 @@ function ContextSwitcher({
             </div>
           </A>
         </li>
-        {contexts.map((context, index) => (
+        {contexts.map((context) => (
           <ContextItem
             context={context}
-            key={index}
+            key={context?.owner?.username}
             currentUser={currentUser}
             currentContext={currentContext}
           />
