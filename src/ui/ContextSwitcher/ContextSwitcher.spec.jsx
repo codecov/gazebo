@@ -41,7 +41,7 @@ describe('ContextSwitcher', () => {
     beforeEach(() => setup())
     afterEach(() => jest.restoreAllMocks())
 
-    it('does not render any link', () => {
+    it('does not render the listed items initially', () => {
       render(
         <ContextSwitcher
           activeContext="laudna"
@@ -82,7 +82,7 @@ describe('ContextSwitcher', () => {
         }
       )
 
-      expect(screen.queryAllByRole('link')).toHaveLength(0)
+      expect(screen.queryByRole('listbox')).toHaveClass('opacity-0')
     })
   })
 
@@ -131,10 +131,10 @@ describe('ContextSwitcher', () => {
         }
       )
 
-      const button = await screen.findByRole('button')
+      const button = await screen.findByRole('button', { expanded: false })
       await user.click(button)
 
-      const popover = await screen.findByRole('menu')
+      const popover = await screen.findByRole('listbox')
       expect(popover).toBeVisible()
     })
 
@@ -180,7 +180,10 @@ describe('ContextSwitcher', () => {
         }
       )
 
-      const button = await screen.findByRole('button')
+      const button = await screen.findByRole(
+        'button',
+        ('button', { expanded: false })
+      )
       await user.click(button)
 
       const laudnaUsers = await screen.findAllByText('laudna')
@@ -340,7 +343,7 @@ describe('ContextSwitcher', () => {
           }
         )
 
-        const button = await screen.findByRole('button')
+        const button = await screen.findByRole('button', { expanded: false })
         await user.click(button)
 
         const spinner = await screen.findByTestId('spinner')
@@ -392,7 +395,7 @@ describe('ContextSwitcher', () => {
           }
         )
 
-        const button = await screen.findByRole('button')
+        const button = await screen.findByRole('button', { expanded: false })
         await user.click(button)
 
         const spinner = screen.queryByTestId('spinner')
@@ -451,7 +454,7 @@ describe('ContextSwitcher', () => {
         }
       )
 
-      const button = await screen.findByRole('button')
+      const button = await screen.findByRole('button', { expanded: false })
       await user.click(button)
 
       expect(onLoadMoreFunc).toHaveBeenCalled()

@@ -1,6 +1,4 @@
-import { Menu, MenuButton, MenuLink, MenuList } from '@reach/menu-button'
 import PropTypes from 'prop-types'
-import '@reach/menu-button/styles.css'
 
 import { useNavLinks } from 'services/navigation'
 import { providerImage, providerToName } from 'shared/utils/provider'
@@ -36,25 +34,25 @@ function LoginButton({ provider }) {
         Login with {providerToName(provider)}
       </a>
       {provider === 'gh' && (
-        <Menu id="scope-dropdown">
-          <MenuButton className={styles.dropdownGithub}>
+        <div id="scope-dropdown">
+          <button className={styles.dropdownGithub}>
             <Icon name="chevron-down" />
-          </MenuButton>
-          <MenuList className={styles.dropdownList}>
-            <MenuLink
+          </button>
+          <ul className={styles.dropdownList}>
+            <li
               className={styles.dropdownLink}
               href={signIn.path({ to, provider, privateScope: true })}
             >
               All repos
-            </MenuLink>
-            <MenuLink
+            </li>
+            <li
               className={styles.dropdownLink}
               href={signIn.path({ to, provider })}
             >
               Public repos only
-            </MenuLink>
-          </MenuList>
-        </Menu>
+            </li>
+          </ul>
+        </div>
       )}
     </div>
   )
