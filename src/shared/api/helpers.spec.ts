@@ -32,15 +32,15 @@ describe('getHeaders', () => {
   })
 
   afterEach(() => {
-    Cookie.set('github-token')
-    Cookie.set('gitlab-token')
-    Cookie.set('bitbucket-token')
-    Cookie.set('github_enterprise-token')
-    Cookie.set('gitlab_enterprise-token')
-    Cookie.set('bitbucket_server-token')
+    Cookie.set('github-token', '')
+    Cookie.set('gitlab-token', '')
+    Cookie.set('bitbucket-token', '')
+    Cookie.set('github_enterprise-token', '')
+    Cookie.set('gitlab_enterprise-token', '')
+    Cookie.set('bitbucket_server-token', '')
   })
 
-  test.each([
+  describe.each([
     ['gh', 'github-token'],
     ['gl', 'gitlab-token'],
     ['bb', 'bitbucket-token'],
@@ -53,20 +53,27 @@ describe('getHeaders', () => {
     ['github_enterprise', 'github_enterprise-token'],
     ['gitlab_enterprise', 'gitlab_enterprise-token'],
     ['bitbucket_server', 'bitbucket_server-token'],
-    ['invalid', undefined],
-  ])(
-    'Passing %s as a provider creates the correct auth header',
-    (provider, token) => {
+  ])('Passing %s as a provider', (provider, token) => {
+    it('returns the correct header', () => {
       expect(getHeaders(provider)).toStrictEqual({
         Accept: 'application/json',
+        'Content-Type': 'application/json; charset=utf-8',
         'Token-Type': token,
       })
-    }
-  )
+    })
+  })
+
+  it('returns baseHeader when invalid provider is given', () => {
+    expect(getHeaders('invalid')).toStrictEqual({
+      Accept: 'application/json',
+      'Content-Type': 'application/json; charset=utf-8',
+    })
+  })
 
   it('returns baseHeader when no provider is given', () => {
     expect(getHeaders(undefined)).toStrictEqual({
       Accept: 'application/json',
+      'Content-Type': 'application/json; charset=utf-8',
     })
   })
 })

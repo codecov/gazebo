@@ -66,6 +66,7 @@ describe('CommitDetailPageTabs', () => {
         expect(filesChanged).not.toHaveAttribute('aria-current', 'page')
       })
     })
+
     describe('on a blob route', () => {
       it('highlights files tab', () => {
         render(<CommitDetailPageTabs commitSHA="sha256" />, {
@@ -88,6 +89,47 @@ describe('CommitDetailPageTabs', () => {
         expect(filesChanged).toBeInTheDocument()
         expect(filesChanged).not.toHaveAttribute('aria-current', 'page')
       })
+    })
+  })
+
+  describe('rendering toggle header', () => {
+    it('renders uncovered legend', () => {
+      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+        wrapper: wrapper(),
+      })
+
+      const legend = screen.getByText('uncovered')
+      expect(legend).toBeInTheDocument()
+    })
+
+    it('renders partial legend', () => {
+      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+        wrapper: wrapper(),
+      })
+
+      const legend = screen.getByText('partial')
+      expect(legend).toBeInTheDocument()
+    })
+
+    it('renders covered legend', () => {
+      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+        wrapper: wrapper(),
+      })
+
+      const legend = screen.getByText('covered')
+      expect(legend).toBeInTheDocument()
+    })
+
+    it('renders hit count legend', () => {
+      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+        wrapper: wrapper(),
+      })
+
+      const hitIcon = screen.getByText('n')
+      expect(hitIcon).toBeInTheDocument()
+
+      const legendText = screen.getByText('upload #')
+      expect(legendText).toBeInTheDocument()
     })
   })
 })

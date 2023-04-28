@@ -6,7 +6,9 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useRepoSettings } from './useRepoSettings'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov/gazebo']}>

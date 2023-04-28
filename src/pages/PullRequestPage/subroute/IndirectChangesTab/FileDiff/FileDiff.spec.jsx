@@ -41,6 +41,10 @@ const mockImpactedFile = {
             baseCoverage: null,
             headCoverage: 'H',
             content: '+export default class Calculator {',
+            coverageInfo: {
+              hitCount: null,
+              hitUploadIds: null,
+            },
           },
           {
             baseNumber: null,
@@ -48,6 +52,10 @@ const mockImpactedFile = {
             baseCoverage: null,
             headCoverage: 'H',
             content: '+  private value = 0;',
+            coverageInfo: {
+              hitCount: 18,
+              hitUploadIds: [0],
+            },
           },
           {
             baseNumber: null,
@@ -55,6 +63,10 @@ const mockImpactedFile = {
             baseCoverage: null,
             headCoverage: 'H',
             content: '+  private calcMode = ""',
+            coverageInfo: {
+              hitCount: null,
+              hitUploadIds: null,
+            },
           },
         ],
       },
@@ -62,7 +74,9 @@ const mockImpactedFile = {
   },
 }
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const server = setupServer()
 
 const wrapper = ({ children }) => (
@@ -118,6 +132,13 @@ describe('FileDiff', () => {
 
       const calcMode = await screen.findByText(/calcMode/)
       expect(calcMode).toBeInTheDocument()
+    })
+
+    it('renders hit counter', async () => {
+      render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+
+      const hitCounter = await screen.findByText('18')
+      expect(hitCounter).toBeInTheDocument()
     })
 
     it('renders the commit redirect url', async () => {

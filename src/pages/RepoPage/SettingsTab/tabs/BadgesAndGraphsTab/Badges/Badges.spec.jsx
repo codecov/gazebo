@@ -8,7 +8,9 @@ import Badges from './Badges'
 
 jest.mock('config')
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings/badge']}>

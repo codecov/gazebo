@@ -11,7 +11,9 @@ jest.mock('services/navigation', () => ({
   useLocationParams: jest.fn(),
 }))
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov/test-repo']}>

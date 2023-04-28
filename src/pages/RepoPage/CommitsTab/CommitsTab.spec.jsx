@@ -11,7 +11,9 @@ import { repoPageRender, screen, waitFor } from '../repo-jest-setup'
 
 jest.mock('react-use/lib/useIntersection')
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const server = setupServer()
 
 const Wrapper = ({ children }) => (

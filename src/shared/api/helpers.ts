@@ -5,7 +5,24 @@ import config from 'config'
 
 import { snakeifyKeys } from 'shared/utils/snakeifyKeys'
 
-export const ProviderCookieKeyMapping = Object.freeze({
+const AllProvidersArray = [
+  'gh',
+  'gl',
+  'bb',
+  'ghe',
+  'gle',
+  'bbs',
+  'github',
+  'gitlab',
+  'bitbucket',
+  'github_enterprise',
+  'gitlab_enterprise',
+  'bitbucket_server',
+] as const
+type AllProviders = typeof AllProvidersArray
+type Provider = AllProviders[number]
+
+export const ProviderCookieKeyMapping = {
   gh: 'github-token',
   gl: 'gitlab-token',
   bb: 'bitbucket-token',
@@ -18,9 +35,13 @@ export const ProviderCookieKeyMapping = Object.freeze({
   github_enterprise: 'github_enterprise-token',
   gitlab_enterprise: 'gitlab_enterprise-token',
   bitbucket_server: 'bitbucket_server-token',
-})
+} as const
 
-export function generatePath({ path, query }) {
+interface GeneratePathArgs {
+  path: string
+  query?: Record<string, unknown>
+}
+export function generatePath({ path, query }: GeneratePathArgs) {
   const baseUrl = `${config.API_URL}/internal`
   const queryString = qs.stringify(snakeifyKeys(query), {
     arrayFormat: 'repeat',
@@ -29,15 +50,23 @@ export function generatePath({ path, query }) {
   return `${baseUrl}${path}${queryString && '?' + queryString}`
 }
 
-export function getHeaders(provider) {
+function isProvider(provider: string): provider is Provider {
+  return AllProvidersArray.includes(provider as Provider)
+}
+
+export function getHeaders(provider?: string) {
   const baseHeader = {
     Accept: 'application/json',
+    'Content-Type': 'application/json; charset=utf-8',
   }
 
   if (typeof provider !== 'string') return baseHeader
 
-  const p = provider.toLowerCase()
-  const tokenType = ProviderCookieKeyMapping[p]
+  const formattedProvider = provider.toLowerCase()
+
+  if (!isProvider(formattedProvider)) return baseHeader
+
+  const tokenType = ProviderCookieKeyMapping[formattedProvider]
 
   return {
     ...baseHeader,

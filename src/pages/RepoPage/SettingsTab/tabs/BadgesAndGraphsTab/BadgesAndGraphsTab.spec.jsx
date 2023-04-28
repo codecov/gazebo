@@ -7,7 +7,9 @@ import { useRepoSettings } from 'services/repo'
 import BadgesAndGraphsTab from './BadgesAndGraphsTab'
 
 jest.mock('services/repo')
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
 describe('BadgesAndGraphsTab', () => {
   function setup({ defaultBranch, graphToken }) {

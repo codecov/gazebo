@@ -22,7 +22,7 @@ describe('Toggle', () => {
       )
 
       const button = screen.getByRole('button')
-      expect(button).toHaveClass('bg-ds-blue-darker')
+      expect(button).toHaveClass('bg-ds-primary-base')
     })
 
     it('Slides circle to the left', () => {

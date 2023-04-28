@@ -42,7 +42,9 @@ beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov/gazebo']}>
     <Route path="/:provider/:owner/:repo">

@@ -6,7 +6,9 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useTabsCounts } from './useTabsCounts'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const wrapper =
   (initialEntries = '/bb/critical-role/bells-hells/pull/9') =>

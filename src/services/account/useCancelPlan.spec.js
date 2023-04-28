@@ -8,7 +8,9 @@ import { Plans } from 'shared/utils/billing'
 
 import { useCancelPlan } from './useCancelPlan'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const wrapper =
   (initialEntries = '/gh') =>
   ({ children }) =>

@@ -10,6 +10,9 @@ export function getPullDataForCompareSummary({
   base,
   compareWithBase,
   commits = [],
+  behindBy,
+  behindByCommit,
+  defaultBranch,
 }) {
   let optionalKeys = {}
   if (commits?.length > 0) {
@@ -29,6 +32,9 @@ export function getPullDataForCompareSummary({
       compareWithBase?.hasDifferentNumberOfHeadAndBaseReports,
     head,
     base,
+    behindBy,
+    behindByCommit,
+    defaultBranch,
     ...optionalKeys,
   }
 }
@@ -41,10 +47,29 @@ export function usePullForCompareSummary() {
   const base = data?.pull?.comparedTo
   const compareWithBase = data?.pull?.compareWithBase
   const commits = mapEdges(data?.pull?.commits)
+  const behindBy = data?.pull?.behindBy
+  const behindByCommit = data?.pull?.behindByCommit
+  const defaultBranch = data?.defaultBranch
 
   return useMemo(
     () =>
-      getPullDataForCompareSummary({ head, base, compareWithBase, commits }),
-    [head, base, compareWithBase, commits]
+      getPullDataForCompareSummary({
+        head,
+        base,
+        compareWithBase,
+        commits,
+        behindBy,
+        behindByCommit,
+        defaultBranch,
+      }),
+    [
+      head,
+      base,
+      compareWithBase,
+      commits,
+      behindBy,
+      behindByCommit,
+      defaultBranch,
+    ]
   )
 }

@@ -6,7 +6,9 @@ import CurrentRepoSettings from './CurrentRepoSettings'
 
 jest.mock('services/repo')
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
 describe('CurrentRepoSettings', () => {
   function setup(botUsername) {

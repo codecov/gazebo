@@ -34,7 +34,9 @@ const mockPullData = {
   },
 }
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const server = setupServer()
 
 const wrapper =
@@ -240,6 +242,41 @@ describe('PullRequestPageTabs', () => {
         expect(commits).toBeInTheDocument()
         expect(commits).not.toHaveAttribute('aria-current', 'page')
       })
+    })
+  })
+
+  describe('rendering toggle header legend', () => {
+    beforeEach(() => setup())
+
+    it('renders uncovered legend', async () => {
+      render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+      const legend = await screen.findByText('uncovered')
+      expect(legend).toBeInTheDocument()
+    })
+
+    it('renders partial legend', async () => {
+      render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+      const legend = await screen.findByText('partial')
+      expect(legend).toBeInTheDocument()
+    })
+
+    it('renders covered legend', async () => {
+      render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+      const legend = await screen.findByText('covered')
+      expect(legend).toBeInTheDocument()
+    })
+
+    it('renders hit count legend', async () => {
+      render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+      const hitIcon = await screen.findByText('n')
+      expect(hitIcon).toBeInTheDocument()
+
+      const legend = await screen.findByText('upload #')
+      expect(legend).toBeInTheDocument()
     })
   })
 })

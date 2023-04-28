@@ -12,7 +12,9 @@ import NetworkErrorBoundary from './NetworkErrorBoundary'
 jest.spyOn(console, 'error').mockImplementation()
 jest.mock('config')
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
 afterEach(() => {
   queryClient.clear()

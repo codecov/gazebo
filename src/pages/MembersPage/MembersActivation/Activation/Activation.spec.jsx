@@ -10,7 +10,9 @@ import Activation from './Activation'
 jest.mock('config')
 jest.mock('./ChangePlanLink', () => () => 'ChangePlanLink')
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const mockedAccountDetails = {
   plan: {
