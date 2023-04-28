@@ -38,7 +38,7 @@ fragment SummaryOnPullFragment on Pull {
       patchTotals {
         percentCovered
       }
-      changeWithParent
+      changeCoverage
       hasDifferentNumberOfHeadAndBaseReports
     }
   }

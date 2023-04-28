@@ -44,7 +44,7 @@ const pull = {
     patchTotals: {
       coverage: 92.12,
     },
-    changeWithParent: 38.94,
+    changeCoverage: 38.94,
   },
 }
 

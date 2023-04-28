@@ -41,7 +41,7 @@ describe('Pulls Table', () => {
           node: {
             author: { username: 'cool-user', avatarUrl: 'random' },
             compareWithBase: {
-              changeWithParent: 14,
+              changeCoverage: 14,
               patchCoverage: {
                 change: 32,
               },
@@ -176,7 +176,7 @@ describe('Pulls Table', () => {
       setup({
         overrideDetails: {
           compareWithBase: {
-            changeWithParent: null,
+            changeCoverage: null,
           },
           head: {
             totals: {
