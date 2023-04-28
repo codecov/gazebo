@@ -35,6 +35,12 @@ LoadingFileViewerToggleHeader.args = {
   coverageIsLoading: true,
 }
 
+export const SimpleFileViewerToggleHeaderWithHitCount = Template.bind({})
+SimpleFileViewerToggleHeaderWithHitCount.args = {
+  coverageIsLoading: false,
+  showHitCount: true,
+}
+
 export default {
   title: 'Components/ToggleHeader',
   component: ToggleHeader,

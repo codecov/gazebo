@@ -8,7 +8,7 @@ import {
   LINE_TYPE,
   lineStateToLabel,
 } from 'shared/utils/fileviewer'
-import CoverageSelectIcon from 'ui/Icon/CoverageSelectIcon'
+import CoverageLineIndicator from 'ui/CodeRenderer/CoverageLineIndicator'
 
 import { useScrollToLine } from '../hooks'
 
@@ -56,7 +56,7 @@ function SingleLine({
               <span key={key} {...getTokenProps({ token, key })} />
             ))}
           </div>
-          <CoverageSelectIcon coverage={lineState} />
+          <CoverageLineIndicator coverage={lineState} />
         </div>
       </td>
     </tr>

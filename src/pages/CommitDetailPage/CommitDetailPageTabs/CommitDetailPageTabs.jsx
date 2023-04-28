@@ -62,7 +62,7 @@ function CommitDetailPageTabs({
           location: customLocation,
         },
       ]}
-      component={<ToggleHeader coverageIsLoading={false} />}
+      component={<ToggleHeader coverageIsLoading={false} showHitCount={true} />}
     />
   )
 }
