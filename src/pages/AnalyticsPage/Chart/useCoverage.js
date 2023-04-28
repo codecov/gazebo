@@ -58,7 +58,7 @@ export const useCoverage = ({ params, options = {} }) => {
         const coverageAxisLabel = (time) => {
           switch (queryVars?.interval) {
             case TimeseriesInterval.INTERVAL_1_DAY:
-              return format(time, 'MMM d, yyyy')
+              return format(time, 'MMM d yyyy')
             case TimeseriesInterval.INTERVAL_7_DAY:
               return format(time, 'MMM yyyy')
             default:
