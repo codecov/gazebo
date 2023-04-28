@@ -85,8 +85,6 @@ const succesfulExpectedData = {
 }
 
 describe('usePullForCompareSummary', () => {
-  let hookData
-
   function setup() {
     useParams.mockReturnValue({
       owner: 'caleb',
@@ -95,12 +93,13 @@ describe('usePullForCompareSummary', () => {
       pullId: '9',
     })
     usePull.mockReturnValue({ data: { pull } })
-    hookData = renderHook(() => usePullForCompareSummary())
   }
 
   it('returns data accordingly', () => {
     setup()
-    expect(hookData.result.current).toEqual(succesfulExpectedData)
+    const { result } = renderHook(() => usePullForCompareSummary())
+
+    expect(result.current).toEqual(succesfulExpectedData)
   })
 })
 

@@ -5,16 +5,13 @@ import AdminAccess from './AdminAccess'
 jest.mock('./AdminAccessTable', () => () => 'AdminAccessTable')
 
 describe('AdminAccess', () => {
-  function setup() {
-    render(<AdminAccess />)
-  }
-
   describe('displays title', () => {
-    beforeEach(() => {
-      setup()
-    })
+    it('renders title', async () => {
+      render(<AdminAccess />)
 
-    it('renders title', () => {
+      const table = await screen.findByText('AdminAccessTable')
+      expect(table).toBeInTheDocument()
+
       const title = screen.getByText('Administrator Access')
       expect(title).toBeInTheDocument()
     })
@@ -22,22 +19,24 @@ describe('AdminAccess', () => {
 
   describe('displays sub title', () => {
     describe('sub title text', () => {
-      beforeEach(() => {
-        setup()
-      })
+      it('renders sub title text', async () => {
+        render(<AdminAccess />)
 
-      it('renders sub title text', () => {
+        const table = await screen.findByText('AdminAccessTable')
+        expect(table).toBeInTheDocument()
+
         const subTitle = screen.getByText('Admins can be edited in the')
         expect(subTitle).toBeInTheDocument()
       })
     })
 
     describe('install.yml links to docs', () => {
-      beforeEach(() => {
-        setup()
-      })
+      it('providers the correct href', async () => {
+        render(<AdminAccess />)
 
-      it('providers the correct href', () => {
+        const table = await screen.findByText('AdminAccessTable')
+        expect(table).toBeInTheDocument()
+
         const link = screen.getByText('install.yml')
         expect(link).toBeInTheDocument()
         expect(link).toHaveAttribute(
@@ -48,11 +47,12 @@ describe('AdminAccess', () => {
     })
 
     describe('learn more links to docs', () => {
-      beforeEach(() => {
-        setup()
-      })
+      it('providers the correct href', async () => {
+        render(<AdminAccess />)
 
-      it('providers the correct href', () => {
+        const table = await screen.findByText('AdminAccessTable')
+        expect(table).toBeInTheDocument()
+
         const link = screen.getByText('learn more')
         expect(link).toBeInTheDocument()
         expect(link).toHaveAttribute(
@@ -64,12 +64,10 @@ describe('AdminAccess', () => {
   })
 
   describe('displays table', () => {
-    beforeEach(() => {
-      setup()
-    })
+    it('renders component', async () => {
+      render(<AdminAccess />)
 
-    it('renders component', () => {
-      const table = screen.getByText('AdminAccessTable')
+      const table = await screen.findByText('AdminAccessTable')
       expect(table).toBeInTheDocument()
     })
   })

@@ -2,7 +2,7 @@ import { renderHook } from '@testing-library/react-hooks'
 
 import { useRepoBackfilled } from 'services/repo'
 
-import { useRepoBackfillingStatus } from './hooks'
+import { useRepoBackfillingStatus } from './useRepoBackfillingStatus'
 
 jest.mock('services/repo')
 
@@ -12,17 +12,15 @@ const repoBackfillData = {
 }
 
 describe('useRepoBackfillingStatus', () => {
-  let hookData
-
   function setup(data = repoBackfillData) {
     useRepoBackfilled.mockReturnValue({ data })
-    hookData = renderHook(() => useRepoBackfillingStatus())
   }
 
   describe('when backfilling is done', () => {
     it('returns data accordingly', () => {
       setup()
-      expect(hookData.result.current).toEqual({
+      const { result } = renderHook(() => useRepoBackfillingStatus())
+      expect(result.current).toEqual({
         flagsMeasurementsActive: true,
         flagsMeasurementsBackfilled: true,
         isRepoBackfilling: false,
@@ -36,8 +34,9 @@ describe('useRepoBackfillingStatus', () => {
         flagsMeasurementsActive: true,
         flagsMeasurementsBackfilled: false,
       })
+      const { result } = renderHook(() => useRepoBackfillingStatus())
 
-      expect(hookData.result.current).toEqual({
+      expect(result.current).toEqual({
         flagsMeasurementsActive: true,
         flagsMeasurementsBackfilled: false,
         isRepoBackfilling: true,

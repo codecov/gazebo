@@ -31,7 +31,6 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('useTracking', () => {
-  let hookData
   let pendoCopy = window.pendo
   let dataLayerCopy = window.dataLayer
 
@@ -64,8 +63,6 @@ describe('useTracking', () => {
         return res(ctx.status(200), ctx.data({ owner: 'codecov' }))
       })
     )
-
-    hookData = renderHook(() => useTracking(), { wrapper })
   }
 
   describe('when the user is logged-in and has all data', () => {
@@ -97,12 +94,14 @@ describe('useTracking', () => {
       email: 'fake@test.com',
     }
 
-    beforeEach(async () => {
+    beforeEach(() => {
       setup({ me: user })
-      await hookData.waitFor(() => !hookData.result.current.isFetching)
     })
 
-    it('set the user data in the dataLayer', () => {
+    it('set the user data in the dataLayer', async () => {
+      const { result, waitFor } = renderHook(() => useTracking(), { wrapper })
+      await waitFor(() => !result.current.isFetching)
+
       expect(useSegmentPage).toHaveBeenCalled()
       expect(window.dataLayer[0]).toEqual({
         codecov: {
@@ -137,7 +136,10 @@ describe('useTracking', () => {
       })
     })
 
-    it('fires pendo', () => {
+    it('fires pendo', async () => {
+      const { result, waitFor } = renderHook(() => useTracking(), { wrapper })
+      await waitFor(() => !result.current.isFetching)
+
       expect(window.pendo.initialize).toHaveBeenCalledTimes(1)
     })
   })
@@ -173,10 +175,12 @@ describe('useTracking', () => {
 
     beforeEach(async () => {
       setup({ me: user })
-      await hookData.waitFor(() => !hookData.result.current.isFetching)
     })
 
-    it('set the user data in the dataLayer', () => {
+    it('set the user data in the dataLayer', async () => {
+      const { result, waitFor } = renderHook(() => useTracking(), { wrapper })
+      await waitFor(() => !result.current.isFetching)
+
       expect(useSegmentPage).toHaveBeenCalled()
       expect(window.dataLayer[0]).toEqual({
         codecov: {
@@ -218,10 +222,12 @@ describe('useTracking', () => {
       spy.mockImplementation(jest.fn())
 
       setup({ me: null })
-      await hookData.waitFor(() => !hookData.result.current.isFetching)
     })
 
-    it('set the user as guest in the dataLayer', () => {
+    it('set the user as guest in the dataLayer', async () => {
+      const { result, waitFor } = renderHook(() => useTracking(), { wrapper })
+      await waitFor(() => !result.current.isFetching)
+
       expect(useSegmentPage).toHaveBeenCalled()
       expect(window.dataLayer[0]).toEqual({
         codecov: {

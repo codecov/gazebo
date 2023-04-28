@@ -5,34 +5,29 @@ import { Route, Router } from 'react-router-dom'
 import { useLocationParams } from './useLocationParams'
 
 describe('useLocationParams', () => {
-  let hookData
   let testLocation
   let history
 
-  function setup({ options, location } = {}) {
+  const wrapper = ({ children }) => (
+    <Router history={history}>
+      {children}
+      <Route
+        path="*"
+        render={({ location }) => {
+          testLocation = location
+          return null
+        }}
+      />
+    </Router>
+  )
+
+  function setup({ location } = {}) {
     testLocation = location
     history = createMemoryHistory()
-
-    const wrapper = ({ children }) => (
-      <Router history={history}>
-        {children}
-        <Route
-          path="*"
-          render={({ location }) => {
-            testLocation = location
-            return null
-          }}
-        />
-      </Router>
-    )
 
     if (testLocation) {
       history.push(testLocation)
     }
-
-    hookData = renderHook(() => useLocationParams(options), {
-      wrapper,
-    })
   }
 
   describe('setParams', () => {
@@ -42,38 +37,52 @@ describe('useLocationParams', () => {
       })
 
       it('setParams updates the window location', () => {
+        const { result } = renderHook(() => useLocationParams(), {
+          wrapper,
+        })
+
         expect(testLocation.search).toBe('')
-        hookData.result.current.setParams({ fiz: 'baz' })
+        result.current.setParams({ fiz: 'baz' })
         expect(testLocation.search).toBe('?fiz=baz')
       })
 
       it('updated state is received after updating location', () => {
-        expect(hookData.result.current.params).toStrictEqual({})
-        hookData.result.current.setParams({ fiz: 'baz' })
-        expect(hookData.result.current.params).toStrictEqual({ fiz: 'baz' })
+        const { result } = renderHook(() => useLocationParams(), {
+          wrapper,
+        })
+
+        expect(result.current.params).toStrictEqual({})
+        result.current.setParams({ fiz: 'baz' })
+        expect(result.current.params).toStrictEqual({ fiz: 'baz' })
       })
     })
 
     describe('default props', () => {
       beforeEach(() => {
-        setup({ options: { foo: 'bar' } })
+        setup()
       })
 
       it('location is not pushed to url if only default params', () => {
-        hookData.result.current.setParams({ fiz: 'baz' })
+        const { result } = renderHook(() => useLocationParams({ foo: 'bar' }), {
+          wrapper,
+        })
+
+        result.current.setParams({ fiz: 'baz' })
         expect(testLocation.search).toBe('?fiz=baz')
-        hookData.result.current.setParams({ foo: 'bar' })
+        result.current.setParams({ foo: 'bar' })
         expect(testLocation.search).toBe('')
       })
 
       it('overwrites state', () => {
-        hookData.result.current.setParams({ foo: 'baz' })
-        expect(hookData.result.current.params).toStrictEqual({
+        const { result } = renderHook(() => useLocationParams({ foo: 'bar' }), {
+          wrapper,
+        })
+
+        result.current.setParams({ foo: 'baz' })
+        expect(result.current.params).toStrictEqual({
           foo: 'baz',
         })
       })
-
-      // Add aditional param state check
     })
 
     describe('Reading from url location', () => {
@@ -81,15 +90,23 @@ describe('useLocationParams', () => {
         setup({ location: '/?apple=fruit' })
       })
       it('overwrites state', () => {
-        hookData.result.current.setParams({ potato: 'vegetable' })
-        expect(hookData.result.current.params).toStrictEqual({
+        const { result } = renderHook(() => useLocationParams(), {
+          wrapper,
+        })
+
+        result.current.setParams({ potato: 'vegetable' })
+        expect(result.current.params).toStrictEqual({
           potato: 'vegetable',
         })
       })
 
       it('updates the window location', () => {
+        const { result } = renderHook(() => useLocationParams(), {
+          wrapper,
+        })
+
         expect(testLocation.search).toBe('?apple=fruit')
-        hookData.result.current.setParams({ fiz: 'baz' })
+        result.current.setParams({ fiz: 'baz' })
         expect(testLocation.search).toBe('?fiz=baz')
       })
     })
@@ -102,54 +119,77 @@ describe('useLocationParams', () => {
       })
 
       it('updates the window location', () => {
+        const { result } = renderHook(() => useLocationParams(), {
+          wrapper,
+        })
+
         expect(testLocation.search).toBe('')
-        hookData.result.current.updateParams({ fiz: 'baz' })
+        result.current.updateParams({ fiz: 'baz' })
         expect(testLocation.search).toBe('?fiz=baz')
       })
 
       it('updated state is received after updating location', () => {
-        expect(hookData.result.current.params).toStrictEqual({})
-        hookData.result.current.updateParams({ fiz: 'baz' })
-        expect(hookData.result.current.params).toStrictEqual({ fiz: 'baz' })
+        const { result } = renderHook(() => useLocationParams(), {
+          wrapper,
+        })
+
+        expect(result.current.params).toStrictEqual({})
+        result.current.updateParams({ fiz: 'baz' })
+        expect(result.current.params).toStrictEqual({ fiz: 'baz' })
       })
     })
 
     describe('default props', () => {
       beforeEach(() => {
-        setup({ options: { foo: 'bar' } })
+        setup()
       })
       it('location is not pushed to url if only default params', () => {
-        hookData.result.current.updateParams({ fiz: 'baz' })
+        const { result } = renderHook(() => useLocationParams({ foo: 'bar' }), {
+          wrapper,
+        })
+
+        result.current.updateParams({ fiz: 'baz' })
         expect(testLocation.search).toBe('?fiz=baz')
-        hookData.result.current.updateParams({ foo: 'bar' })
+        result.current.updateParams({ foo: 'bar' })
         expect(testLocation.search).toBe('?fiz=baz')
       })
 
       it('overwrites state', () => {
-        hookData.result.current.updateParams({ foo: 'baz' })
-        expect(hookData.result.current.params).toStrictEqual({
+        const { result } = renderHook(() => useLocationParams(), {
+          wrapper,
+        })
+
+        result.current.updateParams({ foo: 'baz' })
+        expect(result.current.params).toStrictEqual({
           foo: 'baz',
         })
       })
-
-      // Add aditional param state check, maintains old
     })
 
     describe('Reading from url location', () => {
       beforeEach(() => {
         setup({ location: '/?apple=fruit' })
       })
+
       it('overwrites state', () => {
-        hookData.result.current.updateParams({ potato: 'vegetable' })
-        expect(hookData.result.current.params).toStrictEqual({
+        const { result } = renderHook(() => useLocationParams(), {
+          wrapper,
+        })
+
+        result.current.updateParams({ potato: 'vegetable' })
+        expect(result.current.params).toStrictEqual({
           potato: 'vegetable',
           apple: 'fruit',
         })
       })
 
       it('updates the window location', () => {
+        const { result } = renderHook(() => useLocationParams(), {
+          wrapper,
+        })
+
         expect(testLocation.search).toBe('?apple=fruit')
-        hookData.result.current.updateParams({ fiz: 'baz' })
+        result.current.updateParams({ fiz: 'baz' })
         expect(testLocation.search).toBe('?apple=fruit&fiz=baz')
       })
     })
@@ -162,16 +202,24 @@ describe('useLocationParams', () => {
       })
 
       it('returns no current params', () => {
-        expect(hookData.result.current.params).toStrictEqual({})
+        const { result } = renderHook(() => useLocationParams(), {
+          wrapper,
+        })
+
+        expect(result.current.params).toStrictEqual({})
       })
     })
 
     describe('default props', () => {
       beforeEach(() => {
-        setup({ options: { foo: 'bar' } })
+        setup()
       })
       it('returns with default params', () => {
-        expect(hookData.result.current.params).toStrictEqual({ foo: 'bar' })
+        const { result } = renderHook(() => useLocationParams({ foo: 'bar' }), {
+          wrapper,
+        })
+
+        expect(result.current.params).toStrictEqual({ foo: 'bar' })
       })
     })
 
@@ -180,7 +228,11 @@ describe('useLocationParams', () => {
         setup({ location: '/?apple=fruit' })
       })
       it('returns with url params', () => {
-        expect(hookData.result.current.params).toStrictEqual({
+        const { result } = renderHook(() => useLocationParams(), {
+          wrapper,
+        })
+
+        expect(result.current.params).toStrictEqual({
           apple: 'fruit',
         })
       })
@@ -194,15 +246,19 @@ describe('useLocationParams', () => {
       })
 
       it('returns state', () => {
+        const { result } = renderHook(() => useLocationParams(), {
+          wrapper,
+        })
+
         history.push('/?next=place')
 
-        expect(hookData.result.current.params).toStrictEqual({
+        expect(result.current.params).toStrictEqual({
           next: 'place',
         })
 
         history.goBack()
 
-        expect(hookData.result.current.params).toStrictEqual({
+        expect(result.current.params).toStrictEqual({
           starting: 'place',
         })
       })
@@ -213,21 +269,25 @@ describe('useLocationParams', () => {
       })
 
       it('returns state', () => {
+        const { result } = renderHook(() => useLocationParams(), {
+          wrapper,
+        })
+
         history.push('/?next=place')
 
-        expect(hookData.result.current.params).toStrictEqual({
+        expect(result.current.params).toStrictEqual({
           next: 'place',
         })
 
         history.goBack()
 
-        expect(hookData.result.current.params).toStrictEqual({
+        expect(result.current.params).toStrictEqual({
           starting: 'place',
         })
 
         history.goForward()
 
-        expect(hookData.result.current.params).toStrictEqual({
+        expect(result.current.params).toStrictEqual({
           next: 'place',
         })
       })
@@ -238,13 +298,17 @@ describe('useLocationParams', () => {
       })
 
       it('returns state', () => {
-        expect(hookData.result.current.params).toStrictEqual({
+        const { result } = renderHook(() => useLocationParams(), {
+          wrapper,
+        })
+
+        expect(result.current.params).toStrictEqual({
           starting: 'place',
         })
 
         history.push('/?next=place')
 
-        expect(hookData.result.current.params).toStrictEqual({ next: 'place' })
+        expect(result.current.params).toStrictEqual({ next: 'place' })
       })
     })
   })

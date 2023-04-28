@@ -5,7 +5,7 @@ import FlagsNotConfigured from 'shared/FlagsNotConfigured'
 
 import blurredTable from './assets/blurredTable.png'
 import BackfillBanners from './BackfillBanners/BackfillBanners'
-import { useRepoBackfillingStatus } from './BackfillBanners/hooks'
+import { useRepoBackfillingStatus } from './BackfillBanners/hooks/useRepoBackfillingStatus'
 import Header from './Header'
 import FlagsTable from './subroute/FlagsTable/FlagsTable'
 import TimescaleDisabled from './TimescaleDisabled'

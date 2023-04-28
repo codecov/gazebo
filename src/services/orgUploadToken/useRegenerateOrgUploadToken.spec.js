@@ -32,17 +32,12 @@ const wrapper = ({ children }) => (
 )
 
 describe('useRegenerateOrgUploadToken', () => {
-  let hookData
-
   function setup() {
     server.use(
       graphql.mutation('regenerateOrgUploadToken', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data({ data }))
       })
     )
-    hookData = renderHook(() => useRegenerateOrgUploadToken(), {
-      wrapper,
-    })
   }
 
   describe('when called', () => {
@@ -51,29 +46,44 @@ describe('useRegenerateOrgUploadToken', () => {
     })
 
     it('returns isLoading false', () => {
-      expect(hookData.result.current.isLoading).toBeFalsy()
+      const { result } = renderHook(() => useRegenerateOrgUploadToken(), {
+        wrapper,
+      })
+      expect(result.current.isLoading).toBeFalsy()
     })
 
     describe('when calling the mutation', () => {
-      beforeEach(() => {
-        hookData.result.current.mutate()
-        return hookData.waitFor(() => hookData.result.current.status !== 'idle')
-      })
+      it('returns isLoading true', async () => {
+        const { result, waitFor } = renderHook(
+          () => useRegenerateOrgUploadToken(),
+          {
+            wrapper,
+          }
+        )
 
-      it('returns isLoading true', () => {
-        expect(hookData.result.current.isLoading).toBeTruthy()
+        result.current.mutate()
+        await waitFor(() => result.current.status !== 'idle')
+
+        expect(result.current.isLoading).toBeTruthy()
       })
     })
 
     describe('When mutation is a success', () => {
-      beforeEach(async () => {
-        hookData.result.current.mutate()
-        await hookData.waitFor(() => hookData.result.current.isLoading)
-        await hookData.waitFor(() => !hookData.result.current.isLoading)
-      })
+      beforeEach(async () => {})
 
-      it('returns isSuccess true', () => {
-        expect(hookData.result.current.isSuccess).toBeTruthy()
+      it('returns isSuccess true', async () => {
+        const { result, waitFor } = renderHook(
+          () => useRegenerateOrgUploadToken(),
+          {
+            wrapper,
+          }
+        )
+
+        result.current.mutate()
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+
+        expect(result.current.isSuccess).toBeTruthy()
       })
     })
   })

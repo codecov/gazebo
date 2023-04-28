@@ -1,12 +1,12 @@
 import { render, screen } from 'custom-testing-library'
 
 import BackfillBanners from './BackfillBanners'
-import { useRepoBackfillingStatus } from './hooks'
+import { useRepoBackfillingStatus } from './hooks/useRepoBackfillingStatus'
 
 jest.mock('./TriggerSyncBanner', () => () => 'TriggerSyncBanner')
 jest.mock('./SyncingBanner', () => () => 'SyncingBanner')
 
-jest.mock('./hooks')
+jest.mock('./hooks/useRepoBackfillingStatus')
 
 describe('BackfillBanner', () => {
   function setup(data) {

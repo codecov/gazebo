@@ -157,6 +157,9 @@ describe('Coverage Tab', () => {
       graphql.query('GetRepoCoverage', (req, res, ctx) =>
         res(ctx.status(200), ctx.data({}))
       ),
+      graphql.query('GetBranchCoverageMeasurements', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({}))
+      ),
       rest.get(
         '/internal/:provider/:owner/:repo/coverage/tree',
         (req, res, ctx) => {

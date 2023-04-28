@@ -1,5 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import {
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
@@ -173,45 +178,45 @@ describe('FileExplorer', () => {
     describe('displaying the table head', () => {
       beforeEach(() => setup())
 
-      it('has a files column', async () => {
+      it('has a files column', () => {
         render(<FileExplorer />, { wrapper: wrapper() })
 
-        const files = await screen.findByText('Files')
+        const files = screen.getByText('Files')
         expect(files).toBeInTheDocument()
       })
 
-      it('has a tracked lines column', async () => {
+      it('has a tracked lines column', () => {
         render(<FileExplorer />, { wrapper: wrapper() })
 
-        const trackedLines = await screen.findByText('Tracked lines')
+        const trackedLines = screen.getByText('Tracked lines')
         expect(trackedLines).toBeInTheDocument()
       })
 
-      it('has a covered column', async () => {
+      it('has a covered column', () => {
         render(<FileExplorer />, { wrapper: wrapper() })
 
-        const covered = await screen.findByText('Covered')
+        const covered = screen.getByText('Covered')
         expect(covered).toBeInTheDocument()
       })
 
-      it('has a partial column', async () => {
+      it('has a partial column', () => {
         render(<FileExplorer />, { wrapper: wrapper() })
 
-        const partial = await screen.findByText('Partial')
+        const partial = screen.getByText('Partial')
         expect(partial).toBeInTheDocument()
       })
 
-      it('has a missed column', async () => {
+      it('has a missed column', () => {
         render(<FileExplorer />, { wrapper: wrapper() })
 
-        const missed = await screen.findByText('Missed')
+        const missed = screen.getByText('Missed')
         expect(missed).toBeInTheDocument()
       })
 
-      it('has a coverage column', async () => {
+      it('has a coverage column', () => {
         render(<FileExplorer />, { wrapper: wrapper() })
 
-        const coverage = await screen.findByText('Coverage %')
+        const coverage = screen.getByText('Coverage %')
         expect(coverage).toBeInTheDocument()
       })
     })
@@ -221,6 +226,8 @@ describe('FileExplorer', () => {
         it('sets default sort to name asc', async () => {
           const { requestFilters } = setup()
           render(<FileExplorer />, { wrapper: wrapper() })
+
+          await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
           await waitFor(() =>
             expect(requestFilters).toBeCalledWith({
@@ -236,13 +243,12 @@ describe('FileExplorer', () => {
         it('has the correct url', async () => {
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          const dir = await screen.findByText('src')
-          expect(dir).toBeInTheDocument()
+          await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-          const links = await within(
-            await screen.findByRole('table')
-          ).findAllByRole('link')
-          expect(links[1]).toHaveAttribute(
+          const link = screen.getByRole('link', {
+            name: 'folder.svg src',
+          })
+          expect(link).toHaveAttribute(
             'href',
             '/gh/codecov/cool-repo/tree/main/a/b/c/src'
           )
@@ -255,13 +261,12 @@ describe('FileExplorer', () => {
         it('has the correct url', async () => {
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          const file = await screen.findByText('file.js')
-          expect(file).toBeInTheDocument()
+          await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-          const links = await within(
-            await screen.findByRole('table')
-          ).findAllByRole('link')
-          expect(links[2]).toHaveAttribute(
+          const link = screen.getByRole('link', {
+            name: 'document.svg file.js',
+          })
+          expect(link).toHaveAttribute(
             'href',
             '/gh/codecov/cool-repo/blob/main/a/b/c/file.js'
           )
@@ -279,12 +284,12 @@ describe('FileExplorer', () => {
             ]),
           })
 
-          await waitFor(() =>
-            expect(requestFilters).toBeCalledWith({
-              displayType: 'LIST',
-              ordering: { direction: 'DESC', parameter: 'MISSES' },
-            })
-          )
+          await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+          expect(requestFilters).toBeCalledWith({
+            displayType: 'LIST',
+            ordering: { direction: 'DESC', parameter: 'MISSES' },
+          })
         })
       })
 
@@ -298,10 +303,12 @@ describe('FileExplorer', () => {
             ]),
           })
 
-          const links = await within(
-            await screen.findByRole('table')
-          ).findAllByRole('link')
-          expect(links[0]).toHaveAttribute(
+          await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+          const link = screen.getByRole('link', {
+            name: /a\/b\/c\/file.js/i,
+          })
+          expect(link).toHaveAttribute(
             'href',
             '/gh/codecov/cool-repo/blob/main/a/b/c/file.js'
           )
@@ -317,7 +324,9 @@ describe('FileExplorer', () => {
       it('displays error fetching data message', async () => {
         render(<FileExplorer />, { wrapper: wrapper() })
 
-        const message = await screen.findByText(
+        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+        const message = screen.getByText(
           'There was a problem getting repo contents from your provider'
         )
         expect(message).toBeInTheDocument()
@@ -332,7 +341,9 @@ describe('FileExplorer', () => {
       it('renders no report uploaded message', async () => {
         render(<FileExplorer />, { wrapper: wrapper() })
 
-        const message = await screen.findByText(
+        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+        const message = screen.getByText(
           'No coverage report uploaded for this branch head commit'
         )
         expect(message).toBeInTheDocument()
@@ -340,186 +351,85 @@ describe('FileExplorer', () => {
     })
   })
 
-  describe('sorting on head columns', () => {
-    describe('sorting on head column', () => {
-      describe('sorting in asc order', () => {
-        it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
+  describe.each([
+    ['Files', 'NAME'], // I don't know why NAME is reversed...
+  ])('sorting on %s column', (column, code) => {
+    describe('desc order', () => {
+      beforeEach(() => jest.clearAllMocks())
+      it('sets the api variables', async () => {
+        const { requestFilters, user } = setup()
+        render(<FileExplorer />, { wrapper: wrapper() })
 
-          render(<FileExplorer />, { wrapper: wrapper() })
+        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-          let files = await screen.findByText('Files')
-          await user.click(files)
-          files = await screen.findByText('Files')
-          await user.click(files)
-          files = await screen.findByText('Files')
-          await user.click(files)
+        let header = screen.getByText(column)
+        await user.click(header)
 
-          expect(requestFilters).toHaveBeenCalledWith({
-            ordering: { direction: 'ASC', parameter: 'NAME' },
-          })
-        })
-      })
-
-      describe('sorting in desc order', () => {
-        it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
-          render(<FileExplorer />, { wrapper: wrapper() })
-
-          let files = await screen.findByText('Files')
-          await user.click(files)
-          files = await screen.findByText('Files')
-          await user.click(files)
-
-          await waitFor(() => {
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'DESC', parameter: 'NAME' },
-            })
-          })
+        expect(requestFilters).toHaveBeenLastCalledWith({
+          ordering: { direction: 'DESC', parameter: code },
         })
       })
     })
 
-    describe('sorting on tracked lines column', () => {
-      describe('sorting in asc order', () => {
-        it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
-          render(<FileExplorer />, { wrapper: wrapper() })
+    describe('asc order', () => {
+      beforeEach(() => jest.clearAllMocks())
+      it('sets the api variables', async () => {
+        const { requestFilters, user } = setup()
+        render(<FileExplorer />, { wrapper: wrapper() })
 
-          const trackedLines = await screen.findByText('Tracked lines')
+        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-          await user.click(trackedLines)
-          await user.click(trackedLines)
+        let header = screen.getByText(column)
+        await user.click(header)
+        header = screen.getByText(column)
+        await user.click(header)
 
-          expect(requestFilters).toHaveBeenCalledWith({
-            ordering: { direction: 'ASC', parameter: 'LINES' },
-          })
+        expect(requestFilters).toHaveBeenLastCalledWith({
+          ordering: { direction: 'ASC', parameter: code },
         })
       })
+    })
+  })
 
-      describe('sorting in desc order', () => {
-        it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
-          render(<FileExplorer />, { wrapper: wrapper() })
+  describe.each([
+    ['Tracked lines', 'LINES'],
+    ['Covered', 'HITS'],
+    ['Partial', 'PARTIALS'],
+    ['Missed', 'MISSES'],
+    ['Coverage %', 'COVERAGE'],
+  ])('sorting on %s column', (column, code) => {
+    describe('desc order', () => {
+      beforeEach(() => jest.clearAllMocks())
+      it('sets the api variables', async () => {
+        const { requestFilters, user } = setup()
+        render(<FileExplorer />, { wrapper: wrapper() })
 
-          let trackedLines = await screen.findByText('Tracked lines')
-          await user.click(trackedLines)
-          trackedLines = await screen.findByText('Tracked lines')
-          await user.click(trackedLines)
+        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-          await waitFor(() => {
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'DESC', parameter: 'LINES' },
-            })
-          })
+        let header = screen.getByText(column)
+        await user.click(header)
+        header = screen.getByText(column)
+        await user.click(header)
+
+        expect(requestFilters).toHaveBeenLastCalledWith({
+          ordering: { direction: 'DESC', parameter: code },
         })
       })
     })
 
-    describe('sorting on the covered column', () => {
-      describe('sorting in asc order', () => {
-        it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
-          render(<FileExplorer />, { wrapper: wrapper() })
+    describe('asc order', () => {
+      beforeEach(() => jest.clearAllMocks())
+      it('sets the api variables', async () => {
+        const { requestFilters, user } = setup()
+        render(<FileExplorer />, { wrapper: wrapper() })
 
-          const covered = await screen.findByText('Covered')
-          await user.click(covered)
+        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-          await waitFor(() =>
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'ASC', parameter: 'HITS' },
-            })
-          )
-        })
-      })
+        let header = screen.getByText(column)
+        await user.click(header)
 
-      describe('sorting in desc order', () => {
-        it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
-          render(<FileExplorer />, { wrapper: wrapper() })
-
-          let covered = await screen.findByText('Covered')
-          await user.click(covered)
-          covered = await screen.findByText('Covered')
-          await user.click(covered)
-
-          await waitFor(() => {
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'DESC', parameter: 'HITS' },
-            })
-          })
-        })
-      })
-    })
-
-    describe('sorting on the partial column', () => {
-      describe('sorting in asc order', () => {
-        it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
-          render(<FileExplorer />, { wrapper: wrapper() })
-
-          const partial = await screen.findByText('Partial')
-
-          await user.click(partial)
-          await user.click(partial)
-
-          expect(requestFilters).toHaveBeenCalledWith({
-            ordering: { direction: 'ASC', parameter: 'PARTIALS' },
-          })
-        })
-      })
-
-      describe('sorting in desc order', () => {
-        it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
-          render(<FileExplorer />, { wrapper: wrapper() })
-
-          let partial = await screen.findByText('Partial')
-          await user.click(partial)
-          partial = await screen.findByText('Partial')
-          await user.click(partial)
-
-          await waitFor(() => {
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'DESC', parameter: 'PARTIALS' },
-            })
-          })
-        })
-      })
-    })
-
-    describe('sorting on the coverage line', () => {
-      describe('sorting in asc order', () => {
-        it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
-          render(<FileExplorer />, { wrapper: wrapper() })
-
-          const missed = await screen.findByText('Missed')
-
-          await user.click(missed)
-          await user.click(missed)
-
-          expect(requestFilters).toHaveBeenCalledWith({
-            ordering: { direction: 'ASC', parameter: 'MISSES' },
-          })
-        })
-      })
-
-      describe('sorting in desc order', () => {
-        it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
-          render(<FileExplorer />, { wrapper: wrapper() })
-
-          let missed = await screen.findByText('Missed')
-          await user.click(missed)
-          missed = await screen.findByText('Missed')
-          await user.click(missed)
-
-          await waitFor(() => {
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'DESC', parameter: 'MISSES' },
-            })
-          })
+        expect(requestFilters).toHaveBeenLastCalledWith({
+          ordering: { direction: 'ASC', parameter: code },
         })
       })
     })
@@ -530,6 +440,8 @@ describe('FileExplorer', () => {
       it('sets the correct api variables', async () => {
         const { requestFilters, user } = setup()
         render(<FileExplorer />, { wrapper: wrapper() })
+
+        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
         const search = await screen.findByRole('textbox', {
           name: 'Search for files',
@@ -549,6 +461,8 @@ describe('FileExplorer', () => {
       it('displays no items found message', async () => {
         const { user } = setup()
         render(<FileExplorer />, { wrapper: wrapper() })
+
+        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
         const dir = await screen.findByText('src')
         expect(dir).toBeInTheDocument()

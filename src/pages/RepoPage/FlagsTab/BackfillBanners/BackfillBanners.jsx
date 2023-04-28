@@ -1,4 +1,4 @@
-import { useRepoBackfillingStatus } from './hooks'
+import { useRepoBackfillingStatus } from './hooks/useRepoBackfillingStatus'
 import SyncingBanner from './SyncingBanner'
 import TriggerSyncBanner from './TriggerSyncBanner'
 

@@ -20,7 +20,8 @@ const createTable = ({ tableData }) =>
     : []
 
 function AdminAccessTable() {
-  const { data, isFetching, hasNextPage, fetchNextPage } = useAdminAccessList()
+  const { data, isFetching, hasNextPage, fetchNextPage, isFetchingNextPage } =
+    useAdminAccessList()
 
   const tableContent = createTable({
     tableData: data,
@@ -33,7 +34,7 @@ function AdminAccessTable() {
         <div className="mt-4 flex w-full justify-center">
           <Button
             hook="load-more"
-            isLoading={isFetching}
+            isLoading={isFetching || isFetchingNextPage}
             onClick={() => fetchNextPage()}
           >
             Load More

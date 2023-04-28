@@ -36,43 +36,39 @@ const mockData = [
 ]
 
 describe('useShouldRenderTabs', () => {
-  let hookData
-  function setup({ data = mockData }) {
-    hookData = renderHook(() => usePaginatedContents({ data }))
-  }
-
-  describe('When renderering less than 25 items', () => {
-    beforeEach(() => {
-      setup({ data: mockData })
-    })
-
+  describe('When rendering less than 25 items', () => {
     it('returns all 25 items', () => {
-      expect(hookData.result.current).toBeTruthy()
-      expect(hookData.result.current.paginatedData).toHaveLength(3)
-      expect(hookData.result.current.paginatedData).toEqual(mockData)
-      expect(hookData.result.current.hasNextPage).toEqual(false)
+      const { result } = renderHook(() =>
+        usePaginatedContents({ data: mockData })
+      )
+
+      expect(result.current).toBeTruthy()
+      expect(result.current.paginatedData).toHaveLength(3)
+      expect(result.current.paginatedData).toEqual(mockData)
+      expect(result.current.hasNextPage).toEqual(false)
     })
   })
 
-  describe('When renderering more than 25 items', () => {
-    const bigArray = new Array(26).fill({
-      name: 'flag2',
-      filepath: 'flag2',
-      percentCovered: 92.78,
-      __typename: 'PathContentFile',
-      hits: 4,
-      misses: 2,
-      lines: 7,
-      partials: 1,
-    })
-    beforeEach(() => {
-      setup({ data: bigArray })
-    })
-
+  describe('When rendering more than 25 items', () => {
     it('returns all 25 items', () => {
-      expect(hookData.result.current).toBeTruthy()
-      expect(hookData.result.current.paginatedData).toHaveLength(25)
-      expect(hookData.result.current.hasNextPage).toEqual(true)
+      const { result } = renderHook(() =>
+        usePaginatedContents({
+          data: new Array(26).fill({
+            name: 'flag2',
+            filepath: 'flag2',
+            percentCovered: 92.78,
+            __typename: 'PathContentFile',
+            hits: 4,
+            misses: 2,
+            lines: 7,
+            partials: 1,
+          }),
+        })
+      )
+
+      expect(result.current).toBeTruthy()
+      expect(result.current.paginatedData).toHaveLength(25)
+      expect(result.current.hasNextPage).toEqual(true)
     })
   })
 })

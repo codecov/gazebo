@@ -35,30 +35,12 @@ const dataReturned = {
   },
 }
 
-const provider = 'gh'
-const owner = 'codecov'
-const repo = 'gazebo'
-
-describe('CompareTotals', () => {
-  let hookData
-
+describe('useCompareTotals', () => {
   function setup() {
     server.use(
       graphql.query('CompareTotals', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(dataReturned))
       })
-    )
-
-    hookData = renderHook(
-      () =>
-        useCompareTotals({
-          provider,
-          owner,
-          repo,
-        }),
-      {
-        wrapper,
-      }
     )
   }
 
@@ -68,16 +50,37 @@ describe('CompareTotals', () => {
     })
 
     it('renders isLoading true', () => {
-      expect(hookData.result.current.isLoading).toBeTruthy()
+      const { result } = renderHook(
+        () =>
+          useCompareTotals({
+            provider: 'gh',
+            owner: 'codecov',
+            repo: 'gazebo',
+          }),
+        {
+          wrapper,
+        }
+      )
+      expect(result.current.isLoading).toBeTruthy()
     })
 
     describe('when data is loaded', () => {
-      beforeEach(() => {
-        return hookData.waitFor(() => hookData.result.current.isSuccess)
-      })
+      it('returns the data', async () => {
+        const { result, waitFor } = renderHook(
+          () =>
+            useCompareTotals({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'gazebo',
+            }),
+          {
+            wrapper,
+          }
+        )
 
-      it('returns the data', () => {
-        expect(hookData.result.current.data).toEqual({ state: 'processed' })
+        await waitFor(() =>
+          expect(result.current.data).toEqual({ state: 'processed' })
+        )
       })
     })
   })

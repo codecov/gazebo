@@ -54,6 +54,7 @@ const wrapper =
         </MemoryRouter>
       </QueryClientProvider>
     )
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -72,7 +73,7 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('AdminAccessTable', () => {
-  function setup({ noData = false }) {
+  function setup({ noData = false } = {}) {
     server.use(
       rest.get('/internal/users', (req, res, ctx) => {
         if (noData) {
@@ -105,7 +106,7 @@ describe('AdminAccessTable', () => {
 
   describe('renders table', () => {
     beforeEach(() => {
-      setup({})
+      setup()
     })
 
     it('displays the table heading', async () => {
@@ -118,7 +119,7 @@ describe('AdminAccessTable', () => {
 
   describe('renders load more button', () => {
     beforeEach(() => {
-      setup({})
+      setup()
     })
 
     it('displays the button', async () => {
@@ -131,7 +132,7 @@ describe('AdminAccessTable', () => {
 
   describe('table displays users', () => {
     beforeEach(() => {
-      setup({})
+      setup()
     })
 
     it('displays an initial user set', async () => {
@@ -151,10 +152,14 @@ describe('AdminAccessTable', () => {
       const button = await screen.findByText('Load More')
       await user.click(button)
 
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
+      // Don't love this but it is flaky without it, client status(og version)/looking for the spinner is not reliable.
+      await waitFor(() =>
+        expect(queryClient.getQueryData(['AdminAccessList']).pages.length).toBe(
+          2
+        )
+      )
 
-      const user2 = await screen.findByText('user2-codecov')
+      const user2 = screen.getByText(/user2-codecov/i)
       expect(user2).toBeInTheDocument()
     })
   })

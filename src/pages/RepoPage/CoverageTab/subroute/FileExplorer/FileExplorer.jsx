@@ -10,19 +10,11 @@ import Table from 'ui/Table'
 
 import { useRepoBranchContentsTable } from './hooks'
 
-const Loader = ({ isLoading }) => {
-  return (
-    isLoading && (
-      <div className="flex flex-1 justify-center">
-        <Spinner size={60} />
-      </div>
-    )
-  )
-}
-
-Loader.propTypes = {
-  isLoading: PropType.bool,
-}
+const Loader = () => (
+  <div className="flex flex-1 justify-center">
+    <Spinner size={60} />
+  </div>
+)
 
 function RepoContentsResult({ isSearching, isMissingHeadReport }) {
   if (isMissingHeadReport) {
@@ -71,7 +63,7 @@ function FileExplorer() {
           setSearchValue={(search) => updateParams({ search })}
         />
       </div>
-      <div className=" grid flex-1 grid-cols-12 gap-8">
+      <div className="grid flex-1 grid-cols-12 gap-8">
         <div className="col-span-12 flex flex-col md:col-span-12">
           <Table
             data={data}
@@ -80,8 +72,8 @@ function FileExplorer() {
             enableHover
           />
           <div className="mt-4">
-            <Loader isLoading={isLoading} />
-            {data?.length === 0 && !isLoading && (
+            {isLoading && <Loader />}
+            {!isLoading && (
               <RepoContentsResult
                 isSearching={isSearching}
                 isMissingHeadReport={isMissingHeadReport}

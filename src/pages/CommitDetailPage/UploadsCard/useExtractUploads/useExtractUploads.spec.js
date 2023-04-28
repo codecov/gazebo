@@ -30,43 +30,48 @@ const circleciObject = {
 const mockUploads = [travisObject, circleciObject]
 
 describe('useExtractUploads', () => {
-  let hookData
-
-  function setup() {
-    hookData = renderHook(() => useExtractUploads({ uploads: mockUploads }))
-  }
-
   describe('uploads', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('returns sortedUploads', () => {
-      expect(hookData.result.current.sortedUploads).toEqual({
+      const { result } = renderHook(() =>
+        useExtractUploads({ uploads: mockUploads })
+      )
+
+      expect(result.current.sortedUploads).toEqual({
         travis: [travisObject],
         circleci: [circleciObject],
       })
     })
 
     it('returns upload providers', () => {
-      expect(hookData.result.current.uploadsProviderList).toEqual([
-        'travis',
-        'circleci',
-      ])
+      const { result } = renderHook(() =>
+        useExtractUploads({ uploads: mockUploads })
+      )
+
+      expect(result.current.uploadsProviderList).toEqual(['travis', 'circleci'])
     })
 
     it('returns overview summary', () => {
-      expect(hookData.result.current.uploadsOverview).toEqual(
-        '1 started, 1 errored'
+      const { result } = renderHook(() =>
+        useExtractUploads({ uploads: mockUploads })
       )
+
+      expect(result.current.uploadsOverview).toEqual('1 started, 1 errored')
     })
 
     it('returns hasNoUploads', () => {
-      expect(hookData.result.current.hasNoUploads).toEqual(false)
+      const { result } = renderHook(() =>
+        useExtractUploads({ uploads: mockUploads })
+      )
+
+      expect(result.current.hasNoUploads).toEqual(false)
     })
 
     it('returns erroredUploads', () => {
-      expect(hookData.result.current.erroredUploads).toEqual({
+      const { result } = renderHook(() =>
+        useExtractUploads({ uploads: mockUploads })
+      )
+
+      expect(result.current.erroredUploads).toEqual({
         circleci: [circleciObject],
       })
     })

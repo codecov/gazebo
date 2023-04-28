@@ -26,15 +26,12 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('useServiceProviders', () => {
-  let hookData
   function setup(data) {
     server.use(
       graphql.query('GetServiceProviders', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(data))
       )
     )
-
-    hookData = renderHook(() => useServiceProviders(), { wrapper })
   }
 
   describe('third party services are configured providers', () => {
@@ -46,9 +43,12 @@ describe('useServiceProviders', () => {
       })
     })
     it('returns data', async () => {
-      await hookData.waitFor(() => hookData.result.current.isSuccess)
+      const { result, waitFor } = renderHook(() => useServiceProviders(), {
+        wrapper,
+      })
+      await waitFor(() => result.current.isSuccess)
 
-      expect(hookData.result.current.data).toStrictEqual({
+      expect(result.current.data).toStrictEqual({
         providerList: ['GITHUB', 'GITLAB', 'BITBUCKET'],
         github: true,
         gitlab: true,
@@ -70,9 +70,12 @@ describe('useServiceProviders', () => {
       })
     })
     it('returns data', async () => {
-      await hookData.waitFor(() => hookData.result.current.isSuccess)
+      const { result, waitFor } = renderHook(() => useServiceProviders(), {
+        wrapper,
+      })
+      await waitFor(() => result.current.isSuccess)
 
-      expect(hookData.result.current.data).toStrictEqual({
+      expect(result.current.data).toStrictEqual({
         providerList: [
           'GITHUB_ENTERPRISE',
           'GITLAB_ENTERPRISE',

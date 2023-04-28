@@ -30,17 +30,12 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('useCoverageWithFlags', () => {
-  let hookData
-
   function setup(dataReturned) {
     server.use(
       graphql.query('CoverageForFileWithFlags', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(dataReturned))
       })
     )
-    hookData = renderHook(() => useCoverageWithFlags({ provider }), {
-      wrapper,
-    })
   }
 
   describe('when called for commit', () => {
@@ -87,11 +82,17 @@ describe('useCoverageWithFlags', () => {
     }
     beforeEach(() => {
       setup(data)
-      return hookData.waitFor(() => hookData.result.current.isSuccess)
     })
 
-    it('returns commit file coverage', () => {
-      expect(hookData.result.current.data).toEqual({
+    it('returns commit file coverage', async () => {
+      const { result, waitFor } = renderHook(
+        () => useCoverageWithFlags({ provider }),
+        {
+          wrapper,
+        }
+      )
+      await waitFor(() => result.current.isSuccess)
+      expect(result.current.data).toEqual({
         ...data.owner.repository.commit.coverageFile,
         totals: 0,
         flagNames: ['a', 'b'],

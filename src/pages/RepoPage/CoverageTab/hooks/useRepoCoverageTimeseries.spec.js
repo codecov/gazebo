@@ -75,7 +75,7 @@ const wrapper =
       </QueryClientProvider>
     )
 
-beforeAll(() => server.listen())
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
@@ -83,15 +83,16 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('useRepoCoverageTimeseries', () => {
-  let config = jest.fn()
+  afterAll(() => jest.restoreAllMocks())
 
   function setup({ noCoverageData = false } = { noCoverageData: false }) {
+    const configMock = jest.fn()
     server.use(
-      graphql.query('GetRepoOverview', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockRepoOverview))
-      ),
+      graphql.query('GetRepoOverview', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoOverview))
+      }),
       graphql.query('GetBranchCoverageMeasurements', (req, res, ctx) => {
-        config(req.variables)
+        configMock(req.variables)
 
         if (noCoverageData) {
           return res(ctx.status(200), ctx.data(mockNullBranchMeasurements))
@@ -100,15 +101,16 @@ describe('useRepoCoverageTimeseries', () => {
         return res(ctx.status(200), ctx.data(mockBranchMeasurements))
       })
     )
+
+    return {
+      config: configMock,
+    }
   }
 
   describe('with a trend in the url', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('called the legacy repo coverage with the correct body', async () => {
-      const { waitFor } = renderHook(
+      const { config } = setup()
+      const { waitFor, result } = renderHook(
         () =>
           useRepoCoverageTimeseries({ branch: { name: 'c3', options: {} } }),
         {
@@ -116,22 +118,18 @@ describe('useRepoCoverageTimeseries', () => {
         }
       )
 
-      await waitFor(() => expect(config).toBeCalled())
-      await waitFor(() =>
-        expect(config).toBeCalledWith(
-          expect.objectContaining({ interval: 'INTERVAL_30_DAY' })
-        )
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
+
+      expect(config).toHaveBeenLastCalledWith(
+        expect.objectContaining({ interval: 'INTERVAL_30_DAY' })
       )
     })
   })
 
   describe('with no trend in the url', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('called the legacy repo coverage with the correct body when no trend is set', async () => {
-      const { waitFor } = renderHook(
+      const { config } = setup()
+      const { result, waitFor } = renderHook(
         () =>
           useRepoCoverageTimeseries({ branch: { name: 'c3', options: {} } }),
         {
@@ -139,23 +137,19 @@ describe('useRepoCoverageTimeseries', () => {
         }
       )
 
-      await waitFor(() => expect(config).toBeCalled())
-      await waitFor(() =>
-        expect(config).toBeCalledWith(
-          expect.objectContaining({
-            interval: 'INTERVAL_7_DAY',
-          })
-        )
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
+
+      expect(config).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          interval: 'INTERVAL_7_DAY',
+        })
       )
     })
   })
 
   describe('Coverage Axis Label', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('returns the right format for 30 days', async () => {
+      const { config } = setup()
       const { result, waitFor } = renderHook(
         () => useRepoCoverageTimeseries({}),
         {
@@ -163,21 +157,18 @@ describe('useRepoCoverageTimeseries', () => {
         }
       )
 
-      await waitFor(() => expect(config).toBeCalled())
-      await waitFor(() =>
-        expect(config).toBeCalledWith(
-          expect.objectContaining({ interval: 'INTERVAL_1_DAY' })
-        )
-      )
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
-      await waitFor(() =>
-        expect(
-          result.current.data.coverageAxisLabel(new Date('June 21, 2020'))
-        ).toEqual('Jun 21')
+      expect(config).toHaveBeenLastCalledWith(
+        expect.objectContaining({ interval: 'INTERVAL_1_DAY' })
       )
+      expect(
+        result.current.data.coverageAxisLabel(new Date('June 21, 2020'))
+      ).toEqual('Jun 21')
     })
 
     it('returns the right format for 6 months', async () => {
+      const { config } = setup()
       const { result, waitFor } = renderHook(
         () => useRepoCoverageTimeseries({}),
         {
@@ -185,21 +176,19 @@ describe('useRepoCoverageTimeseries', () => {
         }
       )
 
-      await waitFor(() => expect(config).toBeCalled())
-      await waitFor(() =>
-        expect(config).toBeCalledWith(
-          expect.objectContaining({ interval: 'INTERVAL_7_DAY' })
-        )
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
+
+      expect(config).toHaveBeenLastCalledWith(
+        expect.objectContaining({ interval: 'INTERVAL_7_DAY' })
       )
 
-      await waitFor(() =>
-        expect(
-          result.current.data.coverageAxisLabel(new Date('June 21, 2020'))
-        ).toEqual('Jun')
-      )
+      expect(
+        result.current.data.coverageAxisLabel(new Date('June 21, 2020'))
+      ).toEqual('Jun')
     })
 
     it('returns the right format for 12 months', async () => {
+      const { config } = setup()
       const { result, waitFor } = renderHook(
         () => useRepoCoverageTimeseries({}),
         {
@@ -207,18 +196,15 @@ describe('useRepoCoverageTimeseries', () => {
         }
       )
 
-      await waitFor(() => expect(config).toBeCalled())
-      await waitFor(() =>
-        expect(config).toBeCalledWith(
-          expect.objectContaining({ interval: 'INTERVAL_30_DAY' })
-        )
+      await waitFor(() => expect(result.current.isSuccess).toBe(true))
+
+      expect(config).toHaveBeenLastCalledWith(
+        expect.objectContaining({ interval: 'INTERVAL_30_DAY' })
       )
 
-      await waitFor(() =>
-        expect(
-          result.current.data.coverageAxisLabel(new Date('June 21, 2020'))
-        ).toEqual('Jun 2020')
-      )
+      expect(
+        result.current.data.coverageAxisLabel(new Date('June 21, 2020'))
+      ).toEqual('Jun 2020')
     })
   })
 
@@ -229,6 +215,7 @@ describe('useRepoCoverageTimeseries', () => {
       })
 
       it('returns the correct change', async () => {
+        setup()
         const { result, waitFor } = renderHook(
           () =>
             useRepoCoverageTimeseries({ branch: { name: 'c3', options: {} } }),
@@ -242,11 +229,8 @@ describe('useRepoCoverageTimeseries', () => {
     })
 
     describe('there is no coverage data', () => {
-      beforeEach(() => {
-        setup({ noCoverageData: true })
-      })
-
       it('returns zero', async () => {
+        setup({ noCoverageData: true })
         const { result, waitFor } = renderHook(
           () =>
             useRepoCoverageTimeseries({ branch: { name: 'c3', options: {} } }),
@@ -255,18 +239,17 @@ describe('useRepoCoverageTimeseries', () => {
           }
         )
 
-        await waitFor(() => expect(result.current.data.coverageChange).toBe(0))
+        await waitFor(() => expect(result.current.isSuccess).toBe(true))
+
+        expect(result.current.data.coverageChange).toBe(0)
       })
     })
   })
 
   describe('select', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('calls select', async () => {
-      let selectMock = jest.fn()
+      setup()
+      const selectMock = jest.fn()
 
       const { waitFor } = renderHook(
         () => useRepoCoverageTimeseries({}, { select: selectMock }),

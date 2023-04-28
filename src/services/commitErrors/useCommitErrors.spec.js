@@ -46,27 +46,25 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('useCommitErrors', () => {
-  let hookData
-
   function setup() {
     server.use(
       graphql.query(`CommitErrors`, (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(dataReturned))
       })
     )
-    hookData = renderHook(() => useCommitErrors(), {
-      wrapper,
-    })
   }
 
   describe('when called and user is authenticated', () => {
     beforeEach(() => {
       setup()
-      return hookData.waitFor(() => hookData.result.current.isSuccess)
     })
 
-    it('returns commit info', () => {
-      expect(hookData.result.current.data).toEqual({
+    it('returns commit info', async () => {
+      const { result, waitFor } = renderHook(() => useCommitErrors(), {
+        wrapper,
+      })
+      await waitFor(() => result.current.isSuccess)
+      expect(result.current.data).toEqual({
         botErrors: [{ errorCode: 'repo_bot_invalid' }],
         yamlErrors: [{ errorCode: 'invalid_yaml' }],
       })

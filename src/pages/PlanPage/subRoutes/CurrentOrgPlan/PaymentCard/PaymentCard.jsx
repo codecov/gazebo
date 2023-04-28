@@ -7,7 +7,7 @@ import Card from 'ui/Card'
 
 import CardInformation from './CardInformation'
 import CreditCardForm from './CreditCardForm'
-import { useEnterpriseCloudPlanSupport } from './hooks'
+import { useEnterpriseCloudPlanSupport } from './hooks/useEnterpriseCloudPlanSupport'
 
 const defaultProPlans = [
   'users-pr-inappm',

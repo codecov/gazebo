@@ -23,8 +23,6 @@ const wrapper = ({ children }) => (
   </MemoryRouter>
 )
 describe('useEncodeString', () => {
-  let hookData
-
   function setup() {
     server.use(
       rest.post(
@@ -34,9 +32,6 @@ describe('useEncodeString', () => {
         }
       )
     )
-    hookData = renderHook(() => useEncodeString(), {
-      wrapper,
-    })
   }
 
   describe('when called', () => {
@@ -45,31 +40,36 @@ describe('useEncodeString', () => {
     })
 
     it('returns isLoading false', () => {
-      expect(hookData.result.current.isLoading).toBeFalsy()
+      const { result } = renderHook(() => useEncodeString(), {
+        wrapper,
+      })
+
+      expect(result.current.isLoading).toBeFalsy()
     })
 
     describe('when calling the mutation', () => {
-      const data = { value: 'dummy' }
-      beforeEach(() => {
-        hookData.result.current.mutate(data)
-        return hookData.waitFor(() => hookData.result.current.status !== 'idle')
-      })
+      it('returns isLoading true', async () => {
+        const data = { value: 'dummy' }
+        const { result, waitFor } = renderHook(() => useEncodeString(), {
+          wrapper,
+        })
 
-      it('returns isLoading true', () => {
-        expect(hookData.result.current.isLoading).toBeTruthy()
+        result.current.mutate(data)
+        await waitFor(() => result.current.status !== 'idle')
+
+        expect(result.current.isLoading).toBeTruthy()
       })
     })
 
     describe('When success', () => {
-      beforeEach(async () => {
+      it('returns isSuccess true', async () => {
         const data = { value: 'dummy' }
-        hookData.result.current.mutate(data)
-        await hookData.waitFor(() => hookData.result.current.isLoading)
-        await hookData.waitFor(() => !hookData.result.current.isLoading)
-      })
+        const { result, waitFor } = renderHook(() => useEncodeString(), {
+          wrapper,
+        })
 
-      it('returns isSuccess true', () => {
-        expect(hookData.result.current.isSuccess).toBeTruthy()
+        result.current.mutate(data)
+        await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
       })
     })
   })

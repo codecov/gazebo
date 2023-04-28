@@ -2,21 +2,15 @@ import { renderHook } from '@testing-library/react-hooks'
 
 import { useFlags } from 'shared/featureFlags'
 
-import { useEnterpriseCloudPlanSupport } from './hooks'
+import { useEnterpriseCloudPlanSupport } from './useEnterpriseCloudPlanSupport'
 
 jest.mock('shared/featureFlags')
 
 describe('useEnterpriseCloudPlanSupport', () => {
-  let hookData
-
   function setup(flagValue) {
-    const defaultPlans = ['users-inappm']
     useFlags.mockReturnValue({
       enterpriseCloudPlanSupport: flagValue,
     })
-    hookData = renderHook(() =>
-      useEnterpriseCloudPlanSupport({ plans: defaultPlans })
-    )
   }
 
   describe('flag is true', () => {
@@ -24,7 +18,10 @@ describe('useEnterpriseCloudPlanSupport', () => {
       setup(true)
     })
     it('adds enterprise plans to list', () => {
-      expect(hookData.result.current).toEqual({
+      const { result } = renderHook(() =>
+        useEnterpriseCloudPlanSupport({ plans: ['users-inappm'] })
+      )
+      expect(result.current).toEqual({
         plans: ['users-inappm', 'users-enterprisem', 'users-enterprisey'],
       })
     })
@@ -35,7 +32,10 @@ describe('useEnterpriseCloudPlanSupport', () => {
       setup(false)
     })
     it('does not modify the list', () => {
-      expect(hookData.result.current).toEqual({ plans: ['users-inappm'] })
+      const { result } = renderHook(() =>
+        useEnterpriseCloudPlanSupport({ plans: ['users-inappm'] })
+      )
+      expect(result.current).toEqual({ plans: ['users-inappm'] })
     })
   })
 })

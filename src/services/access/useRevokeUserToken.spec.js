@@ -28,17 +28,12 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('useRevokeUserToken', () => {
-  let hookData
-
   function setup(dataReturned) {
     server.use(
       rest.post(`/graphql/gh`, (req, res, ctx) => {
         return res(ctx.status(200), ctx.json({ data: dataReturned }))
       })
     )
-    hookData = renderHook(() => useRevokeUserToken({ provider }), {
-      wrapper,
-    })
   }
 
   describe('when called', () => {
@@ -49,21 +44,26 @@ describe('useRevokeUserToken', () => {
     })
 
     it('is not loading yet', () => {
-      expect(hookData.result.current.isLoading).toBeFalsy()
+      const { result } = renderHook(() => useRevokeUserToken({ provider }), {
+        wrapper,
+      })
+      expect(result.current.isLoading).toBeFalsy()
     })
 
     describe('when calling the mutation', () => {
       const data = {
         tokenid: 1,
       }
-      beforeEach(async () => {
-        hookData.result.current.mutate(data)
-        await hookData.waitFor(() => hookData.result.current.isLoading)
-        await hookData.waitFor(() => !hookData.result.current.isLoading)
-      })
 
-      it('returns success', () => {
-        expect(hookData.result.current.isSuccess).toBeTruthy()
+      it('returns success', async () => {
+        const { result, waitFor } = renderHook(
+          () => useRevokeUserToken({ provider }),
+          {
+            wrapper,
+          }
+        )
+        result.current.mutate(data)
+        await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
       })
     })
   })

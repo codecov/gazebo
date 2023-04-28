@@ -96,9 +96,7 @@ const provider = 'gh'
 const owner = 'codecov'
 const repo = 'gazebo'
 
-describe('GetCommits', () => {
-  let hookData
-
+describe('useCommits', () => {
   function setup() {
     server.use(
       graphql.query('GetCommits', (req, res, ctx) => {
@@ -133,10 +131,6 @@ describe('GetCommits', () => {
         return res(ctx.status(200), ctx.data(dataReturned))
       })
     )
-
-    hookData = renderHook(() => useCommits({ provider, owner, repo }), {
-      wrapper,
-    })
   }
 
   describe('when called', () => {
@@ -144,17 +138,28 @@ describe('GetCommits', () => {
       setup()
     })
 
-    it('renders isLoading true', () => {
-      expect(hookData.result.current.isLoading).toBeTruthy()
+    it('renders isLoading true', async () => {
+      const { result } = renderHook(
+        () => useCommits({ provider, owner, repo }),
+        {
+          wrapper,
+        }
+      )
+
+      expect(result.current.isLoading).toBeTruthy()
     })
 
     describe('when data is loaded', () => {
-      beforeEach(() => {
-        return hookData.waitFor(() => hookData.result.current.isSuccess)
-      })
+      it('returns the data', async () => {
+        const { result, waitFor } = renderHook(
+          () => useCommits({ provider, owner, repo }),
+          {
+            wrapper,
+          }
+        )
+        await waitFor(() => result.current.isSuccess)
 
-      it('returns the data', () => {
-        expect(hookData.result.current.data.commits).toEqual([node1, node2])
+        expect(result.current.data.commits).toEqual([node1, node2])
       })
     })
   })
@@ -162,18 +167,20 @@ describe('GetCommits', () => {
   describe('when call next page', () => {
     beforeEach(async () => {
       setup()
-      await hookData.waitFor(() => hookData.result.current.isSuccess)
-      hookData.result.current.fetchNextPage()
-      await hookData.waitFor(() => hookData.result.current.isFetching)
-      await hookData.waitFor(() => !hookData.result.current.isFetching)
     })
 
-    it('returns prev and next page commits of the user', () => {
-      expect(hookData.result.current.data.commits).toEqual([
-        node1,
-        node2,
-        node3,
-      ])
+    it('returns prev and next page commits of the user', async () => {
+      const { result, waitFor } = renderHook(
+        () => useCommits({ provider, owner, repo }),
+        {
+          wrapper,
+        }
+      )
+      result.current.fetchNextPage()
+
+      await waitFor(() => !result.current.isFetching)
+
+      expect(result.current.data.commits).toEqual([node1, node2, node3])
     })
   })
 })
