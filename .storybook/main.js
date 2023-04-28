@@ -16,13 +16,15 @@ module.exports = {
     '@storybook/addon-essentials',
     '@storybook/preset-create-react-app',
   ],
-  // Work around for storybook react-cra dep issues between webpack 4 + 5
-  webpackFinal: async (config) => ({
-    ...config,
-    plugins: [
-      ...config.plugins.filter(
-        (plugin) => plugin.constructor.name !== 'IgnorePlugin'
-      ),
-    ],
-  }),
+  docs: {
+    autodocs: true,
+    theme: {
+      base: 'dark',
+      brandTitle: 'Pavilion Storybook',
+      brandUrl: 'https://app.codecov.io',
+      color: {
+        primary: 'rgb(240, 31, 122)',
+      },
+    },
+  },
 }
