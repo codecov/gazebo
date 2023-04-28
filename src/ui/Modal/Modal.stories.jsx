@@ -19,35 +19,43 @@ const Template = (args) => {
   )
 }
 
-export const SimpleModal = Template.bind({})
+export const SimpleModal = {
+  render: Template,
 
-SimpleModal.args = {
-  title: 'Simple modal',
-  body: 'You can use the body to render any JSX',
+  args: {
+    title: 'Simple modal',
+    body: 'You can use the body to render any JSX',
+  },
 }
 
-export const ModalWithFooter = Template.bind({})
+export const ModalWithFooter = {
+  render: Template,
 
-ModalWithFooter.args = {
-  title: 'Modal with a footer',
-  body: 'The footer will appear under a line, good place for buttons',
-  footer: <Button>Footer here</Button>,
+  args: {
+    title: 'Modal with a footer',
+    body: 'The footer will appear under a line, good place for buttons',
+    footer: <Button>Footer here</Button>,
+  },
 }
 
-export const ModalWithSubtitle = Template.bind({})
+export const ModalWithSubtitle = {
+  render: Template,
 
-ModalWithSubtitle.args = {
-  title: 'Modal with a subtitle',
-  subtitle: 'You can add some extra content under the title with this prop',
-  body: 'And it should render well with a body',
+  args: {
+    title: 'Modal with a subtitle',
+    subtitle: 'You can add some extra content under the title with this prop',
+    body: 'And it should render well with a body',
+  },
 }
 
-export const ModalWithNoCloseButton = Template.bind({})
+export const ModalWithNoCloseButton = {
+  render: Template,
 
-ModalWithNoCloseButton.args = {
-  title: 'Modal with no close button',
-  body: "You pass the prop hasCloseButton={false} so the close button doesn't appear next to the title",
-  hasCloseButton: false,
+  args: {
+    title: 'Modal with no close button',
+    body: "You pass the prop hasCloseButton={false} so the close button doesn't appear next to the title",
+    hasCloseButton: false,
+  },
 }
 
 export const BaseModalOnly = () => (

@@ -7,10 +7,13 @@ const Template = (args) => {
   return <Toggle value={toggle} onClick={() => setToggle(!toggle)} {...args} />
 }
 
-export const NormalToggle = Template.bind({})
-NormalToggle.args = {
-  label: 'sr label',
-  labelClass: '',
+export const NormalToggle = {
+  render: Template,
+
+  args: {
+    label: 'sr label',
+    labelClass: '',
+  },
 }
 
 export const DisabledToggle = Template.bind({ disabled: true })

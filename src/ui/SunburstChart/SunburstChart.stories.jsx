@@ -7,11 +7,14 @@ const Template = (args) => (
   </div>
 )
 
-export const NormalSunburstChart = Template.bind({})
-NormalSunburstChart.args = {
-  data: data,
-  svgFontSize: '16px',
-  svgRenderSize: 964,
+export const NormalSunburstChart = {
+  render: Template,
+
+  args: {
+    data: data,
+    svgFontSize: '16px',
+    svgRenderSize: 964,
+  },
 }
 
 export default {

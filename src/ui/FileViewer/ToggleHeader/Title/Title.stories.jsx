@@ -18,9 +18,12 @@ const Template = (args) => {
   )
 }
 
-export const DefaultTitle = Template.bind({})
-DefaultTitle.args = {
-  title: 'File Viewer',
+export const DefaultTitle = {
+  render: Template,
+
+  args: {
+    title: 'File Viewer',
+  },
 }
 
 export default {

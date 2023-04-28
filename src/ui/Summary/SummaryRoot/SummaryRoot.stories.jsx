@@ -10,8 +10,10 @@ const Template = (args) => (
   </SummaryRoot>
 )
 
-export const DefaultSummaryRoot = Template.bind({})
-DefaultSummaryRoot.args = {}
+export const DefaultSummaryRoot = {
+  render: Template,
+  args: {},
+}
 
 export default {
   title: 'Components/Summary/SummaryRoot',

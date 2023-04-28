@@ -21,14 +21,17 @@ const Template = (args) => (
   </MemoryRouter>
 )
 
-export const SimpleSidemenu = Template.bind({})
-SimpleSidemenu.args = {
-  links: [
-    { pageName: 'accountAdmin', exact: true },
-    { pageName: 'billingAndUsers' },
-    { pageName: 'internalAccessTab' },
-    { pageName: 'yamlTab', children: 'Global Yaml' },
-  ],
+export const SimpleSidemenu = {
+  render: Template,
+
+  args: {
+    links: [
+      { pageName: 'accountAdmin', exact: true },
+      { pageName: 'billingAndUsers' },
+      { pageName: 'internalAccessTab' },
+      { pageName: 'yamlTab', children: 'Global Yaml' },
+    ],
+  },
 }
 
 export default {

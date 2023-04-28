@@ -11,11 +11,14 @@ const Template = (args) => (
   </div>
 )
 
-export const SimpleCopyClipboard = Template.bind({})
-SimpleCopyClipboard.args = {
-  string: 'bells hells',
-  showLabel: true,
-  variant: 'default',
+export const SimpleCopyClipboard = {
+  render: Template,
+
+  args: {
+    string: 'bells hells',
+    showLabel: true,
+    variant: 'default',
+  },
 }
 
 export default {

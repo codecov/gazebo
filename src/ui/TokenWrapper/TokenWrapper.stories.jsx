@@ -1,10 +1,9 @@
 import TokenWrapper from './TokenWrapper'
 
-const Template = (args) => <TokenWrapper {...args} />
-
-export const TokenModel = Template.bind({})
-TokenModel.args = {
-  token: 'randomTokenCopyMe',
+export const TokenModel = {
+  args: {
+    token: 'randomTokenCopyMe',
+  },
 }
 
 export default {

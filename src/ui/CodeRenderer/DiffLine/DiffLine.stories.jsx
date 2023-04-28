@@ -27,24 +27,36 @@ const Template = (args) => {
   )
 }
 
-export const DefaultDiffLine = Template.bind({})
-DefaultDiffLine.args = {
-  coverage: 'H',
+export const DefaultDiffLine = {
+  render: Template,
+
+  args: {
+    coverage: 'H',
+  },
 }
 
-export const CoveredButNotShownDiffLine = Template.bind({})
-CoveredButNotShownDiffLine.args = {
-  coverage: 'H',
+export const CoveredButNotShownDiffLine = {
+  render: Template,
+
+  args: {
+    coverage: 'H',
+  },
 }
 
-export const PartialDiffLine = Template.bind({})
-PartialDiffLine.args = {
-  coverage: 'P',
+export const PartialDiffLine = {
+  render: Template,
+
+  args: {
+    coverage: 'P',
+  },
 }
 
-export const UncoveredDiffLine = Template.bind({})
-UncoveredDiffLine.args = {
-  coverage: 'M',
+export const UncoveredDiffLine = {
+  render: Template,
+
+  args: {
+    coverage: 'M',
+  },
 }
 
 export default {

@@ -2,32 +2,34 @@ import A from './A'
 
 import Icon from '../Icon'
 
-const Template = (args) => <A {...args} />
-
-export const NormalA = Template.bind({})
-NormalA.args = {
-  children: 'Normal A',
+export const NormalA = {
+  args: {
+    children: 'Normal A',
+  },
 }
 
-export const MixedA = Template.bind({})
-MixedA.args = {
-  children: (
-    <>
-      Mixed content <Icon name="search" size="sm" />
-    </>
-  ),
+export const MixedA = {
+  args: {
+    children: (
+      <>
+        Mixed content <Icon name="search" size="sm" />
+      </>
+    ),
+  },
 }
 
-export const LinkA = Template.bind({})
-LinkA.args = {
-  children: 'Link A',
-  variant: 'link',
+export const LinkA = {
+  args: {
+    children: 'Link A',
+    variant: 'link',
+  },
 }
 
-export const SemiboldA = Template.bind({})
-SemiboldA.args = {
-  children: 'Semibold A',
-  variant: 'semibold',
+export const SemiboldA = {
+  args: {
+    children: 'Semibold A',
+    variant: 'semibold',
+  },
 }
 
 export default {

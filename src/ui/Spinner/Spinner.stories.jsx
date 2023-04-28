@@ -1,8 +1,6 @@
 import Spinner from './Spinner'
 
-const Template = (args) => <Spinner {...args} />
-
-export const NormalSpinner = Template.bind({})
+export const NormalSpinner = {}
 
 export default {
   title: 'Components/Spinner',

@@ -8,21 +8,22 @@ const Template = (args) => (
   </div>
 )
 
-export const SimpleList = Template.bind({})
-SimpleList.args = {
-  items: [
-    {
-      name: 'firstItem',
-      value: 'First item',
-    },
-    {
-      name: 'secondItem',
-      value: 'Second item',
-    },
-  ],
-}
+export const SimpleList = {
+  render: Template,
 
-export const ListWithElements = Template.bind({})
+  args: {
+    items: [
+      {
+        name: 'firstItem',
+        value: 'First item',
+      },
+      {
+        name: 'secondItem',
+        value: 'Second item',
+      },
+    ],
+  },
+}
 
 const getListItems = () => {
   const listData = [
@@ -46,8 +47,12 @@ const getListItems = () => {
   }))
 }
 
-ListWithElements.args = {
-  items: getListItems(),
+export const ListWithElements = {
+  render: Template,
+
+  args: {
+    items: getListItems(),
+  },
 }
 
 export default {

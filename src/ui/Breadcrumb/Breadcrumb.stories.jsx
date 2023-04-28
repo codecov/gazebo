@@ -17,13 +17,16 @@ const Template = (args) => {
   )
 }
 
-export const DefaultBreadcrumb = Template.bind({})
-DefaultBreadcrumb.args = {
-  paths: [
-    { pageName: 'repo', text: 'bells hells' },
-    { pageName: 'provider', text: 'laudna' },
-    { pageName: '', readOnly: true, text: 'Pate' },
-  ],
+export const DefaultBreadcrumb = {
+  render: Template,
+
+  args: {
+    paths: [
+      { pageName: 'repo', text: 'bells hells' },
+      { pageName: 'provider', text: 'laudna' },
+      { pageName: '', readOnly: true, text: 'Pate' },
+    ],
+  },
 }
 
 export default {

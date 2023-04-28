@@ -1,13 +1,16 @@
 import LogoSpinner from './LogoSpinner'
 
-const Template = (args) => <LogoSpinner {...args} />
+export const Spinner = {
+  args: {},
+}
 
-export const Spinner = Template.bind({})
-Spinner.args = {}
-export const SmallSpinner = Template.bind({})
-SmallSpinner.args = { ...Spinner.args, size: 20 }
-export const BigSpinner = Template.bind({})
-BigSpinner.args = { ...Spinner.args, size: 200 }
+export const SmallSpinner = {
+  args: { ...Spinner.args, size: 20 },
+}
+
+export const BigSpinner = {
+  args: { ...Spinner.args, size: 200 },
+}
 
 export default {
   title: 'old_ui/Components/LogoSpinner',

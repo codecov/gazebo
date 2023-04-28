@@ -26,24 +26,36 @@ const Template = (args) => {
   )
 }
 
-export const DefaultSingleLine = Template.bind({})
-DefaultSingleLine.args = {
-  coverage: 'H',
+export const DefaultSingleLine = {
+  render: Template,
+
+  args: {
+    coverage: 'H',
+  },
 }
 
-export const CoveredButNotShownSingleLine = Template.bind({})
-CoveredButNotShownSingleLine.args = {
-  coverage: 'H',
+export const CoveredButNotShownSingleLine = {
+  render: Template,
+
+  args: {
+    coverage: 'H',
+  },
 }
 
-export const PartialSingleLine = Template.bind({})
-PartialSingleLine.args = {
-  coverage: 'P',
+export const PartialSingleLine = {
+  render: Template,
+
+  args: {
+    coverage: 'P',
+  },
 }
 
-export const UncoveredSingleLine = Template.bind({})
-UncoveredSingleLine.args = {
-  coverage: 'M',
+export const UncoveredSingleLine = {
+  render: Template,
+
+  args: {
+    coverage: 'M',
+  },
 }
 
 export default {

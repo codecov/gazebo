@@ -34,10 +34,13 @@ const contexts = [
   },
 ]
 
-export const SimpleContextSwitcher = Template.bind({})
-SimpleContextSwitcher.args = {
-  activeContext: 'dorianamouroux',
-  contexts,
+export const SimpleContextSwitcher = {
+  render: Template,
+
+  args: {
+    activeContext: 'dorianamouroux',
+    contexts,
+  },
 }
 
 export default {

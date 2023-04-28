@@ -34,52 +34,67 @@ Template.propTypes = {
   onChange: PropTypes.func,
 }
 
-export const SimpleSelect = Template.bind({})
-SimpleSelect.args = {
-  items: [`Item1`, `Item2`, `Item3`],
+export const SimpleSelect = {
+  render: Template,
+
+  args: {
+    items: [`Item1`, `Item2`, `Item3`],
+  },
 }
 
-export const SimpleSelectWithRenderItem = Template.bind({})
-SimpleSelectWithRenderItem.args = {
-  ...SimpleSelect.args,
-  renderItem: (item) => <span>☂️ {item}</span>,
+export const SimpleSelectWithRenderItem = {
+  render: Template,
+
+  args: {
+    ...SimpleSelect.args,
+    renderItem: (item) => <span>☂️ {item}</span>,
+  },
 }
 
-export const ComplexSelectRenderers = Template.bind({})
-ComplexSelectRenderers.args = {
-  ...SimpleSelect.args,
-  items: [{ name: 'Item1' }, { name: 'Item2' }, { name: 'Item3' }],
-  renderItem: (obj) => <span>🧛{obj.name}</span>,
-  renderSelected: (obj) => <span>{obj.length} items selected</span>,
+export const ComplexSelectRenderers = {
+  render: Template,
+
+  args: {
+    ...SimpleSelect.args,
+    items: [{ name: 'Item1' }, { name: 'Item2' }, { name: 'Item3' }],
+    renderItem: (obj) => <span>🧛{obj.name}</span>,
+    renderSelected: (obj) => <span>{obj.length} items selected</span>,
+  },
 }
 
-export const SelectWithLoadMore = Template.bind({})
-SelectWithLoadMore.args = {
-  ...SimpleSelect.args,
-  items: [
-    `Item1`,
-    `Item2`,
-    `Item3`,
-    `Item4`,
-    `Item5`,
-    `Item6`,
-    `Item7`,
-    `Item8`,
-    `Item9`,
-    `Item10`,
-    `Item11`,
-    `Item12`,
-    `Item13`,
-    `Item14`,
-    `Item15`,
-    `Item16`,
-  ],
+export const SelectWithLoadMore = {
+  render: Template,
+
+  args: {
+    ...SimpleSelect.args,
+    items: [
+      `Item1`,
+      `Item2`,
+      `Item3`,
+      `Item4`,
+      `Item5`,
+      `Item6`,
+      `Item7`,
+      `Item8`,
+      `Item9`,
+      `Item10`,
+      `Item11`,
+      `Item12`,
+      `Item13`,
+      `Item14`,
+      `Item15`,
+      `Item16`,
+    ],
+  },
 }
 
-export const SelectWithLoader = Template.bind({})
-SelectWithLoader.args = {
-  items: [`Item1`, `Item2`, `Item3`],
-  isLoading: true,
+export const SelectWithLoader = {
+  render: Template,
+
+  args: {
+    items: [`Item1`, `Item2`, `Item3`],
+    isLoading: true,
+  },
 }
 
 export default {

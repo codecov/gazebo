@@ -6,7 +6,8 @@
     "plugin:@tanstack/eslint-plugin-query/recommended",
     "plugin:react/recommended",
     "plugin:import/recommended",
-    "prettier"
+    "prettier",
+    "plugin:storybook/recommended"
   ],
   "rules": {
     "react/react-in-jsx-scope": "off",

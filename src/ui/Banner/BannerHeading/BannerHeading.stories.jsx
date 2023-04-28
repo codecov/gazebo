@@ -12,7 +12,9 @@ const Template = () => {
   )
 }
 
-export const DefaultBannerHeading = Template.bind({})
+export const DefaultBannerHeading = {
+  render: Template,
+}
 
 export default {
   title: 'Components/Banner/BannerHeading',

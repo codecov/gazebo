@@ -6,28 +6,40 @@ const Template = (args) => {
   return <TitleCoverage onChange={() => {}} {...args} />
 }
 
-export const DefaultTitle = Template.bind({})
-DefaultTitle.args = {
-  checked: true,
-  coverage: LINE_STATE.COVERED,
+export const DefaultTitle = {
+  render: Template,
+
+  args: {
+    checked: true,
+    coverage: LINE_STATE.COVERED,
+  },
 }
 
-export const UncheckedCoveredTitle = Template.bind({})
-UncheckedCoveredTitle.args = {
-  checked: false,
-  coverage: LINE_STATE.COVERED,
+export const UncheckedCoveredTitle = {
+  render: Template,
+
+  args: {
+    checked: false,
+    coverage: LINE_STATE.COVERED,
+  },
 }
 
-export const PartialTitle = Template.bind({})
-PartialTitle.args = {
-  checked: true,
-  coverage: LINE_STATE.PARTIAL,
+export const PartialTitle = {
+  render: Template,
+
+  args: {
+    checked: true,
+    coverage: LINE_STATE.PARTIAL,
+  },
 }
 
-export const UncoveredTitle = Template.bind({})
-UncoveredTitle.args = {
-  checked: true,
-  coverage: LINE_STATE.UNCOVERED,
+export const UncoveredTitle = {
+  render: Template,
+
+  args: {
+    checked: true,
+    coverage: LINE_STATE.UNCOVERED,
+  },
 }
 
 export default {

@@ -68,16 +68,22 @@ console.log(add())
 const test = 1234;
 `
 
-export const SingleLineCodeRenderer = SingleLineTemplate.bind({})
-SingleLineCodeRenderer.args = {
-  code: code,
-  fileName: 'myFile.js',
+export const SingleLineCodeRenderer = {
+  render: SingleLineTemplate,
+
+  args: {
+    code: code,
+    fileName: 'myFile.js',
+  },
 }
 
-export const DiffCodeRenderer = DiffTemplate.bind({})
-DiffCodeRenderer.args = {
-  code: code,
-  fileName: 'myFile.js',
+export const DiffCodeRenderer = {
+  render: DiffTemplate,
+
+  args: {
+    code: code,
+    fileName: 'myFile.js',
+  },
 }
 
 export default {

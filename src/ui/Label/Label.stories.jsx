@@ -19,19 +19,28 @@ const TemplateInherits = (args) => (
   </div>
 )
 
-export const SimpleLabel = Template.bind({})
-SimpleLabel.args = {
-  variant: 'default',
+export const SimpleLabel = {
+  render: Template,
+
+  args: {
+    variant: 'default',
+  },
 }
 
-export const SublteLabel = Template.bind({})
-SublteLabel.args = {
-  variant: 'subtle',
+export const SublteLabel = {
+  render: Template,
+
+  args: {
+    variant: 'subtle',
+  },
 }
 
-export const LabelInherits = TemplateInherits.bind({})
-LabelInherits.args = {
-  variant: 'default',
+export const LabelInherits = {
+  render: TemplateInherits,
+
+  args: {
+    variant: 'default',
+  },
 }
 
 export default {

@@ -25,14 +25,20 @@ const Template = (args) => {
   )
 }
 
-export const SimpleFileViewerToggleHeader = Template.bind({})
-SimpleFileViewerToggleHeader.args = {
-  coverageIsLoading: false,
+export const SimpleFileViewerToggleHeader = {
+  render: Template,
+
+  args: {
+    coverageIsLoading: false,
+  },
 }
 
-export const LoadingFileViewerToggleHeader = Template.bind({})
-LoadingFileViewerToggleHeader.args = {
-  coverageIsLoading: true,
+export const LoadingFileViewerToggleHeader = {
+  render: Template,
+
+  args: {
+    coverageIsLoading: true,
+  },
 }
 
 export const SimpleFileViewerToggleHeaderWithHitCount = Template.bind({})

@@ -34,89 +34,113 @@ Template.propTypes = {
   onChange: PropTypes.func,
 }
 
-export const SimpleSelect = Template.bind({})
-SimpleSelect.args = {
-  ariaName: 'storybook select',
-  items: [`Don't forget EQ`, `Yeehaw`, `Scarlett Dawn`],
+export const SimpleSelect = {
+  render: Template,
+
+  args: {
+    ariaName: 'storybook select',
+    items: [`Don't forget EQ`, `Yeehaw`, `Scarlett Dawn`],
+  },
 }
 
-export const SimpleSelectWithRenderItem = Template.bind({})
-SimpleSelectWithRenderItem.args = {
-  ...SimpleSelect.args,
-  renderItem: (item, { isSelected, isHover, placeholder }) => (
-    <span>
-      {isSelected || isHover ? '👨🏼‍🎤' : '👩🏼‍🎤'} {item || placeholder}
-    </span>
-  ),
+export const SimpleSelectWithRenderItem = {
+  render: Template,
+
+  args: {
+    ...SimpleSelect.args,
+    renderItem: (item, { isSelected, isHover, placeholder }) => (
+      <span>
+        {isSelected || isHover ? '👨🏼‍🎤' : '👩🏼‍🎤'} {item || placeholder}
+      </span>
+    ),
+  },
 }
 
-export const SimpleSelectWithRenderSelected = Template.bind({})
-SimpleSelectWithRenderSelected.args = {
-  ...SimpleSelect.args,
-  renderSelected: (item, { placeholder }) => (
-    <span>👨🏼‍🎤 {item || placeholder}</span>
-  ),
+export const SimpleSelectWithRenderSelected = {
+  render: Template,
+
+  args: {
+    ...SimpleSelect.args,
+    renderSelected: (item, { placeholder }) => (
+      <span>👨🏼‍🎤 {item || placeholder}</span>
+    ),
+  },
 }
 
-export const complexSelectWithAll = Template.bind({})
-complexSelectWithAll.args = {
-  ...SimpleSelect.args,
-  items: [
-    { foo: 'Hello', bar: '!' },
-    { foo: 'This', bar: 'Is' },
-    { foo: 'An', bar: 'Example' },
-  ],
-  // eslint-disable-next-line react/display-name
-  renderItem: (obj) => <span>Passed: {JSON.stringify(obj)}</span>,
-  // eslint-disable-next-line react/display-name
-  renderSelected: (obj) => <span>‍Passed: {JSON.stringify(obj)}</span>,
+export const ComplexSelectWithAll = {
+  render: Template,
+
+  args: {
+    ...SimpleSelect.args,
+    items: [
+      { foo: 'Hello', bar: '!' },
+      { foo: 'This', bar: 'Is' },
+      { foo: 'An', bar: 'Example' },
+    ],
+    // eslint-disable-next-line react/display-name
+    renderItem: (obj) => <span>Passed: {JSON.stringify(obj)}</span>,
+    // eslint-disable-next-line react/display-name
+    renderSelected: (obj) => <span>‍Passed: {JSON.stringify(obj)}</span>,
+  },
 }
 
-export const complexSelect = Template.bind({})
-complexSelect.args = {
-  ...SimpleSelect.args,
-  items: [
-    { foo: 'Hello', bar: '!' },
-    { foo: 'This', bar: 'Is' },
-    { foo: 'An', bar: 'Example' },
-  ],
-  // eslint-disable-next-line react/display-name
-  renderItem: (obj) => <span>Passed: {JSON.stringify(obj)}</span>,
+export const ComplexSelect = {
+  render: Template,
+
+  args: {
+    ...SimpleSelect.args,
+    items: [
+      { foo: 'Hello', bar: '!' },
+      { foo: 'This', bar: 'Is' },
+      { foo: 'An', bar: 'Example' },
+    ],
+    // eslint-disable-next-line react/display-name
+    renderItem: (obj) => <span>Passed: {JSON.stringify(obj)}</span>,
+  },
 }
 
-export const SelectWithLoadMore = Template.bind({})
-SelectWithLoadMore.args = {
-  ...SimpleSelect.args,
-  items: [
-    `Item1`,
-    `Item2`,
-    `Item3`,
-    `Item4`,
-    `Item5`,
-    `Item6`,
-    `Item7`,
-    `Item8`,
-    `Item9`,
-    `Item10`,
-    `Item11`,
-    `Item12`,
-    `Item13`,
-    `Item14`,
-    `Item15`,
-    `Item16`,
-  ],
+export const SelectWithLoadMore = {
+  render: Template,
+
+  args: {
+    ...SimpleSelect.args,
+    items: [
+      `Item1`,
+      `Item2`,
+      `Item3`,
+      `Item4`,
+      `Item5`,
+      `Item6`,
+      `Item7`,
+      `Item8`,
+      `Item9`,
+      `Item10`,
+      `Item11`,
+      `Item12`,
+      `Item13`,
+      `Item14`,
+      `Item15`,
+      `Item16`,
+    ],
+  },
 }
 
-export const SelectWithLoader = Template.bind({})
-SelectWithLoader.args = {
-  items: [`Item1`, `Item2`, `Item3`],
-  isLoading: true,
+export const SelectWithLoader = {
+  render: Template,
+
+  args: {
+    items: [`Item1`, `Item2`, `Item3`],
+    isLoading: true,
+  },
 }
 
-export const SelectWithNoSearch = Template.bind({})
-SelectWithNoSearch.args = {
-  items: [`Item1`, `Item2`, `Item3`],
-  onSearch: undefined,
+export const SelectWithNoSearch = {
+  render: Template,
+
+  args: {
+    items: [`Item1`, `Item2`, `Item3`],
+    onSearch: undefined,
+  },
 }
 
 export default {

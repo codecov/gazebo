@@ -31,37 +31,44 @@ const Template = (args) => {
   )
 }
 
-export const RadioInputStringLabel = Template.bind({})
+export const RadioInputStringLabel = {
+  render: Template,
 
-RadioInputStringLabel.args = {
-  label: '$10/per user monthly, billed annually',
+  args: {
+    label: '$10/per user monthly, billed annually',
+  },
 }
 
-export const NoLabelRadioInput = Template.bind({})
-
-NoLabelRadioInput.args = {}
-
-export const RadioInputHTMLLabel = Template.bind({})
-
-RadioInputHTMLLabel.args = {
-  label: (
-    <span>
-      <span className="font-bold">$10</span>
-      <span>/per user monthly, billed annually</span>
-    </span>
-  ),
+export const NoLabelRadioInput = {
+  render: Template,
+  args: {},
 }
 
-export const RadioInputDisabled = Template.bind({})
+export const RadioInputHTMLLabel = {
+  render: Template,
 
-RadioInputDisabled.args = {
-  label: (
-    <span>
-      <span className="font-bold">$10</span>
-      <span>/per user monthly, billed annually</span>
-    </span>
-  ),
-  disabled: true,
+  args: {
+    label: (
+      <span>
+        <span className="font-bold">$10</span>
+        <span>/per user monthly, billed annually</span>
+      </span>
+    ),
+  },
+}
+
+export const RadioInputDisabled = {
+  render: Template,
+
+  args: {
+    label: (
+      <span>
+        <span className="font-bold">$10</span>
+        <span>/per user monthly, billed annually</span>
+      </span>
+    ),
+    disabled: true,
+  },
 }
 
 export default {

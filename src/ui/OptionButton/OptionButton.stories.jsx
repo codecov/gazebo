@@ -6,10 +6,13 @@ const Template = (args) => (
   </div>
 )
 
-export const SimpleOptionButton = Template.bind({})
-SimpleOptionButton.args = {
-  active: 'Chetney',
-  options: [{ text: 'Orym' }, { text: 'Chetney' }, { text: 'Imogen' }],
+export const SimpleOptionButton = {
+  render: Template,
+
+  args: {
+    active: 'Chetney',
+    options: [{ text: 'Orym' }, { text: 'Chetney' }, { text: 'Imogen' }],
+  },
 }
 
 export default {

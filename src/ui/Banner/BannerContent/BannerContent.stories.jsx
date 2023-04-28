@@ -11,7 +11,9 @@ const Template = () => {
   )
 }
 
-export const DefaultBannerContent = Template.bind({})
+export const DefaultBannerContent = {
+  render: Template,
+}
 
 export default {
   title: 'Components/Banner/BannerContent',

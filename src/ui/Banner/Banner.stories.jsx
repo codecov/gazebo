@@ -26,22 +26,31 @@ const Template = (args) => {
   )
 }
 
-export const DefaultBanner = Template.bind({})
-DefaultBanner.args = {
-  children: 'Normal button',
-  variant: 'default',
+export const DefaultBanner = {
+  render: Template,
+
+  args: {
+    children: 'Normal button',
+    variant: 'default',
+  },
 }
 
-export const PlainBanner = Template.bind({})
-PlainBanner.args = {
-  children: 'Normal button',
-  variant: 'plain',
+export const PlainBanner = {
+  render: Template,
+
+  args: {
+    children: 'Normal button',
+    variant: 'plain',
+  },
 }
 
-export const WarningBanner = Template.bind({})
-WarningBanner.args = {
-  children: 'Normal button',
-  variant: 'warning',
+export const WarningBanner = {
+  render: Template,
+
+  args: {
+    children: 'Normal button',
+    variant: 'warning',
+  },
 }
 
 export default {

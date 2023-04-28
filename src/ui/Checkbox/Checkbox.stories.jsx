@@ -19,31 +19,38 @@ const Template = (args) => {
   )
 }
 
-export const CheckboxStringLabel = Template.bind({})
+export const CheckboxStringLabel = {
+  render: Template,
 
-CheckboxStringLabel.args = {
-  label: 'Opt-in this great email',
+  args: {
+    label: 'Opt-in this great email',
+  },
 }
 
-export const NoLabelCheckbox = Template.bind({})
-
-NoLabelCheckbox.args = {}
-
-export const CheckboxHTMLLabel = Template.bind({})
-
-CheckboxHTMLLabel.args = {
-  label: (
-    <span>
-      <span className="font-bold">Amazing</span> <span>newsletter</span>
-    </span>
-  ),
+export const NoLabelCheckbox = {
+  render: Template,
+  args: {},
 }
 
-export const CheckboxDisabled = Template.bind({})
+export const CheckboxHTMLLabel = {
+  render: Template,
 
-CheckboxDisabled.args = {
-  label: 'Accept cookies',
-  disabled: true,
+  args: {
+    label: (
+      <span>
+        <span className="font-bold">Amazing</span> <span>newsletter</span>
+      </span>
+    ),
+  },
+}
+
+export const CheckboxDisabled = {
+  render: Template,
+
+  args: {
+    label: 'Accept cookies',
+    disabled: true,
+  },
 }
 
 export default {

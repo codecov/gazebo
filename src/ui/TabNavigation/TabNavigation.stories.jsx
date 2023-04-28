@@ -17,12 +17,15 @@ const Template = (args) => (
   </MemoryRouter>
 )
 
-export const SimpleTabNavigation = Template.bind({})
-SimpleTabNavigation.args = {
-  tabs: [
-    { pageName: 'owner', children: 'Repos' },
-    { pageName: 'accountAdmin', children: 'Settings' },
-  ],
+export const SimpleTabNavigation = {
+  render: Template,
+
+  args: {
+    tabs: [
+      { pageName: 'owner', children: 'Repos' },
+      { pageName: 'accountAdmin', children: 'Settings' },
+    ],
+  },
 }
 
 export default {

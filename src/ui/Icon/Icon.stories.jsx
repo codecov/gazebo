@@ -37,100 +37,112 @@ function Description() {
   )
 }
 
-export const AllOutlineIcons = (args) => {
-  const options = Object.keys(svgOutline)
+export const AllOutlineIcons = {
+  render: (args) => {
+    const options = Object.keys(svgOutline)
 
-  return (
-    <>
-      <Description />
-      <div className="flex w-full flex-wrap">
-        {options.map((iconName) => {
-          return (
-            <div key={iconName} className="flex border border-gray-200 p-3">
-              <Icon name={iconName} {...args} />
-              <p className="ml-2">{kebabCase(iconName)}</p>
-            </div>
-          )
-        })}
-      </div>
-    </>
-  )
-}
-AllOutlineIcons.args = {
-  variant: 'outline',
-  size: 'sm',
-}
+    return (
+      <>
+        <Description />
+        <div className="flex w-full flex-wrap">
+          {options.map((iconName) => {
+            return (
+              <div key={iconName} className="flex border border-gray-200 p-3">
+                <Icon name={iconName} {...args} />
+                <p className="ml-2">{kebabCase(iconName)}</p>
+              </div>
+            )
+          })}
+        </div>
+      </>
+    )
+  },
 
-export const AllSolidIcons = (args) => {
-  const options = Object.keys(svgSolid)
-
-  return (
-    <>
-      <Description />
-      <div className="flex w-full flex-wrap">
-        {options.map((iconName) => {
-          return (
-            <div key={iconName} className="flex border border-gray-200 p-3">
-              <Icon name={iconName} {...args} />
-              <p className="ml-2">{iconName}</p>
-            </div>
-          )
-        })}
-      </div>
-    </>
-  )
-}
-AllSolidIcons.args = {
-  variant: 'solid',
-  size: 'sm',
+  args: {
+    variant: 'outline',
+    size: 'sm',
+  },
 }
 
-export const AllDeveloperIcons = (args) => {
-  const options = Object.keys(svgDeveloper)
+export const AllSolidIcons = {
+  render: (args) => {
+    const options = Object.keys(svgSolid)
 
-  return (
-    <>
-      <Description />
-      <div className="flex w-full flex-wrap">
-        {options.map((iconName) => {
-          return (
-            <div key={iconName} className="flex border border-gray-200 p-3">
-              <Icon name={iconName} {...args} />
-              <p className="ml-2">{kebabCase(iconName)}</p>
-            </div>
-          )
-        })}
-      </div>
-    </>
-  )
-}
-AllDeveloperIcons.args = {
-  variant: 'developer',
-  size: 'sm',
+    return (
+      <>
+        <Description />
+        <div className="flex w-full flex-wrap">
+          {options.map((iconName) => {
+            return (
+              <div key={iconName} className="flex border border-gray-200 p-3">
+                <Icon name={iconName} {...args} />
+                <p className="ml-2">{iconName}</p>
+              </div>
+            )
+          })}
+        </div>
+      </>
+    )
+  },
+
+  args: {
+    variant: 'solid',
+    size: 'sm',
+  },
 }
 
-export const IconSize = (args) => {
-  return (
-    <>
-      <h1 className="text-2xl">Icon size</h1>
-      <br />
-      <div className="mt-2 flex items-center">
-        <Icon name="search" size="sm" {...args} />
-        <p className="ml-4">Size = sm</p>
-      </div>
-      <div className="mt-2 flex items-center">
-        <Icon name="search" size="md" {...args} />
-        <p className="ml-4">Size = md</p>
-      </div>
-      <div className="mt-2 flex items-center">
-        <Icon name="search" size="lg" {...args} />
-        <p className="ml-4">Size = lg</p>
-      </div>
-    </>
-  )
+export const AllDeveloperIcons = {
+  render: (args) => {
+    const options = Object.keys(svgDeveloper)
+
+    return (
+      <>
+        <Description />
+        <div className="flex w-full flex-wrap">
+          {options.map((iconName) => {
+            return (
+              <div key={iconName} className="flex border border-gray-200 p-3">
+                <Icon name={iconName} {...args} />
+                <p className="ml-2">{kebabCase(iconName)}</p>
+              </div>
+            )
+          })}
+        </div>
+      </>
+    )
+  },
+
+  args: {
+    variant: 'developer',
+    size: 'sm',
+  },
 }
-IconSize.args = {
-  variant: 'outline',
+
+export const IconSize = {
+  render: (args) => {
+    return (
+      <>
+        <h1 className="text-2xl">Icon size</h1>
+        <br />
+        <div className="mt-2 flex items-center">
+          <Icon name="search" size="sm" {...args} />
+          <p className="ml-4">Size = sm</p>
+        </div>
+        <div className="mt-2 flex items-center">
+          <Icon name="search" size="md" {...args} />
+          <p className="ml-4">Size = md</p>
+        </div>
+        <div className="mt-2 flex items-center">
+          <Icon name="search" size="lg" {...args} />
+          <p className="ml-4">Size = lg</p>
+        </div>
+      </>
+    )
+  },
+
+  args: {
+    variant: 'outline',
+  },
 }
 
 export default {

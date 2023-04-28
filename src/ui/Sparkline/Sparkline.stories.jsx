@@ -31,70 +31,91 @@ const createTestData = Array(20)
   .fill()
   .map(() => Math.random() * range - range / 2)
 
-export const NormalSparkline = Template.bind({})
-NormalSparkline.args = {
-  datum: createTestData,
-  description: 'storybook sparkline',
-  dataTemplate: (d) => `Foo ${d}%`,
+export const NormalSparkline = {
+  render: Template,
+
+  args: {
+    datum: createTestData,
+    description: 'storybook sparkline',
+    dataTemplate: (d) => `Foo ${d}%`,
+  },
 }
 
 const createTestDataWMissing = Array(30)
   .fill()
   .map(() => (Math.random() > 0.4 ? Math.random() * range - range / 2 : null))
 
-export const SparklineWithMissingData = Template.bind({})
-SparklineWithMissingData.args = {
-  datum: createTestDataWMissing,
-  description: 'storybook sparkline',
-  dataTemplate: (d) => `Foo ${d}%`,
+export const SparklineWithMissingData = {
+  render: Template,
+
+  args: {
+    datum: createTestDataWMissing,
+    description: 'storybook sparkline',
+    dataTemplate: (d) => `Foo ${d}%`,
+  },
 }
 
 const createTestDataWMissingBeginning = Array(7)
   .fill()
   .map((_, i) => (i > 2 ? Math.random() * range - range / 2 : null))
 
-export const SparklineWithMissingDataBeginning = Template.bind({})
-SparklineWithMissingDataBeginning.args = {
-  datum: createTestDataWMissingBeginning,
-  description: 'storybook sparkline',
-  dataTemplate: (d) => `Foo ${d}%`,
+export const SparklineWithMissingDataBeginning = {
+  render: Template,
+
+  args: {
+    datum: createTestDataWMissingBeginning,
+    description: 'storybook sparkline',
+    dataTemplate: (d) => `Foo ${d}%`,
+  },
 }
 
 const createTestDataWMissingEnding = Array(20)
   .fill()
   .map((_, i) => (i < 18 ? Math.random() * range - range / 2 : null))
 
-export const SparklineWithMissingDataEnding = Template.bind({})
-SparklineWithMissingDataEnding.args = {
-  datum: createTestDataWMissingEnding,
-  description: 'storybook sparkline',
-  dataTemplate: (d) => `Foo ${d}%`,
+export const SparklineWithMissingDataEnding = {
+  render: Template,
+
+  args: {
+    datum: createTestDataWMissingEnding,
+    description: 'storybook sparkline',
+    dataTemplate: (d) => `Foo ${d}%`,
+  },
 }
 
 const createTestDataComplex = Array(10)
   .fill()
   .map((_) => ({ value: Math.random() * range - range / 2, foo: 'bar' }))
 
-export const SparklineWithComplexData = Template.bind({})
-SparklineWithComplexData.args = {
-  datum: createTestDataComplex,
-  select: (d) => d?.value,
-  description: 'storybook sparkline',
-  dataTemplate: (d) => `Foo ${d}%`,
+export const SparklineWithComplexData = {
+  render: Template,
+
+  args: {
+    datum: createTestDataComplex,
+    select: (d) => d?.value,
+    description: 'storybook sparkline',
+    dataTemplate: (d) => `Foo ${d}%`,
+  },
 }
 
-export const SparklineCustomLineWidth = Template.bind({})
-SparklineCustomLineWidth.args = {
-  datum: createTestData,
-  description: 'storybook sparkline',
-  dataTemplate: (d) => `Foo ${d}%`,
-  lineSize: 2,
+export const SparklineCustomLineWidth = {
+  render: Template,
+
+  args: {
+    datum: createTestData,
+    description: 'storybook sparkline',
+    dataTemplate: (d) => `Foo ${d}%`,
+    lineSize: 2,
+  },
 }
 
-export const ManySparklines = ManyTemplate.bind({})
-ManySparklines.args = {
-  description: 'storybook sparkline',
-  dataTemplate: (d) => `${d}%`,
+export const ManySparklines = {
+  render: ManyTemplate,
+
+  args: {
+    description: 'storybook sparkline',
+    dataTemplate: (d) => `${d}%`,
+  },
 }
 
 export default {

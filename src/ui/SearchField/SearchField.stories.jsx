@@ -6,11 +6,14 @@ const Template = (args) => (
   </div>
 )
 
-export const SimpleSearchField = Template.bind({})
-SimpleSearchField.args = {
-  active: 'Chetney',
-  dataMarketing: 'meta data',
-  variant: 'default',
+export const SimpleSearchField = {
+  render: Template,
+
+  args: {
+    active: 'Chetney',
+    dataMarketing: 'meta data',
+    variant: 'default',
+  },
 }
 
 export default {
