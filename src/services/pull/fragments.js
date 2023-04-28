@@ -38,7 +38,7 @@ fragment SummaryOnPullFragment on Pull {
       patchTotals {
         percentCovered
       }
-      changeWithParent
+      changeCoverage
       hasDifferentNumberOfHeadAndBaseReports
     }
   }
@@ -163,6 +163,10 @@ fragment FileComparisonWithBase on Pull {
                 baseCoverage
                 headCoverage
                 content
+                coverageInfo {
+                  hitCount
+                  hitUploadIds
+                }
               }
             }
           }

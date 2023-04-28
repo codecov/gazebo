@@ -59,6 +59,8 @@ describe('DiffLine', () => {
         baseNumber: '1',
         headCoverage: null,
         baseCoverage: null,
+        hitCount: null,
+        hitUploadIds: null,
       }
 
       render(
@@ -76,7 +78,7 @@ describe('DiffLine', () => {
     })
   })
 
-  describe('renders highlighted covered lines', () => {
+  describe('rendering highlighted covered lines', () => {
     beforeEach(() => {
       setup()
     })
@@ -88,6 +90,8 @@ describe('DiffLine', () => {
         baseNumber: '1',
         headCoverage: 'H',
         baseCoverage: 'H',
+        hitCount: null,
+        hitUploadIds: null,
       }
 
       render(
@@ -105,20 +109,47 @@ describe('DiffLine', () => {
       )
       expect(coveredLinesOfCode.length).toBe(2)
     })
+
+    it('renders hit counter when hit count is passed', () => {
+      const props = {
+        edgeOfFile: false,
+        headNumber: '1',
+        baseNumber: '1',
+        headCoverage: 'H',
+        baseCoverage: 'H',
+        hitCount: 18,
+        hitUploadIds: [0],
+      }
+
+      render(
+        <DiffLine
+          {...props}
+          lineContent={content}
+          getTokenProps={() => {}}
+          getLineProps={() => {}}
+        />,
+        { wrapper }
+      )
+
+      const hitCounter = screen.getByText('18')
+      expect(hitCounter).toBeInTheDocument()
+    })
   })
 
-  describe('renders highlighted covered line for head', () => {
+  describe('rendering highlighted covered line for head', () => {
     beforeEach(() => {
       setup()
     })
 
-    it('render covered lines if there is coverage and showCoverage is true', () => {
+    it('renders covered lines if there is coverage and showCoverage is true', () => {
       const props = {
         edgeOfFile: false,
         headNumber: '1',
         baseNumber: '1',
         headCoverage: 'H',
         baseCoverage: null,
+        hitCount: null,
+        hitUploadIds: null,
       }
 
       render(
@@ -136,9 +167,34 @@ describe('DiffLine', () => {
       )
       expect(coveredLinesOfCode.length).toBe(1)
     })
+
+    it('renders hit counter when hit count is passed', () => {
+      const props = {
+        edgeOfFile: false,
+        headNumber: '1',
+        baseNumber: '1',
+        headCoverage: 'H',
+        baseCoverage: null,
+        hitCount: 18,
+        hitUploadIds: [0],
+      }
+
+      render(
+        <DiffLine
+          {...props}
+          lineContent={content}
+          getTokenProps={() => {}}
+          getLineProps={() => {}}
+        />,
+        { wrapper }
+      )
+
+      const hitCounter = screen.getByText('18')
+      expect(hitCounter).toBeInTheDocument()
+    })
   })
 
-  describe('renders highlighted uncovered lines', () => {
+  describe('rendering highlighted uncovered lines', () => {
     beforeEach(() => {
       setup()
     })
@@ -150,6 +206,8 @@ describe('DiffLine', () => {
         baseNumber: '1',
         headCoverage: 'M',
         baseCoverage: 'M',
+        hitCount: null,
+        hitUploadIds: null,
       }
 
       render(
@@ -173,6 +231,8 @@ describe('DiffLine', () => {
         baseNumber: '1',
         headCoverage: 'M',
         baseCoverage: 'M',
+        hitCount: null,
+        hitUploadIds: null,
       }
 
       render(
@@ -188,20 +248,47 @@ describe('DiffLine', () => {
       const triangles = screen.getAllByText('exclamation-triangle.svg')
       expect(triangles.length).toBe(1)
     })
+
+    it('renders hit counter when hit count is passed', () => {
+      const props = {
+        edgeOfFile: false,
+        headNumber: '1',
+        baseNumber: '1',
+        headCoverage: 'M',
+        baseCoverage: 'M',
+        hitCount: 18,
+        hitUploadIds: [0],
+      }
+
+      render(
+        <DiffLine
+          {...props}
+          lineContent={content}
+          getTokenProps={() => {}}
+          getLineProps={() => {}}
+        />,
+        { wrapper }
+      )
+
+      const hitCounter = screen.getByText('18')
+      expect(hitCounter).toBeInTheDocument()
+    })
   })
 
-  describe('renders highlighted uncovered base', () => {
+  describe('rendering highlighted uncovered base', () => {
     beforeEach(() => {
       setup()
     })
 
-    it('render uncovered line', () => {
+    it('renders uncovered line', () => {
       const props = {
         edgeOfFile: false,
         headNumber: '1',
         baseNumber: '1',
         headCoverage: null,
         baseCoverage: 'M',
+        hitCount: null,
+        hitUploadIds: null,
       }
 
       render(
@@ -216,9 +303,34 @@ describe('DiffLine', () => {
 
       expect(screen.getAllByLabelText('uncovered line of code').length).toBe(1)
     })
+
+    it('does not render hit counter when hit count is passed', () => {
+      const props = {
+        edgeOfFile: false,
+        headNumber: '1',
+        baseNumber: '1',
+        headCoverage: null,
+        baseCoverage: 'M',
+        hitCount: 18,
+        hitUploadIds: [0],
+      }
+
+      render(
+        <DiffLine
+          {...props}
+          lineContent={content}
+          getTokenProps={() => {}}
+          getLineProps={() => {}}
+        />,
+        { wrapper }
+      )
+
+      const hitCounter = screen.queryByText('18')
+      expect(hitCounter).not.toBeInTheDocument()
+    })
   })
 
-  describe('renders highlighted partial lines', () => {
+  describe('rendering highlighted partial lines', () => {
     beforeEach(() => {
       setup()
     })
@@ -230,6 +342,8 @@ describe('DiffLine', () => {
         baseNumber: '1',
         headCoverage: 'P',
         baseCoverage: 'P',
+        hitCount: null,
+        hitUploadIds: null,
       }
 
       render(
@@ -252,6 +366,8 @@ describe('DiffLine', () => {
         baseNumber: '1',
         headCoverage: 'P',
         baseCoverage: 'P',
+        hitCount: null,
+        hitUploadIds: null,
       }
 
       render(
@@ -266,6 +382,31 @@ describe('DiffLine', () => {
 
       expect(screen.getAllByTestId('partial-icon').length).toBe(1)
     })
+
+    it('renders hit counter when hit count is passed', () => {
+      const props = {
+        edgeOfFile: false,
+        headNumber: '1',
+        baseNumber: '1',
+        headCoverage: 'P',
+        baseCoverage: 'P',
+        hitCount: 18,
+        hitUploadIds: [0],
+      }
+
+      render(
+        <DiffLine
+          {...props}
+          lineContent={content}
+          getTokenProps={() => {}}
+          getLineProps={() => {}}
+        />,
+        { wrapper }
+      )
+
+      const hitCounter = screen.getByText('18')
+      expect(hitCounter).toBeInTheDocument()
+    })
   })
 
   describe('detects edge of file', () => {
@@ -279,6 +420,8 @@ describe('DiffLine', () => {
         baseNumber: '1',
         headCoverage: 'P',
         baseCoverage: null,
+        hitCount: null,
+        hitUploadIds: null,
       }
 
       const content = [
@@ -315,6 +458,8 @@ describe('DiffLine', () => {
         baseNumber: '2',
         headCoverage: null,
         baseCoverage: null,
+        hitCount: null,
+        hitUploadIds: null,
       }
 
       render(
@@ -346,6 +491,8 @@ describe('DiffLine', () => {
         baseNumber: '2',
         headCoverage: null,
         baseCoverage: null,
+        hitCount: null,
+        hitUploadIds: null,
       }
 
       render(

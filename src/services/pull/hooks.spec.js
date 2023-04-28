@@ -44,7 +44,7 @@ const pull = {
     patchTotals: {
       coverage: 92.12,
     },
-    changeWithParent: 38.94,
+    changeCoverage: 38.94,
   },
 }
 
@@ -152,6 +152,10 @@ const mockSingularImpactedFilesData = {
             baseCoverage: null,
             headCoverage: 'H',
             content: '+export default class Calculator {',
+            coverageInfo: {
+              hitCount: null,
+              hitUploadIds: null,
+            },
           },
           {
             baseNumber: null,
@@ -159,6 +163,10 @@ const mockSingularImpactedFilesData = {
             baseCoverage: null,
             headCoverage: 'H',
             content: '+  private value = 0;',
+            coverageInfo: {
+              hitCount: 18,
+              hitUploadIds: [0],
+            },
           },
           {
             baseNumber: null,
@@ -166,6 +174,10 @@ const mockSingularImpactedFilesData = {
             baseCoverage: null,
             headCoverage: 'H',
             content: '+  private calcMode = ""',
+            coverageInfo: {
+              hitCount: null,
+              hitUploadIds: null,
+            },
           },
         ],
       },
@@ -234,6 +246,10 @@ describe('useSingularImpactedFileComparison', () => {
                   content: '+export default class Calculator {',
                   headCoverage: 'H',
                   headNumber: '1',
+                  coverageInfo: {
+                    hitCount: null,
+                    hitUploadIds: null,
+                  },
                 },
                 {
                   baseCoverage: null,
@@ -241,6 +257,10 @@ describe('useSingularImpactedFileComparison', () => {
                   content: '+  private value = 0;',
                   headCoverage: 'H',
                   headNumber: '2',
+                  coverageInfo: {
+                    hitCount: 18,
+                    hitUploadIds: [0],
+                  },
                 },
                 {
                   baseCoverage: null,
@@ -248,6 +268,10 @@ describe('useSingularImpactedFileComparison', () => {
                   content: '+  private calcMode = ""',
                   headCoverage: 'H',
                   headNumber: '3',
+                  coverageInfo: {
+                    hitCount: null,
+                    hitUploadIds: null,
+                  },
                 },
               ],
             },

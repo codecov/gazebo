@@ -8,7 +8,7 @@ import {
   LINE_TYPE,
   lineStateToLabel,
 } from 'shared/utils/fileviewer'
-import CoverageSelectIcon from 'ui/Icon/CoverageSelectIcon'
+import CoverageLineIndicator from 'ui/CodeRenderer/CoverageLineIndicator'
 
 import { useScrollToLine } from '../hooks'
 
@@ -20,7 +20,7 @@ function DiffLine({
   headCoverage,
   baseCoverage,
   path,
-  stickyPadding = 0,
+  hitCount,
 }) {
   const baseLineState = getLineState({ coverage: baseCoverage })
   const headLineState = getLineState({ coverage: headCoverage })
@@ -89,11 +89,11 @@ function DiffLine({
       >
         <div className="flex items-center justify-between">
           <div>
-            {lineContent.map((token, key) => (
+            {lineContent?.map((token, key) => (
               <span key={key} {...getTokenProps({ token, key })} />
             ))}
           </div>
-          <CoverageSelectIcon coverage={headLineState} />
+          <CoverageLineIndicator coverage={headLineState} hitCount={hitCount} />
         </div>
       </td>
     </tr>
@@ -109,7 +109,7 @@ DiffLine.propTypes = {
   headCoverage: PropTypes.oneOf(Object.values(LINE_TYPE)),
   getTokenProps: PropTypes.func,
   path: PropTypes.string,
-  stickyPadding: PropTypes.number,
+  hitCount: PropTypes.number,
 }
 
 export default DiffLine

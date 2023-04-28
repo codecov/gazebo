@@ -153,7 +153,7 @@ describe('CompareSummary', () => {
                 patchTotals: {
                   percentCovered: 92.12,
                 },
-                changeWithParent: 38.94,
+                changeCoverage: 38.94,
               },
             },
           },
@@ -244,7 +244,7 @@ describe('CompareSummary', () => {
                 patchTotals: {
                   percentCovered: 92.12,
                 },
-                changeWithParent: 38.94,
+                changeCoverage: 38.94,
               },
             },
           },
@@ -306,7 +306,7 @@ describe('CompareSummary', () => {
                 patchTotals: {
                   percentCovered: 92.12,
                 },
-                changeWithParent: 38.94,
+                changeCoverage: 38.94,
               },
             },
           },
