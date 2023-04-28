@@ -40,7 +40,10 @@ function MyContextSwitcher({ activeContext, pageName, allOrgsPageName }) {
         onLoadMore={() => hasNextPage && fetchNextPage()}
         allOrgsPageName={allOrgsPageName}
         ModalControl={({ onClick }) => (
-          <button className="flex-none text-ds-blue" onClick={onClick}>
+          <button
+            className="flex-none text-ds-blue hover:underline"
+            onClick={onClick}
+          >
             Edit default
           </button>
         )}

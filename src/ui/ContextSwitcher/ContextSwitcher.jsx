@@ -8,6 +8,7 @@ import useClickAway from 'react-use/lib/useClickAway'
 import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A'
 import Avatar from 'ui/Avatar'
+import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 
@@ -63,12 +64,12 @@ function ContextItem({ context, currentContext, currentUser }) {
   const isActiveContext = context === currentContext
   return (
     <li
-      className="grid cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-ds-gray-secondary"
+      className="cursor-pointer select-none py-2 font-semibold text-gray-900 hover:bg-ds-gray-secondary"
       id="listbox-option-0"
     >
-      <A
+      <Button
         to={{ pageName: pageName, options: { owner: owner?.username } }}
-        variant="black"
+        variant="listbox"
       >
         <Avatar user={owner} bordered />
         <div className={cs('mx-1', { 'font-semibold': isActiveContext })}>
@@ -77,7 +78,7 @@ function ContextItem({ context, currentContext, currentUser }) {
         {owner?.username === currentUser?.defaultOrgUsername && (
           <span className="font-medium text-ds-gray-quaternary">Default</span>
         )}
-      </A>
+      </Button>
     </li>
   )
 }
@@ -148,6 +149,7 @@ function ContextSwitcher({
               'ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 shadow-sm',
           }
         )}
+        id="listbox-label"
         aria-haspopup="listbox"
         aria-expanded={toggle}
         onClick={() => setToggle((toggle) => !toggle)}
@@ -181,7 +183,6 @@ function ContextSwitcher({
         tabIndex="-1"
         role="listbox"
         aria-labelledby="listbox-label"
-        aria-activedescendant="listbox-option-3"
       >
         <li className="flex justify-between border-b border-ds-gray-secondary px-4 py-3 text-xs font-semibold">
           <span>Switch context</span>
@@ -191,15 +192,18 @@ function ContextSwitcher({
           />
         </li>
         <li
-          className="relative grid cursor-pointer select-none py-3 pl-4 pr-9 text-xs text-gray-900  hover:bg-ds-gray-secondary"
+          className="relative grid cursor-pointer select-none py-2 text-xs text-gray-900  hover:bg-ds-gray-secondary"
           id="listbox-option-0"
         >
-          <A to={{ pageName: allOrgsPageName ?? 'provider' }} variant="black">
+          <Button
+            to={{ pageName: allOrgsPageName ?? 'provider' }}
+            variant="listbox"
+          >
             <Icon name="home" />
             <div className={cs('mx-1', { 'font-semibold': !activeContext })}>
               All orgs and repos
             </div>
-          </A>
+          </Button>
         </li>
         {contexts.map((context) => (
           <ContextItem
