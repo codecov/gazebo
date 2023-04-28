@@ -16,15 +16,17 @@ module.exports = {
     '@storybook/addon-essentials',
     '@storybook/preset-create-react-app',
   ],
+  parameters: {
+    backgrounds: {
+      default: 'dark',
+    },
+  },
   docs: {
     autodocs: true,
     theme: {
       base: 'dark',
       brandTitle: 'Pavilion Storybook',
       brandUrl: 'https://app.codecov.io',
-      color: {
-        primary: 'rgb(240, 31, 122)',
-      },
     },
   },
 }

@@ -7,6 +7,8 @@
     "@sentry/react": "^7.50.0",
     "@sentry/replay": "^7.50.0",
     "@sentry/tracing": "^7.50.0",
+    "@storybook/manager-api": "^7.0.7",
+    "@storybook/theming": "^7.0.7",
     "@stripe/react-stripe-js": "^1.7.2",
     "@stripe/stripe-js": "^1.52.1",
     "@tanstack/react-query": "^4.29.5",
