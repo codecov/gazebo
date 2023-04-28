@@ -64,7 +64,7 @@ const mockPull = {
           baseTotals: {
             percentCovered: 27.35,
           },
-          changeWithParent: 38.94,
+          changeCoverage: 38.94,
           impactedFiles: mockImpactedFiles,
         },
       },
@@ -143,7 +143,7 @@ describe('FilesChanged', () => {
                 baseTotals: {
                   percentCovered: 27.35,
                 },
-                changeWithParent: 38.94,
+                changeCoverage: 38.94,
                 impactedFiles: [],
               },
             },
