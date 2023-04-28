@@ -10,7 +10,9 @@ jest.mock('ace-builds/src-noconflict/theme-github', () => {})
 jest.mock('ace-builds/src-noconflict/mode-yaml', () => {})
 jest.mock('services/repo')
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
 function MockReactAce({ value }) {
   return <input readOnly value={!value ? '' : value} />

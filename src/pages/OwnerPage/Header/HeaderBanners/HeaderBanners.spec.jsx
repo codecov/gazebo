@@ -11,7 +11,9 @@ import HeaderBanners from './HeaderBanners'
 jest.mock('config')
 
 const server = setupServer()
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const plans = [
   {

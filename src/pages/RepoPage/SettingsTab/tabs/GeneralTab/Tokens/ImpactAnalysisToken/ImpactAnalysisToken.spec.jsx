@@ -15,7 +15,9 @@ jest.mock('copy-to-clipboard', () => () => true)
 jest.mock('services/toastNotification')
 jest.mock('services/tracking/segment')
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings']}>

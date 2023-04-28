@@ -16,7 +16,9 @@ afterEach(() => {
 
 afterAll(() => server.close())
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
 let testLocation
 const wrapper = ({ children }) => (

@@ -61,7 +61,9 @@ const mockNullBranchMeasurements = {
 }
 
 const server = setupServer()
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const wrapper =
   (searchParams = '') =>
   ({ children }) =>

@@ -14,7 +14,9 @@ const mockApiSelfHostedSetUpCorrectly = { config: { hasAdmins: true } }
 const mockApiSelfHostedSetUpIncorrectly = { config: { hasAdmins: false } }
 const mockApiCloud = { config: undefined }
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const server = setupServer()
 beforeAll(() => {

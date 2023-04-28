@@ -8,7 +8,9 @@ import { mapEdges } from 'shared/utils/graphql'
 
 import { useSessions } from './useSessions'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh']}>
     <Route path="/:provider">

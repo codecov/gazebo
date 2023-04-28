@@ -9,7 +9,9 @@ import { useUpgradePlan } from './useUpgradePlan'
 
 jest.mock('@stripe/react-stripe-js')
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const wrapper =
   (initialEntries = '/gh') =>
   ({ children }) =>

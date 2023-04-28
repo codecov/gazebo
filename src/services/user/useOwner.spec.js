@@ -9,6 +9,7 @@ import { useOwner } from './useOwner'
 
 const server = setupServer()
 const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
   logger: {
     error: () => {},
   },

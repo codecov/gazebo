@@ -9,7 +9,9 @@ import { useTracking } from './useTracking'
 
 jest.mock('./segment')
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov']}>

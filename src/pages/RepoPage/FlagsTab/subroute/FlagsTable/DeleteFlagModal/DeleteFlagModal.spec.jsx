@@ -10,7 +10,9 @@ import DeleteFlagModal from './DeleteFlagModal'
 
 jest.mock('ui/Avatar', () => () => 'Avatar')
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const server = setupServer()
 
 const ownerUsername = 'vox-machina'

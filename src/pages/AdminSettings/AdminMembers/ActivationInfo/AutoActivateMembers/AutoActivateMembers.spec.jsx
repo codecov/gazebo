@@ -7,7 +7,9 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import AutoActivateMembers from './AutoActivateMembers'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const server = setupServer()
 const mockResponse = {
   planAutoActivate: true,

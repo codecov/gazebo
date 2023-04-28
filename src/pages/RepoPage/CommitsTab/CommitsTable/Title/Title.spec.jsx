@@ -13,7 +13,9 @@ jest.mock('services/repo')
 
 describe('Title', () => {
   function setup({ author, commitid, message, createdAt }) {
-    const queryClient = new QueryClient()
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    })
     useImage.mockReturnValue({ src: 'imageUrl', isLoading: false, error: null })
 
     render(
