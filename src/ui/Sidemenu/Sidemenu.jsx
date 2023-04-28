@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import AppLink from 'shared/AppLink'
 
 const styles = {
-  nav: 'sticky top-20 lg:w-56 mb-4 border border-ds-gray-tertiary rounded text-ds-gray-quinary overflow-hidden divide-y divide-ds-gray-tertiary mx-4 sm:mx-0',
+  nav: 'sticky top-4 lg:w-56 mb-4 border border-ds-gray-tertiary rounded text-ds-gray-quinary overflow-hidden divide-y divide-ds-gray-tertiary mx-4 sm:mx-0',
   link: 'block p-3 hover:bg-ds-gray-quaternary hover:bg-opacity-5',
   activeLink:
     'border-l-4 pl-2 border-ds-gray-octonary text-ds-gray-octonary font-semibold bg-ds-gray-quaternary bg-opacity-5',

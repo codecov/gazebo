@@ -27,7 +27,10 @@ function ResyncButton() {
         Can&apos;t find your repo{isGh ? ' or org?' : '?'}
       </span>{' '}
       Try{' '}
-      <button className="flex-none text-ds-blue" onClick={triggerResync}>
+      <button
+        className="flex-none text-ds-blue hover:underline"
+        onClick={triggerResync}
+      >
         re-syncing
       </button>
       {isGh && (
