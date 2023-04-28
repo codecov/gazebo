@@ -13,7 +13,7 @@ function Breadcrumb({ paths = [] }) {
         return (
           <Fragment key={i}>
             {i === paths.length - 1 ? (
-              <span className="font-semibold">
+              <span className="inline align-middle font-semibold">
                 {defaultTo(to.children, to.text)}
               </span>
             ) : (
