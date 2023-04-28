@@ -163,6 +163,10 @@ fragment FileComparisonWithBase on Pull {
                 baseCoverage
                 headCoverage
                 content
+                coverageInfo {
+                  hitCount
+                  hitUploadIds
+                }
               }
             }
           }

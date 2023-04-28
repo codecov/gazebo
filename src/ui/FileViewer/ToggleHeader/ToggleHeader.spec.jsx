@@ -107,4 +107,42 @@ describe('ToggleHeader', () => {
       })
     })
   })
+
+  describe('when showHitCount prop is passed', () => {
+    describe('prop is set to true', () => {
+      it('renders legend', () => {
+        render(
+          <ToggleHeader
+            title={'sample title'}
+            coverageIsLoading={false}
+            showHitCount={true}
+          />
+        )
+
+        const hitIcon = screen.getByText('n')
+        expect(hitIcon).toBeInTheDocument()
+
+        const legendText = screen.getByText('upload #')
+        expect(legendText).toBeInTheDocument()
+      })
+    })
+
+    describe('prop is set to false', () => {
+      it('does not render legend', () => {
+        render(
+          <ToggleHeader
+            title={'sample title'}
+            coverageIsLoading={false}
+            showHitCount={false}
+          />
+        )
+
+        const hitIcon = screen.queryByText('n')
+        expect(hitIcon).not.toBeInTheDocument()
+
+        const legendText = screen.queryByText('upload #')
+        expect(legendText).not.toBeInTheDocument()
+      })
+    })
+  })
 })

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 
 import { LINE_STATE } from 'shared/utils/fileviewer'
 
-import Title, { TitleCoverage, TitleFlags } from './Title/Title'
+import Title, { TitleCoverage, TitleFlags, TitleHitCount } from './Title/Title'
 
 function ToggleHeader({
   title,
@@ -10,6 +10,7 @@ function ToggleHeader({
   onFlagsChange,
   coverageIsLoading,
   sticky = false,
+  showHitCount = false,
 }) {
   /**
    * Header component that toggles covered, partial and uncovered lines for the File Viewer page.
@@ -30,6 +31,7 @@ function ToggleHeader({
           flagsIsLoading={coverageIsLoading}
         />
       )}
+      <TitleHitCount showHitCount={showHitCount} />
     </Title>
   )
 }
@@ -40,6 +42,7 @@ ToggleHeader.propTypes = {
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
   onFlagsChange: PropTypes.func,
   sticky: PropTypes.bool,
+  showHitCount: PropTypes.bool,
 }
 
 export default ToggleHeader
