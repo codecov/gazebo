@@ -9,43 +9,18 @@ import UserCount from './UserCount'
  */
 
 describe('UserCount', () => {
-  describe('it is not a sentry plan', () => {
-    it('renders user information', () => {
-      render(
-        <UserCount
-          activatedUserCount={10}
-          inactiveUserCount={10}
-          isSentryUpgrade={false}
-        />
-      )
+  it('renders user information', () => {
+    render(<UserCount activatedUserCount={10} inactiveUserCount={10} />)
 
-      const message = screen.getByText(
-        /Currently 10 users activated out of 20 users./i
-      )
-      expect(message).toBeInTheDocument()
-    })
-  })
-
-  describe('it is a sentry plan', () => {
-    it('renders 5 users included in plan', () => {
-      render(
-        <UserCount
-          activatedUserCount={10}
-          inactiveUserCount={10}
-          isSentryUpgrade={true}
-        />
-      )
-
-      const message = screen.getByText(/5 seats already included in this plan/i)
-      expect(message).toBeInTheDocument()
-    })
+    const message = screen.getByText(
+      /Currently 10 users activated out of 20 users./i
+    )
+    expect(message).toBeInTheDocument()
   })
 
   describe('activatedUserCount is undefined', () => {
     it('returns empty container', () => {
-      const { container } = render(
-        <UserCount activatedUserCount={undefined} isSentryUpgrade={false} />
-      )
+      const { container } = render(<UserCount activatedUserCount={undefined} />)
 
       expect(container).toBeEmptyDOMElement()
     })
@@ -53,9 +28,7 @@ describe('UserCount', () => {
 
   describe('inactiveUserCount is undefined', () => {
     it('returns empty container', () => {
-      const { container } = render(
-        <UserCount inactiveUserCount={undefined} isSentryUpgrade={false} />
-      )
+      const { container } = render(<UserCount inactiveUserCount={undefined} />)
 
       expect(container).toBeEmptyDOMElement()
     })
@@ -68,7 +41,6 @@ describe('UserCount', () => {
           activatedUserCount={10}
           inactiveUserCount={10}
           activatedStudentCount={0}
-          isSentryUpgrade={false}
         />
       )
 
@@ -83,7 +55,6 @@ describe('UserCount', () => {
         activatedUserCount={25}
         inactiveUserCount={30}
         activatedStudentCount={1}
-        isSentryUpgrade={false}
       />
     )
 
@@ -97,7 +68,6 @@ describe('UserCount', () => {
         activatedUserCount={25}
         inactiveUserCount={30}
         activatedStudentCount={2}
-        isSentryUpgrade={false}
       />
     )
 
