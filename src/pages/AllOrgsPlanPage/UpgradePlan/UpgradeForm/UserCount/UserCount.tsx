@@ -68,7 +68,6 @@ interface UserCountProps {
   isSentryUpgrade: boolean
 }
 
-// eslint-disable-next-line complexity
 const UserCount: React.FC<UserCountProps> = ({
   activatedUserCount,
   inactiveUserCount,
