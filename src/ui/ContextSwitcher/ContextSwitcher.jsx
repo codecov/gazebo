@@ -61,10 +61,13 @@ ModalSection.propTypes = {
 
 function ContextItem({ context, currentContext, currentUser }) {
   const { owner, pageName } = context
-  const isActiveContext = context === currentContext
+  const isActiveContext =
+    owner?.username?.toLowerCase() ===
+    currentContext?.owner?.username?.toLowerCase()
+
   return (
     <li
-      className="cursor-pointer select-none py-2 font-semibold text-gray-900 hover:bg-ds-gray-secondary"
+      className="cursor-pointer select-none py-2 text-gray-900 hover:bg-ds-gray-secondary"
       id="listbox-option-0"
     >
       <Button
@@ -143,7 +146,7 @@ function ContextSwitcher({
       <button
         type="button"
         className={cs(
-          '"relative flex gap-1 items-center text-base font-bold w-full rounded-md bg-white py-1.5 text-left text-gray-900 focus:outline-none"',
+          '"relative flex gap-1 items-center text-xl font-semibold w-full rounded-md bg-white py-1.5 text-left text-gray-900 focus:outline-none"',
           {
             [buttonVariant.outlined]:
               'ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 shadow-sm',
@@ -200,7 +203,11 @@ function ContextSwitcher({
             variant="listbox"
           >
             <Icon name="home" />
-            <div className={cs('mx-1', { 'font-semibold': !activeContext })}>
+            <div
+              className={cs('mx-1 text-sm', {
+                'font-semibold': !activeContext,
+              })}
+            >
               All orgs and repos
             </div>
           </Button>
