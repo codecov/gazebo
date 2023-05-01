@@ -4,7 +4,6 @@
   "private": true,
   "dependencies": {
     "@hookform/resolvers": "^2.8.5",
-    "@reach/menu-button": "^0.18.0",
     "@sentry/react": "^7.49.0",
     "@sentry/replay": "^7.49.0",
     "@sentry/tracing": "^7.49.0",

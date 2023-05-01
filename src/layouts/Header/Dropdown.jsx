@@ -6,8 +6,8 @@ import { useParams } from 'react-router-dom'
 import config from 'config'
 
 import { providerToName } from 'shared/utils/provider'
-import A from 'ui/A'
 import Avatar from 'ui/Avatar'
+import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 
 function Dropdown({ currentUser }) {
@@ -64,11 +64,19 @@ function Dropdown({ currentUser }) {
         {...getToggleButtonProps()}
       >
         <Avatar user={currentUser.user} bordered />
-        <Icon variant="solid" name={isOpen ? 'chevron-up' : 'chevron-down'} />
+        <span
+          aria-hidden="true"
+          className={cs('transition-transform', {
+            'rotate-180': isOpen,
+            'rotate-0': !isOpen,
+          })}
+        >
+          <Icon variant="solid" name="chevron-down" />
+        </span>
       </button>
       <ul
         className={cs(
-          'z-50 w-[15rem] border border-gray-ds-tertiary overflow-hidden rounded bg-white text-black border-ds-gray-tertiary absolute right-0 top-8 min-w-fit',
+          'z-50 w-[15.5rem] border border-gray-ds-tertiary overflow-hidden rounded bg-white text-gray-900 border-ds-gray-tertiary absolute right-0 top-8 min-w-fit',
           { hidden: !isOpen }
         )}
         aria-label="user profile menu items"
@@ -78,10 +86,12 @@ function Dropdown({ currentUser }) {
           items.map((item, index) => (
             <li
               key={`main-dropdown-${index}`}
-              className="block cursor-pointer px-3 py-2 text-sm font-normal"
+              className="grid cursor-pointer text-sm first:pt-2 last:pb-2 hover:bg-ds-gray-secondary"
               {...getItemProps({ item, index })}
             >
-              <A {...item.props}>{item.children}</A>
+              <Button variant="listbox" {...item.props}>
+                {item.children}
+              </Button>
             </li>
           ))}
       </ul>
