@@ -166,7 +166,7 @@ describe('useCoverage', () => {
         const coverageAxisLabel = result.current.data.coverageAxisLabel
 
         const message = coverageAxisLabel(new Date('2022/01/01'))
-        expect(message).toBe('Jan 1 2022')
+        expect(message).toBe('Jan 1, 22')
       })
 
       it('returns the right format for weeks', async () => {
@@ -189,7 +189,7 @@ describe('useCoverage', () => {
         const coverageAxisLabel = result.current.data.coverageAxisLabel
 
         const message = coverageAxisLabel(new Date('2022/01/01'))
-        expect(message).toBe('Jan 2022')
+        expect(message).toBe('Jan 1, 22')
       })
 
       it('returns the right format for default', async () => {
@@ -290,7 +290,7 @@ describe('useCoverage', () => {
         expect(config.groupingUnit).toEqual('day')
         expect(
           result.current.coverageAxisLabel(new Date('June 21, 2020'))
-        ).toEqual('Jun 21 2020')
+        ).toEqual('Jun 21, 20')
       })
 
       it('returns the right format for weeks', () => {

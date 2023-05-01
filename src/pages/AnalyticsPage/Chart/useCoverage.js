@@ -58,9 +58,9 @@ export const useCoverage = ({ params, options = {} }) => {
         const coverageAxisLabel = (time) => {
           switch (queryVars?.interval) {
             case TimeseriesInterval.INTERVAL_1_DAY:
-              return format(time, 'MMM d yyyy')
+              return format(time, 'MMM d, yy')
             case TimeseriesInterval.INTERVAL_7_DAY:
-              return format(time, 'MMM yyyy')
+              return format(time, 'MMM d, yy')
             default:
               return format(time, 'MMM yyyy')
           }
@@ -97,7 +97,7 @@ export const useCoverage = ({ params, options = {} }) => {
         }))
         const coverageAxisLabel = (time) => {
           if (query?.groupingUnit === GroupingUnit.DAY) {
-            return format(time, 'MMM d yyyy')
+            return format(time, 'MMM d, yy')
           } else {
             return format(time, 'MMM yyyy')
           }
