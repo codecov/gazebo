@@ -86,12 +86,12 @@ function CommitsTab() {
         children: (
           <span className="inline-flex items-center gap-1">
             <Icon name="branch" variant="developer" size="sm" />
-            {currentBranchSelected?.name}
+            {currentBranchSelected}
           </span>
         ),
       },
     ])
-  }, [currentBranchSelected?.name, setCrumbs])
+  }, [currentBranchSelected, setCrumbs])
 
   const newBranches = [...(isSearching ? [] : ['All branches']), ...branchList]
 

@@ -46,7 +46,7 @@ const mockPull = {
           baseTotals: {
             percentCovered: 27.35,
           },
-          changeWithParent: 38.94,
+          changeCoverage: 38.94,
           impactedFiles: mockImpactedFiles,
         },
       },
@@ -72,7 +72,7 @@ const mockNoImpactedFiles = {
           baseTotals: {
             percentCovered: 27.35,
           },
-          changeWithParent: 38.94,
+          changeCoverage: 38.94,
           impactedFiles: [],
         },
       },
@@ -98,7 +98,7 @@ const mockNoChange = {
           baseTotals: {
             percentCovered: 27.35,
           },
-          changeWithParent: 38.94,
+          changeCoverage: 38.94,
           impactedFiles: [
             {
               isCriticalFile: true,

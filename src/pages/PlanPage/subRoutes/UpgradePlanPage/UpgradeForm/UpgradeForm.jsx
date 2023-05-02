@@ -257,6 +257,7 @@ function UpgradeForm({
           activatedStudentCount={accountDetails?.activatedStudentCount}
           activatedUserCount={accountDetails?.activatedUserCount}
           inactiveUserCount={accountDetails?.inactiveUserCount}
+          isSentryUpgrade={isSentryUpgrade}
         />
       </div>
       <TotalBanner

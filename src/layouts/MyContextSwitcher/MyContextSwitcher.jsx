@@ -31,24 +31,32 @@ function MyContextSwitcher({ activeContext, pageName, allOrgsPageName }) {
   ]
 
   return (
-    <ContextSwitcher
-      activeContext={activeContext}
-      contexts={contexts}
-      currentUser={currentUser}
-      isLoading={isLoading}
-      onLoadMore={() => hasNextPage && fetchNextPage()}
-      allOrgsPageName={allOrgsPageName}
-      ModalControl={({ onClick }) => (
-        <button className="flex-none text-ds-blue" onClick={onClick}>
-          Edit default
-        </button>
-      )}
-      ModalComponent={({ closeFn, showComponent }) => {
-        return (
-          <UpdateDefaultOrgModal closeModal={closeFn} isOpen={showComponent} />
-        )
-      }}
-    />
+    <div className="max-w-[350px]">
+      <ContextSwitcher
+        activeContext={activeContext}
+        contexts={contexts}
+        currentUser={currentUser}
+        isLoading={isLoading}
+        onLoadMore={() => hasNextPage && fetchNextPage()}
+        allOrgsPageName={allOrgsPageName}
+        ModalControl={({ onClick }) => (
+          <button
+            className="flex-none text-ds-blue hover:underline"
+            onClick={onClick}
+          >
+            Edit default
+          </button>
+        )}
+        ModalComponent={({ closeFn, showComponent }) => {
+          return (
+            <UpdateDefaultOrgModal
+              closeModal={closeFn}
+              isOpen={showComponent}
+            />
+          )
+        }}
+      />
+    </div>
   )
 }
 

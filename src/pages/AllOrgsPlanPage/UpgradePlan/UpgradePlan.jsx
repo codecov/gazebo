@@ -73,9 +73,10 @@ FormDetails.propTypes = {
   sentryPlanYear: planPropType,
 }
 
+// eslint-disable-next-line max-statements
 function UpgradePlan() {
   const { provider } = useParams()
-  const [organizationName, setOrganizationName] = useState()
+  const [organizationName, setOrganizationName] = useState(null)
   const { data: plans } = usePlans(provider)
   const { proPlanMonth, proPlanYear } = useProPlans({ plans })
   const { sentryPlanMonth, sentryPlanYear } = findSentryPlans({ plans })
@@ -120,6 +121,13 @@ function UpgradePlan() {
                 dataMarketing="select organization"
               />
             </div>
+            <p className="pt-1 text-xs">
+              <span className="font-semibold text-ds-gray-quinary">
+                Can&apos;t find your org?{' '}
+              </span>
+              <A to={{ pageName: 'userAppManagePage' }}>Admin approval</A> may
+              be required.
+            </p>
           </div>
           <FormDetails
             accountDetails={accountDetails}
