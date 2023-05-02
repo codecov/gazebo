@@ -23,6 +23,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+migration-storybook.log
 build-storybook.log
 .eslintcache
 junit.xml
@@ -45,3 +46,4 @@ codecov
 
 # VSCode
 .vscode
+
