@@ -7,8 +7,8 @@ export function useActivateFlagMeasurements({ provider, owner, repo }) {
   return useMutation({
     mutationFn: () => {
       const query = `
-          mutation ActivateFlagsMeasurements($input: ActivateFlagsMeasurementsInput!) {
-            activateFlagsMeasurements(input: $input) {
+          mutation ActivateMeasurements($input: ActivateMeasurementsInput!) {
+            activateMeasurements(input: $input) {
               error {
                 __typename
               }
@@ -20,7 +20,7 @@ export function useActivateFlagMeasurements({ provider, owner, repo }) {
         provider,
         query,
         variables,
-        mutationPath: 'activateFlagsMeasurements',
+        mutationPath: 'activateMeasurements',
       })
     },
     onSuccess: () => {

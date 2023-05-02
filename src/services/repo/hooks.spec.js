@@ -264,7 +264,7 @@ describe('useRepoBackfilled', () => {
 describe('useActivateFlagMeasurements', () => {
   function setup() {
     server.use(
-      graphql.mutation('ActivateFlagsMeasurements', (req, res, ctx) => {
+      graphql.mutation('ActivateMeasurements', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data())
       })
     )
