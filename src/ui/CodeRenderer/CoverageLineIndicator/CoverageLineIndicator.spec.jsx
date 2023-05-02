@@ -77,5 +77,12 @@ describe('CoverageLineIndicator', () => {
       const hitCount = screen.queryByText('10')
       expect(hitCount).not.toBeInTheDocument()
     })
+
+    it('does not render hit count when count is zero', () => {
+      render(<CoverageLineIndicator coverage="COVERED" hitCount={0} />)
+
+      const hitCount = screen.queryByText('10')
+      expect(hitCount).not.toBeInTheDocument()
+    })
   })
 })
