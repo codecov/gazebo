@@ -39,6 +39,7 @@ const commitData = {
     edges: [
       {
         node: {
+          id: 0,
           state: 'processed',
           provider: 'travis',
           createdAt: '2020-08-25T16:36:19.559474+00:00',
@@ -54,6 +55,7 @@ const commitData = {
       },
       {
         node: {
+          id: 0,
           state: 'processed',
           provider: 'travis',
           createdAt: '2020-08-25T16:36:25.820340+00:00',
