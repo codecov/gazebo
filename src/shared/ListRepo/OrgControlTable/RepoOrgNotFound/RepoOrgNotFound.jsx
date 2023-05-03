@@ -14,7 +14,7 @@ function ResyncButton() {
         <span className="mr-2 inline-block text-ds-blue">
           <Spinner />
         </span>
-        Syncing...
+        syncing...
       </span>
     )
   }
