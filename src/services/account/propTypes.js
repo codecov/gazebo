@@ -25,7 +25,7 @@ export const subscriptionDetailType = PropType.shape({
       last4: PropType.string.isRequired,
     }).isRequired,
   }),
-  trialEnd: PropType.oneOf([null, PropType.number]),
+  trialEnd: PropType.number,
 })
 
 export const accountDetailsPropType = PropType.shape({
