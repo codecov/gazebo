@@ -25,7 +25,7 @@ function UpdateButton({
       <div className="flex items-center gap-2">
         <Button
           data-cy="all-orgs-plan-update"
-          disabled={false}
+          disabled={disableInputs}
           type="submit"
           variant="primary"
           hook="submit-upgrade"
