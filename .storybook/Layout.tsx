@@ -1,3 +1,4 @@
+import React from 'react'
 import '../src/globals.css'
 
 const Layout = ({ children }) => {

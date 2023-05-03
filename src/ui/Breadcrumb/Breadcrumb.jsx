@@ -8,12 +8,12 @@ import A from 'ui/A'
 function Breadcrumb({ paths = [] }) {
   return (
     // space-x-1 doesn't work when text is rendered rtl, using margins
-    <nav className="flex-1 truncate text-ds-gray-octonary [&>*]:mr-1">
+    <nav className="flex flex-1 items-center truncate text-ds-gray-octonary [&>*]:mr-1">
       {paths.map((to, i) => {
         return (
           <Fragment key={i}>
             {i === paths.length - 1 ? (
-              <span className="font-semibold">
+              <span className="flex items-center font-semibold">
                 {defaultTo(to.children, to.text)}
               </span>
             ) : (

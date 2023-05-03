@@ -68,6 +68,7 @@ describe('UploadsCard', () => {
         sortedUploads: {
           travis: [
             {
+              id: 0,
               state: 'PROCESSED',
               provider: 'travis',
               createdAt: '2020-08-25T16:36:19.559474+00:00',
@@ -81,6 +82,7 @@ describe('UploadsCard', () => {
               buildCode: '721065746',
             },
             {
+              id: 1,
               state: 'PROCESSED',
               provider: 'travis',
               createdAt: '2020-08-25T16:36:25.820340+00:00',
@@ -96,6 +98,7 @@ describe('UploadsCard', () => {
           ],
           circleci: [
             {
+              id: 2,
               state: 'PROCESSED',
               provider: 'circleci',
               createdAt: '2020-08-25T16:36:19.559474+00:00',
@@ -109,6 +112,7 @@ describe('UploadsCard', () => {
               buildCode: '111111',
             },
             {
+              id: 3,
               state: 'COMPLETE',
               provider: 'circleci',
               createdAt: '2020-08-25T16:36:19.559474+00:00',
