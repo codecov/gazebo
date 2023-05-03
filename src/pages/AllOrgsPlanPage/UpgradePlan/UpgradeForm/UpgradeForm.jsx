@@ -315,7 +315,7 @@ function UpgradeForm({
           {errors?.seats?.message}
         </p>
       )}
-      <div>
+      <div className="w-fit">
         <UpdateButton
           isValid={isValid}
           getValues={getValues}
