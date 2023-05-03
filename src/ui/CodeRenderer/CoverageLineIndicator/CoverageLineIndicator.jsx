@@ -1,4 +1,5 @@
 import cs from 'classnames'
+import gt from 'lodash/gt'
 import isNumber from 'lodash/isNumber'
 import PropTypes from 'prop-types'
 
@@ -36,24 +37,24 @@ CoverageIcon.propTypes = {
 }
 
 function CoverageHitCounter({ coverage, hitCount }) {
-  if (!isNumber(hitCount) || coverage === LINE_STATE.BLANK) {
-    return null
+  if (isNumber(hitCount) && gt(hitCount, 0) && coverage !== LINE_STATE.BLANK) {
+    return (
+      <span
+        className={cs(
+          'text-white flex justify-center content-center items-center px-1.5 rounded-full text-center',
+          {
+            'bg-ds-primary-red': coverage === LINE_STATE.UNCOVERED,
+            'bg-ds-primary-yellow': coverage === LINE_STATE.PARTIAL,
+            'bg-ds-primary-green': coverage === LINE_STATE.COVERED,
+          }
+        )}
+      >
+        {hitCount}
+      </span>
+    )
   }
 
-  return (
-    <span
-      className={cs(
-        'text-white flex justify-center content-center items-center px-1.5 rounded-full text-center',
-        {
-          'bg-ds-primary-red': coverage === LINE_STATE.UNCOVERED,
-          'bg-ds-primary-yellow': coverage === LINE_STATE.PARTIAL,
-          'bg-ds-primary-green': coverage === LINE_STATE.COVERED,
-        }
-      )}
-    >
-      {hitCount}
-    </span>
-  )
+  return null
 }
 
 CoverageHitCounter.propTypes = {

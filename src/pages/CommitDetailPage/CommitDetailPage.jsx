@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -42,9 +43,13 @@ function CommitErrorBanners() {
   )
 }
 
-function CommitPage() {
+function CommitDetailPage() {
   const { provider, owner, repo, commit: commitSHA } = useParams()
   const shortSHA = commitSHA?.slice(0, 7)
+
+  // reset cache when user navigates to the commit detail page
+  const queryClient = useQueryClient()
+  queryClient.setQueryData(['IgnoredUploadIds'], [])
 
   const { data: commitPageData, isLoading } = useCommitPageData({
     provider,
@@ -98,4 +103,4 @@ function CommitPage() {
   )
 }
 
-export default CommitPage
+export default CommitDetailPage
