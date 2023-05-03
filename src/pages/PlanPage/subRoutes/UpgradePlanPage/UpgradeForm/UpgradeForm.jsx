@@ -278,12 +278,14 @@ function UpgradeForm({
           {errors?.seats?.message}
         </p>
       )}
-      <div className="w-min">
+      <div className="w-fit">
         <UpdateButton
           isValid={isValid}
           getValues={getValues}
           value={accountDetails?.plan?.value}
           quantity={accountDetails?.plan?.quantity}
+          accountDetails={accountDetails}
+          isSentryUpgrade={isSentryUpgrade}
         />
       </div>
     </form>

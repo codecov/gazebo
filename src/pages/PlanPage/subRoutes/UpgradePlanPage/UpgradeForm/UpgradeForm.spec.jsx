@@ -533,6 +533,9 @@ describe('UpgradeForm', () => {
           inactiveUserCount: 0,
           plan: sentryPlanYear,
           latestInvoice: null,
+          subscriptionDetail: {
+            trialEnd: 12345,
+          },
         },
       }
 
@@ -663,6 +666,9 @@ describe('UpgradeForm', () => {
               inactiveUserCount: 0,
               plan: null,
               latestInvoice: null,
+              subscriptionDetail: {
+                trialEnd: 12345,
+              },
             }}
           />,
           { wrapper: wrapper() }
@@ -698,6 +704,9 @@ describe('UpgradeForm', () => {
               inactiveUserCount: 0,
               plan: null,
               latestInvoice: null,
+              subscriptionDetail: {
+                trialEnd: 12345,
+              },
             }}
           />,
           { wrapper: wrapper() }
