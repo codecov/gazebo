@@ -10,7 +10,7 @@ jest.mock(
   './OrgControlTable/GithubPrivateScopeLogin',
   () => () => 'GithubPrivateScopeLogin'
 )
-jest.mock('./OrgControlTable/ResyncButton', () => () => 'ResyncButton')
+jest.mock('./OrgControlTable/RepoOrgNotFound', () => () => 'RepoOrgNotFound')
 jest.mock('./ReposTable', () => () => 'ReposTable')
 
 let testLocation
