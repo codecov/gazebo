@@ -1,6 +1,8 @@
 import cs from 'classnames'
+import isNull from 'lodash/isNull'
 import PropTypes from 'prop-types'
 import { createContext, useContext, useState } from 'react'
+import { z } from 'zod'
 
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
@@ -22,20 +24,35 @@ const variants = {
 
 type Variants = keyof typeof variants
 
-interface TopBannerContextValue {
-  variant: Variants
-  localStorageKey: string
-  setHideBanner: (x: boolean) => void
-}
-
-const TopBannerContext = createContext<TopBannerContextValue>({
-  variant: 'default',
-  localStorageKey: '',
-  setHideBanner: () => {},
+const topBannerContext = z.object({
+  variant: z.union([z.literal('default'), z.literal('warning')]),
+  localStorageKey: z.string(),
+  setHideBanner: z.function().args(z.boolean()).returns(z.void()),
 })
 
+type TopBannerContextValue = z.infer<typeof topBannerContext>
+
+const TopBannerContext = createContext<TopBannerContextValue | null>(null)
+
+/*
+ * WARNING: not for use outside of this hook, only exported for testing purposes
+ */
+export const useTopBannerContext = () => {
+  const rawContext = useContext(TopBannerContext)
+
+  const context = topBannerContext.safeParse(rawContext)
+
+  if (!context.success) {
+    throw new Error(
+      'useTopBannerContext has to be used within `<TopBannerContext.Provider>`'
+    )
+  }
+
+  return context.data
+}
+
 const DismissButton: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const { localStorageKey, setHideBanner } = useContext(TopBannerContext)
+  const { localStorageKey, setHideBanner } = useTopBannerContext()
 
   return (
     <>
@@ -46,7 +63,7 @@ const DismissButton: React.FC<React.PropsWithChildren> = ({ children }) => {
         onClick={() => {
           const currentStore = localStorage.getItem(LOCAL_STORE_ROOT_KEY)
 
-          if (currentStore === null) {
+          if (isNull(currentStore)) {
             localStorage.setItem(
               LOCAL_STORE_ROOT_KEY,
               JSON.stringify({ [localStorageKey]: 'true' })
@@ -55,8 +72,8 @@ const DismissButton: React.FC<React.PropsWithChildren> = ({ children }) => {
             localStorage.setItem(
               LOCAL_STORE_ROOT_KEY,
               JSON.stringify({
-                [localStorageKey]: 'true',
                 ...JSON.parse(currentStore),
+                [localStorageKey]: 'true',
               })
             )
           }
@@ -75,7 +92,7 @@ const ButtonGroup: React.FC<React.PropsWithChildren> = ({ children }) => {
 }
 
 const Content: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const { variant } = useContext(TopBannerContext)
+  const { variant } = useTopBannerContext()
   return (
     <div className="flex grow-0 items-center gap-1 pb-2 md:pb-0">
       <span className={cs('pr- md:pr-0', variants[variant].iconColor)}>
@@ -117,6 +134,7 @@ const TopBannerRoot: React.FC<React.PropsWithChildren<TopBannerProps>> = ({
       value={{ variant, localStorageKey, setHideBanner }}
     >
       <div
+        data-testid="top-banner-root"
         className={cs(
           'w-full px-2 py-1 lg:inline-flex min-h-[38px]',
           variants[variant].bgColor
