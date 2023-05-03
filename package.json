@@ -141,7 +141,9 @@
     ],
     "collectCoverageFrom": [
       "!src/**/*.stories.js",
-      "!src/**/*.stories.jsx"
+      "!src/**/*.stories.jsx",
+      "!src/**/*.stories.ts",
+      "!src/**/*.stories.tsx"
     ],
     "globalSetup": "./src/setupTestGlobal.js"
   },
