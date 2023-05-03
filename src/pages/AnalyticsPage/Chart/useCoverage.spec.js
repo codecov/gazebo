@@ -166,7 +166,7 @@ describe('useCoverage', () => {
         const coverageAxisLabel = result.current.data.coverageAxisLabel
 
         const message = coverageAxisLabel(new Date('2022/01/01'))
-        expect(message).toBe('Jan 1')
+        expect(message).toBe('Jan 1, 22')
       })
 
       it('returns the right format for weeks', async () => {
@@ -189,7 +189,7 @@ describe('useCoverage', () => {
         const coverageAxisLabel = result.current.data.coverageAxisLabel
 
         const message = coverageAxisLabel(new Date('2022/01/01'))
-        expect(message).toBe('Jan')
+        expect(message).toBe('Jan 1, 22')
       })
 
       it('returns the right format for default', async () => {
@@ -268,6 +268,7 @@ describe('useCoverage', () => {
         jest.setSystemTime(new Date('2022/01/01'))
         setupMockQuery()
       })
+
       afterEach(() => {
         queryClient.clear()
         jest.clearAllMocks()
@@ -289,7 +290,7 @@ describe('useCoverage', () => {
         expect(config.groupingUnit).toEqual('day')
         expect(
           result.current.coverageAxisLabel(new Date('June 21, 2020'))
-        ).toEqual('Jun 21')
+        ).toEqual('Jun 21, 20')
       })
 
       it('returns the right format for weeks', () => {
