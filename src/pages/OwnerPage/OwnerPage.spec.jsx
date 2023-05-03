@@ -129,9 +129,7 @@ describe('OwnerPage', () => {
 
           render(<OwnerPage />, { wrapper })
 
-          await waitFor(() =>
-            expect(testLocation.pathname).toBe('/plan/gh/codecov/upgrade')
-          )
+          await waitFor(() => expect(testLocation.pathname).toBe('/plan/gh'))
         })
       })
 
