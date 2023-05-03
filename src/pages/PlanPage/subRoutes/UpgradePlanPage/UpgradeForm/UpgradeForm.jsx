@@ -277,7 +277,7 @@ function UpgradeForm({
           {errors?.seats?.message}
         </p>
       )}
-      <div className="w-min">
+      <div>
         <UpdateButton
           isValid={isValid}
           getValues={getValues}
