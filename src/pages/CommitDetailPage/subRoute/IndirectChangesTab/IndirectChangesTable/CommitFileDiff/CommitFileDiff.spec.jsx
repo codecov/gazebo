@@ -52,8 +52,8 @@ const mockImpactedFile = {
             headCoverage: 'H',
             content: '+  private value = 0;',
             coverageInfo: {
-              hitCount: 18,
-              hitUploadIds: [0],
+              hitCount: 5,
+              hitUploadIds: [0, 1, 2, 3, 4],
             },
           },
           {
@@ -137,11 +137,28 @@ describe('CommitFileDiff', () => {
       expect(calcMode).toBeInTheDocument()
     })
 
-    it('renders hit count icon', async () => {
-      render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
+    describe('rendering hit icon', () => {
+      describe('there are no ignored ids', () => {
+        it('renders hit count icon', async () => {
+          render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
 
-      const hitCount = await screen.findByText('18')
-      expect(hitCount).toBeInTheDocument()
+          const hitCount = await screen.findByText('5')
+          expect(hitCount).toBeInTheDocument()
+        })
+      })
+
+      describe('there are ignored ids', () => {
+        beforeEach(() => {
+          queryClient.setQueryData(['IgnoredUploadIds'], [0])
+        })
+
+        it('renders hit count icon', async () => {
+          render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
+
+          const hitCount = await screen.findByText('4')
+          expect(hitCount).toBeInTheDocument()
+        })
+      })
     })
 
     it('renders the commit redirect url', async () => {

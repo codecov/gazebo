@@ -1,4 +1,7 @@
+import { useQueryClient } from '@tanstack/react-query'
+import without from 'lodash/without'
 import PropTypes from 'prop-types'
+import { useState } from 'react'
 
 import {
   ErrorCodeEnum,
@@ -7,6 +10,7 @@ import {
 } from 'shared/utils/commit'
 import { formatTimeToNow } from 'shared/utils/dates'
 import A from 'ui/A'
+import Checkbox from 'ui/Checkbox'
 import Icon from 'ui/Icon'
 
 import RenderError from './RenderError'
@@ -22,13 +26,35 @@ const Upload = ({
   uploadType,
   state,
   name,
+  id,
 }) => {
+  const [checked, setChecked] = useState(true)
+  const queryClient = useQueryClient()
   const isCarriedForward = uploadType === UploadTypeEnum.CARRIED_FORWARD
 
   return (
     <div className="flex flex-col gap-1 border-r border-ds-gray-secondary px-4 py-2">
       <div className="flex justify-between ">
-        <div className="flex flex-1 flex-wrap gap-1">
+        <div className="flex flex-1 flex-wrap items-center">
+          <Checkbox
+            checked={checked}
+            dataMarketing="toggle-upload-hit-count"
+            onChange={(e) => {
+              if (!!e.target.checked) {
+                queryClient.setQueryData(['IgnoredUploadIds'], (oldData) =>
+                  without(oldData, id)
+                )
+              } else {
+                queryClient.setQueryData(['IgnoredUploadIds'], (oldData) => [
+                  ...(oldData ?? []),
+                  id,
+                ])
+              }
+
+              setChecked((c) => !c)
+            }}
+          />
+
           <UploadReference ciUrl={ciUrl} name={name} buildCode={buildCode} />
           <RenderError errors={errors} state={state} />
         </div>
@@ -38,7 +64,7 @@ const Upload = ({
           </span>
         )}
       </div>
-      <div className="flex justify-between">
+      <div className="flex justify-between pl-5">
         <div className="flex flex-col flex-wrap gap-2 md:flex-row">
           {flags.map((flag, i) => (
             <span key={`${flag}-${i}`} className="flex">
@@ -83,6 +109,8 @@ Upload.propTypes = {
       ]),
     })
   ),
+  id: PropTypes.number,
+  setIgnoredIds: PropTypes.func,
 }
 
 export default Upload

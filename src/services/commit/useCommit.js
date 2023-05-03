@@ -67,6 +67,7 @@ export function useCommit({
                 uploads {
                   edges {
                     node {
+                      id
                       state
                       provider
                       createdAt
