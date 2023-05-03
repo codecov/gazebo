@@ -2,6 +2,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import Api from 'shared/api'
 
+export const MEASUREMENT_TYPE = Object.freeze({
+  FLAG_COVERAGE: 'FLAG_COVERAGE',
+})
+
 export function useActivateFlagMeasurements({ provider, owner, repo }) {
   const queryClient = useQueryClient()
   return useMutation({
@@ -15,7 +19,13 @@ export function useActivateFlagMeasurements({ provider, owner, repo }) {
             }
           }
         `
-      const variables = { input: { owner, repoName: repo } }
+      const variables = {
+        input: {
+          owner,
+          repoName: repo,
+          measurementType: MEASUREMENT_TYPE.FLAG_COVERAGE,
+        },
+      }
       return Api.graphqlMutation({
         provider,
         query,
