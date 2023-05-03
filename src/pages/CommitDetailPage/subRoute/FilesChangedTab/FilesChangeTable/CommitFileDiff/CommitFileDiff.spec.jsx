@@ -52,8 +52,8 @@ const mockImpactedFile = {
             headCoverage: 'H',
             content: '+  private value = 0;',
             coverageInfo: {
-              hitCount: 18,
-              hitUploadIds: [1],
+              hitCount: 5,
+              hitUploadIds: [1, 2, 3, 4, 5],
             },
           },
           {
@@ -140,7 +140,7 @@ describe('CommitFileDiff', () => {
     it('renders hit count icon', async () => {
       render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
 
-      const hitCount = await screen.findByText('18')
+      const hitCount = await screen.findByText('5')
       expect(hitCount).toBeInTheDocument()
     })
 

@@ -5,7 +5,7 @@ import { MemoryRouter, useParams } from 'react-router-dom'
 
 import { useResyncUser } from 'services/user'
 
-import ResyncButton from './ResyncButton'
+import RepoOrgNotFound from './RepoOrgNotFound'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
@@ -13,7 +13,7 @@ jest.mock('react-router-dom', () => ({
 }))
 jest.mock('services/user')
 
-describe('ResyncButton', () => {
+describe('RepoOrgNotFound', () => {
   function setup(
     provider,
     returnValueResync = {
@@ -33,7 +33,7 @@ describe('ResyncButton', () => {
   describe('when rendered with gh provider and the sync is not in progress', () => {
     it('renders the button to resync', () => {
       setup('gh')
-      render(<ResyncButton />, { wrapper: MemoryRouter })
+      render(<RepoOrgNotFound />, { wrapper: MemoryRouter })
 
       expect(
         screen.getByRole('button', {
@@ -44,7 +44,7 @@ describe('ResyncButton', () => {
 
     it('renders text related to gh provider', () => {
       setup('gh')
-      render(<ResyncButton />, { wrapper: MemoryRouter })
+      render(<RepoOrgNotFound />, { wrapper: MemoryRouter })
 
       expect(screen.getByText(/or org?/)).toBeInTheDocument()
       expect(screen.getByText(/check org access/)).toBeInTheDocument()
@@ -55,7 +55,7 @@ describe('ResyncButton', () => {
       it('calls the triggerResync from the service', async () => {
         const { trigger } = setup('gh')
         const user = userEvent.setup()
-        render(<ResyncButton />, { wrapper: MemoryRouter })
+        render(<RepoOrgNotFound />, { wrapper: MemoryRouter })
 
         await user.click(
           screen.getByRole('button', {
@@ -72,7 +72,7 @@ describe('ResyncButton', () => {
     beforeEach(() => setup('not-gh'))
 
     it(`shouldn't render text related to gh provider`, () => {
-      render(<ResyncButton />, { wrapper: MemoryRouter })
+      render(<RepoOrgNotFound />, { wrapper: MemoryRouter })
 
       expect(screen.queryByText(/or org?/)).toBeNull()
       expect(screen.queryByText(/check org access/)).toBeNull()
@@ -88,9 +88,15 @@ describe('ResyncButton', () => {
     })
 
     it('renders a loading message', () => {
-      render(<ResyncButton />, { wrapper: MemoryRouter })
+      render(<RepoOrgNotFound />, { wrapper: MemoryRouter })
 
       expect(screen.getByText(/Syncing\.\.\./i)).toBeInTheDocument()
+    })
+
+    it('renders rest of the help message', () => {
+      render(<RepoOrgNotFound />, { wrapper: MemoryRouter })
+
+      expect(screen.getByText(/check org access/)).toBeInTheDocument()
     })
   })
 })

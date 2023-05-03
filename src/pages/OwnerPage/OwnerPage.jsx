@@ -23,7 +23,7 @@ const useSentryTokenRedirect = ({ ownerData }) => {
         onSuccess: (data) => {
           const error = data?.saveSentryState?.error
           if (!error) {
-            push(`/plan/${provider}/${owner}/upgrade`)
+            push(`/plan/${provider}`)
           }
         },
       })
