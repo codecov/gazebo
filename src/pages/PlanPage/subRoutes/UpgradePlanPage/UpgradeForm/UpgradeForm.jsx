@@ -283,6 +283,7 @@ function UpgradeForm({
           getValues={getValues}
           value={accountDetails?.plan?.value}
           quantity={accountDetails?.plan?.quantity}
+          accountDetails={accountDetails}
           isSentryUpgrade={isSentryUpgrade}
         />
       </div>

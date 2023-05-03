@@ -4,6 +4,7 @@ import PropTypes, { type InferProps } from 'prop-types'
 import { accountDetailsPropType } from 'services/account'
 import Button from 'ui/Button'
 
+// eslint-disable-next-line complexity
 function UpdateButton({
   isValid,
   getValues,
@@ -15,7 +16,7 @@ function UpdateButton({
   const isSamePlan = getValues()?.newPlan === value
   const noChangeInSeats = getValues()?.seats === quantity
   const disabled = !isValid || (isSamePlan && noChangeInSeats)
-  const trialEndTimestamp = accountDetails?.subscriptionDetail?.trialEnd
+  const trialEndTimestamp = accountDetails?.subscriptionDetail?.trialEnd ?? null
 
   if (isSentryUpgrade && isNull(trialEndTimestamp)) {
     return (
