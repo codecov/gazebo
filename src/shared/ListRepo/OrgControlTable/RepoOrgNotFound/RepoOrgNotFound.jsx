@@ -7,32 +7,35 @@ import Spinner from 'ui/Spinner'
 
 function ResyncButton() {
   const { triggerResync, isSyncing } = useResyncUser()
-  const { provider } = useParams()
-  const isGh = providerToName(provider) === 'Github'
 
   if (isSyncing) {
     return (
-      <div className="flex flex-1 items-center text-ds-gray-senary">
-        <div className="mr-2 text-ds-blue">
+      <span>
+        <span className="mr-2 inline-block text-ds-blue">
           <Spinner />
-        </div>
-        Syncing...
-      </div>
+        </span>
+        syncing...
+      </span>
     )
   }
 
   return (
-    <p className="flex-1 text-sm">
+    <button className="text-ds-blue hover:underline" onClick={triggerResync}>
+      re-syncing
+    </button>
+  )
+}
+
+function RepoOrgNotFound() {
+  const { provider } = useParams()
+  const isGh = providerToName(provider) === 'Github'
+
+  return (
+    <p className="flex-1 items-center text-sm">
       <span className="font-semibold text-ds-gray-quinary">
         Can&apos;t find your repo{isGh ? ' or org?' : '?'}
       </span>{' '}
-      Try{' '}
-      <button
-        className="flex-none text-ds-blue hover:underline"
-        onClick={triggerResync}
-      >
-        re-syncing
-      </button>
+      Try <ResyncButton />
       {isGh && (
         <>
           {' '}
@@ -48,4 +51,4 @@ function ResyncButton() {
   )
 }
 
-export default ResyncButton
+export default RepoOrgNotFound
