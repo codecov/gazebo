@@ -125,6 +125,7 @@ const useUpgradeForm = ({
     setValue,
     getValues,
     reset,
+    watch,
     upgradePlan,
     ...rest,
   }
@@ -193,6 +194,7 @@ function UpgradeForm({
     formState: { isValid, errors },
     reset,
     upgradePlan,
+    watch,
   } = useUpgradeForm({
     proPlanYear,
     proPlanMonth,
@@ -303,6 +305,9 @@ function UpgradeForm({
           perMonthPrice={perMonthPrice}
           setValue={setValue}
           isSentryUpgrade={isSentryUpgrade}
+          sentryPlanYear={sentryPlanYear}
+          sentryPlanMonth={sentryPlanMonth}
+          seats={watch('seats')}
         />
       )}
       {nextBillingDate && (
