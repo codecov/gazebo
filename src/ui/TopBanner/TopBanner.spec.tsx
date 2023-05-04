@@ -19,8 +19,16 @@ describe('TopBanner', () => {
 
   describe('rendering base banner with only content', () => {
     describe('default variant', () => {
-      it.skip('has the correct background color', () => {
-        expect(2).toBe(1)
+      it('has the correct background color', () => {
+        render(
+          <TopBanner localStorageKey="testing-key">
+            <TopBanner.Content>Test warning banner</TopBanner.Content>
+          </TopBanner>
+        )
+
+        const div = screen.getByTestId('top-banner-root')
+        expect(div).toBeInTheDocument()
+        expect(div).toHaveClass('bg-ds-gray-primary')
       })
 
       it('renders circle exclamation icon', () => {

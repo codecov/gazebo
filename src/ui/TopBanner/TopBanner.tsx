@@ -13,7 +13,7 @@ const variants = {
   default: {
     icon: 'exclamationCircle',
     iconColor: '',
-    bgColor: 'bg-[#E9EEFC]',
+    bgColor: 'bg-ds-gray-primary',
   },
   warning: {
     icon: 'exclamationTriangle',
