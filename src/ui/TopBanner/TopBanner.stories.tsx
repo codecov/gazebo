@@ -1,29 +1,56 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react'
 
 import TopBannerComponent from './index'
 
-const meta = {
+const meta: Meta<typeof TopBannerComponent> = {
   title: 'Components/TopBanner',
   component: TopBannerComponent,
-} as ComponentMeta<typeof TopBannerComponent>
+  argTypes: {
+    localStorageKey: {
+      description: 'testing',
+      table: {
+        disable: true,
+      },
+    },
+    variant: {
+      options: ['default', 'warning'],
+      control: 'radio',
+      description:
+        'This prop controls the variation of top banner that is displayed',
+    },
+    children: {
+      control: 'text',
+    },
+  },
+}
 
 export default meta
 
-export const TopBanner: ComponentStory<typeof TopBannerComponent> = (args) => (
-  <TopBannerComponent {...args}>
-    <TopBannerComponent.Content>Cool Banner</TopBannerComponent.Content>
-  </TopBannerComponent>
-)
+type Story = StoryObj<typeof TopBannerComponent>
 
-export const TopBannerWithDismissButton: ComponentStory<
-  typeof TopBannerComponent
-> = (args) => (
-  <TopBannerComponent {...args}>
-    <TopBannerComponent.Content>Cool Banner</TopBannerComponent.Content>
-    <TopBannerComponent.ButtonGroup>
-      <TopBannerComponent.DismissButton>
-        Dismiss
-      </TopBannerComponent.DismissButton>
-    </TopBannerComponent.ButtonGroup>
-  </TopBannerComponent>
-)
+export const TopBanner: Story = {
+  args: {
+    variant: 'default',
+    children: 'Cool Banner',
+  },
+  argTypes: {
+    variant: {
+      options: ['default', 'warning'],
+      control: 'radio',
+    },
+    children: {
+      control: 'text',
+    },
+  },
+  render: (args) => {
+    const { variant, children } = args
+    return (
+      <TopBannerComponent
+        localStorageKey="storybook-top-banner"
+        variant={variant}
+      >
+        <TopBannerComponent.Content>{children}</TopBannerComponent.Content>
+      </TopBannerComponent>
+    )
+  },
+}
