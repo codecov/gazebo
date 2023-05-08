@@ -1,6 +1,5 @@
 import * as Sentry from '@sentry/react'
 import { Replay } from '@sentry/replay'
-import { BrowserTracing } from '@sentry/tracing'
 import { Route } from 'react-router-dom'
 
 import config from './config'
@@ -52,7 +51,7 @@ const deClutterConfig = {
 export const SentryRoute = Sentry.withSentryRouting(Route)
 
 export const setupSentry = ({ history }) => {
-  const browserTracing = new BrowserTracing({
+  const browserTracing = new Sentry.BrowserTracing({
     routingInstrumentation: Sentry.reactRouterV5Instrumentation(history),
     tracePropagationTargets: ['api.codecov.io', 'stage-api.codecov.dev'],
   })
