@@ -5,10 +5,13 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useTruncation } from 'ui/TruncatedMessage/hooks'
+
 import CommitPage from './CommitDetailPage'
 
 jest.mock('./CommitDetailPageContent', () => () => 'CommitDetailPageContent')
 jest.mock('./UploadsCard', () => () => 'UploadsCard')
+jest.mock('ui/TruncatedMessage/hooks')
 
 const mockCommit = {
   owner: {
@@ -126,6 +129,11 @@ describe('CommitPage', () => {
   function setup(
     { hasYamlErrors, noCommit } = { hasYamlErrors: false, noCommit: false }
   ) {
+    useTruncation.mockImplementation(() => ({
+      ref: () => {},
+      canTruncate: false,
+    }))
+
     server.use(
       graphql.query('Commit', (req, res, ctx) =>
         res(
