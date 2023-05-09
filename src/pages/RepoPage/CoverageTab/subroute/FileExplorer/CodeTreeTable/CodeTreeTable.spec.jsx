@@ -388,8 +388,12 @@ describe('CodeTreeTable', () => {
 
           const partial = await screen.findByText('Partial')
 
-          await user.click(partial)
-          await user.click(partial)
+          await act(async () => {
+            await user.click(partial)
+          })
+          await act(async () => {
+            await user.click(partial)
+          })
 
           expect(requestFilters).toHaveBeenCalledWith({
             ordering: { direction: 'ASC', parameter: 'PARTIALS' },
