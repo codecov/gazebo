@@ -12,7 +12,7 @@ function getPlans() {
       marketingName: 'Basic',
       value: 'users-free',
       billingRate: null,
-      basUnitprice: 0,
+      baseUnitPrice: 0,
       benefits: [
         'Up to 5 users',
         'Unlimited public repositories',
@@ -74,7 +74,7 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 const wrapper =
-  (initialEntries = '/gh') =>
+  (initialEntries = '/gh'): React.FC<React.PropsWithChildren> =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
@@ -95,7 +95,7 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('usePlans', () => {
-  function setup(currentUrl) {
+  function setup() {
     server.use(
       rest.get(`/internal/plans`, (req, res, ctx) => {
         return res(ctx.status(200), ctx.json(getPlans()))
