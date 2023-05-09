@@ -55,6 +55,7 @@ const SentryBanner: React.FC<SentryBannerProps> = ({
   const nonBundledCost = calculateNonBundledCost({
     baseUnitPrice: sentryPlanMonth.baseUnitPrice,
   })
+
   return (
     <div className="bg-ds-gray-primary p-4">
       <p className="pb-3">
