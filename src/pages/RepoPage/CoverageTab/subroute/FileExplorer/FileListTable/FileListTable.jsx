@@ -14,7 +14,7 @@ function FileListTable() {
   } = useRepoBranchContentsTable()
 
   return (
-    <div className="col-span-12 flex flex-col md:col-span-12">
+    <div className="col-span-12 flex flex-col gap-4">
       <Table
         data={data}
         columns={headers}
@@ -22,15 +22,13 @@ function FileListTable() {
         enableHover
         defaultSort={[{ id: 'misses', desc: true }]}
       />
-      <div className="mt-4">
-        <Loader isLoading={isLoading} />
-        {data?.length === 0 && !isLoading && (
-          <RepoContentsResult
-            isSearching={isSearching}
-            isMissingHeadReport={isMissingHeadReport}
-          />
-        )}
-      </div>
+      <Loader isLoading={isLoading} />
+      {data?.length === 0 && !isLoading && (
+        <RepoContentsResult
+          isSearching={isSearching}
+          isMissingHeadReport={isMissingHeadReport}
+        />
+      )}
     </div>
   )
 }

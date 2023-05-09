@@ -31,7 +31,7 @@ function FileExplorer() {
           setSearchValue={(search) => updateParams({ search })}
         />
       </div>
-      <div className=" grid flex-1 grid-cols-12 gap-8">
+      <div className="flex flex-col gap-8">
         {isFileListDisplay ? <FileListTable /> : <CodeTreeTable />}
       </div>
     </>
