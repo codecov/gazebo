@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 
 import { usePlans } from 'services/account'
 import { findSentryPlans, formatNumberToUSD, Plans } from 'shared/utils/billing'
+import { calculateNonBundledCost } from 'shared/utils/upgradeForm'
 import Icon from 'ui/Icon'
 
 interface SentryBannerProps {
@@ -25,7 +26,9 @@ const SentryBanner: React.FC<SentryBannerProps> = ({
   const { sentryPlanMonth, sentryPlanYear } = findSentryPlans({ plans })
 
   if (isPerYear) {
-    const nonBundledCost = 5 * sentryPlanYear.baseUnitPrice * 12 - 29 * 12
+    const nonBundledCost = calculateNonBundledCost({
+      baseUnitPrice: sentryPlanYear.baseUnitPrice,
+    })
 
     return (
       <div className="bg-ds-gray-primary p-4">
@@ -49,7 +52,9 @@ const SentryBanner: React.FC<SentryBannerProps> = ({
     )
   }
 
-  const nonBundledCost = 5 * sentryPlanMonth.baseUnitPrice * 12 - 29 * 12
+  const nonBundledCost = calculateNonBundledCost({
+    baseUnitPrice: sentryPlanMonth.baseUnitPrice,
+  })
   return (
     <div className="bg-ds-gray-primary p-4">
       <p className="pb-3">
