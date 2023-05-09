@@ -251,7 +251,6 @@ function UpgradeForm({
             {...register('seats')}
             id="nb-seats"
             size="20"
-            className="w-full rounded border bg-ds-gray-secondary p-2"
             type="number"
             label="Seat count"
             min={minSeats}
