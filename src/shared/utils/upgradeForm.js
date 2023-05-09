@@ -78,3 +78,6 @@ export const calculatePrice = ({
 
   return price
 }
+
+export const calculateNonBundledCost = ({ baseUnitPrice }) =>
+  MIN_SENTRY_SEATS * baseUnitPrice * 12 - SENTRY_PRICE * 12
