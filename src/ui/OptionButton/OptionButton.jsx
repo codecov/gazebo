@@ -10,7 +10,8 @@ function OptionButton({ active, options, onChange }) {
             className={cs(
               'flex-1 py-1 px-2 text-sm cursor-pointer whitespace-nowrap',
               {
-                'bg-ds-blue-darker text-white font-semibold': active === o.text,
+                'bg-ds-primary-base text-white font-semibold':
+                  active === o.text,
                 'rounded-l': index === 0,
                 'rounded-r': index === options.length - 1,
               }

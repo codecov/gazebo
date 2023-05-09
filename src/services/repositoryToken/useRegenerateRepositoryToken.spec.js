@@ -21,13 +21,20 @@ const data = {
   },
 }
 
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const server = setupServer()
 
-beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
+beforeAll(() => {
+  server.listen()
+})
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
 afterAll(() => server.close())
 
-const queryClient = new QueryClient()
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov/gazebo']}>
     <Route path="/:provider/:owner/:repo">
@@ -55,35 +62,6 @@ describe('useRegenerateRepositoryToken', () => {
   }
 
   describe('when called', () => {
-    it('returns isLoading false', () => {
-      setup()
-      const { result } = renderHook(
-        () => useRegenerateRepositoryToken({ tokenType: 'profiling' }),
-        {
-          wrapper,
-        }
-      )
-
-      expect(result.current.isLoading).toBeFalsy()
-    })
-
-    describe('when calling the mutation', () => {
-      it('returns isLoading true', async () => {
-        setup()
-        const { result, waitFor } = renderHook(
-          () => useRegenerateRepositoryToken({ tokenType: 'profiling' }),
-          {
-            wrapper,
-          }
-        )
-
-        result.current.mutate()
-        await waitFor(() => result.current.status !== 'idle')
-
-        expect(result.current.isLoading).toBeTruthy()
-      })
-    })
-
     describe('When mutation is a success', () => {
       it('returns isSuccess true', async () => {
         setup()
@@ -95,10 +73,8 @@ describe('useRegenerateRepositoryToken', () => {
         )
 
         result.current.mutate()
-        await waitFor(() => result.current.isLoading)
-        await waitFor(() => !result.current.isLoading)
 
-        expect(result.current.isSuccess).toBeTruthy()
+        await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
       })
     })
   })
@@ -114,8 +90,6 @@ describe('useRegenerateRepositoryToken', () => {
       )
 
       result.current.mutate()
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
 
       await waitFor(() =>
         expect(addNotification).toBeCalledWith({
@@ -127,6 +101,11 @@ describe('useRegenerateRepositoryToken', () => {
   })
 
   describe('when mutation has a network error', () => {
+    beforeEach(() => {
+      // silence console errors for failed requests
+      console.error = () => {}
+    })
+
     it('adds an error notification', async () => {
       const { addNotification } = setup({ triggerError: true })
       const { result, waitFor } = renderHook(

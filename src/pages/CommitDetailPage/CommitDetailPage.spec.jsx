@@ -1,14 +1,17 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useTruncation } from 'ui/TruncatedMessage/hooks'
+
 import CommitPage from './CommitDetailPage'
 
 jest.mock('./CommitDetailPageContent', () => () => 'CommitDetailPageContent')
 jest.mock('./UploadsCard', () => () => 'UploadsCard')
+jest.mock('ui/TruncatedMessage/hooks')
 
 const mockCommit = {
   owner: {
@@ -126,6 +129,11 @@ describe('CommitPage', () => {
   function setup(
     { hasYamlErrors, noCommit } = { hasYamlErrors: false, noCommit: false }
   ) {
+    useTruncation.mockImplementation(() => ({
+      ref: () => {},
+      canTruncate: false,
+    }))
+
     server.use(
       graphql.query('Commit', (req, res, ctx) =>
         res(
@@ -247,6 +255,24 @@ describe('CommitPage', () => {
 
         const yamlError = await screen.findByText('Commit YAML is invalid')
         expect(yamlError).toBeInTheDocument()
+      })
+    })
+
+    describe('testing setting of query cache', () => {
+      beforeEach(() => {
+        setup({ hasYamlErrors: true })
+      })
+
+      it('sets ignore upload ids to empty array', async () => {
+        render(<CommitPage />, {
+          wrapper: wrapper(),
+        })
+
+        await waitFor(() =>
+          expect(queryClient.getQueryData(['IgnoredUploadIds'])).toStrictEqual(
+            []
+          )
+        )
       })
     })
   })

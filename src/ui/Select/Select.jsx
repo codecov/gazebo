@@ -199,12 +199,12 @@ const Select = forwardRef(
               <>
                 {items.map(_renderItem)}
                 {items.length === 0 && onSearch && !isLoading && (
-                  <p className="py-1 px-3 text-sm font-semibold">
+                  <p className="px-3 py-1 text-sm font-semibold">
                     No results found
                   </p>
                 )}
                 {isLoading && (
-                  <span className="flex py-2 px-3">
+                  <span className="flex px-3 py-2">
                     <Spinner />
                   </span>
                 )}

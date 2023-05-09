@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 import useIntersection from 'react-use/lib/useIntersection'
@@ -22,6 +22,7 @@ const wrapper =
       <MemoryRouter initialEntries={[initialEntries]}>
         <Switch>
           <Route path="/:provider" exact>
+            <div>Click away</div>
             {children}
           </Route>
         </Switch>
@@ -41,7 +42,7 @@ describe('ContextSwitcher', () => {
     beforeEach(() => setup())
     afterEach(() => jest.restoreAllMocks())
 
-    it('does not render any link', () => {
+    it('does not render the listed items initially', () => {
       render(
         <ContextSwitcher
           activeContext="laudna"
@@ -82,7 +83,7 @@ describe('ContextSwitcher', () => {
         }
       )
 
-      expect(screen.queryAllByRole('link')).toHaveLength(0)
+      expect(screen.queryByRole('listbox')).toHaveClass('hidden')
     })
   })
 
@@ -131,11 +132,20 @@ describe('ContextSwitcher', () => {
         }
       )
 
-      const button = await screen.findByRole('button')
+      const button = await screen.findByRole('button', { expanded: false })
       await user.click(button)
 
-      const popover = await screen.findByRole('menu')
-      expect(popover).toBeVisible()
+      const popover = await screen.findByRole('listbox')
+      expect(popover).not.toHaveClass('hidden')
+
+      let clickAway = screen.getByText(/Click away/)
+      await act(async () => await user.click(clickAway))
+      expect(popover).toHaveClass('hidden')
+
+      // Does not open the menu when menu is closed
+      clickAway = screen.getByText(/Click away/)
+      await act(async () => await user.click(clickAway))
+      expect(popover).toHaveClass('hidden')
     })
 
     it('renders the orgs', async () => {
@@ -180,7 +190,10 @@ describe('ContextSwitcher', () => {
         }
       )
 
-      const button = await screen.findByRole('button')
+      const button = await screen.findByRole(
+        'button',
+        ('button', { expanded: false })
+      )
       await user.click(button)
 
       const laudnaUsers = await screen.findAllByText('laudna')
@@ -231,8 +244,6 @@ describe('ContextSwitcher', () => {
           currentUser={{
             defaultOrgUsername: 'spotify',
           }}
-          ModalComponent={ModalComponent}
-          ModalControl={ModalControl}
           src="imageUrl"
           isLoading={false}
           error={null}
@@ -340,7 +351,7 @@ describe('ContextSwitcher', () => {
           }
         )
 
-        const button = await screen.findByRole('button')
+        const button = await screen.findByRole('button', { expanded: false })
         await user.click(button)
 
         const spinner = await screen.findByTestId('spinner')
@@ -392,7 +403,7 @@ describe('ContextSwitcher', () => {
           }
         )
 
-        const button = await screen.findByRole('button')
+        const button = await screen.findByRole('button', { expanded: false })
         await user.click(button)
 
         const spinner = screen.queryByTestId('spinner')
@@ -451,17 +462,17 @@ describe('ContextSwitcher', () => {
         }
       )
 
-      const button = await screen.findByRole('button')
+      const button = await screen.findByRole('button', { expanded: false })
       await user.click(button)
 
       expect(onLoadMoreFunc).toHaveBeenCalled()
     })
   })
 
-  describe('when custom component is passed', () => {
+  describe('when custom modal component is passed', () => {
     afterEach(() => jest.restoreAllMocks())
 
-    it('renders the custom component', async () => {
+    it('renders the modal component', async () => {
       const { user } = setup()
       render(
         <ContextSwitcher

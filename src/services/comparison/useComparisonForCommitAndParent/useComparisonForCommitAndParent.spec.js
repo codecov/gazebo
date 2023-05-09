@@ -26,7 +26,7 @@ const mockImpactedFile = {
   isCriticalFile: false,
   headName: 'flag1/file.js',
   hashedPath: 'hashedFilePath',
-  segmentsDeprecated: [
+  segments: [
     {
       header: '-0,0 +1,45',
       hasUnintendedChanges: false,
@@ -37,6 +37,10 @@ const mockImpactedFile = {
           baseCoverage: null,
           headCoverage: 'H',
           content: '+export default class Calculator {',
+          coverageInfo: {
+            hitCount: null,
+            hitUploadIds: null,
+          },
         },
         {
           baseNumber: null,
@@ -44,6 +48,10 @@ const mockImpactedFile = {
           baseCoverage: null,
           headCoverage: 'H',
           content: '+  private value = 0;',
+          coverageInfo: {
+            hitCount: 1,
+            hitUploadIds: [1],
+          },
         },
         {
           baseNumber: null,
@@ -51,6 +59,10 @@ const mockImpactedFile = {
           baseCoverage: null,
           headCoverage: 'H',
           content: '+  private calcMode = ""',
+          coverageInfo: {
+            hitCount: null,
+            hitUploadIds: null,
+          },
         },
       ],
     },

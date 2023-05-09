@@ -1,7 +1,9 @@
+import without from 'lodash/without'
 import PropTypes from 'prop-types'
 import { Fragment } from 'react'
 import { useParams } from 'react-router-dom'
 
+import { useIgnoredIds } from 'pages/CommitDetailPage/hooks/useIgnoredIds'
 import { useComparisonForCommitAndParent } from 'services/comparison/useComparisonForCommitAndParent'
 import { transformImpactedFileData } from 'services/comparison/utils'
 import { useNavLinks } from 'services/navigation'
@@ -31,6 +33,9 @@ const Loader = () => (
 function CommitFileDiff({ path }) {
   const { owner, repo, provider, commit } = useParams()
   const { commitFileDiff } = useNavLinks()
+
+  const { data: ignoredUploadIds } = useIgnoredIds()
+
   const { data: comparisonData, isLoading } = useComparisonForCommitAndParent({
     provider,
     owner,
@@ -91,6 +96,12 @@ function CommitFileDiff({ path }) {
                   lineContent={line}
                   edgeOfFile={i <= 2 || i >= segment.lines.length - 3}
                   path={comparisonData?.hashedPath}
+                  hitCount={
+                    without(
+                      segment?.lines?.[i]?.coverageInfo?.hitUploadIds,
+                      ...ignoredUploadIds
+                    ).length
+                  }
                   {...props}
                   {...segment.lines[i]}
                 />

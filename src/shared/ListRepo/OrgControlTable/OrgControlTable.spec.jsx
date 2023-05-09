@@ -6,7 +6,7 @@ import { orderingOptions } from 'services/repos'
 import OrgControlTable from './OrgControlTable'
 
 jest.mock('./GithubPrivateScopeLogin', () => () => 'GithubPrivateScopeLogin')
-jest.mock('./ResyncButton', () => () => 'ResyncButton')
+jest.mock('./RepoOrgNotFound', () => () => 'RepoOrgNotFound')
 
 describe('OrgControlTable', () => {
   function setup() {
@@ -34,8 +34,8 @@ describe('OrgControlTable', () => {
         name: /Inactive/i,
       })
       // no better way to assert the button is selected yet
-      expect(buttonEnabled).toHaveClass('bg-ds-blue-darker')
-      expect(buttonDisabled).not.toHaveClass('bg-ds-blue-darker')
+      expect(buttonEnabled).toHaveClass('bg-ds-primary-base')
+      expect(buttonDisabled).not.toHaveClass('bg-ds-primary-base')
     })
 
     describe('when clicking on inactive button', () => {
@@ -83,8 +83,8 @@ describe('OrgControlTable', () => {
         name: /Inactive/,
       })
       // no better way to assert the button is selected yet
-      expect(buttonEnabled).not.toHaveClass('bg-ds-blue-darker')
-      expect(buttonDisabled).toHaveClass('bg-ds-blue-darker')
+      expect(buttonEnabled).not.toHaveClass('bg-ds-primary-base')
+      expect(buttonDisabled).toHaveClass('bg-ds-primary-base')
     })
 
     describe('when clicking on Active button', () => {
@@ -165,7 +165,7 @@ describe('OrgControlTable', () => {
   })
 
   describe('when the user can refetch', () => {
-    it('renders the ResyncButton', () => {
+    it('renders the RepoOrgNotFound', () => {
       render(
         <OrgControlTable
           sortItem={orderingOptions[0]}
@@ -177,12 +177,12 @@ describe('OrgControlTable', () => {
           canRefetch={true}
         />
       )
-      expect(screen.getByText(/ResyncButton/)).toBeInTheDocument()
+      expect(screen.getByText(/RepoOrgNotFound/)).toBeInTheDocument()
     })
   })
 
   describe('when the user cant refetch', () => {
-    it(`doesn't render the ResyncButton`, () => {
+    it(`doesn't render the RepoOrgNotFound`, () => {
       render(
         <OrgControlTable
           sortItem={orderingOptions[0]}
@@ -195,7 +195,7 @@ describe('OrgControlTable', () => {
         />
       )
 
-      expect(screen.queryByText(/ResyncButton/)).not.toBeInTheDocument()
+      expect(screen.queryByText(/RepoOrgNotFound/)).not.toBeInTheDocument()
     })
   })
 })

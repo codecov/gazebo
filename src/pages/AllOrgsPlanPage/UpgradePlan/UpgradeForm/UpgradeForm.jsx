@@ -293,6 +293,7 @@ function UpgradeForm({
           activatedStudentCount={accountDetails?.activatedStudentCount}
           activatedUserCount={accountDetails?.activatedUserCount}
           inactiveUserCount={accountDetails?.inactiveUserCount}
+          isSentryUpgrade={isSentryUpgrade}
         />
       </div>
       {!disableInputs && (
@@ -315,13 +316,16 @@ function UpgradeForm({
           {errors?.seats?.message}
         </p>
       )}
-      <div className="w-min">
+      <div className="w-fit">
         <UpdateButton
           isValid={isValid}
           getValues={getValues}
           value={accountDetails?.plan?.value}
           quantity={accountDetails?.plan?.quantity}
           disableInputs={disableInputs}
+          accountDetails={accountDetails}
+          isSentryUpgrade={isSentryUpgrade}
+          organizationName={organizationName}
         />
       </div>
     </form>

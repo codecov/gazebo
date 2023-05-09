@@ -14,6 +14,7 @@ jest.mock('services/toastNotification', () => ({
 }))
 
 const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
   logger: {
     error: () => {},
   },

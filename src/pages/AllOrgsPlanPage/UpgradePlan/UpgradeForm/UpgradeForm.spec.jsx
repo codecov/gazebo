@@ -88,6 +88,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       suspense: true,
+      retry: false,
     },
   },
   logger: {
@@ -583,6 +584,9 @@ describe('UpgradeForm', () => {
           inactiveUserCount: 0,
           plan: sentryPlanYear,
           latestInvoice: null,
+          subscriptionDetail: {
+            trialEnd: 12345,
+          },
         },
       }
 
@@ -719,6 +723,9 @@ describe('UpgradeForm', () => {
               inactiveUserCount: 0,
               plan: null,
               latestInvoice: null,
+              subscriptionDetail: {
+                trialEnd: 12345,
+              },
             }}
           />,
           { wrapper }

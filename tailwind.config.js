@@ -16,7 +16,6 @@ module.exports = {
     './public/*.html',
   ],
   mode: 'jit',
-  plugins: [require('@tailwindcss/line-clamp')],
   theme: {
     container: {
       center: true,
@@ -62,6 +61,7 @@ module.exports = {
             red: withOpacity('--color-ds-primary-red'),
             purple: withOpacity('--color-ds-primary-purple'),
             yellow: withOpacity('--color-ds-primary-yellow'),
+            base: withOpacity('--color-ds-primary-base'),
           },
           coverage: {
             covered: withOpacity('--color-success-100'),

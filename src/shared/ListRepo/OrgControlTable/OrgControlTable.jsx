@@ -8,7 +8,7 @@ import Select from 'ui/Select'
 import TextInput from 'ui/TextInput'
 
 import GithubPrivateScopeLogin from './GithubPrivateScopeLogin'
-import ResyncButton from './ResyncButton'
+import RepoOrgNotFound from './RepoOrgNotFound'
 
 import { repoDisplayOptions } from '../ListRepo'
 
@@ -55,7 +55,7 @@ function OrgControlTable({
         onChange={(e) => setSearch(e.target.value)}
         data-testid="org-control-search"
       />
-      {canRefetch && <ResyncButton />}
+      {canRefetch && <RepoOrgNotFound />}
       <GithubPrivateScopeLogin />
       <Select
         dataMarketing="repo-list-order-selector"

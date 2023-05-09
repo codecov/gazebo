@@ -64,7 +64,7 @@ const mockPull = {
           baseTotals: {
             percentCovered: 27.35,
           },
-          changeWithParent: 38.94,
+          changeCoverage: 38.94,
           impactedFiles: mockImpactedFiles,
         },
       },
@@ -72,7 +72,9 @@ const mockPull = {
   },
 }
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const server = setupServer()
 
 const wrapper = ({ children }) => (
@@ -141,7 +143,7 @@ describe('FilesChanged', () => {
                 baseTotals: {
                   percentCovered: 27.35,
                 },
-                changeWithParent: 38.94,
+                changeCoverage: 38.94,
                 impactedFiles: [],
               },
             },

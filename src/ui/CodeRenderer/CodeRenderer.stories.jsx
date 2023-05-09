@@ -1,3 +1,5 @@
+import { MemoryRouter } from 'react-router-dom'
+
 import CodeRenderer from './CodeRenderer'
 import CodeRendererInfoRow from './CodeRendererInfoRow'
 import DiffLine from './DiffLine'
@@ -5,7 +7,7 @@ import SingleLine from './SingleLine'
 
 const SingleLineTemplate = (args) => {
   return (
-    <>
+    <MemoryRouter initialEntries={['/gh/codecov/cool-repo']}>
       <CodeRendererInfoRow>
         <span>
           Header for the code renderer, put whatever the design needs.
@@ -23,13 +25,13 @@ const SingleLineTemplate = (args) => {
           />
         )}
       />
-    </>
+    </MemoryRouter>
   )
 }
 
 const DiffTemplate = (args) => {
   return (
-    <>
+    <MemoryRouter initialEntries={['/gh/codecov/cool-repo']}>
       <CodeRendererInfoRow>
         <span>
           Header for the code renderer, put whatever the design needs.
@@ -39,7 +41,6 @@ const DiffTemplate = (args) => {
         {...args}
         rendererType="DIFF"
         LineComponent={({ i, line, ...props }) => {
-          console.log(props)
           return (
             <DiffLine
               key={i + 1}
@@ -48,13 +49,14 @@ const DiffTemplate = (args) => {
               lineContent={line}
               headCoverage={['M', 'P', 'H'][Math.floor(Math.random() * 3)]}
               baseCoverage={['M', 'P', 'H'][Math.floor(Math.random() * 3)]}
+              hitCount={[null, 1, 10, 100, 1000][Math.floor(Math.random() * 5)]}
               edgeOfFile={i <= 2}
               {...props}
             />
           )
         }}
       />
-    </>
+    </MemoryRouter>
   )
 }
 

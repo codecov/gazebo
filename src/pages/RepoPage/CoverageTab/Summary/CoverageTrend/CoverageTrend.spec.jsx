@@ -12,7 +12,9 @@ jest.mock('services/branches')
 jest.mock('../../hooks')
 jest.mock('../TrendDropdown', () => () => 'TrendDropdown')
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={[`/gh/caleb/mighty-nein`]}>
     <Route path="/:provider/:owner/:repo">

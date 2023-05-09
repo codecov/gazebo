@@ -28,38 +28,54 @@ const mockImpactedFile = {
   isCriticalFile: false,
   headName: 'flag1/file.js',
   hashedPath: 'hashedFilePath',
-  segmentsDeprecated: [
-    {
-      header: '-0,0 +1,45',
-      hasUnintendedChanges: false,
-      lines: [
-        {
-          baseNumber: null,
-          headNumber: '1',
-          baseCoverage: null,
-          headCoverage: 'H',
-          content: '+export default class Calculator {',
-        },
-        {
-          baseNumber: null,
-          headNumber: '2',
-          baseCoverage: null,
-          headCoverage: 'H',
-          content: '+  private value = 0;',
-        },
-        {
-          baseNumber: null,
-          headNumber: '3',
-          baseCoverage: null,
-          headCoverage: 'H',
-          content: '+  private calcMode = ""',
-        },
-      ],
-    },
-  ],
+  segments: {
+    results: [
+      {
+        header: '-0,0 +1,45',
+        hasUnintendedChanges: false,
+        lines: [
+          {
+            baseNumber: null,
+            headNumber: '1',
+            baseCoverage: null,
+            headCoverage: 'H',
+            content: '+export default class Calculator {',
+            coverageInfo: {
+              hitCount: null,
+              hitUploadIds: null,
+            },
+          },
+          {
+            baseNumber: null,
+            headNumber: '2',
+            baseCoverage: null,
+            headCoverage: 'H',
+            content: '+  private value = 0;',
+            coverageInfo: {
+              hitCount: 5,
+              hitUploadIds: [0, 1, 2, 3, 4],
+            },
+          },
+          {
+            baseNumber: null,
+            headNumber: '3',
+            baseCoverage: null,
+            headCoverage: 'H',
+            content: '+  private calcMode = ""',
+            coverageInfo: {
+              hitCount: null,
+              hitUploadIds: null,
+            },
+          },
+        ],
+      },
+    ],
+  },
 }
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const server = setupServer()
 
 const wrapper = ({ children }) => (
@@ -121,6 +137,30 @@ describe('CommitFileDiff', () => {
       expect(calcMode).toBeInTheDocument()
     })
 
+    describe('rendering hit icon', () => {
+      describe('there are no ignored ids', () => {
+        it('renders hit count icon', async () => {
+          render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
+
+          const hitCount = await screen.findByText('5')
+          expect(hitCount).toBeInTheDocument()
+        })
+      })
+
+      describe('there are ignored ids', () => {
+        beforeEach(() => {
+          queryClient.setQueryData(['IgnoredUploadIds'], [0])
+        })
+
+        it('renders hit count icon', async () => {
+          render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
+
+          const hitCount = await screen.findByText('4')
+          expect(hitCount).toBeInTheDocument()
+        })
+      })
+    })
+
     it('renders the commit redirect url', async () => {
       render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
 
@@ -138,7 +178,7 @@ describe('CommitFileDiff', () => {
       const impactedFile = {
         isCriticalFile: false,
         headName: 'flag1/file.js',
-        segmentsDeprecated: [],
+        segments: [],
       }
 
       setup({ impactedFile })
@@ -163,9 +203,9 @@ describe('CommitFileDiff', () => {
         isCriticalFile: false,
         isNewFile: true,
         headName: 'flag1/file.js',
-        segmentsDeprecated: [
-          { lines: [{ content: 'abc' }, { content: 'def' }] },
-        ],
+        segments: {
+          results: [{ lines: [{ content: 'abc' }, { content: 'def' }] }],
+        },
       }
       setup({ impactedFile })
     })
@@ -184,9 +224,9 @@ describe('CommitFileDiff', () => {
         isCriticalFile: false,
         isRenamedFile: true,
         headName: 'flag1/file.js',
-        segmentsDeprecated: [
-          { lines: [{ content: 'abc' }, { content: 'def' }] },
-        ],
+        segments: {
+          results: [{ lines: [{ content: 'abc' }, { content: 'def' }] }],
+        },
       }
       setup({ impactedFile })
     })
@@ -204,9 +244,9 @@ describe('CommitFileDiff', () => {
         isCriticalFile: false,
         isDeletedFile: true,
         headName: 'flag1/file.js',
-        segmentsDeprecated: [
-          { lines: [{ content: 'abc' }, { content: 'def' }] },
-        ],
+        segments: {
+          results: [{ lines: [{ content: 'abc' }, { content: 'def' }] }],
+        },
       }
       setup({ impactedFile })
     })
@@ -224,9 +264,9 @@ describe('CommitFileDiff', () => {
         isCriticalFile: true,
         fileLabel: null,
         headName: 'flag1/file.js',
-        segmentsDeprecated: [
-          { lines: [{ content: 'abc' }, { content: 'def' }] },
-        ],
+        segments: {
+          results: [{ lines: [{ content: 'abc' }, { content: 'def' }] }],
+        },
       }
       setup({ impactedFile })
     })

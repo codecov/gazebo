@@ -39,7 +39,9 @@ const mockSecondResponse = {
   total_pages: 2,
 }
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const wrapper =
   (initialEntries = '/admin/gh/access') =>
   ({ children }) =>

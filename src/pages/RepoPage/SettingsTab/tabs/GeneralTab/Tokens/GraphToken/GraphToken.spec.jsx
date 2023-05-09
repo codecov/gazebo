@@ -4,7 +4,9 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import GraphToken from './GraphToken'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings']}>

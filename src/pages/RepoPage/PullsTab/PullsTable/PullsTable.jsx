@@ -76,7 +76,7 @@ function transformPullToTable(pulls, isLoading) {
     const { author, compareWithBase, head, pullId, state, title, updatestamp } =
       pull
 
-    const change = compareWithBase?.changeWithParent
+    const change = compareWithBase?.changeCoverage
 
     return {
       title: (

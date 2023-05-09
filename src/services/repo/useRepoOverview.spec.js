@@ -5,7 +5,9 @@ import { setupServer } from 'msw/node'
 
 import { useRepoOverview } from './useRepoOverview'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>

@@ -6,7 +6,9 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useTabsCounts } from './useTabsCounts'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const wrapper =
   (initialEntries = '/bb/critical-role/bells-hells/pull/9') =>
@@ -40,6 +42,7 @@ const mockPullData = {
           directChangedFilesCount: 4,
           indirectChangedFilesCount: 0,
           flagComparisonsCount: 1,
+          componentComparisonsCount: 6,
           __typename: 'Comparison',
         },
       },
@@ -80,18 +83,14 @@ describe('useTabsCount', () => {
     })
 
     it('returns the correct data', async () => {
-      const { result, waitForNextUpdate, waitFor } = renderHook(
-        () => useTabsCounts(),
-        {
-          wrapper: wrapper(),
-        }
-      )
-
-      await waitForNextUpdate()
+      const { result, waitFor } = renderHook(() => useTabsCounts(), {
+        wrapper: wrapper(),
+      })
 
       await waitFor(() =>
         expect(result.current).toStrictEqual({
           flagsCount: 1,
+          componentsCount: 6,
           directChangedFilesCount: 4,
           indirectChangesCount: 0,
           commitsCount: 11,

@@ -4,9 +4,15 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useFlags } from 'shared/featureFlags'
+
 import Tokens from './Tokens'
 
-const queryClient = new QueryClient()
+jest.mock('shared/featureFlags')
+
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const server = setupServer()
 
 const wrapper = ({ children }) => (
@@ -28,7 +34,11 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('Tokens', () => {
-  function setup() {
+  function setup({ showStaticAnalysis = true } = { showStaticAnalysis: true }) {
+    useFlags.mockReturnValue({
+      staticAnalysisToken: showStaticAnalysis,
+    })
+
     server.use(
       graphql.query('GetRepoSettings', (req, res, ctx) => {
         return res(
@@ -38,6 +48,7 @@ describe('Tokens', () => {
               repository: {
                 uploadToken: 'upload token',
                 profilingToken: 'profiling token',
+                staticAnalysisToken: 'static analysis token',
                 graphToken: 'graph token',
               },
             },
@@ -71,6 +82,26 @@ describe('Tokens', () => {
 
       const title = await screen.findByText(/Graphing token/)
       expect(title).toBeInTheDocument()
+    })
+
+    it('renders static token component', async () => {
+      render(<Tokens />, { wrapper })
+
+      const title = await screen.findByText(/Static analysis token/)
+      expect(title).toBeInTheDocument()
+    })
+  })
+
+  describe('when static analysis flag is disabled', () => {
+    beforeEach(() => {
+      setup({ showStaticAnalysis: false })
+    })
+
+    it('does not render static token component', () => {
+      render(<Tokens />, { wrapper })
+
+      const title = screen.queryByText(/Static analysis token/)
+      expect(title).not.toBeInTheDocument()
     })
   })
 })

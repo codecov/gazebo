@@ -8,7 +8,9 @@ import { formatTimeToNow } from 'shared/utils/dates'
 
 import PullsTable from './PullsTable'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const server = setupServer()
 
 beforeAll(() => server.listen())
@@ -39,7 +41,7 @@ describe('Pulls Table', () => {
           node: {
             author: { username: 'cool-user', avatarUrl: 'random' },
             compareWithBase: {
-              changeWithParent: 14,
+              changeCoverage: 14,
               patchCoverage: {
                 change: 32,
               },
@@ -174,7 +176,7 @@ describe('Pulls Table', () => {
       setup({
         overrideDetails: {
           compareWithBase: {
-            changeWithParent: null,
+            changeCoverage: null,
           },
           head: {
             totals: {

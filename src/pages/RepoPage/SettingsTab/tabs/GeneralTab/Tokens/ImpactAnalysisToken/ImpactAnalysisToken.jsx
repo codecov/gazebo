@@ -10,8 +10,9 @@ import A from 'ui/A'
 import Button from 'ui/Button'
 import TokenWrapper from 'ui/TokenWrapper'
 
-import { TokenType } from './enums'
 import RegenerateProfilingTokenModal from './RegenerateProfilingTokenModal'
+
+import { TokenType } from '../enums'
 
 function ImpactAnalysisToken({ profilingToken }) {
   const [showModal, setShowModal] = useState(false)

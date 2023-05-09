@@ -10,7 +10,9 @@ import DeleteFlagModal from './DeleteFlagModal'
 
 jest.mock('ui/Avatar', () => () => 'Avatar')
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const server = setupServer()
 
 const ownerUsername = 'vox-machina'
@@ -53,9 +55,12 @@ describe('DeleteFlagModal', () => {
     })
 
     it('renders the modal message', async () => {
-      render(<DeleteFlagModal flagName="flag-123" closeModal={jest.fn()} />, {
-        wrapper,
-      })
+      render(
+        <DeleteFlagModal flagName="flag-123" closeModal={jest.fn()} isOpen />,
+        {
+          wrapper,
+        }
+      )
       const messagePartOne = await screen.findByText(/This will remove the/)
       expect(messagePartOne).toBeInTheDocument()
       const messagePartTwo = await screen.findByText(
@@ -68,9 +73,12 @@ describe('DeleteFlagModal', () => {
     })
 
     it('renders delete and cancel buttons', async () => {
-      render(<DeleteFlagModal flagName="flag-123" closeModal={jest.fn()} />, {
-        wrapper,
-      })
+      render(
+        <DeleteFlagModal flagName="flag-123" closeModal={jest.fn()} isOpen />,
+        {
+          wrapper,
+        }
+      )
       const deleteButton = await screen.findByRole('button', {
         name: /Delete flag/,
       })
@@ -80,9 +88,12 @@ describe('DeleteFlagModal', () => {
     })
 
     it('renders appropriate title', async () => {
-      render(<DeleteFlagModal flagName="flag-123" closeModal={jest.fn()} />, {
-        wrapper,
-      })
+      render(
+        <DeleteFlagModal flagName="flag-123" closeModal={jest.fn()} isOpen />,
+        {
+          wrapper,
+        }
+      )
       const title = await screen.findByText(/Delete Flag/)
       expect(title).toBeInTheDocument()
     })
@@ -92,9 +103,12 @@ describe('DeleteFlagModal', () => {
     it('selects a default organization', async () => {
       const { user } = setup()
       const closeModal = jest.fn()
-      render(<DeleteFlagModal flagName="flag-123" closeModal={closeModal} />, {
-        wrapper,
-      })
+      render(
+        <DeleteFlagModal flagName="flag-123" closeModal={closeModal} isOpen />,
+        {
+          wrapper,
+        }
+      )
 
       const deleteButton = await screen.findByRole('button', {
         name: /Delete flag/,
@@ -108,9 +122,12 @@ describe('DeleteFlagModal', () => {
     it('closes the modal', async () => {
       const { user } = setup()
       const closeModal = jest.fn()
-      render(<DeleteFlagModal flagName="flag-123" closeModal={closeModal} />, {
-        wrapper,
-      })
+      render(
+        <DeleteFlagModal flagName="flag-123" closeModal={closeModal} isOpen />,
+        {
+          wrapper,
+        }
+      )
       const cancelButton = await screen.findByRole('button', {
         name: /Cancel/,
       })

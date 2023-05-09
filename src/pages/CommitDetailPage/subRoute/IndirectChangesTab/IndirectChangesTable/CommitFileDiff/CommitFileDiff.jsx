@@ -1,7 +1,9 @@
+import without from 'lodash/without'
 import PropTypes from 'prop-types'
 import { Fragment } from 'react'
 import { useParams } from 'react-router-dom'
 
+import { useIgnoredIds } from 'pages/CommitDetailPage/hooks/useIgnoredIds'
 import { useComparisonForCommitAndParent } from 'services/comparison/useComparisonForCommitAndParent'
 import { transformImpactedFileData } from 'services/comparison/utils'
 import { useNavLinks } from 'services/navigation'
@@ -28,16 +30,22 @@ const Loader = () => (
   </div>
 )
 
+// eslint-disable-next-line max-statements
 function CommitFileDiff({ path }) {
   const { owner, repo, provider, commit } = useParams()
   const { commitFileDiff } = useNavLinks()
+
+  const { data: ignoredUploadIds } = useIgnoredIds()
+
   const { data: comparisonData, isLoading } = useComparisonForCommitAndParent({
     provider,
     owner,
     repo,
     commitid: commit,
     path,
-    filters: { hasUnintendedChanges: true },
+    filters: {
+      hasUnintendedChanges: true,
+    },
     opts: {
       select: (res) =>
         transformImpactedFileData(
@@ -55,7 +63,6 @@ function CommitFileDiff({ path }) {
   }
 
   const { fileLabel, headName, isCriticalFile, segments } = comparisonData
-
   return (
     <>
       {isCriticalFile && <CriticalFileLabel variant="borderTop" />}
@@ -91,6 +98,12 @@ function CommitFileDiff({ path }) {
                   lineContent={line}
                   edgeOfFile={i <= 2 || i >= segment.lines.length - 3}
                   path={comparisonData?.hashedPath}
+                  hitCount={
+                    without(
+                      segment?.lines?.[i]?.coverageInfo?.hitUploadIds,
+                      ...ignoredUploadIds
+                    ).length
+                  }
                   {...props}
                   {...segment.lines[i]}
                 />

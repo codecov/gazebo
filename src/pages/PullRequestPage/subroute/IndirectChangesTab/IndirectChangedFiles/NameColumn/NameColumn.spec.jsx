@@ -7,7 +7,9 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import NameColumn from './NameColumn'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const server = setupServer()
 
 const mockSingularImpactedFilesData = {
@@ -31,20 +33,22 @@ const mockSingularImpactedFilesData = {
               percentCovered: 27.43,
             },
             changeCoverage: 58.333333333333336,
-            segmentsDeprecated: [
-              {
-                header: '@@ -0,0 1,45 @@',
-                lines: [
-                  {
-                    baseNumber: null,
-                    headNumber: '1',
-                    baseCoverage: null,
-                    headCoverage: 'H',
-                    content: 'export default class Calculator {',
-                  },
-                ],
-              },
-            ],
+            segments: {
+              results: [
+                {
+                  header: '@@ -0,0 1,45 @@',
+                  lines: [
+                    {
+                      baseNumber: null,
+                      headNumber: '1',
+                      baseCoverage: null,
+                      headCoverage: 'H',
+                      content: 'export default class Calculator {',
+                    },
+                  ],
+                },
+              ],
+            },
           },
         },
       },

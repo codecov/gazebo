@@ -16,6 +16,7 @@ const mockPullData = {
           impactedFilesCount: 4,
           indirectChangedFilesCount: 0,
           flagComparisonsCount: 1,
+          componentComparisonCount: 6,
           __typename: 'Comparison',
         },
       },
@@ -23,7 +24,9 @@ const mockPullData = {
   },
 }
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const server = setupServer()
 
 const wrapper = ({ children }) => (
@@ -82,6 +85,7 @@ describe('usePullPageData', () => {
             impactedFilesCount: 4,
             indirectChangedFilesCount: 0,
             flagComparisonsCount: 1,
+            componentComparisonCount: 6,
             __typename: 'Comparison',
           },
         },

@@ -447,6 +447,18 @@ export function useNavLinks() {
       ) => `/${provider}/${owner}/${repo}/pull/${pullId}/flags`,
       isExternalLink: false,
     },
+    pullComponents: {
+      text: 'Flags',
+      path: (
+        { provider = p, owner = o, repo = r, pullId = pi } = {
+          provider: p,
+          owner: o,
+          repo: r,
+          pullId: pi,
+        }
+      ) => `/${provider}/${owner}/${repo}/pull/${pullId}/components`,
+      isExternalLink: false,
+    },
     pullTreeView: {
       text: 'Pull tree view',
       path: (

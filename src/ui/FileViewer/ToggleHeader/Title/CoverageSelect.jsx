@@ -2,7 +2,7 @@ import cs from 'classnames'
 import PropTypes from 'prop-types'
 
 import { LINE_STATE } from 'shared/utils/fileviewer'
-import CoverageSelectIcon from 'ui/Icon/CoverageSelectIcon'
+import CoverageLineIndicator from 'ui/CodeRenderer/CoverageLineIndicator'
 
 const classNamePerLineState = {
   [LINE_STATE.COVERED]:
@@ -23,7 +23,7 @@ function CoverageSelect({ coverage }) {
       )}
     >
       <span className="text-black">{coverage.toLowerCase()}</span>
-      <CoverageSelectIcon coverage={coverage} />
+      <CoverageLineIndicator coverage={coverage} />
     </div>
   )
 }

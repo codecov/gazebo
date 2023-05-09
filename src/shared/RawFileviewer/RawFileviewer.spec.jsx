@@ -20,7 +20,9 @@ jest.mock(
 
 jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const server = setupServer()
 
 const wrapper =

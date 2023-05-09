@@ -18,7 +18,7 @@ export default function LimitedHeader() {
         'bg-ds-pink-tertiary': isImpersonating,
       })}
     >
-      <nav className="container mx-auto flex flex-wrap items-center justify-between gap-2 py-4 px-3 sm:px-0">
+      <nav className="container mx-auto flex flex-wrap items-center justify-between gap-2 px-3 py-4 sm:px-0">
         <div className="flex items-center gap-4">
           <A to={{ pageName: 'provider' }} variant="header">
             <span className="sr-only">Link to Homepage</span>

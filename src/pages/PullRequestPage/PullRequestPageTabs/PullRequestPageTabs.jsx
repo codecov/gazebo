@@ -12,6 +12,7 @@ import { useTabsCounts } from './hooks'
 function PullRequestPageTabs() {
   const {
     flagsCount,
+    componentsCount,
     indirectChangesCount,
     directChangedFilesCount,
     commitsCount,
@@ -76,13 +77,22 @@ function PullRequestPageTabs() {
           ),
         },
         {
+          pageName: 'pullComponents',
+          children: (
+            <>
+              Components
+              <sup className="text-xs">{componentsCount}</sup>
+            </>
+          ),
+        },
+        {
           pageName: 'pullTreeView',
           children: 'File explorer',
           options: { pullId },
           location: customLocation,
         },
       ]}
-      component={<ToggleHeader coverageIsLoading={false} />}
+      component={<ToggleHeader coverageIsLoading={false} showHitCount={true} />}
     />
   )
 }

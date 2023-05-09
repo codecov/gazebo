@@ -58,3 +58,22 @@ TitleFlags.propTypes = {
   onFlagsChange: PropTypes.func.isRequired,
   flagsIsLoading: PropTypes.bool,
 }
+
+export const TitleHitCount = ({ showHitCount = false }) => {
+  if (!showHitCount) {
+    return null
+  }
+
+  return (
+    <div className="flex items-center gap-2 bg-ds-gray-primary px-1 font-mono">
+      <span className="flex items-center justify-center justify-items-center rounded-full bg-ds-gray-senary px-1.5 text-center text-white">
+        n
+      </span>
+      <span className="text-xs">upload #</span>
+    </div>
+  )
+}
+
+TitleHitCount.propTypes = {
+  showHitCount: PropTypes.bool,
+}

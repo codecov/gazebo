@@ -15,6 +15,8 @@ fragment HeaderOnPullFragment on Pull {
 
 export const SummaryOnPullFragment = `
 fragment SummaryOnPullFragment on Pull {
+  behindBy
+  behindByCommit
   head {
     commitid
     totals {
@@ -36,7 +38,7 @@ fragment SummaryOnPullFragment on Pull {
       patchTotals {
         percentCovered
       }
-      changeWithParent
+      changeCoverage
       hasDifferentNumberOfHeadAndBaseReports
     }
   }
@@ -150,15 +152,23 @@ fragment FileComparisonWithBase on Pull {
           percentCovered
         }
         changeCoverage
-        segmentsDeprecated (filters: $filters) {
-          header
-          hasUnintendedChanges
-          lines {
-            baseNumber
-            headNumber
-            baseCoverage
-            headCoverage
-            content
+        segments (filters: $filters) {
+          ... on SegmentComparisons {
+            results {
+              header
+              hasUnintendedChanges
+              lines {
+                baseNumber
+                headNumber
+                baseCoverage
+                headCoverage
+                content
+                coverageInfo {
+                  hitCount
+                  hitUploadIds
+                }
+              }
+            }
           }
         }
       }
