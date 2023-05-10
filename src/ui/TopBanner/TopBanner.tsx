@@ -87,11 +87,13 @@ const DismissButton: React.FC<React.PropsWithChildren> = ({ children }) => {
   )
 }
 
-const ButtonGroup: React.FC<React.PropsWithChildren> = ({ children }) => {
-  return <div className="flex flex-1 justify-end gap-2">{children}</div>
+const End: React.FC<React.PropsWithChildren> = ({ children }) => {
+  return (
+    <div className="flex flex-1 items-center justify-end gap-2">{children}</div>
+  )
 }
 
-const Content: React.FC<React.PropsWithChildren> = ({ children }) => {
+const Start: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { variant } = useTopBannerContext()
   return (
     <div className="flex grow-0 items-center gap-1 pb-2 md:pb-0">
@@ -153,6 +155,6 @@ TopBannerRoot.propTypes = {
 
 export const TopBanner = Object.assign(TopBannerRoot, {
   DismissButton,
-  ButtonGroup,
-  Content,
+  Start,
+  End,
 })
