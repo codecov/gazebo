@@ -217,7 +217,7 @@ describe('SentryTrialBanner', () => {
             name: /Start trial today/,
           })
           expect(link).toBeInTheDocument()
-          expect(link).toHaveAttribute('href', '/plan/gh/codecov/upgrade')
+          expect(link).toHaveAttribute('href', '/plan/gh')
         })
 
         it('renders link to support', async () => {
@@ -226,12 +226,12 @@ describe('SentryTrialBanner', () => {
           })
 
           const supportLink = await screen.findByRole('link', {
-            name: /Support/,
+            name: /support@codecov.io/,
           })
           expect(supportLink).toBeInTheDocument()
           expect(supportLink).toHaveAttribute(
             'href',
-            'https://codecov.freshdesk.com/support/home'
+            'mailto:support@codecov.io'
           )
         })
 
@@ -244,7 +244,7 @@ describe('SentryTrialBanner', () => {
             name: /Start Trial/,
           })
           expect(buttonLink).toBeInTheDocument()
-          expect(buttonLink).toHaveAttribute('href', '/plan/gh/codecov/upgrade')
+          expect(buttonLink).toHaveAttribute('href', '/plan/gh')
         })
       })
     })

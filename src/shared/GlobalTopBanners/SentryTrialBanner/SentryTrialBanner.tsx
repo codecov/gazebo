@@ -65,7 +65,7 @@ const SentryTrialBanner: React.FC = () => {
           </span>{' '}
           No credit card required -{' '}
           <A
-            to={{ pageName: 'upgradeOrgPlan' }}
+            to={{ pageName: 'allOrgsPlanPage' }}
             isExternal={false}
             hook="sentry-trial-banner-to-upgrade-page"
             variant="semibold"
@@ -80,13 +80,15 @@ const SentryTrialBanner: React.FC = () => {
           <span className="font-semibold">Questions?</span> React out to{' '}
           {/* @ts-ignore-error */}
           <A
-            to={{ pageName: 'support' }}
+            href="mailto:support@codecov.io"
             hook="sentry-trial-banner-to-support"
-            isExternal={true}
-          />
+            isExternal={false}
+          >
+            support@codecov.io
+          </A>
         </p>
         <Button
-          to={{ pageName: 'upgradeOrgPlan' }}
+          to={{ pageName: 'allOrgsPlanPage' }}
           hook="sentry-trial-banner-to-upgrade-page"
           disabled={false}
           variant="primary"
