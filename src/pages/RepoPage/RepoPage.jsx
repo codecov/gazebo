@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { Redirect, Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
@@ -62,20 +62,28 @@ const Loader = () => (
 // eslint-disable-next-line max-statements, complexity
 function RepoPage() {
   const { provider, owner, repo } = useParams()
+  const [refetchEnabled, setRefetchEnabled] = useState(false)
+
   const { data: repoData } = useRepo({
     provider,
     owner,
     repo,
+    opts: {
+      refetchOnWindowFocus: refetchEnabled,
+    },
   })
 
   const matchTree = useMatchTreePath()
   const matchBlobs = useMatchBlobsPath()
-
-  const isRepoActive = repoData?.repository?.active
-  const isRepoActivated = repoData?.repository?.activated
   const isCurrentUserPartOfOrg = repoData?.isCurrentUserPartOfOrg
   const isCurrentUserActivated = repoData?.isCurrentUserActivated
+  const isRepoActive = repoData?.repository?.active
+  const isRepoActivated = repoData?.repository?.activated
   const isRepoPrivate = !!repoData?.repository?.private
+
+  if (!refetchEnabled && !isRepoActivated) {
+    setRefetchEnabled(true)
+  }
 
   if (!repoData?.repository || (isRepoPrivate && !isCurrentUserPartOfOrg))
     return <NotFound />
