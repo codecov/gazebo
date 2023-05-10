@@ -1,6 +1,11 @@
 import { Plans } from 'shared/utils/billing'
 
-import { calculatePrice, getInitialDataForm, getSchema } from './upgradeForm'
+import {
+  calculateNonBundledCost,
+  calculatePrice,
+  getInitialDataForm,
+  getSchema,
+} from './upgradeForm'
 
 describe('calculatePrice', () => {
   describe('isSentryUpgrade is true', () => {
@@ -231,5 +236,12 @@ describe('getSchema', () => {
         message: 'Must deactivate more users before downgrading plans',
       })
     )
+  })
+})
+
+describe('calculateNonBundledCost', () => {
+  it('returns calculated cost', () => {
+    const total = calculateNonBundledCost({ baseUnitPrice: 10 })
+    expect(total).toEqual(252)
   })
 })

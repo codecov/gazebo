@@ -120,6 +120,7 @@ const useUpgradeForm = ({
     setValue,
     getValues,
     reset,
+    watch,
     upgradePlan,
     ...rest,
   }
@@ -185,6 +186,7 @@ function UpgradeForm({
     getValues,
     formState: { isValid, errors },
     upgradePlan,
+    watch,
   } = useUpgradeForm({
     proPlanYear,
     proPlanMonth,
@@ -242,17 +244,18 @@ function UpgradeForm({
         />
       </div>
       <div className="flex flex-col gap-2 xl:w-5/12">
-        <TextInput
-          data-cy="seats"
-          dataMarketing="plan-pricing-seats"
-          {...register('seats')}
-          id="nb-seats"
-          size="20"
-          className="w-full rounded border bg-ds-gray-secondary p-2"
-          type="number"
-          label="Seat count"
-          min={minSeats}
-        />
+        <div className="w-2/6">
+          <TextInput
+            data-cy="seats"
+            dataMarketing="plan-pricing-seats"
+            {...register('seats')}
+            id="nb-seats"
+            size="20"
+            type="number"
+            label="Seat count"
+            min={minSeats}
+          />
+        </div>
         <UserCount
           activatedStudentCount={accountDetails?.activatedStudentCount}
           activatedUserCount={accountDetails?.activatedUserCount}
@@ -266,6 +269,9 @@ function UpgradeForm({
         perMonthPrice={perMonthPrice}
         setValue={setValue}
         isSentryUpgrade={isSentryUpgrade}
+        sentryPlanYear={sentryPlanYear}
+        sentryPlanMonth={sentryPlanMonth}
+        seats={watch('seats')}
       />
       {nextBillingDate && (
         <p className="mt-1 flex">
