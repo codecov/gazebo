@@ -41,10 +41,15 @@ describe('EraseRepoContent', () => {
     it('renders body', () => {
       render(<EraseRepoContent />, { wrapper })
 
-      const p = screen.getByText(
+      const firstBlock = screen.getByText(
         'This will remove all coverage reporting from the repo.'
       )
-      expect(p).toBeInTheDocument()
+      expect(firstBlock).toBeInTheDocument()
+
+      const secondBlock = screen.getByText(
+        'Erasing may take a few minutes depending on repository size.'
+      )
+      expect(secondBlock).toBeInTheDocument()
     })
 
     it('renders regenerate button', () => {
