@@ -5,10 +5,10 @@ import { formatTimeToNow } from 'shared/utils/dates'
 import A from 'ui/A'
 import CIStatusLabel from 'ui/CIStatus'
 import Icon from 'ui/Icon'
+import TruncatedMessage from 'ui/TruncatedMessage/TruncatedMessage'
 
 import { useCommitHeaderData } from './hooks'
 import PullLabel from './PullLabel'
-import TruncatedMessage from './TruncatedMessage'
 
 function Header() {
   const { provider, owner, repo, commit: commitSHA } = useParams()
@@ -38,7 +38,9 @@ function Header() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col">
-        {commit?.message && <TruncatedMessage message={commit?.message} />}
+        {commit?.message && (
+          <TruncatedMessage>{commit?.message}</TruncatedMessage>
+        )}
         <div className="flex items-center gap-2 text-ds-gray-quinary">
           <div>
             {commit?.createdAt && (
