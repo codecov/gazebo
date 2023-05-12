@@ -1,9 +1,9 @@
+import isEqual from 'lodash/isEqual'
 import noop from 'lodash/noop'
 import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
 } from 'react'
@@ -23,7 +23,9 @@ export function PlanBreadcrumbProvider({ children }) {
   const { planTab } = useNavLinks()
   const isBasePath = window.location.pathname === planTab.path()
 
-  useEffect(() => isBasePath && setBreadcrumbs(base), [isBasePath])
+  if (isBasePath && !isEqual(base, breadcrumbs)) {
+    setBreadcrumbs(base)
+  }
 
   const addBreadcrumb = useCallback((crumbs = []) => {
     setBreadcrumbs(() => [...base, ...crumbs])
