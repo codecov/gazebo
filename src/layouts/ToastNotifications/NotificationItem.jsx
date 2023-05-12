@@ -17,7 +17,9 @@ function NotificationItem({ notification, removeNotification }) {
     const timeout = setTimeout(close, notification.disappearAfter)
 
     // cleanup if unmounted before the time
-    return () => clearTimeout(timeout)
+    return () => {
+      clearTimeout(timeout)
+    }
   }, [close, notification])
 
   const className = 'rounded-full max-w-lg mx-auto flex items-center mt-4 p-2'
