@@ -27,10 +27,17 @@ function usePrintPage() {
   const shouldPrint = 'print' in urlParams
 
   useEffect(() => {
+    const controller = new AbortController()
     if (shouldPrint) {
       // close window after printing
-      window.addEventListener('afterprint', window.close)
+      window.addEventListener('afterprint', window.close, {
+        signal: controller.signal,
+      })
       window.print()
+    }
+
+    return () => {
+      controller.abort()
     }
   }, [shouldPrint])
 }
