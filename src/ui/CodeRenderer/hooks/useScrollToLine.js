@@ -28,21 +28,14 @@ const useTarget = ({ location, idString }) => {
 
   // eslint-disable-next-line complexity
   useEffect(() => {
-    let unMounted = false
     if (location?.hash === idString) {
       if (!targeted) {
-        if (unMounted) return
         setTargeted(true)
       }
     } else {
       if (targeted) {
-        if (unMounted) return
         setTargeted(false)
       }
-    }
-
-    return () => {
-      unMounted = true
     }
   }, [location, idString, targeted])
 
