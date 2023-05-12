@@ -277,7 +277,7 @@ describe('UpgradeDetails', () => {
       )
 
       const disclaimer = screen.getByText(
-        /\*\$12 per user \/ month if paid monthly/i
+        /\$12 per user \/ month if paid monthly/i
       )
       expect(disclaimer).toBeInTheDocument()
     })
@@ -415,7 +415,7 @@ describe('UpgradeDetails', () => {
       )
 
       const disclaimer = screen.getByText(
-        /\*\$12 per user \/ month if paid monthly/i
+        /\$12 per user \/ month if paid monthly/i
       )
       expect(disclaimer).toBeInTheDocument()
     })

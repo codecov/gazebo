@@ -1,25 +1,16 @@
-import { Menu, MenuButton, MenuLink, MenuList } from '@reach/menu-button'
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useIntersection } from 'react-use'
+import useClickAway from 'react-use/lib/useClickAway'
 
-import AppLink from 'shared/AppLink'
 import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A'
 import Avatar from 'ui/Avatar'
+import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
-
-import './ContextSwitcher.css'
-
-const styles = {
-  button: 'flex items-center text-xl font-semibold mx-4 sm:mx-0',
-  image: 'w-6 h-6 rounded-full',
-  switchContext:
-    'flex justify-between px-4 py-2 border-b border-ds-gray-secondary font-semibold',
-}
 
 function getCurrentContext({ activeContext, contexts }) {
   return contexts.find((context) => {
@@ -49,9 +40,8 @@ LoadMoreTrigger.propTypes = {
 
 function ModalSection({ ModalControl, ModalComponent }) {
   const [showComponent, setShowComponent] = useState(false)
-  return (
-    ModalControl &&
-    ModalComponent && (
+  if (ModalControl && ModalComponent) {
+    return (
       <>
         <ModalControl onClick={() => setShowComponent(true)} />
         {showComponent && (
@@ -59,7 +49,9 @@ function ModalSection({ ModalControl, ModalComponent }) {
         )}
       </>
     )
-  )
+  }
+
+  return null
 }
 
 ModalSection.propTypes = {
@@ -67,23 +59,55 @@ ModalSection.propTypes = {
   ModalControl: PropTypes.func,
 }
 
-function ContextSwitcher({
-  activeContext,
-  contexts,
-  currentUser,
-  isLoading,
-  onLoadMore,
-  ModalControl,
-  ModalComponent,
-  allOrgsPageName,
-}) {
-  const intersectionRef = useRef(null)
-  const currentContext = getCurrentContext({ activeContext, contexts })
-  const { provider } = useParams()
+function ContextItem({ context, currentContext, currentUser }) {
+  const { owner, pageName } = context
+  const isActiveContext =
+    owner?.username?.toLowerCase() ===
+    currentContext?.owner?.username?.toLowerCase()
 
-  const isGh = providerToName(provider) === 'Github'
+  return (
+    <li
+      className="cursor-pointer select-none py-2 text-gray-900 hover:bg-ds-gray-secondary"
+      id="listbox-option-0"
+    >
+      <Button
+        to={{ pageName: pageName, options: { owner: owner?.username } }}
+        variant="listbox"
+      >
+        <Avatar user={owner} bordered />
+        <div className={cs('mx-1', { 'font-semibold': isActiveContext })}>
+          {owner?.username}
+        </div>
+        {owner?.username === currentUser?.defaultOrgUsername && (
+          <span className="font-medium text-ds-gray-quaternary">Default</span>
+        )}
+      </Button>
+    </li>
+  )
+}
+ContextItem.propTypes = {
+  context: PropTypes.shape({
+    owner: PropTypes.shape({ username: PropTypes.string }),
+    pageName: PropTypes.string,
+  }),
+  currentContext: PropTypes.shape({
+    owner: PropTypes.shape({ username: PropTypes.string }),
+  }),
+  currentUser: PropTypes.shape({
+    defaultOrgUsername: PropTypes.string,
+  }),
+}
 
-  const intersection = useIntersection(intersectionRef, {
+function useCloseOnLooseFocus({ setToggle }) {
+  const ref = useRef(null)
+  useClickAway(ref, () => setToggle((toggle) => (!toggle ? toggle : false)))
+
+  return ref
+}
+
+function useLoadMore({ onLoadMore }) {
+  const ref = useRef(null)
+  const intersection = useIntersection(ref, {
     root: null,
     rootMargin: '0px',
     threshold: 0,
@@ -95,87 +119,132 @@ function ContextSwitcher({
     }
   }, [intersection?.isIntersecting, onLoadMore])
 
-  function renderContext(context) {
-    const { owner, pageName } = context
-    const isActiveContext = context === currentContext
-    return (
-      <MenuLink
-        as={AppLink}
-        pageName={pageName}
-        options={{ owner: owner?.username }}
-        key={owner.username}
-      >
-        <Avatar user={owner} bordered />
-        <div className={cs('mx-2', { 'font-semibold': isActiveContext })}>
-          {owner?.username}
-        </div>
-        {owner?.username === currentUser?.defaultOrgUsername && (
-          <span className="font-medium text-ds-gray-quaternary">Default</span>
-        )}
-      </MenuLink>
-    )
-  }
+  return ref
+}
+
+function ContextSwitcher({
+  buttonVariant = 'default',
+  activeContext,
+  contexts,
+  currentUser,
+  isLoading,
+  onLoadMore,
+  ModalControl,
+  ModalComponent,
+  allOrgsPageName,
+}) {
+  const [toggle, setToggle] = useState(false)
+  const wrapperRef = useCloseOnLooseFocus({ setToggle })
+  const intersectionRef = useLoadMore({ onLoadMore })
+  const currentContext = getCurrentContext({ activeContext, contexts })
+  const { provider } = useParams()
+
+  const isGh = providerToName(provider) === 'Github'
 
   return (
-    <Menu id="context-switcher">
-      <MenuButton className={styles.button}>
+    <div id="context-switcher" className="relative text-sm" ref={wrapperRef}>
+      <button
+        type="button"
+        className={cs(
+          '"relative flex gap-1 items-center text-xl font-semibold w-full rounded-md bg-white py-1.5 text-left text-gray-900 focus:outline-none"',
+          {
+            [buttonVariant.outlined]:
+              'ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 shadow-sm',
+          }
+        )}
+        id="listbox-label"
+        aria-haspopup="listbox"
+        aria-expanded={toggle}
+        onClick={() => setToggle((toggle) => !toggle)}
+      >
         {currentContext ? (
           <>
             <Avatar user={currentContext.owner} bordered />
-            <div className="ml-2 mr-1">{currentContext.owner.username}</div>
+            <p className="ml-1">{currentContext.owner.username}</p>
           </>
         ) : (
           <>
             <Icon name="home" />
-            <div className="ml-2 mr-1">All my orgs and repos</div>
+            <p className="ml-1">All my orgs and repos</p>
           </>
         )}
-        <span aria-hidden="true">
+        <span
+          aria-hidden="true"
+          className={cs('transition-transform', {
+            'rotate-180': toggle,
+            'rotate-0': !toggle,
+          })}
+        >
           <Icon variant="solid" name="chevron-down" />
         </span>
-      </MenuButton>
-      <MenuList>
-        <div className={styles.switchContext}>
+      </button>
+      <ul
+        className={cs(
+          'absolute z-10 max-h-64 w-full overflow-auto rounded-md bg-white shadow-md ring-1 ring-black ring-opacity-5 focus:outline-none',
+          { hidden: !toggle }
+        )}
+        tabIndex="-1"
+        role="listbox"
+        aria-labelledby="listbox-label"
+      >
+        <li className="flex justify-between border-b border-ds-gray-secondary px-4 py-3 text-xs font-semibold">
           <span>Switch context</span>
           <ModalSection
             ModalControl={ModalControl}
             ModalComponent={ModalComponent}
           />
-        </div>
-        <div className="max-h-64 overflow-y-auto">
-          <MenuLink as={AppLink} pageName={allOrgsPageName ?? 'provider'}>
+        </li>
+        <li
+          className="relative grid cursor-pointer select-none py-2 text-xs text-gray-900  hover:bg-ds-gray-secondary"
+          id="listbox-option-0"
+        >
+          <Button
+            to={{ pageName: allOrgsPageName ?? 'provider' }}
+            variant="listbox"
+          >
             <Icon name="home" />
-            <div className={cs('mx-2', { 'font-semibold': !activeContext })}>
+            <div
+              className={cs('mx-1 text-sm', {
+                'font-semibold': !activeContext,
+              })}
+            >
               All orgs and repos
             </div>
-          </MenuLink>
-          {contexts.map(renderContext)}
-          {isLoading && (
-            <span className="flex justify-center pt-1 pb-2">
-              <Spinner />
-            </span>
-          )}
-          <LoadMoreTrigger
-            intersectionRef={intersectionRef}
-            onLoadMore={onLoadMore}
+          </Button>
+        </li>
+        {contexts.map((context) => (
+          <ContextItem
+            context={context}
+            key={context?.owner?.username}
+            currentUser={currentUser}
+            currentContext={currentContext}
           />
-        </div>
+        ))}
+        {isLoading && (
+          <span className="flex justify-center pb-2 pt-1">
+            <Spinner />
+          </span>
+        )}
+        <LoadMoreTrigger
+          intersectionRef={intersectionRef}
+          onLoadMore={onLoadMore}
+        />
         {isGh && (
-          <div className="max-h-64 overflow-y-auto border-t border-ds-gray-secondary px-4 py-2 text-ds-gray-quinary">
+          <li className="flex max-h-64 flex-col gap-1 overflow-y-auto border-t border-ds-gray-secondary px-4 py-3 text-xs text-ds-gray-quinary">
             <span className="font-semibold">Don&apos;t see your org?</span>
-            <br />
             <A to={{ pageName: 'userAppManagePage' }}>
               {' '}
               Manage access restrictions
             </A>
-          </div>
+          </li>
         )}
-      </MenuList>
-    </Menu>
+      </ul>
+    </div>
   )
 }
 
 ContextSwitcher.propTypes = {
+  buttonVariant: PropTypes.oneOf(['default', 'outlined']),
   activeContext: PropTypes.string,
   contexts: PropTypes.arrayOf(
     PropTypes.shape({

@@ -147,7 +147,7 @@ describe('FileEntry', () => {
           commitSha="coolCommitSha"
           displayType={displayTypeParameter.tree}
           runPrefetch={runPrefetchMock}
-          pageName="commitFileView"
+          pageName="commitFileDiff"
         />,
         { wrapper }
       )

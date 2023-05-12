@@ -30,7 +30,7 @@ function UploadsCard() {
           {uploadsProviderList.map((title) => (
             <Fragment key={title}>
               {title !== NULL && (
-                <span className="sticky top-0 flex-1 border-r border-ds-gray-secondary bg-ds-gray-primary py-1 px-4 text-sm font-semibold">
+                <span className="sticky top-0 flex-1 border-r border-ds-gray-secondary bg-ds-gray-primary px-4 py-1 text-sm font-semibold">
                   {title}
                 </span>
               )}
@@ -46,6 +46,7 @@ function UploadsCard() {
                     uploadType,
                     state,
                     name,
+                    id,
                   },
                   i
                 ) => (
@@ -60,13 +61,14 @@ function UploadsCard() {
                     uploadType={uploadType}
                     state={state}
                     name={name}
+                    id={id}
                   />
                 )
               )}
             </Fragment>
           ))}
           {hasNoUploads && (
-            <span className="py-2.5 px-4 text-xs text-ds-gray-quinary">
+            <span className="px-4 py-2.5 text-xs text-ds-gray-quinary">
               Currently no uploads
             </span>
           )}

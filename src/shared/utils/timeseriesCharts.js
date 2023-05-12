@@ -59,21 +59,44 @@ export const calculateDayDifference = ({ end, start }) => {
   return 0
 }
 
-export function chartQuery({ endDate, startDate, repositories }) {
-  const dayDifferenceThreshold = 180
+function analyticsGroupingUnit({ dayDifference }) {
+  const dayThreshold = 180
+  const monthThreshold = 360
+
+  if (dayDifference > 1) {
+    if (dayDifference < dayThreshold) {
+      return GroupingUnit.DAY
+    } else if (dayDifference > dayThreshold && dayDifference < monthThreshold) {
+      return GroupingUnit.WEEK
+    } else {
+      return GroupingUnit.MONTH
+    }
+  }
+  return GroupingUnit.WEEK
+}
+
+// eslint-disable-next-line complexity
+export function analyticsQuery({ endDate, startDate, repositories }) {
   const dayDifference = calculateDayDifference({
     end: endDate,
     start: startDate,
   })
-  const groupingUnit = dayDifference < dayDifferenceThreshold ? 'day' : 'week'
 
   // Conditional returned keys
   const _startDate = startDate ? { startDate } : {}
   const _endDate = endDate ? { endDate } : {}
   const _repositories = repositories?.length > 0 ? { repositories } : {}
 
+  const groupingUnit = analyticsGroupingUnit({ dayDifference })
+  let interval = TimeseriesInterval.INTERVAL_30_DAY
+  if (groupingUnit === GroupingUnit.DAY) {
+    interval = TimeseriesInterval.INTERVAL_1_DAY
+  } else if (groupingUnit === GroupingUnit.WEEK) {
+    interval = TimeseriesInterval.INTERVAL_7_DAY
+  }
+
   return {
-    groupingUnit,
+    interval,
     ..._startDate,
     ..._endDate,
     ..._repositories,

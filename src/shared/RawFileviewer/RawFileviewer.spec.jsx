@@ -20,23 +20,28 @@ jest.mock(
 
 jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const server = setupServer()
 
-const wrapper = ({ children }) => (
-  <MemoryRouter
-    initialEntries={['/gh/codecov/cool-repo/blob/branch-name/a/file.js']}
-  >
-    <Route
-      path={[
-        '/:provider/:owner/:repo/blob/:ref/:path+',
-        '/:provider/:owner/:repo/commit/:commit/blob/:path+',
-      ]}
-    >
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </Route>
-  </MemoryRouter>
-)
+const wrapper =
+  (initialEntries = ['/gh/codecov/cool-repo/blob/branch-name/a/file.js']) =>
+  ({ children }) =>
+    (
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route
+          path={[
+            '/:provider/:owner/:repo/blob/:ref/:path+',
+            '/:provider/:owner/:repo/commit/:commit/blob/:path+',
+          ]}
+        >
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        </Route>
+      </MemoryRouter>
+    )
 
 beforeAll(() => {
   server.listen()
@@ -115,7 +120,7 @@ describe('RawFileviewer', () => {
 
     describe('getting data from ref', () => {
       it('renders the FileViewer Header, CodeRenderer Header, and CodeRenderer', async () => {
-        render(<RawFileviewer />, { wrapper })
+        render(<RawFileviewer />, { wrapper: wrapper() })
 
         await waitFor(() => queryClient.isFetching)
         await waitFor(() => !queryClient.isFetching)
@@ -145,7 +150,7 @@ describe('RawFileviewer', () => {
 
     describe('getting data from commit', () => {
       it('renders the FileViewer Header, CodeRenderer Header, and CodeRenderer', async () => {
-        render(<RawFileviewer />, { wrapper })
+        render(<RawFileviewer />, { wrapper: wrapper() })
 
         await waitFor(() => queryClient.isFetching)
         await waitFor(() => !queryClient.isFetching)
@@ -201,7 +206,7 @@ describe('RawFileviewer', () => {
     })
 
     it('renders the FileViewer Header, CriticalFileLabel, CodeRenderer Header, and CodeRenderer', async () => {
-      render(<RawFileviewer />, { wrapper })
+      render(<RawFileviewer />, { wrapper: wrapper() })
 
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)
@@ -246,7 +251,7 @@ describe('RawFileviewer', () => {
     })
 
     it('renders the Fileviewer Header, CodeRenderer Header, and CodeRenderer', async () => {
-      render(<RawFileviewer />, { wrapper })
+      render(<RawFileviewer />, { wrapper: wrapper() })
 
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)
@@ -296,7 +301,7 @@ describe('RawFileviewer', () => {
     })
 
     it('renders the 404 message', async () => {
-      render(<RawFileviewer />, { wrapper })
+      render(<RawFileviewer />, { wrapper: wrapper() })
 
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)
@@ -319,7 +324,7 @@ describe('RawFileviewer', () => {
     })
 
     it('renders the Fileviewer Header, CodeRenderer Header, and error message', async () => {
-      render(<RawFileviewer />, { wrapper })
+      render(<RawFileviewer />, { wrapper: wrapper() })
 
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)
@@ -355,7 +360,7 @@ describe('RawFileviewer', () => {
     })
 
     it('does not apply the border class', async () => {
-      render(<RawFileviewer showTopBorder={false} />, { wrapper })
+      render(<RawFileviewer showTopBorder={false} />, { wrapper: wrapper() })
 
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)
@@ -376,7 +381,7 @@ describe('RawFileviewer', () => {
     })
 
     it('does not apply the border class', async () => {
-      render(<RawFileviewer addTopPadding={false} />, { wrapper })
+      render(<RawFileviewer addTopPadding={false} />, { wrapper: wrapper() })
 
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)
@@ -384,6 +389,27 @@ describe('RawFileviewer', () => {
       const fileViewer = await screen.findByTestId('file-viewer-wrapper')
       expect(fileViewer).toHaveClass('flex')
       expect(fileViewer).not.toHaveClass('pt-6')
+    })
+  })
+
+  describe('displaying unsupported file', () => {
+    beforeEach(() => {
+      const owner = {
+        username: 'cool-user',
+        isCurrentUserPartOfOrg: true,
+      }
+      setup({ content: null, owner, coverage: null })
+    })
+
+    it('shows the unsupported view component', async () => {
+      render(<RawFileviewer />, {
+        wrapper: wrapper(['/gh/codecov/cool-repo/blob/branch-name/a/file.png']),
+      })
+
+      const binaryFileText = await screen.findByText(
+        'Unable to display contents of binary file included in coverage reports.'
+      )
+      expect(binaryFileText).toBeInTheDocument()
     })
   })
 })

@@ -4,7 +4,9 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import Graphs from './Graphs'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
 describe('Graphs', () => {
   function setup() {

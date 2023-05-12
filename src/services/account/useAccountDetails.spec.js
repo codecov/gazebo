@@ -8,7 +8,9 @@ import { useAccountDetails } from './useAccountDetails'
 
 jest.mock('js-cookie')
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const wrapper =
   (initialEntries = '/gh') =>
   ({ children }) =>

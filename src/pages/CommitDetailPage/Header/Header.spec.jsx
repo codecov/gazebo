@@ -4,7 +4,11 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useTruncation } from 'ui/TruncatedMessage/hooks'
+
 import Header from './Header'
+
+jest.mock('ui/TruncatedMessage/hooks')
 
 const mockData = (pullId) => ({
   owner: {
@@ -24,7 +28,9 @@ const mockData = (pullId) => ({
   },
 })
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const server = setupServer()
 
 const wrapper = ({ children }) => (
@@ -44,6 +50,11 @@ afterAll(() => server.close())
 
 describe('Header', () => {
   function setup(pullId = 1234) {
+    useTruncation.mockImplementation(() => ({
+      ref: () => {},
+      canTruncate: false,
+    }))
+
     server.use(
       graphql.query('CommitPageHeaderData', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockData(pullId)))

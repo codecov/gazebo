@@ -12,7 +12,9 @@ import {
   useUpdateRepo,
 } from './index'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const wrapper =
   (initialEntries = '/gh/codecov/test') =>
@@ -262,7 +264,7 @@ describe('useRepoBackfilled', () => {
 describe('useActivateFlagMeasurements', () => {
   function setup() {
     server.use(
-      graphql.mutation('ActivateFlagsMeasurements', (req, res, ctx) => {
+      graphql.mutation('ActivateMeasurements', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data())
       })
     )

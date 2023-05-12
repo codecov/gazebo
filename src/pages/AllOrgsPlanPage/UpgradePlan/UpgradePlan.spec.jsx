@@ -122,7 +122,9 @@ const sentryProYear = {
   trialDays: 14,
 }
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const server = setupServer()
 
 const wrapper = ({ children }) => (
@@ -297,7 +299,7 @@ describe('UpgradePlan', () => {
         render(<UpgradePlan />, { wrapper })
 
         const note = await screen.findByText(
-          '*$12 per user / month if paid monthly'
+          '$12 per user / month if paid monthly'
         )
 
         await waitFor(() => expect(note).toBeInTheDocument())
@@ -324,6 +326,17 @@ describe('UpgradePlan', () => {
           name: /Select organization/i,
         })
         expect(select).toBeInTheDocument()
+      })
+
+      it('renders the link', async () => {
+        render(<UpgradePlan />, { wrapper })
+
+        const link = await screen.findByRole('link', { name: /Admin approval/ })
+        expect(link).toBeInTheDocument()
+        expect(link).toHaveAttribute(
+          'href',
+          'https://github.com/settings/connections/applications/c68c81cbfd179a50784a'
+        )
       })
 
       it('renders billing', async () => {
@@ -429,7 +442,7 @@ describe('UpgradePlan', () => {
         await user.click(org1)
 
         const note = await screen.findByText(
-          '*$12 per user / month if paid monthly'
+          '$12 per user / month if paid monthly'
         )
         expect(note).toBeInTheDocument()
       })
@@ -475,6 +488,33 @@ describe('UpgradePlan', () => {
 
         const selectOrgOne = await screen.findByText('org1')
         expect(selectOrgOne).toBeInTheDocument()
+      })
+
+      it('renders the link', async () => {
+        const { user } = setup()
+        render(<UpgradePlan />, { wrapper })
+
+        const orgHeader = await screen.findByRole('heading', {
+          name: 'Organization',
+        })
+        expect(orgHeader).toBeInTheDocument()
+
+        const select = await screen.findByRole('button', {
+          name: /Select organization/i,
+        })
+        expect(select).toBeInTheDocument()
+
+        await user.click(select)
+
+        const org1 = await screen.findByText('org1')
+        await user.click(org1)
+
+        const link = await screen.findByRole('link', { name: /Admin approval/ })
+        expect(link).toBeInTheDocument()
+        expect(link).toHaveAttribute(
+          'href',
+          'https://github.com/settings/connections/applications/c68c81cbfd179a50784a'
+        )
       })
 
       it('renders billing', async () => {
@@ -627,7 +667,7 @@ describe('UpgradePlan', () => {
         const org1 = await screen.findByText('org1')
         await user.click(org1)
 
-        const note = screen.queryByText('*$12 per user / month if paid monthly')
+        const note = screen.queryByText('$12 per user / month if paid monthly')
         expect(note).toBeInTheDocument()
       })
 
@@ -758,7 +798,7 @@ describe('UpgradePlan', () => {
         const org1 = await screen.findByText('org1')
         await user.click(org1)
 
-        const note = screen.queryByText('*$12 per user / month if paid monthly')
+        const note = screen.queryByText('$12 per user / month if paid monthly')
         expect(note).toBeInTheDocument()
       })
 
@@ -785,6 +825,17 @@ describe('UpgradePlan', () => {
           name: /Select organization/i,
         })
         expect(select).toBeInTheDocument()
+      })
+
+      it('renders the link', async () => {
+        render(<UpgradePlan />, { wrapper })
+
+        const link = await screen.findByRole('link', { name: /Admin approval/ })
+        expect(link).toBeInTheDocument()
+        expect(link).toHaveAttribute(
+          'href',
+          'https://github.com/settings/connections/applications/c68c81cbfd179a50784a'
+        )
       })
 
       it('renders plan details', async () => {

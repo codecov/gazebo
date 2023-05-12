@@ -12,6 +12,7 @@ fragment CurrentUserFragment on Me {
   privateAccess
   onboardingCompleted
   businessEmail
+  termsAgreement
   user {
     name
     username

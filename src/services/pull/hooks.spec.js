@@ -44,7 +44,7 @@ const pull = {
     patchTotals: {
       coverage: 92.12,
     },
-    changeWithParent: 38.94,
+    changeCoverage: 38.94,
   },
 }
 
@@ -74,15 +74,12 @@ describe('usePull', () => {
         owner: {
           isCurrentUserPartOfOrg: true,
           repository: {
+            defaultBranch: 'umbrasyl',
             private: true,
             pull,
           },
         },
       })
-    })
-
-    it('renders isLoading true', () => {
-      expect(hookData.result.current.isLoading).toBeTruthy()
     })
 
     describe('when data is loaded', () => {
@@ -92,12 +89,14 @@ describe('usePull', () => {
 
       it('returns the data', () => {
         expect(hookData.result.current.data).toEqual({
+          defaultBranch: 'umbrasyl',
           hasAccess: true,
           pull,
         })
       })
     })
   })
+
   describe(`when user shouldn't have access`, () => {
     beforeEach(() => {
       setup({
@@ -109,10 +108,6 @@ describe('usePull', () => {
           },
         },
       })
-    })
-
-    it('renders isLoading true', () => {
-      expect(hookData.result.current.isLoading).toBeTruthy()
     })
 
     describe('when data is loaded', () => {
@@ -146,34 +141,48 @@ const mockSingularImpactedFilesData = {
     percentCovered: 27.43,
   },
   changeCoverage: 58.333333333333336,
-  segmentsDeprecated: [
-    {
-      header: '@@ -0,0 +1,45 @@',
-      lines: [
-        {
-          baseNumber: null,
-          headNumber: '1',
-          baseCoverage: null,
-          headCoverage: 'H',
-          content: '+export default class Calculator {',
-        },
-        {
-          baseNumber: null,
-          headNumber: '2',
-          baseCoverage: null,
-          headCoverage: 'H',
-          content: '+  private value = 0;',
-        },
-        {
-          baseNumber: null,
-          headNumber: '3',
-          baseCoverage: null,
-          headCoverage: 'H',
-          content: '+  private calcMode = ""',
-        },
-      ],
-    },
-  ],
+  segments: {
+    results: [
+      {
+        header: '@@ -0,0 +1,45 @@',
+        lines: [
+          {
+            baseNumber: null,
+            headNumber: '1',
+            baseCoverage: null,
+            headCoverage: 'H',
+            content: '+export default class Calculator {',
+            coverageInfo: {
+              hitCount: null,
+              hitUploadIds: null,
+            },
+          },
+          {
+            baseNumber: null,
+            headNumber: '2',
+            baseCoverage: null,
+            headCoverage: 'H',
+            content: '+  private value = 0;',
+            coverageInfo: {
+              hitCount: 18,
+              hitUploadIds: [0],
+            },
+          },
+          {
+            baseNumber: null,
+            headNumber: '3',
+            baseCoverage: null,
+            headCoverage: 'H',
+            content: '+  private calcMode = ""',
+            coverageInfo: {
+              hitCount: null,
+              hitUploadIds: null,
+            },
+          },
+        ],
+      },
+    ],
+  },
 }
 
 describe('useSingularImpactedFileComparison', () => {
@@ -217,10 +226,6 @@ describe('useSingularImpactedFileComparison', () => {
       })
     })
 
-    it('renders isLoading true', () => {
-      expect(hookData.result.current.isLoading).toBeTruthy()
-    })
-
     describe('when data is loaded', () => {
       beforeEach(async () => {
         await hookData.waitFor(() => !hookData.result.current.isFetching)
@@ -241,6 +246,10 @@ describe('useSingularImpactedFileComparison', () => {
                   content: '+export default class Calculator {',
                   headCoverage: 'H',
                   headNumber: '1',
+                  coverageInfo: {
+                    hitCount: null,
+                    hitUploadIds: null,
+                  },
                 },
                 {
                   baseCoverage: null,
@@ -248,6 +257,10 @@ describe('useSingularImpactedFileComparison', () => {
                   content: '+  private value = 0;',
                   headCoverage: 'H',
                   headNumber: '2',
+                  coverageInfo: {
+                    hitCount: 18,
+                    hitUploadIds: [0],
+                  },
                 },
                 {
                   baseCoverage: null,
@@ -255,6 +268,10 @@ describe('useSingularImpactedFileComparison', () => {
                   content: '+  private calcMode = ""',
                   headCoverage: 'H',
                   headNumber: '3',
+                  coverageInfo: {
+                    hitCount: null,
+                    hitUploadIds: null,
+                  },
                 },
               ],
             },
@@ -270,7 +287,7 @@ describe('useSingularImpactedFileComparison', () => {
         headName: 'file A',
         isRenamedFile: true,
         isCriticalFile: false,
-        segmentsDeprecated: [],
+        segments: { results: [] },
       }
       setup({
         owner: {
@@ -307,7 +324,7 @@ describe('useSingularImpactedFileComparison', () => {
         headName: 'file A',
         isDeletedFile: true,
         isCriticalFile: false,
-        segmentsDeprecated: [],
+        segments: { results: [] },
       }
       setup({
         owner: {
@@ -346,7 +363,7 @@ describe('useSingularImpactedFileComparison', () => {
         isRenamedFile: false,
         isDeletedFile: false,
         isCriticalFile: false,
-        segmentsDeprecated: [],
+        segments: { results: [] },
       }
       setup({
         owner: {

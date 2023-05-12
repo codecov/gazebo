@@ -10,7 +10,6 @@ import { Plans } from 'shared/utils/billing'
 import UpgradePlanPage from './UpgradePlanPage'
 
 jest.mock('./UpgradeForm', () => () => 'UpgradeForm')
-jest.mock('./SentryUpgradeForm', () => () => 'SentryUpgradeForm')
 
 const plans = [
   {
@@ -106,6 +105,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       suspense: true,
+      retry: false,
     },
   },
 })

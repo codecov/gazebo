@@ -11,6 +11,8 @@ import CIStatus from './CIStatus'
 import Coverage from './Coverage'
 import Title from './Title'
 
+import { statusNames } from '../enums'
+
 const headers = [
   {
     id: 'title',
@@ -119,18 +121,18 @@ const Loader = () => (
   </div>
 )
 
-function CommitsTable({ branch, paramCIStatus }) {
-  const { provider, owner, repo, pullId } = useParams()
-
+// eslint-disable-next-line complexity
+function CommitsTable({ branch, states, search }) {
+  const { provider, owner, repo } = useParams()
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useCommits({
       provider,
       owner,
       repo,
       filters: {
-        hideFailedCI: paramCIStatus,
+        states,
         branchName: branch,
-        pullId: +pullId,
+        search,
       },
       opts: { suspense: false },
     })
@@ -165,7 +167,8 @@ function CommitsTable({ branch, paramCIStatus }) {
 
 CommitsTable.propTypes = {
   branch: PropTypes.string,
-  paramCIStatus: PropTypes.bool,
+  states: PropTypes.arrayOf(PropTypes.oneOf(Object.keys(statusNames))),
+  search: PropTypes.string.isRequired,
 }
 
 export default CommitsTable

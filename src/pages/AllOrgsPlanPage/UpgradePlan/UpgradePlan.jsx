@@ -10,7 +10,6 @@ import {
 } from 'services/account'
 import { useMyContexts } from 'services/user'
 import {
-  canApplySentryUpgrade,
   findSentryPlans,
   isEnterprisePlan,
   useProPlans,
@@ -19,7 +18,6 @@ import A from 'ui/A'
 import Card from 'ui/Card'
 import Select from 'ui/Select'
 
-import SentryUpgradeForm from './SentryUpgradeForm'
 import UpgradeDetails from './UpgradeDetails'
 import UpgradeForm from './UpgradeForm'
 
@@ -35,7 +33,6 @@ const FormDetails = ({
   accountDetails,
   organizationName,
   plan,
-  plans,
   proPlanMonth,
   proPlanYear,
   sentryPlanMonth,
@@ -52,22 +49,13 @@ const FormDetails = ({
     )
   }
 
-  if (canApplySentryUpgrade({ plan, plans })) {
-    return (
-      <SentryUpgradeForm
-        accountDetails={accountDetails}
-        sentryPlanYear={sentryPlanYear}
-        sentryPlanMonth={sentryPlanMonth}
-        organizationName={organizationName}
-      />
-    )
-  }
-
   return (
     <UpgradeForm
       accountDetails={accountDetails}
       proPlanYear={proPlanYear}
       proPlanMonth={proPlanMonth}
+      sentryPlanYear={sentryPlanYear}
+      sentryPlanMonth={sentryPlanMonth}
       organizationName={organizationName}
     />
   )
@@ -79,16 +67,16 @@ FormDetails.propTypes = {
   plan: PropTypes.shape({
     value: PropTypes.string,
   }),
-  plans: PropTypes.arrayOf(planPropType),
   proPlanMonth: planPropType,
   proPlanYear: planPropType,
   sentryPlanMonth: planPropType,
   sentryPlanYear: planPropType,
 }
 
+// eslint-disable-next-line max-statements
 function UpgradePlan() {
   const { provider } = useParams()
-  const [organizationName, setOrganizationName] = useState()
+  const [organizationName, setOrganizationName] = useState(null)
   const { data: plans } = usePlans(provider)
   const { proPlanMonth, proPlanYear } = useProPlans({ plans })
   const { sentryPlanMonth, sentryPlanYear } = findSentryPlans({ plans })
@@ -133,12 +121,18 @@ function UpgradePlan() {
                 dataMarketing="select organization"
               />
             </div>
+            <p className="pt-1 text-xs">
+              <span className="font-semibold text-ds-gray-quinary">
+                Can&apos;t find your org?{' '}
+              </span>
+              <A to={{ pageName: 'userAppManagePage' }}>Admin approval</A> may
+              be required.
+            </p>
           </div>
           <FormDetails
             accountDetails={accountDetails}
             organizationName={organizationName}
             plan={plan}
-            plans={plans}
             proPlanMonth={proPlanMonth}
             proPlanYear={proPlanYear}
             sentryPlanYear={sentryPlanYear}

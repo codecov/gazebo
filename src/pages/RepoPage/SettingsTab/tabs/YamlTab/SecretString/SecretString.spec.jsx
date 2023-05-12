@@ -12,7 +12,9 @@ import SecretString from './SecretString'
 jest.mock('services/toastNotification')
 jest.mock('services/repo')
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings/yaml']}>

@@ -1,3 +1,5 @@
+import config from 'config'
+
 import {
   getProviderCommitURL,
   getProviderPullURL,
@@ -5,6 +7,8 @@ import {
   providerImage,
   providerToName,
 } from './provider'
+
+jest.mock('config')
 
 describe('providerToName', () => {
   describe('when called with gh', () => {
@@ -179,6 +183,27 @@ describe('getProviderCommitURL', () => {
       'https://bitbucket.org/codecov/python/commits/12de'
     )
   })
+  it('return ghe commit URL', () => {
+    config.GHE_URL = 'https://github.mycompany.org'
+
+    expect(getProviderCommitURL({ provider: 'ghe', owner, repo, commit })).toBe(
+      'https://github.mycompany.org/codecov/python/commit/12de'
+    )
+  })
+  it('return gitlab enterprise commit URL', () => {
+    config.GLE_URL = 'https://gitlab.mycompany.org'
+
+    expect(getProviderCommitURL({ provider: 'gle', owner, repo, commit })).toBe(
+      'https://gitlab.mycompany.org/codecov/python/-/commit/12de'
+    )
+  })
+  it('return bitbucket enterprise commit URL', () => {
+    config.BBS_URL = 'https://bitbucket.mycompany.org'
+
+    expect(getProviderCommitURL({ provider: 'bbs', owner, repo, commit })).toBe(
+      'https://bitbucket.mycompany.org/codecov/python/commits/12de'
+    )
+  })
 })
 
 describe('getProviderPullURL', () => {
@@ -195,6 +220,27 @@ describe('getProviderPullURL', () => {
   it('return bb PR URL', () => {
     expect(getProviderPullURL({ provider: 'bb', owner, repo, pullId })).toBe(
       'https://bitbucket.org/codecov/python/pull-requests/aebf'
+    )
+  })
+  it('return ghe PR URL', () => {
+    config.GHE_URL = 'https://github.mycompany.org'
+
+    expect(getProviderPullURL({ provider: 'ghe', owner, repo, pullId })).toBe(
+      'https://github.mycompany.org/codecov/python/pull/aebf'
+    )
+  })
+  it('return gle PR URL', () => {
+    config.GLE_URL = 'https://gitlab.mycompany.org'
+
+    expect(getProviderPullURL({ provider: 'gle', owner, repo, pullId })).toBe(
+      'https://gitlab.mycompany.org/codecov/python/-/merge_requests/aebf'
+    )
+  })
+  it('return bbs PR URL', () => {
+    config.BBS_URL = 'https://bitbucket.mycompany.org'
+
+    expect(getProviderPullURL({ provider: 'bbs', owner, repo, pullId })).toBe(
+      'https://bitbucket.mycompany.org/codecov/python/pull-requests/aebf'
     )
   })
 })

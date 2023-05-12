@@ -38,6 +38,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       suspense: true,
+      retry: false,
     },
   },
 })
@@ -184,7 +185,7 @@ describe('GitHubActions', () => {
       expect(gitHubActionsWorkflowLink).toBeInTheDocument()
       expect(gitHubActionsWorkflowLink).toHaveAttribute(
         'href',
-        'https://github.com/codecov/cool-repo/settings/actions'
+        'https://github.com/codecov/cool-repo/actions'
       )
     })
 

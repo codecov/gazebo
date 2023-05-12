@@ -10,7 +10,9 @@ jest.mock('./Header', () => () => 'Header')
 jest.mock('./Tabs', () => () => 'Tabs')
 jest.mock('shared/ListRepo', () => () => 'ListRepo')
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const server = setupServer()
 
 let testLocation
@@ -127,9 +129,7 @@ describe('OwnerPage', () => {
 
           render(<OwnerPage />, { wrapper })
 
-          await waitFor(() =>
-            expect(testLocation.pathname).toBe('/plan/gh/codecov/upgrade')
-          )
+          await waitFor(() => expect(testLocation.pathname).toBe('/plan/gh'))
         })
       })
 

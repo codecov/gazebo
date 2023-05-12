@@ -7,7 +7,9 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import MemberTable from './MemberTable'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const server = setupServer()
 
 const mockedFirstResponse = {
@@ -22,6 +24,7 @@ const mockedFirstResponse = {
       name: 'User 1',
       isAdmin: true,
       activated: false,
+      student: false,
     },
   ],
   totalPages: 2,
@@ -39,6 +42,7 @@ const mockSecondResponse = {
       name: null,
       isAdmin: false,
       activated: true,
+      student: false,
     },
   ],
   total_pages: 2,
@@ -73,10 +77,16 @@ afterAll(() => server.close())
 
 describe('MemberTable', () => {
   function setup(
-    { noData = false, seatsOpen = true, returnActivated = false } = {
+    {
+      noData = false,
+      seatsOpen = true,
+      returnActivated = false,
+      student = false,
+    } = {
       noData: false,
       seatsOpen: true,
       returnActivated: false,
+      student: false,
     }
   ) {
     const user = userEvent.setup()
@@ -109,6 +119,9 @@ describe('MemberTable', () => {
           return res(ctx.status(200), ctx.json(mockSecondResponse))
         } else if (returnActivated) {
           return res(ctx.status(200), ctx.json(mockSecondResponse))
+        } else if (student) {
+          mockedFirstResponse.results[0].student = true
+          return res(ctx.status(200), ctx.json(mockedFirstResponse))
         }
         return res(ctx.status(200), ctx.json(mockedFirstResponse))
       }),
@@ -183,26 +196,54 @@ describe('MemberTable', () => {
 
   describe('activating a user', () => {
     describe('there are no seats open', () => {
-      it('disables the toggle', async () => {
-        const { user } = setup({ seatsOpen: false })
-        render(<MemberTable />, { wrapper })
+      describe('user is not a student', () => {
+        it('disables the toggle', async () => {
+          const { user } = setup({ seatsOpen: false })
+          render(<MemberTable />, { wrapper })
 
-        let toggles = await screen.findAllByRole('button', {
-          name: 'Non-Active',
+          let toggles = await screen.findAllByRole('button', {
+            name: 'Non-Active',
+          })
+          expect(toggles.length).toBe(1)
+
+          let toggle = await screen.findByRole('button', { name: 'Non-Active' })
+          await user.click(toggle)
+
+          await waitFor(() => queryClient.isFetching)
+          await waitFor(() => !queryClient.isFetching)
+
+          toggle = await screen.findByRole('button', { name: 'Non-Active' })
+          expect(toggle).toBeInTheDocument()
+
+          toggles = await screen.findAllByRole('button', { name: 'Non-Active' })
+          expect(toggles.length).toBe(1)
         })
-        expect(toggles.length).toBe(1)
+      })
 
-        let toggle = await screen.findByRole('button', { name: 'Non-Active' })
-        await user.click(toggle)
+      describe('user is a student', () => {
+        it('updates the users activate', async () => {
+          const { user } = setup({ student: true, seatsOpen: false })
+          render(<MemberTable />, { wrapper })
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+          const nonActiveToggleClick = await screen.findByRole('button', {
+            name: 'Non-Active',
+          })
 
-        toggle = await screen.findByRole('button', { name: 'Non-Active' })
-        expect(toggle).toBeInTheDocument()
+          await user.click(nonActiveToggleClick)
 
-        toggles = await screen.findAllByRole('button', { name: 'Non-Active' })
-        expect(toggles.length).toBe(1)
+          await waitFor(() => queryClient.isFetching)
+          await waitFor(() => !queryClient.isFetching)
+
+          const activeToggle = await screen.findByRole('button', {
+            name: 'Activated',
+          })
+          expect(activeToggle).toBeInTheDocument()
+
+          const nonActiveToggle = screen.queryByRole('button', {
+            name: 'Non-Active',
+          })
+          expect(nonActiveToggle).not.toBeInTheDocument()
+        })
       })
     })
 

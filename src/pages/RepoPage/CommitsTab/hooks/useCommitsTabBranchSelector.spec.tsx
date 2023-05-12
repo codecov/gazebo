@@ -11,6 +11,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       suspense: true,
+      retry: false,
     },
   },
 })
@@ -250,7 +251,7 @@ describe('useCommitsTabBranchSelector', () => {
     const passedBranch = 'blah'
     beforeEach(() => setup('branchName', false))
 
-    it('returns all commits as selection', async () => {
+    it('returns All branches as selection', async () => {
       const { result, waitFor } = renderHook(
         () =>
           useCommitsTabBranchSelector({
@@ -262,7 +263,7 @@ describe('useCommitsTabBranchSelector', () => {
       )
 
       await waitFor(() =>
-        expect(result.current.selection).toStrictEqual('All commits')
+        expect(result.current.selection).toStrictEqual('All branches')
       )
     })
   })

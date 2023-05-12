@@ -52,22 +52,27 @@ const mockCoverage = {
   branch: null,
 }
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
 const server = setupServer()
 
-const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter
-      initialEntries={[
-        '/gh/codecov/cool-repo/commit/sha256/blob/directory/file.js',
-      ]}
-    >
-      <Route path="/:provider/:owner/:repo/commit/:commit/blob/:path+">
-        {children}
-      </Route>
-    </MemoryRouter>
-  </QueryClientProvider>
-)
+const wrapper =
+  (
+    initialEntries = [
+      '/gh/codecov/cool-repo/commit/sha256/blob/directory/file.js',
+    ]
+  ) =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Route path="/:provider/:owner/:repo/commit/:commit/blob/:path+">
+            {children}
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
 beforeAll(() => {
   server.listen()
@@ -103,7 +108,7 @@ describe('CommitDetailFileViewer', () => {
 
     describe('displaying the tree path', () => {
       it('displays repo link', async () => {
-        render(<CommitDetailFileViewer />, { wrapper })
+        render(<CommitDetailFileViewer />, { wrapper: wrapper() })
 
         const repoName = await screen.findByRole('link', { name: 'cool-repo' })
         expect(repoName).toBeInTheDocument()
@@ -114,7 +119,7 @@ describe('CommitDetailFileViewer', () => {
       })
 
       it('displays directory link', async () => {
-        render(<CommitDetailFileViewer />, { wrapper })
+        render(<CommitDetailFileViewer />, { wrapper: wrapper() })
 
         const repoName = await screen.findByRole('link', { name: 'directory' })
         expect(repoName).toBeInTheDocument()
@@ -124,8 +129,8 @@ describe('CommitDetailFileViewer', () => {
         )
       })
 
-      it('displays file name', async () => {
-        render(<CommitDetailFileViewer />, { wrapper })
+      it('displays file namee', async () => {
+        render(<CommitDetailFileViewer />, { wrapper: wrapper() })
 
         const fileName = await screen.findByText('file.js')
         expect(fileName).toBeInTheDocument()
@@ -134,7 +139,7 @@ describe('CommitDetailFileViewer', () => {
 
     describe('displaying the file viewer', () => {
       it('sets the correct url link', async () => {
-        render(<CommitDetailFileViewer />, { wrapper })
+        render(<CommitDetailFileViewer />, { wrapper: wrapper() })
 
         const copyLink = await screen.findByRole('link', {
           name: 'directory/file.js',
