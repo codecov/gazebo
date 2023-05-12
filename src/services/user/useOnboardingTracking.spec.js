@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react-hooks'
+import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useOnboardingLocation } from 'services/location'
 import {
   identifySegmentEvent,
   pageSegmentEvent,
@@ -11,28 +11,38 @@ import { useUser } from 'services/user'
 import { useOnboardingTracking } from './useOnboardingTracking'
 
 jest.mock('services/tracking/segment')
-jest.mock('services/location')
 jest.mock('services/user')
 
-describe('useOnboardingTracking', () => {
-  beforeEach(() => {
-    useUser.mockReturnValue({
-      data: {
-        username: 'Laerryn Coramar-Seelie',
-        trackingMetadata: {
-          ownerid: 4,
-        },
+const wrapper = ({ children }) => (
+  <MemoryRouter initialEntries={['/campaign/three/rocks']}>
+    <Route path="/:provider/:owner/:repo">{children}</Route>
+  </MemoryRouter>
+)
+
+//'www.criticalrole.com/campaign/three/rocks'
+
+beforeEach(() => {
+  useUser.mockReturnValue({
+    data: {
+      username: 'Laerryn Coramar-Seelie',
+      trackingMetadata: {
+        ownerid: 4,
       },
-    })
-    useOnboardingLocation.mockReturnValue({
-      path: '/campaign/three/rocks',
-      url: 'www.criticalrole.com/campaign/three/rocks',
-    })
+    },
   })
 
+  // override href location
+  Object.defineProperty(window, 'location', {
+    value: {
+      href: 'www.criticalrole.com/campaign/three/rocks',
+    },
+  })
+})
+
+describe('useOnboardingTracking', () => {
   describe('startOnboarding', () => {
     it('calls segment event with specific information', () => {
-      const { result } = renderHook(() => useOnboardingTracking())
+      const { result } = renderHook(() => useOnboardingTracking(), { wrapper })
       act(() => {
         result.current.startOnboarding()
       })
@@ -53,7 +63,7 @@ describe('useOnboardingTracking', () => {
 
   describe('secondPage', () => {
     it('calls segment event with specific information', () => {
-      const { result } = renderHook(() => useOnboardingTracking())
+      const { result } = renderHook(() => useOnboardingTracking(), { wrapper })
       act(() => {
         result.current.secondPage()
       })
@@ -68,7 +78,7 @@ describe('useOnboardingTracking', () => {
 
   describe('helpFindingOrganization', () => {
     it('calls segment event with specific information', () => {
-      const { result } = renderHook(() => useOnboardingTracking())
+      const { result } = renderHook(() => useOnboardingTracking(), { wrapper })
       act(() => {
         result.current.helpFindingOrganization()
       })
@@ -84,7 +94,7 @@ describe('useOnboardingTracking', () => {
 
   describe('skipOnboarding', () => {
     it('calls segment event with specific information', () => {
-      const { result } = renderHook(() => useOnboardingTracking())
+      const { result } = renderHook(() => useOnboardingTracking(), { wrapper })
       act(() => {
         result.current.skipOnboarding()
       })
@@ -100,7 +110,7 @@ describe('useOnboardingTracking', () => {
 
   describe('selectOrganization', () => {
     it('calls segment event with specific information', () => {
-      const { result } = renderHook(() => useOnboardingTracking())
+      const { result } = renderHook(() => useOnboardingTracking(), { wrapper })
       act(() => {
         result.current.selectOrganization(
           {
@@ -129,7 +139,7 @@ describe('useOnboardingTracking', () => {
 
   describe('completedOnboarding', () => {
     it('calls segment event with specific information', () => {
-      const { result } = renderHook(() => useOnboardingTracking())
+      const { result } = renderHook(() => useOnboardingTracking(), { wrapper })
       act(() => {
         result.current.completedOnboarding(
           {
@@ -170,7 +180,7 @@ describe('useOnboardingTracking', () => {
 
   describe('downloadUploaderClicked', () => {
     it('calls segment event with specific information', () => {
-      const { result } = renderHook(() => useOnboardingTracking())
+      const { result } = renderHook(() => useOnboardingTracking(), { wrapper })
       act(() => {
         result.current.downloadUploaderClicked()
       })
@@ -187,7 +197,7 @@ describe('useOnboardingTracking', () => {
 
   describe('copiedCIToken', () => {
     it('calls segment event with specific information', () => {
-      const { result } = renderHook(() => useOnboardingTracking())
+      const { result } = renderHook(() => useOnboardingTracking(), { wrapper })
       act(() => {
         result.current.copiedCIToken('c8859fa7-9449-45ba-9210-69c12034f097')
       })
@@ -205,7 +215,7 @@ describe('useOnboardingTracking', () => {
 
   describe('terminalUploaderCommandClicked', () => {
     it('calls segment event with specific information', () => {
-      const { result } = renderHook(() => useOnboardingTracking())
+      const { result } = renderHook(() => useOnboardingTracking(), { wrapper })
       act(() => {
         result.current.terminalUploaderCommandClicked()
       })
