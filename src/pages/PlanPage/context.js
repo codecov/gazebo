@@ -7,6 +7,7 @@ import {
   useMemo,
   useState,
 } from 'react'
+import { useLocation } from 'react-router-dom'
 
 import { useNavLinks } from 'services/navigation'
 
@@ -18,10 +19,11 @@ const PlanBreadcrumbSettersContext = createContext({
 PlanBreadcrumbContext.displayName = 'PlanBreadcrumbContext'
 
 export function PlanBreadcrumbProvider({ children }) {
+  const location = useLocation()
   const [breadcrumbs, setBreadcrumbs] = useState(base)
 
   const { planTab } = useNavLinks()
-  const isBasePath = window.location.pathname === planTab.path()
+  const isBasePath = location.pathname === planTab.path()
 
   if (isBasePath && !isEqual(base, breadcrumbs)) {
     setBreadcrumbs(base)
@@ -43,9 +45,11 @@ export function PlanBreadcrumbProvider({ children }) {
 }
 
 export function useCrumbs() {
-  return useContext(PlanBreadcrumbContext)
+  const value = useContext(PlanBreadcrumbContext)
+  return value
 }
 
 export function useSetCrumbs() {
-  return useContext(PlanBreadcrumbSettersContext).addBreadcrumb
+  const { addBreadcrumb } = useContext(PlanBreadcrumbSettersContext)
+  return addBreadcrumb
 }
