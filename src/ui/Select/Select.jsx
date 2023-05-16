@@ -105,17 +105,16 @@ const Select = forwardRef(
     }))
 
     const {
-      isOpen,
-      getToggleButtonProps,
-      getMenuProps,
       getInputProps,
-      getComboboxProps,
-      highlightedIndex,
+      getMenuProps,
       getItemProps,
+      getToggleButtonProps,
+      isOpen,
+      highlightedIndex,
       reset,
       selectedItem,
     } = useCombobox({
-      items,
+      items: items,
       initialSelectedItem: value,
       onSelectedItemChange: ({ selectedItem }) => onChange(selectedItem),
       selectedItem: value,
@@ -148,20 +147,14 @@ const Select = forwardRef(
 
     return (
       <div className={SelectClasses.root}>
-        <div {...getComboboxProps()}>
+        <div>
           <button
             data-marketing={dataMarketing}
             disabled={disabled}
             aria-label={ariaName}
             type="button"
             className={cs(SelectClasses.button, ButtonVariantClass[variant])}
-            {...getToggleButtonProps({
-              onClick: () => {
-                if (!isOpen && onSearch) {
-                  inputRef.current.focus()
-                }
-              },
-            })}
+            {...getToggleButtonProps()}
           >
             {renderButton()}
             <Icon
