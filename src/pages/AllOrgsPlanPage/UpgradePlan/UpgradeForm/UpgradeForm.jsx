@@ -117,6 +117,7 @@ const useUpgradeForm = ({
     setValue,
     getValues,
     upgradePlan,
+    watch,
     ...rest,
   }
 }

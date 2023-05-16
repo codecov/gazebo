@@ -446,16 +446,18 @@ describe('UpgradeForm', () => {
         },
       }
 
-      it('renders plan details', async () => {
+      it('renders plan', async () => {
         setup({ includeSentryPlans: true })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const planDetails = await screen.findByRole('heading', {
-          name: 'Plan Details',
+          name: 'Plan',
         })
         expect(planDetails).toBeInTheDocument()
 
-        const trial = await screen.findByText('14 day free trial')
+        const trial = await screen.findByText(
+          '14 day free trial, then $29 monthly includes 5 seats.'
+        )
         expect(trial).toBeInTheDocument()
       })
 

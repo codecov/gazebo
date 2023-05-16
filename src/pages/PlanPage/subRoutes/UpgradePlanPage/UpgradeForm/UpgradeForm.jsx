@@ -132,7 +132,7 @@ const PlanDetails = ({ isSentryUpgrade }) => {
 
   return (
     <div>
-      <h3 className="text-base font-semibold">Plan Details</h3>
+      <h3 className="font-semibold">Plan</h3>
       <p>14 day free trial, then $29 monthly includes 5 seats.</p>
     </div>
   )
@@ -189,8 +189,8 @@ function UpgradeForm({
       className="flex flex-col gap-4 text-ds-gray-nonary"
       onSubmit={handleSubmit(upgradePlan)}
     >
-      <div className="flex flex-col gap-2">
-        <h3 className="font-semibold">Organization</h3>
+      <div className="flex flex-col">
+        <h3 className="text-base font-semibold">Organization</h3>
         <span>{owner}</span>
       </div>
       <PlanDetails isSentryUpgrade={isSentryUpgrade} />
