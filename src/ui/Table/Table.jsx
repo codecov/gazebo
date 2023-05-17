@@ -172,8 +172,14 @@ const Table = memo(function ({
   })
 
   useEffect(() => {
+    let unMounted = false
     if (!!onSort) {
+      if (unMounted) return
       onSort(sorting)
+    }
+
+    return () => {
+      unMounted = true
     }
   }, [onSort, sorting])
 

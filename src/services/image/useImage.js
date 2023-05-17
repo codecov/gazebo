@@ -36,16 +36,16 @@ export function useImage({ src }) {
   }
 
   useEffect(() => {
-    let cancel = false
+    let unMounted = false
     imageCache
       .get(src)
       .promise.then((src) => {
-        if (cancel) return
+        if (unMounted) return
         imageCache.set(src, { ...imageCache.get(src), cache: 'resolved', src })
         setIsLoading(false)
       })
       .catch((error) => {
-        if (cancel) return
+        if (unMounted) return
         imageCache.set(src, {
           ...imageCache.get(src),
           cache: 'rejected',
@@ -54,7 +54,7 @@ export function useImage({ src }) {
         setIsLoading(false)
       })
     return () => {
-      cancel = true
+      unMounted = true
     }
   }, [imageCache, src])
 

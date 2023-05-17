@@ -17,15 +17,22 @@ function CannyWidget({ basePath, boardToken, ssoToken }) {
   }, [isLoaded])
 
   useEffect(() => {
+    let unMounted = false
     const loader = new CannyLoader()
     ;(async () => {
       try {
         refCanny.current = await loader.load()
+        if (unMounted) return
         setLoaded(true)
       } catch (err) {
+        if (unMounted) return
         setError(errorFunc)
       }
     })()
+
+    return () => {
+      unMounted = true
+    }
   }, [])
 
   useEffect(() => {

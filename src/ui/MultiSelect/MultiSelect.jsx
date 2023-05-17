@@ -244,8 +244,14 @@ const MultiSelect = forwardRef(
     })
 
     useEffect(() => {
+      let unMounted = false
       if (intersection?.isIntersecting && onLoadMore) {
+        if (unMounted) return
         onLoadMore()
+      }
+
+      return () => {
+        unMounted = true
       }
     }, [intersection?.isIntersecting, onLoadMore])
 
