@@ -1,5 +1,5 @@
 import Cookie from 'js-cookie'
-import React from 'react'
+import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 export const segmentUser = {
@@ -77,10 +77,12 @@ export function identifySegmentUser(user) {
 
 export function useSegmentPage() {
   const location = useLocation()
+  const [oldLocation, setOldLocation] = useState('')
 
-  React.useEffect(() => {
+  if (oldLocation !== location.pathname) {
     window?.analytics?.page()
-  }, [location.pathname])
+    setOldLocation(location.pathname)
+  }
 }
 
 export function trackSegmentEvent({ event, data }) {

@@ -15,22 +15,6 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 
-const plans = [
-  {
-    marketingName: 'Sentry Pro Team',
-    value: 'users-sentrym',
-    billingRate: 'monthly',
-    baseUnitPrice: 12,
-    benefits: [
-      'Includes 5 seats',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-      'Priority Support',
-    ],
-    trialDays: 14,
-  },
-]
-
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov']}>
@@ -86,9 +70,6 @@ describe('HeaderBanners', () => {
       }),
       rest.get('/internal/gh/codecov/account-details/', (req, res, ctx) =>
         res(ctx.status(200), ctx.json({ integrationId }))
-      ),
-      rest.get('/internal/plans', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json(plans))
       )
     )
   }

@@ -200,13 +200,12 @@ const MultiSelect = forwardRef(
     ]
 
     const {
-      isOpen,
       getToggleButtonProps,
-      getMenuProps,
       getInputProps,
-      getComboboxProps,
-      highlightedIndex,
       getItemProps,
+      getMenuProps,
+      isOpen,
+      highlightedIndex,
     } = useCombobox({
       selectedItem: null,
       items: listItems,
@@ -244,8 +243,14 @@ const MultiSelect = forwardRef(
     })
 
     useEffect(() => {
+      let unMounted = false
       if (intersection?.isIntersecting && onLoadMore) {
+        if (unMounted) return
         onLoadMore()
+      }
+
+      return () => {
+        unMounted = true
       }
     }, [intersection?.isIntersecting, onLoadMore])
 
@@ -257,7 +262,7 @@ const MultiSelect = forwardRef(
 
     return (
       <div className="relative">
-        <div {...getComboboxProps()}>
+        <div>
           <button
             data-marketing={dataMarketing}
             aria-label={ariaName}

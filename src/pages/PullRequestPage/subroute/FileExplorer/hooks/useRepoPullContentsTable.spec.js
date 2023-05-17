@@ -220,6 +220,10 @@ describe('useRepoPullContentsTable', () => {
         pullId: 123,
         filters: {
           searchValue: 'file.js',
+          ordering: {
+            direction: 'ASC',
+            parameter: 'NAME',
+          },
         },
         owner: 'test-org',
         repo: 'test-repo',
@@ -250,6 +254,10 @@ describe('useRepoPullContentsTable', () => {
         pullId: 123,
         filters: {
           displayType: 'LIST',
+          ordering: {
+            direction: 'DESC',
+            parameter: 'MISSES',
+          },
         },
         owner: 'test-org',
         repo: 'test-repo',
@@ -282,8 +290,8 @@ describe('useRepoPullContentsTable', () => {
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
 
-      expect(calledPullContents).toHaveBeenCalledTimes(3)
-      expect(calledPullContents).toHaveBeenNthCalledWith(3, {
+      expect(calledPullContents).toHaveBeenCalledTimes(2)
+      expect(calledPullContents).toHaveBeenNthCalledWith(2, {
         pullId: 123,
         filters: {
           ordering: {
