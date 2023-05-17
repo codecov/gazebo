@@ -1,6 +1,6 @@
 import isArray from 'lodash/isArray'
+import { useLocation } from 'react-router-dom'
 
-import { useOnboardingLocation } from 'services/location'
 import {
   identifySegmentEvent,
   pageSegmentEvent,
@@ -9,9 +9,11 @@ import {
 import { useUser } from 'services/user'
 
 export function useOnboardingTracking() {
-  const { path, url } = useOnboardingLocation()
   // TODO: create an app context where tracking meta data is shared within the app
   const { data: user } = useUser()
+
+  const { pathname: path } = useLocation()
+  const url = window.location.href
 
   return {
     startOnboarding: () => {

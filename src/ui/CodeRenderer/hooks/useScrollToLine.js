@@ -26,6 +26,7 @@ const handleClick =
 const useTarget = ({ location, idString }) => {
   const [targeted, setTargeted] = useState(false)
 
+  // eslint-disable-next-line complexity
   useEffect(() => {
     if (location?.hash === idString) {
       if (!targeted) {
@@ -41,7 +42,6 @@ const useTarget = ({ location, idString }) => {
   return [targeted, setTargeted]
 }
 
-// eslint-disable-next-line max-statements
 export const useScrollToLine = ({
   number,
   path = '',

@@ -26,9 +26,13 @@ function CopyClipboard({
   }
 
   useEffect(() => {
+    let timer
     if (showSuccess) {
-      let timer = setTimeout(() => setShowSuccess(false), 1500)
-      return () => clearTimeout(timer)
+      timer = setTimeout(() => setShowSuccess(false), 1500)
+    }
+
+    return () => {
+      clearTimeout(timer)
     }
   }, [showSuccess])
 
