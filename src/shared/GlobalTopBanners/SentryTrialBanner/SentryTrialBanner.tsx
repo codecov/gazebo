@@ -95,6 +95,9 @@ const SentryTrialBanner: React.FC = () => {
         >
           Start Trial
         </Button>
+        <TopBanner.DismissButton>
+          <Icon size="sm" variant="solid" name="x" />
+        </TopBanner.DismissButton>
       </TopBanner.End>
     </TopBanner>
   )
