@@ -44,7 +44,7 @@ function AdminList() {
 
   return (
     <>
-      <div className="mb-4">
+      <div className="my-4">
         <AddAdmins
           provider={provider}
           owner={owner}
