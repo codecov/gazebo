@@ -34,7 +34,7 @@ interface UrlParams {
 
 const SentryTrialBanner: React.FC = () => {
   const { provider, owner } = useParams<UrlParams>()
-  const { data: plans } = usePlans()
+  const { data: plans } = usePlans(provider)
   const { data: accountDetails } = useAccountDetails({
     provider,
     owner,
