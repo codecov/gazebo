@@ -200,13 +200,12 @@ const MultiSelect = forwardRef(
     ]
 
     const {
-      isOpen,
       getToggleButtonProps,
-      getMenuProps,
       getInputProps,
-      getComboboxProps,
-      highlightedIndex,
       getItemProps,
+      getMenuProps,
+      isOpen,
+      highlightedIndex,
     } = useCombobox({
       selectedItem: null,
       items: listItems,
@@ -263,7 +262,7 @@ const MultiSelect = forwardRef(
 
     return (
       <div className="relative">
-        <div {...getComboboxProps()}>
+        <div>
           <button
             data-marketing={dataMarketing}
             aria-label={ariaName}

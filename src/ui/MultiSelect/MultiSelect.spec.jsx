@@ -335,7 +335,7 @@ describe('MultiSelect', () => {
       const button = screen.getByText(/All/)
       await user.click(button)
 
-      const searchField = screen.getByRole('textbox')
+      const searchField = screen.getByRole('combobox')
       expect(searchField).toBeInTheDocument()
     })
   })
@@ -361,7 +361,7 @@ describe('MultiSelect', () => {
         const button = screen.getByText(/All items/)
         await user.click(button)
 
-        const searchField = screen.getByRole('textbox')
+        const searchField = screen.getByRole('combobox')
         expect(searchField).toBeInTheDocument()
       })
 
@@ -385,7 +385,7 @@ describe('MultiSelect', () => {
           const button = screen.getByText(/All items/)
           await user.click(button)
 
-          const searchField = screen.getByRole('textbox')
+          const searchField = screen.getByRole('combobox')
           await user.type(searchField, 'item1')
 
           await waitFor(() => expect(onSearch).toHaveBeenCalledWith('item1'))

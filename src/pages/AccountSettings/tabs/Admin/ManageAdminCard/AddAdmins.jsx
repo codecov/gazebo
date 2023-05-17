@@ -72,7 +72,7 @@ function useSearch({ provider, owner, setAdminStatus }) {
   const {
     getMenuProps,
     getInputProps,
-    getComboboxProps,
+
     getItemProps,
     highlightedIndex,
   } = useCombobox({
@@ -106,7 +106,6 @@ function useSearch({ provider, owner, setAdminStatus }) {
     users,
     setInput,
     getInputProps,
-    getComboboxProps,
     getMenuProps,
     getItemProps,
     isLoading,
@@ -119,7 +118,6 @@ function AddAdmins({ provider, owner, setAdminStatus }) {
     setInput,
     users,
     getInputProps,
-    getComboboxProps,
     getMenuProps,
     getItemProps,
     isLoading,
@@ -130,7 +128,7 @@ function AddAdmins({ provider, owner, setAdminStatus }) {
 
   return (
     <div className="relative" ref={wrapperRef}>
-      <div {...getComboboxProps()}>
+      <div>
         <TextInput
           dataMarketing="add-admin"
           placeholder="Search to add administrator"

@@ -145,7 +145,7 @@ describe('Select', () => {
       const button = screen.getByText('Select')
       await user.click(button)
 
-      const searchField = screen.getByRole('textbox')
+      const searchField = screen.getByRole('combobox')
       expect(searchField).toHaveValue('searching')
     })
   })
@@ -303,7 +303,7 @@ describe('Select', () => {
       const button = screen.getByText('Select')
       await user.click(button)
 
-      const searchField = screen.getByRole('textbox')
+      const searchField = screen.getByRole('combobox')
       expect(searchField).toBeInTheDocument()
     })
 
