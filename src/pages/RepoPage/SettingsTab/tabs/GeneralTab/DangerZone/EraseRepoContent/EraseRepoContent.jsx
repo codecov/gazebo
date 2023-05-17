@@ -14,6 +14,10 @@ function EraseRepoContent() {
       <div className="flex flex-1 flex-col gap-1">
         <h2 className="font-semibold">Erase repo coverage content</h2>
         <p>This will remove all coverage reporting from the repo.</p>
+        <p className="text-xs">
+          <span className="font-semibold">Note: </span>
+          Erasing may take a few minutes depending on repository size.
+        </p>
       </div>
       <div>
         <Button

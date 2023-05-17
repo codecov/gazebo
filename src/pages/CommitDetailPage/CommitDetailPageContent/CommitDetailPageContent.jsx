@@ -5,11 +5,11 @@ import { Redirect, Switch, useParams } from 'react-router-dom'
 import { SentryRoute } from 'sentry'
 
 import { useCommit } from 'services/commit'
+import { extractUploads } from 'shared/utils/extractUploads'
 import Spinner from 'ui/Spinner'
 
 import CommitPageTabs from '../CommitDetailPageTabs'
 import ErroredUploads from '../ErroredUploads'
-import { useExtractUploads } from '../UploadsCard/useExtractUploads'
 
 const CommitDetailFileExplorer = lazy(() =>
   import('../subRoute/CommitDetailFileExplorer')
@@ -35,8 +35,9 @@ function CommitDetailPageContent() {
     repo,
     commitid: commitSHA,
   })
-  const { erroredUploads } = useExtractUploads({
-    uploads: commitData?.commit?.uploads,
+
+  const { erroredUploads } = extractUploads({
+    unfilteredUploads: commitData?.commit?.uploads,
   })
 
   if (!isEmpty(erroredUploads)) {

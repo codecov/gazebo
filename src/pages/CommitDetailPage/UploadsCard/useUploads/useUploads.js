@@ -1,8 +1,7 @@
 import { useParams } from 'react-router-dom'
 
 import { useCommit } from 'services/commit'
-
-import { useExtractUploads } from '../useExtractUploads'
+import { extractUploads } from 'shared/utils/extractUploads'
 
 export function useUploads() {
   const { provider, owner, repo, commit } = useParams()
@@ -13,7 +12,7 @@ export function useUploads() {
     commitid: commit,
   })
   const { uploadsOverview, sortedUploads, uploadsProviderList, hasNoUploads } =
-    useExtractUploads({ uploads: data?.commit?.uploads })
+    extractUploads({ unfilteredUploads: data?.commit?.uploads })
 
   return {
     uploadsOverview,

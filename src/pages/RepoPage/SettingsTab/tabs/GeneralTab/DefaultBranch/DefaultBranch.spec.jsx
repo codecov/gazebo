@@ -326,7 +326,7 @@ describe('DefaultBranch', () => {
       const select = await screen.findByText('main')
       await user.click(select)
 
-      const searchInput = screen.getByRole('textbox')
+      const searchInput = screen.getByRole('combobox')
       await user.click(searchInput)
       await user.keyboard('cool branch name')
 

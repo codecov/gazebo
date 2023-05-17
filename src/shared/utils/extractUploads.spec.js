@@ -1,6 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks'
-
-import { useExtractUploads } from './useExtractUploads'
+import { extractUploads } from './extractUploads'
 
 const travisObject = {
   state: 'STARTED',
@@ -29,44 +27,49 @@ const circleciObject = {
 
 const mockUploads = [travisObject, circleciObject]
 
-describe('useExtractUploads', () => {
-  let hookData
-
-  function setup() {
-    hookData = renderHook(() => useExtractUploads({ uploads: mockUploads }))
-  }
-
+describe('extractUploads', () => {
   describe('uploads', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('returns sortedUploads', () => {
-      expect(hookData.result.current.sortedUploads).toEqual({
+      const { sortedUploads } = extractUploads({
+        unfilteredUploads: mockUploads,
+      })
+
+      expect(sortedUploads).toStrictEqual({
         travis: [travisObject],
         circleci: [circleciObject],
       })
     })
 
     it('returns upload providers', () => {
-      expect(hookData.result.current.uploadsProviderList).toEqual([
-        'travis',
-        'circleci',
-      ])
+      const { uploadsProviderList } = extractUploads({
+        unfilteredUploads: mockUploads,
+      })
+
+      expect(uploadsProviderList).toStrictEqual(['travis', 'circleci'])
     })
 
     it('returns overview summary', () => {
-      expect(hookData.result.current.uploadsOverview).toEqual(
-        '1 started, 1 errored'
-      )
+      const { uploadsOverview } = extractUploads({
+        unfilteredUploads: mockUploads,
+      })
+
+      expect(uploadsOverview).toEqual('1 started, 1 errored')
     })
 
     it('returns hasNoUploads', () => {
-      expect(hookData.result.current.hasNoUploads).toEqual(false)
+      const { hasNoUploads } = extractUploads({
+        unfilteredUploads: mockUploads,
+      })
+
+      expect(hasNoUploads).toEqual(false)
     })
 
     it('returns erroredUploads', () => {
-      expect(hookData.result.current.erroredUploads).toEqual({
+      const { erroredUploads } = extractUploads({
+        unfilteredUploads: mockUploads,
+      })
+
+      expect(erroredUploads).toStrictEqual({
         circleci: [circleciObject],
       })
     })

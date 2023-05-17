@@ -1,12 +1,13 @@
+import isEqual from 'lodash/isEqual'
 import noop from 'lodash/noop'
 import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
 } from 'react'
+import { useLocation } from 'react-router-dom'
 
 import { useNavLinks } from 'services/navigation'
 
@@ -18,12 +19,15 @@ const PlanBreadcrumbSettersContext = createContext({
 PlanBreadcrumbContext.displayName = 'PlanBreadcrumbContext'
 
 export function PlanBreadcrumbProvider({ children }) {
+  const location = useLocation()
   const [breadcrumbs, setBreadcrumbs] = useState(base)
 
   const { planTab } = useNavLinks()
-  const isBasePath = window.location.pathname === planTab.path()
+  const isBasePath = location.pathname === planTab.path()
 
-  useEffect(() => isBasePath && setBreadcrumbs(base), [isBasePath])
+  if (isBasePath && !isEqual(base, breadcrumbs)) {
+    setBreadcrumbs(base)
+  }
 
   const addBreadcrumb = useCallback((crumbs = []) => {
     setBreadcrumbs(() => [...base, ...crumbs])
@@ -41,9 +45,11 @@ export function PlanBreadcrumbProvider({ children }) {
 }
 
 export function useCrumbs() {
-  return useContext(PlanBreadcrumbContext)
+  const value = useContext(PlanBreadcrumbContext)
+  return value
 }
 
 export function useSetCrumbs() {
-  return useContext(PlanBreadcrumbSettersContext).addBreadcrumb
+  const { addBreadcrumb } = useContext(PlanBreadcrumbSettersContext)
+  return addBreadcrumb
 }
