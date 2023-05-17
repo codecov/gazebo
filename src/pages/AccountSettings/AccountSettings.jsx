@@ -50,7 +50,7 @@ function AccountSettings() {
               {config.IS_SELF_HOSTED && isViewingPersonalSettings ? (
                 <Profile provider={provider} owner={owner} />
               ) : !config.IS_SELF_HOSTED && isAdmin ? (
-                <AdminTab provider={provider} owner={owner} />
+                <AdminTab />
               ) : (
                 <Redirect to={yamlTab} />
               )}

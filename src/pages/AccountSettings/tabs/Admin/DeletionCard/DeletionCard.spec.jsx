@@ -1,17 +1,36 @@
-import { render, screen } from 'custom-testing-library'
+import { render, screen, waitFor } from 'custom-testing-library'
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter } from 'react-router-dom'
+import { rest } from 'msw'
+import { setupServer } from 'msw/node'
+import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useEraseAccount } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
 
 import DeletionCard from './DeletionCard'
 
-jest.mock('services/account')
 jest.mock('services/toastNotification')
+jest.mock('js-cookie')
 
-const wrapper = ({ children }) => <MemoryRouter>{children}</MemoryRouter>
+const server = setupServer()
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      suspense: false,
+      retry: false,
+    },
+  },
+})
+
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/account/gh/codecov']}>
+      <Route path="/account/:provider/:owner">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
 
 describe('DeletionCard', () => {
   function setup() {
@@ -20,7 +39,14 @@ describe('DeletionCard', () => {
     const addNotification = jest.fn()
 
     useAddNotification.mockReturnValue(addNotification)
-    useEraseAccount.mockReturnValue({ mutate, isLoading: false })
+
+    server.use(
+      rest.delete(`/internal/gh/codecov/account-details/`, (req, res, ctx) => {
+        mutate(req.body)
+
+        return res(ctx.status(204), null)
+      })
+    )
 
     return { mutate, addNotification, user }
   }
@@ -29,16 +55,9 @@ describe('DeletionCard', () => {
     beforeEach(() => setup())
 
     it('renders the copy for organization', () => {
-      render(
-        <DeletionCard
-          provider="gh"
-          owner="codecov"
-          isPersonalSettings={false}
-        />,
-        {
-          wrapper,
-        }
-      )
+      render(<DeletionCard isPersonalSettings={false} />, {
+        wrapper,
+      })
 
       const EraseOrgContent = screen.getByText(
         /Erase all my organization content and projects/
@@ -47,16 +66,9 @@ describe('DeletionCard', () => {
     })
 
     it('has a link to the support page', () => {
-      render(
-        <DeletionCard
-          provider="gh"
-          owner="codecov"
-          isPersonalSettings={false}
-        />,
-        {
-          wrapper,
-        }
-      )
+      render(<DeletionCard isPersonalSettings={false} />, {
+        wrapper,
+      })
 
       const contactSupport = screen.getByRole('link', {
         name: /contact support/i,
@@ -69,16 +81,9 @@ describe('DeletionCard', () => {
     beforeEach(setup)
 
     it('renders the copy for individual', () => {
-      render(
-        <DeletionCard
-          provider="gh"
-          owner="codecov"
-          isPersonalSettings={true}
-        />,
-        {
-          wrapper,
-        }
-      )
+      render(<DeletionCard isPersonalSettings={true} />, {
+        wrapper,
+      })
 
       const eraseAllContent = screen.getByText(
         /erase all my personal content and personal projects\./i
@@ -87,16 +92,9 @@ describe('DeletionCard', () => {
     })
 
     it('has a link to the support page', () => {
-      render(
-        <DeletionCard
-          provider="gh"
-          owner="codecov"
-          isPersonalSettings={true}
-        />,
-        {
-          wrapper,
-        }
-      )
+      render(<DeletionCard isPersonalSettings={true} />, {
+        wrapper,
+      })
 
       const eraseAccount = screen.getByRole('button', {
         name: /erase account/i,
@@ -108,16 +106,9 @@ describe('DeletionCard', () => {
   describe('when clicking on the button to erase', () => {
     it('opens the modal with warning', async () => {
       const { user } = setup()
-      render(
-        <DeletionCard
-          provider="gh"
-          owner="codecov"
-          isPersonalSettings={true}
-        />,
-        {
-          wrapper,
-        }
-      )
+      render(<DeletionCard isPersonalSettings={true} />, {
+        wrapper,
+      })
 
       const eraseAccount = screen.getByRole('button', {
         name: /erase account/i,
@@ -135,16 +126,9 @@ describe('DeletionCard', () => {
 
       it('closes the modal', async () => {
         const { user } = setup()
-        render(
-          <DeletionCard
-            provider="gh"
-            owner="codecov"
-            isPersonalSettings={true}
-          />,
-          {
-            wrapper,
-          }
-        )
+        render(<DeletionCard isPersonalSettings={true} />, {
+          wrapper,
+        })
 
         const eraseAccount = screen.getByRole('button', {
           name: /erase account/i,
@@ -164,16 +148,9 @@ describe('DeletionCard', () => {
     describe('when clicking Close icon', () => {
       it('closes the modal', async () => {
         const { user } = setup()
-        render(
-          <DeletionCard
-            provider="gh"
-            owner="codecov"
-            isPersonalSettings={true}
-          />,
-          {
-            wrapper,
-          }
-        )
+        render(<DeletionCard isPersonalSettings={true} />, {
+          wrapper,
+        })
 
         const eraseAccount = screen.getByRole('button', {
           name: /erase account/i,
@@ -192,61 +169,48 @@ describe('DeletionCard', () => {
 
     describe('when confirming', () => {
       it('calls the mutation', async () => {
-        const { mutate, user } = setup()
-        render(
-          <DeletionCard
-            provider="gh"
-            owner="codecov"
-            isPersonalSettings={true}
-          />,
-          {
-            wrapper,
-          }
-        )
+        const { user } = setup()
+        render(<DeletionCard isPersonalSettings={true} />, {
+          wrapper,
+        })
 
-        const eraseAccount = screen.getByRole('button', {
-          name: /erase account/i,
+        const eraseAccount = await screen.findByRole('button', {
+          name: /Erase account/,
         })
         await user.click(eraseAccount)
 
-        const eraseMyAccount = screen.getByRole('button', {
+        const eraseMyAccount = await screen.findByRole('button', {
           name: /Erase my account/,
         })
         await user.click(eraseMyAccount)
 
-        expect(mutate).toHaveBeenCalled()
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
       })
 
       describe('when the mutation fails', () => {
         it('adds an error notification', async () => {
-          const { mutate, user, addNotification } = setup()
-          render(
-            <DeletionCard
-              provider="gh"
-              owner="codecov"
-              isPersonalSettings={true}
-            />,
-            {
-              wrapper,
-            }
-          )
+          const { user, addNotification } = setup()
+          render(<DeletionCard isPersonalSettings={true} />, {
+            wrapper,
+          })
 
-          const eraseAccount = screen.getByRole('button', {
+          const eraseAccount = await screen.findByRole('button', {
             name: /erase account/i,
           })
           await user.click(eraseAccount)
 
-          const eraseMyAccount = screen.getByRole('button', {
+          const eraseMyAccount = await screen.findByRole('button', {
             name: /Erase my account/,
           })
           await user.click(eraseMyAccount)
 
-          mutate.mock.calls[0][1].onError()
-
-          expect(addNotification).toHaveBeenCalledWith({
-            type: 'error',
-            text: 'Something went wrong',
-          })
+          await waitFor(() =>
+            expect(addNotification).toHaveBeenCalledWith({
+              type: 'error',
+              text: 'Something went wrong',
+            })
+          )
         })
       })
     })

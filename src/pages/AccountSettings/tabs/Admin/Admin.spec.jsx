@@ -1,88 +1,114 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import { useUser } from 'services/user'
 
 import Admin from './Admin'
 
-jest.mock('services/user')
-jest.mock('./NameEmailCard', () => () => 'NameEmailCard')
-jest.mock('./StudentCard', () => () => 'StudentCard')
-jest.mock('./GithubIntegrationCard', () => () => 'GithubIntegrationCard')
+jest.mock('./DetailsSection', () => () => 'DetailsSection')
+jest.mock('./StudentSection', () => () => 'StudentSection')
+jest.mock('./GithubIntegrationSection', () => () => 'GithubIntegrationSection')
 jest.mock('./ManageAdminCard', () => () => 'ManageAdminCard')
 jest.mock('./DeletionCard', () => () => 'DeletionCard')
 
+const me = {
+  user: {
+    username: 'rula',
+  },
+  email: 'rula@codecov.io',
+  name: 'rula',
+  avatarUrl: 'photo',
+  onboardingCompleted: false,
+}
+
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/account/gh/rula']}>
+      <Route path="/account/:provider/:owner">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
+
+const server = setupServer()
+
+beforeAll(() => server.listen())
+beforeEach(() => {
+  server.resetHandlers()
+  queryClient.clear()
+})
+afterAll(() => server.close())
+
 describe('AdminTab', () => {
-  const defaultProps = {
-    provider: 'gh',
-    owner: 'codecov',
-  }
-
-  function setup({ owner }) {
-    useUser.mockReturnValue({
-      data: {
-        user: {
-          username: 'terry',
-        },
-      },
-    })
-    const props = {
-      ...defaultProps,
-      owner,
-    }
-
-    render(
-      <MemoryRouter initialEntries={['/account/gh/codecov']}>
-        <Route path="/account/:provider/:owner/">
-          <Admin {...props} />
-        </Route>
-      </MemoryRouter>
+  function setup() {
+    server.use(
+      graphql.query('CurrentUser', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({ me }))
+      })
     )
   }
 
   describe('when rendered for user', () => {
     beforeEach(() => {
-      setup({ owner: 'terry' })
+      setup()
     })
 
-    it('renders the NameEmailCard', () => {
-      const card = screen.getByText(/NameEmailCard/)
+    it('renders the DetailsSection', async () => {
+      render(<Admin />, { wrapper })
+
+      const card = await screen.findByText(/DetailsSection/)
       expect(card).toBeInTheDocument()
     })
 
-    it('renders the StudentCard', () => {
-      const card = screen.getByText(/StudentCard/)
+    it('renders the StudentSection', async () => {
+      render(<Admin />, { wrapper })
+
+      const card = await screen.findByText(/StudentSection/)
       expect(card).toBeInTheDocument()
     })
 
-    it('renders the GithubIntegrationCard', () => {
-      const card = screen.getByText(/GithubIntegrationCard/)
+    it('renders the GithubIntegrationSection', async () => {
+      render(<Admin />, { wrapper })
+
+      const card = await screen.findByText(/GithubIntegrationSection/)
       expect(card).toBeInTheDocument()
     })
 
-    it('renders the DeletionCard', () => {
-      const card = screen.getByText(/DeletionCard/)
+    it('renders the DeletionCard', async () => {
+      render(<Admin />, { wrapper })
+
+      const card = await screen.findByText(/DeletionCard/)
       expect(card).toBeInTheDocument()
     })
   })
 
   describe('when rendered for organization', () => {
     beforeEach(() => {
-      setup({ owner: '' })
+      setup()
     })
 
-    it('renders the ManageAdminCard', () => {
-      const card = screen.getByText(/ManageAdminCard/)
+    it('renders the ManageAdminCard', async () => {
+      render(<Admin />, { wrapper })
+
+      const card = await screen.findByText(/ManageAdminCard/)
       expect(card).toBeInTheDocument()
     })
 
-    it('renders the GithubIntegrationCard', () => {
-      const card = screen.getByText(/GithubIntegrationCard/)
+    it('renders the GithubIntegrationSection', async () => {
+      render(<Admin />, { wrapper })
+
+      const card = await screen.findByText(/GithubIntegrationSection/)
       expect(card).toBeInTheDocument()
     })
 
-    it('renders the DeletionCard', () => {
-      const card = screen.getByText(/DeletionCard/)
+    it('renders the DeletionCard', async () => {
+      render(<Admin />, { wrapper })
+
+      const card = await screen.findByText(/DeletionCard/)
       expect(card).toBeInTheDocument()
     })
   })

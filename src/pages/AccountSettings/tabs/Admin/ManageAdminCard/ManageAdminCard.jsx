@@ -1,21 +1,25 @@
 import { Suspense } from 'react'
 
-import Card from 'old_ui/Card'
-import LogoSpinner from 'old_ui/LogoSpinner'
+import Card from 'ui/Card'
+import Spinner from 'ui/Spinner'
 
 import AdminList from './AdminList'
 
-function ManageAdminCard() {
-  const loadingState = <LogoSpinner size={40} />
+const Loader = () => (
+  <div className="flex items-center justify-center py-16">
+    <Spinner />
+  </div>
+)
 
+function ManageAdminCard() {
   return (
-    <Card className="p-10">
-      <h2 className="text-2xl">Account administrators</h2>
-      <p className="mb-4 mt-2">
+    <Card className="flex flex-col gap-2 p-8">
+      <h2 className="text-lg font-semibold">Account administrators</h2>
+      <p>
         Admins are able to: Add other admins, activate deactivate other users,
         view billing and modify the team yaml.
       </p>
-      <Suspense fallback={loadingState}>
+      <Suspense fallback={Loader}>
         <AdminList />
       </Suspense>
     </Card>
