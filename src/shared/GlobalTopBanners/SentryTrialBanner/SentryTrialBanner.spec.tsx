@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
@@ -113,6 +114,10 @@ describe('SentryTrialBanner', () => {
       isSentryPlan: false,
     }
   ) {
+    const user = userEvent.setup()
+    const mockSetItem = jest.spyOn(window.localStorage.__proto__, 'setItem')
+    const mockGetItem = jest.spyOn(window.localStorage.__proto__, 'getItem')
+
     server.use(
       rest.get('/internal/plans', (req, res, ctx) => {
         return res(
@@ -149,6 +154,12 @@ describe('SentryTrialBanner', () => {
         )
       })
     )
+
+    return {
+      user,
+      mockSetItem,
+      mockGetItem,
+    }
   }
 
   describe('when owner is not present in path', () => {
@@ -195,11 +206,9 @@ describe('SentryTrialBanner', () => {
 
     describe('user has access to trial', () => {
       describe('renders banner', () => {
-        beforeEach(() => {
-          setup()
-        })
-
         it('renders trial info', async () => {
+          setup()
+
           render(<SentryTrialBanner />, {
             wrapper: wrapper(),
           })
@@ -209,6 +218,8 @@ describe('SentryTrialBanner', () => {
         })
 
         it('renders link to org upgrade page', async () => {
+          setup()
+
           render(<SentryTrialBanner />, {
             wrapper: wrapper(),
           })
@@ -221,6 +232,8 @@ describe('SentryTrialBanner', () => {
         })
 
         it('renders link to support', async () => {
+          setup()
+
           render(<SentryTrialBanner />, {
             wrapper: wrapper(),
           })
@@ -236,6 +249,8 @@ describe('SentryTrialBanner', () => {
         })
 
         it('renders button link to org upgrade page', async () => {
+          setup()
+
           render(<SentryTrialBanner />, {
             wrapper: wrapper(),
           })
@@ -245,6 +260,62 @@ describe('SentryTrialBanner', () => {
           })
           expect(buttonLink).toBeInTheDocument()
           expect(buttonLink).toHaveAttribute('href', '/plan/gh')
+        })
+
+        it('renders dismiss button', async () => {
+          setup()
+
+          render(<SentryTrialBanner />, {
+            wrapper: wrapper(),
+          })
+
+          const dismissButton = await screen.findByRole('button', {
+            name: 'x.svg',
+          })
+          expect(dismissButton).toBeInTheDocument()
+        })
+
+        describe('user dismisses banner', () => {
+          it('calls local storage', async () => {
+            const { user, mockGetItem, mockSetItem } = setup()
+
+            mockGetItem.mockReturnValue(null)
+
+            render(<SentryTrialBanner />, {
+              wrapper: wrapper(),
+            })
+
+            const dismissButton = await screen.findByRole('button', {
+              name: 'x.svg',
+            })
+            expect(dismissButton).toBeInTheDocument()
+            await user.click(dismissButton)
+
+            await waitFor(() =>
+              expect(mockSetItem).toBeCalledWith(
+                'dismissed-top-banners',
+                JSON.stringify({ 'global-top-sentry-banner': 'true' })
+              )
+            )
+          })
+
+          it('hides the banner', async () => {
+            const { user, mockGetItem } = setup()
+
+            mockGetItem.mockReturnValue(null)
+
+            const { container } = render(<SentryTrialBanner />, {
+              wrapper: wrapper(),
+            })
+
+            const dismissButton = await screen.findByRole('button', {
+              name: 'x.svg',
+            })
+            expect(dismissButton).toBeInTheDocument()
+            await user.click(dismissButton)
+
+            await waitFor(() => expect(container).toBeEmptyDOMElement())
+          })
         })
       })
     })
