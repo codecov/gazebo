@@ -19,8 +19,6 @@ const wrapper = ({ children }) => (
   </MemoryRouter>
 )
 
-//'www.criticalrole.com/campaign/three/rocks'
-
 beforeEach(() => {
   useUser.mockReturnValue({
     data: {

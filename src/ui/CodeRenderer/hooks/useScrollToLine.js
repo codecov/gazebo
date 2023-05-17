@@ -42,7 +42,6 @@ const useTarget = ({ location, idString }) => {
   return [targeted, setTargeted]
 }
 
-// eslint-disable-next-line max-statements
 export const useScrollToLine = ({
   number,
   path = '',
