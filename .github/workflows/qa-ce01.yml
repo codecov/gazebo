@@ -1,0 +1,25 @@
+name: Deploy qa-ce01
+
+on:
+  push:
+    branches:
+      - qa-ce01
+      - main
+
+jobs:
+  release:
+    uses: ./.github/workflows/client-release.yml
+    secrets:
+      bucket: ${{ secrets.bucket_qa-ce01 }}
+      client_name: ${{ secrets.client_qa-ce01 }}
+      api_url: ${{ secrets.api_url_qa-ce01 }}
+      base_url: ${{ secrets.base_url_qa-ce01 }}
+      token: ${{ secrets.GITHUB_TOKEN }}
+      gcp_sa: ${{ secrets.CODECOV_GCP_WIDSA }}
+      gcp_idp: ${{ secrets.CODECOV_GCP_WIDP }}
+    permissions:
+      pull-requests: 'write'
+      contents: 'read'
+      id-token: 'write'
+      actions: 'read'
+      repository-projects: 'read'
