@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQueryClient } from '@tanstack/react-query'
 import PropTypes from 'prop-types'
 import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
@@ -9,18 +10,16 @@ import { useUpdateProfile } from 'services/user'
 import Button from 'ui/Button'
 import TextInput from 'ui/TextInput'
 
-function getSchema() {
-  return z.object({
-    name: z.string().nonempty('Name is required'),
-    email: z.string().email('Not a valid email').nonempty('Email is required'),
-  })
-}
+const detailsSchema = z.object({
+  name: z.string().nonempty('Name is required'),
+  email: z.string().email('Not a valid email').nonempty('Email is required'),
+})
 
 function DetailsSection({ email, name }) {
   const { provider } = useParams()
   const addToast = useAddNotification()
   const { register, handleSubmit, formState, reset } = useForm({
-    resolver: zodResolver(getSchema()),
+    resolver: zodResolver(detailsSchema),
     defaultValues: {
       email,
       name,
@@ -29,12 +28,15 @@ function DetailsSection({ email, name }) {
   })
 
   const { mutate, isLoading } = useUpdateProfile({ provider })
+  const queryClient = useQueryClient()
 
   const isButtonDisabled = !formState.isDirty || isLoading
 
   function submit(formData) {
     mutate(formData, {
       onSuccess: (updatedUser) => {
+        queryClient.invalidateQueries(['user', provider])
+
         addToast({
           type: 'success',
           text: 'Information successfully updated',

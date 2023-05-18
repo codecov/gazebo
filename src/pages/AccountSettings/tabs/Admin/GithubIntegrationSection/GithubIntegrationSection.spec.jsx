@@ -13,7 +13,6 @@ const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      suspense: false,
       retry: false,
     },
   },
@@ -78,12 +77,11 @@ describe('GithubIntegrationSection', () => {
     })
 
     it('does not render github integration section', () => {
-      render(<GithubIntegrationSection />, {
+      const { container } = render(<GithubIntegrationSection />, {
         wrapper: wrapper(['/account/bb/batman']),
       })
 
-      const title = screen.queryByText(/GitHub Integration/i)
-      expect(title).not.toBeInTheDocument()
+      expect(container).toBeEmptyDOMElement()
     })
   })
 
@@ -93,10 +91,11 @@ describe('GithubIntegrationSection', () => {
     })
 
     it('renders nothing', () => {
-      render(<GithubIntegrationSection />, { wrapper: wrapper() })
+      const { container } = render(<GithubIntegrationSection />, {
+        wrapper: wrapper(),
+      })
 
-      const title = screen.queryByText(/GitHub Integration/i)
-      expect(title).not.toBeInTheDocument()
+      expect(container).toBeEmptyDOMElement()
     })
   })
 

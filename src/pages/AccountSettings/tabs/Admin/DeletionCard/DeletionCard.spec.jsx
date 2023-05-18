@@ -42,7 +42,7 @@ describe('DeletionCard', () => {
 
     server.use(
       rest.delete(`/internal/gh/codecov/account-details/`, (req, res, ctx) => {
-        mutate(req.body)
+        mutate()
 
         return res(ctx.status(204), null)
       })

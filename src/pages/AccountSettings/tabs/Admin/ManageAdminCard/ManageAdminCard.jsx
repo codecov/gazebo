@@ -19,7 +19,7 @@ function ManageAdminCard() {
         Admins are able to: Add other admins, activate deactivate other users,
         view billing and modify the team yaml.
       </p>
-      <Suspense fallback={Loader}>
+      <Suspense fallback={<Loader />}>
         <AdminList />
       </Suspense>
     </Card>

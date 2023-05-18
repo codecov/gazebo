@@ -17,10 +17,11 @@ describe('StudentSection', () => {
 
   describe('when the user is not a student', () => {
     it('does not render student section', () => {
-      render(<StudentCard isStudent={false} />, { wrapper })
+      const { container } = render(<StudentCard isStudent={false} />, {
+        wrapper,
+      })
 
-      const p = screen.queryByText(/Your account is marked as a student/)
-      expect(p).not.toBeInTheDocument()
+      expect(container).toBeEmptyDOMElement()
     })
   })
 })
