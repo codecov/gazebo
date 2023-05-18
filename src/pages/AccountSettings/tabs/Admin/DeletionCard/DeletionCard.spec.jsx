@@ -15,6 +15,17 @@ jest.mock('js-cookie')
 
 const server = setupServer()
 
+beforeAll(() => {
+  server.listen()
+})
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => {
+  server.close()
+})
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -33,7 +44,11 @@ const wrapper = ({ children }) => (
 )
 
 describe('DeletionCard', () => {
-  function setup() {
+  function setup(
+    { failMutation = false } = {
+      failMutation: false,
+    }
+  ) {
     const user = userEvent.setup()
     const mutate = jest.fn()
     const addNotification = jest.fn()
@@ -44,7 +59,11 @@ describe('DeletionCard', () => {
       rest.delete(`/internal/gh/codecov/account-details/`, (req, res, ctx) => {
         mutate()
 
-        return res(ctx.status(204), null)
+        if (failMutation) {
+          return res(ctx.status(500))
+        }
+
+        return res(ctx.status(200), null)
       })
     )
 
@@ -169,7 +188,7 @@ describe('DeletionCard', () => {
 
     describe('when confirming', () => {
       it('calls the mutation', async () => {
-        const { user } = setup()
+        const { mutate, user } = setup()
         render(<DeletionCard isPersonalSettings={true} />, {
           wrapper,
         })
@@ -186,11 +205,14 @@ describe('DeletionCard', () => {
 
         await waitFor(() => queryClient.isFetching)
         await waitFor(() => expect(queryClient.isFetching()).toBeFalsy())
+        await waitFor(() => expect(mutate).toHaveBeenCalled())
       })
 
       describe('when the mutation fails', () => {
         it('adds an error notification', async () => {
-          const { user, addNotification } = setup()
+          const { user, addNotification } = setup({
+            failMutation: true,
+          })
           render(<DeletionCard isPersonalSettings={true} />, {
             wrapper,
           })
