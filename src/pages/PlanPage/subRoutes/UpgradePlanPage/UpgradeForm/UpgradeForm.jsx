@@ -14,7 +14,6 @@ import {
   canApplySentryUpgrade,
   getNextBillingDate,
   isAnnualPlan,
-  Plans,
 } from 'shared/utils/billing'
 import {
   calculatePrice,
@@ -24,9 +23,9 @@ import {
   MIN_SENTRY_SEATS,
   SENTRY_PRICE,
 } from 'shared/utils/upgradeForm'
-import RadioInput from 'ui/RadioInput/RadioInput'
 import TextInput from 'ui/TextInput'
 
+import BillingControls from './BillingControls/BillingControls'
 import TotalBanner from './TotalBanner'
 import UpdateButton from './UpdateButton'
 import UserCount from './UserCount'
@@ -133,28 +132,13 @@ const PlanDetails = ({ isSentryUpgrade }) => {
 
   return (
     <div>
-      <h3 className="text-base font-semibold">Plan Details</h3>
-      <p>
-        <span className="font-semibold">14 day free trial</span>, then $29
-        monthly includes 5 seats.
-      </p>
+      <h3 className="font-semibold">Plan</h3>
+      <p>14 day free trial, then $29 monthly includes 5 seats.</p>
     </div>
   )
 }
 
 PlanDetails.propTypes = {
-  isSentryUpgrade: PropTypes.bool,
-}
-
-const RadioInputHeader = ({ isSentryUpgrade }) => {
-  if (isSentryUpgrade) {
-    return <h3 className="font-semibold">Additional seats</h3>
-  }
-
-  return <h3 className="font-semibold">Billing</h3>
-}
-
-RadioInputHeader.propTypes = {
   isSentryUpgrade: PropTypes.bool,
 }
 
@@ -198,49 +182,23 @@ function UpgradeForm({
     isSentryUpgrade,
   })
 
+  const planString = getValues('newPlan')
+
   return (
     <form
       className="flex flex-col gap-4 text-ds-gray-nonary"
       onSubmit={handleSubmit(upgradePlan)}
     >
-      <div className="flex flex-col gap-2">
-        <h3 className="font-semibold">Organization</h3>
+      <div className="flex flex-col">
+        <h3 className="text-base font-semibold">Organization</h3>
         <span>{owner}</span>
       </div>
       <PlanDetails isSentryUpgrade={isSentryUpgrade} />
       <div className="flex flex-col gap-2">
-        <RadioInputHeader isSentryUpgrade={isSentryUpgrade} />
-        <RadioInput
-          key={proPlanYear?.billingRate}
-          data-cy={`select-${proPlanYear?.billingRate}`}
-          dataMarketing={`plan-pricing-option-${proPlanYear?.billingRate}`}
-          label={
-            <p>
-              <span className="font-semibold">
-                ${proPlanYear?.baseUnitPrice}
-              </span>
-              /per seat, billed {proPlanYear?.billingRate}
-            </p>
-          }
-          name="billing-options"
-          value={isSentryUpgrade ? Plans.USERS_SENTRYY : Plans.USERS_PR_INAPPY}
-          {...register('newPlan')}
-        />
-        <RadioInput
-          key={proPlanMonth?.billingRate}
-          data-cy={`select-${proPlanMonth?.billingRate}`}
-          dataMarketing={`plan-pricing-option-${proPlanMonth?.billingRate}`}
-          label={
-            <p>
-              <span className="font-semibold">
-                ${proPlanMonth?.baseUnitPrice}
-              </span>
-              /per seat, billed {proPlanMonth?.billingRate}
-            </p>
-          }
-          name="billing-options"
-          value={isSentryUpgrade ? Plans.USERS_SENTRYM : Plans.USERS_PR_INAPPM}
-          {...register('newPlan')}
+        <BillingControls
+          planString={planString}
+          isSentryUpgrade={isSentryUpgrade}
+          setValue={setValue}
         />
       </div>
       <div className="flex flex-col gap-2 xl:w-5/12">
