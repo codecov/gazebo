@@ -260,10 +260,9 @@ function UpgradeForm({
               isSentryUpgrade={isSentryUpgrade}
             />
           </div>
-          {/* If on trial, if no credit card, only show the credit card prompt */}
         </>
       ) : trialEndTimestamp && !hasPaymentMethod ? (
-        // This is a temporary solution till we do the manual form input
+        // If on trial, if no credit card, only show the credit card prompt
         <A
           href="https://billing.stripe.com/p/login/aEU00i9by3V4caQ6oo"
           hook="stripe-account-management-portal"

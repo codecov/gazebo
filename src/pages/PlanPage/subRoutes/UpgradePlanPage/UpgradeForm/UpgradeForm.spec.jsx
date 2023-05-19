@@ -602,7 +602,7 @@ describe('UpgradeForm', () => {
       })
     })
 
-    describe('when the user have a sentry pro year plan but no credit card information', () => {
+    describe('when the user have a sentry pro year plan but no billing information', () => {
       const props = {
         proPlanMonth,
         proPlanYear,
