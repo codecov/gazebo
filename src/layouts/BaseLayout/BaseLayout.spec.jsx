@@ -13,6 +13,7 @@ import BaseLayout from './BaseLayout'
 
 jest.mock('services/image')
 jest.mock('shared/featureFlags')
+jest.mock('shared/GlobalTopBanners', () => () => 'GlobalTopBanners')
 
 const mockOwner = {
   owner: {

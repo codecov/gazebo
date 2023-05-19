@@ -24,33 +24,87 @@ const wrapper = ({ children }) => (
 )
 
 describe('useTableDefaultSort', () => {
-  it('returns returns name descending as default parameter if no url parameters are defined', () => {
-    useLocationParams.mockReturnValue({
-      params: {},
-    })
-    const { result } = renderHook(() => useTableDefaultSort(), { wrapper })
-    const state = result.current[0]
+  describe('on initial render', () => {
+    describe('no url parameters are set', () => {
+      it('returns name ascending as default parameter', () => {
+        useLocationParams.mockReturnValue({
+          params: {},
+        })
+        const { result } = renderHook(() => useTableDefaultSort(), { wrapper })
+        const state = result.current[0]
 
-    expect(state).toEqual([{ id: 'name', desc: false }])
+        expect(state).toEqual([{ id: 'name', desc: false }])
+      })
+    })
+
+    describe('url parameter is set to tree', () => {
+      it('returns name ascending', () => {
+        useLocationParams.mockReturnValue({
+          params: { displayType: 'tree' },
+        })
+        const { result } = renderHook(() => useTableDefaultSort(), { wrapper })
+        const state = result.current[0]
+
+        expect(state).toEqual([{ id: 'name', desc: false }])
+      })
+    })
+
+    describe('url parameter is set to list', () => {
+      it('returns misses descending', () => {
+        useLocationParams.mockReturnValue({
+          params: { displayType: 'list' },
+        })
+        const { result } = renderHook(() => useTableDefaultSort(), { wrapper })
+        const state = result.current[0]
+
+        expect(state).toEqual([{ id: 'misses', desc: true }])
+      })
+    })
   })
 
-  it('returns returns name descending when url parameter is set to tree', () => {
-    useLocationParams.mockReturnValue({
-      params: { displayType: 'tree' },
+  describe('on further renders', () => {
+    describe('url parameter is switched to tree', () => {
+      it('returns misses ascending', async () => {
+        useLocationParams
+          .mockReturnValueOnce({
+            params: { displayType: 'list' },
+          })
+          .mockReturnValue({
+            params: { displayType: 'tree' },
+          })
+
+        const { result, rerender } = renderHook(() => useTableDefaultSort(), {
+          wrapper,
+        })
+
+        rerender()
+
+        const [state] = result.current
+
+        expect(state).toEqual([{ id: 'name', desc: false }])
+      })
     })
-    const { result } = renderHook(() => useTableDefaultSort(), { wrapper })
-    const state = result.current[0]
 
-    expect(state).toEqual([{ id: 'name', desc: false }])
-  })
+    describe('url parameter is switched to list', () => {
+      it('returns names descending', async () => {
+        useLocationParams
+          .mockReturnValueOnce({
+            params: { displayType: 'tree' },
+          })
+          .mockReturnValue({
+            params: { displayType: 'list' },
+          })
 
-  it('returns returns misses ascending when url parameter is set to list', () => {
-    useLocationParams.mockReturnValue({
-      params: { displayType: 'list' },
+        const { result, rerender } = renderHook(() => useTableDefaultSort(), {
+          wrapper,
+        })
+
+        rerender()
+
+        const [state] = result.current
+
+        expect(state).toEqual([{ id: 'misses', desc: true }])
+      })
     })
-    const { result } = renderHook(() => useTableDefaultSort(), { wrapper })
-    const state = result.current[0]
-
-    expect(state).toEqual([{ id: 'misses', desc: true }])
   })
 })

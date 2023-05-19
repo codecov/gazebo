@@ -377,7 +377,7 @@ describe('Summary', () => {
       const select = await screen.findByText('main')
       await user.click(select)
 
-      const input = await screen.findByRole('textbox')
+      const input = await screen.findByRole('combobox')
       await user.type(input, 'searching for branch')
 
       await waitFor(() =>

@@ -29,7 +29,8 @@ describe('AddAdmins', () => {
         <AddAdmins provider="gh" owner="codecov" setAdminStatus={jest.fn()} />
       )
 
-      expect(screen.getByRole('textbox')).toHaveValue('')
+      const textbox = screen.getByRole('combobox')
+      expect(textbox).toHaveValue('')
     })
 
     it(`doesn't render any dropdown`, () => {
@@ -37,7 +38,8 @@ describe('AddAdmins', () => {
         <AddAdmins provider="gh" owner="codecov" setAdminStatus={jest.fn()} />
       )
 
-      expect(screen.getByRole('listbox')).toHaveClass('hidden')
+      const listBox = screen.getByRole('listbox')
+      expect(listBox).toHaveClass('hidden')
     })
 
     it(`doesn't call the API`, () => {
@@ -56,7 +58,7 @@ describe('AddAdmins', () => {
         <AddAdmins provider="gh" owner="codecov" setAdminStatus={jest.fn()} />
       )
 
-      const textbox = screen.getByRole('textbox')
+      const textbox = screen.getByRole('combobox')
       await user.type(textbox, 'hello')
 
       const hideDropdown = screen.getByRole('listbox')
@@ -69,7 +71,7 @@ describe('AddAdmins', () => {
         <AddAdmins provider="gh" owner="codecov" setAdminStatus={jest.fn()} />
       )
 
-      const textbox = screen.getByRole('textbox')
+      const textbox = screen.getByRole('combobox')
       await user.type(textbox, 'hello')
 
       expect(screen.getByText(/loading/)).toBeInTheDocument()
@@ -83,7 +85,7 @@ describe('AddAdmins', () => {
         <AddAdmins provider="gh" owner="codecov" setAdminStatus={jest.fn()} />
       )
 
-      const textbox = screen.getByRole('textbox')
+      const textbox = screen.getByRole('combobox')
       await user.type(textbox, 'hello')
 
       const hideDropdown = screen.getByRole('listbox')
@@ -96,7 +98,7 @@ describe('AddAdmins', () => {
         <AddAdmins provider="gh" owner="codecov" setAdminStatus={jest.fn()} />
       )
 
-      const textbox = screen.getByRole('textbox')
+      const textbox = screen.getByRole('combobox')
       await user.type(textbox, 'hello')
 
       expect(screen.getByText(/No users found/)).toBeInTheDocument()
@@ -112,7 +114,7 @@ describe('AddAdmins', () => {
         <AddAdmins provider="gh" owner="codecov" setAdminStatus={jest.fn()} />
       )
 
-      const textbox = screen.getByRole('textbox')
+      const textbox = screen.getByRole('combobox')
       await user.type(textbox, 'hello')
 
       expect(screen.getByRole('listbox')).not.toHaveClass('hidden')
@@ -126,13 +128,15 @@ describe('AddAdmins', () => {
         <AddAdmins provider="gh" owner="codecov" setAdminStatus={jest.fn()} />
       )
 
-      const textbox = screen.getByRole('textbox')
+      const textbox = screen.getByRole('combobox')
       await user.type(textbox, 'hello')
 
       const username = await screen.findByText('@funspooky')
       expect(username).toBeInTheDocument()
+
       const laudna = await screen.findByText('laudna')
       expect(laudna).toBeInTheDocument()
+
       const email = await screen.findByText('c3@cr.io')
       expect(email).toBeInTheDocument()
     })
@@ -151,8 +155,9 @@ describe('AddAdmins', () => {
         />
       )
 
-      let textbox = screen.getByRole('textbox')
+      let textbox = screen.getByRole('combobox')
       await user.type(textbox, 'hello')
+
       const userOption = screen.getByRole('option', {
         name: new RegExp('launda', 'i'),
       })
@@ -169,14 +174,15 @@ describe('AddAdmins', () => {
         <AddAdmins provider="gh" owner="codecov" setAdminStatus={jest.fn()} />
       )
 
-      let textbox = screen.getByRole('textbox')
+      let textbox = screen.getByRole('combobox')
       await user.type(textbox, 'hello')
+
       const userOption = screen.getByRole('option', {
         name: new RegExp('launda', 'i'),
       })
       await user.click(userOption)
 
-      textbox = screen.getByRole('textbox')
+      textbox = screen.getByRole('combobox')
       expect(textbox).toHaveValue('')
     })
 
@@ -188,8 +194,9 @@ describe('AddAdmins', () => {
         <AddAdmins provider="gh" owner="codecov" setAdminStatus={jest.fn()} />
       )
 
-      const textbox = screen.getByRole('textbox')
+      const textbox = screen.getByRole('combobox')
       await user.type(textbox, 'hello')
+
       const userOption = screen.getByRole('option', {
         name: new RegExp('launda', 'i'),
       })

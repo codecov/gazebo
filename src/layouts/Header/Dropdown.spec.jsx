@@ -64,7 +64,8 @@ describe('Dropdown', () => {
 
         expect(screen.queryByText('Settings')).not.toBeInTheDocument()
 
-        await user.click(screen.getByRole('button'))
+        const openSelect = screen.getByRole('combobox')
+        await user.click(openSelect)
 
         const link = screen.getByText('Settings')
         expect(link).toBeVisible()
@@ -79,7 +80,8 @@ describe('Dropdown', () => {
 
         expect(screen.queryByText('Organizations')).not.toBeInTheDocument()
 
-        await user.click(screen.getByRole('button'))
+        const openSelect = screen.getByRole('combobox')
+        await user.click(openSelect)
 
         const link = screen.getByText('Organizations')
         expect(link).toBeVisible()
@@ -94,7 +96,8 @@ describe('Dropdown', () => {
 
         expect(screen.queryByText('Sign Out')).not.toBeInTheDocument()
 
-        await user.click(screen.getByRole('button'))
+        const openSelect = screen.getByRole('combobox')
+        await user.click(openSelect)
 
         const link = screen.getByText('Sign Out')
         expect(link).toBeVisible()
@@ -114,7 +117,8 @@ describe('Dropdown', () => {
           screen.queryByText('Manage GitHub org access')
         ).not.toBeInTheDocument()
 
-        await user.click(screen.getByRole('button'))
+        const openSelect = screen.getByRole('combobox')
+        await user.click(openSelect)
 
         const link = screen.getByText('Manage GitHub org access')
         expect(link).toBeVisible()
@@ -135,7 +139,8 @@ describe('Dropdown', () => {
 
         expect(screen.queryByText('Settings')).not.toBeInTheDocument()
 
-        await user.click(screen.getByRole('button'))
+        const openSelect = screen.getByRole('combobox')
+        await user.click(openSelect)
 
         const link = screen.getByText('Settings')
         expect(link).toBeVisible()
@@ -150,7 +155,8 @@ describe('Dropdown', () => {
 
         expect(screen.queryByText('Organizations')).not.toBeInTheDocument()
 
-        await user.click(screen.getByRole('button'))
+        const openSelect = screen.getByRole('combobox')
+        await user.click(openSelect)
 
         const link = screen.getByText('Organizations')
         expect(link).toBeVisible()
@@ -165,7 +171,8 @@ describe('Dropdown', () => {
 
         expect(screen.queryByText('Sign Out')).not.toBeInTheDocument()
 
-        await user.click(screen.getByRole('button'))
+        const openSelect = screen.getByRole('combobox')
+        await user.click(openSelect)
 
         const link = screen.getByText('Sign Out')
         expect(link).toBeVisible()
@@ -185,7 +192,8 @@ describe('Dropdown', () => {
           screen.queryByText('Manage GitHub org access')
         ).not.toBeInTheDocument()
 
-        await user.click(screen.getByRole('button'))
+        const openSelect = screen.getByRole('combobox')
+        await user.click(openSelect)
 
         expect(
           screen.queryByText('Manage GitHub org access')

@@ -1,17 +1,19 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 
-function OptionButton({ active, options, onChange }) {
+function OptionButton({ active, options, onChange, type, disabled }) {
   return (
     <div className="flex flex-wrap divide-x rounded border">
       {options.map((o, index) => {
         return (
           <button
+            type={type}
+            disabled={disabled}
             className={cs(
-              'flex-1 py-1 px-2 text-sm cursor-pointer whitespace-nowrap',
+              'flex-1 py-1 px-2 text-sm cursor-pointer whitespace-nowrap disabled:text-ds-gray-quaternary disabled:border-ds-gray-tertiary disabled:bg-ds-gray-primary',
               {
                 'bg-ds-primary-base text-white font-semibold':
-                  active === o.text,
+                  active === o.text && !disabled,
                 'rounded-l': index === 0,
                 'rounded-r': index === options.length - 1,
               }
@@ -37,6 +39,8 @@ OptionButton.propTypes = {
     })
   ),
   onChange: PropTypes.func.isRequired,
+  type: PropTypes.oneOf(['button', 'reset', 'submit']),
+  disabled: PropTypes.bool,
 }
 
 export default OptionButton
