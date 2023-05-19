@@ -1,34 +1,81 @@
-import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-
-import { useUpdateUser, useUsers } from 'services/users'
+import { rest } from 'msw'
+import { setupServer } from 'msw/node'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import ManageAdminCard from './ManageAdminCard'
 
-jest.mock('services/users')
 jest.mock('./AddAdmins', () => () => 'AddAdmins')
-jest.mock('react-router-dom', () => ({
-  useParams: () => ({
-    provider: 'gh',
-    owner: 'codecov',
-  }),
-}))
+
+const mockUsersRequest = {
+  count: 1,
+  next: null,
+  previous: null,
+  results: [
+    {
+      activated: true,
+      is_admin: false,
+      username: 'codecov-user',
+      email: 'user@codecov.io',
+      ownerid: 1,
+      student: false,
+      name: 'codecov',
+      last_pull_timestamp: null,
+    },
+  ],
+  total_pages: 1,
+}
+
+const server = setupServer()
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      suspense: true,
+      retry: false,
+    },
+  },
+})
+
+beforeAll(() => server.listen())
+beforeEach(() => {
+  server.resetHandlers()
+  queryClient.clear()
+})
+afterAll(() => server.close())
+
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/account/gh/codecov']}>
+      <Route path="/account/:provider/:owner">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
 
 describe('ManageAdminCard', () => {
   function setup(adminResults = []) {
     const user = userEvent.setup()
     const refetch = jest.fn()
     const mutate = jest.fn()
-    useUsers.mockReturnValue({
-      data: {
-        results: adminResults,
-      },
-      refetch,
-    })
-    useUpdateUser.mockReturnValue({
-      isLoading: false,
-      mutate,
-    })
+
+    server.use(
+      rest.get('/internal/gh/codecov/users', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.json({
+            ...mockUsersRequest,
+            results: adminResults,
+          })
+        )
+      }),
+      rest.patch('/internal/gh/codecov/users/someid/', (req, res, ctx) => {
+        mutate()
+
+        return res(ctx.status(200), ctx.json({}))
+      })
+    )
 
     return { refetch, mutate, user }
   }
@@ -36,10 +83,10 @@ describe('ManageAdminCard', () => {
   describe('when rendered when there are no admins', () => {
     beforeEach(() => setup([]))
 
-    it('renders an empty copy', () => {
-      render(<ManageAdminCard />)
+    it('renders an empty copy', async () => {
+      render(<ManageAdminCard />, { wrapper })
 
-      const noAdmins = screen.getByText(
+      const noAdmins = await screen.findByText(
         /No admins yet. Note that admins in your Github organization are automatically considered admins./
       )
       expect(noAdmins).toBeInTheDocument()
@@ -49,10 +96,10 @@ describe('ManageAdminCard', () => {
   describe('when rendered when there are no admins and its not a list', () => {
     beforeEach(() => setup(null))
 
-    it('renders an empty copy', () => {
-      render(<ManageAdminCard />)
+    it('renders an empty copy', async () => {
+      render(<ManageAdminCard />, { wrapper })
 
-      const noAdmins = screen.getByText(
+      const noAdmins = await screen.findByText(
         /No admins yet. Note that admins in your Github organization are automatically considered admins./
       )
       expect(noAdmins).toBeInTheDocument()
@@ -60,16 +107,26 @@ describe('ManageAdminCard', () => {
   })
 
   describe('when rendered with admins', () => {
-    it('renders the admins', () => {
+    it('renders the admins', async () => {
       setup([{ username: 'spookyfun', email: 'c3@cr.io', name: 'laudna' }])
-      render(<ManageAdminCard />)
+      render(<ManageAdminCard />, { wrapper })
 
-      const name = screen.getByText('laudna')
+      const name = await screen.findByText('laudna')
       expect(name).toBeInTheDocument()
-      const username = screen.getByText('@spookyfun')
+      const username = await screen.findByText('@spookyfun')
       expect(username).toBeInTheDocument()
-      const email = screen.getByText('c3@cr.io')
+      const email = await screen.findByText('c3@cr.io')
       expect(email).toBeInTheDocument()
+    })
+  })
+
+  describe('when queryclient is fetching', () => {
+    it('renders spinner', async () => {
+      setup()
+      render(<ManageAdminCard />, { wrapper })
+
+      const spinner = await screen.findByTestId('spinner')
+      expect(spinner).toBeInTheDocument()
     })
   })
 
@@ -84,16 +141,15 @@ describe('ManageAdminCard', () => {
         },
       ])
 
-      render(<ManageAdminCard />)
+      render(<ManageAdminCard />, { wrapper })
 
-      const revokeButton = screen.getByRole('button', {
+      const revokeButton = await screen.findByRole('button', {
         name: /revoke/i,
       })
       await user.click(revokeButton)
 
-      expect(mutate).toHaveBeenCalledWith({
-        targetUserOwnerid: 'someid',
-        is_admin: false,
+      await waitFor(() => {
+        expect(mutate).toHaveBeenCalled()
       })
     })
   })

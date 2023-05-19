@@ -1,44 +1,38 @@
-import PropTypes from 'prop-types'
+import { useParams } from 'react-router-dom'
 
 import { useUser } from 'services/user'
 
 import DeletionCard from './DeletionCard'
-import GithubIntegrationCard from './GithubIntegrationCard'
+import DetailsSection from './DetailsSection'
+import GithubIntegrationSection from './GithubIntegrationSection'
 import ManageAdminCard from './ManageAdminCard'
-import NameEmailCard from './NameEmailCard'
-import StudentCard from './StudentCard'
+import StudentSection from './StudentSection'
 
-function Admin({ provider, owner }) {
+function Admin() {
+  const { provider, owner } = useParams()
   const { data: currentUser } = useUser({ provider })
   const isPersonalSettings =
     currentUser?.user?.username?.toLowerCase() === owner.toLowerCase()
 
   return (
-    <div>
+    <div className="flex flex-col gap-8">
       {isPersonalSettings ? (
         <>
-          <NameEmailCard currentUser={currentUser} provider={provider} />
-          <StudentCard currentUser={currentUser} />
+          <DetailsSection
+            email={currentUser.email}
+            name={currentUser.user.name}
+          />
+          <StudentSection isStudent={currentUser.user.student} />
         </>
       ) : (
         <ManageAdminCard />
       )}
-      <div className="mt-8 flex flex-col md:flex-row">
-        <GithubIntegrationCard provider={provider} owner={owner} />
-        <div className="mt-8 grow md:mt-0">
-          <DeletionCard
-            provider={provider}
-            owner={owner}
-            isPersonalSettings={isPersonalSettings}
-          />
-        </div>
-      </div>
+      <hr />
+      <GithubIntegrationSection />
+      <hr />
+      <DeletionCard isPersonalSettings={isPersonalSettings} />
     </div>
   )
 }
 
-Admin.propTypes = {
-  provider: PropTypes.string.isRequired,
-  owner: PropTypes.string.isRequired,
-}
 export default Admin

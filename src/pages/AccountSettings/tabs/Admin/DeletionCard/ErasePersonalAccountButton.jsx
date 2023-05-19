@@ -1,12 +1,13 @@
-import PropTypes from 'prop-types'
 import { useState } from 'react'
+import { useParams } from 'react-router-dom'
 
 import Modal from 'old_ui/Modal'
 import { useEraseAccount } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
 import Button from 'ui/Button'
 
-function ErasePersonalAccountButton({ provider, owner }) {
+function ErasePersonalAccountButton() {
+  const { provider, owner } = useParams()
   const { mutate, isLoading } = useEraseAccount({ provider, owner })
   const [isModalOpen, setIsModalOpen] = useState(false)
   const addToast = useAddNotification()
@@ -63,11 +64,6 @@ function ErasePersonalAccountButton({ provider, owner }) {
       </Modal>
     </>
   )
-}
-
-ErasePersonalAccountButton.propTypes = {
-  provider: PropTypes.string.isRequired,
-  owner: PropTypes.string.isRequired,
 }
 
 export default ErasePersonalAccountButton
