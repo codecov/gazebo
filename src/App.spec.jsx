@@ -27,6 +27,7 @@ jest.mock('./pages/TermsOfService', () => () => 'TermsOfService')
 jest.mock('./pages/EnterpriseLandingPage', () => () => 'EnterpriseLandingPage')
 
 jest.mock('./shared/GlobalBanners', () => () => '')
+jest.mock('./shared/GlobalTopBanners', () => () => '')
 jest.mock('./layouts/Header', () => () => '')
 jest.mock('./layouts/Footer', () => () => '')
 

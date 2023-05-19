@@ -49,7 +49,8 @@ export const TopBanner: Story = {
         localStorageKey="storybook-top-banner"
         variant={variant}
       >
-        <TopBannerComponent.Content>{children}</TopBannerComponent.Content>
+        <TopBannerComponent.Start>{children}</TopBannerComponent.Start>
+        <TopBannerComponent.End>{children}</TopBannerComponent.End>
       </TopBannerComponent>
     )
   },

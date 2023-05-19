@@ -8,6 +8,7 @@ import ToastNotifications from 'layouts/ToastNotifications'
 import LogoSpinner from 'old_ui/LogoSpinner'
 import { useTracking } from 'services/tracking'
 import GlobalBanners from 'shared/GlobalBanners'
+import GlobalTopBanners from 'shared/GlobalTopBanners'
 
 import { useUserAccessGate } from './hooks/useUserAccessGate'
 
@@ -31,7 +32,10 @@ function BaseLayout({ children }) {
   return (
     <>
       {isFullExperience ? (
-        <Header />
+        <>
+          <Header />
+          <GlobalTopBanners />
+        </>
       ) : (
         <Suspense fallback={null}>
           <LimitedHeader />

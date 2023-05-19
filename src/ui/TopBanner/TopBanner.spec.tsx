@@ -22,7 +22,7 @@ describe('TopBanner', () => {
       it('has the correct background color', () => {
         render(
           <TopBanner localStorageKey="testing-key">
-            <TopBanner.Content>Test warning banner</TopBanner.Content>
+            <TopBanner.Start>Test warning banner</TopBanner.Start>
           </TopBanner>
         )
 
@@ -34,7 +34,7 @@ describe('TopBanner', () => {
       it('renders circle exclamation icon', () => {
         render(
           <TopBanner localStorageKey="testing-key">
-            <TopBanner.Content>Test default banner</TopBanner.Content>
+            <TopBanner.Start>Test default banner</TopBanner.Start>
           </TopBanner>
         )
 
@@ -45,7 +45,7 @@ describe('TopBanner', () => {
       it('renders text content', () => {
         render(
           <TopBanner localStorageKey="testing-key">
-            <TopBanner.Content>Test default banner</TopBanner.Content>
+            <TopBanner.Start>Test default banner</TopBanner.Start>
           </TopBanner>
         )
 
@@ -58,7 +58,7 @@ describe('TopBanner', () => {
       it('has the correct background color', () => {
         render(
           <TopBanner variant="warning" localStorageKey="testing-key">
-            <TopBanner.Content>Test warning banner</TopBanner.Content>
+            <TopBanner.Start>Test warning banner</TopBanner.Start>
           </TopBanner>
         )
 
@@ -70,7 +70,7 @@ describe('TopBanner', () => {
       it('renders triangle exclamation icon', () => {
         render(
           <TopBanner variant="warning" localStorageKey="testing-key">
-            <TopBanner.Content>Test warning banner</TopBanner.Content>
+            <TopBanner.Start>Test warning banner</TopBanner.Start>
           </TopBanner>
         )
 
@@ -81,7 +81,7 @@ describe('TopBanner', () => {
       it('renders text content', () => {
         render(
           <TopBanner variant="warning" localStorageKey="testing-key">
-            <TopBanner.Content>Test warning banner</TopBanner.Content>
+            <TopBanner.Start>Test warning banner</TopBanner.Start>
           </TopBanner>
         )
 
@@ -101,7 +101,7 @@ describe('TopBanner', () => {
 
       const { container } = render(
         <TopBanner localStorageKey="testing-dismissed-banner">
-          <TopBanner.Content>Test default banner</TopBanner.Content>
+          <TopBanner.Start>Test default banner</TopBanner.Start>
         </TopBanner>
       )
 
@@ -117,10 +117,10 @@ describe('TopBanner', () => {
 
       const { container } = render(
         <TopBanner localStorageKey="testing-initial-dismiss-banner">
-          <TopBanner.Content>Test default banner</TopBanner.Content>
-          <TopBanner.ButtonGroup>
+          <TopBanner.Start>Test default banner</TopBanner.Start>
+          <TopBanner.End>
             <TopBanner.DismissButton>Dismiss</TopBanner.DismissButton>
-          </TopBanner.ButtonGroup>
+          </TopBanner.End>
         </TopBanner>
       )
 
@@ -140,10 +140,10 @@ describe('TopBanner', () => {
 
         render(
           <TopBanner localStorageKey="testing-initial-dismiss-banner">
-            <TopBanner.Content>Test default banner</TopBanner.Content>
-            <TopBanner.ButtonGroup>
+            <TopBanner.Start>Test default banner</TopBanner.Start>
+            <TopBanner.End>
               <TopBanner.DismissButton>Dismiss</TopBanner.DismissButton>
-            </TopBanner.ButtonGroup>
+            </TopBanner.End>
           </TopBanner>
         )
 
@@ -169,10 +169,10 @@ describe('TopBanner', () => {
 
         render(
           <TopBanner localStorageKey="testing-second-dismiss-banner">
-            <TopBanner.Content>Test default banner</TopBanner.Content>
-            <TopBanner.ButtonGroup>
+            <TopBanner.Start>Test default banner</TopBanner.Start>
+            <TopBanner.End>
               <TopBanner.DismissButton>Dismiss</TopBanner.DismissButton>
-            </TopBanner.ButtonGroup>
+            </TopBanner.End>
           </TopBanner>
         )
 

@@ -9,7 +9,6 @@ import { useAccountDetails } from 'services/account'
 import ExceededUploadsAlert from './ExceededUploadsAlert'
 import GithubConfigBanner from './GithubConfigBanner'
 import ReachingUploadLimit from './ReachingUploadLimit'
-import SentryIncentiveBanner from './SentryBundleBanner'
 
 const MAX_UPLOADS_NUMBER = 250
 const REACHING_UPLOAD_LIMIT = 225
@@ -73,7 +72,6 @@ export default function HeaderBanners() {
         isUploadsReachingLimit={isUploadsReachingLimit}
         hasGhApp={hasGhApp}
       />
-      <SentryIncentiveBanner plan={accountDetails?.plan?.value} />
     </>
   )
 }
