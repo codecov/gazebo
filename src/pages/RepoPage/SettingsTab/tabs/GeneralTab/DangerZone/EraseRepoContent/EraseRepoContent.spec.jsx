@@ -238,7 +238,7 @@ describe('EraseRepoContent', () => {
       await waitFor(() =>
         expect(addNotification).toHaveBeenCalledWith({
           type: 'success',
-          text: 'Repo coverage content erase',
+          text: 'Repo coverage content erased successfully',
         })
       )
     })

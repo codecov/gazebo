@@ -15,7 +15,7 @@ export default function useEraseContent() {
       onSuccess: () =>
         addToast({
           type: 'success',
-          text: 'Repo coverage content erase',
+          text: 'Repo coverage content erased successfully',
         }),
     })
   }
