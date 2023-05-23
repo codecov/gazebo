@@ -3,10 +3,15 @@ import PropTypes from 'prop-types'
 import Button from 'ui/Button'
 import Modal from 'ui/Modal'
 
-const EraseRepoContenModal = ({ closeModal, eraseRepoContent, isLoading }) => {
+const EraseRepoContentModal = ({
+  closeModal,
+  eraseRepoContent,
+  isLoading,
+  showModal,
+}) => {
   return (
     <Modal
-      isOpen={true}
+      isOpen={showModal}
       onClose={closeModal}
       title="Are you sure you want to erase the repo coverage content?"
       body={
@@ -43,10 +48,11 @@ const EraseRepoContenModal = ({ closeModal, eraseRepoContent, isLoading }) => {
   )
 }
 
-EraseRepoContenModal.propTypes = {
+EraseRepoContentModal.propTypes = {
+  showModal: PropTypes.bool.isRequired,
   closeModal: PropTypes.func.isRequired,
   eraseRepoContent: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
 }
 
-export default EraseRepoContenModal
+export default EraseRepoContentModal
