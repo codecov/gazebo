@@ -12,6 +12,11 @@ export default function useEraseContent() {
           type: 'error',
           text: "We were unable to erase this repo's content",
         }),
+      onSuccess: () =>
+        addToast({
+          type: 'success',
+          text: 'Repo coverage content erase',
+        }),
     })
   }
 
