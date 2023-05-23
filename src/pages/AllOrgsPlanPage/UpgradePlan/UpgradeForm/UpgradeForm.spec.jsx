@@ -348,6 +348,52 @@ describe('UpgradeForm', () => {
       })
     })
 
+    describe('when the user have a pro year plan but no billing information', () => {
+      const props = {
+        organizationName: 'codecov',
+        proPlanMonth,
+        proPlanYear,
+        accountDetails: {
+          activatedUserCount: 9,
+          inactiveUserCount: 0,
+          plan: proPlanYear,
+          latestInvoice: null,
+          subscriptionDetail: {
+            trialEnd: 12345,
+          },
+        },
+      }
+
+      it('renders annual option to be "selected"', () => {
+        setup()
+        render(<UpgradeForm {...props} />, { wrapper })
+
+        const optionBtn = screen.queryByRole('button', { name: 'Annual' })
+        expect(optionBtn).not.toBeInTheDocument()
+      })
+
+      it('does not have the update button', () => {
+        setup()
+        render(<UpgradeForm {...props} />, { wrapper })
+
+        const update = screen.queryByText(/Update/)
+        expect(update).not.toBeInTheDocument()
+      })
+
+      it('prompts the user to input their billing information', async () => {
+        setup({ includeSentryPlans: true })
+        render(<UpgradeForm {...props} />, { wrapper })
+
+        const billingInformationAnchor = await screen.findByText(
+          /Proceed with plan and input billing information/
+        )
+        expect(billingInformationAnchor).toBeInTheDocument()
+        expect(billingInformationAnchor.href).toBe(
+          'https://billing.stripe.com/p/login/aEU00i9by3V4caQ6oo'
+        )
+      })
+    })
+
     describe('when the user have a pro year monthly', () => {
       describe('user clicks select annual', () => {
         it('renders annual option to be "selected"', async () => {
@@ -592,6 +638,10 @@ describe('UpgradeForm', () => {
           latestInvoice: null,
           subscriptionDetail: {
             trialEnd: 12345,
+            defaultPaymentMethod: {
+              billingDetails: {},
+              card: { brand: 'visa' },
+            },
           },
         },
       }
@@ -739,6 +789,10 @@ describe('UpgradeForm', () => {
               latestInvoice: null,
               subscriptionDetail: {
                 trialEnd: 12345,
+                defaultPaymentMethod: {
+                  billingDetails: {},
+                  card: { brand: 'visa' },
+                },
               },
             }}
           />,
