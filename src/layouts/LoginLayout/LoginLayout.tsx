@@ -11,10 +11,7 @@ import A from 'ui/A'
 const LogoButton = () => {
   const { provider } = useParams<{ provider?: string }>()
 
-  let pageName = 'root'
-  if (isString(provider)) {
-    pageName = 'provider'
-  }
+  const pageName = isString(provider) ? 'provider' : 'root'
 
   return (
     // @ts-expect-error
@@ -50,9 +47,7 @@ const LoginLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
           {children}
         </main>
       </Suspense>
-      <>
-        <Footer />
-      </>
+      <Footer />
     </>
   )
 }
