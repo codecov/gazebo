@@ -8,7 +8,6 @@ import config from 'config'
 
 import DesktopMenu, { LoginPrompt } from './DesktopMenu'
 
-jest.mock('./RequestButton', () => () => 'Request Button')
 jest.mock('config')
 
 const loggedInUser = {
@@ -169,20 +168,6 @@ describe('DesktopMenu', () => {
 
     const dropdown = await screen.findByTestId('dropdown')
     expect(dropdown).toBeInTheDocument()
-  })
-
-  it('renders request demo button when there is owner with free plan is logged in', async () => {
-    setup()
-
-    render(<DesktopMenu />, {
-      wrapper: wrapper({
-        initialEntries: '/gh/codecov',
-        path: '/:provider/:owner',
-      }),
-    })
-
-    const requestDemoButton = await screen.findByText('Request Button')
-    expect(requestDemoButton).toBeInTheDocument()
   })
 
   it('does not render request demo button when owner is undefined', async () => {
