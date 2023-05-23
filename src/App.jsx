@@ -7,6 +7,7 @@ import config from 'config'
 import { SentryRoute } from 'sentry'
 
 import BaseLayout from 'layouts/BaseLayout'
+import LoginLayout from 'layouts/LoginLayout'
 import { ToastNotificationProvider } from 'services/toastNotification'
 import { useUTM } from 'services/tracking/utm'
 
@@ -29,14 +30,14 @@ const RepoPage = lazy(() => import('./pages/RepoPage'))
 const MainAppRoutes = () => (
   <Switch>
     <SentryRoute path="/login/:provider">
-      <BaseLayout>
+      <LoginLayout>
         {config.IS_SELF_HOSTED ? <Redirect to="/" /> : <LoginPage />}
-      </BaseLayout>
+      </LoginLayout>
     </SentryRoute>
     <SentryRoute path="/login">
-      <BaseLayout>
+      <LoginLayout>
         {config.IS_SELF_HOSTED ? <Redirect to="/" /> : <LoginPage />}
-      </BaseLayout>
+      </LoginLayout>
     </SentryRoute>
     <SentryRoute path="/account/:provider/:owner">
       <BaseLayout>
