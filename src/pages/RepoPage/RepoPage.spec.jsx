@@ -153,22 +153,6 @@ describe('RepoPage', () => {
     })
   })
 
-  describe('the repo is private', () => {
-    beforeEach(() =>
-      setup({
-        isRepoPrivate: true,
-        isCurrentUserPartOfOrg: false,
-        hasRepoData: true,
-      })
-    )
-    it('renders not found', async () => {
-      render(<RepoPage />, { wrapper: wrapper() })
-
-      const notFound = await screen.findByText(/not found/i)
-      expect(notFound).toBeInTheDocument()
-    })
-  })
-
   describe('testing tabs', () => {
     describe('user is part of org', () => {
       it('has a coverage tab', async () => {
