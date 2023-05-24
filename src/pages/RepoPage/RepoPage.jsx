@@ -85,7 +85,7 @@ function RepoPage() {
     setRefetchEnabled(true)
   }
 
-  if (!repoData?.repository || (isRepoPrivate && !isCurrentUserPartOfOrg))
+  if (!repoData?.repository)
     return <NotFound />
 
   if (!isCurrentUserActivated && isRepoPrivate)
