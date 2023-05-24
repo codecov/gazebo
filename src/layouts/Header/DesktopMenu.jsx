@@ -11,7 +11,6 @@ import Button from 'ui/Button'
 import AdminLink from './AdminLink'
 import Dropdown from './Dropdown'
 import FeedbackLink from './FeedbackLink'
-import RequestButton from './RequestButton'
 import SeatDetails from './SeatDetails'
 
 export function LoginPrompt() {
@@ -68,7 +67,6 @@ function DesktopMenu() {
   const { data: currentUser } = useUser({
     suspense: false,
   })
-  const { owner, provider } = useParams()
 
   return (
     <>
@@ -97,7 +95,6 @@ function DesktopMenu() {
               <AdminLink />
             </>
           )}
-          {!!owner && <RequestButton owner={owner} provider={provider} />}
           <Dropdown currentUser={currentUser} />
         </div>
       ) : (

@@ -181,20 +181,20 @@ describe('UpgradeForm', () => {
         },
       }
 
-      it('renders monthly radio button', async () => {
+      it('renders monthly option button', async () => {
         setup()
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const radio = await screen.findByLabelText(/\$12/i)
-        expect(radio).toBeInTheDocument()
+        const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
+        expect(optionBtn).toBeInTheDocument()
       })
 
-      it('renders annual radio button', async () => {
+      it('renders annual option button', async () => {
         setup()
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const radio = await screen.findByLabelText(/\$10/i)
-        expect(radio).toBeInTheDocument()
+        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        expect(optionBtn).toBeInTheDocument()
       })
 
       it('renders the seat input with 2 seats', async () => {
@@ -219,13 +219,13 @@ describe('UpgradeForm', () => {
         },
       }
 
-      it('renders annual plan', async () => {
+      it('renders annual option button as "selected"', async () => {
         setup()
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const radio = await screen.findByRole('radio', { name: /\$10/ })
-        expect(radio).toBeInTheDocument()
-        expect(radio).toBeChecked()
+        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        expect(optionBtn).toBeInTheDocument()
+        expect(optionBtn).toHaveClass('bg-ds-primary-base')
       })
 
       it('renders the seat input with 2 seats', async () => {
@@ -249,12 +249,13 @@ describe('UpgradeForm', () => {
         },
       }
 
-      it('renders annual radio to be checked', async () => {
+      it('renders annual option button to be "selection"', async () => {
         setup()
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const radio = await screen.findByRole('radio', { name: /10/i })
-        expect(radio).toBeChecked()
+        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        expect(optionBtn).toBeInTheDocument()
+        expect(optionBtn).toHaveClass('bg-ds-primary-base')
       })
 
       it('renders the seat input with 10 seats (existing subscription)', async () => {
@@ -286,8 +287,10 @@ describe('UpgradeForm', () => {
           const { user } = setup()
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-          const monthRadio = await screen.findByRole('radio', { name: /12/i })
-          await user.click(monthRadio)
+          const monthOption = await screen.findByRole('button', {
+            name: 'Monthly',
+          })
+          await user.click(monthOption)
 
           const price = screen.getByText(/\$120/)
           expect(price).toBeInTheDocument()
@@ -297,7 +300,7 @@ describe('UpgradeForm', () => {
 
     describe('when the user have a pro year monthly', () => {
       describe('user clicks select annual', () => {
-        it('renders annual radio to be checked', async () => {
+        it('renders annual option button to be "selected', async () => {
           const { user } = setup()
           render(
             <UpgradeForm
@@ -316,8 +319,11 @@ describe('UpgradeForm', () => {
           const switchAnnual = await screen.findByText('switch to annual')
           await user.click(switchAnnual)
 
-          const annualRadio = await screen.findByRole('radio', { name: /10/i })
-          expect(annualRadio).toBeChecked()
+          const annualOption = await screen.findByRole('button', {
+            name: 'Annual',
+          })
+          expect(annualOption).toBeInTheDocument()
+          expect(annualOption).toHaveClass('bg-ds-primary-base')
         })
       })
     })
@@ -440,44 +446,47 @@ describe('UpgradeForm', () => {
         },
       }
 
-      it('renders plan details', async () => {
+      it('renders plan', async () => {
         setup({ includeSentryPlans: true })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const planDetails = await screen.findByRole('heading', {
-          name: 'Plan Details',
+          name: 'Plan',
         })
         expect(planDetails).toBeInTheDocument()
 
-        const trial = await screen.findByText('14 day free trial')
+        const trial = await screen.findByText(
+          '14 day free trial, then $29 monthly includes 5 seats.'
+        )
         expect(trial).toBeInTheDocument()
       })
 
-      it('renders additional seats instead of billing', async () => {
+      it('renders billing', async () => {
         setup({ includeSentryPlans: true })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const additionalSeats = await screen.findByText('Additional seats')
-        expect(additionalSeats).toBeInTheDocument()
-
-        const billing = screen.queryByText('Billing')
-        expect(billing).not.toBeInTheDocument()
+        const billing = await screen.findByText('Billing')
+        expect(billing).toBeInTheDocument()
       })
 
-      it('renders monthly radio button', async () => {
+      it('renders monthly option button', async () => {
         setup({ includeSentryPlans: true })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const radio = await screen.findByLabelText(/\$12/i)
-        expect(radio).toBeInTheDocument()
+        const monthlyOption = await screen.findByRole('button', {
+          name: 'Monthly',
+        })
+        expect(monthlyOption).toBeInTheDocument()
       })
 
-      it('renders annual radio button', async () => {
+      it('renders annual option button', async () => {
         setup({ includeSentryPlans: true })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const radio = await screen.findByLabelText(/\$10/i)
-        expect(radio).toBeInTheDocument()
+        const annualOption = await screen.findByRole('button', {
+          name: 'Annual',
+        })
+        expect(annualOption).toBeInTheDocument()
       })
 
       it('renders the seat input with 5 seats', async () => {
@@ -504,13 +513,15 @@ describe('UpgradeForm', () => {
         },
       }
 
-      it('renders annual plan', async () => {
+      it('renders annual option as "selected"', async () => {
         setup({ includeSentryPlans: true })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const radio = await screen.findByRole('radio', { name: /\$10/ })
-        expect(radio).toBeInTheDocument()
-        expect(radio).toBeChecked()
+        const annualOption = await screen.findByRole('button', {
+          name: 'Annual',
+        })
+        expect(annualOption).toBeInTheDocument()
+        expect(annualOption).toHaveClass('bg-ds-primary-base')
       })
 
       it('renders the seat input with 5 seats', async () => {
@@ -535,16 +546,20 @@ describe('UpgradeForm', () => {
           latestInvoice: null,
           subscriptionDetail: {
             trialEnd: 12345,
+            defaultPaymentMethod: {
+              billingDetails: {},
+              card: { brand: 'visa' },
+            },
           },
         },
       }
 
-      it('renders annual radio to be checked', async () => {
+      it('renders annual option to be "selected"', async () => {
         setup({ includeSentryPlans: true })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const radio = await screen.findByRole('radio', { name: /10/i })
-        expect(radio).toBeChecked()
+        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        expect(optionBtn).toHaveClass('bg-ds-primary-base')
       })
 
       it('renders the seat input with 10 seats (existing subscription)', async () => {
@@ -576,8 +591,10 @@ describe('UpgradeForm', () => {
           const { user } = setup({ includeSentryPlans: true })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-          const monthRadio = await screen.findByRole('radio', { name: /12/i })
-          await user.click(monthRadio)
+          const monthOption = await screen.findByRole('button', {
+            name: 'Monthly',
+          })
+          await user.click(monthOption)
 
           const price = screen.getByText(/\$120/)
           expect(price).toBeInTheDocument()
@@ -585,10 +602,58 @@ describe('UpgradeForm', () => {
       })
     })
 
+    describe('when the user have a sentry pro year plan but no billing information', () => {
+      const props = {
+        proPlanMonth,
+        proPlanYear,
+        sentryPlanMonth,
+        sentryPlanYear,
+        accountDetails: {
+          activatedUserCount: 9,
+          inactiveUserCount: 0,
+          plan: sentryPlanYear,
+          latestInvoice: null,
+          subscriptionDetail: {
+            trialEnd: 12345,
+          },
+        },
+      }
+
+      it('does not render annual option to be "selected"', () => {
+        setup({ includeSentryPlans: true })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const optionBtn = screen.queryByRole('button', { name: 'Annual' })
+        expect(optionBtn).not.toBeInTheDocument()
+      })
+
+      it('does not have the update button', () => {
+        setup({ includeSentryPlans: true })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const update = screen.queryByText(/Update/)
+        expect(update).not.toBeInTheDocument()
+      })
+
+      it('prompts the user to input their billing information', async () => {
+        setup({ includeSentryPlans: true })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const billingInformationAnchor = await screen.findByText(
+          /Proceed with plan and input billing information/
+        )
+        expect(billingInformationAnchor).toBeInTheDocument()
+        expect(billingInformationAnchor.href).toBe(
+          'https://billing.stripe.com/p/login/aEU00i9by3V4caQ6oo'
+        )
+      })
+    })
+
     describe('when the user have a sentry pro monthly', () => {
       describe('user clicks select annual', () => {
-        it('renders annual radio to be checked', async () => {
+        it('renders annual option to be "selected"', async () => {
           const { user } = setup({ includeSentryPlans: true })
+
           render(
             <UpgradeForm
               proPlanMonth={proPlanMonth}
@@ -608,8 +673,10 @@ describe('UpgradeForm', () => {
           const switchAnnual = await screen.findByText('switch to annual')
           await user.click(switchAnnual)
 
-          const annualRadio = await screen.findByRole('radio', { name: /10/i })
-          expect(annualRadio).toBeChecked()
+          const annualOption = await screen.findByRole('button', {
+            name: 'Annual',
+          })
+          expect(annualOption).toHaveClass('bg-ds-primary-base')
         })
       })
     })
@@ -668,6 +735,10 @@ describe('UpgradeForm', () => {
               latestInvoice: null,
               subscriptionDetail: {
                 trialEnd: 12345,
+                defaultPaymentMethod: {
+                  billingDetails: {},
+                  card: { brand: 'visa' },
+                },
               },
             }}
           />,
@@ -706,6 +777,10 @@ describe('UpgradeForm', () => {
               latestInvoice: null,
               subscriptionDetail: {
                 trialEnd: 12345,
+                defaultPaymentMethod: {
+                  billingDetails: {},
+                  card: { brand: 'visa' },
+                },
               },
             }}
           />,

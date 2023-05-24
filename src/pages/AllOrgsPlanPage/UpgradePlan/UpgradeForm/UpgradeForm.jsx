@@ -15,7 +15,6 @@ import {
   canApplySentryUpgrade,
   getNextBillingDate,
   isAnnualPlan,
-  Plans,
 } from 'shared/utils/billing'
 import {
   calculatePrice,
@@ -25,9 +24,11 @@ import {
   MIN_SENTRY_SEATS,
   SENTRY_PRICE,
 } from 'shared/utils/upgradeForm'
-import RadioInput from 'ui/RadioInput/RadioInput'
+import A from 'ui/A'
+import Icon from 'ui/Icon'
 import TextInput from 'ui/TextInput'
 
+import BillingControls from './BillingControls'
 import TotalBanner from './TotalBanner'
 import UpdateButton from './UpdateButton'
 import UserCount from './UserCount'
@@ -75,25 +76,18 @@ const useUpgradeForm = ({
       }
     )
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState,
-    setValue,
-    getValues,
-    reset,
-  } = useForm({
-    defaultValues: getInitialDataForm({
-      accountDetails,
-      proPlanYear,
-      isSentryUpgrade,
-      minSeats,
-      sentryPlanYear,
-    }),
-    resolver: zodResolver(getSchema({ accountDetails, minSeats })),
-    mode: 'onChange',
-  })
+  const { register, handleSubmit, watch, formState, setValue, getValues } =
+    useForm({
+      defaultValues: getInitialDataForm({
+        accountDetails,
+        proPlanYear,
+        isSentryUpgrade,
+        minSeats,
+        sentryPlanYear,
+      }),
+      resolver: zodResolver(getSchema({ accountDetails, minSeats })),
+      mode: 'onChange',
+    })
 
   const perYearPrice = calculatePrice({
     seats: watch('seats'),
@@ -124,9 +118,8 @@ const useUpgradeForm = ({
     formState,
     setValue,
     getValues,
-    reset,
-    watch,
     upgradePlan,
+    watch,
     ...rest,
   }
 }
@@ -138,28 +131,13 @@ const PlanDetails = ({ isSentryUpgrade }) => {
 
   return (
     <div>
-      <h3 className="text-base font-semibold">Plan Details</h3>
-      <p>
-        <span className="font-semibold">14 day free trial</span>, then $29
-        monthly includes 5 seats.
-      </p>
+      <h3 className="font-semibold">Plan</h3>
+      <p>14 day free trial, then $29 monthly includes 5 seats.</p>
     </div>
   )
 }
 
 PlanDetails.propTypes = {
-  isSentryUpgrade: PropTypes.bool,
-}
-
-const RadioInputHeader = ({ isSentryUpgrade }) => {
-  if (isSentryUpgrade) {
-    return <h3 className="font-semibold">Additional seats</h3>
-  }
-
-  return <h3 className="font-semibold">Billing</h3>
-}
-
-RadioInputHeader.propTypes = {
   isSentryUpgrade: PropTypes.bool,
 }
 
@@ -182,6 +160,9 @@ function UpgradeForm({
   })
 
   const minSeats = isSentryUpgrade ? MIN_SENTRY_SEATS : MIN_NB_SEATS
+  const trialEndTimestamp = accountDetails?.subscriptionDetail?.trialEnd ?? null
+  const hasPaymentMethod =
+    accountDetails?.subscriptionDetail?.defaultPaymentMethod ?? null
 
   const {
     perYearPrice,
@@ -192,7 +173,6 @@ function UpgradeForm({
     setValue,
     getValues,
     formState: { isValid, errors },
-    reset,
     upgradePlan,
     watch,
   } = useUpgradeForm({
@@ -214,18 +194,20 @@ function UpgradeForm({
 
   useEffect(() => {
     if (organizationName && accountDetails) {
-      reset({
-        ...getInitialDataForm({
-          accountDetails,
-          proPlanYear,
-          sentryPlanYear,
-          isSentryUpgrade,
-          minSeats,
-        }),
+      const updatedData = getInitialDataForm({
+        accountDetails,
+        proPlanYear,
+        sentryPlanYear,
+        isSentryUpgrade,
+        minSeats,
       })
+
+      // for some reason reset was not longer working so
+      // this is a bit of a hack to get the values to reset
+      setValue('newPlan', updatedData.newPlan)
+      setValue('seats', updatedData.seats)
     }
   }, [
-    reset,
     organizationName,
     proPlanYear,
     proPlanMonth,
@@ -233,7 +215,10 @@ function UpgradeForm({
     minSeats,
     sentryPlanYear,
     isSentryUpgrade,
+    setValue,
   ])
+
+  const planString = getValues('newPlan')
 
   return (
     <form
@@ -241,99 +226,148 @@ function UpgradeForm({
       onSubmit={handleSubmit(upgradePlan)}
     >
       <PlanDetails isSentryUpgrade={isSentryUpgrade} />
-      <div className="flex flex-col gap-2">
-        <RadioInputHeader isSentryUpgrade={isSentryUpgrade} />
-        <RadioInput
-          key={proPlanYear?.billingRate}
-          data-cy={`select-${proPlanYear?.billingRate}`}
-          dataMarketing={`plan-pricing-option-${proPlanYear?.billingRate}`}
-          label={
-            <p>
-              <span className="font-semibold">
-                ${proPlanYear?.baseUnitPrice}
-              </span>
-              /per seat, billed {proPlanYear?.billingRate}
-            </p>
-          }
-          name="billing-options"
-          value={isSentryUpgrade ? Plans.USERS_SENTRYY : Plans.USERS_PR_INAPPY}
-          disabled={disableInputs}
-          {...register('newPlan')}
-        />
-        <RadioInput
-          key={proPlanMonth?.billingRate}
-          data-cy={`select-${proPlanMonth?.billingRate}`}
-          dataMarketing={`plan-pricing-option-${proPlanMonth?.billingRate}`}
-          label={
-            <p>
-              <span className="font-semibold">
-                ${proPlanMonth?.baseUnitPrice}
-              </span>
-              /per seat, billed {proPlanMonth?.billingRate}
-            </p>
-          }
-          name="billing-options"
-          value={isSentryUpgrade ? Plans.USERS_SENTRYM : Plans.USERS_PR_INAPPM}
-          disabled={disableInputs}
-          {...register('newPlan')}
-        />
-      </div>
-      <div className="flex flex-col gap-2 xl:w-5/12">
-        <div className="w-2/6">
-          <TextInput
-            data-cy="seats"
-            dataMarketing="plan-pricing-seats"
-            {...register('seats')}
-            id="nb-seats"
-            size="20"
-            type="number"
-            label="Seat count"
-            disabled={disableInputs}
-            min={minSeats}
+      {/* If not on trial, show the plan details without the credit card prompt */}
+      {!trialEndTimestamp ? (
+        <>
+          <BillingControls
+            disableInputs={disableInputs}
+            planString={planString}
+            isSentryUpgrade={isSentryUpgrade}
+            setValue={setValue}
           />
-        </div>
-        <UserCount
-          activatedStudentCount={accountDetails?.activatedStudentCount}
-          activatedUserCount={accountDetails?.activatedUserCount}
-          inactiveUserCount={accountDetails?.inactiveUserCount}
-          isSentryUpgrade={isSentryUpgrade}
-        />
-      </div>
-      {!disableInputs && (
-        <TotalBanner
-          isPerYear={isPerYear}
-          perYearPrice={perYearPrice}
-          perMonthPrice={perMonthPrice}
-          setValue={setValue}
-          isSentryUpgrade={isSentryUpgrade}
-          sentryPlanYear={sentryPlanYear}
-          sentryPlanMonth={sentryPlanMonth}
-          seats={watch('seats')}
-        />
+          <div className="flex flex-col gap-2 xl:w-5/12">
+            <div className="w-2/6">
+              <TextInput
+                data-cy="seats"
+                dataMarketing="plan-pricing-seats"
+                {...register('seats')}
+                id="nb-seats"
+                size="20"
+                type="number"
+                label="Seat count"
+                disabled={disableInputs}
+                min={minSeats}
+              />
+            </div>
+            <UserCount
+              activatedStudentCount={accountDetails?.activatedStudentCount}
+              activatedUserCount={accountDetails?.activatedUserCount}
+              inactiveUserCount={accountDetails?.inactiveUserCount}
+              isSentryUpgrade={isSentryUpgrade}
+            />
+          </div>
+          {!disableInputs && (
+            <TotalBanner
+              isPerYear={isPerYear}
+              perYearPrice={perYearPrice}
+              perMonthPrice={perMonthPrice}
+              setValue={setValue}
+              isSentryUpgrade={isSentryUpgrade}
+              sentryPlanYear={sentryPlanYear}
+              sentryPlanMonth={sentryPlanMonth}
+              seats={watch('seats')}
+            />
+          )}
+          {nextBillingDate && (
+            <p className="mt-1 flex">
+              Next Billing Date
+              <span className="ml-auto">{nextBillingDate}</span>
+            </p>
+          )}
+          {errors?.seats && (
+            <p className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
+              {errors?.seats?.message}
+            </p>
+          )}
+          <div className="w-fit">
+            <UpdateButton
+              isValid={isValid}
+              getValues={getValues}
+              value={accountDetails?.plan?.value}
+              quantity={accountDetails?.plan?.quantity}
+              disableInputs={disableInputs}
+              accountDetails={accountDetails}
+              isSentryUpgrade={isSentryUpgrade}
+              organizationName={organizationName}
+            />
+          </div>
+        </>
+      ) : trialEndTimestamp && !hasPaymentMethod ? (
+        // If on trial, if no credit card, only show the credit card prompt
+        <A
+          href="https://billing.stripe.com/p/login/aEU00i9by3V4caQ6oo"
+          hook="stripe-account-management-portal"
+        >
+          Proceed with plan and input billing information
+          <Icon name="chevronRight" size="sm" variant="solid" />
+        </A>
+      ) : (
+        <>
+          {/* If on trial, if credit card, only show the billing details */}
+          <BillingControls
+            disableInputs={disableInputs}
+            planString={planString}
+            isSentryUpgrade={isSentryUpgrade}
+            setValue={setValue}
+          />
+          <div className="flex flex-col gap-2 xl:w-5/12">
+            <div className="w-2/6">
+              <TextInput
+                data-cy="seats"
+                dataMarketing="plan-pricing-seats"
+                {...register('seats')}
+                id="nb-seats"
+                size="20"
+                type="number"
+                label="Seat count"
+                disabled={disableInputs}
+                min={minSeats}
+              />
+            </div>
+            <UserCount
+              activatedStudentCount={accountDetails?.activatedStudentCount}
+              activatedUserCount={accountDetails?.activatedUserCount}
+              inactiveUserCount={accountDetails?.inactiveUserCount}
+              isSentryUpgrade={isSentryUpgrade}
+            />
+          </div>
+          {!disableInputs && (
+            <TotalBanner
+              isPerYear={isPerYear}
+              perYearPrice={perYearPrice}
+              perMonthPrice={perMonthPrice}
+              setValue={setValue}
+              isSentryUpgrade={isSentryUpgrade}
+              sentryPlanYear={sentryPlanYear}
+              sentryPlanMonth={sentryPlanMonth}
+              seats={watch('seats')}
+            />
+          )}
+          {nextBillingDate && (
+            <p className="mt-1 flex">
+              Next Billing Date
+              <span className="ml-auto">{nextBillingDate}</span>
+            </p>
+          )}
+          {errors?.seats && (
+            <p className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
+              {errors?.seats?.message}
+            </p>
+          )}
+          <div className="w-fit">
+            <UpdateButton
+              isValid={isValid}
+              getValues={getValues}
+              value={accountDetails?.plan?.value}
+              quantity={accountDetails?.plan?.quantity}
+              disableInputs={disableInputs}
+              accountDetails={accountDetails}
+              isSentryUpgrade={isSentryUpgrade}
+              organizationName={organizationName}
+            />
+          </div>
+        </>
       )}
-      {nextBillingDate && (
-        <p className="mt-1 flex">
-          Next Billing Date
-          <span className="ml-auto">{nextBillingDate}</span>
-        </p>
-      )}
-      {errors?.seats && (
-        <p className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
-          {errors?.seats?.message}
-        </p>
-      )}
-      <div className="w-fit">
-        <UpdateButton
-          isValid={isValid}
-          getValues={getValues}
-          value={accountDetails?.plan?.value}
-          quantity={accountDetails?.plan?.quantity}
-          disableInputs={disableInputs}
-          accountDetails={accountDetails}
-          isSentryUpgrade={isSentryUpgrade}
-          organizationName={organizationName}
-        />
-      </div>
     </form>
   )
 }

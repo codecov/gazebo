@@ -850,12 +850,14 @@ describe('UpgradePlan', () => {
         const org1 = await screen.findByText('org1')
         await user.click(org1)
 
-        const planDetails = await screen.findByRole('heading', {
-          name: 'Plan Details',
+        const billing = await screen.findByRole('heading', {
+          name: 'Billing',
         })
-        expect(planDetails).toBeInTheDocument()
+        expect(billing).toBeInTheDocument()
 
-        const trial = await screen.findByText('14 day free trial')
+        const trial = await screen.findByText(
+          '14 day free trial, then $29 monthly includes 5 seats.'
+        )
         expect(trial).toBeInTheDocument()
       })
     })
