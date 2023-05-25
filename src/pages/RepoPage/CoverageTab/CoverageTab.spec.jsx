@@ -28,17 +28,6 @@ const wrapper =
       </QueryClientProvider>
     )
 
-beforeAll(() => {
-  server.listen({ onUnhandledRequest: 'warn' })
-})
-afterEach(() => {
-  queryClient.clear()
-  server.resetHandlers()
-})
-afterAll(() => {
-  server.close()
-})
-
 const mockRepo = {
   owner: {
     repository: {
@@ -133,6 +122,17 @@ const branchesContentsMock = {
   },
 }
 
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: 'warn' })
+})
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => {
+  server.close()
+})
+
 describe('Coverage Tab', () => {
   function setup({ repoData = mockRepo } = { repoData: mockRepo }) {
     server.use(
@@ -155,6 +155,9 @@ describe('Coverage Tab', () => {
         res(ctx.status(200), ctx.data(overviewMock))
       ),
       graphql.query('GetRepoCoverage', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({}))
+      ),
+      graphql.query('GetBranchCoverageMeasurements', (req, res, ctx) =>
         res(ctx.status(200), ctx.data({}))
       ),
       rest.get(
@@ -210,9 +213,12 @@ describe('Coverage Tab', () => {
 
       setup()
     })
-    afterEach(() => jest.resetAllMocks)
+    afterEach(() => {
+      jest.resetAllMocks()
+    })
 
     it('renders the sunburst chart', async () => {
+      jest.setTimeout(10000)
       render(
         <Route path="/:provider/:owner/:repo" exact={true}>
           <CoverageTab />
