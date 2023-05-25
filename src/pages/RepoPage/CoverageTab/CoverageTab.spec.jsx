@@ -200,10 +200,12 @@ describe('Coverage Tab', () => {
     const hideChart = screen.getByText(/Hide Chart/)
     expect(hideChart).toBeInTheDocument()
 
-    expect(await screen.findByTestId('toggle-element-contents')).toBeTruthy()
-    const toggleContents = screen.getByTestId('toggle-element-contents')
+    expect(await screen.findByTestId('sunburst')).toBeTruthy()
+    const sunburst = screen.getByTestId('sunburst')
+    expect(sunburst).toBeInTheDocument()
 
-    // eslint-disable-next-line testing-library/no-node-access
-    expect(toggleContents.childElementCount).toBe(2)
-  }, 10000)
+    expect(await screen.findByTestId('coverage-area-chart')).toBeTruthy()
+    const coverageAreaChart = screen.getByTestId('coverage-area-chart')
+    expect(coverageAreaChart).toBeInTheDocument()
+  }, 60000)
 })

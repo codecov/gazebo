@@ -58,7 +58,7 @@ function Chart({
 }) {
   return (
     <>
-      <svg style={{ height: 0 }}>
+      <svg data-testid="coverage-area-chart" style={{ height: 0 }}>
         <defs>
           <filter
             id="toLinearRGB"
