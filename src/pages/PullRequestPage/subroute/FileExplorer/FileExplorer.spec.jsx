@@ -560,6 +560,11 @@ describe('FileExplorer', () => {
         })
         userEvent.type(search, 'cool-file.rs')
 
+        expect(await screen.findByTestId('spinner')).toBeTruthy()
+        await waitFor(() =>
+          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+        )
+
         expect(await screen.findByText(/no results found/i)).toBeTruthy()
         const noResults = screen.getByText(/no results found/i)
         expect(noResults).toBeInTheDocument()

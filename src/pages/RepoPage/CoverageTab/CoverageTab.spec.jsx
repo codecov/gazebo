@@ -188,9 +188,9 @@ describe('Coverage Tab', () => {
         { wrapper: wrapper(['/gh/test-org/test-repo']) }
       )
 
-      expect(await screen.findByTestId('spinner')).toBeTruthy()
+      expect(await screen.findAllByTestId('spinner')).toBeTruthy()
       await waitFor(() =>
-        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+        expect(screen.queryAllByTestId('spinner')).toStrictEqual([])
       )
 
       expect(await screen.findByText(/Hide Chart/)).toBeTruthy()
@@ -220,9 +220,9 @@ describe('Coverage Tab', () => {
         { wrapper: wrapper(['/gh/test-org/test-repo']) }
       )
 
-      expect(await screen.findByTestId('spinner')).toBeTruthy()
+      expect(await screen.findAllByTestId('spinner')).toBeTruthy()
       await waitFor(() =>
-        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+        expect(screen.queryAllByTestId('spinner')).toStrictEqual([])
       )
 
       expect(await screen.findByText(/Hide Chart/)).toBeTruthy()
