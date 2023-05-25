@@ -1,13 +1,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import CoverageTab from './CoverageTab'
-
-jest.mock('shared/featureFlags')
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -186,29 +184,26 @@ describe('Coverage Tab', () => {
     )
   }
 
-  describe('sunburst flag enabled', () => {
-    afterEach(() => {
-      jest.resetAllMocks()
-    })
-
-    it('renders the sunburst chart', async () => {
-      setup()
-
-      render(
-        <CoverageTab />,
-
-        { wrapper: wrapper(['/gh/test-org/test-repo']) }
-      )
-
-      expect(await screen.findByText(/Hide Chart/)).toBeTruthy()
-      const hideChart = screen.getByText(/Hide Chart/)
-      expect(hideChart).toBeInTheDocument()
-
-      expect(await screen.findByTestId('toggle-element-contents')).toBeTruthy()
-      const toggleContents = screen.getByTestId('toggle-element-contents')
-
-      // eslint-disable-next-line testing-library/no-node-access
-      expect(toggleContents.childElementCount).toBe(2)
-    }, 10000)
+  afterEach(() => {
+    jest.resetAllMocks()
   })
+
+  it('renders the sunburst chart', async () => {
+    setup()
+
+    render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/test-repo']) })
+
+    await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
+    await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+    expect(await screen.findByText(/Hide Chart/)).toBeTruthy()
+    const hideChart = screen.getByText(/Hide Chart/)
+    expect(hideChart).toBeInTheDocument()
+
+    expect(await screen.findByTestId('toggle-element-contents')).toBeTruthy()
+    const toggleContents = screen.getByTestId('toggle-element-contents')
+
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(toggleContents.childElementCount).toBe(2)
+  }, 10000)
 })
