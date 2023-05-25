@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -188,9 +188,7 @@ describe('Coverage Tab', () => {
         { wrapper: wrapper(['/gh/test-org/test-repo']) }
       )
 
-      await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
-      await waitFor(() => expect(queryClient.isFetching()).toBe(0))
-
+      expect(await screen.findByText(/Hide Chart/)).toBeTruthy()
       const hideChart = screen.getByText(/Hide Chart/)
       expect(hideChart).toBeInTheDocument()
 
@@ -217,9 +215,7 @@ describe('Coverage Tab', () => {
         { wrapper: wrapper(['/gh/test-org/test-repo']) }
       )
 
-      await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
-      await waitFor(() => expect(queryClient.isFetching()).toBe(0))
-
+      expect(await screen.findByText(/Hide Chart/)).toBeTruthy()
       const hideChart = screen.getByText(/Hide Chart/)
 
       expect(hideChart).toBeInTheDocument()
