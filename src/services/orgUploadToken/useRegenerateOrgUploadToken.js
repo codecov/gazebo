@@ -3,11 +3,13 @@ import { useParams } from 'react-router-dom/cjs/react-router-dom.min'
 
 import Api from 'shared/api'
 
-export function useRegenerateOrgUploadToken() {
+export function useRegenerateOrgUploadToken(
+  { onSuccess = () => {} } = { onSuccess: () => {} }
+) {
   const { provider, owner } = useParams()
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: () => {
+    mutationFn: async () => {
       const query = `
         mutation regenerateOrgUploadToken(
           $input: RegenerateOrgUploadTokenInput!
@@ -21,15 +23,18 @@ export function useRegenerateOrgUploadToken() {
         }
       `
       const variables = { input: { owner } }
-      return Api.graphqlMutation({
+      const data = await Api.graphqlMutation({
         provider,
         query,
         variables,
         mutationPath: 'regenerateOrgUploadToken',
       })
+
+      return data
     },
     useErrorBoundary: true,
-    onSuccess: () => {
+    onSuccess: ({ data }) => {
+      onSuccess(data)
       queryClient.invalidateQueries('DetailOwner')
     },
   })

@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -68,7 +68,7 @@ describe('useRepo', () => {
 
     describe('when data is loaded', () => {
       it('returns the data', async () => {
-        const { result, waitFor } = renderHook(
+        const { result } = renderHook(
           () => useRepo({ provider, owner, repo }),
           {
             wrapper: wrapper(),
@@ -104,7 +104,7 @@ describe('useRepo', () => {
 
     describe('when data is loaded', () => {
       it('returns the data', async () => {
-        const { result, waitFor } = renderHook(
+        const { result } = renderHook(
           () => useRepo({ provider, owner, repo }),
           {
             wrapper: wrapper(),
@@ -142,7 +142,7 @@ describe('useEraseRepoContent', () => {
 
     describe('When success', () => {
       it('returns isSuccess true', async () => {
-        const { result, waitFor } = renderHook(() => useEraseRepoContent(), {
+        const { result } = renderHook(() => useEraseRepoContent(), {
           wrapper: wrapper(),
         })
 
@@ -200,7 +200,7 @@ describe('useUpdateRepo', () => {
 
     describe('When success', () => {
       it('returns isSuccess true', async () => {
-        const { result, waitFor } = renderHook(() => useUpdateRepo(), {
+        const { result } = renderHook(() => useUpdateRepo(), {
           wrapper: wrapper(),
         })
 
@@ -237,7 +237,7 @@ describe('useRepoBackfilled', () => {
 
     describe('when data is loaded', () => {
       it('returns the data', async () => {
-        const { result, waitFor } = renderHook(
+        const { result } = renderHook(
           () =>
             useRepoBackfilled({
               provider: 'gh',
@@ -277,7 +277,7 @@ describe('useActivateFlagMeasurements', () => {
 
     describe('When success', () => {
       it('returns expected output', async () => {
-        const { result, waitFor } = renderHook(
+        const { result } = renderHook(
           () =>
             useActivateFlagMeasurements({
               provider: 'gh',

@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
@@ -83,7 +83,7 @@ describe('useBranchSelector', () => {
     beforeEach(() => setup(defaultBranch, true))
 
     it('sets the selected branch', async () => {
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () => useBranchSelector({ branches, defaultBranch }),
         { wrapper: wrapper() }
       )
@@ -97,7 +97,7 @@ describe('useBranchSelector', () => {
     })
 
     it('sets the branchSelectorProps items correctly', async () => {
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () => useBranchSelector({ branches, defaultBranch }),
         { wrapper: wrapper() }
       )
@@ -111,7 +111,7 @@ describe('useBranchSelector', () => {
     })
 
     it('sets the branchSelectorProps value correctly', async () => {
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () => useBranchSelector({ branches, defaultBranch }),
         { wrapper: wrapper() }
       )
@@ -125,7 +125,7 @@ describe('useBranchSelector', () => {
     })
 
     it('formats the branchSelectorProps correctly', async () => {
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () => useBranchSelector({ branches, defaultBranch }),
         { wrapper: wrapper() }
       )
@@ -144,7 +144,7 @@ describe('useBranchSelector', () => {
 
     it('sets the selected branch', async () => {
       const defaultBranch = 'imogen'
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () => useBranchSelector({ branches, defaultBranch }),
         { wrapper: wrapper('/gh/codecov/cool-repo/tree/fcg') }
       )
@@ -159,7 +159,7 @@ describe('useBranchSelector', () => {
 
     it('sets the branchSelectorProps items correctly', async () => {
       const defaultBranch = 'imogen'
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () => useBranchSelector({ branches, defaultBranch }),
         { wrapper: wrapper('/gh/codecov/cool-repo/tree/fcg') }
       )
@@ -174,7 +174,7 @@ describe('useBranchSelector', () => {
 
     it('sets the branchSelectorProps value correctly', async () => {
       const defaultBranch = 'imogen'
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () => useBranchSelector({ branches, defaultBranch }),
         { wrapper: wrapper('/gh/codecov/cool-repo/tree/fcg') }
       )
@@ -189,7 +189,7 @@ describe('useBranchSelector', () => {
 
     it('formats the branchSelectorProps correctly', async () => {
       const defaultBranch = 'imogen'
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () => useBranchSelector({ branches, defaultBranch }),
         { wrapper: wrapper('/gh/codecov/cool-repo/tree/fcg') }
       )
@@ -208,7 +208,7 @@ describe('useBranchSelector', () => {
 
     it('sets the selected branch', async () => {
       const defaultBranch = 'imogen'
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () => useBranchSelector({ branches, defaultBranch }),
         { wrapper: wrapper('/gh/codecov/cool-repo/blob/fcg/file.js') }
       )
@@ -223,7 +223,7 @@ describe('useBranchSelector', () => {
 
     it('sets the branchSelectorProps items correctly', async () => {
       const defaultBranch = 'imogen'
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () => useBranchSelector({ branches, defaultBranch }),
         { wrapper: wrapper('/gh/codecov/cool-repo/blob/fcg/file.js') }
       )
@@ -238,7 +238,7 @@ describe('useBranchSelector', () => {
 
     it('sets the branchSelectorProps value correctly', async () => {
       const defaultBranch = 'imogen'
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () => useBranchSelector({ branches, defaultBranch }),
         { wrapper: wrapper('/gh/codecov/cool-repo/blob/fcg/file.js') }
       )
@@ -253,7 +253,7 @@ describe('useBranchSelector', () => {
 
     it('formats the branchSelectorProps correctly', async () => {
       const defaultBranch = 'imogen'
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () => useBranchSelector({ branches, defaultBranch }),
         { wrapper: wrapper('/gh/codecov/cool-repo/blob/fcg/file.js') }
       )
@@ -272,7 +272,7 @@ describe('useBranchSelector', () => {
 
     it('returns undefined selection', async () => {
       const defaultBranch = 'fcg'
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () => useBranchSelector({ defaultBranch }),
         { wrapper: wrapper('/gh/codecov/cool-repo/blob/fcg/file.js') }
       )

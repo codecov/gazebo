@@ -87,7 +87,7 @@ export function useMyOrganizations(options = {}) {
         : undefined
       return endCursor
     },
-    enabled: provider !== undefined,
+    enabled: !!provider,
     ...options,
   })
 }

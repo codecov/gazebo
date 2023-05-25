@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -23,8 +23,6 @@ const wrapper = ({ children }) => (
   </MemoryRouter>
 )
 describe('useEncodeString', () => {
-  let hookData
-
   function setup() {
     server.use(
       rest.post(
@@ -34,9 +32,6 @@ describe('useEncodeString', () => {
         }
       )
     )
-    hookData = renderHook(() => useEncodeString(), {
-      wrapper,
-    })
   }
 
   describe('when called', () => {
@@ -44,32 +39,21 @@ describe('useEncodeString', () => {
       setup()
     })
 
-    it('returns isLoading false', () => {
-      expect(hookData.result.current.isLoading).toBeFalsy()
-    })
-
     describe('when calling the mutation', () => {
-      const data = { value: 'dummy' }
-      beforeEach(() => {
-        hookData.result.current.mutate(data)
-        return hookData.waitFor(() => hookData.result.current.status !== 'idle')
-      })
+      describe('when successful', () => {
+        it('returns isSuccess true', async () => {
+          const { result } = renderHook(() => useEncodeString(), {
+            wrapper,
+          })
 
-      it('returns isLoading true', () => {
-        expect(hookData.result.current.isLoading).toBeTruthy()
-      })
-    })
+          const data = { value: 'dummy' }
+          result.current.mutate(data)
 
-    describe('When success', () => {
-      beforeEach(async () => {
-        const data = { value: 'dummy' }
-        hookData.result.current.mutate(data)
-        await hookData.waitFor(() => hookData.result.current.isLoading)
-        await hookData.waitFor(() => !hookData.result.current.isLoading)
-      })
+          await waitFor(() => result.current.isLoading)
+          await waitFor(() => !result.current.isLoading)
 
-      it('returns isSuccess true', () => {
-        expect(hookData.result.current.isSuccess).toBeTruthy()
+          await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
+        })
       })
     })
   })

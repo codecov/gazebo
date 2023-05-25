@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
@@ -64,12 +64,12 @@ describe('useMyContexts', () => {
     beforeEach(() => setup())
 
     it('loads initial dataset', async () => {
-      const { result, waitFor } = renderHook(
-        () => useMyContexts({ provider: 'gh' }),
-        { wrapper }
-      )
+      const { result } = renderHook(() => useMyContexts({ provider: 'gh' }), {
+        wrapper,
+      })
 
-      await waitFor(() => result.current.isSuccess)
+      await waitFor(() => result.current.isFetching)
+      await waitFor(() => !result.current.isFetching)
 
       const expectedData = {
         currentUser: {
@@ -88,7 +88,9 @@ describe('useMyContexts', () => {
         },
       }
 
-      expect(result.current.data).toStrictEqual(expectedData)
+      await waitFor(() =>
+        expect(result.current.data).toStrictEqual(expectedData)
+      )
     })
   })
 
@@ -96,14 +98,17 @@ describe('useMyContexts', () => {
     beforeEach(() => setup())
 
     it('returns combined data set', async () => {
-      const { result, waitFor } = renderHook(
-        () => useMyContexts({ provider: 'gh' }),
-        { wrapper }
-      )
+      const { result } = renderHook(() => useMyContexts({ provider: 'gh' }), {
+        wrapper,
+      })
 
-      await waitFor(() => result.current.isSuccess)
+      await waitFor(() => result.current.isFetching)
+      await waitFor(() => !result.current.isFetching)
 
       result.current.fetchNextPage()
+
+      await waitFor(() => result.current.isFetching)
+      await waitFor(() => !result.current.isFetching)
 
       const expectedData = {
         currentUser: {

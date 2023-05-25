@@ -4,7 +4,6 @@ import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-import { act } from 'react-test-renderer'
 
 import FileListTable from './FileListTable'
 
@@ -288,9 +287,10 @@ describe('FileListTable', () => {
           const { requestFilters, user } = setup()
           render(<FileListTable />, { wrapper: wrapper() })
 
-          const trackedLines = await screen.findByText('Tracked lines')
-
+          let trackedLines = await screen.findByText('Tracked lines')
           await user.click(trackedLines)
+
+          trackedLines = await screen.findByText('Tracked lines')
           await user.click(trackedLines)
 
           expect(requestFilters).toHaveBeenCalledWith({
@@ -306,6 +306,7 @@ describe('FileListTable', () => {
 
           let trackedLines = await screen.findByText('Tracked lines')
           await user.click(trackedLines)
+
           trackedLines = await screen.findByText('Tracked lines')
           await user.click(trackedLines)
 
@@ -342,6 +343,7 @@ describe('FileListTable', () => {
 
           let covered = await screen.findByText('Covered')
           await user.click(covered)
+
           covered = await screen.findByText('Covered')
           await user.click(covered)
 
@@ -360,9 +362,10 @@ describe('FileListTable', () => {
           const { requestFilters, user } = setup()
           render(<FileListTable />, { wrapper: wrapper() })
 
-          const partial = await screen.findByText('Partial')
-
+          let partial = await screen.findByText('Partial')
           await user.click(partial)
+
+          partial = await screen.findByText('Partial')
           await user.click(partial)
 
           expect(requestFilters).toHaveBeenCalledWith({
@@ -376,13 +379,11 @@ describe('FileListTable', () => {
           const { requestFilters, user } = setup()
           render(<FileListTable />, { wrapper: wrapper() })
 
-          const partial = await screen.findByText('Partial')
-          await act(async () => {
-            await user.click(partial)
-          })
-          await act(async () => {
-            await user.click(partial)
-          })
+          let partial = await screen.findByText('Partial')
+          await user.click(partial)
+
+          partial = await screen.findByText('Partial')
+          await user.click(partial)
 
           await waitFor(() => {
             expect(requestFilters).toHaveBeenCalledWith({
@@ -401,6 +402,7 @@ describe('FileListTable', () => {
 
           let missed = await screen.findByText('Missed')
           await user.click(missed)
+
           missed = await screen.findByText('Missed')
           await user.click(missed)
 

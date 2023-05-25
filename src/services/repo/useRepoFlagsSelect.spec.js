@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -109,12 +109,14 @@ describe('FlagsSelect', () => {
 
     describe('when data is loaded', () => {
       it('returns the data', async () => {
-        const { result, waitFor } = renderHook(() => useRepoFlagsSelect(), {
+        const { result } = renderHook(() => useRepoFlagsSelect(), {
           wrapper,
         })
 
         await waitFor(() => result.current.isSuccess)
-        expect(result.current.data).toEqual(expectedInitialData)
+        await waitFor(() =>
+          expect(result.current.data).toEqual(expectedInitialData)
+        )
       })
     })
   })
@@ -125,20 +127,24 @@ describe('FlagsSelect', () => {
     })
 
     it('returns prev and next page flags data', async () => {
-      const { result, waitFor } = renderHook(() => useRepoFlagsSelect(), {
+      const { result } = renderHook(() => useRepoFlagsSelect(), {
         wrapper,
       })
 
-      await waitFor(() => result.current.isSuccess)
+      await waitFor(() => result.current.isFetching)
+      await waitFor(() => !result.current.isFetching)
+
       result.current.fetchNextPage()
 
       await waitFor(() => result.current.isFetching)
       await waitFor(() => !result.current.isFetching)
 
-      expect(result.current.data).toEqual([
-        ...expectedInitialData,
-        ...expectedNextPageData,
-      ])
+      await waitFor(() =>
+        expect(result.current.data).toEqual([
+          ...expectedInitialData,
+          ...expectedNextPageData,
+        ])
+      )
     })
   })
 })

@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -477,7 +477,7 @@ describe('useUserAccessGate', () => {
             setup({ termsOfServicePage, user })
           })
           it(`return values are expect while useUser resolves`, async () => {
-            const { result, waitFor } = renderHook(() => useUserAccessGate(), {
+            const { result } = renderHook(() => useUserAccessGate(), {
               wrapper: wrapper(['/gh']),
             })
 
@@ -485,9 +485,12 @@ describe('useUserAccessGate', () => {
 
             expect(result.current).toStrictEqual(expected.beforeSettled)
 
+            await waitFor(() => result.current.isLoading)
             await waitFor(() => !result.current.isLoading)
 
-            expect(result.current).toStrictEqual(expected.afterSettled)
+            await waitFor(() =>
+              expect(result.current).toStrictEqual(expected.afterSettled)
+            )
           })
         })
       })

@@ -4,7 +4,6 @@ import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-import { act } from 'react-test-renderer'
 
 import CodeTreeTable from './CodeTreeTable'
 
@@ -192,6 +191,11 @@ describe('CodeTreeTable', () => {
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
           await waitFor(() =>
+            expect(queryClient.isFetching()).toBeGreaterThan(0)
+          )
+          await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+          await waitFor(() =>
             expect(requestFilters).toBeCalledWith({
               ordering: { direction: 'ASC', parameter: 'NAME' },
             })
@@ -205,12 +209,17 @@ describe('CodeTreeTable', () => {
         it('has the correct url', async () => {
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
-          const dir = await screen.findByText('src')
+          await waitFor(() =>
+            expect(queryClient.isFetching()).toBeGreaterThan(0)
+          )
+          await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+          const dir = screen.getByText('src')
           expect(dir).toBeInTheDocument()
 
-          const links = await within(
-            await screen.findByRole('table')
-          ).findAllByRole('link')
+          const table = await screen.findByRole('table')
+          const links = await within(table).findAllByRole('link')
+
           expect(links[1]).toHaveAttribute(
             'href',
             '/gh/codecov/cool-repo/tree/main/a/b/c/src'
@@ -224,12 +233,18 @@ describe('CodeTreeTable', () => {
         it('has the correct url', async () => {
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
-          const file = await screen.findByText('file.js')
+          await waitFor(() =>
+            expect(queryClient.isFetching()).toBeGreaterThan(0)
+          )
+          await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+          const file = screen.getByText('file.js')
           expect(file).toBeInTheDocument()
 
           const links = await within(
             await screen.findByRole('table')
           ).findAllByRole('link')
+
           expect(links[2]).toHaveAttribute(
             'href',
             '/gh/codecov/cool-repo/blob/main/a/b/c/file.js'
@@ -246,7 +261,10 @@ describe('CodeTreeTable', () => {
       it('displays error fetching data message', async () => {
         render(<CodeTreeTable />, { wrapper: wrapper() })
 
-        const message = await screen.findByText(
+        await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
+        await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+        const message = screen.getByText(
           'There was a problem getting repo contents from your provider'
         )
         expect(message).toBeInTheDocument()
@@ -261,7 +279,10 @@ describe('CodeTreeTable', () => {
       it('renders no report uploaded message', async () => {
         render(<CodeTreeTable />, { wrapper: wrapper() })
 
-        const message = await screen.findByText(
+        await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
+        await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+        const message = screen.getByText(
           'No coverage report uploaded for this branch head commit'
         )
         expect(message).toBeInTheDocument()
@@ -277,15 +298,19 @@ describe('CodeTreeTable', () => {
 
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
-          let files = await screen.findByText('Files')
+          await waitFor(() =>
+            expect(queryClient.isFetching()).toBeGreaterThan(0)
+          )
+          await waitFor(() => expect(queryClient.isFetching()).toBe(0))
 
-          await act(async () => {
-            await user.click(files)
-          })
+          let files = screen.getByText('Files')
+          await user.click(files)
 
-          expect(requestFilters).toHaveBeenCalledWith({
-            ordering: { direction: 'ASC', parameter: 'NAME' },
-          })
+          await waitFor(() =>
+            expect(requestFilters).toHaveBeenCalledWith({
+              ordering: { direction: 'ASC', parameter: 'NAME' },
+            })
+          )
         })
       })
 
@@ -294,9 +319,15 @@ describe('CodeTreeTable', () => {
           const { requestFilters, user } = setup()
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
-          let files = await screen.findByText('Files')
+          await waitFor(() =>
+            expect(queryClient.isFetching()).toBeGreaterThan(0)
+          )
+          await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+          let files = screen.getByText('Files')
           await user.click(files)
-          files = await screen.findByText('Files')
+
+          files = screen.getByText('Files')
           await user.click(files)
 
           await waitFor(() => {
@@ -314,14 +345,22 @@ describe('CodeTreeTable', () => {
           const { requestFilters, user } = setup()
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
-          const trackedLines = await screen.findByText('Tracked lines')
+          await waitFor(() =>
+            expect(queryClient.isFetching()).toBeGreaterThan(0)
+          )
+          await waitFor(() => expect(queryClient.isFetching()).toBe(0))
 
-          await user.click(trackedLines)
+          let trackedLines = screen.getByText('Tracked lines')
           await user.click(trackedLines)
 
-          expect(requestFilters).toHaveBeenCalledWith({
-            ordering: { direction: 'ASC', parameter: 'LINES' },
-          })
+          trackedLines = screen.getByText('Tracked lines')
+          await user.click(trackedLines)
+
+          await waitFor(() =>
+            expect(requestFilters).toHaveBeenCalledWith({
+              ordering: { direction: 'ASC', parameter: 'LINES' },
+            })
+          )
         })
       })
 
@@ -330,9 +369,15 @@ describe('CodeTreeTable', () => {
           const { requestFilters, user } = setup()
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
-          let trackedLines = await screen.findByText('Tracked lines')
+          await waitFor(() =>
+            expect(queryClient.isFetching()).toBeGreaterThan(0)
+          )
+          await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+          let trackedLines = screen.getByText('Tracked lines')
           await user.click(trackedLines)
-          trackedLines = await screen.findByText('Tracked lines')
+
+          trackedLines = screen.getByText('Tracked lines')
           await user.click(trackedLines)
 
           await waitFor(() => {
@@ -350,7 +395,13 @@ describe('CodeTreeTable', () => {
           const { requestFilters, user } = setup()
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
-          const covered = await screen.findByText('Covered')
+          await waitFor(() =>
+            expect(queryClient.isFetching()).toBeGreaterThan(0)
+          )
+          await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+          const covered = screen.getByText('Covered')
+
           await user.click(covered)
 
           await waitFor(() =>
@@ -366,9 +417,18 @@ describe('CodeTreeTable', () => {
           const { requestFilters, user } = setup()
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
-          let covered = await screen.findByText('Covered')
+          await waitFor(() =>
+            expect(queryClient.isFetching()).toBeGreaterThan(0)
+          )
+          await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+          let covered = screen.getByText('Covered')
           await user.click(covered)
-          covered = await screen.findByText('Covered')
+
+          covered = screen.getByText('Covered')
+          await user.click(covered)
+
+          covered = screen.getByText('Covered')
           await user.click(covered)
 
           await waitFor(() => {
@@ -386,18 +446,22 @@ describe('CodeTreeTable', () => {
           const { requestFilters, user } = setup()
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
-          const partial = await screen.findByText('Partial')
+          await waitFor(() =>
+            expect(queryClient.isFetching()).toBeGreaterThan(0)
+          )
+          await waitFor(() => expect(queryClient.isFetching()).toBe(0))
 
-          await act(async () => {
-            await user.click(partial)
-          })
-          await act(async () => {
-            await user.click(partial)
-          })
+          let partial = screen.getByText('Partial')
+          await user.click(partial)
 
-          expect(requestFilters).toHaveBeenCalledWith({
-            ordering: { direction: 'ASC', parameter: 'PARTIALS' },
-          })
+          partial = screen.getByText('Partial')
+          await user.click(partial)
+
+          await waitFor(() =>
+            expect(requestFilters).toHaveBeenCalledWith({
+              ordering: { direction: 'ASC', parameter: 'PARTIALS' },
+            })
+          )
         })
       })
 
@@ -406,9 +470,15 @@ describe('CodeTreeTable', () => {
           const { requestFilters, user } = setup()
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
-          let partial = await screen.findByText('Partial')
+          await waitFor(() =>
+            expect(queryClient.isFetching()).toBeGreaterThan(0)
+          )
+          await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+          let partial = screen.getByText('Partial')
           await user.click(partial)
-          partial = await screen.findByText('Partial')
+
+          partial = screen.getByText('Partial')
           await user.click(partial)
 
           await waitFor(() => {
@@ -426,8 +496,15 @@ describe('CodeTreeTable', () => {
           const { requestFilters, user } = setup()
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
-          const missed = await screen.findByText('Missed')
+          await waitFor(() =>
+            expect(queryClient.isFetching()).toBeGreaterThan(0)
+          )
+          await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+          let missed = screen.getByText('Missed')
           await user.click(missed)
+
+          missed = screen.getByText('Missed')
           await user.click(missed)
 
           expect(requestFilters).toHaveBeenCalledWith({
@@ -441,9 +518,18 @@ describe('CodeTreeTable', () => {
           const { requestFilters, user } = setup()
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
-          let missed = await screen.findByText('Missed')
+          await waitFor(() =>
+            expect(queryClient.isFetching()).toBeGreaterThan(0)
+          )
+          await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+          let missed = screen.getByText('Missed')
           await user.click(missed)
-          missed = await screen.findByText('Missed')
+
+          missed = screen.getByText('Missed')
+          await user.click(missed)
+
+          missed = screen.getByText('Missed')
           await user.click(missed)
 
           await waitFor(() => {

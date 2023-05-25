@@ -3,23 +3,27 @@ import { useAddNotification } from 'services/toastNotification'
 
 export default function useGenerateOrgUploadToken() {
   const addToast = useAddNotification()
-  const { mutate, data: res, ...rest } = useRegenerateOrgUploadToken()
+  const {
+    mutate,
+    data: res,
+    ...rest
+  } = useRegenerateOrgUploadToken({
+    onSuccess: (data) => {
+      const errString = data?.regenerateOrgUploadToken?.error?.__typename
 
-  async function regenerateToken() {
-    const err = res?.data?.regenerateOrgUploadToken?.error
+      if (errString) {
+        addToast({
+          type: 'error',
+          text: errString,
+        })
+      } else {
+        addToast({
+          type: 'success',
+          text: 'Global repository upload token generated.',
+        })
+      }
+    },
+  })
 
-    mutate()
-    if (err) {
-      addToast({
-        type: 'error',
-        text: err,
-      })
-    } else {
-      addToast({
-        type: 'success',
-        text: 'Global repository upload token generated.',
-      })
-    }
-  }
-  return { regenerateToken, res, ...rest }
+  return { regenerateToken: mutate, res, ...rest }
 }

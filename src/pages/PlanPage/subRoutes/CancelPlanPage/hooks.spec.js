@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook } from '@testing-library/react'
 
 import { useFlags } from 'shared/featureFlags'
 
@@ -7,18 +7,15 @@ import { useProPlanMonth } from './hooks'
 jest.mock('shared/featureFlags')
 
 describe('useProPlanMonth', () => {
-  let hookData
-
-  function setup(flagValue, plans = getPlans()) {
+  function setup(flagValue) {
     useFlags.mockReturnValue({
       enterpriseCloudPlanSupport: flagValue,
     })
-    hookData = renderHook(() => useProPlanMonth({ plans }))
   }
 
   describe('flag is enabled', () => {
     it('returns the inappm plan', () => {
-      setup(true, [
+      const plans = [
         {
           marketingName: 'Basic',
           value: 'users-free',
@@ -42,8 +39,12 @@ describe('useProPlanMonth', () => {
             'Priorty Support',
           ],
         },
-      ])
-      expect(hookData.result.current).toEqual({
+      ]
+      setup(true)
+
+      const { result } = renderHook(() => useProPlanMonth({ plans }))
+
+      expect(result.current).toEqual({
         proPlanMonth: {
           marketingName: 'Pro Team',
           value: 'users-pr-inappm',
@@ -59,7 +60,7 @@ describe('useProPlanMonth', () => {
       })
     })
     it('returns the enterprisem plan', () => {
-      setup(true, [
+      const plans = [
         {
           marketingName: 'Basic',
           value: 'users-free',
@@ -83,8 +84,13 @@ describe('useProPlanMonth', () => {
             'Priorty Support',
           ],
         },
-      ])
-      expect(hookData.result.current).toEqual({
+      ]
+
+      setup(true)
+
+      const { result } = renderHook(() => useProPlanMonth({ plans }))
+
+      expect(result.current).toEqual({
         proPlanMonth: {
           marketingName: 'Pro Team',
           value: 'users-enterprisem',
@@ -105,8 +111,13 @@ describe('useProPlanMonth', () => {
     beforeEach(() => {
       setup(false)
     })
+
     it('returns the inappm plan', () => {
-      expect(hookData.result.current).toEqual({
+      const { result } = renderHook(() =>
+        useProPlanMonth({ plans: getPlans() })
+      )
+
+      expect(result.current).toEqual({
         proPlanMonth: {
           marketingName: 'Pro Team',
           value: 'users-pr-inappm',

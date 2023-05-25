@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -31,7 +31,6 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('useTracking', () => {
-  let hookData
   let pendoCopy = window.pendo
   let dataLayerCopy = window.dataLayer
 
@@ -64,8 +63,6 @@ describe('useTracking', () => {
         return res(ctx.status(200), ctx.data({ owner: 'codecov' }))
       })
     )
-
-    hookData = renderHook(() => useTracking(), { wrapper })
   }
 
   describe('when the user is logged-in and has all data', () => {
@@ -97,48 +94,58 @@ describe('useTracking', () => {
       email: 'fake@test.com',
     }
 
-    beforeEach(async () => {
+    beforeEach(() => {
       setup({ me: user })
-      await hookData.waitFor(() => !hookData.result.current.isFetching)
     })
 
-    it('set the user data in the dataLayer', () => {
-      expect(useSegmentPage).toHaveBeenCalled()
-      expect(window.dataLayer[0]).toEqual({
-        codecov: {
-          app: {
-            version: 'react-app',
+    it('set the user data in the dataLayer', async () => {
+      const { result } = renderHook(() => useTracking(), { wrapper })
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      await waitFor(() => expect(useSegmentPage).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(window.dataLayer[0]).toEqual({
+          codecov: {
+            app: {
+              version: 'react-app',
+            },
+            user: {
+              ownerid: 1,
+              has_yaml: true,
+              avatar: 'avatar',
+              service_id: '123',
+              plan: 'plan',
+              staff: true,
+              email: 'fake@test.com',
+              name: 'Eugene Onegin',
+              username: 'eugene_onegin',
+              student: true,
+              bot: true,
+              delinquent: true,
+              did_trial: true,
+              private_access: true,
+              plan_provider: 'provider',
+              plan_user_count: 1000,
+              service: 'github',
+              created_at: new Date('2017-01-01 12:00:00').toISOString(),
+              updated_at: new Date('2018-01-01 12:00:00').toISOString(),
+              student_created_at: new Date('2019-01-01 12:00:00').toISOString(),
+              student_updated_at: new Date('2020-01-01 12:00:00').toISOString(),
+              guest: false,
+            },
           },
-          user: {
-            ownerid: 1,
-            has_yaml: true,
-            avatar: 'avatar',
-            service_id: '123',
-            plan: 'plan',
-            staff: true,
-            email: 'fake@test.com',
-            name: 'Eugene Onegin',
-            username: 'eugene_onegin',
-            student: true,
-            bot: true,
-            delinquent: true,
-            did_trial: true,
-            private_access: true,
-            plan_provider: 'provider',
-            plan_user_count: 1000,
-            service: 'github',
-            created_at: new Date('2017-01-01 12:00:00').toISOString(),
-            updated_at: new Date('2018-01-01 12:00:00').toISOString(),
-            student_created_at: new Date('2019-01-01 12:00:00').toISOString(),
-            student_updated_at: new Date('2020-01-01 12:00:00').toISOString(),
-            guest: false,
-          },
-        },
-      })
+        })
+      )
     })
 
-    it('fires pendo', () => {
-      expect(window.pendo.initialize).toHaveBeenCalledTimes(1)
+    it('fires pendo', async () => {
+      renderHook(() => useTracking(), { wrapper })
+
+      await waitFor(() =>
+        expect(window.pendo.initialize).toHaveBeenCalledTimes(1)
+      )
     })
   })
 
@@ -171,68 +178,80 @@ describe('useTracking', () => {
       privateAccess: null,
     }
 
-    beforeEach(async () => {
+    beforeEach(() => {
       setup({ me: user })
-      await hookData.waitFor(() => !hookData.result.current.isFetching)
     })
 
-    it('set the user data in the dataLayer', () => {
-      expect(useSegmentPage).toHaveBeenCalled()
-      expect(window.dataLayer[0]).toEqual({
-        codecov: {
-          app: {
-            version: 'react-app',
+    it('set the user data in the dataLayer', async () => {
+      const { result } = renderHook(() => useTracking(), { wrapper })
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      await waitFor(() => expect(useSegmentPage).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(window.dataLayer[0]).toEqual({
+          codecov: {
+            app: {
+              version: 'react-app',
+            },
+            user: {
+              ownerid: 3,
+              has_yaml: false,
+              avatar: 'avatar',
+              service_id: '123',
+              plan: 'plan',
+              staff: false,
+              service: 'github',
+              email: 'unknown@codecov.io',
+              name: 'unknown',
+              username: 'unknown',
+              student: false,
+              bot: false,
+              delinquent: false,
+              did_trial: false,
+              private_access: false,
+              plan_provider: '',
+              plan_user_count: 5,
+              created_at: '2014-01-01T12:00:00.000Z',
+              updated_at: '2014-01-01T12:00:00.000Z',
+              student_created_at: '2014-01-01T12:00:00.000Z',
+              student_updated_at: '2014-01-01T12:00:00.000Z',
+              guest: false,
+            },
           },
-          user: {
-            ownerid: 3,
-            has_yaml: false,
-            avatar: 'avatar',
-            service_id: '123',
-            plan: 'plan',
-            staff: false,
-            service: 'github',
-            email: 'unknown@codecov.io',
-            name: 'unknown',
-            username: 'unknown',
-            student: false,
-            bot: false,
-            delinquent: false,
-            did_trial: false,
-            private_access: false,
-            plan_provider: '',
-            plan_user_count: 5,
-            created_at: '2014-01-01T12:00:00.000Z',
-            updated_at: '2014-01-01T12:00:00.000Z',
-            student_created_at: '2014-01-01T12:00:00.000Z',
-            student_updated_at: '2014-01-01T12:00:00.000Z',
-            guest: false,
-          },
-        },
-      })
+        })
+      )
     })
   })
 
   describe('when user is not logged in', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       const spy = jest.spyOn(console, 'error')
       spy.mockImplementation(jest.fn())
 
       setup({ me: null })
-      await hookData.waitFor(() => !hookData.result.current.isFetching)
     })
 
-    it('set the user as guest in the dataLayer', () => {
-      expect(useSegmentPage).toHaveBeenCalled()
-      expect(window.dataLayer[0]).toEqual({
-        codecov: {
-          app: {
-            version: 'react-app',
+    it('set the user as guest in the dataLayer', async () => {
+      const { result } = renderHook(() => useTracking(), { wrapper })
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      await waitFor(() => expect(useSegmentPage).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(window.dataLayer[0]).toEqual({
+          codecov: {
+            app: {
+              version: 'react-app',
+            },
+            user: {
+              guest: true,
+            },
           },
-          user: {
-            guest: true,
-          },
-        },
-      })
+        })
+      )
     })
   })
 })

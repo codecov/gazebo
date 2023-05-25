@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 
@@ -76,7 +76,7 @@ describe('useInfiniteUser', () => {
     beforeEach(() => setup())
 
     it('returns the data', async () => {
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () =>
           useInfiniteUsers(
             { provider: 'gh', owner: 'codecov', query: {} },
@@ -88,16 +88,18 @@ describe('useInfiniteUser', () => {
       await waitFor(() => result.current.isFetching)
       await waitFor(() => !result.current.isFetching)
 
-      expect(result.current.data).toStrictEqual([
-        {
-          ownerid: 1,
-          username: 'user1-codecov',
-          email: 'user1@codecov.io',
-          name: 'User 1',
-          isAdmin: true,
-          activated: true,
-        },
-      ])
+      await waitFor(() =>
+        expect(result.current.data).toStrictEqual([
+          {
+            ownerid: 1,
+            username: 'user1-codecov',
+            email: 'user1@codecov.io',
+            name: 'User 1',
+            isAdmin: true,
+            activated: true,
+          },
+        ])
+      )
     })
   })
 
@@ -105,7 +107,7 @@ describe('useInfiniteUser', () => {
     beforeEach(() => setup())
 
     it('returns the combined data', async () => {
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () =>
           useInfiniteUsers(
             { provider: 'gh', owner: 'codecov', query: {} },
@@ -118,6 +120,9 @@ describe('useInfiniteUser', () => {
       await waitFor(() => !result.current.isFetching)
 
       result.current.fetchNextPage()
+
+      await waitFor(() => result.current.isFetching)
+      await waitFor(() => !result.current.isFetching)
 
       await waitFor(() =>
         expect(result.current.data).toStrictEqual([

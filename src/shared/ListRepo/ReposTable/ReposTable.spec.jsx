@@ -563,6 +563,10 @@ describe('ReposTable', () => {
       const loadMore = await screen.findByText(/Load More/)
       await user.click(loadMore)
 
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+      await waitFor(() => queryClient.getQueriesData(['repos']))
+
       const newlyLoadedRepo = await screen.findByText('Repo name extra')
       expect(newlyLoadedRepo).toBeInTheDocument()
     })

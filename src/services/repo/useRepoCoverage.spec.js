@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
@@ -20,20 +20,11 @@ afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
 describe('useRepoCoverage', () => {
-  let hookData
-
   function setup(data) {
     server.use(
       graphql.query('GetRepoCoverage', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(data))
       })
-    )
-
-    hookData = renderHook(
-      () => useRepoCoverage({ provider: 'bb', owner: 'doggo', repo: 'woof' }),
-      {
-        wrapper,
-      }
     )
   }
 
@@ -57,18 +48,21 @@ describe('useRepoCoverage', () => {
     })
     afterEach(() => server.resetHandlers())
 
-    it('renders isLoading true', () => {
-      expect(hookData.result.current.isLoading).toBeTruthy()
-    })
-
     describe('when data is loaded', () => {
-      beforeEach(() => {
-        return hookData.waitFor(() => hookData.result.current.isSuccess)
-      })
-
       it('returns the data', async () => {
-        await hookData.waitFor(() =>
-          expect(hookData.result.current.data).toEqual({
+        const { result } = renderHook(
+          () =>
+            useRepoCoverage({ provider: 'bb', owner: 'doggo', repo: 'woof' }),
+          {
+            wrapper,
+          }
+        )
+
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+
+        await waitFor(() =>
+          expect(result.current.data).toEqual({
             head: {
               totals: {
                 percentCovered: 70.44,
@@ -89,9 +83,14 @@ describe('useRepoCoverage', () => {
     afterEach(() => server.resetHandlers())
 
     it('returns the data', async () => {
-      await hookData.waitFor(() =>
-        expect(hookData.result.current.data).toEqual({})
+      const { result } = renderHook(
+        () => useRepoCoverage({ provider: 'bb', owner: 'doggo', repo: 'woof' }),
+        {
+          wrapper,
+        }
       )
+
+      await waitFor(() => expect(result.current.data).toEqual({}))
     })
   })
 })

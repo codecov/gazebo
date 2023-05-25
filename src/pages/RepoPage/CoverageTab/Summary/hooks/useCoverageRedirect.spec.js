@@ -1,4 +1,4 @@
-import { act, renderHook } from '@testing-library/react-hooks'
+import { act, renderHook } from '@testing-library/react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import { useCoverageRedirect } from './useCoverageRedirect'

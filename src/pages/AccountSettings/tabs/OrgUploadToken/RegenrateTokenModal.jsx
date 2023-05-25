@@ -11,7 +11,7 @@ const RegenerateTokenModal = ({ closeModal, regenerateToken, isLoading }) => (
     body={
       <div className="flex  flex-col gap-4">
         <h2 className="font-semibold">
-          Are you sure you want to regenerate the glabal token?
+          Are you sure you want to regenerate the global token?
         </h2>
         <span>
           If you regenerate this token you will need to update every repository

@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -22,6 +22,7 @@ const mockFirstResponse = {
   ],
   total_pages: 2,
 }
+
 const mockSecondResponse = {
   count: 2,
   next: null,
@@ -86,7 +87,7 @@ describe('useAdminAccessList', () => {
     })
 
     it('returns the data', async () => {
-      const { result, waitFor } = renderHook(() => useAdminAccessList(), {
+      const { result } = renderHook(() => useAdminAccessList(), {
         wrapper: wrapper(),
       })
 
@@ -111,13 +112,17 @@ describe('useAdminAccessList', () => {
     })
 
     it('returns the data', async () => {
-      const { result, waitFor } = renderHook(() => useAdminAccessList(), {
+      const { result } = renderHook(() => useAdminAccessList(), {
         wrapper: wrapper(),
       })
 
-      await waitFor(() => !result.current.isFetching)
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
 
       result.current.fetchNextPage()
+
+      await waitFor(() => result.current.isFetching)
+      await waitFor(() => !result.current.isFetching)
 
       await waitFor(() =>
         expect(result.current.data).toStrictEqual([

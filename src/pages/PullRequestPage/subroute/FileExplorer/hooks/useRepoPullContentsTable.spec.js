@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -132,28 +132,22 @@ describe('useRepoPullContentsTable', () => {
 
       describe('on root path', () => {
         it('returns directory contents', async () => {
-          const { result, waitFor } = renderHook(
-            () => useRepoPullContentsTable(),
-            { wrapper: wrapper() }
-          )
+          const { result } = renderHook(() => useRepoPullContentsTable(), {
+            wrapper: wrapper(),
+          })
 
           await waitFor(() => result.current.isLoading)
           await waitFor(() => !result.current.isLoading)
 
-          expect(result.current.data.length).toBe(2)
+          await waitFor(() => expect(result.current.data.length).toBe(2))
         })
       })
 
       describe('on child path', () => {
         it('returns directory contents', async () => {
-          const { result, waitFor } = renderHook(
-            () => useRepoPullContentsTable(),
-            {
-              wrapper: wrapper([
-                '/gh/test-org/test-repo/pull/123/tree/src/dir',
-              ]),
-            }
-          )
+          const { result } = renderHook(() => useRepoPullContentsTable(), {
+            wrapper: wrapper(['/gh/test-org/test-repo/pull/123/tree/src/dir']),
+          })
 
           await waitFor(() => result.current.isLoading)
           await waitFor(() => !result.current.isLoading)
@@ -163,10 +157,9 @@ describe('useRepoPullContentsTable', () => {
       })
 
       it('sets the correct headers', async () => {
-        const { result, waitFor } = renderHook(
-          () => useRepoPullContentsTable(),
-          { wrapper: wrapper() }
-        )
+        const { result } = renderHook(() => useRepoPullContentsTable(), {
+          wrapper: wrapper(),
+        })
 
         await waitFor(() => result.current.isLoading)
         await waitFor(() => !result.current.isLoading)
@@ -185,10 +178,9 @@ describe('useRepoPullContentsTable', () => {
       })
 
       it('returns an empty array', async () => {
-        const { result, waitFor } = renderHook(
-          () => useRepoPullContentsTable(),
-          { wrapper: wrapper() }
-        )
+        const { result } = renderHook(() => useRepoPullContentsTable(), {
+          wrapper: wrapper(),
+        })
 
         await waitFor(() => result.current.isLoading)
         await waitFor(() => !result.current.isLoading)
@@ -208,7 +200,7 @@ describe('useRepoPullContentsTable', () => {
     })
 
     it('makes a gql request with the search value', async () => {
-      const { result, waitFor } = renderHook(() => useRepoPullContentsTable(), {
+      const { result } = renderHook(() => useRepoPullContentsTable(), {
         wrapper: wrapper(),
       })
 
@@ -242,7 +234,7 @@ describe('useRepoPullContentsTable', () => {
     })
 
     it('makes a gql request with the list param', async () => {
-      const { result, waitFor } = renderHook(() => useRepoPullContentsTable(), {
+      const { result } = renderHook(() => useRepoPullContentsTable(), {
         wrapper: wrapper(),
       })
 
@@ -276,7 +268,7 @@ describe('useRepoPullContentsTable', () => {
     })
 
     it('makes a gql request with the updated params', async () => {
-      const { result, waitFor } = renderHook(() => useRepoPullContentsTable(), {
+      const { result } = renderHook(() => useRepoPullContentsTable(), {
         wrapper: wrapper(),
       })
 

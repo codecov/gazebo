@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
@@ -148,7 +148,7 @@ describe('useCommitsTabBranchSelector', () => {
     beforeEach(() => setup(defaultBranch, true))
 
     it('sets the selected branch', async () => {
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () => useCommitsTabBranchSelector({ passedBranch, defaultBranch }),
         { wrapper: wrapper() }
       )
@@ -157,7 +157,7 @@ describe('useCommitsTabBranchSelector', () => {
     })
 
     it('sets the branchSelectorProps items correctly', async () => {
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () => useCommitsTabBranchSelector({ passedBranch, defaultBranch }),
         { wrapper: wrapper() }
       )
@@ -171,7 +171,7 @@ describe('useCommitsTabBranchSelector', () => {
     })
 
     it('sets the branchSelectorProps value correctly', async () => {
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () => useCommitsTabBranchSelector({ passedBranch, defaultBranch }),
         { wrapper: wrapper() }
       )
@@ -188,7 +188,7 @@ describe('useCommitsTabBranchSelector', () => {
     beforeEach(() => setup('branch-1', true))
 
     it('sets the selected branch', async () => {
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () => useCommitsTabBranchSelector({ passedBranch, defaultBranch }),
         { wrapper: wrapper('/gh/codecov/cool-repo/commits?branch=branch-1') }
       )
@@ -199,7 +199,7 @@ describe('useCommitsTabBranchSelector', () => {
     })
 
     it('sets the branchSelectorProps items correctly', async () => {
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () => useCommitsTabBranchSelector({ passedBranch, defaultBranch }),
         { wrapper: wrapper('/gh/codecov/cool-repo/commits?branch=branch-1') }
       )
@@ -213,7 +213,7 @@ describe('useCommitsTabBranchSelector', () => {
     })
 
     it('sets the branchSelectorProps value correctly', async () => {
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () => useCommitsTabBranchSelector({ passedBranch, defaultBranch }),
         { wrapper: wrapper('/gh/codecov/cool-repo/commits?branch=branch-1') }
       )
@@ -230,7 +230,7 @@ describe('useCommitsTabBranchSelector', () => {
     beforeEach(() => setup('branchName', false))
 
     it('returns undefined selection', async () => {
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () =>
           useCommitsTabBranchSelector({
             passedBranch,
@@ -252,7 +252,7 @@ describe('useCommitsTabBranchSelector', () => {
     beforeEach(() => setup('branchName', false))
 
     it('returns All branches as selection', async () => {
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () =>
           useCommitsTabBranchSelector({
             passedBranch,

@@ -1,10 +1,10 @@
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook } from '@testing-library/react'
 
 import { useRedirect } from './hooks'
 
 const href = `/account/gh/rula/billing`
 describe('useRedirect', () => {
-  let originalLocation, hookData
+  let originalLocation
 
   beforeAll(() => {
     originalLocation = global.window.location
@@ -19,18 +19,11 @@ describe('useRedirect', () => {
     window.location = originalLocation
   })
 
-  function setup() {
-    hookData = renderHook(() => useRedirect({ href }))
-  }
-
   describe('When data is loaded', () => {
-    beforeEach(() => {
-      setup()
-      return hookData.waitFor(() => hookData.result.current.isSuccess)
-    })
+    it('location replace was called (redirected)', async () => {
+      const { result } = renderHook(() => useRedirect({ href }))
 
-    it('location replace was called (redirected)', () => {
-      const { hardRedirect } = hookData?.result?.current
+      const { hardRedirect } = result?.current
       hardRedirect()
 
       expect(window.location.replace).toHaveBeenCalledTimes(1)

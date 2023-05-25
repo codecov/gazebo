@@ -1,6 +1,5 @@
-import { render, screen } from 'custom-testing-library'
-
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
@@ -231,7 +230,9 @@ describe('CancelButton', () => {
         await user.click(screen.getByTestId('downgrade-button'))
         await user.click(screen.getByTestId('continue-cancellation-button'))
 
-        mutate.mock.calls[0][1].onSuccess()
+        act(() => {
+          mutate.mock.calls[0][1].onSuccess()
+        })
 
         expect(testLocation.pathname).toEqual('/plan/gh/Ollie')
       })

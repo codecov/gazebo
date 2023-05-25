@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -70,7 +70,7 @@ describe('useSaveTermsAgreement', () => {
         setup()
         const invalidateQueries = jest.spyOn(queryClient, 'invalidateQueries')
         const successFn = jest.fn()
-        const { result, waitFor } = renderHook(
+        const { result } = renderHook(
           () =>
             useSaveTermsAgreement({
               onSuccess: () => {
@@ -98,7 +98,7 @@ describe('useSaveTermsAgreement', () => {
         setup()
         const invalidateQueries = jest.spyOn(queryClient, 'invalidateQueries')
         const successFn = jest.fn()
-        const { result, waitFor } = renderHook(
+        const { result } = renderHook(
           () =>
             useSaveTermsAgreement({
               onSuccess: () => {
@@ -129,7 +129,7 @@ describe('useSaveTermsAgreement', () => {
         const spyErrorMock = jest.fn()
         spy.mockImplementation(spyErrorMock)
         const errorFn = jest.fn()
-        const { result, waitFor } = renderHook(
+        const { result } = renderHook(
           () =>
             useSaveTermsAgreement({
               onError: () => {

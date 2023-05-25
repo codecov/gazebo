@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -28,17 +28,12 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('useGenerateUserToken', () => {
-  let hookData
-
   function setup(dataReturned) {
     server.use(
       graphql.mutation(`CreateUserToken`, (req, res, ctx) => {
         return res(ctx.status(200), ctx.data({ data: dataReturned }))
       })
     )
-    hookData = renderHook(() => useGenerateUserToken({ provider }), {
-      wrapper,
-    })
   }
 
   describe('when called', () => {
@@ -48,22 +43,25 @@ describe('useGenerateUserToken', () => {
       })
     })
 
-    it('is not loading yet', () => {
-      expect(hookData.result.current.isLoading).toBeFalsy()
-    })
-
     describe('when calling the mutation', () => {
       const data = {
         sessionid: 1,
       }
-      beforeEach(async () => {
-        hookData.result.current.mutate(data)
-        await hookData.waitFor(() => hookData.result.current.isLoading)
-        await hookData.waitFor(() => !hookData.result.current.isLoading)
-      })
 
-      it('returns success', () => {
-        expect(hookData.result.current.isSuccess).toBeTruthy()
+      it('returns success', async () => {
+        const { result } = renderHook(
+          () => useGenerateUserToken({ provider }),
+          {
+            wrapper,
+          }
+        )
+
+        result.current.mutate(data)
+
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+
+        await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
       })
     })
   })

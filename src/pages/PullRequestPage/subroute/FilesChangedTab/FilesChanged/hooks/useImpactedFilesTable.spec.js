@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -124,41 +124,43 @@ describe('useImpactedFilesTable', () => {
 
     describe('when data is loaded', () => {
       it('returns data', async () => {
-        const { result, waitFor } = renderHook(() => useImpactedFilesTable(), {
+        const { result } = renderHook(() => useImpactedFilesTable(), {
           wrapper,
         })
         await waitFor(() => !result.current.isLoading)
 
-        expect(result.current.data).toEqual({
-          headState: 'PROCESSED',
-          impactedFiles: [
-            {
-              changeCoverage: 44.85,
-              fileName: 'mafs.js',
-              hasHeadOrPatchCoverage: true,
-              headCoverage: 90.23,
-              headName: 'flag1/mafs.js',
-              isCriticalFile: true,
-              patchCoverage: 27.43,
-              missesInComparison: 3,
-              pullId: 14,
-            },
-            {
-              changeCoverage: 41,
-              fileName: 'quarg.js',
-              hasHeadOrPatchCoverage: true,
-              headCoverage: 80,
-              headName: 'flag2/quarg.js',
-              isCriticalFile: true,
-              patchCoverage: 48.23,
-              missesInComparison: 7,
-              pullId: 14,
-            },
-          ],
-          pullBaseCoverage: 27.35,
-          pullHeadCoverage: 74.2,
-          pullPatchCoverage: 92.12,
-        })
+        await waitFor(() =>
+          expect(result.current.data).toEqual({
+            headState: 'PROCESSED',
+            impactedFiles: [
+              {
+                changeCoverage: 44.85,
+                fileName: 'mafs.js',
+                hasHeadOrPatchCoverage: true,
+                headCoverage: 90.23,
+                headName: 'flag1/mafs.js',
+                isCriticalFile: true,
+                patchCoverage: 27.43,
+                missesInComparison: 3,
+                pullId: 14,
+              },
+              {
+                changeCoverage: 41,
+                fileName: 'quarg.js',
+                hasHeadOrPatchCoverage: true,
+                headCoverage: 80,
+                headName: 'flag2/quarg.js',
+                isCriticalFile: true,
+                patchCoverage: 48.23,
+                missesInComparison: 7,
+                pullId: 14,
+              },
+            ],
+            pullBaseCoverage: 27.35,
+            pullHeadCoverage: 74.2,
+            pullPatchCoverage: 92.12,
+          })
+        )
       })
     })
   })
@@ -187,30 +189,32 @@ describe('useImpactedFilesTable', () => {
     })
 
     it('returns data', async () => {
-      const { result, waitFor } = renderHook(() => useImpactedFilesTable(), {
+      const { result } = renderHook(() => useImpactedFilesTable(), {
         wrapper,
       })
       await waitFor(() => !result.current.isLoading)
 
-      expect(result.current.data).toEqual({
-        headState: 'PROCESSED',
-        impactedFiles: [
-          {
-            changeCoverage: NaN,
-            fileName: 'mafs.js',
-            hasHeadOrPatchCoverage: true,
-            headCoverage: undefined,
-            headName: 'flag1/mafs.js',
-            isCriticalFile: true,
-            patchCoverage: 27.43,
-            pullId: 14,
-            missesInComparison: 0,
-          },
-        ],
-        pullBaseCoverage: 27.35,
-        pullHeadCoverage: 74.2,
-        pullPatchCoverage: 92.12,
-      })
+      await waitFor(() =>
+        expect(result.current.data).toEqual({
+          headState: 'PROCESSED',
+          impactedFiles: [
+            {
+              changeCoverage: NaN,
+              fileName: 'mafs.js',
+              hasHeadOrPatchCoverage: true,
+              headCoverage: undefined,
+              headName: 'flag1/mafs.js',
+              isCriticalFile: true,
+              patchCoverage: 27.43,
+              pullId: 14,
+              missesInComparison: 0,
+            },
+          ],
+          pullBaseCoverage: 27.35,
+          pullHeadCoverage: 74.2,
+          pullPatchCoverage: 92.12,
+        })
+      )
     })
   })
 
@@ -220,15 +224,20 @@ describe('useImpactedFilesTable', () => {
     })
 
     it('returns data', async () => {
-      const { result, waitFor } = renderHook(() => useImpactedFilesTable(), {
+      const { result } = renderHook(() => useImpactedFilesTable(), {
         wrapper,
       })
+
+      await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
-      expect(callsHandleSort).toBeCalledTimes(1)
-      expect(callsHandleSort).toHaveBeenNthCalledWith(1, {
-        direction: 'DESC',
-        parameter: orderingParameter.missesInComparison,
-      })
+
+      await waitFor(() => expect(callsHandleSort).toBeCalledTimes(1))
+      await waitFor(() =>
+        expect(callsHandleSort).toHaveBeenNthCalledWith(1, {
+          direction: 'DESC',
+          parameter: orderingParameter.missesInComparison,
+        })
+      )
 
       act(() => {
         result.current.handleSort([{ desc: true, id: 'change' }])
@@ -237,11 +246,13 @@ describe('useImpactedFilesTable', () => {
       await waitFor(() => !result.current.isLoading)
 
       // Accounts for both handleSort being called both times during api call
-      expect(callsHandleSort).toBeCalledTimes(2)
-      expect(callsHandleSort).toHaveBeenNthCalledWith(2, {
-        direction: 'DESC',
-        parameter: 'CHANGE_COVERAGE',
-      })
+      await waitFor(() => expect(callsHandleSort).toBeCalledTimes(2))
+      await waitFor(() =>
+        expect(callsHandleSort).toHaveBeenNthCalledWith(2, {
+          direction: 'DESC',
+          parameter: 'CHANGE_COVERAGE',
+        })
+      )
     })
   })
 })

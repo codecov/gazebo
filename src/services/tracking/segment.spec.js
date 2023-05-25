@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook } from '@testing-library/react'
 import Cookie from 'js-cookie'
 import { useLocation } from 'react-router-dom'
 
@@ -199,13 +199,15 @@ describe('identifySegmentUser', () => {
 describe('useSegmentPage', () => {
   function setup(pathname) {
     useLocation.mockReturnValue({ pathname })
-    renderHook(() => useSegmentPage())
   }
 
   describe('when there is a path change', () => {
     it('makes an analytics page call', () => {
       let pathname = '/gh/thanos'
       setup(pathname)
+
+      renderHook(() => useSegmentPage())
+
       expect(window.analytics.page).toHaveBeenCalledTimes(1)
     })
   })
@@ -216,6 +218,7 @@ describe('useSegmentPage', () => {
 
       owners.forEach((owner) => {
         setup('/gh/' + owner)
+        renderHook(() => useSegmentPage())
       })
 
       expect(window.analytics.page).toHaveBeenCalledTimes(3)

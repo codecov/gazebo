@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -79,7 +79,7 @@ describe('usePrefetchCommitDirEntry', () => {
   })
 
   it('queries the api', async () => {
-    const { result, waitFor } = renderHook(
+    const { result } = renderHook(
       () => usePrefetchCommitDirEntry({ branch: 'main', path: 'src' }),
       { wrapper }
     )

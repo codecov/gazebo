@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -188,12 +188,15 @@ describe('Coverage Tab', () => {
         { wrapper: wrapper(['/gh/test-org/test-repo']) }
       )
 
-      const hideChart = await screen.findByText(/Hide Chart/)
+      await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0))
 
+      const hideChart = screen.getByText(/Hide Chart/)
       expect(hideChart).toBeInTheDocument()
 
       const toggleContents = screen.getByTestId('toggle-element-contents')
 
+      // eslint-disable-next-line testing-library/no-node-access
       expect(toggleContents.childElementCount).toBe(2)
     })
   })
@@ -214,12 +217,16 @@ describe('Coverage Tab', () => {
         { wrapper: wrapper(['/gh/test-org/test-repo']) }
       )
 
-      const hideChart = await screen.findByText(/Hide Chart/)
+      await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+      const hideChart = screen.getByText(/Hide Chart/)
 
       expect(hideChart).toBeInTheDocument()
 
       const toggleContents = screen.getByTestId('toggle-element-contents')
 
+      // eslint-disable-next-line testing-library/no-node-access
       expect(toggleContents.childElementCount).toBe(1)
     })
   })

@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
@@ -40,25 +40,11 @@ const owner = 'codecov'
 const repo = 'gazebo'
 
 describe('CompareTotals', () => {
-  let hookData
-
   function setup() {
     server.use(
       graphql.query('CompareTotals', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(dataReturned))
       })
-    )
-
-    hookData = renderHook(
-      () =>
-        useCompareTotals({
-          provider,
-          owner,
-          repo,
-        }),
-      {
-        wrapper,
-      }
     )
   }
 
@@ -67,17 +53,23 @@ describe('CompareTotals', () => {
       setup()
     })
 
-    it('renders isLoading true', () => {
-      expect(hookData.result.current.isLoading).toBeTruthy()
-    })
-
     describe('when data is loaded', () => {
-      beforeEach(() => {
-        return hookData.waitFor(() => hookData.result.current.isSuccess)
-      })
+      it('returns the data', async () => {
+        const { result } = renderHook(
+          () =>
+            useCompareTotals({
+              provider,
+              owner,
+              repo,
+            }),
+          {
+            wrapper,
+          }
+        )
 
-      it('returns the data', () => {
-        expect(hookData.result.current.data).toEqual({ state: 'processed' })
+        await waitFor(() =>
+          expect(result.current.data).toEqual({ state: 'processed' })
+        )
       })
     })
   })

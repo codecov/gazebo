@@ -32,7 +32,7 @@ export function useRegenerateRepositoryToken({ tokenType }) {
         mutationPath: 'regenerateRepositoryToken',
       })
     },
-    useErrorBoundary: true,
+    useErrorBoundary: false,
     onSuccess: ({ data }) => {
       queryClient.invalidateQueries(['GetRepoSettings'])
       const error =

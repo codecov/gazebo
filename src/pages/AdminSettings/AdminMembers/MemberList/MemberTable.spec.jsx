@@ -8,7 +8,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import MemberTable from './MemberTable'
 
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
+  defaultOptions: { queries: { retry: false, cacheTime: Infinity } },
 })
 const server = setupServer()
 
@@ -164,7 +164,9 @@ describe('MemberTable', () => {
       setup()
       render(<MemberTable />, { wrapper })
 
-      const user = await screen.findByText('User 1')
+      expect(await screen.findByText('User 1')).toBeTruthy()
+
+      const user = screen.getByText('User 1')
       expect(user).toBeInTheDocument()
     })
 
@@ -172,13 +174,17 @@ describe('MemberTable', () => {
       const { user } = setup()
       render(<MemberTable />, { wrapper })
 
-      const button = await screen.findByText('Load More')
+      expect(await screen.findByText('Load More')).toBeTruthy()
+
+      const button = screen.getByText('Load More')
       await user.click(button)
+
+      expect(await screen.findByText('User 1')).toBeTruthy()
 
       const user1 = screen.getByText('User 1')
       expect(user1).toBeInTheDocument()
 
-      const user2 = await screen.findByText('user2-codecov')
+      const user2 = screen.getByText('user2-codecov')
       expect(user2).toBeInTheDocument()
     })
   })
@@ -225,16 +231,25 @@ describe('MemberTable', () => {
           const { user } = setup({ student: true, seatsOpen: false })
           render(<MemberTable />, { wrapper })
 
-          const nonActiveToggleClick = await screen.findByRole('button', {
+          expect(
+            await screen.findByRole('button', {
+              name: 'Non-Active',
+            })
+          ).toBeTruthy()
+
+          const nonActiveToggleClick = screen.getByRole('button', {
             name: 'Non-Active',
           })
-
+          expect(nonActiveToggleClick).toBeInTheDocument()
           await user.click(nonActiveToggleClick)
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
+          expect(
+            await screen.findByRole('button', {
+              name: 'Activated',
+            })
+          ).toBeTruthy()
 
-          const activeToggle = await screen.findByRole('button', {
+          const activeToggle = screen.getByRole('button', {
             name: 'Activated',
           })
           expect(activeToggle).toBeInTheDocument()
@@ -252,24 +267,28 @@ describe('MemberTable', () => {
         const { user } = setup()
         render(<MemberTable />, { wrapper })
 
-        const nonActiveToggleClick = await screen.findByRole('button', {
+        expect(
+          await screen.findByRole('button', {
+            name: 'Non-Active',
+          })
+        ).toBeTruthy()
+
+        const nonActiveToggleClick = screen.getByRole('button', {
           name: 'Non-Active',
         })
 
         await user.click(nonActiveToggleClick)
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        expect(
+          await screen.findByRole('button', {
+            name: 'Activated',
+          })
+        ).toBeTruthy()
 
-        const activeToggle = await screen.findByRole('button', {
+        const activeToggle = screen.getByRole('button', {
           name: 'Activated',
         })
         expect(activeToggle).toBeInTheDocument()
-
-        const nonActiveToggle = screen.queryByRole('button', {
-          name: 'Non-Active',
-        })
-        expect(nonActiveToggle).not.toBeInTheDocument()
       })
     })
   })
@@ -279,21 +298,22 @@ describe('MemberTable', () => {
       const { user } = setup({ returnActivated: true })
       render(<MemberTable />, { wrapper })
 
-      const activeToggleClick = await screen.findByRole('button', {
+      expect(
+        await screen.findByRole('button', {
+          name: 'Activated',
+        })
+      ).toBeTruthy()
+
+      const activeToggleClick = screen.getByRole('button', {
         name: 'Activated',
       })
+      expect(activeToggleClick).toBeInTheDocument()
       await user.click(activeToggleClick)
 
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
+      expect(await screen.findByLabelText('Non-Active')).toBeTruthy()
 
-      const nonActiveToggle = await screen.findByRole('button', {
-        name: 'Non-Active',
-      })
+      const nonActiveToggle = screen.getByLabelText('Non-Active')
       expect(nonActiveToggle).toBeInTheDocument()
-
-      const activeToggle = screen.queryByRole('button', { name: 'Activated' })
-      expect(activeToggle).not.toBeInTheDocument()
     })
   })
 

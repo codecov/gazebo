@@ -53,12 +53,12 @@ export const useScrollToLine = ({
   const history = useHistory()
   const idString = generateIdString({ number, path, base, head })
   const [targeted] = useTarget({ location, idString })
-  const hasDoneInitialDrawRef = useRef(false)
   const lineRef = useRef(null)
+  const hasDoneInitialDrawRef = useRef(false)
 
   const handleResize = useCallback(
     (entries) => {
-      const [entry] = entries
+      const entry = entries?.[0]
 
       if (location?.hash === idString) {
         window.scrollTo({
@@ -79,26 +79,28 @@ export const useScrollToLine = ({
 
     const ref = lineRef?.current
 
-    if (ref && location?.hash === idString) {
-      if (stickyPadding) {
-        // do the first scroll on load
-        if (!hasDoneInitialDrawRef.current) {
-          resizeObs.observe(ref)
-        }
-        // all subsequent scrolls can just be done via window directly
-        else {
-          resizeObs.disconnect()
+    if (ref) {
+      if (location?.hash === idString) {
+        if (stickyPadding) {
+          // do the first scroll on load
+          if (!hasDoneInitialDrawRef.current) {
+            resizeObs.observe(ref)
+          }
+          // all subsequent scrolls can just be done via window directly
+          else {
+            resizeObs.disconnect()
 
-          window.scrollTo({
-            behavior: 'smooth',
-            left: 0,
-            top: ref?.offsetTop + stickyPadding,
-          })
+            window.scrollTo({
+              behavior: 'smooth',
+              left: 0,
+              top: ref?.offsetTop + stickyPadding,
+            })
+          }
         }
-      }
-      // if it does not require padding just easily scroll into view
-      else {
-        ref?.scrollIntoView({ behavior: 'smooth' })
+        // if it does not require padding just easily scroll into view
+        else {
+          ref?.scrollIntoView({ behavior: 'smooth' })
+        }
       }
     }
 

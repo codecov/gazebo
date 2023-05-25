@@ -1,198 +1,330 @@
-import { render, screen } from 'custom-testing-library'
-
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useRegenerateOrgUploadToken } from 'services/orgUploadToken'
 import { useAddNotification } from 'services/toastNotification'
-import { useIsCurrentUserAnAdmin, useOwner } from 'services/user'
 
 import OrgUploadToken from './OrgUploadToken'
 
-jest.mock('services/user')
-jest.mock('services/toastNotification')
-jest.mock('services/orgUploadToken')
 jest.mock('services/toastNotification')
 
+const mockOwner = {
+  owner: {
+    me: {},
+    isCurrentUserPartOfOrg: true,
+  },
+}
+
+const server = setupServer()
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
+  defaultOptions: {
+    queries: { retry: false, suspense: true },
+  },
+})
+
+const wrapper = ({ children }) => (
+  <MemoryRouter initialEntries={['/account/gh/codecov/orgUploadToken']}>
+    <QueryClientProvider client={queryClient}>
+      <Route path="/account/:provider/:owner/orgUploadToken">
+        <Suspense fallback={null}>{children}</Suspense>
+      </Route>
+    </QueryClientProvider>
+  </MemoryRouter>
+)
+
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: 'warn' })
+})
+
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
 })
 
 describe('OrgUploadToken', () => {
-  const mutate = jest.fn()
-  const addNotification = jest.fn()
+  function setup(
+    { orgUploadToken = undefined, error = null, isAdmin = true } = {
+      orgUploadToken: undefined,
+      error: null,
+      isAdmin: true,
+    }
+  ) {
+    const user = userEvent.setup()
+    const mutate = jest.fn()
+    const addNotification = jest.fn()
 
-  function setup({ orgUploadToken = undefined, error = null, isAdmin = true }) {
-    useIsCurrentUserAnAdmin.mockReturnValue(isAdmin)
-    useOwner.mockReturnValue({ data: { orgUploadToken } })
     useAddNotification.mockReturnValue(addNotification)
-    useRegenerateOrgUploadToken.mockReturnValue({
-      isLoading: false,
-      mutate,
-      data: {
-        data: {
-          regenerateOrgUploadToken: {
-            orgUploadToken,
-            error,
-          },
-        },
-      },
-    })
 
-    render(
-      <MemoryRouter initialEntries={['/account/gh/codecov/orgUploadToken']}>
-        <QueryClientProvider client={queryClient}>
-          <Route path="/account/:provider/:owner/orgUploadToken">
-            <OrgUploadToken />
-          </Route>
-        </QueryClientProvider>
-      </MemoryRouter>
+    server.use(
+      graphql.query('DetailOwner', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              ...mockOwner.owner,
+              orgUploadToken: orgUploadToken,
+              isAdmin: isAdmin,
+            },
+          })
+        )
+      }),
+      graphql.mutation('regenerateOrgUploadToken', (req, res, ctx) => {
+        mutate('regenerateOrgUploadToken')
+
+        return res(
+          ctx.status(200),
+          ctx.data({
+            regenerateOrgUploadToken: {
+              orgUploadToken,
+              error: {
+                __typename: error,
+              },
+            },
+          })
+        )
+      })
     )
+
+    return { addNotification, mutate, user }
   }
 
-  describe('Renders OrgUploadToken componenet', () => {
+  describe('renders component', () => {
     beforeEach(() => {
       setup({})
     })
-    it('renders title', () => {
-      const title = screen.getByText(/Global repository upload token/)
+
+    it('renders title', async () => {
+      render(<OrgUploadToken />, { wrapper })
+
+      const title = await screen.findByText(/Global repository upload token/)
       expect(title).toBeInTheDocument()
     })
-    it('renders body', () => {
-      const p = screen.getByText(/Sensitive credential/)
+
+    it('renders body', async () => {
+      render(<OrgUploadToken />, { wrapper })
+
+      const p = await screen.findByText(/Sensitive credential/)
       expect(p).toBeInTheDocument()
     })
 
-    it('renders generate token', () => {
-      const title = screen.getByText(
+    it('renders generate token', async () => {
+      render(<OrgUploadToken />, { wrapper })
+
+      const title = await screen.findByText(
         /Generating a global token allows you to apply the same upload token to/
       )
       expect(title).toBeInTheDocument()
     })
 
-    it('renders generate button', () => {
-      expect(
-        screen.getByRole('button', { name: 'Generate' })
-      ).toBeInTheDocument()
+    it('renders generate button', async () => {
+      render(<OrgUploadToken />, { wrapper })
+
+      const genBtn = await screen.findByRole('button', { name: /Generate/ })
+      expect(genBtn).toBeInTheDocument()
     })
   })
 
-  describe('When user clicks on Generate button', () => {
-    beforeEach(() => {
-      setup({})
-      screen.getByRole('button', { name: 'Generate' }).click()
-    })
-    it('calls the mutation', () => {
-      expect(mutate).toHaveBeenCalled()
-    })
-  })
-
-  describe('When mutation is not successful', () => {
-    beforeEach(async () => {
-      setup({ orgUploadToken: '', error: 'Authentication Error' })
-      screen.getByRole('button', { name: 'Generate' }).click()
-    })
-
+  describe('when user clicks on Generate button', () => {
     it('calls the mutation', async () => {
-      expect(mutate).toHaveBeenCalled()
+      const { mutate, user } = setup()
+
+      render(<OrgUploadToken />, { wrapper })
+
+      const genBtn = await screen.findByRole('button', { name: 'Generate' })
+      await user.click(genBtn)
+
+      await waitFor(() => expect(mutate).toHaveBeenCalled())
     })
 
-    it('adds an error notification', () => {
-      expect(addNotification).toHaveBeenCalledWith({
-        type: 'error',
-        text: 'Authentication Error',
+    describe('when mutation is not successful', () => {
+      it('calls the mutation', async () => {
+        const { user, mutate } = setup({
+          orgUploadToken: '',
+          error: 'Authentication Error',
+          isAdmin: true,
+        })
+        render(<OrgUploadToken />, { wrapper })
+
+        const genBtn = await screen.findByRole('button', { name: 'Generate' })
+        expect(genBtn).toBeInTheDocument()
+
+        await user.click(genBtn)
+
+        await waitFor(() => expect(mutate).toHaveBeenCalled())
+      })
+
+      it('adds an error notification', async () => {
+        const { addNotification, user } = setup({
+          orgUploadToken: '',
+          error: 'Authentication Error',
+          isAdmin: true,
+        })
+        const { rerender } = render(<OrgUploadToken />, { wrapper })
+
+        const genBtn = await screen.findByRole('button', { name: 'Generate' })
+        expect(genBtn).toBeInTheDocument()
+
+        await user.click(genBtn)
+
+        rerender()
+
+        await waitFor(() =>
+          expect(addNotification).toHaveBeenCalledWith({
+            type: 'error',
+            text: 'Authentication Error',
+          })
+        )
       })
     })
   })
 
-  describe('When already has an orgUploadToken', () => {
-    beforeEach(async () => {
-      setup({ orgUploadToken: 'token' })
-      await screen.getByRole('button', { name: 'Regenerate' }).click()
-      screen.getByRole('button', { name: 'Save New Token' }).click()
-    })
-
+  describe('when already has an orgUploadToken', () => {
     it('calls the mutation', async () => {
-      expect(mutate).toHaveBeenCalled()
-    })
+      const { user, mutate } = setup({ orgUploadToken: 'token' })
+      render(<OrgUploadToken />, { wrapper })
 
-    it('adds a success notification', () => {
-      expect(addNotification).toHaveBeenCalledWith({
-        type: 'success',
-        text: 'Global repository upload token generated.',
+      const reGenBtn = await screen.findByRole('button', { name: 'Regenerate' })
+      await user.click(reGenBtn)
+
+      const saveBtn = await screen.findByRole('button', {
+        name: 'Save New Token',
       })
+      await user.click(saveBtn)
+
+      await waitFor(() => expect(mutate).toHaveBeenCalled())
     })
 
-    it('displays the new token -encoded-', () => {
-      expect(screen.getByText('CODECOV_TOKEN=xxxxxx')).toBeInTheDocument()
+    it('adds a success notification', async () => {
+      const { addNotification, user } = setup({ orgUploadToken: 'token' })
+      render(<OrgUploadToken />, { wrapper })
+
+      const reGenBtn = await screen.findByRole('button', { name: 'Regenerate' })
+      await user.click(reGenBtn)
+
+      const saveBtn = await screen.findByRole('button', {
+        name: 'Save New Token',
+      })
+      await user.click(saveBtn)
+
+      await waitFor(() =>
+        expect(addNotification).toHaveBeenCalledWith({
+          type: 'success',
+          text: 'Global repository upload token generated.',
+        })
+      )
+    })
+
+    it('displays the new token -encoded-', async () => {
+      const { user } = setup({ orgUploadToken: 'token' })
+      render(<OrgUploadToken />, { wrapper })
+
+      const reGenBtn = await screen.findByRole('button', { name: 'Regenerate' })
+      await user.click(reGenBtn)
+
+      const saveBtn = await screen.findByRole('button', {
+        name: 'Save New Token',
+      })
+      await user.click(saveBtn)
+
+      const token = await screen.findByText('CODECOV_TOKEN=xxxxxx')
+      expect(token).toBeInTheDocument()
     })
   })
 
-  describe('When click on cancel', () => {
-    beforeEach(async () => {
-      setup({ orgUploadToken: 'token' })
-      await screen.getByRole('button', { name: 'Regenerate' }).click()
-      screen.getByRole('button', { name: 'Cancel' }).click()
-    })
-
+  describe('when click on cancel', () => {
     it('does not call the mutation', async () => {
+      const { user, mutate } = setup({ orgUploadToken: 'token' })
+      render(<OrgUploadToken />, { wrapper })
+
+      const reGenBtn = await screen.findByRole('button', { name: 'Regenerate' })
+      await user.click(reGenBtn)
+
+      const cancelBtn = await screen.findByRole('button', { name: 'Cancel' })
+      await user.click(cancelBtn)
+
       expect(mutate).not.toHaveBeenCalled()
     })
   })
 
-  describe('Toggle token', () => {
-    beforeEach(async () => {
+  describe('toggle token', () => {
+    it('displays the new token -encoded-', async () => {
       setup({ orgUploadToken: 'token' })
+
+      render(<OrgUploadToken />, { wrapper })
+
+      const token = await screen.findByText('CODECOV_TOKEN=xxxxxx')
+      expect(token).toBeInTheDocument()
     })
 
-    it('displays the new token -encoded-', () => {
-      expect(screen.getByText('CODECOV_TOKEN=xxxxxx')).toBeInTheDocument()
-    })
+    it('toggle hide/show the token', async () => {
+      const { user } = setup({ orgUploadToken: 'token' })
+      render(<OrgUploadToken />, { wrapper })
 
-    it('toggle hide/show the token', () => {
-      const show = screen.getAllByText('Show')[1]
-      expect(show).toBeInTheDocument()
+      const show = await screen.findAllByText('Show')
+      expect(show[1]).toBeInTheDocument()
+      await user.click(show[1])
 
-      show.click()
-      expect(screen.getByText('CODECOV_TOKEN=token')).toBeInTheDocument()
+      const token1 = await screen.findByText('CODECOV_TOKEN=token')
+      expect(token1).toBeInTheDocument()
 
-      const hide = screen.getByText('Hide')
+      const hide = await screen.findByText('Hide')
       expect(hide).toBeInTheDocument()
+      await user.click(hide)
 
-      hide.click()
-      expect(screen.getByText('CODECOV_TOKEN=xxxxxx')).toBeInTheDocument()
+      const token2 = await screen.findByText('CODECOV_TOKEN=xxxxxx')
+      expect(token2).toBeInTheDocument()
     })
   })
 
-  describe('When user is not an admin and token is not available', () => {
+  describe('when user is not an admin and token is not available', () => {
     beforeEach(() => {
       setup({ isAdmin: false })
     })
 
-    it('Render disabled regenerate button', () => {
-      expect(screen.getByText('Generate')).toBeDisabled()
+    it('Render disabled regenerate button', async () => {
+      render(<OrgUploadToken />, { wrapper })
+
+      const genBtn = await screen.findByText('Generate')
+      expect(genBtn).toBeDisabled()
     })
 
-    it('Render information', () => {
-      expect(
-        screen.getByText('Only organization admins can regenerate this token.')
-      ).toBeInTheDocument()
+    it('renders information', async () => {
+      render(<OrgUploadToken />, { wrapper })
+
+      const text = await screen.findByText(
+        'Only organization admins can regenerate this token.'
+      )
+      expect(text).toBeInTheDocument()
     })
   })
 
-  describe('When user is not an admin and token is available', () => {
+  describe('when user is not an admin and token is available', () => {
     beforeEach(() => {
       setup({ orgUploadToken: 'token', isAdmin: false })
     })
 
-    it('Render disabled regenerate button', () => {
-      expect(screen.getByText('Regenerate')).toBeDisabled()
+    it('renders disabled regenerate button', async () => {
+      render(<OrgUploadToken />, { wrapper })
+
+      const reGen = await screen.findByText('Regenerate')
+      expect(reGen).toBeDisabled()
     })
 
-    it('Render information', () => {
-      expect(
-        screen.getByText('Only organization admins can regenerate this token.')
-      ).toBeInTheDocument()
+    it('renders information', async () => {
+      render(<OrgUploadToken />, { wrapper })
+
+      const text = await screen.findByText(
+        'Only organization admins can regenerate this token.'
+      )
+      expect(text).toBeInTheDocument()
     })
   })
 })

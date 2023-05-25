@@ -71,9 +71,11 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: false,
+      cacheTime: Infinity,
     },
   },
 })
+
 const server = setupServer()
 
 beforeAll(() => server.listen())
@@ -140,28 +142,36 @@ describe('MembersTable', () => {
       it('has User name column', async () => {
         render(<MembersTable />, { wrapper: wrapper() })
 
-        const userName = await screen.findByText('User name')
+        expect(await screen.findByText('User name')).toBeTruthy()
+
+        const userName = screen.getByText('User name')
         expect(userName).toBeInTheDocument()
       })
 
       it('has Type column', async () => {
         render(<MembersTable />, { wrapper: wrapper() })
 
-        const type = await screen.findByText('Type')
+        expect(await screen.findByText('Type')).toBeTruthy()
+
+        const type = screen.getByText('Type')
         expect(type).toBeInTheDocument()
       })
 
       it('has email column', async () => {
         render(<MembersTable />, { wrapper: wrapper() })
 
-        const email = await screen.findByText('email')
+        expect(await screen.findByText('email')).toBeTruthy()
+
+        const email = screen.getByText('email')
         expect(email).toBeInTheDocument()
       })
 
       it('has Activation status column', async () => {
         render(<MembersTable />, { wrapper: wrapper() })
 
-        const activationStatus = await screen.findByText('Activation status')
+        expect(await screen.findByText('Activation status')).toBeTruthy()
+
+        const activationStatus = screen.getByText('Activation status')
         expect(activationStatus).toBeInTheDocument()
       })
     })
@@ -186,7 +196,9 @@ describe('MembersTable', () => {
           it('renders with name', async () => {
             render(<MembersTable />, { wrapper: wrapper() })
 
-            const name = await screen.findByText('codecov-name')
+            expect(await screen.findByText('codecov-name')).toBeTruthy()
+
+            const name = screen.getByText('codecov-name')
             expect(name).toBeInTheDocument()
           })
         })
@@ -197,7 +209,9 @@ describe('MembersTable', () => {
           it('renders with the username', async () => {
             render(<MembersTable />, { wrapper: wrapper() })
 
-            const userName = await screen.findByText('codecov')
+            expect(await screen.findByText('codecov')).toBeTruthy()
+
+            const userName = screen.getByText('codecov')
             expect(userName).toBeInTheDocument()
           })
         })
@@ -222,7 +236,9 @@ describe('MembersTable', () => {
           it('renders admin', async () => {
             render(<MembersTable />, { wrapper: wrapper() })
 
-            const admin = await screen.findByText('Admin')
+            expect(await screen.findByText('Admin')).toBeTruthy()
+
+            const admin = screen.getByText('Admin')
             expect(admin).toBeInTheDocument()
           })
         })
@@ -233,7 +249,9 @@ describe('MembersTable', () => {
           it('renders Developer', async () => {
             render(<MembersTable />, { wrapper: wrapper() })
 
-            const developer = await screen.findByText('Developer')
+            expect(await screen.findByText('Developer')).toBeTruthy()
+
+            const developer = screen.getByText('Developer')
             expect(developer).toBeInTheDocument()
           })
         })
@@ -245,7 +263,9 @@ describe('MembersTable', () => {
         it('displays users email', async () => {
           render(<MembersTable />, { wrapper: wrapper() })
 
-          const email = await screen.findByText('user@codecov.io')
+          expect(await screen.findByText('user@codecov.io')).toBeTruthy()
+
+          const email = screen.getByText('user@codecov.io')
           expect(email).toBeInTheDocument()
         })
       })
@@ -261,7 +281,9 @@ describe('MembersTable', () => {
           it('displays disabled toggle', async () => {
             render(<MembersTable />, { wrapper: wrapper() })
 
-            const toggle = await screen.findByRole('button')
+            expect(await screen.findByRole('button')).toBeTruthy()
+
+            const toggle = screen.getByRole('button')
             expect(toggle).toBeDisabled()
           })
         })
@@ -276,7 +298,9 @@ describe('MembersTable', () => {
           it('renders an non-disabled toggle', async () => {
             render(<MembersTable />, { wrapper: wrapper() })
 
-            const toggle = await screen.findByRole('button')
+            expect(await screen.findByRole('button')).toBeTruthy()
+
+            const toggle = screen.getByRole('button')
             expect(toggle).not.toBeDisabled()
           })
         })
@@ -293,10 +317,19 @@ describe('MembersTable', () => {
           wrapper: wrapper(),
         })
 
-        const toggle = await screen.findByRole('button')
+        expect(await screen.findByRole('button')).toBeTruthy()
+
+        const toggle = screen.getByRole('button')
         await user.click(toggle)
 
-        expect(handleActivate).toBeCalledWith({ activated: false, ownerid: 1 })
+        expect(await screen.findByRole('button')).toBeTruthy()
+
+        await waitFor(() =>
+          expect(handleActivate).toBeCalledWith({
+            activated: false,
+            ownerid: 1,
+          })
+        )
       })
     })
 
@@ -311,10 +344,19 @@ describe('MembersTable', () => {
           wrapper: wrapper(),
         })
 
-        const toggle = await screen.findByRole('button')
+        expect(await screen.findByRole('button')).toBeTruthy()
+
+        const toggle = screen.getByRole('button')
         await user.click(toggle)
 
-        expect(handleActivate).toBeCalledWith({ activated: false, ownerid: 1 })
+        expect(await screen.findByRole('button')).toBeTruthy()
+
+        await waitFor(() =>
+          expect(handleActivate).toBeCalledWith({
+            activated: false,
+            ownerid: 1,
+          })
+        )
       })
     })
   })
@@ -326,7 +368,9 @@ describe('MembersTable', () => {
           const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          const userName = await screen.findByText('User name')
+          expect(await screen.findByText('User name')).toBeTruthy()
+
+          const userName = screen.getByText('User name')
           await user.click(userName)
 
           await waitFor(() =>
@@ -340,9 +384,12 @@ describe('MembersTable', () => {
           const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          let userName = await screen.findByText('User name')
+          expect(await screen.findByText('User name')).toBeTruthy()
+
+          let userName = screen.getByText('User name')
           await user.click(userName)
-          userName = await screen.findByText('User name')
+
+          userName = screen.getByText('User name')
           await user.click(userName)
 
           await waitFor(() =>
@@ -356,11 +403,15 @@ describe('MembersTable', () => {
           const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          let userName = await screen.findByText('User name')
+          expect(await screen.findByText('User name')).toBeTruthy()
+
+          let userName = screen.getByText('User name')
           await user.click(userName)
-          userName = await screen.findByText('User name')
+
+          userName = screen.getByText('User name')
           await user.click(userName)
-          userName = await screen.findByText('User name')
+
+          userName = screen.getByText('User name')
           await user.click(userName)
 
           await waitFor(() =>
@@ -376,7 +427,9 @@ describe('MembersTable', () => {
           const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          const type = await screen.findByText('Type')
+          expect(await screen.findByText('Type')).toBeTruthy()
+
+          const type = screen.getByText('Type')
           await user.click(type)
 
           await waitFor(() =>
@@ -390,9 +443,12 @@ describe('MembersTable', () => {
           const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          let type = await screen.findByText('Type')
+          expect(await screen.findByText('Type')).toBeTruthy()
+
+          let type = screen.getByText('Type')
           await user.click(type)
-          type = await screen.findByText('Type')
+
+          type = screen.getByText('Type')
           await user.click(type)
 
           await waitFor(() =>
@@ -406,11 +462,15 @@ describe('MembersTable', () => {
           const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          let type = await screen.findByText('Type')
+          expect(await screen.findByText('Type')).toBeTruthy()
+
+          let type = screen.getByText('Type')
           await user.click(type)
-          type = await screen.findByText('Type')
+
+          type = screen.getByText('Type')
           await user.click(type)
-          type = await screen.findByText('Type')
+
+          type = screen.getByText('Type')
           await user.click(type)
 
           await waitFor(() =>
@@ -426,7 +486,9 @@ describe('MembersTable', () => {
           const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          const email = await screen.findByText('email')
+          expect(await screen.findByText('email')).toBeTruthy()
+
+          const email = screen.getByText('email')
           await user.click(email)
 
           await waitFor(() =>
@@ -440,9 +502,12 @@ describe('MembersTable', () => {
           const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          let email = await screen.findByText('email')
+          expect(await screen.findByText('email')).toBeTruthy()
+
+          let email = screen.getByText('email')
           await user.click(email)
-          email = await screen.findByText('email')
+
+          email = screen.getByText('email')
           await user.click(email)
 
           await waitFor(() =>
@@ -456,11 +521,15 @@ describe('MembersTable', () => {
           const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          let email = await screen.findByText('email')
+          expect(await screen.findByText('email')).toBeTruthy()
+
+          let email = screen.getByText('email')
           await user.click(email)
-          email = await screen.findByText('email')
+
+          email = screen.getByText('email')
           await user.click(email)
-          email = await screen.findByText('email')
+
+          email = screen.getByText('email')
           await user.click(email)
 
           await waitFor(() =>
@@ -476,7 +545,9 @@ describe('MembersTable', () => {
           const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          const activationStatus = await screen.findByText('Activation status')
+          expect(await screen.findByText('Activation status')).toBeTruthy()
+
+          const activationStatus = screen.getByText('Activation status')
           await user.click(activationStatus)
 
           await waitFor(() =>
@@ -490,9 +561,12 @@ describe('MembersTable', () => {
           const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          let activationStatus = await screen.findByText('Activation status')
+          expect(await screen.findByText('Activation status')).toBeTruthy()
+
+          let activationStatus = screen.getByText('Activation status')
           await user.click(activationStatus)
-          activationStatus = await screen.findByText('Activation status')
+
+          activationStatus = screen.getByText('Activation status')
           await user.click(activationStatus)
 
           await waitFor(() =>
@@ -506,11 +580,15 @@ describe('MembersTable', () => {
           const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          let activationStatus = await screen.findByText('Activation status')
+          expect(await screen.findByText('Activation status')).toBeTruthy()
+
+          let activationStatus = screen.getByText('Activation status')
           await user.click(activationStatus)
-          activationStatus = await screen.findByText('Activation status')
+
+          activationStatus = screen.getByText('Activation status')
           await user.click(activationStatus)
-          activationStatus = await screen.findByText('Activation status')
+
+          activationStatus = screen.getByText('Activation status')
           await user.click(activationStatus)
 
           await waitFor(() =>
@@ -529,13 +607,17 @@ describe('MembersTable', () => {
     it('displays two users', async () => {
       render(<MembersTable />, { wrapper: wrapper() })
 
-      const user1 = await screen.findByText('User 1')
+      expect(await screen.findByText('User 1')).toBeTruthy()
+
+      const user1 = screen.getByText('User 1')
       expect(user1).toBeInTheDocument()
 
       expect(requestSearchParams.get('page')).toBe('1')
       mockAllIsIntersecting(true)
 
-      const user2 = await screen.findByText('user2-codecov')
+      expect(await screen.findByText('user2-codecov')).toBeTruthy()
+
+      const user2 = screen.getByText('user2-codecov')
       expect(user2).toBeInTheDocument()
     })
   })
@@ -559,8 +641,10 @@ describe('MembersTable', () => {
       it('uses default author', async () => {
         render(<MembersTable />, { wrapper: wrapper(['/gl/codecov']) })
 
-        const avatar = await screen.findByRole('img')
-        expect(avatar).toBeInTheDocument()
+        expect(await screen.findByRole('img')).toBeTruthy()
+
+        const avatar = screen.getByRole('img')
+        await waitFor(() => expect(avatar).toBeInTheDocument())
 
         await waitFor(() =>
           expect(avatar).toHaveAttribute('src', 'mocked-avatar-url')

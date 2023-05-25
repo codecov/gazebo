@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -75,7 +75,7 @@ describe('useSelfActivationMutation', () => {
       })
 
       it('updates query data', async () => {
-        const { result, waitFor } = renderHook(
+        const { result } = renderHook(
           () => useSelfActivationMutation({ queryClient, canChange: true }),
           { wrapper: wrapper() }
         )
@@ -130,7 +130,7 @@ describe('useSelfActivationMutation', () => {
       })
 
       it('updates query data', async () => {
-        const { result, waitFor } = renderHook(
+        const { result } = renderHook(
           () => useSelfActivationMutation({ queryClient, canChange: true }),
           { wrapper: wrapper() }
         )
@@ -185,7 +185,7 @@ describe('useSelfActivationMutation', () => {
       })
 
       it('does not change the query data', async () => {
-        const { result, waitFor } = renderHook(
+        const { result } = renderHook(
           () => useSelfActivationMutation({ queryClient, canChange: false }),
           { wrapper: wrapper() }
         )
@@ -237,7 +237,7 @@ describe('useSelfActivationMutation', () => {
     })
 
     it('reverts to old query data', async () => {
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () => useSelfActivationMutation({ queryClient, canChange: true }),
         { wrapper: wrapper() }
       )

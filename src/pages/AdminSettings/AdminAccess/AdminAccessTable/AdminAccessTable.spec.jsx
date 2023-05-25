@@ -154,6 +154,9 @@ describe('AdminAccessTable', () => {
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)
 
+      const spinner = screen.queryByTestId('spinner')
+      await waitFor(() => expect(spinner).not.toBeInTheDocument())
+
       const user2 = await screen.findByText('user2-codecov')
       expect(user2).toBeInTheDocument()
     })

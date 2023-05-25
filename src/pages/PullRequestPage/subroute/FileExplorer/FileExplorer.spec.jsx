@@ -213,12 +213,16 @@ describe('FileExplorer', () => {
           setup()
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          const dir = await screen.findByText('src')
+          await waitFor(() =>
+            expect(queryClient.isFetching()).toBeGreaterThan(0)
+          )
+          await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+          const dir = screen.getByText('src')
           expect(dir).toBeInTheDocument()
 
-          const links = await within(
-            await screen.findByRole('table')
-          ).findAllByRole('link')
+          const table = await screen.findByRole('table')
+          const links = await within(table).findAllByRole('link')
           expect(links[1]).toHaveAttribute(
             'href',
             '/gh/codecov/cool-repo/pull/123/tree/a/b/c/src'
@@ -231,7 +235,12 @@ describe('FileExplorer', () => {
           setup()
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          const file = await screen.findByText('file.js')
+          await waitFor(() =>
+            expect(queryClient.isFetching()).toBeGreaterThan(0)
+          )
+          await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+          const file = screen.getByText('file.js')
           expect(file).toBeInTheDocument()
 
           const links = await within(
@@ -273,12 +282,16 @@ describe('FileExplorer', () => {
             ]),
           })
 
-          const file = await screen.findByText('a/b/c/file.js')
+          await waitFor(() =>
+            expect(queryClient.isFetching()).toBeGreaterThan(0)
+          )
+          await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+          const file = screen.getByText('a/b/c/file.js')
           expect(file).toBeInTheDocument()
 
-          const links = await within(
-            await screen.findByRole('table')
-          ).findAllByRole('link')
+          const table = await screen.findByRole('table')
+          const links = await within(table).findAllByRole('link')
           expect(links[0]).toHaveAttribute(
             'href',
             '/gh/codecov/cool-repo/pull/123/blob/a/b/c/file.js'
@@ -535,7 +548,10 @@ describe('FileExplorer', () => {
       it('displays no items found message', async () => {
         render(<FileExplorer />, { wrapper: wrapper() })
 
-        const dir = await screen.findByText('src')
+        await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
+        await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+        const dir = screen.getByText('src')
         expect(dir).toBeInTheDocument()
 
         const search = await screen.findByRole('textbox', {

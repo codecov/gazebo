@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook } from '@testing-library/react'
 import Cookie from 'js-cookie'
 
 import { useIdentifyUser } from 'shared/featureFlags'
@@ -12,24 +12,23 @@ jest.mock('shared/featureFlags', () => ({
 describe('useTrackFeatureFlags', () => {
   const mockIdentifyUser = jest.fn()
 
-  function setup(user, impersonate) {
-    renderHook(() => useTrackFeatureFlags(user, impersonate))
-  }
-
   describe('normal use', () => {
     beforeEach(() => {
       useIdentifyUser.mockImplementation(mockIdentifyUser)
-      setup({
-        email: 'test@test.com',
-        user: { avatarUrl: 'doggo.picz', name: 'doggo', username: 'doggo' },
-        trackingMetadata: { ownerid: 'hello' },
-      })
     })
     afterEach(() => {
       jest.clearAllMocks()
     })
 
     it('Creates the expected user and key identified', () => {
+      renderHook(() =>
+        useTrackFeatureFlags({
+          email: 'test@test.com',
+          user: { avatarUrl: 'doggo.picz', name: 'doggo', username: 'doggo' },
+          trackingMetadata: { ownerid: 'hello' },
+        })
+      )
+
       expect(mockIdentifyUser).lastCalledWith({
         name: 'doggo',
         email: 'test@test.com',
@@ -61,17 +60,20 @@ describe('useTrackFeatureFlags', () => {
     beforeEach(() => {
       useIdentifyUser.mockImplementation(mockIdentifyUser)
       Cookie.set('staff_user', 'doggo')
-      setup({
-        email: 'test@test.com',
-        user: { avatarUrl: 'doggo.picz', name: 'doggo', username: 'doggo' },
-        trackingMetadata: { ownerid: 'hello', staff: true },
-      })
     })
     afterEach(() => {
       jest.clearAllMocks()
       Cookie.remove('staff_user')
     })
     it('Creates the expected user and key identified', () => {
+      renderHook(() =>
+        useTrackFeatureFlags({
+          email: 'test@test.com',
+          user: { avatarUrl: 'doggo.picz', name: 'doggo', username: 'doggo' },
+          trackingMetadata: { ownerid: 'hello', staff: true },
+        })
+      )
+
       expect(mockIdentifyUser).lastCalledWith({
         name: 'doggo',
         email: 'test@test.com',
@@ -103,11 +105,6 @@ describe('useTrackFeatureFlags', () => {
     beforeEach(() => {
       useIdentifyUser.mockImplementation(mockIdentifyUser)
       Cookie.set('staff_user', 'doggo')
-      setup({
-        email: 'test@test.com',
-        user: { avatarUrl: 'doggo.picz', name: 'doggo', username: 'doggo' },
-        trackingMetadata: { ownerid: 'hello', staff: true },
-      })
     })
     afterEach(() => {
       jest.clearAllMocks()
@@ -115,6 +112,14 @@ describe('useTrackFeatureFlags', () => {
     })
 
     it('Creates the expected user and key identified', () => {
+      renderHook(() =>
+        useTrackFeatureFlags({
+          email: 'test@test.com',
+          user: { avatarUrl: 'doggo.picz', name: 'doggo', username: 'doggo' },
+          trackingMetadata: { ownerid: 'hello', staff: true },
+        })
+      )
+
       expect(mockIdentifyUser).lastCalledWith({
         name: 'doggo',
         email: 'test@test.com',
@@ -146,17 +151,20 @@ describe('useTrackFeatureFlags', () => {
     beforeEach(() => {
       useIdentifyUser.mockImplementation(mockIdentifyUser)
       Cookie.set('staff_user', 'doggo')
-      setup({
-        email: 'test@test.com',
-        user: { avatarUrl: 'doggo.picz', name: 'doggo', username: 'doggo' },
-        trackingMetadata: { ownerid: 'hello', staff: true },
-      })
     })
     afterEach(() => {
       jest.clearAllMocks()
       Cookie.remove('staff_user')
     })
     it('Creates the expected user and key identified', () => {
+      renderHook(() =>
+        useTrackFeatureFlags({
+          email: 'test@test.com',
+          user: { avatarUrl: 'doggo.picz', name: 'doggo', username: 'doggo' },
+          trackingMetadata: { ownerid: 'hello', staff: true },
+        })
+      )
+
       expect(mockIdentifyUser).lastCalledWith({
         name: 'doggo',
         email: 'test@test.com',

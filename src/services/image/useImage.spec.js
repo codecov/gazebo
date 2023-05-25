@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 
 import { useImage } from './useImage'
 
@@ -8,7 +8,7 @@ afterEach(() => {
 
 describe('useImage', () => {
   it('starts loading an image', async () => {
-    const { result, waitFor } = renderHook(() => useImage({ src: 'image.com' }))
+    const { result } = renderHook(() => useImage({ src: 'image.com' }))
 
     await waitFor(() => expect(result.current.isLoading).toBeTruthy())
   })
@@ -29,7 +29,7 @@ describe('useImage', () => {
     })
 
     it('successfully loads an image', async () => {
-      const { result, waitFor } = renderHook(() =>
+      const { result } = renderHook(() =>
         useImage({ src: 'https://api.backend.dev/image.png' })
       )
 
@@ -58,7 +58,7 @@ describe('useImage', () => {
     })
 
     it('cannot successful load an image', async () => {
-      const { result, waitFor } = renderHook(() =>
+      const { result } = renderHook(() =>
         useImage({ src: 'https://api.backend.dev/image2.png' })
       )
 

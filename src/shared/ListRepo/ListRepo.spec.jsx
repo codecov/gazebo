@@ -206,8 +206,9 @@ describe('ListRepo', () => {
     })
   })
 
-  describe('renders sorting options fo repos', () => {
-    it('render sorting for all repos', () => {
+  describe('renders sorting options for repos', () => {
+    it('render sorting for all repos', async () => {
+      const { user } = setup()
       render(<ListRepo canRefetch />, {
         wrapper: wrapper(),
       })
@@ -217,13 +218,14 @@ describe('ListRepo', () => {
       })
       expect(sortBtn).toBeInTheDocument()
 
-      sortBtn.click()
+      await user.click(sortBtn)
 
       const options = screen.getAllByRole('option')
       expect(options.length).toBe(6)
     })
 
-    it('render sorting for active repos', () => {
+    it('render sorting for active repos', async () => {
+      const { user } = setup()
       render(<ListRepo canRefetch />, {
         wrapper: wrapper({
           repoDisplay: repoDisplayOptions.ACTIVE.text,
@@ -234,14 +236,14 @@ describe('ListRepo', () => {
         name: 'Sort Order',
       })
       expect(sortBtn).toBeInTheDocument()
-
-      sortBtn.click()
+      await user.click(sortBtn)
 
       const options = screen.getAllByRole('option')
       expect(options.length).toBe(6)
     })
 
-    it('render sorting for inactive repos', () => {
+    it('render sorting for inactive repos', async () => {
+      const { user } = setup()
       render(<ListRepo canRefetch />, {
         wrapper: wrapper({
           repoDisplay: repoDisplayOptions.INACTIVE.text,
@@ -252,8 +254,7 @@ describe('ListRepo', () => {
         name: 'Sort Order',
       })
       expect(sortBtn).toBeInTheDocument()
-
-      sortBtn.click()
+      await user.click(sortBtn)
 
       const options = screen.getAllByRole('option')
       expect(options.length).toBe(2)

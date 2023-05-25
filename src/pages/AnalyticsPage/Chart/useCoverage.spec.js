@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -99,7 +99,7 @@ describe('useCoverage', () => {
     it('returns the data formatted correctly', async () => {
       setup()
 
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () =>
           useCoverage({
             params: {
@@ -125,7 +125,7 @@ describe('useCoverage', () => {
       it('resets value to zero', async () => {
         setup({ nullFirstVal: true })
 
-        const { result, waitFor } = renderHook(
+        const { result } = renderHook(
           () =>
             useCoverage({
               params: {
@@ -149,7 +149,7 @@ describe('useCoverage', () => {
       it('returns the right format for days', async () => {
         setup()
 
-        const { result, waitFor } = renderHook(
+        const { result } = renderHook(
           () =>
             useCoverage({
               params: {
@@ -163,6 +163,7 @@ describe('useCoverage', () => {
         await waitFor(() => result.current.isLoading)
         await waitFor(() => !result.current.isLoading)
 
+        await waitFor(() => !!result.current.data.coverageAxisLabel)
         const coverageAxisLabel = result.current.data.coverageAxisLabel
 
         const message = coverageAxisLabel(new Date('2022/01/01'))
@@ -172,7 +173,7 @@ describe('useCoverage', () => {
       it('returns the right format for weeks', async () => {
         setup()
 
-        const { result, waitFor } = renderHook(
+        const { result } = renderHook(
           () =>
             useCoverage({
               params: {
@@ -186,6 +187,7 @@ describe('useCoverage', () => {
         await waitFor(() => result.current.isLoading)
         await waitFor(() => !result.current.isLoading)
 
+        await waitFor(() => !!result.current.data.coverageAxisLabel)
         const coverageAxisLabel = result.current.data.coverageAxisLabel
 
         const message = coverageAxisLabel(new Date('2022/01/01'))
@@ -195,7 +197,7 @@ describe('useCoverage', () => {
       it('returns the right format for default', async () => {
         setup()
 
-        const { result, waitFor } = renderHook(
+        const { result } = renderHook(
           () =>
             useCoverage({
               params: {
@@ -209,6 +211,7 @@ describe('useCoverage', () => {
         await waitFor(() => result.current.isLoading)
         await waitFor(() => !result.current.isLoading)
 
+        await waitFor(() => !!result.current.data.coverageAxisLabel)
         const coverageAxisLabel = result.current.data.coverageAxisLabel
 
         const message = coverageAxisLabel(new Date('2022/01/01'))
@@ -222,7 +225,7 @@ describe('useCoverage', () => {
 
         let selectMock = jest.fn()
 
-        const { waitFor } = renderHook(
+        renderHook(
           () =>
             useCoverage({
               params: {

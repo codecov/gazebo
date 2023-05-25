@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -79,7 +79,7 @@ describe('useMyOrganizations', () => {
           },
         })
 
-        const { result, waitFor } = renderHook(() => useMyOrganizations(), {
+        const { result } = renderHook(() => useMyOrganizations(), {
           wrapper: wrapper(),
         })
 
@@ -126,7 +126,7 @@ describe('useMyOrganizations', () => {
             },
           },
         })
-        const { result, waitFor } = renderHook(() => useMyOrganizations(), {
+        const { result } = renderHook(() => useMyOrganizations(), {
           wrapper: wrapper(),
         })
 
@@ -155,7 +155,7 @@ describe('useMyOrganizations', () => {
     describe('the user is not authenticated', () => {
       it('throws error', async () => {
         const { thrownMock } = setup({ MyOrganizationsData: { me: null } })
-        const { result, waitFor } = renderHook(() => useMyOrganizations(), {
+        const { result } = renderHook(() => useMyOrganizations(), {
           wrapper: wrapper(),
         })
 
@@ -174,7 +174,7 @@ describe('useMyOrganizations', () => {
     describe('there is was an api error', () => {
       it('returns the user', async () => {
         const { thrownMock } = setup({ apiError: true })
-        const { result, waitFor } = renderHook(() => useMyOrganizations(), {
+        const { result } = renderHook(() => useMyOrganizations(), {
           wrapper: wrapper(),
         })
 
@@ -193,12 +193,13 @@ describe('useMyOrganizations', () => {
   })
 
   describe('when there is no provider', () => {
-    it(`Doesn't run hook at all`, async () => {
+    it(`does not run hook at all`, async () => {
       setup({ MyOrganizationsData: { me: null } })
       const { result } = renderHook(() => useMyOrganizations(), {
         wrapper: wrapper(['']),
       })
-      expect(result.current).toEqual(undefined)
+
+      await waitFor(() => expect(result.current).toBeNull())
     })
   })
 
@@ -224,7 +225,7 @@ describe('useMyOrganizations', () => {
         },
       })
 
-      const { result, waitFor } = renderHook(() => useMyOrganizations(), {
+      const { result } = renderHook(() => useMyOrganizations(), {
         wrapper: wrapper(),
       })
 
@@ -278,7 +279,7 @@ describe('useMyOrganizations', () => {
         },
       })
 
-      const { result, waitFor } = renderHook(() => useMyOrganizations(), {
+      const { result } = renderHook(() => useMyOrganizations(), {
         wrapper: wrapper(),
       })
 

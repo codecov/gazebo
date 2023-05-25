@@ -1,5 +1,4 @@
-import { waitFor } from '@testing-library/react'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { useParams } from 'react-router-dom'
 import { act } from 'react-test-renderer'
 
@@ -55,7 +54,6 @@ let mockPull = {
 }
 
 describe('useRepoContentsTable', () => {
-  let hookData
   function setup(pullData = mockPull) {
     useParams.mockReturnValue({
       owner: 'Rabee-AbuBaker',
@@ -64,8 +62,6 @@ describe('useRepoContentsTable', () => {
       pull: 14,
     })
     usePull.mockReturnValue(pullData)
-
-    hookData = renderHook(() => useIndirectChangedFilesTable({}))
   }
 
   describe('when handleSort is triggered', () => {
@@ -74,8 +70,10 @@ describe('useRepoContentsTable', () => {
     })
 
     it('calls useRepoContents with correct filters value', async () => {
+      const { result } = renderHook(() => useIndirectChangedFilesTable({}))
+
       act(() => {
-        hookData.result.current.handleSort([{ desc: false, id: 'name' }])
+        result.current.handleSort([{ desc: false, id: 'name' }])
       })
 
       await waitFor(() =>
@@ -96,7 +94,7 @@ describe('useRepoContentsTable', () => {
       )
 
       act(() => {
-        hookData.result.current.handleSort([{ desc: true, id: 'coverage' }])
+        result.current.handleSort([{ desc: true, id: 'coverage' }])
       })
 
       await waitFor(() =>
@@ -124,7 +122,9 @@ describe('useRepoContentsTable', () => {
     })
 
     it('returns data', async () => {
-      expect(hookData.result.current.data).toEqual({
+      const { result } = renderHook(() => useIndirectChangedFilesTable({}))
+
+      expect(result.current.data).toEqual({
         headState: 'PROCESSED',
         impactedFiles: [
           {
@@ -169,7 +169,9 @@ describe('useRepoContentsTable', () => {
     })
 
     it('returns data', async () => {
-      expect(hookData.result.current.data).toEqual({
+      const { result } = renderHook(() => useIndirectChangedFilesTable({}))
+
+      expect(result.current.data).toEqual({
         headState: 'PROCESSED',
         impactedFiles: [
           {

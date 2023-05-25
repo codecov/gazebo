@@ -202,12 +202,17 @@ describe('CommitDetailFileExplorer', () => {
           setup()
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
-          const dir = await screen.findByText('src')
+          await waitFor(() =>
+            expect(queryClient.isFetching()).toBeGreaterThan(0)
+          )
+          await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+          const dir = screen.getByText('src')
           expect(dir).toBeInTheDocument()
 
-          const links = await within(
-            await screen.findByRole('table')
-          ).findAllByRole('link')
+          const table = await screen.findByRole('table')
+          const links = await within(table).findAllByRole('link')
+
           expect(links[1]).toHaveAttribute(
             'href',
             '/gh/codecov/cool-repo/commit/sha256/tree/a/b/c/src'
@@ -220,7 +225,12 @@ describe('CommitDetailFileExplorer', () => {
           setup()
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
-          const file = await screen.findByText('file.js')
+          await waitFor(() =>
+            expect(queryClient.isFetching()).toBeGreaterThan(0)
+          )
+          await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+          const file = screen.getByText('file.js')
           expect(file).toBeInTheDocument()
 
           const links = await within(
@@ -262,7 +272,12 @@ describe('CommitDetailFileExplorer', () => {
             ]),
           })
 
-          const file = await screen.findByText('a/b/c/file.js')
+          await waitFor(() =>
+            expect(queryClient.isFetching()).toBeGreaterThan(0)
+          )
+          await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+          const file = screen.getByText('a/b/c/file.js')
           expect(file).toBeInTheDocument()
 
           const links = await within(
@@ -315,6 +330,7 @@ describe('CommitDetailFileExplorer', () => {
 
           let files = await screen.findByText('Files')
           await user.click(files)
+
           files = await screen.findByText('Files')
           await user.click(files)
 
@@ -351,6 +367,7 @@ describe('CommitDetailFileExplorer', () => {
 
           let trackedLines = await screen.findByText('Tracked lines')
           await user.click(trackedLines)
+
           trackedLines = await screen.findByText('Tracked lines')
           await user.click(trackedLines)
 
@@ -370,7 +387,6 @@ describe('CommitDetailFileExplorer', () => {
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           const covered = await screen.findByText('Covered')
-
           await user.click(covered)
 
           await waitFor(() => {
@@ -388,6 +404,7 @@ describe('CommitDetailFileExplorer', () => {
 
           let covered = await screen.findByText('Covered')
           await user.click(covered)
+
           covered = await screen.findByText('Covered')
           await user.click(covered)
 
@@ -407,7 +424,6 @@ describe('CommitDetailFileExplorer', () => {
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           const partial = await screen.findByText('Partial')
-
           await user.click(partial)
 
           await waitFor(() => {
@@ -425,6 +441,7 @@ describe('CommitDetailFileExplorer', () => {
 
           let partial = await screen.findByText('Partial')
           await user.click(partial)
+
           partial = await screen.findByText('Partial')
           await user.click(partial)
 
@@ -444,7 +461,6 @@ describe('CommitDetailFileExplorer', () => {
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           const missed = await screen.findByText('Missed')
-
           await user.click(missed)
 
           await waitFor(() => {
@@ -462,6 +478,7 @@ describe('CommitDetailFileExplorer', () => {
 
           let missed = await screen.findByText('Missed')
           await user.click(missed)
+
           missed = await screen.findByText('Missed')
           await user.click(missed)
 
@@ -501,7 +518,10 @@ describe('CommitDetailFileExplorer', () => {
         const { user } = setup()
         render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
-        const dir = await screen.findByText('src')
+        await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
+        await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+        const dir = screen.getByText('src')
         expect(dir).toBeInTheDocument()
 
         const search = await screen.findByRole('textbox', {

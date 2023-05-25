@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -65,7 +65,7 @@ describe('useRegenerateRepositoryToken', () => {
     describe('When mutation is a success', () => {
       it('returns isSuccess true', async () => {
         setup()
-        const { result, waitFor } = renderHook(
+        const { result } = renderHook(
           () => useRegenerateRepositoryToken({ tokenType: 'profiling' }),
           {
             wrapper,
@@ -82,7 +82,7 @@ describe('useRegenerateRepositoryToken', () => {
   describe('when mutations has an error type', () => {
     it('fires toast message', async () => {
       const { addNotification } = setup()
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () => useRegenerateRepositoryToken({ tokenType: 'profiling' }),
         {
           wrapper,
@@ -108,7 +108,7 @@ describe('useRegenerateRepositoryToken', () => {
 
     it('adds an error notification', async () => {
       const { addNotification } = setup({ triggerError: true })
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () => useRegenerateRepositoryToken({ tokenType: 'profiling' }),
         {
           wrapper,

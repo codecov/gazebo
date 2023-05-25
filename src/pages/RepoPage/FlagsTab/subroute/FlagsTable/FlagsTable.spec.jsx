@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
@@ -147,53 +147,69 @@ describe('RepoContentsTable', () => {
     it('renders table headers', async () => {
       render(<FlagsTable />, { wrapper: wrapper() })
 
-      const flags = await screen.findByText('Flags')
+      await expect(screen.findByTestId('spinner')).resolves.toBeInTheDocument()
+      await waitFor(() =>
+        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      )
+
+      const flags = screen.getByText('Flags')
       expect(flags).toBeInTheDocument()
 
-      const coverage = await screen.findByText('Coverage %')
+      const coverage = screen.getByText('Coverage %')
       expect(coverage).toBeInTheDocument()
 
-      const trend = await screen.findByText('Trend')
+      const trend = screen.getByText('Trend')
       expect(trend).toBeInTheDocument()
     })
 
     it('renders repo flags', async () => {
       render(<FlagsTable />, { wrapper: wrapper() })
 
-      const flag1 = await screen.findByText('flag1')
+      await expect(screen.findByTestId('spinner')).resolves.toBeInTheDocument()
+      await waitFor(() =>
+        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      )
+
+      const flag1 = screen.getByText('flag1')
       expect(flag1).toBeInTheDocument()
 
-      const flag2 = await screen.findByText('flag2')
+      const flag2 = screen.getByText('flag2')
       expect(flag2).toBeInTheDocument()
     })
 
     it('renders flags coverage', async () => {
       render(<FlagsTable />, { wrapper: wrapper() })
 
-      const ninetyThreePercent = await screen.findByText(/93.26%/)
+      await expect(screen.findByTestId('spinner')).resolves.toBeInTheDocument()
+      await waitFor(() =>
+        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      )
+
+      const ninetyThreePercent = screen.getByText(/93.26%/)
       expect(ninetyThreePercent).toBeInTheDocument()
 
-      const ninetyOnePercent = await screen.findByText(/91.74%/)
+      const ninetyOnePercent = screen.getByText(/91.74%/)
       expect(ninetyOnePercent).toBeInTheDocument()
     })
 
     it('renders flags sparkline with change', async () => {
       render(<FlagsTable />, { wrapper: wrapper() })
 
-      const flag1SparkLine = await screen.findByText(
-        /Flag flag1 trend sparkline/
+      await expect(screen.findByTestId('spinner')).resolves.toBeInTheDocument()
+      await waitFor(() =>
+        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
       )
+
+      const flag1SparkLine = screen.getByText(/Flag flag1 trend sparkline/)
       expect(flag1SparkLine).toBeInTheDocument()
 
-      const minusOne = await screen.findByText(/-1.56/)
+      const minusOne = screen.getByText(/-1.56/)
       expect(minusOne).toBeInTheDocument()
 
-      const flag2SparkLine = await screen.findByText(
-        /Flag flag2 trend sparkline/
-      )
+      const flag2SparkLine = screen.getByText(/Flag flag2 trend sparkline/)
       expect(flag2SparkLine).toBeInTheDocument()
 
-      const noData = await screen.findByText('No Data')
+      const noData = screen.getByText('No Data')
       expect(noData).toBeInTheDocument()
     })
   })
@@ -202,17 +218,26 @@ describe('RepoContentsTable', () => {
     it('calls functions to open modal', async () => {
       const { user } = setup()
       render(<FlagsTable />, { wrapper: wrapper() })
-      const trashIconButtons = await screen.findAllByRole('button', {
+
+      await expect(screen.findByTestId('spinner')).resolves.toBeInTheDocument()
+      await waitFor(() =>
+        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      )
+
+      const trashIconButtons = screen.getAllByRole('button', {
         name: /trash/,
       })
       expect(trashIconButtons).toHaveLength(2)
 
-      await user.click(trashIconButtons[0])
+      const [firstIcon] = trashIconButtons
+      await act(async () => {
+        await user.click(firstIcon)
+      })
 
-      const deleteFlagModalText = await screen.findByText('Delete Flag')
+      const deleteFlagModalText = screen.getByText('Delete Flag')
       expect(deleteFlagModalText).toBeInTheDocument()
 
-      const cancelButton = await screen.findByRole('button', {
+      const cancelButton = screen.getByRole('button', {
         name: /Cancel/,
       })
       await user.click(cancelButton)
@@ -229,7 +254,14 @@ describe('RepoContentsTable', () => {
       it('renders expected empty state message', async () => {
         render(<FlagsTable />, { wrapper: wrapper() })
 
-        const errorMessage = await screen.findByText(
+        await expect(
+          screen.findByTestId('spinner')
+        ).resolves.toBeInTheDocument()
+        await waitFor(() =>
+          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+        )
+
+        const errorMessage = screen.getByText(
           /There was a problem getting flags data/
         )
         expect(errorMessage).toBeInTheDocument()
@@ -246,7 +278,14 @@ describe('RepoContentsTable', () => {
           wrapper: wrapper('/gh/codecov/gazebo/flags?search=blah'),
         })
 
-        const noResultsFound = await screen.findByText(/No results found/)
+        await expect(
+          screen.findByTestId('spinner')
+        ).resolves.toBeInTheDocument()
+        await waitFor(() =>
+          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+        )
+
+        const noResultsFound = screen.getByText(/No results found/)
         expect(noResultsFound).toBeInTheDocument()
       })
     })
@@ -257,7 +296,12 @@ describe('RepoContentsTable', () => {
       setup()
       render(<FlagsTable />, { wrapper: wrapper() })
 
-      const loadMore = await screen.findByText('Load More')
+      await expect(screen.findByTestId('spinner')).resolves.toBeInTheDocument()
+      await waitFor(() =>
+        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      )
+
+      const loadMore = screen.getByText('Load More')
       expect(loadMore).toBeInTheDocument()
     })
 
@@ -265,7 +309,12 @@ describe('RepoContentsTable', () => {
       const { fetchNextPage, user } = setup()
       render(<FlagsTable />, { wrapper: wrapper() })
 
-      const loadMore = await screen.findByText('Load More')
+      await expect(screen.findByTestId('spinner')).resolves.toBeInTheDocument()
+      await waitFor(() =>
+        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      )
+
+      const loadMore = screen.getByText('Load More')
 
       await user.click(loadMore)
 
@@ -278,7 +327,12 @@ describe('RepoContentsTable', () => {
       const { handleSort, user } = setup()
       render(<FlagsTable />, { wrapper: wrapper() })
 
-      const flags = await screen.findByText('Flags')
+      await expect(screen.findByTestId('spinner')).resolves.toBeInTheDocument()
+      await waitFor(() =>
+        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      )
+
+      const flags = screen.getByText('Flags')
 
       await user.click(flags)
       await waitFor(() => expect(handleSort).toHaveBeenLastCalledWith('DESC'))

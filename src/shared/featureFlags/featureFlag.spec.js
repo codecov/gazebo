@@ -1,6 +1,5 @@
 /* eslint-disable no-restricted-imports */
-import { render, screen } from '@testing-library/react'
-import { renderHook } from '@testing-library/react-hooks'
+import { render, renderHook, screen, waitFor } from '@testing-library/react'
 import {
   useLDClient,
   useFlags as useLDFlags,
@@ -50,37 +49,42 @@ describe('withFeatureFlagProvider', () => {
 })
 
 describe('useFlags', () => {
-  let hookData
   afterAll(() => (config.LAUNCHDARKLY = undefined))
-  function setup(fallback, ldkey) {
+  function setup(ldkey) {
     config.LAUNCHDARKLY = ldkey
     useLDFlags.mockImplementation(() => ({ foo: 'fiz' }))
-
-    hookData = renderHook(() => useFlags(fallback))
   }
 
   describe('env has REACT_APP_LAUNCHDARKLY', () => {
     afterEach(() => jest.clearAllMocks())
     beforeEach(() => {
-      setup({ foo: 'bar' }, 'key')
+      setup('key')
     })
     it('returns a launch darkly flag', () => {
-      expect(hookData.result.current).toStrictEqual({ foo: 'fiz' })
+      const { result } = renderHook(() => useFlags({ foo: 'bar' }))
+      expect(result.current).toStrictEqual({ foo: 'fiz' })
     })
   })
 
   describe('env does not have REACT_APP_LAUNCHDARKLY', () => {
     afterEach(() => jest.clearAllMocks())
-    it('Return fallback value', () => {
-      setup({ foo: 'bar' })
-      expect(hookData.result.current).toStrictEqual({ foo: 'bar' })
-    })
-    it('Throws an error if no fallback is provided', () => {
-      const spy = jest.spyOn(console, 'error').mockImplementation()
-      setup()
+    it('Return fallback value', async () => {
+      setup(undefined)
+      const { result } = renderHook(() => useFlags({ foo: 'bar' }))
 
-      expect(spy).toHaveBeenLastCalledWith(
-        'Warning! Self hosted build is missing a default feature flag value.'
+      await waitFor(() => expect(result.current).toStrictEqual({ foo: 'bar' }))
+    })
+
+    it('Throws an error if no fallback is provided', async () => {
+      const spy = jest.spyOn(console, 'error').mockImplementation()
+      setup(undefined)
+
+      renderHook(() => useFlags())
+
+      await waitFor(() =>
+        expect(spy).toHaveBeenLastCalledWith(
+          'Warning! Self hosted build is missing a default feature flag value.'
+        )
       )
     })
   })
@@ -89,20 +93,23 @@ describe('useFlags', () => {
 describe('useIdentifyUser', () => {
   const mockIdentify = jest.fn()
   afterAll(() => (config.LAUNCHDARKLY = undefined))
-  function setup(user, ldkey) {
+  function setup(ldkey) {
     config.LAUNCHDARKLY = ldkey
 
     useLDClient.mockImplementation(() => ({
       identify: mockIdentify,
     }))
-
-    renderHook(() => useIdentifyUser(user))
   }
 
   describe('env has REACT_APP_LAUNCHDARKLY', () => {
     afterEach(() => jest.clearAllMocks())
     it('emits a new user to launch darkly', () => {
-      setup({ name: 'doggo', key: 'hello', avatar: 'doggo.picz' }, 'borkbork')
+      setup('borkbork')
+
+      renderHook(() =>
+        useIdentifyUser({ name: 'doggo', key: 'hello', avatar: 'doggo.picz' })
+      )
+
       expect(mockIdentify).lastCalledWith({
         name: 'doggo',
         key: 'hello',
@@ -118,8 +125,9 @@ describe('useIdentifyUser', () => {
 
   describe('env does not have REACT_APP_LAUNCHDARKLY', () => {
     afterEach(() => jest.clearAllMocks())
-    beforeEach(() => setup({ key: 'abc' }))
     it('never phones home', () => {
+      renderHook(() => useIdentifyUser({ key: 'abc' }))
+
       expect(mockIdentify).toBeCalledTimes(0)
     })
   })

@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook } from '@testing-library/react'
 import Cookie from 'js-cookie'
 
 import { useUTM } from './utm'
@@ -10,7 +10,6 @@ describe('useUTM', () => {
     window.location = {
       search,
     }
-    renderHook(() => useUTM())
   }
 
   beforeEach(() => {
@@ -27,6 +26,9 @@ describe('useUTM', () => {
     const search =
       '?utm_medium=social%20media&utm_source=twitter&utm_campaign=organic_social&utm_department=marketing'
     setup(search)
+
+    renderHook(() => useUTM())
+
     const utmCookie = Cookie.get('utmParams')
     expect(utmCookie).toBeDefined()
     expect(utmCookie).toBe(
@@ -38,6 +40,9 @@ describe('useUTM', () => {
     const search =
       '?ashton=barbarian&laudna=warlock&FCG=cleric&chetney=rogue&orym=fighter&fearne=druid&dorian=bard&imogen=sorcerer'
     setup(search)
+
+    renderHook(() => useUTM())
+
     const utmCookie = Cookie.get('utmParams')
     expect(utmCookie).toBeUndefined()
   })

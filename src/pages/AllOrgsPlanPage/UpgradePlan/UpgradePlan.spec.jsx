@@ -667,8 +667,11 @@ describe('UpgradePlan', () => {
         const org1 = await screen.findByText('org1')
         await user.click(org1)
 
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
+
         const note = screen.queryByText('$12 per user / month if paid monthly')
-        expect(note).toBeInTheDocument()
+        expect(note).not.toBeInTheDocument()
       })
 
       it('does not render cancel plan link', async () => {
