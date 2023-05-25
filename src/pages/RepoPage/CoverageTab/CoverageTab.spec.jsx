@@ -178,7 +178,6 @@ describe('Coverage Tab', () => {
   describe('sunburst flag enabled', () => {
     beforeEach(() => {
       useFlags.mockReturnValue({ coverageSunburstChart: true })
-      jest.setTimeout(10000)
       setup()
     })
     afterEach(() => {
@@ -206,13 +205,12 @@ describe('Coverage Tab', () => {
 
       // eslint-disable-next-line testing-library/no-node-access
       expect(toggleContents.childElementCount).toBe(2)
-    })
+    }, 10000)
   })
 
   describe('sunburst flag disabled', () => {
     beforeEach(() => {
       useFlags.mockReturnValue({ coverageSunburstChart: false })
-      jest.setTimeout(10000)
       setup()
     })
     afterEach(() => {
@@ -241,6 +239,6 @@ describe('Coverage Tab', () => {
 
       // eslint-disable-next-line testing-library/no-node-access
       expect(toggleContents.childElementCount).toBe(1)
-    })
+    }, 10000)
   })
 })
