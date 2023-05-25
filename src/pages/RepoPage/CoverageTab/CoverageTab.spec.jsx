@@ -178,10 +178,12 @@ describe('Coverage Tab', () => {
   describe('sunburst flag enabled', () => {
     beforeEach(() => {
       useFlags.mockReturnValue({ coverageSunburstChart: true })
-
+      jest.setTimeout(10000)
       setup()
     })
-    afterEach(() => jest.resetAllMocks)
+    afterEach(() => {
+      jest.resetAllMocks()
+    })
 
     it('renders the sunburst chart', async () => {
       render(
@@ -210,7 +212,7 @@ describe('Coverage Tab', () => {
   describe('sunburst flag disabled', () => {
     beforeEach(() => {
       useFlags.mockReturnValue({ coverageSunburstChart: false })
-
+      jest.setTimeout(10000)
       setup()
     })
     afterEach(() => {
@@ -218,7 +220,6 @@ describe('Coverage Tab', () => {
     })
 
     it('renders the sunburst chart', async () => {
-      jest.setTimeout(10000)
       render(
         <Route path="/:provider/:owner/:repo" exact={true}>
           <CoverageTab />
