@@ -175,11 +175,12 @@ describe('BaseLayout', () => {
           wrapper: wrapper(),
         })
 
+        expect(await screen.findByText('hello')).toBeTruthy()
+        const hello = screen.getByText('hello')
+        expect(hello).toBeInTheDocument()
+
         const tos = screen.queryByText('Welcome to Codecov')
         expect(tos).not.toBeInTheDocument()
-
-        const hello = await screen.findByText('hello')
-        expect(hello).toBeInTheDocument()
       })
     })
 
@@ -193,11 +194,12 @@ describe('BaseLayout', () => {
           wrapper: wrapper(),
         })
 
+        expect(await screen.findByText('hello')).toBeTruthy()
+        const hello = screen.getByText('hello')
+        expect(hello).toBeInTheDocument()
+
         const tos = screen.queryByText('Welcome to Codecov')
         expect(tos).not.toBeInTheDocument()
-
-        const hello = await screen.findByText('hello')
-        expect(hello).toBeInTheDocument()
       })
     })
 
@@ -211,7 +213,8 @@ describe('BaseLayout', () => {
           wrapper: wrapper(),
         })
 
-        const tos = await screen.findByText(expectedMatcher)
+        expect(await screen.findByText(expectedMatcher)).toBeTruthy()
+        const tos = screen.getByText(expectedMatcher)
         expect(tos).toBeInTheDocument()
       })
     })
@@ -226,11 +229,12 @@ describe('BaseLayout', () => {
           wrapper: wrapper(),
         })
 
+        expect(await screen.findByText('hello')).toBeTruthy()
+        const hello = screen.getByText('hello')
+        expect(hello).toBeInTheDocument()
+
         const tos = screen.queryByText('Welcome to Codecov')
         expect(tos).not.toBeInTheDocument()
-
-        const hello = await screen.findByText('hello')
-        expect(hello).toBeInTheDocument()
       })
     })
   })
