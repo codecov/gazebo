@@ -2,9 +2,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import { useFlags } from 'shared/featureFlags'
 
 import CoverageTab from './CoverageTab'
 
@@ -14,9 +13,11 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: false,
+      suspense: true,
     },
   },
 })
+
 const server = setupServer()
 
 const wrapper =
@@ -24,7 +25,11 @@ const wrapper =
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Route path="/:provider/:owner/:repo" exact={true}>
+            <Suspense fallback={null}>{children}</Suspense>
+          </Route>
+        </MemoryRouter>
       </QueryClientProvider>
     )
 
@@ -35,6 +40,7 @@ const mockRepo = {
     },
   },
 }
+
 const repoConfigMock = {
   owner: {
     repository: {
@@ -44,10 +50,13 @@ const repoConfigMock = {
     },
   },
 }
+
 const treeMock = { name: 'repoName', children: [] }
+
 const overviewMock = {
   owner: { repository: { private: false, defaultBranch: 'main' } },
 }
+
 const branchesMock = {
   owner: {
     repository: {
@@ -86,6 +95,7 @@ const branchesMock = {
     },
   },
 }
+
 const branchMock = {
   branch: {
     name: 'main',
@@ -94,6 +104,7 @@ const branchMock = {
     },
   },
 }
+
 const branchesContentsMock = {
   owner: {
     username: 'critical-role',
@@ -176,19 +187,16 @@ describe('Coverage Tab', () => {
   }
 
   describe('sunburst flag enabled', () => {
-    beforeEach(() => {
-      useFlags.mockReturnValue({ coverageSunburstChart: true })
-      setup()
-    })
     afterEach(() => {
       jest.resetAllMocks()
     })
 
     it('renders the sunburst chart', async () => {
+      setup()
+
       render(
-        <Route path="/:provider/:owner/:repo" exact={true}>
-          <CoverageTab />
-        </Route>,
+        <CoverageTab />,
+
         { wrapper: wrapper(['/gh/test-org/test-repo']) }
       )
 
@@ -205,40 +213,6 @@ describe('Coverage Tab', () => {
 
       // eslint-disable-next-line testing-library/no-node-access
       expect(toggleContents.childElementCount).toBe(2)
-    }, 10000)
-  })
-
-  describe('sunburst flag disabled', () => {
-    beforeEach(() => {
-      useFlags.mockReturnValue({ coverageSunburstChart: false })
-      setup()
-    })
-    afterEach(() => {
-      jest.resetAllMocks()
-    })
-
-    it('renders the sunburst chart', async () => {
-      render(
-        <Route path="/:provider/:owner/:repo" exact={true}>
-          <CoverageTab />
-        </Route>,
-        { wrapper: wrapper(['/gh/test-org/test-repo']) }
-      )
-
-      expect(await screen.findAllByTestId('spinner')).toBeTruthy()
-      await waitFor(() =>
-        expect(screen.queryAllByTestId('spinner')).toStrictEqual([])
-      )
-
-      expect(await screen.findByText(/Hide Chart/)).toBeTruthy()
-      const hideChart = screen.getByText(/Hide Chart/)
-
-      expect(hideChart).toBeInTheDocument()
-
-      const toggleContents = screen.getByTestId('toggle-element-contents')
-
-      // eslint-disable-next-line testing-library/no-node-access
-      expect(toggleContents.childElementCount).toBe(1)
     }, 10000)
   })
 })

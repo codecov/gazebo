@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom'
 
 import { useBranches } from 'services/branches'
 import { useRepoOverview } from 'services/repo'
-import { useFlags } from 'shared/featureFlags'
 import CoverageAreaChart from 'ui/CoverageAreaChart'
 
 import { useBranchSelector, useRepoCoverageTimeseries } from '../../hooks'
@@ -51,7 +50,6 @@ const useCoverageChart = () => {
 function CoverageChart() {
   const { repo } = useParams()
   const { data, isPreviousData, isSuccess, isError } = useCoverageChart()
-  const { coverageSunburstChart } = useFlags({ coverageSunburstChart: false })
 
   const desc = makeDesc({
     data: data?.coverage,
@@ -78,8 +76,8 @@ function CoverageChart() {
       // These aprox heights let us adjust the ratio and size of the chart.
       // I get these numbers by using the root container space and reducing
       // w/h to something that renders close to the DOM text sizes.
-      aproxHeight={coverageSunburstChart ? 91 : 62.25}
-      aproxWidth={coverageSunburstChart ? 282.1 : 375.5}
+      aproxHeight={91}
+      aproxWidth={282.1}
     />
   )
 }
