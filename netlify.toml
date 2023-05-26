@@ -12,5 +12,5 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "same-origin"
-    Content-Security-Policy = "font-src https://fonts.googleapis.com; style-src-elem https://fonts.googleapis.com; default-src 'self';"
+    Content-Security-Policy = "font-src https://fonts.googleapis.com; style-src-elem https://fonts.googleapis.com https://netlify-cdp-loader.netlify.app/netlify.js; connect-src https://*.sentry.io; worker-src https://*.netify default-src 'self';"
     Permissions-Policy = "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=(), interest-cohort=()"
