@@ -12,9 +12,7 @@ function NoReposBlock({ privateAccess, searchValue }) {
 
   return (
     <div className="mt-8 text-center">
-      <h1 className="text-2xl font-semibold">
-        There are no repos with coverage detected
-      </h1>
+      <h1 className="text-2xl font-semibold">There are no repos detected</h1>
       {!privateAccess && (
         <p>
           Try adding{' '}

@@ -464,11 +464,9 @@ describe('ReposTable', () => {
       })
 
       expect(
-        await screen.findByText(/There are no repos with coverage detected/)
+        await screen.findByText(/There are no repos detected/)
       ).toBeTruthy()
-      const noReposDetected = screen.getByText(
-        /There are no repos with coverage detected/
-      )
+      const noReposDetected = screen.getByText(/There are no repos detected/)
       expect(noReposDetected).toBeInTheDocument()
 
       const searchNotFoundText = screen.queryByText('No results found')
@@ -494,11 +492,9 @@ describe('ReposTable', () => {
       })
 
       expect(
-        await screen.findByText(/There are no repos with coverage detected/)
+        await screen.findByText(/There are no repos detected/)
       ).toBeTruthy()
-      const noReposDetected = screen.getByText(
-        /There are no repos with coverage detected/
-      )
+      const noReposDetected = screen.getByText(/There are no repos detected/)
       expect(noReposDetected).toBeInTheDocument()
 
       const privateScopeButton = await screen.findByText(/private scope/)

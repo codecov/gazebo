@@ -22,7 +22,7 @@ describe('NoReposBlock', () => {
       })
 
       const noReposDetected = await screen.findByText(
-        /There are no repos with coverage detected/
+        /There are no repos detected/
       )
       expect(noReposDetected).toBeInTheDocument()
     })
@@ -65,7 +65,7 @@ describe('NoReposBlock', () => {
       })
 
       const noReposDetected = await screen.findByText(
-        /There are no repos with coverage detected/
+        /There are no repos detected/
       )
       expect(noReposDetected).toBeInTheDocument()
     })
@@ -111,9 +111,7 @@ describe('NoReposBlock', () => {
         wrapper: wrapper(),
       })
 
-      const noReposDetected = screen.queryByText(
-        /There are no repos with coverage detected/
-      )
+      const noReposDetected = screen.queryByText(/There are no repos detected/)
       expect(noReposDetected).not.toBeInTheDocument()
     })
 
