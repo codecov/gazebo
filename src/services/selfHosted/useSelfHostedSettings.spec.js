@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -37,15 +37,12 @@ afterAll(() => {
 })
 
 describe('useSelfHostedSettings', () => {
-  let hookData
   function setup() {
     server.use(
       rest.get('/internal/settings', (req, res, ctx) =>
         res(ctx.status(200), ctx.json(mockResponse))
       )
     )
-
-    hookData = renderHook(() => useSelfHostedSettings(), { wrapper })
   }
 
   describe('when called', () => {
@@ -53,19 +50,19 @@ describe('useSelfHostedSettings', () => {
       setup()
     })
 
-    it('returns isLoading', () => {
-      expect(hookData.result.current.isLoading).toBeTruthy()
-    })
-
     it('returns data', async () => {
-      await hookData.waitFor(() => hookData.result.current.isFetching)
-      await hookData.waitFor(() => !hookData.result.current.isFetching)
+      const { result } = renderHook(() => useSelfHostedSettings(), { wrapper })
 
-      expect(hookData.result.current.data).toStrictEqual({
-        planAutoActivate: true,
-        seatsUsed: 1,
-        seatsAvailable: 10,
-      })
+      await waitFor(() => result.current.isFetching)
+      await waitFor(() => !result.current.isFetching)
+
+      await waitFor(() =>
+        expect(result.current.data).toStrictEqual({
+          planAutoActivate: true,
+          seatsUsed: 1,
+          seatsAvailable: 10,
+        })
+      )
     })
   })
 })

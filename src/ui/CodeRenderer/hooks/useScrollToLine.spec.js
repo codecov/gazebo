@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks'
+import { act, renderHook } from '@testing-library/react'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -56,7 +56,10 @@ describe('useScrollToLine', () => {
   beforeEach(() => {
     useRefSpy = jest
       .spyOn(React, 'useRef')
-      .mockReturnValue({ current: { scrollIntoView: mockScrollIntoViewMock } })
+      .mockImplementationOnce(() => ({
+        current: { scrollIntoView: mockScrollIntoViewMock },
+      }))
+      .mockImplementation(() => ({ current: false }))
 
     Object.defineProperty(global.window, 'scrollTo', { value: mockScrollTo })
     // Object.defineProperty(global.window.ResizeObserver, 'ResizeObserver', {
@@ -136,7 +139,9 @@ describe('useScrollToLine', () => {
             }
           )
 
-          result.current.handleClick()
+          act(() => {
+            result.current.handleClick()
+          })
 
           expect(testLocation.hash).toBe('')
         })
@@ -151,7 +156,9 @@ describe('useScrollToLine', () => {
             }
           )
 
-          result.current.handleClick()
+          act(() => {
+            result.current.handleClick()
+          })
 
           expect(testLocation.hash).toBe(
             createIdString({ path: 'src/file.js', number: 2 })

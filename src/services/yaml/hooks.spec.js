@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -27,19 +27,11 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('useYamlConfig', () => {
-  let hookData
-
   function setup(dataReturned = {}) {
     server.use(
       rest.post(`/graphql/gh`, (req, res, ctx) => {
         return res(ctx.status(200), ctx.json({ data: dataReturned }))
       })
-    )
-    hookData = renderHook(
-      () => useYamlConfig({ variables: { username: 'doggo' } }),
-      {
-        wrapper,
-      }
     )
   }
 
@@ -48,17 +40,19 @@ describe('useYamlConfig', () => {
       setup({ owner: { yaml: null } })
     })
 
-    it('renders isLoading true', () => {
-      expect(hookData.result.current.isLoading).toBeTruthy()
-    })
-
     describe('when data is loaded', () => {
-      beforeEach(() => {
-        return hookData.waitFor(() => hookData.result.current.isSuccess)
-      })
+      it('returns null', async () => {
+        const { result } = renderHook(
+          () => useYamlConfig({ variables: { username: 'doggo' } }),
+          {
+            wrapper,
+          }
+        )
 
-      it('returns null', () => {
-        expect(hookData.result.current.data).toEqual(null)
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+
+        await waitFor(() => expect(result.current.data).toEqual(null))
       })
     })
   })
@@ -66,27 +60,31 @@ describe('useYamlConfig', () => {
   describe('when called and user is authenticated', () => {
     beforeEach(() => {
       setup({ owner: { yaml: 'hello' } })
-      return hookData.waitFor(() => hookData.result.current.isSuccess)
     })
 
-    it('returns the owners yaml file', () => {
-      expect(hookData.result.current.data).toEqual('hello')
+    it('returns the owners yaml file', async () => {
+      const { result } = renderHook(
+        () => useYamlConfig({ variables: { username: 'doggo' } }),
+        {
+          wrapper,
+        }
+      )
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      await waitFor(() => expect(result.current.data).toEqual('hello'))
     })
   })
 })
 
 describe('useUpdateYaml', () => {
-  let hookData
-
   function setup(dataReturned = {}) {
     server.use(
       rest.post(`/graphql/gh`, (req, res, ctx) => {
         return res(ctx.status(200), ctx.json(dataReturned))
       })
     )
-    hookData = renderHook(() => useUpdateYaml({ username: 'doggo' }), {
-      wrapper,
-    })
   }
 
   describe('when mutate is called', () => {
@@ -100,22 +98,32 @@ describe('useUpdateYaml', () => {
             },
           },
         })
+      })
 
-        hookData.result.current.mutate({
+      it('to return the new yaml', async () => {
+        const { result } = renderHook(
+          () => useUpdateYaml({ username: 'doggo' }),
+          {
+            wrapper,
+          }
+        )
+
+        result.current.mutate({
           yaml: 'hello:there',
         })
 
-        return hookData.waitFor(() => hookData.result.current.isSuccess)
-      })
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
 
-      it('to return the new yaml', () => {
-        expect(hookData.result.current.data).toStrictEqual({
-          data: {
-            setYamlOnOwner: {
-              owner: { yaml: 'hello: there', username: 'doggo' },
+        await waitFor(() =>
+          expect(result.current.data).toStrictEqual({
+            data: {
+              setYamlOnOwner: {
+                owner: { yaml: 'hello: there', username: 'doggo' },
+              },
             },
-          },
-        })
+          })
+        )
       })
     })
   })

@@ -101,7 +101,7 @@ describe('SecretString', () => {
         const secretString = screen.getByRole('textbox', {
           name: 'Secret String',
         })
-        await userEvent.type(secretString, 'test')
+        await user.type(secretString, 'test')
 
         const generate = screen.getByRole('button', { name: 'Generate' })
         await user.click(generate)
@@ -120,7 +120,7 @@ describe('SecretString', () => {
         const secretString = screen.getByRole('textbox', {
           name: 'Secret String',
         })
-        await userEvent.type(secretString, 'test')
+        await user.type(secretString, 'test')
         const generate = screen.getByRole('button', { name: 'Generate' })
         await user.click(generate)
 
@@ -142,7 +142,7 @@ describe('SecretString', () => {
           const secretString = screen.getByRole('textbox', {
             name: 'Secret String',
           })
-          await userEvent.type(secretString, 'test')
+          await user.type(secretString, 'test')
           const generate = screen.getByRole('button', { name: 'Generate' })
           await user.click(generate)
 
@@ -169,7 +169,7 @@ describe('SecretString', () => {
         const secretString = screen.getByRole('textbox', {
           name: 'Secret String',
         })
-        await userEvent.type(secretString, 'test')
+        await user.type(secretString, 'test')
         const generate = screen.getByRole('button', { name: 'Generate' })
         await user.click(generate)
 
@@ -189,7 +189,7 @@ describe('SecretString', () => {
         const secretString = screen.getByRole('textbox', {
           name: 'Secret String',
         })
-        await userEvent.type(secretString, 'test')
+        await user.type(secretString, 'test')
         const generate = screen.getByRole('button', { name: 'Generate' })
         await user.click(generate)
 

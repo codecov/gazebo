@@ -4,8 +4,6 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import Canny from './Canny'
 import CannyLoader from './CannyLoader'
 
-const errorFunc = (e) => !e
-
 function CannyWidget({ basePath, boardToken, ssoToken }) {
   const [error, setError] = useState(false)
   const [isLoaded, setLoaded] = useState(false)
@@ -19,6 +17,7 @@ function CannyWidget({ basePath, boardToken, ssoToken }) {
   useEffect(() => {
     let unMounted = false
     const loader = new CannyLoader()
+
     ;(async () => {
       try {
         refCanny.current = await loader.load()
@@ -26,7 +25,8 @@ function CannyWidget({ basePath, boardToken, ssoToken }) {
         setLoaded(true)
       } catch (err) {
         if (unMounted) return
-        setError(errorFunc)
+        // eslint-disable-next-line max-nested-callbacks
+        setError((e) => !e)
       }
     })()
 
@@ -37,7 +37,7 @@ function CannyWidget({ basePath, boardToken, ssoToken }) {
 
   useEffect(() => {
     if (isLoaded) {
-      canny.render({
+      canny?.render({
         basePath,
         boardToken,
         ssoToken,

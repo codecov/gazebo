@@ -341,6 +341,10 @@ describe('MembersList', () => {
         expect(toggle).toBeInTheDocument()
         await user.click(toggle)
 
+        await waitFor(() =>
+          expect(screen.queryByLabelText('Non-Active')).not.toBeInTheDocument()
+        )
+
         const activeToggle = await screen.findByText('Activated')
         expect(activeToggle).toBeInTheDocument()
       })

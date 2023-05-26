@@ -1,10 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useIsCurrentUserAnAdmin } from './useIsCurrentUserAnAdmin'
 import { useOwner } from './useOwner'
 
 const server = setupServer()
@@ -33,7 +32,7 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('useOwner', () => {
-  function setup(dataReturned) {
+  function setup(dataReturned = undefined) {
     server.use(
       graphql.query('DetailOwner', (req, res, ctx) => {
         return res(
@@ -58,12 +57,9 @@ describe('useOwner', () => {
     })
 
     it('returns the org', async () => {
-      const { result, waitFor } = renderHook(
-        () => useOwner({ username: 'codecov' }),
-        {
-          wrapper: wrapper(),
-        }
-      )
+      const { result } = renderHook(() => useOwner({ username: 'codecov' }), {
+        wrapper: wrapper(),
+      })
 
       await waitFor(() => expect(result.current.data).toEqual(codecovOrg))
     })
@@ -80,77 +76,24 @@ describe('useOwner', () => {
       setup(codecovOrg)
     })
 
-    it('returns true value', async () => {
-      const { result: firstResult, waitFor: firstWaitFor } = renderHook(
+    it('returns value', async () => {
+      const { result: firstResult } = renderHook(
         () => useOwner({ username: 'codecov' }),
         {
           wrapper: wrapper(),
         }
       )
 
-      await firstWaitFor(() => expect(firstResult.current.isSuccess))
+      await waitFor(() => expect(firstResult.current.isSuccess))
 
-      const { result: secondResult, waitFor: secondWaitFor } = renderHook(
-        () => useIsCurrentUserAnAdmin({ owner: 'codecov' }),
-        { wrapper }
+      await waitFor(() =>
+        expect(firstResult.current.data).toStrictEqual({
+          username: 'codecov',
+          avatarUrl: '',
+          isCurrentUserPartOfOrg: true,
+          isAdmin: true,
+        })
       )
-
-      secondWaitFor(() => expect(secondResult.current).toEqual(true))
-    })
-  })
-
-  describe('when calling useIsCurrentUserAnAdmin for non-admins', () => {
-    const codecovOrg = {
-      username: 'codecov',
-      avatarUrl: '',
-      isCurrentUserPartOfOrg: true,
-      isAdmin: false,
-    }
-
-    beforeEach(async () => {
-      setup(codecovOrg)
-    })
-
-    it('returns false value', async () => {
-      const { result: firstResult, waitFor: firstWaitFor } = renderHook(
-        () => useOwner({ username: 'codecov' }),
-        {
-          wrapper: wrapper(),
-        }
-      )
-
-      await firstWaitFor(() => expect(firstResult.current.isSuccess))
-
-      const { result: secondResult, waitFor: secondWaitFor } = renderHook(
-        () => useIsCurrentUserAnAdmin({ owner: 'codecov' }),
-        { wrapper }
-      )
-
-      await secondWaitFor(() => expect(secondResult.current).toBeUndefined())
-    })
-  })
-
-  describe('when calling useIsCurrentUserAnAdmin for undefined owners', () => {
-    beforeEach(() => {
-      setup()
-    })
-
-    it('returns false', async () => {
-      const { result: firstResult, waitFor: firstWaitFor } = renderHook(
-        () => useOwner({ username: 'codecov' }),
-        {
-          wrapper: wrapper(),
-        }
-      )
-
-      await firstWaitFor(() => expect(firstResult.current.isSuccess))
-
-      const { result: secondResult, waitFor: secondWaitFor } = renderHook(
-        () => useIsCurrentUserAnAdmin({ owner: 'codecov' }),
-        { wrapper }
-      )
-
-      await secondWaitFor(() => expect(secondResult.current).toBeUndefined())
     })
   })
 })

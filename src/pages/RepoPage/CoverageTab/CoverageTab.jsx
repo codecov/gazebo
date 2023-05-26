@@ -1,11 +1,9 @@
-import cs from 'classnames'
 import { lazy, Suspense } from 'react'
 import { Switch } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
-import { useFlags } from 'shared/featureFlags'
 import Spinner from 'ui/Spinner'
 
 import Summary from './Summary'
@@ -23,7 +21,6 @@ const Loader = () => (
 )
 
 function CoverageTab() {
-  const { coverageSunburstChart } = useFlags({ coverageSunburstChart: false })
   return (
     <div className="mx-4 flex flex-col gap-2 divide-y border-solid border-ds-gray-secondary sm:mx-0">
       <Summary />
@@ -41,21 +38,14 @@ function CoverageTab() {
             hideElement="Hide Chart"
             localStorageKey="is-chart-hidden"
           >
-            <div
-              className={cs('inline-table', {
-                'col-span-9': coverageSunburstChart,
-                'col-span-12': !coverageSunburstChart,
-              })}
-            >
+            <div className="col-span-9 inline-table">
               <SilentNetworkErrorWrapper>
                 <CoverageChart />
               </SilentNetworkErrorWrapper>
             </div>
-            {coverageSunburstChart && (
-              <div className="sticky top-[8rem] col-span-3 flex aspect-square flex-col justify-center gap-4 px-8 py-4">
-                <Sunburst />
-              </div>
-            )}
+            <div className="sticky top-[8rem] col-span-3 flex aspect-square flex-col justify-center gap-4 px-8 py-4">
+              <Sunburst />
+            </div>
           </ToggleElement>
         </Suspense>
       </SentryRoute>

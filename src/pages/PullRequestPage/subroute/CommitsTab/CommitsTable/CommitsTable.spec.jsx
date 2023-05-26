@@ -207,6 +207,9 @@ describe('CommitsTable', () => {
     it('renders on null message', async () => {
       render(<CommitsTable />, { wrapper })
 
+      const spinner = screen.queryByTestId('spinner')
+      await waitFor(() => expect(spinner).not.toBeInTheDocument())
+
       const text = await screen.findByText(/we can't find this commit/)
       expect(text).toBeInTheDocument()
     })

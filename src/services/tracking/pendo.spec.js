@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook } from '@testing-library/react'
 import React from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -39,7 +39,6 @@ describe('initialize pendo', () => {
     window.pendo = {
       initialize: jest.fn(),
     }
-    firePendo(curUser)
   }
 
   beforeEach(() => {
@@ -47,6 +46,8 @@ describe('initialize pendo', () => {
   })
 
   it('fires pendo initialization with expected params', () => {
+    firePendo(curUser)
+
     expect(window.pendo.initialize).toHaveBeenCalledTimes(1)
   })
 })
@@ -60,7 +61,6 @@ describe('update pendo on owner change', () => {
 
     useParams.mockReturnValue({ owner: 'codecov' })
     useOwner.mockReturnValue({ data: ownerData })
-    renderHook(() => useUpdatePendoWithOwner(curUser))
   }
 
   beforeEach(() => {
@@ -68,6 +68,8 @@ describe('update pendo on owner change', () => {
   })
 
   it('fires pendo update options when pathname is different', () => {
+    renderHook(() => useUpdatePendoWithOwner(curUser))
+
     expect(window.pendo.updateOptions).toHaveBeenCalledTimes(1)
   })
 })
@@ -81,7 +83,6 @@ describe('update pendo when owner is not changed', () => {
 
     useParams.mockReturnValue({ owner: 'codecov' })
     useOwner.mockReturnValue({ data: ownerData })
-    renderHook(() => useUpdatePendoWithOwner(curUser))
   }
 
   beforeEach(() => {
@@ -89,6 +90,8 @@ describe('update pendo when owner is not changed', () => {
   })
 
   it('does not fire pendo update', () => {
+    renderHook(() => useUpdatePendoWithOwner(curUser))
+
     expect(window.pendo.updateOptions).toHaveBeenCalledTimes(0)
   })
 })

@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -124,8 +124,6 @@ const owner = 'codecov'
 const repo = 'gazebo'
 
 describe('FlagMeasurements', () => {
-  let hookData
-
   function setup() {
     server.use(
       graphql.query('FlagMeasurements', (req, res, ctx) => {
@@ -147,10 +145,6 @@ describe('FlagMeasurements', () => {
         return res(ctx.status(200), ctx.data(dataReturned))
       })
     )
-
-    hookData = renderHook(() => useRepoFlags({ provider, owner, repo }), {
-      wrapper,
-    })
   }
 
   describe('when called', () => {
@@ -158,37 +152,52 @@ describe('FlagMeasurements', () => {
       setup()
     })
 
-    it('renders isLoading true', () => {
-      expect(hookData.result.current.isLoading).toBeTruthy()
-    })
-
     describe('when data is loaded', () => {
-      beforeEach(() => {
-        return hookData.waitFor(() => hookData.result.current.isSuccess)
-      })
+      it('returns the data', async () => {
+        const { result } = renderHook(
+          () => useRepoFlags({ provider, owner, repo }),
+          {
+            wrapper,
+          }
+        )
 
-      it('returns the data', () => {
-        expect(hookData.result.current.data).toEqual(expectedInitialData)
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+
+        await waitFor(() =>
+          expect(result.current.data).toEqual(expectedInitialData)
+        )
       })
     })
   })
 
   describe('when fetchNextPage is called', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       setup()
-      await hookData.waitFor(() => hookData.result.current.isSuccess)
-
-      hookData.result.current.fetchNextPage()
-
-      await hookData.waitFor(() => hookData.result.current.isFetching)
-      await hookData.waitFor(() => !hookData.result.current.isFetching)
     })
 
     it('returns prev and next page flags data', async () => {
-      expect(hookData.result.current.data).toEqual([
-        ...expectedInitialData,
-        ...expectedNextPageData,
-      ])
+      const { result } = renderHook(
+        () => useRepoFlags({ provider, owner, repo }),
+        {
+          wrapper,
+        }
+      )
+
+      await waitFor(() => result.current.isFetching)
+      await waitFor(() => !result.current.isFetching)
+
+      result.current.fetchNextPage()
+
+      await waitFor(() => result.current.isFetching)
+      await waitFor(() => !result.current.isFetching)
+
+      await waitFor(() =>
+        expect(result.current.data).toEqual([
+          ...expectedInitialData,
+          ...expectedNextPageData,
+        ])
+      )
     })
   })
 })

@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -46,30 +46,32 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('useCommitErrors', () => {
-  let hookData
-
   function setup() {
     server.use(
       graphql.query(`CommitErrors`, (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(dataReturned))
       })
     )
-    hookData = renderHook(() => useCommitErrors(), {
-      wrapper,
-    })
   }
 
   describe('when called and user is authenticated', () => {
     beforeEach(() => {
       setup()
-      return hookData.waitFor(() => hookData.result.current.isSuccess)
     })
 
-    it('returns commit info', () => {
-      expect(hookData.result.current.data).toEqual({
-        botErrors: [{ errorCode: 'repo_bot_invalid' }],
-        yamlErrors: [{ errorCode: 'invalid_yaml' }],
+    it('returns commit info', async () => {
+      const { result } = renderHook(() => useCommitErrors(), {
+        wrapper,
       })
+
+      await waitFor(() => result.current.isSuccess)
+
+      await waitFor(() =>
+        expect(result.current.data).toEqual({
+          botErrors: [{ errorCode: 'repo_bot_invalid' }],
+          yamlErrors: [{ errorCode: 'invalid_yaml' }],
+        })
+      )
     })
   })
 })

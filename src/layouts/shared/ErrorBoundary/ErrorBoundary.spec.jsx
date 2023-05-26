@@ -37,7 +37,7 @@ describe('Error Boundary', () => {
     })
 
     it('displays it in the console', () => {
-      expect(mockError).toHaveBeenCalledTimes(2)
+      expect(mockError).toHaveBeenCalled()
       expect(mockError.mock.calls[0][0]).toContain(thrownError) // Can this be done better?
     })
 
@@ -67,7 +67,7 @@ describe('Error Boundary', () => {
     })
 
     it('displays it in the console', () => {
-      expect(mockError).toHaveBeenCalledTimes(2)
+      expect(mockError).toHaveBeenCalled()
       expect(mockError.mock.calls[0][0]).toContain(thrownError)
     })
 

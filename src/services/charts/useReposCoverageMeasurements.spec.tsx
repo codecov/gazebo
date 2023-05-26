@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
@@ -64,7 +64,7 @@ describe('useReposCoverageMeasurements', () => {
     it('returns coverage information', async () => {
       setup({ hasNoData: false })
 
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () =>
           useReposCoverageMeasurements({
             provider: 'gh',
@@ -104,7 +104,7 @@ describe('useReposCoverageMeasurements', () => {
       it('returns an empty object', async () => {
         setup({ hasNoData: true })
 
-        const { result, waitFor } = renderHook(
+        const { result } = renderHook(
           () =>
             useReposCoverageMeasurements({
               provider: 'gh',

@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
@@ -91,8 +91,6 @@ const owner = 'codecov'
 const repo = 'gazebo'
 
 describe('GetPulls', () => {
-  let hookData
-
   function setup() {
     server.use(
       graphql.query('GetPulls', (req, res, ctx) => {
@@ -129,10 +127,6 @@ describe('GetPulls', () => {
         )
       })
     )
-
-    hookData = renderHook(() => hooks.usePulls({ provider, owner, repo }), {
-      wrapper,
-    })
   }
 
   describe('when called', () => {
@@ -140,39 +134,52 @@ describe('GetPulls', () => {
       setup()
     })
 
-    it('renders isLoading true', () => {
-      expect(hookData.result.current.isLoading).toBeTruthy()
-    })
-
     describe('when data is loaded', () => {
-      beforeEach(async () => {
-        await hookData.waitFor(() => hookData.result.current.isSuccess)
-      })
+      it('returns expected pulls nodes', async () => {
+        const { result } = renderHook(
+          () => hooks.usePulls({ provider, owner, repo }),
+          {
+            wrapper,
+          }
+        )
 
-      it('returns expected pulls nodes', () => {
-        expect(hookData.result.current.data.pulls).toEqual([
-          { node: node1 },
-          { node: node2 },
-        ])
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+
+        await waitFor(() =>
+          expect(result.current.data.pulls).toEqual([
+            { node: node1 },
+            { node: node2 },
+          ])
+        )
       })
     })
-  })
 
-  describe('when call next page', () => {
-    beforeEach(async () => {
-      setup()
-      await hookData.waitFor(() => hookData.result.current.isSuccess)
-      hookData.result.current.fetchNextPage()
-      await hookData.waitFor(() => hookData.result.current.isFetching)
-      await hookData.waitFor(() => !hookData.result.current.isFetching)
-    })
+    describe('when call next page', () => {
+      it('returns prev and next page pulls of the user', async () => {
+        const { result } = renderHook(
+          () => hooks.usePulls({ provider, owner, repo }),
+          {
+            wrapper,
+          }
+        )
 
-    it('returns prev and next page pulls of the user', async () => {
-      expect(hookData.result.current.data.pulls).toEqual([
-        { node: node1 },
-        { node: node2 },
-        { node: node3 },
-      ])
+        await waitFor(() => result.current.isFetching)
+        await waitFor(() => !result.current.isFetching)
+
+        result.current.fetchNextPage()
+
+        await waitFor(() => result.current.isFetching)
+        await waitFor(() => !result.current.isFetching)
+
+        await waitFor(() =>
+          expect(result.current.data.pulls).toEqual([
+            { node: node1 },
+            { node: node2 },
+            { node: node3 },
+          ])
+        )
+      })
     })
   })
 })

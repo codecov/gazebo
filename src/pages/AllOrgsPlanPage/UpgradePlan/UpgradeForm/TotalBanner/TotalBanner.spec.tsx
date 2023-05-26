@@ -149,7 +149,7 @@ describe('TotalBanner', () => {
 
       describe('user switches to annual plan', () => {
         it('calls mock set value with pro annual plan', async () => {
-          const { mockSetValue } = setup()
+          const { mockSetValue, user } = setup()
           render(
             <TotalBanner
               {...props}
@@ -163,7 +163,7 @@ describe('TotalBanner', () => {
           })
           expect(switchToAnnual).toBeInTheDocument()
 
-          await userEvent.click(switchToAnnual)
+          await user.click(switchToAnnual)
 
           expect(mockSetValue).toBeCalledWith('newPlan', Plans.USERS_PR_INAPPY)
         })
@@ -256,7 +256,7 @@ describe('TotalBanner', () => {
 
       describe('user switches to annual plan', () => {
         it('calls mock set value with pro annual plan', async () => {
-          const { mockSetValue } = setup()
+          const { mockSetValue, user } = setup()
           render(
             <TotalBanner {...props} seats={10} setValue={mockSetValue} />,
             { wrapper }
@@ -267,7 +267,7 @@ describe('TotalBanner', () => {
           })
           expect(switchToAnnual).toBeInTheDocument()
 
-          await userEvent.click(switchToAnnual)
+          await user.click(switchToAnnual)
 
           expect(mockSetValue).toBeCalledWith('newPlan', Plans.USERS_SENTRYY)
         })

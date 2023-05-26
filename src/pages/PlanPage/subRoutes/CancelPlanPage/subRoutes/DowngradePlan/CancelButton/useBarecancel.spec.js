@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 
 import config from 'config'
 
@@ -12,19 +12,13 @@ jest.mock('react-router-dom', () => ({
 jest.mock('services/account')
 
 describe('useBarecancel', () => {
-  function setup(customerId, callbackSend) {
-    renderHook(() =>
-      useBarecancel({ customerId, callbackSend, isModalOpen: true })
-    )
-  }
-
   describe('Initializes', () => {
-    const callbackSend = () => {}
-    beforeEach(() => {
-      const customerId = 1234
-      setup(customerId, callbackSend)
-    })
-    it('window params are set', () => {
+    it('window params are set', async () => {
+      const callbackSend = () => {}
+      renderHook(() =>
+        useBarecancel({ customerId: 1234, callbackSend, isModalOpen: true })
+      )
+
       const expectedParams = {
         access_token_id: config.BAREMETRICS_TOKEN,
         customer_oid: 1234,
@@ -36,20 +30,22 @@ describe('useBarecancel', () => {
           console.error(error)
         },
       }
-      expect(JSON.stringify(window.barecancel.params)).toEqual(
-        JSON.stringify(expectedParams)
+
+      await waitFor(() =>
+        expect(JSON.stringify(window.barecancel.params)).toEqual(
+          JSON.stringify(expectedParams)
+        )
       )
     })
   })
 
   describe('Cleans up', () => {
-    beforeEach(() => {
-      const customerId = 1234
-      const callbackSend = () => {}
-      setup(customerId, callbackSend)
-    })
-
     it('Removes script and styles tag', () => {
+      const callbackSend = () => {}
+      renderHook(() =>
+        useBarecancel({ customerId: 1234, callbackSend, isModalOpen: true })
+      )
+
       expect(
         // eslint-disable-next-line
         document.querySelector(

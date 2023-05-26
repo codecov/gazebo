@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import Message from '.'
 
@@ -16,37 +17,41 @@ describe('Message', () => {
       ...defaultProps,
       ...over,
     }
-    render(<Message {...props} />)
+
+    const user = userEvent.setup()
+
+    return { user }
   }
 
   describe('when rendered', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('renders the message', () => {
-      expect(screen.getByText(props.children)).toBeInTheDocument()
+      setup()
+      render(<Message {...props} />)
+
+      const message = screen.getByText(props.children)
+      expect(message).toBeInTheDocument()
     })
   })
 
   describe('when clicking on the close button', () => {
-    beforeEach(() => {
-      setup()
-      fireEvent.click(screen.getByRole('button'))
-    })
+    it('calls the handler', async () => {
+      const { user } = setup()
+      render(<Message {...props} />)
 
-    it('calls the handler', () => {
+      const button = screen.getByRole('button')
+      await user.click(button)
+
       expect(props.onClose).toHaveBeenCalled()
     })
   })
 
   describe('when no onClose is passed', () => {
-    beforeEach(() => {
+    it('does not render any button', () => {
       setup({ onClose: null })
-    })
+      render(<Message {...props} />)
 
-    it('doesnt render any button', () => {
-      expect(screen.queryByRole('button')).not.toBeInTheDocument()
+      const button = screen.queryByRole('button')
+      expect(button).not.toBeInTheDocument()
     })
   })
 })

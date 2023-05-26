@@ -76,7 +76,9 @@ function _renderActivationStatus({
       dataMarketing="handle-members-activation"
       label={activated ? 'Activated' : 'Non-Active'}
       value={activated}
-      onClick={() => handleActivate({ ownerid, activated })}
+      onClick={() => {
+        handleActivate({ ownerid, activated })
+      }}
       disabled={disableToggle}
     />
   )

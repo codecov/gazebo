@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import type { ReactNode } from 'react'
@@ -44,9 +44,9 @@ afterAll(() => {
 describe('useRepoConfig', () => {
   function setup() {
     server.use(
-      graphql.query('RepoConfig', (_, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockRepoConfig))
-      )
+      graphql.query('RepoConfig', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoConfig))
+      })
     )
   }
 
@@ -55,7 +55,7 @@ describe('useRepoConfig', () => {
 
     describe('no options are passed', () => {
       it('returns the repository config', async () => {
-        const { result, waitFor } = renderHook(
+        const { result } = renderHook(
           () =>
             useRepoConfig({
               provider: 'gh',
@@ -67,15 +67,17 @@ describe('useRepoConfig', () => {
 
         await waitFor(() => result.current.isSuccess)
 
-        expect(result.current.data).toStrictEqual({
-          indicationRange: { lowerRange: 60, upperRange: 80 },
-        })
+        await waitFor(() =>
+          expect(result.current.data).toStrictEqual({
+            indicationRange: { lowerRange: 60, upperRange: 80 },
+          })
+        )
       })
     })
 
     describe('options are passed', () => {
       it('returns the repository config', async () => {
-        const { result, waitFor } = renderHook(
+        const { result } = renderHook(
           () =>
             useRepoConfig({
               provider: 'gh',
@@ -90,9 +92,11 @@ describe('useRepoConfig', () => {
 
         await waitFor(() => result.current.isSuccess)
 
-        expect(result.current.data).toStrictEqual({
-          indicationRange: { lowerRange: 60, upperRange: 80 },
-        })
+        await waitFor(() =>
+          expect(result.current.data).toStrictEqual({
+            indicationRange: { lowerRange: 60, upperRange: 80 },
+          })
+        )
       })
     })
   })

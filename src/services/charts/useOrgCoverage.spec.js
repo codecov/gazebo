@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { setupServer } from 'msw/node'
 
 import { orgCoverageHandler } from './mocks'
@@ -104,7 +104,7 @@ describe('useOrgCoverage', () => {
 
   describe('returns quarterly coverage data', () => {
     it('returns chart data', async () => {
-      const { waitFor, result } = renderHook(
+      const { result } = renderHook(
         () =>
           useOrgCoverage({
             provider: 'bitbucket',
@@ -116,15 +116,18 @@ describe('useOrgCoverage', () => {
         }
       )
 
-      await waitFor(() => !result.current.isFetching)
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
 
-      expect(result.current.data).toStrictEqual(exampleQuarterHookData)
+      await waitFor(() =>
+        expect(result.current.data).toStrictEqual(exampleQuarterHookData)
+      )
     })
   })
 
   describe('returns year coverage data', () => {
     it('returns chart data', async () => {
-      const { waitFor, result } = renderHook(
+      const { result } = renderHook(
         () =>
           useOrgCoverage({
             provider: 'bitbucket',
@@ -136,9 +139,12 @@ describe('useOrgCoverage', () => {
         }
       )
 
-      await waitFor(() => !result.current.isFetching)
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
 
-      expect(result.current.data).toStrictEqual(exampleYearlyHookData)
+      await waitFor(() =>
+        expect(result.current.data).toStrictEqual(exampleYearlyHookData)
+      )
     })
   })
 })

@@ -142,7 +142,9 @@ function FlagsTable() {
     <>
       <DeleteFlagModal
         flagName={modalInfo?.flagName}
-        closeModal={() => setModalInfo({ flag: null, showModal: false })}
+        closeModal={() => {
+          setModalInfo({ flag: null, showModal: false })
+        }}
         isOpen={modalInfo?.showModal}
       />
       <Table data={tableData} columns={headers} onSort={handleSort} />

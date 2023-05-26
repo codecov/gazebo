@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
@@ -61,7 +61,7 @@ describe('usePullPageData', () => {
     })
 
     it('returns the correct data', async () => {
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () =>
           usePullPageData({
             provider: 'gh',
@@ -77,19 +77,21 @@ describe('usePullPageData', () => {
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
 
-      expect(result.current.data).toStrictEqual({
-        hasAccess: true,
-        pull: {
-          pullId: 1,
-          compareWithBase: {
-            impactedFilesCount: 4,
-            indirectChangedFilesCount: 0,
-            flagComparisonsCount: 1,
-            componentComparisonCount: 6,
-            __typename: 'Comparison',
+      await waitFor(() =>
+        expect(result.current.data).toStrictEqual({
+          hasAccess: true,
+          pull: {
+            pullId: 1,
+            compareWithBase: {
+              impactedFilesCount: 4,
+              indirectChangedFilesCount: 0,
+              flagComparisonsCount: 1,
+              componentComparisonCount: 6,
+              __typename: 'Comparison',
+            },
           },
-        },
-      })
+        })
+      )
     })
   })
 })

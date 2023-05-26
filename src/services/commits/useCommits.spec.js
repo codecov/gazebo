@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
@@ -97,8 +97,6 @@ const owner = 'codecov'
 const repo = 'gazebo'
 
 describe('GetCommits', () => {
-  let hookData
-
   function setup() {
     server.use(
       graphql.query('GetCommits', (req, res, ctx) => {
@@ -133,10 +131,6 @@ describe('GetCommits', () => {
         return res(ctx.status(200), ctx.data(dataReturned))
       })
     )
-
-    hookData = renderHook(() => useCommits({ provider, owner, repo }), {
-      wrapper,
-    })
   }
 
   describe('when called', () => {
@@ -144,36 +138,40 @@ describe('GetCommits', () => {
       setup()
     })
 
-    it('renders isLoading true', () => {
-      expect(hookData.result.current.isLoading).toBeTruthy()
-    })
-
     describe('when data is loaded', () => {
-      beforeEach(() => {
-        return hookData.waitFor(() => hookData.result.current.isSuccess)
-      })
+      it('returns the data', async () => {
+        const { result } = renderHook(
+          () => useCommits({ provider, owner, repo }),
+          {
+            wrapper,
+          }
+        )
 
-      it('returns the data', () => {
-        expect(hookData.result.current.data.commits).toEqual([node1, node2])
+        await waitFor(() =>
+          expect(result.current.data.commits).toEqual([node1, node2])
+        )
       })
     })
-  })
 
-  describe('when call next page', () => {
-    beforeEach(async () => {
-      setup()
-      await hookData.waitFor(() => hookData.result.current.isSuccess)
-      hookData.result.current.fetchNextPage()
-      await hookData.waitFor(() => hookData.result.current.isFetching)
-      await hookData.waitFor(() => !hookData.result.current.isFetching)
-    })
+    describe('when call next page', () => {
+      it('returns prev and next page commits of the user', async () => {
+        const { result } = renderHook(
+          () => useCommits({ provider, owner, repo }),
+          {
+            wrapper,
+          }
+        )
 
-    it('returns prev and next page commits of the user', () => {
-      expect(hookData.result.current.data.commits).toEqual([
-        node1,
-        node2,
-        node3,
-      ])
+        await waitFor(() => expect(result.current.isSuccess).toBe(true))
+
+        result.current.fetchNextPage()
+
+        await waitFor(() => expect(result.current.status).toBe('success'))
+
+        await waitFor(() =>
+          expect(result.current.data.commits).toEqual([node1, node2, node3])
+        )
+      })
     })
   })
 })

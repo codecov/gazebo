@@ -202,12 +202,13 @@ describe('CommitDetailFileExplorer', () => {
           setup()
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
-          const dir = await screen.findByText('src')
+          expect(await screen.findByText('src')).toBeTruthy()
+          const dir = screen.getByText('src')
           expect(dir).toBeInTheDocument()
 
-          const links = await within(
-            await screen.findByRole('table')
-          ).findAllByRole('link')
+          const table = await screen.findByRole('table')
+          const links = await within(table).findAllByRole('link')
+
           expect(links[1]).toHaveAttribute(
             'href',
             '/gh/codecov/cool-repo/commit/sha256/tree/a/b/c/src'
@@ -220,12 +221,12 @@ describe('CommitDetailFileExplorer', () => {
           setup()
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
-          const file = await screen.findByText('file.js')
+          expect(await screen.findByText('file.js')).toBeTruthy()
+          const file = screen.getByText('file.js')
           expect(file).toBeInTheDocument()
 
-          const links = await within(
-            await screen.findByRole('table')
-          ).findAllByRole('link')
+          const table = await screen.findByRole('table')
+          const links = await within(table).findAllByRole('link')
           expect(links[2]).toHaveAttribute(
             'href',
             '/gh/codecov/cool-repo/commit/sha256/blob/a/b/c/file.js'
@@ -262,7 +263,8 @@ describe('CommitDetailFileExplorer', () => {
             ]),
           })
 
-          const file = await screen.findByText('a/b/c/file.js')
+          expect(await screen.findByText('a/b/c/file.js')).toBeTruthy()
+          const file = screen.getByText('a/b/c/file.js')
           expect(file).toBeInTheDocument()
 
           const links = await within(
@@ -297,7 +299,8 @@ describe('CommitDetailFileExplorer', () => {
           const { user, requestFilters } = setup()
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
-          const files = await screen.findByText('Files')
+          expect(await screen.findByText('Files')).toBeTruthy()
+          const files = screen.getByText('Files')
           await user.click(files)
 
           await waitFor(() => {
@@ -313,9 +316,12 @@ describe('CommitDetailFileExplorer', () => {
           const { user, requestFilters } = setup()
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
-          let files = await screen.findByText('Files')
+          expect(await screen.findByText('Files')).toBeTruthy()
+          let files = screen.getByText('Files')
           await user.click(files)
-          files = await screen.findByText('Files')
+
+          expect(await screen.findByText('Files')).toBeTruthy()
+          files = screen.getByText('Files')
           await user.click(files)
 
           await waitFor(() => {
@@ -333,7 +339,8 @@ describe('CommitDetailFileExplorer', () => {
           const { user, requestFilters } = setup()
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
-          const trackedLines = await screen.findByText('Tracked lines')
+          expect(await screen.findByText('Tracked lines')).toBeTruthy()
+          const trackedLines = screen.getByText('Tracked lines')
           await user.click(trackedLines)
 
           await waitFor(() => {
@@ -349,9 +356,12 @@ describe('CommitDetailFileExplorer', () => {
           const { user, requestFilters } = setup()
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
-          let trackedLines = await screen.findByText('Tracked lines')
+          expect(await screen.findByText('Tracked lines')).toBeTruthy()
+          let trackedLines = screen.getByText('Tracked lines')
           await user.click(trackedLines)
-          trackedLines = await screen.findByText('Tracked lines')
+
+          expect(await screen.findByText('Tracked lines')).toBeTruthy()
+          trackedLines = screen.getByText('Tracked lines')
           await user.click(trackedLines)
 
           await waitFor(() => {
@@ -369,8 +379,8 @@ describe('CommitDetailFileExplorer', () => {
           const { user, requestFilters } = setup()
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
-          const covered = await screen.findByText('Covered')
-
+          expect(await screen.findByText('Covered')).toBeTruthy()
+          const covered = screen.getByText('Covered')
           await user.click(covered)
 
           await waitFor(() => {
@@ -386,9 +396,12 @@ describe('CommitDetailFileExplorer', () => {
           const { user, requestFilters } = setup()
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
-          let covered = await screen.findByText('Covered')
+          expect(await screen.findByText('Covered')).toBeTruthy()
+          let covered = screen.getByText('Covered')
           await user.click(covered)
-          covered = await screen.findByText('Covered')
+
+          expect(await screen.findByText('Covered')).toBeTruthy()
+          covered = screen.getByText('Covered')
           await user.click(covered)
 
           await waitFor(() => {
@@ -406,8 +419,8 @@ describe('CommitDetailFileExplorer', () => {
           const { user, requestFilters } = setup()
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
-          const partial = await screen.findByText('Partial')
-
+          expect(await screen.findByText('Partial')).toBeTruthy()
+          const partial = screen.getByText('Partial')
           await user.click(partial)
 
           await waitFor(() => {
@@ -423,9 +436,12 @@ describe('CommitDetailFileExplorer', () => {
           const { user, requestFilters } = setup()
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
-          let partial = await screen.findByText('Partial')
+          expect(await screen.findByText('Partial')).toBeTruthy()
+          let partial = screen.getByText('Partial')
           await user.click(partial)
-          partial = await screen.findByText('Partial')
+
+          expect(await screen.findByText('Partial')).toBeTruthy()
+          partial = screen.getByText('Partial')
           await user.click(partial)
 
           await waitFor(() => {
@@ -443,8 +459,8 @@ describe('CommitDetailFileExplorer', () => {
           const { user, requestFilters } = setup()
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
-          const missed = await screen.findByText('Missed')
-
+          expect(await screen.findByText('Missed')).toBeTruthy()
+          const missed = screen.getByText('Missed')
           await user.click(missed)
 
           await waitFor(() => {
@@ -460,9 +476,12 @@ describe('CommitDetailFileExplorer', () => {
           const { user, requestFilters } = setup()
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
-          let missed = await screen.findByText('Missed')
+          expect(await screen.findByText('Missed')).toBeTruthy()
+          let missed = screen.getByText('Missed')
           await user.click(missed)
-          missed = await screen.findByText('Missed')
+
+          expect(await screen.findByText('Missed')).toBeTruthy()
+          missed = screen.getByText('Missed')
           await user.click(missed)
 
           await waitFor(() => {
@@ -481,7 +500,12 @@ describe('CommitDetailFileExplorer', () => {
         const { user, requestFilters } = setup()
         render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
-        const search = await screen.findByRole('textbox', {
+        expect(
+          await screen.findByRole('textbox', {
+            name: 'Search for files',
+          })
+        ).toBeTruthy()
+        const search = screen.getByRole('textbox', {
           name: 'Search for files',
         })
         await user.type(search, 'cool-file.rs')
@@ -501,15 +525,22 @@ describe('CommitDetailFileExplorer', () => {
         const { user } = setup()
         render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
-        const dir = await screen.findByText('src')
+        expect(await screen.findByText('src')).toBeTruthy()
+        const dir = screen.getByText('src')
         expect(dir).toBeInTheDocument()
 
-        const search = await screen.findByRole('textbox', {
+        expect(
+          await screen.findByRole('textbox', {
+            name: 'Search for files',
+          })
+        ).toBeTruthy()
+        const search = screen.getByRole('textbox', {
           name: 'Search for files',
         })
         await user.type(search, 'cool-file.rs')
 
-        const noResults = await screen.findByText(/no results found/i)
+        expect(await screen.findByText(/no results found/i)).toBeTruthy()
+        const noResults = screen.getByText(/no results found/i)
         expect(noResults).toBeInTheDocument()
       })
     })

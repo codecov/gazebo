@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { act, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
@@ -10,12 +10,13 @@ import { trackSegmentEvent } from 'services/tracking/segment'
 
 import TermsOfService from './TermsOfService'
 
+jest.mock('services/tracking/segment')
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 const server = setupServer()
-
-jest.mock('services/tracking/segment')
+let errorMock
 
 const wrapper =
   (initialEntries = ['/gh/codecov/cool-repo']) =>
@@ -39,9 +40,13 @@ afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+afterAll(() => {
+  server.close()
+})
+
 describe('TermsOfService', () => {
   beforeEach(() => jest.resetModules())
+
   function setup({
     myOrganizationsData,
     useUserData,
@@ -239,21 +244,18 @@ describe('TermsOfService', () => {
       const selectedMarketing = screen.getByLabelText(
         /I would like to receive updates via email/i
       )
-      await act(async () => {
-        await user.click(selectedMarketing)
-      })
+
+      await user.click(selectedMarketing)
 
       const selectedTos = screen.getByLabelText(
         /I agree to the TOS and privacy policy/i
       )
-      await act(async () => {
-        await user.click(selectedTos)
-      })
+
+      await user.click(selectedTos)
 
       const submit = await screen.findByRole('button', { name: /Continue/ })
-      await act(async () => {
-        await user.click(submit)
-      })
+
+      await user.click(submit)
 
       expect(trackSegmentEvent).toHaveBeenLastCalledWith({
         event: 'Onboarding email opt in',
@@ -298,21 +300,21 @@ describe('TermsOfService', () => {
       const selectedTos = screen.getByLabelText(
         /I agree to the TOS and privacy policy/i
       )
-      await act(async () => {
-        await user.click(selectedTos)
-      })
+
+      await user.click(selectedTos)
 
       const submit = await screen.findByRole('button', { name: /Continue/ })
-      await act(async () => {
-        await user.click(submit)
-      })
 
-      expect(mockMutationVariables).toHaveBeenLastCalledWith({
-        tosInput: {
-          businessEmail: 'personal@cr.com',
-          termsAgreement: true,
-        },
-      })
+      await user.click(submit)
+
+      await waitFor(() =>
+        expect(mockMutationVariables).toHaveBeenLastCalledWith({
+          tosInput: {
+            businessEmail: 'personal@cr.com',
+            termsAgreement: true,
+          },
+        })
+      )
     })
 
     it('Sign TOS, select a default org, sends the correct inputs to the server', async () => {
@@ -355,27 +357,25 @@ describe('TermsOfService', () => {
       const select = screen.getByRole('button', {
         name: 'Select an organization',
       })
-      await act(async () => {
-        await user.click(select)
-      })
+
+      await user.click(select)
+
       const orgInList = screen.getByRole('option', { name: 'criticalRole' })
-      await act(async () => {
-        await user.click(orgInList)
-      })
+
+      await user.click(orgInList)
+
       const selected = screen.getByText(new RegExp('criticalRole', 'i'))
       expect(selected).toBeInTheDocument()
 
       const selectedTos = screen.getByLabelText(
         /I agree to the TOS and privacy policy/i
       )
-      await act(async () => {
-        await user.click(selectedTos)
-      })
+
+      await user.click(selectedTos)
 
       const submit = await screen.findByRole('button', { name: /Continue/ })
-      await act(async () => {
-        await user.click(submit)
-      })
+
+      await user.click(submit)
 
       await waitFor(() =>
         expect(mockMutationVariables).toHaveBeenLastCalledWith({
@@ -602,7 +602,17 @@ describe('TermsOfService', () => {
       [expectRendersServerFailureResult, 'validation error'],
     ],
   ])('form validation, %s', (_, initializeTest, ...steps) => {
-    beforeEach(() => jest.resetModules())
+    beforeEach(() => {
+      const spy = jest.spyOn(console, 'error')
+      errorMock = jest.fn()
+      spy.mockImplementation(errorMock)
+      // console.error = errorMock
+    })
+
+    afterEach(() => {
+      errorMock.mockReset()
+    })
+
     describe(`
       Has signed in: ${!!initializeTest.useUserData.me}
       Has a email via oauth: ${initializeTest.useUserData.me?.email}
@@ -610,6 +620,7 @@ describe('TermsOfService', () => {
       jest.mock('./hooks/useTermsOfService', () => ({
         useSaveTermsAgreement: jest.fn(() => ({ data: 'mocked' })),
       }))
+
       it(`scenario: ${initializeTest.validationDescription}`, async () => {
         const { user } = setup({
           isUnknownError: initializeTest.isUnknownError,
@@ -636,6 +647,9 @@ describe('TermsOfService', () => {
         })
         render(<TermsOfService />, { wrapper: wrapper() })
 
+        await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(1))
+        await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
         for (const [step, args] of steps) {
           await step(user, args)
         }
@@ -655,13 +669,13 @@ async function expectUserSelectsOrg(user, args) {
   const select = screen.getByRole('button', {
     name: 'Select an organization',
   })
-  await act(async () => {
-    await user.click(select)
-  })
+
+  await user.click(select)
+
   const orgInList = screen.getByRole('option', { name: args.orgName })
-  await act(async () => {
-    await user.click(orgInList)
-  })
+
+  await user.click(orgInList)
+
   const selected = screen.getByText(new RegExp(args.orgName, 'i'))
   expect(selected).toBeInTheDocument()
 }
@@ -670,9 +684,8 @@ async function expectUserSignsTOS(user) {
   const selectedTos = screen.getByLabelText(
     /I agree to the TOS and privacy policy/i
   )
-  await act(async () => {
-    await user.click(selectedTos)
-  })
+
+  await user.click(selectedTos)
 }
 
 async function expectUserSelectsMarketingWithFoundEmail(user, args) {
@@ -684,9 +697,7 @@ async function expectUserSelectsMarketingWithFoundEmail(user, args) {
   )
   expect(emailIsInTheLabelOfSelectedMarketing).toBeInTheDocument()
 
-  await act(async () => {
-    await user.click(selectedMarketing)
-  })
+  await user.click(selectedMarketing)
 }
 
 async function expectUserSelectsMarketing(user, args) {
@@ -694,16 +705,13 @@ async function expectUserSelectsMarketing(user, args) {
     /I would like to receive updates via email/i
   )
 
-  await act(async () => {
-    await user.click(selectedMarketing)
-  })
+  await user.click(selectedMarketing)
 }
 
 async function expectUserTextEntryEmailField(user, args) {
   const emailInput = screen.getByLabelText(/Contact email required/i)
-  await act(async () => {
-    await user.type(emailInput, args.email)
-  })
+
+  await user.type(emailInput, args.email)
 }
 
 async function expectSubmitIsDisabled() {
@@ -733,26 +741,27 @@ async function expectUserIsNotWarnedForValidEmail() {
 
 async function expectClickSubmit(user) {
   const submit = screen.getByRole('button', { name: /Continue/ })
-  await act(async () => {
-    await user.click(submit)
-  })
+
+  await user.click(submit)
 }
 
 async function expectRendersServerFailureResult(user, expectedError = {}) {
-  const spy = jest.spyOn(console, 'error')
-  const errorMock = jest.fn()
-  spy.mockImplementation(errorMock)
-
+  expect(await screen.findByRole('button', { name: /Continue/ })).toBeTruthy()
   const submit = screen.getByRole('button', { name: /Continue/ })
-  await act(async () => {
-    await user.click(submit)
-  })
 
-  const error = await screen.findByText(
+  await user.click(submit)
+
+  expect(
+    await screen.findByText(
+      /There was an error with our servers. Please try again later or/i
+    )
+  ).toBeTruthy()
+  const error = screen.getByText(
     /There was an error with our servers. Please try again later or/i
   )
   expect(error).toBeInTheDocument()
-  expect(errorMock).toHaveBeenLastCalledWith(expectedError)
+  await waitFor(() => expect(errorMock).toBeCalled())
+  await waitFor(() => expect(errorMock).toHaveBeenLastCalledWith(expectedError))
 
   const issueLink = screen.getByRole('link', { name: /contact support/i })
   expect(issueLink).toBeInTheDocument()

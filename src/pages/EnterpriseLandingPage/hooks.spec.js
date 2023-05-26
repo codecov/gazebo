@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
@@ -26,15 +26,12 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('useServiceProviders', () => {
-  let hookData
   function setup(data) {
     server.use(
       graphql.query('GetServiceProviders', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(data))
       )
     )
-
-    hookData = renderHook(() => useServiceProviders(), { wrapper })
   }
 
   describe('third party services are configured providers', () => {
@@ -46,14 +43,17 @@ describe('useServiceProviders', () => {
       })
     })
     it('returns data', async () => {
-      await hookData.waitFor(() => hookData.result.current.isSuccess)
+      const { result } = renderHook(() => useServiceProviders(), { wrapper })
+      await waitFor(() => result.current.isSuccess)
 
-      expect(hookData.result.current.data).toStrictEqual({
-        providerList: ['GITHUB', 'GITLAB', 'BITBUCKET'],
-        github: true,
-        gitlab: true,
-        bitbucket: true,
-      })
+      await waitFor(() =>
+        expect(result.current.data).toStrictEqual({
+          providerList: ['GITHUB', 'GITLAB', 'BITBUCKET'],
+          github: true,
+          gitlab: true,
+          bitbucket: true,
+        })
+      )
     })
   })
 
@@ -70,18 +70,22 @@ describe('useServiceProviders', () => {
       })
     })
     it('returns data', async () => {
-      await hookData.waitFor(() => hookData.result.current.isSuccess)
+      const { result } = renderHook(() => useServiceProviders(), { wrapper })
 
-      expect(hookData.result.current.data).toStrictEqual({
-        providerList: [
-          'GITHUB_ENTERPRISE',
-          'GITLAB_ENTERPRISE',
-          'BITBUCKET_SERVER',
-        ],
-        github: true,
-        gitlab: true,
-        bitbucket: true,
-      })
+      await waitFor(() => result.current.isSuccess)
+
+      await waitFor(() =>
+        expect(result.current.data).toStrictEqual({
+          providerList: [
+            'GITHUB_ENTERPRISE',
+            'GITLAB_ENTERPRISE',
+            'BITBUCKET_SERVER',
+          ],
+          github: true,
+          gitlab: true,
+          bitbucket: true,
+        })
+      )
     })
   })
 })

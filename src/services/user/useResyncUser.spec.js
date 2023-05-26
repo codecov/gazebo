@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -22,12 +22,16 @@ const wrapper =
 
 const server = setupServer()
 
-beforeAll(() => server.listen())
-beforeEach(() => {
-  server.resetHandlers()
-  queryClient.clear()
+beforeAll(() => {
+  server.listen()
 })
-afterAll(() => server.close())
+beforeEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => {
+  server.close()
+})
 
 describe('useResyncUser', () => {
   let syncStatus = false
@@ -36,6 +40,7 @@ describe('useResyncUser', () => {
     server.use(
       graphql.query('IsSyncing', (req, res, ctx) => {
         return res(
+          ctx.status(200),
           ctx.data({
             me: {
               isSyncing: syncStatus,
@@ -46,6 +51,7 @@ describe('useResyncUser', () => {
       graphql.mutation('SyncData', (req, res, ctx) => {
         syncStatus = true
         return res(
+          ctx.status(200),
           ctx.data({
             syncWithGitProvider: {
               me: {
@@ -65,7 +71,7 @@ describe('useResyncUser', () => {
     })
 
     it('returns syncing false', async () => {
-      const { result, waitFor } = renderHook(() => useResyncUser(), {
+      const { result } = renderHook(() => useResyncUser(), {
         wrapper: wrapper(),
       })
 
@@ -80,7 +86,7 @@ describe('useResyncUser', () => {
     })
 
     it('returns syncing true', async () => {
-      const { result, waitFor } = renderHook(() => useResyncUser(), {
+      const { result } = renderHook(() => useResyncUser(), {
         wrapper: wrapper(),
       })
 
@@ -97,7 +103,7 @@ describe('useResyncUser', () => {
     })
 
     it('returns syncing true', async () => {
-      const { result, waitFor } = renderHook(() => useResyncUser(), {
+      const { result } = renderHook(() => useResyncUser(), {
         wrapper: wrapper(),
       })
 
@@ -105,24 +111,22 @@ describe('useResyncUser', () => {
     })
   })
 
-  describe('when a sync finises', () => {
-    let refetchQueriesSpy
-    beforeEach(async () => {
-      refetchQueriesSpy = jest.spyOn(queryClient, 'refetchQueries')
+  describe('when a sync finishes', () => {
+    beforeEach(() => {
       syncStatus = true
       setup()
     })
 
     it('returns syncing false', async () => {
-      const { result, waitFor } = renderHook(() => useResyncUser(), {
+      const { result } = renderHook(() => useResyncUser(), {
         wrapper: wrapper(),
       })
 
-      await waitFor(() => result.current.isSyncing)
+      await waitFor(() => expect(result.current.isSyncing).toBe(true))
       // sync on server finishes
       syncStatus = false
       // and wait for the request to get the new isSyncing
-      await waitFor(() => !result.current.isSyncing, {
+      await waitFor(() => expect(result.current.isSyncing).toBe(false), {
         // we need to make a longer timeout because the polling of the
         // isSyncing is 2000ms; and we can't use fake timers as it
         // doesn't work well with waitFor()
@@ -133,15 +137,17 @@ describe('useResyncUser', () => {
     })
 
     it('calls refetchQueries for repos', async () => {
-      const { result, waitFor } = renderHook(() => useResyncUser(), {
+      const refetchQueriesSpy = jest.spyOn(queryClient, 'refetchQueries')
+
+      const { result } = renderHook(() => useResyncUser(), {
         wrapper: wrapper(),
       })
 
-      await waitFor(() => result.current.isSyncing)
+      await waitFor(() => expect(result.current.isSyncing).toBe(true))
       // sync on server finishes
       syncStatus = false
       // and wait for the request to get the new isSyncing
-      await waitFor(() => !result.current.isSyncing, {
+      await waitFor(() => expect(result.current.isSyncing).toBe(false), {
         // we need to make a longer timeout because the polling of the
         // isSyncing is 2000ms; and we can't use fake timers as it
         // doesn't work well with waitFor()

@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -135,42 +135,41 @@ describe('useRepoBranchContentsTable', () => {
 
       describe('on root path', () => {
         it('returns directory contents', async () => {
-          const { result, waitFor } = renderHook(
-            () => useRepoBranchContentsTable(),
-            { wrapper: wrapper() }
+          const { result } = renderHook(() => useRepoBranchContentsTable(), {
+            wrapper: wrapper(),
+          })
+
+          await waitFor(() =>
+            expect(queryClient.isFetching()).toBeGreaterThan(0)
           )
+          await waitFor(() => expect(queryClient.isFetching()).toBe(0))
 
-          await waitFor(() => result.current.isLoading)
-          await waitFor(() => !result.current.isLoading)
-
-          expect(result.current.data.length).toBe(2)
+          await waitFor(() => expect(result.current.data.length).toBe(2))
         })
       })
 
       describe('on child path', () => {
         it('returns directory contents', async () => {
-          const { result, waitFor } = renderHook(
-            () => useRepoBranchContentsTable(),
-            {
-              wrapper: wrapper(['/gh/test-org/test-repo/tree/main/src/dir']),
-            }
-          )
+          const { result } = renderHook(() => useRepoBranchContentsTable(), {
+            wrapper: wrapper(['/gh/test-org/test-repo/tree/main/src/dir']),
+          })
 
-          await waitFor(() => result.current.isLoading)
-          await waitFor(() => !result.current.isLoading)
+          await waitFor(() =>
+            expect(queryClient.isFetching()).toBeGreaterThan(0)
+          )
+          await waitFor(() => expect(queryClient.isFetching()).toBe(0))
 
           await waitFor(() => expect(result.current.data.length).toBe(3))
         })
       })
 
       it('sets the correct headers', async () => {
-        const { result, waitFor } = renderHook(
-          () => useRepoBranchContentsTable(),
-          { wrapper: wrapper() }
-        )
+        const { result } = renderHook(() => useRepoBranchContentsTable(), {
+          wrapper: wrapper(),
+        })
 
-        await waitFor(() => result.current.isLoading)
-        await waitFor(() => !result.current.isLoading)
+        await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
+        await waitFor(() => expect(queryClient.isFetching()).toBe(0))
 
         expect(result.current.headers.length).toBe(6)
       })
@@ -186,13 +185,12 @@ describe('useRepoBranchContentsTable', () => {
       })
 
       it('returns an empty array', async () => {
-        const { result, waitFor } = renderHook(
-          () => useRepoBranchContentsTable(),
-          { wrapper: wrapper() }
-        )
+        const { result } = renderHook(() => useRepoBranchContentsTable(), {
+          wrapper: wrapper(),
+        })
 
-        await waitFor(() => result.current.isLoading)
-        await waitFor(() => !result.current.isLoading)
+        await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
+        await waitFor(() => expect(queryClient.isFetching()).toBe(0))
 
         expect(result.current.data.length).toBe(0)
       })
@@ -209,13 +207,12 @@ describe('useRepoBranchContentsTable', () => {
     })
 
     it('makes a gql request with the search value', async () => {
-      const { result, waitFor } = renderHook(
-        () => useRepoBranchContentsTable(),
-        { wrapper: wrapper() }
-      )
+      renderHook(() => useRepoBranchContentsTable(), {
+        wrapper: wrapper(),
+      })
 
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
+      await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0))
 
       expect(calledCommitContents).toHaveBeenCalled()
       expect(calledCommitContents).toHaveBeenCalledWith({
@@ -244,13 +241,12 @@ describe('useRepoBranchContentsTable', () => {
     })
 
     it('makes a gql request with the list param', async () => {
-      const { result, waitFor } = renderHook(
-        () => useRepoBranchContentsTable(),
-        { wrapper: wrapper() }
-      )
+      renderHook(() => useRepoBranchContentsTable(), {
+        wrapper: wrapper(),
+      })
 
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
+      await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0))
 
       expect(calledCommitContents).toHaveBeenCalled()
       expect(calledCommitContents).toHaveBeenCalledWith({
@@ -279,20 +275,19 @@ describe('useRepoBranchContentsTable', () => {
     })
 
     it('makes a gql request with the updated params', async () => {
-      const { result, waitFor } = renderHook(
-        () => useRepoBranchContentsTable(),
-        { wrapper: wrapper() }
-      )
+      const { result } = renderHook(() => useRepoBranchContentsTable(), {
+        wrapper: wrapper(),
+      })
 
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
+      await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0))
 
       act(() => {
         result.current.handleSort([{ desc: true, id: 'name' }])
       })
 
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
+      await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0))
 
       expect(calledCommitContents).toHaveBeenCalledTimes(2)
       expect(calledCommitContents).toHaveBeenNthCalledWith(2, {

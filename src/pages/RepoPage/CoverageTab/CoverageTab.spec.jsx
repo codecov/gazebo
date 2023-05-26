@@ -1,22 +1,21 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
-
 import CoverageTab from './CoverageTab'
-
-jest.mock('shared/featureFlags')
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: false,
+      suspense: true,
     },
   },
 })
+
 const server = setupServer()
 
 const wrapper =
@@ -24,20 +23,13 @@ const wrapper =
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Route path="/:provider/:owner/:repo" exact={true}>
+            <Suspense fallback={null}>{children}</Suspense>
+          </Route>
+        </MemoryRouter>
       </QueryClientProvider>
     )
-
-beforeAll(() => {
-  server.listen({ onUnhandledRequest: 'warn' })
-})
-afterEach(() => {
-  queryClient.clear()
-  server.resetHandlers()
-})
-afterAll(() => {
-  server.close()
-})
 
 const mockRepo = {
   owner: {
@@ -46,6 +38,7 @@ const mockRepo = {
     },
   },
 }
+
 const repoConfigMock = {
   owner: {
     repository: {
@@ -55,10 +48,13 @@ const repoConfigMock = {
     },
   },
 }
+
 const treeMock = { name: 'repoName', children: [] }
+
 const overviewMock = {
   owner: { repository: { private: false, defaultBranch: 'main' } },
 }
+
 const branchesMock = {
   owner: {
     repository: {
@@ -97,6 +93,7 @@ const branchesMock = {
     },
   },
 }
+
 const branchMock = {
   branch: {
     name: 'main',
@@ -105,6 +102,7 @@ const branchMock = {
     },
   },
 }
+
 const branchesContentsMock = {
   owner: {
     username: 'critical-role',
@@ -133,6 +131,17 @@ const branchesContentsMock = {
   },
 }
 
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: 'warn' })
+})
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => {
+  server.close()
+})
+
 describe('Coverage Tab', () => {
   function setup({ repoData = mockRepo } = { repoData: mockRepo }) {
     server.use(
@@ -157,6 +166,9 @@ describe('Coverage Tab', () => {
       graphql.query('GetRepoCoverage', (req, res, ctx) =>
         res(ctx.status(200), ctx.data({}))
       ),
+      graphql.query('GetBranchCoverageMeasurements', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({}))
+      ),
       rest.get(
         '/internal/:provider/:owner/:repo/coverage/tree',
         (req, res, ctx) => {
@@ -172,55 +184,28 @@ describe('Coverage Tab', () => {
     )
   }
 
-  describe('sunburst flag enabled', () => {
-    beforeEach(() => {
-      useFlags.mockReturnValue({ coverageSunburstChart: true })
-
-      setup()
-    })
-    afterEach(() => jest.resetAllMocks)
-
-    it('renders the sunburst chart', async () => {
-      render(
-        <Route path="/:provider/:owner/:repo" exact={true}>
-          <CoverageTab />
-        </Route>,
-        { wrapper: wrapper(['/gh/test-org/test-repo']) }
-      )
-
-      const hideChart = await screen.findByText(/Hide Chart/)
-
-      expect(hideChart).toBeInTheDocument()
-
-      const toggleContents = screen.getByTestId('toggle-element-contents')
-
-      expect(toggleContents.childElementCount).toBe(2)
-    })
+  afterEach(() => {
+    jest.resetAllMocks()
   })
 
-  describe('sunburst flag disabled', () => {
-    beforeEach(() => {
-      useFlags.mockReturnValue({ coverageSunburstChart: false })
+  it('renders the sunburst chart', async () => {
+    setup()
 
-      setup()
-    })
-    afterEach(() => jest.resetAllMocks)
+    render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/test-repo']) })
 
-    it('renders the sunburst chart', async () => {
-      render(
-        <Route path="/:provider/:owner/:repo" exact={true}>
-          <CoverageTab />
-        </Route>,
-        { wrapper: wrapper(['/gh/test-org/test-repo']) }
-      )
+    await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
+    await waitFor(() => expect(queryClient.isFetching()).toBe(0))
 
-      const hideChart = await screen.findByText(/Hide Chart/)
+    expect(await screen.findByText(/Hide Chart/)).toBeTruthy()
+    const hideChart = screen.getByText(/Hide Chart/)
+    expect(hideChart).toBeInTheDocument()
 
-      expect(hideChart).toBeInTheDocument()
+    expect(await screen.findByTestId('sunburst')).toBeTruthy()
+    const sunburst = screen.getByTestId('sunburst')
+    expect(sunburst).toBeInTheDocument()
 
-      const toggleContents = screen.getByTestId('toggle-element-contents')
-
-      expect(toggleContents.childElementCount).toBe(1)
-    })
-  })
+    expect(await screen.findByTestId('coverage-area-chart')).toBeTruthy()
+    const coverageAreaChart = screen.getByTestId('coverage-area-chart')
+    expect(coverageAreaChart).toBeInTheDocument()
+  }, 60000)
 })

@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -108,7 +108,7 @@ describe('useRepoCoverageTimeseries', () => {
     })
 
     it('called the legacy repo coverage with the correct body', async () => {
-      const { waitFor } = renderHook(
+      renderHook(
         () =>
           useRepoCoverageTimeseries({ branch: { name: 'c3', options: {} } }),
         {
@@ -131,7 +131,7 @@ describe('useRepoCoverageTimeseries', () => {
     })
 
     it('called the legacy repo coverage with the correct body when no trend is set', async () => {
-      const { waitFor } = renderHook(
+      renderHook(
         () =>
           useRepoCoverageTimeseries({ branch: { name: 'c3', options: {} } }),
         {
@@ -156,12 +156,9 @@ describe('useRepoCoverageTimeseries', () => {
     })
 
     it('returns the right format for 30 days', async () => {
-      const { result, waitFor } = renderHook(
-        () => useRepoCoverageTimeseries({}),
-        {
-          wrapper: wrapper('?trend=30 days'),
-        }
-      )
+      const { result } = renderHook(() => useRepoCoverageTimeseries({}), {
+        wrapper: wrapper('?trend=30 days'),
+      })
 
       await waitFor(() => expect(config).toBeCalled())
       await waitFor(() =>
@@ -178,12 +175,9 @@ describe('useRepoCoverageTimeseries', () => {
     })
 
     it('returns the right format for 6 months', async () => {
-      const { result, waitFor } = renderHook(
-        () => useRepoCoverageTimeseries({}),
-        {
-          wrapper: wrapper('?trend=6 months'),
-        }
-      )
+      const { result } = renderHook(() => useRepoCoverageTimeseries({}), {
+        wrapper: wrapper('?trend=6 months'),
+      })
 
       await waitFor(() => expect(config).toBeCalled())
       await waitFor(() =>
@@ -200,12 +194,9 @@ describe('useRepoCoverageTimeseries', () => {
     })
 
     it('returns the right format for 12 months', async () => {
-      const { result, waitFor } = renderHook(
-        () => useRepoCoverageTimeseries({}),
-        {
-          wrapper: wrapper('?trend=12 months'),
-        }
-      )
+      const { result } = renderHook(() => useRepoCoverageTimeseries({}), {
+        wrapper: wrapper('?trend=12 months'),
+      })
 
       await waitFor(() => expect(config).toBeCalled())
       await waitFor(() =>
@@ -229,7 +220,7 @@ describe('useRepoCoverageTimeseries', () => {
       })
 
       it('returns the correct change', async () => {
-        const { result, waitFor } = renderHook(
+        const { result } = renderHook(
           () =>
             useRepoCoverageTimeseries({ branch: { name: 'c3', options: {} } }),
           {
@@ -247,7 +238,7 @@ describe('useRepoCoverageTimeseries', () => {
       })
 
       it('returns zero', async () => {
-        const { result, waitFor } = renderHook(
+        const { result } = renderHook(
           () =>
             useRepoCoverageTimeseries({ branch: { name: 'c3', options: {} } }),
           {
@@ -268,12 +259,9 @@ describe('useRepoCoverageTimeseries', () => {
     it('calls select', async () => {
       let selectMock = jest.fn()
 
-      const { waitFor } = renderHook(
-        () => useRepoCoverageTimeseries({}, { select: selectMock }),
-        {
-          wrapper: wrapper(''),
-        }
-      )
+      renderHook(() => useRepoCoverageTimeseries({}, { select: selectMock }), {
+        wrapper: wrapper(''),
+      })
 
       await waitFor(() => expect(selectMock).toBeCalled())
     })

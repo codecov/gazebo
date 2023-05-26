@@ -122,7 +122,7 @@ export function useRepos({
   const { data, ...rest } = useInfiniteQuery(
     ['repos', provider, variables, owner],
     ({ pageParam, signal }) => {
-      return owner
+      const data = owner
         ? fetchReposForOwner({
             provider,
             variables,
@@ -131,6 +131,8 @@ export function useRepos({
             signal,
           })
         : fetchMyRepos({ provider, variables, after: pageParam, signal })
+
+      return data
     },
     {
       getNextPageParam: (data) =>

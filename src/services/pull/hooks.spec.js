@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
@@ -54,7 +54,6 @@ const repo = 'gazebo'
 
 describe('usePull', () => {
   afterEach(() => queryClient.clear())
-  let hookData
 
   function setup(data) {
     server.use(
@@ -62,10 +61,6 @@ describe('usePull', () => {
         return res(ctx.status(200), ctx.data(data))
       })
     )
-
-    hookData = renderHook(() => usePull({ provider, owner, repo }), {
-      wrapper,
-    })
   }
 
   describe('when called', () => {
@@ -83,16 +78,24 @@ describe('usePull', () => {
     })
 
     describe('when data is loaded', () => {
-      beforeEach(async () => {
-        await hookData.waitFor(() => !hookData.result.current.isFetching)
-      })
+      it('returns the data', async () => {
+        const { result } = renderHook(
+          () => usePull({ provider, owner, repo }),
+          {
+            wrapper,
+          }
+        )
 
-      it('returns the data', () => {
-        expect(hookData.result.current.data).toEqual({
-          defaultBranch: 'umbrasyl',
-          hasAccess: true,
-          pull,
-        })
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+
+        await waitFor(() =>
+          expect(result.current.data).toEqual({
+            defaultBranch: 'umbrasyl',
+            hasAccess: true,
+            pull,
+          })
+        )
       })
     })
   })
@@ -111,15 +114,23 @@ describe('usePull', () => {
     })
 
     describe('when data is loaded', () => {
-      beforeEach(async () => {
-        await hookData.waitFor(() => !hookData.result.current.isFetching)
-      })
+      it('returns the data', async () => {
+        const { result } = renderHook(
+          () => usePull({ provider, owner, repo }),
+          {
+            wrapper,
+          }
+        )
 
-      it('returns the data', () => {
-        expect(hookData.result.current.data).toEqual({
-          hasAccess: false,
-          pull,
-        })
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+
+        await waitFor(() =>
+          expect(result.current.data).toEqual({
+            hasAccess: false,
+            pull,
+          })
+        )
       })
     })
   })
@@ -187,27 +198,12 @@ const mockSingularImpactedFilesData = {
 
 describe('useSingularImpactedFileComparison', () => {
   afterEach(() => queryClient.clear())
-  let hookData
 
   function setup(data) {
     server.use(
       graphql.query('ImpactedFileComparison', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(data))
       })
-    )
-
-    hookData = renderHook(
-      () =>
-        useSingularImpactedFileComparison({
-          provider,
-          owner,
-          repo,
-          pullId: 10,
-          path: 'someFile.js',
-        }),
-      {
-        wrapper,
-      }
     )
   }
 
@@ -227,56 +223,71 @@ describe('useSingularImpactedFileComparison', () => {
     })
 
     describe('when data is loaded', () => {
-      beforeEach(async () => {
-        await hookData.waitFor(() => !hookData.result.current.isFetching)
-      })
+      it('returns the data', async () => {
+        const { result } = renderHook(
+          () =>
+            useSingularImpactedFileComparison({
+              provider,
+              owner,
+              repo,
+              pullId: 10,
+              path: 'someFile.js',
+            }),
+          {
+            wrapper,
+          }
+        )
 
-      it('returns the data', () => {
-        expect(hookData.result.current.data).toEqual({
-          fileLabel: 'New',
-          headName: 'file A',
-          isCriticalFile: false,
-          segments: [
-            {
-              header: '@@ -0,0 +1,45 @@',
-              lines: [
-                {
-                  baseCoverage: null,
-                  baseNumber: null,
-                  content: '+export default class Calculator {',
-                  headCoverage: 'H',
-                  headNumber: '1',
-                  coverageInfo: {
-                    hitCount: null,
-                    hitUploadIds: null,
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+
+        await waitFor(() =>
+          expect(result.current.data).toEqual({
+            fileLabel: 'New',
+            headName: 'file A',
+            isCriticalFile: false,
+            segments: [
+              {
+                header: '@@ -0,0 +1,45 @@',
+                lines: [
+                  {
+                    baseCoverage: null,
+                    baseNumber: null,
+                    content: '+export default class Calculator {',
+                    headCoverage: 'H',
+                    headNumber: '1',
+                    coverageInfo: {
+                      hitCount: null,
+                      hitUploadIds: null,
+                    },
                   },
-                },
-                {
-                  baseCoverage: null,
-                  baseNumber: null,
-                  content: '+  private value = 0;',
-                  headCoverage: 'H',
-                  headNumber: '2',
-                  coverageInfo: {
-                    hitCount: 18,
-                    hitUploadIds: [0],
+                  {
+                    baseCoverage: null,
+                    baseNumber: null,
+                    content: '+  private value = 0;',
+                    headCoverage: 'H',
+                    headNumber: '2',
+                    coverageInfo: {
+                      hitCount: 18,
+                      hitUploadIds: [0],
+                    },
                   },
-                },
-                {
-                  baseCoverage: null,
-                  baseNumber: null,
-                  content: '+  private calcMode = ""',
-                  headCoverage: 'H',
-                  headNumber: '3',
-                  coverageInfo: {
-                    hitCount: null,
-                    hitUploadIds: null,
+                  {
+                    baseCoverage: null,
+                    baseNumber: null,
+                    content: '+  private calcMode = ""',
+                    headCoverage: 'H',
+                    headNumber: '3',
+                    coverageInfo: {
+                      hitCount: null,
+                      hitUploadIds: null,
+                    },
                   },
-                },
-              ],
-            },
-          ],
-        })
+                ],
+              },
+            ],
+          })
+        )
       })
     })
   })
@@ -303,17 +314,32 @@ describe('useSingularImpactedFileComparison', () => {
     })
 
     describe('when data is loaded', () => {
-      beforeEach(async () => {
-        await hookData.waitFor(() => !hookData.result.current.isFetching)
-      })
+      it('returns the data', async () => {
+        const { result } = renderHook(
+          () =>
+            useSingularImpactedFileComparison({
+              provider,
+              owner,
+              repo,
+              pullId: 10,
+              path: 'someFile.js',
+            }),
+          {
+            wrapper,
+          }
+        )
 
-      it('returns the data', () => {
-        expect(hookData.result.current.data).toEqual({
-          fileLabel: 'Renamed',
-          headName: 'file A',
-          isCriticalFile: false,
-          segments: [],
-        })
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+
+        await waitFor(() =>
+          expect(result.current.data).toEqual({
+            fileLabel: 'Renamed',
+            headName: 'file A',
+            isCriticalFile: false,
+            segments: [],
+          })
+        )
       })
     })
   })
@@ -340,17 +366,32 @@ describe('useSingularImpactedFileComparison', () => {
     })
 
     describe('when data is loaded', () => {
-      beforeEach(async () => {
-        await hookData.waitFor(() => !hookData.result.current.isFetching)
-      })
+      it('returns the data', async () => {
+        const { result } = renderHook(
+          () =>
+            useSingularImpactedFileComparison({
+              provider,
+              owner,
+              repo,
+              pullId: 10,
+              path: 'someFile.js',
+            }),
+          {
+            wrapper,
+          }
+        )
 
-      it('returns the data', () => {
-        expect(hookData.result.current.data).toEqual({
-          fileLabel: 'Deleted',
-          headName: 'file A',
-          isCriticalFile: false,
-          segments: [],
-        })
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+
+        await waitFor(() =>
+          expect(result.current.data).toEqual({
+            fileLabel: 'Deleted',
+            headName: 'file A',
+            isCriticalFile: false,
+            segments: [],
+          })
+        )
       })
     })
   })
@@ -379,17 +420,32 @@ describe('useSingularImpactedFileComparison', () => {
     })
 
     describe('when data is loaded', () => {
-      beforeEach(async () => {
-        await hookData.waitFor(() => !hookData.result.current.isFetching)
-      })
+      it('returns the data', async () => {
+        const { result } = renderHook(
+          () =>
+            useSingularImpactedFileComparison({
+              provider,
+              owner,
+              repo,
+              pullId: 10,
+              path: 'someFile.js',
+            }),
+          {
+            wrapper,
+          }
+        )
 
-      it('returns the data', () => {
-        expect(hookData.result.current.data).toEqual({
-          fileLabel: null,
-          headName: 'file A',
-          isCriticalFile: false,
-          segments: [],
-        })
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+
+        await waitFor(() =>
+          expect(result.current.data).toEqual({
+            fileLabel: null,
+            headName: 'file A',
+            isCriticalFile: false,
+            segments: [],
+          })
+        )
       })
     })
   })

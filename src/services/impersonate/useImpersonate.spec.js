@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook } from '@testing-library/react'
 import Cookie from 'js-cookie'
 import { useLocation } from 'react-router-dom'
 
@@ -11,11 +11,8 @@ jest.mock('react-router-dom', () => ({
 // Note, calling rerender manually after setting the location to ensure
 // the useEffect hook has ran at least once.
 describe('useImpersonate', () => {
-  let hookData
-
   function setup({ search }) {
     useLocation.mockReturnValue({ search })
-    hookData = renderHook(() => useImpersonate())
   }
 
   describe('no staff_user cookie', () => {
@@ -24,26 +21,33 @@ describe('useImpersonate', () => {
     })
     it('returns false no search', () => {
       setup({ search: '' })
-      hookData.rerender()
+
+      const { result, rerender } = renderHook(() => useImpersonate())
+
+      rerender()
 
       expect(Cookie.get('staff_user')).toBeUndefined()
-      expect(hookData.result.current.isImpersonating).toBe(false)
+      expect(result.current.isImpersonating).toBe(false)
     })
 
     it('returns true when setting a user in the url', () => {
       setup({ search: '?user=doggo' })
-      hookData.rerender()
+      const { result, rerender } = renderHook(() => useImpersonate())
+
+      rerender()
 
       expect(Cookie.get('staff_user')).toBe('doggo')
-      expect(hookData.result.current.isImpersonating).toBe(true)
+      expect(result.current.isImpersonating).toBe(true)
     })
 
     it('returns false when sending an empty user', () => {
       setup({ search: '?user' })
-      hookData.rerender()
+      const { result, rerender } = renderHook(() => useImpersonate())
+
+      rerender()
 
       expect(Cookie.get('staff_user')).toBeUndefined()
-      expect(hookData.result.current.isImpersonating).toBe(false)
+      expect(result.current.isImpersonating).toBe(false)
     })
   })
 
@@ -56,26 +60,32 @@ describe('useImpersonate', () => {
     })
     it('returns false no search', () => {
       setup({ search: '' })
-      hookData.rerender()
+      const { result, rerender } = renderHook(() => useImpersonate())
+
+      rerender()
 
       expect(Cookie.get('staff_user')).toBe('doggo')
-      expect(hookData.result.current.isImpersonating).toBe(true)
+      expect(result.current.isImpersonating).toBe(true)
     })
 
     it('returns true when setting a user in the url', () => {
       setup({ search: '?user=kitty' })
-      hookData.rerender()
+      const { result, rerender } = renderHook(() => useImpersonate())
+
+      rerender()
 
       expect(Cookie.get('staff_user')).toBe('kitty')
-      expect(hookData.result.current.isImpersonating).toBe(true)
+      expect(result.current.isImpersonating).toBe(true)
     })
 
     it('returns false when sending an empty user', () => {
       setup({ search: '?user=' })
-      hookData.rerender()
+      const { result, rerender } = renderHook(() => useImpersonate())
+
+      rerender()
 
       expect(Cookie.get('staff_user')).toBeUndefined()
-      expect(hookData.result.current.isImpersonating).toBe(false)
+      expect(result.current.isImpersonating).toBe(false)
     })
   })
 })

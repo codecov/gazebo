@@ -1,24 +1,25 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import List from '.'
 
 describe('List', () => {
-  let container
-  const onItemSelect = jest.fn()
+  function setup() {
+    const user = userEvent.setup()
+    const onItemSelect = jest.fn()
 
-  function setup({ items, noBorder }) {
-    ;({ container } = render(
-      <List
-        items={items}
-        onItemSelect={onItemSelect}
-        noBorder={Boolean(noBorder)}
-      />
-    ))
+    return {
+      onItemSelect,
+      user,
+    }
   }
 
   it("doesn't render anything when items array is empty", () => {
-    const items = []
-    setup({ items })
+    const { onItemSelect } = setup()
+
+    const { container } = render(
+      <List items={[]} onItemSelect={onItemSelect} noBorder={Boolean(false)} />
+    )
 
     expect(container).toBeEmptyDOMElement()
   })
@@ -34,27 +35,48 @@ describe('List', () => {
         value: <span>Markup value</span>,
       },
     ]
-    setup({ items })
+    const { onItemSelect } = setup()
+
+    const { container } = render(
+      <List
+        items={items}
+        onItemSelect={onItemSelect}
+        noBorder={Boolean(false)}
+      />
+    )
 
     expect(container).not.toBeEmptyDOMElement()
 
-    expect(screen.getByText('Item value')).toBeInTheDocument()
-    expect(screen.getByText('Markup value')).toBeInTheDocument()
+    const firstItem = screen.getByText('Item value')
+    expect(firstItem).toBeInTheDocument()
+
+    const secondItem = screen.getByText('Markup value')
+    expect(secondItem).toBeInTheDocument()
   })
 
-  it('calls onItemSelect prop when clicked', () => {
+  it('calls onItemSelect prop when clicked', async () => {
     const items = [
       {
         name: 'firstItem',
         value: 'Click me',
       },
     ]
-    setup({ items })
+    const { onItemSelect, user } = setup()
+
+    const { container } = render(
+      <List
+        items={items}
+        onItemSelect={onItemSelect}
+        noBorder={Boolean(false)}
+      />
+    )
 
     expect(container).not.toBeEmptyDOMElement()
+
     const listItem = screen.getByText(/click me/i)
     expect(listItem).toBeInTheDocument()
-    fireEvent.click(listItem)
+    await user.click(listItem)
+
     expect(onItemSelect).toHaveBeenCalledTimes(1)
   })
 
@@ -65,9 +87,17 @@ describe('List', () => {
         value: 'Click me',
       },
     ]
-    setup({ items, noBorder: true })
-    expect(screen.getByRole('list')).not.toHaveClass(
-      'border border-ds-gray-secondary'
+    const { onItemSelect } = setup()
+
+    render(
+      <List
+        items={items}
+        onItemSelect={onItemSelect}
+        noBorder={Boolean(true)}
+      />
     )
+
+    const list = screen.getByRole('list')
+    expect(list).not.toHaveClass('border border-ds-gray-secondary')
   })
 })

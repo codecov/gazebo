@@ -213,12 +213,12 @@ describe('FileExplorer', () => {
           setup()
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          const dir = await screen.findByText('src')
+          expect(await screen.findByText('src')).toBeTruthy()
+          const dir = screen.getByText('src')
           expect(dir).toBeInTheDocument()
 
-          const links = await within(
-            await screen.findByRole('table')
-          ).findAllByRole('link')
+          const table = await screen.findByRole('table')
+          const links = await within(table).findAllByRole('link')
           expect(links[1]).toHaveAttribute(
             'href',
             '/gh/codecov/cool-repo/pull/123/tree/a/b/c/src'
@@ -231,12 +231,12 @@ describe('FileExplorer', () => {
           setup()
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          const file = await screen.findByText('file.js')
+          expect(await screen.findByText('file.js')).toBeTruthy()
+          const file = screen.getByText('file.js')
           expect(file).toBeInTheDocument()
 
-          const links = await within(
-            await screen.findByRole('table')
-          ).findAllByRole('link')
+          const table = await screen.findByRole('table')
+          const links = await within(table).findAllByRole('link')
           expect(links[2]).toHaveAttribute(
             'href',
             '/gh/codecov/cool-repo/pull/123/blob/a/b/c/file.js'
@@ -273,12 +273,12 @@ describe('FileExplorer', () => {
             ]),
           })
 
-          const file = await screen.findByText('a/b/c/file.js')
+          expect(await screen.findByText('a/b/c/file.js')).toBeTruthy()
+          const file = screen.getByText('a/b/c/file.js')
           expect(file).toBeInTheDocument()
 
-          const links = await within(
-            await screen.findByRole('table')
-          ).findAllByRole('link')
+          const table = await screen.findByRole('table')
+          const links = await within(table).findAllByRole('link')
           expect(links[0]).toHaveAttribute(
             'href',
             '/gh/codecov/cool-repo/pull/123/blob/a/b/c/file.js'
@@ -311,12 +311,8 @@ describe('FileExplorer', () => {
 
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          let files = await screen.findByText('Files')
-
-          await user.click(files)
-          files = await screen.findByText('Files')
-          await user.click(files)
-          files = await screen.findByText('Files')
+          expect(await screen.findByText('Files')).toBeTruthy()
+          let files = screen.getByText('Files')
           await user.click(files)
 
           await waitFor(() =>
@@ -333,9 +329,12 @@ describe('FileExplorer', () => {
 
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          let files = await screen.findByText('Files')
+          expect(await screen.findByText('Files')).toBeTruthy()
+          let files = screen.getByText('Files')
           await user.click(files)
-          files = await screen.findByText('Files')
+
+          expect(await screen.findByText('Files')).toBeTruthy()
+          files = screen.getByText('Files')
           await user.click(files)
 
           await waitFor(() =>
@@ -354,9 +353,8 @@ describe('FileExplorer', () => {
 
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          const trackedLines = await screen.findByText('Tracked lines')
-
-          await user.click(trackedLines)
+          expect(await screen.findByText('Tracked lines')).toBeTruthy()
+          const trackedLines = screen.getByText('Tracked lines')
           await user.click(trackedLines)
 
           await waitFor(() =>
@@ -373,9 +371,12 @@ describe('FileExplorer', () => {
 
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          let trackedLines = await screen.findByText('Tracked lines')
+          expect(await screen.findByText('Tracked lines')).toBeTruthy()
+          let trackedLines = screen.getByText('Tracked lines')
           await user.click(trackedLines)
-          trackedLines = await screen.findByText('Tracked lines')
+
+          expect(await screen.findByText('Tracked lines')).toBeTruthy()
+          trackedLines = screen.getByText('Tracked lines')
           await user.click(trackedLines)
 
           await waitFor(() =>
@@ -394,9 +395,8 @@ describe('FileExplorer', () => {
 
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          const covered = await screen.findByText('Covered')
-
-          await user.click(covered)
+          expect(await screen.findByText('Covered')).toBeTruthy()
+          const covered = screen.getByText('Covered')
           await user.click(covered)
 
           await waitFor(() =>
@@ -413,9 +413,12 @@ describe('FileExplorer', () => {
 
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          let covered = await screen.findByText('Covered')
+          expect(await screen.findByText('Covered')).toBeTruthy()
+          let covered = screen.getByText('Covered')
           await user.click(covered)
-          covered = await screen.findByText('Covered')
+
+          expect(await screen.findByText('Covered')).toBeTruthy()
+          covered = screen.getByText('Covered')
           await user.click(covered)
 
           await waitFor(() =>
@@ -434,9 +437,8 @@ describe('FileExplorer', () => {
 
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          const partial = await screen.findByText('Partial')
-
-          await user.click(partial)
+          expect(await screen.findByText('Partial')).toBeTruthy()
+          const partial = screen.getByText('Partial')
           await user.click(partial)
 
           await waitFor(() =>
@@ -453,9 +455,12 @@ describe('FileExplorer', () => {
 
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          let partial = await screen.findByText('Partial')
+          expect(await screen.findByText('Partial')).toBeTruthy()
+          let partial = screen.getByText('Partial')
           await user.click(partial)
-          partial = await screen.findByText('Partial')
+
+          expect(await screen.findByText('Partial')).toBeTruthy()
+          partial = screen.getByText('Partial')
           await user.click(partial)
 
           await waitFor(() =>
@@ -474,9 +479,8 @@ describe('FileExplorer', () => {
 
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          const missed = await screen.findByText('Missed')
-
-          await user.click(missed)
+          expect(await screen.findByText('Missed')).toBeTruthy()
+          const missed = screen.getByText('Missed')
           await user.click(missed)
 
           await waitFor(() =>
@@ -493,9 +497,12 @@ describe('FileExplorer', () => {
 
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          let missed = await screen.findByText('Missed')
+          expect(await screen.findByText('Missed')).toBeTruthy()
+          let missed = screen.getByText('Missed')
           await user.click(missed)
-          missed = await screen.findByText('Missed')
+
+          expect(await screen.findByText('Missed')).toBeTruthy()
+          missed = screen.getByText('Missed')
           await user.click(missed)
 
           await waitFor(() =>
@@ -512,10 +519,14 @@ describe('FileExplorer', () => {
     describe('api variables are being set', () => {
       it('sets the correct api variables', async () => {
         const { requestFilters, user } = setup()
-
         render(<FileExplorer />, { wrapper: wrapper() })
 
-        const search = await screen.findByRole('textbox', {
+        expect(
+          await await screen.findByRole('textbox', {
+            name: 'Search for files',
+          })
+        ).toBeTruthy()
+        const search = screen.getByRole('textbox', {
           name: 'Search for files',
         })
         await user.type(search, 'cool-file.rs')
@@ -530,20 +541,26 @@ describe('FileExplorer', () => {
     })
 
     describe('there are no files to be found', () => {
-      beforeEach(() => setup())
-
       it('displays no items found message', async () => {
+        const { user } = setup()
         render(<FileExplorer />, { wrapper: wrapper() })
 
-        const dir = await screen.findByText('src')
+        expect(await screen.findByText('src')).toBeTruthy()
+        const dir = screen.getByText('src')
         expect(dir).toBeInTheDocument()
 
-        const search = await screen.findByRole('textbox', {
+        expect(
+          await screen.findByRole('textbox', {
+            name: 'Search for files',
+          })
+        ).toBeTruthy()
+        const search = screen.getByRole('textbox', {
           name: 'Search for files',
         })
-        userEvent.type(search, 'cool-file.rs')
+        await user.type(search, 'cool-file.rs')
 
-        const noResults = await screen.findByText(/no results found/i)
+        expect(await screen.findByText(/no results found/i)).toBeTruthy()
+        const noResults = screen.getByText(/no results found/i)
         expect(noResults).toBeInTheDocument()
       })
     })

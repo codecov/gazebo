@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -168,7 +168,7 @@ describe('useRepos', () => {
     })
 
     it('returns repositories', async () => {
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () => useRepos({ filters: { active: true } }),
         {
           wrapper: wrapper(),
@@ -191,12 +191,9 @@ describe('useRepos', () => {
     })
 
     it('returns repositories of the owner', async () => {
-      const { result, waitFor } = renderHook(
-        () => useRepos({ owner: 'codecov' }),
-        {
-          wrapper: wrapper(),
-        }
-      )
+      const { result } = renderHook(() => useRepos({ owner: 'codecov' }), {
+        wrapper: wrapper(),
+      })
 
       await waitFor(() =>
         expect(result.current.data).toEqual({
@@ -212,13 +209,17 @@ describe('useRepos', () => {
     })
 
     it('returns repositories of the user', async () => {
-      const { result, waitFor } = renderHook(() => useRepos({}), {
+      const { result } = renderHook(() => useRepos({}), {
         wrapper: wrapper(),
       })
 
-      await waitFor(() => result.current.isSuccess)
+      await waitFor(() => result.current.isFetching)
+      await waitFor(() => !result.current.isFetching)
 
       result.current.fetchNextPage()
+
+      await waitFor(() => result.current.isFetching)
+      await waitFor(() => !result.current.isFetching)
 
       await waitFor(() =>
         expect(result.current.data).toEqual({

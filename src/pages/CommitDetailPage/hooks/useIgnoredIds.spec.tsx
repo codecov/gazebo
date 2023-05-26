@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 
 import { useIgnoredIds } from './useIgnoredIds'
 
@@ -15,12 +15,12 @@ afterEach(() => {
 
 describe('useIgnoredIds', () => {
   it('sets the initial data to an empty array', async () => {
-    const { result, waitFor } = renderHook(() => useIgnoredIds(), { wrapper })
+    const { result } = renderHook(() => useIgnoredIds(), { wrapper })
 
     await waitFor(() => expect(result.current.data).toStrictEqual([]))
   })
   it('returns an empty array when called a second time', async () => {
-    const { result, waitFor } = renderHook(() => useIgnoredIds(), { wrapper })
+    const { result } = renderHook(() => useIgnoredIds(), { wrapper })
 
     await waitFor(() => expect(result.current.data).toStrictEqual([]))
 

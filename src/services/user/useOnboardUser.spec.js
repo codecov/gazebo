@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -64,7 +64,7 @@ describe('useOnboardUser', () => {
 
     describe('when calling the mutation', () => {
       it('returns success', async () => {
-        const { result, waitFor } = renderHook(() => useOnboardUser(), {
+        const { result } = renderHook(() => useOnboardUser(), {
           wrapper: wrapper(),
         })
 
@@ -74,7 +74,7 @@ describe('useOnboardUser', () => {
       })
 
       it('updates the local cache', async () => {
-        const { result, waitFor } = renderHook(() => useOnboardUser(), {
+        const { result } = renderHook(() => useOnboardUser(), {
           wrapper: wrapper(),
         })
 
@@ -99,7 +99,7 @@ describe('useOnboardUser', () => {
     })
 
     it('returns onSuccess from opts', async () => {
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () =>
           useOnboardUser({
             onSuccess: onSuccessFn,

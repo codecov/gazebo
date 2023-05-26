@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { PropsWithChildren } from 'react'
@@ -64,7 +64,6 @@ describe('useSentryToken', () => {
     }
   ) {
     //@ts-ignore
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const mockAddToast = jest.fn()
 
     //@ts-ignore
@@ -126,7 +125,7 @@ describe('useSentryToken', () => {
       it('does not call addNotification', async () => {
         const { mockAddToast } = setup()
 
-        const { result, waitFor, waitForNextUpdate } = renderHook(
+        const { result } = renderHook(
           () => useSentryToken({ provider: '/gh' }),
           {
             wrapper,
@@ -134,8 +133,6 @@ describe('useSentryToken', () => {
         )
 
         result.current.mutate('super-cool-token')
-
-        await waitForNextUpdate()
 
         await waitFor(() => expect(mockAddToast).not.toBeCalled())
       })
@@ -143,7 +140,7 @@ describe('useSentryToken', () => {
       it('removes item from local storage', async () => {
         const { mockRemoveItem } = setup()
 
-        const { result, waitFor, waitForNextUpdate } = renderHook(
+        const { result } = renderHook(
           () => useSentryToken({ provider: '/gh' }),
           {
             wrapper,
@@ -151,8 +148,6 @@ describe('useSentryToken', () => {
         )
 
         result.current.mutate('super-cool-token')
-
-        await waitForNextUpdate()
 
         await waitFor(() => expect(mockRemoveItem).toBeCalled())
         await waitFor(() =>
@@ -165,7 +160,7 @@ describe('useSentryToken', () => {
       it('calls addNotification', async () => {
         const { mockAddToast } = setup({ isValidationError: true })
 
-        const { result, waitFor, waitForNextUpdate } = renderHook(
+        const { result } = renderHook(
           () => useSentryToken({ provider: '/gh' }),
           {
             wrapper,
@@ -173,8 +168,6 @@ describe('useSentryToken', () => {
         )
 
         result.current.mutate('super-cool-token')
-
-        await waitForNextUpdate()
 
         await waitFor(() => expect(mockAddToast).toBeCalled())
         await waitFor(() =>
@@ -187,7 +180,7 @@ describe('useSentryToken', () => {
       it('removes item from local storage', async () => {
         const { mockRemoveItem } = setup({ isValidationError: true })
 
-        const { result, waitFor, waitForNextUpdate } = renderHook(
+        const { result } = renderHook(
           () => useSentryToken({ provider: '/gh' }),
           {
             wrapper,
@@ -195,8 +188,6 @@ describe('useSentryToken', () => {
         )
 
         result.current.mutate('super-cool-token')
-
-        await waitForNextUpdate()
 
         await waitFor(() => expect(mockRemoveItem).toBeCalled())
         await waitFor(() =>
@@ -209,7 +200,7 @@ describe('useSentryToken', () => {
       it('calls addNotification', async () => {
         const { mockAddToast } = setup({ isUnAuthError: true })
 
-        const { result, waitFor, waitForNextUpdate } = renderHook(
+        const { result } = renderHook(
           () => useSentryToken({ provider: '/gh' }),
           {
             wrapper,
@@ -217,8 +208,6 @@ describe('useSentryToken', () => {
         )
 
         result.current.mutate('super-cool-token')
-
-        await waitForNextUpdate()
 
         await waitFor(() => expect(mockAddToast).toBeCalled())
         await waitFor(() =>
@@ -231,7 +220,7 @@ describe('useSentryToken', () => {
       it('removes item from local storage', async () => {
         const { mockRemoveItem } = setup({ isUnAuthError: true })
 
-        const { result, waitFor, waitForNextUpdate } = renderHook(
+        const { result } = renderHook(
           () => useSentryToken({ provider: '/gh' }),
           {
             wrapper,
@@ -239,8 +228,6 @@ describe('useSentryToken', () => {
         )
 
         result.current.mutate('super-cool-token')
-
-        await waitForNextUpdate()
 
         await waitFor(() => expect(mockRemoveItem).toBeCalled())
         await waitFor(() =>
@@ -253,7 +240,7 @@ describe('useSentryToken', () => {
       it('calls addNotification', async () => {
         const { mockAddToast } = setup({ isUnknownError: true })
 
-        const { result, waitFor, waitForNextUpdate } = renderHook(
+        const { result } = renderHook(
           () => useSentryToken({ provider: '/gh' }),
           {
             wrapper,
@@ -261,8 +248,6 @@ describe('useSentryToken', () => {
         )
 
         result.current.mutate('super-cool-token')
-
-        await waitForNextUpdate()
 
         await waitFor(() => expect(mockAddToast).toBeCalled())
         await waitFor(() =>
@@ -275,7 +260,7 @@ describe('useSentryToken', () => {
       it('removes item from local storage', async () => {
         const { mockRemoveItem } = setup({ isUnknownError: true })
 
-        const { result, waitFor, waitForNextUpdate } = renderHook(
+        const { result } = renderHook(
           () => useSentryToken({ provider: '/gh' }),
           {
             wrapper,
@@ -283,8 +268,6 @@ describe('useSentryToken', () => {
         )
 
         result.current.mutate('super-cool-token')
-
-        await waitForNextUpdate()
 
         await waitFor(() => expect(mockRemoveItem).toBeCalled())
         await waitFor(() =>

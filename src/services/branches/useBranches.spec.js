@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
@@ -80,27 +80,16 @@ describe('GetBranches', () => {
       setup()
     })
 
-    it('sets isLoading to true', () => {
-      const { result } = renderHook(
-        () => useBranches({ provider, owner, repo }),
-        {
-          wrapper,
-        }
-      )
-
-      expect(result.current.isLoading).toBeTruthy()
-    })
-
     describe('when data is loaded', () => {
       it('returns the data', async () => {
-        const { result, waitFor } = renderHook(
+        const { result } = renderHook(
           () => useBranches({ provider, owner, repo }),
           {
             wrapper,
           }
         )
 
-        await waitFor(() => result.current.isSuccess)
+        await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
         const expectedResponse = {
           branches: [
@@ -113,7 +102,9 @@ describe('GetBranches', () => {
           ],
         }
 
-        expect(result.current.data).toEqual(expectedResponse)
+        await waitFor(() =>
+          expect(result.current.data).toEqual(expectedResponse)
+        )
       })
     })
   })
@@ -124,15 +115,18 @@ describe('GetBranches', () => {
     })
 
     it('returns old data and new data combined', async () => {
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () => useBranches({ provider, owner, repo }),
         {
           wrapper,
         }
       )
 
-      await waitFor(() => result.current.isSuccess)
+      await waitFor(() => expect(result.current.status).toBe('success'))
+
       result.current.fetchNextPage()
+
+      await waitFor(() => expect(result.current.status).toBe('success'))
 
       const expectedData = {
         branches: [

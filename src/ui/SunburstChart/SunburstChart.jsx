@@ -283,7 +283,13 @@ function SunburstChart({
     return () => g.remove()
   }, [colorDomainMax, colorDomainMin, data, svgFontSize, svgRenderSize])
 
-  return <svg viewBox={[0, 0, svgRenderSize, svgRenderSize]} ref={ref} />
+  return (
+    <svg
+      data-testid="sunburst"
+      viewBox={[0, 0, svgRenderSize, svgRenderSize]}
+      ref={ref}
+    />
+  )
 }
 
 SunburstChart.propTypes = {

@@ -1,6 +1,6 @@
 import { useStripe } from '@stripe/react-stripe-js'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -85,7 +85,7 @@ describe('useUpdateCard', () => {
       })
 
       it('returns the data from the server', async () => {
-        const { result, waitFor } = renderHook(
+        const { result } = renderHook(
           () => useUpdateCard({ provider, owner }),
           {
             wrapper: wrapper(),
@@ -126,7 +126,7 @@ describe('useUpdateCard', () => {
       })
 
       it('does something', async () => {
-        const { result, waitFor } = renderHook(
+        const { result } = renderHook(
           () => useUpdateCard({ provider, owner }),
           {
             wrapper: wrapper(),

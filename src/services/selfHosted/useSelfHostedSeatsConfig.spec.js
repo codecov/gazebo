@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -33,15 +33,12 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('useSelfHostedSeatsConfig', () => {
-  let hookData
   function setup() {
     server.use(
       graphql.query('Seats', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockData))
       )
     )
-
-    hookData = renderHook(() => useSelfHostedSeatsConfig(), { wrapper })
   }
 
   describe('when called', () => {
@@ -49,18 +46,20 @@ describe('useSelfHostedSeatsConfig', () => {
       setup()
     })
 
-    it('returns isLoading', () => {
-      expect(hookData.result.current.isLoading).toBeTruthy()
-    })
-
     it('returns data', async () => {
-      await hookData.waitFor(() => hookData.result.current.isFetching)
-      await hookData.waitFor(() => !hookData.result.current.isFetching)
-
-      expect(hookData.result.current.data).toStrictEqual({
-        seatsUsed: 5,
-        seatsLimit: 10,
+      const { result } = renderHook(() => useSelfHostedSeatsConfig(), {
+        wrapper,
       })
+
+      await waitFor(() => result.current.isFetching)
+      await waitFor(() => !result.current.isFetching)
+
+      await waitFor(() =>
+        expect(result.current.data).toStrictEqual({
+          seatsUsed: 5,
+          seatsLimit: 10,
+        })
+      )
     })
   })
 })

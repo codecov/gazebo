@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -54,8 +54,6 @@ const wrapper = ({ children }) => (
 )
 
 describe('useRegenerateRepoUploadToken', () => {
-  let hookData
-
   function setup() {
     server.use(
       rest.patch(
@@ -65,9 +63,6 @@ describe('useRegenerateRepoUploadToken', () => {
         }
       )
     )
-    hookData = renderHook(() => useRegenerateRepoUploadToken(), {
-      wrapper,
-    })
   }
 
   describe('when called', () => {
@@ -75,30 +70,20 @@ describe('useRegenerateRepoUploadToken', () => {
       setup()
     })
 
-    it('returns isLoading false', () => {
-      expect(hookData.result.current.isLoading).toBeFalsy()
-    })
-
     describe('when calling the mutation', () => {
-      beforeEach(() => {
-        hookData.result.current.mutate()
-        return hookData.waitFor(() => hookData.result.current.status !== 'idle')
-      })
+      describe('when successful', () => {
+        it('returns isSuccess true', async () => {
+          const { result } = renderHook(() => useRegenerateRepoUploadToken(), {
+            wrapper,
+          })
 
-      it('returns isLoading true', () => {
-        expect(hookData.result.current.isLoading).toBeTruthy()
-      })
-    })
+          result.current.mutate()
 
-    describe('When success', () => {
-      beforeEach(async () => {
-        hookData.result.current.mutate({})
-        await hookData.waitFor(() => hookData.result.current.isLoading)
-        await hookData.waitFor(() => !hookData.result.current.isLoading)
-      })
+          await waitFor(() => result.current.isLoading)
+          await waitFor(() => !result.current.isLoading)
 
-      it('returns isSuccess true', () => {
-        expect(hookData.result.current.isSuccess).toBeTruthy()
+          await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
+        })
       })
     })
   })

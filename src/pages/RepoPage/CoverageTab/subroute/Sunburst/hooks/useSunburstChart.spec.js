@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -77,7 +77,7 @@ describe('useSunburstChart', () => {
     })
 
     it('renders something', async () => {
-      const { result, waitFor } = renderHook(() => useSunburstChart(), {
+      const { result } = renderHook(() => useSunburstChart(), {
         wrapper: wrapper(),
       })
 
@@ -101,7 +101,7 @@ describe('useSunburstChart', () => {
     afterEach(() => jest.resetAllMocks())
 
     it('returns undefined data if no data is received from the server', async () => {
-      const { result, waitFor } = renderHook(() => useSunburstChart(), {
+      const { result } = renderHook(() => useSunburstChart(), {
         wrapper: wrapper(),
       })
 
@@ -122,7 +122,7 @@ describe('useSunburstChart', () => {
     afterEach(() => jest.resetAllMocks())
 
     it('query using default branch', async () => {
-      const { waitFor } = renderHook(() => useSunburstChart(), {
+      renderHook(() => useSunburstChart(), {
         wrapper: wrapper(['/critical-role/c3/bells-hells']),
       })
 
@@ -142,7 +142,7 @@ describe('useSunburstChart', () => {
     afterEach(() => jest.resetAllMocks())
 
     it('query uses current branch', async () => {
-      const { waitFor } = renderHook(() => useSunburstChart(), {
+      renderHook(() => useSunburstChart(), {
         wrapper: wrapper(['/critical-role/c3/bells-hells/tree/something']),
       })
 

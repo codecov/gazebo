@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -9,7 +9,7 @@ import { formatTimeToNow } from 'shared/utils/dates'
 import PullsTable from './PullsTable'
 
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
+  defaultOptions: { queries: { retry: false, suspense: true } },
 })
 const server = setupServer()
 
@@ -100,6 +100,9 @@ describe('Pulls Table', () => {
     it('renders pulls titles', async () => {
       render(<PullsTable />, { wrapper })
 
+      const spinner = screen.queryByTestId('spinner')
+      await waitFor(() => expect(spinner).not.toBeInTheDocument())
+
       const title1 = await screen.findByText(/Test1/)
       expect(title1).toBeInTheDocument()
     })
@@ -107,12 +110,18 @@ describe('Pulls Table', () => {
     it('renders pulls authors', async () => {
       render(<PullsTable />, { wrapper })
 
+      const spinner = screen.queryByTestId('spinner')
+      await waitFor(() => expect(spinner).not.toBeInTheDocument())
+
       const author1 = await screen.findByText(/cool-user/)
       expect(author1).toBeInTheDocument()
     })
 
     it('renders pulls updatestamp', async () => {
       render(<PullsTable />, { wrapper })
+
+      const spinner = screen.queryByTestId('spinner')
+      await waitFor(() => expect(spinner).not.toBeInTheDocument())
 
       const dt = formatTimeToNow('2021-08-30T19:33:49.819672')
       const dt1 = await screen.findByText('last updated ' + dt)
@@ -122,6 +131,9 @@ describe('Pulls Table', () => {
     it('renders pulls ids', async () => {
       render(<PullsTable />, { wrapper })
 
+      const spinner = screen.queryByTestId('spinner')
+      await waitFor(() => expect(spinner).not.toBeInTheDocument())
+
       const id1 = await screen.findByText(/#746/)
       expect(id1).toBeInTheDocument()
     })
@@ -129,12 +141,18 @@ describe('Pulls Table', () => {
     it('renders pulls coverage', async () => {
       render(<PullsTable />, { wrapper })
 
+      const spinner = screen.queryByTestId('spinner')
+      await waitFor(() => expect(spinner).not.toBeInTheDocument())
+
       const cov1 = await screen.findByText(/45.00%/)
       expect(cov1).toBeInTheDocument()
     })
 
     it('renders pulls change from base', async () => {
       render(<PullsTable />, { wrapper })
+
+      const spinner = screen.queryByTestId('spinner')
+      await waitFor(() => expect(spinner).not.toBeInTheDocument())
 
       const changeValue = await screen.findByTestId('change-value')
       const child = await within(changeValue).findByTestId('number-value')
@@ -151,7 +169,10 @@ describe('Pulls Table', () => {
     it('renders no pulls message', async () => {
       render(<PullsTable />, { wrapper })
 
-      const msg = await screen.findByText(/no results found/)
+      const spinner = screen.queryByTestId('spinner')
+      await waitFor(() => expect(spinner).not.toBeInTheDocument())
+
+      const msg = await screen.findByText('no results found')
       expect(msg).toBeInTheDocument()
     })
   })
@@ -165,6 +186,9 @@ describe('Pulls Table', () => {
 
     it('renders missing pulls message', async () => {
       render(<PullsTable />, { wrapper })
+
+      const spinner = screen.queryByTestId('spinner')
+      await waitFor(() => expect(spinner).not.toBeInTheDocument())
 
       const msg = await screen.findByText(/we can't find this pull/)
       expect(msg).toBeInTheDocument()
@@ -190,12 +214,18 @@ describe('Pulls Table', () => {
     it('renders text of null coverage', async () => {
       render(<PullsTable />, { wrapper })
 
+      const spinner = screen.queryByTestId('spinner')
+      await waitFor(() => expect(spinner).not.toBeInTheDocument())
+
       const msg = await screen.findByText(/No report uploaded yet/)
       expect(msg).toBeInTheDocument()
     })
 
     it('renders id of the pull', async () => {
       render(<PullsTable />, { wrapper })
+
+      const spinner = screen.queryByTestId('spinner')
+      await waitFor(() => expect(spinner).not.toBeInTheDocument())
 
       const id = await screen.findByText(/#746/)
       expect(id).toBeInTheDocument()
@@ -212,6 +242,9 @@ describe('Pulls Table', () => {
     it('renders the icon pullRequestClosed', async () => {
       render(<PullsTable />, { wrapper })
 
+      const spinner = screen.queryByTestId('spinner')
+      await waitFor(() => expect(spinner).not.toBeInTheDocument())
+
       const icon = await screen.findByText(/pull-request-closed.svg/)
       expect(icon).toBeInTheDocument()
     })
@@ -224,6 +257,9 @@ describe('Pulls Table', () => {
 
     it('renders the icon merge', async () => {
       render(<PullsTable />, { wrapper })
+
+      const spinner = screen.queryByTestId('spinner')
+      await waitFor(() => expect(spinner).not.toBeInTheDocument())
 
       const icon = await screen.findByText(/merge.svg/)
       expect(icon).toBeInTheDocument()
@@ -239,6 +275,9 @@ describe('Pulls Table', () => {
 
     it('renders the icon pullRequestOpen', async () => {
       render(<PullsTable />, { wrapper })
+
+      const spinner = screen.queryByTestId('spinner')
+      await waitFor(() => expect(spinner).not.toBeInTheDocument())
 
       const icon = await screen.findByText(/pull-request-open.svg/)
       expect(icon).toBeInTheDocument()
@@ -256,8 +295,11 @@ describe('Pulls Table', () => {
       })
     })
 
-    it('does not render the change', () => {
+    it('does not render the change', async () => {
       render(<PullsTable />, { wrapper })
+
+      const spinner = screen.queryByTestId('spinner')
+      await waitFor(() => expect(spinner).not.toBeInTheDocument())
 
       const change = screen.queryByText(/90/)
       expect(change).not.toBeInTheDocument()

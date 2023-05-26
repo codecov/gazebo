@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import _ from 'lodash'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
@@ -87,7 +87,7 @@ describe('useFileWithMainCoverage', () => {
     })
 
     it('returns commit file coverage', async () => {
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () => useFileWithMainCoverage({ provider }),
         {
           wrapper,
@@ -97,15 +97,17 @@ describe('useFileWithMainCoverage', () => {
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
 
-      expect(result.current.data).toEqual({
-        ...data.owner.repository.commit.coverageFile,
-        totals: 0,
-        flagNames: ['a', 'b'],
-        coverage: _.chain(data.owner.repository.commit.coverageFile.coverage)
-          .keyBy('line')
-          .mapValues('coverage')
-          .value(),
-      })
+      await waitFor(() =>
+        expect(result.current.data).toEqual({
+          ...data.owner.repository.commit.coverageFile,
+          totals: 0,
+          flagNames: ['a', 'b'],
+          coverage: _.chain(data.owner.repository.commit.coverageFile.coverage)
+            .keyBy('line')
+            .mapValues('coverage')
+            .value(),
+        })
+      )
     })
   })
 
@@ -168,7 +170,7 @@ describe('useFileWithMainCoverage', () => {
     })
 
     it('returns branch file coverage', async () => {
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () => useFileWithMainCoverage({ provider }),
         {
           wrapper,
@@ -178,18 +180,20 @@ describe('useFileWithMainCoverage', () => {
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
 
-      expect(result.current.data).toEqual({
-        ...data.owner.repository.branch.head.coverageFile,
-        totals: 0,
-        flagNames: [],
-        isCriticalFile: true,
-        coverage: _.chain(
-          data.owner.repository.branch.head.coverageFile.coverage
-        )
-          .keyBy('line')
-          .mapValues('coverage')
-          .value(),
-      })
+      await waitFor(() =>
+        expect(result.current.data).toEqual({
+          ...data.owner.repository.branch.head.coverageFile,
+          totals: 0,
+          flagNames: [],
+          isCriticalFile: true,
+          coverage: _.chain(
+            data.owner.repository.branch.head.coverageFile.coverage
+          )
+            .keyBy('line')
+            .mapValues('coverage')
+            .value(),
+        })
+      )
     })
   })
 })

@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook } from '@testing-library/react'
 import Cookie from 'js-cookie'
 import { MemoryRouter, Route } from 'react-router-dom'
 

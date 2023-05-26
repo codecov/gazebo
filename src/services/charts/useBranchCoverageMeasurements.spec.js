@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
@@ -64,7 +64,7 @@ describe('useBranchCoverageMeasurements', () => {
     })
 
     it('returns coverage information', async () => {
-      const { result, waitFor } = renderHook(
+      const { result } = renderHook(
         () =>
           useBranchCoverageMeasurements({
             provider: 'gh',

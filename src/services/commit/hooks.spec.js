@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -55,7 +55,7 @@ const commitData = {
       },
       {
         node: {
-          id: 0,
+          id: 1,
           state: 'processed',
           provider: 'travis',
           createdAt: '2020-08-25T16:36:25.820340+00:00',
@@ -115,9 +115,7 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('useCommit', () => {
-  let hookData
-
-  function setup(provider, owner, repo, commitid) {
+  function setup() {
     server.use(
       graphql.query(`Commit`, (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(dataReturned))
@@ -126,38 +124,49 @@ describe('useCommit', () => {
         return res(ctx.status(200), ctx.data(compareDoneData))
       })
     )
-    hookData = renderHook(
-      () => useCommit({ provider, owner, repo, commitid }),
-      {
-        wrapper,
-      }
-    )
   }
 
   describe('when useCommit is called', () => {
     const expectedResponse = {
       commit: {
         ...commitData,
+        compareWithParent: {
+          state: 'processed',
+        },
         uploads: [
           commitData.uploads.edges[0].node,
           commitData.uploads.edges[1].node,
         ],
       },
     }
+
     beforeEach(() => {
-      setup('gh', 'febg', 'repo-test', 'a23sda3')
-      return hookData.waitFor(() => hookData.result.current.isSuccess)
+      setup()
     })
 
-    it('returns commit info', () => {
-      expect(hookData.result.current.data).toEqual(expectedResponse)
+    it('returns commit info', async () => {
+      const { result } = renderHook(
+        () =>
+          useCommit({
+            provider: 'gh',
+            owner: 'febg',
+            repo: 'repo-test',
+            commitid: 'a23sda3',
+          }),
+        {
+          wrapper,
+        }
+      )
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      await waitFor(() => expect(result.current.data).toEqual(expectedResponse))
     })
   })
 })
 
 describe('useCommit polling', () => {
-  let hookData
-
   let nbCallCompare = 0
 
   function setup(provider, owner, repo, commitid) {
@@ -174,12 +183,6 @@ describe('useCommit polling', () => {
         return res(ctx.status(200), ctx.data(compareDoneData))
       })
     )
-    hookData = renderHook(
-      () => useCommit({ provider, owner, repo, commitid, refetchInterval: 5 }),
-      {
-        wrapper,
-      }
-    )
   }
 
   describe('when useCommit is called', () => {
@@ -193,31 +196,46 @@ describe('useCommit polling', () => {
       },
     }
     beforeEach(async () => {
-      setup('gh', 'febg', 'repo-test', 'a23sda3')
-      await hookData.waitFor(() => hookData.result.current.isSuccess)
-      await hookData.waitFor(() => {
-        const { commit } = hookData.result.current.data
-        return commit.compareWithParent.state === 'processed'
-      })
+      setup()
     })
 
-    it('returns commit data merged with what polling fetched', () => {
-      expect(hookData.result.current.data).toEqual({
-        ...expectedResponse,
-        commit: {
-          ...expectedResponse.commit,
-          compareWithParent: {
-            state: 'processed',
-          },
-        },
+    it('returns commit data merged with what polling fetched', async () => {
+      const { result } = renderHook(
+        () =>
+          useCommit({
+            provider: 'gh',
+            owner: 'febg',
+            repo: 'repo-test',
+            commitid: 'a23sda3',
+            refetchInterval: 5,
+          }),
+        {
+          wrapper,
+        }
+      )
+
+      await waitFor(() => result.current.isSuccess)
+      await waitFor(() => {
+        const { commit } = result.current.data
+        return commit.compareWithParent.state === 'processed'
       })
+
+      await waitFor(() =>
+        expect(result.current.data).toEqual({
+          ...expectedResponse,
+          commit: {
+            ...expectedResponse.commit,
+            compareWithParent: {
+              state: 'processed',
+            },
+          },
+        })
+      )
     })
   })
 })
 
 describe('useCommitYaml', () => {
-  let hookData
-
   const yaml =
     'codecov:\n  max_report_age: false\n  require_ci_to_pass: true\ncomment:\n  behavior: default\n  layout: reach,diff,flags,tree,reach\n  show_carryforward_flags: false\ncoverage:\n  precision: 2\n  range:\n  - 70.0\n  - 100.0\n  round: down\n  status:\n    changes: false\n    default_rules:\n      flag_coverage_not_uploaded_behavior: include\n    patch:\n      default:\n        target: 80.0\n    project:\n      library:\n        paths:\n        - src/path1/.*\n        target: auto\n        threshold: 0.1\n      tests:\n        paths:\n        - src/path2/.*\n        target: 100.0\ngithub_checks:\n  annotations: true\n'
 
@@ -239,22 +257,31 @@ describe('useCommitYaml', () => {
         )
       })
     )
-    hookData = renderHook(
-      () => useCommitYaml({ provider, owner, repo, commitid }),
-      {
-        wrapper,
-      }
-    )
   }
 
   describe('when called and user is authenticated', () => {
     beforeEach(() => {
-      setup('gh', 'febg', 'repo-test', 'a23sda3')
-      return hookData.waitFor(() => hookData.result.current.isSuccess)
+      setup()
     })
 
-    it('returns commit info', () => {
-      expect(hookData.result.current.data).toEqual(yaml)
+    it('returns commit info', async () => {
+      const { result } = renderHook(
+        () =>
+          useCommitYaml({
+            provider: 'gh',
+            owner: 'febg',
+            repo: 'repo-test',
+            commitid: 'a23sda3',
+          }),
+        {
+          wrapper,
+        }
+      )
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      await waitFor(() => expect(result.current.data).toEqual(yaml))
     })
   })
 })

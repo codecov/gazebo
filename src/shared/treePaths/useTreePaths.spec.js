@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -167,7 +167,7 @@ describe('useTreePaths', () => {
     })
     describe('a path is provided', () => {
       it('returns a list of objects', async () => {
-        const { result, waitFor } = renderHook(() => useTreePaths(), {
+        const { result } = renderHook(() => useTreePaths(), {
           wrapper: wrapper(['/gh/owner/coolrepo/tree/main/src/file.js']),
         })
 
@@ -204,7 +204,7 @@ describe('useTreePaths', () => {
     })
     describe('correctly generates paths', () => {
       it('returns a list of objects', async () => {
-        const { result, waitFor } = renderHook(() => useTreePaths(), {
+        const { result } = renderHook(() => useTreePaths(), {
           wrapper: wrapper(['/gh/owner/coolrepo']),
         })
 

@@ -106,7 +106,7 @@ describe('EraseRepoContent', () => {
       const eraseButton = await screen.findByRole('button', {
         name: /Erase Content/,
       })
-      await userEvent.click(eraseButton)
+      await user.click(eraseButton)
 
       const modalCancelButton = await screen.findByRole('button', {
         name: /Erase Content/,

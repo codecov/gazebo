@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
@@ -67,7 +67,7 @@ describe('usePullHeadData', () => {
       })
 
       it('returns the correct data', async () => {
-        const { result, waitFor } = renderHook(
+        const { result } = renderHook(
           () =>
             usePullHeadData({
               provider: 'gh',
@@ -83,19 +83,21 @@ describe('usePullHeadData', () => {
         await waitFor(() => result.current.isLoading)
         await waitFor(() => !result.current.isLoading)
 
-        expect(result.current.data).toStrictEqual({
-          pullId: 1,
-          title: 'Cool Pull Request',
-          state: 'open',
-          author: {
-            username: 'cool-user',
-          },
-          head: {
-            branchName: 'cool-branch',
-            ciPassed: true,
-          },
-          updatestamp: '',
-        })
+        await waitFor(() =>
+          expect(result.current.data).toStrictEqual({
+            pullId: 1,
+            title: 'Cool Pull Request',
+            state: 'open',
+            author: {
+              username: 'cool-user',
+            },
+            head: {
+              branchName: 'cool-branch',
+              ciPassed: true,
+            },
+            updatestamp: '',
+          })
+        )
       })
     })
 
@@ -105,7 +107,7 @@ describe('usePullHeadData', () => {
       })
 
       it('returns an empty object', async () => {
-        const { result, waitFor } = renderHook(
+        const { result } = renderHook(
           () =>
             usePullHeadData({
               provider: 'gh',
@@ -121,7 +123,7 @@ describe('usePullHeadData', () => {
         await waitFor(() => result.current.isLoading)
         await waitFor(() => !result.current.isLoading)
 
-        expect(result.current.data).toStrictEqual({})
+        await waitFor(() => expect(result.current.data).toStrictEqual({}))
       })
     })
   })

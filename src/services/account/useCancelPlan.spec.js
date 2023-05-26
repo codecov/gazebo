@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -69,24 +69,23 @@ describe('useCancelPlan', () => {
     })
 
     it('calls with the correct body', async () => {
-      const { result, waitFor } = renderHook(
-        () => useCancelPlan({ provider, owner }),
-        {
-          wrapper: wrapper(),
-        }
-      )
+      const { result } = renderHook(() => useCancelPlan({ provider, owner }), {
+        wrapper: wrapper(),
+      })
 
       result.current.mutate()
 
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
 
-      expect(mockBody).toBeCalled()
-      expect(mockBody).toHaveBeenCalledWith({
-        plan: {
-          value: Plans.USERS_BASIC,
-        },
-      })
+      await waitFor(() => expect(mockBody).toBeCalled())
+      await waitFor(() =>
+        expect(mockBody).toHaveBeenCalledWith({
+          plan: {
+            value: Plans.USERS_BASIC,
+          },
+        })
+      )
     })
   })
 })

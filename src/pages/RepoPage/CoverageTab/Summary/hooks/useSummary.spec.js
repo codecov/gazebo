@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
@@ -158,7 +158,7 @@ describe('useSummary', () => {
     })
 
     it('passes down useRepoCoverage', async () => {
-      const { result, waitFor } = renderHook(() => useSummary(), { wrapper })
+      const { result } = renderHook(() => useSummary(), { wrapper })
 
       await waitFor(() =>
         expect(result.current.data).toEqual({
@@ -175,7 +175,7 @@ describe('useSummary', () => {
     })
 
     it('passed down branch selector props', async () => {
-      const { result, waitFor } = renderHook(() => useSummary(), { wrapper })
+      const { result } = renderHook(() => useSummary(), { wrapper })
 
       await waitFor(() =>
         expect(result.current.branchSelectorProps).toStrictEqual({
@@ -204,7 +204,7 @@ describe('useSummary', () => {
     })
 
     it('passed down the currentBranchSelected', async () => {
-      const { result, waitFor } = renderHook(() => useSummary(), { wrapper })
+      const { result } = renderHook(() => useSummary(), { wrapper })
 
       await waitFor(() =>
         expect(result.current.currentBranchSelected).toEqual({
@@ -215,19 +215,19 @@ describe('useSummary', () => {
     })
 
     it('passed down the defaultBranch', async () => {
-      const { result, waitFor } = renderHook(() => useSummary(), { wrapper })
+      const { result } = renderHook(() => useSummary(), { wrapper })
 
       await waitFor(() => expect(result.current.defaultBranch).toEqual('main'))
     })
 
     it('passed down the privateRepo', async () => {
-      const { result, waitFor } = renderHook(() => useSummary(), { wrapper })
+      const { result } = renderHook(() => useSummary(), { wrapper })
 
       await waitFor(() => expect(result.current.privateRepo).toEqual(false))
     })
 
     it('sets branchList to list of branches', async () => {
-      const { result, waitFor } = renderHook(() => useSummary(), { wrapper })
+      const { result } = renderHook(() => useSummary(), { wrapper })
 
       await waitFor(() =>
         expect(result.current.branchList).toStrictEqual([
@@ -254,7 +254,7 @@ describe('useSummary', () => {
     })
 
     it('sets branchList to empty list', async () => {
-      const { result, waitFor } = renderHook(() => useSummary(), { wrapper })
+      const { result } = renderHook(() => useSummary(), { wrapper })
 
       await waitFor(() => expect(result.current.branchList).toStrictEqual([]))
     })
