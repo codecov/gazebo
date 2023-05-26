@@ -12,5 +12,5 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "same-origin"
-    Content-Security-Policy = "font-src https://fonts.googleapis.com http://fonts.gstatic.com; style-src-elem https://fonts.googleapis.com https://*.netlify.app; connect-src https://*.sentry.io https://*.launchdarkly.com https://*.codecov.dev; worker-src https://*.netify.app; img-src https://*.netify.app. default-src 'unsafe-inline';"
+    Content-Security-Policy = "font-src https://fonts.googleapis.com http://fonts.gstatic.com; style-src-elem https://fonts.googleapis.com https://*.netlify.app; connect-src https://*.sentry.io https://*.launchdarkly.com https://*.codecov.dev; worker-src https://*.netify.app; img-src https://*.netify.app; default-src 'unsafe-inline';"
     Permissions-Policy = "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=(), interest-cohort=()"
