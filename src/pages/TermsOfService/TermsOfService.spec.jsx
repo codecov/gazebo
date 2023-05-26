@@ -10,12 +10,13 @@ import { trackSegmentEvent } from 'services/tracking/segment'
 
 import TermsOfService from './TermsOfService'
 
+jest.mock('services/tracking/segment')
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 const server = setupServer()
-
-jest.mock('services/tracking/segment')
+let errorMock
 
 const wrapper =
   (initialEntries = ['/gh/codecov/cool-repo']) =>
@@ -39,9 +40,13 @@ afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+afterAll(() => {
+  server.close()
+})
+
 describe('TermsOfService', () => {
   beforeEach(() => jest.resetModules())
+
   function setup({
     myOrganizationsData,
     useUserData,
@@ -597,7 +602,17 @@ describe('TermsOfService', () => {
       [expectRendersServerFailureResult, 'validation error'],
     ],
   ])('form validation, %s', (_, initializeTest, ...steps) => {
-    beforeEach(() => jest.resetModules())
+    beforeEach(() => {
+      const spy = jest.spyOn(console, 'error')
+      errorMock = jest.fn()
+      spy.mockImplementation(errorMock)
+      // console.error = errorMock
+    })
+
+    afterEach(() => {
+      errorMock.mockReset()
+    })
+
     describe(`
       Has signed in: ${!!initializeTest.useUserData.me}
       Has a email via oauth: ${initializeTest.useUserData.me?.email}
@@ -605,6 +620,7 @@ describe('TermsOfService', () => {
       jest.mock('./hooks/useTermsOfService', () => ({
         useSaveTermsAgreement: jest.fn(() => ({ data: 'mocked' })),
       }))
+
       it(`scenario: ${initializeTest.validationDescription}`, async () => {
         const { user } = setup({
           isUnknownError: initializeTest.isUnknownError,
@@ -730,19 +746,22 @@ async function expectClickSubmit(user) {
 }
 
 async function expectRendersServerFailureResult(user, expectedError = {}) {
-  const spy = jest.spyOn(console, 'error')
-  const errorMock = jest.fn()
-  spy.mockImplementation(errorMock)
-
+  expect(await screen.findByRole('button', { name: /Continue/ })).toBeTruthy()
   const submit = screen.getByRole('button', { name: /Continue/ })
 
   await user.click(submit)
 
+  expect(
+    await screen.findByText(
+      /There was an error with our servers. Please try again later or/i
+    )
+  ).toBeTruthy()
   const error = screen.getByText(
     /There was an error with our servers. Please try again later or/i
   )
   expect(error).toBeInTheDocument()
-  // await waitFor(() => expect(errorMock).toHaveBeenLastCalledWith(expectedError))
+  await waitFor(() => expect(errorMock).toBeCalled())
+  await waitFor(() => expect(errorMock).toHaveBeenLastCalledWith(expectedError))
 
   const issueLink = screen.getByRole('link', { name: /contact support/i })
   expect(issueLink).toBeInTheDocument()
