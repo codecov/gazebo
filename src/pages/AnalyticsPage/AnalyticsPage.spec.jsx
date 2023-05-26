@@ -78,7 +78,7 @@ describe('AnalyticsPage', () => {
       })
     })
 
-    it('doesnt render the header', () => {
+    it('does not render the header', () => {
       expect(screen.queryByText(/Header/)).not.toBeInTheDocument()
     })
 
@@ -119,7 +119,7 @@ describe('AnalyticsPage', () => {
       })
     })
 
-    it('doesnt render Tabs', () => {
+    it('does not render Tabs', () => {
       expect(screen.queryByText(/Tabs/)).not.toBeInTheDocument()
     })
   })
