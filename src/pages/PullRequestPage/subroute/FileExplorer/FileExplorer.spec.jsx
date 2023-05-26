@@ -541,9 +541,8 @@ describe('FileExplorer', () => {
     })
 
     describe('there are no files to be found', () => {
-      beforeEach(() => setup())
-
       it('displays no items found message', async () => {
+        const { user } = setup()
         render(<FileExplorer />, { wrapper: wrapper() })
 
         expect(await screen.findByText('src')).toBeTruthy()
@@ -558,7 +557,7 @@ describe('FileExplorer', () => {
         const search = screen.getByRole('textbox', {
           name: 'Search for files',
         })
-        userEvent.type(search, 'cool-file.rs')
+        await user.type(search, 'cool-file.rs')
 
         expect(await screen.findByText(/no results found/i)).toBeTruthy()
         const noResults = screen.getByText(/no results found/i)

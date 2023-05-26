@@ -1,27 +1,32 @@
-import { fireEvent, render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import Button from '.'
 
 describe('Button', () => {
-  let wrapper
-
   const onClick = jest.fn()
 
   describe('when rendered', () => {
-    beforeEach(() => {
-      wrapper = render(<Button onClick={onClick}>Click me</Button>)
-    })
+    function setup() {
+      const user = userEvent.setup()
+      return { user }
+    }
 
     it('renders a button', () => {
-      expect(wrapper.container.querySelector('button')).not.toBeNull()
+      render(<Button onClick={onClick}>Click me</Button>)
+
+      const button = screen.getByRole('button')
+      expect(button).toBeInTheDocument()
     })
 
     describe('when clicking', () => {
-      beforeEach(() => {
-        fireEvent.click(wrapper.getByText('Click me'))
-      })
+      it('calls the handler', async () => {
+        const { user } = setup()
+        render(<Button onClick={onClick}>Click me</Button>)
 
-      it('calls the handler', () => {
+        const button = screen.getByRole('button')
+        await user.click(button)
+
         expect(onClick).toHaveBeenCalled()
       })
     })
