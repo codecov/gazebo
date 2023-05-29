@@ -1224,17 +1224,23 @@ describe('useNavLinks', () => {
     })
 
     it('Returns the correct link with nothing passed', () => {
-      expect(hookData.result.current.githubRepoActions.path()).toBe(
-        'https://github.com/codecov/cool-repo/actions'
-      )
+      expect(
+        hookData.result.current.githubRepoActions.path({ branch: 'main' })
+      ).toBe('https://github.com/codecov/cool-repo/tree/main/.github/workflows')
     })
     it('can override the params', () => {
       expect(
-        hookData.result.current.githubRepoActions.path({ repo: 'test-repo' })
-      ).toBe('https://github.com/codecov/test-repo/actions')
+        hookData.result.current.githubRepoActions.path({
+          repo: 'test-repo',
+          branch: 'main',
+        })
+      ).toBe('https://github.com/codecov/test-repo/tree/main/.github/workflows')
       expect(
-        hookData.result.current.githubRepoActions.path({ owner: 'cat' })
-      ).toBe('https://github.com/cat/cool-repo/actions')
+        hookData.result.current.githubRepoActions.path({
+          owner: 'cat',
+          branch: 'master',
+        })
+      ).toBe('https://github.com/cat/cool-repo/tree/master/.github/workflows')
     })
   })
 })
