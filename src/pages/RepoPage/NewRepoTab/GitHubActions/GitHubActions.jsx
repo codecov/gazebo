@@ -65,8 +65,9 @@ function GitHubActions() {
           Step 3: get coverage analysis from Codecov
         </h2>
         <p>
-          After you committed your changes and ran the repo’s CI/CD pipeline. In
-          your pull request, you should see two status checks and PR comment.
+          After you committed your changes and ran the repo&aposs CI/CD
+          pipeline. In your pull request, you should see two status checks and
+          PR comment.
         </p>
         <img
           alt="codecov patch and project"
@@ -76,7 +77,7 @@ function GitHubActions() {
         />
         <p>
           Once merged to the default branch, subsequent pull requests will have
-          checks and report comment. Additionally, you’ll find your repo
+          checks and report comment. Additionally, you&aposll find your repo
           coverage dashboard here.
         </p>
       </>
