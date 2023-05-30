@@ -12,5 +12,5 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "same-origin"
-    Content-Security-Policy = "font-src 'self' https://fonts.googleapis.com http://fonts.gstatic.com; script-src-elem 'self'; style-src-elem 'self' https://fonts.googleapis.com; connect-src 'self' https://*.sentry.io https://*.launchdarkly.com https://*.codecov.dev; worker-src 'self''; img-src 'self'; manifest-src 'self'';  default-src 'self';"
+    Content-Security-Policy = "font-src 'self' https://fonts.googleapis.com http://fonts.gstatic.com; script-src-elem https://*; style-src-elem 'self' https://fonts.googleapis.com; connect-src 'self' https://*.sentry.io https://*.launchdarkly.com https://*.codecov.dev; worker-src 'self'; img-src 'self'; manifest-src 'self';  default-src 'unsafe-inline';"
     Permissions-Policy = "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=(), interest-cohort=()"
