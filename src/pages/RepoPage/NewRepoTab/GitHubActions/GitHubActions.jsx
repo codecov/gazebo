@@ -76,7 +76,7 @@ function GitHubActions() {
         />
         <p>
           Once merged to the default branch, subsequent pull requests will have
-          checks and report comment. Additionally, you&aposll find your repo
+          checks and report comment. Additionally, you&apos;ll find your repo
           coverage dashboard here.
         </p>
       </>
