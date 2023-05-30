@@ -17,7 +17,7 @@ function GitHubActions() {
   return (
     <>
       <div className="flex flex-col gap-4">
-        <span>
+        <div>
           <h2 className="pt-6 text-base font-semibold">
             Step 1: add repository token as{' '}
             <A to={{ pageName: 'githubRepoSecrets' }} isExternal>
@@ -28,7 +28,7 @@ function GitHubActions() {
             Admin required to access repo settings {'>'} secrets and variable
             {' >'} actions
           </p>
-        </span>
+        </div>
         <pre className="flex items-center gap-2 overflow-auto rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
           CODECOV_TOKEN={data?.repository?.uploadToken}
           <CopyClipboard
