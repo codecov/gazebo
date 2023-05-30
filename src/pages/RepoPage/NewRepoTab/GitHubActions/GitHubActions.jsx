@@ -64,7 +64,7 @@ function GitHubActions() {
           Step 3: get coverage analysis from Codecov
         </h2>
         <p>
-          After you committed your changes and ran the repo&aposs CI/CD
+          After you committed your changes and ran the repo&apos;s CI/CD
           pipeline. In your pull request, you should see two status checks and
           PR comment.
         </p>
