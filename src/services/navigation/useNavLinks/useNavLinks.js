@@ -504,12 +504,11 @@ export function useNavLinks() {
     githubRepoActions: {
       text: 'GitHub Actions workflow yaml file',
       path: (
-        { owner = o, repo = r, branch } = {
+        { owner = o, repo = r } = {
           owner: o,
           repo: r,
         }
-      ) =>
-        `https://github.com/${owner}/${repo}/tree/${branch}/.github/workflows`,
+      ) => `https://github.com/${owner}/${repo}/actions`,
       isExternalLink: true,
       openNewTab: true,
     },
