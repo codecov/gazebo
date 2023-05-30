@@ -1,1 +1,1 @@
-export * from './useRenderToast'
+export * from './renderToast'

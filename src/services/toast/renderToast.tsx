@@ -8,6 +8,7 @@ export interface ToastProps {
   content: string
 }
 
+// TODO: once new designs have been done up for new toasts
 export type ToastTypes = 'generic' // | 'success' | ...
 
 export interface ToastArgs {
@@ -17,18 +18,23 @@ export interface ToastArgs {
   options?: ToastOptions
 }
 
-const renderToast = ({
+export const renderToast = ({
   title,
   content,
   type = 'generic',
-  options = {},
+  options = { duration: 4000 },
 }: ToastArgs) => {
   let component = <GenericToast title={title} content={content} />
 
   // TODO: once new designs have been done up for new toasts
-  // if (type === "success") {
-  //   component = ...
-  // }
+  switch (type) {
+    // case 'success':
+    //   component = <SuccessToast title={title} content={content} />
+    //   break
+    // ...
+    default:
+      component = <GenericToast title={title} content={content} />
+  }
 
   toast.custom(component, {
     duration: 5000,
@@ -36,7 +42,3 @@ const renderToast = ({
     ...options,
   })
 }
-
-export const useRenderToast = () => ({
-  renderToast,
-})
