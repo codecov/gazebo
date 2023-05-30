@@ -37,7 +37,7 @@ export const renderToast = ({
   }
 
   toast.custom(component, {
-    duration: 5000,
+    duration: 2000,
     position: 'bottom-right',
     ...options,
   })
