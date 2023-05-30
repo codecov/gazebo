@@ -502,7 +502,7 @@ export function useNavLinks() {
       openNewTab: true,
     },
     githubRepoActions: {
-      text: 'GitHub Actions workflow yaml file',
+      text: 'GitHub Actions workflow',
       path: (
         { owner = o, repo = r } = {
           owner: o,

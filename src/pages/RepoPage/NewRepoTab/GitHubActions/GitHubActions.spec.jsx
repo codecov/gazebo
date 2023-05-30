@@ -162,7 +162,7 @@ describe('GitHubActions', () => {
       expect(header).toBeInTheDocument()
 
       const gitHubActionsWorkflowLink = await screen.findByRole('link', {
-        name: /GitHub Actions workflow yaml file/,
+        name: /GitHub Actions workflow/,
       })
       expect(gitHubActionsWorkflowLink).toBeInTheDocument()
       expect(gitHubActionsWorkflowLink).toHaveAttribute(
