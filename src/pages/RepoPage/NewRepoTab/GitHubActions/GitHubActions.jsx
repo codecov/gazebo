@@ -43,7 +43,6 @@ function GitHubActions() {
           <A
             to={{
               pageName: 'githubRepoActions',
-              options: { branch: data?.repository?.defaultBranch },
             }}
             isExternal
           />
