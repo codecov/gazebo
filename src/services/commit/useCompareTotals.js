@@ -38,7 +38,7 @@ export function useCompareTotals({
   const query = `
       query CompareTotals($owner: String!, $repo: String!, $commitid: String!) {
         owner(username: $owner) {
-          repository(name: $repo) {
+          repository: repositoryDeprecated(name: $repo) {
             commit(id: $commitid) {
               ...ComparisonFragment
             }
