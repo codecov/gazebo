@@ -208,7 +208,7 @@ describe('FileListTable', () => {
           ).findAllByRole('link')
           expect(links[0]).toHaveAttribute(
             'href',
-            '/gh/codecov/cool-repo/blob/main/a/b/c/file.js'
+            '/gh/codecov/cool-repo/blob/main/a%2Fb%2Fc%2Ffile.js'
           )
         })
       })
