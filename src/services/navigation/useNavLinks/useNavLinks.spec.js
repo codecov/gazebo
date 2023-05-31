@@ -532,7 +532,7 @@ describe('useNavLinks', () => {
           tree: 'src/view/catWatch.php',
           ref: 'ref',
         })
-      ).toBe('/gl/doggo/watch/tree/ref/src/view/catWatch.php')
+      ).toBe('/gl/doggo/watch/tree/ref/src%2Fview%2FcatWatch.php')
       expect(
         hookData.result.current.treeView.path({ tree: 'src', ref: 'ref' })
       ).toBe('/gl/doggo/watch/tree/ref/src')
@@ -541,7 +541,7 @@ describe('useNavLinks', () => {
           tree: 'src/view',
           ref: 'ref',
         })
-      ).toBe('/gl/doggo/watch/tree/ref/src/view')
+      ).toBe('/gl/doggo/watch/tree/ref/src%2Fview')
     })
   })
 
@@ -567,6 +567,7 @@ describe('useNavLinks', () => {
           tree: 'index.js',
         })
       ).toBe('/bb/codecov-owner/another-test/blob/main/index.js')
+
       expect(
         hookData.result.current.fileViewer.path({
           owner: 'cat',
@@ -580,7 +581,7 @@ describe('useNavLinks', () => {
           ref: 'main',
           tree: 'flags1/mafs.js',
         })
-      ).toBe('/gh/codecov-owner/another-test/blob/main/flags1/mafs.js')
+      ).toBe('/gh/codecov-owner/another-test/blob/main/flags1%2Fmafs.js')
 
       expect(
         hookData.result.current.fileViewer.path({
