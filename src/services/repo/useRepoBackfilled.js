@@ -10,7 +10,7 @@ function fetchRepoBackfilledContents({ provider, owner, repo, signal }) {
           isTimescaleEnabled
         }
         owner(username:$name){
-          repository(name:$repo){
+          repository: repositoryDeprecated(name:$repo){
             flagsMeasurementsActive
             flagsMeasurementsBackfilled
             flagsCount

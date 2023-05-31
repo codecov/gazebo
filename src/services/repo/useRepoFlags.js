@@ -29,7 +29,7 @@ function fetchRepoFlags({
       $after: String
     ) {
       owner(username: $name) {
-        repository(name: $repo) {
+        repository: repositoryDeprecated(name: $repo) {
           flags(filters: $filters, orderingDirection: $orderingDirection, after: $after, first: 15) {
             pageInfo {
               hasNextPage

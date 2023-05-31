@@ -7,7 +7,7 @@ function fetchRepoSettingsDetails({ provider, owner, repo, signal }) {
   const query = `
     query GetRepoSettings($name: String!, $repo: String!){
       owner(username:$name){
-        repository(name:$repo){
+        repository: repositoryDeprecated(name:$repo){
           private
           activated
           uploadToken

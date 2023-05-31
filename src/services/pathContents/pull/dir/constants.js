@@ -7,7 +7,7 @@ export const query = `
     $filters: PathContentsFilters!
   ) {
     owner(username: $owner) {
-      repository(name: $repo) {
+      repository: repositoryDeprecated(name: $repo) {
         repositoryConfig {
           indicationRange {
             upperRange

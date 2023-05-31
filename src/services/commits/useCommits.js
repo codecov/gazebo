@@ -36,7 +36,7 @@ function fetchRepoCommits({ provider, owner, repo, variables, after, signal }) {
   const query = `
     query GetCommits($owner: String!, $repo: String!, $filters:CommitsSetFilters, $after: String, $includeTotalCount: Boolean!){
         owner(username:$owner){
-            repository(name: $repo){
+            repository: repositoryDeprecated(name: $repo){
                 commits(filters: $filters, first: 20, after: $after){
                   totalCount @include(if: $includeTotalCount)
                   edges{

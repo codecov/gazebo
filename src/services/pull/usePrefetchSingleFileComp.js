@@ -9,7 +9,7 @@ import { transformImpactedFileData } from './utils'
 const query = `
   query ImpactedFileComparison($owner: String!, $repo: String!, $pullId: Int!, $path: String!, $filters: SegmentsFilters) {
     owner(username: $owner) {
-      repository(name: $repo) {
+      repository: repositoryDeprecated(name: $repo) {
         pull(id: $pullId) {
           ...FileComparisonWithBase
         }
