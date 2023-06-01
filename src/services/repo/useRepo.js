@@ -9,7 +9,7 @@ function fetchRepoDetails({ provider, owner, repo, signal }) {
         isAdmin
         isCurrentUserPartOfOrg
         isCurrentUserActivated
-        repository(name:$repo){
+        repository: repositoryDeprecated(name:$repo){
           private
           uploadToken
           defaultBranch

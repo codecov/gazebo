@@ -5,7 +5,7 @@ import Api from 'shared/api'
 const query = `
   query CommitPageHeaderData($owner: String!, $repo: String!, $commitId: String!) {
     owner(username: $owner) {
-      repository(name: $repo) {
+      repository: repositoryDeprecated(name: $repo) {
         commit(id: $commitId) {
           author {
             username

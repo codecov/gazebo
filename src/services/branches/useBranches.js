@@ -11,7 +11,7 @@ const query = `
     $filters: BranchesSetFilters
   ) {
     owner(username: $owner) {
-      repository(name: $repo) {
+      repository: repositoryDeprecated(name: $repo) {
         branches(
           first: 20
           after: $after
