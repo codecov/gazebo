@@ -94,7 +94,7 @@ describe('BranchDirEntry', () => {
     const a = await screen.findByRole('link')
     expect(a).toHaveAttribute(
       'href',
-      '/gh/codecov/test-repo/tree/branch/path/to/directory/dir'
+      '/gh/codecov/test-repo/tree/branch/path%2Fto%2Fdirectory%2Fdir'
     )
   })
 

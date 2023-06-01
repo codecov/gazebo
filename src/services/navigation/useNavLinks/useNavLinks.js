@@ -190,13 +190,18 @@ export function useNavLinks() {
           repo: r,
         }
       ) => {
-        if (!tree && !ref) {
-          return `/${provider}/${owner}/${repo}/tree/`
-        } else if (!tree) {
-          return `/${provider}/${owner}/${repo}/tree/${ref}/`
-        } else {
-          return `/${provider}/${owner}/${repo}/tree/${ref}/${tree}`
+        if (ref) {
+          const encodedRef = encodeURIComponent(ref)
+
+          if (tree) {
+            const encodedTree = encodeURIComponent(tree)
+            return `/${provider}/${owner}/${repo}/tree/${encodedRef}/${encodedTree}`
+          }
+
+          return `/${provider}/${owner}/${repo}/tree/${encodedRef}/`
         }
+
+        return `/${provider}/${owner}/${repo}/tree/`
       },
       isExternalLink: false,
       text: 'Tree View',
@@ -208,7 +213,12 @@ export function useNavLinks() {
           owner: o,
           repo: r,
         }
-      ) => `/${provider}/${owner}/${repo}/blob/${ref}/${tree}`,
+      ) => {
+        const encodedRef = encodeURIComponent(ref)
+        const encodedTree = encodeURIComponent(tree)
+
+        return `/${provider}/${owner}/${repo}/blob/${encodedRef}/${encodedTree}`
+      },
       isExternalLink: false,
       text: 'File Viewer',
     },
@@ -358,7 +368,8 @@ export function useNavLinks() {
       text: 'Feedback',
       path: ({ provider = p, ref } = { provider: p, ref: null }) => {
         if (ref) {
-          return `/${provider}/feedback?ref=${encodeURIComponent(ref)}`
+          const encodedRef = encodeURIComponent(ref)
+          return `/${provider}/feedback?ref=${encodedRef}`
         }
         return `/${provider}/feedback`
       },
@@ -502,7 +513,7 @@ export function useNavLinks() {
       openNewTab: true,
     },
     githubRepoActions: {
-      text: 'GitHub Repo',
+      text: 'GitHub Actions workflow',
       path: (
         { owner = o, repo = r } = {
           owner: o,

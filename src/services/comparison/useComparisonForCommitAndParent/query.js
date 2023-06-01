@@ -9,7 +9,7 @@ export const query = `
     $filters: SegmentsFilters
   ) {
     owner(username: $owner) {
-      repository(name: $repo) {
+      repository: repositoryDeprecated(name: $repo) {
         commit(id: $commitid) {
           compareWithParent {
             ...ComparisonFragment

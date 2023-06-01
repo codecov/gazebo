@@ -6,7 +6,7 @@ export function useCommitYaml({ provider, owner, repo, commitid }) {
   const query = `
     query CommitYaml($owner: String!, $repo: String!, $commitid: String!) {
       owner(username: $owner) {
-        repository(name: $repo) {
+        repository: repositoryDeprecated(name: $repo) {
           commit(id: $commitid) {
             commitid
             yaml

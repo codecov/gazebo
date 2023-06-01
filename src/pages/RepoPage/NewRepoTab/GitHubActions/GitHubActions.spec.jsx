@@ -102,10 +102,19 @@ describe('GitHubActions', () => {
       )
     })
 
+    it('renders body', async () => {
+      render(<GitHubActions />, { wrapper })
+
+      const body = await screen.findByText(
+        /Admin required to access repo settings > secrets and variable > actions/
+      )
+      expect(body).toBeInTheDocument()
+    })
+
     it('renders token box', async () => {
       render(<GitHubActions />, { wrapper })
 
-      const codecovToken = await screen.findByText(/CODECOV_TOKEN/)
+      const codecovToken = await screen.findByText(/CODECOV_TOKEN=/)
       expect(codecovToken).toBeInTheDocument()
 
       const tokenValue = await screen.findByText(
@@ -152,33 +161,6 @@ describe('GitHubActions', () => {
       const header = await screen.findByRole('heading', { name: /Step 2/ })
       expect(header).toBeInTheDocument()
 
-      const codecovGitHubAppLink = await screen.findByRole('link', {
-        name: /Codecov's GitHub app/,
-      })
-      expect(codecovGitHubAppLink).toBeInTheDocument()
-      expect(codecovGitHubAppLink).toHaveAttribute(
-        'href',
-        'https://github.com/apps/codecov'
-      )
-    })
-
-    it('renders body section', async () => {
-      render(<GitHubActions />, { wrapper })
-
-      const body = await screen.findByText(/Codecov will use the/)
-      expect(body).toBeInTheDocument()
-    })
-  })
-
-  describe('step three', () => {
-    beforeEach(() => setup())
-
-    it('renders header', async () => {
-      render(<GitHubActions />, { wrapper })
-
-      const header = await screen.findByRole('heading', { name: /Step 3/ })
-      expect(header).toBeInTheDocument()
-
       const gitHubActionsWorkflowLink = await screen.findByRole('link', {
         name: /GitHub Actions workflow/,
       })
@@ -199,20 +181,27 @@ describe('GitHubActions', () => {
     })
   })
 
-  describe('step four', () => {
+  describe('step three', () => {
     beforeEach(() => setup())
 
     it('renders header', async () => {
       render(<GitHubActions />, { wrapper })
 
-      const header = await screen.findByRole('heading', { name: /Step 4/ })
+      const header = await screen.findByRole('heading', { name: /Step 3/ })
       expect(header).toBeInTheDocument()
     })
 
     it('renders first body', async () => {
       render(<GitHubActions />, { wrapper })
 
-      const body = await screen.findByText(/Once you've committed your changes/)
+      const body = await screen.findByText(/After you committed your changes/)
+      expect(body).toBeInTheDocument()
+    })
+
+    it('renders second body', async () => {
+      render(<GitHubActions />, { wrapper })
+
+      const body = await screen.findByText(/Once merged to the/)
       expect(body).toBeInTheDocument()
     })
 
@@ -224,46 +213,10 @@ describe('GitHubActions', () => {
       })
       expect(img).toBeInTheDocument()
     })
-
-    it('renders second body', async () => {
-      render(<GitHubActions />, { wrapper })
-
-      const body = await screen.findByText(/and a comment with coverage/)
-      expect(body).toBeInTheDocument()
-    })
-
-    it('renders pr comment image', async () => {
-      render(<GitHubActions />, { wrapper })
-
-      const img = await screen.findByRole('img', { name: 'codecov report' })
-      expect(img).toBeInTheDocument()
-    })
-
-    it('renders footer text', async () => {
-      render(<GitHubActions />, { wrapper })
-
-      const footer = await screen.findByText(/Learn more about the comment/)
-      expect(footer).toBeInTheDocument()
-
-      const footerLink = await screen.findByRole('link', { name: /here/ })
-      expect(footerLink).toBeInTheDocument()
-      expect(footerLink).toHaveAttribute(
-        'href',
-        'https://docs.codecov.com/docs/pull-request-comments#layout'
-      )
-    })
   })
 
   describe('ending', () => {
     beforeEach(() => setup())
-
-    it('renders title', async () => {
-      render(<GitHubActions />, { wrapper })
-
-      const title = await screen.findByText(/Once steps are complete/)
-      expect(title).toBeInTheDocument()
-    })
-
     it('renders body', async () => {
       render(<GitHubActions />, { wrapper })
 

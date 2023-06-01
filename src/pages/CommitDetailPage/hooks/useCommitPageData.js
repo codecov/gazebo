@@ -6,7 +6,7 @@ const query = `
   query CommitPageData($owner: String!, $repo: String!, $commitId: String!) {
     owner(username: $owner) {
       isCurrentUserPartOfOrg
-      repository(name: $repo) {
+      repository: repositoryDeprecated(name: $repo) {
         commit(id: $commitId) {
           commitid
         }

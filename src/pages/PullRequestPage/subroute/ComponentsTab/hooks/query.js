@@ -5,7 +5,7 @@ export const query = `
     $pullId: Int!
   ) {
     owner(username: $owner) {
-      repository(name: $repo) {
+      repository: repositoryDeprecated(name: $repo) {
         pull(id: $pullId) {
           compareWithBase {
             __typename
