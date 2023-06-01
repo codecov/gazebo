@@ -13,10 +13,13 @@ function NoReposBlock({ privateAccess, searchValue }) {
     return <h1 className="mt-8 text-center text-lg">No results found</h1>
   }
 
+  const shouldHavePrivateScope =
+    !privateAccess && providerToName(provider) !== 'Github'
+
   return (
     <div className="mt-8 text-center">
       <h1 className="text-2xl font-semibold">There are no repos detected</h1>
-      {!privateAccess && providerToName(provider) !== 'Github' && (
+      {shouldHavePrivateScope && (
         <p>
           Try adding{' '}
           <a
