@@ -30,7 +30,7 @@ const wrapper =
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={['/gh']}>
+        <MemoryRouter initialEntries={['/gl']}>
           <Route path="/:provider">
             <ActiveContext.Provider value={repoDisplay}>
               {children}
@@ -240,9 +240,9 @@ describe('ReposTable', () => {
         name: 'lock-closed.svg owner1 / Repo name 3',
       })
 
-      expect(repo1).toHaveAttribute('href', '/gh/owner1/Repo name 1')
-      expect(repo2).toHaveAttribute('href', '/gh/owner1/Repo name 2')
-      expect(repo3).toHaveAttribute('href', '/gh/owner1/Repo name 3')
+      expect(repo1).toHaveAttribute('href', '/gl/owner1/Repo name 1')
+      expect(repo2).toHaveAttribute('href', '/gl/owner1/Repo name 2')
+      expect(repo3).toHaveAttribute('href', '/gl/owner1/Repo name 3')
     })
 
     it('renders last updated column', async () => {
@@ -358,17 +358,17 @@ describe('ReposTable', () => {
         const repo1 = await screen.findByRole('link', {
           name: 'globe-alt.svg Repo name 1',
         })
-        expect(repo1).toHaveAttribute('href', '/gh/owner1/Repo name 1/new')
+        expect(repo1).toHaveAttribute('href', '/gl/owner1/Repo name 1/new')
 
         const repo2 = await screen.findByRole('link', {
           name: 'lock-closed.svg Repo name 2',
         })
-        expect(repo2).toHaveAttribute('href', '/gh/owner1/Repo name 2/new')
+        expect(repo2).toHaveAttribute('href', '/gl/owner1/Repo name 2/new')
 
         const repo3 = await screen.findByRole('link', {
           name: 'lock-closed.svg Repo name 3',
         })
-        expect(repo3).toHaveAttribute('href', '/gh/owner1/Repo name 3/new')
+        expect(repo3).toHaveAttribute('href', '/gl/owner1/Repo name 3/new')
       })
     })
 
@@ -501,7 +501,7 @@ describe('ReposTable', () => {
       expect(privateScopeButton).toBeInTheDocument()
       expect(privateScopeButton).toHaveAttribute(
         'href',
-        'https://stage-web.codecov.dev/login/gh?private=true'
+        'https://stage-web.codecov.dev/login/gl?private=true'
       )
 
       const privateScopeText = await screen.findByText(

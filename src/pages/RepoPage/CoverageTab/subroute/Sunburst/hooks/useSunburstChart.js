@@ -11,7 +11,9 @@ const useSunburstChart = () => {
     owner,
   })
 
-  const currentBranch = branch || overview?.defaultBranch
+  const currentBranch = branch
+    ? decodeURIComponent(branch)
+    : overview?.defaultBranch
 
   return useSunburstCoverage(
     { provider, owner, repo, query: { branch: currentBranch } },
