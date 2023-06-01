@@ -836,6 +836,26 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('repo new circle ci link', () => {
+    beforeAll(() => {
+      setup(['/gh/RulaKhaled/test/new/circle-ci'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(hookData.result.current.circleCI.path()).toBe(
+        '/gh/RulaKhaled/test/new/circle-ci'
+      )
+    })
+    it('can override the params', () => {
+      expect(hookData.result.current.circleCI.path({ provider: 'bb' })).toBe(
+        '/bb/RulaKhaled/test/new/circle-ci'
+      )
+      expect(hookData.result.current.circleCI.path({ repo: 'cat' })).toBe(
+        '/gh/RulaKhaled/cat/new/circle-ci'
+      )
+    })
+  })
+
   describe('general repo settings link', () => {
     beforeAll(() => {
       setup(['/gh/RulaKhaled/test/settings'])
@@ -1224,17 +1244,53 @@ describe('useNavLinks', () => {
     })
 
     it('Returns the correct link with nothing passed', () => {
-      expect(hookData.result.current.githubRepoActions.path()).toBe(
-        'https://github.com/codecov/cool-repo/actions'
-      )
+      expect(
+        hookData.result.current.githubRepoActions.path({ branch: 'main' })
+      ).toBe('https://github.com/codecov/cool-repo/tree/main/.github/workflows')
     })
     it('can override the params', () => {
       expect(
-        hookData.result.current.githubRepoActions.path({ repo: 'test-repo' })
-      ).toBe('https://github.com/codecov/test-repo/actions')
+        hookData.result.current.githubRepoActions.path({
+          repo: 'test-repo',
+          branch: 'master',
+        })
+      ).toBe(
+        'https://github.com/codecov/test-repo/tree/master/.github/workflows'
+      )
       expect(
-        hookData.result.current.githubRepoActions.path({ owner: 'cat' })
-      ).toBe('https://github.com/cat/cool-repo/actions')
+        hookData.result.current.githubRepoActions.path({
+          owner: 'cat',
+          branch: 'master',
+        })
+      ).toBe('https://github.com/cat/cool-repo/tree/master/.github/workflows')
+    })
+  })
+
+  describe('circleCI yaml', () => {
+    beforeAll(() => {
+      setup(['/gh/codecov/cool-repo'])
+    })
+
+    it('Returns the correct link with nothing passed', () => {
+      expect(
+        hookData.result.current.circleCIyaml.path({ branch: 'main' })
+      ).toBe('https://github.com/codecov/cool-repo/tree/main/.circleci/config')
+    })
+    it('can override the params', () => {
+      expect(
+        hookData.result.current.circleCIyaml.path({
+          repo: 'test-repo',
+          branch: 'master',
+        })
+      ).toBe(
+        'https://github.com/codecov/test-repo/tree/master/.circleci/config'
+      )
+      expect(
+        hookData.result.current.circleCIyaml.path({
+          owner: 'cat',
+          branch: 'master',
+        })
+      ).toBe('https://github.com/cat/cool-repo/tree/master/.circleci/config')
     })
   })
 })

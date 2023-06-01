@@ -168,6 +168,12 @@ function RepoPage() {
                   >
                     <NewRepoTab />
                   </SentryRoute>
+                  <SentryRoute
+                    path={[`${path}/new`, `${path}/new/circle-ci`]}
+                    exact
+                  >
+                    <NewRepoTab />
+                  </SentryRoute>
                   <Redirect from={path} to={`${path}/new`} />
                   <Redirect from={`${path}/*`} to={`${path}/new`} />
                 </Switch>

@@ -261,6 +261,16 @@ export function useNavLinks() {
       ) => `/${provider}/${owner}/${repo}/new/other-ci`,
       text: 'Other CI',
     },
+    circleCI: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/new/circle-ci`,
+      text: 'CircleCI',
+    },
     overview: {
       path: (
         { provider = p, owner = o, repo = r } = {
@@ -502,13 +512,39 @@ export function useNavLinks() {
       openNewTab: true,
     },
     githubRepoActions: {
-      text: 'GitHub Actions workflow',
+      text: 'GitHub Actions workflow yaml file',
       path: (
-        { owner = o, repo = r } = {
+        { owner = o, repo = r, branch } = {
           owner: o,
           repo: r,
         }
-      ) => `https://github.com/${owner}/${repo}/actions`,
+      ) =>
+        `https://github.com/${owner}/${repo}/tree/${branch}/.github/workflows`,
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    circleCIEnvVars: {
+      text: 'environment variables',
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) =>
+        `https://app.circleci.com/settings/project/${provider}/${owner}/${repo}/environment-variables`,
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    circleCIyaml: {
+      text: 'config.yml',
+      path: (
+        { owner = o, repo = r, branch } = {
+          owner: o,
+          repo: r,
+        }
+      ) =>
+        `https://github.com/${owner}/${repo}/tree/${branch}/.circleci/config`,
       isExternalLink: true,
       openNewTab: true,
     },
