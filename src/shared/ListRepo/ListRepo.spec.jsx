@@ -6,10 +6,6 @@ import { ActiveContext } from 'shared/context'
 
 import ListRepo, { repoDisplayOptions } from './ListRepo'
 
-jest.mock(
-  './OrgControlTable/GithubPrivateScopeLogin',
-  () => () => 'GithubPrivateScopeLogin'
-)
 jest.mock('./OrgControlTable/RepoOrgNotFound', () => () => 'RepoOrgNotFound')
 jest.mock('./ReposTable', () => () => 'ReposTable')
 
