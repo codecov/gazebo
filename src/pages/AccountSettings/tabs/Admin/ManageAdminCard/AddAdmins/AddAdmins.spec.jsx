@@ -71,10 +71,13 @@ describe('AddAdmins', () => {
         <AddAdmins provider="gh" owner="codecov" setAdminStatus={jest.fn()} />
       )
 
+      expect(await screen.findByRole('combobox')).toBeTruthy()
       const textbox = screen.getByRole('combobox')
       await user.type(textbox, 'hello')
 
-      expect(screen.getByText(/loading/)).toBeInTheDocument()
+      expect(await screen.findByText(/Loading.../)).toBeTruthy()
+      const loading = screen.getByText(/Loading.../)
+      expect(loading).toBeInTheDocument()
     })
   })
 

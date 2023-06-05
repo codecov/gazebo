@@ -2,25 +2,26 @@ import cs from 'classnames'
 import { useCombobox } from 'downshift'
 import PropTypes from 'prop-types'
 import { useRef, useState } from 'react'
+import { useDebounce } from 'react-use'
 import useClickAway from 'react-use/lib/useClickAway'
 
-import TextInput from 'old_ui/TextInput'
 import User from 'old_ui/User'
 import { ApiFilterEnum } from 'services/navigation'
 import { useUsers } from 'services/users'
 import { getOwnerImg } from 'shared/utils'
+import TextInput from 'ui/TextInput'
 
 const styles = {
   listResult: (isOpen) =>
     cs(
-      'overflow-hidden rounded-b-md bg-gray-100 border border-gray-200 outline-none absolute w-full z-10 ',
+      'overflow-hidden rounded-b-md bg-white border border-gray-200 outline-none absolute z-10 ',
       { hidden: !isOpen }
     ),
   item: (highlighted) =>
     cs('flex p-2 text-sm border-t border-gray-200', {
-      'bg-white': highlighted,
+      'bg-gray-100': highlighted,
     }),
-  input: (isOpen) => cs({ 'rounded-b-none': isOpen, 'rounded-t-3xl': isOpen }),
+  input: (isOpen) => cs({ 'rounded-b-none': isOpen }),
 }
 
 function ResultList({
@@ -30,9 +31,13 @@ function ResultList({
   highlightedIndex,
   provider,
 }) {
-  if (isLoading) return 'loading...'
+  if (isLoading) {
+    return <p className="px-1 py-2">Loading...</p>
+  }
 
-  if (users.length === 0) return 'No users found'
+  if (users.length === 0) {
+    return <p className="px-1 py-2">No users found</p>
+  }
 
   return users.map((user, index) => (
     <li
@@ -51,9 +56,27 @@ function ResultList({
   ))
 }
 
+ResultList.propTypes = {
+  isLoading: PropTypes.bool,
+  users: PropTypes.array,
+  getItemProps: PropTypes.func,
+  highlightedIndex: PropTypes.number,
+  provider: PropTypes.string,
+}
+
 function useSearch({ provider, owner, setAdminStatus }) {
   const [input, setInput] = useState('')
-  const params = { isAdmin: ApiFilterEnum.false, search: input }
+  const [search, setSearch] = useState('')
+
+  useDebounce(
+    () => {
+      setSearch(input)
+    },
+    500,
+    [input]
+  )
+
+  const params = { isAdmin: ApiFilterEnum.false, search: search }
   const isOpen = input.length > 0
   const { data, isLoading } = useUsers({
     provider,
@@ -69,36 +92,31 @@ function useSearch({ provider, owner, setAdminStatus }) {
 
   const users = data?.results ?? []
 
-  const {
-    getMenuProps,
-    getInputProps,
-
-    getItemProps,
-    highlightedIndex,
-  } = useCombobox({
-    items: users,
-    inputValue: input,
-    stateReducer: (state, actionAndChanges) => {
-      // when a result is selected, reset input and selectedItem and call
-      // the setAdminStatus callback from the props
-      const { type, changes } = actionAndChanges
-      switch (type) {
-        case useCombobox.stateChangeTypes.InputKeyDownEnter:
-        case useCombobox.stateChangeTypes.ItemClick:
-          setInput('')
-          setAdminStatus(changes.selectedItem, true)
-          return {
-            ...changes,
-            selectedItem: null,
-            inputValue: '',
-          }
-        default:
-          return changes
-      }
-    },
-    onInputValueChange: ({ inputValue }) => setInput(inputValue),
-    isOpen,
-  })
+  const { getMenuProps, getInputProps, getItemProps, highlightedIndex } =
+    useCombobox({
+      items: users,
+      inputValue: input,
+      stateReducer: (state, actionAndChanges) => {
+        // when a result is selected, reset input and selectedItem and call
+        // the setAdminStatus callback from the props
+        const { type, changes } = actionAndChanges
+        switch (type) {
+          case useCombobox.stateChangeTypes.InputKeyDownEnter:
+          case useCombobox.stateChangeTypes.ItemClick:
+            setInput('')
+            setAdminStatus(changes.selectedItem, true)
+            return {
+              ...changes,
+              selectedItem: null,
+              inputValue: '',
+            }
+          default:
+            return changes
+        }
+      },
+      onInputValueChange: ({ inputValue }) => setInput(inputValue),
+      isOpen,
+    })
 
   return {
     highlightedIndex,
@@ -127,16 +145,19 @@ function AddAdmins({ provider, owner, setAdminStatus }) {
   useClickAway(wrapperRef, () => setInput(''))
 
   return (
-    <div className="relative" ref={wrapperRef}>
+    <div className="relative w-4/12" ref={wrapperRef}>
       <div>
         <TextInput
           dataMarketing="add-admin"
           placeholder="Search to add administrator"
-          className={styles.input(isOpen)}
+          className={cs(styles.input(isOpen))}
           {...getInputProps()}
         />
       </div>
-      <ul {...getMenuProps()} className={styles.listResult(isOpen)}>
+      <ul
+        {...getMenuProps()}
+        className={cs(styles.listResult(isOpen), 'w-full')}
+      >
         {isOpen && (
           <ResultList
             users={users}
