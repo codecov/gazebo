@@ -13,19 +13,22 @@ const columns = [
     id: 'name',
     header: 'Name',
     accessorKey: 'name',
-    width: 'w-7/12',
+    width: 'w-8/12',
     cell: ({ row, getValue }) => <NameColumn row={row} getValue={getValue} />,
     justifyStart: true,
   },
   {
+    id: 'missesCount',
+    header: 'Missed lines',
+    accessorKey: 'missesCount',
+    width: 'w-2/12 justify-end',
+    cell: (info) => info.getValue(),
+  },
+  {
     id: 'head',
-    header: (
-      <span className="flex-1 text-right">
-        <span className="font-mono">HEAD</span> file coverage %
-      </span>
-    ),
+    header: <span className="w-full text-right font-mono">HEAD %</span>,
     accessorKey: 'head',
-    width: 'w-4/12 justify-end',
+    width: 'w-2/12 justify-end',
     cell: (info) => info.getValue(),
   },
   {
@@ -43,6 +46,7 @@ function createTable({ tableData, pullId }) {
         const {
           headCoverage,
           patchCoverage,
+          missesCount,
           changeCoverage,
           hasHeadOrPatchCoverage,
           headName,
@@ -66,6 +70,9 @@ function createTable({ tableData, pullId }) {
                 </span>
               )}
             </div>
+          ),
+          missesCount: (
+            <div className="flex w-full justify-end">{missesCount}</div>
           ),
           head: <TotalsNumber value={headCoverage} plain />,
           patch: <TotalsNumber value={patchCoverage} />,
@@ -116,6 +123,7 @@ function IndirectChangedFiles() {
       data={tableContent}
       columns={columns}
       onSort={handleSort}
+      defaultSort={[{ id: 'missesCount', desc: true }]}
       renderSubComponent={renderSubComponent}
     />
   )

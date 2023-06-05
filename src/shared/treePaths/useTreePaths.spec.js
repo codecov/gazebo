@@ -17,7 +17,7 @@ const queryClient = new QueryClient({
 const server = setupServer()
 
 const wrapper =
-  (initialEntries = ['/gh/owner/coolrepo/tree/main/src/tests']) =>
+  (initialEntries = ['/gh/owner/coolrepo/tree/main/src%2Ftests']) =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
@@ -98,7 +98,7 @@ describe('useTreePaths', () => {
       it('returns a list of objects', () => {
         const { result } = renderHook(() => useTreePaths(), {
           wrapper: wrapper([
-            '/gh/owner/coolrepo/tree/main/src/temp/src/temp/component',
+            '/gh/owner/coolrepo/tree/main/src%2Ftemp%2Fsrc%2Ftemp%2Fcomponent',
           ]),
         })
 
@@ -168,7 +168,7 @@ describe('useTreePaths', () => {
     describe('a path is provided', () => {
       it('returns a list of objects', async () => {
         const { result } = renderHook(() => useTreePaths(), {
-          wrapper: wrapper(['/gh/owner/coolrepo/tree/main/src/file.js']),
+          wrapper: wrapper(['/gh/owner/coolrepo/tree/main/src%2Ffile.js']),
         })
 
         await waitFor(() =>
@@ -202,6 +202,7 @@ describe('useTreePaths', () => {
         },
       })
     })
+
     describe('correctly generates paths', () => {
       it('returns a list of objects', async () => {
         const { result } = renderHook(() => useTreePaths(), {

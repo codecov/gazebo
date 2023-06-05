@@ -6,7 +6,7 @@ query CoverageForFile(
   $path: String!
 ) {
   owner(username: $owner) {
-    repository(name: $repo) {
+    repository: repositoryDeprecated(name: $repo) {
       commit(id: $ref) {
         ...CoverageForFile
       }

@@ -606,7 +606,6 @@ describe('TermsOfService', () => {
       const spy = jest.spyOn(console, 'error')
       errorMock = jest.fn()
       spy.mockImplementation(errorMock)
-      // console.error = errorMock
     })
 
     afterEach(() => {

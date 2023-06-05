@@ -163,7 +163,11 @@ function RepoPage() {
               ) : (
                 <Switch>
                   <SentryRoute
-                    path={[`${path}/new`, `${path}/new/other-ci`]}
+                    path={[
+                      `${path}/new`,
+                      `${path}/new/circle-ci`,
+                      `${path}/new/other-ci`,
+                    ]}
                     exact
                   >
                     <NewRepoTab />

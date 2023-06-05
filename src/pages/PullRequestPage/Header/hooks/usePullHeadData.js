@@ -5,7 +5,7 @@ import Api from 'shared/api'
 const query = `
   query PullHeadData ($owner: String!, $repo: String!, $pullId: Int!) {
     owner(username: $owner) {
-      repository(name: $repo) {
+      repository: repositoryDeprecated(name: $repo) {
         pull(id: $pullId) {
           pullId
           title
