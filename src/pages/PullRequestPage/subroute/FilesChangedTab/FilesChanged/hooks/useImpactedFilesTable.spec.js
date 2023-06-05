@@ -25,7 +25,7 @@ const mockImpactedFiles = [
     patchCoverage: {
       percentCovered: 27.43,
     },
-    missesInComparison: 3,
+    missesCount: 3,
   },
   {
     isCriticalFile: true,
@@ -41,7 +41,7 @@ const mockImpactedFiles = [
     patchCoverage: {
       percentCovered: 48.23,
     },
-    missesInComparison: 7,
+    missesCount: 7,
   },
 ]
 
@@ -141,7 +141,7 @@ describe('useImpactedFilesTable', () => {
                 headName: 'flag1/mafs.js',
                 isCriticalFile: true,
                 patchCoverage: 27.43,
-                missesInComparison: 3,
+                missesCount: 3,
                 pullId: 14,
               },
               {
@@ -152,7 +152,7 @@ describe('useImpactedFilesTable', () => {
                 headName: 'flag2/quarg.js',
                 isCriticalFile: true,
                 patchCoverage: 48.23,
-                missesInComparison: 7,
+                missesCount: 7,
                 pullId: 14,
               },
             ],
@@ -207,7 +207,7 @@ describe('useImpactedFilesTable', () => {
               isCriticalFile: true,
               patchCoverage: 27.43,
               pullId: 14,
-              missesInComparison: 0,
+              missesCount: 0,
             },
           ],
           pullBaseCoverage: 27.35,
@@ -235,7 +235,7 @@ describe('useImpactedFilesTable', () => {
       await waitFor(() =>
         expect(callsHandleSort).toHaveBeenNthCalledWith(1, {
           direction: 'DESC',
-          parameter: orderingParameter.missesInComparison,
+          parameter: orderingParameter.missesCount,
         })
       )
 

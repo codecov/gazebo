@@ -23,7 +23,7 @@ export function usePull({
     query Pull($owner: String!, $repo: String!, $pullId: Int!, $filters: ImpactedFilesFilters!) {
         owner(username: $owner) {
           isCurrentUserPartOfOrg
-          repository(name: $repo) {
+          repository: repositoryDeprecated(name: $repo) {
             defaultBranch
             private
             pull(id: $pullId) {

@@ -21,7 +21,7 @@ function fetchRepoFlags({
       $after: String
     ) {
       owner(username: $name) {
-        repository(name: $repo) {
+        repository: repositoryDeprecated(name: $repo) {
           flags(filters: $filters, after: $after) {
             pageInfo {
               hasNextPage

@@ -110,7 +110,8 @@ function RawFileViewer({
   stickyPadding,
   commit,
 }) {
-  const { owner, repo, provider, path } = useParams()
+  const { owner, repo, provider, path: urlPath } = useParams()
+  const path = decodeURIComponent(urlPath)
   const { data: ownerData } = useOwner({ username: owner })
   const [selectedFlags, setSelectedFlags] = useState([])
   const isUnsupportedFileType = unsupportedExtensionsMapper({ path })
