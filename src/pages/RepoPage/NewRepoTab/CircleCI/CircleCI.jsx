@@ -29,7 +29,8 @@ function CircleCI() {
             />
           </h2>
           <p className="text-base">
-            Environment variable in CircleCI found in project&apos;s settings.
+            Environment variables in CircleCI can be found in project&apos;s
+            settings.
           </p>
         </div>
         <pre className="flex items-center gap-2 overflow-auto rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
