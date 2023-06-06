@@ -10,6 +10,7 @@ function fetchRepoBranchCoverage({ provider, owner, repo, branch, signal }) {
           branch(name:$branch) {
             name
             head {
+              yamlState
               totals {
                 percentCovered
                 lineCount

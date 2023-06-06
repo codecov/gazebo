@@ -59,6 +59,7 @@ describe('useStaticNavLinks', () => {
       ${links.orgUploadTokenDoc}       | ${'https://docs.codecov.com/docs/codecov-uploader#organization-upload-token'}
       ${links.selfHostedLicensing}     | ${'https://docs.codecov.com/docs/self-hosted-dependency-licensing'}
       ${links.repoYaml}                | ${'https://docs.codecov.com/docs/codecov-yaml#repository-yaml'}
+      ${links.codecovYaml}             | ${'https://docs.codecov.com/docs/codecov-yaml'}
       ${links.oauthEnabling}           | ${'https://docs.github.com/en/organizations/restricting-access-to-your-organizations-data/enabling-oauth-app-access-restrictions-for-your-organization'}
       ${links.github}                  | ${'https://github.com/marketplace/codecov'}
       ${links.repoConfigFeedback}      | ${'https://github.com/codecov/Codecov-user-feedback/issues/18'}
