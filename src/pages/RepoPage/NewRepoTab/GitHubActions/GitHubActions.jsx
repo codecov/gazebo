@@ -6,8 +6,7 @@ import { useOnboardingTracking } from 'services/user'
 import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
 
-const codecovActionString =
-  '- name: Upload coverage reports to Codecov\n  uses: codecov/codecov-action@v3'
+const codecovActionString = `- name: Upload coverage reports to Codecov\n  uses: codecov/codecov-action@v3\n   env: CODECOV_TOKEN: \${{ secrets.CODECOV_TOKEN }}`
 
 function GitHubActions() {
   const { provider, owner, repo } = useParams()
@@ -15,10 +14,10 @@ function GitHubActions() {
   const { copiedCIToken } = useOnboardingTracking()
 
   return (
-    <>
+    <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4">
         <div>
-          <h2 className="pt-6 text-base font-semibold">
+          <h2 className="text-base font-semibold">
             Step 1: add repository token as{' '}
             <A to={{ pageName: 'githubRepoSecrets' }} isExternal>
               repository secret
@@ -38,15 +37,21 @@ function GitHubActions() {
         </pre>
       </div>
       <div className="flex flex-col gap-4">
-        <h2 className="pt-6 text-base font-semibold">
-          Step 2: add Codecov to your{' '}
-          <A
-            to={{
-              pageName: 'githubRepoActions',
-            }}
-            isExternal
-          />
-        </h2>
+        <div className="text-base">
+          <h2 className="font-semibold">
+            Step 2: add Codecov to your{' '}
+            <A
+              to={{
+                pageName: 'githubRepoActions',
+              }}
+              options={{ branch: data?.repository?.defaultBranch }}
+              isExternal
+            />
+          </h2>
+          <p>
+            After tests run, this will upload your coverage report to Codecov:
+          </p>
+        </div>
         <div className="flex items-start justify-between overflow-auto whitespace-pre-line rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
           <pre>
             - name: Upload coverage reports to Codecov
@@ -59,10 +64,7 @@ function GitHubActions() {
           <CopyClipboard string={codecovActionString} />
         </div>
       </div>
-      <>
-        <h2 className="pt-6 text-base font-semibold">
-          Step 3: get coverage analysis from Codecov
-        </h2>
+      <div>
         <p>
           After you committed your changes and ran the repo&apos;s CI/CD
           pipeline. In your pull request, you should see two status checks and
@@ -79,15 +81,15 @@ function GitHubActions() {
           checks and report comment. Additionally, you&apos;ll find your repo
           coverage dashboard here.
         </p>
-      </>
-      <p className="mt-6 border-l-2 border-ds-gray-secondary pl-4">
-        <span className="font-semibold">How was your setup experience?</span>{' '}
-        Let us know in{' '}
-        <A to={{ pageName: 'repoConfigFeedback' }} isExternal>
-          this issue
-        </A>
-      </p>
-    </>
+        <p className="mt-6 border-l-2 border-ds-gray-secondary pl-4">
+          <span className="font-semibold">How was your setup experience?</span>{' '}
+          Let us know in{' '}
+          <A to={{ pageName: 'repoConfigFeedback' }} isExternal>
+            this issue
+          </A>
+        </p>
+      </div>
+    </div>
   )
 }
 

@@ -76,7 +76,7 @@ export default function InstructionBox() {
 
   return (
     <div
-      className="my-4 w-auto rounded bg-ds-gray-primary"
+      className="w-auto rounded bg-ds-gray-primary"
       data-testid="instruction-box"
     >
       <div className="flex h-auto flex-row overflow-auto bg-ds-gray-secondary">

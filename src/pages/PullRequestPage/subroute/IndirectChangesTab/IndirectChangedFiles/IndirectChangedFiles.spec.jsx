@@ -228,6 +228,17 @@ describe('IndirectChangedFiles', () => {
         expect(name).toBeInTheDocument()
       })
 
+      it('renders misses column', async () => {
+        render(<IndirectChangedFiles />, { wrapper: wrapper() })
+
+        await waitFor(() =>
+          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+        )
+
+        const head = await screen.findByText('Missed lines')
+        expect(head).toBeInTheDocument()
+      })
+
       it('renders HEAD column', async () => {
         render(<IndirectChangedFiles />, { wrapper: wrapper() })
 
@@ -235,19 +246,8 @@ describe('IndirectChangedFiles', () => {
           expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
         )
 
-        const head = await screen.findByText('HEAD')
+        const head = await screen.findByText('HEAD %')
         expect(head).toBeInTheDocument()
-      })
-
-      it('renders file coverage column', async () => {
-        render(<IndirectChangedFiles />, { wrapper: wrapper() })
-
-        await waitFor(() =>
-          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-        )
-
-        const fileCoverage = await screen.findByText('file coverage %')
-        expect(fileCoverage).toBeInTheDocument()
       })
 
       it('does not render patch column', async () => {
@@ -288,17 +288,6 @@ describe('IndirectChangedFiles', () => {
           'href',
           '/gh/test-org/test-repo/pull/12/blob/flag1/mafs.js'
         )
-      })
-
-      it('renders file coverage', async () => {
-        render(<IndirectChangedFiles />, { wrapper: wrapper() })
-
-        await waitFor(() =>
-          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-        )
-
-        const fileCoverage = await screen.findByText(/90.23%/i)
-        expect(fileCoverage).toBeInTheDocument()
       })
 
       it('renders change coverage', async () => {
@@ -386,19 +375,8 @@ describe('IndirectChangedFiles', () => {
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
       )
 
-      const head = await screen.findByText('HEAD')
+      const head = await screen.findByText('HEAD %')
       expect(head).toBeInTheDocument()
-    })
-
-    it('renders file coverage column', async () => {
-      render(<IndirectChangedFiles />, { wrapper: wrapper() })
-
-      await waitFor(() =>
-        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-      )
-
-      const fileCoverage = await screen.findByText('file coverage %')
-      expect(fileCoverage).toBeInTheDocument()
     })
 
     it('renders change', async () => {

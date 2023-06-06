@@ -263,5 +263,11 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    circleCIOrbs: {
+      text: 'CircleCI Documentation',
+      path: () => 'https://circleci.com/developer/orbs/orb/codecov/codecov',
+      isExternalLink: true,
+      openNewTab: true,
+    },
   }
 }
