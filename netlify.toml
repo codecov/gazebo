@@ -2,14 +2,7 @@
   ignore = "git log -1 --pretty=%B | grep dependabot"
 
 [context.deploy-preview]
+  command = "npm run build && rm -f build/mockServiceWorker.js && cp custom-headers/_preview_headers  build/_headers"
   environment = { REACT_APP_API_URL = "https://stage-api.codecov.dev", REACT_APP_STRIPE_KEY="pk_test_d3lcWjpwF96baLX9ShZfMcq4", REACT_APP_BASE_URL="https://stage-web.codecov.dev", REACT_APP_LAUNCHDARKLY="60f9b3cf32beb9244b10f3d0" }
 
-[[headers]]
-  for = "/*"
-  [headers.values]
-    Access-Control-Allow-Origin = "events.launchdarkly.com"
-    X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "same-origin"
-    Permissions-Policy = "accelerometer=(), camera=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=(), interest-cohort=()"
+[context.deploy-preview]
