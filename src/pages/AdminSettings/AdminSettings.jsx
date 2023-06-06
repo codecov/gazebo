@@ -4,8 +4,8 @@ import { Redirect, Switch, useParams } from 'react-router-dom'
 import { SentryRoute } from 'sentry'
 
 import SidebarLayout from 'layouts/SidebarLayout'
-import LogoSpinner from 'old_ui/LogoSpinner'
 import { useSelfHostedCurrentUser } from 'services/selfHosted'
+import LoadingLogo from 'ui/LoadingLogo'
 import Spinner from 'ui/Spinner'
 
 import AdminSettingsHeader from './AdminSettingsHeader'
@@ -16,7 +16,7 @@ const AdminMembers = lazy(() => import('./AdminMembers'))
 
 const Loader = (
   <div className="mt-16 flex flex-1 items-center justify-center">
-    <LogoSpinner />
+    <LoadingLogo />
   </div>
 )
 

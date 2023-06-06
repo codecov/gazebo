@@ -7,8 +7,8 @@ import config from 'config'
 
 import { SentryRoute } from 'sentry'
 
-import LogoSpinner from 'old_ui/LogoSpinner'
 import { usePlanPageData } from 'pages/PlanPage/hooks'
+import LoadingLogo from 'ui/LoadingLogo'
 
 import { PlanBreadcrumbProvider } from './context'
 import Header from './Header'
@@ -26,7 +26,7 @@ const path = '/plan/:provider/:owner'
 
 const Loader = () => (
   <div className="mt-16 flex flex-1 items-center justify-center">
-    <LogoSpinner />
+    <LoadingLogo />
   </div>
 )
 
