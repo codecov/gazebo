@@ -1,6 +1,3 @@
-[[headers]]
-  for = "/*"
-  [headers.values]
     Access-Control-Allow-Origin = "stage-api.codecov.dev"
     X-Frame-Options = "DENY"
     X-XSS-Protection = "1; mode=block"
