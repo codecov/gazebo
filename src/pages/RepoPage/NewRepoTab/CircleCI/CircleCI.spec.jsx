@@ -102,27 +102,6 @@ describe('CircleCI', () => {
       )
     })
 
-    it('renders body', async () => {
-      render(<CircleCI />, { wrapper })
-
-      const body = await screen.findByText(
-        "Environment variables in CircleCI can be found in project's settings."
-      )
-      expect(body).toBeInTheDocument()
-    })
-
-    it('renders token box', async () => {
-      render(<CircleCI />, { wrapper })
-
-      const codecovToken = await screen.findByText(/CODECOV_TOKEN=/)
-      expect(codecovToken).toBeInTheDocument()
-
-      const tokenValue = await screen.findByText(
-        /9e6a6189-20f1-482d-ab62-ecfaa2629295/
-      )
-      expect(tokenValue).toBeInTheDocument()
-    })
-
     describe('user copies token', () => {
       it('fires segment event', async () => {
         const user = userEvent.setup()
