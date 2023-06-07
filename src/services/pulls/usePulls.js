@@ -31,7 +31,7 @@ function fetchRepoPulls({ provider, owner, repo, variables, after, signal }) {
   const query = `
       query GetPulls($owner: String!, $repo: String!, $orderingDirection: OrderingDirection, $filters: PullsSetFilters, $after: String){
             owner(username:$owner){
-                repository(name:$repo){
+                repository: repositoryDeprecated(name:$repo){
                     pulls(orderingDirection: $orderingDirection, filters: $filters, first: 20, after: $after){
                         edges{
                             node{

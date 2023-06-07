@@ -3,11 +3,12 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { trackSegmentEvent } from 'services/tracking/segment'
 
-import OtherCI from './OtherCI'
+import CircleCI from './CircleCI'
 
 jest.mock('services/tracking/segment')
 
@@ -34,20 +35,25 @@ const mockGetRepo = {
 }
 
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
+  defaultOptions: {
+    queries: {
+      suspense: true,
+      retry: false,
+    },
+  },
 })
 const server = setupServer()
 
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/codecov/cool-repo/new/other-ci']}>
+    <MemoryRouter initialEntries={['/gh/codecov/cool-repo/new']}>
       <Route
         path={[
           '/:provider/:owner/:repo/new',
-          '/:provider/:owner/:repo/new/other-ci',
+          '/:provider/:owner/:repo/new/circle-ci',
         ]}
       >
-        {children}
+        <Suspense fallback={null}>{children}</Suspense>
       </Route>
     </MemoryRouter>
   </QueryClientProvider>
@@ -63,9 +69,8 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 
-describe('OtherCI', () => {
+describe('CircleCI', () => {
   function setup() {
-    const user = userEvent.setup()
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockGetRepo))
@@ -76,24 +81,40 @@ describe('OtherCI', () => {
     )
 
     trackSegmentEvent.mockImplementation((data) => data)
-
-    return { user }
   }
 
   describe('step one', () => {
     beforeEach(() => setup())
 
     it('renders header', async () => {
-      render(<OtherCI />, { wrapper })
+      render(<CircleCI />, { wrapper })
 
-      const header = await screen.findByText(/Step 1/)
+      const header = await screen.findByRole('heading', { name: /Step 1/ })
       expect(header).toBeInTheDocument()
+
+      const environmentVariableLink = await screen.findByRole('link', {
+        name: /environment variables/,
+      })
+      expect(environmentVariableLink).toBeInTheDocument()
+      expect(environmentVariableLink).toHaveAttribute(
+        'href',
+        'https://app.circleci.com/settings/project/github/codecov/cool-repo/environment-variables'
+      )
+    })
+
+    it('renders body', async () => {
+      render(<CircleCI />, { wrapper })
+
+      const body = await screen.findByText(
+        "Environment variables in CircleCI can be found in project's settings."
+      )
+      expect(body).toBeInTheDocument()
     })
 
     it('renders token box', async () => {
-      render(<OtherCI />, { wrapper })
+      render(<CircleCI />, { wrapper })
 
-      const codecovToken = await screen.findByText(/CODECOV_TOKEN/)
+      const codecovToken = await screen.findByText(/CODECOV_TOKEN=/)
       expect(codecovToken).toBeInTheDocument()
 
       const tokenValue = await screen.findByText(
@@ -104,8 +125,8 @@ describe('OtherCI', () => {
 
     describe('user copies token', () => {
       it('fires segment event', async () => {
-        const { user } = setup()
-        render(<OtherCI />, { wrapper })
+        const user = userEvent.setup()
+        render(<CircleCI />, { wrapper })
 
         // this is needed to wait for all the data to be loaded
         const tokenValue = await screen.findByText(
@@ -132,102 +153,71 @@ describe('OtherCI', () => {
   })
 
   describe('step two', () => {
-    it('renders header', async () => {
-      setup()
-      render(<OtherCI />, { wrapper })
+    beforeEach(() => setup())
 
-      const header = await screen.findByText(/Step 2/)
+    it('renders header', async () => {
+      render(<CircleCI />, { wrapper })
+
+      const header = await screen.findByRole('heading', { name: /Step 2/ })
       expect(header).toBeInTheDocument()
 
-      const headerLink = await screen.findByRole('link', {
-        name: /uploader to your/,
+      const CircleCIWorkflowLink = await screen.findByRole('link', {
+        name: /config.yml/,
       })
-      expect(headerLink).toBeInTheDocument()
-      expect(headerLink).toHaveAttribute(
+      expect(CircleCIWorkflowLink).toBeInTheDocument()
+      expect(CircleCIWorkflowLink).toHaveAttribute(
         'href',
-        'https://docs.codecov.com/docs/codecov-uploader'
+        'https://github.com/codecov/cool-repo/tree/main/.circleci/config'
       )
     })
 
-    describe('user clicks on header link', () => {
-      it('triggers segment event', async () => {
-        const { user } = setup()
-        render(<OtherCI />, { wrapper })
+    it('renders yaml section', async () => {
+      render(<CircleCI />, { wrapper })
 
-        const tokenValue = await screen.findByText(
-          /9e6a6189-20f1-482d-ab62-ecfaa2629295/
-        )
-        expect(tokenValue).toBeInTheDocument()
-
-        const headerLink = await screen.findByRole('link', {
-          name: /uploader to your/,
-        })
-        expect(headerLink).toBeInTheDocument()
-
-        await user.click(headerLink)
-
-        expect(trackSegmentEvent).toBeCalled()
-        expect(trackSegmentEvent).toHaveBeenCalledWith({
-          data: { category: 'Onboarding', userId: 'user-owner-id' },
-          event: 'User Onboarding Download Uploader Clicked',
-        })
-      })
-    })
-
-    it('renders instruction box', async () => {
-      render(<OtherCI />, { wrapper })
-
-      const box = await screen.findByTestId('instruction-box')
-      expect(box).toBeInTheDocument()
-    })
-
-    it('renders integrity check msg', async () => {
-      render(<OtherCI />, { wrapper })
-
-      const integrityCheck = await screen.findByText(/It is highly recommended/)
-      expect(integrityCheck).toBeInTheDocument()
-
-      const integrityCheckLink = await screen.findByRole('link', {
-        name: /integrity check/,
-      })
-      expect(integrityCheckLink).toBeInTheDocument()
-      expect(integrityCheckLink).toHaveAttribute(
-        'href',
-        'https://docs.codecov.com/docs/codecov-uploader#integrity-checking-the-uploader'
+      const yamlBox = await screen.findByText(
+        /Add the following to your .circleci\/config.yaml and push changes to repository./
       )
+      expect(yamlBox).toBeInTheDocument()
+    })
+
+    it('renders yaml code', async () => {
+      render(<CircleCI />, { wrapper })
+
+      const yamlCode = await screen.findByText(/codecov\/codecov@3.2.4/)
+      expect(yamlCode).toBeInTheDocument()
     })
   })
 
   describe('step three', () => {
     beforeEach(() => setup())
     it('renders first body', async () => {
-      render(<OtherCI />, { wrapper })
+      render(<CircleCI />, { wrapper })
 
       const body = await screen.findByText(/After you committed your changes/)
       expect(body).toBeInTheDocument()
     })
 
+    it('renders second body', async () => {
+      render(<CircleCI />, { wrapper })
+
+      const body = await screen.findByText(/Once merged to the/)
+      expect(body).toBeInTheDocument()
+    })
+
     it('renders status check image', async () => {
-      render(<OtherCI />, { wrapper })
+      render(<CircleCI />, { wrapper })
 
       const img = await screen.findByRole('img', {
         name: 'codecov patch and project',
       })
       expect(img).toBeInTheDocument()
     })
-
-    it('renders second body', async () => {
-      render(<OtherCI />, { wrapper })
-
-      const title = await screen.findByText(/Once merged to the default branch/)
-      expect(title).toBeInTheDocument()
-    })
   })
 
   describe('ending', () => {
     beforeEach(() => setup())
     it('renders body', async () => {
-      render(<OtherCI />, { wrapper })
+      render(<CircleCI />, { wrapper })
 
       const body = await screen.findByText(/How was your setup experience/)
       expect(body).toBeInTheDocument()

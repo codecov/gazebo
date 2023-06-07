@@ -7,6 +7,7 @@ import { useOwner, useUser } from 'services/user'
 import { ActiveContext } from 'shared/context'
 import { formatTimeToNow } from 'shared/utils/dates'
 import Button from 'ui/Button'
+import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
 
@@ -16,6 +17,12 @@ import NoReposBlock from './NoReposBlock'
 import RepoTitleLink from './RepoTitleLink'
 
 import { repoDisplayOptions } from '../ListRepo'
+
+const Loader = () => (
+  <div className="flex flex-1 justify-center">
+    <Spinner size={60} />
+  </div>
+)
 
 const tableActive = [
   {
@@ -123,6 +130,7 @@ function transformRepoToTable({ repos, owner, isCurrentUserPartOfOrg }) {
   })
 }
 
+// eslint-disable-next-line complexity
 function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
   const { data: userData } = useUser()
   const { data: ownerData } = useOwner({
@@ -132,13 +140,15 @@ function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
   const repoDisplay = useContext(ActiveContext)
   const activated = repoDisplayOptions[repoDisplay.toUpperCase()].status
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useRepos({
-    activated,
-    sortItem,
-    term: searchValue,
-    repoNames: filterValues,
-    owner,
-  })
+  const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage } =
+    useRepos({
+      activated,
+      sortItem,
+      term: searchValue,
+      repoNames: filterValues,
+      owner,
+      suspense: false,
+    })
 
   const dataTable = transformRepoToTable({
     repos: data.repos,
@@ -146,7 +156,7 @@ function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
     isCurrentUserPartOfOrg: ownerData?.isCurrentUserPartOfOrg,
   })
 
-  if (isEmpty(data?.repos)) {
+  if (!isFetching && isEmpty(data?.repos)) {
     return (
       <NoReposBlock
         searchValue={searchValue}
@@ -165,6 +175,7 @@ function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
             : tableActive
         }
       />
+      {isFetching && <Loader />}
       {hasNextPage && (
         <div className="mt-4 flex w-full justify-center">
           <Button

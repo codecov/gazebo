@@ -79,7 +79,7 @@ describe('useRepoContentsTable', () => {
       await waitFor(() =>
         expect(usePull).toHaveBeenCalledWith({
           filters: {
-            ordering: { direction: 'DESC', parameter: 'CHANGE_COVERAGE' },
+            ordering: { direction: 'DESC', parameter: 'MISSES_COUNT' },
             hasUnintendedChanges: true,
           },
           owner: 'Rabee-AbuBaker',
@@ -134,6 +134,7 @@ describe('useRepoContentsTable', () => {
             headCoverage: 90.23,
             headName: 'flag1/mafs.js',
             isCriticalFile: true,
+            missesCount: 0,
             patchCoverage: 27.43,
             pullId: 14,
           },
@@ -182,6 +183,7 @@ describe('useRepoContentsTable', () => {
             headCoverage: undefined,
             headName: 'flag1/mafs.js',
             isCriticalFile: true,
+            missesCount: 0,
             patchCoverage: 27.43,
           },
         ],

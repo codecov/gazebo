@@ -43,7 +43,7 @@ describe('DirEntry', () => {
       const a = screen.getByRole('link')
       expect(a).toHaveAttribute(
         'href',
-        '/gh/codecov/test-repo/tree/branch/path/to/directory/dir'
+        '/gh/codecov/test-repo/tree/branch/path%2Fto%2Fdirectory%2Fdir'
       )
     })
   })

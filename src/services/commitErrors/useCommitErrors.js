@@ -9,7 +9,7 @@ export function useCommitErrors() {
   const query = `
       query CommitErrors($owner: String!, $repo: String!, $commitid: String!) {
         owner(username: $owner) {
-          repository(name: $repo) {
+          repository: repositoryDeprecated(name: $repo) {
             commit(id: $commitid) {
               yamlErrors: errors(errorType: YAML_ERROR){
                 edges{

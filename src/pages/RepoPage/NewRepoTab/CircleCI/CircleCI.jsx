@@ -3,22 +3,36 @@ import { useParams } from 'react-router-dom'
 import patchAndProject from 'assets/repoConfig/patch-and-project.svg'
 import { useRepo } from 'services/repo'
 import { useOnboardingTracking } from 'services/user'
+import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
 
-import TerminalInstructions from './TerminalInstructions'
+const orbsString = 'orbs:\n codecov/codecov@3.2.4'
 
-function OtherCI() {
+function CircleCI() {
   const { provider, owner, repo } = useParams()
+  const providerName = providerToName(provider).toLowerCase()
   const { data } = useRepo({ provider, owner, repo })
-  const { copiedCIToken, downloadUploaderClicked } = useOnboardingTracking()
+  const { copiedCIToken } = useOnboardingTracking()
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-3">
-        <h2 className="text-base font-semibold">
-          Step 1: add repository token as a secret to your CI Provider
-        </h2>
+        <div>
+          <h2 className="text-base font-semibold">
+            Step 1: add repository token to{' '}
+            <A
+              to={{
+                pageName: 'circleCIEnvVars',
+                options: { provider: providerName },
+              }}
+            />
+          </h2>
+          <p className="text-base">
+            Environment variables in CircleCI can be found in project&apos;s
+            settings.
+          </p>
+        </div>
         <pre className="flex items-center gap-2 overflow-auto rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
           CODECOV_TOKEN={data?.repository?.uploadToken}
           <CopyClipboard
@@ -28,29 +42,33 @@ function OtherCI() {
         </pre>
       </div>
       <div className="flex flex-col gap-3">
-        <h2 className="text-base font-semibold">
-          Step 2: add Codecov{' '}
-          <A
-            to={{ pageName: 'uploader' }}
-            data-testid="uploader"
-            onClick={() => downloadUploaderClicked()}
-            isExternal
-          >
-            uploader to your CI workflow
-          </A>
-        </h2>
-        <TerminalInstructions />
-        <div className="border-l-2 border-ds-gray-secondary">
-          <p className="pl-2">
-            It is highly recommended to{' '}
-            <A to={{ pageName: 'integrityCheck' }} isExternal>
-              integrity check the uploader
-            </A>
-          </p>
-          <p className="pl-2">
-            This will verify the uploader integrity before uploading to Codecov.
+        <div className="text-base">
+          <h2 className="font-semibold">
+            Step 2: add Codecov orb to CircleCI{' '}
+            <A
+              to={{
+                pageName: 'circleCIyaml',
+                options: { branch: data?.repository?.defaultBranch },
+              }}
+            />
+          </h2>
+          <p>
+            Add the following to your .circleci/config.yaml and push changes to
+            repository.
           </p>
         </div>
+        <div className="flex items-start justify-between overflow-auto whitespace-pre-line rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
+          <pre>
+            orbs:
+            <br />
+            &nbsp;&nbsp;codecov/codecov@3.2.4
+          </pre>
+          <CopyClipboard string={orbsString} />
+        </div>
+        <small>
+          For more, see Codecov specific{' '}
+          <A to={{ pageName: 'circleCIOrbs' }} isExternal />
+        </small>
       </div>
       <div>
         <p>
@@ -81,4 +99,4 @@ function OtherCI() {
   )
 }
 
-export default OtherCI
+export default CircleCI
