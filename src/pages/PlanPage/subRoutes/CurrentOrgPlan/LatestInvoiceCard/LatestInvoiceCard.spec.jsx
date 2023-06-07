@@ -46,7 +46,7 @@ describe('LatestInvoiceCard', () => {
     })
   })
 
-  describe('when rendering with no invoice', () => {
+  describe('when rendering without invoice', () => {
     beforeEach(() => {
       setup({ invoices: [] })
     })
