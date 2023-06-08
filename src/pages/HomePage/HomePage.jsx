@@ -2,12 +2,12 @@ import { useLayoutEffect } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
 import MyContextSwitcher from 'layouts/MyContextSwitcher'
-import LogoSpinner from 'old_ui/LogoSpinner'
 import { useSentryToken } from 'services/account'
 import { useLocationParams } from 'services/navigation'
 import { useUser } from 'services/user'
 import { ActiveContext } from 'shared/context'
 import ListRepo from 'shared/ListRepo'
+import LoadingLogo from 'ui/LoadingLogo'
 
 import Tabs from './Tabs'
 
@@ -56,7 +56,7 @@ function HomePage() {
   if (isLoading) {
     return (
       <div className="mt-16 flex items-center justify-center">
-        <LogoSpinner />
+        <LoadingLogo />
       </div>
     )
   }

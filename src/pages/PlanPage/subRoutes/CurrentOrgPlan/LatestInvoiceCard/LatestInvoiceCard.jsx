@@ -12,8 +12,7 @@ function LatestInvoiceCard() {
   const { data: invoices } = useInvoices({ provider, owner })
   const latestInvoice = !!invoices?.length && invoices[0]
 
-  if (!latestInvoice || !latestInvoice?.dueDate || !latestInvoice?.created)
-    return null
+  if (!latestInvoice || !latestInvoice?.created) return null
 
   return (
     <Card header="Invoices">
@@ -25,11 +24,13 @@ function LatestInvoiceCard() {
               {format(fromUnixTime(latestInvoice?.created), 'MMMM yyyy')}
             </div>
             <div className="text-ds-gray-quaternary">
-              <span className="italic">
-                Due date{' '}
-                {format(fromUnixTime(latestInvoice?.dueDate), 'do MMM')} - $
-                {(latestInvoice?.total / 100).toFixed(2)}{' '}
-              </span>
+              {latestInvoice?.dueDate && (
+                <span className="italic">
+                  Due date{' '}
+                  {format(fromUnixTime(latestInvoice?.dueDate), 'do MMM')} - $
+                  {(latestInvoice?.total / 100).toFixed(2)}{' '}
+                </span>
+              )}
               <A
                 to={{
                   pageName: 'invoiceDetail',

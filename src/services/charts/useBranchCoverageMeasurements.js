@@ -12,7 +12,7 @@ const query = `
     $interval: MeasurementInterval!
   ) {
     owner(username: $owner) {
-      repository(name: $repo) {
+      repository: repositoryDeprecated(name: $repo) {
         measurements(
           interval: $interval
           after: $after

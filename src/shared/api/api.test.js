@@ -227,7 +227,7 @@ describe('when using a graphql request', () => {
       const query = `
         query CoverageForFile($owner: String!, $repo: String!, $ref: String!) {
           owner(username: $owner) {
-            repository(name: $repo){
+            repository: repositoryDeprecated(name: $repo){
               commit(id: $ref) {
                 commitid
               }

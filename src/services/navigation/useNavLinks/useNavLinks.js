@@ -190,13 +190,18 @@ export function useNavLinks() {
           repo: r,
         }
       ) => {
-        if (!tree && !ref) {
-          return `/${provider}/${owner}/${repo}/tree/`
-        } else if (!tree) {
-          return `/${provider}/${owner}/${repo}/tree/${ref}/`
-        } else {
-          return `/${provider}/${owner}/${repo}/tree/${ref}/${tree}`
+        if (ref) {
+          const encodedRef = encodeURIComponent(ref)
+
+          if (tree) {
+            const encodedTree = encodeURIComponent(tree)
+            return `/${provider}/${owner}/${repo}/tree/${encodedRef}/${encodedTree}`
+          }
+
+          return `/${provider}/${owner}/${repo}/tree/${encodedRef}/`
         }
+
+        return `/${provider}/${owner}/${repo}/tree/`
       },
       isExternalLink: false,
       text: 'Tree View',
@@ -208,7 +213,12 @@ export function useNavLinks() {
           owner: o,
           repo: r,
         }
-      ) => `/${provider}/${owner}/${repo}/blob/${ref}/${tree}`,
+      ) => {
+        const encodedRef = encodeURIComponent(ref)
+        const encodedTree = encodeURIComponent(tree)
+
+        return `/${provider}/${owner}/${repo}/blob/${encodedRef}/${encodedTree}`
+      },
       isExternalLink: false,
       text: 'File Viewer',
     },
@@ -260,6 +270,16 @@ export function useNavLinks() {
         }
       ) => `/${provider}/${owner}/${repo}/new/other-ci`,
       text: 'Other CI',
+    },
+    circleCI: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/new/circle-ci`,
+      text: 'CircleCI',
     },
     overview: {
       path: (
@@ -358,7 +378,8 @@ export function useNavLinks() {
       text: 'Feedback',
       path: ({ provider = p, ref } = { provider: p, ref: null }) => {
         if (ref) {
-          return `/${provider}/feedback?ref=${encodeURIComponent(ref)}`
+          const encodedRef = encodeURIComponent(ref)
+          return `/${provider}/feedback?ref=${encodedRef}`
         }
         return `/${provider}/feedback`
       },
@@ -502,13 +523,39 @@ export function useNavLinks() {
       openNewTab: true,
     },
     githubRepoActions: {
-      text: 'GitHub Repo',
+      text: 'GitHub Actions workflow yaml file',
       path: (
-        { owner = o, repo = r } = {
+        { owner = o, repo = r, branch } = {
           owner: o,
           repo: r,
         }
-      ) => `https://github.com/${owner}/${repo}/actions`,
+      ) =>
+        `https://github.com/${owner}/${repo}/tree/${branch}/.github/workflows`,
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    circleCIEnvVars: {
+      text: 'environment variables',
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) =>
+        `https://app.circleci.com/settings/project/${provider}/${owner}/${repo}/environment-variables`,
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    circleCIyaml: {
+      text: 'config.yml',
+      path: (
+        { owner = o, repo = r, branch } = {
+          owner: o,
+          repo: r,
+        }
+      ) =>
+        `https://github.com/${owner}/${repo}/tree/${branch}/.circleci/config`,
       isExternalLink: true,
       openNewTab: true,
     },

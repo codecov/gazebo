@@ -6,7 +6,7 @@ function fetchRepoOverviewInitial({ provider, owner, repo, signal }) {
   const query = `
     query GetRepoOverview($name: String!, $repo: String!) {
       owner(username:$name){
-        repository(name:$repo){
+        repository: repositoryDeprecated(name:$repo){
           private
           defaultBranch
           oldestCommitAt

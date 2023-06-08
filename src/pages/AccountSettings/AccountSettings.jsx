@@ -6,10 +6,10 @@ import config from 'config'
 import { SentryRoute } from 'sentry'
 
 import SidebarLayout from 'layouts/SidebarLayout'
-import LogoSpinner from 'old_ui/LogoSpinner'
 import { useAccountDetails } from 'services/account'
 import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
 import { isEnterprisePlan } from 'shared/utils/billing'
+import LoadingLogo from 'ui/LoadingLogo'
 
 import AccountSettingsSideMenu from './AccountSettingsSideMenu'
 import Header from './shared/Header'
@@ -23,7 +23,7 @@ const YAMLTab = lazy(() => import('./tabs/YAML'))
 
 const Loader = (
   <div className="flex h-full w-full items-center justify-center">
-    <LogoSpinner />
+    <LoadingLogo />
   </div>
 )
 
