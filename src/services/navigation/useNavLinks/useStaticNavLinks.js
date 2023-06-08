@@ -187,6 +187,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    codecovYaml: {
+      text: 'Repository Yaml',
+      path: () => 'https://docs.codecov.com/docs/codecov-yaml',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     repoYaml: {
       text: 'Repository Yaml',
       path: () => 'https://docs.codecov.com/docs/codecov-yaml#repository-yaml',
@@ -254,6 +260,12 @@ export function useStaticNavLinks() {
     staticAnalysisDoc: {
       text: 'Static Analysis',
       path: () => 'https://docs.codecov.com/docs/automated-test-selection',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    circleCIOrbs: {
+      text: 'CircleCI Documentation',
+      path: () => 'https://circleci.com/developer/orbs/orb/codecov/codecov',
       isExternalLink: true,
       openNewTab: true,
     },

@@ -11,6 +11,7 @@ import { providerToName } from 'shared/utils'
 import Spinner from 'ui/Spinner'
 import TabNavigation from 'ui/TabNavigation'
 
+import CircleCI from './CircleCI'
 import GitHubActions from './GitHubActions'
 
 const OtherCI = lazy(() => import('./OtherCI'))
@@ -37,6 +38,7 @@ function Content({ provider }) {
       <TabNavigation
         tabs={[
           { pageName: 'new', children: 'GitHub Actions', exact: true },
+          { pageName: 'circleCI' },
           { pageName: 'newOtherCI' },
         ]}
       />
@@ -45,7 +47,10 @@ function Content({ provider }) {
           <SentryRoute path="/:provider/:owner/:repo/new" exact>
             <GitHubActions />
           </SentryRoute>
-          <SentryRoute path="/:provider/:owner/:repo/new/other-ci">
+          <SentryRoute path="/:provider/:owner/:repo/new/circle-ci" exact>
+            <CircleCI />
+          </SentryRoute>
+          <SentryRoute path="/:provider/:owner/:repo/new/other-ci" exact>
             <Suspense fallback={<Loader />}>
               <OtherCI />
             </Suspense>

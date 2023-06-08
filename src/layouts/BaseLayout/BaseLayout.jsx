@@ -5,10 +5,10 @@ import Header from 'layouts/Header'
 import ErrorBoundary from 'layouts/shared/ErrorBoundary'
 import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
 import ToastNotifications from 'layouts/ToastNotifications'
-import LogoSpinner from 'old_ui/LogoSpinner'
 import { useTracking } from 'services/tracking'
 import GlobalBanners from 'shared/GlobalBanners'
 import GlobalTopBanners from 'shared/GlobalTopBanners'
+import LoadingLogo from 'ui/LoadingLogo'
 
 import { useUserAccessGate } from './hooks/useUserAccessGate'
 
@@ -17,7 +17,7 @@ const LimitedHeader = lazy(() => import('layouts/LimitedHeader'))
 
 const FullPageLoader = () => (
   <div className="mt-16 flex flex-1 items-center justify-center">
-    <LogoSpinner />
+    <LoadingLogo />
   </div>
 )
 

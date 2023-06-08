@@ -35,6 +35,7 @@ describe('useRepoCoverage', () => {
           repository: {
             branch: {
               head: {
+                yamlState: 'DEFAULT',
                 totals: {
                   percentCovered: 70.44,
                   lineCount: 90,
@@ -64,6 +65,7 @@ describe('useRepoCoverage', () => {
         await waitFor(() =>
           expect(result.current.data).toEqual({
             head: {
+              yamlState: 'DEFAULT',
               totals: {
                 percentCovered: 70.44,
                 lineCount: 90,

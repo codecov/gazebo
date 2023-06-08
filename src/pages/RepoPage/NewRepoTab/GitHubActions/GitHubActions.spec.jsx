@@ -167,7 +167,7 @@ describe('GitHubActions', () => {
       expect(gitHubActionsWorkflowLink).toBeInTheDocument()
       expect(gitHubActionsWorkflowLink).toHaveAttribute(
         'href',
-        'https://github.com/codecov/cool-repo/actions'
+        'https://github.com/codecov/cool-repo/tree/main/.github/workflows'
       )
     })
 
@@ -183,14 +183,6 @@ describe('GitHubActions', () => {
 
   describe('step three', () => {
     beforeEach(() => setup())
-
-    it('renders header', async () => {
-      render(<GitHubActions />, { wrapper })
-
-      const header = await screen.findByRole('heading', { name: /Step 3/ })
-      expect(header).toBeInTheDocument()
-    })
-
     it('renders first body', async () => {
       render(<GitHubActions />, { wrapper })
 

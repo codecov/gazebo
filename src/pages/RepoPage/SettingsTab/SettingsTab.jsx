@@ -4,8 +4,8 @@ import { Switch, useParams } from 'react-router-dom'
 import { SentryRoute } from 'sentry'
 
 import SidebarLayout from 'layouts/SidebarLayout'
-import LogoSpinner from 'old_ui/LogoSpinner'
 import { useOwner } from 'services/user'
+import LoadingLogo from 'ui/LoadingLogo'
 
 import SideMenuSettings from './SideMenuSettings'
 
@@ -16,7 +16,7 @@ const BadgesAndGraphsTab = lazy(() => import('./tabs/BadgesAndGraphsTab'))
 
 const tabLoading = (
   <div className="flex h-full w-full items-center justify-center">
-    <LogoSpinner />
+    <LoadingLogo />
   </div>
 )
 
