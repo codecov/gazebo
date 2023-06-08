@@ -5,8 +5,8 @@ import { useParams } from 'react-router-dom'
 // @ts-expect-error
 import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
 import Footer from 'layouts/Footer'
-import LogoSpinner from 'old_ui/LogoSpinner/LogoSpinner'
 import A from 'ui/A'
+import LoadingLogo from 'ui/LoadingLogo'
 
 const LogoButton = () => {
   const { provider } = useParams<{ provider?: string }>()
@@ -24,7 +24,7 @@ const LogoButton = () => {
 
 const FullPageLoader = () => (
   <div className="mt-16 flex flex-1 items-center justify-center">
-    <LogoSpinner />
+    <LoadingLogo />
   </div>
 )
 
