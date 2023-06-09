@@ -81,7 +81,6 @@ describe('CircleCI', () => {
 
     trackSegmentEvent.mockImplementation((data) => data)
   }
-
   describe('step one', () => {
     beforeEach(() => setup())
 
