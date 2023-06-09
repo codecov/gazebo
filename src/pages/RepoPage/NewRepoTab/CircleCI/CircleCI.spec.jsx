@@ -19,7 +19,6 @@ const mockCurrentUser = {
     },
   },
 }
-
 const mockGetRepo = {
   owner: {
     isCurrentUserPartOfOrg: true,
