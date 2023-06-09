@@ -3,11 +3,11 @@ import { Redirect, Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
-import LogoSpinner from 'old_ui/LogoSpinner'
 import NotFound from 'pages/NotFound'
 import { useRepo } from 'services/repo'
 import CustomError from 'shared/CustomError'
 import A from 'ui/A'
+import LoadingLogo from 'ui/LoadingLogo'
 import TabNavigation from 'ui/TabNavigation'
 
 import { RepoBreadcrumbProvider } from './context'
@@ -55,7 +55,7 @@ const getRepoTabs = ({
 
 const Loader = () => (
   <div className="mt-16 flex flex-1 items-center justify-center">
-    <LogoSpinner />
+    <LoadingLogo />
   </div>
 )
 

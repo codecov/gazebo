@@ -218,7 +218,7 @@ describe('CodeTreeTable', () => {
 
           expect(links[1]).toHaveAttribute(
             'href',
-            '/gh/codecov/cool-repo/tree/main/a/b/c/src'
+            '/gh/codecov/cool-repo/tree/main/a%2Fb%2Fc%2Fsrc'
           )
         })
       })
@@ -238,7 +238,7 @@ describe('CodeTreeTable', () => {
 
           expect(links[2]).toHaveAttribute(
             'href',
-            '/gh/codecov/cool-repo/blob/main/a/b/c/file.js'
+            '/gh/codecov/cool-repo/blob/main/a%2Fb%2Fc%2Ffile.js'
           )
         })
       })

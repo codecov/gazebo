@@ -187,6 +187,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    codecovYaml: {
+      text: 'Repository Yaml',
+      path: () => 'https://docs.codecov.com/docs/codecov-yaml',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     repoYaml: {
       text: 'Repository Yaml',
       path: () => 'https://docs.codecov.com/docs/codecov-yaml#repository-yaml',

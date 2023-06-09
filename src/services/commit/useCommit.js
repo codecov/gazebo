@@ -51,7 +51,7 @@ export function useCommit({
   const query = `
       query Commit($owner: String!, $repo: String!, $commitid: String!, $filters: ImpactedFilesFilters) {
           owner(username: $owner) {
-            repository(name: $repo) {
+            repository: repositoryDeprecated(name: $repo) {
               commit(id: $commitid) {
                 totals {
                   coverage # Absolute coverage of the commit
