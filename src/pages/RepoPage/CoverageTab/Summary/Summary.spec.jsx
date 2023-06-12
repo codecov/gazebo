@@ -78,6 +78,7 @@ const mockRepoCoverage = {
   branch: {
     name: 'main',
     head: {
+      yamlState: 'DEFAULT',
       totals: {
         percentCovered: 95.0,
         lineCount: 100,
@@ -230,6 +231,29 @@ describe('Summary', () => {
 
       const shortSha = await screen.findByText(/321fdsa/)
       expect(shortSha).toBeInTheDocument()
+    })
+
+    it('renders the yaml configuration for default yaml prompt', async () => {
+      render(<Summary />, { wrapper: wrapper() })
+
+      const yamlConfigurationTitle = await screen.findByText(
+        /Yaml Configuration/
+      )
+      expect(yamlConfigurationTitle).toBeInTheDocument()
+
+      const yamlConfigurationLink = await screen.findByRole('link', {
+        name: /Learn more/,
+      })
+      expect(yamlConfigurationLink).toBeInTheDocument()
+      expect(yamlConfigurationLink).toHaveAttribute(
+        'href',
+        'https://docs.codecov.com/docs/codecov-yaml'
+      )
+
+      const yamlConfigurationBody = await screen.findByText(
+        /about PR comment, target and flags/
+      )
+      expect(yamlConfigurationBody).toBeInTheDocument()
     })
   })
 

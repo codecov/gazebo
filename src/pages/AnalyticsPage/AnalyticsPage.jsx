@@ -1,12 +1,12 @@
 import { lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
-import LogoSpinner from 'old_ui/LogoSpinner'
 import NotFound from 'pages/NotFound'
 import { useLocationParams } from 'services/navigation'
 import { orderingOptions } from 'services/repos'
 import { useOwner } from 'services/user'
 import ReposTable from 'shared/ListRepo/ReposTable'
+import LoadingLogo from 'ui/LoadingLogo'
 
 import ChartSelectors from './ChartSelectors'
 import './analytics.css'
@@ -53,15 +53,15 @@ function AnalyticsPage() {
         active={true}
         sortItem={sortItem}
       />
-      <Suspense fallback={<LogoSpinner />}>
+      <Suspense fallback={<LoadingLogo />}>
         <Chart params={params} />
-        <ReposTable
-          owner={owner}
-          sortItem={sortItem}
-          searchValue={params.search}
-          filterValues={params?.repositories}
-        />
       </Suspense>
+      <ReposTable
+        owner={owner}
+        sortItem={sortItem}
+        searchValue={params?.search}
+        filterValues={params?.repositories}
+      />
     </div>
   )
 }

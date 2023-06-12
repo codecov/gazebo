@@ -8,7 +8,7 @@ export const query = `
   ) {
     owner(username: $name) {
       username
-      repository(name: $repo) {
+      repository: repositoryDeprecated(name: $repo) {
         repositoryConfig {
           indicationRange {
             upperRange

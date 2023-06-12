@@ -8,8 +8,22 @@ function getTreeLocation(paths, location, index) {
   return dropRight(paths, paths.length - index - 1).join('/')
 }
 
+// eslint-disable-next-line max-statements, complexity
 export function useTreePaths(passedPath) {
-  const { provider, owner, branch, path, repo, ref } = useParams()
+  const {
+    provider,
+    owner,
+    branch: urlBranch,
+    path: urlPath,
+    repo,
+    ref: urlRef,
+  } = useParams()
+  const branch = urlBranch && decodeURIComponent(urlBranch)
+  const ref = urlRef && decodeURIComponent(urlRef)
+  const path = urlPath && decodeURIComponent(urlPath)
+
+  console.debug(branch, ref, path)
+
   const filePaths = getFilePathParts(passedPath || path)
   const { data: repoOverview } = useRepoOverview(
     {

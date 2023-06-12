@@ -5,7 +5,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import NoReposBlock from './NoReposBlock'
 
 const wrapper =
-  (initialEntries = ['/gh/codecov']) =>
+  (initialEntries = ['/gl/codecov']) =>
   ({ children }) =>
     (
       <MemoryRouter initialEntries={initialEntries}>
@@ -27,7 +27,7 @@ describe('NoReposBlock', () => {
       expect(noReposDetected).toBeInTheDocument()
     })
 
-    it('renders private scope text', async () => {
+    it('renders private scope text if it is not github', async () => {
       const props = { privateAccess: false, searchValue: '' }
       render(<NoReposBlock {...props} />, {
         wrapper: wrapper(),
@@ -37,7 +37,7 @@ describe('NoReposBlock', () => {
       expect(privateScopeButton).toBeInTheDocument()
       expect(privateScopeButton).toHaveAttribute(
         'href',
-        'https://stage-web.codecov.dev/login/gh?private=true'
+        'https://stage-web.codecov.dev/login/gl?private=true'
       )
 
       const privateScopeText = await screen.findByText(

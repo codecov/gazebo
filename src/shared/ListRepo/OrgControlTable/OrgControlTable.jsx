@@ -7,7 +7,6 @@ import OptionButton from 'ui/OptionButton'
 import Select from 'ui/Select'
 import TextInput from 'ui/TextInput'
 
-import GithubPrivateScopeLogin from './GithubPrivateScopeLogin'
 import RepoOrgNotFound from './RepoOrgNotFound'
 
 import { repoDisplayOptions } from '../ListRepo'
@@ -56,7 +55,6 @@ function OrgControlTable({
         data-testid="org-control-search"
       />
       {canRefetch && <RepoOrgNotFound />}
-      <GithubPrivateScopeLogin />
       <Select
         dataMarketing="repo-list-order-selector"
         ariaName="Sort Order"

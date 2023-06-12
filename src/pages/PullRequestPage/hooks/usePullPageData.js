@@ -7,7 +7,7 @@ const query = `
   query PullPageData ($owner: String!, $repo: String!, $pullId: Int!) {
     owner(username: $owner) {
       isCurrentUserPartOfOrg
-      repository(name: $repo) {
+      repository: repositoryDeprecated(name: $repo) {
         private
         pull(id: $pullId) {
           pullId

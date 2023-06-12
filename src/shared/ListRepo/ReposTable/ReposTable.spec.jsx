@@ -30,7 +30,7 @@ const wrapper =
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={['/gh']}>
+        <MemoryRouter initialEntries={['/gl']}>
           <Route path="/:provider">
             <ActiveContext.Provider value={repoDisplay}>
               {children}
@@ -240,9 +240,9 @@ describe('ReposTable', () => {
         name: 'lock-closed.svg owner1 / Repo name 3',
       })
 
-      expect(repo1).toHaveAttribute('href', '/gh/owner1/Repo name 1')
-      expect(repo2).toHaveAttribute('href', '/gh/owner1/Repo name 2')
-      expect(repo3).toHaveAttribute('href', '/gh/owner1/Repo name 3')
+      expect(repo1).toHaveAttribute('href', '/gl/owner1/Repo name 1')
+      expect(repo2).toHaveAttribute('href', '/gl/owner1/Repo name 2')
+      expect(repo3).toHaveAttribute('href', '/gl/owner1/Repo name 3')
     })
 
     it('renders last updated column', async () => {
@@ -250,7 +250,8 @@ describe('ReposTable', () => {
         wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
       })
 
-      const lastSeen1 = await screen.findByText(/3 days ago/)
+      expect(await screen.findByText(/3 days ago/)).toBeTruthy()
+      const lastSeen1 = screen.getByText(/3 days ago/)
       expect(lastSeen1).toBeInTheDocument()
 
       const lastSeen2 = await screen.findByText(/2 days ago/)
@@ -262,7 +263,8 @@ describe('ReposTable', () => {
         wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
       })
 
-      const coverage1 = await screen.findByText(/43\.00/)
+      expect(await screen.findByText(/43\.00/)).toBeTruthy()
+      const coverage1 = screen.getByText(/43\.00/)
       expect(coverage1).toBeInTheDocument()
 
       const coverage2 = await screen.findByText(/100\.00/)
@@ -274,7 +276,8 @@ describe('ReposTable', () => {
         wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
       })
 
-      const lines1 = await screen.findByText('99')
+      expect(await screen.findByText('99')).toBeTruthy()
+      const lines1 = screen.getByText('99')
       expect(lines1).toBeInTheDocument()
 
       const lines2 = await screen.findByText('101')
@@ -286,7 +289,8 @@ describe('ReposTable', () => {
         wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
       })
 
-      const noData = await screen.findByText(/No data/)
+      expect(await screen.findByText(/No data/)).toBeTruthy()
+      const noData = screen.getByText(/No data/)
       expect(noData).toBeInTheDocument()
     })
   })
@@ -354,17 +358,17 @@ describe('ReposTable', () => {
         const repo1 = await screen.findByRole('link', {
           name: 'globe-alt.svg Repo name 1',
         })
-        expect(repo1).toHaveAttribute('href', '/gh/owner1/Repo name 1/new')
+        expect(repo1).toHaveAttribute('href', '/gl/owner1/Repo name 1/new')
 
         const repo2 = await screen.findByRole('link', {
           name: 'lock-closed.svg Repo name 2',
         })
-        expect(repo2).toHaveAttribute('href', '/gh/owner1/Repo name 2/new')
+        expect(repo2).toHaveAttribute('href', '/gl/owner1/Repo name 2/new')
 
         const repo3 = await screen.findByRole('link', {
           name: 'lock-closed.svg Repo name 3',
         })
-        expect(repo3).toHaveAttribute('href', '/gh/owner1/Repo name 3/new')
+        expect(repo3).toHaveAttribute('href', '/gl/owner1/Repo name 3/new')
       })
     })
 
@@ -459,9 +463,10 @@ describe('ReposTable', () => {
         wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
       })
 
-      const noReposDetected = await screen.findByText(
-        /There are no repos detected/
-      )
+      expect(
+        await screen.findByText(/There are no repos detected/)
+      ).toBeTruthy()
+      const noReposDetected = screen.getByText(/There are no repos detected/)
       expect(noReposDetected).toBeInTheDocument()
 
       const searchNotFoundText = screen.queryByText('No results found')
@@ -486,16 +491,17 @@ describe('ReposTable', () => {
         wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
       })
 
-      const noReposDetected = await screen.findByText(
-        /There are no repos detected/
-      )
+      expect(
+        await screen.findByText(/There are no repos detected/)
+      ).toBeTruthy()
+      const noReposDetected = screen.getByText(/There are no repos detected/)
       expect(noReposDetected).toBeInTheDocument()
 
       const privateScopeButton = await screen.findByText(/private scope/)
       expect(privateScopeButton).toBeInTheDocument()
       expect(privateScopeButton).toHaveAttribute(
         'href',
-        'https://stage-web.codecov.dev/login/gh?private=true'
+        'https://stage-web.codecov.dev/login/gl?private=true'
       )
 
       const privateScopeText = await screen.findByText(
@@ -636,10 +642,8 @@ describe('ReposTable', () => {
         wrapper: wrapper(repoDisplayOptions.ALL.text),
       })
 
-      await waitFor(() => queryClient.isFetching())
-      await waitFor(() => !queryClient.isFetching())
-
-      const label = await screen.findByText(/Not yet enabled/)
+      expect(await screen.findByText(/Not yet enabled/)).toBeTruthy()
+      const label = screen.getByText(/Not yet enabled/)
       expect(label).toBeInTheDocument()
     })
 
@@ -648,10 +652,8 @@ describe('ReposTable', () => {
         wrapper: wrapper(repoDisplayOptions.ALL.text),
       })
 
-      await waitFor(() => queryClient.isFetching())
-      await waitFor(() => !queryClient.isFetching())
-
-      const label = await screen.findByText(/Deactivated/)
+      expect(await screen.findByText(/Deactivated/)).toBeTruthy()
+      const label = screen.getByText(/Deactivated/)
       expect(label).toBeInTheDocument()
     })
   })

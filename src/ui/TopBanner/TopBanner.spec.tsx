@@ -1,11 +1,7 @@
-import {
-  render,
-  /* renderHook, */ screen,
-  waitFor,
-} from '@testing-library/react'
+import { render, renderHook, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { TopBanner /* useTopBannerContext */ } from './TopBanner'
+import { TopBanner, useTopBannerContext } from './TopBanner'
 
 describe('TopBanner', () => {
   function setup() {
@@ -196,15 +192,31 @@ describe('TopBanner', () => {
   })
 })
 
-describe.skip('useTopBannerContext', () => {
+describe('useTopBannerContext', () => {
   describe('when used outside of context', () => {
+    let errorMock: jest.Mock
+
+    beforeEach(() => {
+      const spy = jest.spyOn(console, 'error')
+      errorMock = jest.fn()
+      spy.mockImplementation(errorMock)
+    })
+
+    afterEach(() => {
+      errorMock.mockReset()
+    })
+
     it('throws an error', () => {
-      // const { result } = renderHook(() => useTopBannerContext())
-      // expect(result.error).toStrictEqual(
-      //   Error(
-      //     'useTopBannerContext has to be used within `<TopBannerContext.Provider>`'
-      //   )
-      // )
+      let error
+
+      try {
+        renderHook(() => useTopBannerContext())
+      } catch (e) {
+        error = e as Error
+      }
+      expect(error?.message).toBe(
+        'useTopBannerContext has to be used within `<TopBannerContext.Provider>`'
+      )
     })
   })
 })

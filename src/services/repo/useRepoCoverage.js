@@ -6,10 +6,11 @@ function fetchRepoBranchCoverage({ provider, owner, repo, branch, signal }) {
   const query = `
     query GetRepoCoverage($name: String!, $repo: String!, $branch: String!) {
       owner(username:$name){
-        repository(name:$repo){
+        repository: repositoryDeprecated(name:$repo){
           branch(name:$branch) {
             name
             head {
+              yamlState
               totals {
                 percentCovered
                 lineCount

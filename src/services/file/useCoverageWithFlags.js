@@ -16,7 +16,7 @@ export function useCoverageWithFlags({
   const query = `
   query CoverageForFileWithFlags($owner: String!, $repo: String!, $ref: String!, $path: String!, $flags: [String]) {
     owner(username: $owner) {
-      repository(name: $repo){
+      repository: repositoryDeprecated(name: $repo){
         commit(id: $ref) {
           coverageFile(path: $path, flags: $flags) {
             isCriticalFile
