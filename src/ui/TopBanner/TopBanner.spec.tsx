@@ -88,6 +88,42 @@ describe('TopBanner', () => {
         expect(textContent).toBeInTheDocument()
       })
     })
+
+    describe('excitement variant', () => {
+      it('has the correct background color', () => {
+        render(
+          <TopBanner localStorageKey="testing-key">
+            <TopBanner.Start>Test excitement banner</TopBanner.Start>
+          </TopBanner>
+        )
+
+        const div = screen.getByTestId('top-banner-root')
+        expect(div).toBeInTheDocument()
+        expect(div).toHaveClass('bg-ds-gray-primary')
+      })
+
+      it('renders confetti-pop emoji', () => {
+        render(
+          <TopBanner localStorageKey="testing-key" variant="excitement">
+            <TopBanner.Start>Test excitement banner</TopBanner.Start>
+          </TopBanner>
+        )
+
+        const icon = screen.getByText(/🎉/)
+        expect(icon).toBeInTheDocument()
+      })
+
+      it('renders text content', () => {
+        render(
+          <TopBanner localStorageKey="testing-key">
+            <TopBanner.Start>Test excitement banner</TopBanner.Start>
+          </TopBanner>
+        )
+
+        const text = screen.getByText('Test excitement banner')
+        expect(text).toBeInTheDocument()
+      })
+    })
   })
 
   describe('banner display is set to false in local storage', () => {

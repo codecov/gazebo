@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom'
 
 import { useAccountDetails, usePlans } from 'services/account'
 import { findSentryPlans, isSentryPlan } from 'shared/utils/billing'
-import A from 'ui/A'
 import Button from 'ui/Button/Button'
 import Icon from 'ui/Icon/Icon'
 import TopBanner from 'ui/TopBanner'
@@ -57,36 +56,19 @@ const SentryTrialBanner: React.FC = () => {
   }
 
   return (
-    <TopBanner localStorageKey="global-top-sentry-banner">
+    <TopBanner
+      localStorageKey="global-top-sentry-banner"
+      variant={'excitement'}
+    >
       <TopBanner.Start>
         <p>
           <span className="font-semibold">
-            Start your FREE Pro Team Sentry 14-day free trial today!
+            Start your 14-day free Codecov Pro trial today.
           </span>{' '}
-          No credit card required -{' '}
-          <A
-            to={{ pageName: 'allOrgsPlanPage' }}
-            isExternal={false}
-            hook="sentry-trial-banner-to-upgrade-page"
-            variant="semibold"
-          >
-            Start trial today
-            <Icon size="sm" name="chevron-right" variant="solid" />
-          </A>
+          No credit card required.
         </p>
       </TopBanner.Start>
       <TopBanner.End>
-        <p>
-          <span className="font-semibold">Questions?</span> React out to{' '}
-          {/* @ts-ignore-error */}
-          <A
-            href="mailto:support@codecov.io"
-            hook="sentry-trial-banner-to-support"
-            isExternal={false}
-          >
-            support@codecov.io
-          </A>
-        </p>
         <Button
           to={{ pageName: 'allOrgsPlanPage' }}
           hook="sentry-trial-banner-to-upgrade-page"
