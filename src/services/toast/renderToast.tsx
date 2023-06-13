@@ -3,6 +3,8 @@ import { toast, type ToastOptions } from 'react-hot-toast'
 
 import GenericToast from './GenericToast'
 
+const TOAST_DURATION = 4000
+
 export interface ToastProps {
   title: string
   content: string
@@ -22,7 +24,7 @@ export const renderToast = ({
   title,
   content,
   type = 'generic',
-  options = { duration: 4000 },
+  options = { duration: TOAST_DURATION },
 }: ToastArgs) => {
   let component = <GenericToast title={title} content={content} />
 
@@ -37,7 +39,7 @@ export const renderToast = ({
   }
 
   toast.custom(component, {
-    duration: 2000,
+    duration: TOAST_DURATION,
     position: 'bottom-right',
     ...options,
   })
