@@ -50,7 +50,7 @@ export function generatePath({ path, query }: GeneratePathArgs) {
   return `${baseUrl}${path}${queryString && '?' + queryString}`
 }
 
-function isProvider(provider: string): provider is Provider {
+export function isProvider(provider: string): provider is Provider {
   return AllProvidersArray.includes(provider as Provider)
 }
 
