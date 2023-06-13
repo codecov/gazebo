@@ -13,18 +13,10 @@ const variants = {
   default: {
     icon: 'exclamationCircle',
     iconColor: '',
-    symbol: 0,
-    bgColor: 'bg-ds-gray-primary',
-  },
-  excitement: {
-    icon: '',
-    iconColor: '',
-    symbol: 127881,
     bgColor: 'bg-ds-gray-primary',
   },
   warning: {
     icon: 'exclamationTriangle',
-    symbol: 0,
     iconColor: 'text-ds-primary-yellow',
     bgColor: 'bg-orange-100',
   },
@@ -33,11 +25,7 @@ const variants = {
 type Variants = keyof typeof variants
 
 const topBannerContext = z.object({
-  variant: z.union([
-    z.literal('default'),
-    z.literal('warning'),
-    z.literal('excitement'),
-  ]),
+  variant: z.union([z.literal('default'), z.literal('warning')]),
   localStorageKey: z.string(),
   setHideBanner: z.function().args(z.boolean()).returns(z.void()),
 })
@@ -106,25 +94,19 @@ const End: React.FC<React.PropsWithChildren> = ({ children }) => {
 }
 
 const Start: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const { variant } = useTopBannerContext()
   return (
     <div className="flex grow-0 items-center gap-1 pb-2 md:pb-0">
-      <span
-        className={cs(
-          'pr-2 md:pr-0',
-          variants[variant]?.iconColor ?? variants[variant].iconColor
-        )}
-      >
-        {variants[variant]?.icon ? (
-          <Icon name={variants[variant].icon} size="md" variant="outline" />
-        ) : (
-          <span className="text-xl">
-            {String.fromCodePoint(variants[variant]?.symbol)}
-          </span>
-        )}
-      </span>
       <span>{children}</span>
     </div>
+  )
+}
+
+const IconSymbol: React.FC = () => {
+  const { variant } = useTopBannerContext()
+  return (
+    <span className={cs('pr-2 md:pr-0', variants[variant].iconColor)}>
+      <Icon name={variants[variant].icon} size="md" variant="outline" />
+    </span>
   )
 }
 
@@ -172,12 +154,13 @@ const TopBannerRoot: React.FC<React.PropsWithChildren<TopBannerProps>> = ({
 }
 
 TopBannerRoot.propTypes = {
-  variant: PropTypes.oneOf(['default', 'warning', 'excitement']),
+  variant: PropTypes.oneOf(['default', 'warning']),
   localStorageKey: PropTypes.string.isRequired,
 }
 
 export const TopBanner = Object.assign(TopBannerRoot, {
   DismissButton,
   Start,
+  IconSymbol,
   End,
 })

@@ -30,10 +30,11 @@ describe('TopBanner', () => {
         expect(div).toHaveClass('bg-ds-gray-primary')
       })
 
-      it('renders circle exclamation icon', () => {
+      it('renders circle exclamation icon when icon component is rendered', () => {
         render(
           <TopBanner localStorageKey="testing-key">
             <TopBanner.Start>Test default banner</TopBanner.Start>
+            <TopBanner.IconSymbol />
           </TopBanner>
         )
 
@@ -70,6 +71,7 @@ describe('TopBanner', () => {
         render(
           <TopBanner variant="warning" localStorageKey="testing-key">
             <TopBanner.Start>Test warning banner</TopBanner.Start>
+            <TopBanner.IconSymbol />
           </TopBanner>
         )
 
@@ -86,42 +88,6 @@ describe('TopBanner', () => {
 
         const textContent = screen.getByText('Test warning banner')
         expect(textContent).toBeInTheDocument()
-      })
-    })
-
-    describe('excitement variant', () => {
-      it('has the correct background color', () => {
-        render(
-          <TopBanner localStorageKey="testing-key">
-            <TopBanner.Start>Test excitement banner</TopBanner.Start>
-          </TopBanner>
-        )
-
-        const div = screen.getByTestId('top-banner-root')
-        expect(div).toBeInTheDocument()
-        expect(div).toHaveClass('bg-ds-gray-primary')
-      })
-
-      it('renders confetti-pop emoji', () => {
-        render(
-          <TopBanner localStorageKey="testing-key" variant="excitement">
-            <TopBanner.Start>Test excitement banner</TopBanner.Start>
-          </TopBanner>
-        )
-
-        const icon = screen.getByText(/🎉/)
-        expect(icon).toBeInTheDocument()
-      })
-
-      it('renders text content', () => {
-        render(
-          <TopBanner localStorageKey="testing-key">
-            <TopBanner.Start>Test excitement banner</TopBanner.Start>
-          </TopBanner>
-        )
-
-        const text = screen.getByText('Test excitement banner')
-        expect(text).toBeInTheDocument()
       })
     })
   })

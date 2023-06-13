@@ -56,12 +56,10 @@ const SentryTrialBanner: React.FC = () => {
   }
 
   return (
-    <TopBanner
-      localStorageKey="global-top-sentry-banner"
-      variant={'excitement'}
-    >
+    <TopBanner localStorageKey="global-top-sentry-banner">
       <TopBanner.Start>
         <p>
+          <span className="pr-2 text-xl">&#127881;</span>
           <span className="font-semibold">
             Start your 14-day free Codecov Pro trial today.
           </span>{' '}
