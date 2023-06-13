@@ -1,11 +1,13 @@
 import rocketImg from 'assets/enterprise-rocket.png'
 import { LoginProvidersEnum } from 'services/loginProviders'
 
-import { useServiceProviders } from './hooks'
 import ProviderCard from './ProviderCard/ProviderCard'
+import { useEnterpriseRedirect } from './useEnterpriseRedirect'
+import { useServiceProviders } from './useServiceProviders'
 
 function EnterpriseLandingPage() {
   const { data } = useServiceProviders()
+  useEnterpriseRedirect()
 
   return (
     <div className="flex flex-col gap-5">
