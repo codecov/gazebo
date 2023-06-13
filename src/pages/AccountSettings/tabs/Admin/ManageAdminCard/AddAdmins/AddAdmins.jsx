@@ -2,6 +2,7 @@ import cs from 'classnames'
 import { useCombobox } from 'downshift'
 import PropTypes from 'prop-types'
 import { useRef, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import { useDebounce } from 'react-use'
 import useClickAway from 'react-use/lib/useClickAway'
 
@@ -24,13 +25,9 @@ const styles = {
   input: (isOpen) => cs({ 'rounded-b-none': isOpen }),
 }
 
-function ResultList({
-  isLoading,
-  users,
-  getItemProps,
-  highlightedIndex,
-  provider,
-}) {
+function ResultList({ isLoading, users, getItemProps, highlightedIndex }) {
+  const { provider } = useParams()
+
   if (isLoading) {
     return <p className="px-1 py-2">Loading...</p>
   }
@@ -61,10 +58,10 @@ ResultList.propTypes = {
   users: PropTypes.array,
   getItemProps: PropTypes.func,
   highlightedIndex: PropTypes.number,
-  provider: PropTypes.string,
 }
 
-function useSearch({ provider, owner, setAdminStatus }) {
+function useSearch({ setAdminStatus }) {
+  const { provider, owner } = useParams()
   const [input, setInput] = useState('')
   const [search, setSearch] = useState('')
 
@@ -130,7 +127,7 @@ function useSearch({ provider, owner, setAdminStatus }) {
   }
 }
 
-function AddAdmins({ provider, owner, setAdminStatus }) {
+function AddAdmins({ setAdminStatus }) {
   const {
     isOpen,
     setInput,
@@ -140,7 +137,7 @@ function AddAdmins({ provider, owner, setAdminStatus }) {
     getItemProps,
     isLoading,
     highlightedIndex,
-  } = useSearch({ provider, owner, setAdminStatus })
+  } = useSearch({ setAdminStatus })
   const wrapperRef = useRef()
   useClickAway(wrapperRef, () => setInput(''))
 
@@ -163,7 +160,6 @@ function AddAdmins({ provider, owner, setAdminStatus }) {
             users={users}
             isLoading={isLoading}
             getItemProps={getItemProps}
-            provider={provider}
             highlightedIndex={highlightedIndex}
           />
         )}
@@ -173,8 +169,6 @@ function AddAdmins({ provider, owner, setAdminStatus }) {
 }
 
 AddAdmins.propTypes = {
-  provider: PropTypes.string.isRequired,
-  owner: PropTypes.string.isRequired,
   setAdminStatus: PropTypes.func.isRequired,
 }
 
