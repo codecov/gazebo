@@ -188,4 +188,62 @@ describe('AddAdmins', () => {
       expect(hideDropdown).toHaveClass('hidden')
     })
   })
+
+  describe('when pressing on a user', () => {
+    it('calls the setAdminStatus with the user', async () => {
+      const users = [{ username: 'launda', email: 'c3@cr.io', name: 'laudna' }]
+      const { user } = setup(users)
+      const setAdminStatus = jest.fn()
+      render(<AddAdmins setAdminStatus={setAdminStatus} />, { wrapper })
+
+      let textbox = screen.getByRole('combobox')
+      await user.type(textbox, 'hello')
+
+      const userOption = screen.getByRole('option', {
+        name: new RegExp('launda', 'i'),
+      })
+      await user.hover(userOption)
+      await user.keyboard('{Enter}')
+
+      expect(setAdminStatus).toHaveBeenCalledWith(users[0], true)
+    })
+
+    it('resets the text input', async () => {
+      const { user } = setup([
+        { username: 'launda', email: 'c3@cr.io', name: 'laudna' },
+      ])
+      render(<AddAdmins setAdminStatus={jest.fn()} />, { wrapper })
+
+      let textbox = screen.getByRole('combobox')
+      await user.type(textbox, 'hello')
+
+      const userOption = screen.getByRole('option', {
+        name: new RegExp('launda', 'i'),
+      })
+      await user.hover(userOption)
+      await user.keyboard('{Enter}')
+
+      textbox = screen.getByRole('combobox')
+      expect(textbox).toHaveValue('')
+    })
+
+    it(`doesn't render the dropdown anymore`, async () => {
+      const { user } = setup([
+        { username: 'launda', email: 'c3@cr.io', name: 'laudna' },
+      ])
+      render(<AddAdmins setAdminStatus={jest.fn()} />, { wrapper })
+
+      const textbox = screen.getByRole('combobox')
+      await user.type(textbox, 'hello')
+
+      const userOption = screen.getByRole('option', {
+        name: new RegExp('launda', 'i'),
+      })
+      await user.hover(userOption)
+      await user.keyboard('{Enter}')
+
+      const hideDropdown = screen.getByRole('listbox')
+      expect(hideDropdown).toHaveClass('hidden')
+    })
+  })
 })
