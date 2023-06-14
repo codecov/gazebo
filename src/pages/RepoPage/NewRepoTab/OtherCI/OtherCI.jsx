@@ -1,6 +1,5 @@
 import { useParams } from 'react-router-dom'
 
-import codecovReport from 'assets/repoConfig/codecov-report.svg'
 import patchAndProject from 'assets/repoConfig/patch-and-project.svg'
 import { useRepo } from 'services/repo'
 import { useOnboardingTracking } from 'services/user'
@@ -15,9 +14,9 @@ function OtherCI() {
   const { copiedCIToken, downloadUploaderClicked } = useOnboardingTracking()
 
   return (
-    <>
-      <div className="flex flex-col gap-4">
-        <h2 className="pt-6 text-base font-semibold">
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-3">
+        <h2 className="text-base font-semibold">
           Step 1: add repository token as a secret to your CI Provider
         </h2>
         <pre className="flex items-center gap-2 overflow-auto rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
@@ -28,8 +27,8 @@ function OtherCI() {
           />
         </pre>
       </div>
-      <div className="flex flex-col">
-        <h2 className="pt-6 text-base font-semibold">
+      <div className="flex flex-col gap-3">
+        <h2 className="text-base font-semibold">
           Step 2: add Codecov{' '}
           <A
             to={{ pageName: 'uploader' }}
@@ -53,37 +52,24 @@ function OtherCI() {
           </p>
         </div>
       </div>
-      <div className="flex flex-col">
-        <div>
-          <h2 className="pt-6 text-base font-semibold">
-            Step 3: get coverage analysis from Codecov
-          </h2>
-          <p className="text-base">
-            Once you&apos;ve committed your changes in step 2 and ran your CI/CD
-            pipeline. In your pull request, you should see two status checks:
-          </p>
-        </div>
+      <div>
+        <p>
+          After you committed your changes and ran the repo&apos;s CI/CD
+          pipeline. In your pull request, you should see two status checks and
+          PR comment.
+        </p>
         <img
           alt="codecov patch and project"
           src={patchAndProject}
           className="my-3 md:px-5"
           loading="lazy"
         />
-        <p className="text-base">
-          and a comment with coverage report in the pull request:
-        </p>
-        <img alt="codecov report" src={codecovReport} loading="lazy" />
         <p>
-          Learn more about the comment report and customizing{' '}
-          <A to={{ pageName: 'prCommentLayout' }}>here</A>
+          Once merged to the default branch, subsequent pull requests will have
+          checks and report comment. Additionally, you&apos;ll find your repo
+          coverage dashboard here.
         </p>
-      </div>
-      <div className="mt-6 border-l-2 border-ds-gray-secondary">
-        <p className="pb-2 pl-3 text-base">
-          &#127881; Once steps are complete, you should see the coverage
-          dashboard
-        </p>
-        <p className="pl-3">
+        <p className="mt-6 border-l-2 border-ds-gray-secondary pl-4">
           <span className="font-semibold">How was your setup experience?</span>{' '}
           Let us know in{' '}
           <A to={{ pageName: 'repoConfigFeedback' }} isExternal>
@@ -91,7 +77,7 @@ function OtherCI() {
           </A>
         </p>
       </div>
-    </>
+    </div>
   )
 }
 

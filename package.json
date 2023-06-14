@@ -73,6 +73,7 @@
     "react-datepicker": "^4.12.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.9",
+    "react-hot-toast": "^2.4.1",
     "react-intersection-observer": "^9.4.1",
     "react-modal": "^3.14.4",
     "react-router-dom": "^6.11.2",
