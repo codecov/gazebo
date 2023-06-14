@@ -5,6 +5,11 @@ on:
     branches:
       - main
 
+env:
+  CODECOV_GAZEBO_DEVOPS_IMAGE: ${{ vars.CODECOV_GAZEBO_DEVOPS_IMAGE }}
+  CODECOV_GAZEBO_ENTERPRISE_IMAGE: ${{ vars.CODECOV_GAZEBO_ENTERPRISE_IMAGE }}
+  CODECOV_GAZEBO_IMAGE: ${{ vars.CODECOV_GAZEBO_IMAGE }}
+
 jobs:
   setup-build-publish:
     name: Setup, Build, Publish
