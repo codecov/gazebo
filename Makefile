@@ -1,9 +1,12 @@
 sha := $(shell git rev-parse --short=7 HEAD)
 release_version := `cat VERSION`
 build_date ?= $(shell git show -s --date=iso8601-strict --pretty=format:%cd $$sha)
-image := us-docker.pkg.dev/genuine-polymer-165712/codecov/codecov-frontend-gazebo
-enterprise_image := us-docker.pkg.dev/genuine-polymer-165712/codecov/enterprise-frontend
-devops_image := us-docker.pkg.dev/genuine-polymer-165712/codecov-devops/dive:latest
+# IMAGE, ENTERPRISE_IMAGE, and DEVOPS_IMAGE are provided via Github Actions. Engineers can refer to
+# https://www.notion.so/sentry/Environment-variables-for-building-pushing-Docker-images-locally-3159e90c5e6f4db4bfbde8800cdad2c0?pvs=4
+# for the relevant values.
+IMAGE := ${CODECOV_GAZEBO_IMAGE}
+ENTERPRISE_IMAGE := ${CODECOV_GAZEBO_ENTERPRISE_IMAGE}
+DEVOPS_IMAGE := ${CODECOV_GAZEBO_DEVOPS_IMAGE}
 dockerhub_image := codecov/enterprise-frontend
 export DOCKER_BUILDKIT := 1
 
@@ -11,16 +14,16 @@ gcr.auth:
 	gcloud auth configure-docker us-docker.pkg.dev
 
 build.local:
-	docker build -f docker/Dockerfile . -t ${image}:latest --build-arg REACT_APP_STAGE=development --build-arg REACT_APP_CODECOV_VERSION=${release_version} --build-arg REACT_APP_ENV_ARG=development
+	docker build -f docker/Dockerfile . -t ${IMAGE}:latest --build-arg REACT_APP_STAGE=development --build-arg REACT_APP_CODECOV_VERSION=${release_version} --build-arg REACT_APP_ENV_ARG=development
 
 build.local.enterprise:
-	docker build -f docker/Dockerfile . -t ${enterprise_image}:${release_version}-latest \
+	docker build -f docker/Dockerfile . -t ${ENTERPRISE_IMAGE}:${release_version}-latest \
 	--build-arg REACT_APP_STAGE=development \
 	--build-arg REACT_APP_ENV_ARG=enterprise \
 	--build-arg REACT_APP_CODECOV_VERSION=${release_version}
 
 build:
-	docker build -f docker/Dockerfile . -t ${image}:${ENV}-${release_version}-${sha} \
+	docker build -f docker/Dockerfile . -t ${IMAGE}:${ENV}-${release_version}-${sha} \
 	--build-arg REACT_APP_STAGE=${ENV} \
 	--build-arg REACT_APP_CODECOV_VERSION=${release_version} \
 	--build-arg REACT_APP_ENV_ARG=${ENV} \
@@ -32,8 +35,8 @@ build:
 
 build.enterprise:
 	$(MAKE) build
-	docker build -f docker/Dockerfile.enterprise . -t ${enterprise_image}:${release_version}-${sha} \
-    	--build-arg FRONTEND_IMAGE=${image}:${ENV}-${release_version}-${sha} \
+	docker build -f docker/Dockerfile.enterprise . -t ${ENTERPRISE_IMAGE}:${release_version}-${sha} \
+    	--build-arg FRONTEND_IMAGE=${IMAGE}:${ENV}-${release_version}-${sha} \
     	--label "org.label-schema.build-date"="$(build_date)" \
     	--label "org.label-schema.name"="Self-Hosted Frontend" \
     	--label "org.label-schema.vendor"="Codecov" \
@@ -41,34 +44,34 @@ build.enterprise:
     	--squash
 
 push:
-	docker tag ${image}:${ENV}-${release_version}-${sha} ${image}:${ENV}-${release_version}-latest
-	docker push ${image}:${ENV}-${release_version}-${sha}
-	docker push ${image}:${ENV}-${release_version}-latest
+	docker tag ${IMAGE}:${ENV}-${release_version}-${sha} ${image}:${ENV}-${release_version}-latest
+	docker push ${IMAGE}:${ENV}-${release_version}-${sha}
+	docker push ${IMAGE}:${ENV}-${release_version}-latest
 
 push.enterprise:
-	docker tag ${enterprise_image}:${release_version}-${sha} ${enterprise_image}:${release_version}-latest
-	docker push ${enterprise_image}:${release_version}-${sha}
-	docker push ${enterprise_image}:${release_version}-latest
+	docker tag ${ENTERPRISE_IMAGE}:${release_version}-${sha} ${ENTERPRISE_IMAGE}:${release_version}-latest
+	docker push ${ENTERPRISE_IMAGE}:${release_version}-${sha}
+	docker push ${ENTERPRISE_IMAGE}:${release_version}-latest
 
 pull-for-release:
-	docker pull ${enterprise_image}:${release_version}-${sha}
+	docker pull ${ENTERPRISE_IMAGE}:${release_version}-${sha}
 
 release:
-	docker tag ${enterprise_image}:${release_version}-${sha} ${dockerhub_image}:${release_version}
-	docker tag ${enterprise_image}:${release_version}-${sha} ${dockerhub_image}:latest-stable
+	docker tag ${ENTERPRISE_IMAGE}:${release_version}-${sha} ${dockerhub_image}:${release_version}
+	docker tag ${ENTERPRISE_IMAGE}:${release_version}-${sha} ${dockerhub_image}:latest-stable
 	docker push ${dockerhub_image}:${release_version}
 	docker push ${dockerhub_image}:latest-stable
 
 pull.devops:
-	docker pull ${devops_image}
+	docker pull ${DEVOPS_IMAGE}
 
 dive:
 	$(MAKE) pull.devops
-	docker run -e CI=true  -v /var/run/docker.sock:/var/run/docker.sock ${devops_image} dive ${image}:${ENV}-${release_version}-${sha} --lowestEfficiency=0.97 --highestUserWastedPercent=0.06
+	docker run -e CI=true  -v /var/run/docker.sock:/var/run/docker.sock ${DEVOPS_IMAGE} dive ${image}:${ENV}-${release_version}-${sha} --lowestEfficiency=0.97 --highestUserWastedPercent=0.06
 
 deep-dive:
 	$(MAKE) pull.devops
-	docker run -v /var/run/docker.sock:/var/run/docker.sock -v "$(shell pwd)":/tmp ${devops_image} /usr/bin/deep-dive -v --config /tmp/.deep-dive.yaml ${enterprise_image}:${release_version}-${sha}
+	docker run -v /var/run/docker.sock:/var/run/docker.sock -v "$(shell pwd)":/tmp ${DEVOPS_IMAGE} /usr/bin/deep-dive -v --config /tmp/.deep-dive.yaml ${ENTERPRISE_IMAGE}:${release_version}-${sha}
 
 tag.qa-release:
 	git tag -a qa-${release_version}-${sha}-${EPOCH} -m "Autogenerated tag for enterprise frontend QA ${release_version} ${sha}"
