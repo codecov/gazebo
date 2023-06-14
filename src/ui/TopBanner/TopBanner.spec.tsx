@@ -30,10 +30,11 @@ describe('TopBanner', () => {
         expect(div).toHaveClass('bg-ds-gray-primary')
       })
 
-      it('renders circle exclamation icon', () => {
+      it('renders circle exclamation icon when icon component is rendered', () => {
         render(
           <TopBanner localStorageKey="testing-key">
             <TopBanner.Start>Test default banner</TopBanner.Start>
+            <TopBanner.IconSymbol />
           </TopBanner>
         )
 
@@ -70,6 +71,7 @@ describe('TopBanner', () => {
         render(
           <TopBanner variant="warning" localStorageKey="testing-key">
             <TopBanner.Start>Test warning banner</TopBanner.Start>
+            <TopBanner.IconSymbol />
           </TopBanner>
         )
 
