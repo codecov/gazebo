@@ -7,8 +7,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import ManageAdminCard from './ManageAdminCard'
 
-jest.mock('./AddAdmins', () => () => 'AddAdmins')
-
 const mockUsersRequest = {
   count: 1,
   next: null,
@@ -59,9 +57,38 @@ describe('ManageAdminCard', () => {
     const user = userEvent.setup()
     const refetch = jest.fn()
     const mutate = jest.fn()
+    const searchParams = jest.fn()
 
     server.use(
       rest.get('/internal/gh/codecov/users', (req, res, ctx) => {
+        const searchParam = req.url.searchParams.get('search')
+
+        if (searchParam !== null && searchParam !== '') {
+          searchParams(searchParam)
+
+          return res(
+            ctx.status(200),
+            ctx.json({
+              count: 1,
+              next: null,
+              previous: null,
+              results: [
+                {
+                  activated: true,
+                  is_admin: false,
+                  username: 'searched-user',
+                  email: 'searched-user@codecov.io',
+                  ownerid: 10,
+                  student: false,
+                  name: 'searching-user',
+                  last_pull_timestamp: null,
+                },
+              ],
+              total_pages: 1,
+            })
+          )
+        }
+
         return res(
           ctx.status(200),
           ctx.json({
@@ -70,14 +97,16 @@ describe('ManageAdminCard', () => {
           })
         )
       }),
-      rest.patch('/internal/gh/codecov/users/someid/', (req, res, ctx) => {
-        mutate()
+      rest.patch('/internal/gh/codecov/users/:userId/', (req, res, ctx) => {
+        const userId = req.params.userId
+
+        mutate(userId)
 
         return res(ctx.status(200), ctx.json({}))
       })
     )
 
-    return { refetch, mutate, user }
+    return { refetch, mutate, user, searchParams }
   }
 
   describe('when rendered when there are no admins', () => {
@@ -111,22 +140,13 @@ describe('ManageAdminCard', () => {
       setup([{ username: 'spookyfun', email: 'c3@cr.io', name: 'laudna' }])
       render(<ManageAdminCard />, { wrapper })
 
-      const name = await screen.findByText('laudna')
-      expect(name).toBeInTheDocument()
-      const username = await screen.findByText('@spookyfun')
+      expect(await screen.findByText('spookyfun')).toBeTruthy()
+      const username = screen.getByText('spookyfun')
       expect(username).toBeInTheDocument()
-      const email = await screen.findByText('c3@cr.io')
+
+      expect(await screen.findByText('c3@cr.io')).toBeTruthy()
+      const email = screen.getByText('c3@cr.io')
       expect(email).toBeInTheDocument()
-    })
-  })
-
-  describe('when queryclient is fetching', () => {
-    it('renders spinner', async () => {
-      setup()
-      render(<ManageAdminCard />, { wrapper })
-
-      const spinner = await screen.findByTestId('spinner')
-      expect(spinner).toBeInTheDocument()
     })
   })
 
@@ -151,6 +171,30 @@ describe('ManageAdminCard', () => {
       await waitFor(() => {
         expect(mutate).toHaveBeenCalled()
       })
+    })
+  })
+
+  describe('adding a new admin', () => {
+    it('calls the mutate function', async () => {
+      const { user, searchParams, mutate } = setup([
+        { username: 'spookyfun', email: 'c3@cr.io', name: 'laudna' },
+      ])
+      render(<ManageAdminCard />, { wrapper })
+
+      expect(await screen.findByRole('combobox')).toBeTruthy()
+      const input = screen.getByRole('combobox')
+      await user.type(input, 'cool-user')
+
+      await waitFor(() => expect(searchParams).toBeCalledWith('cool-user'))
+
+      expect(await screen.findByText('searching-user')).toBeTruthy()
+      const searchedUser = screen.getByText('searching-user')
+      expect(searchedUser).toBeInTheDocument()
+
+      await user.click(searchedUser)
+
+      await waitFor(() => expect(mutate).toBeCalled())
+      await waitFor(() => expect(mutate).toBeCalledWith('10'))
     })
   })
 })
