@@ -48,7 +48,7 @@ export const useEnterpriseRedirect = () => {
 
   // if the user is found we should redirect
   if (
-    !isUndefined(data?.me) &&
+    !isUndefined(data?.me?.email) &&
     !isUndefined(provider) &&
     location.pathname !== `/${provider}`
   ) {
