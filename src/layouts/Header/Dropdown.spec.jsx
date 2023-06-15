@@ -114,17 +114,17 @@ describe('Dropdown', () => {
         })
 
         expect(
-          screen.queryByText('Manage GitHub org access')
+          screen.queryByText('Install Codecov app for an org')
         ).not.toBeInTheDocument()
 
         const openSelect = screen.getByRole('combobox')
         await user.click(openSelect)
 
-        const link = screen.getByText('Manage GitHub org access')
+        const link = screen.getByText('Install Codecov app for an org')
         expect(link).toBeVisible()
         expect(link).toHaveAttribute(
           'href',
-          'https://github.com/settings/connections/applications/c68c81cbfd179a50784a'
+          'https://github.com/apps/codecov/installations/new'
         )
       })
     })
@@ -189,14 +189,14 @@ describe('Dropdown', () => {
         })
 
         expect(
-          screen.queryByText('Manage GitHub org access')
+          screen.queryByText('Install Codecov app for an org')
         ).not.toBeInTheDocument()
 
         const openSelect = screen.getByRole('combobox')
         await user.click(openSelect)
 
         expect(
-          screen.queryByText('Manage GitHub org access')
+          screen.queryByText('Install Codecov app for an org')
         ).not.toBeInTheDocument()
       })
     })

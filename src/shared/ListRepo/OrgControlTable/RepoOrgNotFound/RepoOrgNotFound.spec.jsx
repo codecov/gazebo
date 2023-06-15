@@ -46,8 +46,7 @@ describe('RepoOrgNotFound', () => {
       setup('gh')
       render(<RepoOrgNotFound />, { wrapper: MemoryRouter })
 
-      expect(screen.getByText(/or org?/)).toBeInTheDocument()
-      expect(screen.getByText(/check org access/)).toBeInTheDocument()
+      expect(screen.getByText(/install app for org/)).toBeInTheDocument()
       expect(screen.getByText(/Learn more in/)).toBeInTheDocument()
     })
 
@@ -75,7 +74,7 @@ describe('RepoOrgNotFound', () => {
       render(<RepoOrgNotFound />, { wrapper: MemoryRouter })
 
       expect(screen.queryByText(/or org?/)).toBeNull()
-      expect(screen.queryByText(/check org access/)).toBeNull()
+      expect(screen.queryByText(/install app for org/)).toBeNull()
     })
   })
 
@@ -96,7 +95,7 @@ describe('RepoOrgNotFound', () => {
     it('renders rest of the help message', () => {
       render(<RepoOrgNotFound />, { wrapper: MemoryRouter })
 
-      expect(screen.getByText(/check org access/)).toBeInTheDocument()
+      expect(screen.getByText(/install app for org/)).toBeInTheDocument()
     })
   })
 })
