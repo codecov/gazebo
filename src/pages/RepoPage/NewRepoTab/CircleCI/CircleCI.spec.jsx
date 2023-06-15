@@ -19,6 +19,7 @@ const mockCurrentUser = {
     },
   },
 }
+
 const mockGetRepo = {
   owner: {
     isCurrentUserPartOfOrg: true,
@@ -81,6 +82,7 @@ describe('CircleCI', () => {
 
     trackSegmentEvent.mockImplementation((data) => data)
   }
+
   describe('step one', () => {
     beforeEach(() => setup())
 
@@ -98,6 +100,27 @@ describe('CircleCI', () => {
         'href',
         'https://app.circleci.com/settings/project/github/codecov/cool-repo/environment-variables'
       )
+    })
+
+    it('renders body', async () => {
+      render(<CircleCI />, { wrapper })
+
+      const body = await screen.findByText(
+        "Environment variable in CircleCI found in project's settings."
+      )
+      expect(body).toBeInTheDocument()
+    })
+
+    it('renders token box', async () => {
+      render(<CircleCI />, { wrapper })
+
+      const codecovToken = await screen.findByText(/CODECOV_TOKEN=/)
+      expect(codecovToken).toBeInTheDocument()
+
+      const tokenValue = await screen.findByText(
+        /9e6a6189-20f1-482d-ab62-ecfaa2629295/
+      )
+      expect(tokenValue).toBeInTheDocument()
     })
 
     describe('user copies token', () => {
