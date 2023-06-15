@@ -19,7 +19,7 @@ function Dropdown({ currentUser }) {
       ? [
           {
             props: { to: { pageName: 'codecovAppInstallation' } },
-            children: 'Install Codecov app for an org',
+            children: 'Install Codecov app for org',
           },
         ]
       : []

@@ -120,7 +120,7 @@ describe('Dropdown', () => {
         const openSelect = screen.getByRole('combobox')
         await user.click(openSelect)
 
-        const link = screen.getByText('Install Codecov app for an org')
+        const link = screen.getByText('Install Codecov app for org')
         expect(link).toBeVisible()
         expect(link).toHaveAttribute(
           'href',
