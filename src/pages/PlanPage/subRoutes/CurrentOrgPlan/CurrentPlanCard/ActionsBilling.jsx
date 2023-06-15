@@ -1,10 +1,15 @@
-import PropTypes from 'prop-types'
+import { useParams } from 'react-router-dom'
 
 import githubLogo from 'assets/githublogo.png'
-import { accountDetailsPropType } from 'services/account'
+import { useAccountDetails } from 'services/account'
+import { isFreePlan } from 'shared/utils/billing'
 import Button from 'ui/Button'
 
-function ActionsBilling({ accountDetails, isFreePlan }) {
+function ActionsBilling() {
+  const { owner, provider } = useParams()
+  const { data: accountDetails } = useAccountDetails({ owner, provider })
+  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
+
   if (accountDetails?.planProvider === 'github') {
     return (
       <div className="flex flex-col gap-4 border-ds-gray-secondary">
@@ -50,15 +55,10 @@ function ActionsBilling({ accountDetails, isFreePlan }) {
   return (
     <div className="flex self-start">
       <Button to={{ pageName: 'upgradeOrgPlan' }} variant="primary">
-        {isFreePlan ? 'Upgrade plan' : 'Change plan'}
+        {isFreePlan(plan?.value) ? 'Upgrade to Pro Team plan' : 'Manage plan'}
       </Button>
     </div>
   )
-}
-
-ActionsBilling.propTypes = {
-  accountDetails: accountDetailsPropType.isRequired,
-  isFreePlan: PropTypes.bool.isRequired,
 }
 
 export default ActionsBilling
