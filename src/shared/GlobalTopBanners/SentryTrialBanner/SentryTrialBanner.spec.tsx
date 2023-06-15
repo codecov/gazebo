@@ -213,39 +213,10 @@ describe('SentryTrialBanner', () => {
             wrapper: wrapper(),
           })
 
-          const info = await screen.findByText(/Start your FREE/i)
-          expect(info).toBeInTheDocument()
-        })
-
-        it('renders link to org upgrade page', async () => {
-          setup()
-
-          render(<SentryTrialBanner />, {
-            wrapper: wrapper(),
-          })
-
-          const link = await screen.findByRole('link', {
-            name: /Start trial today/,
-          })
-          expect(link).toBeInTheDocument()
-          expect(link).toHaveAttribute('href', '/plan/gh')
-        })
-
-        it('renders link to support', async () => {
-          setup()
-
-          render(<SentryTrialBanner />, {
-            wrapper: wrapper(),
-          })
-
-          const supportLink = await screen.findByRole('link', {
-            name: /support@codecov.io/,
-          })
-          expect(supportLink).toBeInTheDocument()
-          expect(supportLink).toHaveAttribute(
-            'href',
-            'mailto:support@codecov.io'
+          const info = await screen.findByText(
+            /Start your 14-day free Codecov Pro trial today./i
           )
+          expect(info).toBeInTheDocument()
         })
 
         it('renders button link to org upgrade page', async () => {
