@@ -21,7 +21,12 @@ function PlanPricing({ value, baseUnitPrice }) {
     return <h2 className="text-2xl font-semibold">${SENTRY_PRICE}</h2>
   }
 
-  return <h2 className="text-2xl font-semibold uppercase">${baseUnitPrice}</h2>
+  return (
+    <h2 className="text-xs font-semibold">
+      <span className="text-2xl uppercase">${baseUnitPrice}</span>
+      /per user, per month
+    </h2>
+  )
 }
 
 PlanPricing.propTypes = {
