@@ -1,5 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
+import { graphql, rest } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import FreePlanCard from './FreePlanCard'
@@ -22,6 +24,20 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 
+const server = setupServer()
+
+beforeAll(() => {
+  server.listen()
+})
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+  jest.resetAllMocks()
+})
+afterAll(() => {
+  server.close()
+})
+
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/plan/bb/critical-role']}>
@@ -31,7 +47,93 @@ const wrapper = ({ children }) => (
 )
 
 describe('FreePlanCard', () => {
+  function setup(
+    { owner } = {
+      owner: {
+        username: 'codecov',
+        isCurrentUserPartOfOrg: true,
+        numberOfUploads: 10,
+      },
+    }
+  ) {
+    server.use(
+      graphql.query('PlanPageData', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({ owner }))
+      ),
+      rest.get('/internal/plans', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.json([
+            {
+              marketingName: 'Basic',
+              value: 'users-basic',
+              billingRate: null,
+              baseUnitPrice: 0,
+              benefits: [
+                'Up to 5 users',
+                'Unlimited public repositories',
+                'Unlimited private repositories',
+              ],
+            },
+            {
+              marketingName: 'Pro Team',
+              value: 'users-pr-inappm',
+              billingRate: 'monthly',
+              baseUnitPrice: 12,
+              benefits: [
+                'Configurable # of users',
+                'Unlimited public repositories',
+                'Unlimited private repositories',
+                'Priorty Support',
+              ],
+            },
+            {
+              marketingName: 'Pro Team',
+              value: 'users-pr-inappy',
+              billingRate: 'annually',
+              baseUnitPrice: 10,
+              benefits: [
+                'Configurable # of users',
+                'Unlimited public repositories',
+                'Unlimited private repositories',
+                'Priorty Support',
+              ],
+            },
+            {
+              marketingName: 'Pro Team',
+              value: 'users-enterprisem',
+              billingRate: 'monthly',
+              baseUnitPrice: 12,
+              benefits: [
+                'Configurable # of users',
+                'Unlimited public repositories',
+                'Unlimited private repositories',
+                'Priorty Support',
+              ],
+            },
+            {
+              marketingName: 'Pro Team',
+              value: 'users-enterprisey',
+              billingRate: 'annually',
+              baseUnitPrice: 10,
+              benefits: [
+                'Configurable # of users',
+                'Unlimited public repositories',
+                'Unlimited private repositories',
+                'Priorty Support',
+              ],
+            },
+          ])
+        )
+      )
+    )
+  }
+
   describe('When rendered', () => {
+    beforeEach(() => {
+      setup()
+    })
+
     it('renders the plan marketing name', () => {
       render(<FreePlanCard plan={freePlan} scheduledPhase={scheduledPhase} />, {
         wrapper,
@@ -78,6 +180,16 @@ describe('FreePlanCard', () => {
 
       expect(
         screen.getByText(/to discuss custom Enterprise plans/)
+      ).toBeInTheDocument()
+    })
+
+    it('renders number of uploads', async () => {
+      render(<FreePlanCard plan={freePlan} />, {
+        wrapper,
+      })
+
+      expect(
+        await screen.findByText(/10 of 250 uploads in the last 30 days/)
       ).toBeInTheDocument()
     })
   })
