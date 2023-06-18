@@ -94,14 +94,19 @@ const End: React.FC<React.PropsWithChildren> = ({ children }) => {
 }
 
 const Start: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const { variant } = useTopBannerContext()
   return (
     <div className="flex grow-0 items-center gap-1 pb-2 md:pb-0">
-      <span className={cs('pr-2 md:pr-0', variants[variant].iconColor)}>
-        <Icon name={variants[variant].icon} size="md" variant="outline" />
-      </span>
       <span>{children}</span>
     </div>
+  )
+}
+
+const IconSymbol: React.FC = () => {
+  const { variant } = useTopBannerContext()
+  return (
+    <span className={cs('pr-2 md:pr-0', variants[variant].iconColor)}>
+      <Icon name={variants[variant].icon} size="md" variant="outline" />
+    </span>
   )
 }
 
@@ -138,7 +143,7 @@ const TopBannerRoot: React.FC<React.PropsWithChildren<TopBannerProps>> = ({
       <div
         data-testid="top-banner-root"
         className={cs(
-          'h-fit w-full px-2 py-1 lg:inline-flex lg:min-h-[38px]',
+          'h-fit w-full px-4 py-2 lg:inline-flex lg:min-h-[38px]',
           variants[variant].bgColor
         )}
       >
@@ -156,5 +161,6 @@ TopBannerRoot.propTypes = {
 export const TopBanner = Object.assign(TopBannerRoot, {
   DismissButton,
   Start,
+  IconSymbol,
   End,
 })
