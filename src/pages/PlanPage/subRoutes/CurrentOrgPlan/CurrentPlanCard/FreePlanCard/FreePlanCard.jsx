@@ -1,3 +1,4 @@
+import isNumber from 'lodash/isNumber'
 import PropType from 'prop-types'
 import { useParams } from 'react-router-dom'
 
@@ -56,7 +57,8 @@ PlanUpgrade.propTypes = {
 
 function FreePlanCard({ plan, scheduledPhase }) {
   const { data: ownerData } = usePlanPageData()
-  const uploadsNumber = ownerData?.numberOfUploads
+  const uploadsNumber =
+    isNumber(ownerData?.numberOfUploads) && ownerData?.numberOfUploads
 
   return (
     <div className="flex flex-col gap-4">
