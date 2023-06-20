@@ -240,7 +240,7 @@ function ContextSwitcher({
             <span className="font-semibold">Don&apos;t see your org?</span>
             <A to={{ pageName: 'codecovAppInstallation' }}>
               {' '}
-              You may need to install Codecov GitHub app
+              Installation of Codecov app required
             </A>
           </li>
         )}

@@ -114,13 +114,13 @@ describe('Dropdown', () => {
         })
 
         expect(
-          screen.queryByText('Install Codecov app for an org')
+          screen.queryByText('Install Codecov app')
         ).not.toBeInTheDocument()
 
         const openSelect = screen.getByRole('combobox')
         await user.click(openSelect)
 
-        const link = screen.getByText('Install Codecov app for org')
+        const link = screen.getByText('Install Codecov app')
         expect(link).toBeVisible()
         expect(link).toHaveAttribute(
           'href',
@@ -189,14 +189,14 @@ describe('Dropdown', () => {
         })
 
         expect(
-          screen.queryByText('Install Codecov app for an org')
+          screen.queryByText('Install Codecov app')
         ).not.toBeInTheDocument()
 
         const openSelect = screen.getByRole('combobox')
         await user.click(openSelect)
 
         expect(
-          screen.queryByText('Install Codecov app for an org')
+          screen.queryByText('Install Codecov app')
         ).not.toBeInTheDocument()
       })
     })

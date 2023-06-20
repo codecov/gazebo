@@ -299,7 +299,7 @@ describe('ContextSwitcher', () => {
       )
 
       const manageAccess = await screen.findByText(
-        /You may need to install Codecov GitHub app/i
+        /Installation of Codecov app required/i
       )
       expect(manageAccess).toBeInTheDocument()
     })
