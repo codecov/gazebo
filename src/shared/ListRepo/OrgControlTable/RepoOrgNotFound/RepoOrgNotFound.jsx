@@ -39,8 +39,9 @@ function RepoOrgNotFound() {
       {isGh && (
         <>
           {' '}
-          or <A to={{ pageName: 'userAppManagePage' }}>check org access</A>.
-          Learn more in{' '}
+          or{' '}
+          <A to={{ pageName: 'codecovAppInstallation' }}>install app for org</A>
+          . Learn more in{' '}
           <A hook="oauth-troubleshoot" to={{ pageName: 'oauthTroubleshoot' }}>
             our docs
           </A>
