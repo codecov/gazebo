@@ -1,5 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
+import { rest } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import CurrentPlanCard from './CurrentPlanCard'
@@ -9,35 +11,41 @@ jest.mock('./ProPlanCard', () => () => 'Pro plan card')
 jest.mock('./EnterprisePlanCard', () => () => 'Enterprise plan card')
 
 const proPlanDetails = {
-  marketingName: 'Pro Team',
-  baseUnitPrice: 12,
-  benefits: ['Configureable # of users', 'Unlimited repos'],
-  quantity: 5,
-  value: 'users-inappm',
+  plan: {
+    marketingName: 'Pro Team',
+    baseUnitPrice: 12,
+    benefits: ['Configureable # of users', 'Unlimited repos'],
+    quantity: 5,
+    value: 'users-inappm',
+  },
 }
 
 const freePlanDetails = {
-  marketingName: 'Basic',
-  value: 'users-free',
-  billingRate: null,
-  baseUnitPrice: 0,
-  benefits: [
-    'Up to 5 users',
-    'Unlimited public repositories',
-    'Unlimited private repositories',
-  ],
+  plan: {
+    marketingName: 'Basic',
+    value: 'users-free',
+    billingRate: null,
+    baseUnitPrice: 0,
+    benefits: [
+      'Up to 5 users',
+      'Unlimited public repositories',
+      'Unlimited private repositories',
+    ],
+  },
 }
 
 const enterprisePlan = {
-  marketingName: 'Enterprise',
-  value: 'users-enterprisey',
-  billingRate: null,
-  baseUnitPrice: 0,
-  benefits: [
-    'Unlimited users',
-    'Unlimited public repositories',
-    'Unlimited private repositories',
-  ],
+  plan: {
+    marketingName: 'Enterprise',
+    value: 'users-enterprisey',
+    billingRate: null,
+    baseUnitPrice: 0,
+    benefits: [
+      'Unlimited users',
+      'Unlimited public repositories',
+      'Unlimited private repositories',
+    ],
+  },
 }
 
 const queryClient = new QueryClient({
@@ -52,34 +60,62 @@ const wrapper = ({ children }) => (
   </QueryClientProvider>
 )
 
+const server = setupServer()
+
+beforeAll(() => server.listen())
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => server.close())
+
 describe('CurrentPlanCard', () => {
+  function setup(planDetails = freePlanDetails) {
+    server.use(
+      rest.get('/internal/bb/critical-role/account-details/', (req, res, ctx) =>
+        res(ctx.status(200), ctx.json(planDetails))
+      )
+    )
+  }
+
   describe('When rendered with free plan', () => {
-    it('renders the correct plan card', () => {
-      render(<CurrentPlanCard plan={freePlanDetails} />, {
+    beforeEach(() => {
+      setup()
+    })
+    it('renders the correct plan card', async () => {
+      render(<CurrentPlanCard />, {
         wrapper,
       })
 
-      expect(screen.getByText(/Free plan card/)).toBeInTheDocument()
+      expect(await screen.findByText(/Free plan card/)).toBeInTheDocument()
     })
   })
 
   describe('When rendered with pro plan', () => {
-    it('renders the correct plan card', () => {
-      render(<CurrentPlanCard accountDetails={proPlanDetails} />, {
+    beforeEach(() => {
+      setup(proPlanDetails)
+    })
+    it('renders the correct plan card', async () => {
+      render(<CurrentPlanCard />, {
         wrapper,
       })
 
-      expect(screen.getByText(/Pro plan card/)).toBeInTheDocument()
+      expect(await screen.findByText(/Pro plan card/)).toBeInTheDocument()
     })
   })
 
   describe('When rendered with enterprise plan', () => {
-    it('renders the correct plan card', () => {
-      render(<CurrentPlanCard plan={enterprisePlan} />, {
+    beforeEach(() => {
+      setup(enterprisePlan)
+    })
+    it('renders the correct plan card', async () => {
+      render(<CurrentPlanCard />, {
         wrapper,
       })
 
-      expect(screen.getByText(/Enterprise plan card/)).toBeInTheDocument()
+      expect(
+        await screen.findByText(/Enterprise plan card/)
+      ).toBeInTheDocument()
     })
   })
 })

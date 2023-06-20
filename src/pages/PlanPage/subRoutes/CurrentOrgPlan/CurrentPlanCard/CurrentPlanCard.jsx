@@ -1,32 +1,35 @@
-import PropTypes from 'prop-types'
+import { useParams } from 'react-router-dom'
 
-import { planPropType } from 'services/account'
-import { isEnterprisePlan, isFreePlan } from 'shared/utils/billing'
+import { useAccountDetails } from 'services/account'
+import {
+  CollectionMethods,
+  isEnterprisePlan,
+  isFreePlan,
+} from 'shared/utils/billing'
 
 import EnterprisePlanCard from './EnterprisePlanCard'
 import FreePlanCard from './FreePlanCard'
 import ProPlanCard from './ProPlanCard'
 
-function CurrentPlanCard({ plan, isInvoicedCustomer, scheduledPhase }) {
+function CurrentPlanCard() {
+  const { provider, owner } = useParams()
+  const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
+  const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
+  const collectionMethod = accountDetails?.subscriptionDetail?.collectionMethod
+
   if (isFreePlan(plan?.value)) {
     return <FreePlanCard plan={plan} scheduledPhase={scheduledPhase} />
   }
 
-  if (isEnterprisePlan(plan?.value) || isInvoicedCustomer) {
+  if (
+    isEnterprisePlan(plan?.value) ||
+    collectionMethod === CollectionMethods.INVOICED_CUSTOMER_METHOD
+  ) {
     return <EnterprisePlanCard plan={plan} />
   }
 
   return <ProPlanCard plan={plan} scheduledPhase={scheduledPhase} />
-}
-
-CurrentPlanCard.propTypes = {
-  plan: planPropType.isRequired,
-  scheduledPhase: PropTypes.shape({
-    quantity: PropTypes.number.isRequired,
-    plan: PropTypes.string.isRequired,
-    startDate: PropTypes.number.isRequired,
-  }),
-  isInvoicedCustomer: PropTypes.bool.isRequired,
 }
 
 export default CurrentPlanCard

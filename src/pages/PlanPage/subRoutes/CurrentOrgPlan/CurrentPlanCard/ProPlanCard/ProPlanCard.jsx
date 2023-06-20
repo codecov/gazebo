@@ -13,7 +13,7 @@ function ProPlanCard({ plan, scheduledPhase }) {
   return (
     <div className="flex flex-col border">
       <div className="p-4">
-        <h2 className="font-semibold">{plan?.marketingName} plan</h2>
+        <h2 className="font-semibold">{plan.marketingName} plan</h2>
         <span className="text-gray-500">Current Plan</span>
       </div>
       <hr />
@@ -21,7 +21,7 @@ function ProPlanCard({ plan, scheduledPhase }) {
         <div className="flex flex-col gap-2">
           <p className="text-xs font-semibold">Includes</p>
           <BenefitList
-            benefits={plan?.benefits}
+            benefits={plan.benefits}
             iconName="check"
             iconColor="text-ds-pink-quinary"
           />
@@ -30,8 +30,8 @@ function ProPlanCard({ plan, scheduledPhase }) {
           <p className="text-xs font-semibold">Pricing</p>
           <div>
             <PlanPricing
-              value={plan?.value}
-              baseUnitPrice={plan?.baseUnitPrice}
+              value={plan.value}
+              baseUnitPrice={plan.baseUnitPrice}
             />
             {seats && (
               <p className="text-xs text-ds-gray-senary">
