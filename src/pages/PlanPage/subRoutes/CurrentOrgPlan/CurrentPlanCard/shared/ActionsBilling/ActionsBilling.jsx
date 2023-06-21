@@ -1,14 +1,42 @@
 import { useParams } from 'react-router-dom'
 
 import githubLogo from 'assets/githublogo.png'
-import { useAccountDetails } from 'services/account'
-import { isFreePlan } from 'shared/utils/billing'
+import { planPropType, useAccountDetails, usePlans } from 'services/account'
+import { canApplySentryUpgrade, isFreePlan } from 'shared/utils/billing'
 import Button from 'ui/Button'
+
+function PlansActionsBilling({ plan }) {
+  const { provider } = useParams()
+  const { data: plans } = usePlans(provider)
+
+  if (canApplySentryUpgrade({ plan, plans })) {
+    return (
+      <div className="flex self-start">
+        <Button to={{ pageName: 'upgradeOrgPlan' }} variant="primary">
+          Upgrade to Sentry Pro Team plan
+        </Button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex self-start">
+      <Button to={{ pageName: 'upgradeOrgPlan' }} variant="primary">
+        {isFreePlan(plan?.value) ? 'Upgrade to Pro Team plan' : 'Manage plan'}
+      </Button>
+    </div>
+  )
+}
+
+PlansActionsBilling.propTypes = {
+  plan: planPropType,
+}
 
 function ActionsBilling() {
   const { owner, provider } = useParams()
   const { data: accountDetails } = useAccountDetails({ owner, provider })
   const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
+  const username = accountDetails?.rootOrganization?.username
 
   if (accountDetails?.planProvider === 'github') {
     return (
@@ -29,19 +57,18 @@ function ActionsBilling() {
     )
   }
 
-  if (accountDetails?.rootOrganization?.username) {
+  if (username) {
     return (
       <div className="flex flex-col gap-4">
         <hr />
         <p className="text-sm">
-          This subgroup’s billing is managed by{' '}
-          {accountDetails?.rootOrganization?.username}.
+          This subgroup’s billing is managed by {username}.
         </p>
         <div className="flex self-start">
           <Button
             to={{
               pageName: 'billingAndUsers',
-              options: { owner: accountDetails?.rootOrganization?.username },
+              options: { owner: username },
             }}
             variant="primary"
           >
@@ -52,13 +79,7 @@ function ActionsBilling() {
     )
   }
 
-  return (
-    <div className="flex self-start">
-      <Button to={{ pageName: 'upgradeOrgPlan' }} variant="primary">
-        {isFreePlan(plan?.value) ? 'Upgrade to Pro Team plan' : 'Manage plan'}
-      </Button>
-    </div>
-  )
+  return <PlansActionsBilling plan={plan} />
 }
 
 export default ActionsBilling

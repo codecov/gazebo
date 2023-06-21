@@ -7,6 +7,78 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import ActionsBilling from './ActionsBilling'
 
+const allPlans = [
+  {
+    marketingName: 'Basic',
+    value: 'users-basic',
+    billingRate: null,
+    baseUnitPrice: 0,
+    benefits: [
+      'Up to 5 users',
+      'Unlimited public repositories',
+      'Unlimited private repositories',
+    ],
+  },
+  {
+    marketingName: 'Pro Team',
+    value: 'users-pr-inappm',
+    billingRate: 'monthly',
+    baseUnitPrice: 12,
+    benefits: [
+      'Configurable # of users',
+      'Unlimited public repositories',
+      'Unlimited private repositories',
+      'Priorty Support',
+    ],
+  },
+  {
+    marketingName: 'Pro Team',
+    value: 'users-pr-inappy',
+    billingRate: 'annually',
+    baseUnitPrice: 10,
+    benefits: [
+      'Configurable # of users',
+      'Unlimited public repositories',
+      'Unlimited private repositories',
+      'Priorty Support',
+    ],
+  },
+  {
+    marketingName: 'Pro Team',
+    value: 'users-enterprisem',
+    billingRate: 'monthly',
+    baseUnitPrice: 12,
+    benefits: [
+      'Configurable # of users',
+      'Unlimited public repositories',
+      'Unlimited private repositories',
+      'Priorty Support',
+    ],
+  },
+  {
+    marketingName: 'Pro Team',
+    value: 'users-enterprisey',
+    billingRate: 'annually',
+    baseUnitPrice: 10,
+    benefits: [
+      'Configurable # of users',
+      'Unlimited public repositories',
+      'Unlimited private repositories',
+      'Priorty Support',
+    ],
+  },
+]
+
+const sentryPlans = [
+  {
+    marketingName: 'Pro Team for Sentry',
+    baseUnitPrice: 12,
+    benefits: ['Configurable # of users', 'Unlimited repos'],
+    value: 'users-sentrym',
+    billingRate: 'monthly',
+  },
+]
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
@@ -35,6 +107,18 @@ const mockedProAccountDetails = {
   inactiveUserCount: 1,
 }
 
+const sentryMockedAccountDetails = {
+  plan: {
+    marketingName: 'Pro Team for Sentry',
+    baseUnitPrice: 12,
+    benefits: ['Configurable # of users', 'Unlimited repos'],
+    quantity: 9,
+    value: 'users-sentrym',
+  },
+  activatedUserCount: 5,
+  inactiveUserCount: 1,
+}
+
 const server = setupServer()
 
 beforeAll(() => server.listen())
@@ -53,10 +137,13 @@ const wrapper = ({ children }) => (
 )
 
 describe('Actions Billing', () => {
-  function setup(accountDetails = mockedFreeAccountDetails) {
+  function setup(accountDetails = mockedFreeAccountDetails, plans = allPlans) {
     server.use(
       rest.get('/internal/members/gh/account-details/', (req, res, ctx) =>
         res(ctx.status(200), ctx.json(accountDetails))
+      ),
+      rest.get('/internal/plans', (req, res, ctx) =>
+        res(ctx.status(200), ctx.json(plans))
       )
     )
   }
@@ -142,6 +229,26 @@ describe('Actions Billing', () => {
       expect(
         await screen.findByRole('link', { name: /Manage billing in GitHub/ })
       ).toHaveAttribute('href', 'https://github.com/marketplace/codecov')
+    })
+  })
+
+  describe('If can upgrade to sentry plan', () => {
+    beforeEach(() => setup(sentryMockedAccountDetails, sentryPlans))
+
+    it('Displays upgrade to sentry plan', async () => {
+      render(<ActionsBilling />, { wrapper })
+
+      expect(
+        await screen.findByRole('link', {
+          name: /Upgrade to Sentry Pro Team plan/,
+        })
+      ).toBeInTheDocument()
+
+      expect(
+        await screen.findByRole('link', {
+          name: /Upgrade to Sentry Pro Team plan/,
+        })
+      ).toHaveAttribute('href', '/plan/members/gh/upgrade')
     })
   })
 })

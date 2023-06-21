@@ -5,27 +5,27 @@ import { useParams } from 'react-router-dom'
 import { usePlanPageData } from 'pages/PlanPage/hooks'
 import { planPropType, usePlans } from 'services/account'
 import BenefitList from 'shared/plan/BenefitList'
-import { useProPlans } from 'shared/utils/billing'
+import {
+  canApplySentryUpgrade,
+  findSentryPlans,
+  useProPlans,
+} from 'shared/utils/billing'
 import A from 'ui/A'
 
 import ActionsBilling from '../shared/ActionsBilling/ActionsBilling'
 import PlanPricing from '../shared/PlanPricing'
 import ScheduledPlanDetails from '../shared/ScheduledPlanDetails'
 
-function PlanUpgrade() {
-  const { provider } = useParams()
-  const { data: plans } = usePlans(provider)
-  const { proPlanMonth } = useProPlans({ plans })
-
+function PlanUpgrade({ upgradeToPlan }) {
   return (
     <div className="flex flex-col border">
-      <h2 className="p-4 font-semibold">{proPlanMonth?.marketingName} plan</h2>
+      <h2 className="p-4 font-semibold">{upgradeToPlan?.marketingName} plan</h2>
       <hr />
       <div className="grid gap-4 p-4 sm:grid-cols-2 sm:gap-0">
         <div className="flex flex-col gap-2">
           <p className="text-xs font-semibold">Includes</p>
           <BenefitList
-            benefits={proPlanMonth?.benefits}
+            benefits={upgradeToPlan?.benefits}
             iconName="check"
             iconColor="text-ds-pink-quinary"
           />
@@ -36,11 +36,11 @@ function PlanUpgrade() {
           </p>
           <div className="text-xs">
             <p className="font-semibold">
-              <span className="text-2xl">${proPlanMonth?.baseUnitPrice}</span>
+              <span className="text-2xl">${upgradeToPlan?.baseUnitPrice}</span>
               /per user, per month
             </p>
             <p className="text-ds-gray-senary">
-              billed annually, or ${proPlanMonth?.baseUnitPrice} per user
+              billed annually, or ${upgradeToPlan?.baseUnitPrice} per user
               billing monthly
             </p>
           </div>
@@ -52,13 +52,22 @@ function PlanUpgrade() {
 }
 
 PlanUpgrade.propTypes = {
-  plan: PropType.string.isRequired,
+  upgradeToPlan: planPropType,
 }
 
 function FreePlanCard({ plan, scheduledPhase }) {
+  const { provider } = useParams()
+
   const { data: ownerData } = usePlanPageData()
   const uploadsNumber =
     isNumber(ownerData?.numberOfUploads) && ownerData?.numberOfUploads
+
+  const { data: plans } = usePlans(provider)
+  const { proPlanMonth } = useProPlans({ plans })
+  const { sentryPlanMonth } = findSentryPlans({ plans })
+  const upgradeToPlan = canApplySentryUpgrade({ plan, plans })
+    ? sentryPlanMonth
+    : proPlanMonth
 
   return (
     <div className="flex flex-col gap-4">
@@ -96,7 +105,7 @@ function FreePlanCard({ plan, scheduledPhase }) {
           </div>
         </div>
       </div>
-      <PlanUpgrade plan={plan?.value} />
+      <PlanUpgrade upgradeToPlan={upgradeToPlan} />
       <div className="text-xs">
         <A to={{ pageName: 'sales' }}>Contact sales</A> to discuss custom
         Enterprise plans

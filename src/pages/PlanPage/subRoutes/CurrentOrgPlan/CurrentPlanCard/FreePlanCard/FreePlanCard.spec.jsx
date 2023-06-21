@@ -76,6 +76,14 @@ const freePlan = {
   benefits: ['Up to 1 user', '250 free uploads'],
 }
 
+const sentryPlan = {
+  marketingName: 'Sentry',
+  value: 'users-sentrym',
+  billingRate: null,
+  baseUnitPrice: 0,
+  benefits: ['Up to # user', 'Unlimited public repositories'],
+}
+
 const scheduledPhase = {
   quantity: 0,
   plan: '',
@@ -124,6 +132,9 @@ describe('FreePlanCard', () => {
       ),
       rest.get('/internal/plans', (req, res, ctx) =>
         res(ctx.status(200), ctx.json(plans))
+      ),
+      rest.get('/internal/bb/critical-role/account-details/', (req, res, ctx) =>
+        res(ctx.status(200), ctx.json({ numberOfUploads: 250 }))
       )
     )
   }
@@ -190,6 +201,49 @@ describe('FreePlanCard', () => {
       expect(
         await screen.findByText(/10 of 250 uploads in the last 30 days/)
       ).toBeInTheDocument()
+    })
+  })
+
+  describe('When can apply sentry updates', () => {
+    beforeEach(() => {
+      setup({
+        owner: {
+          username: 'codecov',
+          isCurrentUserPartOfOrg: false,
+          numberOfUploads: 10,
+        },
+      })
+    })
+
+    it('renders the plan marketing name', () => {
+      render(<FreePlanCard plan={sentryPlan} />, {
+        wrapper,
+      })
+
+      expect(screen.getByText(/Sentry plan/)).toBeInTheDocument()
+    })
+
+    it('renders the benefits', () => {
+      render(<FreePlanCard plan={sentryPlan} />, {
+        wrapper,
+      })
+
+      expect(screen.getByText(/Up to # user/)).toBeInTheDocument()
+    })
+
+    it('renders actions billing button', () => {
+      render(<FreePlanCard plan={sentryPlan} />, {
+        wrapper,
+      })
+
+      expect(
+        screen.getByRole('link', { name: /Manage plan/ })
+      ).toBeInTheDocument()
+
+      expect(screen.getByRole('link', { name: /Manage plan/ })).toHaveAttribute(
+        'href',
+        '/plan/bb/critical-role/upgrade'
+      )
     })
   })
 })
