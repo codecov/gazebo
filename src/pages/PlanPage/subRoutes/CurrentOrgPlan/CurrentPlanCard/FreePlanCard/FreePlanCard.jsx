@@ -8,6 +8,7 @@ import BenefitList from 'shared/plan/BenefitList'
 import {
   canApplySentryUpgrade,
   findSentryPlans,
+  SENTRY_PRICE,
   useProPlans,
 } from 'shared/utils/billing'
 import A from 'ui/A'
@@ -16,7 +17,53 @@ import ActionsBilling from '../shared/ActionsBilling/ActionsBilling'
 import PlanPricing from '../shared/PlanPricing'
 import ScheduledPlanDetails from '../shared/ScheduledPlanDetails'
 
-function PlanUpgrade({ upgradeToPlan }) {
+function PlanDetails({
+  isSentryUpgrade,
+  sentryAnnualUnitPrice,
+  proMonthlyUnitPrice,
+  proYearlyUnitPrice,
+}) {
+  if (isSentryUpgrade) {
+    return (
+      <div className="text-xs">
+        <p className="font-semibold">
+          <span className="text-2xl">${SENTRY_PRICE}</span>
+          /per month
+        </p>
+        <p className="text-ds-gray-senary">
+          over 5 years is ${sentryAnnualUnitPrice}/per user per month, billed
+          annually
+        </p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="text-xs">
+      <p className="font-semibold">
+        <span className="text-2xl">${proYearlyUnitPrice}</span>
+        /per user, per month
+      </p>
+      <p className="text-ds-gray-senary">
+        billed annually, or ${proMonthlyUnitPrice} per user billing monthly
+      </p>
+    </div>
+  )
+}
+
+PlanDetails.propTypes = {
+  isSentryUpgrade: PropType.bool.isRequired,
+  sentryAnnualUnitPrice: PropType.number,
+  proMonthlyUnitPrice: PropType.number,
+  proYearlyUnitPrice: PropType.number,
+}
+
+function PlanUpgrade({ isSentryUpgrade, plans }) {
+  const { proPlanMonth, proPlanYear } = useProPlans({ plans })
+  const { sentryPlanYear } = findSentryPlans({ plans })
+
+  const upgradeToPlan = isSentryUpgrade ? sentryPlanYear : proPlanMonth
+
   return (
     <div className="flex flex-col border">
       <h2 className="p-4 font-semibold">{upgradeToPlan?.marketingName} plan</h2>
@@ -34,16 +81,12 @@ function PlanUpgrade({ upgradeToPlan }) {
           <p className="border-t pt-2 text-xs font-semibold sm:border-0 sm:p-0">
             Pricing
           </p>
-          <div className="text-xs">
-            <p className="font-semibold">
-              <span className="text-2xl">${upgradeToPlan?.baseUnitPrice}</span>
-              /per user, per month
-            </p>
-            <p className="text-ds-gray-senary">
-              billed annually, or ${upgradeToPlan?.baseUnitPrice} per user
-              billing monthly
-            </p>
-          </div>
+          <PlanDetails
+            isSentryUpgrade={isSentryUpgrade}
+            sentryAnnualUnitPrice={sentryPlanYear?.baseUnitPrice}
+            proMonthlyUnitPrice={proPlanMonth?.baseUnitPrice}
+            proYearlyUnitPrice={proPlanYear?.baseUnitPrice}
+          />
           <ActionsBilling />
         </div>
       </div>
@@ -52,7 +95,8 @@ function PlanUpgrade({ upgradeToPlan }) {
 }
 
 PlanUpgrade.propTypes = {
-  upgradeToPlan: planPropType,
+  isSentryUpgrade: PropType.bool.isRequired,
+  plans: PropType.arrayOf(planPropType).isRequired,
 }
 
 function FreePlanCard({ plan, scheduledPhase }) {
@@ -63,11 +107,6 @@ function FreePlanCard({ plan, scheduledPhase }) {
     isNumber(ownerData?.numberOfUploads) && ownerData?.numberOfUploads
 
   const { data: plans } = usePlans(provider)
-  const { proPlanMonth } = useProPlans({ plans })
-  const { sentryPlanMonth } = findSentryPlans({ plans })
-  const upgradeToPlan = canApplySentryUpgrade({ plan, plans })
-    ? sentryPlanMonth
-    : proPlanMonth
 
   return (
     <div className="flex flex-col gap-4">
@@ -105,7 +144,10 @@ function FreePlanCard({ plan, scheduledPhase }) {
           </div>
         </div>
       </div>
-      <PlanUpgrade upgradeToPlan={upgradeToPlan} />
+      <PlanUpgrade
+        isSentryUpgrade={canApplySentryUpgrade({ plan, plans })}
+        plans={plans}
+      />
       <div className="text-xs">
         <A to={{ pageName: 'sales' }}>Contact sales</A> to discuss custom
         Enterprise plans

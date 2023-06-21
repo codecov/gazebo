@@ -4,6 +4,8 @@ import isString from 'lodash/isString'
 
 import { useFlags } from 'shared/featureFlags'
 
+export const SENTRY_PRICE = 29
+
 export const Plans = Object.freeze({
   USERS_FREE: 'users-free',
   USERS_BASIC: 'users-basic',

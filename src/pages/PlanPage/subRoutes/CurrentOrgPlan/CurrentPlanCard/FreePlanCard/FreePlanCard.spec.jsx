@@ -80,7 +80,7 @@ const sentryPlans = [
     marketingName: 'Sentry',
     value: 'users-sentryy',
     billingRate: null,
-    baseUnitPrice: 0,
+    baseUnitPrice: 10,
     benefits: ['Up to # user', 'Unlimited private repositories'],
   },
 ]
@@ -220,6 +220,21 @@ describe('FreePlanCard', () => {
         await screen.findByText(/10 of 250 uploads in the last 30 days/)
       ).toBeInTheDocument()
     })
+
+    it('renders the expected price details for pro team billing', async () => {
+      render(<FreePlanCard plan={freePlan} />, {
+        wrapper,
+      })
+
+      expect(await screen.findByText(/\$10/)).toBeInTheDocument()
+      expect(await screen.findByText(/per user, per month/)).toBeInTheDocument()
+
+      expect(
+        await screen.findByText(
+          /billed annually, or \$12 per user billing monthly/
+        )
+      ).toBeInTheDocument()
+    })
   })
 
   describe('When can apply sentry updates', () => {
@@ -232,14 +247,6 @@ describe('FreePlanCard', () => {
         },
         plans: sentryPlans,
       })
-    })
-
-    it('renders the plan marketing name', () => {
-      render(<FreePlanCard plan={sentryPlan} />, {
-        wrapper,
-      })
-
-      expect(screen.getByText(/Sentry plan/)).toBeInTheDocument()
     })
 
     it('renders the benefits', () => {
@@ -266,6 +273,21 @@ describe('FreePlanCard', () => {
           name: /Upgrade to Sentry Pro Team plan/,
         })
       ).toHaveAttribute('href', '/plan/bb/critical-role/upgrade')
+    })
+
+    it('renders the expected price details for sentry pro team billing', async () => {
+      render(<FreePlanCard plan={freePlan} />, {
+        wrapper,
+      })
+
+      expect(await screen.findByText(/\$29/)).toBeInTheDocument()
+      expect(await screen.findByText(/\/per month/)).toBeInTheDocument()
+
+      expect(
+        await screen.findByText(
+          /over 5 years is \$10\/per user per month, billed annually/
+        )
+      ).toBeInTheDocument()
     })
   })
 })
