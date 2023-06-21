@@ -8,9 +8,9 @@ import BenefitList from 'shared/plan/BenefitList'
 import {
   canApplySentryUpgrade,
   findSentryPlans,
-  SENTRY_PRICE,
   useProPlans,
 } from 'shared/utils/billing'
+import { SENTRY_PRICE } from 'shared/utils/upgradeForm'
 import A from 'ui/A'
 
 import ActionsBilling from '../shared/ActionsBilling/ActionsBilling'
@@ -31,7 +31,7 @@ function PlanDetails({
           /per month
         </p>
         <p className="text-ds-gray-senary">
-          over 5 years is ${sentryAnnualUnitPrice}/per user per month, billed
+          over 5 users is ${sentryAnnualUnitPrice}/per user per month, billed
           annually
         </p>
       </div>

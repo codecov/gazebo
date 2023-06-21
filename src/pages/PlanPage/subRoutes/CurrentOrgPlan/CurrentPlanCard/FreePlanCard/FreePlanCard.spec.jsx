@@ -285,7 +285,7 @@ describe('FreePlanCard', () => {
 
       expect(
         await screen.findByText(
-          /over 5 years is \$10\/per user per month, billed annually/
+          /over 5 users is \$10\/per user per month, billed annually/
         )
       ).toBeInTheDocument()
     })
