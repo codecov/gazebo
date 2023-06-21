@@ -233,7 +233,7 @@ describe('Actions Billing', () => {
   })
 
   describe('If can upgrade to sentry plan', () => {
-    beforeEach(() => setup(sentryMockedAccountDetails, sentryPlans))
+    beforeEach(() => setup(mockedProAccountDetails, sentryPlans))
 
     it('Displays upgrade to sentry plan', async () => {
       render(<ActionsBilling />, { wrapper })
@@ -248,6 +248,22 @@ describe('Actions Billing', () => {
         await screen.findByRole('link', {
           name: /Upgrade to Sentry Pro Team plan/,
         })
+      ).toHaveAttribute('href', '/plan/members/gh/upgrade')
+    })
+  })
+
+  describe('If current plan is sentry plan', () => {
+    beforeEach(() => setup(sentryMockedAccountDetails, sentryPlans))
+
+    it('Displays manage plan', async () => {
+      render(<ActionsBilling />, { wrapper })
+
+      expect(
+        await screen.findByRole('link', { name: /Manage plan/ })
+      ).toBeInTheDocument()
+
+      expect(
+        await screen.findByRole('link', { name: /Manage plan/ })
       ).toHaveAttribute('href', '/plan/members/gh/upgrade')
     })
   })

@@ -6,7 +6,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import FreePlanCard from './FreePlanCard'
 
-const plans = [
+const allPlans = [
   {
     marketingName: 'Basic',
     value: 'users-basic',
@@ -68,6 +68,23 @@ const plans = [
   },
 ]
 
+const sentryPlans = [
+  {
+    marketingName: 'Sentry',
+    value: 'users-sentrym',
+    billingRate: null,
+    baseUnitPrice: 0,
+    benefits: ['Up to # user', 'Unlimited public repositories'],
+  },
+  {
+    marketingName: 'Sentry',
+    value: 'users-sentryy',
+    billingRate: null,
+    baseUnitPrice: 0,
+    benefits: ['Up to # user', 'Unlimited private repositories'],
+  },
+]
+
 const freePlan = {
   marketingName: 'Free',
   value: 'users-basic',
@@ -118,12 +135,13 @@ const wrapper = ({ children }) => (
 
 describe('FreePlanCard', () => {
   function setup(
-    { owner } = {
+    { owner, plans } = {
       owner: {
         username: 'codecov',
         isCurrentUserPartOfOrg: true,
         numberOfUploads: 10,
       },
+      plans: allPlans,
     }
   ) {
     server.use(
@@ -212,6 +230,7 @@ describe('FreePlanCard', () => {
           isCurrentUserPartOfOrg: false,
           numberOfUploads: 10,
         },
+        plans: sentryPlans,
       })
     })
 
@@ -231,19 +250,22 @@ describe('FreePlanCard', () => {
       expect(screen.getByText(/Up to # user/)).toBeInTheDocument()
     })
 
-    it('renders actions billing button', () => {
+    it('renders actions billing button', async () => {
       render(<FreePlanCard plan={sentryPlan} />, {
         wrapper,
       })
 
       expect(
-        screen.getByRole('link', { name: /Manage plan/ })
+        await screen.findByRole('link', {
+          name: /Upgrade to Sentry Pro Team plan/,
+        })
       ).toBeInTheDocument()
 
-      expect(screen.getByRole('link', { name: /Manage plan/ })).toHaveAttribute(
-        'href',
-        '/plan/bb/critical-role/upgrade'
-      )
+      expect(
+        await screen.findByRole('link', {
+          name: /Upgrade to Sentry Pro Team plan/,
+        })
+      ).toHaveAttribute('href', '/plan/bb/critical-role/upgrade')
     })
   })
 })

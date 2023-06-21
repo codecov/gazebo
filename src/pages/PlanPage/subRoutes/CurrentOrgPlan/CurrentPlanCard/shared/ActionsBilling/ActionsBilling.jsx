@@ -2,12 +2,26 @@ import { useParams } from 'react-router-dom'
 
 import githubLogo from 'assets/githublogo.png'
 import { planPropType, useAccountDetails, usePlans } from 'services/account'
-import { canApplySentryUpgrade, isFreePlan } from 'shared/utils/billing'
+import {
+  canApplySentryUpgrade,
+  isFreePlan,
+  isSentryPlan,
+} from 'shared/utils/billing'
 import Button from 'ui/Button'
 
 function PlansActionsBilling({ plan }) {
   const { provider } = useParams()
   const { data: plans } = usePlans(provider)
+
+  if (isSentryPlan(plan?.value)) {
+    return (
+      <div className="flex self-start">
+        <Button to={{ pageName: 'upgradeOrgPlan' }} variant="primary">
+          Manage plan
+        </Button>
+      </div>
+    )
+  }
 
   if (canApplySentryUpgrade({ plan, plans })) {
     return (
