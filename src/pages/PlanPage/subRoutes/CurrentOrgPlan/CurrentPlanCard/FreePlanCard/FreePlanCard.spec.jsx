@@ -175,7 +175,8 @@ describe('FreePlanCard', () => {
         wrapper,
       })
 
-      expect(screen.getByText(/Up to 1 user/)).toBeInTheDocument()
+      const benefits = screen.getByText(/Up to 1 user/)
+      expect(benefits).toBeInTheDocument()
     })
 
     it('renders the scheduled phase', () => {
@@ -183,7 +184,8 @@ describe('FreePlanCard', () => {
         wrapper,
       })
 
-      expect(screen.getByText(/Scheduled Details/)).toBeInTheDocument()
+      const scheduledPhaseCopy = screen.getByText(/Scheduled Details/)
+      expect(scheduledPhaseCopy).toBeInTheDocument()
     })
 
     it('renders actions billing button', () => {
@@ -191,14 +193,10 @@ describe('FreePlanCard', () => {
         wrapper,
       })
 
-      expect(
-        screen.getByRole('link', { name: /Manage plan/ })
-      ).toBeInTheDocument()
+      const link = screen.getByRole('link', { name: /Manage plan/ })
 
-      expect(screen.getByRole('link', { name: /Manage plan/ })).toHaveAttribute(
-        'href',
-        '/plan/bb/critical-role/upgrade'
-      )
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute('href', '/plan/bb/critical-role/upgrade')
     })
 
     it('renders the help message', () => {
@@ -206,9 +204,8 @@ describe('FreePlanCard', () => {
         wrapper,
       })
 
-      expect(
-        screen.getByText(/to discuss custom Enterprise plans/)
-      ).toBeInTheDocument()
+      const helpMessage = screen.getByText(/to discuss custom Enterprise plans/)
+      expect(helpMessage).toBeInTheDocument()
     })
 
     it('renders number of uploads', async () => {
@@ -254,7 +251,8 @@ describe('FreePlanCard', () => {
         wrapper,
       })
 
-      expect(screen.getByText(/Up to # user/)).toBeInTheDocument()
+      const benefits = screen.getByText(/Up to # user/)
+      expect(benefits).toBeInTheDocument()
     })
 
     it('renders actions billing button', async () => {

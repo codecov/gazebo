@@ -38,7 +38,8 @@ describe('ProPlanCard', () => {
         wrapper,
       })
 
-      expect(screen.getByText(/Pro Team plan/)).toBeInTheDocument()
+      const planName = screen.getByText(/Pro Team plan/)
+      expect(planName).toBeInTheDocument()
     })
 
     it('renders the benefits', () => {
@@ -46,9 +47,8 @@ describe('ProPlanCard', () => {
         wrapper,
       })
 
-      expect(
-        screen.getByText(/Unlimited public repositories/)
-      ).toBeInTheDocument()
+      const benefits = screen.getByText(/Unlimited public repositories/)
+      expect(benefits).toBeInTheDocument()
     })
 
     it('renders the scheduled phase', () => {
@@ -56,7 +56,8 @@ describe('ProPlanCard', () => {
         wrapper,
       })
 
-      expect(screen.getByText(/Scheduled Details/)).toBeInTheDocument()
+      const scheduledPhaseCopy = screen.getByText(/Scheduled Details/)
+      expect(scheduledPhaseCopy).toBeInTheDocument()
     })
 
     it('renders seats number', () => {
@@ -64,7 +65,8 @@ describe('ProPlanCard', () => {
         wrapper,
       })
 
-      expect(screen.getByText(/plan has 5 seats/)).toBeInTheDocument()
+      const seats = screen.getByText(/plan has 5 seats/)
+      expect(seats).toBeInTheDocument()
     })
 
     it('renders actions billing button', () => {
@@ -72,14 +74,10 @@ describe('ProPlanCard', () => {
         wrapper,
       })
 
-      expect(
-        screen.getByRole('link', { name: /Manage plan/ })
-      ).toBeInTheDocument()
+      const link = screen.getByRole('link', { name: /Manage plan/ })
 
-      expect(screen.getByRole('link', { name: /Manage plan/ })).toHaveAttribute(
-        'href',
-        '/plan/bb/critical-role/upgrade'
-      )
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute('href', '/plan/bb/critical-role/upgrade')
     })
   })
 })

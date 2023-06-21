@@ -55,7 +55,8 @@ describe('EnterprisePlanCard', () => {
         wrapper,
       })
 
-      expect(screen.getByText(/Unlimited users/)).toBeInTheDocument()
+      const benefits = screen.getByText(/Unlimited users/)
+      expect(benefits).toBeInTheDocument()
     })
 
     it('renders the scheduled phase', () => {
@@ -69,7 +70,8 @@ describe('EnterprisePlanCard', () => {
         }
       )
 
-      expect(screen.getByText(/Scheduled Details/)).toBeInTheDocument()
+      const scheduledPhaseCopy = screen.getByText(/Scheduled Details/)
+      expect(scheduledPhaseCopy).toBeInTheDocument()
     })
 
     it('renders the help message', () => {
@@ -77,9 +79,11 @@ describe('EnterprisePlanCard', () => {
         wrapper,
       })
 
-      expect(
-        screen.getByText(/For help or changes to plan, connect with/)
-      ).toBeInTheDocument()
+      const helpMessage = screen.getByText(
+        /For help or changes to plan, connect with/
+      )
+
+      expect(helpMessage).toBeInTheDocument()
     })
   })
 })
