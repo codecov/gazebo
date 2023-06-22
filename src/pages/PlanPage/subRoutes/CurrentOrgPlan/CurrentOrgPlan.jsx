@@ -24,7 +24,7 @@ function CurrentOrgPlan() {
       <InfoMessageStripeCallback />
       {accountDetails?.plan && (
         <div className="flex flex-col gap-4 sm:mr-4 sm:flex-initial md:w-2/3 lg:w-3/4">
-          <CurrentPlanCard accountDetails={accountDetails} />
+          <CurrentPlanCard />
           {shouldRenderBillingDetails && (
             <>
               <PaymentCard

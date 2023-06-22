@@ -11,7 +11,7 @@ import { useLocation } from 'react-router-dom'
 
 import { useNavLinks } from 'services/navigation'
 
-const base = [{ pageName: 'planTab', text: 'Current org plan' }]
+const base = [{ pageName: 'planTab' }]
 const PlanBreadcrumbContext = createContext([])
 const PlanBreadcrumbSettersContext = createContext({
   addBreadcrumb: noop,
