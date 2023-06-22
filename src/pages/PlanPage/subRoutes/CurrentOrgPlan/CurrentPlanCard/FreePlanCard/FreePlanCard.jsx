@@ -103,8 +103,7 @@ function FreePlanCard({ plan, scheduledPhase }) {
   const { provider } = useParams()
 
   const { data: ownerData } = usePlanPageData()
-  const uploadsNumber =
-    isNumber(ownerData?.numberOfUploads) && ownerData?.numberOfUploads
+  const uploadsNumber = ownerData?.numberOfUploads
 
   const { data: plans } = usePlans(provider)
 
@@ -132,7 +131,7 @@ function FreePlanCard({ plan, scheduledPhase }) {
               baseUnitPrice={plan?.baseUnitPrice}
             />
             <div>
-              {uploadsNumber && (
+              {isNumber(uploadsNumber) && (
                 <p className="mt-4 text-xs text-ds-gray-senary">
                   {uploadsNumber} of 250 uploads in the last 30 days
                 </p>
