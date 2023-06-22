@@ -238,9 +238,9 @@ function ContextSwitcher({
         {isGh && (
           <li className="flex max-h-64 flex-col gap-1 overflow-y-auto border-t border-ds-gray-secondary px-4 py-3 text-xs text-ds-gray-quinary">
             <span className="font-semibold">Don&apos;t see your org?</span>
-            <A to={{ pageName: 'userAppManagePage' }}>
+            <A to={{ pageName: 'codecovAppInstallation' }}>
               {' '}
-              Manage access restrictions
+              Installation of Codecov app required
             </A>
           </li>
         )}

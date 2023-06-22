@@ -3,7 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { useServiceProviders } from './hooks'
+import { useServiceProviders } from './useServiceProviders'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

@@ -1,5 +1,6 @@
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { lazy } from 'react'
+import { Toaster } from 'react-hot-toast'
 import { Redirect, Switch } from 'react-router-dom'
 
 import config from 'config'
@@ -137,10 +138,13 @@ function App() {
   useUTM()
 
   return (
-    <ToastNotificationProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
-      <MainAppRoutes />
-    </ToastNotificationProvider>
+    <>
+      <ToastNotificationProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
+        <MainAppRoutes />
+      </ToastNotificationProvider>
+      <Toaster />
+    </>
   )
 }
 
