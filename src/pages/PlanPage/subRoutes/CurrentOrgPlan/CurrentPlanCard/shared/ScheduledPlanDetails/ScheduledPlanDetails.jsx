@@ -11,12 +11,11 @@ function ScheduledPlanDetails({ scheduledPhase }) {
   const scheduleStart = getScheduleStart(scheduledPhase)
 
   return (
-    <div className="flex flex-col gap-0.5">
+    <div className="flex flex-col gap-0.5 text-xs">
       <h2 className="font-semibold">Scheduled Details</h2>
-      <span>Start Date: {scheduleStart}</span>
-      <span className="capitalize">Plan: {plan}</span>
-      <span>Seats: {quantity}</span>
-      <hr />
+      <p className="text-ds-gray-senary">
+        Start date {scheduleStart} {plan} with {quantity} seats
+      </p>
     </div>
   )
 }

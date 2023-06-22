@@ -1,10 +1,16 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import { rest } from 'msw'
+import { setupServer } from 'msw/node'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import CurrentPlanCard from './CurrentPlanCard'
 
-const proAccountDetails = {
+jest.mock('./FreePlanCard', () => () => 'Free plan card')
+jest.mock('./ProPlanCard', () => () => 'Pro plan card')
+jest.mock('./EnterprisePlanCard', () => () => 'Enterprise plan card')
+
+const proPlanDetails = {
   plan: {
     marketingName: 'Pro Team',
     baseUnitPrice: 12,
@@ -12,10 +18,9 @@ const proAccountDetails = {
     quantity: 5,
     value: 'users-inappm',
   },
-  activatedUserCount: 2,
 }
 
-const freeAccountDetails = {
+const freePlanDetails = {
   plan: {
     marketingName: 'Basic',
     value: 'users-free',
@@ -27,171 +32,90 @@ const freeAccountDetails = {
       'Unlimited private repositories',
     ],
   },
-  activatedUserCount: 2,
+}
+
+const enterprisePlan = {
+  plan: {
+    marketingName: 'Enterprise',
+    value: 'users-enterprisey',
+    billingRate: null,
+    baseUnitPrice: 0,
+    benefits: [
+      'Unlimited users',
+      'Unlimited public repositories',
+      'Unlimited private repositories',
+    ],
+  },
 }
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: () => ({ provider: 'gl' }),
-}))
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/plan/bb/critical-role']}>
+      <Route path="/plan/:provider/:owner">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
+
+const server = setupServer()
+
+beforeAll(() => server.listen())
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => server.close())
 
 describe('CurrentPlanCard', () => {
-  function setup(accountDetails) {
-    /*Let's try to git rid of unnecessary wrappers*/
-
-    render(
-      <QueryClientProvider client={queryClient}>
-        <CurrentPlanCard accountDetails={accountDetails} />
-      </QueryClientProvider>,
-      {
-        wrapper: MemoryRouter,
-      }
+  function setup(planDetails = freePlanDetails) {
+    server.use(
+      rest.get('/internal/bb/critical-role/account-details/', (req, res, ctx) =>
+        res(ctx.status(200), ctx.json(planDetails))
+      )
     )
   }
 
-  describe('when rendering with a pro plan', () => {
+  describe('When rendered with free plan', () => {
     beforeEach(() => {
-      setup(proAccountDetails)
+      setup()
     })
+    it('renders the correct plan card', async () => {
+      render(<CurrentPlanCard />, {
+        wrapper,
+      })
 
-    it('renders the price of the plan', () => {
-      expect(screen.getByText(/\$12/)).toBeInTheDocument()
-    })
-
-    it('shows the help message', () => {
-      expect(screen.getByText(/Need help?/)).toBeInTheDocument()
+      expect(await screen.findByText(/Free plan card/)).toBeInTheDocument()
     })
   })
 
-  describe('when rendering with a free plan', () => {
+  describe('When rendered with pro plan', () => {
     beforeEach(() => {
-      setup(freeAccountDetails)
+      setup(proPlanDetails)
     })
+    it('renders the correct plan card', async () => {
+      render(<CurrentPlanCard />, {
+        wrapper,
+      })
 
-    it('doesnt render the link to Cancel', () => {
+      expect(await screen.findByText(/Pro plan card/)).toBeInTheDocument()
+    })
+  })
+
+  describe('When rendered with enterprise plan', () => {
+    beforeEach(() => {
+      setup(enterprisePlan)
+    })
+    it('renders the correct plan card', async () => {
+      render(<CurrentPlanCard />, {
+        wrapper,
+      })
+
       expect(
-        screen.queryByRole('link', { name: /Cancel Plan/ })
-      ).not.toBeInTheDocument()
-    })
-
-    it('shows the help message', () => {
-      expect(screen.getByText(/Need help?/)).toBeInTheDocument()
-    })
-  })
-
-  describe('when the subscription of the user is expiring', () => {
-    beforeEach(() => {
-      setup({
-        ...proAccountDetails,
-        subscriptionDetail: {
-          cancelAtPeriodEnd: true,
-        },
-      })
-    })
-
-    it('doesnt render the link to Cancel', () => {
-      expect(
-        screen.queryByRole('link', { name: /Cancel Plan/ })
-      ).not.toBeInTheDocument()
-    })
-
-    it('shows the help message', () => {
-      expect(screen.getByText(/Need help?/)).toBeInTheDocument()
-    })
-  })
-
-  describe('when the subscription has scheduled information', () => {
-    beforeEach(() => {
-      setup({
-        ...proAccountDetails,
-        scheduleDetail: {
-          id: 'sub_sched_sch1K77Y5GlVGuVgOrkJrLjRnne',
-          scheduledPhase: {
-            plan: 'Annual',
-            quantity: 14,
-            startDate: 191276319264,
-          },
-        },
-      })
-    })
-
-    it('renders scheduled details', () => {
-      expect(screen.getByText(/\Scheduled Details/)).toBeInTheDocument()
-    })
-  })
-
-  describe('when the subscription doesn not have scheduled information', () => {
-    beforeEach(() => {
-      setup({
-        ...proAccountDetails,
-        scheduleDetail: {
-          id: null,
-        },
-      })
-    })
-
-    it('renders doesn not render scheduled details', () => {
-      expect(screen.queryByText(/\Scheduled Details/)).not.toBeInTheDocument()
-    })
-  })
-
-  describe('when the user is using github marketplace', () => {
-    beforeEach(() => {
-      setup({
-        ...freeAccountDetails,
-        planProvider: 'github',
-      })
-    })
-
-    it('renders a link to the github marketplace', () => {
-      expect(
-        screen.getByRole('link', { name: /Manage billing in GitHub/ })
+        await screen.findByText(/Enterprise plan card/)
       ).toBeInTheDocument()
-    })
-
-    it('shows the help message', () => {
-      expect(screen.getByText(/Need help?/)).toBeInTheDocument()
-    })
-  })
-
-  describe('when the owner is a Gitlab subgroup', () => {
-    const parentUsername = 'parent'
-
-    beforeEach(() => {
-      setup({
-        ...freeAccountDetails,
-        rootOrganization: {
-          ...proAccountDetails,
-          username: parentUsername,
-        },
-      })
-    })
-
-    it('renders the plan of the parent', () => {
-      expect(
-        screen.getByRole('heading', {
-          name: /pro team/i,
-        })
-      ).toBeInTheDocument()
-    })
-
-    it('renders a link to the billing page of the parent', () => {
-      const link = screen.getByRole('link', {
-        name: /view billing/i,
-      })
-      expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute(
-        'href',
-        `/account/gl/${parentUsername}/billing`
-      )
-    })
-
-    it('shows the help message', () => {
-      expect(screen.getByText(/Need help?/)).toBeInTheDocument()
     })
   })
 })
