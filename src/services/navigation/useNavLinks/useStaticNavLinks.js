@@ -66,6 +66,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    codecovAppInstallation: {
+      text: 'Install Codecov app for an org',
+      path: () => 'https://github.com/apps/codecov/installations/new',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     userAppManagePage: {
       text: 'User App Manage/Access Page',
       path: () =>
