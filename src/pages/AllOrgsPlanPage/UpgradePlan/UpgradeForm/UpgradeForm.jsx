@@ -11,6 +11,7 @@ import {
   useUpgradePlan,
 } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
+import { TrialStatuses, useTrialData } from 'services/trial'
 import {
   canApplySentryUpgrade,
   getNextBillingDate,
@@ -124,7 +125,7 @@ const useUpgradeForm = ({
   }
 }
 
-const PlanDetails = ({ isSentryUpgrade }) => {
+const PlanDetails = ({ isSentryUpgrade, trialStatus }) => {
   if (!isSentryUpgrade) {
     return null
   }
@@ -132,13 +133,19 @@ const PlanDetails = ({ isSentryUpgrade }) => {
   return (
     <div>
       <h3 className="font-semibold">Plan</h3>
-      <p>14 day free trial, then $29 monthly includes 5 seats.</p>
+      <p>
+        {trialStatus !== TrialStatuses.EXPIRED && (
+          <span>14 day free trial, then </span>
+        )}
+        $29 monthly includes 5 seats.
+      </p>
     </div>
   )
 }
 
 PlanDetails.propTypes = {
   isSentryUpgrade: PropTypes.bool,
+  trialStatus: PropTypes.string,
 }
 
 // eslint-disable-next-line max-statements, complexity
@@ -154,13 +161,21 @@ function UpgradeForm({
   const { data: plans } = usePlans(provider)
   const nextBillingDate = getNextBillingDate(accountDetails)
 
+  const { data: trialData } = useTrialData({
+    provider,
+    owner: organizationName,
+    opts: {
+      enabled: !!organizationName,
+    },
+  })
+
   const isSentryUpgrade = canApplySentryUpgrade({
     plan: accountDetails?.plan?.value,
     plans,
   })
 
   const minSeats = isSentryUpgrade ? MIN_SENTRY_SEATS : MIN_NB_SEATS
-  const trialEndTimestamp = accountDetails?.subscriptionDetail?.trialEnd ?? null
+  const trialStatus = trialData?.trialStatus
   const hasPaymentMethod =
     accountDetails?.subscriptionDetail?.defaultPaymentMethod ?? null
 
@@ -225,9 +240,12 @@ function UpgradeForm({
       className="flex flex-col gap-4 pt-4 text-ds-gray-nonary"
       onSubmit={handleSubmit(upgradePlan)}
     >
-      <PlanDetails isSentryUpgrade={isSentryUpgrade} />
+      <PlanDetails
+        isSentryUpgrade={isSentryUpgrade}
+        trialStatus={trialStatus}
+      />
       {/* If not on trial, show the plan details without the credit card prompt */}
-      {!trialEndTimestamp ? (
+      {!trialStatus === TrialStatuses.ONGOING ? (
         <>
           <BillingControls
             disableInputs={disableInputs}
@@ -286,13 +304,13 @@ function UpgradeForm({
               value={accountDetails?.plan?.value}
               quantity={accountDetails?.plan?.quantity}
               disableInputs={disableInputs}
-              accountDetails={accountDetails}
               isSentryUpgrade={isSentryUpgrade}
               organizationName={organizationName}
+              trialStatus={trialStatus}
             />
           </div>
         </>
-      ) : trialEndTimestamp && !hasPaymentMethod ? (
+      ) : trialStatus === TrialStatuses.ONGOING && !hasPaymentMethod ? (
         // If on trial, if no credit card, only show the credit card prompt
         <A
           href="https://billing.stripe.com/p/login/aEU00i9by3V4caQ6oo"
@@ -361,9 +379,9 @@ function UpgradeForm({
               value={accountDetails?.plan?.value}
               quantity={accountDetails?.plan?.quantity}
               disableInputs={disableInputs}
-              accountDetails={accountDetails}
               isSentryUpgrade={isSentryUpgrade}
               organizationName={organizationName}
+              trialStatus={trialStatus}
             />
           </div>
         </>
