@@ -44,20 +44,6 @@ describe('Plan breadcrumb context', () => {
     return { user }
   }
 
-  describe('checking crumbs are rendered', () => {
-    it('crumbs return default crumb', () => {
-      render(
-        <PlanBreadcrumbProvider>
-          <TestComponent />
-        </PlanBreadcrumbProvider>,
-        { wrapper: wrapper() }
-      )
-
-      const currentPlanCrumb = screen.getByText('Current org plan')
-      expect(currentPlanCrumb).toBeInTheDocument()
-    })
-  })
-
   describe('when calling setCrumbs', () => {
     it('adds new crumb to context', async () => {
       const { user } = setup()

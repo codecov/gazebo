@@ -5,6 +5,11 @@ on:
     branches:
       - main
     types: [closed]
+    
+env:
+  CODECOV_GAZEBO_DEVOPS_IMAGE: ${{ vars.CODECOV_GAZEBO_DEVOPS_IMAGE }}
+  CODECOV_GAZEBO_ENTERPRISE_IMAGE: ${{ vars.CODECOV_GAZEBO_ENTERPRISE_IMAGE }}
+  CODECOV_GAZEBO_IMAGE: ${{ vars.CODECOV_GAZEBO_IMAGE }}
 
 jobs:
   push_to_registry:

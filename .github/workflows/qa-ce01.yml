@@ -14,6 +14,7 @@ jobs:
       client_name: ${{ secrets.client_qace01 }}
       api_url: ${{ secrets.api_url_qace01 }}
       base_url: ${{ secrets.base_url_qace01 }}
+      default_provider: ${{ secrets.default_provider_qace01 }}
       token: ${{ secrets.GITHUB_TOKEN }}
       gcp_sa: ${{ secrets.CODECOV_GCP_WIDSA }}
       gcp_idp: ${{ secrets.CODECOV_GCP_WIDP }}

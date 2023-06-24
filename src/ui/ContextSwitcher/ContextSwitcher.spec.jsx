@@ -299,7 +299,7 @@ describe('ContextSwitcher', () => {
       )
 
       const manageAccess = await screen.findByText(
-        /Manage access restrictions/i
+        /Installation of Codecov app required/i
       )
       expect(manageAccess).toBeInTheDocument()
     })

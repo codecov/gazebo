@@ -18,8 +18,8 @@ function Dropdown({ currentUser }) {
     !config.IS_SELF_HOSTED && isGh
       ? [
           {
-            props: { to: { pageName: 'userAppManagePage' } },
-            children: 'Manage GitHub org access',
+            props: { to: { pageName: 'codecovAppInstallation' } },
+            children: 'Install Codecov app',
           },
         ]
       : []

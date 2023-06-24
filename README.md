@@ -15,6 +15,8 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 We recommend using the same Node version as in CircleCI: [Node (Latest LTS)](https://nodejs.org/en/download/).
 You can refer to the .nvmrc in the root folder.
 
+In order to use the Makefile to build a Docker image, you'll need to set an environment variable for `CODECOV_GAZEBO_IMAGE`. Set it to a string that will be used as a Docker image name to build to.
+
 ## Run the project
 
 To run the project in development mode

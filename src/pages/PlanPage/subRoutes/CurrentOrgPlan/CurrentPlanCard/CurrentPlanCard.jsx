@@ -1,52 +1,35 @@
-import { accountDetailsPropType } from 'services/account'
-import A from 'ui/A'
-import Card from 'ui/Card'
+import { useParams } from 'react-router-dom'
 
-import PlanControls from './PlanControls'
-import PlanPricing from './PlanPricing'
-import ScheduledPlanDetails from './ScheduledPlanDetails'
-import Usage from './Usage'
+import { useAccountDetails } from 'services/account'
+import {
+  CollectionMethods,
+  isEnterprisePlan,
+  isFreePlan,
+} from 'shared/utils/billing'
 
-import BenefitList from '../../../shared/BenefitList'
+import EnterprisePlanCard from './EnterprisePlanCard'
+import FreePlanCard from './FreePlanCard'
+import ProPlanCard from './ProPlanCard'
 
-function CurrentPlanCard({ accountDetails }) {
+function CurrentPlanCard() {
+  const { provider, owner } = useParams()
+  const { data: accountDetails } = useAccountDetails({ provider, owner })
   const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
-  const isBasicPlan = plan?.value === 'users-basic'
+  const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
+  const collectionMethod = accountDetails?.subscriptionDetail?.collectionMethod
 
-  return (
-    // Wdyt about this? Gives the flexibility to put the color you want, but makes the UI component umpredictable. Alternative is to create a headerVariant class and add a 'secondary' variant there
-    <Card
-      header={<h3 className="text-ds-pink-quinary">{plan?.marketingName}</h3>}
-    >
-      <div className="flex flex-col gap-6">
-        <PlanPricing value={plan?.value} baseUnitPrice={plan?.baseUnitPrice} />
-        <BenefitList
-          iconName="check"
-          iconColor="text-ds-pink-quinary"
-          benefits={plan?.benefits}
-        />
-        {/* TODO: Left a note in the Card component to implement a variant that creates <hr />'s after any component */}
-        <hr />
-        <Usage accountDetails={accountDetails} isBasicPlan={isBasicPlan} />
-        <hr />
-        {accountDetails?.scheduleDetail?.scheduledPhase && (
-          <ScheduledPlanDetails
-            scheduledPhase={accountDetails?.scheduleDetail?.scheduledPhase}
-          />
-        )}
-        <PlanControls accountDetails={accountDetails} />
-        <hr />
-        <div className="text-ds-gray-quinary">
-          <span className="font-semibold">Need help?</span> Connect with our
-          sales team today at <A to={{ pageName: 'sales' }}>sales@codecov.io</A>
-        </div>
-      </div>
-    </Card>
-  )
-}
+  if (isFreePlan(plan?.value)) {
+    return <FreePlanCard plan={plan} scheduledPhase={scheduledPhase} />
+  }
 
-CurrentPlanCard.propTypes = {
-  accountDetails: accountDetailsPropType.isRequired,
+  if (
+    isEnterprisePlan(plan?.value) ||
+    collectionMethod === CollectionMethods.INVOICED_CUSTOMER_METHOD
+  ) {
+    return <EnterprisePlanCard plan={plan} />
+  }
+
+  return <ProPlanCard plan={plan} scheduledPhase={scheduledPhase} />
 }
 
 export default CurrentPlanCard

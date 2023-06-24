@@ -36,6 +36,13 @@ export function isFreePlan(plan) {
   return false
 }
 
+export function isBasicPlan(plan) {
+  if (isString(plan)) {
+    return plan === Plans.USERS_BASIC
+  }
+  return false
+}
+
 export function isPaidPlan(plan) {
   if (isString(plan)) {
     return isAnnualPlan(plan) || isMonthlyPlan(plan)
