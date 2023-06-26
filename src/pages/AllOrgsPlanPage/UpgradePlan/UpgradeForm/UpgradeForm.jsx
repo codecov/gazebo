@@ -245,7 +245,7 @@ function UpgradeForm({
         trialStatus={trialStatus}
       />
       {/* If not on trial, show the plan details without the credit card prompt */}
-      {!trialStatus === TrialStatuses.ONGOING ? (
+      {trialStatus === TrialStatuses.NOT_STARTED ? (
         <>
           <BillingControls
             disableInputs={disableInputs}

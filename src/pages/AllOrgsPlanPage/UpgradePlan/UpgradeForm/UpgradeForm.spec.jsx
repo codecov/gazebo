@@ -7,6 +7,7 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useAddNotification } from 'services/toastNotification'
+import { TrialStatuses } from 'services/trial'
 
 import UpgradeForm from './UpgradeForm'
 
@@ -128,12 +129,12 @@ describe('UpgradeForm', () => {
       successfulRequest = true,
       errorDetails = undefined,
       includeSentryPlans = false,
-      ongoingTrial = null,
+      trialStatus = null,
     } = {
       successfulRequest: true,
       errorDetails: undefined,
       includeSentryPlans: false,
-      ongoingTrial: null,
+      trialStatus: null,
     }
   ) {
     const user = userEvent.setup()
@@ -147,7 +148,7 @@ describe('UpgradeForm', () => {
         res(
           ctx.status(200),
           ctx.data({
-            owner: { trialStatus: ongoingTrial ? 'ONGOING' : 'NOT_STARTED' },
+            owner: { trialStatus },
           })
         )
       ),
@@ -388,7 +389,7 @@ describe('UpgradeForm', () => {
       })
 
       it('prompts the user to input their billing information', async () => {
-        setup({ includeSentryPlans: true, ongoingTrial: true })
+        setup({ includeSentryPlans: true, trialStatus: TrialStatuses.ONGOING })
         render(<UpgradeForm {...props} />, { wrapper })
 
         const billingInformationAnchor = await screen.findByText(
@@ -678,7 +679,7 @@ describe('UpgradeForm', () => {
       })
 
       it('has the update button disabled', async () => {
-        setup({ includeSentryPlans: true, ongoingTrial: true })
+        setup({ includeSentryPlans: true, trialStatus: TrialStatuses.ONGOING })
         render(<UpgradeForm {...props} />, { wrapper })
 
         const update = await screen.findByText(/Update/)
@@ -780,7 +781,10 @@ describe('UpgradeForm', () => {
 
     describe('when the user chooses less than the number of active users', () => {
       it('displays an error', async () => {
-        const { user } = setup({ includeSentryPlans: true, ongoingTrial: true })
+        const { user } = setup({
+          includeSentryPlans: true,
+          trialStatus: TrialStatuses.ONGOING,
+        })
         render(
           <UpgradeForm
             organizationName="codecov"
