@@ -13,10 +13,7 @@ describe('UpdateButton', () => {
         value: Plans.USERS_BASIC,
         quantity: 2,
         isSentryUpgrade: false,
-        accountDetails: {
-          activatedUserCount: 0,
-          subscriptionDetail: {},
-        },
+        trialStatus: 'NOT_STARTED',
       }
 
       render(<UpdateButton {...props} />)
@@ -35,10 +32,7 @@ describe('UpdateButton', () => {
         value: Plans.USERS_PR_INAPPY,
         quantity: 10,
         isSentryUpgrade: false,
-        accountDetails: {
-          activatedUserCount: 0,
-          subscriptionDetail: {},
-        },
+        trialStatus: 'NOT_STARTED',
       }
 
       render(<UpdateButton {...props} />)
@@ -57,10 +51,7 @@ describe('UpdateButton', () => {
         value: Plans.USERS_BASIC,
         quantity: 2,
         isSentryUpgrade: false,
-        accountDetails: {
-          activatedUserCount: 0,
-          subscriptionDetail: {},
-        },
+        trialStatus: 'NOT_STARTED',
       }
 
       render(<UpdateButton {...props} />)
@@ -81,12 +72,7 @@ describe('UpdateButton', () => {
             value: Plans.USERS_BASIC,
             quantity: 2,
             isSentryUpgrade: true,
-            accountDetails: {
-              activatedUserCount: 0,
-              subscriptionDetail: {
-                trialEnd: null,
-              },
-            },
+            trialStatus: 'NOT_STARTED',
           }
 
           render(<UpdateButton {...props} />)
@@ -103,12 +89,7 @@ describe('UpdateButton', () => {
             value: Plans.USERS_BASIC,
             quantity: 2,
             isSentryUpgrade: true,
-            accountDetails: {
-              activatedUserCount: 0,
-              subscriptionDetail: {
-                trialEnd: null,
-              },
-            },
+            trialStatus: 'NOT_STARTED',
           }
 
           render(<UpdateButton {...props} />)
@@ -126,10 +107,7 @@ describe('UpdateButton', () => {
             value: Plans.USERS_BASIC,
             quantity: 2,
             isSentryUpgrade: true,
-            accountDetails: {
-              activatedUserCount: 0,
-              subscriptionDetail: null,
-            },
+            trialStatus: 'NOT_STARTED',
           }
 
           render(<UpdateButton {...props} />)
@@ -146,10 +124,7 @@ describe('UpdateButton', () => {
             value: Plans.USERS_BASIC,
             quantity: 2,
             isSentryUpgrade: true,
-            accountDetails: {
-              activatedUserCount: 0,
-              subscriptionDetail: null,
-            },
+            trialStatus: 'NOT_STARTED',
           }
 
           render(<UpdateButton {...props} />)
@@ -168,12 +143,28 @@ describe('UpdateButton', () => {
           value: Plans.USERS_BASIC,
           quantity: 2,
           isSentryUpgrade: true,
-          accountDetails: {
-            activatedUserCount: 0,
-            subscriptionDetail: {
-              trialEnd: 123456,
-            },
-          },
+          trialStatus: 'ONGOING',
+        }
+
+        render(<UpdateButton {...props} />)
+
+        const button = screen.getByText('Update')
+        expect(button).toBeInTheDocument()
+        expect(button).not.toBeDisabled()
+      })
+    })
+
+    describe('the user has finished the trial', () => {
+      it('displays button with "Update" text', () => {
+        const props = {
+          isValid: true,
+          getValues: () => ({ newPlan: Plans.USERS_PR_INAPPY, seats: 10 }),
+          value: Plans.USERS_BASIC,
+          quantity: 2,
+          isSentryUpgrade: true,
+          disableInputs: false,
+          organizationName: 'codecov',
+          trialStatus: 'EXPIRED',
         }
 
         render(<UpdateButton {...props} />)
