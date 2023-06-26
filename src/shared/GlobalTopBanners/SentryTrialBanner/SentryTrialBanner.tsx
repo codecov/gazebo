@@ -1,8 +1,8 @@
+import isNumber from 'lodash/isNumber'
 import isUndefined from 'lodash/isUndefined'
 import { useParams } from 'react-router-dom'
 
 import { useAccountDetails, usePlans } from 'services/account'
-import { TrialStatuses, useTrialData } from 'services/trial'
 import { findSentryPlans, isSentryPlan } from 'shared/utils/billing'
 import Button from 'ui/Button/Button'
 import Icon from 'ui/Icon/Icon'
@@ -41,19 +41,12 @@ const SentryTrialBanner: React.FC = () => {
       enabled: !!owner,
     },
   })
-  const { data: trialData } = useTrialData({
-    provider,
-    owner: owner || '',
-    opts: {
-      enabled: !!owner,
-    },
-  })
 
-  const trialStatus = trialData?.trialStatus
+  const trialEndTimestamp = accountDetails?.subscriptionDetail?.trialEnd ?? null
 
   if (
     isUndefined(owner) ||
-    trialStatus !== TrialStatuses.NOT_STARTED ||
+    isNumber(trialEndTimestamp) ||
     isOnSentryPlan({
       plans,
       planValue: accountDetails?.plan?.value,
