@@ -1,7 +1,6 @@
-import isNull from 'lodash/isNull'
 import PropTypes, { type InferProps } from 'prop-types'
 
-import { accountDetailsPropType } from 'services/account'
+import { TrialStatuses } from 'services/trial'
 import Button from 'ui/Button'
 
 // eslint-disable-next-line complexity
@@ -10,15 +9,14 @@ function UpdateButton({
   getValues,
   value,
   quantity,
-  accountDetails,
   isSentryUpgrade,
+  trialStatus,
 }: InferProps<typeof UpdateButton.propTypes>) {
   const isSamePlan = getValues()?.newPlan === value
   const noChangeInSeats = getValues()?.seats === quantity
   const disabled = !isValid || (isSamePlan && noChangeInSeats)
-  const trialEndTimestamp = accountDetails?.subscriptionDetail?.trialEnd ?? null
 
-  if (isSentryUpgrade && isNull(trialEndTimestamp)) {
+  if (isSentryUpgrade && trialStatus === TrialStatuses.NOT_STARTED) {
     return (
       <div className="flex items-center gap-2">
         <Button
@@ -55,8 +53,8 @@ UpdateButton.propTypes = {
   getValues: PropTypes.func.isRequired,
   value: PropTypes.string,
   quantity: PropTypes.number,
-  accountDetails: accountDetailsPropType,
   isSentryUpgrade: PropTypes.bool.isRequired,
+  trialStatus: PropTypes.string.isRequired,
 }
 
 export default UpdateButton
