@@ -615,7 +615,7 @@ describe('UpgradeForm', () => {
       })
     })
 
-    describe('when the user have a sentry pro year plan but no billing information', () => {
+    describe('when the user have a sentry pro year plan but no billing information during trial', () => {
       const props = {
         proPlanMonth,
         proPlanYear,

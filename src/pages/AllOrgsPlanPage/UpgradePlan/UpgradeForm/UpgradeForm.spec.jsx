@@ -359,7 +359,7 @@ describe('UpgradeForm', () => {
       })
     })
 
-    describe('when the user have a pro year plan but no billing information', () => {
+    describe('when the user have a pro year plan but no billing information during a trial', () => {
       const props = {
         organizationName: 'codecov',
         proPlanMonth,
@@ -959,6 +959,75 @@ describe('UpgradeForm', () => {
           )
         })
       })
+    })
+  })
+
+  describe('when the customer has not started a trial', () => {
+    const props = {
+      organizationName: 'codecov',
+      proPlanMonth,
+      proPlanYear,
+      sentryPlanMonth,
+      sentryPlanYear,
+      accountDetails: {
+        activatedUserCount: 9,
+        inactiveUserCount: 0,
+        plan: null,
+        latestInvoice: null,
+      },
+    }
+
+    it('renders monthly option button', async () => {
+      setup({
+        includeSentryPlans: true,
+        trialStatus: TrialStatuses.NOT_STARTED,
+      })
+      render(<UpgradeForm {...props} />, { wrapper })
+
+      const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
+      expect(optionBtn).toBeInTheDocument()
+      expect(optionBtn).not.toHaveClass('bg-ds-primary-base')
+    })
+
+    it('renders annual option button', async () => {
+      setup({
+        includeSentryPlans: true,
+        trialStatus: TrialStatuses.NOT_STARTED,
+      })
+      render(<UpgradeForm {...props} />, { wrapper })
+
+      const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+      expect(optionBtn).toBeInTheDocument()
+      expect(optionBtn).toHaveClass('bg-ds-primary-base')
+    })
+
+    it('renders the seat input with 5 seats', async () => {
+      setup({
+        includeSentryPlans: true,
+        trialStatus: TrialStatuses.NOT_STARTED,
+      })
+      render(<UpgradeForm {...props} />, { wrapper })
+
+      const numberInput = await screen.findByRole('spinbutton')
+      expect(numberInput).toBeInTheDocument()
+      expect(numberInput).toHaveValue(5)
+      expect(numberInput).not.toBeDisabled()
+    })
+
+    it('renders the trial fields', async () => {
+      setup({
+        includeSentryPlans: true,
+        trialStatus: TrialStatuses.NOT_STARTED,
+      })
+      render(<UpgradeForm {...props} />, { wrapper })
+
+      const startTrial = await screen.findByRole('button', {
+        name: 'Start trial',
+      })
+      expect(startTrial).toBeInTheDocument()
+
+      const creditCardInfo = await screen.findByText('No credit card required!')
+      expect(creditCardInfo).toBeInTheDocument()
     })
   })
 })
