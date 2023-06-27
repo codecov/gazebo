@@ -3,7 +3,7 @@ import { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useRepos } from 'services/repos'
-import DateRangePicker from 'ui/DateRangePicker'
+import DateRange from 'ui/DateRangePicker'
 import MultiSelect from 'ui/MultiSelect'
 
 function formatDataForMultiselect(repos) {
@@ -99,6 +99,11 @@ function ChartSelectors({ params, updateParams, active, sortItem }) {
     setSelectedRepos([])
   }
 
+  const onSelectChangeHandler = (item) => {
+    setSelectedRepos(item)
+    updateParams({ repositories: item })
+  }
+
   const clearFiltersHandler = () => {
     updateParams({
       startDate: null,
@@ -111,19 +116,30 @@ function ChartSelectors({ params, updateParams, active, sortItem }) {
 
   return (
     <div className="flex flex-wrap justify-center gap-4 sm:flex-nowrap sm:justify-start">
-      <DateSelector
-        startDate={startDate}
-        endDate={endDate}
-        updateParams={updateParams}
-      />
-      <RepoSelector
-        active={active}
-        updateParams={updateParams}
-        sortItem={sortItem}
-        selectedRepos={selectedRepos}
-        setSelectedRepos={setSelectedRepos}
-        resetRef={resetRef}
-      />
+      <div className="flex flex-col gap-3">
+        <span className="font-semibold">Dates</span>
+        <DateRange
+          startDate={startDate}
+          endDate={endDate}
+          onChange={(args) => {
+            const startDate = args?.from ?? null
+            const endDate = args?.to ?? null
+
+            updateParams({ startDate, endDate })
+          }}
+        />
+      </div>
+      <div className="flex w-52 flex-col gap-3">
+        <span className="font-semibold">Repositories</span>
+        <RepoSelector
+          active={active}
+          updateParams={updateParams}
+          sortItem={sortItem}
+          selectedRepos={selectedRepos}
+          setSelectedRepos={setSelectedRepos}
+          resetRef={resetRef}
+        />
+      </div>
       <button
         className="mt-7 text-ds-blue-darker"
         onClick={clearFiltersHandler}
