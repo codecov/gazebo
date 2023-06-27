@@ -14,6 +14,7 @@ function getProviderShortName(provider) {
     gl: 'gl',
     gitlab: 'gl',
   }
+
   return providerShortName[provider] || null
 }
 
