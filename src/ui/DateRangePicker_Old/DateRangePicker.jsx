@@ -12,7 +12,8 @@ function DateRangePicker({ startDate, endDate, onChange }) {
   const [dateRange, setDateRange] = useState([s, e])
   const [_startDate, _endDate] = dateRange
 
-  function handleDateChange([startDate, endDate]) {
+  function handleDateChange(params) {
+    const [startDate, endDate] = params
     setDateRange([startDate, endDate])
     onChange([startDate, endDate])
   }
@@ -31,6 +32,7 @@ function DateRangePicker({ startDate, endDate, onChange }) {
         openToDate={sub(new Date(), { months: 1 })}
         placeholderText="Start Date"
         className="w-full border-0 border-ds-gray-octonary px-2 py-1 font-sans text-sm text-ds-gray-octonary focus:border-b-2 focus:outline-none"
+        returnValue="range"
       />
     </div>
   )

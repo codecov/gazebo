@@ -9,7 +9,7 @@ BasicDateRangePicker.args = {
 }
 
 export default {
-  title: 'Components/DateRangePicker',
+  title: 'Components/DateRangePicker_Old',
   component: DateRangePicker,
   argTypes: {
     onChange: {
