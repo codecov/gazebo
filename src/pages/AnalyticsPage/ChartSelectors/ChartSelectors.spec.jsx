@@ -224,19 +224,19 @@ describe('ChartSelectors', () => {
               ordering: 'NAME',
               direction: 'ASC',
             }}
-            params={{ search: 'Repo name 1', repositories: [] }}
+            params={{ search: 'Repo name 1', repositories: ['Repo name 1'] }}
             updateParams={jest.fn()}
           />,
           { wrapper }
         )
 
-        const multiselect = screen.getByText('All Repos')
+        const multiselect = screen.getByText('1 Repo selected')
         await user.click(multiselect)
 
-        const repo1 = screen.getByText('Repo name 1')
+        const repo1 = screen.getByText('Repo name 3')
         await user.click(repo1)
 
-        const multiSelectUpdated = await screen.findByText('1 Repo selected')
+        const multiSelectUpdated = screen.getByText('2 Repos selected')
         expect(multiSelectUpdated).toBeInTheDocument()
       })
 

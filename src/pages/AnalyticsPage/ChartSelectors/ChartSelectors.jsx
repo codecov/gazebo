@@ -9,9 +9,17 @@ function formatDataForMultiselect(repos) {
   return repos?.map((repo) => repo.name)
 }
 
+// eslint-disable-next-line max-statements
 function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
+  const resetRef = useRef(null)
   const { repositories, startDate, endDate } = params
+
   const [selectedRepos, setSelectedRepos] = useState(repositories)
+
+  if (selectedRepos.length > 0 && repositories.length === 0) {
+    setSelectedRepos([])
+  }
+
   const [search, setSearch] = useState()
   const { data, isLoading, fetchNextPage, hasNextPage } = useRepos({
     active,
@@ -21,9 +29,6 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
     first: Infinity,
     suspense: false,
   })
-  const resetRef = useRef(null)
-
-  const items = formatDataForMultiselect(data?.repos)
 
   const onSelectChangeHandler = (item) => {
     setSelectedRepos(item)
@@ -60,7 +65,7 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
           hook="repo-chart-selector"
           ariaName="Select repos to choose"
           dataMarketing="repo-chart-selector"
-          items={items}
+          items={formatDataForMultiselect(data?.repos)}
           onChange={onSelectChangeHandler}
           resourceName="Repo"
           value={selectedRepos}
@@ -68,6 +73,7 @@ function ChartSelectors({ params, updateParams, owner, active, sortItem }) {
           onLoadMore={() => hasNextPage && fetchNextPage()}
           onSearch={(search) => setSearch(search)}
           ref={resetRef}
+          selectedItemsOverride={selectedRepos}
         />
       </div>
       <button
