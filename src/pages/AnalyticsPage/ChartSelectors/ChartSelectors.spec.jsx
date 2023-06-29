@@ -70,7 +70,6 @@ describe('ChartSelectors', () => {
     it('renders date picker', async () => {
       render(
         <ChartSelectors
-          owner="bob"
           active={true}
           sortItem={{
             ordering: 'NAME',
@@ -89,7 +88,6 @@ describe('ChartSelectors', () => {
     it('renders multiselect', async () => {
       render(
         <ChartSelectors
-          owner="bob"
           active={true}
           sortItem={{
             ordering: 'NAME',
@@ -108,7 +106,6 @@ describe('ChartSelectors', () => {
     it('renders clear filters', async () => {
       render(
         <ChartSelectors
-          owner="bob"
           active={true}
           sortItem={{
             ordering: 'NAME',
@@ -130,7 +127,6 @@ describe('ChartSelectors', () => {
       const { user } = setup()
       render(
         <ChartSelectors
-          owner="bob"
           active={true}
           sortItem={{
             ordering: 'NAME',
@@ -159,7 +155,6 @@ describe('ChartSelectors', () => {
       const updateParams = jest.fn()
       render(
         <ChartSelectors
-          owner="bob"
           active={true}
           sortItem={{
             ordering: 'NAME',
@@ -191,7 +186,6 @@ describe('ChartSelectors', () => {
       const { user } = setup()
       render(
         <ChartSelectors
-          owner="bob"
           active={true}
           sortItem={{
             ordering: 'NAME',
@@ -218,7 +212,6 @@ describe('ChartSelectors', () => {
         const { user } = setup()
         render(
           <ChartSelectors
-            owner="bob"
             active={true}
             sortItem={{
               ordering: 'NAME',
@@ -245,7 +238,6 @@ describe('ChartSelectors', () => {
         const updateParams = jest.fn()
         render(
           <ChartSelectors
-            owner="bob"
             active={true}
             sortItem={{
               ordering: 'NAME',
@@ -274,7 +266,6 @@ describe('ChartSelectors', () => {
         const { user } = setup()
         render(
           <ChartSelectors
-            owner="bob"
             active={true}
             sortItem={{
               ordering: 'NAME',
@@ -297,7 +288,6 @@ describe('ChartSelectors', () => {
         const { user } = setup()
         render(
           <ChartSelectors
-            owner="bob"
             active={true}
             sortItem={{
               ordering: 'NAME',
@@ -322,7 +312,7 @@ describe('ChartSelectors', () => {
           expect(useRepos).toBeCalledWith({
             active: true,
             first: Infinity,
-            owner: 'bob',
+            owner: 'codecov',
             sortItem: {
               direction: 'ASC',
               ordering: 'NAME',
@@ -344,7 +334,6 @@ describe('ChartSelectors', () => {
 
           render(
             <ChartSelectors
-              owner="bob"
               active={true}
               sortItem={{
                 ordering: 'NAME',
@@ -369,7 +358,6 @@ describe('ChartSelectors', () => {
 
           render(
             <ChartSelectors
-              owner="bob"
               active={true}
               sortItem={{
                 ordering: 'NAME',
@@ -396,7 +384,6 @@ describe('ChartSelectors', () => {
       const updateParams = jest.fn()
       render(
         <ChartSelectors
-          owner="bob"
           active={true}
           sortItem={{
             ordering: 'NAME',
