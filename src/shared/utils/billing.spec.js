@@ -9,6 +9,7 @@ import {
   formatNumberToUSD,
   getNextBillingDate,
   isAnnualPlan,
+  isBasicPlan,
   isEnterprisePlan,
   isFreePlan,
   isMonthlyPlan,
@@ -438,5 +439,24 @@ describe('canApplySentryUpgrade', () => {
     })
 
     expect(result).toBeFalsy()
+  })
+})
+
+describe('isBasicPlan', () => {
+  it('returns true when plan is basic', () => {
+    expect(isBasicPlan(Plans.USERS_BASIC)).toBeTruthy()
+  })
+
+  it('returns false when plan is not basic', () => {
+    expect(isBasicPlan(Plans.USERS_FREE)).toBeFalsy()
+    expect(isBasicPlan(Plans.USERS_INAPP)).toBeFalsy()
+    expect(isBasicPlan(Plans.USERS_ENTERPRISEM)).toBeFalsy()
+    expect(isBasicPlan(Plans.USERS_SENTRYM)).toBeFalsy()
+  })
+
+  it('returns false when plan is not a string', () => {
+    expect(isBasicPlan(123)).toBeFalsy()
+    expect(isBasicPlan({})).toBeFalsy()
+    expect(isBasicPlan([])).toBeFalsy()
   })
 })
