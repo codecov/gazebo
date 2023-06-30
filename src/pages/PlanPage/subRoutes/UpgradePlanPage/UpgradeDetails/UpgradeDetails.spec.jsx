@@ -121,9 +121,7 @@ describe('UpgradeDetails', () => {
         { wrapper: wrapper() }
       )
 
-      const marketingName = screen.getByRole('heading', {
-        name: 'Sentry Pro Team',
-      })
+      const marketingName = screen.getByText('Sentry Pro Team')
       expect(marketingName).toBeInTheDocument()
     })
 
@@ -206,7 +204,7 @@ describe('UpgradeDetails', () => {
         { wrapper: wrapper() }
       )
 
-      const link = screen.getByRole('link', { name: /Cancel plan/ })
+      const link = screen.getByRole('link', { name: /Cancel/ })
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute('href', '/plan/gh/codecov/cancel')
     })
@@ -219,24 +217,6 @@ describe('UpgradeDetails', () => {
       activatedUserCount: 5,
       subscriptionDetail: { cancelAtPeriodEnd: false },
     }
-
-    it('renders correct image', () => {
-      render(
-        <UpgradeDetails
-          accountDetails={accountDetails}
-          plan={plan}
-          plans={plans}
-          proPlanMonth={proPlanMonth}
-          proPlanYear={proPlanYear}
-          sentryPlanMonth={sentryPlanMonth}
-          sentryPlanYear={sentryPlanYear}
-        />,
-        { wrapper: wrapper() }
-      )
-
-      const image = screen.getByRole('img', { name: 'parasol' })
-      expect(image).toBeInTheDocument()
-    })
 
     it('renders marketing name', () => {
       render(
@@ -252,9 +232,7 @@ describe('UpgradeDetails', () => {
         { wrapper: wrapper() }
       )
 
-      const marketingName = screen.getByRole('heading', {
-        name: 'Pro Team',
-      })
+      const marketingName = screen.getByText('Pro Team plan')
       expect(marketingName).toBeInTheDocument()
     })
 
@@ -272,7 +250,7 @@ describe('UpgradeDetails', () => {
         { wrapper: wrapper() }
       )
 
-      const price = screen.getByRole('heading', { name: /\$10\*/i })
+      const price = screen.getByText(/\$10/)
       expect(price).toBeInTheDocument()
     })
 
@@ -291,7 +269,7 @@ describe('UpgradeDetails', () => {
       )
 
       const disclaimer = screen.getByText(
-        /\$12 per user \/ month if paid monthly/i
+        /billed annually or \$12 for monthly billing/i
       )
       expect(disclaimer).toBeInTheDocument()
     })
@@ -337,7 +315,7 @@ describe('UpgradeDetails', () => {
         { wrapper: wrapper() }
       )
 
-      const link = screen.getByRole('link', { name: /Cancel plan/ })
+      const link = screen.getByRole('link', { name: /Cancel/ })
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute('href', '/plan/gh/codecov/cancel')
     })
