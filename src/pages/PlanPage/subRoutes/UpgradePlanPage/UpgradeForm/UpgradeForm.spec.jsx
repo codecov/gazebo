@@ -236,7 +236,9 @@ describe('UpgradeForm', () => {
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(optionBtn).toBeInTheDocument()
-        expect(optionBtn).toHaveClass('bg-ds-primary-base')
+        expect(optionBtn).toHaveClass(
+          'flex-1 py-1 px-2 text-sm cursor-pointer whitespace-nowrap bg-ds-gray-secondary border-ds-gray-secondary hover:bg-ds-gray-tertiary rounded-l'
+        )
       })
 
       it('renders the seat input with 2 seats', async () => {
@@ -266,7 +268,9 @@ describe('UpgradeForm', () => {
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(optionBtn).toBeInTheDocument()
-        expect(optionBtn).toHaveClass('bg-ds-primary-base')
+        expect(optionBtn).toHaveClass(
+          'flex-1 py-1 px-2 text-sm cursor-pointer whitespace-nowrap bg-ds-gray-secondary border-ds-gray-secondary hover:bg-ds-gray-tertiary rounded-l'
+        )
       })
 
       it('renders the seat input with 10 seats (existing subscription)', async () => {
@@ -334,7 +338,9 @@ describe('UpgradeForm', () => {
             name: 'Annual',
           })
           expect(annualOption).toBeInTheDocument()
-          expect(annualOption).toHaveClass('bg-ds-primary-base')
+          expect(annualOption).toHaveClass(
+            'flex-1 py-1 px-2 text-sm cursor-pointer whitespace-nowrap bg-ds-gray-secondary border-ds-gray-secondary hover:bg-ds-gray-tertiary rounded-l'
+          )
         })
       })
     })
@@ -535,7 +541,9 @@ describe('UpgradeForm', () => {
           name: 'Annual',
         })
         expect(annualOption).toBeInTheDocument()
-        expect(annualOption).toHaveClass('bg-ds-primary-base')
+        expect(annualOption).toHaveClass(
+          'flex-1 py-1 px-2 text-sm cursor-pointer whitespace-nowrap bg-ds-gray-secondary border-ds-gray-secondary hover:bg-ds-gray-tertiary rounded-l'
+        )
       })
 
       it('renders the seat input with 5 seats', async () => {
@@ -572,7 +580,9 @@ describe('UpgradeForm', () => {
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
-        expect(optionBtn).toHaveClass('bg-ds-primary-base')
+        expect(optionBtn).toHaveClass(
+          'flex-1 py-1 px-2 text-sm cursor-pointer whitespace-nowrap bg-ds-gray-secondary border-ds-gray-secondary hover:bg-ds-gray-tertiary rounded-l'
+        )
       })
 
       it('renders the seat input with 10 seats (existing subscription)', async () => {
@@ -686,7 +696,9 @@ describe('UpgradeForm', () => {
           const annualOption = await screen.findByRole('button', {
             name: 'Annual',
           })
-          expect(annualOption).toHaveClass('bg-ds-primary-base')
+          expect(annualOption).toHaveClass(
+            'flex-1 py-1 px-2 text-sm cursor-pointer whitespace-nowrap bg-ds-gray-secondary border-ds-gray-secondary hover:bg-ds-gray-tertiary rounded-l'
+          )
         })
       })
     })
