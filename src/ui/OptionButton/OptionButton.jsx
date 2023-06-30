@@ -1,7 +1,24 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 
-function OptionButton({ active, options, onChange, type, disabled }) {
+const activeClasses = {
+  default: 'bg-ds-primary-base text-white',
+  gray: 'bg-ds-gray-secondary border-ds-gray-secondary hover:bg-ds-gray-tertiary',
+}
+
+const disabledClasses = {
+  default: 'text-ds-gray-quaternary border-ds-gray-tertiary bg-ds-gray-primary',
+  gray: 'bg-white border-white',
+}
+
+function OptionButton({
+  active,
+  options,
+  onChange,
+  type,
+  disabled,
+  variant = 'default',
+}) {
   return (
     <div className="flex flex-wrap divide-x rounded border">
       {options.map((o, index) => {
@@ -10,10 +27,10 @@ function OptionButton({ active, options, onChange, type, disabled }) {
             type={type}
             disabled={disabled}
             className={cs(
-              'flex-1 py-1 px-2 text-sm cursor-pointer whitespace-nowrap disabled:text-ds-gray-quaternary disabled:border-ds-gray-tertiary disabled:bg-ds-gray-primary',
+              'flex-1 py-1 px-2 text-sm cursor-pointer whitespace-nowrap',
               {
-                'bg-ds-primary-base text-white font-semibold':
-                  active === o.text && !disabled,
+                [disabledClasses[variant]]: disabled,
+                [activeClasses[variant]]: active === o.text && !disabled,
                 'rounded-l': index === 0,
                 'rounded-r': index === options.length - 1,
               }
@@ -41,6 +58,7 @@ OptionButton.propTypes = {
   onChange: PropTypes.func.isRequired,
   type: PropTypes.oneOf(['button', 'reset', 'submit']),
   disabled: PropTypes.bool,
+  variant: PropTypes.oneOf(['default', 'gray']),
 }
 
 export default OptionButton
