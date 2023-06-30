@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import { z } from 'zod'
 
-import { isPaidPlan, isSentryPlan } from 'shared/utils/billing'
+import { isFreePlan, isPaidPlan, isSentryPlan } from 'shared/utils/billing'
 
 export const MIN_NB_SEATS = 2
 export const MIN_SENTRY_SEATS = 5
@@ -81,3 +81,13 @@ export const calculatePrice = ({
 
 export const calculateNonBundledCost = ({ baseUnitPrice }) =>
   MIN_SENTRY_SEATS * baseUnitPrice * 12 - SENTRY_PRICE * 12
+
+export function shouldRenderCancelLink(accountDetails, plan) {
+  // cant cancel a free plan
+  if (isFreePlan(plan?.value)) return false
+
+  // plan is already set for cancellation
+  if (accountDetails?.subscriptionDetail?.cancelAtPeriodEnd) return false
+
+  return true
+}
