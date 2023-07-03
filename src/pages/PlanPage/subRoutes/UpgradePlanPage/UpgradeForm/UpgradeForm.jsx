@@ -85,7 +85,6 @@ const useUpgradeForm = ({
       accountDetails,
       proPlanYear,
       isSentryUpgrade,
-      minSeats,
       sentryPlanYear,
     }),
     resolver: zodResolver(getSchema({ accountDetails, minSeats })),

@@ -7,30 +7,43 @@ export const MIN_NB_SEATS = 2
 export const MIN_SENTRY_SEATS = 5
 export const SENTRY_PRICE = 29
 
+export function extractSeats({ currentPlan, totalMembers, isSentryUpgrade }) {
+  const minPlansSeats = isSentryUpgrade ? MIN_SENTRY_SEATS : MIN_NB_SEATS
+  const freePlanMinSeats = Math.max(minPlansSeats, totalMembers || 0)
+  const currentPlanSeats = currentPlan?.quantity ?? 0
+
+  const seats = isFreePlan(currentPlan?.value)
+    ? freePlanMinSeats
+    : Math.max(currentPlanSeats, minPlansSeats)
+
+  return seats
+}
+
 export const getInitialDataForm = ({
   accountDetails,
   proPlanYear,
   sentryPlanYear,
   isSentryUpgrade,
-  minSeats,
 }) => {
   const currentPlan = accountDetails?.plan
-  const currentNbSeats = currentPlan?.quantity ?? minSeats
-
-  // get the number of seats of the current plan, but minimum x seats
-  const seats = Math.max(currentNbSeats, minSeats)
+  const plan = currentPlan?.value
 
   // if the current plan is a pro plan, we return it, otherwise select by default the first pro plan
   let newPlan = proPlanYear?.value
-  if (isSentryUpgrade && !isSentryPlan(currentPlan?.value)) {
+  if (isSentryUpgrade && !isSentryPlan(plan)) {
     newPlan = sentryPlanYear?.value
-  } else if (isPaidPlan(currentPlan?.value)) {
-    newPlan = currentPlan?.value
+  } else if (isPaidPlan(plan)) {
+    newPlan = plan
   }
 
   return {
     newPlan,
-    seats,
+    seats: extractSeats({
+      currentPlan,
+      totalMembers:
+        accountDetails?.activatedUserCount + accountDetails?.inactiveUserCount,
+      isSentryUpgrade,
+    }),
   }
 }
 
