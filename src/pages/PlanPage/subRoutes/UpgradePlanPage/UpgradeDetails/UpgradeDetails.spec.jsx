@@ -377,4 +377,39 @@ describe('UpgradeDetails', () => {
       })
     })
   })
+
+  describe('when scheduled phase is valid', () => {
+    it('renders scheduled phase', () => {
+      const plan = proPlanMonth
+      const plans = [plan]
+      const accountDetails = {
+        activatedUserCount: 5,
+        subscriptionDetail: {
+          cancelAtPeriodEnd: false,
+          scheduledPhase: {
+            phase: 'pro',
+            effectiveDate: '2021-01-01T00:00:00Z',
+            startDate: 123456789,
+          },
+        },
+      }
+
+      render(
+        <UpgradeDetails
+          accountDetails={accountDetails}
+          plan={plan}
+          plans={plans}
+          proPlanMonth={proPlanMonth}
+          proPlanYear={proPlanYear}
+          sentryPlanMonth={sentryPlanMonth}
+          sentryPlanYear={sentryPlanYear}
+          scheduledPhase={accountDetails.subscriptionDetail.scheduledPhase}
+        />,
+        { wrapper: wrapper() }
+      )
+
+      const scheduledPhase = screen.getByText('Scheduled Details')
+      expect(scheduledPhase).toBeInTheDocument()
+    })
+  })
 })
