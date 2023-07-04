@@ -3,7 +3,7 @@ import { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useRepos } from 'services/repos'
-import DateRange from 'ui/DateRangePicker'
+import DateRangePicker from 'ui/DateRangePicker'
 import MultiSelect from 'ui/MultiSelect'
 
 function formatDataForMultiselect(repos) {
@@ -11,17 +11,18 @@ function formatDataForMultiselect(repos) {
 }
 
 function DateSelector({ startDate, endDate, updateParams }) {
-  const onDateRangeChangeHandler = ([startDate, endDate]) => {
-    updateParams({ startDate, endDate })
-  }
-
   return (
     <div className="flex flex-col gap-3">
       <span className="font-semibold">Dates</span>
       <DateRangePicker
         startDate={startDate}
         endDate={endDate}
-        onChange={onDateRangeChangeHandler}
+        onChange={(args) => {
+          const startDate = args?.from ?? null
+          const endDate = args?.to ?? null
+
+          updateParams({ startDate, endDate })
+        }}
       />
     </div>
   )
@@ -99,11 +100,6 @@ function ChartSelectors({ params, updateParams, active, sortItem }) {
     setSelectedRepos([])
   }
 
-  const onSelectChangeHandler = (item) => {
-    setSelectedRepos(item)
-    updateParams({ repositories: item })
-  }
-
   const clearFiltersHandler = () => {
     updateParams({
       startDate: null,
@@ -118,15 +114,10 @@ function ChartSelectors({ params, updateParams, active, sortItem }) {
     <div className="flex flex-wrap justify-center gap-4 sm:flex-nowrap sm:justify-start">
       <div className="flex flex-col gap-3">
         <span className="font-semibold">Dates</span>
-        <DateRange
+        <DateSelector
           startDate={startDate}
           endDate={endDate}
-          onChange={(args) => {
-            const startDate = args?.from ?? null
-            const endDate = args?.to ?? null
-
-            updateParams({ startDate, endDate })
-          }}
+          updateParams={updateParams}
         />
       </div>
       <div className="flex w-52 flex-col gap-3">
