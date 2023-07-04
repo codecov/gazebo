@@ -16,7 +16,7 @@ function SentryPlanDetails({
   cancelAtPeriodEnd,
 }) {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 border p-4">
       <img src={sentryCodecov} alt="sentry codecov logos" width="110px" />
       <h3 className="text-2xl font-semibold text-ds-pink-quinary">
         {sentryPlanYear?.marketingName}
