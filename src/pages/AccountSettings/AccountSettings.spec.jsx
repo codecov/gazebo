@@ -1,175 +1,228 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { useAccountDetails } from 'services/account'
-import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
-
 import AccountSettings from './AccountSettings'
 
 jest.mock('config')
-jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
-jest.mock('services/user')
-jest.mock('services/account')
-jest.mock('shared/featureFlags')
 
-jest.mock('./tabs/Admin', () => () => 'AdminTab')
-jest.mock('./tabs/Access', () => () => 'AccessTab')
-jest.mock('../NotFound', () => () => 'NotFound')
-jest.mock('./tabs/Profile', () => () => 'Profile')
-jest.mock('./tabs/YAML', () => () => 'YAMLTab')
-jest.mock('./tabs/OrgUploadToken', () => () => 'org upload token tab')
+jest.mock('./shared/Header', () => () => 'Header')
 jest.mock('./AccountSettingsSideMenu', () => () => 'AccountSettingsSideMenu')
 
+jest.mock('./tabs/Access', () => () => 'Access')
+jest.mock('./tabs/Admin', () => () => 'Admin')
+jest.mock('../NotFound', () => () => 'NotFound')
+jest.mock('./tabs/OrgUploadToken', () => () => 'OrgUploadToken')
+jest.mock('./tabs/Profile', () => () => 'Profile')
+jest.mock('./tabs/YAML', () => () => 'YAML')
+
+const server = setupServer()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { suspense: true, retry: false } },
+})
+
+const wrapper =
+  (
+    {
+      initialEntries = '/account/gh/codecov',
+      path = '/account/:provider/:owner',
+    } = {
+      initialEntries: '/account/gh/codecov',
+      path: '/account/:provider/:owner',
+    }
+  ) =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path={path}>
+            <Suspense fallback={null}>{children}</Suspense>
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
+
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: 'warn' })
+})
+
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
+
 describe('AccountSettings', () => {
-  function setup({
-    url = [],
-    isAdmin = false,
-    isSelfHosted = false,
-    planValue = 'users-free',
-  }) {
+  function setup(
+    {
+      isSelfHosted = false,
+      owner = 'codecov',
+      username = 'codecov',
+      isAdmin = false,
+    } = {
+      isSelfHosted: false,
+      owner: 'codecov',
+      username: 'codecov',
+      isAdmin: false,
+    }
+  ) {
     config.IS_SELF_HOSTED = isSelfHosted
-    useUser.mockReturnValue({
-      data: {
-        user: {
-          username: 'codecov',
-        },
-      },
-    })
 
-    useIsCurrentUserAnAdmin.mockReturnValue(isAdmin)
-    useAccountDetails.mockReturnValue({
-      data: { plan: { value: planValue } },
-    })
-
-    render(
-      <MemoryRouter initialEntries={[url]}>
-        <Route path="/account/:provider/:owner/">
-          <AccountSettings />
-        </Route>
-      </MemoryRouter>
+    server.use(
+      graphql.query('CurrentUser', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            me: { user: { username } },
+          })
+        )
+      }),
+      graphql.query('DetailOwner', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({ owner: { username: owner, isAdmin } }))
+      )
     )
   }
 
-  describe('when not running in self hosted mode', () => {
-    describe('when attempting to access admin tab', () => {
-      describe('when user is an admin', () => {
-        beforeEach(() => {
-          setup({
-            url: '/account/gh/codecov',
-            isAdmin: true,
+  describe('on root route', () => {
+    describe('is self hosted', () => {
+      describe('user is viewing personal settings', () => {
+        it('displays profile tab', async () => {
+          setup({ isSelfHosted: true })
+
+          render(<AccountSettings />, {
+            wrapper: wrapper(),
           })
-        })
 
-        it('renders the admin tab', async () => {
-          const tab = await screen.findByText('AdminTab')
-
-          expect(tab).toBeInTheDocument()
+          const profileTab = await screen.findByText('Profile')
+          expect(profileTab).toBeInTheDocument()
         })
       })
 
-      describe('when user is not an admin', () => {
-        beforeEach(() => {
-          setup({
-            url: '/account/gh/codecov',
-            isAdmin: false,
+      describe('user is not viewing personal settings', () => {
+        it('redirects the user to the yaml tab', async () => {
+          setup({ isSelfHosted: true, username: 'cool-user' })
+
+          render(<AccountSettings />, {
+            wrapper: wrapper(),
           })
-        })
 
-        it('redirects to yaml tab', async () => {
-          const tab = await screen.findByText('YAMLTab')
-
-          expect(tab).toBeInTheDocument()
+          const yamlTab = await screen.findByText('YAML')
+          expect(yamlTab).toBeInTheDocument()
         })
       })
     })
 
-    describe('when attempting to access yaml tab', () => {
-      beforeEach(() => {
-        setup({
-          url: '/account/gh/codecov/yaml',
+    describe('is not self hosted', () => {
+      describe('user is an admin', () => {
+        it('displays the admin tab', async () => {
+          setup({ isAdmin: true, username: 'cool-user' })
+
+          render(<AccountSettings />, {
+            wrapper: wrapper(),
+          })
+
+          const adminTab = await screen.findByText('Admin')
+          expect(adminTab).toBeInTheDocument()
         })
       })
 
-      it('renders the yaml tab', async () => {
-        const tab = await screen.findByText('YAMLTab')
+      describe('user is not an admin', () => {
+        it('redirects user to yaml tab', async () => {
+          setup({ isAdmin: false, username: 'cool-user' })
 
-        expect(tab).toBeInTheDocument()
+          render(<AccountSettings />, {
+            wrapper: wrapper(),
+          })
+
+          const yamlTab = await screen.findByText('YAML')
+          expect(yamlTab).toBeInTheDocument()
+        })
       })
     })
 
-    describe('when attempting to access access tab', () => {
-      beforeEach(() => {
-        setup({
-          url: '/account/gh/codecov/access',
-        })
+    it('redirects the user to the yaml tab', async () => {
+      setup()
+
+      render(<AccountSettings />, {
+        wrapper: wrapper(),
       })
 
+      const yamlTab = await screen.findByText('YAML')
+      expect(yamlTab).toBeInTheDocument()
+    })
+  })
+
+  describe('on the yaml route', () => {
+    it('renders the yaml tab', async () => {
+      setup()
+
+      render(<AccountSettings />, {
+        wrapper: wrapper({
+          initialEntries: '/account/gh/codecov/yaml',
+          path: '/account/:provider/:owner/yaml',
+        }),
+      })
+
+      const yamlTab = await screen.findByText('YAML')
+      expect(yamlTab).toBeInTheDocument()
+    })
+  })
+
+  describe('on the access route', () => {
+    describe('is self hosted', () => {
+      it('renders not found tab', async () => {
+        setup({ isSelfHosted: true })
+
+        render(<AccountSettings />, {
+          wrapper: wrapper({
+            initialEntries: '/account/gh/codecov/access',
+            path: '/account/:provider/:owner/access',
+          }),
+        })
+
+        const notFound = await screen.findByText('NotFound')
+        expect(notFound).toBeInTheDocument()
+      })
+    })
+
+    describe('is not self hosted', () => {
       it('renders access tab', async () => {
-        const tab = await screen.findByText('AccessTab')
+        setup()
 
-        expect(tab).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('when running in self hosted mode', () => {
-    describe('when attempted to access the profile tab', () => {
-      beforeEach(() => {
-        setup({
-          url: '/account/gh/codecov',
-          isSelfHosted: true,
+        render(<AccountSettings />, {
+          wrapper: wrapper({
+            initialEntries: '/account/gh/codecov/access',
+            path: '/account/:provider/:owner/access',
+          }),
         })
-      })
 
-      it('renders profile tab', async () => {
-        const tab = await screen.findByText('Profile')
-
-        expect(tab).toBeInTheDocument()
-      })
-    })
-
-    describe('when navigating to the yaml tab', () => {
-      beforeEach(() => {
-        setup({
-          url: '/account/gh/codecov/yaml',
-          isSelfHosted: true,
-        })
-      })
-
-      it('renders the yaml tab', async () => {
-        const tab = await screen.findByText('YAMLTab')
-
-        expect(tab).toBeInTheDocument()
+        const accessTab = await screen.findByText('Access')
+        expect(accessTab).toBeInTheDocument()
       })
     })
   })
-  describe('when going to an unknown page', () => {
-    beforeEach(() => {
-      setup({
-        url: '/account/gh/codecov/ahhhhhhhhh',
+
+  describe('on org upload token route', () => {
+    it('renders org upload token tab', async () => {
+      setup()
+
+      render(<AccountSettings />, {
+        wrapper: wrapper({
+          initialEntries: '/account/gh/codecov/org-upload-token',
+          path: '/account/:provider/:owner/org-upload-token',
+        }),
       })
-    })
-    it('renders not found tab', async () => {
-      const tab = await screen.findByText('NotFound')
 
-      expect(tab).toBeInTheDocument()
-    })
-  })
-
-  describe('when navigating to the org upload token tab', () => {
-    beforeEach(() => {
-      setup({
-        url: '/account/gh/codecov/org-upload-token',
-        planValue: 'users-enterprisem',
-      })
-    })
-
-    it('renders the org upload token tab', async () => {
-      const tab = await screen.findByText('org upload token tab')
-
-      expect(tab).toBeInTheDocument()
+      const orgUploadTab = await screen.findByText('OrgUploadToken')
+      expect(orgUploadTab).toBeInTheDocument()
     })
   })
 })
