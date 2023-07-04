@@ -246,17 +246,22 @@ describe('extractSeats', () => {
   describe('user on free plan and can upgrade to sentry plan', () => {
     it('returns min seats when members are less than min', () => {
       const seats = extractSeats({
-        currentPlan: { value: Plans.USERS_BASIC, quantity: 1 },
+        value: Plans.USERS_BASIC,
+        quantity: 1,
         isSentryUpgrade: true,
+        activatedUserCount: 0,
+        inactivatedUserCount: 0,
       })
       expect(seats).toEqual(5)
     })
 
     it('returns members number as seats when members are greater than min', () => {
       const seats = extractSeats({
-        currentPlan: { value: Plans.USERS_BASIC, quantity: 1 },
-        totalMembers: 12,
+        value: Plans.USERS_BASIC,
+        quantity: 1,
         isSentryUpgrade: true,
+        activatedUserCount: 10,
+        inactiveUserCount: 2,
       })
       expect(seats).toEqual(12)
     })
@@ -265,16 +270,21 @@ describe('extractSeats', () => {
   describe('user on free plan and can not upgrade to sentry plan', () => {
     it('returns min seats when members are less than min', () => {
       const seats = extractSeats({
-        currentPlan: { value: Plans.USERS_BASIC, quantity: 1 },
+        value: Plans.USERS_BASIC,
+        quantity: 1,
         isSentryUpgrade: false,
+        activatedUserCount: 0,
+        inactivatedUserCount: 0,
       })
       expect(seats).toEqual(2)
     })
 
     it('returns members number as seats when members are greater than min', () => {
       const seats = extractSeats({
-        currentPlan: { value: Plans.USERS_BASIC, quantity: 1 },
-        totalMembers: 12,
+        value: Plans.USERS_BASIC,
+        quantity: 1,
+        activatedUserCount: 10,
+        inactiveUserCount: 2,
         isSentryUpgrade: false,
       })
       expect(seats).toEqual(12)
@@ -284,8 +294,10 @@ describe('extractSeats', () => {
   describe('user on paid plan', () => {
     it('returns members number as seats', () => {
       const seats = extractSeats({
-        currentPlan: { value: Plans.USERS_PR_INAPPM, quantity: 8 },
-        totalMembers: 12,
+        value: Plans.USERS_PR_INAPPM,
+        quantity: 8,
+        activatedUserCount: 12,
+        inactiveUserCount: 0,
         isSentryUpgrade: false,
       })
       expect(seats).toEqual(8)
@@ -295,8 +307,10 @@ describe('extractSeats', () => {
   describe('user on sentry plan', () => {
     it('returns members number as seats', () => {
       const seats = extractSeats({
-        currentPlan: { value: Plans.USERS_SENTRYM, quantity: 8 },
-        totalMembers: 12,
+        value: Plans.USERS_SENTRYM,
+        quantity: 8,
+        activatedUserCount: 12,
+        inactiveUserCount: 0,
         isSentryUpgrade: false,
       })
       expect(seats).toEqual(8)
@@ -306,8 +320,10 @@ describe('extractSeats', () => {
   describe('user on paid plan and can upgrade to sentry plan', () => {
     it('returns members number as seats if greater than min', () => {
       const seats = extractSeats({
-        currentPlan: { value: Plans.USERS_PR_INAPPM, quantity: 8 },
-        totalMembers: 12,
+        value: Plans.USERS_PR_INAPPM,
+        quantity: 8,
+        activatedUserCount: 12,
+        inactiveUserCount: 0,
         isSentryUpgrade: true,
       })
       expect(seats).toEqual(8)
@@ -315,7 +331,8 @@ describe('extractSeats', () => {
 
     it('returns min seats if less than min', () => {
       const seats = extractSeats({
-        currentPlan: { value: Plans.USERS_PR_INAPPM, quantity: 2 },
+        value: Plans.USERS_PR_INAPPM,
+        quantity: 2,
         isSentryUpgrade: true,
       })
       expect(seats).toEqual(5)

@@ -7,16 +7,19 @@ export const MIN_NB_SEATS = 2
 export const MIN_SENTRY_SEATS = 5
 export const SENTRY_PRICE = 29
 
-export function extractSeats({ currentPlan, totalMembers, isSentryUpgrade }) {
+export function extractSeats({
+  quantity,
+  value,
+  activatedUserCount,
+  inactiveUserCount,
+  isSentryUpgrade,
+}) {
+  const totalMembers = (inactiveUserCount ?? 0) + (activatedUserCount ?? 0)
   const minPlansSeats = isSentryUpgrade ? MIN_SENTRY_SEATS : MIN_NB_SEATS
-  const freePlanMinSeats = Math.max(minPlansSeats, totalMembers || 0)
-  const currentPlanSeats = currentPlan?.quantity ?? 0
+  const freePlanSeats = Math.max(minPlansSeats, totalMembers)
+  const paidPlansSeats = Math.max(minPlansSeats, quantity)
 
-  const seats = isFreePlan(currentPlan?.value)
-    ? freePlanMinSeats
-    : Math.max(currentPlanSeats, minPlansSeats)
-
-  return seats
+  return isFreePlan(value) ? freePlanSeats : paidPlansSeats
 }
 
 export const getInitialDataForm = ({
@@ -39,9 +42,10 @@ export const getInitialDataForm = ({
   return {
     newPlan,
     seats: extractSeats({
-      currentPlan,
-      totalMembers:
-        accountDetails?.activatedUserCount + accountDetails?.inactiveUserCount,
+      quantity: currentPlan?.quantity ?? 0,
+      value: plan,
+      activatedUserCount: accountDetails?.activatedUserCount,
+      inactiveUserCount: accountDetails?.inactiveUserCount,
       isSentryUpgrade,
     }),
   }
