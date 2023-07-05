@@ -2,13 +2,9 @@ import cs from 'classnames'
 import PropTypes from 'prop-types'
 
 const activeClasses = {
-  default: 'bg-ds-primary-base text-white',
-  gray: 'bg-ds-gray-secondary border-ds-gray-secondary hover:bg-ds-gray-tertiary',
-}
-
-const disabledClasses = {
-  default: 'text-ds-gray-quaternary border-ds-gray-tertiary bg-ds-gray-primary',
-  gray: 'bg-white border-white',
+  default:
+    'bg-ds-primary-base text-white disabled:text-ds-gray-quaternary disabled:border-ds-gray-tertiary disabled:bg-ds-gray-primary',
+  gray: 'bg-ds-gray-secondary border-ds-gray-secondary hover:bg-ds-gray-tertiary disabled:border-white disabled:bg-white',
 }
 
 function OptionButton({
@@ -29,7 +25,6 @@ function OptionButton({
             className={cs(
               'flex-1 py-1 px-2 text-sm cursor-pointer whitespace-nowrap',
               {
-                [disabledClasses[variant]]: disabled,
                 [activeClasses[variant]]: active === o.text && !disabled,
                 'rounded-l': index === 0,
                 'rounded-r': index === options.length - 1,

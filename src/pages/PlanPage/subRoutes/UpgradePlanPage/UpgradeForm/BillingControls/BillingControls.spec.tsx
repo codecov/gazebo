@@ -125,17 +125,13 @@ describe('BillingControls', () => {
 
         const annualBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(annualBtn).toBeInTheDocument()
-        expect(annualBtn).toHaveClass(
-          'flex-1 py-1 px-2 text-sm cursor-pointer whitespace-nowrap bg-ds-gray-secondary border-ds-gray-secondary hover:bg-ds-gray-tertiary rounded-l'
-        )
+        expect(annualBtn).toHaveClass('bg-ds-gray-secondary')
 
         const monthlyBtn = await screen.findByRole('button', {
           name: 'Monthly',
         })
         expect(monthlyBtn).toBeInTheDocument()
-        expect(monthlyBtn).not.toHaveClass(
-          'flex-1 py-1 px-2 text-sm cursor-pointer whitespace-nowrap bg-ds-gray-secondary border-ds-gray-secondary hover:bg-ds-gray-tertiary rounded-r'
-        )
+        expect(monthlyBtn).not.toHaveClass('bg-ds-gray-secondary')
       })
 
       it('renders correct pricing scheme', async () => {
@@ -204,17 +200,13 @@ describe('BillingControls', () => {
 
         const annualBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(annualBtn).toBeInTheDocument()
-        expect(annualBtn).not.toHaveClass(
-          'flex-1 py-1 px-2 text-sm cursor-pointer whitespace-nowrap bg-ds-gray-secondary border-ds-gray-secondary hover:bg-ds-gray-tertiary rounded-r'
-        )
+        expect(annualBtn).not.toHaveClass('bg-ds-gray-secondary')
 
         const monthlyBtn = await screen.findByRole('button', {
           name: 'Monthly',
         })
         expect(monthlyBtn).toBeInTheDocument()
-        expect(monthlyBtn).toHaveClass(
-          'flex-1 py-1 px-2 text-sm cursor-pointer whitespace-nowrap bg-ds-gray-secondary border-ds-gray-secondary hover:bg-ds-gray-tertiary rounded-r'
-        )
+        expect(monthlyBtn).toHaveClass('bg-ds-gray-secondary')
       })
 
       it('renders correct pricing scheme', async () => {
@@ -285,17 +277,13 @@ describe('BillingControls', () => {
 
         const annualBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(annualBtn).toBeInTheDocument()
-        expect(annualBtn).toHaveClass(
-          'flex-1 py-1 px-2 text-sm cursor-pointer whitespace-nowrap bg-ds-gray-secondary border-ds-gray-secondary hover:bg-ds-gray-tertiary rounded-l'
-        )
+        expect(annualBtn).toHaveClass('bg-ds-gray-secondary')
 
         const monthlyBtn = await screen.findByRole('button', {
           name: 'Monthly',
         })
         expect(monthlyBtn).toBeInTheDocument()
-        expect(monthlyBtn).not.toHaveClass(
-          'flex-1 py-1 px-2 text-sm cursor-pointer whitespace-nowrap bg-ds-gray-secondary border-ds-gray-secondary hover:bg-ds-gray-tertiary rounded-r'
-        )
+        expect(monthlyBtn).not.toHaveClass('bg-ds-gray-secondary')
       })
 
       it('renders correct pricing scheme', async () => {
@@ -364,17 +352,13 @@ describe('BillingControls', () => {
 
         const annualBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(annualBtn).toBeInTheDocument()
-        expect(annualBtn).not.toHaveClass(
-          'flex-1 py-1 px-2 text-sm cursor-pointer whitespace-nowrap bg-ds-gray-secondary border-ds-gray-secondary hover:bg-ds-gray-tertiary rounded-r'
-        )
+        expect(annualBtn).not.toHaveClass('bg-ds-gray-secondary')
 
         const monthlyBtn = await screen.findByRole('button', {
           name: 'Monthly',
         })
         expect(monthlyBtn).toBeInTheDocument()
-        expect(monthlyBtn).toHaveClass(
-          'flex-1 py-1 px-2 text-sm cursor-pointer whitespace-nowrap bg-ds-gray-secondary border-ds-gray-secondary hover:bg-ds-gray-tertiary rounded-r'
-        )
+        expect(monthlyBtn).toHaveClass('bg-ds-gray-secondary')
       })
 
       it('renders correct pricing scheme', async () => {

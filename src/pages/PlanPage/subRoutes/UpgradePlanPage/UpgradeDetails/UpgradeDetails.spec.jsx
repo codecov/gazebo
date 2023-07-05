@@ -121,7 +121,9 @@ describe('UpgradeDetails', () => {
         { wrapper: wrapper() }
       )
 
-      const marketingName = screen.getByText('Sentry Pro Team')
+      const marketingName = screen.getByRole('heading', {
+        name: /Sentry Pro Team/,
+      })
       expect(marketingName).toBeInTheDocument()
     })
 
@@ -232,7 +234,9 @@ describe('UpgradeDetails', () => {
         { wrapper: wrapper() }
       )
 
-      const marketingName = screen.getByText('Pro Team plan')
+      const marketingName = screen.getByRole('heading', {
+        name: /Pro Team plan/,
+      })
       expect(marketingName).toBeInTheDocument()
     })
 
