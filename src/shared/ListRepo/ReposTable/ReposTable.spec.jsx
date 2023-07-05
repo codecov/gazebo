@@ -42,10 +42,8 @@ const wrapper =
 
 describe('ReposTable', () => {
   function setup({
-    propObj = {},
     edges = [],
     isCurrentUserPartOfOrg = true,
-    repoDisplayPassed = '',
     privateAccess = true,
   }) {
     server.use(
@@ -370,6 +368,24 @@ describe('ReposTable', () => {
         })
         expect(repo3).toHaveAttribute('href', '/gl/owner1/Repo name 3/new')
       })
+
+      it('renders set up repo copy', async () => {
+        render(
+          <ReposTable
+            searchValue=""
+            sortItem={orderingOptions[0]}
+            owner="owner1"
+          />,
+          {
+            wrapper: wrapper(repoDisplayOptions.INACTIVE.text),
+          }
+        )
+
+        const setupRepo = await screen.findAllByRole('link', {
+          name: /Setup repo chevron-right.svg/,
+        })
+        expect(setupRepo.length).toBe(3)
+      })
     })
 
     describe('user does not belongs to org', () => {
@@ -440,8 +456,8 @@ describe('ReposTable', () => {
           wrapper: wrapper(repoDisplayOptions.INACTIVE.text),
         })
 
-        const notEnabled = await screen.findAllByText('Not yet enabled')
-        expect(notEnabled.length).toBe(3)
+        const inactiveCopy = await screen.findAllByText('Inactive')
+        expect(inactiveCopy.length).toBe(3)
 
         const repo1 = screen.queryByText('setup repo')
         expect(repo1).not.toBeInTheDocument()
@@ -637,13 +653,13 @@ describe('ReposTable', () => {
       expect(buttons.length).toBe(3)
     })
 
-    it('renders not yet set up for inactive repos', async () => {
+    it('renders inactive copy for inactive repos', async () => {
       render(<ReposTable searchValue="" sortItem={orderingOptions[0]} />, {
         wrapper: wrapper(repoDisplayOptions.ALL.text),
       })
 
-      expect(await screen.findByText(/Not yet enabled/)).toBeTruthy()
-      const label = screen.getByText(/Not yet enabled/)
+      expect(await screen.findByText(/Inactive/)).toBeTruthy()
+      const label = screen.getByText(/Inactive/)
       expect(label).toBeInTheDocument()
     })
 

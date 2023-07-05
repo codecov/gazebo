@@ -1,26 +1,24 @@
 import PropTypes from 'prop-types'
 
 import AppLink from 'shared/AppLink'
+import Icon from 'ui/Icon'
 
 function InactiveRepo({ owner, repoName, isCurrentUserPartOfOrg, isActive }) {
   if (isActive) return <>Deactivated</>
+  if (!isCurrentUserPartOfOrg) return <>Inactive</>
 
   return (
-    <div className="whitespace-nowrap">
-      Not yet enabled{' '}
-      {isCurrentUserPartOfOrg && (
-        <AppLink
-          className="font-semibold text-ds-blue"
-          pageName="new"
-          options={{
-            owner,
-            repo: repoName,
-          }}
-        >
-          setup repo
-        </AppLink>
-      )}
-    </div>
+    <AppLink
+      className="flex items-center font-semibold text-ds-blue"
+      pageName="new"
+      options={{
+        owner,
+        repo: repoName,
+      }}
+    >
+      Setup repo
+      <Icon name="chevron-right" variant="solid" size="sm" />
+    </AppLink>
   )
 }
 
