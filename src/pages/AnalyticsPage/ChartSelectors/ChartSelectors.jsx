@@ -11,17 +11,18 @@ function formatDataForMultiselect(repos) {
 }
 
 function DateSelector({ startDate, endDate, updateParams }) {
-  const onDateRangeChangeHandler = ([startDate, endDate]) => {
-    updateParams({ startDate, endDate })
-  }
-
   return (
     <div className="flex flex-col gap-3">
       <span className="font-semibold">Dates</span>
       <DateRangePicker
         startDate={startDate}
         endDate={endDate}
-        onChange={onDateRangeChangeHandler}
+        onChange={(args) => {
+          const startDate = args?.from ?? null
+          const endDate = args?.to ?? null
+
+          updateParams({ startDate, endDate })
+        }}
       />
     </div>
   )
