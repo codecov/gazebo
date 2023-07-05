@@ -49,7 +49,6 @@ function AnalyticsPage() {
       <ChartSelectors
         params={params}
         updateParams={updateParams}
-        owner={owner}
         active={true}
         sortItem={sortItem}
       />
