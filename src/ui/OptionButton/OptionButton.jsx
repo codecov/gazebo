@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 const activeClasses = {
   default: 'bg-ds-primary-base text-white',
-  gray: 'bg-ds-gray-secondary border-ds-gray-secondary hover:bg-ds-gray-tertiary',
+  gray: 'bg-ds-gray-secondary border-ds-gray-secondary hover:bg-ds-gray-tertiary font-semibold',
 }
 
 const disabledClasses = {
