@@ -40,9 +40,11 @@ export default function DateRangePicker({
             )}
           </button>
         </Popover.Trigger>
-        <Popover.Anchor />
         <Popover.Portal>
-          <Popover.Content className="w-auto rounded-md border border-ds-gray-tertiary bg-white px-1 py-0">
+          <Popover.Content
+            align="start"
+            className="w-auto rounded-md border border-ds-gray-tertiary bg-white px-1 py-0"
+          >
             <div className="flex flex-row-reverse">
               <Popover.Close className="p-1">
                 <Icon name="x" size="sm" />
