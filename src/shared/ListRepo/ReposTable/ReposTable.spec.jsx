@@ -385,6 +385,9 @@ describe('ReposTable', () => {
           name: /Setup repo chevron-right.svg/,
         })
         expect(setupRepo.length).toBe(3)
+
+        const setupRepo1 = setupRepo[0]
+        expect(setupRepo1).toHaveAttribute('href', '/gl/owner1/Repo name 1/new')
       })
     })
 
