@@ -201,8 +201,8 @@ function UpgradeForm({
       className="flex flex-col gap-4 border p-4 text-ds-gray-nonary md:w-2/3"
       onSubmit={handleSubmit(upgradePlan)}
     >
-      <div className="flex flex-col">
-        <h3 className="text-base font-semibold">Organization</h3>
+      <div className="flex flex-col gap-1">
+        <h3 className="font-semibold">Organization</h3>
         <span>{owner}</span>
       </div>
       <PlanDetails
