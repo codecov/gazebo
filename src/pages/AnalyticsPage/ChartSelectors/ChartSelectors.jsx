@@ -112,25 +112,19 @@ function ChartSelectors({ params, updateParams, active, sortItem }) {
 
   return (
     <div className="flex flex-wrap justify-center gap-4 sm:flex-nowrap sm:justify-start">
-      <div className="flex flex-col gap-3">
-        <span className="font-semibold">Dates</span>
-        <DateSelector
-          startDate={startDate}
-          endDate={endDate}
-          updateParams={updateParams}
-        />
-      </div>
-      <div className="flex w-52 flex-col gap-3">
-        <span className="font-semibold">Repositories</span>
-        <RepoSelector
-          active={active}
-          updateParams={updateParams}
-          sortItem={sortItem}
-          selectedRepos={selectedRepos}
-          setSelectedRepos={setSelectedRepos}
-          resetRef={resetRef}
-        />
-      </div>
+      <DateSelector
+        startDate={startDate}
+        endDate={endDate}
+        updateParams={updateParams}
+      />
+      <RepoSelector
+        active={active}
+        updateParams={updateParams}
+        sortItem={sortItem}
+        selectedRepos={selectedRepos}
+        setSelectedRepos={setSelectedRepos}
+        resetRef={resetRef}
+      />
       <button
         className="mt-7 text-ds-blue-darker"
         onClick={clearFiltersHandler}
