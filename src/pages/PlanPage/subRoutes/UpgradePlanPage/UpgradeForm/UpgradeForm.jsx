@@ -89,7 +89,7 @@ const useUpgradeForm = ({
       sentryPlanYear,
     }),
     resolver: zodResolver(getSchema({ accountDetails, minSeats })),
-    mode: 'onChange',
+    mode: 'onBlur',
   })
 
   const perYearPrice = calculatePrice({
