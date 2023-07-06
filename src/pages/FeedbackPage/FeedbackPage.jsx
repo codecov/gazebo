@@ -1,11 +1,13 @@
 import { useParams } from 'react-router-dom'
 
+import config from 'config'
+
 import ErrorBoundary from 'layouts/shared/ErrorBoundary'
 import { useUser } from 'services/user'
 
 import CannyWidget from './Canny/CannyWidget'
 
-const BOARD_TOKEN = '0acac6b2-1912-bfa8-cc54-0dac794f7375'
+const BOARD_TOKEN = config.CANNY_BOARD_TOKEN
 
 function FeedbackPage() {
   const { data: user } = useUser()
