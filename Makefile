@@ -17,7 +17,7 @@ build.local:
 	docker build -f docker/Dockerfile . -t ${IMAGE}:latest --build-arg REACT_APP_STAGE=development --build-arg REACT_APP_CODECOV_VERSION=${release_version} --build-arg REACT_APP_ENV_ARG=development
 
 build.local.enterprise:
-	docker build -f docker/Dockerfile . -t ${ENTERPRISE_IMAGE}:${release_version}-latest -t  \
+	docker build -f docker/Dockerfile . -t ${ENTERPRISE_IMAGE}:${release_version}-latest \
 	--build-arg REACT_APP_STAGE=development \
 	--build-arg REACT_APP_ENV_ARG=enterprise \
 	--build-arg REACT_APP_CODECOV_VERSION=${release_version}
