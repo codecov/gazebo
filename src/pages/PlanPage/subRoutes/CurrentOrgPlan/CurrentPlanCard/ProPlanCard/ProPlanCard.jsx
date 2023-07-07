@@ -2,10 +2,10 @@ import PropType from 'prop-types'
 
 import { planPropType } from 'services/account'
 import BenefitList from 'shared/plan/BenefitList'
+import ScheduledPlanDetails from 'shared/plan/ScheduledPlanDetails'
 
 import ActionsBilling from '../shared/ActionsBilling/ActionsBilling'
 import PlanPricing from '../shared/PlanPricing'
-import ScheduledPlanDetails from '../shared/ScheduledPlanDetails'
 
 function ProPlanCard({ plan, scheduledPhase }) {
   const seats = plan?.quantity
