@@ -23,7 +23,7 @@ build.local.enterprise:
 	--build-arg REACT_APP_CODECOV_VERSION=${release_version}
 
 build:
-	docker build -f docker/Dockerfile . -t ${IMAGE}:${ENV}-${release_version}-${sha} -t ${image}:${ENV}-${release_version}-latest \
+	docker build -f docker/Dockerfile . -t ${IMAGE}:${ENV}-${release_version}-${sha} -t ${IMAGE}:${ENV}-${release_version}-latest \
 	--build-arg REACT_APP_STAGE=${ENV} \
 	--build-arg REACT_APP_CODECOV_VERSION=${release_version} \
 	--build-arg REACT_APP_ENV_ARG=${ENV} \
@@ -68,7 +68,7 @@ pull.devops:
 
 dive:
 	$(MAKE) pull.devops
-	docker run -e CI=true  -v /var/run/docker.sock:/var/run/docker.sock ${DEVOPS_IMAGE} dive ${image}:${ENV}-${release_version}-${sha} --lowestEfficiency=0.97 --highestUserWastedPercent=0.06
+	docker run -e CI=true  -v /var/run/docker.sock:/var/run/docker.sock ${DEVOPS_IMAGE} dive ${IMAGE}:${ENV}-${release_version}-${sha} --lowestEfficiency=0.97 --highestUserWastedPercent=0.06
 
 deep-dive:
 	$(MAKE) pull.devops
