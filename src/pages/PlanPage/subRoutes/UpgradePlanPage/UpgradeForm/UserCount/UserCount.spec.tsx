@@ -19,9 +19,7 @@ describe('UserCount', () => {
         />
       )
 
-      const message = screen.getByText(
-        /Currently 10 users activated out of 20 users./i
-      )
+      const message = screen.getByText(/Your organization has 20 members./)
       expect(message).toBeInTheDocument()
     })
   })

@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { subDays } from 'date-fns'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -7,6 +7,18 @@ import useIntersection from 'react-use/lib/useIntersection'
 import { useRepos } from 'services/repos'
 
 import ChartSelectors from './ChartSelectors'
+;(() => {
+  return (global.ResizeObserver = class ResizeObserver {
+    constructor(cb) {
+      this.cb = cb
+    }
+    observe() {
+      this.cb([{ borderBoxSize: { inlineSize: 0, blockSize: 0 } }])
+    }
+    unobserve() {}
+    disconnect() {}
+  })
+})()
 
 jest.mock('services/repos')
 jest.mock('react-use/lib/useIntersection')
@@ -70,7 +82,6 @@ describe('ChartSelectors', () => {
     it('renders date picker', async () => {
       render(
         <ChartSelectors
-          owner="bob"
           active={true}
           sortItem={{
             ordering: 'NAME',
@@ -82,14 +93,13 @@ describe('ChartSelectors', () => {
         { wrapper }
       )
 
-      const datePicker = screen.getByPlaceholderText('Start Date')
+      const datePicker = screen.getByText('Pick a date')
       expect(datePicker).toBeInTheDocument()
     })
 
     it('renders multiselect', async () => {
       render(
         <ChartSelectors
-          owner="bob"
           active={true}
           sortItem={{
             ordering: 'NAME',
@@ -108,7 +118,6 @@ describe('ChartSelectors', () => {
     it('renders clear filters', async () => {
       render(
         <ChartSelectors
-          owner="bob"
           active={true}
           sortItem={{
             ordering: 'NAME',
@@ -126,40 +135,11 @@ describe('ChartSelectors', () => {
   })
 
   describe('interacting with the date picker', () => {
-    it('updates the value', async () => {
-      const { user } = setup()
-      render(
-        <ChartSelectors
-          owner="bob"
-          active={true}
-          sortItem={{
-            ordering: 'NAME',
-            direction: 'ASC',
-          }}
-          params={{ search: 'Repo name 1', repositories: [] }}
-          updateParams={jest.fn()}
-        />,
-        { wrapper }
-      )
-
-      let datePicker = screen.getByPlaceholderText('Start Date')
-      await user.click(datePicker)
-
-      const selectedDate = screen.getByRole('option', {
-        name: 'Choose Wednesday, March 23rd, 2022',
-      })
-      await user.click(selectedDate)
-
-      datePicker = screen.getByPlaceholderText('Start Date')
-      expect(datePicker.value).toBe('03/23/2022 - ')
-    })
-
     it('updates the location params', async () => {
       const { user } = setup()
       const updateParams = jest.fn()
       render(
         <ChartSelectors
-          owner="bob"
           active={true}
           sortItem={{
             ordering: 'NAME',
@@ -171,17 +151,60 @@ describe('ChartSelectors', () => {
         { wrapper }
       )
 
-      let datePicker = screen.getByPlaceholderText('Start Date')
-      await user.click(datePicker)
-
-      const selectedDate = screen.getByRole('option', {
-        name: 'Choose Wednesday, March 23rd, 2022',
+      let datePicker = screen.getByText('Pick a date')
+      await act(async () => {
+        await user.click(datePicker)
       })
-      await user.click(selectedDate)
 
-      expect(updateParams).toBeCalledWith({
-        endDate: null,
-        startDate: new Date('2022-03-23T00:00:00.000Z'),
+      const gridCells = screen.getAllByRole('gridcell', { name: '31' })
+      const date = within(gridCells[0]).getByText('31')
+      await act(async () => {
+        await user.click(date)
+      })
+
+      await waitFor(() =>
+        expect(updateParams).toBeCalledWith({
+          endDate: null,
+          startDate: new Date('2022-03-31T00:00:00.000Z'),
+        })
+      )
+    })
+
+    describe('start date and end date set and user clicks on the date', () => {
+      it('clears the params', async () => {
+        const { user } = setup()
+        const updateParams = jest.fn()
+        const testDate = new Date('2022-03-31T00:00:00.000Z')
+
+        render(
+          <ChartSelectors
+            owner="bob"
+            active={true}
+            sortItem={{
+              ordering: 'NAME',
+              direction: 'ASC',
+            }}
+            params={{
+              search: 'Repo name 1',
+              repositories: [],
+              startDate: testDate,
+              endDate: testDate,
+            }}
+            updateParams={updateParams}
+          />,
+          { wrapper }
+        )
+
+        let datePicker = screen.getByText('Mar 31, 2022 - Mar 31, 2022')
+        await act(async () => {
+          await user.click(datePicker)
+        })
+
+        let gridCells = screen.getAllByRole('gridcell', { name: '31' })
+        let date = within(gridCells[0]).getByText('31')
+        await act(async () => {
+          await user.click(date)
+        })
       })
     })
   })
@@ -191,7 +214,6 @@ describe('ChartSelectors', () => {
       const { user } = setup()
       render(
         <ChartSelectors
-          owner="bob"
           active={true}
           sortItem={{
             ordering: 'NAME',
@@ -218,25 +240,24 @@ describe('ChartSelectors', () => {
         const { user } = setup()
         render(
           <ChartSelectors
-            owner="bob"
             active={true}
             sortItem={{
               ordering: 'NAME',
               direction: 'ASC',
             }}
-            params={{ search: 'Repo name 1', repositories: [] }}
+            params={{ search: 'Repo name 1', repositories: ['Repo name 1'] }}
             updateParams={jest.fn()}
           />,
           { wrapper }
         )
 
-        const multiselect = screen.getByText('All Repos')
+        const multiselect = screen.getByText('1 Repo selected')
         await user.click(multiselect)
 
-        const repo1 = screen.getByText('Repo name 1')
+        const repo1 = screen.getByText('Repo name 3')
         await user.click(repo1)
 
-        const multiSelectUpdated = await screen.findByText('1 Repo selected')
+        const multiSelectUpdated = screen.getByText('2 Repos selected')
         expect(multiSelectUpdated).toBeInTheDocument()
       })
 
@@ -245,7 +266,6 @@ describe('ChartSelectors', () => {
         const updateParams = jest.fn()
         render(
           <ChartSelectors
-            owner="bob"
             active={true}
             sortItem={{
               ordering: 'NAME',
@@ -274,7 +294,6 @@ describe('ChartSelectors', () => {
         const { user } = setup()
         render(
           <ChartSelectors
-            owner="bob"
             active={true}
             sortItem={{
               ordering: 'NAME',
@@ -297,7 +316,6 @@ describe('ChartSelectors', () => {
         const { user } = setup()
         render(
           <ChartSelectors
-            owner="bob"
             active={true}
             sortItem={{
               ordering: 'NAME',
@@ -322,7 +340,7 @@ describe('ChartSelectors', () => {
           expect(useRepos).toBeCalledWith({
             active: true,
             first: Infinity,
-            owner: 'bob',
+            owner: 'codecov',
             sortItem: {
               direction: 'ASC',
               ordering: 'NAME',
@@ -344,7 +362,6 @@ describe('ChartSelectors', () => {
 
           render(
             <ChartSelectors
-              owner="bob"
               active={true}
               sortItem={{
                 ordering: 'NAME',
@@ -369,7 +386,6 @@ describe('ChartSelectors', () => {
 
           render(
             <ChartSelectors
-              owner="bob"
               active={true}
               sortItem={{
                 ordering: 'NAME',
@@ -396,7 +412,6 @@ describe('ChartSelectors', () => {
       const updateParams = jest.fn()
       render(
         <ChartSelectors
-          owner="bob"
           active={true}
           sortItem={{
             ordering: 'NAME',
