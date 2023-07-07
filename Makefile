@@ -23,7 +23,7 @@ build.local.enterprise:
 	--build-arg REACT_APP_CODECOV_VERSION=${release_version}
 
 build:
-	docker build -f docker/Dockerfile . -t ${IMAGE}:${ENV}-${release_version}-${sha} -t ${image}:${ENV}-${release_version}-latest \
+	docker build -f docker/Dockerfile . -t ${IMAGE}:${ENV}-${release_version}-${sha} -t ${IMAGE}:${ENV}-${release_version}-latest \
 	--build-arg REACT_APP_STAGE=${ENV} \
 	--build-arg REACT_APP_CODECOV_VERSION=${release_version} \
 	--build-arg REACT_APP_ENV_ARG=${ENV} \
