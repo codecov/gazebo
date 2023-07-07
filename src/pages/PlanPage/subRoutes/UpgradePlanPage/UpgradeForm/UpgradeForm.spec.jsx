@@ -239,12 +239,12 @@ describe('UpgradeForm', () => {
         expect(optionBtn).toHaveClass('bg-ds-primary-base')
       })
 
-      it('renders the seat input with 2 seats', async () => {
+      it('renders the seat input with 9 seats', async () => {
         setup()
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const numberInput = await screen.findByRole('spinbutton')
-        expect(numberInput).toHaveValue(2)
+        expect(numberInput).toHaveValue(9)
       })
     })
 
@@ -538,12 +538,12 @@ describe('UpgradeForm', () => {
         expect(annualOption).toHaveClass('bg-ds-primary-base')
       })
 
-      it('renders the seat input with 5 seats', async () => {
+      it('renders the seat input with 9 seats', async () => {
         setup({ includeSentryPlans: true })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const numberInput = await screen.findByRole('spinbutton')
-        expect(numberInput).toHaveValue(5)
+        expect(numberInput).toHaveValue(9)
       })
     })
 

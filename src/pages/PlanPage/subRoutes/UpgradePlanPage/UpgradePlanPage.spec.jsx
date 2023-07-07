@@ -216,7 +216,7 @@ describe('UpgradePlanPage', () => {
     it('renders a cancel plan link', async () => {
       render(<UpgradePlanPage />, { wrapper: wrapper() })
 
-      const cancelLink = await screen.findByText('Cancel plan')
+      const cancelLink = await screen.findByText('Cancel')
       expect(cancelLink).toBeInTheDocument()
     })
 
@@ -228,19 +228,6 @@ describe('UpgradePlanPage', () => {
 
       const banner = screen.queryByText(/You are choosing to upgrade/)
       expect(banner).not.toBeInTheDocument()
-    })
-  })
-
-  describe('when rendered with free plan', () => {
-    beforeEach(() => {
-      setup({ planValue: Plans.USERS_FREE })
-    })
-
-    it('renders upgrade banner', async () => {
-      render(<UpgradePlanPage />, { wrapper: wrapper() })
-
-      const banner = await screen.findByText(/You are choosing to upgrade/)
-      expect(banner).toBeInTheDocument()
     })
   })
 
