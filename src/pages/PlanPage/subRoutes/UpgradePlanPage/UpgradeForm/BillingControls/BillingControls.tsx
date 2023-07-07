@@ -89,7 +89,6 @@ const BillingControls: React.FC<BillingControlsProps> = ({
       <h3 className="font-semibold">Billing</h3>
       <div className="inline-flex items-center gap-2">
         <OptionButton
-          variant="gray"
           type="button"
           active={option}
           onChange={({ text }) => {

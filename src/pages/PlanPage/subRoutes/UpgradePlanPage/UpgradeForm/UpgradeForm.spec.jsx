@@ -236,7 +236,7 @@ describe('UpgradeForm', () => {
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(optionBtn).toBeInTheDocument()
-        expect(optionBtn).toHaveClass('bg-ds-gray-secondary')
+        expect(optionBtn).toHaveClass('bg-ds-primary-base')
       })
 
       it('renders the seat input with 9 seats', async () => {
@@ -266,7 +266,7 @@ describe('UpgradeForm', () => {
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(optionBtn).toBeInTheDocument()
-        expect(optionBtn).toHaveClass('bg-ds-gray-secondary')
+        expect(optionBtn).toHaveClass('bg-ds-primary-base')
       })
 
       it('renders the seat input with 10 seats (existing subscription)', async () => {
@@ -334,7 +334,7 @@ describe('UpgradeForm', () => {
             name: 'Annual',
           })
           expect(annualOption).toBeInTheDocument()
-          expect(annualOption).toHaveClass('bg-ds-gray-secondary')
+          expect(annualOption).toHaveClass('bg-ds-primary-base')
         })
       })
     })
@@ -535,7 +535,7 @@ describe('UpgradeForm', () => {
           name: 'Annual',
         })
         expect(annualOption).toBeInTheDocument()
-        expect(annualOption).toHaveClass('bg-ds-gray-secondary')
+        expect(annualOption).toHaveClass('bg-ds-primary-base')
       })
 
       it('renders the seat input with 9 seats', async () => {
@@ -572,7 +572,7 @@ describe('UpgradeForm', () => {
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
-        expect(optionBtn).toHaveClass('bg-ds-gray-secondary')
+        expect(optionBtn).toHaveClass('bg-ds-primary-base')
       })
 
       it('renders the seat input with 10 seats (existing subscription)', async () => {
@@ -686,7 +686,7 @@ describe('UpgradeForm', () => {
           const annualOption = await screen.findByRole('button', {
             name: 'Annual',
           })
-          expect(annualOption).toHaveClass('bg-ds-gray-secondary')
+          expect(annualOption).toHaveClass('bg-ds-primary-base')
         })
       })
     })

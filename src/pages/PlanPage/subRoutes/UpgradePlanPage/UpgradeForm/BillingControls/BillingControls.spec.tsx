@@ -125,13 +125,13 @@ describe('BillingControls', () => {
 
         const annualBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(annualBtn).toBeInTheDocument()
-        expect(annualBtn).toHaveClass('bg-ds-gray-secondary')
+        expect(annualBtn).toHaveClass('bg-ds-primary-base')
 
         const monthlyBtn = await screen.findByRole('button', {
           name: 'Monthly',
         })
         expect(monthlyBtn).toBeInTheDocument()
-        expect(monthlyBtn).not.toHaveClass('bg-ds-gray-secondary')
+        expect(monthlyBtn).not.toHaveClass('bg-ds-primary-base')
       })
 
       it('renders correct pricing scheme', async () => {
@@ -200,13 +200,13 @@ describe('BillingControls', () => {
 
         const annualBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(annualBtn).toBeInTheDocument()
-        expect(annualBtn).not.toHaveClass('bg-ds-gray-secondary')
+        expect(annualBtn).not.toHaveClass('bg-ds-primary-base')
 
         const monthlyBtn = await screen.findByRole('button', {
           name: 'Monthly',
         })
         expect(monthlyBtn).toBeInTheDocument()
-        expect(monthlyBtn).toHaveClass('bg-ds-gray-secondary')
+        expect(monthlyBtn).toHaveClass('bg-ds-primary-base')
       })
 
       it('renders correct pricing scheme', async () => {
@@ -277,13 +277,13 @@ describe('BillingControls', () => {
 
         const annualBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(annualBtn).toBeInTheDocument()
-        expect(annualBtn).toHaveClass('bg-ds-gray-secondary')
+        expect(annualBtn).toHaveClass('bg-ds-primary-base')
 
         const monthlyBtn = await screen.findByRole('button', {
           name: 'Monthly',
         })
         expect(monthlyBtn).toBeInTheDocument()
-        expect(monthlyBtn).not.toHaveClass('bg-ds-gray-secondary')
+        expect(monthlyBtn).not.toHaveClass('bg-ds-primary-base')
       })
 
       it('renders correct pricing scheme', async () => {
@@ -352,13 +352,13 @@ describe('BillingControls', () => {
 
         const annualBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(annualBtn).toBeInTheDocument()
-        expect(annualBtn).not.toHaveClass('bg-ds-gray-secondary')
+        expect(annualBtn).not.toHaveClass('bg-ds-primary-base')
 
         const monthlyBtn = await screen.findByRole('button', {
           name: 'Monthly',
         })
         expect(monthlyBtn).toBeInTheDocument()
-        expect(monthlyBtn).toHaveClass('bg-ds-gray-secondary')
+        expect(monthlyBtn).toHaveClass('bg-ds-primary-base')
       })
 
       it('renders correct pricing scheme', async () => {
