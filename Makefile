@@ -68,7 +68,7 @@ pull.devops:
 
 dive:
 	$(MAKE) pull.devops
-	docker run -e CI=true  -v /var/run/docker.sock:/var/run/docker.sock ${DEVOPS_IMAGE} dive ${image}:${ENV}-${release_version}-${sha} --lowestEfficiency=0.97 --highestUserWastedPercent=0.06
+	docker run -e CI=true  -v /var/run/docker.sock:/var/run/docker.sock ${DEVOPS_IMAGE} dive ${IMAGE}:${ENV}-${release_version}-${sha} --lowestEfficiency=0.97 --highestUserWastedPercent=0.06
 
 deep-dive:
 	$(MAKE) pull.devops
