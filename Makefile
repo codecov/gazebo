@@ -50,6 +50,8 @@ push:
 push.enterprise:
 	docker push ${ENTERPRISE_IMAGE}:${release_version}-${sha}
 	docker push ${ENTERPRISE_IMAGE}:${release_version}-latest
+
+push.rolling:
 	docker push ${dockerhub_image}:rolling
 
 pull-for-release:
