@@ -165,6 +165,7 @@ const MultiSelect = forwardRef(
       resourceName = '',
       value = [],
       variant,
+      selectedItemsOverride,
     },
     ref
   ) => {
@@ -178,6 +179,7 @@ const MultiSelect = forwardRef(
       reset,
     } = useMultipleSelection({
       initialSelectedItems: value,
+      selectedItems: selectedItemsOverride,
       onSelectedItemsChange: ({ selectedItems }) => onChange(selectedItems),
     })
 
@@ -330,6 +332,7 @@ MultiSelect.propTypes = {
   disabled: PropTypes.bool,
   isLoading: PropTypes.bool,
   dataMarketing: dataMarketingType,
+  selectedItemsOverride: PropTypes.array,
 }
 
 export default MultiSelect

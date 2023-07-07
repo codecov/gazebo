@@ -1,12 +1,13 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { rest } from 'msw'
+import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useAddNotification } from 'services/toastNotification'
+import { TrialStatuses } from 'services/trial'
 
 import UpgradeForm from './UpgradeForm'
 
@@ -128,10 +129,12 @@ describe('UpgradeForm', () => {
       successfulRequest = true,
       errorDetails = undefined,
       includeSentryPlans = false,
+      trialStatus = null,
     } = {
       successfulRequest: true,
       errorDetails: undefined,
       includeSentryPlans: false,
+      trialStatus: null,
     }
   ) {
     const user = userEvent.setup()
@@ -141,6 +144,14 @@ describe('UpgradeForm', () => {
     useAddNotification.mockReturnValue(addNotification)
 
     server.use(
+      graphql.query('GetTrialData', (_, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({
+            owner: { trialStatus },
+          })
+        )
+      ),
       rest.patch(
         '/internal/gh/codecov/account-details/',
         async (req, res, ctx) => {
@@ -348,7 +359,7 @@ describe('UpgradeForm', () => {
       })
     })
 
-    describe('when the user have a pro year plan but no billing information', () => {
+    describe('when the user have a pro year plan but no billing information during a trial', () => {
       const props = {
         organizationName: 'codecov',
         proPlanMonth,
@@ -358,9 +369,6 @@ describe('UpgradeForm', () => {
           inactiveUserCount: 0,
           plan: proPlanYear,
           latestInvoice: null,
-          subscriptionDetail: {
-            trialEnd: 12345,
-          },
         },
       }
 
@@ -381,7 +389,7 @@ describe('UpgradeForm', () => {
       })
 
       it('prompts the user to input their billing information', async () => {
-        setup({ includeSentryPlans: true })
+        setup({ includeSentryPlans: true, trialStatus: TrialStatuses.ONGOING })
         render(<UpgradeForm {...props} />, { wrapper })
 
         const billingInformationAnchor = await screen.findByText(
@@ -637,7 +645,6 @@ describe('UpgradeForm', () => {
           plan: sentryPlanYear,
           latestInvoice: null,
           subscriptionDetail: {
-            trialEnd: 12345,
             defaultPaymentMethod: {
               billingDetails: {},
               card: { brand: 'visa' },
@@ -672,7 +679,7 @@ describe('UpgradeForm', () => {
       })
 
       it('has the update button disabled', async () => {
-        setup({ includeSentryPlans: true })
+        setup({ includeSentryPlans: true, trialStatus: TrialStatuses.ONGOING })
         render(<UpgradeForm {...props} />, { wrapper })
 
         const update = await screen.findByText(/Update/)
@@ -774,7 +781,10 @@ describe('UpgradeForm', () => {
 
     describe('when the user chooses less than the number of active users', () => {
       it('displays an error', async () => {
-        const { user } = setup({ includeSentryPlans: true })
+        const { user } = setup({
+          includeSentryPlans: true,
+          trialStatus: TrialStatuses.ONGOING,
+        })
         render(
           <UpgradeForm
             organizationName="codecov"
@@ -788,7 +798,6 @@ describe('UpgradeForm', () => {
               plan: null,
               latestInvoice: null,
               subscriptionDetail: {
-                trialEnd: 12345,
                 defaultPaymentMethod: {
                   billingDetails: {},
                   card: { brand: 'visa' },
@@ -950,6 +959,75 @@ describe('UpgradeForm', () => {
           )
         })
       })
+    })
+  })
+
+  describe('when the customer has not started a trial', () => {
+    const props = {
+      organizationName: 'codecov',
+      proPlanMonth,
+      proPlanYear,
+      sentryPlanMonth,
+      sentryPlanYear,
+      accountDetails: {
+        activatedUserCount: 9,
+        inactiveUserCount: 0,
+        plan: null,
+        latestInvoice: null,
+      },
+    }
+
+    it('renders monthly option button', async () => {
+      setup({
+        includeSentryPlans: true,
+        trialStatus: TrialStatuses.NOT_STARTED,
+      })
+      render(<UpgradeForm {...props} />, { wrapper })
+
+      const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
+      expect(optionBtn).toBeInTheDocument()
+      expect(optionBtn).not.toHaveClass('bg-ds-primary-base')
+    })
+
+    it('renders annual option button', async () => {
+      setup({
+        includeSentryPlans: true,
+        trialStatus: TrialStatuses.NOT_STARTED,
+      })
+      render(<UpgradeForm {...props} />, { wrapper })
+
+      const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+      expect(optionBtn).toBeInTheDocument()
+      expect(optionBtn).toHaveClass('bg-ds-primary-base')
+    })
+
+    it('renders the seat input with 5 seats', async () => {
+      setup({
+        includeSentryPlans: true,
+        trialStatus: TrialStatuses.NOT_STARTED,
+      })
+      render(<UpgradeForm {...props} />, { wrapper })
+
+      const numberInput = await screen.findByRole('spinbutton')
+      expect(numberInput).toBeInTheDocument()
+      expect(numberInput).toHaveValue(5)
+      expect(numberInput).not.toBeDisabled()
+    })
+
+    it('renders the trial fields', async () => {
+      setup({
+        includeSentryPlans: true,
+        trialStatus: TrialStatuses.NOT_STARTED,
+      })
+      render(<UpgradeForm {...props} />, { wrapper })
+
+      const startTrial = await screen.findByRole('button', {
+        name: 'Start trial',
+      })
+      expect(startTrial).toBeInTheDocument()
+
+      const creditCardInfo = await screen.findByText('No credit card required!')
+      expect(creditCardInfo).toBeInTheDocument()
     })
   })
 })

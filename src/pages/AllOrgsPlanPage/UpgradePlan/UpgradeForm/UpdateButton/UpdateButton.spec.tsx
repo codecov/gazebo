@@ -14,6 +14,7 @@ describe('UpdateButton', () => {
         quantity: 2,
         disableInputs: false,
         isSentryUpgrade: false,
+        trialStatus: 'ONGOING',
       }
 
       render(<UpdateButton {...props} />)
@@ -33,6 +34,7 @@ describe('UpdateButton', () => {
         quantity: 2,
         disableInputs: true,
         isSentryUpgrade: false,
+        trialStatus: 'ONGOING',
       }
 
       render(<UpdateButton {...props} />)
@@ -52,6 +54,7 @@ describe('UpdateButton', () => {
         quantity: 10,
         disableInputs: false,
         isSentryUpgrade: false,
+        trialStatus: 'ONGOING',
       }
 
       render(<UpdateButton {...props} />)
@@ -71,6 +74,7 @@ describe('UpdateButton', () => {
         quantity: 2,
         disableInputs: false,
         isSentryUpgrade: false,
+        trialStatus: 'ONGOING',
       }
 
       render(<UpdateButton {...props} />)
@@ -93,12 +97,7 @@ describe('UpdateButton', () => {
             isSentryUpgrade: true,
             disableInputs: false,
             organizationName: 'codecov',
-            accountDetails: {
-              activatedUserCount: 0,
-              subscriptionDetail: {
-                trialEnd: null,
-              },
-            },
+            trialStatus: 'NOT_STARTED',
           }
 
           render(<UpdateButton {...props} />)
@@ -108,7 +107,7 @@ describe('UpdateButton', () => {
           expect(button).not.toBeDisabled()
         })
 
-        it('displays no credit card required text', () => {
+        it('displays no credit card required text', async () => {
           const props = {
             isValid: true,
             getValues: () => ({ newPlan: Plans.USERS_PR_INAPPY, seats: 10 }),
@@ -117,17 +116,12 @@ describe('UpdateButton', () => {
             organizationName: 'codecov',
             disableInputs: false,
             isSentryUpgrade: true,
-            accountDetails: {
-              activatedUserCount: 0,
-              subscriptionDetail: {
-                trialEnd: null,
-              },
-            },
+            trialStatus: 'NOT_STARTED',
           }
 
           render(<UpdateButton {...props} />)
 
-          const text = screen.getByText('No credit card required!')
+          const text = await screen.findByText('No credit card required!')
           expect(text).toBeInTheDocument()
         })
       })
@@ -142,10 +136,7 @@ describe('UpdateButton', () => {
             isSentryUpgrade: true,
             disableInputs: false,
             organizationName: 'codecov',
-            accountDetails: {
-              activatedUserCount: 0,
-              subscriptionDetail: null,
-            },
+            trialStatus: 'NOT_STARTED',
           }
 
           render(<UpdateButton {...props} />)
@@ -164,10 +155,7 @@ describe('UpdateButton', () => {
             organizationName: 'codecov',
             disableInputs: false,
             isSentryUpgrade: true,
-            accountDetails: {
-              activatedUserCount: 0,
-              subscriptionDetail: null,
-            },
+            trialStatus: 'NOT_STARTED',
           }
 
           render(<UpdateButton {...props} />)
@@ -188,12 +176,28 @@ describe('UpdateButton', () => {
           isSentryUpgrade: true,
           disableInputs: false,
           organizationName: 'codecov',
-          accountDetails: {
-            activatedUserCount: 0,
-            subscriptionDetail: {
-              trialEnd: 123456,
-            },
-          },
+          trialStatus: 'ONGOING',
+        }
+
+        render(<UpdateButton {...props} />)
+
+        const button = screen.getByText('Update')
+        expect(button).toBeInTheDocument()
+        expect(button).not.toBeDisabled()
+      })
+    })
+
+    describe('the user has finished the trial', () => {
+      it('displays button with "Update" text', () => {
+        const props = {
+          isValid: true,
+          getValues: () => ({ newPlan: Plans.USERS_PR_INAPPY, seats: 10 }),
+          value: Plans.USERS_BASIC,
+          quantity: 2,
+          isSentryUpgrade: true,
+          disableInputs: false,
+          organizationName: 'codecov',
+          trialStatus: 'EXPIRED',
         }
 
         render(<UpdateButton {...props} />)

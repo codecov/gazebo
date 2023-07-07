@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { rest } from 'msw'
+import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -102,15 +102,15 @@ describe('SentryTrialBanner', () => {
   function setup(
     {
       includeSentryPlans = true,
-      includeTimeStamp = null,
+      ongoingTrial = null,
       isSentryPlan = false,
     }: {
       includeSentryPlans?: boolean
-      includeTimeStamp?: number | null
+      ongoingTrial?: boolean | null
       isSentryPlan?: boolean
     } = {
       includeSentryPlans: true,
-      includeTimeStamp: null,
+      ongoingTrial: null,
       isSentryPlan: false,
     }
   ) {
@@ -119,6 +119,14 @@ describe('SentryTrialBanner', () => {
     const mockGetItem = jest.spyOn(window.localStorage.__proto__, 'getItem')
 
     server.use(
+      graphql.query('GetTrialData', (_, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({
+            owner: { trialStatus: ongoingTrial ? 'ONGOING' : 'NOT_STARTED' },
+          })
+        )
+      ),
       rest.get('/internal/plans', (req, res, ctx) => {
         return res(
           ctx.status(200),
@@ -142,13 +150,6 @@ describe('SentryTrialBanner', () => {
           ctx.status(200),
           ctx.json({
             ...accountOne,
-            ...(includeTimeStamp
-              ? {
-                  subscriptionDetail: {
-                    trialEnd: 123456,
-                  },
-                }
-              : {}),
             plan: proPlanMonth,
           })
         )
@@ -178,7 +179,7 @@ describe('SentryTrialBanner', () => {
     describe('user is already on a trial', () => {
       it('returns null', async () => {
         setup({
-          includeTimeStamp: 12345,
+          ongoingTrial: true,
         })
 
         const { container } = render(<SentryTrialBanner />, {
