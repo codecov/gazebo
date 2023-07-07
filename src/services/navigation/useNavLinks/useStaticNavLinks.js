@@ -189,7 +189,7 @@ export function useStaticNavLinks() {
     },
     graphsSunburst: {
       text: 'Graphs Sunburst',
-      path: () => 'https://docs.codecov.com/reference/sunburst',
+      path: () => 'https://docs.codecov.com/docs/graphs#sunburst',
       isExternalLink: true,
       openNewTab: true,
     },
