@@ -49,8 +49,7 @@ const UserText: React.FC<UserTextProps> = ({
 
   return (
     <p>
-      Currently {activatedUserCount} users activated out of{' '}
-      {activatedUserCount + inactiveUserCount} users.
+      Your organization has {activatedUserCount + inactiveUserCount} members.
     </p>
   )
 }

@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom'
 import { usePlanPageData } from 'pages/PlanPage/hooks'
 import { planPropType, usePlans } from 'services/account'
 import BenefitList from 'shared/plan/BenefitList'
+import ScheduledPlanDetails from 'shared/plan/ScheduledPlanDetails'
 import {
   canApplySentryUpgrade,
   findSentryPlans,
@@ -15,7 +16,6 @@ import A from 'ui/A'
 
 import ActionsBilling from '../shared/ActionsBilling/ActionsBilling'
 import PlanPricing from '../shared/PlanPricing'
-import ScheduledPlanDetails from '../shared/ScheduledPlanDetails'
 
 function PlanDetails({
   isSentryUpgrade,

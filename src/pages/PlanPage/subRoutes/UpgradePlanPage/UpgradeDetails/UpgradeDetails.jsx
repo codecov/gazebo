@@ -1,78 +1,59 @@
 import PropTypes from 'prop-types'
 
-import parasolImg from 'assets/plan/parasol.png'
 import sentryCodecov from 'assets/plan/sentry_codecov.svg'
 import { accountDetailsPropType, planPropType } from 'services/account'
 import BenefitList from 'shared/plan/BenefitList'
-import { canApplySentryUpgrade, isFreePlan } from 'shared/utils/billing'
+import ScheduledPlanDetails from 'shared/plan/ScheduledPlanDetails'
+import { canApplySentryUpgrade } from 'shared/utils/billing'
+import { SENTRY_PRICE, shouldRenderCancelLink } from 'shared/utils/upgradeForm'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 
-function shouldRenderCancelLink(accountDetails, plan) {
-  // cant cancel a free plan
-  if (isFreePlan(plan?.value)) return false
-
-  // plan is already set for cancellation
-  if (accountDetails?.subscriptionDetail?.cancelAtPeriodEnd) return false
-
-  return true
+function SentryPlanDetails({
+  plan,
+  sentryPlanMonth,
+  sentryPlanYear,
+  cancelAtPeriodEnd,
+}) {
+  return (
+    <div className="flex flex-col gap-4 border p-4">
+      <img src={sentryCodecov} alt="sentry codecov logos" width="110px" />
+      <h3 className="text-2xl font-semibold text-ds-pink-quinary">
+        {sentryPlanYear?.marketingName}
+      </h3>
+      <h2 className="text-4xl">
+        ${SENTRY_PRICE}
+        <span className="text-base">/monthly</span>
+      </h2>
+      <BenefitList
+        iconName="check"
+        iconColor="text-ds-pink-quinary"
+        benefits={sentryPlanYear?.benefits}
+      />
+      <p className="text-ds-gray-quaternary">
+        ${sentryPlanMonth?.baseUnitPrice} per user / month if paid monthly
+      </p>
+      {shouldRenderCancelLink(cancelAtPeriodEnd, plan) && (
+        <A
+          to={{ pageName: 'cancelOrgPlan' }}
+          variant="black"
+          hook="cancel-plan"
+        >
+          Cancel
+          <Icon name="chevronRight" size="sm" variant="solid" />
+        </A>
+      )}
+    </div>
+  )
 }
 
-const SENTRY_PRICE = 29
-
-const determineDetails = ({
-  plan,
-  plans,
-  proPlanMonth,
-  proPlanYear,
-  sentryPlanYear,
-  sentryPlanMonth,
-}) => {
-  let details = {
-    img: (
-      <div className="-mt-16">
-        <img src={parasolImg} alt="parasol" />
-      </div>
-    ),
-    marketingName: proPlanYear?.marketingName,
-    baseUnitPrice: (
-      <>
-        ${proPlanYear?.baseUnitPrice}*
-        <span className="text-base">/monthly</span>
-      </>
-    ),
-    priceDisclaimer: (
-      <p className="text-ds-gray-quaternary">
-        ${proPlanMonth?.baseUnitPrice} per user / month if paid monthly
-      </p>
-    ),
-    benefits: proPlanYear?.benefits,
-  }
-
-  if (canApplySentryUpgrade({ plan, plans })) {
-    details = {
-      img: (
-        <div>
-          <img src={sentryCodecov} alt="sentry codecov logos" width="110px" />
-        </div>
-      ),
-      marketingName: sentryPlanYear?.marketingName,
-      baseUnitPrice: (
-        <>
-          ${SENTRY_PRICE}
-          <span className="text-base">/monthly</span>
-        </>
-      ),
-      priceDisclaimer: (
-        <p className="text-ds-gray-quaternary">
-          ${sentryPlanMonth?.baseUnitPrice} per user / month if paid monthly
-        </p>
-      ),
-      benefits: sentryPlanYear?.benefits,
-    }
-  }
-
-  return details
+SentryPlanDetails.propTypes = {
+  cancelAtPeriodEnd: PropTypes.bool,
+  plan: PropTypes.shape({
+    value: PropTypes.string,
+  }),
+  sentryPlanMonth: planPropType,
+  sentryPlanYear: planPropType,
 }
 
 function UpgradeDetails({
@@ -83,39 +64,56 @@ function UpgradeDetails({
   sentryPlanMonth,
   sentryPlanYear,
   accountDetails,
+  scheduledPhase,
 }) {
-  const details = determineDetails({
-    plan,
-    plans,
-    proPlanMonth,
-    proPlanYear,
-    sentryPlanMonth,
-    sentryPlanYear,
-  })
+  const cancelAtPeriodEnd =
+    accountDetails?.subscriptionDetail?.cancelAtPeriodEnd
+
+  if (canApplySentryUpgrade({ plan, plans })) {
+    return (
+      <SentryPlanDetails
+        cancelAtPeriodEnd={cancelAtPeriodEnd}
+        plan={plan}
+        sentryPlanMonth={sentryPlanMonth}
+        sentryPlanYear={sentryPlanYear}
+      />
+    )
+  }
 
   return (
-    <div className="flex flex-col gap-4">
-      {details?.img}
-      <h3 className="text-2xl font-semibold text-ds-pink-quinary">
-        {details?.marketingName}
-      </h3>
-      <h2 className="text-4xl">{details?.baseUnitPrice}</h2>
-      <BenefitList
-        iconName="check"
-        iconColor="text-ds-pink-quinary"
-        benefits={details?.benefits}
-      />
-      {details?.priceDisclaimer}
-      {shouldRenderCancelLink(accountDetails, plan) && (
-        <A
-          to={{ pageName: 'cancelOrgPlan' }}
-          variant="black"
-          hook="cancel-plan"
-        >
-          Cancel plan
-          <Icon name="chevronRight" size="sm" variant="solid" />
-        </A>
-      )}
+    <div className="h-fit border">
+      <h3 className="p-4 font-semibold">{proPlanYear?.marketingName} plan</h3>
+      <hr />
+      <div className="flex flex-col gap-4 p-4">
+        <BenefitList
+          iconName="check"
+          iconColor="text-ds-pink-quinary"
+          benefits={proPlanYear?.benefits}
+        />
+        <div>
+          <p className="text-xs font-semibold">
+            <span className="text-2xl">${proPlanYear?.baseUnitPrice}</span>
+            /per user, per month
+          </p>
+          <p className="text-xs text-ds-gray-quaternary">
+            billed annually or ${proPlanMonth?.baseUnitPrice} for monthly
+            billing
+          </p>
+        </div>
+        {scheduledPhase && (
+          <ScheduledPlanDetails scheduledPhase={scheduledPhase} />
+        )}
+        {shouldRenderCancelLink(cancelAtPeriodEnd, plan) && (
+          <A
+            to={{ pageName: 'cancelOrgPlan' }}
+            variant="graySenary"
+            hook="cancel-plan"
+          >
+            Cancel
+            <Icon name="chevronRight" size="sm" variant="solid" />
+          </A>
+        )}
+      </div>
     </div>
   )
 }
@@ -130,6 +128,11 @@ UpgradeDetails.propTypes = {
   proPlanYear: planPropType,
   sentryPlanMonth: planPropType,
   sentryPlanYear: planPropType,
+  scheduledPhase: PropTypes.shape({
+    quantity: PropTypes.number.isRequired,
+    plan: PropTypes.string.isRequired,
+    startDate: PropTypes.number.isRequired,
+  }),
 }
 
 export default UpgradeDetails
