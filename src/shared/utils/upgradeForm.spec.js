@@ -3,6 +3,7 @@ import { Plans } from 'shared/utils/billing'
 import {
   calculateNonBundledCost,
   calculatePrice,
+  extractSeats,
   getInitialDataForm,
   getSchema,
 } from './upgradeForm'
@@ -67,7 +68,6 @@ describe('getInitialDataForm', () => {
         proPlanYear,
         sentryPlanYear,
         isSentryUpgrade,
-        minSeats: 2,
       })
 
       expect(data).toStrictEqual({
@@ -78,7 +78,7 @@ describe('getInitialDataForm', () => {
 
     it('returns current plan if the user is on a paid plan', () => {
       const accountDetails = {
-        plan: { value: Plans.USERS_PR_INAPPM, quantity: 1 },
+        plan: { value: Plans.USERS_PR_INAPPM, quantity: 2 },
       }
 
       const data = getInitialDataForm({
@@ -86,7 +86,6 @@ describe('getInitialDataForm', () => {
         proPlanYear,
         sentryPlanYear,
         isSentryUpgrade,
-        minSeats: 2,
       })
 
       expect(data).toStrictEqual({
@@ -109,12 +108,11 @@ describe('getInitialDataForm', () => {
         proPlanYear,
         sentryPlanYear,
         isSentryUpgrade,
-        minSeats: 2,
       })
 
       expect(data).toStrictEqual({
         newPlan: Plans.USERS_SENTRYY,
-        seats: 2,
+        seats: 5,
       })
     })
 
@@ -128,12 +126,11 @@ describe('getInitialDataForm', () => {
         proPlanYear,
         sentryPlanYear,
         isSentryUpgrade,
-        minSeats: 2,
       })
 
       expect(data).toStrictEqual({
         newPlan: Plans.USERS_SENTRYM,
-        seats: 2,
+        seats: 5,
       })
     })
 
@@ -147,12 +144,11 @@ describe('getInitialDataForm', () => {
         proPlanYear,
         sentryPlanYear,
         isSentryUpgrade,
-        minSeats: 2,
       })
 
       expect(data).toStrictEqual({
         newPlan: Plans.USERS_SENTRYY,
-        seats: 2,
+        seats: 5,
       })
     })
   })
@@ -243,5 +239,103 @@ describe('calculateNonBundledCost', () => {
   it('returns calculated cost', () => {
     const total = calculateNonBundledCost({ baseUnitPrice: 10 })
     expect(total).toEqual(252)
+  })
+})
+
+describe('extractSeats', () => {
+  describe('user on free plan and can upgrade to sentry plan', () => {
+    it('returns min seats when members are less than min', () => {
+      const seats = extractSeats({
+        value: Plans.USERS_BASIC,
+        quantity: 1,
+        isSentryUpgrade: true,
+        activatedUserCount: 0,
+        inactivatedUserCount: 0,
+      })
+      expect(seats).toEqual(5)
+    })
+
+    it('returns members number as seats when members are greater than min', () => {
+      const seats = extractSeats({
+        value: Plans.USERS_BASIC,
+        quantity: 1,
+        isSentryUpgrade: true,
+        activatedUserCount: 10,
+        inactiveUserCount: 2,
+      })
+      expect(seats).toEqual(12)
+    })
+  })
+
+  describe('user on free plan and can not upgrade to sentry plan', () => {
+    it('returns min seats when members are less than min', () => {
+      const seats = extractSeats({
+        value: Plans.USERS_BASIC,
+        quantity: 1,
+        isSentryUpgrade: false,
+        activatedUserCount: 0,
+        inactivatedUserCount: 0,
+      })
+      expect(seats).toEqual(2)
+    })
+
+    it('returns members number as seats when members are greater than min', () => {
+      const seats = extractSeats({
+        value: Plans.USERS_BASIC,
+        quantity: 1,
+        activatedUserCount: 10,
+        inactiveUserCount: 2,
+        isSentryUpgrade: false,
+      })
+      expect(seats).toEqual(12)
+    })
+  })
+
+  describe('user on paid plan', () => {
+    it('returns members number as seats', () => {
+      const seats = extractSeats({
+        value: Plans.USERS_PR_INAPPM,
+        quantity: 8,
+        activatedUserCount: 12,
+        inactiveUserCount: 0,
+        isSentryUpgrade: false,
+      })
+      expect(seats).toEqual(8)
+    })
+  })
+
+  describe('user on sentry plan', () => {
+    it('returns members number as seats', () => {
+      const seats = extractSeats({
+        value: Plans.USERS_SENTRYM,
+        quantity: 8,
+        activatedUserCount: 12,
+        inactiveUserCount: 0,
+        isSentryUpgrade: false,
+      })
+      expect(seats).toEqual(8)
+    })
+  })
+
+  describe('user on paid plan and can upgrade to sentry plan', () => {
+    it('returns members number as seats if greater than min', () => {
+      const seats = extractSeats({
+        value: Plans.USERS_PR_INAPPM,
+        quantity: 8,
+        activatedUserCount: 12,
+        inactiveUserCount: 0,
+        isSentryUpgrade: true,
+      })
+      expect(seats).toEqual(8)
+    })
+
+    it('returns min seats if less than min', () => {
+      const seats = extractSeats({
+        value: Plans.USERS_PR_INAPPM,
+        quantity: 2,
+        isSentryUpgrade: true,
+      })
+      expect(seats).toEqual(5)
+    })
   })
 })
