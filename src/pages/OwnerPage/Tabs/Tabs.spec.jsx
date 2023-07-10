@@ -6,73 +6,94 @@ import config from 'config'
 import Tabs from './Tabs'
 
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
+jest.mock('./TrialReminder', () => () => 'TrialReminder')
 jest.mock('config')
 
-describe('Tabs', () => {
-  function setup({ props = {}, isSelfHosted = false }) {
-    config.IS_SELF_HOSTED = isSelfHosted
+const wrapper = ({ children }) => (
+  <MemoryRouter initialEntries={['/gh/codecov']}>
+    <Route path="/:provider/:owner">{children}</Route>
+  </MemoryRouter>
+)
 
-    render(
-      <MemoryRouter initialEntries={['/gh/codecov']}>
-        <Route path="/:provider/:owner">
-          <Tabs {...props} />
-        </Route>
-      </MemoryRouter>
-    )
+describe('Tabs', () => {
+  function setup({ isSelfHosted = false }) {
+    config.IS_SELF_HOSTED = isSelfHosted
   }
 
   describe('when user is part of the org', () => {
-    beforeEach(() => {
-      setup({ props: { owner: { username: 'kelly' }, provider: 'gh' } })
-    })
-
     it('renders links to the owner settings', () => {
-      expect(
-        screen.getByRole('link', {
-          name: /settings/i,
-        })
-      ).toHaveAttribute('href', '/account/gh/codecov')
+      setup({})
+
+      render(<Tabs owner={{ username: 'kelly' }} provider="gh" />, { wrapper })
+
+      const settingsLink = screen.getByRole('link', {
+        name: /settings/i,
+      })
+      expect(settingsLink).toBeInTheDocument()
+      expect(settingsLink).toHaveAttribute('href', '/account/gh/codecov')
     })
 
     it('renders link to plan', () => {
-      expect(
-        screen.getByRole('link', {
-          name: /plan/i,
-        })
-      ).toHaveAttribute('href', '/plan/gh/codecov')
+      setup({})
+
+      render(<Tabs owner={{ username: 'kelly' }} provider="gh" />, { wrapper })
+
+      const planLink = screen.getByRole('link', {
+        name: /plan/i,
+      })
+      expect(planLink).toBeInTheDocument()
+      expect(planLink).toHaveAttribute('href', '/plan/gh/codecov')
     })
 
     it('renders link to members page', () => {
-      expect(
-        screen.getByRole('link', {
-          name: /members/i,
-        })
-      ).toHaveAttribute('href', `/members/gh/codecov`)
+      setup({})
+
+      render(<Tabs owner={{ username: 'kelly' }} provider="gh" />, { wrapper })
+
+      const membersLink = screen.getByRole('link', {
+        name: /members/i,
+      })
+      expect(membersLink).toBeInTheDocument()
+      expect(membersLink).toHaveAttribute('href', `/members/gh/codecov`)
     })
   })
 
   describe('when user is enterprise account', () => {
-    beforeEach(() => {
-      setup({
-        props: { owner: { username: 'kelly' }, provider: 'gh' },
-        isSelfHosted: true,
-      })
-    })
-
     it('does not render link to plan', () => {
-      expect(
-        screen.queryByRole('link', {
-          name: /plan/i,
-        })
-      ).not.toBeInTheDocument()
+      setup({ isSelfHosted: true })
+
+      render(<Tabs owner={{ username: 'kelly' }} provider="gh" />, { wrapper })
+
+      const planLink = screen.queryByRole('link', {
+        name: /plan/i,
+      })
+      expect(planLink).not.toBeInTheDocument()
     })
 
     it('does not render link to members page', () => {
-      expect(
-        screen.queryByRole('link', {
-          name: /members/i,
-        })
-      ).not.toBeInTheDocument()
+      setup({ isSelfHosted: true })
+
+      render(<Tabs owner={{ username: 'kelly' }} provider="gh" />, { wrapper })
+
+      const membersLink = screen.queryByRole('link', {
+        name: /members/i,
+      })
+      expect(membersLink).not.toBeInTheDocument()
+    })
+  })
+
+  describe('rendering TrialReminder', () => {
+    beforeEach(() => {
+      setup({ props: { owner: { username: 'kelly' }, provider: 'gh' } })
+    })
+
+    it('displays trial reminder', async () => {
+      setup({})
+
+      render(<Tabs owner={{ username: 'kelly' }} provider="gh" />, { wrapper })
+
+      const trialReminder = await screen.findByText('TrialReminder')
+      expect(trialReminder).toBeInTheDocument()
     })
   })
 })

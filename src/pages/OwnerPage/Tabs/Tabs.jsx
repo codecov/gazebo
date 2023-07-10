@@ -1,8 +1,11 @@
 import PropTypes from 'prop-types'
+import { lazy, Suspense } from 'react'
 
 import config from 'config'
 
 import TabNavigation from 'ui/TabNavigation'
+
+const TrialReminder = lazy(() => import('./TrialReminder'))
 
 function Tabs({ provider, owner }) {
   return (
@@ -24,6 +27,11 @@ function Tabs({ provider, owner }) {
           children: 'Settings',
         },
       ]}
+      component={
+        <Suspense fallback={null}>
+          <TrialReminder />
+        </Suspense>
+      }
     />
   )
 }
