@@ -174,7 +174,7 @@ function UpgradeForm({
   })
 
   const minSeats = isSentryUpgrade ? MIN_SENTRY_SEATS : MIN_NB_SEATS
-  const trialStatus = trialData?.trialStatus
+  const trialStatus = trialData?.plan?.trialStatus
   const hasPaymentMethod =
     accountDetails?.subscriptionDetail?.defaultPaymentMethod ?? null
 

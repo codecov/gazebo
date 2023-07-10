@@ -143,7 +143,7 @@ describe('UpgradeForm', () => {
         res(
           ctx.status(200),
           ctx.data({
-            owner: { trialStatus },
+            owner: { plan: { trialStatus: trialStatus } },
           })
         )
       ),
