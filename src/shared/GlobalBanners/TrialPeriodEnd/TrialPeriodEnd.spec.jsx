@@ -147,19 +147,8 @@ describe('TrialPeriodEnd', () => {
       )
       expect(anchorLinks[1]).toHaveAttribute(
         'href',
-        'https://codecov.freshdesk.com/support/home'
+        'https://codecovpro.zendesk.com/hc/en-us'
       )
     })
   })
 })
-
-// {
-//   owner: {
-//     orgUploadToken: 'token',
-//     ownerid: 123,
-//     username: 'cool-user',
-//     avatarUrl: 'url',
-//     isCurrentUserPartOfOrg: true,
-//     isAdmin: true,
-//   },
-// }

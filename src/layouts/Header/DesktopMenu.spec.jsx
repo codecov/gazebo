@@ -146,7 +146,7 @@ describe('DesktopMenu', () => {
     expect(supportLink).toBeInTheDocument()
     expect(supportLink).toHaveAttribute(
       'href',
-      'https://codecov.freshdesk.com/support/home'
+      'https://codecovpro.zendesk.com/hc/en-us'
     )
 
     const blogLink = await within(desktopMenu).findByRole('link', {

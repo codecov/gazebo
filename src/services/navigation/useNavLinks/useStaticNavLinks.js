@@ -106,10 +106,7 @@ export function useStaticNavLinks() {
     },
     support: {
       text: 'Support',
-      path: ({ isEnterprise = false } = { isEnterprise: false }) =>
-        config.IS_SELF_HOSTED || isEnterprise === true
-          ? `https://codecoventerprise.codecov.io/support/home`
-          : `https://codecov.freshdesk.com/support/home`,
+      path: () => 'https://codecovpro.zendesk.com/hc/en-us',
       isExternalLink: true,
       openNewTab: true,
     },
