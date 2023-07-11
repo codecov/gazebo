@@ -25,7 +25,7 @@ function Access({ provider }) {
             data-testid="tokens-docs-link"
             rel="noreferrer"
             target="_blank"
-            href="https://docs.codecov.com/reference/overview-v2"
+            href="https://docs.codecov.com/reference/overview"
             className="text-ds-blue"
           >
             learn more
