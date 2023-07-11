@@ -1,14 +1,34 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 import useIntersection from 'react-use/lib/useIntersection'
 
 import { useImage } from 'services/image'
 
-import ContextSwitcher from '.'
+import ContextSwitcher from './ContextSwitcher'
 
 jest.mock('react-use/lib/useIntersection')
 jest.mock('services/image')
+
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+const server = setupServer()
+
+beforeAll(() => {
+  server.listen()
+  console.error = () => {}
+})
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => {
+  server.close()
+})
 
 // eslint-disable-next-line react/prop-types
 const ModalComponent = ({ closeFn }) => <div onClick={closeFn}>component</div>
@@ -19,23 +39,32 @@ const wrapper =
   (initialEntries = '/gh') =>
   ({ children }) =>
     (
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Switch>
-          <Route path="/:provider" exact>
-            <div>Click away</div>
-            {children}
-          </Route>
-        </Switch>
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Switch>
+            <Route path="/:provider" exact>
+              <div>Click away</div>
+              {children}
+            </Route>
+          </Switch>
+        </MemoryRouter>
+      </QueryClientProvider>
     )
 
 describe('ContextSwitcher', () => {
   function setup() {
     const user = userEvent.setup()
+    const mutate = jest.fn()
 
     useImage.mockReturnValue({ src: 'imageUrl', isLoading: false, error: null })
+    server.use(
+      graphql.mutation('updateDefaultOrganization', (req, res, ctx) => {
+        mutate(req.variables)
 
-    return { user }
+        return res(ctx.status(200), ctx.json({ username: 'spotify' }))
+      })
+    )
+    return { user, mutate }
   }
 
   describe('when rendered', () => {
@@ -204,9 +233,6 @@ describe('ContextSwitcher', () => {
 
       const spotifyOwner = await screen.findByText('spotify')
       expect(spotifyOwner).toBeInTheDocument()
-
-      const defaultText = await screen.findByText('Default')
-      expect(defaultText).toBeInTheDocument()
     })
   })
 
@@ -214,50 +240,7 @@ describe('ContextSwitcher', () => {
     beforeEach(() => setup())
     afterEach(() => jest.restoreAllMocks())
 
-    it('renders all orgs and repos', async () => {
-      render(
-        <ContextSwitcher
-          activeContext={null}
-          contexts={[
-            {
-              owner: {
-                username: 'laudna',
-                avatarUrl: 'https://github.com/laudna.png?size=40',
-              },
-              pageName: 'provider',
-            },
-            {
-              owner: {
-                username: 'spotify',
-                avatarUrl: 'https://github.com/spotify.png?size=40',
-              },
-              pageName: 'owner',
-            },
-            {
-              owner: {
-                username: 'codecov',
-                avatarUrl: 'https://github.com/codecov.png?size=40',
-              },
-              pageName: 'owner',
-            },
-          ]}
-          currentUser={{
-            defaultOrgUsername: 'spotify',
-          }}
-          src="imageUrl"
-          isLoading={false}
-          error={null}
-        />,
-        {
-          wrapper: wrapper(),
-        }
-      )
-
-      const allOrgsAndRepos = await /all my orgs and repos/i
-      expect(screen.getByText(allOrgsAndRepos)).toBeInTheDocument()
-    })
-
-    it('renders Add GitHub organization copy', async () => {
+    it('renders manage access restrictions', async () => {
       render(
         <ContextSwitcher
           activeContext="laudna"
@@ -525,6 +508,65 @@ describe('ContextSwitcher', () => {
       await user.click(modalComponentText)
 
       await waitFor(() => expect(modalComponentText).not.toBeInTheDocument())
+    })
+
+    describe('when user clicks on an org', () => {
+      afterEach(() => jest.restoreAllMocks())
+
+      it('fires update org mutation', async () => {
+        const { user, mutate } = setup()
+        render(
+          <ContextSwitcher
+            activeContext="laudna"
+            contexts={[
+              {
+                owner: {
+                  username: 'laudna',
+                  avatarUrl: '',
+                },
+                pageName: 'provider',
+              },
+              {
+                owner: {
+                  username: 'spotify',
+                  avatarUrl: '',
+                },
+                pageName: 'owner',
+              },
+              {
+                owner: {
+                  username: 'codecov',
+                  avatarUrl: '',
+                },
+                pageName: 'owner',
+              },
+            ]}
+            currentUser={{
+              defaultOrgUsername: 'spotify',
+            }}
+            src="imageUrl"
+            isLoading={false}
+            error={null}
+          />,
+          {
+            wrapper: wrapper(),
+          }
+        )
+
+        const button = await screen.findByRole('button', { expanded: false })
+        await user.click(button)
+
+        const orgButton = await screen.findByText('codecov')
+        await user.click(orgButton)
+
+        await waitFor(() => {
+          expect(mutate).toHaveBeenCalledWith({
+            input: {
+              username: 'codecov',
+            },
+          })
+        })
+      })
     })
   })
 })
