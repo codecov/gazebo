@@ -236,11 +236,10 @@ function ContextSwitcher({
           onLoadMore={onLoadMore}
         />
         {isGh && (
-          <li className="flex max-h-64 flex-col gap-1 overflow-y-auto border-t border-ds-gray-secondary px-4 py-3 text-xs text-ds-gray-quinary">
-            <span className="font-semibold">Don&apos;t see your org?</span>
+          <li className="px-4 py-2 text-ds-blue-darker">
             <A to={{ pageName: 'codecovAppInstallation' }}>
-              {' '}
-              Installation of Codecov app required
+              <Icon name="plus-circle" />
+              Add GitHub organization
             </A>
           </li>
         )}
