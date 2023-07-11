@@ -37,7 +37,7 @@ jobs:
       - run:
           name: Run tests
           command: |
-            TESTFILES=$(circleci tests glob "src/**/*.spec.js" "src/**/*.test.js" "src/**/*.spec.jsx" "src/**/*.test.jsx" | circleci tests split --split-by=timings)
+            TESTFILES=$(circleci tests glob "src/**/*.spec.js" "src/**/*.test.js" "src/**/*.spec.jsx" "src/**/*.test.jsx" src/**/*.spec.ts" "src/**/*.test.ts" "src/**/*.spec.tsx" "src/**/*.test.tsx" | circleci tests split --split-by=timings)
             CI=true npm run test:ci -- --maxWorkers=2 $TESTFILES
           # Set maxWorkers to reflect the number of cores on the Resource Class running this task.
           environment:
