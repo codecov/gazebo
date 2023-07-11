@@ -52,9 +52,9 @@ afterAll(() => {
 interface SetupArgs {
   flagValue?: boolean
   planValue?: string
-  trialStatus?: string
-  trialStartDate?: string
-  trialEndDate?: string
+  trialStatus?: string | null
+  trialStartDate?: string | null
+  trialEndDate?: string | null
 }
 
 describe('TrialReminder', () => {
@@ -208,6 +208,24 @@ describe('TrialReminder', () => {
 
           expect(container).toBeEmptyDOMElement()
         })
+      })
+    })
+
+    describe('API returns no information', () => {
+      it('returns nothing', async () => {
+        setup({
+          planValue: Plans.USERS_BASIC,
+          trialStatus: null,
+          trialStartDate: null,
+          trialEndDate: null,
+        })
+
+        const { container } = render(<TrialReminder />, { wrapper })
+
+        await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
+        await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+        expect(container).toBeEmptyDOMElement()
       })
     })
   })

@@ -42,9 +42,9 @@ const TrialReminder: React.FC = () => {
         <A to={{ pageName: 'planTab' }}>&#128640; Upgrade plan</A>
       </div>
     )
+  } else {
+    return null
   }
-
-  return null
 }
 
 export default TrialReminder
