@@ -6,7 +6,11 @@ import { useOnboardingTracking } from 'services/user'
 import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
 
-const codecovActionString = `- name: Upload coverage reports to Codecov\n  uses: codecov/codecov-action@v3\n   env: CODECOV_TOKEN: \${{ secrets.CODECOV_TOKEN }}`
+const codecovActionString = `- name: Upload coverage reports to Codecov
+  uses: codecov/codecov-action@v3
+  env:
+    CODECOV_TOKEN: \${{ secrets.CODECOV_TOKEN }}
+`
 
 function GitHubActions() {
   const { provider, owner, repo } = useParams()
@@ -52,15 +56,8 @@ function GitHubActions() {
             After tests run, this will upload your coverage report to Codecov:
           </p>
         </div>
-        <div className="flex items-start justify-between overflow-auto whitespace-pre-line rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          <pre>
-            - name: Upload coverage reports to Codecov
-            <br />
-            &nbsp;&nbsp;uses: codecov/codecov-action@v3
-            <br />
-            &nbsp;&nbsp;&nbsp;&nbsp;env: CODECOV_TOKEN: $
-            {'{{ secrets.CODECOV_TOKEN }}'}
-          </pre>
+        <div className="flex items-start justify-between overflow-auto rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
+          <pre className="whitespace-pre">{codecovActionString}</pre>
           <CopyClipboard string={codecovActionString} />
         </div>
       </div>
