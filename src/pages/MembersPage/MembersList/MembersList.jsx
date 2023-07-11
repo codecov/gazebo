@@ -41,10 +41,8 @@ function useActivateUser({ provider, owner }) {
 }
 
 const handleActivate = (accountDetails, activate, setIsOpen) => (user) => {
-  const maxActivatedUsers = 5
-
   if (
-    accountDetails?.activatedUserCount >= maxActivatedUsers &&
+    accountDetails?.activatedUserCount >= accountDetails?.plan?.quantity &&
     !user.activated &&
     isFreePlan(accountDetails?.plan?.value)
   ) {
