@@ -2,16 +2,14 @@ import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
-import { useAccountDetails } from 'services/account'
 import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
-import { isEnterprisePlan } from 'shared/utils/billing'
 import Sidemenu from 'ui/Sidemenu'
 
-function defaultLinks({ internalAccessTab, orgUploadTokenTab }) {
+function defaultLinks({ internalAccessTab }) {
   return [
     ...(internalAccessTab ? [{ pageName: internalAccessTab }] : []),
     { pageName: 'yamlTab' },
-    ...(orgUploadTokenTab ? [{ pageName: orgUploadTokenTab }] : []),
+    { pageName: 'orgUploadToken' },
   ]
 }
 
@@ -22,7 +20,7 @@ function selfHostedOverrideLinks({ isPersonalSettings }) {
   ]
 }
 
-function adminOverrideLinks({ internalAccessTab, orgUploadTokenTab }) {
+function adminOverrideLinks({ internalAccessTab }) {
   return [
     {
       pageName: 'accountAdmin',
@@ -30,26 +28,26 @@ function adminOverrideLinks({ internalAccessTab, orgUploadTokenTab }) {
     },
     ...(internalAccessTab ? [{ pageName: internalAccessTab }] : []),
     { pageName: 'yamlTab' },
-    ...(orgUploadTokenTab ? [{ pageName: orgUploadTokenTab }] : []),
+    { pageName: 'orgUploadToken' },
   ]
 }
 
-const generateLinks = ({ isAdmin, isPersonalSettings, showOrgUploadToken }) => {
+const generateLinks = ({ isAdmin, isPersonalSettings }) => {
   const internalAccessTab = isPersonalSettings ? 'internalAccessTab' : ''
-  const orgUploadTokenTab = showOrgUploadToken ? 'orgUploadToken' : ''
 
   if (config.IS_SELF_HOSTED) {
     return selfHostedOverrideLinks({ isPersonalSettings })
   }
+
   if (isAdmin) {
-    return adminOverrideLinks({ internalAccessTab, orgUploadTokenTab })
+    return adminOverrideLinks({ internalAccessTab })
   }
 
-  return defaultLinks({ internalAccessTab, orgUploadTokenTab })
+  return defaultLinks({ internalAccessTab })
 }
 
 function AccountSettingsSideMenu() {
-  const { provider, owner } = useParams()
+  const { owner } = useParams()
 
   const { data: currentUser } = useUser()
   const isAdmin = useIsCurrentUserAnAdmin({ owner })
@@ -57,12 +55,9 @@ function AccountSettingsSideMenu() {
   const isPersonalSettings =
     currentUser?.user?.username?.toLowerCase() === owner?.toLowerCase()
 
-  const { data: accountDetails } = useAccountDetails({ owner, provider })
-
   const links = generateLinks({
     isAdmin,
     isPersonalSettings,
-    showOrgUploadToken: isEnterprisePlan(accountDetails?.plan?.value),
   })
 
   return <Sidemenu links={links} />
