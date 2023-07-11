@@ -7,7 +7,7 @@ build_date ?= $(shell git show -s --date=iso8601-strict --pretty=format:%cd $$sh
 IMAGE := ${CODECOV_GAZEBO_IMAGE}
 ENTERPRISE_IMAGE := ${CODECOV_GAZEBO_ENTERPRISE_IMAGE}
 DEVOPS_IMAGE := ${CODECOV_GAZEBO_DEVOPS_IMAGE}
-dockerhub_image := codecov/enterprise-frontend
+dockerhub_image := codecov/self-hosted-frontend
 export DOCKER_BUILDKIT := 1
 
 gcr.auth:
@@ -23,7 +23,7 @@ build.local.enterprise:
 	--build-arg REACT_APP_CODECOV_VERSION=${release_version}
 
 build:
-	docker build -f docker/Dockerfile . -t ${IMAGE}:${ENV}-${release_version}-${sha} \
+	docker build -f docker/Dockerfile . -t ${IMAGE}:${ENV}-${release_version}-${sha} -t ${IMAGE}:${ENV}-${release_version}-latest \
 	--build-arg REACT_APP_STAGE=${ENV} \
 	--build-arg REACT_APP_CODECOV_VERSION=${release_version} \
 	--build-arg REACT_APP_ENV_ARG=${ENV} \
@@ -35,7 +35,7 @@ build:
 
 build.enterprise:
 	$(MAKE) build
-	docker build -f docker/Dockerfile.enterprise . -t ${ENTERPRISE_IMAGE}:${release_version}-${sha} \
+	docker build -f docker/Dockerfile.enterprise . -t ${ENTERPRISE_IMAGE}:${release_version}-${sha} -t ${ENTERPRISE_IMAGE}:${release_version}-latest -t ${dockerhub_image}:rolling \
     	--build-arg FRONTEND_IMAGE=${IMAGE}:${ENV}-${release_version}-${sha} \
     	--label "org.label-schema.build-date"="$(build_date)" \
     	--label "org.label-schema.name"="Self-Hosted Frontend" \
@@ -44,14 +44,15 @@ build.enterprise:
     	--squash
 
 push:
-	docker tag ${IMAGE}:${ENV}-${release_version}-${sha} ${image}:${ENV}-${release_version}-latest
 	docker push ${IMAGE}:${ENV}-${release_version}-${sha}
 	docker push ${IMAGE}:${ENV}-${release_version}-latest
 
 push.enterprise:
-	docker tag ${ENTERPRISE_IMAGE}:${release_version}-${sha} ${ENTERPRISE_IMAGE}:${release_version}-latest
 	docker push ${ENTERPRISE_IMAGE}:${release_version}-${sha}
 	docker push ${ENTERPRISE_IMAGE}:${release_version}-latest
+
+push.rolling:
+	docker push ${dockerhub_image}:rolling
 
 pull-for-release:
 	docker pull ${ENTERPRISE_IMAGE}:${release_version}-${sha}
@@ -59,15 +60,17 @@ pull-for-release:
 release:
 	docker tag ${ENTERPRISE_IMAGE}:${release_version}-${sha} ${dockerhub_image}:${release_version}
 	docker tag ${ENTERPRISE_IMAGE}:${release_version}-${sha} ${dockerhub_image}:latest-stable
+	docker tag ${ENTERPRISE_IMAGE}:${release_version}-${sha} ${dockerhub_image}:latest-calver
 	docker push ${dockerhub_image}:${release_version}
 	docker push ${dockerhub_image}:latest-stable
+	docker push ${dockerhub_image}:latest-calver
 
 pull.devops:
 	docker pull ${DEVOPS_IMAGE}
 
 dive:
 	$(MAKE) pull.devops
-	docker run -e CI=true  -v /var/run/docker.sock:/var/run/docker.sock ${DEVOPS_IMAGE} dive ${image}:${ENV}-${release_version}-${sha} --lowestEfficiency=0.97 --highestUserWastedPercent=0.06
+	docker run -e CI=true  -v /var/run/docker.sock:/var/run/docker.sock ${DEVOPS_IMAGE} dive ${IMAGE}:${ENV}-${release_version}-${sha} --lowestEfficiency=0.97 --highestUserWastedPercent=0.06
 
 deep-dive:
 	$(MAKE) pull.devops

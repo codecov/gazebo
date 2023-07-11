@@ -2,10 +2,7 @@ import { format } from 'date-fns'
 import isFunction from 'lodash/isFunction'
 import { useParams } from 'react-router-dom'
 
-import { useOrgCoverage } from 'services/charts'
 import { useReposCoverageMeasurements } from 'services/charts/useReposCoverageMeasurements'
-import { useFlags } from 'shared/featureFlags'
-import { chartQuery, GroupingUnit } from 'shared/utils/legacyCharts'
 import {
   analyticsQuery,
   TimeseriesInterval,
@@ -13,16 +10,12 @@ import {
 
 export const useCoverage = ({ params, options = {} }) => {
   const { provider, owner } = useParams()
-  const { analyticsPageTimeSeries } = useFlags({
-    analyticsPageTimeSeries: false,
-  })
 
   const { select, ...newOptions } = options
-  const query = chartQuery(params)
 
   const queryVars = analyticsQuery(params)
 
-  const timeseriesCoverage = useReposCoverageMeasurements({
+  return useReposCoverageMeasurements({
     provider,
     owner,
     interval: queryVars?.interval,
@@ -30,7 +23,6 @@ export const useCoverage = ({ params, options = {} }) => {
     before: queryVars?.endDate,
     after: queryVars?.startDate,
     opts: {
-      enabled: !!analyticsPageTimeSeries,
       select: (data) => {
         if (data?.measurements?.[0]?.max === null) {
           data.measurements[0].max = 0
@@ -83,47 +75,4 @@ export const useCoverage = ({ params, options = {} }) => {
       ...newOptions,
     },
   })
-
-  const orgCoverage = useOrgCoverage({
-    provider,
-    owner,
-    query,
-    opts: {
-      enabled: !analyticsPageTimeSeries,
-      select: (data) => {
-        const coverage = data.coverage.map((coverage) => ({
-          ...coverage,
-          date: new Date(coverage.date),
-        }))
-        const coverageAxisLabel = (time) => {
-          if (query?.groupingUnit === GroupingUnit.DAY) {
-            return format(time, 'MMM d, yy')
-          } else {
-            return format(time, 'MMM yyyy')
-          }
-        }
-
-        const newData = {
-          ...data,
-          coverageAxisLabel,
-          coverage,
-        }
-
-        if (typeof select === 'function') {
-          return select(newData)
-        } else {
-          return newData
-        }
-      },
-      staleTime: 30000,
-      keepPreviousData: false,
-      ...newOptions,
-    },
-  })
-
-  if (analyticsPageTimeSeries) {
-    return timeseriesCoverage
-  }
-
-  return orgCoverage
 }

@@ -75,26 +75,15 @@ jobs:
           make push
 
       - name: Publish Enterprise
-        env:
-          ENV: enterprise
         run: |-
           make push.enterprise
           
-      
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1.14.1
+        with:
+          username: ${{ secrets.CODECOV_DEVOPS_DOCKER_USERNAME }}
+          password: ${{ secrets.CODECOV_DEVOPS_DOCKER_PASSWORD }}
 
-  release:
-    uses: ./.github/workflows/client-release.yml
-    secrets:
-      bucket: ${{ secrets.bucket_alpha }}
-      client_name: ${{ secrets.client_alpha }}
-      api_url: ${{ secrets.api_url_alpha }}
-      base_url: ${{ secrets.base_url_alpha }}
-      token: ${{ secrets.GITHUB_TOKEN }}
-      gcp_sa: ${{ secrets.CODECOV_GCP_WIDSA }}
-      gcp_idp: ${{ secrets.CODECOV_GCP_WIDP }}
-    permissions:
-      pull-requests: 'write'
-      contents: 'read'
-      id-token: 'write'
-      actions: 'read'
-      repository-projects: 'read'
+      - name: Publish Rolling
+        run: |-
+          make push.rolling

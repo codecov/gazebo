@@ -28,10 +28,10 @@ const variantClasses = {
   `,
   primary: `
     justify-center font-semibold
-    text-white bg-ds-blue-medium border-ds-blue-quinary
+    text-white bg-ds-blue-darker border-ds-blue-quinary
     border-solid border shadow
 
-    hover:bg-ds-blue-darker
+    hover:bg-ds-blue-quinary
   `,
   danger: `
     justify-center font-semibold

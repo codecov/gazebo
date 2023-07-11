@@ -257,7 +257,7 @@ describe('ContextSwitcher', () => {
       expect(screen.getByText(allOrgsAndRepos)).toBeInTheDocument()
     })
 
-    it('renders manage access restrictions', async () => {
+    it('renders Add GitHub organization copy', async () => {
       render(
         <ContextSwitcher
           activeContext="laudna"
@@ -298,10 +298,12 @@ describe('ContextSwitcher', () => {
         }
       )
 
-      const manageAccess = await screen.findByText(
-        /Installation of Codecov app required/i
+      const installCopy = await screen.findByText(/Add GitHub organization/)
+      expect(installCopy).toBeInTheDocument()
+      expect(installCopy).toHaveAttribute(
+        'href',
+        'https://github.com/apps/codecov/installations/new'
       )
-      expect(manageAccess).toBeInTheDocument()
     })
   })
 
