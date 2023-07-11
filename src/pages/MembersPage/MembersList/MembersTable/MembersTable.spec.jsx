@@ -7,7 +7,6 @@ import { mockAllIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useImage } from 'services/image'
-import { Plans } from 'shared/utils/billing'
 
 import MembersTable from './MembersTable'
 
@@ -272,47 +271,20 @@ describe('MembersTable', () => {
       })
 
       describe('rendering activation status column', () => {
-        describe('user is not on a free plan', () => {
-          describe('there are no open seats', () => {
-            beforeEach(() =>
-              setup({
-                accountDetails: {
-                  activatedUserCount: 5,
-                  plan: { value: Plans.USERS_PR_INAPPY, quantity: 5 },
-                },
-              })
-            )
-
-            it('displays disabled toggle', async () => {
-              render(<MembersTable />, { wrapper: wrapper() })
-
-              expect(await screen.findByRole('button')).toBeTruthy()
-
-              const toggle = screen.getByRole('button')
-              expect(toggle).toBeDisabled()
+        describe('there are no open seats', () => {
+          beforeEach(() =>
+            setup({
+              accountDetails: { activatedUserCount: 5, plan: { quantity: 5 } },
             })
-          })
-        })
+          )
 
-        describe('user is on a free plan', () => {
-          describe('there are no open seats', () => {
-            beforeEach(() =>
-              setup({
-                accountDetails: {
-                  activatedUserCount: 5,
-                  plan: { value: Plans.USERS_BASIC, quantity: 5 },
-                },
-              })
-            )
+          it('displays disabled toggle', async () => {
+            render(<MembersTable />, { wrapper: wrapper() })
 
-            it('displays enabled toggle', async () => {
-              render(<MembersTable />, { wrapper: wrapper() })
+            expect(await screen.findByRole('button')).toBeTruthy()
 
-              expect(await screen.findByRole('button')).toBeTruthy()
-
-              const toggle = screen.getByRole('button')
-              expect(toggle).not.toBeDisabled()
-            })
+            const toggle = screen.getByRole('button')
+            expect(toggle).toBeDisabled()
           })
         })
 

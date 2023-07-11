@@ -8,7 +8,6 @@ import { useParams } from 'react-router-dom'
 import { useAccountDetails } from 'services/account'
 import { useInfiniteUsers } from 'services/users'
 import { getOwnerImg } from 'shared/utils'
-import { isFreePlan } from 'shared/utils/billing'
 import Avatar, { DefaultAuthor } from 'ui/Avatar'
 import Spinner from 'ui/Spinner'
 import Table from 'ui/Table'
@@ -177,8 +176,7 @@ function MembersTable({ handleActivate, params }) {
 
   const { data: accountDetails } = useAccountDetails({ owner, provider })
   const maxSeatsReached =
-    accountDetails?.activatedUserCount >= accountDetails?.plan?.quantity &&
-    !isFreePlan(accountDetails?.plan?.value)
+    accountDetails?.activatedUserCount >= accountDetails?.plan?.quantity
 
   const tableContent = useMemo(
     () =>

@@ -6,8 +6,6 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import 'react-intersection-observer/test-utils'
 
-import { Plans } from 'shared/utils/billing'
-
 import MembersList from './MembersList'
 
 const mockNonActiveUserRequest = {
@@ -53,16 +51,12 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-beforeAll(() => {
-  server.listen()
-})
+beforeAll(() => server.listen())
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-afterAll(() => {
-  server.close()
-})
+afterAll(() => server.close())
 
 describe('MembersList', () => {
   let testLocation
@@ -84,7 +78,6 @@ describe('MembersList', () => {
 
   function setup({ accountDetails = {} } = { accountDetails: {} }) {
     const user = userEvent.setup()
-    const mockActivateUser = jest.fn()
 
     let sendActivatedUser = false
 
@@ -101,12 +94,11 @@ describe('MembersList', () => {
       }),
       rest.patch('/internal/gh/codecov/users/:ownerid', (req, res, ctx) => {
         sendActivatedUser = true
-        mockActivateUser()
         return res(ctx.status(200))
       })
     )
 
-    return { user, mockActivateUser }
+    return { user }
   }
 
   describe('rendering MembersList', () => {
@@ -302,124 +294,59 @@ describe('MembersList', () => {
   })
 
   describe('interacting with user toggles', () => {
-    describe('user is on a free plan', () => {
-      describe('activated seats is greater then or equal to plan quantity', () => {
-        it('opens up upgrade modal', async () => {
-          const { user } = setup({
-            accountDetails: {
-              activatedUserCount: 100,
-              plan: { value: Plans.USERS_BASIC, quantity: 1 },
-            },
-          })
-
-          render(<MembersList />, { wrapper })
-
-          await waitFor(() =>
-            expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-          )
-
-          const tableHeader = await screen.findByText('User name')
-          expect(tableHeader).toBeInTheDocument()
-
-          const toggle = await screen.findByLabelText('Non-Active')
-          expect(toggle).toBeInTheDocument()
-          await user.click(toggle)
-
-          const modalHeader = await screen.findByText('Upgrade to Pro')
-          expect(modalHeader).toBeInTheDocument()
+    describe('user has reached max seats, and on a free plan', () => {
+      it('opens up upgrade modal', async () => {
+        const { user } = setup({
+          accountDetails: {
+            activatedUserCount: 100,
+            plan: { value: 'users-free' },
+          },
         })
-      })
+        render(<MembersList />, { wrapper })
 
-      describe('activated seats is less then or equal to plan quantity', () => {
-        it('does not open upgrade modal', async () => {
-          const { user } = setup({
-            accountDetails: {
-              activatedUserCount: 0,
-              plan: { value: Plans.USERS_BASIC, quantity: 1 },
-            },
-          })
-          render(<MembersList />, { wrapper })
+        await waitFor(() =>
+          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+        )
 
-          await waitFor(() =>
-            expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-          )
+        const tableHeader = await screen.findByText('User name')
+        expect(tableHeader).toBeInTheDocument()
 
-          const tableHeader = await screen.findByText('User name')
-          expect(tableHeader).toBeInTheDocument()
+        const toggle = await screen.findByLabelText('Non-Active')
+        expect(toggle).toBeInTheDocument()
+        await user.click(toggle)
 
-          const toggle = await screen.findByLabelText('Non-Active')
-          expect(toggle).toBeInTheDocument()
-          await user.click(toggle)
-
-          await waitFor(() =>
-            expect(
-              screen.queryByLabelText('Non-Active')
-            ).not.toBeInTheDocument()
-          )
-
-          const activeToggle = await screen.findByText('Activated')
-          expect(activeToggle).toBeInTheDocument()
-        })
+        const modalHeader = await screen.findByText('Upgrade to Pro')
+        expect(modalHeader).toBeInTheDocument()
       })
     })
 
-    describe('user is not on a free plan', () => {
-      describe('activated seats is greater then or equal to plan quantity', () => {
-        it('renders disabled toggle', async () => {
-          setup({
-            accountDetails: {
-              activatedUserCount: 100,
-              plan: { value: Plans.USERS_PR_INAPPY, quantity: 1 },
-            },
-          })
-
-          render(<MembersList />, { wrapper })
-
-          await waitFor(() =>
-            expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-          )
-
-          const tableHeader = await screen.findByText('User name')
-          expect(tableHeader).toBeInTheDocument()
-
-          const toggle = await screen.findByLabelText('Non-Active')
-          expect(toggle).toBeInTheDocument()
-          expect(toggle).toBeDisabled()
+    describe('user has not reached max seats', () => {
+      it('opens up upgrade modal', async () => {
+        const { user } = setup({
+          accountDetails: {
+            activatedUserCount: 0,
+            plan: { value: 'users-free' },
+          },
         })
-      })
+        render(<MembersList />, { wrapper })
 
-      describe('activated seats is less then or equal to plan quantity', () => {
-        it('calls activate user', async () => {
-          const { user, mockActivateUser } = setup({
-            accountDetails: {
-              activatedUserCount: 0,
-              plan: { value: Plans.USERS_PR_INAPPY, quantity: 1 },
-            },
-          })
-          render(<MembersList />, { wrapper })
+        await waitFor(() =>
+          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+        )
 
-          await waitFor(() =>
-            expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-          )
+        const tableHeader = await screen.findByText('User name')
+        expect(tableHeader).toBeInTheDocument()
 
-          const tableHeader = await screen.findByText('User name')
-          expect(tableHeader).toBeInTheDocument()
+        const toggle = await screen.findByLabelText('Non-Active')
+        expect(toggle).toBeInTheDocument()
+        await user.click(toggle)
 
-          const toggle = await screen.findByLabelText('Non-Active')
-          expect(toggle).toBeInTheDocument()
-          await user.click(toggle)
+        await waitFor(() =>
+          expect(screen.queryByLabelText('Non-Active')).not.toBeInTheDocument()
+        )
 
-          await waitFor(() =>
-            expect(
-              screen.queryByLabelText('Non-Active')
-            ).not.toBeInTheDocument()
-          )
-
-          const activeToggle = await screen.findByText('Activated')
-          expect(activeToggle).toBeInTheDocument()
-
-          await waitFor(() => expect(mockActivateUser).toBeCalled())
-        })
+        const activeToggle = await screen.findByText('Activated')
+        expect(activeToggle).toBeInTheDocument()
       })
     })
   })
