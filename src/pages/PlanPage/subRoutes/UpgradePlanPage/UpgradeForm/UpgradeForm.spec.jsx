@@ -124,12 +124,12 @@ describe('UpgradeForm', () => {
       successfulRequest = true,
       errorDetails = undefined,
       includeSentryPlans = false,
-      trialStatus = null,
+      trialStatus = undefined,
     } = {
       successfulRequest: true,
       errorDetails: undefined,
       includeSentryPlans: false,
-      trialStatus: null,
+      trialStatus: undefined,
     }
   ) {
     const addNotification = jest.fn()
