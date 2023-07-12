@@ -61,7 +61,7 @@ describe('TrialReminder', () => {
   function setup({
     flagValue = true,
     planValue = Plans.USERS_BASIC,
-    trialStatus = TrialStatuses.NOT_STARTED,
+    trialStatus = undefined,
     trialStartDate = '2023-01-01T08:55:25',
     trialEndDate = '2023-01-01T08:55:25',
   }: SetupArgs) {
@@ -211,11 +211,28 @@ describe('TrialReminder', () => {
       })
     })
 
+    describe('user cannot trial', () => {
+      it('does not display upgrade link', async () => {
+        setup({
+          planValue: Plans.USERS_PR_INAPPY,
+          trialStatus: TrialStatuses.NEVER_TRIALED,
+          trialStartDate: '2023-01-01T08:55:25',
+          trialEndDate: '2023-01-01T08:55:25',
+        })
+
+        const { container } = render(<TrialReminder />, { wrapper })
+
+        await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
+        await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+        expect(container).toBeEmptyDOMElement()
+      })
+    })
+
     describe('API returns no information', () => {
       it('returns nothing', async () => {
         setup({
           planValue: Plans.USERS_BASIC,
-          trialStatus: null,
           trialStartDate: null,
           trialEndDate: null,
         })
