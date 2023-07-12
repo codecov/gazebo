@@ -60,7 +60,7 @@ const MainAppRoutes = () => (
         </BaseLayout>
       </SentryRoute>
     )}
-    {!config.IS_SELF_HOSTED && ( //Do we redirect to default org?
+    {!config.IS_SELF_HOSTED && (
       <SentryRoute path="/plan/:provider" exact>
         <BaseLayout>
           <HomePageRedirect />
@@ -134,7 +134,7 @@ const MainAppRoutes = () => (
           <EnterpriseLandingPage />
         </BaseLayout>
       ) : (
-        <Redirect to="/gh/not_found" /> // TODO: Handle redirect to org, somehow?
+        <Redirect to="/login/gh" />
       )}
     </SentryRoute>
   </Switch>

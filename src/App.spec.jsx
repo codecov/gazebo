@@ -261,11 +261,11 @@ describe('App', () => {
     ],
     [
       {
-        testLabel: 'EnterpriseLandingPage',
+        testLabel: 'LoginPage',
         pathname: '/',
         expected: {
-          page: /OwnerPage/i,
-          location: '/gh/not_found',
+          page: /LoginPage/i,
+          location: '/login/gh',
         },
       },
     ],
