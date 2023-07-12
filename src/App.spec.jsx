@@ -15,7 +15,6 @@ jest.mock('./pages/AdminSettings', () => () => 'AdminSettingsPage')
 jest.mock('./pages/AnalyticsPage', () => () => 'AnalyticsPage')
 jest.mock('./pages/CommitDetailPage', () => () => 'CommitDetailPage')
 jest.mock('./pages/FeedbackPage', () => () => 'FeedbackPage')
-jest.mock('./pages/HomePage', () => () => 'HomePage')
 jest.mock('./pages/LoginPage', () => () => 'LoginPage')
 jest.mock('./pages/OwnerPage', () => () => 'OwnerPage')
 jest.mock('./pages/MembersPage', () => () => 'MembersPage')
@@ -98,7 +97,11 @@ describe('App', () => {
         res(
           ctx.status(200),
           ctx.data({
-            me: { user: user, trackingMetadata: { ownerid: 123 }, ...user },
+            me: {
+              user: user,
+              trackingMetadata: { ownerid: 123 },
+              ...user,
+            },
           })
         )
       )
@@ -158,11 +161,11 @@ describe('App', () => {
     ],
     [
       {
-        testLabel: 'AllOrgsPlanPage',
+        testLabel: 'PlanPage',
         pathname: '/plan/gh',
         expected: {
-          page: /AllOrgsPlanPage/i,
-          location: '/plan/gh',
+          page: /OwnerPage/i,
+          location: '/gh/CodecovUser',
         },
       },
     ],
@@ -193,16 +196,6 @@ describe('App', () => {
         expected: {
           page: /FeedbackPage/i,
           location: '/bb/feedback',
-        },
-      },
-    ],
-    [
-      {
-        testLabel: 'HomePage',
-        pathname: '/gh',
-        expected: {
-          page: /HomePage/i,
-          location: '/gh',
         },
       },
     ],
@@ -271,8 +264,8 @@ describe('App', () => {
         testLabel: 'EnterpriseLandingPage',
         pathname: '/',
         expected: {
-          page: /HomePage/i,
-          location: '/gh',
+          page: /OwnerPage/i,
+          location: '/gh/not_found',
         },
       },
     ],
@@ -341,7 +334,7 @@ describe('App', () => {
     ],
     [
       {
-        testLabel: 'PlanPage',
+        testLabel: 'OwnerPage',
         pathname: '/plan/gh/codecov',
         expected: {
           page: /RepoPage/i,
@@ -386,16 +379,6 @@ describe('App', () => {
         expected: {
           page: /FeedbackPage/i,
           location: '/bb/feedback',
-        },
-      },
-    ],
-    [
-      {
-        testLabel: 'HomePage',
-        pathname: '/gh',
-        expected: {
-          page: /HomePage/i,
-          location: '/gh',
         },
       },
     ],

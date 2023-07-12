@@ -233,7 +233,7 @@ describe('SentryTrialBanner', () => {
             name: /Start Trial/,
           })
           expect(buttonLink).toBeInTheDocument()
-          expect(buttonLink).toHaveAttribute('href', '/plan/gh')
+          expect(buttonLink).toHaveAttribute('href', '/gh/codecov')
         })
 
         it('renders dismiss button', async () => {

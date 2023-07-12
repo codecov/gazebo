@@ -20,19 +20,11 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 
-let testLocation
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov']}>
     <Route path="/:provider/:owner/">
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </Route>
-    <Route
-      path="*"
-      render={({ location }) => {
-        testLocation = location
-        return null
-      }}
-    />
   </MemoryRouter>
 )
 
@@ -73,7 +65,6 @@ describe('useUpdateDefaultOrganization', () => {
         const username =
           result.current.data.data.updateDefaultOrganization.username
         await waitFor(() => expect(username).toBe('Gilmore'))
-        await waitFor(() => expect(testLocation.pathname).toBe('/gh/Gilmore'))
       })
     })
   })

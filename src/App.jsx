@@ -60,6 +60,13 @@ const MainAppRoutes = () => (
         </BaseLayout>
       </SentryRoute>
     )}
+    {!config.IS_SELF_HOSTED && ( //Do we redirect to default org?
+      <SentryRoute path="/plan/:provider" exact>
+        <BaseLayout>
+          <HomePageRedirect />
+        </BaseLayout>
+      </SentryRoute>
+    )}
     {!config.IS_SELF_HOSTED && (
       <SentryRoute path="/plan/:provider/:owner">
         <BaseLayout>

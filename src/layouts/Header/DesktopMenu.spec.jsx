@@ -12,6 +12,9 @@ jest.mock('config')
 
 const loggedInUser = {
   me: {
+    owner: {
+      defaultOrgUsername: 'codecov',
+    },
     user: {
       username: 'p',
       avatarUrl: '',
@@ -100,7 +103,7 @@ describe('DesktopMenu', () => {
 
         const link = await screen.findByTestId('homepage-link')
         expect(link).toBeInTheDocument()
-        expect(link).toHaveAttribute('href', '/gh')
+        expect(link).toHaveAttribute('href', '/gh/codecov')
       })
     })
 
