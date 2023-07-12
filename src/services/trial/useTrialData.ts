@@ -7,13 +7,14 @@ export const TrialStatuses = {
   NOT_STARTED: 'NOT_STARTED',
   ONGOING: 'ONGOING',
   EXPIRED: 'EXPIRED',
+  NEVER_TRIALED: 'NEVER_TRIALED',
 } as const
 
 export const TrialConfig = z
   .object({
     plan: z
       .object({
-        trialStatus: z.nativeEnum(TrialStatuses).nullish(),
+        trialStatus: z.nativeEnum(TrialStatuses).optional(),
         trialStartDate: z.string().nullish(),
         trialEndDate: z.string().nullish(),
       })
