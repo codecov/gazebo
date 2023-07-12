@@ -38,7 +38,7 @@ function GenerateOrgUploadToken() {
         </div>
       )}
       <div className="flex gap-1">
-        <A to={{ pageName: 'orgUploadToken' }}>Learn more</A>
+        <A to={{ pageName: 'orgUploadTokenDoc' }}>Learn more</A>
         <p>how to generate and use the global upload token.</p>
       </div>
     </div>
