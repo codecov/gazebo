@@ -179,17 +179,8 @@ function ContextSwitcher({
         aria-expanded={toggle}
         onClick={() => setToggle((toggle) => !toggle)}
       >
-        {currentContext ? (
-          <>
-            <Avatar user={currentContext.owner} bordered />
-            <p className="ml-1">{currentContext.owner.username}</p>
-          </>
-        ) : (
-          <>
-            <Icon name="home" />
-            <p className="ml-1">All my orgs and repos</p>
-          </>
-        )}
+        <Avatar user={currentContext.owner} bordered />
+        <p className="ml-1">{currentContext.owner.username}</p>
         <span
           aria-hidden="true"
           className={cs('transition-transform', {
