@@ -26,7 +26,6 @@ const OwnerPage = lazy(() => import('./pages/OwnerPage'))
 const PullRequestPage = lazy(() => import('./pages/PullRequestPage'))
 const RepoPage = lazy(() => import('./pages/RepoPage'))
 
-// TODO: Move to shared
 const HomePageRedirect = () => {
   const { provider } = useParams()
   const { data: currentUser } = useUser()
