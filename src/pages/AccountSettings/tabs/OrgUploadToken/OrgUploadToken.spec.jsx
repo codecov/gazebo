@@ -130,6 +130,17 @@ describe('OrgUploadToken', () => {
       const genBtn = await screen.findByRole('button', { name: /Generate/ })
       expect(genBtn).toBeInTheDocument()
     })
+
+    it('renders link to codecov uploader', async () => {
+      render(<OrgUploadToken />, { wrapper })
+
+      const link = await screen.findByRole('link', { name: /Learn more/ })
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute(
+        'href',
+        'https://docs.codecov.com/docs/codecov-uploader#organization-upload-token'
+      )
+    })
   })
 
   describe('when user clicks on Generate button', () => {
