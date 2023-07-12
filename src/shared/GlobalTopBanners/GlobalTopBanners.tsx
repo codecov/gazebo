@@ -2,12 +2,12 @@ import { lazy } from 'react'
 
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 
-const SentryTrialBanner = lazy(() => import('./SentryTrialBanner'))
+const TrialBanner = lazy(() => import('./SentryTrialBanner'))
 
 const GlobalTopBanners: React.FC = () => {
   return (
     <SilentNetworkErrorWrapper>
-      <SentryTrialBanner />
+      <TrialBanner />
     </SilentNetworkErrorWrapper>
   )
 }

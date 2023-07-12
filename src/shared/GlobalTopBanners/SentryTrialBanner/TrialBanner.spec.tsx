@@ -8,7 +8,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
 
-import SentryTrialBanner from './SentryTrialBanner'
+import TrialBanner from './TrialBanner'
 
 const accountOne = {
   integrationId: null,
@@ -112,7 +112,7 @@ afterAll(() => {
   server.close()
 })
 
-describe('SentryTrialBanner', () => {
+describe('TrialBanner', () => {
   function setup(
     {
       includeSentryPlans = true,
@@ -186,7 +186,7 @@ describe('SentryTrialBanner', () => {
     it('returns null', async () => {
       setup()
 
-      const { container } = render(<SentryTrialBanner />, {
+      const { container } = render(<TrialBanner />, {
         wrapper: wrapper('/gh', '/:provider'),
       })
 
@@ -201,7 +201,7 @@ describe('SentryTrialBanner', () => {
           ongoingTrial: true,
         })
 
-        const { container } = render(<SentryTrialBanner />, {
+        const { container } = render(<TrialBanner />, {
           wrapper: wrapper(),
         })
 
@@ -216,7 +216,7 @@ describe('SentryTrialBanner', () => {
           isSentryPlan: true,
         })
 
-        const { container } = render(<SentryTrialBanner />, {
+        const { container } = render(<TrialBanner />, {
           wrapper: wrapper(),
         })
 
@@ -229,7 +229,7 @@ describe('SentryTrialBanner', () => {
         it('renders trial info', async () => {
           setup()
 
-          render(<SentryTrialBanner />, {
+          render(<TrialBanner />, {
             wrapper: wrapper(),
           })
 
@@ -242,7 +242,7 @@ describe('SentryTrialBanner', () => {
         it('renders button link to org upgrade page', async () => {
           setup()
 
-          render(<SentryTrialBanner />, {
+          render(<TrialBanner />, {
             wrapper: wrapper(),
           })
 
@@ -256,7 +256,7 @@ describe('SentryTrialBanner', () => {
         it('renders dismiss button', async () => {
           setup()
 
-          render(<SentryTrialBanner />, {
+          render(<TrialBanner />, {
             wrapper: wrapper(),
           })
 
@@ -272,7 +272,7 @@ describe('SentryTrialBanner', () => {
 
             mockGetItem.mockReturnValue(null)
 
-            render(<SentryTrialBanner />, {
+            render(<TrialBanner />, {
               wrapper: wrapper(),
             })
 
@@ -295,7 +295,7 @@ describe('SentryTrialBanner', () => {
 
             mockGetItem.mockReturnValue(null)
 
-            const { container } = render(<SentryTrialBanner />, {
+            const { container } = render(<TrialBanner />, {
               wrapper: wrapper(),
             })
 

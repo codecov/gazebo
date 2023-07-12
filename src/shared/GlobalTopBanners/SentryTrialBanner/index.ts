@@ -1,1 +1,1 @@
-export { default } from './SentryTrialBanner'
+export { default } from './TrialBanner'
