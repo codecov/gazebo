@@ -17,7 +17,7 @@ const PendoLink: React.FC = () => {
       <A
         id="pendo-modal-anchor-link"
         hook="pendo-pr-page"
-        href=""
+        href="#"
         variant="black"
       >
         Does this report look accurate?
