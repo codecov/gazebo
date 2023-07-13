@@ -59,17 +59,17 @@ const TrialReminder: React.FC = () => {
     },
   })
 
-  const trialStatus = planData?.plan?.trialStatus
-  const trialStartDate = planData?.plan?.trialStartDate
-  const trialEndDate = planData?.plan?.trialEndDate
   const planValue = planData?.plan?.planName
 
   const { trialNotStarted, trialOngoing, trialExpired, cannotTrial } =
     determineTrialStates({
-      trialStatus,
+      trialStatus: planData?.plan?.trialStatus,
     })
 
-  const dateDiff = determineDateDiff({ trialStartDate, trialEndDate })
+  const dateDiff = determineDateDiff({
+    trialStartDate: planData?.plan?.trialStartDate,
+    trialEndDate: planData?.plan?.trialEndDate,
+  })
 
   if (
     (!isFreePlan(planValue) && !trialOngoing) ||
