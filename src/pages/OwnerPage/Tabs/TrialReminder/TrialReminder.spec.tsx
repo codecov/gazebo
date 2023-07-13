@@ -67,6 +67,7 @@ interface SetupArgs {
   trialStatus?: string | null
   trialStartDate?: string | null
   trialEndDate?: string | null
+  userPartOfOrg?: boolean
 }
 
 describe('TrialReminder', () => {
@@ -76,6 +77,7 @@ describe('TrialReminder', () => {
     trialStatus = undefined,
     trialStartDate = '2023-01-01T08:55:25',
     trialEndDate = '2023-01-01T08:55:25',
+    userPartOfOrg = true,
   }: SetupArgs) {
     mockedUseFlags.mockReturnValue({
       codecovTrialMvp: flagValue,
@@ -97,6 +99,16 @@ describe('TrialReminder', () => {
             },
           })
         )
+      }),
+      graphql.query('DetailOwner', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              isCurrentUserPartOfOrg: userPartOfOrg,
+            },
+          })
+        )
       })
     )
   }
@@ -104,22 +116,46 @@ describe('TrialReminder', () => {
   describe('flag is enabled', () => {
     describe('user has not started a trial', () => {
       describe('user is on a free plan', () => {
-        it('displays trial upgrade link', async () => {
-          setup({
-            planValue: Plans.USERS_BASIC,
-            trialStatus: TrialStatuses.NOT_STARTED,
-            trialStartDate: undefined,
-            trialEndDate: undefined,
+        describe('user is part of org', () => {
+          it('displays trial upgrade link', async () => {
+            setup({
+              planValue: Plans.USERS_BASIC,
+              trialStatus: TrialStatuses.NOT_STARTED,
+              trialStartDate: undefined,
+              trialEndDate: undefined,
+              userPartOfOrg: true,
+            })
+
+            render(<TrialReminder />, { wrapper })
+
+            const link = await screen.findByRole('link', {
+              name: /Trial Pro Team/,
+            })
+
+            expect(link).toBeInTheDocument()
+            expect(link).toHaveAttribute('href', '/plan/gh/codecov/upgrade')
           })
+        })
 
-          render(<TrialReminder />, { wrapper })
+        describe('user is not part of org', () => {
+          it('does not display trial upgrade link', async () => {
+            setup({
+              planValue: Plans.USERS_BASIC,
+              trialStatus: TrialStatuses.NOT_STARTED,
+              trialStartDate: undefined,
+              trialEndDate: undefined,
+              userPartOfOrg: false,
+            })
 
-          const link = await screen.findByRole('link', {
-            name: /Trial Pro Team/,
+            const { container } = render(<TrialReminder />, { wrapper })
+
+            await waitFor(() =>
+              expect(queryClient.isFetching()).toBeGreaterThan(0)
+            )
+            await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+            expect(container).toBeEmptyDOMElement()
           })
-
-          expect(link).toBeInTheDocument()
-          expect(link).toHaveAttribute('href', '/plan/gh/codecov/upgrade')
         })
       })
 
@@ -146,18 +182,41 @@ describe('TrialReminder', () => {
 
     describe('user is currently on a trial', () => {
       describe('it is within 4 days remaining on the trial', () => {
-        it('displays trial upgrade link', async () => {
-          setup({
-            planValue: Plans.USERS_PR_INAPPY,
-            trialStatus: TrialStatuses.ONGOING,
-            trialStartDate: '2023-01-01T08:55:25',
-            trialEndDate: '2023-01-10T08:55:25',
+        describe('user is part of org', () => {
+          it('displays trial upgrade link', async () => {
+            setup({
+              planValue: Plans.USERS_PR_INAPPY,
+              trialStatus: TrialStatuses.ONGOING,
+              trialStartDate: '2023-01-01T08:55:25',
+              trialEndDate: '2023-01-10T08:55:25',
+            })
+
+            render(<TrialReminder />, { wrapper })
+
+            const text = await screen.findByText(/Trial is active/)
+            expect(text).toBeInTheDocument()
           })
+        })
 
-          render(<TrialReminder />, { wrapper })
+        describe('user is not part of org', () => {
+          it('does not display trial upgrade link', async () => {
+            setup({
+              planValue: Plans.USERS_BASIC,
+              trialStatus: TrialStatuses.ONGOING,
+              trialStartDate: '2023-01-01T08:55:25',
+              trialEndDate: '2023-01-10T08:55:25',
+              userPartOfOrg: false,
+            })
 
-          const text = await screen.findByText(/Trial is active/)
-          expect(text).toBeInTheDocument()
+            const { container } = render(<TrialReminder />, { wrapper })
+
+            await waitFor(() =>
+              expect(queryClient.isFetching()).toBeGreaterThan(0)
+            )
+            await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+            expect(container).toBeEmptyDOMElement()
+          })
         })
       })
 
@@ -184,19 +243,45 @@ describe('TrialReminder', () => {
 
     describe('user has finished the trial', () => {
       describe('the user is on a free plan', () => {
-        it('displays the upgrade link', async () => {
-          setup({
-            planValue: Plans.USERS_BASIC,
-            trialStatus: TrialStatuses.EXPIRED,
-            trialStartDate: '2023-01-01T08:55:25',
-            trialEndDate: '2023-01-02T08:55:25',
+        describe('user is part of the org', () => {
+          it('displays the upgrade link', async () => {
+            setup({
+              planValue: Plans.USERS_BASIC,
+              trialStatus: TrialStatuses.EXPIRED,
+              trialStartDate: '2023-01-01T08:55:25',
+              trialEndDate: '2023-01-02T08:55:25',
+              userPartOfOrg: true,
+            })
+
+            render(<TrialReminder />, { wrapper })
+
+            const link = await screen.findByRole('link', {
+              name: /Upgrade plan/,
+            })
+            expect(link).toBeInTheDocument()
+            expect(link).toHaveAttribute('href', '/plan/gh/codecov/upgrade')
           })
+        })
 
-          render(<TrialReminder />, { wrapper })
+        describe('user is not part of org', () => {
+          it('does not display trial upgrade link', async () => {
+            setup({
+              planValue: Plans.USERS_BASIC,
+              trialStatus: TrialStatuses.EXPIRED,
+              trialStartDate: '2023-01-01T08:55:25',
+              trialEndDate: '2023-01-02T08:55:25',
+              userPartOfOrg: false,
+            })
 
-          const link = await screen.findByRole('link', { name: /Upgrade plan/ })
-          expect(link).toBeInTheDocument()
-          expect(link).toHaveAttribute('href', '/plan/gh/codecov/upgrade')
+            const { container } = render(<TrialReminder />, { wrapper })
+
+            await waitFor(() =>
+              expect(queryClient.isFetching()).toBeGreaterThan(0)
+            )
+            await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+            expect(container).toBeEmptyDOMElement()
+          })
         })
       })
 
