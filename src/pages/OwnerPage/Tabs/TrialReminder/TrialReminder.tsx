@@ -1,8 +1,7 @@
 import { differenceInCalendarDays } from 'date-fns'
 import { useParams } from 'react-router-dom'
 
-import { useAccountDetails } from 'services/account'
-import { TrialStatuses, useTrialData } from 'services/trial'
+import { TrialStatuses, usePlanData } from 'services/account'
 import { useFlags } from 'shared/featureFlags'
 import { isFreePlan } from 'shared/utils/billing'
 import A from 'ui/A/A'
@@ -15,7 +14,7 @@ const determineTrialStates = ({
   const trialNotStarted = trialStatus === TrialStatuses.NOT_STARTED
   const trialOngoing = trialStatus === TrialStatuses.ONGOING
   const trialExpired = trialStatus === TrialStatuses.EXPIRED
-  const cannotTrial = trialStatus === TrialStatuses.NEVER_TRIALED
+  const cannotTrial = trialStatus === TrialStatuses.CANNOT_TRIAL
 
   return { trialNotStarted, trialOngoing, trialExpired, cannotTrial }
 }
@@ -46,26 +45,22 @@ const TrialReminder: React.FC = () => {
     codecovTrialMvp: false,
   })
 
-  const { data: accountData } = useAccountDetails({
+  const { data: planData } = usePlanData({
     provider,
     owner,
-    opts: { enabled: codecovTrialMvp },
+    opts: {
+      enabled: codecovTrialMvp,
+    },
   })
 
-  const planValue = accountData?.plan?.value
-
-  const { data: trialData } = useTrialData({
-    provider,
-    owner,
-    opts: { enabled: codecovTrialMvp },
-  })
-
-  const trialStartDate = trialData?.plan?.trialStartDate
-  const trialEndDate = trialData?.plan?.trialEndDate
+  const trialStatus = planData?.plan?.trialStatus
+  const trialStartDate = planData?.plan?.trialStartDate
+  const trialEndDate = planData?.plan?.trialEndDate
+  const planValue = planData?.plan?.planName
 
   const { trialNotStarted, trialOngoing, trialExpired, cannotTrial } =
     determineTrialStates({
-      trialStatus: trialData?.plan?.trialStatus,
+      trialStatus,
     })
 
   const dateDiff = determineDateDiff({ trialStartDate, trialEndDate })
@@ -83,7 +78,7 @@ const TrialReminder: React.FC = () => {
       <div className="flex items-center font-semibold">
         {/* this is required because the A component has this random `[x: string]: any` record type on it */}
         {/* @ts-expect-error */}
-        <A to={{ pageName: 'planTab' }}>&#128640; Trial Pro Team</A>
+        <A to={{ pageName: 'upgradeOrgPlan' }}>&#128640; Trial Pro Team</A>
       </div>
     )
   }
@@ -96,7 +91,7 @@ const TrialReminder: React.FC = () => {
           <span className="font-semibold">
             {/* this is required because the A component has this random `[x: string]: any` record type on it */}
             {/* @ts-expect-error */}
-            <A to={{ pageName: 'planTab' }}>upgrade</A>
+            <A to={{ pageName: 'upgradeOrgPlan' }}>upgrade</A>
           </span>
         </p>
       </div>
@@ -108,7 +103,7 @@ const TrialReminder: React.FC = () => {
       <div className="flex items-center font-semibold">
         {/* this is required because the A component has this random `[x: string]: any` record type on it */}
         {/* @ts-expect-error*/}
-        <A to={{ pageName: 'planTab' }}>&#128640; Upgrade plan</A>
+        <A to={{ pageName: 'upgradeOrgPlan' }}>&#128640; Upgrade plan</A>
       </div>
     )
   }

@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql, rest } from 'msw'
+import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -23,6 +23,18 @@ const queryClient = new QueryClient({
     },
   },
 })
+
+const mockResponse = {
+  baseUnitPrice: 10,
+  benefits: [],
+  billingRate: 'monthly',
+  marketingName: 'Users Basic',
+  monthlyUploadLimit: 250,
+  planName: 'users-basic',
+  trialStatus: TrialStatuses.NOT_STARTED,
+  trialStartDate: '',
+  trialEndDate: '',
+}
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
@@ -70,20 +82,18 @@ describe('TrialReminder', () => {
     })
 
     server.use(
-      graphql.query('GetTrialData', (req, res, ctx) => {
+      graphql.query('GetPlanData', (req, res, ctx) => {
         return res(
           ctx.status(200),
           ctx.data({
-            owner: { plan: { trialStatus, trialStartDate, trialEndDate } },
-          })
-        )
-      }),
-      rest.get('/internal/gh/codecov/account-details/', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            plan: {
-              value: planValue,
+            owner: {
+              plan: {
+                ...mockResponse,
+                trialStatus,
+                trialStartDate,
+                trialEndDate,
+                planName: planValue,
+              },
             },
           })
         )
@@ -109,7 +119,7 @@ describe('TrialReminder', () => {
           })
 
           expect(link).toBeInTheDocument()
-          expect(link).toHaveAttribute('href', '/plan/gh/codecov')
+          expect(link).toHaveAttribute('href', '/plan/gh/codecov/upgrade')
         })
       })
 
@@ -186,7 +196,7 @@ describe('TrialReminder', () => {
 
           const link = await screen.findByRole('link', { name: /Upgrade plan/ })
           expect(link).toBeInTheDocument()
-          expect(link).toHaveAttribute('href', '/plan/gh/codecov')
+          expect(link).toHaveAttribute('href', '/plan/gh/codecov/upgrade')
         })
       })
 
