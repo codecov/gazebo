@@ -567,6 +567,57 @@ describe('ContextSwitcher', () => {
           })
         })
       })
+
+      it('does not fire update org mutation if org is already the default', async () => {
+        const { user, mutate } = setup()
+        render(
+          <ContextSwitcher
+            activeContext="laudna"
+            contexts={[
+              {
+                owner: {
+                  username: 'laudna',
+                  avatarUrl: '',
+                },
+                pageName: 'provider',
+              },
+              {
+                owner: {
+                  username: 'spotify',
+                  avatarUrl: '',
+                },
+                pageName: 'owner',
+              },
+              {
+                owner: {
+                  username: 'codecov',
+                  avatarUrl: '',
+                },
+                pageName: 'owner',
+              },
+            ]}
+            currentUser={{
+              defaultOrgUsername: 'codecov',
+            }}
+            src="imageUrl"
+            isLoading={false}
+            error={null}
+          />,
+          {
+            wrapper: wrapper(),
+          }
+        )
+
+        const button = await screen.findByRole('button', { expanded: false })
+        await user.click(button)
+
+        const orgButton = await screen.findByText('codecov')
+        await user.click(orgButton)
+
+        await waitFor(() => {
+          expect(mutate).not.toHaveBeenCalled()
+        })
+      })
     })
   })
 })
