@@ -28,7 +28,7 @@ describe('useStaticNavLinks', () => {
       ${links.security}                | ${`${config.MARKETING_BASE_URL}/security`}
       ${links.gdpr}                    | ${`${config.MARKETING_BASE_URL}/gdpr`}
       ${links.pricing}                 | ${`${config.MARKETING_BASE_URL}/pricing`}
-      ${links.support}                 | ${`https://codecov.freshdesk.com/support/home`}
+      ${links.support}                 | ${`https://codecovpro.zendesk.com/hc/en-us`}
       ${links.docs}                    | ${`https://docs.codecov.io/`}
       ${links.enterprise}              | ${`${config.MARKETING_BASE_URL}/self-hosted`}
       ${links.githubMarketplace}       | ${`https://github.com/marketplace/codecov`}
@@ -77,33 +77,6 @@ describe('useStaticNavLinks', () => {
           config.BASE_URL + 'random/path/name'
         )
       })
-    })
-  })
-  describe('self hosted', () => {
-    beforeEach(() => {
-      config.IS_SELF_HOSTED = true
-    })
-    afterEach(() => jest.resetAllMocks())
-
-    it('sends users to the correct support link', () => {
-      const links = view.result.current
-
-      expect(links.support.path()).toBe(
-        `https://codecoventerprise.codecov.io/support/home`
-      )
-    })
-  })
-  /*
-    Not yet implemented but in the future check the plan and if it's an enterprise
-    plan we can switch which link support goes to.
-  */
-  describe('cloud enterprise support', () => {
-    it('sends users to the correct support link', () => {
-      const links = view.result.current
-
-      expect(links.support.path({ isEnterprise: true })).toBe(
-        `https://codecoventerprise.codecov.io/support/home`
-      )
     })
   })
 })

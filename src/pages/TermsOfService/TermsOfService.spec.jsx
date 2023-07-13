@@ -764,5 +764,5 @@ async function expectRendersServerFailureResult(user, expectedError = {}) {
 
   const issueLink = screen.getByRole('link', { name: /contact support/i })
   expect(issueLink).toBeInTheDocument()
-  expect(issueLink.href).toBe('https://codecov.freshdesk.com/support/home')
+  expect(issueLink.href).toBe('https://codecovpro.zendesk.com/hc/en-us')
 }
