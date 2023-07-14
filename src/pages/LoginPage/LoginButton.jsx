@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { Redirect } from 'react-router-dom'
+import { Redirect, useLocation } from 'react-router-dom'
 
 import { useNavLinks } from 'services/navigation'
 import { useFlags } from 'shared/featureFlags'
@@ -9,11 +9,13 @@ import {
   loginProviderToName,
 } from 'shared/utils/loginProviders'
 
+// temp disabling because of flag
+// eslint-disable-next-line max-statements
 function LoginButton({ provider }) {
   const { sentryLoginProvider } = useFlags({
     sentryLoginProvider: false,
   })
-
+  const location = useLocation()
   const { signIn } = useNavLinks()
 
   const to = `${window.location.protocol}//${window.location.host}/${provider}`
@@ -21,6 +23,10 @@ function LoginButton({ provider }) {
   const providerImage = loginProviderImage(provider)
 
   if (!sentryLoginProvider && providerName === LOGIN_PROVIDER_NAMES.sentry) {
+    if (location.pathname === '/login') {
+      return null
+    }
+
     return <Redirect to="/login" />
   }
 
