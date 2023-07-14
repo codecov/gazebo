@@ -47,7 +47,7 @@ function Footer() {
             <FooterItem key={`footer-left-${i}`} {...props} />
           ))}
         </ul>
-        <A to={{ pageName: 'provider' }}>
+        <A to={{ pageName: 'owner' }}>
           <CodecovIcon className="mr-2 cursor-pointer text-ds-gray-quinary" />
         </A>
         <ul className="flex flex-1 items-center justify-center gap-4 lg:justify-end">

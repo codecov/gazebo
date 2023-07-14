@@ -161,7 +161,7 @@ describe('App', () => {
     ],
     [
       {
-        testLabel: 'PlanPage',
+        testLabel: 'OldPlanPage',
         pathname: '/plan/gh',
         expected: {
           page: /OwnerPage/i,

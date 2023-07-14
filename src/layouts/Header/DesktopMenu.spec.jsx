@@ -12,9 +12,6 @@ jest.mock('config')
 
 const loggedInUser = {
   me: {
-    owner: {
-      defaultOrgUsername: 'codecov',
-    },
     user: {
       username: 'p',
       avatarUrl: '',
