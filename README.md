@@ -160,21 +160,7 @@ export const handlers = [
 
 Read more at the [official documentation.](https://mswjs.io/docs/getting-started/mocks/rest-api)
 
-## Impersonation
+## Contributing
 
-Below is the old way, this probably still works but I usually impersonate through the [django dashboard with the VPN](https://api.codecov.io/3Iz61TsiAL/codecov_auth/owner/). If this is not working you need to make a [SOCII request](https://codecovio.atlassian.net/jira/software/projects/SOC/boards/7) to be a staff member.
+This repository, like all of Codecov's repositories, strives to follow our general [Contributing guidlines](https://github.com/codecov/contributing). If you're considering making a contribution to this repository, we encourage review of our Contributing guidelines first. 
 
----
-
-It is possible to impersonate other users for debugging purposes if you are a `Codecov Staff User`. Details on how to impersonate users are explained below:
-
-1. Make sure your codecov user is marked as staff. You can do this by checking the `is_staff` column of the User table. If you are not a staff user, reach out to the [#eng-help](https://codecovteam.slack.com/archives/CDMMWG602)
-   channel on Slack.
-2. Log in to your codecov account.
-3. Once logged in, open the inspect panel and navigate to the `Application` tab.
-4. Open the cookies section and add a new cookie with the username you want to impersonate:
-   4.1. The cookie key should be `staff_user`
-   4.2. The cookie value should be the username you want to impersonate
-5. Save the cookie and reload the page... you should be impersonating!
-
-**NOTE: Make sure you delete the staff_user cookie after you are done impersonating**
