@@ -21,11 +21,10 @@ export function useNavLinks() {
     },
     signIn: {
       text: 'Log in',
-      path: ({ provider = p, privateScope, to } = { provider: p }) => {
+      path: ({ provider = p, to } = { provider: p }) => {
         const query = qs.stringify(
           {
             to,
-            private: privateScope,
             ...utmCookieObj,
           },
           { addQueryPrefix: true }
