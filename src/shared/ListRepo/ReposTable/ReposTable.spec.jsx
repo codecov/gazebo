@@ -468,7 +468,7 @@ describe('ReposTable', () => {
     })
   })
 
-  describe('when rendered empty repos with private access', () => {
+  describe('when rendered empty repos', () => {
     beforeEach(() => {
       setup({
         edges: [],
@@ -477,7 +477,7 @@ describe('ReposTable', () => {
       })
     })
 
-    it('renders no repos detected and no private repo info', async () => {
+    it('renders no repos detected', async () => {
       render(<ReposTable sortItem={orderingOptions[0]} />, {
         wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
       })
@@ -490,43 +490,6 @@ describe('ReposTable', () => {
 
       const searchNotFoundText = screen.queryByText('No results found')
       expect(searchNotFoundText).not.toBeInTheDocument()
-
-      const privateScope = screen.queryByText('for access to private repos')
-      expect(privateScope).not.toBeInTheDocument()
-    })
-  })
-
-  describe('when rendered empty repos without private access', () => {
-    beforeEach(() => {
-      setup({
-        edges: [],
-        repoDisplayPassed: repoDisplayOptions.ALL.text,
-        privateAccess: false,
-      })
-    })
-
-    it('renders no repos detected and no private repo info', async () => {
-      render(<ReposTable sortItem={orderingOptions[0]} />, {
-        wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
-      })
-
-      expect(
-        await screen.findByText(/There are no repos detected/)
-      ).toBeTruthy()
-      const noReposDetected = screen.getByText(/There are no repos detected/)
-      expect(noReposDetected).toBeInTheDocument()
-
-      const privateScopeButton = await screen.findByText(/private scope/)
-      expect(privateScopeButton).toBeInTheDocument()
-      expect(privateScopeButton).toHaveAttribute(
-        'href',
-        'https://stage-web.codecov.dev/login/gl?private=true'
-      )
-
-      const privateScopeText = await screen.findByText(
-        /for access to private repos/
-      )
-      expect(privateScopeText).toBeInTheDocument()
     })
   })
 

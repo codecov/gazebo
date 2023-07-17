@@ -27,25 +27,6 @@ describe('NoReposBlock', () => {
       expect(noReposDetected).toBeInTheDocument()
     })
 
-    it('renders private scope text if it is not github', async () => {
-      const props = { privateAccess: false, searchValue: '' }
-      render(<NoReposBlock {...props} />, {
-        wrapper: wrapper(),
-      })
-
-      const privateScopeButton = await screen.findByText(/private scope/)
-      expect(privateScopeButton).toBeInTheDocument()
-      expect(privateScopeButton).toHaveAttribute(
-        'href',
-        'https://stage-web.codecov.dev/login/gl?private=true'
-      )
-
-      const privateScopeText = await screen.findByText(
-        /for access to private repos/
-      )
-      expect(privateScopeText).toBeInTheDocument()
-    })
-
     it('does not render search prompt', () => {
       const props = { privateAccess: false, searchValue: '' }
       render(<NoReposBlock {...props} />, {
@@ -68,19 +49,6 @@ describe('NoReposBlock', () => {
         /There are no repos detected/
       )
       expect(noReposDetected).toBeInTheDocument()
-    })
-
-    it('does not render private scope text', () => {
-      const props = { privateAccess: true, searchValue: '' }
-      render(<NoReposBlock {...props} />, {
-        wrapper: wrapper(),
-      })
-
-      const privateScopeButton = screen.queryByText(/private scope/)
-      expect(privateScopeButton).not.toBeInTheDocument()
-
-      const privateScopeText = screen.queryByText(/for access to private repos/)
-      expect(privateScopeText).not.toBeInTheDocument()
     })
 
     it('does not render search prompt', () => {
@@ -113,19 +81,6 @@ describe('NoReposBlock', () => {
 
       const noReposDetected = screen.queryByText(/There are no repos detected/)
       expect(noReposDetected).not.toBeInTheDocument()
-    })
-
-    it('does not render private scope text', () => {
-      const props = { privateAccess: true, searchValue: 'asff' }
-      render(<NoReposBlock {...props} />, {
-        wrapper: wrapper(),
-      })
-
-      const privateScopeButton = screen.queryByText(/private scope/)
-      expect(privateScopeButton).not.toBeInTheDocument()
-
-      const privateScopeText = screen.queryByText(/for access to private repos/)
-      expect(privateScopeText).not.toBeInTheDocument()
     })
   })
 })
