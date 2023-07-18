@@ -72,7 +72,7 @@ const TrialReminder: React.FC = () => {
   })
 
   if (
-    (!isFreePlan(planValue) && !trialOngoing) ||
+    !isFreePlan(planValue) ||
     cannotTrial ||
     !ownerData?.isCurrentUserPartOfOrg ||
     !codecovTrialMvp
