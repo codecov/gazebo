@@ -7,6 +7,7 @@ import { useFlags } from 'shared/featureFlags'
 export const Plans = Object.freeze({
   USERS_FREE: 'users-free',
   USERS_BASIC: 'users-basic',
+  USERS_TRIAL: 'users-trial',
   USERS_INAPP: 'users-inappm',
   USERS_INAPPY: 'users-inappy',
   USERS_PR_INAPPM: 'users-pr-inappm',
@@ -78,6 +79,14 @@ export function isSentryPlan(plan) {
   if (isString(plan)) {
     return plan === Plans.USERS_SENTRYM || plan === Plans.USERS_SENTRYY
   }
+  return false
+}
+
+export function isTrialPlan(plan) {
+  if (isString(plan)) {
+    return plan === Plans.USERS_TRIAL
+  }
+
   return false
 }
 

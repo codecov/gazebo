@@ -15,6 +15,7 @@ import {
   isMonthlyPlan,
   isPaidPlan,
   isSentryPlan,
+  isTrialPlan,
   Plans,
   useProPlans,
 } from './billing'
@@ -458,5 +459,25 @@ describe('isBasicPlan', () => {
     expect(isBasicPlan(123)).toBeFalsy()
     expect(isBasicPlan({})).toBeFalsy()
     expect(isBasicPlan([])).toBeFalsy()
+  })
+})
+
+describe('isTrialPlan', () => {
+  it('returns true when plan is trial', () => {
+    expect(isTrialPlan(Plans.USERS_TRIAL)).toBeTruthy()
+  })
+
+  it('returns false when plan is not trial', () => {
+    expect(isTrialPlan(Plans.USERS_FREE)).toBeFalsy()
+    expect(isTrialPlan(Plans.USERS_INAPP)).toBeFalsy()
+    expect(isTrialPlan(Plans.USERS_ENTERPRISEM)).toBeFalsy()
+    expect(isTrialPlan(Plans.USERS_SENTRYM)).toBeFalsy()
+    expect(isTrialPlan(Plans.USERS_BASIC)).toBeFalsy()
+  })
+
+  it('returns false when plan is not a string', () => {
+    expect(isTrialPlan(123)).toBeFalsy()
+    expect(isTrialPlan({})).toBeFalsy()
+    expect(isTrialPlan([])).toBeFalsy()
   })
 })
