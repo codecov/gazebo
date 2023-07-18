@@ -1,4 +1,4 @@
-name: Deploy qa-ce01
+name: Deploy epic
 
 on:
   push:
