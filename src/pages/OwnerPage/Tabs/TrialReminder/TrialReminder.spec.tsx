@@ -185,7 +185,7 @@ describe('TrialReminder', () => {
         describe('user is part of org', () => {
           it('displays trial upgrade link', async () => {
             setup({
-              planValue: Plans.USERS_PR_INAPPY,
+              planValue: Plans.USERS_BASIC,
               trialStatus: TrialStatuses.ONGOING,
               trialStartDate: '2023-01-01T08:55:25',
               trialEndDate: '2023-01-10T08:55:25',
@@ -223,7 +223,7 @@ describe('TrialReminder', () => {
       describe('it is within 3 days remaining on the trial', () => {
         it('does not display the trial upgrade link', async () => {
           setup({
-            planValue: Plans.USERS_PR_INAPPY,
+            planValue: Plans.USERS_BASIC,
             trialStatus: TrialStatuses.ONGOING,
             trialStartDate: '2023-01-01T08:55:25',
             trialEndDate: '2023-01-02T08:55:25',
