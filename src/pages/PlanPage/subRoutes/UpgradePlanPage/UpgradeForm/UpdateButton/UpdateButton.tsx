@@ -1,6 +1,7 @@
 import PropTypes, { type InferProps } from 'prop-types'
 
 import { TrialStatuses } from 'services/trial'
+import { isFreePlan } from 'shared/utils/billing'
 import Button from 'ui/Button'
 
 // eslint-disable-next-line complexity
@@ -43,7 +44,7 @@ function UpdateButton({
       hook="submit-upgrade"
       to={undefined}
     >
-      Update
+      {isFreePlan(value) ? 'Proceed with plan' : 'Update'}
     </Button>
   )
 }

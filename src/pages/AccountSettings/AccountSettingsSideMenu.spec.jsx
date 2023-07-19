@@ -1,256 +1,271 @@
-import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, waitFor } from '@testing-library/react'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { useAccountDetails } from 'services/account'
-import { useIsCurrentUserAnAdmin, useUser } from 'services/user'
-import { useFlags } from 'shared/featureFlags'
-
 import AccountSettingsSideMenu from './AccountSettingsSideMenu'
 
 jest.mock('config')
-jest.mock('services/user')
-jest.mock('services/account')
-jest.mock('shared/featureFlags')
+
+const server = setupServer()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      suspense: true,
+    },
+  },
+})
+
+const wrapper =
+  (
+    { initialEntries = '/account/gh/codecov' } = {
+      initialEntries: '/account/gh/codecov',
+    }
+  ) =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path="/account/:provider/:owner">
+            <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
+
+beforeAll(() => {
+  server.listen()
+})
+
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
 
 describe('AccountSettingsSideMenu', () => {
-  function setup({
-    entries = [],
-    isAdmin = false,
-    user = {},
-    isSelfHosted = false,
-    planValue = 'users-free',
-    orgUploadTokenFlag = false,
-  }) {
+  function setup(
+    {
+      isAdmin = false,
+      username = 'codecov',
+      isSelfHosted = false,
+      owner = 'codecov',
+    } = {
+      isAdmin: false,
+      username: 'codecov',
+      isSelfHosted: false,
+      owner: 'codecov',
+    }
+  ) {
     config.IS_SELF_HOSTED = isSelfHosted
-    useIsCurrentUserAnAdmin.mockReturnValue(isAdmin)
-    useUser.mockReturnValue({ data: user })
-    useAccountDetails.mockReturnValue({ data: { plan: { value: planValue } } })
-    useFlags.mockReturnValue({ orgUploadToken: orgUploadTokenFlag })
 
-    render(
-      <MemoryRouter initialEntries={entries}>
-        <Route path="/account/:provider/:owner/">
-          <AccountSettingsSideMenu />
-        </Route>
-      </MemoryRouter>
+    server.use(
+      graphql.query('CurrentUser', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            me: { user: { username } },
+          })
+        )
+      }),
+      graphql.query('DetailOwner', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({ owner: { username: owner, isAdmin } }))
+      )
     )
   }
 
-  describe('user is not an admin', () => {
-    describe('user is looking at their personal org', () => {
-      beforeEach(() => {
-        setup({
-          entries: ['/account/gh/codecov'],
-          isAdmin: false,
-          user: {
-            user: {
-              username: 'codecov',
-            },
-          },
-        })
-      })
+  describe('running in self hosted mode', () => {
+    describe('user is viewing their personal settings', () => {
+      it('renders profile link', async () => {
+        setup({ isSelfHosted: true })
 
-      it('does not show admin link', () => {
-        const link = screen.queryByText('Admin')
+        render(<AccountSettingsSideMenu />, { wrapper: wrapper() })
 
-        expect(link).not.toBeInTheDocument()
-      })
-
-      it('shows  internal access link', async () => {
-        const link = await screen.findByText('Access')
-
+        const link = await screen.findByRole('link', { name: 'Profile' })
         expect(link).toBeInTheDocument()
-        expect(link).toHaveAttribute('href', '/account/gh/codecov/access')
-      })
-
-      it('displays yaml link', async () => {
-        const link = await screen.findByText('Global YAML')
-
-        expect(link).toBeInTheDocument()
-        expect(link).toHaveAttribute('href', '/account/gh/codecov/yaml')
+        expect(link).toHaveAttribute('href', '/account/gh/codecov')
       })
     })
 
-    describe('user is not looking a their personal org', () => {
-      beforeEach(() => {
-        setup({
-          entries: ['/account/gh/codecov-org'],
-          isAdmin: false,
-          user: {
-            user: {
-              username: 'codecov',
-            },
-          },
+    describe('user is not viewing their personal settings', () => {
+      it('does not render profile link', async () => {
+        setup({ isSelfHosted: true })
+
+        render(<AccountSettingsSideMenu />, {
+          wrapper: wrapper({ initialEntries: '/account/gh/cool-new-user' }),
         })
-      })
 
-      it('does not show admin link', () => {
-        const link = screen.queryByText('Admin')
+        const suspense = await screen.findByText('Loading')
+        expect(suspense).toBeInTheDocument()
+        await waitFor(() =>
+          expect(screen.queryByText('Loading')).not.toBeInTheDocument()
+        )
 
+        const link = screen.queryByRole('link', { name: 'Profile' })
         expect(link).not.toBeInTheDocument()
       })
+    })
 
-      it('does not show internal access link', () => {
-        const link = screen.queryByText('Access')
+    it('renders yaml link', async () => {
+      setup({ isSelfHosted: true })
 
-        expect(link).not.toBeInTheDocument()
-      })
+      render(<AccountSettingsSideMenu />, { wrapper: wrapper() })
 
-      it('displays yaml link', async () => {
-        const link = await screen.findByText('Global YAML')
+      const link = await screen.findByRole('link', { name: 'Global YAML' })
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute('href', '/account/gh/codecov/yaml')
+    })
 
-        expect(link).toBeInTheDocument()
-        expect(link).toHaveAttribute('href', '/account/gh/codecov-org/yaml')
-      })
+    it('does not render org upload token link', async () => {
+      setup({ isSelfHosted: true })
+
+      render(<AccountSettingsSideMenu />, { wrapper: wrapper() })
+
+      const suspense = await screen.findByText('Loading')
+      expect(suspense).toBeInTheDocument()
+      await waitFor(() =>
+        expect(screen.queryByText('Loading')).not.toBeInTheDocument()
+      )
+
+      const link = screen.queryByRole('link', { name: 'Global Upload Token' })
+      expect(link).not.toBeInTheDocument()
     })
   })
 
-  describe('user is an admin', () => {
-    describe('user is looking at their personal org', () => {
-      beforeEach(() => {
-        setup({
-          entries: ['/account/gh/codecov'],
-          isAdmin: true,
-          user: {
-            user: {
-              username: 'codecov',
-            },
-          },
-        })
-      })
+  describe('not running in self hosted mode', () => {
+    describe('user is an admin', () => {
+      it('renders admin link', async () => {
+        setup({ isAdmin: true })
 
-      it('shows admin link', async () => {
-        const link = await screen.findByText('Admin')
+        render(<AccountSettingsSideMenu />, { wrapper: wrapper() })
 
+        const link = await screen.findByRole('link', { name: 'Admin' })
         expect(link).toBeInTheDocument()
         expect(link).toHaveAttribute('href', '/account/gh/codecov')
       })
 
-      it('shows internal access link', async () => {
-        const link = await screen.findByText('Access')
+      describe('user is viewing personal settings', () => {
+        it('renders internal access link', async () => {
+          setup({ isAdmin: true })
 
-        expect(link).toBeInTheDocument()
-        expect(link).toHaveAttribute('href', '/account/gh/codecov/access')
+          render(<AccountSettingsSideMenu />, { wrapper: wrapper() })
+
+          const link = await screen.findByRole('link', { name: 'Access' })
+          expect(link).toBeInTheDocument()
+          expect(link).toHaveAttribute('href', '/account/gh/codecov/access')
+        })
       })
 
-      it('displays yaml link', async () => {
-        const link = await screen.findByText('Global YAML')
+      describe('user is not viewing personal settings', () => {
+        it('does not render internal access link', async () => {
+          setup({ isAdmin: true, username: 'cool-new-user' })
 
+          render(<AccountSettingsSideMenu />, {
+            wrapper: wrapper('/account/gh/cool-new-owner'),
+          })
+
+          const suspense = await screen.findByText('Loading')
+          expect(suspense).toBeInTheDocument()
+          await waitFor(() =>
+            expect(screen.queryByText('Loading')).not.toBeInTheDocument()
+          )
+
+          const link = screen.queryByRole('link', { name: 'Access' })
+          await waitFor(() => {
+            expect(link).not.toBeInTheDocument()
+          })
+        })
+      })
+
+      it('renders yaml link', async () => {
+        setup({ isAdmin: true })
+
+        render(<AccountSettingsSideMenu />, { wrapper: wrapper() })
+
+        const link = await screen.findByRole('link', { name: 'Global YAML' })
         expect(link).toBeInTheDocument()
         expect(link).toHaveAttribute('href', '/account/gh/codecov/yaml')
       })
+
+      it('renders org upload link', async () => {
+        setup({ isAdmin: true })
+
+        render(<AccountSettingsSideMenu />, { wrapper: wrapper() })
+
+        const link = await screen.findByRole('link', {
+          name: 'Global Upload Token',
+        })
+        expect(link).toBeInTheDocument()
+        expect(link).toHaveAttribute(
+          'href',
+          '/account/gh/codecov/org-upload-token'
+        )
+      })
     })
 
-    describe('user is not looking a their personal org', () => {
-      beforeEach(() => {
-        setup({
-          entries: ['/account/gh/codecov-org'],
-          isAdmin: true,
-          user: {
-            user: {
-              username: 'codecov',
-            },
-          },
+    describe('user is not an admin', () => {
+      describe('user is viewing personal settings', () => {
+        it('renders internal access link', async () => {
+          setup()
+
+          render(<AccountSettingsSideMenu />, { wrapper: wrapper() })
+
+          const link = await screen.findByRole('link', { name: 'Access' })
+          expect(link).toBeInTheDocument()
+          expect(link).toHaveAttribute('href', '/account/gh/codecov/access')
         })
       })
 
-      it('shows admin link', async () => {
-        const link = await screen.findByText('Admin')
+      describe('user is not viewing personal settings', () => {
+        it('does not render internal access link', async () => {
+          setup({ username: 'cool-new-owner' })
 
-        expect(link).toBeInTheDocument()
-        expect(link).toHaveAttribute('href', '/account/gh/codecov-org')
-      })
+          render(<AccountSettingsSideMenu />, {
+            wrapper: wrapper(),
+          })
 
-      it('does not show internal access link', () => {
-        const link = screen.queryByText('Access')
+          const suspense = await screen.findByText('Loading')
+          expect(suspense).toBeInTheDocument()
+          await waitFor(() =>
+            expect(screen.queryByText('Loading')).not.toBeInTheDocument()
+          )
 
-        expect(link).not.toBeInTheDocument()
-      })
-
-      it('displays yaml link', async () => {
-        const link = await screen.findByText('Global YAML')
-
-        expect(link).toBeInTheDocument()
-        expect(link).toHaveAttribute('href', '/account/gh/codecov-org/yaml')
-      })
-    })
-  })
-
-  describe('codecov is running in self hosted mode', () => {
-    describe('user is looking at their own settings', () => {
-      beforeEach(() => {
-        setup({
-          entries: ['/account/gh/codecov'],
-          isAdmin: true,
-          user: {
-            user: {
-              username: 'codecov',
-            },
-          },
-          isSelfHosted: true,
+          const link = screen.queryByRole('link', { name: 'Access' })
+          expect(link).not.toBeInTheDocument()
         })
       })
 
-      it('displays profile link', async () => {
-        const link = await screen.findByText('Profile')
+      it('renders yaml link', async () => {
+        setup()
 
-        expect(link).toBeInTheDocument()
-        expect(link).toHaveAttribute('href', '/account/gh/codecov')
-      })
+        render(<AccountSettingsSideMenu />, { wrapper: wrapper() })
 
-      it('displays yaml link', async () => {
-        const link = await screen.findByText('Global YAML')
-
+        const link = await screen.findByRole('link', { name: 'Global YAML' })
         expect(link).toBeInTheDocument()
         expect(link).toHaveAttribute('href', '/account/gh/codecov/yaml')
       })
-    })
 
-    describe('user is not looking at their own settings', () => {
-      beforeEach(() => {
-        setup({
-          entries: ['/account/gh/codecov-org'],
-          isAdmin: true,
-          user: {
-            user: {
-              username: 'codecov',
-            },
-          },
-          isSelfHosted: true,
+      it('renders org upload link', async () => {
+        setup()
+
+        render(<AccountSettingsSideMenu />, { wrapper: wrapper() })
+
+        const link = await screen.findByRole('link', {
+          name: 'Global Upload Token',
         })
-      })
-
-      it('does not display profile link', () => {
-        const link = screen.queryByText('Profile')
-
-        expect(link).not.toBeInTheDocument()
-      })
-
-      it('displays yaml link', async () => {
-        const link = await screen.findByText('Global YAML')
-
         expect(link).toBeInTheDocument()
-        expect(link).toHaveAttribute('href', '/account/gh/codecov-org/yaml')
+        expect(link).toHaveAttribute(
+          'href',
+          '/account/gh/codecov/org-upload-token'
+        )
       })
-    })
-  })
-
-  describe('when rendering for enterprise cloud users', () => {
-    beforeEach(() => {
-      setup({
-        entries: ['/account/gh/rula'],
-        isAdmin: false,
-        planValue: 'users-enterprisem',
-        orgUploadTokenFlag: true,
-      })
-    })
-
-    it('renders Global Upload Token link', () => {
-      expect(
-        screen.getByRole('link', { name: /Global Upload Token/i })
-      ).toBeInTheDocument()
     })
   })
 })

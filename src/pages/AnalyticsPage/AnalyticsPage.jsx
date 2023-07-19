@@ -15,6 +15,14 @@ import Tabs from './Tabs'
 
 const Chart = lazy(() => import('./Chart'))
 
+function SuspenseFallback() {
+  return (
+    <div className="flex h-64 items-center justify-center">
+      <LoadingLogo />
+    </div>
+  )
+}
+
 const defaultQueryParams = {
   search: '',
   repositories: [],
@@ -52,7 +60,7 @@ function AnalyticsPage() {
         active={true}
         sortItem={sortItem}
       />
-      <Suspense fallback={<LoadingLogo />}>
+      <Suspense fallback={<SuspenseFallback />}>
         <Chart params={params} />
       </Suspense>
       <ReposTable

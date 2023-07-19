@@ -5,6 +5,7 @@ import {
   getProviderPullURL,
   providerFeedback,
   providerImage,
+  providerToInternalProvider,
   providerToName,
 } from './provider'
 
@@ -242,5 +243,85 @@ describe('getProviderPullURL', () => {
     expect(getProviderPullURL({ provider: 'bbs', owner, repo, pullId })).toBe(
       'https://bitbucket.mycompany.org/codecov/python/pull-requests/aebf'
     )
+  })
+})
+
+describe('providerToInternalProvider', () => {
+  describe('when called with gh', () => {
+    it('returns github', () => {
+      expect(providerToInternalProvider('gh')).toBe('github')
+    })
+  })
+
+  describe('when called with gl', () => {
+    it('returns gitlab', () => {
+      expect(providerToInternalProvider('gl')).toBe('gitlab')
+    })
+  })
+
+  describe('when called with bb', () => {
+    it('returns bitbucket', () => {
+      expect(providerToInternalProvider('bb')).toBe('bitbucket')
+    })
+  })
+
+  describe('when called with ghe', () => {
+    it('returns github_enterprise', () => {
+      expect(providerToInternalProvider('ghe')).toBe('github_enterprise')
+    })
+  })
+
+  describe('when called with gle', () => {
+    it('returns gitlab_enterprise', () => {
+      expect(providerToInternalProvider('gle')).toBe('gitlab_enterprise')
+    })
+  })
+
+  describe('when called with bbs', () => {
+    it('returns bitbucket_server', () => {
+      expect(providerToInternalProvider('bbs')).toBe('bitbucket_server')
+    })
+  })
+
+  describe('when called with Github', () => {
+    it('returns github', () => {
+      expect(providerToInternalProvider('github')).toBe('github')
+    })
+  })
+
+  describe('when called with Gitlab', () => {
+    it('returns gitlab', () => {
+      expect(providerToInternalProvider('gitlab')).toBe('gitlab')
+    })
+  })
+
+  describe('when called with BitBucket', () => {
+    it('returns bitbucket', () => {
+      expect(providerToInternalProvider('BitBucket')).toBe('bitbucket')
+    })
+  })
+
+  describe('when called with github_enterprise', () => {
+    it('returns github_enterprise', () => {
+      expect(providerToInternalProvider('github_enterprise')).toBe(
+        'github_enterprise'
+      )
+    })
+  })
+
+  describe('when called with gitlab-enterprise', () => {
+    it('returns gitlab_enterprise', () => {
+      expect(providerToInternalProvider('gitlab_enterprise')).toBe(
+        'gitlab_enterprise'
+      )
+    })
+  })
+
+  describe('when called with bitbucket_server', () => {
+    it('returns bitbucket_server', () => {
+      expect(providerToInternalProvider('bitbucket_server')).toBe(
+        'bitbucket_server'
+      )
+    })
   })
 })

@@ -57,7 +57,7 @@ describe('AppLink', () => {
     it('renders a link with the right URL', () => {
       expect(screen.getByRole('link')).toHaveAttribute(
         'href',
-        'https://codecov.freshdesk.com/support/home'
+        'https://codecovpro.zendesk.com/hc/en-us'
       )
     })
   })
