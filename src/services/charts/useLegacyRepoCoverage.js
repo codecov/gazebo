@@ -1,12 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
 
 import Api from 'shared/api'
-import { providerToName } from 'shared/utils'
+import { providerToInternalProvider } from 'shared/utils'
 
 function getRepoCoverage({ provider, owner }) {
-  return `/charts/${providerToName(
-    provider
-  ).toLowerCase()}/${owner}/coverage/repository`
+  const internalProvider = providerToInternalProvider(provider)
+  return `/charts/${internalProvider}/${owner}/coverage/repository`
 }
 
 function fetchRepoCoverage({ provider, owner, body, signal }) {

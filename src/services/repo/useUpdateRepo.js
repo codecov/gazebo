@@ -2,14 +2,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
-import { providerToName } from 'shared/utils'
+import { providerToInternalProvider } from 'shared/utils'
 
 function getRepoPath({ provider, owner, repo }) {
   return `/${provider}/${owner}/repos/${repo}/`
 }
 
 function updateRepo({ provider, owner, repo, body }) {
-  const refactoredProvider = providerToName(provider).toLowerCase()
+  const refactoredProvider = providerToInternalProvider(provider)
   const path = getRepoPath({
     provider: refactoredProvider,
     owner,

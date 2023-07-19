@@ -22,8 +22,6 @@ export function useTreePaths(passedPath) {
   const ref = urlRef && decodeURIComponent(urlRef)
   const path = urlPath && decodeURIComponent(urlPath)
 
-  console.debug(branch, ref, path)
-
   const filePaths = getFilePathParts(passedPath || path)
   const { data: repoOverview } = useRepoOverview(
     {
