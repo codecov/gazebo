@@ -1,3 +1,4 @@
+import Cookie from 'js-cookie'
 import get from 'lodash/get'
 
 import config from 'config'
@@ -20,6 +21,7 @@ function _fetch({
   const headers = {
     Accept: 'application/json',
     'Content-Type': 'application/json; charset=utf-8',
+    'X-CSRFToken': Cookie.get('csrftoken'),
     ...getHeaders(provider),
     ...extraHeaders,
   }
