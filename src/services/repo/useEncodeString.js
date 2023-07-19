@@ -2,14 +2,14 @@ import { useMutation } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
-import { providerToName } from 'shared/utils'
+import { providerToInternalProvider } from 'shared/utils'
 
 function getEncodeStringPath({ provider, owner, repo }) {
   return `/${provider}/${owner}/repos/${repo}/encode/`
 }
 
 function encodeString({ provider, owner, repo, value }) {
-  const refactoredProvider = providerToName(provider).toLowerCase()
+  const refactoredProvider = providerToInternalProvider(provider)
   const path = getEncodeStringPath({
     provider: refactoredProvider,
     owner,
