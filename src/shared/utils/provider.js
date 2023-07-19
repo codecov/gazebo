@@ -22,6 +22,23 @@ export function providerToName(provider) {
   }[provider.toLowerCase()]
 }
 
+export function providerToInternalProvider(provider) {
+  return {
+    gh: 'github',
+    bb: 'bitbucket',
+    gl: 'gitlab',
+    ghe: 'github_enterprise',
+    gle: 'gitlab_enterprise',
+    bbs: 'bitbucket_server',
+    github: 'github',
+    bitbucket: 'bitbucket',
+    gitlab: 'gitlab',
+    github_enterprise: 'github_enterprise',
+    gitlab_enterprise: 'gitlab_enterprise',
+    bitbucket_server: 'bitbucket_server',
+  }[provider.toLowerCase()]
+}
+
 export function providerImage(providerName) {
   return {
     Github: githubLogo,

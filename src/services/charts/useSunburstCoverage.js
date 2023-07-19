@@ -1,12 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
 
 import Api from 'shared/api'
-import { providerToName } from 'shared/utils'
+import { providerToInternalProvider } from 'shared/utils'
 
 function getSunburstCoverage({ provider, owner, repo }) {
-  return `/${providerToName(
-    provider
-  )?.toLowerCase()}/${owner}/${repo}/coverage/tree`
+  const internalProvider = providerToInternalProvider(provider)
+  return `/${internalProvider}/${owner}/${repo}/coverage/tree`
 }
 
 function fetchSunburstCoverage({ provider, owner, query, repo, signal }) {
