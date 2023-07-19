@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import patchAndProject from 'assets/repoConfig/patch-and-project.svg'
 import { useRepo } from 'services/repo'
 import { useOnboardingTracking } from 'services/user'
-import { providerToName } from 'shared/utils/provider'
+import { providerToInternalProvider } from 'shared/utils/provider'
 import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
 
@@ -11,7 +11,7 @@ const orbsString = 'orbs:\n codecov/codecov@3.2.4'
 
 function CircleCI() {
   const { provider, owner, repo } = useParams()
-  const providerName = providerToName(provider).toLowerCase()
+  const providerName = providerToInternalProvider(provider)
   const { data } = useRepo({ provider, owner, repo })
   const { copiedCIToken } = useOnboardingTracking()
 
