@@ -93,9 +93,6 @@ const MainAppRoutes = () => (
         <FeedbackPage />
       </BaseLayout>
     </SentryRoute>
-    <SentryRoute path="/:provider" exact>
-      <HomePageRedirect />
-    </SentryRoute>
     <SentryRoute path="/:provider/:owner" exact>
       <BaseLayout>
         <OwnerPage />
@@ -138,6 +135,9 @@ const MainAppRoutes = () => (
       ) : (
         <Redirect to="/login/gh" />
       )}
+    </SentryRoute>
+    <SentryRoute path="*" exact>
+      <HomePageRedirect />
     </SentryRoute>
   </Switch>
 )

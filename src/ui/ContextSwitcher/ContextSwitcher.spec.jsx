@@ -188,7 +188,7 @@ describe('ContextSwitcher', () => {
                 username: 'laudna',
                 avatarUrl: 'https://github.com/laudna.png?size=40',
               },
-              pageName: 'provider',
+              pageName: 'owner',
             },
             {
               owner: {
@@ -250,7 +250,7 @@ describe('ContextSwitcher', () => {
                 username: 'laudna',
                 avatarUrl: 'https://github.com/laudna.png?size=40',
               },
-              pageName: 'provider',
+              pageName: 'owner',
             },
             {
               owner: {

@@ -8,12 +8,10 @@ import config from 'config'
 
 import DesktopMenu, { LoginPrompt } from './DesktopMenu'
 
-jest.mock('config')
-
 const loggedInUser = {
   me: {
     user: {
-      username: 'p',
+      username: 'codecov',
       avatarUrl: '',
     },
   },
@@ -55,7 +53,7 @@ const wrapper =
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={[initialEntries]}>
           <Route path={path} exact>
-            <DesktopMenu />
+            {children}
           </Route>
         </MemoryRouter>
       </QueryClientProvider>
@@ -87,8 +85,8 @@ describe('DesktopMenu', () => {
   }
 
   describe('rendering logo button', () => {
-    describe('when provider is present', () => {
-      it('directs user to provider endpoint', async () => {
+    describe('when user is authenticated', () => {
+      it('directs user to owner default page', async () => {
         setup()
 
         render(<DesktopMenu />, {
@@ -98,13 +96,16 @@ describe('DesktopMenu', () => {
           }),
         })
 
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
+
         const link = await screen.findByTestId('homepage-link')
         expect(link).toBeInTheDocument()
         expect(link).toHaveAttribute('href', '/gh/codecov')
       })
     })
 
-    describe('when provider is not present', () => {
+    describe('when user is not authenticated', () => {
       it('directs user to about codecov io', async () => {
         setup()
 

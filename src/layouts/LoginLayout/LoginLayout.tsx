@@ -1,21 +1,31 @@
-import isString from 'lodash/isString'
 import { Suspense } from 'react'
-import { useParams } from 'react-router-dom'
 
 // @ts-expect-error
 import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
 import Footer from 'layouts/Footer'
+import { useUser } from 'services/user'
 import A from 'ui/A'
 import LoadingLogo from 'ui/LoadingLogo'
 
+// TODO: Move to a UI component
 const LogoButton = () => {
-  const { provider } = useParams<{ provider?: string }>()
+  const { data: currentUser } = useUser()
+  const defaultOrg =
+    currentUser?.owner?.defaultOrgUsername ?? currentUser?.user?.username
 
-  const pageName = isString(provider) ? 'provider' : 'root'
+  const pageName = defaultOrg ? 'owner' : 'root'
 
   return (
     // @ts-expect-error
-    <A to={{ pageName }} variant="header" data-testid="homepage-link">
+    <A
+      to={{
+        pageName,
+        text: defaultOrg,
+        options: { owner: defaultOrg },
+      }}
+      variant="header"
+      data-testid="homepage-link"
+    >
       <span className="sr-only">Link to Homepage</span>
       <CodecovIcon />
     </A>

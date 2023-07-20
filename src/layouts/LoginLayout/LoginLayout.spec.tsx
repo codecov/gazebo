@@ -1,10 +1,18 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router'
 
 import LoginLayout from './LoginLayout'
+
+const loggedInUser = {
+  me: {
+    user: {
+      username: 'Codecov',
+    },
+  },
+}
 
 console.error = () => {}
 
@@ -41,27 +49,35 @@ afterAll(() => {
 })
 
 describe('LoginLayout', () => {
-  function setup() {
+  function setup({ hasLoggedInUser = true } = {}) {
     server.use(
-      graphql.query('CurrentUser', (req, res, ctx) => res(ctx.status(200)))
+      graphql.query('CurrentUser', (req, res, ctx) => {
+        if (hasLoggedInUser) {
+          return res(ctx.status(200), ctx.data(loggedInUser))
+        } else {
+          return res(ctx.status(200), ctx.data({ me: null }))
+        }
+      })
     )
   }
 
   describe('rendering component', () => {
-    describe('provider is not present', () => {
-      it('renders logo button link', () => {
-        setup()
+    describe('user is not authenticated', () => {
+      it('renders logo button link', async () => {
+        setup({ hasLoggedInUser: false })
 
         render(<LoginLayout>child content</LoginLayout>, { wrapper: wrapper() })
 
-        const link = screen.getByRole('link', { name: /Link to Homepage/ })
+        const link = await screen.findByRole('link', {
+          name: /Link to Homepage/,
+        })
         expect(link).toBeInTheDocument()
         expect(link).toHaveAttribute('href', 'https://about.codecov.io')
       })
     })
 
-    describe('provider is present', () => {
-      it('renders logo button link', () => {
+    describe('user is authenticated', () => {
+      it('renders logo button link', async () => {
         setup()
 
         render(<LoginLayout>child content</LoginLayout>, {
@@ -71,9 +87,15 @@ describe('LoginLayout', () => {
           }),
         })
 
-        const link = screen.getByRole('link', { name: /Link to Homepage/ })
-        expect(link).toBeInTheDocument()
-        expect(link).toHaveAttribute('href', '/gh')
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
+
+        expect(
+          await screen.findByRole('link', { name: /Link to Homepage/ })
+        ).toBeInTheDocument()
+        expect(
+          await screen.findByRole('link', { name: /Link to Homepage/ })
+        ).toHaveAttribute('href', '/gh/Codecov')
       })
     })
 

@@ -30,21 +30,6 @@ describe('useNavLinks', () => {
     })
   }
 
-  describe('provider link', () => {
-    beforeAll(() => {
-      setup(['/gl/doggo/squirrel-locator'])
-    })
-
-    it('Returns the correct link with nothing passed', () => {
-      expect(hookData.result.current.provider.path()).toBe('/gl')
-    })
-    it('can override the params', () => {
-      expect(hookData.result.current.provider.path({ provider: 'dog' })).toBe(
-        '/dog'
-      )
-    })
-  })
-
   describe('Sign Out', () => {
     beforeAll(() => {
       setup(['/gl/doggo/squirrel-locator'])
