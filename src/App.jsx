@@ -29,7 +29,8 @@ const RepoPage = lazy(() => import('./pages/RepoPage'))
 const HomePageRedirect = () => {
   const { provider } = useParams()
   const { data: currentUser } = useUser()
-  if (!currentUser) return <Redirect to={`/login/${provider}}`} />
+
+  if (!provider || !currentUser) return <Redirect to="/login" />
 
   const defaultOrg =
     currentUser?.owner?.defaultOrgUsername ?? currentUser?.user?.username
