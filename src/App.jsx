@@ -137,7 +137,7 @@ const MainAppRoutes = () => (
         <Redirect to="/login/gh" />
       )}
     </SentryRoute>
-    <SentryRoute path="*" exact>
+    <SentryRoute path="*">
       <HomePageRedirect />
     </SentryRoute>
   </Switch>
