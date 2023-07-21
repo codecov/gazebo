@@ -58,7 +58,7 @@ const wrapper =
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={[initialEntries]}>
           <Route path={path} exact>
-            <DesktopMenu />
+            {children}
           </Route>
         </MemoryRouter>
       </QueryClientProvider>
