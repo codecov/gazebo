@@ -2,8 +2,6 @@ import { render, screen, waitFor } from 'custom-testing-library'
 
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import config from 'config'
-
 import { useUser } from 'services/user'
 
 import FeedbackPage from './FeedbackPage'
@@ -44,9 +42,6 @@ const user = {
 describe('FeedbackPage', () => {
   function setup(data) {
     useUser.mockReturnValue(user)
-
-    config.CANNY_BOARD_TOKEN = ''
-
     render(
       <MemoryRouter initialEntries={['/gh/feedback']}>
         <Route path="/:provider/feedback">
