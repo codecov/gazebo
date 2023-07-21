@@ -157,12 +157,7 @@ function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
   })
 
   if (!isFetching && isEmpty(data?.repos)) {
-    return (
-      <NoReposBlock
-        searchValue={searchValue}
-        privateAccess={userData?.privateAccess}
-      />
-    )
+    return <NoReposBlock searchValue={searchValue} />
   }
 
   return (
