@@ -4,9 +4,12 @@ import identity from 'lodash/identity'
 import pluralize from 'pluralize'
 import PropTypes from 'prop-types'
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
+import { useParams } from 'react-router-dom'
 import { useIntersection } from 'react-use'
 
 import { dataMarketingType } from 'shared/propTypes'
+import { providerToName } from 'shared/utils'
+import A from 'ui/A'
 import Icon from 'ui/Icon'
 import SearchField from 'ui/SearchField'
 import Spinner from 'ui/Spinner'
@@ -24,12 +27,14 @@ const UlVariantClass = {
   default: 'w-full border-gray-ds-tertiary',
   gray: 'w-full border-gray-ds-tertiary',
   text: 'left-0 whitespace-nowrap',
+  defaultOrgSelector: 'w-full border-gray-ds-tertiary top-12',
 }
 
 const ButtonVariantClass = {
   default: `w-full h-8 px-3 border border-ds-gray-tertiary rounded-md bg-white disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary`,
   gray: `w-full h-8 px-3 border border-ds-gray-tertiary rounded-md bg-white disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary bg-ds-gray-primary`,
   text: `flex-init text-ds-blue`,
+  defaultOrgSelector: `w-full h-12 px-3 border border-ds-gray-tertiary rounded-md bg-white disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary`,
 }
 
 function getSearchPlaceholder(resourceName) {
@@ -87,6 +92,8 @@ const Select = forwardRef(
   ) => {
     const inputRef = useRef(null)
     const intersectionRef = useRef(null)
+
+    const { provider } = useParams()
 
     const intersection = useIntersection(intersectionRef, {
       root: null,
@@ -197,6 +204,15 @@ const Select = forwardRef(
             {isOpen && (
               <>
                 {items.map(_renderItem)}
+                {variant === 'defaultOrgSelector' &&
+                  providerToName(provider) === 'Github' && (
+                    <li className="px-4 py-2 text-ds-blue-darker">
+                      <A to={{ pageName: 'codecovAppInstallation' }}>
+                        <Icon name="plus-circle" />
+                        Add GitHub organization
+                      </A>
+                    </li>
+                  )}
                 {items.length === 0 && onSearch && !isLoading && (
                   <p className="px-3 py-1 text-sm font-semibold">
                     No results found
@@ -230,7 +246,7 @@ Select.propTypes = {
   renderItem: PropTypes.func,
   renderSelected: PropTypes.func,
   ariaName: PropTypes.string.isRequired,
-  variant: PropTypes.oneOf(['default', 'gray', 'text']),
+  variant: PropTypes.oneOf(['default', 'gray', 'text', 'defaultOrgSelector']),
   disabled: PropTypes.bool,
   dataMarketing: dataMarketingType,
   onSearch: PropTypes.func,

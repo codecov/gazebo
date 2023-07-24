@@ -6,13 +6,14 @@ import ErrorBoundary from 'layouts/shared/ErrorBoundary'
 import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
 import ToastNotifications from 'layouts/ToastNotifications'
 import { useTracking } from 'services/tracking'
+import { useUser } from 'services/user'
 import GlobalBanners from 'shared/GlobalBanners'
 import GlobalTopBanners from 'shared/GlobalTopBanners'
 import LoadingLogo from 'ui/LoadingLogo'
 
 import { useUserAccessGate } from './hooks/useUserAccessGate'
 
-const TermsOfService = lazy(() => import('pages/TermsOfService'))
+const DefaultOrgSelector = lazy(() => import('pages/DefaultOrgSelector'))
 const LimitedHeader = lazy(() => import('layouts/LimitedHeader'))
 
 const FullPageLoader = () => (
@@ -23,6 +24,8 @@ const FullPageLoader = () => (
 
 function BaseLayout({ children }) {
   const { isFullExperience, isLoading } = useUserAccessGate()
+  const { data: currentUser } = useUser()
+  const hasDefaultOrg = currentUser?.owner?.defaultOrgUsername
 
   useTracking()
 
@@ -46,11 +49,11 @@ function BaseLayout({ children }) {
           <NetworkErrorBoundary>
             <main className="container mb-8 mt-2 flex grow flex-col gap-2 md:p-0">
               <GlobalBanners />
-              {isFullExperience ? (
+              {hasDefaultOrg ? (
                 children
               ) : (
                 <Suspense fallback={null}>
-                  <TermsOfService />
+                  <DefaultOrgSelector />
                 </Suspense>
               )}
             </main>
