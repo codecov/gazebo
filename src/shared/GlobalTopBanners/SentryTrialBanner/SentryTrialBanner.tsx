@@ -49,7 +49,7 @@ const SentryTrialBanner: React.FC = () => {
     },
   })
 
-  const trialStatus = trialData?.trialStatus
+  const trialStatus = trialData?.plan?.trialStatus
 
   if (
     isUndefined(owner) ||

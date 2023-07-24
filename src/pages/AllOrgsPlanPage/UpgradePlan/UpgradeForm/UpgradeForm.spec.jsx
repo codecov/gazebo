@@ -129,12 +129,12 @@ describe('UpgradeForm', () => {
       successfulRequest = true,
       errorDetails = undefined,
       includeSentryPlans = false,
-      trialStatus = null,
+      trialStatus = undefined,
     } = {
       successfulRequest: true,
       errorDetails: undefined,
       includeSentryPlans: false,
-      trialStatus: null,
+      trialStatus: undefined,
     }
   ) {
     const user = userEvent.setup()
@@ -148,7 +148,7 @@ describe('UpgradeForm', () => {
         res(
           ctx.status(200),
           ctx.data({
-            owner: { trialStatus },
+            owner: { plan: { trialStatus: trialStatus } },
           })
         )
       ),

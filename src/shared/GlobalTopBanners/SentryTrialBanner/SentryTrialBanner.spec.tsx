@@ -123,7 +123,9 @@ describe('SentryTrialBanner', () => {
         res(
           ctx.status(200),
           ctx.data({
-            owner: { trialStatus: ongoingTrial ? 'ONGOING' : 'NOT_STARTED' },
+            owner: {
+              plan: { trialStatus: ongoingTrial ? 'ONGOING' : 'NOT_STARTED' },
+            },
           })
         )
       ),

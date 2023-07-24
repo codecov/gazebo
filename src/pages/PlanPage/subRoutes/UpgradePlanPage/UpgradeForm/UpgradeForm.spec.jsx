@@ -124,12 +124,12 @@ describe('UpgradeForm', () => {
       successfulRequest = true,
       errorDetails = undefined,
       includeSentryPlans = false,
-      trialStatus = null,
+      trialStatus = undefined,
     } = {
       successfulRequest: true,
       errorDetails: undefined,
       includeSentryPlans: false,
-      trialStatus: null,
+      trialStatus: undefined,
     }
   ) {
     const addNotification = jest.fn()
@@ -143,7 +143,7 @@ describe('UpgradeForm', () => {
         res(
           ctx.status(200),
           ctx.data({
-            owner: { trialStatus },
+            owner: { plan: { trialStatus: trialStatus } },
           })
         )
       ),

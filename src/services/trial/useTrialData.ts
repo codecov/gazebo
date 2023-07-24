@@ -7,11 +7,18 @@ export const TrialStatuses = {
   NOT_STARTED: 'NOT_STARTED',
   ONGOING: 'ONGOING',
   EXPIRED: 'EXPIRED',
+  NEVER_TRIALED: 'NEVER_TRIALED',
 } as const
 
 export const TrialConfig = z
   .object({
-    trialStatus: z.nativeEnum(TrialStatuses).nullish(),
+    plan: z
+      .object({
+        trialStatus: z.nativeEnum(TrialStatuses).optional(),
+        trialStartDate: z.string().nullish(),
+        trialEndDate: z.string().nullish(),
+      })
+      .nullish(),
   })
   .nullish()
 
@@ -26,7 +33,11 @@ export interface UseTrialArgs {
 export const query = `
   query GetTrialData($owner: String!) {
     owner(username: $owner) {
-      trialStatus
+      plan {
+        trialStatus
+        trialStartDate
+        trialEndDate
+      }
     }
   }
 `

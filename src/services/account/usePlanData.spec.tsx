@@ -3,15 +3,19 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { useTrialData } from './useTrialData'
+import { usePlanData } from './usePlanData'
 
 const mockTrialData = {
-  owner: {
-    plan: {
-      trialStatus: 'ONGOING',
-      trialStartDate: '2023-01-01T08:55:25',
-      trialEndDate: '2023-01-10T08:55:25',
-    },
+  plan: {
+    baseUnitPrice: 10,
+    benefits: [],
+    billingRate: 'monthly',
+    marketingName: 'Users Basic',
+    monthlyUploadLimit: 250,
+    planName: 'users-basic',
+    trialStatus: 'ONGOING',
+    trialStartDate: '2023-01-01T08:55:25',
+    trialEndDate: '2023-01-10T08:55:25',
   },
 }
 
@@ -27,31 +31,33 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 beforeAll(() => {
   server.listen()
 })
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
+
 afterAll(() => {
   server.close()
 })
 
-describe('useTrialData', () => {
+describe('usePlanData', () => {
   function setup({ trialData }: { trialData: any }) {
     server.use(
-      graphql.query('GetTrialData', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(trialData))
+      graphql.query('GetPlanData', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({ owner: { ...trialData } }))
       )
     )
   }
 
   describe('calling hook', () => {
-    describe('there is trial data', () => {
+    describe('there is plan data', () => {
       beforeEach(() => setup({ trialData: mockTrialData }))
 
-      it('returns the trial data', async () => {
+      it('returns the plan data', async () => {
         const { result } = renderHook(
           () =>
-            useTrialData({
+            usePlanData({
               provider: 'gh',
               owner: 'codecov',
             }),
@@ -61,6 +67,12 @@ describe('useTrialData', () => {
         await waitFor(() =>
           expect(result.current.data).toStrictEqual({
             plan: {
+              baseUnitPrice: 10,
+              benefits: [],
+              billingRate: 'monthly',
+              marketingName: 'Users Basic',
+              monthlyUploadLimit: 250,
+              planName: 'users-basic',
               trialStatus: 'ONGOING',
               trialStartDate: '2023-01-01T08:55:25',
               trialEndDate: '2023-01-10T08:55:25',
@@ -70,13 +82,13 @@ describe('useTrialData', () => {
       })
     })
 
-    describe('there is no trial data', () => {
+    describe('there is no plan data', () => {
       beforeEach(() => setup({ trialData: undefined }))
 
       it('returns an empty object', async () => {
         const { result } = renderHook(
           () =>
-            useTrialData({
+            usePlanData({
               provider: 'gh',
               owner: 'codecov',
             }),
