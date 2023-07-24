@@ -2,11 +2,10 @@ import { differenceInCalendarDays } from 'date-fns'
 import isUndefined from 'lodash/isUndefined'
 import { useParams } from 'react-router-dom'
 
-import { useAccountDetails } from 'services/account'
-import { TrialStatuses, useTrialData } from 'services/trial'
+import { TrialStatuses, usePlanData } from 'services/account'
 import { useOwner } from 'services/user'
 import { useFlags } from 'shared/featureFlags'
-import { isFreePlan } from 'shared/utils/billing'
+import { isFreePlan, isTrialPlan } from 'shared/utils/billing'
 
 import ExpiredBanner from './ExpiredBanner'
 import OngoingBanner from './OngoingBanner'
@@ -44,13 +43,7 @@ const TrialBanner: React.FC = () => {
 
   const enableQuery = !!owner || codecovTrialMvp
 
-  const { data: accountDetails } = useAccountDetails({
-    provider,
-    owner,
-    opts: { enabled: enableQuery },
-  })
-
-  const { data: trialData } = useTrialData({
+  const { data: planData } = usePlanData({
     provider,
     owner: owner || '',
     opts: { enabled: enableQuery },
@@ -61,9 +54,12 @@ const TrialBanner: React.FC = () => {
     opts: { enabled: enableQuery },
   })
 
-  const planValue = accountDetails?.plan?.value
-  const trialStatus = trialData?.trialStatus
-  const dateDiff = determineDateDiff({ trialStartDate: '', trialEndDate: '' })
+  const planName = planData?.plan?.planName
+  const trialStatus = planData?.plan?.trialStatus
+  const dateDiff = determineDateDiff({
+    trialStartDate: planData?.plan?.trialStartDate,
+    trialEndDate: planData?.plan?.trialEndDate,
+  })
 
   // hide on "global" pages, trial flag, and if user does not belong to the org
   if (
@@ -77,7 +73,7 @@ const TrialBanner: React.FC = () => {
   // user is not on a free plan, trial is currently on going
   // there are 3 or less days left, so display ongoing banner
   if (
-    !isFreePlan(planValue) &&
+    isTrialPlan(planName) &&
     trialStatus === TrialStatuses.ONGOING &&
     dateDiff < 4
   ) {
@@ -85,7 +81,7 @@ const TrialBanner: React.FC = () => {
   }
 
   // user has a free plan again, and the trial status is expired
-  if (isFreePlan(planValue) && trialStatus === TrialStatuses.EXPIRED) {
+  if (isFreePlan(planName) && trialStatus === TrialStatuses.EXPIRED) {
     return <ExpiredBanner />
   }
 

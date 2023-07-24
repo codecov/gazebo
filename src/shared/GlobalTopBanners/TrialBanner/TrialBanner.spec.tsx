@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, rest } from 'msw'
+import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -14,24 +14,6 @@ import TrialBanner from './TrialBanner'
 jest.mock('shared/featureFlags')
 
 const mockedUseFlags = useFlags as jest.Mock<{ codecovTrialMvp: boolean }>
-
-const accountOne = {
-  integrationId: null,
-  activatedStudentCount: 0,
-  activatedUserCount: 0,
-  checkoutSessionId: null,
-  email: 'codecov-user@codecov.io',
-  inactiveUserCount: 0,
-  name: 'codecov-user',
-  nbActivePrivateRepos: 1,
-  planAutoActivate: true,
-  planProvider: null,
-  repoTotalCredits: 99999999,
-  rootOrganization: null,
-  scheduleDetail: null,
-  studentCount: 0,
-  subscriptionDetail: null,
-}
 
 const proPlanMonth = {
   marketingName: 'Pro Team',
@@ -113,6 +95,8 @@ interface SetupArgs {
   isCurrentUserPartOfOrg?: boolean
   isTrialPlan?: boolean
   isProPlan?: boolean
+  trialStartDate?: string
+  trialEndDate?: string
 }
 
 describe('TrialBanner', () => {
@@ -122,6 +106,8 @@ describe('TrialBanner', () => {
     isCurrentUserPartOfOrg = false,
     isTrialPlan = false,
     isProPlan = false,
+    trialStartDate = '2021-01-01',
+    trialEndDate = '20221-02-01',
   }: SetupArgs) {
     const user = userEvent.setup()
 
@@ -130,31 +116,38 @@ describe('TrialBanner', () => {
     })
 
     server.use(
-      graphql.query('GetTrialData', (_, res, ctx) =>
-        res(
+      graphql.query('GetPlanData', (_, res, ctx) => {
+        let plan: any = basicPlan
+
+        if (isTrialPlan) {
+          plan = trialPlan
+        } else if (isProPlan) {
+          plan = proPlanMonth
+        }
+
+        return res(
           ctx.status(200),
           ctx.data({
-            owner: { trialStatus },
+            owner: {
+              plan: {
+                baseUnitPrice: plan.baseUnitPrice,
+                benefits: plan.benefits,
+                billingRate: null,
+                marketingName: plan.marketingName,
+                monthlyUploadLimit: null,
+                planName: plan.value,
+                trialStatus,
+                trialStartDate,
+                trialEndDate,
+              },
+            },
           })
         )
-      ),
+      }),
       graphql.query('DetailOwner', (req, res, ctx) => {
         return res(
           ctx.status(200),
           ctx.data({ owner: { isCurrentUserPartOfOrg } })
-        )
-      }),
-      rest.get('/internal/gh/:owner/account-details/', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            ...accountOne,
-            plan: isTrialPlan
-              ? trialPlan
-              : isProPlan
-              ? proPlanMonth
-              : basicPlan,
-          })
         )
       })
     )
@@ -193,34 +186,51 @@ describe('TrialBanner', () => {
     })
 
     describe('trial is ongoing', () => {
-      describe('user is on a free plan', () => {
-        it('renders nothing', async () => {
-          setup({
-            flagValue: true,
-            trialStatus: TrialStatuses.ONGOING,
-            isCurrentUserPartOfOrg: true,
-          })
-
-          const { container } = render(<TrialBanner />, {
-            wrapper: wrapper(),
-          })
-
-          await waitFor(() =>
-            expect(queryClient.isFetching()).toBeGreaterThan(0)
-          )
-          await waitFor(() => expect(queryClient.isFetching()).toBe(0))
-
-          expect(container).toBeEmptyDOMElement()
-        })
-      })
-
       describe('trial is ongoing', () => {
         describe('date diff is less then 4', () => {
-          it('renders ongoing banner', async () => {})
+          it('renders ongoing banner', async () => {
+            setup({
+              flagValue: true,
+              trialStatus: TrialStatuses.ONGOING,
+              isCurrentUserPartOfOrg: true,
+              isTrialPlan: true,
+              trialStartDate: '2021-01-01',
+              trialEndDate: '2021-01-02',
+            })
+
+            render(<TrialBanner />, {
+              wrapper: wrapper(),
+            })
+
+            const text = await screen.findByText(
+              /Your trial ends in 1 day\(s\)/
+            )
+            expect(text).toBeInTheDocument()
+          })
         })
 
         describe('date diff is greater then 4', () => {
-          it('renders nothing', async () => {})
+          it('renders nothing', async () => {
+            setup({
+              flagValue: true,
+              trialStatus: TrialStatuses.ONGOING,
+              isCurrentUserPartOfOrg: true,
+              isTrialPlan: true,
+              trialStartDate: '2021-01-01',
+              trialEndDate: '2021-01-14',
+            })
+
+            const { container } = render(<TrialBanner />, {
+              wrapper: wrapper(),
+            })
+
+            await waitFor(() =>
+              expect(queryClient.isFetching()).toBeGreaterThan(0)
+            )
+            await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+            expect(container).toBeEmptyDOMElement()
+          })
         })
       })
     })
