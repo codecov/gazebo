@@ -48,7 +48,7 @@ describe('OngoingBanner', () => {
       expect(supportLink).toBeInTheDocument()
       expect(supportLink).toHaveAttribute(
         'href',
-        'https://codecov.freshdesk.com/support/home'
+        'https://codecovpro.zendesk.com/hc/en-us'
       )
     })
 
