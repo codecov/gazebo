@@ -48,16 +48,14 @@ describe('LoginLayout', () => {
   }
 
   describe('rendering component', () => {
-    describe('provider is not present', () => {
-      it('renders logo button link', () => {
-        setup()
+    it('renders logo button with expected link', () => {
+      setup()
 
-        render(<LoginLayout>child content</LoginLayout>, { wrapper: wrapper() })
+      render(<LoginLayout>child content</LoginLayout>, { wrapper: wrapper() })
 
-        const link = screen.getByRole('link', { name: /Link to Homepage/ })
-        expect(link).toBeInTheDocument()
-        expect(link).toHaveAttribute('href', 'https://about.codecov.io')
-      })
+      const link = screen.getByRole('link', { name: /Link to Homepage/ })
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute('href', 'https://about.codecov.io')
     })
 
     it('renders new to codecov link', () => {
