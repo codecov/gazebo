@@ -30,21 +30,6 @@ describe('useNavLinks', () => {
     })
   }
 
-  describe('provider link', () => {
-    beforeAll(() => {
-      setup(['/gl/doggo/squirrel-locator'])
-    })
-
-    it('Returns the correct link with nothing passed', () => {
-      expect(hookData.result.current.provider.path()).toBe('/gl')
-    })
-    it('can override the params', () => {
-      expect(hookData.result.current.provider.path({ provider: 'dog' })).toBe(
-        '/dog'
-      )
-    })
-  })
-
   describe('Sign Out', () => {
     beforeAll(() => {
       setup(['/gl/doggo/squirrel-locator'])
@@ -178,21 +163,6 @@ describe('useNavLinks', () => {
       expect(hookData.result.current.planTab.path({ owner: 'cat' })).toBe(
         `/plan/gl/cat`
       )
-    })
-  })
-
-  describe('All orgs an repo plans', () => {
-    beforeAll(() => {
-      setup(['/gl/doggo'])
-    })
-
-    it('Returns the correct link with nothing passed', () => {
-      expect(hookData.result.current.allOrgsPlanPage.path()).toBe(`/plan/gl`)
-    })
-    it('can override the params', () => {
-      expect(
-        hookData.result.current.allOrgsPlanPage.path({ provider: 'bb' })
-      ).toBe(`/plan/bb`)
     })
   })
 

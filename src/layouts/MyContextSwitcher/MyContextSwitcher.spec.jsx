@@ -118,30 +118,6 @@ describe('MyContextSwitcher', () => {
       })
       expect(button).toBeInTheDocument()
     })
-
-    it('renders the default org modal', async () => {
-      const { user } = setup()
-      render(<MyContextSwitcher activeContext="codecov" pageName="owner" />, {
-        wrapper: wrapper(),
-      })
-
-      const editDefaultButton = await screen.findByText(/Edit default/i)
-      expect(editDefaultButton).toBeInTheDocument()
-      await user.click(editDefaultButton)
-
-      const title = await screen.findByText(/Select default organization/)
-      expect(title).toBeInTheDocument()
-      const subTitle = await screen.findByText(
-        /Org will appear as default for landing page context/
-      )
-      expect(subTitle).toBeInTheDocument()
-
-      const cancelButton = await screen.findByRole('button', { name: 'Cancel' })
-      expect(cancelButton).toBeInTheDocument()
-
-      const updateButton = await screen.findByRole('button', { name: 'Update' })
-      expect(updateButton).toBeInTheDocument()
-    })
   })
 
   describe('user "scrolls" and fetches next page', () => {

@@ -4,9 +4,7 @@ import { useParams } from 'react-router-dom'
 import { useMyContexts } from 'services/user'
 import ContextSwitcher from 'ui/ContextSwitcher'
 
-import UpdateDefaultOrgModal from './UpdateDefaultOrgModal'
-
-function MyContextSwitcher({ activeContext, pageName, allOrgsPageName }) {
+function MyContextSwitcher({ activeContext, pageName }) {
   const { provider } = useParams()
   const {
     data: myContexts,
@@ -38,23 +36,6 @@ function MyContextSwitcher({ activeContext, pageName, allOrgsPageName }) {
         currentUser={currentUser}
         isLoading={isLoading}
         onLoadMore={() => hasNextPage && fetchNextPage()}
-        allOrgsPageName={allOrgsPageName}
-        ModalControl={({ onClick }) => (
-          <button
-            className="flex-none text-ds-blue hover:underline"
-            onClick={onClick}
-          >
-            Edit default
-          </button>
-        )}
-        ModalComponent={({ closeFn, showComponent }) => {
-          return (
-            <UpdateDefaultOrgModal
-              closeModal={closeFn}
-              isOpen={showComponent}
-            />
-          )
-        }}
       />
     </div>
   )
@@ -69,7 +50,6 @@ MyContextSwitcher.propTypes = {
    ** The page name where each context will point to
    */
   pageName: PropTypes.string.isRequired,
-  allOrgsPageName: PropTypes.string,
 }
 
 export default MyContextSwitcher

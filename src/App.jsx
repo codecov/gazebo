@@ -1,7 +1,7 @@
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { lazy } from 'react'
 import { Toaster } from 'react-hot-toast'
-import { Redirect, Switch } from 'react-router-dom'
+import { Redirect, Switch, useParams } from 'react-router-dom'
 
 import config from 'config'
 
@@ -11,21 +11,32 @@ import BaseLayout from 'layouts/BaseLayout'
 import LoginLayout from 'layouts/LoginLayout'
 import { ToastNotificationProvider } from 'services/toastNotification'
 import { useUTM } from 'services/tracking/utm'
+import { useUser } from 'services/user'
 
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
 const AdminSettings = lazy(() => import('./pages/AdminSettings'))
-const AllOrgsPlanPage = lazy(() => import('./pages/AllOrgsPlanPage'))
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
 const CommitDetailPage = lazy(() => import('./pages/CommitDetailPage'))
 const EnterpriseLandingPage = lazy(() => import('pages/EnterpriseLandingPage'))
 const FeedbackPage = lazy(() => import('./pages/FeedbackPage'))
-const HomePage = lazy(() => import('./pages/HomePage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const MembersPage = lazy(() => import('./pages/MembersPage'))
 const PlanPage = lazy(() => import('./pages/PlanPage'))
 const OwnerPage = lazy(() => import('./pages/OwnerPage'))
 const PullRequestPage = lazy(() => import('./pages/PullRequestPage'))
 const RepoPage = lazy(() => import('./pages/RepoPage'))
+
+const HomePageRedirect = () => {
+  const { provider } = useParams()
+  const { data: currentUser } = useUser()
+
+  if (!provider || !currentUser) return <Redirect to="/login" />
+
+  const defaultOrg =
+    currentUser?.owner?.defaultOrgUsername ?? currentUser?.user?.username
+
+  return <Redirect to={`/${provider}/${defaultOrg}`} />
+}
 
 // eslint-disable-next-line complexity
 const MainAppRoutes = () => (
@@ -53,16 +64,16 @@ const MainAppRoutes = () => (
       </SentryRoute>
     )}
     {!config.IS_SELF_HOSTED && (
-      <SentryRoute path="/plan/:provider/:owner">
+      <SentryRoute path="/plan/:provider" exact>
         <BaseLayout>
-          <PlanPage />
+          <HomePageRedirect />
         </BaseLayout>
       </SentryRoute>
     )}
     {!config.IS_SELF_HOSTED && (
-      <SentryRoute path="/plan/:provider/" exact>
+      <SentryRoute path="/plan/:provider/:owner">
         <BaseLayout>
-          <AllOrgsPlanPage />
+          <PlanPage />
         </BaseLayout>
       </SentryRoute>
     )}
@@ -78,14 +89,12 @@ const MainAppRoutes = () => (
         <AnalyticsPage />
       </BaseLayout>
     </SentryRoute>
+    <SentryRoute path="/:provider" exact>
+      <HomePageRedirect />
+    </SentryRoute>
     <SentryRoute path="/:provider/feedback">
       <BaseLayout>
         <FeedbackPage />
-      </BaseLayout>
-    </SentryRoute>
-    <SentryRoute path="/:provider" exact>
-      <BaseLayout>
-        <HomePage />
       </BaseLayout>
     </SentryRoute>
     <SentryRoute path="/:provider/:owner" exact>
@@ -128,8 +137,11 @@ const MainAppRoutes = () => (
           <EnterpriseLandingPage />
         </BaseLayout>
       ) : (
-        <Redirect to="/gh" />
+        <Redirect to="/login/gh" />
       )}
+    </SentryRoute>
+    <SentryRoute path="*">
+      <HomePageRedirect />
     </SentryRoute>
   </Switch>
 )

@@ -12,6 +12,9 @@ jest.mock('config')
 
 const loggedInUser = {
   me: {
+    owner: {
+      defaultOrgUsername: 'codecov',
+    },
     user: {
       username: 'p',
       avatarUrl: '',
@@ -55,7 +58,7 @@ const wrapper =
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={[initialEntries]}>
           <Route path={path} exact>
-            <DesktopMenu />
+            {children}
           </Route>
         </MemoryRouter>
       </QueryClientProvider>
@@ -69,14 +72,19 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('DesktopMenu', () => {
-  function setup({ hasLoggedInUser = true } = { hasLoggedInUser: true }) {
+  function setup(
+    { hasLoggedInUser = true, user = loggedInUser } = {
+      hasLoggedInUser: true,
+      user: loggedInUser,
+    }
+  ) {
     server.use(
       graphql.query('Seats', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockSeatData))
       ),
       graphql.query('CurrentUser', (req, res, ctx) => {
         if (hasLoggedInUser) {
-          return res(ctx.status(200), ctx.data(loggedInUser))
+          return res(ctx.status(200), ctx.data(user))
         }
         return res(ctx.status(200), ctx.data({}))
       }),
@@ -87,24 +95,7 @@ describe('DesktopMenu', () => {
   }
 
   describe('rendering logo button', () => {
-    describe('when provider is present', () => {
-      it('directs user to provider endpoint', async () => {
-        setup()
-
-        render(<DesktopMenu />, {
-          wrapper: wrapper({
-            initialEntries: '/gh/codecov',
-            path: '/:provider/:owner',
-          }),
-        })
-
-        const link = await screen.findByTestId('homepage-link')
-        expect(link).toBeInTheDocument()
-        expect(link).toHaveAttribute('href', '/gh')
-      })
-    })
-
-    describe('when provider is not present', () => {
+    describe('when default org does not exist', () => {
       it('directs user to about codecov io', async () => {
         setup()
 
@@ -118,6 +109,70 @@ describe('DesktopMenu', () => {
         const link = await screen.findByTestId('homepage-link')
         expect(link).toBeInTheDocument()
         expect(link).toHaveAttribute('href', 'https://about.codecov.io')
+      })
+    })
+
+    describe('when username exists but no default org name', () => {
+      it('renders username as default org', async () => {
+        setup({
+          user: {
+            me: {
+              owner: {
+                defaultOrgUsername: null,
+              },
+              user: {
+                username: 'penny',
+                avatarUrl: '',
+              },
+            },
+          },
+        })
+
+        render(<DesktopMenu />, {
+          wrapper: wrapper({
+            initialEntries: '/gh/penny',
+            path: '/:provider/:owner',
+          }),
+        })
+
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
+
+        const link = await screen.findByTestId('homepage-link')
+        expect(link).toBeInTheDocument()
+        expect(link).toHaveAttribute('href', '/gh/penny')
+      })
+    })
+
+    describe('when default org exists for user', () => {
+      it('renders owner default org as default org', async () => {
+        setup({
+          user: {
+            me: {
+              owner: {
+                defaultOrgUsername: 'penny-org',
+              },
+              user: {
+                username: 'penny',
+                avatarUrl: '',
+              },
+            },
+          },
+        })
+
+        render(<DesktopMenu />, {
+          wrapper: wrapper({
+            initialEntries: '/gh/penny',
+            path: '/:provider/:owner',
+          }),
+        })
+
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
+
+        const link = await screen.findByTestId('homepage-link')
+        expect(link).toBeInTheDocument()
+        expect(link).toHaveAttribute('href', '/gh/penny-org')
       })
     })
   })

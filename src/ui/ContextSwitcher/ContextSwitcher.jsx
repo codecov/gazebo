@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom'
 import { useIntersection } from 'react-use'
 import useClickAway from 'react-use/lib/useClickAway'
 
+import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
 import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A'
 import Avatar from 'ui/Avatar'
@@ -59,11 +60,13 @@ ModalSection.propTypes = {
   ModalControl: PropTypes.func,
 }
 
-function ContextItem({ context, currentContext, currentUser }) {
+function ContextItem({ context, currentContext, defaultOrgUsername }) {
   const { owner, pageName } = context
+  const orgUsername = owner?.username
   const isActiveContext =
-    owner?.username?.toLowerCase() ===
+    orgUsername?.toLowerCase() ===
     currentContext?.owner?.username?.toLowerCase()
+  const { mutate } = useUpdateDefaultOrganization()
 
   return (
     <li
@@ -71,16 +74,18 @@ function ContextItem({ context, currentContext, currentUser }) {
       id="listbox-option-0"
     >
       <Button
-        to={{ pageName: pageName, options: { owner: owner?.username } }}
+        to={{ pageName: pageName, options: { owner: orgUsername } }}
         variant="listbox"
+        onClick={() => {
+          if (defaultOrgUsername === orgUsername) return
+
+          mutate({ username: orgUsername })
+        }}
       >
         <Avatar user={owner} bordered />
         <div className={cs('mx-1', { 'font-semibold': isActiveContext })}>
-          {owner?.username}
+          {orgUsername}
         </div>
-        {owner?.username === currentUser?.defaultOrgUsername && (
-          <span className="font-medium text-ds-gray-quaternary">Default</span>
-        )}
       </Button>
     </li>
   )
@@ -93,9 +98,7 @@ ContextItem.propTypes = {
   currentContext: PropTypes.shape({
     owner: PropTypes.shape({ username: PropTypes.string }),
   }),
-  currentUser: PropTypes.shape({
-    defaultOrgUsername: PropTypes.string,
-  }),
+  defaultOrgUsername: PropTypes.string,
 }
 
 function useCloseOnLooseFocus({ setToggle }) {
@@ -128,6 +131,19 @@ function useLoadMore({ onLoadMore }) {
   return ref
 }
 
+const Loader = ({ isLoading }) => {
+  if (!isLoading) return null
+  return (
+    <span className="flex justify-center pb-2 pt-1">
+      <Spinner />
+    </span>
+  )
+}
+
+Loader.propTypes = {
+  isLoading: PropTypes.bool.isRequired,
+}
+
 function ContextSwitcher({
   buttonVariant = 'default',
   activeContext,
@@ -137,13 +153,13 @@ function ContextSwitcher({
   onLoadMore,
   ModalControl,
   ModalComponent,
-  allOrgsPageName,
 }) {
   const [toggle, setToggle] = useState(false)
   const wrapperRef = useCloseOnLooseFocus({ setToggle })
   const intersectionRef = useLoadMore({ onLoadMore })
   const currentContext = getCurrentContext({ activeContext, contexts })
   const { provider } = useParams()
+  const defaultOrgUsername = currentUser?.defaultOrgUsername
 
   const isGh = providerToName(provider) === 'Github'
 
@@ -163,17 +179,8 @@ function ContextSwitcher({
         aria-expanded={toggle}
         onClick={() => setToggle((toggle) => !toggle)}
       >
-        {currentContext ? (
-          <>
-            <Avatar user={currentContext.owner} bordered />
-            <p className="ml-1">{currentContext.owner.username}</p>
-          </>
-        ) : (
-          <>
-            <Icon name="home" />
-            <p className="ml-1">All my orgs and repos</p>
-          </>
-        )}
+        <Avatar user={currentContext.owner} bordered />
+        <p className="ml-1">{currentContext.owner.username}</p>
         <span
           aria-hidden="true"
           className={cs('transition-transform', {
@@ -200,37 +207,15 @@ function ContextSwitcher({
             ModalComponent={ModalComponent}
           />
         </li>
-        <li
-          className="relative grid cursor-pointer select-none py-2 text-xs text-gray-900  hover:bg-ds-gray-secondary"
-          id="listbox-option-0"
-        >
-          <Button
-            to={{ pageName: allOrgsPageName ?? 'provider' }}
-            variant="listbox"
-          >
-            <Icon name="home" />
-            <div
-              className={cs('mx-1 text-sm', {
-                'font-semibold': !activeContext,
-              })}
-            >
-              All orgs and repos
-            </div>
-          </Button>
-        </li>
         {contexts.map((context) => (
           <ContextItem
+            defaultOrgUsername={defaultOrgUsername}
             context={context}
             key={context?.owner?.username}
-            currentUser={currentUser}
             currentContext={currentContext}
           />
         ))}
-        {isLoading && (
-          <span className="flex justify-center pb-2 pt-1">
-            <Spinner />
-          </span>
-        )}
+        <Loader isLoading={isLoading} />
         <LoadMoreTrigger
           intersectionRef={intersectionRef}
           onLoadMore={onLoadMore}
@@ -267,7 +252,6 @@ ContextSwitcher.propTypes = {
   isLoading: PropTypes.bool,
   ModalComponent: PropTypes.func,
   ModalControl: PropTypes.func,
-  allOrgsPageName: PropTypes.string,
 }
 
 export default ContextSwitcher
