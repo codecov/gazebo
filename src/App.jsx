@@ -89,6 +89,9 @@ const MainAppRoutes = () => (
         <AnalyticsPage />
       </BaseLayout>
     </SentryRoute>
+    <SentryRoute path="/:provider" exact>
+      <HomePageRedirect />
+    </SentryRoute>
     <SentryRoute path="/:provider/feedback">
       <BaseLayout>
         <FeedbackPage />
