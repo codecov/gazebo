@@ -1,17 +1,58 @@
 import { useParams } from 'react-router-dom'
 
 import githubLogo from 'assets/githublogo.png'
-import { planPropType, useAccountDetails, usePlans } from 'services/account'
+import {
+  planPropType,
+  TrialStatuses,
+  useAccountDetails,
+  usePlanData,
+  usePlans,
+} from 'services/account'
+import { useFlags } from 'shared/featureFlags'
 import {
   canApplySentryUpgrade,
   isFreePlan,
   isSentryPlan,
+  isTrialPlan,
 } from 'shared/utils/billing'
+import A from 'ui/A/A'
 import Button from 'ui/Button'
 
+// eslint-disable-next-line complexity
 function PlansActionsBilling({ plan }) {
-  const { provider } = useParams()
+  const { provider, owner } = useParams()
   const { data: plans } = usePlans(provider)
+  const { codecovTrialMvp } = useFlags({
+    codecovTrialMvp: false,
+  })
+
+  const { data: planData } = usePlanData({
+    provider,
+    owner,
+    opts: { enabled: codecovTrialMvp },
+  })
+
+  const canStartTrial =
+    planData?.plan?.trialStatus === TrialStatuses.NOT_STARTED &&
+    isFreePlan(planData?.plan?.planName)
+
+  if (canStartTrial) {
+    return (
+      <div className="flex items-center gap-4 self-start">
+        <Button
+          onClick={() => {
+            // call mutate depending on condition
+            // redirect if no error
+          }}
+          variant="primary"
+        >
+          Start trial
+        </Button>
+        <p className="font-semibold">OR</p>
+        <A to={{ pageName: 'upgradeOrgPlan' }}>upgrade now</A>
+      </div>
+    )
+  }
 
   if (canApplySentryUpgrade({ plan, plans })) {
     return (
@@ -28,7 +69,9 @@ function PlansActionsBilling({ plan }) {
   return (
     <div className="flex self-start">
       <Button to={{ pageName: 'upgradeOrgPlan' }} variant="primary">
-        {isFreePlan(plan?.value) ? 'Upgrade to Pro Team plan' : 'Manage plan'}
+        {isFreePlan(plan?.value) || isTrialPlan(plan?.value)
+          ? 'Upgrade to Pro Team plan'
+          : 'Manage plan'}
       </Button>
     </div>
   )
@@ -68,7 +111,7 @@ function ActionsBilling() {
       <div className="flex flex-col gap-4">
         <hr />
         <p className="text-sm">
-          This subgroup’s billing is managed by {username}.
+          This subgroup&apos;s billing is managed by {username}.
         </p>
         <div className="flex self-start">
           <Button
