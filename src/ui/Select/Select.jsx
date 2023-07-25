@@ -27,7 +27,7 @@ const UlVariantClass = {
   default: 'w-full border-gray-ds-tertiary',
   gray: 'w-full border-gray-ds-tertiary',
   text: 'left-0 whitespace-nowrap',
-  defaultOrgSelector: 'w-full border-gray-ds-tertiary top-12',
+  defaultOrgSelector: 'w-full border-gray-ds-tertiary top-[3rem]',
 }
 
 const ButtonVariantClass = {

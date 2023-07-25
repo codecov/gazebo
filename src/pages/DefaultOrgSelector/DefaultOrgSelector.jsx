@@ -4,9 +4,9 @@ import { useHistory, useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
+import { trackSegmentEvent } from 'services/tracking/segment'
 import { useUser } from 'services/user'
 import { mapEdges } from 'shared/utils/graphql'
-import A from 'ui/A'
 import Avatar from 'ui/Avatar/Avatar'
 import Button from 'ui/Button'
 import Select from 'ui/Select'
@@ -20,14 +20,15 @@ const FormSchema = z.object({
 })
 
 function DefaultOrgSelector() {
-  const { register, control, formState, setValue, handleSubmit } = useForm({
+  const { register, control, setValue, handleSubmit } = useForm({
     resolver: zodResolver(FormSchema),
     mode: 'onChange',
   })
 
-  const { data: currentUser, isLoading: userIsLoading } = useUser()
   const { provider } = useParams()
   const history = useHistory()
+
+  const { data: currentUser, isLoading: userIsLoading } = useUser()
   const { mutate: updateDefaultOrg } = useUpdateDefaultOrganization()
 
   const {
@@ -58,6 +59,16 @@ function DefaultOrgSelector() {
   const onSubmit = (data) => {
     if (!data?.select)
       return history.push(`/${provider}/${currentUser?.user?.username}`)
+
+    const segmentEvent = {
+      event: 'Onboarding default org selector',
+      data: {
+        ownerid: currentUser?.trackingMetadata?.ownerid,
+        username: currentUser?.user?.username,
+        org: data?.select,
+      },
+    }
+    trackSegmentEvent(segmentEvent)
 
     updateDefaultOrg({ username: data?.select }) //got an embed redirect that's removed in #pr-2134
     // fire the trial mutation on continue to app
@@ -103,13 +114,6 @@ function DefaultOrgSelector() {
           </div>
           <GitHubHelpBanner />
         </div>
-        {formState?.errors?.apiError && (
-          <p className="mb-3 text-xs text-codecov-red">
-            We&apos;re sorry for the inconvenience, there was an error with our
-            servers. Please try again later or{' '}
-            <A to={{ pageName: 'support' }}>Contact support</A>.
-          </p>
-        )}
         <div className="flex justify-end">
           <Button hook="user selects org, continues to app" type="submit">
             Continue to app
