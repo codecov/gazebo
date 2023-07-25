@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
-import { providerToName } from 'shared/utils'
+import { providerToInternalProvider } from 'shared/utils'
 
 function getPathEraseRepo({ provider, owner, repo }) {
   return `/${provider}/${owner}/repos/${repo}/erase/`
@@ -11,7 +11,7 @@ function getPathEraseRepo({ provider, owner, repo }) {
 export function useEraseRepoContent() {
   const { provider, owner, repo } = useParams()
   const queryClient = useQueryClient()
-  const refactoredProvider = providerToName(provider).toLowerCase()
+  const refactoredProvider = providerToInternalProvider(provider)
   return useMutation({
     mutationFn: () => {
       const path = getPathEraseRepo({
