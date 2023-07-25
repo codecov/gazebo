@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useHistory, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import { renderToast } from 'services/toast'
@@ -49,7 +49,6 @@ interface UseStartTrialArgs {
 export const useStartTrial = ({ owner }: UseStartTrialArgs) => {
   const { provider } = useParams<Params>()
   const queryClient = useQueryClient()
-  const history = useHistory()
 
   const mutation = useMutation({
     mutationFn: () => {
@@ -71,16 +70,7 @@ export const useStartTrial = ({ owner }: UseStartTrialArgs) => {
       const error = parsedData.startTrial?.error
 
       if (error) {
-        renderToast({
-          type: 'error',
-          title: 'Error starting trial',
-          content:
-            'Please try again. If the error persists please contact support',
-          options: {
-            duration: 10000,
-          },
-        })
-        return
+        throw new Error(error.message)
       }
 
       queryClient.invalidateQueries(['accountDetails'])
@@ -96,7 +86,7 @@ export const useStartTrial = ({ owner }: UseStartTrialArgs) => {
         },
       })
 
-      history.push(`/${provider}/${owner}`)
+      return
     },
     onError: () => {
       renderToast({
@@ -108,7 +98,7 @@ export const useStartTrial = ({ owner }: UseStartTrialArgs) => {
           duration: 10000,
         },
       })
-      return
+      return { success: false }
     },
   })
 

@@ -18,18 +18,10 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-let testLocation: any
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh']}>
       <Route path="/:provider">{children}</Route>
-      <Route
-        path="*"
-        render={({ location }) => {
-          testLocation = location
-          return null
-        }}
-      />
     </MemoryRouter>
   </QueryClientProvider>
 )
@@ -111,6 +103,18 @@ describe('useStartTrial', () => {
         result.current.mutate()
 
         await waitFor(() =>
+          expect(mockRenderToast).not.toBeCalledWith({
+            type: 'error',
+            title: 'Error starting trial',
+            content:
+              'Please try again. If the error persists please contact support',
+            options: {
+              duration: 10000,
+            },
+          })
+        )
+
+        await waitFor(() =>
           expect(mockRenderToast).toBeCalledWith({
             type: 'generic',
             title: '14 day trial has started',
@@ -122,22 +126,13 @@ describe('useStartTrial', () => {
           })
         )
       })
-
-      it('redirects the user', async () => {
-        setup({})
-
-        const { result } = renderHook(
-          () => useStartTrial({ owner: 'codecov' }),
-          { wrapper }
-        )
-
-        result.current.mutate()
-
-        await waitFor(() => expect(testLocation.pathname).toBe('/gh/codecov'))
-      })
     })
 
     describe('an unsuccessful mutation', () => {
+      beforeAll(() => {
+        console.error = () => null
+      })
+
       describe('handled server error', () => {
         it('triggers render toast', async () => {
           const { mockRenderToast } = setup({ isOtherError: true })
@@ -160,14 +155,22 @@ describe('useStartTrial', () => {
               },
             })
           )
+
+          await waitFor(() =>
+            expect(mockRenderToast).not.toBeCalledWith({
+              type: 'generic',
+              title: '14 day trial has started',
+              content: '',
+              options: {
+                duration: 5000,
+                position: 'bottom-left',
+              },
+            })
+          )
         })
       })
 
       describe('internal server error', () => {
-        beforeAll(() => {
-          console.error = () => null
-        })
-
         it('triggers toast', async () => {
           const { mockRenderToast } = setup({ isServerError: true })
 
