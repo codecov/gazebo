@@ -1,6 +1,8 @@
 import { differenceInCalendarDays } from 'date-fns'
 import { useParams } from 'react-router-dom'
 
+import config from 'config'
+
 import { TrialStatuses, usePlanData } from 'services/account'
 import { useOwner } from 'services/user'
 import { useFlags } from 'shared/featureFlags'
@@ -75,6 +77,7 @@ const TrialReminder: React.FC = () => {
     (!isFreePlan(planValue) && !trialOngoing) ||
     cannotTrial ||
     !ownerData?.isCurrentUserPartOfOrg ||
+    config.IS_SELF_HOSTED ||
     !codecovTrialMvp
   ) {
     return null

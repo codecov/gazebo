@@ -5,15 +5,19 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import config from 'config'
+
 import { TrialStatuses } from 'services/trial'
 import { useFlags } from 'shared/featureFlags'
 import { Plans } from 'shared/utils/billing'
 
 import TrialReminder from './TrialReminder'
 
+jest.mock('config')
 jest.mock('shared/featureFlags')
 
 const mockedUseFlags = useFlags as jest.Mock<{ codecovTrialMvp: boolean }>
+const mockedConfig = config as { IS_SELF_HOSTED: boolean }
 
 const server = setupServer()
 const queryClient = new QueryClient({
@@ -68,6 +72,7 @@ interface SetupArgs {
   trialStartDate?: string | null
   trialEndDate?: string | null
   userPartOfOrg?: boolean
+  isSelfHosted?: boolean
 }
 
 describe('TrialReminder', () => {
@@ -78,10 +83,13 @@ describe('TrialReminder', () => {
     trialStartDate = '2023-01-01T08:55:25',
     trialEndDate = '2023-01-01T08:55:25',
     userPartOfOrg = true,
+    isSelfHosted = false,
   }: SetupArgs) {
     mockedUseFlags.mockReturnValue({
       codecovTrialMvp: flagValue,
     })
+
+    mockedConfig.IS_SELF_HOSTED = isSelfHosted
 
     server.use(
       graphql.query('GetPlanData', (req, res, ctx) => {
@@ -336,6 +344,26 @@ describe('TrialReminder', () => {
 
         await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
         await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+        expect(container).toBeEmptyDOMElement()
+      })
+    })
+
+    describe('app is running in self hosted', () => {
+      it('renders nothing', async () => {
+        setup({
+          planValue: Plans.USERS_BASIC,
+          trialStatus: TrialStatuses.NOT_STARTED,
+          trialStartDate: undefined,
+          trialEndDate: undefined,
+          userPartOfOrg: true,
+          isSelfHosted: true,
+        })
+
+        const { container } = render(<TrialReminder />, { wrapper })
+
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
 
         expect(container).toBeEmptyDOMElement()
       })
