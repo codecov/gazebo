@@ -153,7 +153,6 @@ function ContextSwitcher({
   onLoadMore,
   ModalControl,
   ModalComponent,
-  allOrgsPageName,
 }) {
   const [toggle, setToggle] = useState(false)
   const wrapperRef = useCloseOnLooseFocus({ setToggle })
@@ -262,7 +261,6 @@ ContextSwitcher.propTypes = {
   isLoading: PropTypes.bool,
   ModalComponent: PropTypes.func,
   ModalControl: PropTypes.func,
-  allOrgsPageName: PropTypes.string,
 }
 
 export default ContextSwitcher

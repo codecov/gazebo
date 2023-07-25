@@ -1,4 +1,5 @@
 import isString from 'lodash/isString'
+import PropTypes from 'prop-types'
 import { useLocation, useParams } from 'react-router-dom'
 
 import config from 'config'
@@ -47,20 +48,33 @@ export function LoginPrompt() {
   )
 }
 
-const LogoButton = () => {
+const LogoButton = ({ defaultOrgUsername }) => {
   const { provider } = useParams()
 
   let pageName = 'root'
   if (isString(provider)) {
-    pageName = 'provider'
+    pageName = 'owner'
   }
 
   return (
-    <A to={{ pageName }} variant="header" data-testid="homepage-link">
+    <A
+      to={{
+        pageName,
+        options: {
+          owner: defaultOrgUsername,
+        },
+      }}
+      variant="header"
+      data-testid="homepage-link"
+    >
       <span className="sr-only">Link to Homepage</span>
       <CodecovIcon />
     </A>
   )
+}
+
+LogoButton.propTypes = {
+  defaultOrgUsername: PropTypes.string,
 }
 
 function DesktopMenu() {
@@ -71,7 +85,9 @@ function DesktopMenu() {
   return (
     <>
       <div data-testid="desktop-menu" className="flex items-center gap-4">
-        <LogoButton />
+        <LogoButton
+          defaultOrgUsername={currentUser?.owner?.defaultOrgUsername}
+        />
         <A to={{ pageName: 'docs' }} variant="header" showExternalIcon={false}>
           Docs
         </A>

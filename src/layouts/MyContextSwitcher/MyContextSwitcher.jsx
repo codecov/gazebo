@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 import { useMyContexts } from 'services/user'
 import ContextSwitcher from 'ui/ContextSwitcher'
 
-function MyContextSwitcher({ activeContext, pageName, allOrgsPageName }) {
+function MyContextSwitcher({ activeContext, pageName }) {
   const { provider } = useParams()
   const {
     data: myContexts,
@@ -36,7 +36,6 @@ function MyContextSwitcher({ activeContext, pageName, allOrgsPageName }) {
         currentUser={currentUser}
         isLoading={isLoading}
         onLoadMore={() => hasNextPage && fetchNextPage()}
-        allOrgsPageName={allOrgsPageName}
       />
     </div>
   )
@@ -51,7 +50,6 @@ MyContextSwitcher.propTypes = {
    ** The page name where each context will point to
    */
   pageName: PropTypes.string.isRequired,
-  allOrgsPageName: PropTypes.string,
 }
 
 export default MyContextSwitcher

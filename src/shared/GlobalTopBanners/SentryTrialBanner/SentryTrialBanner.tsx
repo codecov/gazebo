@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 
 import { useAccountDetails, usePlans } from 'services/account'
 import { TrialStatuses, useTrialData } from 'services/trial'
+import { useUser } from 'services/user'
 import { findSentryPlans, isSentryPlan } from 'shared/utils/billing'
 import Button from 'ui/Button/Button'
 import Icon from 'ui/Icon/Icon'
@@ -48,6 +49,8 @@ const SentryTrialBanner: React.FC = () => {
       enabled: !!owner,
     },
   })
+  const { data: currentUser } = useUser()
+  const defaultOrgUsername = currentUser?.owner?.defaultOrgUsername
 
   const trialStatus = trialData?.plan?.trialStatus
 
@@ -75,7 +78,7 @@ const SentryTrialBanner: React.FC = () => {
       </TopBanner.Start>
       <TopBanner.End>
         <Button
-          to={{ pageName: 'allOrgsPlanPage' }}
+          to={{ pageName: 'owner', options: { owner: defaultOrgUsername } }}
           hook="sentry-trial-banner-to-upgrade-page"
           disabled={false}
           variant="primary"

@@ -12,7 +12,6 @@ import App from './App'
 
 jest.mock('./pages/AccountSettings', () => () => 'AccountSettings')
 jest.mock('./pages/AdminSettings', () => () => 'AdminSettingsPage')
-jest.mock('./pages/AllOrgsPlanPage', () => () => 'AllOrgsPlanPage')
 jest.mock('./pages/AnalyticsPage', () => () => 'AnalyticsPage')
 jest.mock('./pages/CommitDetailPage', () => () => 'CommitDetailPage')
 jest.mock('./pages/FeedbackPage', () => () => 'FeedbackPage')
