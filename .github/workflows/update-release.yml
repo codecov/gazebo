@@ -50,15 +50,6 @@ jobs:
         run: |-
           make build.enterprise
 
-      - name: Dive
-        env:
-          ENV: production
-        run: |-
-          make dive
-
-      - name: Deep Dive
-        run: |-
-          make deep-dive
 
       - name: Publish Enterprise
         env:
