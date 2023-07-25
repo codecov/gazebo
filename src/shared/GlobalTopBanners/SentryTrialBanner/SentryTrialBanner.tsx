@@ -75,7 +75,7 @@ const SentryTrialBanner: React.FC = () => {
       </TopBanner.Start>
       <TopBanner.End>
         <Button
-          to={{ pageName: 'allOrgsPlanPage' }}
+          to={{ pageName: 'planTab' }}
           hook="sentry-trial-banner-to-upgrade-page"
           disabled={false}
           variant="primary"
