@@ -63,7 +63,6 @@ export const useStartTrial = ({ owner }: UseStartTrialArgs) => {
         mutationPath: 'startTrial',
       })
     },
-    // eslint-disable-next-line max-statements
     onSuccess: ({ data }) => {
       const parsedData = StartTrialSchema.parse(data)
 
@@ -85,8 +84,6 @@ export const useStartTrial = ({ owner }: UseStartTrialArgs) => {
           position: 'bottom-left',
         },
       })
-
-      return
     },
     onError: () => {
       renderToast({
@@ -98,7 +95,6 @@ export const useStartTrial = ({ owner }: UseStartTrialArgs) => {
           duration: 10000,
         },
       })
-      return { success: false }
     },
   })
 
