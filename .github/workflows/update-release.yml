@@ -7,6 +7,9 @@ jobs:
   push_to_registry:
     name: Update PR for Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     steps:
       - name: Checkout
         uses: actions/checkout@v3
