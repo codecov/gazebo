@@ -3,16 +3,25 @@ import PropType from 'prop-types'
 import { useParams } from 'react-router-dom'
 
 import { usePlanPageData } from 'pages/PlanPage/hooks'
-import { planPropType, usePlans } from 'services/account'
+import {
+  planPropType,
+  TrialStatuses,
+  usePlanData,
+  usePlans,
+} from 'services/account'
+import { useFlags } from 'shared/featureFlags'
 import BenefitList from 'shared/plan/BenefitList'
 import ScheduledPlanDetails from 'shared/plan/ScheduledPlanDetails'
 import {
   canApplySentryUpgrade,
   findSentryPlans,
+  isTrialPlan,
   useProPlans,
 } from 'shared/utils/billing'
 import { SENTRY_PRICE } from 'shared/utils/upgradeForm'
 import A from 'ui/A'
+
+import ProPlanSubheading from './ProPlanSubheading'
 
 import ActionsBilling from '../shared/ActionsBilling/ActionsBilling'
 import PlanPricing from '../shared/PlanPricing'
@@ -66,7 +75,10 @@ function PlanUpgrade({ isSentryUpgrade, plans }) {
 
   return (
     <div className="flex flex-col border">
-      <h2 className="p-4 font-semibold">{upgradeToPlan?.marketingName} plan</h2>
+      <div className="p-4">
+        <h2 className="font-semibold">{upgradeToPlan?.marketingName} plan</h2>
+        <ProPlanSubheading />
+      </div>
       <hr />
       <div className="grid gap-4 p-4 sm:grid-cols-2 sm:gap-0">
         <div className="flex flex-col gap-2">
@@ -100,10 +112,21 @@ PlanUpgrade.propTypes = {
 }
 
 function FreePlanCard({ plan, scheduledPhase }) {
-  const { provider } = useParams()
-
+  const { provider, owner } = useParams()
+  const { codecovTrialMvp } = useFlags({
+    codecovTrialMvp: false,
+  })
   const { data: ownerData } = usePlanPageData()
+  const { data: planData } = usePlanData({
+    provider,
+    owner,
+    opts: { enabled: codecovTrialMvp },
+  })
+
   const uploadsNumber = ownerData?.numberOfUploads
+  const trialOngoing =
+    isTrialPlan(planData?.plan?.planName) &&
+    planData?.plan.trialStatus === TrialStatuses.ONGOING
 
   const { data: plans } = usePlans(provider)
 
@@ -112,7 +135,11 @@ function FreePlanCard({ plan, scheduledPhase }) {
       <div className="flex flex-col border">
         <div className="p-4">
           <h2 className="font-semibold">{plan?.marketingName} plan</h2>
-          <span className="text-gray-500">Current Plan</span>
+          <span className="text-gray-500">
+            {trialOngoing
+              ? "You'll be downgraded to this plan when your trial expires"
+              : 'Current Plan'}
+          </span>
         </div>
         <hr />
         <div className="grid gap-4 p-4 sm:grid-cols-2 sm:gap-0">
