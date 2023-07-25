@@ -56,7 +56,7 @@ export const query = `
 
 export const usePlanData = ({ provider, owner, opts }: UseTrialArgs) =>
   useQuery({
-    queryKey: ['GetTrialData', provider, owner, query],
+    queryKey: ['GetPlanData', provider, owner, query],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,

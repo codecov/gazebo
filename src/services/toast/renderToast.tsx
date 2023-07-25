@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import { toast, type ToastOptions } from 'react-hot-toast'
 
+import ErrorToast from './ErrorToast'
 import GenericToast from './GenericToast'
 
 const TOAST_DURATION = 4000
@@ -10,8 +11,7 @@ export interface ToastProps {
   content: string
 }
 
-// TODO: once new designs have been done up for new toasts
-export type ToastTypes = 'generic' // | 'success' | ...
+export type ToastTypes = 'generic' | 'error'
 
 export interface ToastArgs {
   title: string
@@ -28,12 +28,10 @@ export const renderToast = ({
 }: ToastArgs) => {
   let component = <GenericToast title={title} content={content} />
 
-  // TODO: once new designs have been done up for new toasts
   switch (type) {
-    // case 'success':
-    //   component = <SuccessToast title={title} content={content} />
-    //   break
-    // ...
+    case 'error':
+      component = <ErrorToast title={title} content={content} />
+      break
     default:
       component = <GenericToast title={title} content={content} />
   }
