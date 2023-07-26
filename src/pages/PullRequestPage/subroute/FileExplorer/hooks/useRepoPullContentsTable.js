@@ -1,4 +1,5 @@
 import isEqual from 'lodash/isEqual'
+import isString from 'lodash/isString'
 import { useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -172,6 +173,10 @@ export function useRepoPullContentsTable() {
   const { params } = useLocationParams(defaultQueryParams)
   const { treePaths } = usePullTreePaths()
   const [sortBy, setSortBy] = useTableDefaultSort()
+
+  if (isString(params?.search)) {
+    params.search = params.search.toLowerCase()
+  }
 
   const { data: pullData, isLoading: pullIsLoading } = useRepoPullContents({
     provider,
