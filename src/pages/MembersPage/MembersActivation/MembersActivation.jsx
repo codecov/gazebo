@@ -13,7 +13,7 @@ function MemberActivation() {
   const { data: accountDetails } = useAccountDetails({ owner, provider })
 
   const { codecovTrialMvp } = useFlags({
-    codecovTrialMvp: true,
+    codecovTrialMvp: false,
   })
 
   const { data: planData } = usePlanData({
