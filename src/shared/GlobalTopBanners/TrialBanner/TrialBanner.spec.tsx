@@ -6,7 +6,7 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TrialStatuses } from 'services/trial'
+import { TrialStatuses } from 'services/account'
 import { useFlags } from 'shared/featureFlags'
 
 import TrialBanner from './TrialBanner'
