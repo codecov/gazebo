@@ -1,19 +1,83 @@
 import { useParams } from 'react-router-dom'
 
-import { useAccountDetails } from 'services/account'
+import { TrialStatuses, useAccountDetails, usePlanData } from 'services/account'
+import { useFlags } from 'shared/featureFlags'
+import { isFreePlan, isTrialPlan } from 'shared/utils/billing'
+import A from 'ui/A/A'
 
 import ChangePlanLink from './ChangePlanLink'
 
+// eslint-disable-next-line complexity, max-statements
 function Activation() {
   const { owner, provider } = useParams()
   const { data: accountDetails } = useAccountDetails({ owner, provider })
 
+  const { codecovTrialMvp } = useFlags({
+    codecovTrialMvp: true,
+  })
+
+  const { data: planData } = usePlanData({
+    provider,
+    owner,
+    opts: {
+      enabled: codecovTrialMvp,
+    },
+  })
+
   const activatedUserCount = accountDetails?.activatedUserCount || 0
   const planQuantity = accountDetails?.plan?.quantity || 0
 
+  if (
+    isTrialPlan(planData?.plan?.planName) &&
+    planData?.plan?.trialStatus === TrialStatuses.ONGOING
+  ) {
+    return (
+      <div className="flex flex-col gap-2 p-4">
+        <h3 className="text-base font-semibold">Member activation</h3>
+        <section>
+          <p>
+            <span className="text-lg font-semibold">{activatedUserCount}</span>{' '}
+            active members
+          </p>
+          <p className="text-xs">
+            Your org is on trial{' '}
+            <span className="font-semibold">
+              <A to={{ pageName: 'upgradeOrgPlan' }}>upgrade</A>
+            </span>
+          </p>
+        </section>
+      </div>
+    )
+  }
+
+  if (
+    isFreePlan(planData?.plan?.planName) &&
+    planData?.plan?.trialStatus === TrialStatuses.EXPIRED
+  ) {
+    return (
+      <div className="flex flex-col gap-2 p-4">
+        <h3 className="text-base font-semibold">Member activation</h3>
+        <section>
+          <p>
+            <span className="text-lg font-semibold">{activatedUserCount}</span>{' '}
+            active members of{' '}
+            <span className="text-lg font-semibold">{planQuantity}</span>{' '}
+            available seats{' '}
+          </p>
+          <p className="text-xs">
+            Your org trialed Pro Team plan{' '}
+            <span className="font-semibold">
+              <A to={{ pageName: 'upgradeOrgPlan' }}>upgrade</A>
+            </span>
+          </p>
+        </section>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col gap-2 p-4">
-      <h3 className="font-semibold">Member activation</h3>
+      <h3 className="text-base font-semibold">Member activation</h3>
       <p>
         <span className="text-lg font-semibold">{activatedUserCount}</span>{' '}
         active members of{' '}
