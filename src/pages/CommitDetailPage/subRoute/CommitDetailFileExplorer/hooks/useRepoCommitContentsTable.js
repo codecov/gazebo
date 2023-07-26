@@ -1,4 +1,5 @@
 import isEqual from 'lodash/isEqual'
+import isString from 'lodash/isString'
 import { useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -170,6 +171,10 @@ export function useRepoCommitContentsTable() {
   const { params } = useLocationParams(defaultQueryParams)
   const { treePaths } = useCommitTreePaths()
   const [sortBy, setSortBy] = useTableDefaultSort()
+
+  if (isString(params?.search)) {
+    params.search = params.search.toLowerCase()
+  }
 
   const { data: commitData, isLoading: commitIsLoading } =
     useRepoCommitContents({
