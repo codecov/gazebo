@@ -1,11 +1,25 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import { orderingOptions } from 'services/repos'
 
 import OrgControlTable from './OrgControlTable'
 
 jest.mock('./RepoOrgNotFound', () => () => 'RepoOrgNotFound')
+
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/bb/critical-role/bells-hells']}>
+      <Route path="/:provider/:owner/:repo">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
 
 describe('OrgControlTable', () => {
   function setup() {
@@ -23,7 +37,8 @@ describe('OrgControlTable', () => {
           searchValue=""
           canRefetch={true}
           repoDisplay="Active"
-        />
+        />,
+        { wrapper }
       )
 
       const buttonEnabled = screen.getByRole('button', {
@@ -50,7 +65,8 @@ describe('OrgControlTable', () => {
             setSearchValue={jest.fn()}
             searchValue=""
             canRefetch={true}
-          />
+          />,
+          { wrapper }
         )
 
         const inactiveButton = screen.getByRole('button', { name: /Inactive/ })
@@ -72,7 +88,8 @@ describe('OrgControlTable', () => {
           searchValue=""
           canRefetch={true}
           repoDisplay="Inactive"
-        />
+        />,
+        { wrapper }
       )
 
       const buttonEnabled = screen.getByRole('button', {
@@ -99,7 +116,8 @@ describe('OrgControlTable', () => {
             setSearchValue={jest.fn()}
             searchValue=""
             canRefetch={true}
-          />
+          />,
+          { wrapper }
         )
 
         const activeButton = screen.getByRole('button', {
@@ -126,7 +144,8 @@ describe('OrgControlTable', () => {
           setSearchValue={setSearchValue}
           searchValue=""
           canRefetch={true}
-        />
+        />,
+        { wrapper }
       )
 
       const searchInput = screen.getByRole('textbox', {
@@ -150,7 +169,8 @@ describe('OrgControlTable', () => {
             setSearchValue={setSearchValue}
             searchValue=""
             canRefetch={true}
-          />
+          />,
+          { wrapper }
         )
 
         const searchInput = screen.getByRole('textbox', {
@@ -174,7 +194,8 @@ describe('OrgControlTable', () => {
           setSearchValue={jest.fn()}
           searchValue=""
           canRefetch={true}
-        />
+        />,
+        { wrapper }
       )
       expect(screen.getByText(/RepoOrgNotFound/)).toBeInTheDocument()
     })
@@ -191,7 +212,8 @@ describe('OrgControlTable', () => {
           setSearchValue={jest.fn()}
           searchValue=""
           canRefetch={false}
-        />
+        />,
+        { wrapper }
       )
 
       expect(screen.queryByText(/RepoOrgNotFound/)).not.toBeInTheDocument()

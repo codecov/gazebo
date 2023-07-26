@@ -155,7 +155,7 @@ describe('BaseLayout', () => {
   }
 
   describe.each([
-    ['cloud', false, 'TOS', /Welcome to Codecov/],
+    ['cloud', false, 'children', /hello/],
     ['self hosted', true, 'children', /hello/],
   ])('%s', (_, isSelfHosted, expectedPage, expectedMatcher) => {
     beforeEach(() => {

@@ -87,7 +87,11 @@ function BaseLayout({ children }) {
           <NetworkErrorBoundary>
             <main className="container mb-8 mt-2 flex grow flex-col gap-2 md:p-0">
               <GlobalBanners />
-              <OnboardingOrChildren>{children}</OnboardingOrChildren>
+              {!isFullExperience ? (
+                <OnboardingOrChildren>{children}</OnboardingOrChildren>
+              ) : (
+                children
+              )}
             </main>
           </NetworkErrorBoundary>
         </ErrorBoundary>
