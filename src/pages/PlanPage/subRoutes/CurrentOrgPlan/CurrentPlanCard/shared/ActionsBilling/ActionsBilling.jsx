@@ -8,6 +8,7 @@ import {
   usePlanData,
   usePlans,
 } from 'services/account'
+import { useStartTrial } from 'services/trial'
 import { useFlags } from 'shared/featureFlags'
 import {
   canApplySentryUpgrade,
@@ -18,7 +19,7 @@ import {
 import A from 'ui/A/A'
 import Button from 'ui/Button'
 
-// eslint-disable-next-line complexity
+// eslint-disable-next-line complexity, max-statements
 function PlansActionsBilling({ plan }) {
   const { provider, owner } = useParams()
   const { data: plans } = usePlans(provider)
@@ -32,6 +33,8 @@ function PlansActionsBilling({ plan }) {
     opts: { enabled: codecovTrialMvp },
   })
 
+  const { mutate, isLoading } = useStartTrial({ owner })
+
   const canStartTrial =
     planData?.plan?.trialStatus === TrialStatuses.NOT_STARTED &&
     isFreePlan(planData?.plan?.planName)
@@ -41,10 +44,10 @@ function PlansActionsBilling({ plan }) {
       <div className="flex items-center gap-4 self-start">
         <Button
           onClick={() => {
-            // call mutate depending on condition
-            // redirect if no error
+            mutate()
           }}
           variant="primary"
+          isLoading={isLoading}
         >
           Start trial
         </Button>

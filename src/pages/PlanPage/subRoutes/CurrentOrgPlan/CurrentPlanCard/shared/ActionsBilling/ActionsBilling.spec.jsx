@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -83,10 +84,6 @@ const sentryPlans = [
   },
 ]
 
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
-})
-
 const mockedFreeAccountDetails = {
   plan: {
     marketingName: 'Pro Team',
@@ -150,6 +147,9 @@ const mockTrialData = {
 }
 
 const server = setupServer()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+})
 
 beforeAll(() => {
   server.listen()
@@ -179,6 +179,9 @@ describe('Actions Billing', () => {
     codecovTrialFlag = false,
     trialPlanData = mockTrialData
   ) {
+    const user = userEvent.setup()
+    const mockMutationVars = jest.fn()
+
     useFlags.mockReturnValue({
       codecovTrialMvp: codecovTrialFlag,
     })
@@ -192,8 +195,14 @@ describe('Actions Billing', () => {
       ),
       graphql.query('GetPlanData', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data({ owner: trialPlanData }))
+      }),
+      graphql.mutation('startTrial', (req, res, ctx) => {
+        mockMutationVars(req.variables)
+        return res(ctx.status(200), ctx.data({ startTrial: null }))
       })
     )
+
+    return { mockMutationVars, user }
   }
 
   describe('rendering component', () => {
@@ -250,6 +259,38 @@ describe('Actions Billing', () => {
             'href',
             '/plan/gh/critical-role/upgrade'
           )
+        })
+
+        describe('user clicks start trial', () => {
+          it('triggers the mutation', async () => {
+            const { mockMutationVars, user } = setup(
+              mockedFreeAccountDetails,
+              allPlans,
+              true,
+              {
+                plan: {
+                  ...mockTrialData.plan,
+                  trialStatus: TrialStatuses.NOT_STARTED,
+                },
+              }
+            )
+
+            render(<ActionsBilling />, { wrapper })
+
+            const startTrialBtn = await screen.findByRole('button', {
+              name: 'Start trial',
+            })
+            expect(startTrialBtn).toBeInTheDocument()
+
+            await user.click(startTrialBtn)
+
+            await waitFor(() => expect(mockMutationVars).toBeCalled())
+            await waitFor(() =>
+              expect(mockMutationVars).toBeCalledWith({
+                input: { orgUsername: 'critical-role' },
+              })
+            )
+          })
         })
       })
     })
@@ -369,7 +410,7 @@ describe('Actions Billing', () => {
 
       describe('flag is true', () => {
         describe('user is on a free plan', () => {
-          it('renders start trial link', async () => {
+          it('renders start trial button', async () => {
             setup(mockedFreeAccountDetails, sentryPlans, true, {
               plan: {
                 ...mockTrialData.plan,
@@ -403,6 +444,38 @@ describe('Actions Billing', () => {
               'href',
               '/plan/gh/critical-role/upgrade'
             )
+          })
+
+          describe('user click start trial', () => {
+            it('triggers the mutation', async () => {
+              const { mockMutationVars, user } = setup(
+                mockedFreeAccountDetails,
+                sentryPlans,
+                true,
+                {
+                  plan: {
+                    ...mockTrialData.plan,
+                    trialStatus: TrialStatuses.NOT_STARTED,
+                  },
+                }
+              )
+
+              render(<ActionsBilling />, { wrapper })
+
+              const startTrialBtn = await screen.findByRole('button', {
+                name: /Start trial/,
+              })
+              expect(startTrialBtn).toBeInTheDocument()
+
+              await user.click(startTrialBtn)
+
+              await waitFor(() => expect(mockMutationVars).toBeCalled())
+              await waitFor(() =>
+                expect(mockMutationVars).toBeCalledWith({
+                  input: { orgUsername: 'critical-role' },
+                })
+              )
+            })
           })
         })
 
