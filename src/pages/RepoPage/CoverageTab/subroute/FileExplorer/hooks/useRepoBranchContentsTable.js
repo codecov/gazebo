@@ -1,4 +1,5 @@
 import isEqual from 'lodash/isEqual'
+import isString from 'lodash/isString'
 import { useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -167,11 +168,16 @@ const getQueryFilters = ({ params, sortBy }) => {
   }
 }
 
+// eslint-disable-next-line max-statements
 export function useRepoBranchContentsTable() {
   const { provider, owner, repo, path: urlPath, branch } = useParams()
   const { params } = useLocationParams(defaultQueryParams)
   const { treePaths } = useTreePaths()
   const [sortBy, setSortBy] = useTableDefaultSort()
+
+  if (isString(params?.search)) {
+    params.search = params.search.toLowerCase()
+  }
 
   const { data: repoOverview, isLoadingRepo } = useRepoOverview({
     provider,
