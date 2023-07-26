@@ -7,7 +7,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { TrialStatuses } from 'services/trial'
+import { TrialStatuses } from 'services/account'
 import { useFlags } from 'shared/featureFlags'
 import { Plans } from 'shared/utils/billing'
 
@@ -318,7 +318,7 @@ describe('TrialReminder', () => {
       it('does not display upgrade link', async () => {
         setup({
           planValue: Plans.USERS_PR_INAPPY,
-          trialStatus: TrialStatuses.NEVER_TRIALED,
+          trialStatus: TrialStatuses.CANNOT_TRIAL,
           trialStartDate: '2023-01-01T08:55:25',
           trialEndDate: '2023-01-01T08:55:25',
         })
