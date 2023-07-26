@@ -6,10 +6,11 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
+import { useFlags } from 'shared/featureFlags'
 
 import Activation from './Activation'
 
-jest.mock('config')
+jest.mock('shared/featureFlags')
 jest.mock('./ChangePlanLink', () => () => 'ChangePlanLink')
 
 const mockedAccountDetails = {
@@ -70,8 +71,13 @@ describe('Activation', () => {
   function setup(
     accountDetails = mockedAccountDetails,
     trialStatus = TrialStatuses.NOT_STARTED,
-    planValue = mockedAccountDetails.plan.value
+    planValue = mockedAccountDetails.plan.value,
+    trialFlag = false
   ) {
+    useFlags.mockReturnValue({
+      codecovTrialMvp: trialFlag,
+    })
+
     server.use(
       rest.get('/internal/gh/:owner/account-details/', (req, res, ctx) =>
         res(ctx.status(200), ctx.json(accountDetails))
@@ -140,7 +146,7 @@ describe('Activation', () => {
 
     describe('user is currently on a trial', () => {
       it('displays title', async () => {
-        setup(mockedAccountDetails, TrialStatuses.ONGOING, 'users-trial')
+        setup(mockedAccountDetails, TrialStatuses.ONGOING, 'users-trial', true)
 
         render(<Activation />, { wrapper: wrapper() })
 
@@ -151,7 +157,7 @@ describe('Activation', () => {
       })
 
       it('displays number of active users', async () => {
-        setup(mockedAccountDetails, TrialStatuses.ONGOING, 'users-trial')
+        setup(mockedAccountDetails, TrialStatuses.ONGOING, 'users-trial', true)
 
         render(<Activation />, { wrapper: wrapper() })
 
@@ -163,7 +169,7 @@ describe('Activation', () => {
       })
 
       it('displays on trial notice', async () => {
-        setup(mockedAccountDetails, TrialStatuses.ONGOING, 'users-trial')
+        setup(mockedAccountDetails, TrialStatuses.ONGOING, 'users-trial', true)
 
         render(<Activation />, { wrapper: wrapper() })
 
@@ -172,7 +178,7 @@ describe('Activation', () => {
       })
 
       it('displays upgrade plan link', async () => {
-        setup(mockedAccountDetails, TrialStatuses.ONGOING, 'users-trial')
+        setup(mockedAccountDetails, TrialStatuses.ONGOING, 'users-trial', true)
 
         render(<Activation />, { wrapper: wrapper() })
 
@@ -189,7 +195,7 @@ describe('Activation', () => {
 
     describe('user has an expired trial', () => {
       it('displays title', async () => {
-        setup(mockedAccountDetails, TrialStatuses.EXPIRED, 'users-basic')
+        setup(mockedAccountDetails, TrialStatuses.EXPIRED, 'users-basic', true)
 
         render(<Activation />, { wrapper: wrapper() })
 
@@ -200,7 +206,7 @@ describe('Activation', () => {
       })
 
       it('displays number of activated users', async () => {
-        setup(mockedAccountDetails, TrialStatuses.EXPIRED, 'users-basic')
+        setup(mockedAccountDetails, TrialStatuses.EXPIRED, 'users-basic', true)
 
         render(<Activation />, { wrapper: wrapper() })
 
@@ -212,7 +218,7 @@ describe('Activation', () => {
       })
 
       it('displays number of plan quantity', async () => {
-        setup(mockedAccountDetails, TrialStatuses.EXPIRED, 'users-basic')
+        setup(mockedAccountDetails, TrialStatuses.EXPIRED, 'users-basic', true)
 
         render(<Activation />, { wrapper: wrapper() })
 
@@ -224,7 +230,7 @@ describe('Activation', () => {
       })
 
       it('displays org trialed text', async () => {
-        setup(mockedAccountDetails, TrialStatuses.EXPIRED, 'users-basic')
+        setup(mockedAccountDetails, TrialStatuses.EXPIRED, 'users-basic', true)
 
         render(<Activation />, { wrapper: wrapper() })
 
@@ -235,7 +241,7 @@ describe('Activation', () => {
       })
 
       it('displays change plan link', async () => {
-        setup(mockedAccountDetails, TrialStatuses.EXPIRED, 'users-basic')
+        setup(mockedAccountDetails, TrialStatuses.EXPIRED, 'users-basic', true)
 
         render(<Activation />, { wrapper: wrapper() })
 
