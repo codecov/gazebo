@@ -1,6 +1,6 @@
 import PropTypes, { type InferProps } from 'prop-types'
 
-import { TrialStatuses } from 'services/trial'
+import { TrialStatuses } from 'services/account'
 import { isFreePlan } from 'shared/utils/billing'
 import Button from 'ui/Button'
 
