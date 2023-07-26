@@ -7,6 +7,7 @@ const variantClasses = {
   default: `border-l-4 border-ds-blue-quinary`,
   plain: `border-none`,
   warning: `border-l-4 border-orange-500 bg-orange-100`,
+  top: `border-none absolute top-[56px] left-0 right-0`,
 }
 
 function Banner({ children, variant = 'default' }) {
@@ -16,7 +17,7 @@ function Banner({ children, variant = 'default' }) {
 }
 
 Banner.propTypes = {
-  variant: PropTypes.oneOf(['default', 'plain', 'warning']),
+  variant: PropTypes.oneOf(['default', 'plain', 'warning', 'top']),
 }
 
 export default Banner

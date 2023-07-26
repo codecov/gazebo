@@ -9,6 +9,7 @@ import { ActiveContext } from 'shared/context'
 import ListRepo from 'shared/ListRepo'
 
 import Header from './Header'
+import RequestInstallBanner from './RequestInstallBanner'
 import Tabs from './Tabs'
 
 const useSentryTokenRedirect = ({ ownerData }) => {
@@ -47,6 +48,7 @@ function OwnerPage() {
   return (
     // mt-2 temporary till we stick this header
     <div className="mt-2 flex flex-col gap-4">
+      <RequestInstallBanner />
       <Header />
       <div>
         {ownerData?.isCurrentUserPartOfOrg && (

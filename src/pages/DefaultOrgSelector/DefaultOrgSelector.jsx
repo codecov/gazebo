@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm } from 'react-hook-form'
-import { useHistory, useParams } from 'react-router-dom'
+import { Redirect, useHistory, useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
@@ -18,6 +18,17 @@ import { useMyOrganizations } from '../TermsOfService/hooks/useMyOrganizations'
 const FormSchema = z.object({
   select: z.string().nullish(),
 })
+
+const renderItem = ({ item }) => {
+  if (!item) return null
+
+  return (
+    <div className="flex h-8 items-center gap-2">
+      {item?.avatarUrl && <Avatar user={item} />}
+      <span>{item?.username}</span>
+    </div>
+  )
+}
 
 function DefaultOrgSelector() {
   const { register, control, setValue, handleSubmit } = useForm({
@@ -45,17 +56,6 @@ function DefaultOrgSelector() {
     },
   })
 
-  const renderItem = ({ item }) => {
-    if (!item) return null
-
-    return (
-      <div className="flex h-8 items-center gap-2">
-        {item?.avatarUrl && <Avatar user={item} />}
-        <span>{item?.username}</span>
-      </div>
-    )
-  }
-
   const onSubmit = (data) => {
     if (!data?.select)
       return history.push(`/${provider}/${currentUser?.user?.username}`)
@@ -70,12 +70,13 @@ function DefaultOrgSelector() {
     }
     trackSegmentEvent(segmentEvent)
 
-    updateDefaultOrg({ username: data?.select }) //got an embed redirect that's removed in #pr-2134
+    updateDefaultOrg({ username: data?.select })
     // fire the trial mutation on continue to app
     return history.push(`/${provider}/${data?.select}`)
   }
 
   if (userIsLoading) return null
+  if (!userIsLoading && !currentUser) return <Redirect to="/login" />
 
   return (
     <div className="mx-auto w-full max-w-[38rem]">
