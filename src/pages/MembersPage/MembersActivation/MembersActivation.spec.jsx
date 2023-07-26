@@ -1,68 +1,152 @@
-import { render, screen } from 'custom-testing-library'
-
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, waitFor } from '@testing-library/react'
+import { graphql, rest } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useAccountDetails } from 'services/account'
+import { TrialStatuses } from 'services/account'
+import { useFlags } from 'shared/featureFlags'
 
 import MembersActivation from './MembersActivation'
 
-jest.mock('./AutoActivate/AutoActivate', () => () => 'Auto Activate')
+jest.mock('shared/featureFlags')
+jest.mock('./AutoActivate/AutoActivate', () => () => 'AutoActivate')
 jest.mock('./Activation/Activation', () => () => 'Activation')
-jest.mock('services/account')
 
+const mockedAccountDetails = {
+  plan: {
+    marketingName: 'Pro Team',
+    baseUnitPrice: 12,
+    benefits: ['Configurable # of users', 'Unlimited repos'],
+    quantity: 9,
+    value: 'users-basic',
+  },
+  activatedUserCount: 5,
+  inactiveUserCount: 1,
+}
+
+const mockPlanData = {
+  baseUnitPrice: 10,
+  benefits: [],
+  billingRate: 'monthly',
+  marketingName: 'Users Basic',
+  monthlyUploadLimit: 250,
+  planName: 'users-basic',
+  trialStatus: TrialStatuses.NOT_STARTED,
+  trialStartDate: '',
+  trialEndDate: '',
+}
+
+const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/members/gh/codecov']}>
+      <Route path="/members/:provider/:owner">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
+
+beforeAll(() => {
+  server.listen()
+})
+
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
+
 describe('Members Activation', () => {
-  function setup(mockAccountDetails) {
-    useAccountDetails.mockReturnValue(mockAccountDetails)
-    render(
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={['/members/gh/critical-role']}>
-          <Route path="/:provider/:owner/:repo">
-            <MembersActivation />
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
+  function setup(
+    accountDetails = mockedAccountDetails,
+    trialStatus = TrialStatuses.NOT_STARTED,
+    planValue = mockedAccountDetails.plan.value,
+    codecovTrialMvp = false
+  ) {
+    useFlags.mockReturnValue({ codecovTrialMvp })
+
+    server.use(
+      rest.get('/internal/gh/:owner/account-details/', (req, res, ctx) =>
+        res(ctx.status(200), ctx.json(accountDetails))
+      ),
+      graphql.query('GetPlanData', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              plan: {
+                ...mockPlanData,
+                trialStatus,
+                planName: planValue,
+              },
+            },
+          })
+        )
+      )
     )
   }
 
   describe('MemberActivation', () => {
-    describe('when plan is autoactivated', () => {
-      beforeEach(() => {
-        setup({
-          data: {
-            planAutoActivate: true,
-          },
+    describe('flag is disabled', () => {
+      it('renders activation component', async () => {
+        setup()
+
+        render(<MembersActivation />, { wrapper })
+
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
+
+        const activation = await screen.findByText('Activation')
+        expect(activation).toBeInTheDocument()
+      })
+
+      describe('plan auto activate is not undefined', () => {
+        it('renders auto activate component', async () => {
+          setup({ ...mockedAccountDetails, planAutoActivate: true })
+
+          render(<MembersActivation />, { wrapper })
+
+          await waitFor(() => queryClient.isFetching)
+          await waitFor(() => !queryClient.isFetching)
+
+          const AutoActivate = await screen.findByText(/AutoActivate/)
+          expect(AutoActivate).toBeInTheDocument()
         })
       })
 
-      it('Displays the Activation component', () => {
-        expect(screen.getByText(/Activation/)).toBeInTheDocument()
-      })
+      describe('plan auto activation is undefined', () => {
+        it('does not render auto activate component', async () => {
+          setup({ ...mockedAccountDetails, planAutoActivate: undefined })
 
-      it('Displays the Auto Activate component', () => {
-        expect(screen.getByText(/Auto Activate/)).toBeInTheDocument()
+          render(<MembersActivation />, { wrapper })
+
+          await waitFor(() => queryClient.isFetching)
+          await waitFor(() => !queryClient.isFetching)
+
+          const AutoActivate = screen.queryByText(/AutoActivate/)
+          expect(AutoActivate).not.toBeInTheDocument()
+        })
       })
     })
 
-    describe('when plan autoactivation is undefined', () => {
-      beforeEach(() => {
-        setup({
-          data: {
-            planAutoActivate: undefined,
-          },
-        })
-      })
+    describe('flag is enabled', () => {
+      it('renders the activation component', async () => {
+        setup(mockedAccountDetails, TrialStatuses.ONGOING, 'users-trial', true)
 
-      it('Displays the Activation component', () => {
-        expect(screen.getByText(/Activation/)).toBeInTheDocument()
-      })
+        render(<MembersActivation />, { wrapper })
 
-      it('Displays the Auto Activate component', () => {
-        expect(screen.queryByText(/Auto Activate/)).not.toBeInTheDocument()
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
+
+        const activation = await screen.findByText('Activation')
+        expect(activation).toBeInTheDocument()
       })
     })
   })
