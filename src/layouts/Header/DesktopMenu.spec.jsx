@@ -135,12 +135,15 @@ describe('DesktopMenu', () => {
           }),
         })
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
-
-        const link = await screen.findByTestId('homepage-link')
-        expect(link).toBeInTheDocument()
-        expect(link).toHaveAttribute('href', '/gh/penny')
+        await waitFor(async () =>
+          expect(await screen.findByTestId('homepage-link')).toBeInTheDocument()
+        )
+        await waitFor(async () =>
+          expect(await screen.findByTestId('homepage-link')).toHaveAttribute(
+            'href',
+            '/gh/penny'
+          )
+        )
       })
     })
 
@@ -167,12 +170,15 @@ describe('DesktopMenu', () => {
           }),
         })
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
-
-        const link = await screen.findByTestId('homepage-link')
-        expect(link).toBeInTheDocument()
-        expect(link).toHaveAttribute('href', '/gh/penny-org')
+        await waitFor(async () =>
+          expect(await screen.findByTestId('homepage-link')).toBeInTheDocument()
+        )
+        await waitFor(async () =>
+          expect(await screen.findByTestId('homepage-link')).toHaveAttribute(
+            'href',
+            '/gh/penny-org'
+          )
+        )
       })
     })
   })
