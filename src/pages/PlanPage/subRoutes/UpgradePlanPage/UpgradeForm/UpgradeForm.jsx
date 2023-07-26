@@ -25,8 +25,6 @@ import {
   MIN_SENTRY_SEATS,
   SENTRY_PRICE,
 } from 'shared/utils/upgradeForm'
-import A from 'ui/A'
-import Icon from 'ui/Icon'
 import TextInput from 'ui/TextInput'
 
 import BillingControls from './BillingControls/BillingControls'
@@ -170,8 +168,6 @@ function UpgradeForm({
   })
   const minSeats = isSentryUpgrade ? MIN_SENTRY_SEATS : MIN_NB_SEATS
   const trialStatus = planData?.plan?.trialStatus
-  const hasPaymentMethod =
-    accountDetails?.subscriptionDetail?.defaultPaymentMethod ?? null
 
   const {
     perYearPrice,
@@ -210,140 +206,64 @@ function UpgradeForm({
         isSentryUpgrade={isSentryUpgrade}
         trialStatus={trialStatus}
       />
-      {/* If not on trial, show the plan details without the credit card prompt */}
-      {trialStatus === TrialStatuses.NOT_STARTED ? (
-        <>
-          <div className="flex flex-col gap-2">
-            <BillingControls
-              planString={planString}
-              isSentryUpgrade={isSentryUpgrade}
-              setValue={setValue}
-            />
-          </div>
-          <div className="flex flex-col gap-2 xl:w-5/12">
-            <div className="w-2/6">
-              <TextInput
-                data-cy="seats"
-                dataMarketing="plan-pricing-seats"
-                {...register('seats')}
-                id="nb-seats"
-                size="20"
-                type="number"
-                label="Seat count"
-                min={minSeats}
-              />
-            </div>
-            <UserCount
-              activatedStudentCount={accountDetails?.activatedStudentCount}
-              activatedUserCount={accountDetails?.activatedUserCount}
-              inactiveUserCount={accountDetails?.inactiveUserCount}
-              isSentryUpgrade={isSentryUpgrade}
-            />
-          </div>
-          <TotalBanner
-            isPerYear={isPerYear}
-            perYearPrice={perYearPrice}
-            perMonthPrice={perMonthPrice}
-            setValue={setValue}
-            isSentryUpgrade={isSentryUpgrade}
-            sentryPlanYear={sentryPlanYear}
-            sentryPlanMonth={sentryPlanMonth}
-            seats={watch('seats')}
+      <div className="flex flex-col gap-2">
+        <BillingControls
+          planString={planString}
+          isSentryUpgrade={isSentryUpgrade}
+          setValue={setValue}
+        />
+      </div>
+      <div className="flex flex-col gap-2 xl:w-5/12">
+        <div className="w-2/6">
+          <TextInput
+            data-cy="seats"
+            dataMarketing="plan-pricing-seats"
+            {...register('seats')}
+            id="nb-seats"
+            size="20"
+            type="number"
+            label="Seat count"
+            min={minSeats}
           />
-          {nextBillingDate && (
-            <p className="mt-1 flex">
-              Next Billing Date
-              <span className="ml-auto">{nextBillingDate}</span>
-            </p>
-          )}
-          {errors?.seats && (
-            <p className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
-              {errors?.seats?.message}
-            </p>
-          )}
-          <div className="w-fit">
-            <UpdateButton
-              isValid={isValid}
-              getValues={getValues}
-              value={accountDetails?.plan?.value}
-              quantity={accountDetails?.plan?.quantity}
-              isSentryUpgrade={isSentryUpgrade}
-              trialStatus={trialStatus}
-            />
-          </div>
-        </>
-      ) : trialStatus === TrialStatuses.ONGOING && !hasPaymentMethod ? (
-        // If on trial, if no credit card, only show the credit card prompt
-        <A
-          href="https://billing.stripe.com/p/login/aEU00i9by3V4caQ6oo"
-          hook="stripe-account-management-portal"
-        >
-          Proceed with plan and input billing information
-          <Icon name="chevronRight" size="sm" variant="solid" />
-        </A>
-      ) : (
-        <>
-          {/* If on trial, if credit card, only show the billing details */}
-          <div className="flex flex-col gap-2">
-            <BillingControls
-              planString={planString}
-              isSentryUpgrade={isSentryUpgrade}
-              setValue={setValue}
-            />
-          </div>
-          <div className="flex flex-col gap-2 xl:w-5/12">
-            <div className="w-2/6">
-              <TextInput
-                data-cy="seats"
-                dataMarketing="plan-pricing-seats"
-                {...register('seats')}
-                id="nb-seats"
-                size="20"
-                type="number"
-                label="Seat count"
-                min={minSeats}
-              />
-            </div>
-            <UserCount
-              activatedStudentCount={accountDetails?.activatedStudentCount}
-              activatedUserCount={accountDetails?.activatedUserCount}
-              inactiveUserCount={accountDetails?.inactiveUserCount}
-              isSentryUpgrade={isSentryUpgrade}
-            />
-          </div>
-          <TotalBanner
-            isPerYear={isPerYear}
-            perYearPrice={perYearPrice}
-            perMonthPrice={perMonthPrice}
-            setValue={setValue}
-            isSentryUpgrade={isSentryUpgrade}
-            sentryPlanYear={sentryPlanYear}
-            sentryPlanMonth={sentryPlanMonth}
-            seats={watch('seats')}
-          />
-          {nextBillingDate && (
-            <p className="mt-1 flex">
-              Next Billing Date
-              <span className="ml-auto">{nextBillingDate}</span>
-            </p>
-          )}
-          {errors?.seats && (
-            <p className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
-              {errors?.seats?.message}
-            </p>
-          )}
-          <div className="w-fit">
-            <UpdateButton
-              isValid={isValid}
-              getValues={getValues}
-              value={accountDetails?.plan?.value}
-              quantity={accountDetails?.plan?.quantity}
-              isSentryUpgrade={isSentryUpgrade}
-              trialStatus={trialStatus}
-            />
-          </div>
-        </>
+        </div>
+        <UserCount
+          activatedStudentCount={accountDetails?.activatedStudentCount}
+          activatedUserCount={accountDetails?.activatedUserCount}
+          inactiveUserCount={accountDetails?.inactiveUserCount}
+          isSentryUpgrade={isSentryUpgrade}
+        />
+      </div>
+      <TotalBanner
+        isPerYear={isPerYear}
+        perYearPrice={perYearPrice}
+        perMonthPrice={perMonthPrice}
+        setValue={setValue}
+        isSentryUpgrade={isSentryUpgrade}
+        sentryPlanYear={sentryPlanYear}
+        sentryPlanMonth={sentryPlanMonth}
+        seats={watch('seats')}
+      />
+      {nextBillingDate && (
+        <p className="mt-1 flex">
+          Next Billing Date
+          <span className="ml-auto">{nextBillingDate}</span>
+        </p>
       )}
+      {errors?.seats && (
+        <p className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
+          {errors?.seats?.message}
+        </p>
+      )}
+      <div className="w-fit">
+        <UpdateButton
+          isValid={isValid}
+          getValues={getValues}
+          value={accountDetails?.plan?.value}
+          quantity={accountDetails?.plan?.quantity}
+          isSentryUpgrade={isSentryUpgrade}
+          trialStatus={trialStatus}
+        />
+      </div>
     </form>
   )
 }

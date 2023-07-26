@@ -570,12 +570,6 @@ describe('UpgradeForm', () => {
           inactiveUserCount: 0,
           plan: sentryPlanYear,
           latestInvoice: null,
-          subscriptionDetail: {
-            defaultPaymentMethod: {
-              billingDetails: {},
-              card: { brand: 'visa' },
-            },
-          },
         },
       }
 
@@ -624,50 +618,6 @@ describe('UpgradeForm', () => {
           const price = screen.getByText(/\$120/)
           expect(price).toBeInTheDocument()
         })
-      })
-    })
-
-    describe('when the user have a sentry pro year plan but no billing information during trial', () => {
-      const props = {
-        proPlanMonth,
-        proPlanYear,
-        sentryPlanMonth,
-        sentryPlanYear,
-        accountDetails: {
-          activatedUserCount: 9,
-          inactiveUserCount: 0,
-          plan: sentryPlanYear,
-          latestInvoice: null,
-        },
-      }
-
-      it('does not render annual option to be "selected"', () => {
-        setup({ includeSentryPlans: true, trialStatus: TrialStatuses.ONGOING })
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-        const optionBtn = screen.queryByRole('button', { name: 'Annual' })
-        expect(optionBtn).not.toBeInTheDocument()
-      })
-
-      it('does not have the update button', () => {
-        setup({ includeSentryPlans: true })
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-        const update = screen.queryByText(/Update/)
-        expect(update).not.toBeInTheDocument()
-      })
-
-      it('prompts the user to input their billing information', async () => {
-        setup({ includeSentryPlans: true, trialStatus: TrialStatuses.ONGOING })
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-        const billingInformationAnchor = await screen.findByText(
-          /Proceed with plan and input billing information/
-        )
-        expect(billingInformationAnchor).toBeInTheDocument()
-        expect(billingInformationAnchor.href).toBe(
-          'https://billing.stripe.com/p/login/aEU00i9by3V4caQ6oo'
-        )
       })
     })
 
@@ -758,12 +708,6 @@ describe('UpgradeForm', () => {
               inactiveUserCount: 0,
               plan: null,
               latestInvoice: null,
-              subscriptionDetail: {
-                defaultPaymentMethod: {
-                  billingDetails: {},
-                  card: { brand: 'visa' },
-                },
-              },
             }}
           />,
           { wrapper: wrapper() }
@@ -802,12 +746,6 @@ describe('UpgradeForm', () => {
               inactiveUserCount: 0,
               plan: null,
               latestInvoice: null,
-              subscriptionDetail: {
-                defaultPaymentMethod: {
-                  billingDetails: {},
-                  card: { brand: 'visa' },
-                },
-              },
             }}
           />,
           { wrapper: wrapper() }
