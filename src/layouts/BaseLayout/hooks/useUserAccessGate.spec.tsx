@@ -152,11 +152,11 @@ describe('useUserAccessGate', () => {
         isSelfHosted: false,
         expected: {
           beforeSettled: {
-            isFullExperience: true,
+            isFullExperience: false,
             isLoading: true,
           },
           afterSettled: {
-            isFullExperience: true,
+            isFullExperience: false,
             isLoading: false,
           },
         },
@@ -172,51 +172,11 @@ describe('useUserAccessGate', () => {
         isSelfHosted: false,
         expected: {
           beforeSettled: {
-            isFullExperience: true,
-            isLoading: true,
-          },
-          afterSettled: {
-            isFullExperience: true,
-            isLoading: false,
-          },
-        },
-      },
-    ],
-    [
-      'cloud',
-      'feature flag: ON',
-      'legacy',
-      {
-        user: loggedInLegacyUser,
-        termsOfServicePage: true,
-        isSelfHosted: false,
-        expected: {
-          beforeSettled: {
-            isFullExperience: true,
-            isLoading: true,
-          },
-          afterSettled: {
-            isFullExperience: true,
-            isLoading: false,
-          },
-        },
-      },
-    ],
-    [
-      'cloud',
-      'feature flag: ON',
-      'unsigned TOS',
-      {
-        user: loggedInUnsignedUser,
-        termsOfServicePage: true,
-        isSelfHosted: false,
-        expected: {
-          beforeSettled: {
-            isFullExperience: true,
-            isLoading: true,
-          },
-          afterSettled: {
             isFullExperience: false,
+            isLoading: true,
+          },
+          afterSettled: {
+            isFullExperience: true,
             isLoading: false,
           },
         },

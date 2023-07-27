@@ -97,13 +97,11 @@ function DefaultOrgSelector() {
                   placeholder="Select organization"
                   items={myOrganizations || []}
                   renderItem={(item) => renderItem({ item })}
-                  onChange={
-                    (value) =>
-                      setValue('select', value?.username, {
-                        shouldDirty: true,
-                        shouldValidate: true,
-                      })
-                    // mutate the default org? and fire the trial mutation on continue to app?
+                  onChange={(value) =>
+                    setValue('select', value?.username, {
+                      shouldDirty: true,
+                      shouldValidate: true,
+                    })
                   }
                   onLoadMore={() => hasNextPage && fetchNextPage()}
                   isLoading={isFetching}

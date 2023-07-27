@@ -7,13 +7,19 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import config from 'config'
 
 import { useImage } from 'services/image'
+import { useLocationParams } from 'services/navigation'
 import { useFlags } from 'shared/featureFlags'
 
 import BaseLayout from './BaseLayout'
 
+jest.mock('services/navigation/useLocationParams')
 jest.mock('services/image')
 jest.mock('shared/featureFlags')
 jest.mock('shared/GlobalTopBanners', () => () => 'GlobalTopBanners')
+jest.mock(
+  'pages/DefaultOrgSelector/InstallationHelpBanner',
+  () => () => 'InstallationHelpBanner'
+)
 
 const mockOwner = {
   owner: {
@@ -29,37 +35,13 @@ const userSignedInIdentity = {
   avatarUrl: 'http://photo.com/codecov.png',
 }
 
-const loggedInLegacyUser = {
-  me: {
-    user: {
-      ...userSignedInIdentity,
-    },
-    trackingMetadata: { ownerid: 123 },
-    ...userSignedInIdentity,
-  },
-}
-
 const loggedInUser = {
   me: {
     user: {
       ...userSignedInIdentity,
-      termsAgreement: true,
     },
     trackingMetadata: { ownerid: 123 },
     ...userSignedInIdentity,
-    termsAgreement: true,
-  },
-}
-
-const loggedInUnsignedUser = {
-  me: {
-    user: {
-      ...userSignedInIdentity,
-      termsAgreement: false,
-    },
-    trackingMetadata: { ownerid: 123 },
-    ...userSignedInIdentity,
-    termsAgreement: false,
   },
 }
 
@@ -76,6 +58,7 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
+let testLocation
 const wrapper =
   (initialEntries = ['/bb/batman/batcave']) =>
   ({ children }) =>
@@ -83,6 +66,13 @@ const wrapper =
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={initialEntries}>
           <Route path="/:provider/:owner/:repo">{children}</Route>
+          <Route
+            path="*"
+            render={({ location }) => {
+              testLocation = location
+              return null
+            }}
+          />
         </MemoryRouter>
       </QueryClientProvider>
     )
@@ -99,9 +89,14 @@ afterAll(() => server.close())
 describe('BaseLayout', () => {
   afterEach(() => jest.resetAllMocks())
   function setup(
-    { termsOfServicePage = false, currentUser = loggedInUser } = {
+    {
+      termsOfServicePage = false,
+      currentUser = loggedInUser,
+      setUpAction = '',
+    } = {
       termsOfServicePage: false,
       currentUser: loggedInUser,
+      setUpAction: '',
     }
   ) {
     useImage.mockReturnValue({
@@ -111,6 +106,10 @@ describe('BaseLayout', () => {
     })
     useFlags.mockReturnValue({
       termsOfServicePage,
+    })
+
+    useLocationParams.mockReturnValue({
+      params: { setup_action: setUpAction },
     })
 
     server.use(
@@ -155,7 +154,7 @@ describe('BaseLayout', () => {
   }
 
   describe.each([
-    ['cloud', false, 'children', /hello/],
+    ['cloud', false, 'children', /Select organization/],
     ['self hosted', true, 'children', /hello/],
   ])('%s', (_, isSelfHosted, expectedPage, expectedMatcher) => {
     beforeEach(() => {
@@ -179,12 +178,12 @@ describe('BaseLayout', () => {
         const hello = screen.getByText('hello')
         expect(hello).toBeInTheDocument()
 
-        const tos = screen.queryByText('Welcome to Codecov')
+        const tos = screen.queryByText(/select organization/)
         expect(tos).not.toBeInTheDocument()
       })
     })
 
-    describe('user is signed', () => {
+    describe('feature flag is off', () => {
       beforeEach(() =>
         setup({ termsOfServicePage: false, currentUser: loggedInUser })
       )
@@ -198,14 +197,14 @@ describe('BaseLayout', () => {
         const hello = screen.getByText('hello')
         expect(hello).toBeInTheDocument()
 
-        const tos = screen.queryByText('Welcome to Codecov')
+        const tos = screen.queryByText(/select organization/)
         expect(tos).not.toBeInTheDocument()
       })
     })
 
-    describe('user unsigned', () => {
+    describe('flag is on', () => {
       beforeEach(() =>
-        setup({ termsOfServicePage: true, currentUser: loggedInUnsignedUser })
+        setup({ termsOfServicePage: true, currentUser: loggedInUser })
       )
 
       it(`renders the ${expectedPage}`, async () => {
@@ -218,24 +217,79 @@ describe('BaseLayout', () => {
         expect(tos).toBeInTheDocument()
       })
     })
+  })
 
-    describe('user was created pre TOS', () => {
-      beforeEach(() =>
-        setup({ termsOfServicePage: true, currentUser: loggedInLegacyUser })
-      )
+  describe('feature flag is on and set up action param is install', () => {
+    beforeEach(() =>
+      setup({ termsOfServicePage: true, currentUser: loggedInUser })
+    )
 
-      it('renders the children', async () => {
-        render(<BaseLayout>hello</BaseLayout>, {
-          wrapper: wrapper(),
-        })
-
-        expect(await screen.findByText('hello')).toBeTruthy()
-        const hello = screen.getByText('hello')
-        expect(hello).toBeInTheDocument()
-
-        const tos = screen.queryByText('Welcome to Codecov')
-        expect(tos).not.toBeInTheDocument()
+    it('renders the select org page with banner', async () => {
+      render(<BaseLayout>hello</BaseLayout>, {
+        wrapper: wrapper(['/bb/batman/batcave?setup_action=install']),
       })
+
+      expect(await screen.findByText(/Select organization/)).toBeTruthy()
+      const selectInput = screen.getByText(/Select organization/)
+      expect(selectInput).toBeInTheDocument()
+    })
+
+    it('rdners installation help banner', async () => {
+      render(<BaseLayout>hello</BaseLayout>, {
+        wrapper: wrapper(['/bb/batman/batcave?setup_action=install']),
+      })
+
+      expect(await screen.findByText(/InstallationHelpBanner/)).toBeTruthy()
+      const selectInput = screen.getByText(/InstallationHelpBanner/)
+      expect(selectInput).toBeInTheDocument()
+    })
+  })
+
+  describe('feature flag is on and set up action param is request', () => {
+    beforeEach(() =>
+      setup({
+        termsOfServicePage: true,
+        currentUser: loggedInUser,
+        setUpAction: 'request',
+      })
+    )
+
+    it('redirects to self org page', async () => {
+      render(<BaseLayout>hello</BaseLayout>, {
+        wrapper: wrapper(['/bb/batman/batcave?setup_action=request']),
+      })
+
+      expect(testLocation.pathname).toEqual('/bb/batman/batcave')
+    })
+  })
+
+  describe('feature flag is on and default org exists', () => {
+    beforeEach(() =>
+      setup({
+        termsOfServicePage: true,
+        currentUser: {
+          me: {
+            user: {
+              ...userSignedInIdentity,
+            },
+            trackingMetadata: { ownerid: 123 },
+            owner: {
+              ...mockOwner.owner,
+              defaultOrgUsername: 'batman',
+            },
+          },
+        },
+      })
+    )
+
+    it('renders children', async () => {
+      render(<BaseLayout>hello</BaseLayout>, {
+        wrapper: wrapper(),
+      })
+
+      expect(await screen.findByText(/hello/)).toBeTruthy()
+      const hello = screen.getByText(/hello/)
+      expect(hello).toBeInTheDocument()
     })
   })
 })

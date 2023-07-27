@@ -33,7 +33,7 @@ const useUserAccessGate = () => {
   // Not fully tested logic yet, waiting on API to be available.
   // Assuming self hosted users do not need to sign
   return {
-    isFullExperience: !!config.IS_SELF_HOSTED || data?.termsAgreement !== false,
+    isFullExperience: !!config.IS_SELF_HOSTED,
     isLoading,
   }
 }
