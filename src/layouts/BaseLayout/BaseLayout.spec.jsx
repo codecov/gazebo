@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -203,11 +203,9 @@ describe('BaseLayout', () => {
     })
 
     describe('flag is on', () => {
-      beforeEach(() =>
-        setup({ termsOfServicePage: true, currentUser: loggedInUser })
-      )
-
       it(`renders the ${expectedPage}`, async () => {
+        setup({ termsOfServicePage: true, currentUser: loggedInUser })
+
         render(<BaseLayout>hello</BaseLayout>, {
           wrapper: wrapper(),
         })
@@ -220,11 +218,9 @@ describe('BaseLayout', () => {
   })
 
   describe('feature flag is on and set up action param is install', () => {
-    beforeEach(() =>
-      setup({ termsOfServicePage: true, currentUser: loggedInUser })
-    )
-
     it('renders the select org page with banner', async () => {
+      setup({ termsOfServicePage: true, currentUser: loggedInUser })
+
       render(<BaseLayout>hello</BaseLayout>, {
         wrapper: wrapper(['/bb/batman/batcave?setup_action=install']),
       })
@@ -234,7 +230,13 @@ describe('BaseLayout', () => {
       expect(selectInput).toBeInTheDocument()
     })
 
-    it('rdners installation help banner', async () => {
+    it('render installation help banner', async () => {
+      setup({
+        termsOfServicePage: true,
+        currentUser: loggedInUser,
+        setUpAction: 'install',
+      })
+
       render(<BaseLayout>hello</BaseLayout>, {
         wrapper: wrapper(['/bb/batman/batcave?setup_action=install']),
       })
@@ -245,16 +247,35 @@ describe('BaseLayout', () => {
     })
   })
 
-  describe('feature flag is on and set up action param is request', () => {
-    beforeEach(() =>
+  describe('set up action param is request', () => {
+    it('redirects to self org page', async () => {
       setup({
         termsOfServicePage: true,
         currentUser: loggedInUser,
         setUpAction: 'request',
       })
-    )
 
+      render(<BaseLayout>hello</BaseLayout>, {
+        wrapper: wrapper(['/bb/batman/batcave?setup_action=request']),
+      })
+
+      await waitFor(() =>
+        expect(testLocation.pathname).toEqual('/gh/CodecovUser')
+      )
+      await waitFor(() =>
+        expect(testLocation.search).toEqual('?setup_action=request')
+      )
+    })
+  })
+
+  describe('feature flag is on and set up action param is request', () => {
     it('redirects to self org page', async () => {
+      setup({
+        termsOfServicePage: true,
+        currentUser: loggedInUser,
+        setUpAction: 'request',
+      })
+
       render(<BaseLayout>hello</BaseLayout>, {
         wrapper: wrapper(['/bb/batman/batcave?setup_action=request']),
       })
@@ -264,7 +285,7 @@ describe('BaseLayout', () => {
   })
 
   describe('feature flag is on and default org exists', () => {
-    beforeEach(() =>
+    it('renders children', async () => {
       setup({
         termsOfServicePage: true,
         currentUser: {
@@ -280,9 +301,7 @@ describe('BaseLayout', () => {
           },
         },
       })
-    )
 
-    it('renders children', async () => {
       render(<BaseLayout>hello</BaseLayout>, {
         wrapper: wrapper(),
       })
