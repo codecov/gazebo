@@ -1,11 +1,34 @@
 import { useParams } from 'react-router-dom'
 
+import { useResyncUser } from 'services/user'
 import { providerToName } from 'shared/utils'
 import A from 'ui/A'
 import Banner from 'ui/Banner'
 import BannerContent from 'ui/Banner/BannerContent'
 import BannerHeading from 'ui/Banner/BannerHeading'
 import Icon from 'ui/Icon'
+import Spinner from 'ui/Spinner'
+
+function ResyncButton() {
+  const { triggerResync, isSyncing } = useResyncUser()
+
+  if (isSyncing) {
+    return (
+      <span className="flex gap-1">
+        <span className="text-ds-blue">
+          <Spinner />
+        </span>
+        syncing...
+      </span>
+    )
+  }
+
+  return (
+    <button className="text-ds-blue hover:underline" onClick={triggerResync}>
+      re-sync
+    </button>
+  )
+}
 
 function GitHubHelpBanner() {
   const { provider } = useParams()
@@ -35,8 +58,8 @@ function GitHubHelpBanner() {
             you&apos;ll need to request admin to install the app.
           </p>
           <p>
-            If you installed app recently and not seeing the org you may need to
-            re-sync
+            If you installed app recently and not seeing the org you may need to{' '}
+            <ResyncButton />
           </p>
         </div>
       </BannerContent>
