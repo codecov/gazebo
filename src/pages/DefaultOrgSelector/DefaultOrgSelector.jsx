@@ -57,8 +57,10 @@ function DefaultOrgSelector() {
   })
 
   const onSubmit = (data) => {
-    if (!data?.select)
+    if (!data?.select) {
+      updateDefaultOrg({ username: currentUser?.user?.username })
       return history.push(`/${provider}/${currentUser?.user?.username}`)
+    }
 
     const segmentEvent = {
       event: 'Onboarding default org selector',

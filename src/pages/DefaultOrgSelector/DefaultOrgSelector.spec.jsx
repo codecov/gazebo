@@ -406,7 +406,7 @@ describe('DefaultOrgSelector', () => {
       const segmentMock = jest.fn()
       trackSegmentEvent.mockReturnValue(segmentMock)
 
-      const { user } = setup({
+      const { user, mockMutationVariables } = setup({
         useUserData: {
           me: {
             email: 'personal@cr.com',
@@ -444,6 +444,14 @@ describe('DefaultOrgSelector', () => {
       })
 
       await user.click(submit)
+
+      await waitFor(() =>
+        expect(mockMutationVariables).toHaveBeenLastCalledWith({
+          input: {
+            username: 'chetney',
+          },
+        })
+      )
 
       expect(testLocation.pathname).toBe('/gh/chetney')
     })
