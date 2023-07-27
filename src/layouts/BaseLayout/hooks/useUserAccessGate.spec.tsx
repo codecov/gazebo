@@ -6,12 +6,14 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
+import { useLocationParams } from 'services/navigation'
 import { useFlags } from 'shared/featureFlags'
 
 import { useUserAccessGate } from './useUserAccessGate'
 
 jest.mock('shared/featureFlags')
 jest.spyOn(console, 'error')
+jest.mock('services/navigation/useLocationParams')
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,6 +32,10 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
+let testLocation: { pathname: string; search: string } = {
+  pathname: '',
+  search: '',
+}
 type WrapperClosure = (
   initialEntries?: string[]
 ) => React.FC<React.PropsWithChildren>
@@ -40,6 +46,14 @@ const wrapper: WrapperClosure =
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={initialEntries}>
           <Route path="/:provider">{children}</Route>
+          <Route
+            path="*"
+            render={({ location }) => {
+              testLocation.pathname = location.pathname
+              testLocation.search = location.search
+              return null
+            }}
+          />
         </MemoryRouter>
       </QueryClientProvider>
     )
@@ -83,6 +97,9 @@ const loggedInLegacyUser = {
 
 const loggedInUser = {
   me: {
+    owner: {
+      defaultOrgUsername: '',
+    },
     user: {
       ...userSignedInIdentity,
       termsAgreement: true,
@@ -120,17 +137,33 @@ afterAll(() => {
   server.close()
 })
 
-type Setup = { termsOfServicePage: boolean; user: UserPartial }
+type Setup = {
+  termsOfServicePage: boolean
+  user: UserPartial
+  setupAction: string
+}
 
 describe('useUserAccessGate', () => {
   function setup(
-    { termsOfServicePage = false, user = loggedInUser }: Setup = {
+    {
+      termsOfServicePage = false,
+      user = loggedInUser,
+      setupAction = '',
+    }: Setup = {
       termsOfServicePage: false,
       user: loggedInUser,
+      setupAction: '',
     }
   ) {
     const mockedUseFlags = jest.mocked(useFlags)
+    const mockedLocationParams = jest.mocked(useLocationParams)
+
     mockedUseFlags.mockReturnValue({ termsOfServicePage })
+    mockedLocationParams.mockReturnValue({
+      params: { setup_action: setupAction },
+      setParams: jest.fn(),
+      updateParams: jest.fn(),
+    })
 
     server.use(
       graphql.query('CurrentUser', (req, res, ctx) => {
@@ -434,7 +467,7 @@ describe('useUserAccessGate', () => {
         describe(`when called with ${userType} user`, () => {
           beforeEach(() => {
             config.IS_SELF_HOSTED = isSelfHosted
-            setup({ termsOfServicePage, user })
+            setup({ termsOfServicePage, user, setupAction: '' })
           })
           it(`return values are expect while useUser resolves`, async () => {
             const { result } = renderHook(() => useUserAccessGate(), {
@@ -456,4 +489,42 @@ describe('useUserAccessGate', () => {
       })
     }
   )
+
+  describe('feature flag is on and default org exists', () => {
+    it('renders children', async () => {
+      setup({
+        user: loggedInUser,
+        termsOfServicePage: true,
+        setupAction: 'request',
+      })
+
+      const { result } = renderHook(() => useUserAccessGate(), {
+        wrapper: wrapper(['/gh']),
+      })
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      await waitFor(() => expect(testLocation.pathname).toBe('/gh/CodecovUser'))
+
+      await waitFor(() =>
+        expect(testLocation.search).toEqual('?setup_action=request')
+      )
+    })
+  })
+
+  describe('feature flag is on and default org exist', () => {
+    it('renders full experience set to true', async () => {
+      setup({ user: loggedInUser, termsOfServicePage: true, setupAction: '' })
+
+      const { result } = renderHook(() => useUserAccessGate(), {
+        wrapper: wrapper(['/gh']),
+      })
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      await waitFor(() => expect(result.current.isFullExperience).toBe(true))
+    })
+  })
 })

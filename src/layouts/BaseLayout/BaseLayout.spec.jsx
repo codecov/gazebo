@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -58,7 +58,6 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-let testLocation
 const wrapper =
   (initialEntries = ['/bb/batman/batcave']) =>
   ({ children }) =>
@@ -66,13 +65,6 @@ const wrapper =
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={initialEntries}>
           <Route path="/:provider/:owner/:repo">{children}</Route>
-          <Route
-            path="*"
-            render={({ location }) => {
-              testLocation = location
-              return null
-            }}
-          />
         </MemoryRouter>
       </QueryClientProvider>
     )
@@ -89,14 +81,9 @@ afterAll(() => server.close())
 describe('BaseLayout', () => {
   afterEach(() => jest.resetAllMocks())
   function setup(
-    {
-      termsOfServicePage = false,
-      currentUser = loggedInUser,
-      setUpAction = '',
-    } = {
+    { termsOfServicePage = false, currentUser = loggedInUser } = {
       termsOfServicePage: false,
       currentUser: loggedInUser,
-      setUpAction: '',
     }
   ) {
     useImage.mockReturnValue({
@@ -109,7 +96,7 @@ describe('BaseLayout', () => {
     })
 
     useLocationParams.mockReturnValue({
-      params: { setup_action: setUpAction },
+      params: { setup_action: 'install' },
     })
 
     server.use(
@@ -244,71 +231,6 @@ describe('BaseLayout', () => {
       expect(await screen.findByText(/InstallationHelpBanner/)).toBeTruthy()
       const selectInput = screen.getByText(/InstallationHelpBanner/)
       expect(selectInput).toBeInTheDocument()
-    })
-  })
-
-  describe('set up action param is request', () => {
-    it('redirects to self org page', async () => {
-      setup({
-        termsOfServicePage: true,
-        currentUser: loggedInUser,
-        setUpAction: 'request',
-      })
-
-      render(<BaseLayout>hello</BaseLayout>, {
-        wrapper: wrapper(['/bb/batman/batcave?setup_action=request']),
-      })
-
-      await waitFor(() =>
-        expect(testLocation.pathname).toEqual('/gh/CodecovUser')
-      )
-      await waitFor(() =>
-        expect(testLocation.search).toEqual('?setup_action=request')
-      )
-    })
-  })
-
-  describe('feature flag is on and set up action param is request', () => {
-    it('redirects to self org page', async () => {
-      setup({
-        termsOfServicePage: true,
-        currentUser: loggedInUser,
-        setUpAction: 'request',
-      })
-
-      render(<BaseLayout>hello</BaseLayout>, {
-        wrapper: wrapper(['/bb/batman/batcave?setup_action=request']),
-      })
-
-      expect(testLocation.pathname).toEqual('/bb/batman/batcave')
-    })
-  })
-
-  describe('feature flag is on and default org exists', () => {
-    it('renders children', async () => {
-      setup({
-        termsOfServicePage: true,
-        currentUser: {
-          me: {
-            user: {
-              ...userSignedInIdentity,
-            },
-            trackingMetadata: { ownerid: 123 },
-            owner: {
-              ...mockOwner.owner,
-              defaultOrgUsername: 'batman',
-            },
-          },
-        },
-      })
-
-      render(<BaseLayout>hello</BaseLayout>, {
-        wrapper: wrapper(),
-      })
-
-      expect(await screen.findByText(/hello/)).toBeTruthy()
-      const hello = screen.getByText(/hello/)
-      expect(hello).toBeInTheDocument()
     })
   })
 })

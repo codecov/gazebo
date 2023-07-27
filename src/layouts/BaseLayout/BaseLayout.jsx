@@ -13,7 +13,10 @@ import LoadingLogo from 'ui/LoadingLogo'
 import { useUserAccessGate } from './hooks/useUserAccessGate'
 
 const LimitedHeader = lazy(() => import('layouts/LimitedHeader'))
-const OnboardingOrChildren = lazy(() => import('./OnboardingOrChildren'))
+const DefaultOrgSelector = lazy(() => import('pages/DefaultOrgSelector'))
+const InstallationHelpBanner = lazy(() =>
+  import('pages/DefaultOrgSelector/InstallationHelpBanner')
+)
 
 const FullPageLoader = () => (
   <div className="mt-16 flex flex-1 items-center justify-center">
@@ -50,7 +53,8 @@ function BaseLayout({ children }) {
                 children
               ) : (
                 <Suspense fallback={null}>
-                  <OnboardingOrChildren>{children}</OnboardingOrChildren>
+                  <InstallationHelpBanner />
+                  <DefaultOrgSelector />
                 </Suspense>
               )}
             </main>
