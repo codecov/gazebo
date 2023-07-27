@@ -9,12 +9,11 @@ jest.mock('shared/featureFlags')
 
 let testLocation
 const wrapper =
-  (initialEntries = '/gh') =>
+  ({ initialEntries, path }) =>
   ({ children }) =>
     (
       <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path="/:provider" exact>
-          <div>Click away</div>
+        <Route path={path} exact>
           {children}
         </Route>
         <Route
@@ -34,44 +33,64 @@ describe('LoginButton', () => {
     })
   }
 
-  describe('provider is bitbucket', () => {
+  describe('bitbucket', () => {
     it('renders bitbucket login button', () => {
       setup()
 
-      render(<LoginButton provider="bb" />, { wrapper: wrapper() })
+      render(<LoginButton provider="bb" />, {
+        wrapper: wrapper({
+          initialEntries: '/login/bb',
+          path: '/login/:provider',
+        }),
+      })
 
       const bitbucket = screen.getByText(/Login with Bitbucket/i)
       expect(bitbucket).toBeInTheDocument()
     })
   })
 
-  describe('provider is github', () => {
+  describe('github', () => {
     it('renders github login button', () => {
       setup()
 
-      render(<LoginButton provider="gh" />, { wrapper: wrapper() })
+      render(<LoginButton provider="gh" />, {
+        wrapper: wrapper({
+          initialEntries: '/login/gh',
+          path: '/login/:provider',
+        }),
+      })
 
       const github = screen.getByText(/Login with GitHub/i)
       expect(github).toBeInTheDocument()
     })
   })
 
-  describe('provider is gitlab', () => {
+  describe('gitlab', () => {
     it('renders gitlab login button', () => {
       setup()
 
-      render(<LoginButton provider="gl" />, { wrapper: wrapper() })
+      render(<LoginButton provider="gl" />, {
+        wrapper: wrapper({
+          initialEntries: '/login/gl',
+          path: '/login/:provider',
+        }),
+      })
 
       const gitlab = screen.getByText(/Login with GitLab/i)
       expect(gitlab).toBeInTheDocument()
     })
   })
 
-  describe('provider is sentry', () => {
+  describe('sentry', () => {
     describe('flag is enabled', () => {
       it('renders sentry login button', () => {
         setup(true)
-        render(<LoginButton provider="sentry" />, { wrapper: wrapper() })
+        render(<LoginButton provider="sentry" />, {
+          wrapper: wrapper({
+            initialEntries: '/login/sentry',
+            path: '/login/:provider',
+          }),
+        })
 
         const sentry = screen.getByText(/Login with Sentry/i)
         expect(sentry).toBeInTheDocument()
@@ -79,11 +98,33 @@ describe('LoginButton', () => {
     })
 
     describe('flag is disabled', () => {
-      it('redirects the user to base login page', async () => {
-        setup(false)
-        render(<LoginButton provider="sentry" />, { wrapper: wrapper() })
+      describe('provider is set to sentry', () => {
+        it('redirects the user to base login page', async () => {
+          setup(false)
+          render(<LoginButton provider="sentry" />, {
+            wrapper: wrapper({
+              initialEntries: '/login/sentry',
+              path: '/login/:provider',
+            }),
+          })
 
-        await waitFor(() => expect(testLocation.pathname).toBe('/login'))
+          await waitFor(() => expect(testLocation.pathname).toBe('/login'))
+        })
+      })
+
+      describe('on root login route', () => {
+        it('renders nothing', () => {
+          setup(false)
+
+          const { container } = render(<LoginButton provider="sentry" />, {
+            wrapper: wrapper({
+              initialEntries: '/login',
+              path: '/login',
+            }),
+          })
+
+          expect(container).toBeEmptyDOMElement()
+        })
       })
     })
   })
