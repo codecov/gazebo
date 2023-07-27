@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, useEffect } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
@@ -37,10 +37,10 @@ function OnboardingOrChildren({ children }) {
   if (defaultOrg) return children
 
   return (
-    <Suspense fallback={null}>
+    <>
       <InstallationHelpBanner />
       <DefaultOrgSelector />
-    </Suspense>
+    </>
   )
 }
 

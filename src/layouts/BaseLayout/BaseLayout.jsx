@@ -11,9 +11,9 @@ import GlobalTopBanners from 'shared/GlobalTopBanners'
 import LoadingLogo from 'ui/LoadingLogo'
 
 import { useUserAccessGate } from './hooks/useUserAccessGate'
-import OnboardingOrChildren from './OnboardingOrChildren'
 
 const LimitedHeader = lazy(() => import('layouts/LimitedHeader'))
+const OnboardingOrChildren = lazy(() => import('./OnboardingOrChildren'))
 
 const FullPageLoader = () => (
   <div className="mt-16 flex flex-1 items-center justify-center">
@@ -49,7 +49,9 @@ function BaseLayout({ children }) {
               {isFullExperience ? (
                 children
               ) : (
-                <OnboardingOrChildren>{children}</OnboardingOrChildren>
+                <Suspense fallback={null}>
+                  <OnboardingOrChildren>{children}</OnboardingOrChildren>
+                </Suspense>
               )}
             </main>
           </NetworkErrorBoundary>
