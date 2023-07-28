@@ -16,6 +16,7 @@ jest.mock('services/navigation/useLocationParams')
 jest.mock('services/image')
 jest.mock('shared/featureFlags')
 jest.mock('shared/GlobalTopBanners', () => () => 'GlobalTopBanners')
+jest.mock('./InstallationHelpBanner', () => () => 'InstallationHelpBanner')
 
 const mockOwner = {
   owner: {
@@ -210,6 +211,20 @@ describe('BaseLayout', () => {
 
       expect(await screen.findByText(/Select organization/)).toBeTruthy()
       const selectInput = screen.getByText(/Select organization/)
+      expect(selectInput).toBeInTheDocument()
+    })
+  })
+
+  describe('user is not on full access experience', () => {
+    it('renders the select org page with banner', async () => {
+      setup({ termsOfServicePage: true, currentUser: loggedInUser })
+
+      render(<BaseLayout>hello</BaseLayout>, {
+        wrapper: wrapper(['/bb/batman/batcave?setup_action=install']),
+      })
+
+      expect(await screen.findByText(/InstallationHelpBanner/)).toBeTruthy()
+      const selectInput = screen.getByText(/InstallationHelpBanner/)
       expect(selectInput).toBeInTheDocument()
     })
   })

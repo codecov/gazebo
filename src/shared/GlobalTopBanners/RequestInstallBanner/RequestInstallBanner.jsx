@@ -5,7 +5,7 @@ import { providerToName } from 'shared/utils'
 import Icon from 'ui/Icon'
 import TopBanner from 'ui/TopBanner'
 
-function InstallationHelpBanner() {
+function RequestInstallBanner() {
   const { provider } = useParams()
   const { params } = useLocationParams()
 
@@ -35,4 +35,4 @@ function InstallationHelpBanner() {
   )
 }
 
-export default InstallationHelpBanner
+export default RequestInstallBanner

@@ -1,10 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import GlobalBanners from './GlobalTopBanners'
+import GlobalTopBanners from './GlobalTopBanners'
 
 jest.mock('./SentryTrialBanner', () => () => 'SentryTrialBanner')
-jest.mock('./InstallationHelpBanner', () => () => 'InstallationHelpBanner')
 jest.mock('./RequestInstallBanner', () => () => 'RequestInstallBanner')
 
 const wrapper =
@@ -19,9 +18,9 @@ const wrapper =
       </MemoryRouter>
     )
 
-describe('GlobalBanners', () => {
+describe('GlobalTopBanners', () => {
   it('renders sentry trial banner', async () => {
-    render(<GlobalBanners />, {
+    render(<GlobalTopBanners />, {
       wrapper: wrapper({
         initialEntries: '/bb/batman/batcave',
         path: '/:provider/:owner/:repo',
@@ -33,7 +32,7 @@ describe('GlobalBanners', () => {
   })
 
   it('renders request install help banner', async () => {
-    render(<GlobalBanners />, {
+    render(<GlobalTopBanners />, {
       wrapper: wrapper({
         initialEntries: '/bb/batman',
         path: '/:provider/:owner',
@@ -41,18 +40,6 @@ describe('GlobalBanners', () => {
     })
 
     const banner = await screen.findByText('RequestInstallBanner')
-    expect(banner).toBeInTheDocument()
-  })
-
-  it('renders installation help banner', async () => {
-    render(<GlobalBanners />, {
-      wrapper: wrapper({
-        initialEntries: '/bb',
-        path: '/:provider',
-      }),
-    })
-
-    const banner = await screen.findByText('InstallationHelpBanner')
     expect(banner).toBeInTheDocument()
   })
 })
