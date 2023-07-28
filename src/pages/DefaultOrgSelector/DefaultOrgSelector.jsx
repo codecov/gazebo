@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -35,19 +34,28 @@ const renderItem = ({ item }) => {
   )
 }
 
-function fireTrialMutation({
-  trialStatus,
-  fireTrial,
-  owner,
-  username,
-  planName,
-}) {
+function useFireTrialMutation({ selectedOrg, username }) {
+  const { provider } = useParams()
+
+  const { data: planData } = usePlanData({ owner: selectedOrg, provider })
+  const { mutate: fireTrial } = useStartTrial({ owner: selectedOrg })
+
+  const trialStatus = planData?.plan?.trialStatus
   const newTrial = trialStatus === TrialStatuses.NOT_STARTED
 
-  if (isFreePlan(planName) || owner === username || !newTrial) return null
-  return fireTrial()
+  if (
+    isFreePlan(planData?.plan?.isFreePlan) ||
+    selectedOrg === username ||
+    !newTrial
+  )
+    return null
+
+  return {
+    fireTrial,
+  }
 }
 
+/* eslint-disable max-statements */
 function DefaultOrgSelector() {
   const { register, control, setValue, handleSubmit } = useForm({
     resolver: zodResolver(FormSchema),
@@ -61,8 +69,10 @@ function DefaultOrgSelector() {
   const [selectedOrg, setSelectedOrg] = useState(currentUser?.user?.username)
 
   const { mutate: updateDefaultOrg } = useUpdateDefaultOrganization()
-  const { data: planData } = usePlanData({ owner: selectedOrg, provider })
-  const { mutate: fireTrial } = useStartTrial({ owner: selectedOrg })
+  const { fireTrial } = useFireTrialMutation({
+    selectedOrg,
+    username: currentUser?.user?.username,
+  })
 
   const {
     data: myOrganizations,
@@ -89,17 +99,11 @@ function DefaultOrgSelector() {
         org: selectedOrg,
       },
     }
+
     trackSegmentEvent(segmentEvent)
 
-    updateDefaultOrg({ username: data?.select })
-
-    fireTrialMutation({
-      trialStatus: planData?.trialStatus,
-      fireTrial,
-      owner: selectedOrg,
-      username: currentUser?.user?.username,
-      planName: planData?.plan?.planName,
-    })
+    updateDefaultOrg({ username: selectedOrg })
+    if (fireTrial) fireTrial()
 
     return history.push(`/${provider}/${selectedOrg}`)
   }
