@@ -46,6 +46,9 @@ describe('InstallationHelpBanner', () => {
   function setup({ setUpAction } = { setUpAction: 'install' }) {
     const mutation = jest.fn()
 
+    const mockSetItem = jest.spyOn(window.localStorage.__proto__, 'setItem')
+    const mockGetItem = jest.spyOn(window.localStorage.__proto__, 'getItem')
+
     useLocationParams.mockReturnValue({
       params: { setup_action: setUpAction },
     })
@@ -76,7 +79,7 @@ describe('InstallationHelpBanner', () => {
       })
     )
 
-    return { user: userEvent.setup(), mutation }
+    return { user: userEvent.setup(), mutation, mockSetItem, mockGetItem }
   }
 
   describe('when rendered with github provider', () => {
@@ -139,6 +142,62 @@ describe('InstallationHelpBanner', () => {
 
       const body = screen.queryByText(/Installed organization/)
       expect(body).not.toBeInTheDocument()
+    })
+  })
+
+  describe('user dismisses banner', () => {
+    it('renders dismiss button', async () => {
+      setup()
+
+      render(<InstallationHelpBanner />, {
+        wrapper: wrapper({ provider: 'gh' }),
+      })
+
+      const dismissButton = await screen.findByRole('button', {
+        name: 'x.svg',
+      })
+      expect(dismissButton).toBeInTheDocument()
+    })
+
+    it('calls local storage', async () => {
+      const { user, mockGetItem, mockSetItem } = setup()
+
+      mockGetItem.mockReturnValue(null)
+
+      render(<InstallationHelpBanner />, {
+        wrapper: wrapper({ provider: 'gh' }),
+      })
+
+      const dismissButton = await screen.findByRole('button', {
+        name: 'x.svg',
+      })
+      expect(dismissButton).toBeInTheDocument()
+      await user.click(dismissButton)
+
+      await waitFor(() =>
+        expect(mockSetItem).toBeCalledWith(
+          'dismissed-top-banners',
+          JSON.stringify({ 'install-help-banner': 'true' })
+        )
+      )
+    })
+
+    it('hides the banner', async () => {
+      const { user, mockGetItem } = setup()
+
+      mockGetItem.mockReturnValue(null)
+
+      const { container } = render(<InstallationHelpBanner />, {
+        wrapper: wrapper({ provider: 'gh' }),
+      })
+
+      const dismissButton = await screen.findByRole('button', {
+        name: 'x.svg',
+      })
+      expect(dismissButton).toBeInTheDocument()
+      await user.click(dismissButton)
+
+      await waitFor(() => expect(container).toBeEmptyDOMElement())
     })
   })
 })

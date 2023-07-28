@@ -3,10 +3,9 @@ import { useParams } from 'react-router-dom'
 import { useLocationParams } from 'services/navigation'
 import { useResyncUser } from 'services/user'
 import { providerToName } from 'shared/utils'
-import Banner from 'ui/Banner'
-import BannerContent from 'ui/Banner/BannerContent'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
+import TopBanner from 'ui/TopBanner'
 
 function ResyncButton() {
   const { triggerResync, isSyncing } = useResyncUser()
@@ -39,8 +38,8 @@ function InstallationHelpBanner() {
   if (setupAction !== 'install') return null
 
   return (
-    <Banner variant="top">
-      <BannerContent>
+    <TopBanner localStorageKey="install-help-banner">
+      <TopBanner.Start>
         <p className="items-center gap-1 text-xs md:flex">
           <span className="flex items-center gap-1 font-semibold">
             <Icon name="information-circle" />
@@ -49,8 +48,13 @@ function InstallationHelpBanner() {
           - it may take a few minutes to appear as a selection, if you
           don&apos;t see it try <ResyncButton />
         </p>
-      </BannerContent>
-    </Banner>
+      </TopBanner.Start>
+      <TopBanner.End>
+        <TopBanner.DismissButton>
+          <Icon size="sm" variant="solid" name="x" />
+        </TopBanner.DismissButton>
+      </TopBanner.End>
+    </TopBanner>
   )
 }
 

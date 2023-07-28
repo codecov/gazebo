@@ -16,10 +16,6 @@ jest.mock('services/navigation/useLocationParams')
 jest.mock('services/image')
 jest.mock('shared/featureFlags')
 jest.mock('shared/GlobalTopBanners', () => () => 'GlobalTopBanners')
-jest.mock(
-  'pages/DefaultOrgSelector/InstallationHelpBanner',
-  () => () => 'InstallationHelpBanner'
-)
 
 const mockOwner = {
   owner: {
@@ -214,22 +210,6 @@ describe('BaseLayout', () => {
 
       expect(await screen.findByText(/Select organization/)).toBeTruthy()
       const selectInput = screen.getByText(/Select organization/)
-      expect(selectInput).toBeInTheDocument()
-    })
-
-    it('render installation help banner', async () => {
-      setup({
-        termsOfServicePage: true,
-        currentUser: loggedInUser,
-        setUpAction: 'install',
-      })
-
-      render(<BaseLayout>hello</BaseLayout>, {
-        wrapper: wrapper(['/bb/batman/batcave?setup_action=install']),
-      })
-
-      expect(await screen.findByText(/InstallationHelpBanner/)).toBeTruthy()
-      const selectInput = screen.getByText(/InstallationHelpBanner/)
       expect(selectInput).toBeInTheDocument()
     })
   })

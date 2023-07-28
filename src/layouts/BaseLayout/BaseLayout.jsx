@@ -14,9 +14,6 @@ import { useUserAccessGate } from './hooks/useUserAccessGate'
 
 const LimitedHeader = lazy(() => import('layouts/LimitedHeader'))
 const DefaultOrgSelector = lazy(() => import('pages/DefaultOrgSelector'))
-const InstallationHelpBanner = lazy(() =>
-  import('pages/DefaultOrgSelector/InstallationHelpBanner')
-)
 
 const FullPageLoader = () => (
   <div className="mt-16 flex flex-1 items-center justify-center">
@@ -53,7 +50,6 @@ function BaseLayout({ children }) {
                 children
               ) : (
                 <Suspense fallback={null}>
-                  <InstallationHelpBanner />
                   <DefaultOrgSelector />
                 </Suspense>
               )}
