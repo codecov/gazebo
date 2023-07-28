@@ -1,11 +1,16 @@
+/* eslint-disable max-statements */
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Redirect, useHistory, useParams } from 'react-router-dom'
 import { z } from 'zod'
 
+import { TrialStatuses, usePlanData } from 'services/account'
 import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
 import { trackSegmentEvent } from 'services/tracking/segment'
+import { useStartTrial } from 'services/trial'
 import { useUser } from 'services/user'
+import { isFreePlan } from 'shared/utils/billing'
 import { mapEdges } from 'shared/utils/graphql'
 import Avatar from 'ui/Avatar/Avatar'
 import Button from 'ui/Button'
@@ -30,6 +35,19 @@ const renderItem = ({ item }) => {
   )
 }
 
+function fireTrialMutation({
+  trialStatus,
+  fireTrial,
+  owner,
+  username,
+  planName,
+}) {
+  const newTrial = trialStatus === TrialStatuses.NOT_STARTED
+
+  if (isFreePlan(planName) || owner === username || !newTrial) return null
+  return fireTrial()
+}
+
 function DefaultOrgSelector() {
   const { register, control, setValue, handleSubmit } = useForm({
     resolver: zodResolver(FormSchema),
@@ -40,7 +58,11 @@ function DefaultOrgSelector() {
   const history = useHistory()
 
   const { data: currentUser, isLoading: userIsLoading } = useUser()
+  const [selectedOrg, setSelectedOrg] = useState(currentUser?.user?.username)
+
   const { mutate: updateDefaultOrg } = useUpdateDefaultOrganization()
+  const { data: planData } = usePlanData({ owner: selectedOrg, provider })
+  const { mutate: fireTrial } = useStartTrial({ owner: selectedOrg })
 
   const {
     data: myOrganizations,
@@ -57,24 +79,29 @@ function DefaultOrgSelector() {
   })
 
   const onSubmit = (data) => {
-    if (!data?.select) {
-      updateDefaultOrg({ username: currentUser?.user?.username })
-      return history.push(`/${provider}/${currentUser?.user?.username}`)
-    }
+    setSelectedOrg(data?.select ?? currentUser?.user?.username)
 
     const segmentEvent = {
       event: 'Onboarding default org selector',
       data: {
         ownerid: currentUser?.trackingMetadata?.ownerid,
         username: currentUser?.user?.username,
-        org: data?.select,
+        org: selectedOrg,
       },
     }
     trackSegmentEvent(segmentEvent)
 
     updateDefaultOrg({ username: data?.select })
-    // fire the trial mutation on continue to app
-    return history.push(`/${provider}/${data?.select}`)
+
+    fireTrialMutation({
+      trialStatus: planData?.trialStatus,
+      fireTrial,
+      owner: selectedOrg,
+      username: currentUser?.user?.username,
+      planName: planData?.plan?.planName,
+    })
+
+    return history.push(`/${provider}/${selectedOrg}`)
   }
 
   if (userIsLoading) return null
