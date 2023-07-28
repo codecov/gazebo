@@ -1,6 +1,4 @@
-import isString from 'lodash/isString'
 import { Suspense } from 'react'
-import { useParams } from 'react-router-dom'
 
 // @ts-expect-error
 import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
@@ -9,13 +7,15 @@ import A from 'ui/A'
 import LoadingLogo from 'ui/LoadingLogo'
 
 const LogoButton = () => {
-  const { provider } = useParams<{ provider?: string }>()
-
-  const pageName = isString(provider) ? 'provider' : 'root'
-
   return (
     // @ts-expect-error
-    <A to={{ pageName }} variant="header" data-testid="homepage-link">
+    <A
+      to={{
+        pageName: 'root',
+      }}
+      variant="header"
+      data-testid="homepage-link"
+    >
       <span className="sr-only">Link to Homepage</span>
       <CodecovIcon />
     </A>

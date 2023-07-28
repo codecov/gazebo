@@ -1,8 +1,12 @@
 import isUndefined from 'lodash/isUndefined'
 import { useParams } from 'react-router-dom'
 
-import { useAccountDetails, usePlans } from 'services/account'
-import { TrialStatuses, useTrialData } from 'services/trial'
+import {
+  TrialStatuses,
+  useAccountDetails,
+  usePlanData,
+  usePlans,
+} from 'services/account'
 import { findSentryPlans, isSentryPlan } from 'shared/utils/billing'
 import Button from 'ui/Button/Button'
 import Icon from 'ui/Icon/Icon'
@@ -41,7 +45,7 @@ const SentryTrialBanner: React.FC = () => {
       enabled: !!owner,
     },
   })
-  const { data: trialData } = useTrialData({
+  const { data: planData } = usePlanData({
     provider,
     owner: owner || '',
     opts: {
@@ -49,7 +53,7 @@ const SentryTrialBanner: React.FC = () => {
     },
   })
 
-  const trialStatus = trialData?.trialStatus
+  const trialStatus = planData?.plan?.trialStatus
 
   if (
     isUndefined(owner) ||
@@ -75,7 +79,7 @@ const SentryTrialBanner: React.FC = () => {
       </TopBanner.Start>
       <TopBanner.End>
         <Button
-          to={{ pageName: 'allOrgsPlanPage' }}
+          to={{ pageName: 'planTab' }}
           hook="sentry-trial-banner-to-upgrade-page"
           disabled={false}
           variant="primary"

@@ -6,6 +6,8 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TrialStatuses } from 'services/account'
+
 import SentryTrialBanner from './SentryTrialBanner'
 
 const accountOne = {
@@ -68,6 +70,18 @@ const sentryProYear = {
   trialDays: 14,
 }
 
+const mockPlanData = {
+  baseUnitPrice: 10,
+  benefits: [],
+  billingRate: 'monthly',
+  marketingName: 'Users Basic',
+  monthlyUploadLimit: 250,
+  planName: 'users-basic',
+  trialStatus: TrialStatuses.NOT_STARTED,
+  trialStartDate: '',
+  trialEndDate: '',
+}
+
 const queryClient = new QueryClient()
 const server = setupServer()
 
@@ -119,11 +133,16 @@ describe('SentryTrialBanner', () => {
     const mockGetItem = jest.spyOn(window.localStorage.__proto__, 'getItem')
 
     server.use(
-      graphql.query('GetTrialData', (_, res, ctx) =>
+      graphql.query('GetPlanData', (_, res, ctx) =>
         res(
           ctx.status(200),
           ctx.data({
-            owner: { trialStatus: ongoingTrial ? 'ONGOING' : 'NOT_STARTED' },
+            owner: {
+              plan: {
+                ...mockPlanData,
+                trialStatus: ongoingTrial ? 'ONGOING' : 'NOT_STARTED',
+              },
+            },
           })
         )
       ),
@@ -231,7 +250,7 @@ describe('SentryTrialBanner', () => {
             name: /Start Trial/,
           })
           expect(buttonLink).toBeInTheDocument()
-          expect(buttonLink).toHaveAttribute('href', '/plan/gh')
+          expect(buttonLink).toHaveAttribute('href', '/plan/gh/codecov')
         })
 
         it('renders dismiss button', async () => {

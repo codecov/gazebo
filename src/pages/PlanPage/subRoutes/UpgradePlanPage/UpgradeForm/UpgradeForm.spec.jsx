@@ -6,8 +6,8 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TrialStatuses } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
-import { TrialStatuses } from 'services/trial'
 
 import UpgradeForm from './UpgradeForm'
 
@@ -85,6 +85,18 @@ const proPlanYear = {
   quantity: 10,
 }
 
+const mockPlanData = {
+  baseUnitPrice: 10,
+  benefits: [],
+  billingRate: 'monthly',
+  marketingName: 'Users Basic',
+  monthlyUploadLimit: 250,
+  planName: 'users-basic',
+  trialStatus: TrialStatuses.NOT_STARTED,
+  trialStartDate: '',
+  trialEndDate: '',
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -124,12 +136,12 @@ describe('UpgradeForm', () => {
       successfulRequest = true,
       errorDetails = undefined,
       includeSentryPlans = false,
-      trialStatus = null,
+      trialStatus = undefined,
     } = {
       successfulRequest: true,
       errorDetails: undefined,
       includeSentryPlans: false,
-      trialStatus: null,
+      trialStatus: undefined,
     }
   ) {
     const addNotification = jest.fn()
@@ -139,11 +151,11 @@ describe('UpgradeForm', () => {
     useAddNotification.mockReturnValue(addNotification)
 
     server.use(
-      graphql.query('GetTrialData', (_, res, ctx) =>
+      graphql.query('GetPlanData', (_, res, ctx) =>
         res(
           ctx.status(200),
           ctx.data({
-            owner: { trialStatus },
+            owner: { plan: { ...mockPlanData, trialStatus: trialStatus } },
           })
         )
       ),

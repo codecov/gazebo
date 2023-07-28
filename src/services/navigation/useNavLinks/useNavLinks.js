@@ -43,10 +43,6 @@ export function useNavLinks() {
       },
       isExternalLink: true,
     },
-    provider: {
-      path: ({ provider = p } = { provider: p }) => `/${provider}`,
-      isExternalLink: false,
-    },
     owner: {
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
         `/${provider}/${owner}`,
@@ -76,11 +72,6 @@ export function useNavLinks() {
       text: 'Plan',
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
         `/plan/${provider}/${owner}`,
-      isExternalLink: false,
-    },
-    allOrgsPlanPage: {
-      text: 'Plan',
-      path: ({ provider = p } = { provider: p }) => `/plan/${provider}`,
       isExternalLink: false,
     },
     membersTab: {

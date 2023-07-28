@@ -34,7 +34,6 @@ function Dropdown({ currentUser }) {
       },
       children: 'Settings',
     },
-    { props: { to: { pageName: 'provider' } }, children: 'Organizations' },
     { props: { to: { pageName: 'signOut' } }, children: 'Sign Out' }
   )
 

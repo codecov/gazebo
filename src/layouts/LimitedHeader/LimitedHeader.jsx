@@ -9,6 +9,8 @@ import Avatar from 'ui/Avatar'
 export default function LimitedHeader() {
   const { isImpersonating } = useImpersonate()
   const { data: currentUser, isLoading } = useUser()
+  const defaultOrg =
+    currentUser?.owner?.defaultOrgUsername ?? currentUser?.user?.username
 
   return (
     <header
@@ -20,7 +22,10 @@ export default function LimitedHeader() {
     >
       <nav className="container mx-auto flex flex-wrap items-center justify-between gap-2 px-3 py-4 sm:px-0">
         <div className="flex items-center gap-4">
-          <A to={{ pageName: 'provider' }} variant="header">
+          <A
+            to={{ pageName: 'owner', options: { owner: defaultOrg } }}
+            variant="header"
+          >
             <span className="sr-only">Link to Homepage</span>
             <CodecovIcon />
           </A>

@@ -1,1 +1,1 @@
-export * from './useTrialData'
+export * from './useStartTrial'

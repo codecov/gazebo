@@ -6,11 +6,12 @@ import { useHistory, useParams } from 'react-router-dom'
 import {
   accountDetailsPropType,
   planPropType,
+  TrialStatuses,
+  usePlanData,
   usePlans,
   useUpgradePlan,
 } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
-import { TrialStatuses, useTrialData } from 'services/trial'
 import {
   canApplySentryUpgrade,
   getNextBillingDate,
@@ -160,7 +161,7 @@ function UpgradeForm({
 }) {
   const { provider, owner } = useParams()
   const { data: plans } = usePlans(provider)
-  const { data: trialData } = useTrialData({ owner, provider })
+  const { data: planData } = usePlanData({ owner, provider })
 
   const nextBillingDate = getNextBillingDate(accountDetails)
   const isSentryUpgrade = canApplySentryUpgrade({
@@ -168,7 +169,7 @@ function UpgradeForm({
     plans,
   })
   const minSeats = isSentryUpgrade ? MIN_SENTRY_SEATS : MIN_NB_SEATS
-  const trialStatus = trialData?.trialStatus
+  const trialStatus = planData?.plan?.trialStatus
   const hasPaymentMethod =
     accountDetails?.subscriptionDetail?.defaultPaymentMethod ?? null
 

@@ -93,11 +93,52 @@ describe('renderToast', () => {
         await user.click(clearToasts)
       })
     })
+
     describe('no type passed', () => {
       it('renders toast', async () => {
         const { user } = setup()
 
         render(<TestComponent />)
+
+        const button = screen.getByRole('button', { name: 'click me' })
+        expect(button).toBeInTheDocument()
+        await user.click(button)
+
+        const title = screen.getByRole('heading', { name: /Cool title/ })
+        expect(title).toBeInTheDocument()
+
+        const clearToasts = screen.getByRole('button', { name: 'clear toasts' })
+        expect(clearToasts).toBeInTheDocument()
+        await user.click(clearToasts)
+      })
+    })
+  })
+
+  describe('triggering error toast', () => {
+    describe('with options and type passed', () => {
+      it('renders toast', async () => {
+        const { user } = setup()
+
+        render(<TestComponent type="error" options={{ duration: 5000 }} />)
+
+        const button = screen.getByRole('button', { name: 'click me' })
+        expect(button).toBeInTheDocument()
+        await user.click(button)
+
+        const title = screen.getByRole('heading', { name: /Cool title/ })
+        expect(title).toBeInTheDocument()
+
+        const clearToasts = screen.getByRole('button', { name: 'clear toasts' })
+        expect(clearToasts).toBeInTheDocument()
+        await user.click(clearToasts)
+      })
+    })
+
+    describe('no options are passed', () => {
+      it('renders toast', async () => {
+        const { user } = setup()
+
+        render(<TestComponent type="error" />)
 
         const button = screen.getByRole('button', { name: 'click me' })
         expect(button).toBeInTheDocument()

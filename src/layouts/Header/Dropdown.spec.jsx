@@ -72,22 +72,6 @@ describe('Dropdown', () => {
         expect(link).toHaveAttribute('href', '/account/gh/chetney')
       })
 
-      it('shows organizations link', async () => {
-        const { user } = setup()
-        render(<Dropdown currentUser={currentUser} />, {
-          wrapper: Wrapper({ provider: 'gh' }),
-        })
-
-        expect(screen.queryByText('Organizations')).not.toBeInTheDocument()
-
-        const openSelect = screen.getByRole('combobox')
-        await user.click(openSelect)
-
-        const link = screen.getByText('Organizations')
-        expect(link).toBeVisible()
-        expect(link).toHaveAttribute('href', '/gh')
-      })
-
       it('shows sign out link', async () => {
         const { user } = setup()
         render(<Dropdown currentUser={currentUser} />, {
@@ -145,22 +129,6 @@ describe('Dropdown', () => {
         const link = screen.getByText('Settings')
         expect(link).toBeVisible()
         expect(link).toHaveAttribute('href', '/account/gl/chetney')
-      })
-
-      it('shows organizations link', async () => {
-        const { user } = setup()
-        render(<Dropdown currentUser={currentUser} />, {
-          wrapper: Wrapper({ provider: 'gl' }),
-        })
-
-        expect(screen.queryByText('Organizations')).not.toBeInTheDocument()
-
-        const openSelect = screen.getByRole('combobox')
-        await user.click(openSelect)
-
-        const link = screen.getByText('Organizations')
-        expect(link).toBeVisible()
-        expect(link).toHaveAttribute('href', '/gl')
       })
 
       it('shows sign out link', async () => {
