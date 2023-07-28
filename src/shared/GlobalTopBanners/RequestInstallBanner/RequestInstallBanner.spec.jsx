@@ -12,9 +12,9 @@ const wrapper =
   ({ provider = 'gh' }) =>
   ({ children }) => {
     return (
-      <MemoryRouter initialEntries={[`/${provider}/codecov/analytics/new`]}>
+      <MemoryRouter initialEntries={[`/${provider}/codecov`]}>
         <Switch>
-          <Route path="/:provider/:owner/:repo/new">{children}</Route>
+          <Route path="/:provider/:owner">{children}</Route>
         </Switch>
       </MemoryRouter>
     )

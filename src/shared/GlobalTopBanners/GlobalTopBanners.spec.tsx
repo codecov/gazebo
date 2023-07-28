@@ -27,7 +27,7 @@ describe('GlobalTopBanners', () => {
       }),
     })
 
-    const banner = await screen.findByText('SentryTrialBanner')
+    const banner = await screen.findByText(/SentryTrialBanner/)
     expect(banner).toBeInTheDocument()
   })
 
@@ -39,7 +39,7 @@ describe('GlobalTopBanners', () => {
       }),
     })
 
-    const banner = await screen.findByText('RequestInstallBanner')
+    const banner = await screen.findByText(/RequestInstallBanner/)
     expect(banner).toBeInTheDocument()
   })
 })

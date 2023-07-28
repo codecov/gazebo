@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useParams, useRouteMatch } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
 import { providerToName } from 'shared/utils'
@@ -8,11 +8,15 @@ import TopBanner from 'ui/TopBanner'
 function RequestInstallBanner() {
   const { provider } = useParams()
   const { params } = useLocationParams()
-
-  if (providerToName(provider) !== 'Github') return null
-
+  const ownerMatch = useRouteMatch('/:provider/:owner')
   const { setup_action: setupAction } = params
-  if (setupAction !== 'request') return null
+
+  if (
+    providerToName(provider) !== 'Github' ||
+    !ownerMatch?.isExact ||
+    setupAction !== 'request'
+  )
+    return null
 
   return (
     <TopBanner localStorageKey="request-install-banner">
