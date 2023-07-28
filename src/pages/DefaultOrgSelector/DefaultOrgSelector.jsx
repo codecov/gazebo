@@ -48,7 +48,7 @@ function useFireTrialMutation({ selectedOrg, username }) {
     selectedOrg === username ||
     !newTrial
   )
-    return null
+    return { fireTrial: null }
 
   return {
     fireTrial,
@@ -89,7 +89,7 @@ function DefaultOrgSelector() {
   })
 
   const onSubmit = (data) => {
-    setSelectedOrg(data?.select ?? currentUser?.user?.username)
+    if (data?.select) setSelectedOrg(data?.select)
 
     const segmentEvent = {
       event: 'Onboarding default org selector',
@@ -103,6 +103,7 @@ function DefaultOrgSelector() {
     trackSegmentEvent(segmentEvent)
 
     updateDefaultOrg({ username: selectedOrg })
+
     if (fireTrial) fireTrial()
 
     return history.push(`/${provider}/${selectedOrg}`)
