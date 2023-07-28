@@ -6,11 +6,14 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import config from 'config'
+
 import { TrialStatuses } from 'services/account'
 import { useFlags } from 'shared/featureFlags'
 
 import TrialBanner from './TrialBanner'
 
+jest.mock('config')
 jest.mock('shared/featureFlags')
 
 const mockedUseFlags = useFlags as jest.Mock<{ codecovTrialMvp: boolean }>
@@ -97,6 +100,7 @@ interface SetupArgs {
   isProPlan?: boolean
   trialStartDate?: string
   trialEndDate?: string
+  isSelfHosted?: boolean
 }
 
 describe('TrialBanner', () => {
@@ -108,12 +112,15 @@ describe('TrialBanner', () => {
     isProPlan = false,
     trialStartDate = '2021-01-01',
     trialEndDate = '20221-02-01',
+    isSelfHosted = false,
   }: SetupArgs) {
     const user = userEvent.setup()
 
     mockedUseFlags.mockReturnValue({
       codecovTrialMvp: flagValue,
     })
+
+    config.IS_SELF_HOSTED = isSelfHosted
 
     server.use(
       graphql.query('GetPlanData', (_, res, ctx) => {
@@ -275,6 +282,26 @@ describe('TrialBanner', () => {
 
           expect(container).toBeEmptyDOMElement()
         })
+      })
+    })
+
+    describe('running in self hosted mode', () => {
+      it('renders nothing', async () => {
+        setup({
+          flagValue: true,
+          trialStatus: TrialStatuses.ONGOING,
+          isCurrentUserPartOfOrg: true,
+          isTrialPlan: true,
+          trialStartDate: '2021-01-01',
+          trialEndDate: '2021-01-02',
+          isSelfHosted: true,
+        })
+
+        const { container } = render(<TrialBanner />, {
+          wrapper: wrapper('/gh', '/:provider'),
+        })
+
+        expect(container).toBeEmptyDOMElement()
       })
     })
   })

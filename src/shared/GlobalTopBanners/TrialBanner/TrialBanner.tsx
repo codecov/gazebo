@@ -2,6 +2,8 @@ import { differenceInCalendarDays } from 'date-fns'
 import isUndefined from 'lodash/isUndefined'
 import { useParams } from 'react-router-dom'
 
+import config from 'config'
+
 import { TrialStatuses, usePlanData } from 'services/account'
 import { useOwner } from 'services/user'
 import { useFlags } from 'shared/featureFlags'
@@ -65,6 +67,7 @@ const TrialBanner: React.FC = () => {
   if (
     isUndefined(owner) ||
     !ownerData?.isCurrentUserPartOfOrg ||
+    config.IS_SELF_HOSTED ||
     !codecovTrialMvp
   ) {
     return null
