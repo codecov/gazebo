@@ -34,27 +34,6 @@ const renderItem = ({ item }) => {
   )
 }
 
-function useFireTrialMutation({ selectedOrg, username }) {
-  const { provider } = useParams()
-
-  const { data: planData } = usePlanData({ owner: selectedOrg, provider })
-  const { mutate: fireTrial } = useStartTrial({ owner: selectedOrg })
-
-  const trialStatus = planData?.plan?.trialStatus
-  const newTrial = trialStatus === TrialStatuses.NOT_STARTED
-
-  if (
-    isFreePlan(planData?.plan?.isFreePlan) ||
-    selectedOrg === username ||
-    !newTrial
-  )
-    return { fireTrial: null }
-
-  return {
-    fireTrial,
-  }
-}
-
 /* eslint-disable max-statements */
 function DefaultOrgSelector() {
   const { register, control, setValue, handleSubmit } = useForm({
@@ -65,14 +44,20 @@ function DefaultOrgSelector() {
   const { provider } = useParams()
   const history = useHistory()
 
-  const { data: currentUser, isLoading: userIsLoading } = useUser()
-  const [selectedOrg, setSelectedOrg] = useState(currentUser?.user?.username)
+  const [selectedOrg, setSelectedOrg] = useState()
+  const { data: currentUser, isLoading: userIsLoading } = useUser({
+    onSuccess: (user) => {
+      setSelectedOrg(user?.user?.username)
+    },
+  })
 
   const { mutate: updateDefaultOrg } = useUpdateDefaultOrganization()
-  const { fireTrial } = useFireTrialMutation({
-    selectedOrg,
-    username: currentUser?.user?.username,
-  })
+
+  const { data: planData } = usePlanData({ owner: selectedOrg, provider })
+  const { mutate: fireTrial } = useStartTrial({ owner: selectedOrg })
+
+  const trialStatus = planData?.plan?.trialStatus
+  const isNewTrial = trialStatus === TrialStatuses.NOT_STARTED
 
   const {
     data: myOrganizations,
@@ -88,9 +73,7 @@ function DefaultOrgSelector() {
     },
   })
 
-  const onSubmit = (data) => {
-    if (data?.select) setSelectedOrg(data?.select)
-
+  const onSubmit = () => {
     const segmentEvent = {
       event: 'Onboarding default org selector',
       data: {
@@ -101,10 +84,15 @@ function DefaultOrgSelector() {
     }
 
     trackSegmentEvent(segmentEvent)
-
     updateDefaultOrg({ username: selectedOrg })
 
-    if (fireTrial) fireTrial()
+    if (
+      !isFreePlan(planData?.plan?.isFreePlan) &&
+      selectedOrg !== currentUser?.user?.username &&
+      isNewTrial
+    ) {
+      fireTrial()
+    }
 
     return history.push(`/${provider}/${selectedOrg}`)
   }
@@ -131,12 +119,13 @@ function DefaultOrgSelector() {
                   placeholder="Select organization"
                   items={myOrganizations || []}
                   renderItem={(item) => renderItem({ item })}
-                  onChange={(value) =>
+                  onChange={(value) => {
                     setValue('select', value?.username, {
                       shouldDirty: true,
                       shouldValidate: true,
                     })
-                  }
+                    setSelectedOrg(value?.username)
+                  }}
                   onLoadMore={() => hasNextPage && fetchNextPage()}
                   isLoading={isFetching}
                   ariaName="Select an organization"
