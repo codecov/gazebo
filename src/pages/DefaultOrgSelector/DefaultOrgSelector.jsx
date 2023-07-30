@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Redirect, useHistory, useParams } from 'react-router-dom'
 import { z } from 'zod'
@@ -36,28 +35,24 @@ const renderItem = ({ item }) => {
 
 /* eslint-disable max-statements */
 function DefaultOrgSelector() {
-  const { register, control, setValue, handleSubmit } = useForm({
+  const { register, control, handleSubmit, setValue } = useForm({
     resolver: zodResolver(FormSchema),
-    mode: 'onChange',
+    mode: 'onSubmit',
   })
 
   const { provider } = useParams()
   const history = useHistory()
 
-  const [selectedOrg, setSelectedOrg] = useState()
-  const { data: currentUser, isLoading: userIsLoading } = useUser({
-    onSuccess: (user) => {
-      setSelectedOrg(user?.user?.username)
-    },
-  })
+  const { data: currentUser, isLoading: userIsLoading } = useUser()
 
   const { mutate: updateDefaultOrg } = useUpdateDefaultOrganization()
+
+  let selectedOrg = currentUser?.user?.username
 
   const { data: planData } = usePlanData({ owner: selectedOrg, provider })
   const { mutate: fireTrial } = useStartTrial({ owner: selectedOrg })
 
-  const trialStatus = planData?.plan?.trialStatus
-  const isNewTrial = trialStatus === TrialStatuses.NOT_STARTED
+  const isNewTrial = planData?.plan?.trialStatus === TrialStatuses.NOT_STARTED
 
   const {
     data: myOrganizations,
@@ -73,7 +68,9 @@ function DefaultOrgSelector() {
     },
   })
 
-  const onSubmit = () => {
+  const onSubmit = (data) => {
+    if (data.select) selectedOrg = data.select
+
     const segmentEvent = {
       event: 'Onboarding default org selector',
       data: {
@@ -119,13 +116,12 @@ function DefaultOrgSelector() {
                   placeholder="Select organization"
                   items={myOrganizations || []}
                   renderItem={(item) => renderItem({ item })}
-                  onChange={(value) => {
+                  onChange={(value) =>
                     setValue('select', value?.username, {
                       shouldDirty: true,
                       shouldValidate: true,
                     })
-                    setSelectedOrg(value?.username)
-                  }}
+                  }
                   onLoadMore={() => hasNextPage && fetchNextPage()}
                   isLoading={isFetching}
                   ariaName="Select an organization"
