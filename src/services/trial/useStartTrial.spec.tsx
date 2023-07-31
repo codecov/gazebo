@@ -78,12 +78,9 @@ describe('useStartTrial', () => {
       it('passes the correct args', async () => {
         const { variablesPassed } = setup({})
 
-        const { result } = renderHook(
-          () => useStartTrial({ owner: 'codecov' }),
-          { wrapper }
-        )
+        const { result } = renderHook(() => useStartTrial(), { wrapper })
 
-        result.current.mutate()
+        result.current.mutate({ owner: 'codecov' })
 
         await waitFor(() =>
           expect(variablesPassed).toBeCalledWith({
@@ -95,12 +92,9 @@ describe('useStartTrial', () => {
       it('triggers render toast', async () => {
         const { mockRenderToast } = setup({})
 
-        const { result } = renderHook(
-          () => useStartTrial({ owner: 'codecov' }),
-          { wrapper }
-        )
+        const { result } = renderHook(() => useStartTrial(), { wrapper })
 
-        result.current.mutate()
+        result.current.mutate({ owner: 'codecov' })
 
         await waitFor(() =>
           expect(mockRenderToast).not.toBeCalledWith({
@@ -137,12 +131,9 @@ describe('useStartTrial', () => {
         it('triggers render toast', async () => {
           const { mockRenderToast } = setup({ isOtherError: true })
 
-          const { result } = renderHook(
-            () => useStartTrial({ owner: 'codecov' }),
-            { wrapper }
-          )
+          const { result } = renderHook(() => useStartTrial(), { wrapper })
 
-          result.current.mutate()
+          result.current.mutate({ owner: 'codecov' })
 
           await waitFor(() =>
             expect(mockRenderToast).toBeCalledWith({
@@ -174,12 +165,9 @@ describe('useStartTrial', () => {
         it('triggers toast', async () => {
           const { mockRenderToast } = setup({ isServerError: true })
 
-          const { result } = renderHook(
-            () => useStartTrial({ owner: 'codecov' }),
-            { wrapper }
-          )
+          const { result } = renderHook(() => useStartTrial(), { wrapper })
 
-          result.current.mutate()
+          result.current.mutate({ owner: 'codecov' })
 
           await waitFor(() =>
             expect(mockRenderToast).toBeCalledWith({
