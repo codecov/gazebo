@@ -95,6 +95,21 @@ const loggedInLegacyUser = {
   },
 }
 
+const userHasDefaultOrg = {
+  me: {
+    owner: {
+      defaultOrgUsername: 'codecov',
+    },
+    user: {
+      ...userSignedInIdentity,
+      termsAgreement: true,
+    },
+    trackingMetadata: { ownerid: 123 },
+    ...userSignedInIdentity,
+    termsAgreement: true,
+  },
+}
+
 const loggedInUser = {
   me: {
     owner: {
@@ -141,6 +156,7 @@ type Setup = {
   termsOfServicePage: boolean
   user: UserPartial
   setupAction: string
+  defaultOrgSelectorPage: boolean
 }
 
 describe('useUserAccessGate', () => {
@@ -149,16 +165,21 @@ describe('useUserAccessGate', () => {
       termsOfServicePage = false,
       user = loggedInUser,
       setupAction = '',
+      defaultOrgSelectorPage = false,
     }: Setup = {
       termsOfServicePage: false,
       user: loggedInUser,
       setupAction: '',
+      defaultOrgSelectorPage: false,
     }
   ) {
     const mockedUseFlags = jest.mocked(useFlags)
     const mockedLocationParams = jest.mocked(useLocationParams)
 
-    mockedUseFlags.mockReturnValue({ termsOfServicePage })
+    mockedUseFlags.mockReturnValue({
+      termsOfServicePage,
+      defaultOrgSelectorPage,
+    })
     mockedLocationParams.mockReturnValue({
       params: { setup_action: setupAction },
       setParams: jest.fn(),
@@ -177,280 +198,425 @@ describe('useUserAccessGate', () => {
   describe.each([
     [
       'cloud',
-      'feature flag: ON',
+      'TOS feature flag: ON',
       'signed TOS',
       {
         user: loggedInUser,
         termsOfServicePage: true,
         isSelfHosted: false,
+        defaultOrgSelectorPage: false,
         expected: {
           beforeSettled: {
-            isFullExperience: false,
+            isFullExperience: true,
             isLoading: true,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
           },
           afterSettled: {
-            isFullExperience: false,
+            isFullExperience: true,
             isLoading: false,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
           },
         },
       },
     ],
     [
       'cloud',
-      'feature flag: ON',
+      'TOS feature flag: ON',
       'guest',
       {
         user: guestUser,
         termsOfServicePage: true,
         isSelfHosted: false,
+        defaultOrgSelectorPage: false,
         expected: {
           beforeSettled: {
-            isFullExperience: false,
+            isFullExperience: true,
             isLoading: true,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
           },
         },
       },
     ],
     [
       'cloud',
-      'feature flag: OFF',
+      'TOS feature flag: OFF',
       'signed TOS',
       {
         user: loggedInUser,
         termsOfServicePage: false,
         isSelfHosted: false,
+        defaultOrgSelectorPage: false,
         expected: {
           beforeSettled: {
             isFullExperience: true,
             isLoading: true,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
           },
         },
       },
     ],
     [
       'cloud',
-      'feature flag: OFF',
+      'TOS feature flag: OFF',
       'guest',
       {
         user: guestUser,
         termsOfServicePage: false,
         isSelfHosted: false,
+        defaultOrgSelectorPage: false,
         expected: {
           beforeSettled: {
             isFullExperience: true,
             isLoading: true,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
           },
         },
       },
     ],
     [
       'cloud',
-      'feature flag: OFF',
+      'TOS feature flag: ON',
+      'unsigned TOS',
+      {
+        user: loggedInUnsignedUser,
+        termsOfServicePage: true,
+        isSelfHosted: false,
+        defaultOrgSelectorPage: false,
+        expected: {
+          beforeSettled: {
+            isFullExperience: true,
+            isLoading: true,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
+          },
+          afterSettled: {
+            isFullExperience: false,
+            isLoading: false,
+            showAgreeToTerms: true,
+            showDefaultOrgSelector: false,
+          },
+        },
+      },
+    ],
+    [
+      'cloud',
+      'TOS feature flag: OFF',
       'legacy',
       {
         user: loggedInLegacyUser,
         termsOfServicePage: false,
         isSelfHosted: false,
+        defaultOrgSelectorPage: false,
         expected: {
           beforeSettled: {
             isFullExperience: true,
             isLoading: true,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
           },
         },
       },
     ],
     [
       'cloud',
-      'feature flag: OFF',
+      'TOS feature flag: OFF',
       'unsigned TOS',
       {
         user: loggedInUnsignedUser,
         termsOfServicePage: false,
         isSelfHosted: false,
+        defaultOrgSelectorPage: false,
         expected: {
           beforeSettled: {
             isFullExperience: true,
             isLoading: true,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
+          },
+        },
+      },
+    ],
+    [
+      'cloud',
+      'org selector feature flag: ON',
+      'has default org',
+      {
+        user: userHasDefaultOrg,
+        termsOfServicePage: false,
+        isSelfHosted: false,
+        defaultOrgSelectorPage: true,
+        expected: {
+          beforeSettled: {
+            isFullExperience: true,
+            isLoading: true,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
+          },
+          afterSettled: {
+            isFullExperience: false,
+            isLoading: false,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: true,
+          },
+        },
+      },
+    ],
+    [
+      'cloud',
+      'org selector feature flag: ON',
+      'does not have a default org',
+      {
+        user: loggedInUser,
+        termsOfServicePage: false,
+        isSelfHosted: false,
+        defaultOrgSelectorPage: true,
+        expected: {
+          beforeSettled: {
+            isFullExperience: true,
+            isLoading: true,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
+          },
+          afterSettled: {
+            isFullExperience: true,
+            isLoading: false,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
           },
         },
       },
     ],
     [
       'self hosted',
-      'feature flag: ON',
+      'TOS feature flag: ON',
       'signed TOS',
       {
         user: loggedInUser,
         termsOfServicePage: true,
         isSelfHosted: true,
+        defaultOrgSelectorPage: false,
         expected: {
           beforeSettled: {
             isFullExperience: true,
             isLoading: true,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
           },
         },
       },
     ],
     [
       'self hosted',
-      'feature flag: ON',
+      'TOS feature flag: ON',
       'guest',
       {
         user: guestUser,
         termsOfServicePage: true,
         isSelfHosted: true,
+        defaultOrgSelectorPage: false,
         expected: {
           beforeSettled: {
             isFullExperience: true,
             isLoading: true,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
           },
         },
       },
     ],
     [
       'self hosted',
-      'feature flag: ON',
+      'TOS feature flag: ON',
       'legacy',
       {
         user: loggedInLegacyUser,
         termsOfServicePage: true,
         isSelfHosted: true,
+        defaultOrgSelectorPage: false,
         expected: {
           beforeSettled: {
             isFullExperience: true,
             isLoading: true,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
           },
         },
       },
     ],
     [
       'self hosted',
-      'feature flag: ON',
+      'TOS feature flag: ON',
       'unsigned TOS',
       {
         user: loggedInUnsignedUser,
         termsOfServicePage: true,
         isSelfHosted: true,
+        defaultOrgSelectorPage: false,
         expected: {
           beforeSettled: {
             isFullExperience: true,
             isLoading: true,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
+            showAgreeToTerms: true,
+            showDefaultOrgSelector: false,
           },
         },
       },
     ],
     [
       'self hosted',
-      'feature flag: OFF',
+      'TOS feature flag: OFF',
       'signed TOS',
       {
         user: loggedInUser,
         termsOfServicePage: false,
         isSelfHosted: true,
+        defaultOrgSelectorPage: false,
         expected: {
           beforeSettled: {
             isFullExperience: true,
             isLoading: true,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
           },
         },
       },
     ],
     [
       'self hosted',
-      'feature flag: OFF',
+      'TOS feature flag: OFF',
       'guest',
       {
         user: guestUser,
         termsOfServicePage: false,
         isSelfHosted: true,
+        defaultOrgSelectorPage: false,
         expected: {
           beforeSettled: {
             isFullExperience: true,
             isLoading: true,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
           },
         },
       },
     ],
     [
       'self hosted',
-      'feature flag: OFF',
+      'TOS feature flag: OFF',
       'legacy',
       {
         user: loggedInLegacyUser,
         termsOfServicePage: false,
         isSelfHosted: true,
+        defaultOrgSelectorPage: false,
         expected: {
           beforeSettled: {
             isFullExperience: true,
             isLoading: true,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
           },
         },
       },
     ],
     [
       'self hosted',
-      'feature flag: OFF',
+      'TOS feature flag: OFF',
       'unsigned TOS',
       {
         user: loggedInUnsignedUser,
         termsOfServicePage: false,
         isSelfHosted: true,
+        defaultOrgSelectorPage: false,
         expected: {
           beforeSettled: {
             isFullExperience: true,
             isLoading: true,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
           },
         },
       },
@@ -461,13 +627,24 @@ describe('useUserAccessGate', () => {
       _,
       termsFlagStatus,
       userType,
-      { user, termsOfServicePage, isSelfHosted, expected }
+      {
+        user,
+        termsOfServicePage,
+        isSelfHosted,
+        expected,
+        defaultOrgSelectorPage,
+      }
     ) => {
       describe(`${termsFlagStatus}`, () => {
         describe(`when called with ${userType} user`, () => {
           beforeEach(() => {
             config.IS_SELF_HOSTED = isSelfHosted
-            setup({ termsOfServicePage, user, setupAction: '' })
+            setup({
+              termsOfServicePage,
+              user,
+              setupAction: '',
+              defaultOrgSelectorPage,
+            })
           })
           it(`return values are expect while useUser resolves`, async () => {
             const { result } = renderHook(() => useUserAccessGate(), {
@@ -496,6 +673,7 @@ describe('useUserAccessGate', () => {
         user: loggedInUser,
         termsOfServicePage: true,
         setupAction: 'request',
+        defaultOrgSelectorPage: true,
       })
 
       const { result } = renderHook(() => useUserAccessGate(), {
@@ -515,7 +693,12 @@ describe('useUserAccessGate', () => {
 
   describe('feature flag is on and default org exist', () => {
     it('renders full experience set to true', async () => {
-      setup({ user: loggedInUser, termsOfServicePage: true, setupAction: '' })
+      setup({
+        user: loggedInUser,
+        termsOfServicePage: true,
+        setupAction: '',
+        defaultOrgSelectorPage: true,
+      })
 
       const { result } = renderHook(() => useUserAccessGate(), {
         wrapper: wrapper(['/gh']),

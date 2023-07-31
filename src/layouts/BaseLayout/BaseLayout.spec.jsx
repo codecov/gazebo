@@ -17,6 +17,8 @@ jest.mock('services/image')
 jest.mock('shared/featureFlags')
 jest.mock('shared/GlobalTopBanners', () => () => 'GlobalTopBanners')
 jest.mock('./InstallationHelpBanner', () => () => 'InstallationHelpBanner')
+jest.mock('pages/TermsOfService', () => () => 'TermsOfService')
+jest.mock('pages/DefaultOrgSelector', () => () => 'DefaultOrgSelector')
 
 const mockOwner = {
   owner: {
@@ -32,8 +34,22 @@ const userSignedInIdentity = {
   avatarUrl: 'http://photo.com/codecov.png',
 }
 
+const userHasDefaultOrg = {
+  me: {
+    owner: {
+      defaultOrgUsername: 'codecov',
+    },
+    user: {
+      ...userSignedInIdentity,
+    },
+    trackingMetadata: { ownerid: 123 },
+    ...userSignedInIdentity,
+  },
+}
+
 const loggedInUser = {
   me: {
+    termsAgreement: false,
     user: {
       ...userSignedInIdentity,
     },
@@ -78,9 +94,14 @@ afterAll(() => server.close())
 describe('BaseLayout', () => {
   afterEach(() => jest.resetAllMocks())
   function setup(
-    { termsOfServicePage = false, currentUser = loggedInUser } = {
+    {
+      termsOfServicePage = false,
+      currentUser = loggedInUser,
+      defaultOrgSelectorPage = false,
+    } = {
       termsOfServicePage: false,
       currentUser: loggedInUser,
+      defaultOrgSelectorPage: false,
     }
   ) {
     useImage.mockReturnValue({
@@ -90,6 +111,7 @@ describe('BaseLayout', () => {
     })
     useFlags.mockReturnValue({
       termsOfServicePage,
+      defaultOrgSelectorPage,
     })
 
     useLocationParams.mockReturnValue({
@@ -138,7 +160,7 @@ describe('BaseLayout', () => {
   }
 
   describe.each([
-    ['cloud', false, 'children', /Select organization/],
+    ['cloud', false, 'terms of services', /TermsOfService/],
     ['self hosted', true, 'children', /hello/],
   ])('%s', (_, isSelfHosted, expectedPage, expectedMatcher) => {
     beforeEach(() => {
@@ -150,7 +172,7 @@ describe('BaseLayout', () => {
     describe('user is guest', () => {
       beforeEach(() => {
         jest.spyOn(console, 'error').mockImplementation(() => {})
-        setup({ termsOfServicePage: false, currentUser: guestUser })
+        setup({ currentUser: guestUser })
       })
 
       it('renders the children', async () => {
@@ -162,17 +184,20 @@ describe('BaseLayout', () => {
         const hello = screen.getByText('hello')
         expect(hello).toBeInTheDocument()
 
-        const tos = screen.queryByText(/select organization/)
-        expect(tos).not.toBeInTheDocument()
+        const defaultOrg = screen.queryByText(/DefaultOrgSelector/)
+        expect(defaultOrg).not.toBeInTheDocument()
+
+        const termsOfService = screen.queryByText(/TermsOfService/)
+        expect(termsOfService).not.toBeInTheDocument()
       })
     })
 
-    describe('feature flag is off', () => {
-      beforeEach(() =>
-        setup({ termsOfServicePage: false, currentUser: loggedInUser })
-      )
+    describe('TOS feature flag is off, org selector flag is off', () => {
+      it('does not render children', async () => {
+        setup({
+          currentUser: loggedInUser,
+        })
 
-      it('renders the children', async () => {
         render(<BaseLayout>hello</BaseLayout>, {
           wrapper: wrapper(),
         })
@@ -181,36 +206,37 @@ describe('BaseLayout', () => {
         const hello = screen.getByText('hello')
         expect(hello).toBeInTheDocument()
 
-        const tos = screen.queryByText(/select organization/)
-        expect(tos).not.toBeInTheDocument()
+        const defaultOrg = screen.queryByText(/DefaultOrgSelector/)
+        expect(defaultOrg).not.toBeInTheDocument()
+
+        const termsOfService = screen.queryByText(/TermsOfService/)
+        expect(termsOfService).not.toBeInTheDocument()
       })
     })
 
-    describe('flag is on', () => {
-      it(`renders the ${expectedPage}`, async () => {
-        setup({ termsOfServicePage: true, currentUser: loggedInUser })
+    it(`renders the ${expectedPage}`, async () => {
+      setup({ termsOfServicePage: true, currentUser: loggedInUser })
 
-        render(<BaseLayout>hello</BaseLayout>, {
-          wrapper: wrapper(),
-        })
-
-        expect(await screen.findByText(expectedMatcher)).toBeTruthy()
-        const tos = screen.getByText(expectedMatcher)
-        expect(tos).toBeInTheDocument()
+      render(<BaseLayout>hello</BaseLayout>, {
+        wrapper: wrapper(),
       })
+
+      expect(await screen.findByText(expectedMatcher)).toBeTruthy()
+      const tos = screen.getByText(expectedMatcher)
+      expect(tos).toBeInTheDocument()
     })
   })
 
   describe('feature flag is on and set up action param is install', () => {
     it('renders the select org page with banner', async () => {
-      setup({ termsOfServicePage: true, currentUser: loggedInUser })
+      setup({ defaultOrgSelectorPage: true, currentUser: userHasDefaultOrg })
 
       render(<BaseLayout>hello</BaseLayout>, {
         wrapper: wrapper(['/bb/batman/batcave?setup_action=install']),
       })
 
-      expect(await screen.findByText(/Select organization/)).toBeTruthy()
-      const selectInput = screen.getByText(/Select organization/)
+      expect(await screen.findByText(/DefaultOrgSelector/)).toBeTruthy()
+      const selectInput = screen.getByText(/DefaultOrgSelector/)
       expect(selectInput).toBeInTheDocument()
     })
   })

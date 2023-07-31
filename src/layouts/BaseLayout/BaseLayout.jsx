@@ -15,12 +15,36 @@ import { useUserAccessGate } from './hooks/useUserAccessGate'
 const LimitedHeader = lazy(() => import('layouts/LimitedHeader'))
 const DefaultOrgSelector = lazy(() => import('pages/DefaultOrgSelector'))
 const InstallationHelpBanner = lazy(() => import('./InstallationHelpBanner'))
+const TermsOfService = lazy(() => import('pages/TermsOfService'))
 
 const FullPageLoader = () => (
   <div className="mt-16 flex flex-1 items-center justify-center">
     <LoadingLogo />
   </div>
 )
+
+const OnboardingOrChildren = ({ children }) => {
+  const { isFullExperience, showAgreeToTerms, showDefaultOrgSelector } =
+    useUserAccessGate()
+
+  if (isFullExperience) return children
+
+  if (showAgreeToTerms)
+    return (
+      <Suspense fallback={null}>
+        <TermsOfService />
+      </Suspense>
+    )
+
+  if (showDefaultOrgSelector)
+    return (
+      <Suspense fallback={null}>
+        <DefaultOrgSelector />
+      </Suspense>
+    )
+
+  return null
+}
 
 function BaseLayout({ children }) {
   const { isFullExperience, isLoading } = useUserAccessGate()
@@ -48,13 +72,7 @@ function BaseLayout({ children }) {
           <NetworkErrorBoundary>
             <main className="container mb-8 mt-2 flex grow flex-col gap-2 md:p-0">
               <GlobalBanners />
-              {isFullExperience ? (
-                children
-              ) : (
-                <Suspense fallback={null}>
-                  <DefaultOrgSelector />
-                </Suspense>
-              )}
+              <OnboardingOrChildren>{children}</OnboardingOrChildren>
             </main>
           </NetworkErrorBoundary>
         </ErrorBoundary>
