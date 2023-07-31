@@ -63,6 +63,7 @@ describe('DefaultOrgSelector', () => {
     planName,
   } = {}) {
     const mockMutationVariables = jest.fn()
+    const mockTrialMutationVariables = jest.fn()
     const user = userEvent.setup()
 
     server.use(
@@ -100,10 +101,14 @@ describe('DefaultOrgSelector', () => {
             },
           })
         )
+      }),
+      graphql.mutation('startTrial', (req, res, ctx) => {
+        mockTrialMutationVariables(req.variables)
+        return res(ctx.status(200), ctx.data({}))
       })
     )
 
-    return { user, mockMutationVariables }
+    return { user, mockMutationVariables, mockTrialMutationVariables }
   }
 
   describe('page renders', () => {
@@ -381,6 +386,8 @@ describe('DefaultOrgSelector', () => {
             },
           },
         },
+        planName: 'users-inappm',
+        trialStatus: 'NOT_STARTED',
       })
 
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
@@ -465,6 +472,68 @@ describe('DefaultOrgSelector', () => {
       )
 
       expect(testLocation.pathname).toBe('/gh/chetney')
+    })
+
+    it('fires start trial mutation', async () => {
+      const { user, mockTrialMutationVariables } = setup({
+        useUserData: {
+          me: {
+            email: 'personal@cr.com',
+            trackingMetadata: {
+              ownerid: '1234',
+            },
+            user: {
+              username: 'chetney',
+            },
+          },
+        },
+        myOrganizationsData: {
+          me: {
+            myOrganizations: {
+              edges: [
+                {
+                  node: {
+                    avatarUrl:
+                      'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+                    username: 'criticalRole',
+                    ownerid: 1,
+                  },
+                },
+              ],
+              pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
+            },
+          },
+        },
+      })
+
+      render(<DefaultOrgSelector />, { wrapper: wrapper() })
+
+      const selectLabel = await screen.findByText(
+        /What org would you like to setup?/
+      )
+      expect(selectLabel).toBeInTheDocument()
+
+      const selectOrg = screen.getByRole('button', {
+        name: 'Select an organization',
+      })
+      await user.click(selectOrg)
+
+      const orgInList = screen.getByRole('option', { name: 'criticalRole' })
+      await user.click(orgInList)
+
+      const submit = await screen.findByRole('button', {
+        name: /Continue to app/,
+      })
+
+      await user.click(submit)
+
+      await waitFor(() =>
+        expect(mockTrialMutationVariables).toHaveBeenLastCalledWith({
+          input: {
+            orgUsername: 'criticalRole',
+          },
+        })
+      )
     })
   })
 

@@ -1,15 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Redirect, useHistory, useParams } from 'react-router-dom'
 import { z } from 'zod'
 
-import { TrialStatuses, usePlanData } from 'services/account'
 import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
 import { trackSegmentEvent } from 'services/tracking/segment'
 import { useStartTrial } from 'services/trial'
 import { useUser } from 'services/user'
-import { isFreePlan } from 'shared/utils/billing'
 import { mapEdges } from 'shared/utils/graphql'
 import Avatar from 'ui/Avatar/Avatar'
 import Button from 'ui/Button'
@@ -34,9 +31,9 @@ const renderItem = ({ item }) => {
   )
 }
 
-/* eslint-disable max-statements */
+// eslint-disable-next-line max-statements
 function DefaultOrgSelector() {
-  const { register, control, handleSubmit } = useForm({
+  const { register, control, handleSubmit, setValue } = useForm({
     resolver: zodResolver(FormSchema),
     mode: 'onSubmit',
   })
@@ -44,19 +41,10 @@ function DefaultOrgSelector() {
   const { provider } = useParams()
   const history = useHistory()
 
-  const [selectedOrg, setSelectedOrg] = useState('')
-  const { data: currentUser, isLoading: userIsLoading } = useUser({
-    onSuccess: (user) => {
-      setSelectedOrg(user?.user?.username)
-    },
-  })
+  const { data: currentUser, isLoading: userIsLoading } = useUser()
 
   const { mutate: updateDefaultOrg } = useUpdateDefaultOrganization()
-
-  const { data: planData } = usePlanData({ owner: selectedOrg, provider })
-  const { mutate: fireTrial } = useStartTrial({ owner: selectedOrg })
-
-  const isNewTrial = planData?.plan?.trialStatus === TrialStatuses.NOT_STARTED
+  const { mutate: fireTrial } = useStartTrial()
 
   const {
     data: myOrganizations,
@@ -72,7 +60,8 @@ function DefaultOrgSelector() {
     },
   })
 
-  const onSubmit = () => {
+  const onSubmit = (data) => {
+    const selectedOrg = data?.select ?? currentUser?.user?.username
     const segmentEvent = {
       event: 'Onboarding default org selector',
       data: {
@@ -84,14 +73,7 @@ function DefaultOrgSelector() {
 
     trackSegmentEvent(segmentEvent)
     updateDefaultOrg({ username: selectedOrg })
-
-    if (
-      !isFreePlan(planData?.plan?.isFreePlan) &&
-      selectedOrg !== currentUser?.user?.username &&
-      isNewTrial
-    ) {
-      fireTrial()
-    }
+    fireTrial({ owner: selectedOrg })
 
     return history.push(`/${provider}/${selectedOrg}`)
   }
@@ -118,7 +100,12 @@ function DefaultOrgSelector() {
                   placeholder="Select organization"
                   items={myOrganizations || []}
                   renderItem={(item) => renderItem({ item })}
-                  onChange={(value) => setSelectedOrg(value?.username)}
+                  onChange={(value) =>
+                    setValue('select', value?.username, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    })
+                  }
                   onLoadMore={() => hasNextPage && fetchNextPage()}
                   isLoading={isFetching}
                   ariaName="Select an organization"

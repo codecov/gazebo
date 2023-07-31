@@ -46,12 +46,12 @@ interface SetupArgs {
 
 describe('useStartTrial', () => {
   function setup({ isOtherError = false, isServerError = false }: SetupArgs) {
-    const variablesPassed = jest.fn()
+    const mutationVariables = jest.fn()
     const mockRenderToast = renderToast as jest.Mock
 
     server.use(
       graphql.mutation('startTrial', (req, res, ctx) => {
-        variablesPassed(req.variables)
+        mutationVariables(req.variables)
         if (isOtherError) {
           return res(
             ctx.status(200),
@@ -70,23 +70,20 @@ describe('useStartTrial', () => {
       })
     )
 
-    return { variablesPassed, mockRenderToast }
+    return { mutationVariables, mockRenderToast }
   }
 
   describe('calling mutation', () => {
     describe('a successful mutation', () => {
       it('passes the correct args', async () => {
-        const { variablesPassed } = setup({})
+        const { mutationVariables } = setup({})
 
-        const { result } = renderHook(
-          () => useStartTrial({ owner: 'codecov' }),
-          { wrapper }
-        )
+        const { result } = renderHook(() => useStartTrial(), { wrapper })
 
-        result.current.mutate()
+        result.current.mutate({ owner: 'codecov' })
 
         await waitFor(() =>
-          expect(variablesPassed).toBeCalledWith({
+          expect(mutationVariables).toBeCalledWith({
             input: { orgUsername: 'codecov' },
           })
         )
@@ -95,12 +92,9 @@ describe('useStartTrial', () => {
       it('triggers render toast', async () => {
         const { mockRenderToast } = setup({})
 
-        const { result } = renderHook(
-          () => useStartTrial({ owner: 'codecov' }),
-          { wrapper }
-        )
+        const { result } = renderHook(() => useStartTrial(), { wrapper })
 
-        result.current.mutate()
+        result.current.mutate({ owner: 'codecov' })
 
         await waitFor(() =>
           expect(mockRenderToast).not.toBeCalledWith({
@@ -137,12 +131,9 @@ describe('useStartTrial', () => {
         it('triggers render toast', async () => {
           const { mockRenderToast } = setup({ isOtherError: true })
 
-          const { result } = renderHook(
-            () => useStartTrial({ owner: 'codecov' }),
-            { wrapper }
-          )
+          const { result } = renderHook(() => useStartTrial(), { wrapper })
 
-          result.current.mutate()
+          result.current.mutate({ owner: 'codecov' })
 
           await waitFor(() =>
             expect(mockRenderToast).toBeCalledWith({
@@ -174,12 +165,9 @@ describe('useStartTrial', () => {
         it('triggers toast', async () => {
           const { mockRenderToast } = setup({ isServerError: true })
 
-          const { result } = renderHook(
-            () => useStartTrial({ owner: 'codecov' }),
-            { wrapper }
-          )
+          const { result } = renderHook(() => useStartTrial(), { wrapper })
 
-          result.current.mutate()
+          result.current.mutate({ owner: 'codecov' })
 
           await waitFor(() =>
             expect(mockRenderToast).toBeCalledWith({
