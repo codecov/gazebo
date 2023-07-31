@@ -33,7 +33,7 @@ function PlansActionsBilling({ plan }) {
     opts: { enabled: codecovTrialMvp },
   })
 
-  const { mutate, isLoading } = useStartTrial({ owner })
+  const { mutate, isLoading } = useStartTrial()
 
   const canStartTrial =
     planData?.plan?.trialStatus === TrialStatuses.NOT_STARTED &&
@@ -44,7 +44,7 @@ function PlansActionsBilling({ plan }) {
       <div className="flex items-center gap-4 self-start">
         <Button
           onClick={() => {
-            mutate()
+            mutate({ owner })
           }}
           variant="primary"
           isLoading={isLoading}
