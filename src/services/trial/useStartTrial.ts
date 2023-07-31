@@ -40,18 +40,18 @@ interface Params {
   provider: string
 }
 
-interface UseStartTrialArgs {
+interface StarTrialMutationArgs {
   owner: string
 }
 
 // need to take owner as an arg here because
 // onboarding won't have it in the url
-export const useStartTrial = ({ owner }: UseStartTrialArgs) => {
+export const useStartTrial = () => {
   const { provider } = useParams<Params>()
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
-    mutationFn: () => {
+    mutationFn: ({ owner }: StarTrialMutationArgs) => {
       const variables = {
         input: { orgUsername: owner },
       }
