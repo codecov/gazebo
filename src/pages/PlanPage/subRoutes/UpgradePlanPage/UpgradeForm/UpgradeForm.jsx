@@ -32,6 +32,7 @@ import TotalBanner from './TotalBanner'
 import UpdateButton from './UpdateButton'
 import UserCount from './UserCount'
 
+// eslint-disable-next-line max-statements
 const useUpgradeForm = ({
   proPlanYear,
   proPlanMonth,
@@ -46,6 +47,7 @@ const useUpgradeForm = ({
   const history = useHistory()
   const addToast = useAddNotification()
   const { mutate, ...rest } = useUpgradePlan({ provider, owner })
+  const { data: planData } = usePlanData({ provider, owner })
 
   function upgradePlan({ seats, newPlan }) {
     return mutate(
@@ -85,6 +87,7 @@ const useUpgradeForm = ({
       proPlanYear,
       isSentryUpgrade,
       sentryPlanYear,
+      trialStatus: planData?.plan?.trialStatus,
     }),
     resolver: zodResolver(getSchema({ accountDetails, minSeats })),
     mode: 'onChange',
