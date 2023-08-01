@@ -89,7 +89,13 @@ const useUpgradeForm = ({
       sentryPlanYear,
       trialStatus: planData?.plan?.trialStatus,
     }),
-    resolver: zodResolver(getSchema({ accountDetails, minSeats })),
+    resolver: zodResolver(
+      getSchema({
+        accountDetails,
+        minSeats,
+        trialStatus: planData?.plan?.trialStatus,
+      })
+    ),
     mode: 'onChange',
   })
 

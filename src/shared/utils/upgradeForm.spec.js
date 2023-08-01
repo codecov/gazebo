@@ -162,7 +162,10 @@ describe('getSchema', () => {
     }
     const schema = getSchema({ accountDetails, minSeats: 5 })
 
-    const response = schema.safeParse({ seats: 10, newPlan: 'users-inappy' })
+    const response = schema.safeParse({
+      seats: 10,
+      newPlan: Plans.USERS_PR_INAPPY,
+    })
     expect(response.success).toEqual(true)
     expect(response.error).toBeUndefined()
   })
@@ -233,6 +236,27 @@ describe('getSchema', () => {
         message: 'Must deactivate more users before downgrading plans',
       })
     )
+  })
+
+  it('passes when seats are below activated seats and user is on trial', () => {
+    const accountDetails = {
+      activatedUserCount: 2,
+      plan: {
+        value: Plans.USERS_TRIAL,
+      },
+    }
+    const schema = getSchema({
+      accountDetails,
+      minSeats: 5,
+      trialStatus: TrialStatuses.ONGOING,
+    })
+
+    const response = schema.safeParse({
+      seats: 10,
+      newPlan: Plans.USERS_PR_INAPPY,
+    })
+    expect(response.success).toEqual(true)
+    expect(response.error).toBeUndefined()
   })
 })
 
