@@ -78,7 +78,8 @@ const TrialBanner: React.FC = () => {
   if (
     isTrialPlan(planName) &&
     trialStatus === TrialStatuses.ONGOING &&
-    dateDiff < 4
+    dateDiff < 4 &&
+    dateDiff >= 0
   ) {
     return <OngoingBanner dateDiff={dateDiff} />
   }
