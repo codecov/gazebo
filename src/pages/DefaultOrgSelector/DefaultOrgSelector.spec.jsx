@@ -173,14 +173,10 @@ describe('DefaultOrgSelector', () => {
       const orgInList = screen.getByRole('option', { name: 'criticalRole' })
       expect(orgInList).toBeInTheDocument()
 
-      const addNewOrg = screen.getByRole('link', {
-        name: 'plus-circle.svg Add GitHub organization external-link.svg',
+      const addNewOrg = screen.getByRole('option', {
+        name: 'plus-circle.svg Add GitHub organization',
       })
       expect(addNewOrg).toBeInTheDocument()
-      expect(addNewOrg).toHaveAttribute(
-        'href',
-        'https://github.com/apps/codecov/installations/new'
-      )
     })
 
     it('renders continue to app button', async () => {
