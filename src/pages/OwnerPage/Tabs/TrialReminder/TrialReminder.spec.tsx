@@ -149,7 +149,7 @@ describe('TrialReminder', () => {
             })
 
             expect(link).toBeInTheDocument()
-            expect(link).toHaveAttribute('href', '/plan/gh/codecov/upgrade')
+            expect(link).toHaveAttribute('href', '/plan/gh/codecov')
           })
         })
 

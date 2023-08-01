@@ -1,23 +1,37 @@
 /* eslint-disable camelcase */
 import { z } from 'zod'
 
-import { isFreePlan, isPaidPlan, isSentryPlan } from 'shared/utils/billing'
+import { TrialStatuses } from 'services/account'
+import {
+  isFreePlan,
+  isPaidPlan,
+  isSentryPlan,
+  Plans,
+} from 'shared/utils/billing'
 
 export const MIN_NB_SEATS = 2
 export const MIN_SENTRY_SEATS = 5
 export const SENTRY_PRICE = 29
 
+// eslint-disable-next-line complexity
 export function extractSeats({
   quantity,
   value,
   activatedUserCount,
   inactiveUserCount,
   isSentryUpgrade,
+  trialStatus,
 }) {
   const totalMembers = (inactiveUserCount ?? 0) + (activatedUserCount ?? 0)
   const minPlansSeats = isSentryUpgrade ? MIN_SENTRY_SEATS : MIN_NB_SEATS
   const freePlanSeats = Math.max(minPlansSeats, totalMembers)
   const paidPlansSeats = Math.max(minPlansSeats, quantity)
+
+  // if their on trial their seat count is around 1000 so this resets the
+  // value to the minium value they would be going on if sentry or pro
+  if (trialStatus === TrialStatuses.ONGOING && value === Plans.USERS_TRIAL) {
+    return minPlansSeats
+  }
 
   return isFreePlan(value) ? freePlanSeats : paidPlansSeats
 }
@@ -27,6 +41,7 @@ export const getInitialDataForm = ({
   proPlanYear,
   sentryPlanYear,
   isSentryUpgrade,
+  trialStatus,
 }) => {
   const currentPlan = accountDetails?.plan
   const plan = currentPlan?.value
@@ -47,11 +62,12 @@ export const getInitialDataForm = ({
       activatedUserCount: accountDetails?.activatedUserCount,
       inactiveUserCount: accountDetails?.inactiveUserCount,
       isSentryUpgrade,
+      trialStatus,
     }),
   }
 }
 
-export const getSchema = ({ accountDetails, minSeats }) =>
+export const getSchema = ({ accountDetails, minSeats, trialStatus }) =>
   z.object({
     seats: z.coerce
       .number({
@@ -63,6 +79,13 @@ export const getSchema = ({ accountDetails, minSeats }) =>
         message: `You cannot purchase a per user plan for less than ${minSeats} users`,
       })
       .transform((val, ctx) => {
+        if (
+          trialStatus === TrialStatuses.ONGOING &&
+          accountDetails?.plan?.value === Plans.USERS_TRIAL
+        ) {
+          return val
+        }
+
         if (val < accountDetails?.activatedUserCount) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,

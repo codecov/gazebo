@@ -1,3 +1,4 @@
+import { TrialStatuses } from 'services/account'
 import { Plans } from 'shared/utils/billing'
 
 import {
@@ -161,7 +162,10 @@ describe('getSchema', () => {
     }
     const schema = getSchema({ accountDetails, minSeats: 5 })
 
-    const response = schema.safeParse({ seats: 10, newPlan: 'users-inappy' })
+    const response = schema.safeParse({
+      seats: 10,
+      newPlan: Plans.USERS_PR_INAPPY,
+    })
     expect(response.success).toEqual(true)
     expect(response.error).toBeUndefined()
   })
@@ -232,6 +236,27 @@ describe('getSchema', () => {
         message: 'Must deactivate more users before downgrading plans',
       })
     )
+  })
+
+  it('passes when seats are below activated seats and user is on trial', () => {
+    const accountDetails = {
+      activatedUserCount: 2,
+      plan: {
+        value: Plans.USERS_TRIAL,
+      },
+    }
+    const schema = getSchema({
+      accountDetails,
+      minSeats: 5,
+      trialStatus: TrialStatuses.ONGOING,
+    })
+
+    const response = schema.safeParse({
+      seats: 10,
+      newPlan: Plans.USERS_PR_INAPPY,
+    })
+    expect(response.success).toEqual(true)
+    expect(response.error).toBeUndefined()
   })
 })
 
@@ -336,6 +361,38 @@ describe('extractSeats', () => {
         isSentryUpgrade: true,
       })
       expect(seats).toEqual(5)
+    })
+  })
+
+  describe('user on trial plan plan', () => {
+    describe('user has access to sentry upgrade', () => {
+      it('returns sentry plan base seat count as seats', () => {
+        const seats = extractSeats({
+          value: Plans.USERS_TRIAL,
+          quantity: 8,
+          activatedUserCount: 12,
+          inactiveUserCount: 0,
+          isSentryUpgrade: true,
+          trialStatus: TrialStatuses.ONGOING,
+        })
+
+        expect(seats).toEqual(5)
+      })
+    })
+
+    describe('user does not have access to sentry upgrade', () => {
+      it('returns pro plan base seat count as seats', () => {
+        const seats = extractSeats({
+          value: Plans.USERS_TRIAL,
+          quantity: 8,
+          activatedUserCount: 12,
+          inactiveUserCount: 0,
+          isSentryUpgrade: false,
+          trialStatus: TrialStatuses.ONGOING,
+        })
+
+        expect(seats).toEqual(2)
+      })
     })
   })
 })
