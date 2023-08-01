@@ -8,6 +8,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
+import { Plans } from 'shared/utils/billing'
 
 import UpgradeForm from './UpgradeForm'
 
@@ -730,11 +731,12 @@ describe('UpgradeForm', () => {
     })
 
     describe('when the user chooses less than the number of active users', () => {
-      it('displays an error', async () => {
+      it('does not display an error', async () => {
         const { user } = setup({
           includeSentryPlans: true,
           trialStatus: TrialStatuses.ONGOING,
         })
+
         render(
           <UpgradeForm
             proPlanMonth={proPlanMonth}
@@ -744,7 +746,7 @@ describe('UpgradeForm', () => {
             accountDetails={{
               activatedUserCount: 9,
               inactiveUserCount: 0,
-              plan: null,
+              plan: { value: Plans.USERS_TRIAL },
               latestInvoice: null,
             }}
           />,
@@ -760,10 +762,13 @@ describe('UpgradeForm', () => {
         })
         await user.click(updateButton)
 
-        const error = await screen.findByText(
+        await waitFor(() => queryClient.isMutating)
+        await waitFor(() => !queryClient.isMutating)
+
+        const error = screen.queryByText(
           /deactivate more users before downgrading plans/i
         )
-        expect(error).toBeInTheDocument()
+        expect(error).not.toBeInTheDocument()
       })
     })
   })
