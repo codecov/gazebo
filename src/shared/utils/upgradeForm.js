@@ -67,7 +67,7 @@ export const getInitialDataForm = ({
   }
 }
 
-export const getSchema = ({ accountDetails, minSeats }) =>
+export const getSchema = ({ accountDetails, minSeats, trialStatus }) =>
   z.object({
     seats: z.coerce
       .number({
@@ -79,6 +79,13 @@ export const getSchema = ({ accountDetails, minSeats }) =>
         message: `You cannot purchase a per user plan for less than ${minSeats} users`,
       })
       .transform((val, ctx) => {
+        if (
+          trialStatus === TrialStatuses.ONGOING &&
+          accountDetails?.plan?.value === Plans.USERS_TRIAL
+        ) {
+          return val
+        }
+
         if (val < accountDetails?.activatedUserCount) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
