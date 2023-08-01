@@ -23,18 +23,13 @@ const determineTrialStates = ({
 }
 
 const determineDateDiff = ({
-  trialStartDate,
   trialEndDate,
 }: {
-  trialStartDate?: string | null
   trialEndDate?: string | null
 }) => {
   let dateDiff = 0
-  if (trialStartDate && trialEndDate) {
-    dateDiff = differenceInCalendarDays(
-      new Date(trialEndDate),
-      new Date(trialStartDate)
-    )
+  if (trialEndDate) {
+    dateDiff = differenceInCalendarDays(new Date(trialEndDate), new Date())
   }
 
   return dateDiff
@@ -69,10 +64,8 @@ const TrialReminder: React.FC = () => {
     })
 
   const dateDiff = determineDateDiff({
-    trialStartDate: planData?.plan?.trialStartDate,
     trialEndDate: planData?.plan?.trialEndDate,
   })
-
   if (
     (!isFreePlan(planValue) && !trialOngoing) ||
     cannotTrial ||
