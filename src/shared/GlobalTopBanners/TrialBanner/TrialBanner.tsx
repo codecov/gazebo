@@ -13,18 +13,13 @@ import ExpiredBanner from './ExpiredBanner'
 import OngoingBanner from './OngoingBanner'
 
 const determineDateDiff = ({
-  trialStartDate,
   trialEndDate,
 }: {
-  trialStartDate?: string | null
   trialEndDate?: string | null
 }) => {
   let dateDiff = 0
-  if (trialStartDate && trialEndDate) {
-    dateDiff = differenceInCalendarDays(
-      new Date(trialEndDate),
-      new Date(trialStartDate)
-    )
+  if (trialEndDate) {
+    dateDiff = differenceInCalendarDays(new Date(trialEndDate), new Date())
   }
 
   return dateDiff
@@ -59,7 +54,6 @@ const TrialBanner: React.FC = () => {
   const planName = planData?.plan?.planName
   const trialStatus = planData?.plan?.trialStatus
   const dateDiff = determineDateDiff({
-    trialStartDate: planData?.plan?.trialStartDate,
     trialEndDate: planData?.plan?.trialEndDate,
   })
 
