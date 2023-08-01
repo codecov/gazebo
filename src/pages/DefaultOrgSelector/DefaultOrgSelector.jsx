@@ -122,12 +122,10 @@ function DefaultOrgSelector() {
                 register={register}
                 required
                 placeholder="Select organization"
-                items={
-                  [
-                    ...myOrganizations,
-                    ...(isGh ? [{ org: {}, isProvider: true }] : []),
-                  ] || []
-                }
+                items={[
+                  ...myOrganizations,
+                  ...(isGh ? [{ org: {}, isProvider: true }] : []),
+                ]}
                 renderItem={(item) => renderItem({ item })}
                 onChange={(value) => {
                   if (!value?.isProvider) {

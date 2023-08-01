@@ -230,6 +230,64 @@ describe('DefaultOrgSelector', () => {
       expect(addNewOrg).not.toBeInTheDocument()
     })
 
+    it('opens new page on add org select', async () => {
+      window.open = jest.fn()
+
+      const { user } = setup({
+        useUserData: {
+          me: {
+            email: 'personal@cr.com',
+            trackingMetadata: {
+              ownerid: '1234',
+            },
+            user: {
+              username: 'chetney',
+            },
+          },
+        },
+        myOrganizationsData: {
+          me: {
+            myOrganizations: {
+              edges: [
+                {
+                  node: {
+                    avatarUrl:
+                      'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+                    username: 'criticalRole',
+                    ownerid: 1,
+                  },
+                },
+              ],
+              pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
+            },
+          },
+        },
+      })
+
+      render(<DefaultOrgSelector />, {
+        wrapper: wrapper(['/gh/codecov/cool-repo']),
+      })
+
+      const selectOrg = await screen.findByRole('button', {
+        name: 'Select an organization',
+      })
+
+      await user.click(selectOrg)
+
+      const addNewOrg = screen.getByRole('option', {
+        name: 'plus-circle.svg Add GitHub organization',
+      })
+
+      await user.click(addNewOrg)
+
+      await waitFor(() =>
+        expect(window.open).toBeCalledWith(
+          'https://github.com/apps/codecov/installations/new',
+          '_blank'
+        )
+      )
+    })
+
     it('renders continue to app button', async () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
