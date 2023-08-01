@@ -1,3 +1,4 @@
+import { TrialStatuses } from 'services/account'
 import { Plans } from 'shared/utils/billing'
 
 import {
@@ -336,6 +337,38 @@ describe('extractSeats', () => {
         isSentryUpgrade: true,
       })
       expect(seats).toEqual(5)
+    })
+  })
+
+  describe('user on trial plan plan', () => {
+    describe('user has access to sentry upgrade', () => {
+      it('returns sentry plan base seat count as seats', () => {
+        const seats = extractSeats({
+          value: Plans.USERS_TRIAL,
+          quantity: 8,
+          activatedUserCount: 12,
+          inactiveUserCount: 0,
+          isSentryUpgrade: true,
+          trialStatus: TrialStatuses.ONGOING,
+        })
+
+        expect(seats).toEqual(5)
+      })
+    })
+
+    describe('user does not have access to sentry upgrade', () => {
+      it('returns pro plan base seat count as seats', () => {
+        const seats = extractSeats({
+          value: Plans.USERS_TRIAL,
+          quantity: 8,
+          activatedUserCount: 12,
+          inactiveUserCount: 0,
+          isSentryUpgrade: false,
+          trialStatus: TrialStatuses.ONGOING,
+        })
+
+        expect(seats).toEqual(2)
+      })
     })
   })
 })
