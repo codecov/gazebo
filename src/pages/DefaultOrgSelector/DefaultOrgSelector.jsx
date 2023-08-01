@@ -125,7 +125,7 @@ function DefaultOrgSelector() {
                 items={
                   [
                     ...myOrganizations,
-                    ...(isGh && [{ org: {}, isProvider: true }]),
+                    ...(isGh ? [{ org: {}, isProvider: true }] : []),
                   ] || []
                 }
                 renderItem={(item) => renderItem({ item })}

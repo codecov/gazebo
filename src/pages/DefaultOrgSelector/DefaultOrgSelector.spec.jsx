@@ -179,6 +179,57 @@ describe('DefaultOrgSelector', () => {
       expect(addNewOrg).toBeInTheDocument()
     })
 
+    it('does not render add org on different providers', async () => {
+      const { user } = setup({
+        useUserData: {
+          me: {
+            email: 'personal@cr.com',
+            trackingMetadata: {
+              ownerid: '1234',
+            },
+            user: {
+              username: 'chetney',
+            },
+          },
+        },
+        myOrganizationsData: {
+          me: {
+            myOrganizations: {
+              edges: [
+                {
+                  node: {
+                    avatarUrl:
+                      'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+                    username: 'criticalRole',
+                    ownerid: 1,
+                  },
+                },
+              ],
+              pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
+            },
+          },
+        },
+      })
+
+      render(<DefaultOrgSelector />, {
+        wrapper: wrapper(['/gl/codecov/cool-repo']),
+      })
+
+      const selectOrg = await screen.findByRole('button', {
+        name: 'Select an organization',
+      })
+
+      await user.click(selectOrg)
+
+      const orgInList = screen.getByRole('option', { name: 'criticalRole' })
+      expect(orgInList).toBeInTheDocument()
+
+      const addNewOrg = screen.queryByRole('option', {
+        name: 'plus-circle.svg Add GitHub organization',
+      })
+      expect(addNewOrg).not.toBeInTheDocument()
+    })
+
     it('renders continue to app button', async () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
