@@ -6,14 +6,12 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { useLocationParams } from 'services/navigation'
 import { useFlags } from 'shared/featureFlags'
 
 import { useUserAccessGate } from './useUserAccessGate'
 
 jest.mock('shared/featureFlags')
 jest.spyOn(console, 'error')
-jest.mock('services/navigation/useLocationParams')
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -155,7 +153,6 @@ afterAll(() => {
 type Setup = {
   termsOfServicePage: boolean
   user: UserPartial
-  setupAction: string
   defaultOrgSelectorPage: boolean
 }
 
@@ -164,26 +161,18 @@ describe('useUserAccessGate', () => {
     {
       termsOfServicePage = false,
       user = loggedInUser,
-      setupAction = '',
       defaultOrgSelectorPage = false,
     }: Setup = {
       termsOfServicePage: false,
       user: loggedInUser,
-      setupAction: '',
       defaultOrgSelectorPage: false,
     }
   ) {
     const mockedUseFlags = jest.mocked(useFlags)
-    const mockedLocationParams = jest.mocked(useLocationParams)
 
     mockedUseFlags.mockReturnValue({
       termsOfServicePage,
       defaultOrgSelectorPage,
-    })
-    mockedLocationParams.mockReturnValue({
-      params: { setup_action: setupAction },
-      setParams: jest.fn(),
-      updateParams: jest.fn(),
     })
 
     server.use(
@@ -642,13 +631,12 @@ describe('useUserAccessGate', () => {
             setup({
               termsOfServicePage,
               user,
-              setupAction: '',
               defaultOrgSelectorPage,
             })
           })
           it(`return values are expect while useUser resolves`, async () => {
             const { result } = renderHook(() => useUserAccessGate(), {
-              wrapper: wrapper(['/gh']),
+              wrapper: wrapper(['/gh?']),
             })
 
             await waitFor(() => result.current.isLoading)
@@ -667,17 +655,16 @@ describe('useUserAccessGate', () => {
     }
   )
 
-  describe('feature flag is on and default org exists', () => {
+  describe('feature flag is on and set up action param is request', () => {
     it('renders children', async () => {
       setup({
         user: loggedInUser,
         termsOfServicePage: true,
-        setupAction: 'request',
         defaultOrgSelectorPage: true,
       })
 
       const { result } = renderHook(() => useUserAccessGate(), {
-        wrapper: wrapper(['/gh']),
+        wrapper: wrapper(['/gh?setup_action=request']),
       })
 
       await waitFor(() => result.current.isLoading)
@@ -688,26 +675,6 @@ describe('useUserAccessGate', () => {
       await waitFor(() =>
         expect(testLocation.search).toEqual('?setup_action=request')
       )
-    })
-  })
-
-  describe('feature flag is on and default org exist', () => {
-    it('renders full experience set to true', async () => {
-      setup({
-        user: loggedInUser,
-        termsOfServicePage: true,
-        setupAction: '',
-        defaultOrgSelectorPage: true,
-      })
-
-      const { result } = renderHook(() => useUserAccessGate(), {
-        wrapper: wrapper(['/gh']),
-      })
-
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
-
-      await waitFor(() => expect(result.current.isFullExperience).toBe(true))
     })
   })
 })

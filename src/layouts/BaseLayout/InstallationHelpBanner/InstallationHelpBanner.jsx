@@ -46,7 +46,7 @@ function InstallationHelpBanner() {
             Installed organization
           </span>
           - it may take a few minutes to appear as a selection, if you
-          don&apos;t see it try <ResyncButton />
+          don&apos;t see it try. <ResyncButton />
         </p>
       </TopBanner.Start>
       <TopBanner.End>

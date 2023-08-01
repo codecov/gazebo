@@ -27,27 +27,25 @@ const OnboardingOrChildren = ({ children }) => {
   const { isFullExperience, showAgreeToTerms, showDefaultOrgSelector } =
     useUserAccessGate()
 
-  if (isFullExperience) return children
-
-  if (showAgreeToTerms)
+  if (showAgreeToTerms && !isFullExperience)
     return (
       <Suspense fallback={null}>
         <TermsOfService />
       </Suspense>
     )
 
-  if (showDefaultOrgSelector)
+  if (showDefaultOrgSelector && !isFullExperience)
     return (
       <Suspense fallback={null}>
         <DefaultOrgSelector />
       </Suspense>
     )
 
-  return null
+  return children
 }
 
 function BaseLayout({ children }) {
-  const { isFullExperience, isLoading } = useUserAccessGate()
+  const { isFullExperience, showAgreeToTerms, isLoading } = useUserAccessGate()
 
   useTracking()
 
@@ -64,7 +62,7 @@ function BaseLayout({ children }) {
       ) : (
         <Suspense fallback={null}>
           <LimitedHeader />
-          <InstallationHelpBanner />
+          {showAgreeToTerms && <InstallationHelpBanner />}
         </Suspense>
       )}
       <Suspense fallback={<FullPageLoader />}>

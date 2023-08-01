@@ -7,12 +7,10 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import config from 'config'
 
 import { useImage } from 'services/image'
-import { useLocationParams } from 'services/navigation'
 import { useFlags } from 'shared/featureFlags'
 
 import BaseLayout from './BaseLayout'
 
-jest.mock('services/navigation/useLocationParams')
 jest.mock('services/image')
 jest.mock('shared/featureFlags')
 jest.mock('shared/GlobalTopBanners', () => () => 'GlobalTopBanners')
@@ -112,10 +110,6 @@ describe('BaseLayout', () => {
     useFlags.mockReturnValue({
       termsOfServicePage,
       defaultOrgSelectorPage,
-    })
-
-    useLocationParams.mockReturnValue({
-      params: { setup_action: 'install' },
     })
 
     server.use(

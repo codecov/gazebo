@@ -5,11 +5,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 
-import { useLocationParams } from 'services/navigation'
-
 import InstallationHelpBanner from './InstallationHelpBanner'
-
-jest.mock('services/navigation')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -29,13 +25,13 @@ afterAll(() => {
 })
 
 const wrapper =
-  ({ provider = 'gh' } = {}) =>
+  (initialEntries = ['/gh?setup_action=install']) =>
   ({ children }) => {
     return (
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[`/${provider}/codecov/analytics/new`]}>
+        <MemoryRouter initialEntries={initialEntries}>
           <Switch>
-            <Route path="/:provider/:owner/:repo/new">{children}</Route>
+            <Route path="/:provider">{children}</Route>
           </Switch>
         </MemoryRouter>
       </QueryClientProvider>
@@ -43,15 +39,12 @@ const wrapper =
   }
 
 describe('InstallationHelpBanner', () => {
-  function setup({ setUpAction } = { setUpAction: 'install' }) {
+  function setup() {
     const mutation = jest.fn()
 
     const mockSetItem = jest.spyOn(window.localStorage.__proto__, 'setItem')
     const mockGetItem = jest.spyOn(window.localStorage.__proto__, 'getItem')
 
-    useLocationParams.mockReturnValue({
-      params: { setup_action: setUpAction },
-    })
     server.use(
       graphql.query('IsSyncing', (req, res, ctx) => {
         return res(
@@ -87,7 +80,7 @@ describe('InstallationHelpBanner', () => {
       setup()
 
       render(<InstallationHelpBanner />, {
-        wrapper: wrapper({ provider: 'gh' }),
+        wrapper: wrapper(),
       })
 
       const body = screen.getByText(/Installed organization/)
@@ -102,10 +95,10 @@ describe('InstallationHelpBanner', () => {
 
   describe('when rendered with a different setup action', () => {
     it('renders empty dom', () => {
-      setup({ setUpAction: 'request' })
+      setup()
 
       const { container } = render(<InstallationHelpBanner />, {
-        wrapper: wrapper({ provider: 'gh' }),
+        wrapper: wrapper(['/gh?setup_action=request']),
       })
 
       expect(container).toBeEmptyDOMElement()
@@ -137,7 +130,7 @@ describe('InstallationHelpBanner', () => {
       setup()
 
       render(<InstallationHelpBanner />, {
-        wrapper: wrapper({ provider: 'gl' }),
+        wrapper: wrapper(['/bb?setup_action=install']),
       })
 
       const body = screen.queryByText(/Installed organization/)
@@ -150,7 +143,7 @@ describe('InstallationHelpBanner', () => {
       setup()
 
       render(<InstallationHelpBanner />, {
-        wrapper: wrapper({ provider: 'gh' }),
+        wrapper: wrapper(),
       })
 
       const dismissButton = await screen.findByRole('button', {
@@ -165,7 +158,7 @@ describe('InstallationHelpBanner', () => {
       mockGetItem.mockReturnValue(null)
 
       render(<InstallationHelpBanner />, {
-        wrapper: wrapper({ provider: 'gh' }),
+        wrapper: wrapper(),
       })
 
       const dismissButton = await screen.findByRole('button', {
@@ -188,7 +181,7 @@ describe('InstallationHelpBanner', () => {
       mockGetItem.mockReturnValue(null)
 
       const { container } = render(<InstallationHelpBanner />, {
-        wrapper: wrapper({ provider: 'gh' }),
+        wrapper: wrapper(),
       })
 
       const dismissButton = await screen.findByRole('button', {
