@@ -127,7 +127,7 @@ describe('GitHubHelpBanner', () => {
       const reSync = screen.getByText(/re-sync/)
       expect(reSync).toBeInTheDocument()
 
-      user.click(reSync)
+      await user.click(reSync)
 
       await waitFor(() => expect(mutation).toHaveBeenCalledTimes(1))
 

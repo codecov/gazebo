@@ -116,7 +116,7 @@ describe('InstallationHelpBanner', () => {
       const reSync = screen.getByText(/re-syncing/)
       expect(reSync).toBeInTheDocument()
 
-      user.click(reSync)
+      await user.click(reSync)
 
       await waitFor(() => expect(mutation).toHaveBeenCalledTimes(1))
 
