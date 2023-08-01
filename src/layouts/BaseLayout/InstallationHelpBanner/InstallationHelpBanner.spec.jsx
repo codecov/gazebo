@@ -51,7 +51,7 @@ describe('InstallationHelpBanner', () => {
           ctx.status(200),
           ctx.data({
             me: {
-              isSyncing: true,
+              isSyncing: false,
             },
           })
         )
@@ -113,7 +113,7 @@ describe('InstallationHelpBanner', () => {
         wrapper: wrapper(),
       })
 
-      const reSync = screen.getByText(/re-syncing/)
+      const reSync = await screen.findByText(/re-syncing/)
       expect(reSync).toBeInTheDocument()
 
       await user.click(reSync)
