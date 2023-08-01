@@ -239,6 +239,30 @@ describe('TrialBanner', () => {
             expect(container).toBeEmptyDOMElement()
           })
         })
+
+        describe('date diff is less then 0', () => {
+          it('renders nothing', async () => {
+            setup({
+              flagValue: true,
+              trialStatus: TrialStatuses.ONGOING,
+              isCurrentUserPartOfOrg: true,
+              isTrialPlan: true,
+              trialStartDate: '2021-01-02',
+              trialEndDate: '2021-01-01',
+            })
+
+            const { container } = render(<TrialBanner />, {
+              wrapper: wrapper(),
+            })
+
+            await waitFor(() =>
+              expect(queryClient.isFetching()).toBeGreaterThan(0)
+            )
+            await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+            expect(container).toBeEmptyDOMElement()
+          })
+        })
       })
     })
 
