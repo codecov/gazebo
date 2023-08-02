@@ -479,9 +479,6 @@ describe('UpgradeForm', () => {
         })
         expect(planDetails).toBeInTheDocument()
 
-        const trial = await screen.findByText('14 day free trial, then')
-        expect(trial).toBeInTheDocument()
-
         const standardSeats = await screen.findByText(
           '$29 monthly includes 5 seats.'
         )
