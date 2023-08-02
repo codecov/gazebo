@@ -1,5 +1,16 @@
-import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
+
+import { TrialStatuses } from 'services/account'
+import { Plans } from 'shared/utils/billing'
 
 import UpgradeDetails from './UpgradeDetails'
 
@@ -71,16 +82,87 @@ const freePlan = {
   ],
 }
 
+const mockPlanData = {
+  baseUnitPrice: 10,
+  benefits: [],
+  billingRate: 'monthly',
+  marketingName: 'Users Basic',
+  monthlyUploadLimit: 250,
+  planName: 'users-basic',
+  trialStatus: TrialStatuses.NOT_STARTED,
+  trialStartDate: '',
+  trialEndDate: '',
+}
+
+const trialPlan = {
+  marketingName: 'Trial Pro Team',
+  value: 'users-trial',
+  billingRate: 'monthly',
+  baseUnitPrice: 0,
+  benefits: [
+    'Configurable # of users',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+    'Priority Support',
+  ],
+  quantity: 10,
+}
+
+const server = setupServer()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false, suspense: true } },
+})
+
 const wrapper =
   (initialEntries = '/plan/gh/codecov/upgrade') =>
   ({ children }) =>
     (
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path="/plan/:provider/:owner/upgrade">{children}</Route>
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path="/plan/:provider/:owner/upgrade">
+            <Suspense fallback={<p>Loading...</p>}>{children}</Suspense>
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
     )
 
+beforeAll(() => {
+  server.listen()
+})
+
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
+
 describe('UpgradeDetails', () => {
+  function setup({ isOngoingTrial = false } = { isOngoingTrial: false }) {
+    server.use(
+      graphql.query('GetPlanData', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              plan: {
+                ...mockPlanData,
+                trialStatus: isOngoingTrial
+                  ? TrialStatuses.ONGOING
+                  : TrialStatuses.CANNOT_TRIAL,
+                planName: isOngoingTrial
+                  ? Plans.USERS_TRIAL
+                  : Plans.USERS_BASIC,
+              },
+            },
+          })
+        )
+      )
+    )
+  }
+
   describe('users can apply sentry plan', () => {
     const plan = sentryPlanMonth
     const plans = [plan]
@@ -89,7 +171,9 @@ describe('UpgradeDetails', () => {
       subscriptionDetail: { cancelAtPeriodEnd: false },
     }
 
-    it('renders correct image', () => {
+    it('renders correct image', async () => {
+      setup()
+
       render(
         <UpgradeDetails
           accountDetails={accountDetails}
@@ -103,11 +187,15 @@ describe('UpgradeDetails', () => {
         { wrapper: wrapper() }
       )
 
-      const image = screen.getByRole('img', { name: 'sentry codecov logos' })
+      const image = await screen.findByRole('img', {
+        name: 'sentry codecov logos',
+      })
       expect(image).toBeInTheDocument()
     })
 
-    it('renders marketing name', () => {
+    it('renders marketing name', async () => {
+      setup()
+
       render(
         <UpgradeDetails
           accountDetails={accountDetails}
@@ -121,13 +209,15 @@ describe('UpgradeDetails', () => {
         { wrapper: wrapper() }
       )
 
-      const marketingName = screen.getByRole('heading', {
+      const marketingName = await screen.findByRole('heading', {
         name: /Sentry Pro Team/,
       })
       expect(marketingName).toBeInTheDocument()
     })
 
-    it('renders 29 monthly bundle', () => {
+    it('renders 29 monthly bundle', async () => {
+      setup()
+
       render(
         <UpgradeDetails
           accountDetails={accountDetails}
@@ -141,11 +231,13 @@ describe('UpgradeDetails', () => {
         { wrapper: wrapper() }
       )
 
-      const price = screen.getByRole('heading', { name: /\$29/i })
+      const price = await screen.findByRole('heading', { name: /\$29/i })
       expect(price).toBeInTheDocument()
     })
 
-    it('renders pricing disclaimer', () => {
+    it('renders pricing disclaimer', async () => {
+      setup()
+
       render(
         <UpgradeDetails
           accountDetails={accountDetails}
@@ -159,13 +251,15 @@ describe('UpgradeDetails', () => {
         { wrapper: wrapper() }
       )
 
-      const disclaimer = screen.getByText(
+      const disclaimer = await screen.findByText(
         /\$12 per user \/ month if paid monthly/i
       )
       expect(disclaimer).toBeInTheDocument()
     })
 
-    it('renders benefits section', () => {
+    it('renders benefits section', async () => {
+      setup()
+
       render(
         <UpgradeDetails
           accountDetails={accountDetails}
@@ -179,20 +273,26 @@ describe('UpgradeDetails', () => {
         { wrapper: wrapper() }
       )
 
-      const benefitOne = screen.getByText('Includes 5 seats')
+      const benefitOne = await screen.findByText('Includes 5 seats')
       expect(benefitOne).toBeInTheDocument()
 
-      const benefitTwo = screen.getByText('Unlimited public repositories')
+      const benefitTwo = await screen.findByText(
+        'Unlimited public repositories'
+      )
       expect(benefitTwo).toBeInTheDocument()
 
-      const benefitThree = screen.getByText('Unlimited private repositories')
+      const benefitThree = await screen.findByText(
+        'Unlimited private repositories'
+      )
       expect(benefitThree).toBeInTheDocument()
 
-      const benefitFour = screen.getByText('Priority Support')
+      const benefitFour = await screen.findByText('Priority Support')
       expect(benefitFour).toBeInTheDocument()
     })
 
-    it('renders cancellation link', () => {
+    it('renders cancellation link', async () => {
+      setup()
+
       render(
         <UpgradeDetails
           accountDetails={accountDetails}
@@ -206,7 +306,7 @@ describe('UpgradeDetails', () => {
         { wrapper: wrapper() }
       )
 
-      const link = screen.getByRole('link', { name: /Cancel/ })
+      const link = await screen.findByRole('link', { name: /Cancel/ })
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute('href', '/plan/gh/codecov/cancel')
     })
@@ -220,7 +320,9 @@ describe('UpgradeDetails', () => {
       subscriptionDetail: { cancelAtPeriodEnd: false },
     }
 
-    it('renders marketing name', () => {
+    it('renders marketing name', async () => {
+      setup()
+
       render(
         <UpgradeDetails
           accountDetails={accountDetails}
@@ -234,13 +336,15 @@ describe('UpgradeDetails', () => {
         { wrapper: wrapper() }
       )
 
-      const marketingName = screen.getByRole('heading', {
+      const marketingName = await screen.findByRole('heading', {
         name: /Pro Team plan/,
       })
       expect(marketingName).toBeInTheDocument()
     })
 
-    it('renders price', () => {
+    it('renders price', async () => {
+      setup()
+
       render(
         <UpgradeDetails
           accountDetails={accountDetails}
@@ -254,11 +358,13 @@ describe('UpgradeDetails', () => {
         { wrapper: wrapper() }
       )
 
-      const price = screen.getByText(/\$10/)
+      const price = await screen.findByText(/\$10/)
       expect(price).toBeInTheDocument()
     })
 
-    it('renders pricing disclaimer', () => {
+    it('renders pricing disclaimer', async () => {
+      setup()
+
       render(
         <UpgradeDetails
           accountDetails={accountDetails}
@@ -272,13 +378,15 @@ describe('UpgradeDetails', () => {
         { wrapper: wrapper() }
       )
 
-      const disclaimer = screen.getByText(
+      const disclaimer = await screen.findByText(
         /billed annually or \$12 for monthly billing/i
       )
       expect(disclaimer).toBeInTheDocument()
     })
 
-    it('renders benefits section', () => {
+    it('renders benefits section', async () => {
+      setup()
+
       render(
         <UpgradeDetails
           accountDetails={accountDetails}
@@ -292,20 +400,26 @@ describe('UpgradeDetails', () => {
         { wrapper: wrapper() }
       )
 
-      const benefitOne = screen.getByText('Configurable # of users')
+      const benefitOne = await screen.findByText('Configurable # of users')
       expect(benefitOne).toBeInTheDocument()
 
-      const benefitTwo = screen.getByText('Unlimited public repositories')
+      const benefitTwo = await screen.findByText(
+        'Unlimited public repositories'
+      )
       expect(benefitTwo).toBeInTheDocument()
 
-      const benefitThree = screen.getByText('Unlimited private repositories')
+      const benefitThree = await screen.findByText(
+        'Unlimited private repositories'
+      )
       expect(benefitThree).toBeInTheDocument()
 
-      const benefitFour = screen.getByText('Priority Support')
+      const benefitFour = await screen.findByText('Priority Support')
       expect(benefitFour).toBeInTheDocument()
     })
 
-    it('renders cancellation link', () => {
+    it('renders cancellation link', async () => {
+      setup()
+
       render(
         <UpgradeDetails
           accountDetails={accountDetails}
@@ -319,15 +433,17 @@ describe('UpgradeDetails', () => {
         { wrapper: wrapper() }
       )
 
-      const link = screen.getByRole('link', { name: /Cancel/ })
+      const link = await screen.findByRole('link', { name: /Cancel/ })
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute('href', '/plan/gh/codecov/cancel')
     })
   })
 
   describe('not rendering cancellation link', () => {
-    describe('user is on a free plan', () => {
-      it('does not render cancel link', () => {
+    describe('user is currently on a free plan', () => {
+      it('does not render cancel link', async () => {
+        setup()
+
         const plan = freePlan
         const plans = [plan]
         const accountDetails = {
@@ -348,13 +464,54 @@ describe('UpgradeDetails', () => {
           { wrapper: wrapper() }
         )
 
+        const loading = await screen.findByText('Loading...')
+        expect(loading).toBeInTheDocument()
+
+        await waitForElementToBeRemoved(loading)
+
+        const link = screen.queryByRole('link', { name: /Cancel plan/ })
+        expect(link).not.toBeInTheDocument()
+      })
+    })
+
+    describe('user is on a trial', () => {
+      it('does not render cancel link', async () => {
+        setup({ isOngoingTrial: true })
+
+        const plan = trialPlan
+        const plans = [plan]
+        const accountDetails = {
+          activatedUserCount: 5,
+          subscriptionDetail: { cancelAtPeriodEnd: false },
+        }
+
+        render(
+          <UpgradeDetails
+            accountDetails={accountDetails}
+            plan={plan}
+            plans={plans}
+            proPlanMonth={proPlanMonth}
+            proPlanYear={proPlanYear}
+            sentryPlanMonth={sentryPlanMonth}
+            sentryPlanYear={sentryPlanYear}
+          />,
+          { wrapper: wrapper() }
+        )
+
+        const loading = await screen.findByText('Loading...')
+        expect(loading).toBeInTheDocument()
+
+        await waitForElementToBeRemoved(loading)
+
         const link = screen.queryByRole('link', { name: /Cancel plan/ })
         expect(link).not.toBeInTheDocument()
       })
     })
 
     describe('user has already cancelled plan', () => {
-      it('does not render cancel link', () => {
+      it('does not render cancel link', async () => {
+        setup()
+
         const plan = proPlanMonth
         const plans = [plan]
 
@@ -376,6 +533,11 @@ describe('UpgradeDetails', () => {
           { wrapper: wrapper() }
         )
 
+        const loading = await screen.findByText('Loading...')
+        expect(loading).toBeInTheDocument()
+
+        await waitForElementToBeRemoved(loading)
+
         const link = screen.queryByRole('link', { name: /Cancel plan/ })
         expect(link).not.toBeInTheDocument()
       })
@@ -383,7 +545,9 @@ describe('UpgradeDetails', () => {
   })
 
   describe('when scheduled phase is valid', () => {
-    it('renders scheduled phase', () => {
+    it('renders scheduled phase', async () => {
+      setup()
+
       const plan = proPlanMonth
       const plans = [plan]
       const accountDetails = {
@@ -412,7 +576,7 @@ describe('UpgradeDetails', () => {
         { wrapper: wrapper() }
       )
 
-      const scheduledPhase = screen.getByText('Scheduled Details')
+      const scheduledPhase = await screen.findByText('Scheduled Details')
       expect(scheduledPhase).toBeInTheDocument()
     })
   })
