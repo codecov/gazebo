@@ -7,6 +7,7 @@ import {
   extractSeats,
   getInitialDataForm,
   getSchema,
+  shouldRenderCancelLink,
 } from './upgradeForm'
 
 describe('calculatePrice', () => {
@@ -393,6 +394,54 @@ describe('extractSeats', () => {
 
         expect(seats).toEqual(2)
       })
+    })
+  })
+})
+
+describe('shouldRenderCancelLink', () => {
+  it('returns true', () => {
+    // eslint-disable-next-line testing-library/render-result-naming-convention
+    const value = shouldRenderCancelLink(
+      {},
+      { value: Plans.USERS_PR_INAPPY },
+      ''
+    )
+
+    expect(value).toBeTruthy()
+  })
+
+  describe('user is on a free plan', () => {
+    it('returns false', () => {
+      // eslint-disable-next-line testing-library/render-result-naming-convention
+      const value = shouldRenderCancelLink({}, { value: Plans.USERS_BASIC }, '')
+
+      expect(value).toBeFalsy()
+    })
+  })
+
+  describe('user is currently on a trial', () => {
+    it('returns false', () => {
+      // eslint-disable-next-line testing-library/render-result-naming-convention
+      const value = shouldRenderCancelLink(
+        {},
+        { value: Plans.USERS_TRIAL },
+        TrialStatuses.ONGOING
+      )
+
+      expect(value).toBeFalsy()
+    })
+  })
+
+  describe('user has already cancelled their plan', () => {
+    it('returns false', () => {
+      // eslint-disable-next-line testing-library/render-result-naming-convention
+      const value = shouldRenderCancelLink(
+        { subscriptionDetail: { cancelAtPeriodEnd: true } },
+        { value: Plans.USERS_PR_INAPPY },
+        ''
+      )
+
+      expect(value).toBeFalsy()
     })
   })
 })

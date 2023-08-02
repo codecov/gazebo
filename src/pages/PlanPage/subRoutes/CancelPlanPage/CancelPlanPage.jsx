@@ -3,8 +3,12 @@ import { Redirect, Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
-import { useAccountDetails } from 'services/account'
-import { isEnterprisePlan, isMonthlyPlan } from 'shared/utils/billing'
+import { TrialStatuses, useAccountDetails, usePlanData } from 'services/account'
+import {
+  isEnterprisePlan,
+  isMonthlyPlan,
+  isTrialPlan,
+} from 'shared/utils/billing'
 import Spinner from 'ui/Spinner'
 
 import SpecialOffer from './subRoutes/SpecialOffer'
@@ -17,12 +21,18 @@ const Loader = () => (
   </div>
 )
 
+// eslint-disable-next-line max-statements, complexity
 function CancelPlanPage() {
   const { provider, owner } = useParams()
   const { data: accountDetailsData } = useAccountDetails({ provider, owner })
+  const { data: planData } = usePlanData({ provider, owner })
+
+  const isOnTrial =
+    isTrialPlan(planData?.plan?.planName) &&
+    planData?.plan?.trialStatus === TrialStatuses.ONGOING
 
   // redirect right away if the user is on an enterprise plan
-  if (isEnterprisePlan(accountDetailsData?.plan?.value)) {
+  if (isEnterprisePlan(accountDetailsData?.plan?.value) || isOnTrial) {
     return <Redirect to={`/plan/${provider}/${owner}`} />
   }
 
