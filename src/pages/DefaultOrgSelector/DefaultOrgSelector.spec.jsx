@@ -67,10 +67,6 @@ describe('DefaultOrgSelector', () => {
 
     server.use(
       graphql.query('UseMyOrganizations', (req, res, ctx) => {
-        // if (!!req?.variables?.after) {
-        //   fetchNextPage(req?.variables?.after)
-        // }
-
         return res(ctx.status(200), ctx.data(myOrganizationsData))
       }),
       graphql.query('CurrentUser', (req, res, ctx) => {
@@ -569,37 +565,6 @@ describe('DefaultOrgSelector', () => {
 
       expect(testLocation.pathname).toBe('/gh/chetney')
     })
-  })
-
-  describe('no current user', () => {
-    it('redirects to login', async () => {
-      setup({
-        useUserData: {
-          me: null,
-        },
-        myOrganizationsData: {
-          me: {
-            myOrganizations: {
-              edges: [
-                {
-                  node: {
-                    avatarUrl:
-                      'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
-                    username: 'criticalRole',
-                    ownerid: 1,
-                  },
-                },
-              ],
-              pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
-            },
-          },
-        },
-      })
-
-      render(<DefaultOrgSelector />, { wrapper: wrapper() })
-
-      await waitFor(() => expect(testLocation.pathname).toBe('/login'))
-    })
 
     it('renders load more on load more trigger', async () => {
       const { user } = setup({
@@ -651,6 +616,37 @@ describe('DefaultOrgSelector', () => {
 
       const loadMore = await screen.findByText(/Loading more items.../)
       expect(loadMore).toBeInTheDocument()
+    })
+  })
+
+  describe('no current user', () => {
+    it('redirects to login', async () => {
+      setup({
+        useUserData: {
+          me: null,
+        },
+        myOrganizationsData: {
+          me: {
+            myOrganizations: {
+              edges: [
+                {
+                  node: {
+                    avatarUrl:
+                      'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+                    username: 'criticalRole',
+                    ownerid: 1,
+                  },
+                },
+              ],
+              pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
+            },
+          },
+        },
+      })
+
+      render(<DefaultOrgSelector />, { wrapper: wrapper() })
+
+      await waitFor(() => expect(testLocation.pathname).toBe('/login'))
     })
   })
 })
