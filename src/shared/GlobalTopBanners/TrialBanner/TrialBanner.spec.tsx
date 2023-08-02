@@ -166,6 +166,14 @@ describe('TrialBanner', () => {
 
   describe('when flag is enabled', () => {
     describe('owner is undefined', () => {
+      beforeAll(() => {
+        jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
+      })
+
+      afterAll(() => {
+        jest.useRealTimers()
+      })
+
       it('renders nothing', async () => {
         setup({ flagValue: true })
 
@@ -178,6 +186,14 @@ describe('TrialBanner', () => {
     })
 
     describe('owner does not belong to org', () => {
+      beforeAll(() => {
+        jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
+      })
+
+      afterAll(() => {
+        jest.useRealTimers()
+      })
+
       it('renders nothing', async () => {
         setup({ flagValue: true, isCurrentUserPartOfOrg: false })
 
@@ -195,6 +211,15 @@ describe('TrialBanner', () => {
     describe('trial is ongoing', () => {
       describe('trial is ongoing', () => {
         describe('date diff is less then 4', () => {
+          beforeAll(() => {
+            jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
+          })
+
+          afterEach(() => {
+            jest.runOnlyPendingTimers()
+            jest.useRealTimers()
+          })
+
           it('renders ongoing banner', async () => {
             setup({
               flagValue: true,
@@ -217,6 +242,14 @@ describe('TrialBanner', () => {
         })
 
         describe('date diff is greater then 4', () => {
+          beforeAll(() => {
+            jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
+          })
+
+          afterAll(() => {
+            jest.useRealTimers()
+          })
+
           it('renders nothing', async () => {
             setup({
               flagValue: true,
@@ -239,10 +272,50 @@ describe('TrialBanner', () => {
             expect(container).toBeEmptyDOMElement()
           })
         })
+
+        describe('date diff is less then 0', () => {
+          beforeAll(() => {
+            jest.useFakeTimers().setSystemTime(new Date('2021-01-02'))
+          })
+
+          afterAll(() => {
+            jest.useRealTimers()
+          })
+
+          it('renders nothing', async () => {
+            setup({
+              flagValue: true,
+              trialStatus: TrialStatuses.ONGOING,
+              isCurrentUserPartOfOrg: true,
+              isTrialPlan: true,
+              trialStartDate: '2021-01-02',
+              trialEndDate: '2021-01-01',
+            })
+
+            const { container } = render(<TrialBanner />, {
+              wrapper: wrapper(),
+            })
+
+            await waitFor(() =>
+              expect(queryClient.isFetching()).toBeGreaterThan(0)
+            )
+            await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+            expect(container).toBeEmptyDOMElement()
+          })
+        })
       })
     })
 
     describe('trial is expired', () => {
+      beforeAll(() => {
+        jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
+      })
+
+      afterAll(() => {
+        jest.useRealTimers()
+      })
+
       describe('user is on a free plan', () => {
         it('renders expired banner', async () => {
           setup({
@@ -286,6 +359,14 @@ describe('TrialBanner', () => {
     })
 
     describe('running in self hosted mode', () => {
+      beforeAll(() => {
+        jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
+      })
+
+      afterAll(() => {
+        jest.useRealTimers()
+      })
+
       it('renders nothing', async () => {
         setup({
           flagValue: true,
@@ -307,6 +388,14 @@ describe('TrialBanner', () => {
   })
 
   describe('when flag is disabled', () => {
+    beforeAll(() => {
+      jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
+    })
+
+    afterAll(() => {
+      jest.useRealTimers()
+    })
+
     it('displays nothing', async () => {
       setup({ flagValue: false })
 

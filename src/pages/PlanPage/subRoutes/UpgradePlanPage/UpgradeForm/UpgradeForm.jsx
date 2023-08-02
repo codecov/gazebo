@@ -6,7 +6,6 @@ import { useHistory, useParams } from 'react-router-dom'
 import {
   accountDetailsPropType,
   planPropType,
-  TrialStatuses,
   usePlanData,
   usePlans,
   useUpgradePlan,
@@ -32,6 +31,7 @@ import TotalBanner from './TotalBanner'
 import UpdateButton from './UpdateButton'
 import UserCount from './UserCount'
 
+// eslint-disable-next-line max-statements
 const useUpgradeForm = ({
   proPlanYear,
   proPlanMonth,
@@ -46,6 +46,7 @@ const useUpgradeForm = ({
   const history = useHistory()
   const addToast = useAddNotification()
   const { mutate, ...rest } = useUpgradePlan({ provider, owner })
+  const { data: planData } = usePlanData({ provider, owner })
 
   function upgradePlan({ seats, newPlan }) {
     return mutate(
@@ -85,8 +86,15 @@ const useUpgradeForm = ({
       proPlanYear,
       isSentryUpgrade,
       sentryPlanYear,
+      trialStatus: planData?.plan?.trialStatus,
     }),
-    resolver: zodResolver(getSchema({ accountDetails, minSeats })),
+    resolver: zodResolver(
+      getSchema({
+        accountDetails,
+        minSeats,
+        trialStatus: planData?.plan?.trialStatus,
+      })
+    ),
     mode: 'onChange',
   })
 
@@ -134,12 +142,7 @@ const PlanDetails = ({ isSentryUpgrade, trialStatus }) => {
   return (
     <div>
       <h3 className="font-semibold">Plan</h3>
-      <p>
-        {trialStatus !== TrialStatuses.EXPIRED && (
-          <span>14 day free trial, then </span>
-        )}
-        $29 monthly includes 5 seats.
-      </p>
+      <p>$29 monthly includes 5 seats.</p>
     </div>
   )
 }
@@ -260,8 +263,6 @@ function UpgradeForm({
           getValues={getValues}
           value={accountDetails?.plan?.value}
           quantity={accountDetails?.plan?.quantity}
-          isSentryUpgrade={isSentryUpgrade}
-          trialStatus={trialStatus}
         />
       </div>
     </form>

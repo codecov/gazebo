@@ -8,6 +8,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
+import { Plans } from 'shared/utils/billing'
 
 import UpgradeForm from './UpgradeForm'
 
@@ -478,9 +479,6 @@ describe('UpgradeForm', () => {
         })
         expect(planDetails).toBeInTheDocument()
 
-        const trial = await screen.findByText('14 day free trial, then')
-        expect(trial).toBeInTheDocument()
-
         const standardSeats = await screen.findByText(
           '$29 monthly includes 5 seats.'
         )
@@ -729,41 +727,47 @@ describe('UpgradeForm', () => {
       })
     })
 
-    describe('when the user chooses less than the number of active users', () => {
-      it('displays an error', async () => {
-        const { user } = setup({
-          includeSentryPlans: true,
-          trialStatus: TrialStatuses.ONGOING,
+    describe('user is currently on a trial', () => {
+      describe('user chooses less than the number of active users', () => {
+        it('does not display an error', async () => {
+          const { user } = setup({
+            includeSentryPlans: true,
+            trialStatus: TrialStatuses.ONGOING,
+          })
+
+          render(
+            <UpgradeForm
+              proPlanMonth={proPlanMonth}
+              proPlanYear={proPlanYear}
+              sentryPlanMonth={sentryPlanMonth}
+              sentryPlanYear={sentryPlanYear}
+              accountDetails={{
+                activatedUserCount: 9,
+                inactiveUserCount: 0,
+                plan: { value: Plans.USERS_TRIAL },
+                latestInvoice: null,
+              }}
+            />,
+            { wrapper: wrapper() }
+          )
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '8')
+
+          const updateButton = await screen.findByRole('button', {
+            name: 'Update',
+          })
+          await user.click(updateButton)
+
+          await waitFor(() => queryClient.isMutating)
+          await waitFor(() => !queryClient.isMutating)
+
+          const error = screen.queryByText(
+            /deactivate more users before downgrading plans/i
+          )
+          expect(error).not.toBeInTheDocument()
         })
-        render(
-          <UpgradeForm
-            proPlanMonth={proPlanMonth}
-            proPlanYear={proPlanYear}
-            sentryPlanMonth={sentryPlanMonth}
-            sentryPlanYear={sentryPlanYear}
-            accountDetails={{
-              activatedUserCount: 9,
-              inactiveUserCount: 0,
-              plan: null,
-              latestInvoice: null,
-            }}
-          />,
-          { wrapper: wrapper() }
-        )
-
-        const input = await screen.findByRole('spinbutton')
-        await user.type(input, '{backspace}{backspace}{backspace}')
-        await user.type(input, '8')
-
-        const updateButton = await screen.findByRole('button', {
-          name: 'Update',
-        })
-        await user.click(updateButton)
-
-        const error = await screen.findByText(
-          /deactivate more users before downgrading plans/i
-        )
-        expect(error).toBeInTheDocument()
       })
     })
   })

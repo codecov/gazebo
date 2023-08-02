@@ -23,18 +23,13 @@ const determineTrialStates = ({
 }
 
 const determineDateDiff = ({
-  trialStartDate,
   trialEndDate,
 }: {
-  trialStartDate?: string | null
   trialEndDate?: string | null
 }) => {
   let dateDiff = 0
-  if (trialStartDate && trialEndDate) {
-    dateDiff = differenceInCalendarDays(
-      new Date(trialEndDate),
-      new Date(trialStartDate)
-    )
+  if (trialEndDate) {
+    dateDiff = differenceInCalendarDays(new Date(trialEndDate), new Date())
   }
 
   return dateDiff
@@ -69,10 +64,8 @@ const TrialReminder: React.FC = () => {
     })
 
   const dateDiff = determineDateDiff({
-    trialStartDate: planData?.plan?.trialStartDate,
     trialEndDate: planData?.plan?.trialEndDate,
   })
-
   if (
     (!isFreePlan(planValue) && !trialOngoing) ||
     cannotTrial ||
@@ -88,7 +81,7 @@ const TrialReminder: React.FC = () => {
       <div className="flex items-center font-semibold">
         {/* this is required because the A component has this random `[x: string]: any` record type on it */}
         {/* @ts-expect-error */}
-        <A to={{ pageName: 'upgradeOrgPlan' }}>&#128640; Trial Pro Team</A>
+        <A to={{ pageName: 'planTab' }}>&#128640; Trial Pro Team</A>
       </div>
     )
   }

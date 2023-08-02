@@ -123,6 +123,14 @@ describe('TrialReminder', () => {
 
   describe('flag is enabled', () => {
     describe('user has not started a trial', () => {
+      beforeEach(() => {
+        jest.useFakeTimers().setSystemTime(new Date('2023-01-01'))
+      })
+
+      afterEach(() => {
+        jest.useRealTimers()
+      })
+
       describe('user is on a free plan', () => {
         describe('user is part of org', () => {
           it('displays trial upgrade link', async () => {
@@ -141,7 +149,7 @@ describe('TrialReminder', () => {
             })
 
             expect(link).toBeInTheDocument()
-            expect(link).toHaveAttribute('href', '/plan/gh/codecov/upgrade')
+            expect(link).toHaveAttribute('href', '/plan/gh/codecov')
           })
         })
 
@@ -190,6 +198,14 @@ describe('TrialReminder', () => {
 
     describe('user is currently on a trial', () => {
       describe('it is within 4 days remaining on the trial', () => {
+        beforeEach(() => {
+          jest.useFakeTimers().setSystemTime(new Date('2023-01-01'))
+        })
+
+        afterEach(() => {
+          jest.useRealTimers()
+        })
+
         describe('user is part of org', () => {
           it('displays trial upgrade link', async () => {
             setup({
@@ -229,6 +245,14 @@ describe('TrialReminder', () => {
       })
 
       describe('it is within 3 days remaining on the trial', () => {
+        beforeEach(() => {
+          jest.useFakeTimers().setSystemTime(new Date('2023-01-02'))
+        })
+
+        afterEach(() => {
+          jest.useRealTimers()
+        })
+
         it('does not display the trial upgrade link', async () => {
           setup({
             planValue: Plans.USERS_BASIC,
@@ -250,6 +274,14 @@ describe('TrialReminder', () => {
     })
 
     describe('user has finished the trial', () => {
+      beforeEach(() => {
+        jest.useFakeTimers().setSystemTime(new Date('2023-01-01'))
+      })
+
+      afterEach(() => {
+        jest.useRealTimers()
+      })
+
       describe('the user is on a free plan', () => {
         describe('user is part of the org', () => {
           it('displays the upgrade link', async () => {
@@ -315,6 +347,14 @@ describe('TrialReminder', () => {
     })
 
     describe('user cannot trial', () => {
+      beforeEach(() => {
+        jest.useFakeTimers().setSystemTime(new Date('2023-01-01'))
+      })
+
+      afterEach(() => {
+        jest.useRealTimers()
+      })
+
       it('does not display upgrade link', async () => {
         setup({
           planValue: Plans.USERS_PR_INAPPY,
@@ -333,6 +373,14 @@ describe('TrialReminder', () => {
     })
 
     describe('API returns no information', () => {
+      beforeEach(() => {
+        jest.useFakeTimers().setSystemTime(new Date('2023-01-01'))
+      })
+
+      afterEach(() => {
+        jest.useRealTimers()
+      })
+
       it('returns nothing', async () => {
         setup({
           planValue: Plans.USERS_BASIC,
@@ -350,6 +398,14 @@ describe('TrialReminder', () => {
     })
 
     describe('app is running in self hosted', () => {
+      beforeEach(() => {
+        jest.useFakeTimers().setSystemTime(new Date('2023-01-01'))
+      })
+
+      afterEach(() => {
+        jest.useRealTimers()
+      })
+
       it('renders nothing', async () => {
         setup({
           planValue: Plans.USERS_BASIC,
@@ -371,6 +427,14 @@ describe('TrialReminder', () => {
   })
 
   describe('flag is disabled', () => {
+    beforeEach(() => {
+      jest.useFakeTimers().setSystemTime(new Date('2023-01-01'))
+    })
+
+    afterEach(() => {
+      jest.useRealTimers()
+    })
+
     it('displays nothing', async () => {
       setup({ flagValue: false })
 
