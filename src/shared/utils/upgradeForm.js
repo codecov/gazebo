@@ -6,6 +6,7 @@ import {
   isFreePlan,
   isPaidPlan,
   isSentryPlan,
+  isTrialPlan,
   Plans,
 } from 'shared/utils/billing'
 
@@ -122,12 +123,21 @@ export const calculatePrice = ({
 export const calculateNonBundledCost = ({ baseUnitPrice }) =>
   MIN_SENTRY_SEATS * baseUnitPrice * 12 - SENTRY_PRICE * 12
 
-export function shouldRenderCancelLink(accountDetails, plan) {
+export function shouldRenderCancelLink(accountDetails, plan, trialStatus) {
   // cant cancel a free plan
-  if (isFreePlan(plan?.value)) return false
+  if (isFreePlan(plan?.value)) {
+    return false
+  }
+
+  // if user is on trial can't cancel plan
+  if (isTrialPlan(plan?.value) && trialStatus === TrialStatuses.ONGOING) {
+    return false
+  }
 
   // plan is already set for cancellation
-  if (accountDetails?.subscriptionDetail?.cancelAtPeriodEnd) return false
+  if (accountDetails?.subscriptionDetail?.cancelAtPeriodEnd) {
+    return false
+  }
 
   return true
 }

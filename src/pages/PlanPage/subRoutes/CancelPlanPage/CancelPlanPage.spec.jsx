@@ -1,16 +1,29 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { rest } from 'msw'
+import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TrialStatuses } from 'services/account'
 import { Plans } from 'shared/utils/billing'
 
 import CancelPlanPage from './CancelPlanPage'
 
 jest.mock('./subRoutes/SpecialOffer', () => () => 'SpecialOffer')
 jest.mock('./subRoutes/DowngradePlan', () => () => 'DowngradePlan')
+
+const mockPlanData = {
+  baseUnitPrice: 10,
+  benefits: [],
+  billingRate: 'monthly',
+  marketingName: 'Users Basic',
+  monthlyUploadLimit: 250,
+  planName: 'users-basic',
+  trialStatus: TrialStatuses.NOT_STARTED,
+  trialStartDate: '',
+  trialEndDate: '',
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -56,9 +69,14 @@ afterAll(() => {
 
 describe('CancelPlanPage', () => {
   function setup(
-    { hasDiscount = false, planValue = Plans.USERS_PR_INAPPM } = {
+    {
+      hasDiscount = false,
+      planValue = Plans.USERS_PR_INAPPM,
+      trialStatus = TrialStatuses.NOT_STARTED,
+    } = {
       hasDiscount: false,
       planValue: Plans.USERS_PR_INAPPM,
+      trialStatus: TrialStatuses.NOT_STARTED,
     }
   ) {
     server.use(
@@ -72,6 +90,20 @@ describe('CancelPlanPage', () => {
             subscriptionDetail: {
               customer: {
                 discount: hasDiscount,
+              },
+            },
+          })
+        )
+      ),
+      graphql.query('GetPlanData', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              plan: {
+                ...mockPlanData,
+                trialStatus,
+                planName: planValue,
               },
             },
           })
@@ -212,6 +244,23 @@ describe('CancelPlanPage', () => {
     beforeEach(() => setup({ planValue: Plans.USERS_ENTERPRISEM }))
 
     it('directs them directly to plan page', async () => {
+      render(<CancelPlanPage />, {
+        wrapper: wrapper('/plan/gh/codecov/cancel'),
+      })
+
+      await waitFor(() =>
+        expect(testLocation.pathname).toBe('/plan/gh/codecov')
+      )
+    })
+  })
+
+  describe('user is on a trial', () => {
+    it('directs them directly to plan page', async () => {
+      setup({
+        planValue: Plans.USERS_TRIAL,
+        trialStatus: TrialStatuses.ONGOING,
+      })
+
       render(<CancelPlanPage />, {
         wrapper: wrapper('/plan/gh/codecov/cancel'),
       })
