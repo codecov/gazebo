@@ -6,7 +6,6 @@ import { useHistory, useParams } from 'react-router-dom'
 import {
   accountDetailsPropType,
   planPropType,
-  TrialStatuses,
   usePlanData,
   usePlans,
   useUpgradePlan,
@@ -143,12 +142,7 @@ const PlanDetails = ({ isSentryUpgrade, trialStatus }) => {
   return (
     <div>
       <h3 className="font-semibold">Plan</h3>
-      <p>
-        {trialStatus !== TrialStatuses.EXPIRED && (
-          <span>14 day free trial, then </span>
-        )}
-        $29 monthly includes 5 seats.
-      </p>
+      <p>$29 monthly includes 5 seats.</p>
     </div>
   )
 }
@@ -269,8 +263,6 @@ function UpgradeForm({
           getValues={getValues}
           value={accountDetails?.plan?.value}
           quantity={accountDetails?.plan?.quantity}
-          isSentryUpgrade={isSentryUpgrade}
-          trialStatus={trialStatus}
         />
       </div>
     </form>
