@@ -60,10 +60,17 @@ describe('DefaultOrgSelector', () => {
     isValidUser = true,
   } = {}) {
     const mockMutationVariables = jest.fn()
+    const mockWindow = jest.fn()
+    window.open = mockWindow
+
     const user = userEvent.setup()
 
     server.use(
       graphql.query('UseMyOrganizations', (req, res, ctx) => {
+        // if (!!req?.variables?.after) {
+        //   fetchNextPage(req?.variables?.after)
+        // }
+
         return res(ctx.status(200), ctx.data(myOrganizationsData))
       }),
       graphql.query('CurrentUser', (req, res, ctx) => {
@@ -87,7 +94,11 @@ describe('DefaultOrgSelector', () => {
       })
     )
 
-    return { user, mockMutationVariables }
+    return {
+      user,
+      mockMutationVariables,
+      mockWindow,
+    }
   }
 
   describe('page renders', () => {
@@ -231,9 +242,7 @@ describe('DefaultOrgSelector', () => {
     })
 
     it('opens new page on add org select', async () => {
-      window.open = jest.fn()
-
-      const { user } = setup({
+      const { user, mockWindow } = setup({
         useUserData: {
           me: {
             email: 'personal@cr.com',
@@ -281,7 +290,7 @@ describe('DefaultOrgSelector', () => {
       await user.click(addNewOrg)
 
       await waitFor(() =>
-        expect(window.open).toBeCalledWith(
+        expect(mockWindow).toBeCalledWith(
           'https://github.com/apps/codecov/installations/new',
           '_blank'
         )
@@ -504,7 +513,7 @@ describe('DefaultOrgSelector', () => {
     })
   })
 
-  describe('on submit with no default org', () => {
+  describe('on submit with no default org selected', () => {
     beforeEach(() => jest.resetAllMocks())
 
     it('redirects to self org page', async () => {
@@ -590,6 +599,58 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       await waitFor(() => expect(testLocation.pathname).toBe('/login'))
+    })
+
+    it('renders load more on load more trigger', async () => {
+      const { user } = setup({
+        useUserData: {
+          me: {
+            email: 'personal@cr.com',
+            trackingMetadata: {
+              ownerid: '1234',
+            },
+            user: {
+              username: 'chetney',
+            },
+          },
+        },
+        myOrganizationsData: {
+          me: {
+            myOrganizations: {
+              edges: [
+                {
+                  node: {
+                    avatarUrl:
+                      'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+                    username: 'chetney',
+                    ownerid: 1,
+                  },
+                },
+                {
+                  node: {
+                    avatarUrl:
+                      'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+                    username: 'criticalRole',
+                    ownerid: 1,
+                  },
+                },
+              ],
+              pageInfo: { hasNextPage: true, endCursor: 'MTI=' },
+            },
+          },
+        },
+      })
+
+      render(<DefaultOrgSelector />, { wrapper: wrapper() })
+
+      const selectOrg = await screen.findByRole('button', {
+        name: 'Select an organization',
+      })
+
+      await user.click(selectOrg)
+
+      const loadMore = await screen.findByText(/Loading more items.../)
+      expect(loadMore).toBeInTheDocument()
     })
   })
 })

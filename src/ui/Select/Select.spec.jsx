@@ -1,25 +1,11 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { act } from 'react-dom/test-utils'
-import { MemoryRouter, Route } from 'react-router-dom'
 import useIntersection from 'react-use/lib/useIntersection'
 
 import Select from './Select'
 
 jest.mock('react-use/lib/useIntersection')
-
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
-})
-
-const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/bb/critical-role/bells-hells']}>
-      <Route path="/:provider/:owner/:repo">{children}</Route>
-    </MemoryRouter>
-  </QueryClientProvider>
-)
 
 describe('Select', () => {
   function setup() {
@@ -37,9 +23,7 @@ describe('Select', () => {
           dataMarketing="select test"
           items={['item1', 'item2', 'item3']}
           onChange={onChange}
-        />,
-        { wrapper },
-        { wrapper }
+        />
       )
 
       const button = screen.getByText('Select')
@@ -54,9 +38,7 @@ describe('Select', () => {
           dataMarketing="select test"
           items={['item1', 'item2', 'item3']}
           onChange={onChange}
-        />,
-        { wrapper },
-        { wrapper }
+        />
       )
 
       const listbox = screen.getByRole('listbox')
@@ -74,9 +56,7 @@ describe('Select', () => {
           dataMarketing="select test"
           items={['item1', 'item2', 'item3']}
           onChange={onChange}
-        />,
-        { wrapper },
-        { wrapper }
+        />
       )
       const button = screen.getByText('Select')
       await user.click(button)
@@ -94,9 +74,7 @@ describe('Select', () => {
           dataMarketing="select test"
           items={['item1', 'item2', 'item3']}
           onChange={onChange}
-        />,
-        { wrapper },
-        { wrapper }
+        />
       )
 
       const button = screen.getByText('Select')
@@ -119,8 +97,7 @@ describe('Select', () => {
           items={['item1', 'item2', 'item3']}
           onChange={onChange}
           resourceName="item"
-        />,
-        { wrapper }
+        />
       )
 
       const button = screen.getByText('Select')
@@ -142,8 +119,7 @@ describe('Select', () => {
           onChange={onChange}
           value="item1"
           resourceName="items"
-        />,
-        { wrapper }
+        />
       )
 
       const buttonText = screen.getByText('item1')
@@ -163,8 +139,7 @@ describe('Select', () => {
           onChange={onChange}
           resourceName="items"
           searchValue="searching"
-        />,
-        { wrapper }
+        />
       )
 
       const button = screen.getByText('Select')
@@ -185,8 +160,7 @@ describe('Select', () => {
           dataMarketing="select test"
           items={['item1', 'item2', 'item3']}
           onChange={onChange}
-        />,
-        { wrapper }
+        />
       )
 
       const button = screen.getByText('Select')
@@ -220,8 +194,7 @@ describe('Select', () => {
           dataMarketing="select test"
           items={['item1', 'item2', 'item3']}
           onChange={onChange}
-        />,
-        { wrapper }
+        />
       )
 
       const button = screen.getByText('Select')
@@ -243,8 +216,7 @@ describe('Select', () => {
           dataMarketing="select test"
           items={['item1', 'item2', 'item3']}
           onChange={onChange}
-        />,
-        { wrapper }
+        />
       )
       const button = screen.getByText('Select')
       await user.click(button)
@@ -268,8 +240,7 @@ describe('Select', () => {
           items={[{ name: 'item1' }, { name: 'item2' }, { name: 'item3' }]}
           renderItem={(item) => <p>{item.name}</p>}
           value={{ name: 'item1' }}
-        />,
-        { wrapper }
+        />
       )
 
       const button = screen.getByText('item1')
@@ -300,8 +271,7 @@ describe('Select', () => {
           onChange={onChange}
           renderItem={(item) => <p>Selected: {item}</p>}
           value="item1"
-        />,
-        { wrapper }
+        />
       )
 
       const selectedItem = screen.getByText('Selected: item1')
@@ -327,8 +297,7 @@ describe('Select', () => {
           onChange={onChange}
           onSearch={onSearch}
           resourceName="item"
-        />,
-        { wrapper }
+        />
       )
 
       const button = screen.getByText('Select')
@@ -350,8 +319,7 @@ describe('Select', () => {
           resourceName="item"
           onChange={onChange}
           onSearch={onSearch}
-        />,
-        { wrapper }
+        />
       )
 
       const button = screen.getByText('Select')
@@ -378,8 +346,7 @@ describe('Select', () => {
             onChange={onChange}
             onSearch={onSearch}
             resourceName="item"
-          />,
-          { wrapper }
+          />
         )
 
         const button = screen.getByText('Select')
@@ -419,8 +386,7 @@ describe('Select', () => {
           onChange={onChange}
           onSearch={onSearch}
           onLoadMore={onLoadMore}
-        />,
-        { wrapper }
+        />
       )
 
       const button = screen.getByText('Select')
@@ -443,8 +409,7 @@ describe('Select', () => {
           onChange={onChange}
           onSearch={onSearch}
           onLoadMore={onLoadMore}
-        />,
-        { wrapper }
+        />
       )
 
       const button = screen.getByText('Select')
@@ -468,8 +433,7 @@ describe('Select', () => {
           onChange={onChange}
           onSearch={onSearch}
           isLoading={true}
-        />,
-        { wrapper }
+        />
       )
 
       const button = screen.getByText('Select')
@@ -497,8 +461,7 @@ describe('Select', () => {
           ref={(ref) => {
             selectRef = ref
           }}
-        />,
-        { wrapper }
+        />
       )
 
       const button = screen.getByText('Select')

@@ -58,7 +58,7 @@ function DefaultOrgSelector() {
 
   const history = useHistory()
 
-  const [temp, setTemp] = useState(null)
+  const [orgValue, setOrgValue] = useState(null)
   const { codecovAppInstallation } = useStaticNavLinks()
 
   const { data: currentUser, isLoading: userIsLoading } = useUser()
@@ -129,7 +129,7 @@ function DefaultOrgSelector() {
                 renderItem={(item) => renderItem({ item })}
                 onChange={(value) => {
                   if (!value?.isProvider) {
-                    setTemp(value)
+                    setOrgValue(value)
                     setValue('select', value?.org?.username, {
                       shouldDirty: true,
                       shouldValidate: true,
@@ -142,7 +142,7 @@ function DefaultOrgSelector() {
                 isLoading={isFetching}
                 ariaName="Select an organization"
                 dataMarketing="Select an organization"
-                value={temp}
+                value={orgValue}
               />
             )}
           />
