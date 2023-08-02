@@ -5,12 +5,14 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { useIntersection } from 'react-use'
 
 import { trackSegmentEvent } from 'services/tracking/segment'
 
 import DefaultOrgSelector from './DefaultOrgSelector'
 
 jest.mock('services/tracking/segment')
+jest.mock('react-use/lib/useIntersection')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -62,11 +64,15 @@ describe('DefaultOrgSelector', () => {
     const mockMutationVariables = jest.fn()
     const mockWindow = jest.fn()
     window.open = mockWindow
+    const fetchNextPage = jest.fn()
 
     const user = userEvent.setup()
 
     server.use(
       graphql.query('UseMyOrganizations', (req, res, ctx) => {
+        if (!!req.variables.after) {
+          fetchNextPage(req.variables.after)
+        }
         return res(ctx.status(200), ctx.data(myOrganizationsData))
       }),
       graphql.query('CurrentUser', (req, res, ctx) => {
@@ -94,6 +100,7 @@ describe('DefaultOrgSelector', () => {
       user,
       mockMutationVariables,
       mockWindow,
+      fetchNextPage,
     }
   }
 
@@ -647,6 +654,51 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       await waitFor(() => expect(testLocation.pathname).toBe('/login'))
+    })
+  })
+
+  describe('on fetch next page', () => {
+    it('renders next page', async () => {
+      const { user, fetchNextPage } = setup({
+        useUserData: {
+          me: {
+            email: 'personal@cr.com',
+            trackingMetadata: {
+              ownerid: '1234',
+            },
+            user: {
+              username: 'chetney',
+            },
+          },
+        },
+        myOrganizationsData: {
+          me: {
+            myOrganizations: {
+              edges: [
+                {
+                  node: {
+                    username: 'chetney',
+                    ownerid: 1,
+                  },
+                },
+              ],
+              pageInfo: { hasNextPage: true, endCursor: 'MTI=' },
+            },
+          },
+        },
+      })
+
+      render(<DefaultOrgSelector />, { wrapper: wrapper() })
+      useIntersection.mockReturnValue({ isIntersecting: true })
+
+      const selectOrg = await screen.findByRole('button', {
+        name: 'Select an organization',
+      })
+
+      await user.click(selectOrg)
+
+      await waitFor(() => expect(fetchNextPage).toBeCalled())
+      await waitFor(() => expect(fetchNextPage).toHaveBeenCalledWith('MTI='))
     })
   })
 })

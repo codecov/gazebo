@@ -61,13 +61,14 @@ export function useMyOrganizations(options = {}) {
 
   return useInfiniteQuery({
     queryKey: ['UseMyOrganizations', provider],
-    queryFn: async ({ signal }) => {
+    queryFn: async ({ signal, pageParam: after }) => {
       try {
         assertIsString(provider)
         const { data } = await Api.graphql({
           provider,
           query,
           signal,
+          variables: { after },
         })
 
         const currentUser = data?.me
