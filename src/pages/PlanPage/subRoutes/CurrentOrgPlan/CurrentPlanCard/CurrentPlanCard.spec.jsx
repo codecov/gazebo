@@ -14,7 +14,7 @@ const proPlanDetails = {
   plan: {
     marketingName: 'Pro Team',
     baseUnitPrice: 12,
-    benefits: ['Configureable # of users', 'Unlimited repos'],
+    benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 5,
     value: 'users-inappm',
   },
@@ -48,6 +48,16 @@ const enterprisePlan = {
   },
 }
 
+const trialPlanDetails = {
+  plan: {
+    marketingName: 'Pro Trial Team',
+    baseUnitPrice: 12,
+    benefits: ['Configurable # of users', 'Unlimited repos'],
+    quantity: 5,
+    value: 'users-trial',
+  },
+}
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
@@ -78,44 +88,55 @@ describe('CurrentPlanCard', () => {
     )
   }
 
-  describe('When rendered with free plan', () => {
-    beforeEach(() => {
+  describe('rendered with free plan', () => {
+    it('renders the correct plan card', async () => {
       setup()
-    })
-    it('renders the correct plan card', async () => {
+
       render(<CurrentPlanCard />, {
         wrapper,
       })
 
-      expect(await screen.findByText(/Free plan card/)).toBeInTheDocument()
+      const freePlanCard = await screen.findByText(/Free plan card/)
+      expect(freePlanCard).toBeInTheDocument()
     })
   })
 
-  describe('When rendered with pro plan', () => {
-    beforeEach(() => {
+  describe('rendered with trial plan', () => {
+    it('renders the correct plan card', async () => {
+      setup(trialPlanDetails)
+
+      render(<CurrentPlanCard />, {
+        wrapper,
+      })
+
+      const freePlanCard = await screen.findByText(/Free plan card/)
+      expect(freePlanCard).toBeInTheDocument()
+    })
+  })
+
+  describe('rendered with pro plan', () => {
+    it('renders the correct plan card', async () => {
       setup(proPlanDetails)
-    })
-    it('renders the correct plan card', async () => {
+
       render(<CurrentPlanCard />, {
         wrapper,
       })
 
-      expect(await screen.findByText(/Pro plan card/)).toBeInTheDocument()
+      const proPlanCard = await screen.findByText(/Pro plan card/)
+      expect(proPlanCard).toBeInTheDocument()
     })
   })
 
-  describe('When rendered with enterprise plan', () => {
-    beforeEach(() => {
-      setup(enterprisePlan)
-    })
+  describe('rendered with enterprise plan', () => {
     it('renders the correct plan card', async () => {
+      setup(enterprisePlan)
+
       render(<CurrentPlanCard />, {
         wrapper,
       })
 
-      expect(
-        await screen.findByText(/Enterprise plan card/)
-      ).toBeInTheDocument()
+      const enterpriseCard = await screen.findByText(/Enterprise plan card/)
+      expect(enterpriseCard).toBeInTheDocument()
     })
   })
 })

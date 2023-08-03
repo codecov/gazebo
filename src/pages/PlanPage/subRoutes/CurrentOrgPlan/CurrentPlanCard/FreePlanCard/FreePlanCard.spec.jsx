@@ -4,7 +4,12 @@ import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TrialStatuses } from 'services/account'
+import { useFlags } from 'shared/featureFlags'
+
 import FreePlanCard from './FreePlanCard'
+
+jest.mock('shared/featureFlags')
 
 const allPlans = [
   {
@@ -107,20 +112,33 @@ const scheduledPhase = {
   startDate: 123456789,
 }
 
+const mockPlanData = {
+  baseUnitPrice: 10,
+  benefits: [],
+  billingRate: 'monthly',
+  marketingName: 'Users Basic',
+  monthlyUploadLimit: 250,
+  planName: 'users-basic',
+  trialStatus: TrialStatuses.NOT_STARTED,
+  trialStartDate: '',
+  trialEndDate: '',
+}
+
+const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 
-const server = setupServer()
-
 beforeAll(() => {
   server.listen()
 })
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
   jest.resetAllMocks()
 })
+
 afterAll(() => {
   server.close()
 })
@@ -135,18 +153,37 @@ const wrapper = ({ children }) => (
 
 describe('FreePlanCard', () => {
   function setup(
-    { owner, plans } = {
+    { owner, plans, trialStatus, planValue, trialFlag } = {
       owner: {
         username: 'codecov',
         isCurrentUserPartOfOrg: true,
         numberOfUploads: 10,
       },
+      trialFlag: false,
+      trialStatus: TrialStatuses.CANNOT_TRIAL,
+      planValue: 'users-basic',
       plans: allPlans,
     }
   ) {
+    useFlags.mockReturnValue({ codecovTrialMvp: trialFlag })
+
     server.use(
       graphql.query('PlanPageData', (req, res, ctx) =>
         res(ctx.status(200), ctx.data({ owner }))
+      ),
+      graphql.query('GetPlanData', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              plan: {
+                ...mockPlanData,
+                trialStatus,
+                planName: planValue,
+              },
+            },
+          })
+        )
       ),
       rest.get('/internal/plans', (req, res, ctx) =>
         res(ctx.status(200), ctx.json(plans))
@@ -157,12 +194,10 @@ describe('FreePlanCard', () => {
     )
   }
 
-  describe('When rendered', () => {
-    beforeEach(() => {
-      setup()
-    })
-
+  describe('rendering component', () => {
     it('renders the plan marketing name', () => {
+      setup()
+
       render(<FreePlanCard plan={freePlan} scheduledPhase={scheduledPhase} />, {
         wrapper,
       })
@@ -171,6 +206,8 @@ describe('FreePlanCard', () => {
     })
 
     it('renders the benefits', () => {
+      setup()
+
       render(<FreePlanCard plan={freePlan} />, {
         wrapper,
       })
@@ -180,6 +217,8 @@ describe('FreePlanCard', () => {
     })
 
     it('renders the scheduled phase', () => {
+      setup()
+
       render(<FreePlanCard plan={freePlan} scheduledPhase={scheduledPhase} />, {
         wrapper,
       })
@@ -189,6 +228,8 @@ describe('FreePlanCard', () => {
     })
 
     it('renders actions billing button', () => {
+      setup()
+
       render(<FreePlanCard plan={freePlan} />, {
         wrapper,
       })
@@ -200,6 +241,8 @@ describe('FreePlanCard', () => {
     })
 
     it('renders the help message', () => {
+      setup()
+
       render(<FreePlanCard plan={freePlan} />, {
         wrapper,
       })
@@ -209,33 +252,62 @@ describe('FreePlanCard', () => {
     })
 
     it('renders number of uploads', async () => {
+      setup()
+
       render(<FreePlanCard plan={freePlan} />, {
         wrapper,
       })
 
-      expect(
-        await screen.findByText(/10 of 250 uploads in the last 30 days/)
-      ).toBeInTheDocument()
+      const uploadCount = await screen.findByText(
+        /10 of 250 uploads in the last 30 days/
+      )
+      expect(uploadCount).toBeInTheDocument()
     })
 
     it('renders the expected price details for pro team billing', async () => {
+      setup()
+
       render(<FreePlanCard plan={freePlan} />, {
         wrapper,
       })
 
-      expect(await screen.findByText(/\$10/)).toBeInTheDocument()
-      expect(await screen.findByText(/per user, per month/)).toBeInTheDocument()
+      const cost = await screen.findByText(/\$10/)
+      expect(cost).toBeInTheDocument()
 
-      expect(
-        await screen.findByText(
-          /billed annually, or \$12 per user billing monthly/
-        )
-      ).toBeInTheDocument()
+      const annualBillingText = await screen.findByText(/per user, per month/)
+      expect(annualBillingText).toBeInTheDocument()
+
+      const monthlyBillingText = await screen.findByText(
+        /billed annually, or \$12 per user billing monthly/
+      )
+      expect(monthlyBillingText).toBeInTheDocument()
+    })
+
+    describe('flag is set to true', () => {
+      describe('the user is currently on a trial', () => {
+        it('renders downgrade text', async () => {
+          setup({
+            planValue: 'users-trial',
+            trialStatus: TrialStatuses.ONGOING,
+            trialFlag: true,
+            plans: allPlans,
+          })
+
+          render(<FreePlanCard plan={freePlan} />, {
+            wrapper,
+          })
+
+          const text = await screen.findByText(
+            /You'll be downgraded to this plan/
+          )
+          expect(text).toBeInTheDocument()
+        })
+      })
     })
   })
 
-  describe('When can apply sentry updates', () => {
-    beforeEach(() => {
+  describe('user can apply sentry updates', () => {
+    it('renders the benefits', () => {
       setup({
         owner: {
           username: 'codecov',
@@ -244,9 +316,7 @@ describe('FreePlanCard', () => {
         },
         plans: sentryPlans,
       })
-    })
 
-    it('renders the benefits', () => {
       render(<FreePlanCard plan={sentryPlan} />, {
         wrapper,
       })
@@ -256,36 +326,53 @@ describe('FreePlanCard', () => {
     })
 
     it('renders actions billing button', async () => {
+      setup({
+        owner: {
+          username: 'codecov',
+          isCurrentUserPartOfOrg: false,
+          numberOfUploads: 10,
+        },
+        plans: sentryPlans,
+      })
+
       render(<FreePlanCard plan={sentryPlan} />, {
         wrapper,
       })
 
-      expect(
-        await screen.findByRole('link', {
-          name: /Upgrade to Sentry Pro Team plan/,
-        })
-      ).toBeInTheDocument()
-
-      expect(
-        await screen.findByRole('link', {
-          name: /Upgrade to Sentry Pro Team plan/,
-        })
-      ).toHaveAttribute('href', '/plan/bb/critical-role/upgrade')
+      const upgradeLink = await screen.findByRole('link', {
+        name: /Upgrade to Sentry Pro Team plan/,
+      })
+      expect(upgradeLink).toBeInTheDocument()
+      expect(upgradeLink).toHaveAttribute(
+        'href',
+        '/plan/bb/critical-role/upgrade'
+      )
     })
 
     it('renders the expected price details for sentry pro team billing', async () => {
+      setup({
+        owner: {
+          username: 'codecov',
+          isCurrentUserPartOfOrg: false,
+          numberOfUploads: 10,
+        },
+        plans: sentryPlans,
+      })
+
       render(<FreePlanCard plan={freePlan} />, {
         wrapper,
       })
 
-      expect(await screen.findByText(/\$29/)).toBeInTheDocument()
-      expect(await screen.findByText(/\/per month/)).toBeInTheDocument()
+      const cost = await screen.findByText(/\$29/)
+      expect(cost).toBeInTheDocument()
 
-      expect(
-        await screen.findByText(
-          /over 5 users is \$10\/per user per month, billed annually/
-        )
-      ).toBeInTheDocument()
+      const perMonth = await screen.findByText(/\/per month/)
+      expect(perMonth).toBeInTheDocument()
+
+      const billingCycleInfo = await screen.findByText(
+        /over 5 users is \$10\/per user per month, billed annually/
+      )
+      expect(billingCycleInfo).toBeInTheDocument()
     })
   })
 })
