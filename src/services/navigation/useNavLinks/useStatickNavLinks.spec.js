@@ -66,6 +66,7 @@ describe('useStaticNavLinks', () => {
       ${links.repoConfigFeedback}      | ${'https://github.com/codecov/Codecov-user-feedback/issues/18'}
       ${links.staticAnalysisDoc}       | ${'https://docs.codecov.com/docs/automated-test-selection'}
       ${links.circleCIOrbs}            | ${'https://circleci.com/developer/orbs/orb/codecov/codecov'}
+      ${links.freeTrialFaqs}           | ${'https://docs.codecov.com/docs/free-trial-faqs'}
     `('static links return path', ({ link, outcome }) => {
       it(`${link.text}: Returns the correct link`, () => {
         expect(link.path()).toBe(outcome)
