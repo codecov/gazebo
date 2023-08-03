@@ -71,14 +71,20 @@ function DefaultOrgSelector() {
     isFetching,
   } = useMyOrganizations({
     select: ({ pages }) => {
-      const [organizations] = pages.map((org) =>
+      const organizations = pages.flatMap((org) =>
         mapEdges(org?.me?.myOrganizations).map((edge) => ({
           org: edge,
           isProvider: false,
         }))
       )
 
-      return organizations
+      return [
+        {
+          org: pages?.at(-1)?.me?.owner,
+          isProvider: false,
+        },
+        ...organizations,
+      ]
     },
   })
 

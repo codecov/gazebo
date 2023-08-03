@@ -159,6 +159,12 @@ describe('DefaultOrgSelector', () => {
         },
         myOrganizationsData: {
           me: {
+            owner: {
+              username: 'Rula',
+              avatarUrl:
+                'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+              ownerid: 9,
+            },
             myOrganizations: {
               edges: [
                 {
@@ -186,6 +192,9 @@ describe('DefaultOrgSelector', () => {
 
       const orgInList = screen.getByRole('option', { name: 'criticalRole' })
       expect(orgInList).toBeInTheDocument()
+
+      const selfOrg = screen.getByRole('option', { name: 'Rula' })
+      expect(selfOrg).toBeInTheDocument()
 
       const addNewOrg = screen.getByRole('option', {
         name: 'plus-circle.svg Add GitHub organization',
@@ -513,6 +522,136 @@ describe('DefaultOrgSelector', () => {
       await waitFor(() =>
         expect(testLocation.pathname).toBe('/gh/criticalRole')
       )
+    })
+  })
+
+  describe('on submit with self org selected', () => {
+    beforeEach(() => jest.resetAllMocks())
+
+    it('fires update default org mutation', async () => {
+      const { user, mockMutationVariables } = setup({
+        useUserData: {
+          me: {
+            email: 'personal@cr.com',
+            trackingMetadata: {
+              ownerid: '1234',
+            },
+            user: {
+              username: 'chetney',
+            },
+          },
+        },
+        myOrganizationsData: {
+          me: {
+            owner: {
+              username: 'Rula',
+              avatarUrl:
+                'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+              ownerid: 9,
+            },
+            myOrganizations: {
+              edges: [
+                {
+                  node: {
+                    avatarUrl:
+                      'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+                    username: 'criticalRole',
+                    ownerid: 1,
+                  },
+                },
+              ],
+              pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
+            },
+          },
+        },
+      })
+
+      render(<DefaultOrgSelector />, { wrapper: wrapper() })
+
+      const selectOrg = await screen.findByRole('button', {
+        name: 'Select an organization',
+      })
+
+      await user.click(selectOrg)
+
+      const selfOrg = screen.getByRole('option', { name: 'Rula' })
+      expect(selfOrg).toBeInTheDocument()
+
+      await user.click(selfOrg)
+
+      const submit = await screen.findByRole('button', {
+        name: /Continue to app/,
+      })
+
+      await user.click(submit)
+
+      await waitFor(() =>
+        expect(mockMutationVariables).toHaveBeenLastCalledWith({
+          input: {
+            username: 'Rula',
+          },
+        })
+      )
+    })
+
+    it('redirects to self org', async () => {
+      const { user } = setup({
+        useUserData: {
+          me: {
+            email: 'personal@cr.com',
+            trackingMetadata: {
+              ownerid: '1234',
+            },
+            user: {
+              username: 'chetney',
+            },
+          },
+        },
+        myOrganizationsData: {
+          me: {
+            owner: {
+              username: 'Rula',
+              avatarUrl:
+                'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+              ownerid: 9,
+            },
+            myOrganizations: {
+              edges: [
+                {
+                  node: {
+                    avatarUrl:
+                      'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+                    username: 'criticalRole',
+                    ownerid: 1,
+                  },
+                },
+              ],
+              pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
+            },
+          },
+        },
+      })
+
+      render(<DefaultOrgSelector />, { wrapper: wrapper() })
+
+      const selectOrg = await screen.findByRole('button', {
+        name: 'Select an organization',
+      })
+
+      await user.click(selectOrg)
+
+      const selfOrg = screen.getByRole('option', { name: 'Rula' })
+      expect(selfOrg).toBeInTheDocument()
+
+      await user.click(selfOrg)
+
+      const submit = await screen.findByRole('button', {
+        name: /Continue to app/,
+      })
+
+      await user.click(submit)
+
+      await waitFor(() => expect(testLocation.pathname).toBe('/gh/Rula'))
     })
   })
 

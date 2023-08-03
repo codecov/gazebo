@@ -13,6 +13,11 @@ function caughtServiceError(hook: string, error: unknown) {
 export const MyOrganizationsConfig = z.object({
   me: z
     .object({
+      owner: z.object({
+        username: z.string().nullish(),
+        avatarUrl: z.string().url('not a valid url').nullish(),
+        ownerid: z.number().nullish(),
+      }),
       myOrganizations: z.object({
         edges: z.array(
           z.object({
@@ -36,6 +41,11 @@ export type MyOrganizationsData = z.infer<typeof MyOrganizationsConfig>
 const query = `
 query UseMyOrganizations($after: String) {
   me {
+     owner {
+        username
+        avatarUrl
+        ownerid
+    }
     myOrganizations(first: 20, after: $after) {
       edges {
         node {
