@@ -117,6 +117,8 @@ const mockPlanData = {
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
+  trialTotalDays: 0,
+  pretrialUsersCount: 0,
 }
 
 const queryClient = new QueryClient({
