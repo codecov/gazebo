@@ -131,20 +131,22 @@ function FreePlanCard({ plan, scheduledPhase }) {
     isTrialPlan(planData?.plan?.planName) &&
     planData?.plan.trialStatus === TrialStatuses.ONGOING
 
-  console.debug(trialOngoing)
-
   let benefits = plan?.benefits
+  let planName = plan?.value
+  let baseUnitPrice = plan?.baseUnitPrice
+  let marketingName = plan?.marketingName
   if (trialOngoing) {
     benefits = planData?.pretrialPlan?.benefits
+    planName = planData?.pretrialPlan?.planName
+    baseUnitPrice = planData?.pretrialPlan?.baseUnitPrice
+    marketingName = planData?.pretrialPlan?.marketingName
   }
-
-  console.debug(benefits)
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col border">
         <div className="p-4">
-          <h2 className="font-semibold">{plan?.marketingName} plan</h2>
+          <h2 className="font-semibold">{marketingName} plan</h2>
           <span className="text-gray-500">
             {trialOngoing
               ? "You'll be downgraded to this plan when your trial expires"
@@ -163,10 +165,7 @@ function FreePlanCard({ plan, scheduledPhase }) {
           </div>
           <div className="flex flex-col gap-3 border-t pt-2 sm:border-0 sm:p-0">
             <p className="text-xs font-semibold">Pricing</p>
-            <PlanPricing
-              value={plan?.value}
-              baseUnitPrice={plan?.baseUnitPrice}
-            />
+            <PlanPricing value={planName} baseUnitPrice={baseUnitPrice} />
             <div>
               {isNumber(uploadsNumber) && (
                 <p className="mt-4 text-xs text-ds-gray-senary">
