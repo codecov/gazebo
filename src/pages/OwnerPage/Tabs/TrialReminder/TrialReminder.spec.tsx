@@ -38,6 +38,8 @@ const mockResponse = {
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
+  trialTotalDays: 0,
+  pretrialUsersCount: 0,
 }
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => {
@@ -79,7 +81,7 @@ describe('TrialReminder', () => {
   function setup({
     flagValue = true,
     planValue = Plans.USERS_BASIC,
-    trialStatus = undefined,
+    trialStatus = TrialStatuses.CANNOT_TRIAL,
     trialStartDate = '2023-01-01T08:55:25',
     trialEndDate = '2023-01-01T08:55:25',
     userPartOfOrg = true,
