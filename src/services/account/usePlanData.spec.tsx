@@ -16,6 +16,16 @@ const mockTrialData = {
     trialStatus: 'ONGOING',
     trialStartDate: '2023-01-01T08:55:25',
     trialEndDate: '2023-01-10T08:55:25',
+    trialTotalDays: 0,
+    pretrialUsersCount: 0,
+  },
+  pretrialPlan: {
+    baseUnitPrice: 10,
+    benefits: [],
+    billingRate: 'monthly',
+    marketingName: 'Users Basic',
+    monthlyUploadLimit: 250,
+    planName: 'users-basic',
   },
 }
 
@@ -52,9 +62,9 @@ describe('usePlanData', () => {
 
   describe('calling hook', () => {
     describe('there is plan data', () => {
-      beforeEach(() => setup({ trialData: mockTrialData }))
-
       it('returns the plan data', async () => {
+        setup({ trialData: mockTrialData })
+
         const { result } = renderHook(
           () =>
             usePlanData({
@@ -76,6 +86,16 @@ describe('usePlanData', () => {
               trialStatus: 'ONGOING',
               trialStartDate: '2023-01-01T08:55:25',
               trialEndDate: '2023-01-10T08:55:25',
+              trialTotalDays: 0,
+              pretrialUsersCount: 0,
+            },
+            pretrialPlan: {
+              baseUnitPrice: 10,
+              benefits: [],
+              billingRate: 'monthly',
+              marketingName: 'Users Basic',
+              monthlyUploadLimit: 250,
+              planName: 'users-basic',
             },
           })
         )
