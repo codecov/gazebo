@@ -30,6 +30,8 @@ const proPlanMonth = {
     'Priority Support',
   ],
   quantity: 10,
+  trialTotalDays: 0,
+  pretrialUsersCount: 0,
 }
 
 const trialPlan = {
@@ -44,6 +46,8 @@ const trialPlan = {
     'Priority Support',
   ],
   quantity: 10,
+  trialTotalDays: 0,
+  pretrialUsersCount: 0,
 }
 
 const basicPlan = {
@@ -57,6 +61,8 @@ const basicPlan = {
     'Unlimited private repositories',
   ],
   quantity: 1,
+  trialTotalDays: 0,
+  pretrialUsersCount: 0,
 }
 
 const queryClient = new QueryClient()
@@ -146,6 +152,8 @@ describe('TrialBanner', () => {
                 trialStatus,
                 trialStartDate,
                 trialEndDate,
+                trialTotalDays: plan.trialTotalDays,
+                pretrialUsersCount: plan.pretrialUsersCount,
               },
             },
           })

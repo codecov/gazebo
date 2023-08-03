@@ -143,6 +143,8 @@ const mockTrialData = {
     trialStatus: 'ONGOING',
     trialStartDate: '2023-01-01T08:55:25',
     trialEndDate: '2023-01-10T08:55:25',
+    trialTotalDays: 0,
+    pretrialUsersCount: 0,
   },
 }
 

@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
@@ -32,7 +33,7 @@ const allPlans = [
       'Configurable # of users',
       'Unlimited public repositories',
       'Unlimited private repositories',
-      'Priorty Support',
+      'Priority Support',
     ],
   },
   {
@@ -44,7 +45,7 @@ const allPlans = [
       'Configurable # of users',
       'Unlimited public repositories',
       'Unlimited private repositories',
-      'Priorty Support',
+      'Priority Support',
     ],
   },
   {
@@ -56,7 +57,7 @@ const allPlans = [
       'Configurable # of users',
       'Unlimited public repositories',
       'Unlimited private repositories',
-      'Priorty Support',
+      'Priority Support',
     ],
   },
   {
@@ -68,7 +69,7 @@ const allPlans = [
       'Configurable # of users',
       'Unlimited public repositories',
       'Unlimited private repositories',
-      'Priorty Support',
+      'Priority Support',
     ],
   },
 ]
@@ -79,14 +80,14 @@ const sentryPlans = [
     value: 'users-sentrym',
     billingRate: null,
     baseUnitPrice: 0,
-    benefits: ['Up to # user', 'Unlimited public repositories'],
+    benefits: ['Includes 5 seats', 'Unlimited public repositories'],
   },
   {
     marketingName: 'Sentry',
     value: 'users-sentryy',
     billingRate: null,
     baseUnitPrice: 10,
-    benefits: ['Up to # user', 'Unlimited private repositories'],
+    benefits: ['Includes 5 seats', 'Unlimited private repositories'],
   },
 ]
 
@@ -98,14 +99,6 @@ const freePlan = {
   benefits: ['Up to 1 user', '250 free uploads'],
 }
 
-const sentryPlan = {
-  marketingName: 'Sentry',
-  value: 'users-sentrym',
-  billingRate: null,
-  baseUnitPrice: 0,
-  benefits: ['Up to # user', 'Unlimited public repositories'],
-}
-
 const scheduledPhase = {
   quantity: 0,
   plan: '',
@@ -114,7 +107,7 @@ const scheduledPhase = {
 
 const mockPlanData = {
   baseUnitPrice: 10,
-  benefits: [],
+  benefits: ['Up to # user', 'Unlimited public repositories'],
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
@@ -122,11 +115,22 @@ const mockPlanData = {
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
+  trialTotalDays: 0,
+  pretrialUsersCount: 0,
+}
+
+const mockPreTrialPlanInfo = {
+  baseUnitPrice: 0,
+  benefits: ['Up to 1 user', 'Pre Trial benefits'],
+  billingRate: 'monthly',
+  marketingName: 'Users Basic',
+  monthlyUploadLimit: 250,
+  planName: 'users-basic',
 }
 
 const server = setupServer()
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
+  defaultOptions: { queries: { retry: false, suspense: true } },
 })
 
 beforeAll(() => {
@@ -146,14 +150,22 @@ afterAll(() => {
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/plan/bb/critical-role']}>
-      <Route path="/plan/:provider/:owner">{children}</Route>
+      <Route path="/plan/:provider/:owner">
+        <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+      </Route>
     </MemoryRouter>
   </QueryClientProvider>
 )
 
 describe('FreePlanCard', () => {
   function setup(
-    { owner, plans, trialStatus, planValue, trialFlag } = {
+    {
+      owner,
+      plans,
+      trialStatus = TrialStatuses.CANNOT_TRIAL,
+      planValue = 'users-basic',
+      trialFlag,
+    } = {
       owner: {
         username: 'codecov',
         isCurrentUserPartOfOrg: true,
@@ -181,6 +193,7 @@ describe('FreePlanCard', () => {
                 trialStatus,
                 planName: planValue,
               },
+              pretrialPlan: mockPreTrialPlanInfo,
             },
           })
         )
@@ -195,59 +208,62 @@ describe('FreePlanCard', () => {
   }
 
   describe('rendering component', () => {
-    it('renders the plan marketing name', () => {
+    it('renders the plan marketing name', async () => {
       setup()
 
       render(<FreePlanCard plan={freePlan} scheduledPhase={scheduledPhase} />, {
         wrapper,
       })
 
-      expect(screen.getByText(/Free plan/)).toBeInTheDocument()
+      const marketingName = await screen.findByText(/Free plan/)
+      expect(marketingName).toBeInTheDocument()
     })
 
-    it('renders the benefits', () => {
+    it('renders the benefits', async () => {
       setup()
 
       render(<FreePlanCard plan={freePlan} />, {
         wrapper,
       })
 
-      const benefits = screen.getByText(/Up to 1 user/)
+      const benefits = await screen.findByText(/Up to 1 user/)
       expect(benefits).toBeInTheDocument()
     })
 
-    it('renders the scheduled phase', () => {
+    it('renders the scheduled phase', async () => {
       setup()
 
       render(<FreePlanCard plan={freePlan} scheduledPhase={scheduledPhase} />, {
         wrapper,
       })
 
-      const scheduledPhaseCopy = screen.getByText(/Scheduled Details/)
+      const scheduledPhaseCopy = await screen.findByText(/Scheduled Details/)
       expect(scheduledPhaseCopy).toBeInTheDocument()
     })
 
-    it('renders actions billing button', () => {
+    it('renders actions billing button', async () => {
       setup()
 
       render(<FreePlanCard plan={freePlan} />, {
         wrapper,
       })
 
-      const link = screen.getByRole('link', { name: /Manage plan/ })
+      const link = await screen.findByRole('link', { name: /Manage plan/ })
 
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute('href', '/plan/bb/critical-role/upgrade')
     })
 
-    it('renders the help message', () => {
+    it('renders the help message', async () => {
       setup()
 
       render(<FreePlanCard plan={freePlan} />, {
         wrapper,
       })
 
-      const helpMessage = screen.getByText(/to discuss custom Enterprise plans/)
+      const helpMessage = await screen.findByText(
+        /to discuss custom Enterprise plans/
+      )
       expect(helpMessage).toBeInTheDocument()
     })
 
@@ -302,12 +318,33 @@ describe('FreePlanCard', () => {
           )
           expect(text).toBeInTheDocument()
         })
+
+        it('renders the pretrial benefits', async () => {
+          setup({
+            planValue: 'users-trial',
+            trialStatus: TrialStatuses.ONGOING,
+            trialFlag: true,
+            plans: allPlans,
+          })
+
+          // ['Up to 1 user', 'Unlimited public repositories'],
+
+          render(<FreePlanCard plan={freePlan} />, {
+            wrapper,
+          })
+
+          const benefitOne = await screen.findByText(/Up to 1 user/)
+          expect(benefitOne).toBeInTheDocument()
+
+          const benefitTwo = await screen.findByText(/Pre Trial benefits/)
+          expect(benefitTwo).toBeInTheDocument()
+        })
       })
     })
   })
 
   describe('user can apply sentry updates', () => {
-    it('renders the benefits', () => {
+    it('renders the benefits', async () => {
       setup({
         owner: {
           username: 'codecov',
@@ -317,11 +354,11 @@ describe('FreePlanCard', () => {
         plans: sentryPlans,
       })
 
-      render(<FreePlanCard plan={sentryPlan} />, {
+      render(<FreePlanCard plan={freePlan} />, {
         wrapper,
       })
 
-      const benefits = screen.getByText(/Up to # user/)
+      const benefits = await screen.findByText(/Includes 5 seats/)
       expect(benefits).toBeInTheDocument()
     })
 
@@ -335,7 +372,7 @@ describe('FreePlanCard', () => {
         plans: sentryPlans,
       })
 
-      render(<FreePlanCard plan={sentryPlan} />, {
+      render(<FreePlanCard plan={freePlan} />, {
         wrapper,
       })
 
