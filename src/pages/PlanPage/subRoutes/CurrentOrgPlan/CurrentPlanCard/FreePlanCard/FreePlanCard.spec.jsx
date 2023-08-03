@@ -32,7 +32,7 @@ const allPlans = [
       'Configurable # of users',
       'Unlimited public repositories',
       'Unlimited private repositories',
-      'Priorty Support',
+      'Priority Support',
     ],
   },
   {
@@ -44,7 +44,7 @@ const allPlans = [
       'Configurable # of users',
       'Unlimited public repositories',
       'Unlimited private repositories',
-      'Priorty Support',
+      'Priority Support',
     ],
   },
   {
@@ -56,7 +56,7 @@ const allPlans = [
       'Configurable # of users',
       'Unlimited public repositories',
       'Unlimited private repositories',
-      'Priorty Support',
+      'Priority Support',
     ],
   },
   {
@@ -68,7 +68,7 @@ const allPlans = [
       'Configurable # of users',
       'Unlimited public repositories',
       'Unlimited private repositories',
-      'Priorty Support',
+      'Priority Support',
     ],
   },
 ]
@@ -114,7 +114,7 @@ const scheduledPhase = {
 
 const mockPlanData = {
   baseUnitPrice: 10,
-  benefits: [],
+  benefits: ['Up to # user', 'Unlimited public repositories'],
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
@@ -124,6 +124,15 @@ const mockPlanData = {
   trialEndDate: '',
   trialTotalDays: 0,
   pretrialUsersCount: 0,
+}
+
+const mockPreTrialPlanInfo = {
+  baseUnitPrice: 0,
+  benefits: ['Up to 1 user', 'Pre Trial benefits'],
+  billingRate: 'monthly',
+  marketingName: 'Users Basic',
+  monthlyUploadLimit: 250,
+  planName: 'users-basic',
 }
 
 const server = setupServer()
@@ -155,7 +164,13 @@ const wrapper = ({ children }) => (
 
 describe('FreePlanCard', () => {
   function setup(
-    { owner, plans, trialStatus, planValue, trialFlag } = {
+    {
+      owner,
+      plans,
+      trialStatus = TrialStatuses.CANNOT_TRIAL,
+      planValue = 'users-basic',
+      trialFlag,
+    } = {
       owner: {
         username: 'codecov',
         isCurrentUserPartOfOrg: true,
@@ -183,6 +198,7 @@ describe('FreePlanCard', () => {
                 trialStatus,
                 planName: planValue,
               },
+              pretrialPlan: mockPreTrialPlanInfo,
             },
           })
         )
@@ -303,6 +319,27 @@ describe('FreePlanCard', () => {
             /You'll be downgraded to this plan/
           )
           expect(text).toBeInTheDocument()
+        })
+
+        it('renders the pretrial benefits', async () => {
+          setup({
+            planValue: 'users-trial',
+            trialStatus: TrialStatuses.ONGOING,
+            trialFlag: true,
+            plans: allPlans,
+          })
+
+          // ['Up to 1 user', 'Unlimited public repositories'],
+
+          render(<FreePlanCard plan={freePlan} />, {
+            wrapper,
+          })
+
+          const benefitOne = await screen.findByText(/Up to 1 user/)
+          expect(benefitOne).toBeInTheDocument()
+
+          const benefitTwo = await screen.findByText(/Pre Trial benefits/)
+          expect(benefitTwo).toBeInTheDocument()
         })
       })
     })

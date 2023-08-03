@@ -111,6 +111,7 @@ PlanUpgrade.propTypes = {
   plans: PropType.arrayOf(planPropType).isRequired,
 }
 
+// eslint-disable-next-line complexity, max-statements
 function FreePlanCard({ plan, scheduledPhase }) {
   const { provider, owner } = useParams()
   const { codecovTrialMvp } = useFlags({
@@ -123,12 +124,21 @@ function FreePlanCard({ plan, scheduledPhase }) {
     opts: { enabled: codecovTrialMvp },
   })
 
+  const { data: plans } = usePlans(provider)
+
   const uploadsNumber = ownerData?.numberOfUploads
   const trialOngoing =
     isTrialPlan(planData?.plan?.planName) &&
     planData?.plan.trialStatus === TrialStatuses.ONGOING
 
-  const { data: plans } = usePlans(provider)
+  console.debug(trialOngoing)
+
+  let benefits = plan?.benefits
+  if (trialOngoing) {
+    benefits = planData?.pretrialPlan?.benefits
+  }
+
+  console.debug(benefits)
 
   return (
     <div className="flex flex-col gap-4">
@@ -146,7 +156,7 @@ function FreePlanCard({ plan, scheduledPhase }) {
           <div className="flex flex-col gap-2">
             <p className="text-xs font-semibold">Includes</p>
             <BenefitList
-              benefits={plan?.benefits}
+              benefits={benefits}
               iconName="check"
               iconColor="text-ds-pink-quinary"
             />
