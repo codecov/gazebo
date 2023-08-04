@@ -16,7 +16,7 @@ export function useNavLinks() {
     signOut: {
       text: 'Sign Out',
       path: ({ provider = p } = { provider: p }) =>
-        `${config.BASE_URL}/logout/${provider}`,
+        `${config.API_URL}/logout/${provider}`,
       isExternalLink: true,
     },
     signIn: {
@@ -29,7 +29,7 @@ export function useNavLinks() {
           },
           { addQueryPrefix: true }
         )
-        return `${config.BASE_URL}/login/${provider}${query}`
+        return `${config.API_URL}/login/${provider}${query}`
       },
       isExternalLink: true,
     },
