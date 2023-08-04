@@ -223,7 +223,7 @@ describe('BaseLayout', () => {
 
   describe('feature flag is on and set up action param is install', () => {
     it('renders the select org page with banner', async () => {
-      setup({ defaultOrgSelectorPage: true, currentUser: userHasDefaultOrg })
+      setup({ defaultOrgSelectorPage: true, currentUser: loggedInUser })
 
       render(<BaseLayout>hello</BaseLayout>, {
         wrapper: wrapper(['/bb/batman/batcave?setup_action=install']),
@@ -232,6 +232,20 @@ describe('BaseLayout', () => {
       expect(await screen.findByText(/DefaultOrgSelector/)).toBeTruthy()
       const selectInput = screen.getByText(/DefaultOrgSelector/)
       expect(selectInput).toBeInTheDocument()
+    })
+
+    it('does not render the select org page for users that have default org', async () => {
+      setup({
+        defaultOrgSelectorPage: true,
+        currentUser: userHasDefaultOrg,
+      })
+
+      render(<BaseLayout>hello</BaseLayout>, {
+        wrapper: wrapper(['/bb/batman/batcave?setup_action=request']),
+      })
+
+      const selectInput = screen.queryByText(/DefaultOrgSelector/)
+      expect(selectInput).not.toBeInTheDocument()
     })
   })
 

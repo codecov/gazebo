@@ -62,7 +62,7 @@ const useUserAccessGate = () => {
   }
 
   if (defaultOrgSelectorPage && !isGuest) {
-    showDefaultOrgSelector = !!data?.owner?.defaultOrgUsername
+    showDefaultOrgSelector = !data?.owner?.defaultOrgUsername
   }
 
   // Not fully tested logic yet, waiting on API to be available.

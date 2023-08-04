@@ -371,16 +371,16 @@ describe('useUserAccessGate', () => {
         defaultOrgSelectorPage: true,
         expected: {
           beforeSettled: {
-            isFullExperience: true,
+            isFullExperience: false,
             isLoading: true,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
+            showDefaultOrgSelector: true,
           },
           afterSettled: {
-            isFullExperience: false,
+            isFullExperience: true,
             isLoading: false,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: true,
+            showDefaultOrgSelector: false,
           },
         },
       },
@@ -396,16 +396,16 @@ describe('useUserAccessGate', () => {
         defaultOrgSelectorPage: true,
         expected: {
           beforeSettled: {
-            isFullExperience: true,
+            isFullExperience: false,
             isLoading: true,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
+            showDefaultOrgSelector: true,
           },
           afterSettled: {
-            isFullExperience: true,
+            isFullExperience: false,
             isLoading: false,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
+            showDefaultOrgSelector: true,
           },
         },
       },
