@@ -3,7 +3,7 @@ release_version := `cat VERSION`
 build_date ?= $(shell git show -s --date=iso8601-strict --pretty=format:%cd $$sha)
 # IMAGE, ENTERPRISE_IMAGE, and DEVOPS_IMAGE are provided via Github Actions. Engineers can refer to
 # https://www.notion.so/sentry/Environment-variables-for-building-pushing-Docker-images-locally-3159e90c5e6f4db4bfbde8800cdad2c0?pvs=4
-# for the relevant values. Open source users can set these to whatever tag names they want.
+# for the relevant values. Self-hosted users can set these to whatever tag names they want.
 IMAGE := ${CODECOV_GAZEBO_IMAGE}
 ENTERPRISE_IMAGE := ${CODECOV_GAZEBO_ENTERPRISE_IMAGE}
 DEVOPS_IMAGE := ${CODECOV_GAZEBO_DEVOPS_IMAGE}
