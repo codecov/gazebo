@@ -48,7 +48,7 @@ describe('GitHubHelpBanner', () => {
           ctx.status(200),
           ctx.data({
             me: {
-              isSyncing: true,
+              isSyncing: false,
             },
           })
         )
