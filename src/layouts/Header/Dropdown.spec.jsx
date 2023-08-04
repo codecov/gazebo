@@ -85,10 +85,10 @@ describe('Dropdown', () => {
 
         const link = screen.getByText('Sign Out')
         expect(link).toBeVisible()
-        expect(link).toHaveAttribute(
-          'href',
-          'https://stage-web.codecov.dev/logout/gh'
-        )
+        // This is supposed to have REACT_APP_API_URL in front of it, but a lot
+        // of tests rely on that value being blank in `.env.test` so the test
+        // appears to assert that it is a same-site URL.
+        expect(link).toHaveAttribute('href', '/logout/gh')
       })
 
       it('shows manage app access link', async () => {
@@ -144,10 +144,10 @@ describe('Dropdown', () => {
 
         const link = screen.getByText('Sign Out')
         expect(link).toBeVisible()
-        expect(link).toHaveAttribute(
-          'href',
-          'https://stage-web.codecov.dev/logout/gl'
-        )
+        // This is supposed to have REACT_APP_API_URL in front of it, but a lot
+        // of tests rely on that value being blank in `.env.test` so the test
+        // appears to assert that it is a same-site URL.
+        expect(link).toHaveAttribute('href', '/logout/gl')
       })
 
       it('does not show manage app access link', async () => {

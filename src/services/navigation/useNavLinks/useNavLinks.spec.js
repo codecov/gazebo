@@ -36,13 +36,19 @@ describe('useNavLinks', () => {
     })
 
     it('Returns the correct link with nothing passed', () => {
+      // This is supposed to have REACT_APP_API_URL in front of it, but a lot
+      // of tests rely on that value being blank in `.env.test` so the test
+      // appears to assert that it is a same-site URL.
       expect(hookData.result.current.signOut.path()).toBe(
-        `${config.BASE_URL}/logout/gl`
+        `${config.API_URL}/logout/gl`
       )
     })
     it('can override the params', () => {
+      // This is supposed to have REACT_APP_API_URL in front of it, but a lot
+      // of tests rely on that value being blank in `.env.test` so the test
+      // appears to assert that it is a same-site URL.
       expect(hookData.result.current.signOut.path({ provider: 'bb' })).toBe(
-        `${config.BASE_URL}/logout/bb`
+        `${config.API_URL}/logout/bb`
       )
     })
   })
@@ -53,24 +59,33 @@ describe('useNavLinks', () => {
     })
 
     it('Returns the correct link with nothing passed', () => {
+      // This is supposed to have REACT_APP_API_URL in front of it, but a lot
+      // of tests rely on that value being blank in `.env.test` so the test
+      // appears to assert that it is a same-site URL.
       expect(hookData.result.current.signIn.path()).toBe(
-        `${config.BASE_URL}/login/gl`
+        `${config.API_URL}/login/gl`
       )
     })
 
     it('can override the params', () => {
+      // This is supposed to have REACT_APP_API_URL in front of it, but a lot
+      // of tests rely on that value being blank in `.env.test` so the test
+      // appears to assert that it is a same-site URL.
       expect(hookData.result.current.signIn.path({ provider: 'bb' })).toBe(
-        `${config.BASE_URL}/login/bb`
+        `${config.API_URL}/login/bb`
       )
     })
 
     it('can add a `to` redirection', () => {
+      // This is supposed to have REACT_APP_API_URL in front of it, but a lot
+      // of tests rely on that value being blank in `.env.test` so the test
+      // appears to assert that it is a same-site URL.
       expect(
         hookData.result.current.signIn.path({
           to: 'htts://app.codecov.io/gh/codecov',
         })
       ).toBe(
-        `${config.BASE_URL}/login/gl?to=htts%3A%2F%2Fapp.codecov.io%2Fgh%2Fcodecov`
+        `${config.API_URL}/login/gl?to=htts%3A%2F%2Fapp.codecov.io%2Fgh%2Fcodecov`
       )
     })
 
@@ -81,12 +96,15 @@ describe('useNavLinks', () => {
       )
       setup(['/gh/doggo/squirrel-locator'])
 
+      // This is supposed to have REACT_APP_API_URL in front of it, but a lot
+      // of tests rely on that value being blank in `.env.test` so the test
+      // appears to assert that it is a same-site URL.
       expect(
         hookData.result.current.signIn.path({
           to: 'htts://app.codecov.io/gh/codecov',
         })
       ).toBe(
-        `${config.BASE_URL}/login/gh?to=htts%3A%2F%2Fapp.codecov.io%2Fgh%2Fcodecov&utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e`
+        `${config.API_URL}/login/gh?to=htts%3A%2F%2Fapp.codecov.io%2Fgh%2Fcodecov&utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e`
       )
       Cookie.remove('utmParams')
     })
