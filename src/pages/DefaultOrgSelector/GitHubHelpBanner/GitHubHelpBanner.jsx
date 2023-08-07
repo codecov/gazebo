@@ -24,7 +24,11 @@ function ResyncButton() {
   }
 
   return (
-    <button className="text-ds-blue hover:underline" onClick={triggerResync}>
+    <button
+      className="text-ds-blue hover:underline"
+      onClick={triggerResync}
+      type="button"
+    >
       re-sync
     </button>
   )
