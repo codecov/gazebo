@@ -1,8 +1,8 @@
-import { useEffect } from 'react'
-import { useHistory, useLocation, useParams } from 'react-router-dom'
+import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 
 import config from 'config'
 
+import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
 import { useLocationParams } from 'services/navigation'
 import { useUser } from 'services/user'
 import { useFlags } from 'shared/featureFlags'
@@ -14,19 +14,19 @@ const SetUpActions = Object.freeze({
 
 function useOnboardingRedirect({ username }) {
   const history = useHistory()
-  const location = useLocation()
-
+  const matchProvider = useRouteMatch('/gh')
   const { params } = useLocationParams()
+  const { mutate: updateDefaultOrg } = useUpdateDefaultOrganization()
+
+  if (!username) return
+
   const { setup_action: setupAction } = params
 
-  useEffect(() => {
-    if (setupAction === SetUpActions.REQUEST) {
-      const queryParams = new URLSearchParams(location.search)
+  if (setupAction === SetUpActions.REQUEST && matchProvider.isExact) {
+    updateDefaultOrg({ username })
 
-      queryParams.set('setup_action', 'request')
-      return history.push(`/gh/${username}?${queryParams.toString()}`)
-    }
-  }, [username, history, location.search, setupAction])
+    return history.push(`/gh/${username}?setup_action=${SetUpActions.REQUEST}`)
+  }
 }
 
 // eslint-disable-next-line complexity, max-statements

@@ -169,6 +169,7 @@ describe('useUserAccessGate', () => {
     }
   ) {
     const mockedUseFlags = jest.mocked(useFlags)
+    const mockMutationVariables = jest.fn()
 
     mockedUseFlags.mockReturnValue({
       termsOfServicePage,
@@ -178,8 +179,26 @@ describe('useUserAccessGate', () => {
     server.use(
       graphql.query('CurrentUser', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(user))
+      }),
+      graphql.mutation('updateDefaultOrganization', (req, res, ctx) => {
+        mockMutationVariables(req.variables)
+
+        return res(
+          ctx.status(200),
+          ctx.data({
+            updateDefaultOrganization: {
+              defaultOrg: {
+                username: 'criticalRole',
+              },
+            },
+          })
+        )
       })
     )
+
+    return {
+      mockMutationVariables,
+    }
   }
 
   afterEach(() => jest.resetAllMocks)
@@ -674,6 +693,29 @@ describe('useUserAccessGate', () => {
 
       await waitFor(() =>
         expect(testLocation.search).toEqual('?setup_action=request')
+      )
+    })
+
+    it('fires update default org mutation', async () => {
+      const { mockMutationVariables } = setup({
+        user: loggedInUser,
+        termsOfServicePage: true,
+        defaultOrgSelectorPage: true,
+      })
+
+      const { result } = renderHook(() => useUserAccessGate(), {
+        wrapper: wrapper(['/gh?setup_action=request']),
+      })
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      await waitFor(() =>
+        expect(mockMutationVariables).toHaveBeenCalledWith({
+          input: {
+            username: 'CodecovUser',
+          },
+        })
       )
     })
   })
