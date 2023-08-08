@@ -339,12 +339,9 @@ describe('LoginPrompt', () => {
 
       const loginLink = within(loginPrompt).getByText('Log in')
       expect(loginLink).toBeInTheDocument()
-      // This is supposed to have REACT_APP_API_URL in front of it, but a lot
-      // of tests rely on that value being blank in `.env.test` so the test
-      // appears to assert that it is a same-site URL.
       expect(loginLink).toHaveAttribute(
         'href',
-        '/login/gh?to=http%3A%2F%2Flocalhost%2F'
+        'https://stage-web.codecov.dev/login/gh?to=http%3A%2F%2Flocalhost%2F'
       )
 
       const signUpLink = within(loginPrompt).getByText('Sign up')
