@@ -23,7 +23,7 @@ function UpdateButton({
       hook="submit-upgrade"
       to={undefined}
     >
-      {isFreePlan(value) ? 'Proceed with plan' : 'Update'}
+      {isFreePlan(value) ? 'Proceed to Checkout' : 'Update'}
     </Button>
   )
 }

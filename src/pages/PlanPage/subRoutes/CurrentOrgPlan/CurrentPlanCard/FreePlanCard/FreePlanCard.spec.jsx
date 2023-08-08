@@ -314,7 +314,7 @@ describe('FreePlanCard', () => {
           })
 
           const text = await screen.findByText(
-            /You'll be downgraded to this plan/
+            /You'll be downgraded to the Developer plan when your trial expires./
           )
           expect(text).toBeInTheDocument()
         })

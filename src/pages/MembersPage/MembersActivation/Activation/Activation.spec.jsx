@@ -175,7 +175,9 @@ describe('Activation', () => {
 
         render(<Activation />, { wrapper: wrapper() })
 
-        const trialText = await screen.findByText(/Your org is on trial/)
+        const trialText = await screen.findByText(
+          /Your org is on a free trial./
+        )
         expect(trialText).toBeInTheDocument()
       })
 
@@ -185,7 +187,7 @@ describe('Activation', () => {
         render(<Activation />, { wrapper: wrapper() })
 
         const upgradeLink = await screen.findByRole('link', {
-          name: /upgrade/,
+          name: /Upgrade to Pro today./,
         })
         expect(upgradeLink).toBeInTheDocument()
         expect(upgradeLink).toHaveAttribute(

@@ -90,11 +90,11 @@ const TrialReminder: React.FC = () => {
     return (
       <div className="flex items-center">
         <p>
-          Trial is active with {dateDiff} days{' '}
+          Trial active for {dateDiff} days.{' '}
           <span className="font-semibold">
             {/* this is required because the A component has this random `[x: string]: any` record type on it */}
             {/* @ts-expect-error */}
-            <A to={{ pageName: 'upgradeOrgPlan' }}>upgrade</A>
+            <A to={{ pageName: 'upgradeOrgPlan' }}>Upgrade now</A>
           </span>
         </p>
       </div>

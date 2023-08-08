@@ -149,7 +149,7 @@ function FreePlanCard({ plan, scheduledPhase }) {
           <h2 className="font-semibold">{marketingName} plan</h2>
           <span className="text-gray-500">
             {trialOngoing
-              ? "You'll be downgraded to this plan when your trial expires"
+              ? "You'll be downgraded to the Developer plan when your trial expires."
               : 'Current Plan'}
           </span>
         </div>
