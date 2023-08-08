@@ -513,12 +513,12 @@ describe('App', () => {
     }
   )
 
-  describe('feature flag is on and set up action param is request', () => {
+  describe('provider page and set up action param is request', () => {
     it('renders children', async () => {
       setup()
 
       render(<App />, {
-        wrapper: wrapper(['/gh/CodecovUser?setup_action=request']),
+        wrapper: wrapper(['/gh?setup_action=request']),
       })
 
       await waitFor(() => expect(testLocation.pathname).toBe('/gh/CodecovUser'))
@@ -527,24 +527,59 @@ describe('App', () => {
         expect(testLocation.search).toEqual('?setup_action=request')
       )
     })
+
+    it('fires update default org mutation', async () => {
+      const { mockMutationVariables } = setup()
+
+      render(<App />, {
+        wrapper: wrapper(['/gh?setup_action=request']),
+      })
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+
+      await waitFor(() =>
+        expect(mockMutationVariables).toHaveBeenCalledWith({
+          input: {
+            username: 'CodecovUser',
+          },
+        })
+      )
+    })
   })
 
-  it('fires update default org mutation', async () => {
-    const { mockMutationVariables } = setup()
+  describe('provider page and set up action param is install', () => {
+    it('renders children', async () => {
+      setup()
 
-    render(<App />, {
-      wrapper: wrapper(['/gh?setup_action=request']),
+      render(<App />, {
+        wrapper: wrapper(['/gh?setup_action=install']),
+      })
+
+      await waitFor(() => expect(testLocation.pathname).toBe('/gh'))
+
+      await waitFor(() =>
+        expect(testLocation.search).toEqual('?setup_action=install')
+      )
     })
 
-    await waitFor(() => queryClient.isFetching)
-    await waitFor(() => !queryClient.isFetching)
+    it('does not fire update default org mutation', async () => {
+      const { mockMutationVariables } = setup()
 
-    await waitFor(() =>
-      expect(mockMutationVariables).toHaveBeenCalledWith({
-        input: {
-          username: 'CodecovUser',
-        },
+      render(<App />, {
+        wrapper: wrapper(['/gh?setup_action=install']),
       })
-    )
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+
+      await waitFor(() =>
+        expect(mockMutationVariables).not.toHaveBeenCalledWith({
+          input: {
+            username: 'CodecovUser',
+          },
+        })
+      )
+    })
   })
 })

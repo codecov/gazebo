@@ -50,16 +50,18 @@ const HomePageRedirect = () => {
 
   if (setupAction === SetUpActions.REQUEST) {
     updateDefaultOrg({ username: defaultOrg })
+
+    return (
+      <Redirect
+        to={{
+          pathname: `/${provider}/${defaultOrg}`,
+          search: `?setup_action=${SetUpActions.REQUEST}`,
+        }}
+      />
+    )
   }
 
-  return (
-    <Redirect
-      to={{
-        pathname: `/${provider}/${defaultOrg}`,
-        search: setupAction ? `?setup_action=${SetUpActions.REQUEST}` : '',
-      }}
-    />
-  )
+  return <Redirect to={`/${provider}/${defaultOrg}`} />
 }
 
 // eslint-disable-next-line complexity
