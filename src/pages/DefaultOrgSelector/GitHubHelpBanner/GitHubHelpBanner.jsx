@@ -14,7 +14,7 @@ function ResyncButton() {
 
   if (isSyncing) {
     return (
-      <span className="flex gap-1">
+      <span className="flex items-center gap-1">
         <span className="text-ds-blue">
           <Spinner />
         </span>
@@ -29,7 +29,7 @@ function ResyncButton() {
       onClick={triggerResync}
       type="button"
     >
-      re-sync
+      re-sync.
     </button>
   )
 }
