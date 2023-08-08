@@ -45,7 +45,8 @@ const OnboardingOrChildren = ({ children }) => {
 }
 
 function BaseLayout({ children }) {
-  const { isFullExperience, showAgreeToTerms, isLoading } = useUserAccessGate()
+  const { isFullExperience, showDefaultOrgSelector, isLoading } =
+    useUserAccessGate()
 
   useTracking()
 
@@ -62,7 +63,7 @@ function BaseLayout({ children }) {
       ) : (
         <Suspense fallback={null}>
           <LimitedHeader />
-          {showAgreeToTerms && <InstallationHelpBanner />}
+          {showDefaultOrgSelector && <InstallationHelpBanner />}
         </Suspense>
       )}
       <Suspense fallback={<FullPageLoader />}>

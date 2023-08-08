@@ -251,7 +251,7 @@ describe('BaseLayout', () => {
 
   describe('user is not on full access experience', () => {
     it('renders the select org page with banner', async () => {
-      setup({ termsOfServicePage: true, currentUser: loggedInUser })
+      setup({ defaultOrgSelectorPage: true, currentUser: loggedInUser })
 
       render(<BaseLayout>hello</BaseLayout>, {
         wrapper: wrapper(['/bb/batman/batcave?setup_action=install']),
