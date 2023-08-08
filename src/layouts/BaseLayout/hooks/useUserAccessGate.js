@@ -1,33 +1,9 @@
-import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
-import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
-import { useLocationParams } from 'services/navigation'
 import { useUser } from 'services/user'
 import { useFlags } from 'shared/featureFlags'
-
-const SetUpActions = Object.freeze({
-  INSTALL: 'install',
-  REQUEST: 'request',
-})
-
-function useOnboardingRedirect({ username }) {
-  const history = useHistory()
-  const matchProvider = useRouteMatch('/gh')
-  const { params } = useLocationParams()
-  const { mutate: updateDefaultOrg } = useUpdateDefaultOrganization()
-
-  if (!username) return
-
-  const { setup_action: setupAction } = params
-
-  if (setupAction === SetUpActions.REQUEST && matchProvider.isExact) {
-    updateDefaultOrg({ username })
-
-    return history.push(`/gh/${username}?setup_action=${SetUpActions.REQUEST}`)
-  }
-}
 
 // eslint-disable-next-line complexity, max-statements
 const useUserAccessGate = () => {
@@ -40,8 +16,6 @@ const useUserAccessGate = () => {
     suspense: false,
     enabled: !!provider || !config.IS_SELF_HOSTED,
   })
-
-  useOnboardingRedirect({ username: data?.user.username })
 
   const isGuest = !data && isSuccess
   let showAgreeToTerms = false,
