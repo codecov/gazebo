@@ -62,6 +62,12 @@ describe('useMyOrganizations', () => {
         const { thrownMock } = setup({
           MyOrganizationsData: {
             me: {
+              owner: {
+                avatarUrl:
+                  'https://avatars0.githubusercontent.com/u/8226205?v=3&s=s0',
+                username: 'Rula',
+                ownerid: 9,
+              },
               myOrganizations: {
                 edges: [
                   {
@@ -91,6 +97,12 @@ describe('useMyOrganizations', () => {
           pages: [
             {
               me: {
+                owner: {
+                  avatarUrl:
+                    'https://avatars0.githubusercontent.com/u/8226205?v=3&s=s0',
+                  username: 'Rula',
+                  ownerid: 9,
+                },
                 myOrganizations: {
                   edges: [
                     {
@@ -119,6 +131,12 @@ describe('useMyOrganizations', () => {
         const { thrownMock } = setup({
           MyOrganizationsData: {
             me: {
+              owner: {
+                avatarUrl:
+                  'https://avatars0.githubusercontent.com/u/8226205?v=3&s=s0',
+                username: 'Rula',
+                ownerid: 9,
+              },
               myOrganizations: {
                 edges: [],
                 pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
@@ -138,6 +156,12 @@ describe('useMyOrganizations', () => {
           pages: [
             {
               me: {
+                owner: {
+                  avatarUrl:
+                    'https://avatars0.githubusercontent.com/u/8226205?v=3&s=s0',
+                  username: 'Rula',
+                  ownerid: 9,
+                },
                 myOrganizations: {
                   edges: [],
                   pageInfo: {
@@ -208,6 +232,12 @@ describe('useMyOrganizations', () => {
       const { thrownMock } = setup({
         MyOrganizationsData: {
           me: {
+            owner: {
+              avatarUrl:
+                'https://avatars0.githubusercontent.com/u/8226205?v=3&s=s0',
+              username: 'Rula',
+              ownerid: 9,
+            },
             myOrganizations: {
               edges: [
                 {
@@ -237,6 +267,12 @@ describe('useMyOrganizations', () => {
         pages: [
           {
             me: {
+              owner: {
+                avatarUrl:
+                  'https://avatars0.githubusercontent.com/u/8226205?v=3&s=s0',
+                username: 'Rula',
+                ownerid: 9,
+              },
               myOrganizations: {
                 edges: [
                   {
@@ -262,6 +298,12 @@ describe('useMyOrganizations', () => {
       const { thrownMock } = setup({
         MyOrganizationsData: {
           me: {
+            owner: {
+              avatarUrl:
+                'https://avatars0.githubusercontent.com/u/8226205?v=3&s=s0',
+              username: 'Rula',
+              ownerid: 9,
+            },
             myOrganizations: {
               edges: [
                 {
@@ -291,6 +333,12 @@ describe('useMyOrganizations', () => {
         pages: [
           {
             me: {
+              owner: {
+                avatarUrl:
+                  'https://avatars0.githubusercontent.com/u/8226205?v=3&s=s0',
+                username: 'Rula',
+                ownerid: 9,
+              },
               myOrganizations: {
                 edges: [
                   {
