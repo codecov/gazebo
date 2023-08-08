@@ -24,7 +24,7 @@ const OngoingBanner: React.FC<OngoingBannerProps> = ({ dateDiff }) => {
       <TopBanner.End>
         <p>
           {/* @ts-expect-error */}
-          Need help? view our <A to={{ pageName: 'docs' }}>
+          Need help? View our <A to={{ pageName: 'docs' }}>
             get started docs
           </A>{' '}
           or {/* @ts-expect-error */}
