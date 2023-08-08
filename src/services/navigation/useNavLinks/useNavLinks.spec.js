@@ -36,19 +36,13 @@ describe('useNavLinks', () => {
     })
 
     it('Returns the correct link with nothing passed', () => {
-      // This is supposed to have REACT_APP_API_URL in front of it, but a lot
-      // of tests rely on that value being blank in `.env.test` so the test
-      // appears to assert that it is a same-site URL.
       expect(hookData.result.current.signOut.path()).toBe(
-        `${config.API_URL}/logout/gl`
+        `${config.BASE_URL}/logout/gl`
       )
     })
     it('can override the params', () => {
-      // This is supposed to have REACT_APP_API_URL in front of it, but a lot
-      // of tests rely on that value being blank in `.env.test` so the test
-      // appears to assert that it is a same-site URL.
       expect(hookData.result.current.signOut.path({ provider: 'bb' })).toBe(
-        `${config.API_URL}/logout/bb`
+        `${config.BASE_URL}/logout/bb`
       )
     })
   })
