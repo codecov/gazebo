@@ -8,7 +8,7 @@ describe('GlobalBanners', () => {
   it('renders sentry trial banner', async () => {
     render(<GlobalBanners />)
 
-    const banner = await screen.findByText('TrialBanner')
+    const banner = await screen.findByText(/TrialBanner/)
     expect(banner).toBeInTheDocument()
   })
 })
