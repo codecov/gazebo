@@ -28,10 +28,7 @@ describe('ProviderCard', () => {
           name: 'Login via Bitbucket',
         })
         expect(element).toBeInTheDocument()
-        // This is supposed to have REACT_APP_API_URL in front of it, but a lot
-        // of tests rely on that value being blank in `.env.test` so the test
-        // appears to assert that it is a same-site URL.
-        expect(element).toHaveAttribute('href', `${config.API_URL}/login/bb`)
+        expect(element).toHaveAttribute('href', `${config.BASE_URL}/login/bb`)
       })
 
       it('renders self hosted login link', () => {
@@ -39,10 +36,7 @@ describe('ProviderCard', () => {
           name: 'Login via Bitbucket Server',
         })
         expect(element).toBeInTheDocument()
-        // This is supposed to have REACT_APP_API_URL in front of it, but a lot
-        // of tests rely on that value being blank in `.env.test` so the test
-        // appears to assert that it is a same-site URL.
-        expect(element).toHaveAttribute('href', `${config.API_URL}/login/bbs`)
+        expect(element).toHaveAttribute('href', `${config.BASE_URL}/login/bbs`)
       })
     })
   })
@@ -57,10 +51,7 @@ describe('ProviderCard', () => {
       it('renders external login button', () => {
         const element = screen.getByRole('link', { name: 'Login via GitHub' })
         expect(element).toBeInTheDocument()
-        // This is supposed to have REACT_APP_API_URL in front of it, but a lot
-        // of tests rely on that value being blank in `.env.test` so the test
-        // appears to assert that it is a same-site URL.
-        expect(element).toHaveAttribute('href', `${config.API_URL}/login/gh`)
+        expect(element).toHaveAttribute('href', `${config.BASE_URL}/login/gh`)
       })
 
       it('renders self hosted login link', () => {
@@ -68,10 +59,7 @@ describe('ProviderCard', () => {
           name: 'Login via GitHub Enterprise',
         })
         expect(element).toBeInTheDocument()
-        // This is supposed to have REACT_APP_API_URL in front of it, but a lot
-        // of tests rely on that value being blank in `.env.test` so the test
-        // appears to assert that it is a same-site URL.
-        expect(element).toHaveAttribute('href', `${config.API_URL}/login/ghe`)
+        expect(element).toHaveAttribute('href', `${config.BASE_URL}/login/ghe`)
       })
     })
   })
@@ -86,10 +74,7 @@ describe('ProviderCard', () => {
       it('renders external login button', () => {
         const element = screen.getByRole('link', { name: 'Login via GitLab' })
         expect(element).toBeInTheDocument()
-        // This is supposed to have REACT_APP_API_URL in front of it, but a lot
-        // of tests rely on that value being blank in `.env.test` so the test
-        // appears to assert that it is a same-site URL.
-        expect(element).toHaveAttribute('href', `${config.API_URL}/login/gl`)
+        expect(element).toHaveAttribute('href', `${config.BASE_URL}/login/gl`)
       })
 
       it('renders self hosted login link', () => {
@@ -97,10 +82,7 @@ describe('ProviderCard', () => {
           name: 'Login via GitLab CE/EE',
         })
         expect(element).toBeInTheDocument()
-        // This is supposed to have REACT_APP_API_URL in front of it, but a lot
-        // of tests rely on that value being blank in `.env.test` so the test
-        // appears to assert that it is a same-site URL.
-        expect(element).toHaveAttribute('href', `${config.API_URL}/login/gle`)
+        expect(element).toHaveAttribute('href', `${config.BASE_URL}/login/gle`)
       })
     })
   })
