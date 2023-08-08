@@ -18,7 +18,7 @@ describe('UpdateButton', () => {
 
       render(<UpdateButton {...props} />)
 
-      const button = screen.getByText('Proceed with plan')
+      const button = screen.getByText('Proceed to Checkout')
       expect(button).toBeInTheDocument()
       expect(button).not.toBeDisabled()
     })
@@ -56,14 +56,14 @@ describe('UpdateButton', () => {
 
       render(<UpdateButton {...props} />)
 
-      const button = screen.getByText('Proceed with plan')
+      const button = screen.getByText('Proceed to Checkout')
       expect(button).toBeInTheDocument()
       expect(button).toBeDisabled()
     })
   })
 
   describe('user is able to start a new plan', () => {
-    it('displays button with "Proceed with plan" text', () => {
+    it('displays button with "Proceed to Checkout" text', () => {
       const props = {
         isValid: true,
         getValues: () => ({ newPlan: Plans.USERS_PR_INAPPY, seats: 10 }),
@@ -73,7 +73,7 @@ describe('UpdateButton', () => {
 
       render(<UpdateButton {...props} />)
 
-      const button = screen.getByText('Proceed with plan')
+      const button = screen.getByText('Proceed to Checkout')
       expect(button).toBeInTheDocument()
       expect(button).not.toBeDisabled()
     })
