@@ -40,9 +40,9 @@ function Activation() {
             active members
           </p>
           <p className="text-xs">
-            Your org is on trial{' '}
+            Your org is on a free trial.{' '}
             <span className="font-semibold">
-              <A to={{ pageName: 'upgradeOrgPlan' }}>upgrade</A>
+              <A to={{ pageName: 'upgradeOrgPlan' }}>Upgrade to Pro today.</A>
             </span>
           </p>
         </section>
