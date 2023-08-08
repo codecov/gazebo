@@ -219,8 +219,11 @@ describe('TrialReminder', () => {
 
             render(<TrialReminder />, { wrapper })
 
-            const text = await screen.findByText(/Trial is active/)
-            expect(text).toBeInTheDocument()
+            const link = await screen.findByRole('link', {
+              name: /Upgrade now/,
+            })
+            expect(link).toBeInTheDocument()
+            expect(link).toHaveAttribute('href', '/plan/gh/codecov/upgrade')
           })
         })
 
