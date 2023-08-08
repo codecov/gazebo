@@ -48,6 +48,8 @@ const HomePageRedirect = () => {
 
   const { setup_action: setupAction } = params
 
+  if (setupAction === SetUpActions.INSTALL) return
+
   if (setupAction === SetUpActions.REQUEST) {
     updateDefaultOrg({ username: defaultOrg })
 
