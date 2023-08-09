@@ -14,7 +14,7 @@ function Header() {
   const { provider, owner, repo, commit: commitSHA } = useParams()
   const shortSHA = commitSHA?.slice(0, 7)
 
-  const { data: commit } = useCommitHeaderData({
+  const { data: headerData } = useCommitHeaderData({
     provider,
     owner,
     repo,
@@ -25,7 +25,7 @@ function Header() {
     provider,
     owner,
     repo,
-    pullId: commit?.pullId,
+    pullId: headerData?.commit?.pullId,
   })
 
   const providerCommitUrl = getProviderCommitURL({
@@ -38,24 +38,24 @@ function Header() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col">
-        {commit?.message && (
-          <TruncatedMessage>{commit?.message}</TruncatedMessage>
+        {headerData?.commit?.message && (
+          <TruncatedMessage>{headerData?.commit?.message}</TruncatedMessage>
         )}
         <div className="flex items-center gap-2 text-ds-gray-quinary">
           <div>
-            {commit?.createdAt && (
+            {headerData?.commit?.createdAt && (
               <span className="font-light">
-                {formatTimeToNow(commit?.createdAt)}
+                {formatTimeToNow(headerData?.commit?.createdAt)}
               </span>
             )}{' '}
-            {commit?.author?.username && (
+            {headerData?.commit?.author?.username && (
               <A
                 to={{
                   pageName: 'owner',
-                  options: { owner: commit?.author?.username },
+                  options: { owner: headerData?.commit?.author?.username },
                 }}
               >
-                {commit?.author?.username}
+                {headerData?.commit?.author?.username}
               </A>
             )}{' '}
             <span className="font-light">authored commit</span>{' '}
@@ -68,13 +68,13 @@ function Header() {
               {shortSHA}
             </A>
           </div>
-          <CIStatusLabel ciPassed={commit?.ciPassed} />
+          <CIStatusLabel ciPassed={headerData?.commit?.ciPassed} />
           <span className="flex flex-none items-center">
             <Icon name="branch" variant="developer" size="sm" />
-            {commit?.branchName}
+            {headerData?.commit?.branchName}
           </span>
           <PullLabel
-            pullId={commit?.pullId}
+            pullId={headerData?.commit?.pullId}
             provider={provider}
             providerPullUrl={providerPullUrl}
           />
