@@ -12,10 +12,8 @@ import LoadingLogo from 'ui/LoadingLogo'
 
 import { useUserAccessGate } from './hooks/useUserAccessGate'
 
-const LimitedHeader = lazy(() => import('layouts/LimitedHeader'))
-const DefaultOrgSelector = lazy(() => import('pages/DefaultOrgSelector'))
-const InstallationHelpBanner = lazy(() => import('./InstallationHelpBanner'))
 const TermsOfService = lazy(() => import('pages/TermsOfService'))
+const LimitedHeader = lazy(() => import('layouts/LimitedHeader'))
 
 const FullPageLoader = () => (
   <div className="mt-16 flex flex-1 items-center justify-center">
@@ -23,30 +21,8 @@ const FullPageLoader = () => (
   </div>
 )
 
-const OnboardingOrChildren = ({ children }) => {
-  const { isFullExperience, showAgreeToTerms, showDefaultOrgSelector } =
-    useUserAccessGate()
-
-  if (showAgreeToTerms && !isFullExperience)
-    return (
-      <Suspense fallback={null}>
-        <TermsOfService />
-      </Suspense>
-    )
-
-  if (showDefaultOrgSelector && !isFullExperience)
-    return (
-      <Suspense fallback={null}>
-        <DefaultOrgSelector />
-      </Suspense>
-    )
-
-  return children
-}
-
 function BaseLayout({ children }) {
-  const { isFullExperience, showDefaultOrgSelector, isLoading } =
-    useUserAccessGate()
+  const { isFullExperience, isLoading } = useUserAccessGate()
 
   useTracking()
 
@@ -63,7 +39,6 @@ function BaseLayout({ children }) {
       ) : (
         <Suspense fallback={null}>
           <LimitedHeader />
-          {showDefaultOrgSelector && <InstallationHelpBanner />}
         </Suspense>
       )}
       <Suspense fallback={<FullPageLoader />}>
@@ -71,7 +46,13 @@ function BaseLayout({ children }) {
           <NetworkErrorBoundary>
             <main className="container mb-8 mt-2 flex grow flex-col gap-2 md:p-0">
               <GlobalBanners />
-              <OnboardingOrChildren>{children}</OnboardingOrChildren>
+              {isFullExperience ? (
+                children
+              ) : (
+                <Suspense fallback={null}>
+                  <TermsOfService />
+                </Suspense>
+              )}
             </main>
           </NetworkErrorBoundary>
         </ErrorBoundary>

@@ -90,9 +90,7 @@ const MainAppRoutes = () => (
       </BaseLayout>
     </SentryRoute>
     <SentryRoute path="/:provider" exact>
-      <BaseLayout>
-        <HomePageRedirect />
-      </BaseLayout>
+      <HomePageRedirect />
     </SentryRoute>
     <SentryRoute path="/:provider/feedback">
       <BaseLayout>
