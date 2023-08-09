@@ -26,13 +26,14 @@ const mockCommit = {
 const mockCommitHeaderData = {
   owner: {
     repository: {
+      __typename: 'Repository',
       commit: {
         author: {
           username: 'cool-user',
         },
         branchName: 'cool-branch',
         ciPassed: true,
-        commitid: 1,
+        commitid: '1',
         createdAt: '2023-01-01T12:00:00.000000',
         message: 'Cool Commit Message',
         pullId: 1,
