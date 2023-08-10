@@ -34,10 +34,6 @@ export const CommitHeaderDataSchema = z.object({
       __typename: z.literal('OwnerNotActivatedError'),
       message: z.string(),
     }),
-    z.object({
-      __typename: z.literal('ResolverError'),
-      message: z.string(),
-    }),
   ]),
 })
 
@@ -141,13 +137,8 @@ export const useCommitHeaderData = ({
           })
         }
 
-        if (data?.repository?.__typename === 'ResolverError') {
-          return Promise.reject({
-            status: 500,
-            data: {},
-          })
+        return {
+          commit: data?.repository?.commit,
         }
-
-        return data?.repository
       }),
   })
