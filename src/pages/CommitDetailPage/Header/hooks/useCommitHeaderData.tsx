@@ -67,9 +67,6 @@ const query = `
         ... on OwnerNotActivatedError {
           message
         }
-        ... on ResolverError {
-          message
-        }
       }
     }
   }
