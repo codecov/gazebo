@@ -37,16 +37,6 @@ const mockOwnerNotActivatedError = {
   },
 }
 
-const mockResolverError = {
-  owner: {
-    isCurrentUserPartOfOrg: false,
-    repository: {
-      __typename: 'ResolverError',
-      message: 'resolver error',
-    },
-  },
-}
-
 const mockUnsuccessfulParseError = {}
 
 const queryClient = new QueryClient({
@@ -74,7 +64,6 @@ afterAll(() => {
 interface SetupArgs {
   isNotFoundError?: boolean
   isOwnerNotActivatedError?: boolean
-  isResolverError?: boolean
   isUnsuccessfulParseError?: boolean
 }
 
@@ -82,7 +71,6 @@ describe('useCommitPageData', () => {
   function setup({
     isNotFoundError = false,
     isOwnerNotActivatedError = false,
-    isResolverError = false,
     isUnsuccessfulParseError = false,
   }: SetupArgs) {
     server.use(
@@ -91,8 +79,6 @@ describe('useCommitPageData', () => {
           return res(ctx.status(200), ctx.data(mockNotFoundError))
         } else if (isOwnerNotActivatedError) {
           return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
-        } else if (isResolverError) {
-          return res(ctx.status(200), ctx.data(mockResolverError))
         } else if (isUnsuccessfulParseError) {
           return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
         } else {
@@ -200,42 +186,6 @@ describe('useCommitPageData', () => {
           expect(result.current.error).toEqual(
             expect.objectContaining({
               status: 403,
-            })
-          )
-        )
-      })
-    })
-
-    describe('returns ResolverError __typename', () => {
-      let oldConsoleError = console.error
-
-      beforeEach(() => {
-        console.error = () => null
-      })
-
-      afterEach(() => {
-        console.error = oldConsoleError
-      })
-
-      it('throws an error', async () => {
-        setup({ isResolverError: true })
-
-        const { result } = renderHook(
-          () =>
-            useCommitPageData({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'cool-repo',
-              commitId: 'id-1',
-            }),
-          { wrapper }
-        )
-
-        await waitFor(() => expect(result.current.isError).toBeTruthy())
-        await waitFor(() =>
-          expect(result.current.error).toEqual(
-            expect.objectContaining({
-              status: 500,
             })
           )
         )

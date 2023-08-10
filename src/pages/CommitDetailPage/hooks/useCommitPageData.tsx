@@ -25,10 +25,6 @@ const CommitPageDataSchema = z.object({
       __typename: z.literal('OwnerNotActivatedError'),
       message: z.string(),
     }),
-    z.object({
-      __typename: z.literal('ResolverError'),
-      message: z.string(),
-    }),
   ]),
 })
 
@@ -49,9 +45,6 @@ const query = `
           message
         }
         ... on OwnerNotActivatedError {
-          message
-        }
-        ... on ResolverError {
           message
         }
       }
@@ -119,13 +112,6 @@ export const useCommitPageData = ({
                 </p>
               ),
             },
-          })
-        }
-
-        if (data?.repository?.__typename === 'ResolverError') {
-          return Promise.reject({
-            status: 500,
-            data: {},
           })
         }
 
