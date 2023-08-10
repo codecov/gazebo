@@ -39,6 +39,7 @@ const query = `
     owner(username: $owner) {
       isCurrentUserPartOfOrg
       repository(name: $repo) {
+        __typename
         ... on Repository {
           commit(id: $commitId) {
             commitid
