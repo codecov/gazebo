@@ -55,14 +55,20 @@ const mockCoverage = {
 const mockPullData = {
   isCurrentUserPartOfOrg: true,
   repository: {
+    __typename: 'Repository',
     private: true,
     pull: {
       pullId: 1,
+      head: {
+        commitid: '123',
+      },
       compareWithBase: {
+        __typename: 'Comparison',
         impactedFilesCount: 4,
         indirectChangedFilesCount: 0,
         flagComparisonsCount: 1,
-        __typename: 'Comparison',
+        componentComparisonsCount: 6,
+        directChangedFilesCount: 0,
       },
     },
   },

@@ -35,6 +35,21 @@ const mockPullHeadData = {
   },
 }
 
+const mockPullPageData = {
+  pullId: 1,
+  head: {
+    commitid: '123',
+  },
+  compareWithBase: {
+    __typename: 'Comparison',
+    impactedFilesCount: 4,
+    indirectChangedFilesCount: 0,
+    flagComparisonsCount: 1,
+    componentComparisonsCount: 6,
+    directChangedFilesCount: 0,
+  },
+}
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
@@ -63,7 +78,12 @@ afterAll(() => {
 })
 
 describe('PullRequestPage', () => {
-  function setup({ hasAccess = false, pullData = {} }) {
+  function setup(
+    { hasAccess = false, pullData = mockPullPageData } = {
+      hasAccess: false,
+      pullData: mockPullPageData,
+    }
+  ) {
     useFlags.mockReturnValue({ pendoModalPrPage: false })
 
     server.use(
@@ -77,6 +97,7 @@ describe('PullRequestPage', () => {
             owner: {
               isCurrentUserPartOfOrg: hasAccess,
               repository: {
+                __typename: 'Repository',
                 private: true,
                 pull: pullData,
               },

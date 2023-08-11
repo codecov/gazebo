@@ -35,15 +35,20 @@ const mockPullData = {
   owner: {
     isCurrentUserPartOfOrg: true,
     repository: {
+      __typename: 'Repository',
       private: true,
       pull: {
         pullId: 1,
+        head: {
+          commitid: '123',
+        },
         compareWithBase: {
-          directChangedFilesCount: 4,
-          indirectChangedFilesCount: 0,
-          flagComparisonsCount: 1,
-          componentComparisonsCount: 6,
           __typename: 'Comparison',
+          componentComparisonsCount: 6,
+          directChangedFilesCount: 4,
+          flagComparisonsCount: 1,
+          indirectChangedFilesCount: 0,
+          impactedFilesCount: 0,
         },
       },
     },
