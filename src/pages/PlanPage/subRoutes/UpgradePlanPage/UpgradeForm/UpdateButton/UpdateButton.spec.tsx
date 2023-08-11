@@ -18,7 +18,7 @@ describe('UpdateButton', () => {
 
       render(<UpdateButton {...props} />)
 
-      const button = screen.getByText('Proceed with plan')
+      const button = screen.getByText('Proceed to Checkout')
       expect(button).toBeInTheDocument()
       expect(button).not.toBeDisabled()
     })
@@ -56,123 +56,26 @@ describe('UpdateButton', () => {
 
       render(<UpdateButton {...props} />)
 
-      const button = screen.getByText('Proceed with plan')
+      const button = screen.getByText('Proceed to Checkout')
       expect(button).toBeInTheDocument()
       expect(button).toBeDisabled()
     })
   })
 
-  describe('it is a sentry upgrade', () => {
-    describe('the user has not yet started a trial', () => {
-      describe('subscription details are present', () => {
-        it('displays button with "Start trial" text', () => {
-          const props = {
-            isValid: true,
-            getValues: () => ({ newPlan: Plans.USERS_PR_INAPPY, seats: 10 }),
-            value: Plans.USERS_BASIC,
-            quantity: 2,
-            isSentryUpgrade: true,
-            trialStatus: 'NOT_STARTED',
-          }
+  describe('user is able to start a new plan', () => {
+    it('displays button with "Proceed to Checkout" text', () => {
+      const props = {
+        isValid: true,
+        getValues: () => ({ newPlan: Plans.USERS_PR_INAPPY, seats: 10 }),
+        value: Plans.USERS_BASIC,
+        quantity: 2,
+      }
 
-          render(<UpdateButton {...props} />)
+      render(<UpdateButton {...props} />)
 
-          const button = screen.getByText('Start trial')
-          expect(button).toBeInTheDocument()
-          expect(button).not.toBeDisabled()
-        })
-
-        it('displays no credit card required text', () => {
-          const props = {
-            isValid: true,
-            getValues: () => ({ newPlan: Plans.USERS_PR_INAPPY, seats: 10 }),
-            value: Plans.USERS_BASIC,
-            quantity: 2,
-            isSentryUpgrade: true,
-            trialStatus: 'NOT_STARTED',
-          }
-
-          render(<UpdateButton {...props} />)
-
-          const text = screen.getByText('No credit card required!')
-          expect(text).toBeInTheDocument()
-        })
-      })
-
-      describe('subscription details are null', () => {
-        it('displays button with "Start trial" text', () => {
-          const props = {
-            isValid: true,
-            getValues: () => ({ newPlan: Plans.USERS_PR_INAPPY, seats: 10 }),
-            value: Plans.USERS_BASIC,
-            quantity: 2,
-            isSentryUpgrade: true,
-            trialStatus: 'NOT_STARTED',
-          }
-
-          render(<UpdateButton {...props} />)
-
-          const button = screen.getByText('Start trial')
-          expect(button).toBeInTheDocument()
-          expect(button).not.toBeDisabled()
-        })
-
-        it('displays no credit card required text', () => {
-          const props = {
-            isValid: true,
-            getValues: () => ({ newPlan: Plans.USERS_PR_INAPPY, seats: 10 }),
-            value: Plans.USERS_BASIC,
-            quantity: 2,
-            isSentryUpgrade: true,
-            trialStatus: 'NOT_STARTED',
-          }
-
-          render(<UpdateButton {...props} />)
-
-          const text = screen.getByText('No credit card required!')
-          expect(text).toBeInTheDocument()
-        })
-      })
-    })
-
-    describe('the user has already started the trial', () => {
-      it('displays button with "Proceed with plan" text', () => {
-        const props = {
-          isValid: true,
-          getValues: () => ({ newPlan: Plans.USERS_PR_INAPPY, seats: 10 }),
-          value: Plans.USERS_BASIC,
-          quantity: 2,
-          isSentryUpgrade: true,
-          trialStatus: 'ONGOING',
-        }
-
-        render(<UpdateButton {...props} />)
-
-        const button = screen.getByText('Proceed with plan')
-        expect(button).toBeInTheDocument()
-        expect(button).not.toBeDisabled()
-      })
-    })
-
-    describe('the user has finished the trial', () => {
-      it('displays button with "Proceed with plan" text', () => {
-        const props = {
-          isValid: true,
-          getValues: () => ({ newPlan: Plans.USERS_PR_INAPPY, seats: 10 }),
-          value: Plans.USERS_BASIC,
-          quantity: 2,
-          isSentryUpgrade: true,
-          disableInputs: false,
-          organizationName: 'codecov',
-          trialStatus: 'EXPIRED',
-        }
-
-        render(<UpdateButton {...props} />)
-
-        const button = screen.getByText('Proceed with plan')
-        expect(button).toBeInTheDocument()
-        expect(button).not.toBeDisabled()
-      })
+      const button = screen.getByText('Proceed to Checkout')
+      expect(button).toBeInTheDocument()
+      expect(button).not.toBeDisabled()
     })
   })
 })

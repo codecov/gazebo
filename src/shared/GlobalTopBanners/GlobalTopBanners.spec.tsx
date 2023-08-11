@@ -2,14 +2,14 @@ import { render, screen } from '@testing-library/react'
 
 import GlobalTopBanners from './GlobalTopBanners'
 
-jest.mock('./SentryTrialBanner', () => () => 'SentryTrialBanner')
 jest.mock('./RequestInstallBanner', () => () => 'RequestInstallBanner')
+jest.mock('./TrialBanner', () => () => 'TrialBanner')
 
 describe('GlobalTopBanners', () => {
   it('renders sentry trial banner', async () => {
     render(<GlobalTopBanners />)
 
-    const banner = await screen.findByText(/SentryTrialBanner/)
+    const banner = await screen.findByText(/TrialBanner/)
     expect(banner).toBeInTheDocument()
   })
 
