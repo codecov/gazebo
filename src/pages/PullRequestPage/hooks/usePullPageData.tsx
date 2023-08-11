@@ -8,6 +8,10 @@ import {
   MissingHeadCommitSchema,
   MissingHeadReportSchema,
 } from 'services/comparison'
+import {
+  RepoNotFoundErrorSchema,
+  RepoOwnerNotActivatedErrorSchema,
+} from 'services/repo'
 import Api from 'shared/api'
 import { userHasAccess } from 'shared/utils/user'
 import A from 'ui/A/A'
@@ -48,14 +52,8 @@ const PullPageDataSchema = z.object({
   isCurrentUserPartOfOrg: z.boolean(),
   repository: z.discriminatedUnion('__typename', [
     RepositorySchema,
-    z.object({
-      __typename: z.literal('NotFoundError'),
-      message: z.string(),
-    }),
-    z.object({
-      __typename: z.literal('OwnerNotActivatedError'),
-      message: z.string(),
-    }),
+    RepoNotFoundErrorSchema,
+    RepoOwnerNotActivatedErrorSchema,
   ]),
 })
 
