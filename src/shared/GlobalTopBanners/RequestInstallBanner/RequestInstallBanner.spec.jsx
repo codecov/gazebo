@@ -178,4 +178,17 @@ describe('RequestInstallBanner', () => {
       expect(body).not.toBeInTheDocument()
     })
   })
+
+  describe('when there is no valid provider', () => {
+    it('does not render banner body', () => {
+      setup()
+
+      render(<RequestInstallBanner />, {
+        wrapper: wrapper({ provider: null }),
+      })
+
+      const body = screen.queryByText(/Installation request sent./)
+      expect(body).not.toBeInTheDocument()
+    })
+  })
 })

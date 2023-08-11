@@ -20,9 +20,11 @@ function RequestInstallBanner() {
     defaultOrgSelectorPage: false,
   })
 
+  const isGitHubProvider = provider && providerToName(provider) === 'Github'
+
   if (
     !showBanner ||
-    (provider && providerToName(provider) !== 'Github') ||
+    !isGitHubProvider ||
     !ownerMatch?.isExact ||
     setupAction !== 'request' ||
     config.IS_SELF_HOSTED
