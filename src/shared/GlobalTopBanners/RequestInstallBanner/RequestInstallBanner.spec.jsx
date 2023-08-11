@@ -2,11 +2,16 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 
+import config from 'config'
+
 import { useLocationParams } from 'services/navigation'
+import { useFlags } from 'shared/featureFlags'
 
 import RequestInstallBanner from './RequestInstallBanner'
 
 jest.mock('services/navigation')
+jest.mock('config')
+jest.mock('shared/featureFlags')
 
 const wrapper =
   ({ provider = 'gh' }) =>
@@ -21,13 +26,25 @@ const wrapper =
   }
 
 describe('RequestInstallBanner', () => {
-  function setup({ setUpAction } = { setUpAction: 'request' }) {
+  function setup(
+    { setUpAction, isSelfHosted, showBanner } = {
+      setUpAction: 'request',
+      isSelfHosted: false,
+      showBanner: true,
+    }
+  ) {
     const user = userEvent.setup()
     const mockSetItem = jest.spyOn(window.localStorage.__proto__, 'setItem')
     const mockGetItem = jest.spyOn(window.localStorage.__proto__, 'getItem')
 
+    config.IS_SELF_HOSTED = isSelfHosted
+
     useLocationParams.mockReturnValue({
       params: { setup_action: setUpAction },
+    })
+
+    useFlags.mockReturnValue({
+      defaultOrgSelectorPage: showBanner,
     })
 
     return {
@@ -133,6 +150,32 @@ describe('RequestInstallBanner', () => {
       await user.click(dismissButton)
 
       await waitFor(() => expect(container).toBeEmptyDOMElement())
+    })
+  })
+
+  describe('when self hosted', () => {
+    it('does not render banner body', () => {
+      setup({ isSelfHosted: true })
+
+      render(<RequestInstallBanner />, {
+        wrapper: wrapper({ provider: 'gh' }),
+      })
+
+      const body = screen.queryByText(/Installation request sent./)
+      expect(body).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when defaultOrgSelectorPage is false', () => {
+    it('does not render banner body', () => {
+      setup({ showBanner: false })
+
+      render(<RequestInstallBanner />, {
+        wrapper: wrapper({ provider: 'gh' }),
+      })
+
+      const body = screen.queryByText(/Installation request sent./)
+      expect(body).not.toBeInTheDocument()
     })
   })
 })
