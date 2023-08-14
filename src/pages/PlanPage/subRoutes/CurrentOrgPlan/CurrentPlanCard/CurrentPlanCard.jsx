@@ -5,12 +5,14 @@ import {
   CollectionMethods,
   isEnterprisePlan,
   isFreePlan,
+  isTrialPlan,
 } from 'shared/utils/billing'
 
 import EnterprisePlanCard from './EnterprisePlanCard'
 import FreePlanCard from './FreePlanCard'
 import ProPlanCard from './ProPlanCard'
 
+// eslint-disable-next-line complexity
 function CurrentPlanCard() {
   const { provider, owner } = useParams()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
@@ -18,7 +20,7 @@ function CurrentPlanCard() {
   const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
   const collectionMethod = accountDetails?.subscriptionDetail?.collectionMethod
 
-  if (isFreePlan(plan?.value)) {
+  if (isFreePlan(plan?.value) || isTrialPlan(plan?.value)) {
     return <FreePlanCard plan={plan} scheduledPhase={scheduledPhase} />
   }
 

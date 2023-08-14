@@ -20,21 +20,27 @@ const PlanDataSchema = z
         marketingName: z.string(),
         monthlyUploadLimit: z.number().nullable(),
         planName: z.string(),
+        pretrialUsersCount: z.number().nullable(),
+        trialEndDate: z.string().nullable(),
         trialStatus: z.nativeEnum(TrialStatuses),
         trialStartDate: z.string().nullable(),
-        trialEndDate: z.string().nullable(),
+        trialTotalDays: z.number().nullable(),
+      })
+      .nullish(),
+    pretrialPlan: z
+      .object({
+        baseUnitPrice: z.number(),
+        benefits: z.array(z.string()),
+        billingRate: z.string().nullable(),
+        marketingName: z.string(),
+        monthlyUploadLimit: z.number().nullable(),
+        planName: z.string(),
       })
       .nullish(),
   })
   .nullish()
 
 type TPlanData = z.infer<typeof PlanDataSchema>
-
-export interface UseTrialArgs {
-  provider: string
-  owner: string
-  opts?: UseQueryOptions<TPlanData>
-}
 
 export const query = `
   query GetPlanData($owner: String!) {
@@ -46,16 +52,32 @@ export const query = `
         marketingName
         monthlyUploadLimit
         planName
+        pretrialUsersCount
+        trialEndDate
         trialStatus
         trialStartDate
-        trialEndDate
+        trialTotalDays
+      }
+      pretrialPlan {
+        baseUnitPrice
+        benefits
+        billingRate
+        marketingName
+        monthlyUploadLimit
+        planName
       }
     }
   }
 `
 
-export const usePlanData = ({ provider, owner, opts }: UseTrialArgs) =>
-  useQuery({
+export interface UseTrialArgs {
+  provider: string
+  owner: string
+  opts?: UseQueryOptions<TPlanData>
+}
+
+export const usePlanData = ({ provider, owner, opts }: UseTrialArgs) => {
+  return useQuery({
     queryKey: ['GetPlanData', provider, owner, query],
     queryFn: ({ signal }) =>
       Api.graphql({
@@ -76,3 +98,4 @@ export const usePlanData = ({ provider, owner, opts }: UseTrialArgs) =>
       }),
     ...(!!opts && opts),
   })
+}
