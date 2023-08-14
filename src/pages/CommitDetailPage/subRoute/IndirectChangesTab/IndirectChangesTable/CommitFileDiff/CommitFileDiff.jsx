@@ -30,7 +30,6 @@ const Loader = () => (
   </div>
 )
 
-// eslint-disable-next-line max-statements
 function CommitFileDiff({ path }) {
   const { owner, repo, provider, commit } = useParams()
   const { commitFileDiff } = useNavLinks()

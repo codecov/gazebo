@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import type { ToastProps } from '../renderToast'
 
 const GenericToast: React.FC<ToastProps> = ({ title, content }) => (

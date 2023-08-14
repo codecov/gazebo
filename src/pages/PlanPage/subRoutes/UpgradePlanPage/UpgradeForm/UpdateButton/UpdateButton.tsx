@@ -3,7 +3,6 @@ import PropTypes, { type InferProps } from 'prop-types'
 import { isFreePlan } from 'shared/utils/billing'
 import Button from 'ui/Button'
 
-// eslint-disable-next-line complexity
 function UpdateButton({
   isValid,
   getValues,

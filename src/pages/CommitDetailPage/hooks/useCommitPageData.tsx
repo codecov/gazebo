@@ -76,7 +76,6 @@ export const useCommitPageData = ({
           repo,
           commitId,
         },
-        // eslint-disable-next-line max-statements, complexity
       }).then((res) => {
         const parsedData = CommitPageDataSchema.safeParse(res?.data?.owner)
 

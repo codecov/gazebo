@@ -12,7 +12,6 @@ import EnterprisePlanCard from './EnterprisePlanCard'
 import FreePlanCard from './FreePlanCard'
 import ProPlanCard from './ProPlanCard'
 
-// eslint-disable-next-line complexity
 function CurrentPlanCard() {
   const { provider, owner } = useParams()
   const { data: accountDetails } = useAccountDetails({ provider, owner })

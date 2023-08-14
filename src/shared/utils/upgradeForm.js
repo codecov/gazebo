@@ -14,7 +14,6 @@ export const MIN_NB_SEATS = 2
 export const MIN_SENTRY_SEATS = 5
 export const SENTRY_PRICE = 29
 
-// eslint-disable-next-line complexity
 export function extractSeats({
   quantity,
   value,

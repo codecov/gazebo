@@ -35,7 +35,6 @@ const determineDateDiff = ({
   return dateDiff
 }
 
-// eslint-disable-next-line max-statements, complexity
 const TrialReminder: React.FC = () => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
 

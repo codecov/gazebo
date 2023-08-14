@@ -7,7 +7,6 @@ export function getEndPeriod(unixPeriodEnd) {
   )
 }
 
-/* eslint-disable max-statements */
 export function loadBaremetrics() {
   return new Promise((resolve) => {
     if (window.barecancel && window.barecancel.created) {

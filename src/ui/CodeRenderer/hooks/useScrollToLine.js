@@ -26,7 +26,6 @@ const handleClick =
 const useTarget = ({ location, idString }) => {
   const [targeted, setTargeted] = useState(false)
 
-  // eslint-disable-next-line complexity
   useEffect(() => {
     if (location?.hash === idString) {
       if (!targeted) {
@@ -73,7 +72,6 @@ export const useScrollToLine = ({
 
   const [resizeObs] = useState(() => new ResizeObserver(handleResize))
 
-  // eslint-disable-next-line complexity, max-statements
   useEffect(() => {
     if (!resizeObs) return
 

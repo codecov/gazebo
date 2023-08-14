@@ -49,7 +49,6 @@ AlertBanners.propTypes = {
   hasGhApp: PropTypes.bool.isRequired,
 }
 
-// eslint-disable-next-line complexity
 export default function HeaderBanners() {
   const { owner, provider } = useParams()
   // TODO: refactor this to add a gql field for the integration id used to determine if the org has a GH app

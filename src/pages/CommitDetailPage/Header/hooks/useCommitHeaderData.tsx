@@ -96,7 +96,6 @@ export const useCommitHeaderData = ({
           repo,
           commitId,
         },
-        // eslint-disable-next-line max-statements
       }).then((res) => {
         const parsedData = CommitHeaderDataSchema.safeParse(res?.data?.owner)
 

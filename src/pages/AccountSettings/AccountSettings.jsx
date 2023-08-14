@@ -25,7 +25,6 @@ const Loader = () => (
   </div>
 )
 
-// eslint-disable-next-line complexity
 function AccountSettings() {
   const { provider, owner } = useParams()
   const isAdmin = useIsCurrentUserAnAdmin({ owner })
