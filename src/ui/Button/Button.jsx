@@ -81,7 +81,7 @@ const variantClasses = {
 
 const loadingVariantClasses = {
   default: `disabled:bg-ds-gray-secondary disabled:text-ds-gray-octonary disabled:border-ds-gray-quaternary`,
-  primary: `disabled:bg-ds-blue-darker disabled:bg-ds-blue-medium text-white disabled:border-ds-blue-quinary`,
+  primary: `justify-center border border-solid font-semibold text-white shadow disabled:border-ds-blue-quinary disabled:bg-ds-blue-quinary`,
   danger: `disabled:text-white disabled:border-ds-primary-red disabled:bg-ds-primary-red`,
   secondary: `disabled:text-white disabled:border-ds-pink-tertiary disabled:bg-ds-pink`,
 }
