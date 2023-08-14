@@ -14,7 +14,7 @@ import {
 } from 'services/repo'
 import Api from 'shared/api'
 import { userHasAccess } from 'shared/utils/user'
-import A from 'ui/A/A'
+import A from 'ui/A'
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
