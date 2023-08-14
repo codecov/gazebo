@@ -1,3 +1,4 @@
+export * from './schemas'
 export * from './useRepo'
 export * from './useRepoOverview'
 export * from './useRepoCoverage'
