@@ -15,25 +15,53 @@ jest.mock('../subroute/ComponentsTab', () => () => 'ComponentsTab')
 jest.mock('../subroute/FileExplorer', () => () => 'FileExplorer')
 jest.mock('../subroute/FileViewer', () => () => 'FileViewer')
 
-const mockPullData = (resultType) => ({
-  owner: {
-    isCurrentUserPartOfOrg: true,
-    repository: {
-      private: false,
-      pull: {
-        pullId: 1,
-        compareWithBase: {
-          __typename: resultType,
-          impactedFilesCount: 2,
-          indirectChangedFilesCount: 3,
-          directChangedFilesCount: 4,
-          flagComparisonsCount: 5,
-          componentComparisonCount: 6,
+const mockPullData = (resultType) => {
+  if (resultType === ComparisonReturnType.MISSING_BASE_COMMIT) {
+    return {
+      owner: {
+        isCurrentUserPartOfOrg: true,
+        repository: {
+          __typename: 'Repository',
+          private: false,
+          pull: {
+            pullId: 1,
+            head: {
+              commitid: '123',
+            },
+            compareWithBase: {
+              __typename: resultType,
+              message: resultType,
+            },
+          },
+        },
+      },
+    }
+  }
+
+  return {
+    owner: {
+      isCurrentUserPartOfOrg: true,
+      repository: {
+        __typename: 'Repository',
+        private: false,
+        pull: {
+          pullId: 1,
+          head: {
+            commitid: '123',
+          },
+          compareWithBase: {
+            __typename: resultType,
+            impactedFilesCount: 2,
+            indirectChangedFilesCount: 3,
+            directChangedFilesCount: 4,
+            flagComparisonsCount: 5,
+            componentComparisonsCount: 6,
+          },
         },
       },
     },
-  },
-})
+  }
+}
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -188,9 +216,9 @@ describe('PullRequestPageContent', () => {
   })
 
   describe('testing blob path', () => {
-    beforeEach(() => setup())
-
     it('renders FileViewer', async () => {
+      setup()
+
       render(<PullRequestPageContent />, {
         wrapper: wrapper('/gh/codecov/test-repo/pull/1/blob/src/file.js'),
       })
