@@ -15,9 +15,11 @@ jest.mock('ui/TruncatedMessage/hooks')
 
 const mockCommit = {
   owner: {
+    isCurrentUserPartOfOrg: true,
     repository: {
+      __typename: 'Repository',
       commit: {
-        commitid: 1,
+        commitid: '1',
       },
     },
   },
@@ -146,7 +148,12 @@ describe('CommitPage', () => {
         if (noCommit) {
           return res(
             ctx.status(200),
-            ctx.data({ owner: { repository: { commit: null } } })
+            ctx.data({
+              owner: {
+                isCurrentUserPartOfOrg: false,
+                repository: { __typename: 'Repository', commit: null },
+              },
+            })
           )
         }
 
