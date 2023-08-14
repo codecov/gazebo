@@ -24,12 +24,14 @@ const UlVariantClass = {
   default: 'w-full border-gray-ds-tertiary',
   gray: 'w-full border-gray-ds-tertiary',
   text: 'left-0 whitespace-nowrap',
+  defaultOrgSelector: 'w-full border-gray-ds-tertiary top-[3rem]',
 }
 
 const ButtonVariantClass = {
   default: `w-full h-8 px-3 border border-ds-gray-tertiary rounded-md bg-white disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary`,
   gray: `w-full h-8 px-3 border border-ds-gray-tertiary rounded-md bg-white disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary bg-ds-gray-primary`,
   text: `flex-init text-ds-blue`,
+  defaultOrgSelector: `w-full h-12 px-3 border border-ds-gray-tertiary rounded-md bg-white disabled:text-ds-gray-quaternary disabled:bg-ds-gray-primary disabled:border-ds-gray-tertiary`,
 }
 
 function getSearchPlaceholder(resourceName) {
@@ -230,7 +232,7 @@ Select.propTypes = {
   renderItem: PropTypes.func,
   renderSelected: PropTypes.func,
   ariaName: PropTypes.string.isRequired,
-  variant: PropTypes.oneOf(['default', 'gray', 'text']),
+  variant: PropTypes.oneOf(['default', 'gray', 'text', 'defaultOrgSelector']),
   disabled: PropTypes.bool,
   dataMarketing: dataMarketingType,
   onSearch: PropTypes.func,
