@@ -13,10 +13,11 @@ jest.mock('shared/featureFlags')
 const mockPullData = {
   owner: {
     repository: {
+      __typename: 'Repository',
       pull: {
         pullId: 1,
         title: 'Cool Pull Request',
-        state: 'open',
+        state: 'OPEN',
         author: {
           username: 'cool-user',
         },

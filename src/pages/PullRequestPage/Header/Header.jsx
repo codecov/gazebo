@@ -25,39 +25,41 @@ function Header() {
     <div className="flex justify-between border-b border-ds-gray-secondary pb-2 text-xs">
       <div>
         <h1 className="flex items-center gap-2 text-lg font-semibold">
-          {data?.title}
+          {data?.pull?.title}
           <span
             className={cs(
               'text-white font-bold px-3 py-0.5 text-xs rounded',
-              pullStateToColor[data?.state]
+              pullStateToColor[data?.pull?.state]
             )}
           >
-            {capitalize(data?.state)}
+            {capitalize(data?.pull?.state)}
           </span>
         </h1>
         <p className="flex items-center gap-2">
           <span>
-            {data?.updatestamp && formatTimeToNow(data?.updatestamp)}{' '}
-            <span className="bold">{data?.author?.username}</span> authored{' '}
-            {data?.pullId && (
+            {data?.pull?.updatestamp &&
+              formatTimeToNow(data?.pull?.updatestamp)}{' '}
+            <span className="bold">{data?.pull?.author?.username}</span>{' '}
+            authored{' '}
+            {data?.pull?.pullId && (
               <A
                 href={getProviderPullURL({
                   provider,
                   owner,
                   repo,
-                  pullId: data?.pullId,
+                  pullId: data?.pull?.pullId,
                 })}
                 hook="provider-pr-link"
                 isExternal={true}
               >
-                #{data?.pullId}
+                #{data?.pull?.pullId}
               </A>
             )}
           </span>
-          <CIStatusLabel ciPassed={data?.head?.ciPassed} />
+          <CIStatusLabel ciPassed={data?.pull?.head?.ciPassed} />
           <span className="flex items-center">
             <Icon name="branch" variant="developer" size="sm" />
-            {data?.head?.branchName}
+            {data?.pull?.head?.branchName}
           </span>
         </p>
       </div>
