@@ -77,7 +77,7 @@ afterAll(() => {
 })
 
 describe('PullRequestPage', () => {
-  function setup({ hasAccess = false, pullData = {} }) {
+  function setup({ hasAccess = false, pullData = mockPullPageData }) {
     server.use(
       graphql.query('PullHeadData', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockPullHeadData))
