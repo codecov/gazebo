@@ -18,6 +18,7 @@ jest.mock('./PullRequestPageTabs', () => () => 'PullRequestPageTabs')
 const mockPullHeadData = {
   owner: {
     repository: {
+      __typename: 'Repository',
       pull: {
         pullId: 12,
         title: 'Cool New Pull Request',

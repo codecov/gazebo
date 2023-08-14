@@ -1,26 +1,20 @@
 import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
+import { useFlags } from 'shared/featureFlags'
+import { loginProviderToShortName } from 'shared/utils/loginProviders'
 import A from 'ui/A'
 
 import LoginButton from './LoginButton'
 
-function getProviderShortName(provider) {
-  const providerShortName = {
-    gh: 'gh',
-    github: 'gh',
-    bb: 'bb',
-    bitbucket: 'bb',
-    gl: 'gl',
-    gitlab: 'gl',
-  }
-  return providerShortName[provider] || null
-}
-
 function LoginPage() {
+  const { sentryLoginProvider } = useFlags({
+    sentryLoginProvider: false,
+  })
+
   const { provider } = useParams()
   const { params } = useLocationParams()
-  const providerName = getProviderShortName(provider)
+  const providerName = loginProviderToShortName(provider)
 
   if ('state' in params) {
     localStorage.setItem('sentry-token', params?.state)
@@ -29,7 +23,7 @@ function LoginPage() {
   return (
     <div className="flex h-full flex-col items-center justify-center">
       <h1 className="mb-4	text-3xl">Login to Codecov</h1>
-      <p>You&apos;ll be taken to your repo provider to authenticate</p>
+      <p>You&apos;ll be taken to your provider to authenticate</p>
       <div className="mx-auto mt-6 w-96">
         <div className="mb-4">
           <hr />
@@ -39,6 +33,7 @@ function LoginPage() {
         ) : (
           <div className="space-y-4">
             <LoginButton provider="gh" />
+            {sentryLoginProvider && <LoginButton provider="sentry" />}
             <LoginButton provider="bb" />
             <LoginButton provider="gl" />
           </div>

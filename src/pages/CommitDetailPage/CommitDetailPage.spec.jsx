@@ -15,9 +15,11 @@ jest.mock('ui/TruncatedMessage/hooks')
 
 const mockCommit = {
   owner: {
+    isCurrentUserPartOfOrg: true,
     repository: {
+      __typename: 'Repository',
       commit: {
-        commitid: 1,
+        commitid: '1',
       },
     },
   },
@@ -26,13 +28,14 @@ const mockCommit = {
 const mockCommitHeaderData = {
   owner: {
     repository: {
+      __typename: 'Repository',
       commit: {
         author: {
           username: 'cool-user',
         },
         branchName: 'cool-branch',
         ciPassed: true,
-        commitid: 1,
+        commitid: '1',
         createdAt: '2023-01-01T12:00:00.000000',
         message: 'Cool Commit Message',
         pullId: 1,
@@ -145,7 +148,12 @@ describe('CommitPage', () => {
         if (noCommit) {
           return res(
             ctx.status(200),
-            ctx.data({ owner: { repository: { commit: null } } })
+            ctx.data({
+              owner: {
+                isCurrentUserPartOfOrg: false,
+                repository: { __typename: 'Repository', commit: null },
+              },
+            })
           )
         }
 

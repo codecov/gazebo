@@ -10,9 +10,10 @@ import Header from './Header'
 
 jest.mock('ui/TruncatedMessage/hooks')
 
-const mockData = (pullId) => ({
+const mockData = (pullId = null) => ({
   owner: {
     repository: {
+      __typename: 'Repository',
       commit: {
         author: {
           username: 'cool-user',

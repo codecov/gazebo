@@ -1,10 +1,16 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
-import { rest } from 'msw'
+import {
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
+import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TrialStatuses } from 'services/account'
 import { Plans } from 'shared/utils/billing'
 
 import UpgradePlanPage from './UpgradePlanPage'
@@ -101,6 +107,20 @@ const sentryPlanYear = {
   trialDays: 14,
 }
 
+const mockPlanData = {
+  baseUnitPrice: 10,
+  benefits: [],
+  billingRate: 'monthly',
+  marketingName: 'Users Basic',
+  monthlyUploadLimit: 250,
+  planName: 'users-basic',
+  trialStatus: TrialStatuses.NOT_STARTED,
+  trialStartDate: '',
+  trialEndDate: '',
+  trialTotalDays: 0,
+  pretrialUsersCount: 0,
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -119,7 +139,7 @@ const wrapper =
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={[initialWrappers]}>
           <Route path="/plan/:provider/:owner/upgrade">
-            <Suspense fallback={null}>{children}</Suspense>
+            <Suspense fallback={<p>Loading...</p>}>{children}</Suspense>
           </Route>
           <Route
             path="*"
@@ -154,6 +174,18 @@ describe('UpgradePlanPage', () => {
     }
   ) {
     server.use(
+      graphql.query('GetPlanData', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              plan: {
+                ...mockPlanData,
+              },
+            },
+          })
+        )
+      ),
       rest.get('/internal/plans', (req, res, ctx) =>
         res(
           ctx.status(200),
@@ -185,10 +217,10 @@ describe('UpgradePlanPage', () => {
               value: planValue,
               baseUnitPrice: 12,
               benefits: [
-                'Configureable # of users',
+                'Configurable # of users',
                 'Unlimited public repositories',
                 'Unlimited private repositories',
-                'Priorty Support',
+                'Priority Support',
               ],
             },
             subscriptionDetail: {
@@ -223,8 +255,40 @@ describe('UpgradePlanPage', () => {
     it('does not render upgrade banner', async () => {
       render(<UpgradePlanPage />, { wrapper: wrapper() })
 
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
+      await waitForElementToBeRemoved(screen.queryByText('Loading...'))
+
+      const banner = screen.queryByText(/You are choosing to upgrade/)
+      expect(banner).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with a free plan', () => {
+    it('renders the basic plan title', async () => {
+      setup({ planValue: Plans.USERS_BASIC })
+
+      render(<UpgradePlanPage />, { wrapper: wrapper() })
+
+      const title = await screen.findByText(/Pro Team/)
+      expect(title).toBeInTheDocument()
+    })
+
+    it('does not render a cancel plan link', async () => {
+      setup({ planValue: Plans.USERS_BASIC })
+
+      render(<UpgradePlanPage />, { wrapper: wrapper() })
+
+      await waitForElementToBeRemoved(screen.queryByText('Loading...'))
+
+      const cancelLink = screen.queryByText('Cancel')
+      expect(cancelLink).not.toBeInTheDocument()
+    })
+
+    it('does not render upgrade banner', async () => {
+      setup({ planValue: Plans.USERS_BASIC })
+
+      render(<UpgradePlanPage />, { wrapper: wrapper() })
+
+      await waitForElementToBeRemoved(screen.queryByText('Loading...'))
 
       const banner = screen.queryByText(/You are choosing to upgrade/)
       expect(banner).not.toBeInTheDocument()
@@ -253,8 +317,7 @@ describe('UpgradePlanPage', () => {
     it('does not render cancel plan link', async () => {
       render(<UpgradePlanPage />, { wrapper: wrapper() })
 
-      const title = await screen.findByText(/Pro Team/)
-      expect(title).toBeInTheDocument()
+      await waitForElementToBeRemoved(screen.queryByText('Loading...'))
 
       const cancelLink = screen.queryByText('Cancel plan')
       expect(cancelLink).not.toBeInTheDocument()
