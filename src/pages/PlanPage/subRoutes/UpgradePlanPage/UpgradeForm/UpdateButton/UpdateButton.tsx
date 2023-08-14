@@ -1,6 +1,5 @@
 import PropTypes, { type InferProps } from 'prop-types'
 
-import { TrialStatuses } from 'services/account'
 import { isFreePlan } from 'shared/utils/billing'
 import Button from 'ui/Button'
 
@@ -10,30 +9,10 @@ function UpdateButton({
   getValues,
   value,
   quantity,
-  isSentryUpgrade,
-  trialStatus,
 }: InferProps<typeof UpdateButton.propTypes>) {
   const isSamePlan = getValues()?.newPlan === value
   const noChangeInSeats = getValues()?.seats === quantity
   const disabled = !isValid || (isSamePlan && noChangeInSeats)
-
-  if (isSentryUpgrade && trialStatus === TrialStatuses.NOT_STARTED) {
-    return (
-      <div className="flex items-center gap-2">
-        <Button
-          data-cy="all-orgs-plan-update"
-          disabled={false}
-          type="submit"
-          variant="primary"
-          hook="submit-upgrade"
-          to={undefined}
-        >
-          Start trial
-        </Button>
-        <p>No credit card required!</p>
-      </div>
-    )
-  }
 
   return (
     <Button
@@ -44,7 +23,7 @@ function UpdateButton({
       hook="submit-upgrade"
       to={undefined}
     >
-      {isFreePlan(value) ? 'Proceed with plan' : 'Update'}
+      {isFreePlan(value) ? 'Proceed to Checkout' : 'Update'}
     </Button>
   )
 }
@@ -54,8 +33,6 @@ UpdateButton.propTypes = {
   getValues: PropTypes.func.isRequired,
   value: PropTypes.string,
   quantity: PropTypes.number,
-  isSentryUpgrade: PropTypes.bool.isRequired,
-  trialStatus: PropTypes.string.isRequired,
 }
 
 export default UpdateButton

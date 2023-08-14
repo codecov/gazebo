@@ -5,8 +5,6 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
-
 import PullRequestPage from './PullRequestPage'
 
 jest.mock('shared/featureFlags')
@@ -18,6 +16,7 @@ jest.mock('./PullRequestPageTabs', () => () => 'PullRequestPageTabs')
 const mockPullHeadData = {
   owner: {
     repository: {
+      __typename: 'Repository',
       pull: {
         pullId: 12,
         title: 'Cool New Pull Request',
@@ -32,6 +31,21 @@ const mockPullHeadData = {
         updatestamp: '2023-01-01T12:00:00.000000',
       },
     },
+  },
+}
+
+const mockPullPageData = {
+  pullId: 1,
+  head: {
+    commitid: '123',
+  },
+  compareWithBase: {
+    __typename: 'Comparison',
+    impactedFilesCount: 4,
+    indirectChangedFilesCount: 0,
+    flagComparisonsCount: 1,
+    componentComparisonsCount: 6,
+    directChangedFilesCount: 0,
   },
 }
 
@@ -63,9 +77,7 @@ afterAll(() => {
 })
 
 describe('PullRequestPage', () => {
-  function setup({ hasAccess = false, pullData = {} }) {
-    useFlags.mockReturnValue({ pendoModalPrPage: false })
-
+  function setup({ hasAccess = false, pullData = mockPullPageData }) {
     server.use(
       graphql.query('PullHeadData', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockPullHeadData))
@@ -77,6 +89,7 @@ describe('PullRequestPage', () => {
             owner: {
               isCurrentUserPartOfOrg: hasAccess,
               repository: {
+                __typename: 'Repository',
                 private: true,
                 pull: pullData,
               },

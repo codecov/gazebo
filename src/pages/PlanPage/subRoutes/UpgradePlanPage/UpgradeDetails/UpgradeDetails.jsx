@@ -1,7 +1,12 @@
 import PropTypes from 'prop-types'
+import { useParams } from 'react-router-dom'
 
 import sentryCodecov from 'assets/plan/sentry_codecov.svg'
-import { accountDetailsPropType, planPropType } from 'services/account'
+import {
+  accountDetailsPropType,
+  planPropType,
+  usePlanData,
+} from 'services/account'
 import BenefitList from 'shared/plan/BenefitList'
 import ScheduledPlanDetails from 'shared/plan/ScheduledPlanDetails'
 import { canApplySentryUpgrade } from 'shared/utils/billing'
@@ -14,6 +19,7 @@ function SentryPlanDetails({
   sentryPlanMonth,
   sentryPlanYear,
   cancelAtPeriodEnd,
+  trialStatus,
 }) {
   return (
     <div className="flex flex-col gap-4 border p-4">
@@ -33,7 +39,7 @@ function SentryPlanDetails({
       <p className="text-ds-gray-quaternary">
         ${sentryPlanMonth?.baseUnitPrice} per user / month if paid monthly
       </p>
-      {shouldRenderCancelLink(cancelAtPeriodEnd, plan) && (
+      {shouldRenderCancelLink(cancelAtPeriodEnd, plan, trialStatus) && (
         <A
           to={{ pageName: 'cancelOrgPlan' }}
           variant="black"
@@ -54,6 +60,7 @@ SentryPlanDetails.propTypes = {
   }),
   sentryPlanMonth: planPropType,
   sentryPlanYear: planPropType,
+  trialStatus: PropTypes.string,
 }
 
 function UpgradeDetails({
@@ -66,8 +73,12 @@ function UpgradeDetails({
   accountDetails,
   scheduledPhase,
 }) {
+  const { provider, owner } = useParams()
+  const { data: planData } = usePlanData({ provider, owner })
+
   const cancelAtPeriodEnd =
     accountDetails?.subscriptionDetail?.cancelAtPeriodEnd
+  const trialStatus = planData?.plan?.trialStatus
 
   if (canApplySentryUpgrade({ plan, plans })) {
     return (
@@ -76,6 +87,7 @@ function UpgradeDetails({
         plan={plan}
         sentryPlanMonth={sentryPlanMonth}
         sentryPlanYear={sentryPlanYear}
+        trialStatus={trialStatus}
       />
     )
   }
@@ -103,7 +115,7 @@ function UpgradeDetails({
         {scheduledPhase && (
           <ScheduledPlanDetails scheduledPhase={scheduledPhase} />
         )}
-        {shouldRenderCancelLink(cancelAtPeriodEnd, plan) && (
+        {shouldRenderCancelLink(cancelAtPeriodEnd, plan, trialStatus) && (
           <A
             to={{ pageName: 'cancelOrgPlan' }}
             variant="graySenary"

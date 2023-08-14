@@ -1,13 +1,6 @@
-import { useFlags } from 'shared/featureFlags'
 import A from 'ui/A'
 
 const PendoLink: React.FC = () => {
-  const { pendoModalPrPage } = useFlags({ pendoModalPrPage: false })
-
-  if (!pendoModalPrPage) {
-    return null
-  }
-
   return (
     <div className="flex items-end">
       {/* Need this rule here as the href will be handled by pendo */}
