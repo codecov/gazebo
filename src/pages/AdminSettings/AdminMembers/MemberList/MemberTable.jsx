@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'

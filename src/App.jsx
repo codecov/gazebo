@@ -38,7 +38,6 @@ const HomePageRedirect = () => {
   return <Redirect to={`/${provider}/${defaultOrg}`} />
 }
 
-// eslint-disable-next-line complexity
 const MainAppRoutes = () => (
   <Switch>
     <SentryRoute path="/login/:provider">

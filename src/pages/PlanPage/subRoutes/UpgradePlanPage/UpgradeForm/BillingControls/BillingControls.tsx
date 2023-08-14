@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -17,7 +16,6 @@ interface BillingTextProps {
   isSentryUpgrade: boolean
 }
 
-// eslint-disable-next-line max-statements
 const BillingText: React.FC<BillingTextProps> = ({
   isSentryUpgrade,
   option,

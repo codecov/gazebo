@@ -10,7 +10,6 @@ interface URLParams {
   provider: string
 }
 
-// eslint-disable-next-line max-statements, complexity
 export const useCommitsTabBranchSelector = ({
   passedBranch,
   defaultBranch,

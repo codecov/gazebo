@@ -59,7 +59,6 @@ const Loader = () => (
   </div>
 )
 
-// eslint-disable-next-line max-statements, complexity
 function RepoPage() {
   const { provider, owner, repo } = useParams()
   const [refetchEnabled, setRefetchEnabled] = useState(false)

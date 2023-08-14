@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { toast, Toaster } from 'react-hot-toast'

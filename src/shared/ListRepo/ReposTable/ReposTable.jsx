@@ -75,7 +75,6 @@ const tableInactive = [
   },
 ]
 
-// eslint-disable-next-line complexity
 function transformRepoToTable({ repos, owner, isCurrentUserPartOfOrg }) {
   // if there are no repos show empty message
   if (!repos?.length || repos?.length <= 0) {
@@ -130,7 +129,6 @@ function transformRepoToTable({ repos, owner, isCurrentUserPartOfOrg }) {
   })
 }
 
-// eslint-disable-next-line complexity
 function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
   const { data: userData } = useUser()
   const { data: ownerData } = useOwner({

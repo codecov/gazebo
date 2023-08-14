@@ -52,7 +52,6 @@ const handleActivate = (accountDetails, activate, setIsOpen) => (user) => {
   }
 }
 
-// eslint-disable-next-line max-statements
 function MembersList() {
   const { owner, provider } = useParams()
   const { params, updateParams } = useLocationParams({

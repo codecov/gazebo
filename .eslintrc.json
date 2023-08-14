@@ -23,8 +23,8 @@
     "testing-library/prefer-user-event": "warn",
     "testing-library/prefer-wait-for": "warn",
     "testing-library/prefer-explicit-assert": "warn",
-    "complexity": ["error", 5],
-    "max-statements": ["error", 10],
+    "complexity": "off",
+    "max-statements": "off",
     "max-nested-callbacks": ["error", 2],
     "react/prefer-stateless-function": ["error"],
     "react/prop-types": [
@@ -237,6 +237,14 @@
         ]
       }
     },
+    // TypeScript rules
+    {
+      "files": ["src/**/*.ts", "src/**/*.tsx"],
+      "rules": {
+        // No prop-types definitions required for typed React components
+        "react/prop-types": "off"
+      }
+    },
     // Testing Rules
     {
       "files": [
@@ -255,8 +263,6 @@
       ],
       "rules": {
         "max-nested-callbacks": "off",
-        "max-statements": "off",
-        "complexity": "off",
         "react/display-name": "off",
         "camelcase": "off"
       }

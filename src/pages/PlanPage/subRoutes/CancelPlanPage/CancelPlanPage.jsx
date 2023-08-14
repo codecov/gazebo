@@ -21,7 +21,6 @@ const Loader = () => (
   </div>
 )
 
-// eslint-disable-next-line max-statements, complexity
 function CancelPlanPage() {
   const { provider, owner } = useParams()
   const { data: accountDetailsData } = useAccountDetails({ provider, owner })

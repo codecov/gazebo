@@ -68,7 +68,6 @@ LoadMoreTrigger.propTypes = {
   intersectionRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
 }
 
-// eslint-disable-next-line complexity
 function DropdownList({
   ariaName,
   isOpen,

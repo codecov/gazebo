@@ -30,7 +30,6 @@ interface UrlParams {
   owner?: string
 }
 
-// eslint-disable-next-line complexity, max-statements
 const TrialBanner: React.FC = () => {
   const { provider, owner } = useParams<UrlParams>()
 

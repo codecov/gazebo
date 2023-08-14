@@ -25,7 +25,6 @@ function isDisabled({ isValid, isDirty }) {
   return (!isValid && isDirty) || !isDirty
 }
 
-// eslint-disable-next-line complexity
 export default function TermsOfService() {
   const { register, control, handleSubmit, formState, setValue, setError } =
     useForm({

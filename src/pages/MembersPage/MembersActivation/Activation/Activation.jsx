@@ -7,7 +7,6 @@ import A from 'ui/A/A'
 
 import ChangePlanLink from './ChangePlanLink'
 
-// eslint-disable-next-line complexity, max-statements
 function Activation() {
   const { owner, provider } = useParams()
   const { data: accountDetails } = useAccountDetails({ owner, provider })

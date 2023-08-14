@@ -121,7 +121,6 @@ const Loader = () => (
   </div>
 )
 
-// eslint-disable-next-line complexity
 function CommitsTable({ branch, states, search }) {
   const { provider, owner, repo } = useParams()
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
