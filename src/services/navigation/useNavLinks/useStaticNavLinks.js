@@ -272,5 +272,11 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    freeTrialFaqs: {
+      text: 'Free Trial FAQ',
+      path: () => 'https://docs.codecov.com/docs/free-trial-faqs',
+      isExternalLink: true,
+      openNewTab: true,
+    },
   }
 }

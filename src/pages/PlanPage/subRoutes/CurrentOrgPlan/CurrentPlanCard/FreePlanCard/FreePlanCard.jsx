@@ -3,16 +3,25 @@ import PropType from 'prop-types'
 import { useParams } from 'react-router-dom'
 
 import { usePlanPageData } from 'pages/PlanPage/hooks'
-import { planPropType, usePlans } from 'services/account'
+import {
+  planPropType,
+  TrialStatuses,
+  usePlanData,
+  usePlans,
+} from 'services/account'
+import { useFlags } from 'shared/featureFlags'
 import BenefitList from 'shared/plan/BenefitList'
 import ScheduledPlanDetails from 'shared/plan/ScheduledPlanDetails'
 import {
   canApplySentryUpgrade,
   findSentryPlans,
+  isTrialPlan,
   useProPlans,
 } from 'shared/utils/billing'
 import { SENTRY_PRICE } from 'shared/utils/upgradeForm'
 import A from 'ui/A'
+
+import ProPlanSubheading from './ProPlanSubheading'
 
 import ActionsBilling from '../shared/ActionsBilling/ActionsBilling'
 import PlanPricing from '../shared/PlanPricing'
@@ -66,7 +75,10 @@ function PlanUpgrade({ isSentryUpgrade, plans }) {
 
   return (
     <div className="flex flex-col border">
-      <h2 className="p-4 font-semibold">{upgradeToPlan?.marketingName} plan</h2>
+      <div className="p-4">
+        <h2 className="font-semibold">{upgradeToPlan?.marketingName} plan</h2>
+        <ProPlanSubheading />
+      </div>
       <hr />
       <div className="grid gap-4 p-4 sm:grid-cols-2 sm:gap-0">
         <div className="flex flex-col gap-2">
@@ -99,37 +111,61 @@ PlanUpgrade.propTypes = {
   plans: PropType.arrayOf(planPropType).isRequired,
 }
 
+// eslint-disable-next-line complexity, max-statements
 function FreePlanCard({ plan, scheduledPhase }) {
-  const { provider } = useParams()
-
+  const { provider, owner } = useParams()
+  const { codecovTrialMvp } = useFlags({
+    codecovTrialMvp: false,
+  })
   const { data: ownerData } = usePlanPageData()
-  const uploadsNumber = ownerData?.numberOfUploads
+  const { data: planData } = usePlanData({
+    provider,
+    owner,
+    opts: { enabled: codecovTrialMvp },
+  })
 
   const { data: plans } = usePlans(provider)
+
+  const uploadsNumber = ownerData?.numberOfUploads
+  const trialOngoing =
+    isTrialPlan(planData?.plan?.planName) &&
+    planData?.plan.trialStatus === TrialStatuses.ONGOING
+
+  let benefits = plan?.benefits
+  let planName = plan?.value
+  let baseUnitPrice = plan?.baseUnitPrice
+  let marketingName = plan?.marketingName
+  if (trialOngoing) {
+    benefits = planData?.pretrialPlan?.benefits
+    planName = planData?.pretrialPlan?.planName
+    baseUnitPrice = planData?.pretrialPlan?.baseUnitPrice
+    marketingName = planData?.pretrialPlan?.marketingName
+  }
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col border">
         <div className="p-4">
-          <h2 className="font-semibold">{plan?.marketingName} plan</h2>
-          <span className="text-gray-500">Current Plan</span>
+          <h2 className="font-semibold">{marketingName} plan</h2>
+          <span className="text-gray-500">
+            {trialOngoing
+              ? "You'll be downgraded to the Developer plan when your trial expires."
+              : 'Current Plan'}
+          </span>
         </div>
         <hr />
         <div className="grid gap-4 p-4 sm:grid-cols-2 sm:gap-0">
           <div className="flex flex-col gap-2">
             <p className="text-xs font-semibold">Includes</p>
             <BenefitList
-              benefits={plan?.benefits}
+              benefits={benefits}
               iconName="check"
               iconColor="text-ds-pink-quinary"
             />
           </div>
           <div className="flex flex-col gap-3 border-t pt-2 sm:border-0 sm:p-0">
             <p className="text-xs font-semibold">Pricing</p>
-            <PlanPricing
-              value={plan?.value}
-              baseUnitPrice={plan?.baseUnitPrice}
-            />
+            <PlanPricing value={planName} baseUnitPrice={baseUnitPrice} />
             <div>
               {isNumber(uploadsNumber) && (
                 <p className="mt-4 text-xs text-ds-gray-senary">
