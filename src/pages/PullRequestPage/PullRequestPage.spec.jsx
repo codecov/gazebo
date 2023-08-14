@@ -5,8 +5,6 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
-
 import PullRequestPage from './PullRequestPage'
 
 jest.mock('shared/featureFlags')
@@ -79,14 +77,7 @@ afterAll(() => {
 })
 
 describe('PullRequestPage', () => {
-  function setup(
-    { hasAccess = false, pullData = mockPullPageData } = {
-      hasAccess: false,
-      pullData: mockPullPageData,
-    }
-  ) {
-    useFlags.mockReturnValue({ pendoModalPrPage: false })
-
+  function setup({ hasAccess = false, pullData = mockPullPageData }) {
     server.use(
       graphql.query('PullHeadData', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockPullHeadData))

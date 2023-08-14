@@ -4,8 +4,6 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
-
 import Header from './Header'
 
 jest.mock('shared/featureFlags')
@@ -58,8 +56,6 @@ afterAll(() => {
 
 describe('Header', () => {
   function setup() {
-    useFlags.mockReturnValue({ pendoModalPrPage: false })
-
     server.use(
       graphql.query('PullHeadData', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockPullData))
