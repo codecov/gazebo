@@ -6,7 +6,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
-import A from 'ui/A/A'
+import A from 'ui/A'
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
