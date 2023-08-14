@@ -72,7 +72,7 @@ describe('Header', () => {
       setup()
     })
 
-    it.only('renders the pr overview', async () => {
+    it('renders the pr overview', async () => {
       render(<Header />, { wrapper })
 
       await waitFor(() => queryClient.isFetching)
