@@ -1,8 +1,8 @@
 import { useParams } from 'react-router-dom'
 
+import Table from 'old_ui/Table'
 import { usePull } from 'services/pull'
 import FlagsNotConfigured from 'shared/FlagsNotConfigured'
-import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
 
 const tableColumns = [
