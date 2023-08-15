@@ -43,7 +43,7 @@ export interface UseBranchArgs {
   owner: string
   repo: string
   branch: string
-  opts?: UseQueryOptions<{ branch: BranchData | undefined }>
+  opts?: UseQueryOptions<{ branch: BranchData }>
 }
 
 export const query = `
@@ -124,7 +124,7 @@ export const useBranch = ({
         }
 
         return {
-          branch: data?.owner?.repository?.branch,
+          branch: data?.owner?.repository?.branch ?? null,
         }
       }),
     ...(!!opts && opts),
