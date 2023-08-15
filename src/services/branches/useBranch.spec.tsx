@@ -39,6 +39,10 @@ const mockOwnerNotActivatedError = {
   },
 }
 
+const mockNullOwner = {
+  owner: null,
+}
+
 const mockUnsuccessfulParseError = {}
 
 const queryClient = new QueryClient({
@@ -65,6 +69,7 @@ interface SetupArgs {
   isNotFoundError?: boolean
   isOwnerNotActivatedError?: boolean
   isUnsuccessfulParseError?: boolean
+  isNullOwner?: boolean
 }
 
 describe('useBranch', () => {
@@ -72,6 +77,7 @@ describe('useBranch', () => {
     isNotFoundError = false,
     isOwnerNotActivatedError = false,
     isUnsuccessfulParseError = false,
+    isNullOwner = false,
   }: SetupArgs) {
     server.use(
       graphql.query('GetBranch', (req, res, ctx) => {
@@ -81,6 +87,8 @@ describe('useBranch', () => {
           return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
         } else if (isUnsuccessfulParseError) {
           return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+        } else if (isNullOwner) {
+          return res(ctx.status(200), ctx.data(mockNullOwner))
         } else {
           return res(ctx.status(200), ctx.data(mockBranch))
         }
@@ -90,24 +98,48 @@ describe('useBranch', () => {
 
   describe('calling hook', () => {
     describe('returns repository typename of Repository', () => {
-      it('fetches the branch data', async () => {
-        setup({})
-        const { result } = renderHook(
-          () =>
-            useBranch({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'cool-repo',
-              branch: 'main',
-            }),
-          { wrapper }
-        )
+      describe('there is valid data', () => {
+        it('fetches the branch data', async () => {
+          setup({})
+          const { result } = renderHook(
+            () =>
+              useBranch({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'cool-repo',
+                branch: 'main',
+              }),
+            { wrapper }
+          )
 
-        await waitFor(() =>
-          expect(result.current.data).toStrictEqual({
-            branch: { name: 'main', head: { commitid: 'commit-123' } },
-          })
-        )
+          await waitFor(() =>
+            expect(result.current.data).toStrictEqual({
+              branch: { name: 'main', head: { commitid: 'commit-123' } },
+            })
+          )
+        })
+      })
+
+      describe('there is a null owner', () => {
+        it('returns a null value', async () => {
+          setup({ isNullOwner: true })
+          const { result } = renderHook(
+            () =>
+              useBranch({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'cool-repo',
+                branch: 'main',
+              }),
+            { wrapper }
+          )
+
+          await waitFor(() =>
+            expect(result.current.data).toStrictEqual({
+              branch: null,
+            })
+          )
+        })
       })
     })
 
