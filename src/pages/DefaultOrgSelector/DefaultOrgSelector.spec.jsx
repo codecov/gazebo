@@ -30,6 +30,8 @@ const mockTrialData = {
   trialStatus: 'ONGOING',
   trialStartDate: '2023-01-01T08:55:25',
   trialEndDate: '2023-01-10T08:55:25',
+  trialTotalDays: 0,
+  pretrialUsersCount: 0,
 }
 
 let testLocation
@@ -74,7 +76,7 @@ describe('DefaultOrgSelector', () => {
     useUserData,
     isValidUser = true,
     trialStatus = 'NOT_STARTED',
-    planName = 'users-inappm',
+    planName = 'users-basic',
   } = {}) {
     const mockMutationVariables = jest.fn()
     const mockTrialMutationVariables = jest.fn()
@@ -105,6 +107,14 @@ describe('DefaultOrgSelector', () => {
                 ...mockTrialData,
                 trialStatus,
                 planName,
+              },
+              pretrialPlan: {
+                baseUnitPrice: 10,
+                benefits: [],
+                billingRate: 'monthly',
+                marketingName: 'Users Basic',
+                monthlyUploadLimit: 250,
+                planName: 'users-basic',
               },
             },
           })
