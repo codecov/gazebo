@@ -6,11 +6,11 @@ import config from 'config'
 import SettingsDescriptor from 'ui/SettingsDescriptor'
 import TokenWrapper from 'ui/TokenWrapper'
 
-const useBadges = ({ graphToken, defaultBranch }) => {
+const useBadges = ({ graphToken }) => {
   const { provider, owner, repo } = useParams()
 
   const repoPath = `${config.BASE_URL}/${provider}/${owner}/${repo}`
-  const fullPath = `${repoPath}/branch/${defaultBranch}/graph/badge.svg?token=${graphToken}`
+  const fullPath = `${repoPath}/graph/badge.svg?token=${graphToken}`
 
   const BadgesEnum = Object.freeze({
     MARKDOWN: `[![codecov](${fullPath})](${repoPath})`,
@@ -21,8 +21,8 @@ const useBadges = ({ graphToken, defaultBranch }) => {
   return BadgesEnum
 }
 
-function Badges({ graphToken, defaultBranch }) {
-  const BadgesEnum = useBadges({ graphToken, defaultBranch })
+function Badges({ graphToken }) {
+  const BadgesEnum = useBadges({ graphToken })
 
   return (
     <SettingsDescriptor
@@ -49,7 +49,6 @@ function Badges({ graphToken, defaultBranch }) {
 }
 
 Badges.propTypes = {
-  defaultBranch: PropTypes.string,
   graphToken: PropTypes.string.isRequired,
 }
 
