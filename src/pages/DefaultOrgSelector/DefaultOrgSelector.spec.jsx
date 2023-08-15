@@ -732,6 +732,73 @@ describe('DefaultOrgSelector', () => {
     })
   })
 
+  describe('on submit with a free plan', () => {
+    it('does not fire trial mutation', async () => {
+      const { user, mockTrialMutationVariables } = setup({
+        useUserData: {
+          me: {
+            email: 'personal@cr.com',
+            trackingMetadata: {
+              ownerid: '1234',
+            },
+            user: {
+              username: 'chetney',
+            },
+          },
+        },
+        planName: 'users-free',
+        myOrganizationsData: {
+          me: {
+            myOrganizations: {
+              edges: [
+                {
+                  node: {
+                    avatarUrl:
+                      'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+                    username: 'chetney',
+                    ownerid: 1,
+                  },
+                },
+                {
+                  node: {
+                    avatarUrl:
+                      'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+                    username: 'criticalRole',
+                    ownerid: 1,
+                  },
+                },
+              ],
+              pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
+            },
+          },
+        },
+      })
+
+      render(<DefaultOrgSelector />, { wrapper: wrapper() })
+
+      const selectLabel = await screen.findByText(
+        /What org would you like to setup?/
+      )
+      expect(selectLabel).toBeInTheDocument()
+
+      const selectOrg = screen.getByRole('button', {
+        name: 'Select an organization',
+      })
+      await user.click(selectOrg)
+
+      const orgInList = screen.getByRole('option', { name: 'chetney' })
+      await user.click(orgInList)
+
+      const submit = await screen.findByRole('button', {
+        name: /Continue to app/,
+      })
+
+      await user.click(submit)
+
+      expect(mockTrialMutationVariables).not.toHaveBeenCalled()
+    })
+  })
+
   describe('on submit with self org selected', () => {
     beforeEach(() => jest.resetAllMocks())
 
@@ -920,7 +987,7 @@ describe('DefaultOrgSelector', () => {
     })
   })
 
-  describe('on submit with a free plan', () => {
+  describe('on submit with a free basic plan', () => {
     beforeEach(() => jest.resetAllMocks())
 
     it('fires trial mutation', async () => {

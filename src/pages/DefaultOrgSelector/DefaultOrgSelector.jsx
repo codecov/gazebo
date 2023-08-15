@@ -10,7 +10,7 @@ import { useStaticNavLinks } from 'services/navigation'
 import { trackSegmentEvent } from 'services/tracking/segment'
 import { useStartTrial } from 'services/trial'
 import { useUser } from 'services/user'
-import { isFreePlan } from 'shared/utils/billing'
+import { isBasicPlan } from 'shared/utils/billing'
 import { mapEdges } from 'shared/utils/graphql'
 import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A/A'
@@ -114,7 +114,7 @@ function DefaultOrgSelector() {
     updateDefaultOrg({ username: selectedOrg })
 
     if (
-      isFreePlan(planData?.plan?.planName) &&
+      isBasicPlan(planData?.plan?.planName) &&
       selectedOrg !== currentUser?.user?.username &&
       isNewTrial
     ) {
