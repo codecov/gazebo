@@ -12,10 +12,10 @@ const queryClient = new QueryClient({
 })
 
 describe('BadgesAndGraphsTab', () => {
-  function setup({ defaultBranch, graphToken }) {
+  function setup({ graphToken }) {
     useRepoSettings.mockReturnValue({
       data: {
-        repository: { defaultBranch, graphToken },
+        repository: { graphToken },
       },
     })
 
