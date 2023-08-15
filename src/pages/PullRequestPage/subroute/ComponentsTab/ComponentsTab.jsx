@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 
+import Table from 'old_ui/Table'
 import Spinner from 'ui/Spinner'
-import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
 
 import ComponentsNotConfigured from './ComponentsNotConfigured'

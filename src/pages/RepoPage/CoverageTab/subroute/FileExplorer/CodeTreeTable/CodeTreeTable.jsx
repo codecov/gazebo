@@ -1,4 +1,4 @@
-import Table from 'ui/Table'
+import Table from 'old_ui/Table'
 
 import { useRepoBranchContentsTable } from '../hooks'
 import { Loader, RepoContentsResult } from '../shared'

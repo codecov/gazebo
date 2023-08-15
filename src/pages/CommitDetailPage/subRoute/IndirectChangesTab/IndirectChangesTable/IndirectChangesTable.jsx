@@ -5,11 +5,11 @@ import PropTypes from 'prop-types'
 import { lazy, Suspense, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
+import Table from 'old_ui/Table'
 import { useCommit } from 'services/commit'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
-import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
 
 const CommitFileDiff = lazy(() => import('./CommitFileDiff'))
