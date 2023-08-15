@@ -1,6 +1,6 @@
+import Table from 'old_ui/Table'
 import A from 'ui/A'
 import Spinner from 'ui/Spinner'
-import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
 
 import { useImpactedFilesTable } from './hooks'

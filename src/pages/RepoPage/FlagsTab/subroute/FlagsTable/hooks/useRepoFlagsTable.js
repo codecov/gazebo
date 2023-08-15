@@ -2,6 +2,7 @@ import { format, sub } from 'date-fns'
 import { useCallback, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
+import { SortingDirection } from 'old_ui/Table/constants'
 import {
   AFTER_DATE_FORMAT_OPTIONS,
   MEASUREMENT_TIME_INTERVALS,
@@ -9,7 +10,6 @@ import {
 import { useLocationParams } from 'services/navigation'
 import { useRepo } from 'services/repo'
 import { useRepoFlags } from 'services/repo/useRepoFlags'
-import { SortingDirection } from 'ui/Table/constants'
 
 const getSortByDirection = (sortBy) =>
   sortBy.length > 0 && sortBy[0].desc

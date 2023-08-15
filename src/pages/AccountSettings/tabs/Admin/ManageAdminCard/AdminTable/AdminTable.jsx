@@ -1,12 +1,12 @@
 import { useParams } from 'react-router-dom'
 
+import Table from 'old_ui/Table'
 import { ApiFilterEnum } from 'services/navigation'
 import { useUpdateUser, useUsers } from 'services/users'
 import { getOwnerImg } from 'shared/utils'
 import Avatar from 'ui/Avatar'
 import Button from 'ui/Button'
 import Spinner from 'ui/Spinner'
-import Table from 'ui/Table'
 
 const Loader = () => (
   <div className="mt-16 flex flex-1 items-center justify-center">
