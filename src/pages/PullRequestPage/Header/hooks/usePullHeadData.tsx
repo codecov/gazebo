@@ -96,7 +96,6 @@ export const usePullHeadData = ({
           repo,
           pullId: parseInt(pullId, 10),
         },
-        // eslint-disable-next-line max-statements
       }).then((res) => {
         const parsedData = PullHeadDataSchema.safeParse(
           res?.data?.owner?.repository

@@ -131,7 +131,6 @@ LoadMoreTrigger.propTypes = {
   intersectionRef: PropTypes.func,
 }
 
-// eslint-disable-next-line max-statements
 function MembersTable({ handleActivate, params }) {
   const [sortBy, setSortBy] = useState([])
   const { owner, provider } = useParams()

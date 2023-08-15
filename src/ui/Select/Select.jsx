@@ -59,7 +59,6 @@ LoadMoreTrigger.propTypes = {
 }
 
 const Select = forwardRef(
-  // eslint-disable-next-line complexity
   (
     {
       placeholder = 'Select',

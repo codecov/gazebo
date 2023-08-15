@@ -39,7 +39,6 @@ export function getTrendEnum(trend) {
   return Trend.THREE_MONTHS
 }
 
-// eslint-disable-next-line complexity
 const calculateTrendDate = ({ today, trend }) => {
   if (trend === Trend.SEVEN_DAYS) return subDays(today, 7)
   if (trend === Trend.THIRTY_DAYS) return subDays(today, 30)
@@ -75,7 +74,6 @@ function analyticsGroupingUnit({ dayDifference }) {
   return GroupingUnit.WEEK
 }
 
-// eslint-disable-next-line complexity
 export function analyticsQuery({ endDate, startDate, repositories }) {
   const dayDifference = calculateDayDifference({
     end: endDate,

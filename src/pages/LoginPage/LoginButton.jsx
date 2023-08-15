@@ -10,7 +10,7 @@ import {
 } from 'shared/utils/loginProviders'
 
 // temp disabling because of flag
-// eslint-disable-next-line max-statements
+
 function LoginButton({ provider }) {
   const { sentryLoginProvider } = useFlags({
     sentryLoginProvider: false,

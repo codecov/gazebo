@@ -31,7 +31,6 @@ import TotalBanner from './TotalBanner'
 import UpdateButton from './UpdateButton'
 import UserCount from './UserCount'
 
-// eslint-disable-next-line max-statements
 const useUpgradeForm = ({
   proPlanYear,
   proPlanMonth,
@@ -152,7 +151,6 @@ PlanDetails.propTypes = {
   trialStatus: PropTypes.string,
 }
 
-// eslint-disable-next-line complexity, max-statements
 function UpgradeForm({
   proPlanYear,
   proPlanMonth,

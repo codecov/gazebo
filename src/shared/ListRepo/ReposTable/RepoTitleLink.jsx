@@ -14,7 +14,6 @@ function Badge({ children }) {
 const getRepoIconName = ({ activated, isRepoPrivate, active }) =>
   !activated && active ? 'ban' : isRepoPrivate ? 'lock-closed' : 'globe-alt'
 
-// eslint-disable-next-line complexity
 function RepoTitleLink({ repo, showRepoOwner, pageName, disabledLink }) {
   const options = {
     owner: repo.author.username,

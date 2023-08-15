@@ -19,7 +19,6 @@ import {
 import A from 'ui/A/A'
 import Button from 'ui/Button'
 
-// eslint-disable-next-line complexity, max-statements
 function PlansActionsBilling({ plan }) {
   const { provider, owner } = useParams()
   const { data: plans } = usePlans(provider)

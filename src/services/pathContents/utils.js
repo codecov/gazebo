@@ -1,7 +1,6 @@
 import keyBy from 'lodash/keyBy'
 import mapValues from 'lodash/mapValues'
 
-// eslint-disable-next-line complexity
 export function extractCoverageFromResponse(res) {
   const commit = res?.data?.owner?.repository?.commit
   const branch = res?.data?.owner?.repository?.branch?.head

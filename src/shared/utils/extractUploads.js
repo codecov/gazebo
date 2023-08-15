@@ -3,7 +3,6 @@ import groupBy from 'lodash/groupBy'
 
 import { UploadStateEnum, UploadTypeEnum } from 'shared/utils/commit'
 
-// eslint-disable-next-line complexity
 function humanReadableOverview(state, count) {
   const plural = (count) => (count > 1 ? 'are' : 'is')
   if (state === UploadStateEnum.error) return 'errored'

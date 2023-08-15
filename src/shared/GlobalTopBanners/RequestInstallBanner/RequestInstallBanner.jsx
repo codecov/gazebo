@@ -8,7 +8,6 @@ import { providerToName } from 'shared/utils'
 import Icon from 'ui/Icon'
 import TopBanner from 'ui/TopBanner'
 
-// eslint-disable-next-line complexity
 function RequestInstallBanner() {
   const { provider } = useParams()
   const { params } = useLocationParams()

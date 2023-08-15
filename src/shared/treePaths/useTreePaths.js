@@ -8,7 +8,6 @@ function getTreeLocation(paths, location, index) {
   return dropRight(paths, paths.length - index - 1).join('/')
 }
 
-// eslint-disable-next-line max-statements, complexity
 export function useTreePaths(passedPath) {
   const {
     provider,

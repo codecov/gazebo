@@ -49,7 +49,6 @@ const renderItem = ({ item }) => {
   )
 }
 
-// eslint-disable-next-line max-statements
 function DefaultOrgSelector() {
   const { register, control, setValue, handleSubmit } = useForm({
     resolver: zodResolver(FormSchema),
