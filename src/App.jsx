@@ -9,8 +9,6 @@ import { SentryRoute } from 'sentry'
 
 import BaseLayout from 'layouts/BaseLayout'
 import LoginLayout from 'layouts/LoginLayout'
-import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
-import { useLocationParams } from 'services/navigation'
 import { ToastNotificationProvider } from 'services/toastNotification'
 import { useUTM } from 'services/tracking/utm'
 import { useUser } from 'services/user'
@@ -28,40 +26,14 @@ const OwnerPage = lazy(() => import('./pages/OwnerPage'))
 const PullRequestPage = lazy(() => import('./pages/PullRequestPage'))
 const RepoPage = lazy(() => import('./pages/RepoPage'))
 
-const SetUpActions = Object.freeze({
-  INSTALL: 'install',
-  REQUEST: 'request',
-})
-
-// eslint-disable-next-line max-statements, complexity
 const HomePageRedirect = () => {
   const { provider } = useParams()
   const { data: currentUser } = useUser()
-
-  const { params } = useLocationParams()
-  const { mutate: updateDefaultOrg } = useUpdateDefaultOrganization()
 
   if (!provider || !currentUser) return <Redirect to="/login" />
 
   const defaultOrg =
     currentUser?.owner?.defaultOrgUsername ?? currentUser?.user?.username
-
-  const { setup_action: setupAction } = params
-
-  if (setupAction === SetUpActions.INSTALL) return
-
-  if (setupAction === SetUpActions.REQUEST) {
-    updateDefaultOrg({ username: defaultOrg })
-
-    return (
-      <Redirect
-        to={{
-          pathname: `/${provider}/${defaultOrg}`,
-          search: `?setup_action=${SetUpActions.REQUEST}`,
-        }}
-      />
-    )
-  }
 
   return <Redirect to={`/${provider}/${defaultOrg}`} />
 }

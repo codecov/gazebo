@@ -85,7 +85,6 @@ describe('App', () => {
   function setup(
     { termsOfServicePage = false } = { termsOfServicePage: false }
   ) {
-    const mockMutationVariables = jest.fn()
     useFlags.mockReturnValue({
       termsOfServicePage,
     })
@@ -105,26 +104,8 @@ describe('App', () => {
             },
           })
         )
-      ),
-      graphql.mutation('updateDefaultOrganization', (req, res, ctx) => {
-        mockMutationVariables(req.variables)
-
-        return res(
-          ctx.status(200),
-          ctx.data({
-            updateDefaultOrganization: {
-              defaultOrg: {
-                username: 'criticalRole',
-              },
-            },
-          })
-        )
-      })
+      )
     )
-
-    return {
-      mockMutationVariables,
-    }
   }
 
   const cloudFullRouterCases = [
@@ -285,26 +266,6 @@ describe('App', () => {
         expected: {
           page: /LoginPage/i,
           location: '/login/gh',
-        },
-      },
-    ],
-    [
-      {
-        testLabel: 'provider page',
-        pathname: '/gh',
-        expected: {
-          page: /OwnerPage/i,
-          location: '/gh/CodecovUser',
-        },
-      },
-    ],
-    [
-      {
-        testLabel: 'provider page with request params',
-        pathname: '/gh?setup_action=request',
-        expected: {
-          page: /OwnerPage/i,
-          location: '/gh/CodecovUser',
         },
       },
     ],
@@ -512,74 +473,4 @@ describe('App', () => {
       })
     }
   )
-
-  describe('provider page and set up action param is request', () => {
-    it('renders children', async () => {
-      setup()
-
-      render(<App />, {
-        wrapper: wrapper(['/gh?setup_action=request']),
-      })
-
-      await waitFor(() => expect(testLocation.pathname).toBe('/gh/CodecovUser'))
-
-      await waitFor(() =>
-        expect(testLocation.search).toEqual('?setup_action=request')
-      )
-    })
-
-    it('fires update default org mutation', async () => {
-      const { mockMutationVariables } = setup()
-
-      render(<App />, {
-        wrapper: wrapper(['/gh?setup_action=request']),
-      })
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
-
-      await waitFor(() =>
-        expect(mockMutationVariables).toHaveBeenCalledWith({
-          input: {
-            username: 'CodecovUser',
-          },
-        })
-      )
-    })
-  })
-
-  describe('provider page and set up action param is install', () => {
-    it('renders children', async () => {
-      setup()
-
-      render(<App />, {
-        wrapper: wrapper(['/gh?setup_action=install']),
-      })
-
-      await waitFor(() => expect(testLocation.pathname).toBe('/gh'))
-
-      await waitFor(() =>
-        expect(testLocation.search).toEqual('?setup_action=install')
-      )
-    })
-
-    it('does not fire update default org mutation', async () => {
-      const { mockMutationVariables } = setup()
-
-      render(<App />, {
-        wrapper: wrapper(['/gh?setup_action=install']),
-      })
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
-
-      await waitFor(() =>
-        expect(mockMutationVariables).not.toHaveBeenCalledWith({
-          input: {
-            username: 'CodecovUser',
-          },
-        })
-      )
-    })
-  })
 })
