@@ -167,7 +167,12 @@ describe('Summary', () => {
         )
       ),
       graphql.query('GetBranch', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner: { repository: mockBranch } }))
+        res(
+          ctx.status(200),
+          ctx.data({
+            owner: { repository: { __typename: 'Repository', ...mockBranch } },
+          })
+        )
       ),
       graphql.query('GetBranches', (req, res, ctx) => {
         if (req.variables?.after) {
