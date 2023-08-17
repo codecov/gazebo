@@ -147,7 +147,7 @@ describe('TrialReminder', () => {
             render(<TrialReminder />, { wrapper })
 
             const link = await screen.findByRole('link', {
-              name: /Trial Pro Team/,
+              name: /Try Codecov Pro/,
             })
 
             expect(link).toBeInTheDocument()

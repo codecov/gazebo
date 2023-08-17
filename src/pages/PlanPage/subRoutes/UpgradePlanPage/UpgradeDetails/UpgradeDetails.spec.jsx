@@ -97,7 +97,7 @@ const mockPlanData = {
 }
 
 const trialPlan = {
-  marketingName: 'Trial Pro Team',
+  marketingName: 'Try Codecov Pro',
   value: 'users-trial',
   billingRate: 'monthly',
   baseUnitPrice: 0,
