@@ -172,10 +172,14 @@ describe('DefaultOrgSelector', () => {
     it('only renders the component after a valid user is returned from the useUser hook', async () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
-      let selectLabel = screen.queryByText(/What org would you like to setup?/)
+      let selectLabel = screen.queryByText(
+        /Which organization would you like to set up?/
+      )
       expect(selectLabel).not.toBeInTheDocument()
 
-      selectLabel = await screen.findByText(/What org would you like to setup?/)
+      selectLabel = await screen.findByText(
+        /Which organization would you like to set up?/
+      )
       expect(selectLabel).toBeInTheDocument()
     })
 
@@ -354,11 +358,11 @@ describe('DefaultOrgSelector', () => {
       )
     })
 
-    it('renders continue to app button', async () => {
+    it('renders continue button', async () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       const submit = await screen.findByRole('button', {
-        name: /Continue to app/,
+        name: /Continue/,
       })
       expect(submit).toBeInTheDocument()
     })
@@ -412,7 +416,7 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       const selectLabel = await screen.findByText(
-        /What org would you like to setup?/
+        /Which organization would you like to set up?/
       )
       expect(selectLabel).toBeInTheDocument()
 
@@ -425,7 +429,7 @@ describe('DefaultOrgSelector', () => {
       await user.click(orgInList)
 
       const submit = await screen.findByRole('button', {
-        name: /Continue to app/,
+        name: /Continue/,
       })
 
       await user.click(submit)
@@ -475,7 +479,7 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       const selectLabel = await screen.findByText(
-        /What org would you like to setup?/
+        /Which organization would you like to set up?/
       )
       expect(selectLabel).toBeInTheDocument()
 
@@ -488,7 +492,7 @@ describe('DefaultOrgSelector', () => {
       await user.click(orgInList)
 
       const submit = await screen.findByRole('button', {
-        name: /Continue to app/,
+        name: /Continue/,
       })
 
       await user.click(submit)
@@ -541,7 +545,7 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       const selectLabel = await screen.findByText(
-        /What org would you like to setup?/
+        /Which organization would you like to set up?/
       )
       expect(selectLabel).toBeInTheDocument()
 
@@ -554,7 +558,7 @@ describe('DefaultOrgSelector', () => {
       await user.click(orgInList)
 
       const submit = await screen.findByRole('button', {
-        name: /Continue to app/,
+        name: /Continue/,
       })
 
       await user.click(submit)
@@ -606,7 +610,7 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       const submit = await screen.findByRole('button', {
-        name: /Continue to app/,
+        name: /Continue/,
       })
 
       await user.click(submit)
@@ -657,7 +661,7 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       const submit = await screen.findByRole('button', {
-        name: /Continue to app/,
+        name: /Continue/,
       })
 
       await user.click(submit)
@@ -710,7 +714,7 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       const selectLabel = await screen.findByText(
-        /What org would you like to setup?/
+        /Which organization would you like to set up?/
       )
       expect(selectLabel).toBeInTheDocument()
 
@@ -723,7 +727,7 @@ describe('DefaultOrgSelector', () => {
       await user.click(orgInList)
 
       const submit = await screen.findByRole('button', {
-        name: /Continue to app/,
+        name: /Continue/,
       })
 
       await user.click(submit)
@@ -777,7 +781,7 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       const selectLabel = await screen.findByText(
-        /What org would you like to setup?/
+        /Which organization would you like to set up?/
       )
       expect(selectLabel).toBeInTheDocument()
 
@@ -790,7 +794,7 @@ describe('DefaultOrgSelector', () => {
       await user.click(orgInList)
 
       const submit = await screen.findByRole('button', {
-        name: /Continue to app/,
+        name: /Continue/,
       })
 
       await user.click(submit)
@@ -854,7 +858,7 @@ describe('DefaultOrgSelector', () => {
       await user.click(selfOrg)
 
       const submit = await screen.findByRole('button', {
-        name: /Continue to app/,
+        name: /Continue/,
       })
 
       await user.click(submit)
@@ -920,7 +924,7 @@ describe('DefaultOrgSelector', () => {
       await user.click(selfOrg)
 
       const submit = await screen.findByRole('button', {
-        name: /Continue to app/,
+        name: /Continue/,
       })
 
       await user.click(submit)
@@ -970,7 +974,7 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       const submit = await screen.findByRole('button', {
-        name: /Continue to app/,
+        name: /Continue/,
       })
 
       await user.click(submit)
@@ -1034,7 +1038,7 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       const selectLabel = await screen.findByText(
-        /What org would you like to setup?/
+        /Which organization would you like to set up?/
       )
       expect(selectLabel).toBeInTheDocument()
 
@@ -1049,7 +1053,7 @@ describe('DefaultOrgSelector', () => {
       await user.click(orgInList)
 
       const submit = await screen.findByRole('button', {
-        name: /Continue to app/,
+        name: /Continue/,
       })
 
       await user.click(submit)
@@ -1161,7 +1165,7 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       const selectLabel = await screen.findByText(
-        /What org would you like to setup?/
+        /Which organization would you like to set up?/
       )
       expect(selectLabel).toBeInTheDocument()
 
@@ -1174,7 +1178,7 @@ describe('DefaultOrgSelector', () => {
       await user.click(orgInList)
 
       const submit = await screen.findByRole('button', {
-        name: /Continue to app/,
+        name: /Continue/,
       })
 
       await user.click(submit)

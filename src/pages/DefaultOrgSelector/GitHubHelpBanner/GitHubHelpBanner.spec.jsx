@@ -84,7 +84,9 @@ describe('GitHubHelpBanner', () => {
         wrapper: wrapper({ provider: 'gh' }),
       })
 
-      const body = screen.getByText(/you can install app instantly./)
+      const body = screen.getByText(
+        /Please note, GitHub organization members will need to request/
+      )
       expect(body).toBeInTheDocument()
     })
 
@@ -93,7 +95,9 @@ describe('GitHubHelpBanner', () => {
         wrapper: wrapper({ provider: 'gh' }),
       })
 
-      const link = screen.getByRole('link', { name: /GitHub app is required/ })
+      const link = screen.getByRole('link', {
+        name: /Install the Codecov GitHub App/,
+      })
       expect(link).toHaveAttribute('href', 'https://github.com/apps/codecov')
     })
   })
@@ -111,7 +115,9 @@ describe('GitHubHelpBanner', () => {
         wrapper: wrapper({ provider: 'gl' }),
       })
 
-      const body = screen.queryByText(/you can install app instantly./)
+      const body = screen.queryByText(
+        /Please note, GitHub organization members will need to request/
+      )
       expect(body).not.toBeInTheDocument()
     })
   })
@@ -124,7 +130,7 @@ describe('GitHubHelpBanner', () => {
         wrapper: wrapper(),
       })
 
-      const reSync = screen.getByText(/re-sync./)
+      const reSync = screen.getByText(/Re-sync now./)
       expect(reSync).toBeInTheDocument()
 
       await user.click(reSync)
