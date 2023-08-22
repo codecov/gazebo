@@ -130,7 +130,7 @@ function DefaultOrgSelector() {
   return (
     <div className="mx-auto w-full max-w-[38rem]">
       <h1 className="pb-3 pt-20 text-2xl font-semibold">
-        Which organization would you like to set up?
+        Which organization are you using today?
       </h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="my-4 flex flex-col gap-4 border-y border-ds-gray-tertiary py-6">

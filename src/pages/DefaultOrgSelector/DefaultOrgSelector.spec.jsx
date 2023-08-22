@@ -173,12 +173,12 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       let selectLabel = screen.queryByText(
-        /Which organization would you like to set up?/
+        /Which organization are you using today?/
       )
       expect(selectLabel).not.toBeInTheDocument()
 
       selectLabel = await screen.findByText(
-        /Which organization would you like to set up?/
+        /Which organization are you using today?/
       )
       expect(selectLabel).toBeInTheDocument()
     })
@@ -416,7 +416,7 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       const selectLabel = await screen.findByText(
-        /Which organization would you like to set up?/
+        /Which organization are you using today?/
       )
       expect(selectLabel).toBeInTheDocument()
 
@@ -479,7 +479,7 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       const selectLabel = await screen.findByText(
-        /Which organization would you like to set up?/
+        /Which organization are you using today?/
       )
       expect(selectLabel).toBeInTheDocument()
 
@@ -545,7 +545,7 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       const selectLabel = await screen.findByText(
-        /Which organization would you like to set up?/
+        /Which organization are you using today?/
       )
       expect(selectLabel).toBeInTheDocument()
 
@@ -714,7 +714,7 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       const selectLabel = await screen.findByText(
-        /Which organization would you like to set up?/
+        /Which organization are you using today?/
       )
       expect(selectLabel).toBeInTheDocument()
 
@@ -781,7 +781,7 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       const selectLabel = await screen.findByText(
-        /Which organization would you like to set up?/
+        /Which organization are you using today?/
       )
       expect(selectLabel).toBeInTheDocument()
 
@@ -1038,7 +1038,7 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       const selectLabel = await screen.findByText(
-        /Which organization would you like to set up?/
+        /Which organization are you using today?/
       )
       expect(selectLabel).toBeInTheDocument()
 
@@ -1165,7 +1165,7 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       const selectLabel = await screen.findByText(
-        /Which organization would you like to set up?/
+        /Which organization are you using today?/
       )
       expect(selectLabel).toBeInTheDocument()
 
