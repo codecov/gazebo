@@ -56,6 +56,7 @@ const query = `
   ) {
     owner(username: $owner) {
       repository: repositoryDeprecated(name: $repo) {
+        __typename
         measurements(
           interval: $interval
           after: $after
