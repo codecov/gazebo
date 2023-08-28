@@ -1,44 +1,38 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import Graphs from './Graphs'
 
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
-})
+const wrapper = ({ children }) => (
+  <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings/badge']}>
+    <Route path="/:provider/:owner/:repo/settings/badge">{children}</Route>
+  </MemoryRouter>
+)
 
 describe('Graphs', () => {
-  function setup() {
-    render(
-      <MemoryRouter
-        initialEntries={['/gh/codecov/codecov-client/settings/badge']}
-      >
-        <QueryClientProvider client={queryClient}>
-          <Route path="/:provider/:owner/:repo/settings/badge">
-            <Graphs graphToken="WIO9JXFGE" defaultBranch="master" />
-          </Route>
-        </QueryClientProvider>
-      </MemoryRouter>
-    )
-  }
-
   describe('renders Graphs component', () => {
-    beforeEach(() => {
-      setup()
-    })
     it('renders title', () => {
+      render(<Graphs graphToken="WIO9JXFGE" />, { wrapper })
+
       const title = screen.getByText(/Graphs/)
       expect(title).toBeInTheDocument()
     })
+
     it('renders Embed via API component', () => {
+      render(<Graphs graphToken="WIO9JXFGE" />, { wrapper })
+
       const p = screen.getByText(
         /Use this token to view graphs and images for third party dashboard usage./
       )
       expect(p).toBeInTheDocument()
-      expect(screen.getAllByText(/WIO9JXFGE/)[0]).toBeInTheDocument()
+
+      const token = screen.getAllByText(/WIO9JXFGE/)[0]
+      expect(token).toBeInTheDocument()
     })
+
     it('renders Embed via URL component', () => {
+      render(<Graphs graphToken="WIO9JXFGE" />, { wrapper })
+
       const p = screen.getByText(
         /Use the URL of the svg to embed a graph of your repository page./
       )
@@ -46,6 +40,8 @@ describe('Graphs', () => {
     })
 
     it('renders three different graphs cards', () => {
+      render(<Graphs graphToken="WIO9JXFGE" />, { wrapper })
+
       expect(screen.getByText(/Sunburst/)).toBeInTheDocument()
       expect(
         screen.getByText(/The inner-most circle is the entire/)
@@ -60,6 +56,18 @@ describe('Graphs', () => {
       expect(
         screen.getByText(/The top section represents the entire/)
       ).toBeInTheDocument()
+    })
+
+    it('renders open SVG', () => {
+      render(<Graphs graphToken="WIO9JXFGE" />, { wrapper })
+
+      const url = screen.getAllByRole('link', { name: /Open SVG/ })
+      expect(url).toHaveLength(3)
+
+      expect(url[0]).toHaveAttribute(
+        'href',
+        'https://stage-web.codecov.dev/gh/codecov/codecov-client/graphs/sunburst.svg?token=WIO9JXFGE'
+      )
     })
   })
 })

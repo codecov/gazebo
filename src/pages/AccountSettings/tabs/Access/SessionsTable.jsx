@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
+import Table from 'old_ui/Table'
 import { useDeleteSession } from 'services/access'
 import { formatTimeToNow } from 'shared/utils/dates'
 import Button from 'ui/Button'
-import Table from 'ui/Table'
 
 const tableColumns = [
   {
