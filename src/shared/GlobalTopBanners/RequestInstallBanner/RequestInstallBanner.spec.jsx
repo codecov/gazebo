@@ -66,7 +66,7 @@ describe('RequestInstallBanner', () => {
       expect(body).toBeInTheDocument()
 
       const body2 = screen.getByText(
-        /Since you're a member of the requested organization/
+        /You need GitHub Admin approval to install the app. We bugged them for you. You should too./
       )
       expect(body2).toBeInTheDocument()
     })

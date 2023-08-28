@@ -33,19 +33,21 @@ function RepoOrgNotFound() {
   return (
     <p className="flex-1 items-center text-sm">
       <span className="font-semibold text-ds-gray-quinary">
-        Can&apos;t find your repo{isGh ? ' or org?' : '?'}
+        Can&apos;t find your repo{isGh ? ' organization?' : '?'}
       </span>{' '}
       Try <ResyncButton />
       {isGh && (
         <>
           {' '}
           or{' '}
-          <A to={{ pageName: 'codecovAppInstallation' }}>install app for org</A>
-          . Learn more in{' '}
+          <A to={{ pageName: 'codecovAppInstallation' }}>
+            installing the Codecov app
+          </A>
+          . Check out{' '}
           <A hook="oauth-troubleshoot" to={{ pageName: 'oauthTroubleshoot' }}>
             our docs
-          </A>
-          .
+          </A>{' '}
+          for more information.
         </>
       )}
     </p>

@@ -38,8 +38,10 @@ afterAll(() => {
 const mockPull = {
   owner: {
     repository: {
+      __typename: 'Repository',
       pull: {
         compareWithBase: {
+          __typename: 'Comparison',
           componentComparisons: [
             {
               name: 'secondTest',
@@ -75,7 +77,9 @@ describe('ComponentsTab', () => {
 
   describe('when there are no components in the new tab', () => {
     beforeEach(() => {
-      setup({})
+      setup({
+        owner: null,
+      })
     })
 
     it('will render card with no dismiss button', async () => {

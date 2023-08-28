@@ -1,9 +1,10 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { graphql } from 'msw'
 
 import config from 'config'
 
-import { useOnboardingTracking, useUser } from 'services/user'
+import { useOnboardingTracking } from 'services/user'
 
 import InstructionBox from '.'
 
@@ -30,14 +31,18 @@ describe('InstructionBox', () => {
         })
       },
     })
-    useUser.mockReturnValue({
-      data: {
-        username: "Patia Por'co",
-        trackingMetadata: {
-          ownerid: 12345,
-        },
-      },
-    })
+
+    graphql.query('CurrentUser', (_, res, ctx) =>
+      res(
+        ctx.status(200),
+        ctx.data({
+          me: {
+            user: { username: "Patia Por'co" },
+            trackingMetadata: { ownerid: 12345 },
+          },
+        })
+      )
+    )
 
     return {
       terminalUploaderCommandClicked: mockTerminalUploaderCommandClicked,
@@ -123,7 +128,7 @@ describe('InstructionBox', () => {
 
       await user.click(screen.getByRole('button', { name: 'Windows' }))
 
-      const baseUrl = screen.getByText(/https:\/\/app.codecov.io\/uploader/)
+      const baseUrl = screen.getByText(/https:\/\/app\.codecov\.io\/uploader/)
       expect(baseUrl).toBeInTheDocument()
     })
 
@@ -134,7 +139,7 @@ describe('InstructionBox', () => {
       await user.click(screen.getByRole('button', { name: 'Windows' }))
 
       const selfHostedInstruction = screen.getByText(
-        /\/codecov -u https:\/\/app.codecov.io/
+        /\/codecov -u https:\/\/app\.codecov\.io/
       )
       expect(selfHostedInstruction).toBeInTheDocument()
     })
@@ -147,7 +152,7 @@ describe('InstructionBox', () => {
 
       await user.click(screen.getByRole('button', { name: 'Linux' }))
       const instruction = screen.queryByText(
-        /curl -Os https:\/\/uploader.codecov.io\/latest\/linux\/codecov/
+        /curl -Os https:\/\/uploader\.codecov\.io\/latest\/linux\/codecov/
       )
       expect(instruction).toBeInTheDocument()
     })
@@ -160,7 +165,7 @@ describe('InstructionBox', () => {
 
       await user.click(screen.getByRole('button', { name: 'Alpine Linux' }))
       const instruction = screen.queryByText(
-        /curl -Os https:\/\/uploader.codecov.io\/latest\/alpine\/codecov/
+        /curl -Os https:\/\/uploader\.codecov\.io\/latest\/alpine\/codecov/
       )
       expect(instruction).toBeInTheDocument()
     })
