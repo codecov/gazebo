@@ -21,6 +21,7 @@ const mockRepoOverview = {
 const mockBranchMeasurements = {
   owner: {
     repository: {
+      __typename: 'Repository',
       measurements: [
         {
           timestamp: '2023-01-01T00:00:00+00:00',
@@ -46,6 +47,7 @@ const mockBranchMeasurements = {
 const mockNullBranchMeasurements = {
   owner: {
     repository: {
+      __typename: 'Repository',
       measurements: [
         {
           timestamp: '2023-01-01T00:00:00+00:00',

@@ -2,7 +2,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import CoverageTab from './CoverageTab'
@@ -11,7 +10,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: false,
-      suspense: true,
+      suspense: false,
     },
   },
 })
@@ -25,7 +24,7 @@ const wrapper =
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={initialEntries}>
           <Route path="/:provider/:owner/:repo" exact={true}>
-            <Suspense fallback={null}>{children}</Suspense>
+            {children}
           </Route>
         </MemoryRouter>
       </QueryClientProvider>
@@ -42,6 +41,7 @@ const mockRepo = {
 const repoConfigMock = {
   owner: {
     repository: {
+      __typename: 'Repository',
       repositoryConfig: {
         indicationRange: { upperRange: 80, lowerRange: 60 },
       },
@@ -58,6 +58,7 @@ const overviewMock = {
 const branchesMock = {
   owner: {
     repository: {
+      __typename: 'Repository',
       branches: {
         edges: [
           {
@@ -107,6 +108,7 @@ const branchesContentsMock = {
   owner: {
     username: 'critical-role',
     repository: {
+      __typename: 'Repository',
       repositoryConfig: {
         indicationRange: {
           upperRange: 80,
@@ -127,6 +129,32 @@ const branchesContentsMock = {
           },
         },
       },
+    },
+  },
+}
+
+const mockBranchMeasurements = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      measurements: [
+        {
+          timestamp: '2023-01-01T00:00:00+00:00',
+          max: 85,
+        },
+        {
+          timestamp: '2023-01-02T00:00:00+00:00',
+          max: 80,
+        },
+        {
+          timestamp: '2023-01-03T00:00:00+00:00',
+          max: 90,
+        },
+        {
+          timestamp: '2023-01-04T00:00:00+00:00',
+          max: 100,
+        },
+      ],
     },
   },
 }
@@ -152,7 +180,12 @@ describe('Coverage Tab', () => {
         res(ctx.status(200), ctx.data(branchesMock))
       ),
       graphql.query('GetBranch', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner: { repository: branchMock } }))
+        res(
+          ctx.status(200),
+          ctx.data({
+            owner: { repository: { __typename: 'Repository', ...branchMock } },
+          })
+        )
       ),
       graphql.query('BranchContents', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(branchesContentsMock))
@@ -167,7 +200,7 @@ describe('Coverage Tab', () => {
         res(ctx.status(200), ctx.data({}))
       ),
       graphql.query('GetBranchCoverageMeasurements', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({}))
+        res(ctx.status(200), ctx.data(mockBranchMeasurements))
       ),
       rest.get(
         '/internal/:provider/:owner/:repo/coverage/tree',
@@ -191,21 +224,20 @@ describe('Coverage Tab', () => {
   it('renders the sunburst chart', async () => {
     setup()
 
+    console.error = () => {}
+
     render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/test-repo']) })
 
     await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
     await waitFor(() => expect(queryClient.isFetching()).toBe(0))
 
-    expect(await screen.findByText(/Hide Chart/)).toBeTruthy()
-    const hideChart = screen.getByText(/Hide Chart/)
+    const hideChart = await screen.findByText(/Hide Chart/)
     expect(hideChart).toBeInTheDocument()
 
-    expect(await screen.findByTestId('sunburst')).toBeTruthy()
-    const sunburst = screen.getByTestId('sunburst')
+    const sunburst = await screen.findByTestId('sunburst')
     expect(sunburst).toBeInTheDocument()
 
-    expect(await screen.findByTestId('coverage-area-chart')).toBeTruthy()
-    const coverageAreaChart = screen.getByTestId('coverage-area-chart')
+    const coverageAreaChart = await screen.findByTestId('coverage-area-chart')
     expect(coverageAreaChart).toBeInTheDocument()
-  }, 60000)
+  })
 })
