@@ -1,8 +1,8 @@
+import isUndefined from 'lodash/isUndefined'
 import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
 import { TrialStatuses, useAccountDetails, usePlanData } from 'services/account'
-import { useFlags } from 'shared/featureFlags'
 import { isTrialPlan } from 'shared/utils/billing'
 
 import Activation from './Activation'
@@ -12,37 +12,22 @@ function MemberActivation() {
   const { owner, provider } = useParams()
   const { data: accountDetails } = useAccountDetails({ owner, provider })
 
-  const { codecovTrialMvp } = useFlags({
-    codecovTrialMvp: false,
-  })
-
   const { data: planData } = usePlanData({
     provider,
     owner,
-    opts: {
-      enabled: codecovTrialMvp,
-    },
   })
 
   const planAutoActivate = accountDetails?.planAutoActivate
 
-  if (codecovTrialMvp) {
-    if (
-      isTrialPlan(planData?.plan?.planName) &&
-      planData?.plan?.trialStatus === TrialStatuses.ONGOING
-    ) {
-      return (
-        <div className="border-2 border-ds-gray-primary">
-          <Activation />
-        </div>
-      )
-    }
-  }
+  const showAutoActivate =
+    !isUndefined(planAutoActivate) &&
+    !isTrialPlan(planData?.plan?.planName) &&
+    planData?.plan?.trialStatus !== TrialStatuses.ONGOING
 
   return (
     <div className="border-2 border-ds-gray-primary">
       <Activation />
-      {planAutoActivate !== undefined && (
+      {showAutoActivate && (
         <>
           {/* TODO: have this be created dynamically w/ a better parent component */}
           <hr className="mx-4" />
