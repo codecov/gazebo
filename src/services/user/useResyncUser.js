@@ -76,7 +76,7 @@ export function useResyncUser() {
   const prevIsSyncing = usePrevious(isSyncing)
   useEffect(() => {
     if (prevIsSyncing && !isSyncing) {
-      queryClient.refetchQueries(['repos'])
+      queryClient.refetchQueries(['repos', 'UseMyOrganizations'])
     }
   }, [prevIsSyncing, isSyncing, queryClient])
 

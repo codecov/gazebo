@@ -4,10 +4,13 @@ import { Controller, useForm } from 'react-hook-form'
 import { Redirect, useHistory, useParams } from 'react-router-dom'
 import { z } from 'zod'
 
+import { TrialStatuses, usePlanData } from 'services/account'
 import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
 import { useStaticNavLinks } from 'services/navigation'
 import { trackSegmentEvent } from 'services/tracking/segment'
+import { useStartTrial } from 'services/trial'
 import { useUser } from 'services/user'
+import { isBasicPlan } from 'shared/utils/billing'
 import { mapEdges } from 'shared/utils/graphql'
 import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A/A'
@@ -46,11 +49,10 @@ const renderItem = ({ item }) => {
   )
 }
 
-// eslint-disable-next-line max-statements
 function DefaultOrgSelector() {
   const { register, control, setValue, handleSubmit } = useForm({
     resolver: zodResolver(FormSchema),
-    mode: 'onChange',
+    mode: 'onSubmit',
   })
 
   const { provider } = useParams()
@@ -63,6 +65,16 @@ function DefaultOrgSelector() {
 
   const { data: currentUser, isLoading: userIsLoading } = useUser()
   const { mutate: updateDefaultOrg } = useUpdateDefaultOrganization()
+
+  const selectedOrg = orgValue?.org?.username ?? currentUser?.user?.username
+
+  const { data: planData } = usePlanData({
+    owner: selectedOrg,
+    provider,
+  })
+  const { mutate: fireTrial } = useStartTrial()
+
+  const isNewTrial = planData?.plan?.trialStatus === TrialStatuses.NOT_STARTED
 
   const {
     data: myOrganizations,
@@ -88,25 +100,28 @@ function DefaultOrgSelector() {
     },
   })
 
-  const onSubmit = (data) => {
-    if (!data?.select) {
-      updateDefaultOrg({ username: currentUser?.user?.username })
-      return history.push(`/${provider}/${currentUser?.user?.username}`)
-    }
-
+  const onSubmit = () => {
     const segmentEvent = {
       event: 'Onboarding default org selector',
       data: {
         ownerid: currentUser?.trackingMetadata?.ownerid,
         username: currentUser?.user?.username,
-        org: data?.select,
+        org: selectedOrg,
       },
     }
-    trackSegmentEvent(segmentEvent)
 
-    updateDefaultOrg({ username: data?.select })
-    // fire the trial mutation on continue to app
-    return history.push(`/${provider}/${data?.select}`)
+    trackSegmentEvent(segmentEvent)
+    updateDefaultOrg({ username: selectedOrg })
+
+    if (
+      isBasicPlan(planData?.plan?.planName) &&
+      selectedOrg !== currentUser?.user?.username &&
+      isNewTrial
+    ) {
+      fireTrial({ owner: selectedOrg })
+    }
+
+    return history.push(`/${provider}/${selectedOrg}`)
   }
 
   if (userIsLoading) return null
@@ -115,7 +130,7 @@ function DefaultOrgSelector() {
   return (
     <div className="mx-auto w-full max-w-[38rem]">
       <h1 className="pb-3 pt-20 text-2xl font-semibold">
-        What org would you like to setup?
+        Which organization are you using today?
       </h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="my-4 flex flex-col gap-4 border-y border-ds-gray-tertiary py-6">
@@ -156,7 +171,7 @@ function DefaultOrgSelector() {
         </div>
         <div className="flex justify-end">
           <Button hook="user selects org, continues to app" type="submit">
-            Continue to app
+            Continue
           </Button>
         </div>
       </form>

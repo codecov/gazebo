@@ -2,13 +2,13 @@ import isEmpty from 'lodash/isEmpty'
 import PropTypes from 'prop-types'
 import { useContext } from 'react'
 
+import Table from 'old_ui/Table'
 import { useRepos } from 'services/repos'
 import { useOwner, useUser } from 'services/user'
 import { ActiveContext } from 'shared/context'
 import { formatTimeToNow } from 'shared/utils/dates'
 import Button from 'ui/Button'
 import Spinner from 'ui/Spinner'
-import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
 
 import InactiveRepo from './InactiveRepo'
@@ -75,7 +75,6 @@ const tableInactive = [
   },
 ]
 
-// eslint-disable-next-line complexity
 function transformRepoToTable({ repos, owner, isCurrentUserPartOfOrg }) {
   // if there are no repos show empty message
   if (!repos?.length || repos?.length <= 0) {
@@ -130,7 +129,6 @@ function transformRepoToTable({ repos, owner, isCurrentUserPartOfOrg }) {
   })
 }
 
-// eslint-disable-next-line complexity
 function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
   const { data: userData } = useUser()
   const { data: ownerData } = useOwner({

@@ -8,7 +8,6 @@ import { providerToName } from 'shared/utils'
 import Icon from 'ui/Icon'
 import TopBanner from 'ui/TopBanner'
 
-// eslint-disable-next-line complexity
 function RequestInstallBanner() {
   const { provider } = useParams()
   const { params } = useLocationParams()
@@ -39,8 +38,8 @@ function RequestInstallBanner() {
             <Icon name="information-circle" />
             Installation request sent.
           </span>
-          Since you&apos;re a member of the requested organization, you need the
-          owner to approve and install the app.
+          You need GitHub Admin approval to install the app. We bugged them for
+          you. You should too.
         </p>
       </TopBanner.Start>
       <TopBanner.End>

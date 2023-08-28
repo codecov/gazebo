@@ -155,7 +155,10 @@ describe('useResyncUser', () => {
       })
 
       await waitFor(() =>
-        expect(refetchQueriesSpy).toHaveBeenCalledWith(['repos'])
+        expect(refetchQueriesSpy).toHaveBeenCalledWith([
+          'repos',
+          'UseMyOrganizations',
+        ])
       )
     })
   })

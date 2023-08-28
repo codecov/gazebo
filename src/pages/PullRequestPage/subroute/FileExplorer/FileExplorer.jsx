@@ -1,3 +1,4 @@
+import Table from 'old_ui/Table'
 import { useLocationParams } from 'services/navigation'
 import ContentsTableHeader from 'shared/ContentsTable/ContentsTableHeader'
 import DisplayTypeButton from 'shared/ContentsTable/DisplayTypeButton'
@@ -6,7 +7,6 @@ import { usePullTreePaths } from 'shared/treePaths'
 import Breadcrumb from 'ui/Breadcrumb'
 import SearchField from 'ui/SearchField'
 import Spinner from 'ui/Spinner'
-import Table from 'ui/Table'
 
 import { useRepoPullContentsTable } from './hooks'
 

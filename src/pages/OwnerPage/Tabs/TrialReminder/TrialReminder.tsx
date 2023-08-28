@@ -35,7 +35,6 @@ const determineDateDiff = ({
   return dateDiff
 }
 
-// eslint-disable-next-line max-statements, complexity
 const TrialReminder: React.FC = () => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
 
@@ -81,7 +80,7 @@ const TrialReminder: React.FC = () => {
       <div className="flex items-center font-semibold">
         {/* this is required because the A component has this random `[x: string]: any` record type on it */}
         {/* @ts-expect-error */}
-        <A to={{ pageName: 'planTab' }}>&#128640; Trial Pro Team</A>
+        <A to={{ pageName: 'planTab' }}>&#128640; Try Codecov Pro</A>
       </div>
     )
   }

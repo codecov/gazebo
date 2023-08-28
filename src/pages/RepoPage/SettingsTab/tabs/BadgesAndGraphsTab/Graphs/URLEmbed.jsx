@@ -4,8 +4,8 @@ import GraphCard from 'ui/GraphCard'
 
 import useGraphsDetails from './useGraphsDetails'
 
-function URLEmbed({ graphToken, defaultBranch }) {
-  const GraphsDetailsEnum = useGraphsDetails({ defaultBranch, graphToken })
+function URLEmbed({ graphToken }) {
+  const GraphsDetailsEnum = useGraphsDetails({ graphToken })
 
   return (
     <div className="flex flex-col gap-2 border-2 border-ds-gray-primary p-4 xl:w-4/5 2xl:w-3/5">
@@ -30,7 +30,6 @@ function URLEmbed({ graphToken, defaultBranch }) {
 
 URLEmbed.propTypes = {
   graphToken: PropTypes.string.isRequired,
-  defaultBranch: PropTypes.string,
 }
 
 export default URLEmbed

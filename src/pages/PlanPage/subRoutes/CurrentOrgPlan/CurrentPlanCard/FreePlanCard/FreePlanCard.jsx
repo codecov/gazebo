@@ -111,7 +111,6 @@ PlanUpgrade.propTypes = {
   plans: PropType.arrayOf(planPropType).isRequired,
 }
 
-// eslint-disable-next-line complexity, max-statements
 function FreePlanCard({ plan, scheduledPhase }) {
   const { provider, owner } = useParams()
   const { codecovTrialMvp } = useFlags({

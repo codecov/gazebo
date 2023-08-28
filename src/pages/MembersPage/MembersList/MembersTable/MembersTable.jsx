@@ -5,13 +5,13 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
 
+import Table from 'old_ui/Table'
 import { useAccountDetails } from 'services/account'
 import { useInfiniteUsers } from 'services/users'
 import { getOwnerImg } from 'shared/utils'
 import { isFreePlan } from 'shared/utils/billing'
 import Avatar, { DefaultAuthor } from 'ui/Avatar'
 import Spinner from 'ui/Spinner'
-import Table from 'ui/Table'
 import Toggle from 'ui/Toggle'
 
 import { OrderItems } from '../enums'
@@ -131,7 +131,6 @@ LoadMoreTrigger.propTypes = {
   intersectionRef: PropTypes.func,
 }
 
-// eslint-disable-next-line max-statements
 function MembersTable({ handleActivate, params }) {
   const [sortBy, setSortBy] = useState([])
   const { owner, provider } = useParams()

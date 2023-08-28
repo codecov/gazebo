@@ -29,7 +29,6 @@ function useOnboardingRedirect({ username }) {
   }
 }
 
-// eslint-disable-next-line complexity, max-statements
 const useUserAccessGate = () => {
   const { provider } = useParams()
   const { termsOfServicePage, defaultOrgSelectorPage } = useFlags({

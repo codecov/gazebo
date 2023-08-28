@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import { format } from 'date-fns'
 import { useParams } from 'react-router-dom'
 

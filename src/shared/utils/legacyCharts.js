@@ -34,7 +34,6 @@ export function getTrendEnum(trend) {
   return Trend.THREE_MONTHS
 }
 
-// eslint-disable-next-line complexity
 const calculateTrendDate = ({ today, trend }) => {
   if (trend === Trend.TWENTY_FOUR_HOURS) return subDays(today, 1)
   if (trend === Trend.SEVEN_DAYS) return subDays(today, 7)

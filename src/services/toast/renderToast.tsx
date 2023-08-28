@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { toast, type ToastOptions } from 'react-hot-toast'
 
 import ErrorToast from './ErrorToast'

@@ -5,7 +5,6 @@ import Banner from 'ui/Banner'
 
 import { ComparisonReturnType } from './constants'
 
-// eslint-disable-next-line complexity, max-statements
 function BannerContent({ errorType }) {
   if (errorType === ComparisonReturnType.MISSING_BASE_COMMIT) {
     return (

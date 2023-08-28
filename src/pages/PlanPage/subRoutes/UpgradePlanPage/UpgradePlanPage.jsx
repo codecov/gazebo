@@ -14,7 +14,6 @@ import UpgradeForm from './UpgradeForm'
 
 import { useSetCrumbs } from '../../context'
 
-// eslint-disable-next-line max-statements
 function UpgradePlanPage() {
   const { provider, owner } = useParams()
   const setCrumbs = useSetCrumbs()

@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
+import Table from 'old_ui/Table'
 import { useLocationParams } from 'services/navigation'
 import { usePulls } from 'services/pulls'
 import Button from 'ui/Button'
 import Spinner from 'ui/Spinner'
-import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
 
 import Coverage from './Coverage'

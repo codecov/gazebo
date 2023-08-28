@@ -10,7 +10,6 @@ interface Params {
   owner: string
 }
 
-// eslint-disable-next-line max-statements, complexity
 function ProPlanSubheading() {
   const { provider, owner } = useParams<Params>()
   const { codecovTrialMvp } = useFlags({

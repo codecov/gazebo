@@ -1,8 +1,8 @@
-/* eslint-disable complexity */
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
+import Table from 'old_ui/Table'
 import { useLocationParams } from 'services/navigation'
 import {
   useSelfHostedSettings,
@@ -10,7 +10,6 @@ import {
 } from 'services/selfHosted'
 import Api from 'shared/api'
 import Button from 'ui/Button'
-import Table from 'ui/Table'
 import Toggle from 'ui/Toggle'
 
 const columns = [

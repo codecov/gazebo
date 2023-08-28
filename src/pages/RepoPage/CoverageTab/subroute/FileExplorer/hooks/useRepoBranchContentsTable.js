@@ -2,6 +2,7 @@ import isEqual from 'lodash/isEqual'
 import { useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
+import { SortingDirection } from 'old_ui/Table/constants'
 import { useLocationParams } from 'services/navigation'
 import { useRepoBranchContents } from 'services/pathContents/branch/dir'
 import { useRepoOverview } from 'services/repo'
@@ -14,7 +15,6 @@ import { useTreePaths } from 'shared/treePaths'
 import { CommitErrorTypes } from 'shared/utils/commit'
 import { determineProgressColor } from 'shared/utils/determineProgressColor'
 import CoverageProgress from 'ui/CoverageProgress'
-import { SortingDirection } from 'ui/Table/constants'
 
 function determineDisplayType({ filters, isSearching }) {
   return filters?.displayType === displayTypeParameter.list || isSearching
