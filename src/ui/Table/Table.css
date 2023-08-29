@@ -1,0 +1,60 @@
+.tableui {
+  @apply @container/table text-ds-gray-octonary;
+}
+
+/* .tableui > div {
+    @apply px-4 @sm/table:px-6 @lg/table:px-8;
+}
+
+.tableui > div > div {
+    @apply -mx-4 @sm/table:-mx-0;
+} */
+
+.tableui table {
+  @apply min-w-full divide-y divide-ds-gray-tertiary border-t border-ds-gray-tertiary;
+}
+
+.tableui tr {
+  @apply text-left;
+}
+
+.tableui th {
+  @apply text-sm font-semibold text-ds-gray-quinary;
+}
+
+/* <div className="tableui" data-highlight-row="onHover"> */
+/* <tr data-highlight-row="onHover"> */
+.tableui[data-highlight-row='onHover'] tr,
+tr[data-highlight-row='onHover'] {
+  @apply hover:bg-ds-gray-primary;
+}
+
+.tableui tr > th {
+  @apply font-sans;
+}
+
+.tableui td,
+.tableui th {
+  @apply px-3 py-4;
+}
+
+/* <div  className="tableui" data-type="numeric"> */
+/* <td data-type="numeric"> */
+.tableui[data-type='numeric'] td,
+td[data-type='numeric'] {
+  @apply font-mono text-right;
+}
+
+/* <div className="tableui" data-type="numeric"> */
+/* <th data-type="numeric"> */
+.tableui[data-type='numeric'] th,
+th[data-type='numeric'] {
+  @apply text-right;
+}
+
+/* <div className="tableui" data-sortable="true"> */
+/* <th data-sortable="true"> */
+.tableui[data-sortable='true'] th,
+th[data-sortable='true'] {
+  @apply cursor-pointer;
+}
