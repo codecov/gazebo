@@ -1,9 +1,11 @@
-import PropTypes from 'prop-types'
-
 import { useNavLinks } from 'services/navigation'
 import { providerImage, providerToName } from 'shared/utils/provider'
 
-function SyncButton({ provider }: { provider: string }) {
+interface SyncButtonProps {
+  provider: 'gh' | 'gl' | 'bb'
+}
+
+const SyncButton: React.FC<SyncButtonProps> = ({ provider }) => {
   const { signIn } = useNavLinks()
   const to = `${window.location.protocol}//${window.location.host}/${provider}`
 
@@ -11,7 +13,7 @@ function SyncButton({ provider }: { provider: string }) {
     <div className="flex h-14 items-center rounded-sm border border-ds-gray-quaternary bg-ds-gray-primary text-left shadow">
       <a
         className="flex h-full grow items-center font-semibold hover:bg-ds-gray-secondary"
-        href={signIn.path({ to, provider, privateScope: true })}
+        href={signIn.path({ to, provider })}
         data-cy={'login-button'}
       >
         <img
@@ -23,10 +25,6 @@ function SyncButton({ provider }: { provider: string }) {
       </a>
     </div>
   )
-}
-
-SyncButton.propTypes = {
-  provider: PropTypes.oneOf(['gh', 'gl', 'bb']).isRequired,
 }
 
 export default SyncButton
