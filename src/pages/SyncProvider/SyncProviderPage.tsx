@@ -5,7 +5,7 @@ import { useFlags } from 'shared/featureFlags'
 
 import SyncButton from './SyncButton'
 
-const SyncProvider: React.FC = () => {
+const SyncProviderPage: React.FC = () => {
   // const routeMatch = useRouteMatch('/sync')
 
   const { sentryLoginProvider } = useFlags({
@@ -27,8 +27,8 @@ const SyncProvider: React.FC = () => {
   // experience env because if they don't have any providers selected
   // then we need to have them select one before they move onto onboarding
   // --
-  // once we allow users to sync multiple providers need to add
-  // !routeMatch?.isExact
+  // once we allow users to sync multiple providers need change this logic
+  // to allow them to view this page
   if (hasSynced && sentryLoginProvider) {
     return <Redirect to="/" />
   }
@@ -52,4 +52,4 @@ const SyncProvider: React.FC = () => {
   )
 }
 
-export default SyncProvider
+export default SyncProviderPage

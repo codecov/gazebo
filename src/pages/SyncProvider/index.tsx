@@ -1,1 +1,1 @@
-export { default } from './SyncProvider'
+export { default } from './SyncProviderPage'
