@@ -19,6 +19,8 @@ const OwnerSchema = z
   })
   .nullish()
 
+export type InternalUserOwnerData = z.infer<typeof OwnerSchema>
+
 const InternalUserSchema = z
   .object({
     email: z.string().nullish(),
@@ -28,7 +30,7 @@ const InternalUserSchema = z
   })
   .nullish()
 
-type InternalUserData = z.infer<typeof InternalUserSchema>
+export type InternalUserData = z.infer<typeof InternalUserSchema>
 
 export interface UseInternalUserArgs {
   opts?: UseQueryOptions<InternalUserData>
