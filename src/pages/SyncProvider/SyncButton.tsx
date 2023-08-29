@@ -1,0 +1,32 @@
+import PropTypes from 'prop-types'
+
+import { useNavLinks } from 'services/navigation'
+import { providerImage, providerToName } from 'shared/utils/provider'
+
+function SyncButton({ provider }: { provider: string }) {
+  const { signIn } = useNavLinks()
+  const to = `${window.location.protocol}//${window.location.host}/${provider}`
+
+  return (
+    <div className="flex h-14 items-center rounded-sm border border-ds-gray-quaternary bg-ds-gray-primary text-left shadow">
+      <a
+        className="flex h-full grow items-center font-semibold hover:bg-ds-gray-secondary"
+        href={signIn.path({ to, provider, privateScope: true })}
+        data-cy={'login-button'}
+      >
+        <img
+          alt={`Logo of ${providerToName(provider)}`}
+          className="mx-4 block h-6 w-6"
+          src={providerImage(provider)}
+        />
+        Sync with {providerToName(provider)}
+      </a>
+    </div>
+  )
+}
+
+SyncButton.propTypes = {
+  provider: PropTypes.oneOf(['gh', 'gl', 'bb']).isRequired,
+}
+
+export default SyncButton
