@@ -79,7 +79,7 @@
     "react-modal": "^3.14.4",
     "react-router-dom": "^5.2.1",
     "react-use": "^17.2.4",
-    "victory": "^36.6.10",
+    "victory": "^36.6.11",
     "web-vitals": "^2.1.4",
     "yup": "^0.32.11",
     "zod": "^3.21.4"
