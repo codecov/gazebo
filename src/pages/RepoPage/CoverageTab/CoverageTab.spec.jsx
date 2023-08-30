@@ -223,8 +223,6 @@ describe('Coverage Tab', () => {
   it('renders the sunburst chart', async () => {
     setup()
 
-    console.error = () => {}
-
     render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/test-repo']) })
 
     const hideChart = await screen.findByText(/Hide Chart/)
