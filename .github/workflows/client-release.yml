@@ -55,5 +55,6 @@ jobs:
           REACT_APP_CE_CLIENT: ${{ secrets.client_name }}
           REACT_APP_ENTERPRISE_DEFAULT_PROVIDER: ${{ secrets.default_provider }}
           REACT_APP_SENTRY_DSN: ${{ secrets.sentry_dsn }}
+          REACT_APP_SENTRY_ENVIRONMENT: ${{ secrets.client_name }}
 
       - run: gsutil -m rsync -d -c -r build gs://${{ secrets.bucket }}
