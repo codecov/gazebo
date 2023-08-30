@@ -67,17 +67,17 @@ describe('AccountSettings', () => {
       owner = 'codecov',
       username = 'codecov',
       isAdmin = false,
-      showAccessTab = false,
+      hideAccessTab = true,
     } = {
       isSelfHosted: false,
       owner: 'codecov',
       username: 'codecov',
       isAdmin: false,
-      showAccessTab: false,
+      hideAccessTab: true,
     }
   ) {
     config.IS_SELF_HOSTED = isSelfHosted
-    config.SHOW_ACCESS_TAB = showAccessTab
+    config.HIDE_ACCESS_TAB = hideAccessTab
 
     server.use(
       graphql.query('CurrentUser', (req, res, ctx) => {
@@ -181,9 +181,9 @@ describe('AccountSettings', () => {
 
   describe('on the access route', () => {
     describe('is self hosted', () => {
-      describe('show access tab is set to true', () => {
+      describe('hide access tab is set to false', () => {
         it('renders access tab', async () => {
-          setup({ isSelfHosted: true, showAccessTab: true })
+          setup({ isSelfHosted: true, hideAccessTab: false })
 
           render(<AccountSettings />, {
             wrapper: wrapper({
@@ -197,9 +197,9 @@ describe('AccountSettings', () => {
         })
       })
 
-      describe('show access tab is set to false', () => {
+      describe('hide access tab is set to true', () => {
         it('renders not found tab', async () => {
-          setup({ isSelfHosted: true, showAccessTab: false })
+          setup({ isSelfHosted: true, hideAccessTab: true })
 
           render(<AccountSettings />, {
             wrapper: wrapper({
@@ -215,9 +215,9 @@ describe('AccountSettings', () => {
     })
 
     describe('is not self hosted', () => {
-      describe('show access tab is set to true', () => {
+      describe('hide access tab is set to false', () => {
         it('renders access tab', async () => {
-          setup({ isSelfHosted: false, showAccessTab: true })
+          setup({ isSelfHosted: false, hideAccessTab: false })
 
           render(<AccountSettings />, {
             wrapper: wrapper({
@@ -230,9 +230,9 @@ describe('AccountSettings', () => {
           expect(accessTab).toBeInTheDocument()
         })
       })
-      describe('show access tab is set to false', () => {
+      describe('hide access tab is set to true', () => {
         it('renders access tab', async () => {
-          setup({ isSelfHosted: false, showAccessTab: false })
+          setup({ isSelfHosted: false, hideAccessTab: true })
 
           render(<AccountSettings />, {
             wrapper: wrapper({
