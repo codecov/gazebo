@@ -48,7 +48,7 @@ const repoConfigMock = {
   },
 }
 
-const treeMock = { name: 'repoName', children: [] }
+const treeMock = [{ name: 'repoName', children: [] }]
 
 const overviewMock = {
   owner: { repository: { private: false, defaultBranch: 'main' } },
@@ -119,10 +119,10 @@ const branchesContentsMock = {
           pathContents: {
             results: [
               {
-                name: 'flag1',
-                filePath: null,
+                name: 'src',
+                path: 'src',
                 percentCovered: 100.0,
-                type: 'dir',
+                __typename: 'PathContentDir',
               },
             ],
           },
@@ -161,10 +161,12 @@ const mockBranchMeasurements = {
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })
 })
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
+
 afterAll(() => {
   server.close()
 })
@@ -204,7 +206,7 @@ describe('Coverage Tab', () => {
       rest.get(
         '/internal/:provider/:owner/:repo/coverage/tree',
         (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json({ data: treeMock }))
+          return res(ctx.status(200), ctx.json(treeMock))
         }
       ),
       rest.post(
@@ -223,7 +225,7 @@ describe('Coverage Tab', () => {
   it('renders the sunburst chart', async () => {
     setup()
 
-    render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/test-repo']) })
+    render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/repoName']) })
 
     const hideChart = await screen.findByText(/Hide Chart/)
     expect(hideChart).toBeInTheDocument()
