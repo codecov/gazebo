@@ -26,7 +26,7 @@ const InternalUserSchema = z
     email: z.string().nullish(),
     name: z.string().nullish(),
     externalId: z.string().nullish(),
-    owners: z.array(OwnerSchema),
+    owners: z.array(OwnerSchema).nullish(),
   })
   .nullish()
 
