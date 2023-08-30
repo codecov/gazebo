@@ -151,12 +151,32 @@ describe('SyncProviderPage', () => {
     })
 
     describe('user has synced a provider', () => {
-      it('redirects user to /', async () => {
-        setup({ flagValue: true, user: createMockedInternalUser() })
+      describe('service is valid', () => {
+        it('redirects to the service provider', async () => {
+          setup({
+            flagValue: true,
+            user: createMockedInternalUser({
+              name: 'github',
+              service: 'github',
+            }),
+          })
 
-        render(<SyncProviderPage />, { wrapper })
+          render(<SyncProviderPage />, { wrapper })
 
-        await waitFor(() => expect(testLocation.pathname).toBe('/'))
+          await waitFor(() => expect(testLocation.pathname).toBe('/gh'))
+        })
+      })
+      describe('user does not have a service', () => {
+        it('redirects user to /', async () => {
+          setup({
+            flagValue: true,
+            user: createMockedInternalUser({ name: 'github' }),
+          })
+
+          render(<SyncProviderPage />, { wrapper })
+
+          await waitFor(() => expect(testLocation.pathname).toBe('/'))
+        })
       })
     })
   })

@@ -1,13 +1,13 @@
+import gt from 'lodash/gt'
 import { Redirect } from 'react-router-dom'
 
 import { useInternalUser } from 'services/user/useInternalUser'
 import { useFlags } from 'shared/featureFlags'
+import { loginProviderToShortName } from 'shared/utils/loginProviders'
 
 import SyncButton from './SyncButton'
 
-const SyncProviderPage: React.FC = () => {
-  // const routeMatch = useRouteMatch('/sync')
-
+function SyncProviderPage() {
   const { sentryLoginProvider } = useFlags({
     sentryLoginProvider: false,
   })
@@ -16,7 +16,7 @@ const SyncProviderPage: React.FC = () => {
 
   // will be false if 0 | undefined | null
   // will be true if greater than 1
-  const hasSynced = !!internalUser?.owners?.length
+  const hasSynced = gt(internalUser?.owners?.length, 0)
 
   // block all requests if flag is false
   if (!sentryLoginProvider) {
@@ -29,7 +29,15 @@ const SyncProviderPage: React.FC = () => {
   // --
   // once we allow users to sync multiple providers need change this logic
   // to allow them to view this page
-  if (hasSynced && sentryLoginProvider) {
+  if (hasSynced) {
+    const service = internalUser?.owners?.[0]?.service
+    if (service) {
+      const provider = loginProviderToShortName(service)
+      return <Redirect to={`/${provider}`} />
+    }
+
+    // user **should** have a service at this point
+    // but like just incase redirect them to /
     return <Redirect to="/" />
   }
 
