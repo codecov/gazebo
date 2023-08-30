@@ -18,6 +18,7 @@ jobs:
       token: ${{ secrets.GITHUB_TOKEN }}
       gcp_sa: ${{ secrets.CODECOV_GCP_WIDSA }}
       gcp_idp: ${{ secrets.CODECOV_GCP_WIDP }}
+      sentry_dsn: ${{ secrets.sentry_dsn_alpha }}
     permissions:
       pull-requests: 'write'
       contents: 'read'
