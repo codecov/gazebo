@@ -1,4 +1,5 @@
 import { lazy, Suspense } from 'react'
+import { useHistory } from 'react-router-dom'
 
 import Footer from 'layouts/Footer'
 import Header from 'layouts/Header'
@@ -25,24 +26,35 @@ const FullPageLoader = () => (
 )
 
 const OnboardingOrChildren = ({ children }) => {
-  const { isFullExperience, showAgreeToTerms, showDefaultOrgSelector } =
-    useUserAccessGate()
+  const history = useHistory()
+  const {
+    isFullExperience,
+    showAgreeToTerms,
+    showDefaultOrgSelector,
+    redirectToSyncPage,
+  } = useUserAccessGate()
 
   const { isImpersonating } = useImpersonate()
 
-  if (showAgreeToTerms && !isFullExperience)
+  if (showAgreeToTerms && !isFullExperience) {
     return (
       <Suspense fallback={null}>
         <TermsOfService />
       </Suspense>
     )
+  }
 
-  if (showDefaultOrgSelector && !isFullExperience && !isImpersonating)
+  if (redirectToSyncPage && !isFullExperience) {
+    history.replace('/sync')
+  }
+
+  if (showDefaultOrgSelector && !isFullExperience && !isImpersonating) {
     return (
       <Suspense fallback={null}>
         <DefaultOrgSelector />
       </Suspense>
     )
+  }
 
   return children
 }
