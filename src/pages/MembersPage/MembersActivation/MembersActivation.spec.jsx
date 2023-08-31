@@ -5,11 +5,10 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
-import { useFlags } from 'shared/featureFlags'
+import { Plans } from 'shared/utils/billing'
 
 import MembersActivation from './MembersActivation'
 
-jest.mock('shared/featureFlags')
 jest.mock('./AutoActivate/AutoActivate', () => () => 'AutoActivate')
 jest.mock('./Activation/Activation', () => () => 'Activation')
 
@@ -69,11 +68,8 @@ describe('Members Activation', () => {
   function setup(
     accountDetails = mockedAccountDetails,
     trialStatus = TrialStatuses.NOT_STARTED,
-    planValue = mockedAccountDetails.plan.value,
-    codecovTrialMvp = false
+    planValue = mockedAccountDetails.plan.value
   ) {
-    useFlags.mockReturnValue({ codecovTrialMvp })
-
     server.use(
       rest.get('/internal/gh/:owner/account-details/', (req, res, ctx) =>
         res(ctx.status(200), ctx.json(accountDetails))
@@ -96,19 +92,57 @@ describe('Members Activation', () => {
   }
 
   describe('MemberActivation', () => {
-    describe('flag is disabled', () => {
-      it('renders activation component', async () => {
-        setup()
+    it('renders activation component', async () => {
+      setup()
 
-        render(<MembersActivation />, { wrapper })
+      render(<MembersActivation />, { wrapper })
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
 
-        const activation = await screen.findByText('Activation')
-        expect(activation).toBeInTheDocument()
+      const activation = await screen.findByText('Activation')
+      expect(activation).toBeInTheDocument()
+    })
+
+    describe('user is currently on a trial', () => {
+      describe('plan auto activate is not undefined', () => {
+        it('does not render auto activate component', async () => {
+          setup(
+            { ...mockedAccountDetails, planAutoActivate: true },
+            TrialStatuses.ONGOING,
+            Plans.USERS_TRIAL
+          )
+
+          render(<MembersActivation />, { wrapper })
+
+          await waitFor(() => queryClient.isFetching)
+          await waitFor(() => !queryClient.isFetching)
+
+          const AutoActivate = screen.queryByText(/AutoActivate/)
+          expect(AutoActivate).not.toBeInTheDocument()
+        })
       })
 
+      describe('plan auto activation is undefined', () => {
+        it('does not render auto activate component', async () => {
+          setup(
+            { ...mockedAccountDetails, planAutoActivate: undefined },
+            TrialStatuses.ONGOING,
+            Plans.USERS_TRIAL
+          )
+
+          render(<MembersActivation />, { wrapper })
+
+          await waitFor(() => queryClient.isFetching)
+          await waitFor(() => !queryClient.isFetching)
+
+          const AutoActivate = screen.queryByText(/AutoActivate/)
+          expect(AutoActivate).not.toBeInTheDocument()
+        })
+      })
+    })
+
+    describe('user is not on a trial', () => {
       describe('plan auto activate is not undefined', () => {
         it('renders auto activate component', async () => {
           setup({ ...mockedAccountDetails, planAutoActivate: true })
@@ -135,20 +169,6 @@ describe('Members Activation', () => {
           const AutoActivate = screen.queryByText(/AutoActivate/)
           expect(AutoActivate).not.toBeInTheDocument()
         })
-      })
-    })
-
-    describe('flag is enabled', () => {
-      it('renders the activation component', async () => {
-        setup(mockedAccountDetails, TrialStatuses.ONGOING, 'users-trial', true)
-
-        render(<MembersActivation />, { wrapper })
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
-
-        const activation = await screen.findByText('Activation')
-        expect(activation).toBeInTheDocument()
       })
     })
   })
