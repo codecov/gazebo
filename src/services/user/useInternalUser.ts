@@ -36,7 +36,7 @@ export interface UseInternalUserArgs {
   opts?: UseQueryOptions<InternalUserData>
 }
 
-export const useInternalUser = ({ opts }: UseInternalUserArgs) =>
+export const useInternalUser = (opts: UseInternalUserArgs) =>
   useQuery({
     queryKey: ['InternalUser'],
     queryFn: ({ signal }) => {
