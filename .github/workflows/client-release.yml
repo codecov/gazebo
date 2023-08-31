@@ -15,7 +15,7 @@ jobs:
         with:
           owner: codecov
           repo: ${{ secrets.DEVOPS_WORKFLOW_REPO }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GH_RELEASE_TOKEN }}
           workflow_file_name: ${{ secrets.CLIENT_WORKFLOW_FILE }}
     permissions:
       pull-requests: 'read'
