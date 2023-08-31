@@ -21,6 +21,10 @@ on:
         required: true
       sentry_dsn:
         required: true
+      sentry_project:
+        required: true
+      sentry_release_token:
+        required: true
 jobs:
   release:
     name: Release
@@ -56,5 +60,7 @@ jobs:
           REACT_APP_ENTERPRISE_DEFAULT_PROVIDER: ${{ secrets.default_provider }}
           REACT_APP_SENTRY_DSN: ${{ secrets.sentry_dsn }}
           REACT_APP_SENTRY_ENVIRONMENT: ${{ secrets.client_name }}
+          REACT_APP_SENTRY_AUTH_TOKEN: ${{ secrets.sentry_release_token }}
+          REACT_APP_SENTRY_PROJECT: ${{ secrets.sentry_project }}
 
       - run: gsutil -m rsync -d -c -r build gs://${{ secrets.bucket }}
