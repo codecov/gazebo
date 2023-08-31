@@ -5,8 +5,8 @@ const SentryWebpackPlugin = require('@sentry/webpack-plugin')
 const { resolve } = require('path')
 
 const SentryPlugin = new SentryWebpackPlugin({
-  org: 'codecov',
-  project: 'gazebo',
+  org: process.env.SENTRY_ORG || 'codecov',
+  project: process.env.SENTRY_PROJECT || 'gazebo',
   include: './build/static/js',
   authToken: process.env.SENTRY_AUTH_TOKEN,
   urlPrefix: '~/static/js',
