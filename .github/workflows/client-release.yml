@@ -1,66 +1,23 @@
-name: Client Release
+name: Deploy Clients
 
 on:
-  workflow_call:
-    secrets:
-      bucket:
-        required: true
-      client_name:
-        required: true
-      api_url:
-        required: true
-      base_url:
-        required: true
-      token:
-        required: true
-      gcp_sa:
-        required: true
-      default_provider:
-        required: true
-      gcp_idp:
-        required: true
-      sentry_dsn:
-        required: true
-      sentry_project:
-        required: true
-      sentry_release_token:
-        required: true
+  push:
+    branches:
+      - main
+      - feature/remote-build
+
 jobs:
   release:
-    name: Release
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v1
+    - steps:
+        uses: convictional/trigger-workflow-and-wait@v1.6.5
         with:
-          node-version: '18.8.0'
-      - uses: actions/cache@v1
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-js-${{ hashFiles('package-lock.json') }}
-      - id: 'auth'
-        name: 'Authenticate to Google Cloud'
-        uses: 'google-github-actions/auth@v1.0.0'
-        with:
-          workload_identity_provider: ${{ secrets.gcp_idp }}
-          service_account: ${{ secrets.gcp_sa }}
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v1'
-        with:
-          skip_install: true
-      - run: |-
-          npm install
-          npm run build
-          rm -f build/mockServiceWorker.js
-        env:
-          REACT_APP_ENV: "enterprise"
-          REACT_APP_API_URL: https://${{ secrets.api_url }}
-          REACT_APP_BASE_URL: https://${{ secrets.base_url }}
-          REACT_APP_CE_CLIENT: ${{ secrets.client_name }}
-          REACT_APP_ENTERPRISE_DEFAULT_PROVIDER: ${{ secrets.default_provider }}
-          REACT_APP_SENTRY_DSN: ${{ secrets.sentry_dsn }}
-          REACT_APP_SENTRY_ENVIRONMENT: ${{ secrets.client_name }}
-          REACT_APP_SENTRY_AUTH_TOKEN: ${{ secrets.sentry_release_token }}
-          REACT_APP_SENTRY_PROJECT: ${{ secrets.sentry_project }}
-
-      - run: gsutil -m rsync -d -c -r build gs://${{ secrets.bucket }}
+          owner: codecov
+          repo: ${{ secrets.DEVOPS_WORKFLOW_REPO }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow_file_name: ${{ secrets.CLIENT_WORKFLOW_FILE }}
+  permissions:
+    pull-requests: 'read'
+    contents: 'read'
+    id-token: 'write'
+    actions: 'write'
+    repository-projects: 'read'
