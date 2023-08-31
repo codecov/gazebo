@@ -19,17 +19,14 @@ function SyncProviderPage() {
   const hasSynced = gt(internalUser?.owners?.length, 0)
 
   // block all requests if flag is false
-  if (!sentryLoginProvider) {
-    return <Redirect to="/" />
-  }
-
+  // --
   // this allows us to also show the sync page within the limited
   // experience env because if they don't have any providers selected
   // then we need to have them select one before they move onto onboarding
   // --
   // once we allow users to sync multiple providers need change this logic
   // to allow them to view this page
-  if (hasSynced) {
+  if (!sentryLoginProvider || hasSynced) {
     const service = internalUser?.owners?.[0]?.service
     if (service) {
       const provider = loginProviderToShortName(service)
