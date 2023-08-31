@@ -18,6 +18,9 @@ jobs:
       token: ${{ secrets.GITHUB_TOKEN }}
       gcp_sa: ${{ secrets.CODECOV_GCP_WIDSA }}
       gcp_idp: ${{ secrets.CODECOV_GCP_WIDP }}
+      sentry_dsn: ${{ secrets.sentry_dsn_alpha }}
+      sentry_release_token: ${{ secrets.CODECOV_SENTRY_RELEASE_TOKEN }}
+      sentry_project: ${{ secrets.CODECOV_SENTRY_CLIENT_PROJECT }}
     permissions:
       pull-requests: 'write'
       contents: 'read'

@@ -5,6 +5,7 @@ import Header from 'layouts/Header'
 import ErrorBoundary from 'layouts/shared/ErrorBoundary'
 import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
 import ToastNotifications from 'layouts/ToastNotifications'
+import { useImpersonate } from 'services/impersonate'
 import { useTracking } from 'services/tracking'
 import GlobalBanners from 'shared/GlobalBanners'
 import GlobalTopBanners from 'shared/GlobalTopBanners'
@@ -27,6 +28,8 @@ const OnboardingOrChildren = ({ children }) => {
   const { isFullExperience, showAgreeToTerms, showDefaultOrgSelector } =
     useUserAccessGate()
 
+  const { isImpersonating } = useImpersonate()
+
   if (showAgreeToTerms && !isFullExperience)
     return (
       <Suspense fallback={null}>
@@ -34,7 +37,7 @@ const OnboardingOrChildren = ({ children }) => {
       </Suspense>
     )
 
-  if (showDefaultOrgSelector && !isFullExperience)
+  if (showDefaultOrgSelector && !isFullExperience && !isImpersonating)
     return (
       <Suspense fallback={null}>
         <DefaultOrgSelector />
