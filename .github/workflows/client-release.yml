@@ -8,16 +8,18 @@ on:
 
 jobs:
   release:
-    - steps:
-        uses: convictional/trigger-workflow-and-wait@v1.6.5
+    name: Trigger client deploy workflow
+    runs-on: ubuntu-latest
+    steps:
+      - uses: convictional/trigger-workflow-and-wait@v1.6.5
         with:
           owner: codecov
           repo: ${{ secrets.DEVOPS_WORKFLOW_REPO }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workflow_file_name: ${{ secrets.CLIENT_WORKFLOW_FILE }}
-  permissions:
-    pull-requests: 'read'
-    contents: 'read'
-    id-token: 'write'
-    actions: 'write'
-    repository-projects: 'read'
+    permissions:
+      pull-requests: 'read'
+      contents: 'read'
+      id-token: 'write'
+      actions: 'write'
+      repository-projects: 'read'
