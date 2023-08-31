@@ -14,7 +14,6 @@ jest.mock('./pages/AccountSettings', () => () => 'AccountSettings')
 jest.mock('./pages/AdminSettings', () => () => 'AdminSettingsPage')
 jest.mock('./pages/AnalyticsPage', () => () => 'AnalyticsPage')
 jest.mock('./pages/CommitDetailPage', () => () => 'CommitDetailPage')
-jest.mock('./pages/FeedbackPage', () => () => 'FeedbackPage')
 jest.mock('./pages/LoginPage', () => () => 'LoginPage')
 jest.mock('./pages/OwnerPage', () => () => 'OwnerPage')
 jest.mock('./pages/MembersPage', () => () => 'MembersPage')
@@ -191,16 +190,6 @@ describe('App', () => {
     ],
     [
       {
-        testLabel: 'FeedbackPage',
-        pathname: '/bb/feedback',
-        expected: {
-          page: /FeedbackPage/i,
-          location: '/bb/feedback',
-        },
-      },
-    ],
-    [
-      {
         testLabel: 'OwnerPage',
         pathname: '/gh/codecov',
         expected: {
@@ -369,16 +358,6 @@ describe('App', () => {
         expected: {
           page: /AnalyticsPage/i,
           location: '/analytics/gh/codecov',
-        },
-      },
-    ],
-    [
-      {
-        testLabel: 'FeedbackPage',
-        pathname: '/bb/feedback',
-        expected: {
-          page: /FeedbackPage/i,
-          location: '/bb/feedback',
         },
       },
     ],
