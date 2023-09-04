@@ -48,12 +48,27 @@ const iconClasses = {
   lg: 'w-16 h-16',
 }
 
-interface IconProps {
-  name: Name
-  variant?: Variant
+type CommonProps = {
   size?: 'sm' | 'md' | 'lg' | 'flex'
   label?: string
 }
+
+type OutlineIconProps = {
+  name: keyof OutlineIconCollection
+  variant: 'outline'
+} & CommonProps
+
+type SolidIconProps = {
+  name: keyof SolidIconCollection
+  variant: 'solid'
+} & CommonProps
+
+type DeveloperIconProps = {
+  name: keyof DeveloperIconCollection
+  variant: 'developer'
+} & CommonProps
+
+type IconProps = OutlineIconProps | SolidIconProps | DeveloperIconProps
 
 function Icon({
   name,
