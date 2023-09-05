@@ -38,7 +38,7 @@ const useUserAccessGate = () => {
     useFlags({
       termsOfServicePage: false,
       defaultOrgSelectorPage: false,
-      sentryLoginProvider: true,
+      sentryLoginProvider: false,
     })
 
   const {
