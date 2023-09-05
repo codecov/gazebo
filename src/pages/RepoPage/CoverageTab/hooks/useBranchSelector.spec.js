@@ -20,6 +20,7 @@ const server = setupServer()
 const mockBranches = (branchName) => ({
   owner: {
     repository: {
+      __typename: 'Repository',
       branch: {
         name: branchName,
         head: {
@@ -73,7 +74,7 @@ describe('useBranchSelector', () => {
           return res(ctx.status(200), ctx.data(mockBranches(branchName)))
         }
 
-        return res(ctx.status(200), ctx.data({}))
+        return res(ctx.status(200), ctx.data({ owner: null }))
       })
     )
   }
