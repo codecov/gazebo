@@ -87,6 +87,7 @@ const branchesMock = {
 }
 
 const mockBranchMeasurements = {
+  __typename: 'Repository',
   measurements: [
     {
       timestamp: '2023-01-01T00:00:00+00:00',
@@ -140,7 +141,7 @@ describe('CoverageChart', () => {
       ),
       graphql.query('GetBranchCoverageMeasurements', (req, res, ctx) => {
         if (coverageRepoStatus) {
-          return res(ctx.status(400), ctx.errors({}))
+          return res(ctx.status(400), ctx.errors({ owner: null }))
         }
 
         return res(
@@ -157,6 +158,7 @@ describe('CoverageChart', () => {
         repoOverviewData: overviewMock,
         branchesData: branchesMock,
         branchMeasurementsData: {
+          __typename: 'Repository',
           measurements: [
             { timestamp: '2020-01-15T20:18:39.413Z', max: 20 },
             { timestamp: '2020-01-17T20:18:39.413Z', max: 50 },
@@ -184,6 +186,7 @@ describe('CoverageChart', () => {
         repoOverviewData: overviewMock,
         branchesData: branchesMock,
         branchMeasurementsData: {
+          __typename: 'Repository',
           measurements: [
             { timestamp: '2020-01-15T20:18:39.413Z', max: 20 },
             { timestamp: '2020-01-17T20:18:39.413Z', max: 0 },
@@ -211,6 +214,7 @@ describe('CoverageChart', () => {
         repoOverviewData: overviewMock,
         branchesData: branchesMock,
         branchMeasurementsData: {
+          __typename: 'Repository',
           measurements: [{ timestamp: '2020-01-15T20:18:39.413Z', max: 20 }],
         },
         coverageRepoStatus: 500,
