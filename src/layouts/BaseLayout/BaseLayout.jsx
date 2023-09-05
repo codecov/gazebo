@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { useHistory } from 'react-router-dom'
+import { Redirect } from 'react-router-dom'
 
 import Footer from 'layouts/Footer'
 import Header from 'layouts/Header'
@@ -26,7 +26,6 @@ const FullPageLoader = () => (
 )
 
 const OnboardingOrChildren = ({ children }) => {
-  const history = useHistory()
   const {
     isFullExperience,
     showAgreeToTerms,
@@ -45,7 +44,7 @@ const OnboardingOrChildren = ({ children }) => {
   }
 
   if (redirectToSyncPage && !isFullExperience) {
-    history.replace('/sync')
+    return <Redirect to="/sync" />
   }
 
   if (showDefaultOrgSelector && !isFullExperience && !isImpersonating) {
