@@ -55,16 +55,19 @@ describe('AccountSettingsSideMenu', () => {
     {
       isAdmin = false,
       username = 'codecov',
-      isSelfHosted = false,
       owner = 'codecov',
+      isSelfHosted = false,
+      hideAccessTab = false,
     } = {
       isAdmin: false,
       username: 'codecov',
       isSelfHosted: false,
       owner: 'codecov',
+      hideAccessTab: false,
     }
   ) {
     config.IS_SELF_HOSTED = isSelfHosted
+    config.HIDE_ACCESS_TAB = hideAccessTab
 
     server.use(
       graphql.query('CurrentUser', (req, res, ctx) => {
@@ -91,6 +94,37 @@ describe('AccountSettingsSideMenu', () => {
         const link = await screen.findByRole('link', { name: 'Profile' })
         expect(link).toBeInTheDocument()
         expect(link).toHaveAttribute('href', '/account/gh/codecov')
+      })
+
+      describe('hide access tab is set to false', () => {
+        it('renders access tab link', async () => {
+          setup({ isSelfHosted: true })
+
+          render(<AccountSettingsSideMenu />, { wrapper: wrapper() })
+
+          const link = await screen.findByRole('link', { name: 'Access' })
+          expect(link).toBeInTheDocument()
+          expect(link).toHaveAttribute('href', '/account/gh/codecov/access')
+        })
+      })
+
+      describe('hide access tab is set to true', () => {
+        it('does not render access tab link', async () => {
+          setup({ isSelfHosted: true, hideAccessTab: true })
+
+          render(<AccountSettingsSideMenu />, { wrapper: wrapper() })
+
+          const suspense = await screen.findByText('Loading')
+          expect(suspense).toBeInTheDocument()
+          await waitFor(() =>
+            expect(screen.queryByText('Loading')).not.toBeInTheDocument()
+          )
+
+          const link = screen.queryByRole('link', {
+            name: 'Access',
+          })
+          expect(link).not.toBeInTheDocument()
+        })
       })
     })
 
