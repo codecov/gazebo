@@ -34,6 +34,8 @@ function useOnboardingRedirect({ username }) {
 
 const useUserAccessGate = () => {
   const { provider } = useParams()
+  const currentRoute = useRouteMatch()
+
   const { termsOfServicePage, defaultOrgSelectorPage, sentryLoginProvider } =
     useFlags({
       termsOfServicePage: false,
@@ -82,7 +84,8 @@ const useUserAccessGate = () => {
     showAgreeToTerms = userData?.termsAgreement === false
   }
 
-  if (sentryLoginProvider && !isGuest) {
+  const onSyncPage = currentRoute.path === '/sync'
+  if (sentryLoginProvider && !isGuest && !onSyncPage) {
     // owners array contains a list of the synced providers
     // if it is zero then they haven't synced any other providers
     redirectToSyncPage = isEqual(internalUser?.owners?.length, 0)
