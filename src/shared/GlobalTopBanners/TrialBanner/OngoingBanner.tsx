@@ -5,6 +5,18 @@ import Button from 'ui/Button/Button'
 import Icon from 'ui/Icon/Icon'
 import TopBanner from 'ui/TopBanner'
 
+interface DayCountProps {
+  dateDiff: number
+}
+
+const DayCount: React.FC<DayCountProps> = ({ dateDiff }) => {
+  if (dateDiff <= 1) {
+    return <span>Your trial ends in {dateDiff} day.</span>
+  }
+
+  return <span>Your trial ends in {dateDiff} days.</span>
+}
+
 interface OngoingBannerProps {
   dateDiff: number
 }
@@ -16,8 +28,9 @@ const OngoingBanner: React.FC<OngoingBannerProps> = ({ dateDiff }) => {
         <p>
           <span className="pr-2 text-xl">&#128075;</span>
           <span className="font-semibold">
-            Your trial ends in {dateDiff} day(s) {/* @ts-expect-error */}
-            <A to={{ pageName: 'upgradeOrgPlan' }}>upgrade</A>.
+            <DayCount dateDiff={dateDiff} />
+            {/* @ts-expect-error */}
+            <A to={{ pageName: 'upgradeOrgPlan' }}>Upgrade now</A>.
           </span>
         </p>
       </TopBanner.Start>

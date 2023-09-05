@@ -7,11 +7,13 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import config from 'config'
 
 import { useImage } from 'services/image'
+import { useImpersonate } from 'services/impersonate'
 import { useFlags } from 'shared/featureFlags'
 
 import BaseLayout from './BaseLayout'
 
 jest.mock('services/image')
+jest.mock('services/impersonate')
 jest.mock('shared/featureFlags')
 jest.mock('shared/GlobalTopBanners', () => () => 'GlobalTopBanners')
 jest.mock('./InstallationHelpBanner', () => () => 'InstallationHelpBanner')
@@ -96,6 +98,7 @@ describe('BaseLayout', () => {
       termsOfServicePage = false,
       currentUser = loggedInUser,
       defaultOrgSelectorPage = false,
+      isImpersonating = false,
     } = {
       termsOfServicePage: false,
       currentUser: loggedInUser,
@@ -111,6 +114,7 @@ describe('BaseLayout', () => {
       termsOfServicePage,
       defaultOrgSelectorPage,
     })
+    useImpersonate.mockReturnValue({ isImpersonating })
 
     server.use(
       graphql.query('CurrentUser', (_, res, ctx) =>
@@ -170,6 +174,27 @@ describe('BaseLayout', () => {
       })
 
       it('renders the children', async () => {
+        render(<BaseLayout>hello</BaseLayout>, {
+          wrapper: wrapper(),
+        })
+
+        expect(await screen.findByText('hello')).toBeTruthy()
+        const hello = screen.getByText('hello')
+        expect(hello).toBeInTheDocument()
+
+        const defaultOrg = screen.queryByText(/DefaultOrgSelector/)
+        expect(defaultOrg).not.toBeInTheDocument()
+
+        const termsOfService = screen.queryByText(/TermsOfService/)
+        expect(termsOfService).not.toBeInTheDocument()
+      })
+    })
+
+    describe('user is impersonating', () => {
+      it('renders the children', async () => {
+        setup({
+          isImpersonating: true,
+        })
         render(<BaseLayout>hello</BaseLayout>, {
           wrapper: wrapper(),
         })

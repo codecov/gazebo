@@ -111,6 +111,7 @@ const mockBranchMeasurements = {
 const branchMock = {
   owner: {
     repository: {
+      __typename: 'Repository',
       branch: {
         name: 'main',
         head: {

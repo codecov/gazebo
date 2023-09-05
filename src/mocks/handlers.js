@@ -40,8 +40,6 @@ graphql.query('CurrentUser', (req, res, ctx) => {
           student: false,
           studentCreatedAt: null,
           studentUpdatedAt: null,
-          cannySSOToken:
-            'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdmF0YXJVUkwiOiJodHRwczovL2F2YXRhcnMwLmdpdGh1YnVzZXJjb250ZW50LmNvbS91Lzg3ODI0ODEyP3Y9MyZzPTU1IiwiZW1haWwiOiJ0ZXJyeUBjb2RlY292LmlvIiwiaWQiOjM0NTY1NTYsIm5hbWUiOiJUZXJyeSJ9.SW-coKzY14lfLJBSA_5hROr0lB6tPdGo8ZNItWEGgdU',
         },
         trackingMetadata: {
           service: 'github',

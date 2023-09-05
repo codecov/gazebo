@@ -20,18 +20,29 @@ describe('OngoingBanner', () => {
   }
 
   describe('rendering banner', () => {
-    it('renders left side text', () => {
-      render(<OngoingBanner dateDiff={3} />, { wrapper })
+    describe('date diff greater then 1', () => {
+      it('renders left side text', () => {
+        render(<OngoingBanner dateDiff={3} />, { wrapper })
 
-      const leftText = screen.getByText(/Your trial ends in 3 day\(s\)/)
-      expect(leftText).toBeInTheDocument()
+        const leftText = screen.getByText('Your trial ends in 3 days.')
+        expect(leftText).toBeInTheDocument()
+      })
+    })
+
+    describe('date diff lt or eq to 1', () => {
+      it('renders left side text', () => {
+        render(<OngoingBanner dateDiff={1} />, { wrapper })
+
+        const leftText = screen.getByText('Your trial ends in 1 day.')
+        expect(leftText).toBeInTheDocument()
+      })
     })
 
     it('renders link to upgrade', () => {
       render(<OngoingBanner dateDiff={3} />, { wrapper })
 
       const upgradeLink = screen.getByRole('link', {
-        name: /upgrade/,
+        name: /Upgrade now/,
       })
       expect(upgradeLink).toBeInTheDocument()
       expect(upgradeLink).toHaveAttribute('href', '/plan/gh/codecov/upgrade')
@@ -55,7 +66,7 @@ describe('OngoingBanner', () => {
     it('renders button to upgrade', () => {
       render(<OngoingBanner dateDiff={3} />, { wrapper })
 
-      const btn = screen.getByRole('link', { name: /Upgrade/ })
+      const btn = screen.getByRole('link', { name: /Upgrade now/ })
       expect(btn).toBeInTheDocument()
       expect(btn).toHaveAttribute('href', '/plan/gh/codecov/upgrade')
     })

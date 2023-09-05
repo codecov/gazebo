@@ -67,14 +67,17 @@ describe('AccountSettings', () => {
       owner = 'codecov',
       username = 'codecov',
       isAdmin = false,
+      hideAccessTab = true,
     } = {
       isSelfHosted: false,
       owner: 'codecov',
       username: 'codecov',
       isAdmin: false,
+      hideAccessTab: true,
     }
   ) {
     config.IS_SELF_HOSTED = isSelfHosted
+    config.HIDE_ACCESS_TAB = hideAccessTab
 
     server.use(
       graphql.query('CurrentUser', (req, res, ctx) => {
@@ -178,34 +181,69 @@ describe('AccountSettings', () => {
 
   describe('on the access route', () => {
     describe('is self hosted', () => {
-      it('renders not found tab', async () => {
-        setup({ isSelfHosted: true })
+      describe('hide access tab is set to false', () => {
+        it('renders access tab', async () => {
+          setup({ isSelfHosted: true, hideAccessTab: false })
 
-        render(<AccountSettings />, {
-          wrapper: wrapper({
-            initialEntries: '/account/gh/codecov/access',
-            path: '/account/:provider/:owner/access',
-          }),
+          render(<AccountSettings />, {
+            wrapper: wrapper({
+              initialEntries: '/account/gh/codecov/access',
+              path: '/account/:provider/:owner/access',
+            }),
+          })
+
+          const accessTab = await screen.findByText('Access')
+          expect(accessTab).toBeInTheDocument()
         })
+      })
 
-        const notFound = await screen.findByText('NotFound')
-        expect(notFound).toBeInTheDocument()
+      describe('hide access tab is set to true', () => {
+        it('renders not found tab', async () => {
+          setup({ isSelfHosted: true, hideAccessTab: true })
+
+          render(<AccountSettings />, {
+            wrapper: wrapper({
+              initialEntries: '/account/gh/codecov/access',
+              path: '/account/:provider/:owner/access',
+            }),
+          })
+
+          const notFound = await screen.findByText('NotFound')
+          expect(notFound).toBeInTheDocument()
+        })
       })
     })
 
     describe('is not self hosted', () => {
-      it('renders access tab', async () => {
-        setup()
+      describe('hide access tab is set to false', () => {
+        it('renders access tab', async () => {
+          setup({ isSelfHosted: false, hideAccessTab: false })
 
-        render(<AccountSettings />, {
-          wrapper: wrapper({
-            initialEntries: '/account/gh/codecov/access',
-            path: '/account/:provider/:owner/access',
-          }),
+          render(<AccountSettings />, {
+            wrapper: wrapper({
+              initialEntries: '/account/gh/codecov/access',
+              path: '/account/:provider/:owner/access',
+            }),
+          })
+
+          const accessTab = await screen.findByText('Access')
+          expect(accessTab).toBeInTheDocument()
         })
+      })
+      describe('hide access tab is set to true', () => {
+        it('renders access tab', async () => {
+          setup({ isSelfHosted: false, hideAccessTab: true })
 
-        const accessTab = await screen.findByText('Access')
-        expect(accessTab).toBeInTheDocument()
+          render(<AccountSettings />, {
+            wrapper: wrapper({
+              initialEntries: '/account/gh/codecov/access',
+              path: '/account/:provider/:owner/access',
+            }),
+          })
+
+          const accessTab = await screen.findByText('Access')
+          expect(accessTab).toBeInTheDocument()
+        })
       })
     })
   })

@@ -1078,39 +1078,11 @@ describe('useNavLinks', () => {
       ).toBe(`/gl/doggo/squirrel-locator/commit/888/indirect-changes`)
     })
   })
-
-  describe('feedback', () => {
-    describe('ref provided', () => {
-      beforeAll(() => {
-        setup(['/gh/codecov/codecov-demo'])
-      })
-
-      it('returns the correct url', () => {
-        expect(
-          hookData.result.current.feedback.path({
-            ref: '/gh/codecov/codecov-demo',
-          })
-        ).toBe(
-          `/gh/feedback?ref=${encodeURIComponent('/gh/codecov/codecov-demo')}`
-        )
-      })
-    })
-    describe('no ref provided', () => {
-      beforeAll(() => {
-        setup(['/gh'])
-      })
-
-      it('returns the correct url', () => {
-        expect(hookData.result.current.feedback.path()).toBe('/gh/feedback')
-      })
-    })
-  })
-
   describe('prevLink', () => {
     describe('ref provided', () => {
       beforeAll(() => {
         setup([
-          `/gh/feedback?ref=${encodeURIComponent('/gh/codecov/codecov-demo')}`,
+          `/gh/codecov?ref=${encodeURIComponent('/gh/codecov/codecov-demo')}`,
         ])
       })
 

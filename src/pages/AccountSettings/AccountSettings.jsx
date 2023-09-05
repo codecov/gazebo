@@ -51,9 +51,9 @@ function AccountSettings() {
             <SentryRoute path="/account/:provider/:owner/yaml/" exact>
               <YAMLTab provider={provider} owner={owner} />
             </SentryRoute>
-            {!config.IS_SELF_HOSTED && (
+            {(!config.IS_SELF_HOSTED || !config.HIDE_ACCESS_TAB) && (
               <SentryRoute path="/account/:provider/:owner/access/" exact>
-                <AccessTab provider={provider} />
+                <AccessTab />
               </SentryRoute>
             )}
             <SentryRoute
