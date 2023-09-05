@@ -21,7 +21,6 @@ fragment CurrentUserFragment on Me {
     student
     studentCreatedAt
     studentUpdatedAt
-    cannySSOToken
   }
   trackingMetadata {
     service

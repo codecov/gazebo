@@ -1,7 +1,6 @@
 import { useParams } from 'react-router-dom'
 
 import { TrialStatuses, useAccountDetails, usePlanData } from 'services/account'
-import { useFlags } from 'shared/featureFlags'
 import { isFreePlan, isTrialPlan } from 'shared/utils/billing'
 import A from 'ui/A/A'
 
@@ -11,16 +10,9 @@ function Activation() {
   const { owner, provider } = useParams()
   const { data: accountDetails } = useAccountDetails({ owner, provider })
 
-  const { codecovTrialMvp } = useFlags({
-    codecovTrialMvp: false,
-  })
-
   const { data: planData } = usePlanData({
     provider,
     owner,
-    opts: {
-      enabled: codecovTrialMvp,
-    },
   })
 
   const activatedUserCount = accountDetails?.activatedUserCount || 0
