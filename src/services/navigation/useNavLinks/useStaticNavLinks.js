@@ -278,5 +278,11 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    feedback: {
+      text: 'Feedback',
+      path: () => 'https://github.com/codecov/feedback/discussions',
+      isExternalLink: true,
+      openNewTab: true,
+    },
   }
 }

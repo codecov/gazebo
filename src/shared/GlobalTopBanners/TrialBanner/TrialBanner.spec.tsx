@@ -242,9 +242,7 @@ describe('TrialBanner', () => {
               wrapper: wrapper(),
             })
 
-            const text = await screen.findByText(
-              /Your trial ends in 1 day\(s\)/
-            )
+            const text = await screen.findByText(/Your trial ends in 1 day/)
             expect(text).toBeInTheDocument()
           })
         })
