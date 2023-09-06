@@ -29,9 +29,7 @@ function FileExplorer() {
           />
           <FileBreadcrumb />
         </div>
-        <div className="w-1/6">
-          <FlagMultiSelect />
-        </div>
+        <FlagMultiSelect />
         <SearchField
           dataMarketing="files-search"
           placeholder="Search for files"

@@ -47,31 +47,33 @@ function FlagMultiSelect() {
   }
 
   return (
-    <MultiSelect
-      dataMarketing="coverage-tab-flag-multi-select"
-      hook="coverage-tab-flag-multi-select"
-      ariaName="Select flags to show"
-      items={[...flagNames]}
-      selectedItemsOverride={selectedFlags}
-      resourceName="Flag"
-      isLoading={flagsIsLoading}
-      onLoadMore={() => flagsHasNextPage && flagsFetchNextPage()}
-      onChange={(flags) => {
-        setSelectedFlags(flags)
-        updateParams({ flags })
-      }}
-      onSearch={(term) => setFlagSearch(term)}
-      renderSelected={(selectedItems) => (
-        <span className="flex items-center gap-2">
-          <Icon variant="solid" name="flag" />
-          {selectedItems.length === 0 ? (
-            'All flags'
-          ) : (
-            <span>{selectedItems.length} selected flags</span>
-          )}
-        </span>
-      )}
-    />
+    <div className="w-1/6">
+      <MultiSelect
+        dataMarketing="coverage-tab-flag-multi-select"
+        hook="coverage-tab-flag-multi-select"
+        ariaName="Select flags to show"
+        items={[...flagNames]}
+        selectedItemsOverride={selectedFlags}
+        resourceName="Flag"
+        isLoading={flagsIsLoading}
+        onLoadMore={() => flagsHasNextPage && flagsFetchNextPage()}
+        onChange={(flags) => {
+          setSelectedFlags(flags)
+          updateParams({ flags })
+        }}
+        onSearch={(term) => setFlagSearch(term)}
+        renderSelected={(selectedItems) => (
+          <span className="flex items-center gap-2">
+            <Icon variant="solid" name="flag" />
+            {selectedItems.length === 0 ? (
+              'All flags'
+            ) : (
+              <span>{selectedItems.length} selected flags</span>
+            )}
+          </span>
+        )}
+      />
+    </div>
   )
 }
 
