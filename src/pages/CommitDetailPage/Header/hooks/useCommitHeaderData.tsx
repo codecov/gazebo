@@ -28,11 +28,17 @@ const RepositorySchema = z.object({
 })
 
 export const CommitHeaderDataSchema = z.object({
-  repository: z.discriminatedUnion('__typename', [
-    RepositorySchema,
-    RepoNotFoundErrorSchema,
-    RepoOwnerNotActivatedErrorSchema,
-  ]),
+  owner: z
+    .object({
+      repository: z
+        .discriminatedUnion('__typename', [
+          RepositorySchema,
+          RepoNotFoundErrorSchema,
+          RepoOwnerNotActivatedErrorSchema,
+        ])
+        .nullable(),
+    })
+    .nullable(),
 })
 
 export type CommitHeaderData = z.infer<typeof CommitHeaderDataSchema>
@@ -97,7 +103,7 @@ export const useCommitHeaderData = ({
           commitId,
         },
       }).then((res) => {
-        const parsedData = CommitHeaderDataSchema.safeParse(res?.data?.owner)
+        const parsedData = CommitHeaderDataSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return Promise.reject({
@@ -108,14 +114,14 @@ export const useCommitHeaderData = ({
 
         const data = parsedData.data
 
-        if (data?.repository?.__typename === 'NotFoundError') {
+        if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return Promise.reject({
             status: 404,
             data: {},
           })
         }
 
-        if (data?.repository?.__typename === 'OwnerNotActivatedError') {
+        if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return Promise.reject({
             status: 403,
             data: {
@@ -132,7 +138,7 @@ export const useCommitHeaderData = ({
         }
 
         return {
-          commit: data?.repository?.commit,
+          commit: data?.owner?.repository?.commit ?? null,
         }
       }),
   })
