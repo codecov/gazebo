@@ -18,12 +18,18 @@ const RepositorySchema = z.object({
 })
 
 const CommitPageDataSchema = z.object({
-  isCurrentUserPartOfOrg: z.boolean(),
-  repository: z.discriminatedUnion('__typename', [
-    RepositorySchema,
-    RepoNotFoundErrorSchema,
-    RepoOwnerNotActivatedErrorSchema,
-  ]),
+  owner: z
+    .object({
+      isCurrentUserPartOfOrg: z.boolean(),
+      repository: z
+        .discriminatedUnion('__typename', [
+          RepositorySchema,
+          RepoNotFoundErrorSchema,
+          RepoOwnerNotActivatedErrorSchema,
+        ])
+        .nullable(),
+    })
+    .nullable(),
 })
 
 export type CommitPageData = z.infer<typeof CommitPageDataSchema>
@@ -77,7 +83,7 @@ export const useCommitPageData = ({
           commitId,
         },
       }).then((res) => {
-        const parsedData = CommitPageDataSchema.safeParse(res?.data?.owner)
+        const parsedData = CommitPageDataSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return Promise.reject({
@@ -87,16 +93,15 @@ export const useCommitPageData = ({
         }
 
         const { data } = parsedData
-        const isCurrentUserPartOfOrg = data?.isCurrentUserPartOfOrg
 
-        if (data?.repository?.__typename === 'NotFoundError') {
+        if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return Promise.reject({
             status: 404,
             data: {},
           })
         }
 
-        if (data?.repository?.__typename === 'OwnerNotActivatedError') {
+        if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return Promise.reject({
             status: 403,
             data: {
@@ -113,8 +118,8 @@ export const useCommitPageData = ({
         }
 
         return {
-          isCurrentUserPartOfOrg,
-          commit: data?.repository?.commit,
+          isCurrentUserPartOfOrg: data?.owner?.isCurrentUserPartOfOrg ?? null,
+          commit: data?.owner?.repository?.commit ?? null,
         }
       }),
   })
