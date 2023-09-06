@@ -3,6 +3,8 @@ import type { Meta, StoryObj } from '@storybook/react'
 import './Table.css'
 
 interface Person {
+  comment: string
+  date: string
   name: string
   title: string
   email: string
@@ -15,20 +17,24 @@ const people: Person[] = [
     title: 'Front-end Developer',
     email: 'lindsay.walton@example.com',
     seatNumber: '23',
+    comment: 'This is a comment',
+    date: '2021-01-01',
   },
   {
     name: 'McGregory James',
     title: 'Back-end Developer',
     email: 'mcgregory@example.com',
     seatNumber: '3',
+    comment: 'This is another comment',
+    date: '2021-06-31',
   },
   // More people...
 ]
-function Example() {
+function MultiLineExample() {
   return (
     <div className="tableui">
       <table>
-        <caption>A basic html example.</caption>
+        <caption>A basic multiline html example.</caption>
         <thead>
           <tr>
             <th scope="col">Name</th>
@@ -42,7 +48,17 @@ function Example() {
         <tbody>
           {people.map((person) => (
             <tr key={person.email}>
-              <td>{person.name}</td>
+              <td>
+                <div className="flex flex-col">
+                  <span>{person.comment}</span>
+                  <span className="text-sm">
+                    <span className="font-semibold text-ds-gray-octonary">
+                      {person.name}
+                    </span>{' '}
+                    {person.date}
+                  </span>
+                </div>
+              </td>
               <td>{person.title}</td>
               <td>{person.email}</td>
               <td data-type="numeric">{person.seatNumber}</td>
@@ -54,14 +70,14 @@ function Example() {
   )
 }
 
-const meta: Meta<typeof Example> = {
+const meta: Meta<typeof MultiLineExample> = {
   title: 'Components/Table',
-  component: Example,
+  component: MultiLineExample,
 }
 
 export default meta
-type Story = StoryObj<typeof Example>
+type Story = StoryObj<typeof MultiLineExample>
 
-export const BasicExample: Story = {
-  render: () => <Example />,
+export const BasicMultiLineExample: Story = {
+  render: () => <MultiLineExample />,
 }
