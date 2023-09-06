@@ -42,6 +42,10 @@ const mockOwnerNotActivatedError = {
   },
 }
 
+const mockNullOwner = {
+  owner: null,
+}
+
 const mockUnsuccessfulParseError = {}
 
 const queryClient = new QueryClient({
@@ -70,6 +74,7 @@ interface SetupArgs {
   isNotFoundError?: boolean
   isOwnerNotActivatedError?: boolean
   isUnsuccessfulParseError?: boolean
+  isNullOwner?: boolean
 }
 
 describe('useCommitHeaderData', () => {
@@ -77,6 +82,7 @@ describe('useCommitHeaderData', () => {
     isNotFoundError = false,
     isOwnerNotActivatedError = false,
     isUnsuccessfulParseError = false,
+    isNullOwner = false,
   }: SetupArgs) {
     server.use(
       graphql.query('CommitPageHeaderData', (req, res, ctx) => {
@@ -86,6 +92,8 @@ describe('useCommitHeaderData', () => {
           return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
         } else if (isUnsuccessfulParseError) {
           return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+        } else if (isNullOwner) {
+          return res(ctx.status(200), ctx.data(mockNullOwner))
         } else {
           return res(ctx.status(200), ctx.data(mockRepository))
         }
@@ -95,40 +103,69 @@ describe('useCommitHeaderData', () => {
 
   describe('fetching data', () => {
     describe('returns Repository __typename', () => {
-      it('sets the correct data', async () => {
-        setup({})
+      describe('there is data', () => {
+        it('sets the correct data', async () => {
+          setup({})
 
-        const { result } = renderHook(
-          () =>
-            useCommitHeaderData({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'test-repo',
-              commitId: 'id-1',
-            }),
-          { wrapper }
-        )
+          const { result } = renderHook(
+            () =>
+              useCommitHeaderData({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'test-repo',
+                commitId: 'id-1',
+              }),
+            { wrapper }
+          )
 
-        await waitFor(() => result.current.isLoading)
-        await waitFor(() => !result.current.isLoading)
+          await waitFor(() => result.current.isLoading)
+          await waitFor(() => !result.current.isLoading)
 
-        const expectedResult = {
-          commit: {
-            author: {
-              username: 'cool-user',
+          const expectedResult = {
+            commit: {
+              author: {
+                username: 'cool-user',
+              },
+              branchName: 'cool-branch',
+              ciPassed: true,
+              commitid: 'id-1',
+              createdAt: '2022-01-01T12:59:59',
+              message: 'cool commit message',
+              pullId: 1234,
             },
-            branchName: 'cool-branch',
-            ciPassed: true,
-            commitid: 'id-1',
-            createdAt: '2022-01-01T12:59:59',
-            message: 'cool commit message',
-            pullId: 1234,
-          },
-        }
+          }
 
-        await waitFor(() =>
-          expect(result.current.data).toStrictEqual(expectedResult)
-        )
+          await waitFor(() =>
+            expect(result.current.data).toStrictEqual(expectedResult)
+          )
+        })
+      })
+      describe('there is a null owner', () => {
+        it('sets the correct data', async () => {
+          setup({ isNullOwner: true })
+
+          const { result } = renderHook(
+            () =>
+              useCommitHeaderData({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'test-repo',
+                commitId: 'id-1',
+              }),
+            { wrapper }
+          )
+
+          await waitFor(() => result.current.isLoading)
+          await waitFor(() => !result.current.isLoading)
+
+          const expectedResult = {
+            commit: null,
+          }
+
+          await waitFor(() =>
+            expect(result.current.data).toStrictEqual(expectedResult)
+          )
+        })
       })
     })
 
