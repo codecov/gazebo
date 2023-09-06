@@ -36,6 +36,48 @@ Data tags are used to opt into standardized styling/features. You can either sta
 3. `data-sort-direction={<tableSortState>}` Applied to any element, reads state, handles animation and rotating the element.
    - Note: Due to a limitation of postcss Tailwind can't use `@apply` and group hovers together, the example shows how to show the element on hover of the whole `th` rather then only the `Icon` element. This is how I'd recommend handling table header hover.
 
+### Controlling Column Width
+
+Browsers calculate making room for content and breaking correctly quiet well, which is why I would recommend trying to stick to letting table's do their thing rather then overriding their behavior.
+
+```html
+<table>
+  <colgroup>
+    <col className="w-full @sm/table:w-8/12" />
+    <col className="@sm/table:w-1/12" />
+    <col className="@sm/table:w-1/12" />
+    <col className="@sm/table:w-1/12" />
+    <col className="@sm/table:w-1/12" />
+  </colgroup>
+  <thead>
+    <tr>
+      <th>Filename</th>
+      <th>Lines Missed</th>
+      <th>HEAD %</th>
+      <th>Patch %</th>
+      <th>Change</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>/src/components/Select/Select.tsx</td>
+      <td>789</td>
+      <td>23.5%</td>
+      <td>34%</td>
+      <td>-2.5%</td>
+    </tr>
+  </tbody>
+</table>
+```
+
+#### Manually setting the width's / screwing around with word breaks
+
+This causes cascading "tweaks" throughout the styles and was the source of a lot of pain of the old tables. I will explain how to enable similar styling but I caution against it. Let tables be tables, design programs don't need to worry about changing real estate space.
+
+`<table className="table-fixed">`
+
+`<th className="w-1/3">`
+
 ### Responsiveness
 
 With the markup in the hands of the implementor responsive concerns are mostly left to the developer / specific design. On the barest bones if the content of the table is too full, the table should start horizontally scrolling, however on a case by case basis you can improve the table's behavior on small screens.

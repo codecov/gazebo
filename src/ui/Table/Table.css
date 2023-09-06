@@ -6,6 +6,10 @@
   @apply min-w-full divide-y divide-ds-gray-tertiary border-t border-ds-gray-tertiary;
 }
 
+.tableui thead {
+  @apply whitespace-nowrap;
+}
+
 .tableui caption {
   @apply sr-only caption-top;
 }
@@ -15,7 +19,7 @@
 }
 
 .tableui th {
-  @apply font-sans text-sm font-semibold text-ds-gray-quinary py-2 px-0 @sm:px-3.5;
+  @apply font-sans text-sm font-semibold text-ds-gray-quinary py-2 px-3.5;
 }
 
 .tableui td {
