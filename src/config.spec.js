@@ -40,6 +40,34 @@ describe('config', () => {
       })
     })
 
+    describe('sets HIDE_ACCESS_TAB to boolean', () => {
+      it('sets to true', () => {
+        const obj = {
+          HIDE_ACCESS_TAB: 'true',
+        }
+
+        expect(removeReactAppPrefix(obj)).toEqual({
+          HIDE_ACCESS_TAB: true,
+        })
+      })
+
+      it('sets to false', () => {
+        const obj = {
+          HIDE_ACCESS_TAB: 'false',
+        }
+
+        expect(removeReactAppPrefix(obj)).toEqual({
+          HIDE_ACCESS_TAB: false,
+        })
+      })
+
+      it('sets skips if undefined', () => {
+        const obj = {}
+
+        expect(removeReactAppPrefix(obj)).toEqual({})
+      })
+    })
+
     describe('sets SENTRY_TRACING_SAMPLE_RATE to float', () => {
       it('sets to float', () => {
         const obj = {

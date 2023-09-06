@@ -1,4 +1,3 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -8,22 +7,16 @@ import Badges from './Badges'
 
 jest.mock('config')
 
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
-})
-
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings/badge']}>
-    <QueryClientProvider client={queryClient}>
-      <Route path="/:provider/:owner/:repo/settings/badge">{children}</Route>
-    </QueryClientProvider>
+    <Route path="/:provider/:owner/:repo/settings/badge">{children}</Route>
   </MemoryRouter>
 )
 
 describe('Badges', () => {
   describe('renders', () => {
     it('renders title', () => {
-      render(<Badges graphToken="WIO9JXFGE" defaultBranch="master" />, {
+      render(<Badges graphToken="WIO9JXFGE" />, {
         wrapper,
       })
 
@@ -32,7 +25,7 @@ describe('Badges', () => {
     })
 
     it('renders body', () => {
-      render(<Badges graphToken="WIO9JXFGE" defaultBranch="master" />, {
+      render(<Badges graphToken="WIO9JXFGE" />, {
         wrapper,
       })
 
@@ -43,19 +36,19 @@ describe('Badges', () => {
     })
 
     it('renders with expected base url', () => {
-      render(<Badges graphToken="WIO9JXFGE" defaultBranch="master" />, {
+      render(<Badges graphToken="WIO9JXFGE" />, {
         wrapper,
       })
       config.BASE_URL = 'https://stage-codecov.io'
 
       const baseUrl = screen.getByText(
-        '[![codecov](https://stage-web.codecov.dev/gh/codecov/codecov-client/branch/master/graph/badge.svg?token=WIO9JXFGE)](https://stage-web.codecov.dev/gh/codecov/codecov-client)'
+        '[![codecov](https://stage-web.codecov.dev/gh/codecov/codecov-client/graph/badge.svg?token=WIO9JXFGE)](https://stage-web.codecov.dev/gh/codecov/codecov-client)'
       )
       expect(baseUrl).toBeInTheDocument()
     })
 
     it('renders tokens', () => {
-      render(<Badges graphToken="WIO9JXFGE" defaultBranch="master" />, {
+      render(<Badges graphToken="WIO9JXFGE" />, {
         wrapper,
       })
 

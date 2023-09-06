@@ -2,17 +2,31 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useBranch } from './useBranch'
+import { useComponentComparison } from './useComponentComparison'
 
-const mockBranch = {
+const mockResponse = {
   owner: {
     repository: {
       __typename: 'Repository',
-      branch: {
-        name: 'main',
-        head: {
-          commitid: 'commit-123',
+      pull: {
+        compareWithBase: {
+          __typename: 'Comparison',
+          componentComparisons: [
+            {
+              name: 'kevdak',
+              patchTotals: {
+                percentCovered: 31.46,
+              },
+              headTotals: {
+                percentCovered: 71.46,
+              },
+              baseTotals: {
+                percentCovered: 51.46,
+              },
+            },
+          ],
         },
       },
     },
@@ -21,7 +35,6 @@ const mockBranch = {
 
 const mockNotFoundError = {
   owner: {
-    isCurrentUserPartOfOrg: true,
     repository: {
       __typename: 'NotFoundError',
       message: 'commit not found',
@@ -31,7 +44,6 @@ const mockNotFoundError = {
 
 const mockOwnerNotActivatedError = {
   owner: {
-    isCurrentUserPartOfOrg: true,
     repository: {
       __typename: 'OwnerNotActivatedError',
       message: 'owner not activated',
@@ -39,107 +51,89 @@ const mockOwnerNotActivatedError = {
   },
 }
 
-const mockNullOwner = {
-  owner: null,
-}
-
 const mockUnsuccessfulParseError = {}
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const server = setupServer()
-
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  <MemoryRouter
+    initialEntries={['/gh/matt-mercer/exandria/pull/123/components']}
+  >
+    <Route path="/:provider/:owner/:repo/pull/:pullId/components">
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </Route>
+  </MemoryRouter>
 )
 
-beforeAll(() => {
-  server.listen()
-})
-afterEach(() => {
-  queryClient.clear()
+const server = setupServer()
+
+beforeAll(() => server.listen())
+beforeEach(() => {
   server.resetHandlers()
+  queryClient.clear()
 })
-afterAll(() => {
-  server.close()
-})
+afterAll(() => server.close())
 
 interface SetupArgs {
   isNotFoundError?: boolean
   isOwnerNotActivatedError?: boolean
   isUnsuccessfulParseError?: boolean
-  isNullOwner?: boolean
 }
 
-describe('useBranch', () => {
+describe('useComponentComparison', () => {
   function setup({
     isNotFoundError = false,
     isOwnerNotActivatedError = false,
     isUnsuccessfulParseError = false,
-    isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetBranch', (req, res, ctx) => {
+      graphql.query('PullComponentComparison', (req, res, ctx) => {
         if (isNotFoundError) {
           return res(ctx.status(200), ctx.data(mockNotFoundError))
         } else if (isOwnerNotActivatedError) {
           return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
         } else if (isUnsuccessfulParseError) {
           return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
-        } else if (isNullOwner) {
-          return res(ctx.status(200), ctx.data(mockNullOwner))
         } else {
-          return res(ctx.status(200), ctx.data(mockBranch))
+          return res(ctx.status(200), ctx.data(mockResponse))
         }
       })
     )
   }
 
-  describe('calling hook', () => {
-    describe('returns repository typename of Repository', () => {
-      describe('there is valid data', () => {
-        it('fetches the branch data', async () => {
-          setup({})
-          const { result } = renderHook(
-            () =>
-              useBranch({
-                provider: 'gh',
-                owner: 'codecov',
-                repo: 'cool-repo',
-                branch: 'main',
-              }),
-            { wrapper }
-          )
+  describe('when called', () => {
+    describe('repository typename of Repository', () => {
+      it('returns data for the owner page', async () => {
+        setup({})
 
-          await waitFor(() =>
-            expect(result.current.data).toStrictEqual({
-              branch: { name: 'main', head: { commitid: 'commit-123' } },
-            })
-          )
+        const { result } = renderHook(() => useComponentComparison(), {
+          wrapper,
         })
-      })
 
-      describe('there is a null owner', () => {
-        it('returns a null value', async () => {
-          setup({ isNullOwner: true })
-          const { result } = renderHook(
-            () =>
-              useBranch({
-                provider: 'gh',
-                owner: 'codecov',
-                repo: 'cool-repo',
-                branch: 'main',
-              }),
-            { wrapper }
-          )
-
-          await waitFor(() =>
-            expect(result.current.data).toStrictEqual({
-              branch: null,
-            })
-          )
-        })
+        await waitFor(() =>
+          expect(result.current.data).toStrictEqual({
+            pull: {
+              compareWithBase: {
+                __typename: 'Comparison',
+                componentComparisons: [
+                  {
+                    name: 'kevdak',
+                    patchTotals: {
+                      percentCovered: 31.46,
+                    },
+                    headTotals: {
+                      percentCovered: 71.46,
+                    },
+                    baseTotals: {
+                      percentCovered: 51.46,
+                    },
+                  },
+                ],
+              },
+            },
+          })
+        )
       })
     })
 
@@ -156,16 +150,9 @@ describe('useBranch', () => {
 
       it('throws a 404', async () => {
         setup({ isNotFoundError: true })
-        const { result } = renderHook(
-          () =>
-            useBranch({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'cool-repo',
-              branch: 'main',
-            }),
-          { wrapper }
-        )
+        const { result } = renderHook(() => useComponentComparison(), {
+          wrapper,
+        })
 
         await waitFor(() => expect(result.current.isError).toBeTruthy())
         await waitFor(() =>
@@ -191,16 +178,9 @@ describe('useBranch', () => {
 
       it('throws a 403', async () => {
         setup({ isOwnerNotActivatedError: true })
-        const { result } = renderHook(
-          () =>
-            useBranch({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'cool-repo',
-              branch: 'main',
-            }),
-          { wrapper }
-        )
+        const { result } = renderHook(() => useComponentComparison(), {
+          wrapper,
+        })
 
         await waitFor(() => expect(result.current.isError).toBeTruthy())
         await waitFor(() =>
@@ -226,17 +206,11 @@ describe('useBranch', () => {
 
       it('throws a 404', async () => {
         setup({ isUnsuccessfulParseError: true })
-        const { result } = renderHook(
-          () =>
-            useBranch({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'cool-repo',
-              branch: 'main',
-            }),
-          { wrapper }
-        )
+        const { result } = renderHook(() => useComponentComparison(), {
+          wrapper,
+        })
 
+        await waitFor(() => expect(result.current.isError).toBeTruthy())
         await waitFor(() => expect(result.current.isError).toBeTruthy())
         await waitFor(() =>
           expect(result.current.error).toEqual(

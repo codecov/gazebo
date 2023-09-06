@@ -59,6 +59,7 @@ const mockBranches = {
 }
 
 const mockBranch = (branchName) => ({
+  __typename: 'Repository',
   branch: {
     name: branchName,
     head: {

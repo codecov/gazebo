@@ -19,6 +19,10 @@ export function removeReactAppPrefix(obj) {
     keys['IS_SELF_HOSTED'] = keys['ENV'].toLowerCase() === 'enterprise'
   }
 
+  if ('HIDE_ACCESS_TAB' in keys) {
+    keys['HIDE_ACCESS_TAB'] = keys['HIDE_ACCESS_TAB'].toLowerCase() === 'true'
+  }
+
   if ('SENTRY_TRACING_SAMPLE_RATE' in keys) {
     keys['SENTRY_TRACING_SAMPLE_RATE'] = parseFloat(
       keys['SENTRY_TRACING_SAMPLE_RATE']

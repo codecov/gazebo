@@ -4,11 +4,11 @@ import config from 'config'
 
 import { icicle, sunburst, tree } from 'assets/svg/graphs'
 
-const useChartsDetails = ({ defaultBranch, graphToken }) => {
+const useChartsDetails = ({ graphToken }) => {
   const { provider, owner, repo } = useParams()
 
   const repoPath = `${config.BASE_URL}/${provider}/${owner}/${repo}`
-  const fullPath = `${repoPath}/branch/${defaultBranch}/graphs`
+  const fullPath = `${repoPath}/graphs`
 
   const ChartDetailsEnum = Object.freeze({
     SUNBURST: {

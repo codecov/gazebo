@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 
+import Table from 'old_ui/Table'
 import Spinner from 'ui/Spinner'
-import Table from 'ui/Table'
 import TotalsNumber from 'ui/TotalsNumber'
 
 import ComponentsNotConfigured from './ComponentsNotConfigured'
@@ -87,14 +87,10 @@ function getTableData(data) {
 }
 
 function ComponentsTab() {
-  const { data, isLoading } = useComponentComparison({
-    options: {
-      select: ({ data }) =>
-        data?.owner?.repository?.pull?.compareWithBase?.componentComparisons,
-    },
-  })
+  const { data, isLoading } = useComponentComparison()
 
-  const componentComparisons = data || []
+  const componentComparisons =
+    data?.pull?.compareWithBase?.componentComparisons || []
 
   const tableData = getTableData(componentComparisons)
   const isTableDataEmpty = tableData && tableData?.length <= 0

@@ -1,5 +1,5 @@
+import Table from 'old_ui/Table'
 import Button from 'ui/Button'
-import Table from 'ui/Table'
 
 import { useAdminAccessList } from './useAdminAccessList'
 

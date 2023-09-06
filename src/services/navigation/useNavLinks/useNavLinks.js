@@ -364,17 +364,6 @@ export function useNavLinks() {
       ) => `/${provider}/${owner}/${repo}/settings/badge`,
       text: 'Badges & Graphs',
     },
-    feedback: {
-      text: 'Feedback',
-      path: ({ provider = p, ref } = { provider: p, ref: null }) => {
-        if (ref) {
-          const encodedRef = encodeURIComponent(ref)
-          return `/${provider}/feedback?ref=${encodedRef}`
-        }
-        return `/${provider}/feedback`
-      },
-      isExternalLink: false,
-    },
     prevLink: {
       text: 'Back',
       path: ({ provider = p, ref } = { provider: p, ref: null }) => {
