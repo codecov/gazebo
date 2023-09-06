@@ -335,4 +335,53 @@ describe('CompareSummary', () => {
       )
     })
   })
+
+  describe('When PR is not behind by the target branch', () => {
+    it('does not render a card with the behind by information', async () => {
+      setup({
+        owner: {
+          repository: {
+            defaultBranch: 'main',
+            pull: {
+              behindBy: 0,
+              behindByCommit: undefined,
+              commits: {
+                edges: [{ node: { state: 'complete', commitid: 'abc' } }],
+              },
+              head: {
+                commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
+                totals: {
+                  percentCovered: 78.33,
+                },
+                uploads: {
+                  totalCount: 4,
+                },
+              },
+              comparedTo: {
+                commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
+                uploads: {
+                  totalCount: 1,
+                },
+              },
+              compareWithBase: {
+                hasDifferentNumberOfHeadAndBaseReports: true,
+                patchTotals: {
+                  percentCovered: 92.12,
+                },
+                changeCoverage: 38.94,
+              },
+            },
+          },
+        },
+      })
+
+      render(<CompareSummary />, { wrapper: wrapper() })
+
+      const baseCommitText = screen.queryByText(/BASE commit is/)
+      expect(baseCommitText).not.toBeInTheDocument()
+
+      const behindByNumber = screen.queryByText(/0/)
+      expect(behindByNumber).not.toBeInTheDocument()
+    })
+  })
 })
