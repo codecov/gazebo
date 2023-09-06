@@ -5,6 +5,7 @@ import SearchField from 'ui/SearchField'
 
 import CodeTreeTable from './CodeTreeTable'
 import FileListTable from './FileListTable'
+import FlagMultiSelect from './FlagMultiSelect'
 import { useRepoBranchContentsTable } from './hooks'
 
 const defaultQueryParams = {
@@ -12,17 +13,24 @@ const defaultQueryParams = {
 }
 
 function FileExplorer() {
-  const { data, isLoading } = useRepoBranchContentsTable()
-
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const isFileListDisplay = params?.displayType === 'list'
+
+  const { data: branchData, isLoading: branchIsLoading } =
+    useRepoBranchContentsTable()
 
   return (
     <>
       <div className="sticky top-[4.5rem] flex justify-between gap-2 bg-white pt-2">
         <div className="flex flex-1 items-center gap-4">
-          <DisplayTypeButton dataLength={data?.length} isLoading={isLoading} />
+          <DisplayTypeButton
+            dataLength={branchData?.length}
+            isLoading={branchIsLoading}
+          />
           <FileBreadcrumb />
+        </div>
+        <div className="w-1/6">
+          <FlagMultiSelect />
         </div>
         <SearchField
           dataMarketing="files-search"
