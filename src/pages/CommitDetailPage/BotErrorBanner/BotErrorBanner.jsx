@@ -22,20 +22,79 @@ function useProviderSetting() {
   })
 
   const provider = providerToName(paramProvider)
-  const hasGhApp = accountDetails?.integrationId
+  const ghWithApp =
+    accountDetails?.integrationId && provider === ProvidersEnum.Github
 
-  const ghWithNoApp = provider === ProvidersEnum.Github && !hasGhApp
-  const bbOrhasGhApp =
-    provider === ProvidersEnum.BitBucket ||
-    (hasGhApp && provider === ProvidersEnum.Github)
+  const ghWithNoApp =
+    !accountDetails?.integrationId && provider === ProvidersEnum.Github
+
+  const bbProvider = provider === ProvidersEnum.BitBucket
   const glProvider = provider === ProvidersEnum.Gitlab
 
-  return { ghWithNoApp, bbOrhasGhApp, glProvider }
+  return { ghWithNoApp, bbProvider, glProvider, ghWithApp }
+}
+
+const BotErrorContent = () => {
+  const { ghWithNoApp, bbProvider, glProvider, ghWithApp } =
+    useProviderSetting()
+
+  if (ghWithNoApp) {
+    return (
+      <p>
+        <span>
+          The bot posts the coverage report comment on pull requests. If
+          you&apos;re using GitHub, the best way to integrate with Codecov.io is
+          to Install
+        </span>
+        <A to={{ pageName: 'codecovGithubApp' }}> Codecov&apos;s GitHub App.</A>
+      </p>
+    )
+  }
+  if (glProvider) {
+    return (
+      <p>
+        The bot posts the coverage report comment on merge request; since the
+        bot is missing the report will not be visible.
+      </p>
+    )
+  }
+
+  if (bbProvider) {
+    return (
+      <p>
+        The bot posts the coverage report comment on pull requests; since the
+        bot is missing the report will not be visible.
+      </p>
+    )
+  }
+
+  if (ghWithApp) {
+    return (
+      <p>
+        Please uninstall and reinstall the GH app to successfully sync Codecov
+        with your account.
+      </p>
+    )
+  }
+}
+
+const BotErrorHeading = () => {
+  const { ghWithApp } = useProviderSetting()
+
+  if (ghWithApp) {
+    return (
+      <p className="font-semibold">There was an issue with the Github app</p>
+    )
+  }
+
+  return (
+    <p className="font-semibold">
+      <A to={{ pageName: 'teamBot' }}>Team bot </A> is missing
+    </p>
+  )
 }
 
 function BotErrorBanner({ botErrorsCount }) {
-  const { ghWithNoApp, bbOrhasGhApp, glProvider } = useProviderSetting()
-
   if (botErrorsCount === 0) {
     return null
   }
@@ -43,36 +102,10 @@ function BotErrorBanner({ botErrorsCount }) {
   return (
     <Banner variant="warning">
       <BannerHeading>
-        <p className="font-semibold">
-          <A to={{ pageName: 'teamBot' }}>Team bot </A> is missing
-        </p>
+        <BotErrorHeading />
       </BannerHeading>
       <BannerContent>
-        {ghWithNoApp && (
-          <div className="gap-1 lg:flex lg:w-max">
-            <span>
-              The bot posts the coverage report comment on pull requests. If
-              you&apos;re using GitHub, the best way to integrate with
-              Codecov.io is to Install
-            </span>
-            <A to={{ pageName: 'codecovGithubApp' }}>
-              {' '}
-              Codecov&apos;s GitHub App.
-            </A>{' '}
-          </div>
-        )}
-        {glProvider && (
-          <p>
-            The bot posts the coverage report comment on merge request; since
-            the bot is missing the report will not be visible.
-          </p>
-        )}
-        {bbOrhasGhApp && (
-          <p>
-            The bot posts the coverage report comment on pull requests; since
-            the bot is missing the report will not be visible.
-          </p>
-        )}
+        <BotErrorContent />
       </BannerContent>
     </Banner>
   )

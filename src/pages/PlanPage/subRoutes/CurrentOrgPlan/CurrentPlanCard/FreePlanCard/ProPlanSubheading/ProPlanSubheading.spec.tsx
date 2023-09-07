@@ -5,13 +5,8 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
-import { useFlags } from 'shared/featureFlags'
 
 import ProPlanSubheading from './ProPlanSubheading'
-
-jest.mock('shared/featureFlags')
-
-const mockedUseFlags = useFlags as jest.Mock<{ codecovTrialMvp: boolean }>
 
 const mockResponse = {
   baseUnitPrice: 10,
@@ -54,21 +49,15 @@ afterAll(() => {
 })
 
 interface SetupArgs {
-  trialFlag?: boolean
   trialStatus?: string | null
   planValue?: string
 }
 
 describe('ProPlanSubheading', () => {
   function setup({
-    trialFlag = false,
     trialStatus = TrialStatuses.NOT_STARTED,
     planValue = 'users-basic',
   }: SetupArgs) {
-    mockedUseFlags.mockReturnValue({
-      codecovTrialMvp: trialFlag,
-    })
-
     server.use(
       graphql.query('GetPlanData', (req, res, ctx) =>
         res(
@@ -87,98 +76,83 @@ describe('ProPlanSubheading', () => {
     )
   }
 
-  describe('flag is set to false', () => {
-    it('renders nothing', () => {
-      setup({ trialFlag: false })
+  describe('user is not eligible for a trial', () => {
+    it('renders nothing', async () => {
+      setup({ trialStatus: TrialStatuses.CANNOT_TRIAL })
 
       const { container } = render(<ProPlanSubheading />, { wrapper })
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
 
       expect(container).toBeEmptyDOMElement()
     })
   })
 
-  describe('flag is set to true', () => {
-    describe('user is not eligible for a trial', () => {
-      it('renders nothing', async () => {
-        setup({ trialFlag: true, trialStatus: TrialStatuses.CANNOT_TRIAL })
+  describe('user is on a free plan', () => {
+    it('renders correct text', async () => {
+      setup({ trialStatus: TrialStatuses.NOT_STARTED })
 
-        const { container } = render(<ProPlanSubheading />, { wrapper })
+      render(<ProPlanSubheading />, { wrapper })
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
-
-        expect(container).toBeEmptyDOMElement()
-      })
+      const text = await screen.findByText(/Includes 14-day free trial/)
+      expect(text).toBeInTheDocument()
     })
 
-    describe('user is on a free plan', () => {
-      it('renders correct text', async () => {
-        setup({ trialFlag: true, trialStatus: TrialStatuses.NOT_STARTED })
+    it('renders faq link', async () => {
+      setup({ trialStatus: TrialStatuses.NOT_STARTED })
 
-        render(<ProPlanSubheading />, { wrapper })
+      render(<ProPlanSubheading />, { wrapper })
 
-        const text = await screen.findByText(/Includes 14-day free trial/)
-        expect(text).toBeInTheDocument()
+      const faqLink = await screen.findByRole('link', { name: /FAQ/ })
+      expect(faqLink).toBeInTheDocument()
+      expect(faqLink).toHaveAttribute(
+        'href',
+        'https://docs.codecov.com/docs/free-trial-faqs'
+      )
+    })
+  })
+
+  describe('user is currently on a trial', () => {
+    it('renders correct text', async () => {
+      setup({
+        trialStatus: TrialStatuses.ONGOING,
+        planValue: 'users-trial',
       })
 
-      it('renders faq link', async () => {
-        setup({ trialFlag: true, trialStatus: TrialStatuses.NOT_STARTED })
+      render(<ProPlanSubheading />, { wrapper })
 
-        render(<ProPlanSubheading />, { wrapper })
-
-        const faqLink = await screen.findByRole('link', { name: /FAQ/ })
-        expect(faqLink).toBeInTheDocument()
-        expect(faqLink).toHaveAttribute(
-          'href',
-          'https://docs.codecov.com/docs/free-trial-faqs'
-        )
-      })
+      const text = await screen.findByText(/Current trial/)
+      expect(text).toBeInTheDocument()
     })
 
-    describe('user is currently on a trial', () => {
-      it('renders correct text', async () => {
-        setup({
-          trialFlag: true,
-          trialStatus: TrialStatuses.ONGOING,
-          planValue: 'users-trial',
-        })
-
-        render(<ProPlanSubheading />, { wrapper })
-
-        const text = await screen.findByText(/Current trial/)
-        expect(text).toBeInTheDocument()
+    it('renders link to faqs', async () => {
+      setup({
+        trialStatus: TrialStatuses.ONGOING,
+        planValue: 'users-trial',
       })
 
-      it('renders link to faqs', async () => {
-        setup({
-          trialFlag: true,
-          trialStatus: TrialStatuses.ONGOING,
-          planValue: 'users-trial',
-        })
+      render(<ProPlanSubheading />, { wrapper })
 
-        render(<ProPlanSubheading />, { wrapper })
-
-        const faqLink = await screen.findByRole('link', { name: /FAQ/ })
-        expect(faqLink).toBeInTheDocument()
-        expect(faqLink).toHaveAttribute(
-          'href',
-          'https://docs.codecov.com/docs/free-trial-faqs'
-        )
-      })
+      const faqLink = await screen.findByRole('link', { name: /FAQ/ })
+      expect(faqLink).toBeInTheDocument()
+      expect(faqLink).toHaveAttribute(
+        'href',
+        'https://docs.codecov.com/docs/free-trial-faqs'
+      )
     })
+  })
 
-    describe('users trial has expired', () => {
-      it('renders correct text', async () => {
-        setup({
-          trialFlag: true,
-          trialStatus: TrialStatuses.EXPIRED,
-        })
-
-        render(<ProPlanSubheading />, { wrapper })
-
-        const text = await screen.findByText(/Your org trialed this plan/)
-        expect(text).toBeInTheDocument()
+  describe('users trial has expired', () => {
+    it('renders correct text', async () => {
+      setup({
+        trialStatus: TrialStatuses.EXPIRED,
       })
+
+      render(<ProPlanSubheading />, { wrapper })
+
+      const text = await screen.findByText(/Your org trialed this plan/)
+      expect(text).toBeInTheDocument()
     })
   })
 })
