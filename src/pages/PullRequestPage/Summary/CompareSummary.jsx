@@ -50,6 +50,38 @@ function totalsCards({
   ]
 }
 
+function BehindByCommits({ behindByCommit, behindBy, defaultBranch }) {
+  const { owner, repo, provider } = useParams()
+
+  if (!behindBy || !behindByCommit) return null
+
+  return (
+    <p className="text-xs text-ds-gray-quinary">
+      BASE commit is <span>{behindBy}</span> commits behind HEAD on{' '}
+      <span>{defaultBranch}</span>{' '}
+      <A
+        variant="code"
+        href={getProviderCommitURL({
+          provider,
+          owner,
+          repo,
+          commit: behindByCommit,
+        })}
+        hook="provider commit url"
+        isExternal={true}
+      >
+        {behindByCommit?.slice(0, 7)}
+      </A>
+    </p>
+  )
+}
+
+BehindByCommits.propTypes = {
+  behindByCommit: PropTypes.string,
+  behindBy: PropTypes.number,
+  defaultBranch: PropTypes.string,
+}
+
 function CardWithDifferentNumberOfUploads({
   head,
   base,
@@ -59,7 +91,6 @@ function CardWithDifferentNumberOfUploads({
   behindByCommit,
   defaultBranch,
 }) {
-  const { owner, repo, provider } = useParams()
   return (
     <div className="flex flex-col gap-1">
       <p className="text-sm text-ds-gray-octonary">
@@ -93,25 +124,11 @@ function CardWithDifferentNumberOfUploads({
           </A>{' '}
         </p>
       </div>
-      {behindBy && behindByCommit && (
-        <p className="text-xs text-ds-gray-quinary">
-          BASE commit is <span>{behindBy}</span> commits behind HEAD on{' '}
-          <span>{defaultBranch}</span>{' '}
-          <A
-            variant="code"
-            href={getProviderCommitURL({
-              provider,
-              owner,
-              repo,
-              commit: behindByCommit,
-            })}
-            hook="provider commit url"
-            isExternal={true}
-          >
-            {behindByCommit?.slice(0, 7)}
-          </A>
-        </p>
-      )}
+      <BehindByCommits
+        behindByCommit={behindByCommit}
+        behindBy={behindBy}
+        defaultBranch={defaultBranch}
+      />
     </div>
   )
 }
@@ -141,7 +158,6 @@ function CardWithSameNumberOfUploads({
   behindByCommit,
   defaultBranch,
 }) {
-  const { owner, repo, provider } = useParams()
   return (
     <p className="text-sm text-ds-gray-octonary">
       Coverage data is based on{' '}
@@ -153,25 +169,11 @@ function CardWithSameNumberOfUploads({
       <A to={{ pageName: 'commit', options: { commit: baseCommit } }}>
         {baseCommit?.slice(0, 7)}
       </A>{' '}
-      {behindBy && behindByCommit && (
-        <p className="text-xs text-ds-gray-quinary">
-          BASE commit is <span>{behindBy}</span> commits behind HEAD on{' '}
-          <span>{defaultBranch}</span>{' '}
-          <A
-            variant="code"
-            href={getProviderCommitURL({
-              provider,
-              owner,
-              repo,
-              commit: behindByCommit,
-            })}
-            hook="provider commit url"
-            isExternal={true}
-          >
-            {behindByCommit?.slice(0, 7)}
-          </A>
-        </p>
-      )}
+      <BehindByCommits
+        behindByCommit={behindByCommit}
+        behindBy={behindBy}
+        defaultBranch={defaultBranch}
+      />
     </p>
   )
 }

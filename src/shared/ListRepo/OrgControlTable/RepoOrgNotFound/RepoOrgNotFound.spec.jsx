@@ -46,8 +46,8 @@ describe('RepoOrgNotFound', () => {
       setup('gh')
       render(<RepoOrgNotFound />, { wrapper: MemoryRouter })
 
-      expect(screen.getByText(/install app for org/)).toBeInTheDocument()
-      expect(screen.getByText(/Learn more in/)).toBeInTheDocument()
+      expect(screen.getByText(/installing the Codecov app/)).toBeInTheDocument()
+      expect(screen.getByText(/Check out/)).toBeInTheDocument()
     })
 
     describe('when the user clicks on the button', () => {
@@ -74,7 +74,7 @@ describe('RepoOrgNotFound', () => {
       render(<RepoOrgNotFound />, { wrapper: MemoryRouter })
 
       expect(screen.queryByText(/or org?/)).toBeNull()
-      expect(screen.queryByText(/install app for org/)).toBeNull()
+      expect(screen.queryByText(/installing the Codecov app/)).toBeNull()
     })
   })
 
@@ -95,7 +95,7 @@ describe('RepoOrgNotFound', () => {
     it('renders rest of the help message', () => {
       render(<RepoOrgNotFound />, { wrapper: MemoryRouter })
 
-      expect(screen.getByText(/install app for org/)).toBeInTheDocument()
+      expect(screen.getByText(/installing the Codecov app/)).toBeInTheDocument()
     })
   })
 })

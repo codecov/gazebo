@@ -130,7 +130,7 @@ function DefaultOrgSelector() {
   return (
     <div className="mx-auto w-full max-w-[38rem]">
       <h1 className="pb-3 pt-20 text-2xl font-semibold">
-        What org would you like to setup?
+        Which organization are you using today?
       </h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="my-4 flex flex-col gap-4 border-y border-ds-gray-tertiary py-6">
@@ -171,7 +171,7 @@ function DefaultOrgSelector() {
         </div>
         <div className="flex justify-end">
           <Button hook="user selects org, continues to app" type="submit">
-            Continue to app
+            Continue
           </Button>
         </div>
       </form>

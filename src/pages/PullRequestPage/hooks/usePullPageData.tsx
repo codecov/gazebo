@@ -49,12 +49,18 @@ const RepositorySchema = z.object({
 })
 
 const PullPageDataSchema = z.object({
-  isCurrentUserPartOfOrg: z.boolean(),
-  repository: z.discriminatedUnion('__typename', [
-    RepositorySchema,
-    RepoNotFoundErrorSchema,
-    RepoOwnerNotActivatedErrorSchema,
-  ]),
+  owner: z
+    .object({
+      isCurrentUserPartOfOrg: z.boolean(),
+      repository: z
+        .discriminatedUnion('__typename', [
+          RepositorySchema,
+          RepoNotFoundErrorSchema,
+          RepoOwnerNotActivatedErrorSchema,
+        ])
+        .nullable(),
+    })
+    .nullable(),
 })
 
 const query = `
@@ -134,7 +140,7 @@ export const usePullPageData = ({
           pullId: parseInt(pullId, 10),
         },
       }).then((res) => {
-        const parsedData = PullPageDataSchema.safeParse(res?.data?.owner)
+        const parsedData = PullPageDataSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return Promise.reject({
@@ -145,14 +151,14 @@ export const usePullPageData = ({
 
         const data = parsedData.data
 
-        if (data?.repository?.__typename === 'NotFoundError') {
+        if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return Promise.reject({
             status: 404,
             data: {},
           })
         }
 
-        if (data?.repository?.__typename === 'OwnerNotActivatedError') {
+        if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return Promise.reject({
             status: 403,
             data: {
@@ -170,10 +176,10 @@ export const usePullPageData = ({
 
         return {
           hasAccess: userHasAccess({
-            privateRepo: data?.repository?.private,
-            isCurrentUserPartOfOrg: data?.isCurrentUserPartOfOrg,
+            privateRepo: data?.owner?.repository?.private,
+            isCurrentUserPartOfOrg: data?.owner?.isCurrentUserPartOfOrg,
           }),
-          pull: data?.repository?.pull,
+          pull: data?.owner?.repository?.pull ?? null,
         }
       }),
   })

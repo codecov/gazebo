@@ -33,11 +33,19 @@ const RepositorySchema = z.object({
     .nullable(),
 })
 
-const PullHeadDataSchema = z.discriminatedUnion('__typename', [
-  RepositorySchema,
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-])
+const PullHeadDataSchema = z.object({
+  owner: z
+    .object({
+      repository: z
+        .discriminatedUnion('__typename', [
+          RepositorySchema,
+          RepoNotFoundErrorSchema,
+          RepoOwnerNotActivatedErrorSchema,
+        ])
+        .nullable(),
+    })
+    .nullable(),
+})
 
 const query = `
   query PullHeadData($owner: String!, $repo: String!, $pullId: Int!) {
@@ -97,12 +105,9 @@ export const usePullHeadData = ({
           pullId: parseInt(pullId, 10),
         },
       }).then((res) => {
-        const parsedData = PullHeadDataSchema.safeParse(
-          res?.data?.owner?.repository
-        )
+        const parsedData = PullHeadDataSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          console.debug(parsedData.error)
           return Promise.reject({
             status: 404,
             data: {},
@@ -111,14 +116,14 @@ export const usePullHeadData = ({
 
         const data = parsedData.data
 
-        if (data?.__typename === 'NotFoundError') {
+        if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return Promise.reject({
             status: 404,
             data: {},
           })
         }
 
-        if (data?.__typename === 'OwnerNotActivatedError') {
+        if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return Promise.reject({
             status: 403,
             data: {
@@ -135,7 +140,7 @@ export const usePullHeadData = ({
         }
 
         return {
-          pull: data?.pull,
+          pull: data?.owner?.repository?.pull ?? null,
         }
       }),
   })

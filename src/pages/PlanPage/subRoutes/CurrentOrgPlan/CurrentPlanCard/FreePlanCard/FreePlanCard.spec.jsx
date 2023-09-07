@@ -6,11 +6,8 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
-import { useFlags } from 'shared/featureFlags'
 
 import FreePlanCard from './FreePlanCard'
-
-jest.mock('shared/featureFlags')
 
 const allPlans = [
   {
@@ -164,21 +161,17 @@ describe('FreePlanCard', () => {
       plans,
       trialStatus = TrialStatuses.CANNOT_TRIAL,
       planValue = 'users-basic',
-      trialFlag,
     } = {
       owner: {
         username: 'codecov',
         isCurrentUserPartOfOrg: true,
         numberOfUploads: 10,
       },
-      trialFlag: false,
       trialStatus: TrialStatuses.CANNOT_TRIAL,
       planValue: 'users-basic',
       plans: allPlans,
     }
   ) {
-    useFlags.mockReturnValue({ codecovTrialMvp: trialFlag })
-
     server.use(
       graphql.query('PlanPageData', (req, res, ctx) =>
         res(ctx.status(200), ctx.data({ owner }))
@@ -299,46 +292,40 @@ describe('FreePlanCard', () => {
       expect(monthlyBillingText).toBeInTheDocument()
     })
 
-    describe('flag is set to true', () => {
-      describe('the user is currently on a trial', () => {
-        it('renders downgrade text', async () => {
-          setup({
-            planValue: 'users-trial',
-            trialStatus: TrialStatuses.ONGOING,
-            trialFlag: true,
-            plans: allPlans,
-          })
-
-          render(<FreePlanCard plan={freePlan} />, {
-            wrapper,
-          })
-
-          const text = await screen.findByText(
-            /You'll be downgraded to the Developer plan when your trial expires./
-          )
-          expect(text).toBeInTheDocument()
+    describe('the user is currently on a trial', () => {
+      it('renders downgrade text', async () => {
+        setup({
+          planValue: 'users-trial',
+          trialStatus: TrialStatuses.ONGOING,
+          plans: allPlans,
         })
 
-        it('renders the pretrial benefits', async () => {
-          setup({
-            planValue: 'users-trial',
-            trialStatus: TrialStatuses.ONGOING,
-            trialFlag: true,
-            plans: allPlans,
-          })
-
-          // ['Up to 1 user', 'Unlimited public repositories'],
-
-          render(<FreePlanCard plan={freePlan} />, {
-            wrapper,
-          })
-
-          const benefitOne = await screen.findByText(/Up to 1 user/)
-          expect(benefitOne).toBeInTheDocument()
-
-          const benefitTwo = await screen.findByText(/Pre Trial benefits/)
-          expect(benefitTwo).toBeInTheDocument()
+        render(<FreePlanCard plan={freePlan} />, {
+          wrapper,
         })
+
+        const text = await screen.findByText(
+          /You'll be downgraded to the Developer plan when your trial expires./
+        )
+        expect(text).toBeInTheDocument()
+      })
+
+      it('renders the pretrial benefits', async () => {
+        setup({
+          planValue: 'users-trial',
+          trialStatus: TrialStatuses.ONGOING,
+          plans: allPlans,
+        })
+
+        render(<FreePlanCard plan={freePlan} />, {
+          wrapper,
+        })
+
+        const benefitOne = await screen.findByText(/Up to 1 user/)
+        expect(benefitOne).toBeInTheDocument()
+
+        const benefitTwo = await screen.findByText(/Pre Trial benefits/)
+        expect(benefitTwo).toBeInTheDocument()
       })
     })
   })
