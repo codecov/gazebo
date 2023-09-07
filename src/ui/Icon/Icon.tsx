@@ -55,17 +55,17 @@ type CommonProps = {
 
 type OutlineIconProps = {
   name: keyof OutlineIconCollection
-  variant: 'outline'
+  variant?: 'outline'
 } & CommonProps
 
 type SolidIconProps = {
   name: keyof SolidIconCollection
-  variant: 'solid'
+  variant?: 'solid'
 } & CommonProps
 
 type DeveloperIconProps = {
   name: keyof DeveloperIconCollection
-  variant: 'developer'
+  variant?: 'developer'
 } & CommonProps
 
 type IconProps = OutlineIconProps | SolidIconProps | DeveloperIconProps
