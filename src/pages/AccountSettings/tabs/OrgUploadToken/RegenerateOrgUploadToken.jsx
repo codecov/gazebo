@@ -3,7 +3,6 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useIsCurrentUserAnAdmin } from 'services/user'
-import A from 'ui/A'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 import TokenWrapper from 'ui/TokenWrapper'
@@ -56,19 +55,6 @@ function RegenerateOrgUploadToken({ orgUploadToken }) {
     <div className="flex">
       <div className="flex flex-1 flex-col gap-4">
         <p>Add this token to your codecov.yml</p>
-        <p className="text-xs">
-          <span className="font-semibold">Note:</span> Token not required for
-          public repositories uploading from Travis, CircleCI, AppVeyor, Azure
-          Pipelines or{' '}
-          <A
-            href="https://github.com/codecov/codecov-action#usage"
-            isExternal
-            hook="gh-actions"
-          >
-            GitHub Actions
-          </A>
-          .
-        </p>
         <UploadToken
           token={orgUploadToken}
           format={TokenFormatEnum.FIRST_FORMAT}

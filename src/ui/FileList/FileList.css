@@ -1,0 +1,73 @@
+.filelistui {
+  @apply @container/filelist text-ds-gray-octonary overflow-auto;
+}
+
+.filelistui > div {
+  @apply flex-1 w-full min-w-full divide-y divide-ds-gray-tertiary;
+}
+
+.filelistui .filelistui-thead,
+.filelistui .filelistui-row {
+  @apply flex gap-2 items-center;
+}
+
+.filelistui .filelistui-thead {
+  @apply whitespace-nowrap;
+}
+
+.filelistui .filelistui-thead > div {
+  @apply font-sans text-sm font-semibold text-ds-gray-quinary py-2 px-3.5;
+}
+
+.filelistui .filelistui-row > div {
+  @apply py-3 @sm/filelist:px-4;
+}
+
+.filelistui .filelistui-row {
+  @apply border-t border-ds-gray-tertiary;
+}
+
+/* <element data-highlight-row="onHover"> */
+/* <element className="filelistui-row"> */
+.filelistui[data-highlight-row='onHover'] .filelistui-row,
+.filelistui .filelistui-row[data-highlight-row='onHover'],
+.filelistui [data-highlight-row='onHover'] {
+  @apply hover:bg-ds-gray-primary;
+}
+
+/* <element data-type="numeric"> */
+.filelistui .filelistui-thead [data-type='numeric'] {
+  @apply text-right justify-end;
+}
+
+/* <element data-type="numeric"> */
+.filelistui [data-type='numeric'] {
+  @apply font-mono text-right justify-end;
+}
+
+/* <element data-sortable="true"> */
+.filelistui [data-sortable='true'] {
+  @apply cursor-pointer select-none;
+}
+
+.filelistui [data-sort-direction] {
+  @apply transform opacity-0 transition-opacity ease-in duration-100;
+}
+
+.filelistui [data-sort-direction='asc'] {
+  @apply opacity-100;
+}
+
+.filelistui [data-sort-direction='desc'] {
+  @apply opacity-100 rotate-180;
+}
+
+/* <element data-expanded="false"> */
+.filelistui [data-expanded='false'] {
+  @apply hidden;
+}
+
+/* <element data-action="clickable"> */
+.filelistui [data-action='clickable'] {
+  @apply cursor-pointer;
+}

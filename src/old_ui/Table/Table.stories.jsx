@@ -94,6 +94,6 @@ TableWithButton.args = {
 }
 
 export default {
-  title: 'Components/Table',
+  title: 'old_ui/Table',
   component: TableComponent,
 }

@@ -1,16 +1,11 @@
 import config from 'config'
 
 import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
-import { useUser } from 'services/user'
 import A from 'ui/A'
 
 import { FooterItem } from './FooterItem'
 
 function Footer() {
-  const { data: currentUser } = useUser({
-    suspense: false,
-  })
-
   const year = new Date().getUTCFullYear()
   const buildModeLeftMenu = config.IS_SELF_HOSTED
     ? [{ text: config?.CODECOV_VERSION }]
@@ -33,11 +28,8 @@ function Footer() {
     ...buildModeRightMenu,
     { to: { pageName: 'support' } },
     { to: { pageName: 'docs' } },
+    { to: { pageName: 'feedback' } },
   ]
-
-  if (!!currentUser) {
-    rightMenu.push({ to: { pageName: 'feedback' } })
-  }
 
   return (
     <footer className="flex-none">

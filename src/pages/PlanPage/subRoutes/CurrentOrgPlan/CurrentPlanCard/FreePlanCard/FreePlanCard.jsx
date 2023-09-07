@@ -9,7 +9,6 @@ import {
   usePlanData,
   usePlans,
 } from 'services/account'
-import { useFlags } from 'shared/featureFlags'
 import BenefitList from 'shared/plan/BenefitList'
 import ScheduledPlanDetails from 'shared/plan/ScheduledPlanDetails'
 import {
@@ -113,14 +112,12 @@ PlanUpgrade.propTypes = {
 
 function FreePlanCard({ plan, scheduledPhase }) {
   const { provider, owner } = useParams()
-  const { codecovTrialMvp } = useFlags({
-    codecovTrialMvp: false,
-  })
+
   const { data: ownerData } = usePlanPageData()
+
   const { data: planData } = usePlanData({
     provider,
     owner,
-    opts: { enabled: codecovTrialMvp },
   })
 
   const { data: plans } = usePlans(provider)

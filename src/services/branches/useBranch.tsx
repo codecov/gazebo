@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, UseQueryOptions } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import {
@@ -8,22 +8,28 @@ import {
 import Api from 'shared/api'
 import A from 'ui/A'
 
-const RepositorySchema = z.object({
-  __typename: z.literal('Repository'),
-  commit: z
-    .object({
-      commitid: z.string(),
-    })
-    .nullable(),
-})
+export const BranchSchema = z
+  .object({
+    name: z.string(),
+    head: z
+      .object({
+        commitid: z.string().nullable(),
+      })
+      .nullable(),
+  })
+  .nullable()
 
-const CommitPageDataSchema = z.object({
+type BranchData = z.infer<typeof BranchSchema>
+
+const GetBranchSchema = z.object({
   owner: z
     .object({
-      isCurrentUserPartOfOrg: z.boolean(),
       repository: z
         .discriminatedUnion('__typename', [
-          RepositorySchema,
+          z.object({
+            __typename: z.literal('Repository'),
+            branch: BranchSchema,
+          }),
           RepoNotFoundErrorSchema,
           RepoOwnerNotActivatedErrorSchema,
         ])
@@ -32,58 +38,58 @@ const CommitPageDataSchema = z.object({
     .nullable(),
 })
 
-export type CommitPageData = z.infer<typeof CommitPageDataSchema>
-
-const query = `
-  query CommitPageData($owner: String!, $repo: String!, $commitId: String!) {
-    owner(username: $owner) {
-      isCurrentUserPartOfOrg
-      repository(name: $repo) {
-        __typename
-        ... on Repository {
-          commit(id: $commitId) {
-            commitid
-          }
-        }
-        ... on NotFoundError {
-          message
-        }
-        ... on OwnerNotActivatedError {
-          message
-        }
-      }
-    }
-  }
-`
-
-interface UseCommitPageDataArgs {
+export interface UseBranchArgs {
   provider: string
   owner: string
   repo: string
-  commitId: string
+  branch: string
+  opts?: UseQueryOptions<{ branch: BranchData }>
 }
 
-export const useCommitPageData = ({
+export const query = `
+query GetBranch($owner: String!, $repo: String!, $branch: String!) {
+  owner(username: $owner) {
+    repository(name: $repo) {
+      __typename
+      ... on Repository {
+        branch(name: $branch) {
+          name
+          head {
+            commitid
+          }
+        }
+      }
+      ... on NotFoundError {
+        message
+      }
+      ... on OwnerNotActivatedError {
+        message
+      }
+    }
+  }
+}`
+
+export const useBranch = ({
   provider,
   owner,
   repo,
-  commitId,
-}: UseCommitPageDataArgs) =>
+  branch,
+  opts,
+}: UseBranchArgs) =>
   useQuery({
-    queryKey: ['CommitPageData', provider, owner, repo, commitId, query],
+    queryKey: ['GetBranch', provider, owner, repo, branch, query],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
         query,
         signal,
         variables: {
-          provider,
           owner,
           repo,
-          commitId,
+          branch,
         },
       }).then((res) => {
-        const parsedData = CommitPageDataSchema.safeParse(res?.data)
+        const parsedData = GetBranchSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return Promise.reject({
@@ -92,7 +98,7 @@ export const useCommitPageData = ({
           })
         }
 
-        const { data } = parsedData
+        const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
           return Promise.reject({
@@ -118,8 +124,8 @@ export const useCommitPageData = ({
         }
 
         return {
-          isCurrentUserPartOfOrg: data?.owner?.isCurrentUserPartOfOrg ?? null,
-          commit: data?.owner?.repository?.commit ?? null,
+          branch: data?.owner?.repository?.branch ?? null,
         }
       }),
+    ...(!!opts && opts),
   })

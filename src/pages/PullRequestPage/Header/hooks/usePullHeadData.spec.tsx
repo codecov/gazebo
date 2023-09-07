@@ -44,6 +44,10 @@ const mockOwnerNotActivatedError = {
   },
 }
 
+const mockNullOwner = {
+  owner: null,
+}
+
 const mockUnsuccessfulParseError = {}
 
 const queryClient = new QueryClient({
@@ -72,6 +76,7 @@ interface SetupArgs {
   isNotFoundError?: boolean
   isOwnerNotActivatedError?: boolean
   isUnsuccessfulParseError?: boolean
+  isNullOwner?: boolean
 }
 
 describe('usePullHeadData', () => {
@@ -79,6 +84,7 @@ describe('usePullHeadData', () => {
     isNotFoundError = false,
     isOwnerNotActivatedError = false,
     isUnsuccessfulParseError = false,
+    isNullOwner = false,
   }: SetupArgs) {
     server.use(
       graphql.query('PullHeadData', (req, res, ctx) => {
@@ -88,6 +94,8 @@ describe('usePullHeadData', () => {
           return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
         } else if (isUnsuccessfulParseError) {
           return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+        } else if (isNullOwner) {
+          return res(ctx.status(200), ctx.data(mockNullOwner))
         } else {
           return res(ctx.status(200), ctx.data(mockPullData))
         }
@@ -97,44 +105,70 @@ describe('usePullHeadData', () => {
 
   describe('calling hook', () => {
     describe('returns Repository __typename', () => {
-      beforeEach(() => {
-        setup({})
+      describe('there is data', () => {
+        it('returns the correct data', async () => {
+          setup({})
+          const { result } = renderHook(
+            () =>
+              usePullHeadData({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'cool-repo',
+                pullId: '1',
+              }),
+            {
+              wrapper,
+            }
+          )
+
+          await waitFor(() => result.current.isLoading)
+          await waitFor(() => !result.current.isLoading)
+
+          await waitFor(() =>
+            expect(result.current.data).toStrictEqual({
+              pull: {
+                pullId: 1,
+                title: 'Cool Pull Request',
+                state: 'OPEN',
+                author: {
+                  username: 'cool-user',
+                },
+                head: {
+                  branchName: 'cool-branch',
+                  ciPassed: true,
+                },
+                updatestamp: '',
+              },
+            })
+          )
+        })
       })
 
-      it('returns the correct data', async () => {
-        const { result } = renderHook(
-          () =>
-            usePullHeadData({
-              provider: 'gh',
-              owner: 'codecov',
-              repo: 'cool-repo',
-              pullId: '1',
-            }),
-          {
-            wrapper,
-          }
-        )
+      describe('there is a null owner', () => {
+        it('returns null data', async () => {
+          setup({ isNullOwner: true })
+          const { result } = renderHook(
+            () =>
+              usePullHeadData({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'cool-repo',
+                pullId: '1',
+              }),
+            {
+              wrapper,
+            }
+          )
 
-        await waitFor(() => result.current.isLoading)
-        await waitFor(() => !result.current.isLoading)
+          await waitFor(() => result.current.isLoading)
+          await waitFor(() => !result.current.isLoading)
 
-        await waitFor(() =>
-          expect(result.current.data).toStrictEqual({
-            pull: {
-              pullId: 1,
-              title: 'Cool Pull Request',
-              state: 'OPEN',
-              author: {
-                username: 'cool-user',
-              },
-              head: {
-                branchName: 'cool-branch',
-                ciPassed: true,
-              },
-              updatestamp: '',
-            },
-          })
-        )
+          await waitFor(() =>
+            expect(result.current.data).toStrictEqual({
+              pull: null,
+            })
+          )
+        })
       })
     })
 
