@@ -53,6 +53,58 @@ const mockSecondResponse = {
   },
 }
 
+const mockBackfillHasFlagsAndActive = {
+  config: {
+    isTimeScaleEnabled: true,
+  },
+  owner: {
+    repository: {
+      flagsMeasurementsActive: true,
+      flagsMeasurementsBackfilled: true,
+      flagsCount: 4,
+    },
+  },
+}
+
+const mockBackfillTimeScaleDisabled = {
+  config: {
+    isTimeScaleEnabled: false,
+  },
+  owner: {
+    repository: {
+      flagsMeasurementsActive: true,
+      flagsMeasurementsBackfilled: true,
+      flagsCount: 4,
+    },
+  },
+}
+
+const mockBackfillNoFlagsPresent = {
+  config: {
+    isTimeScaleEnabled: true,
+  },
+  owner: {
+    repository: {
+      flagsMeasurementsActive: true,
+      flagsMeasurementsBackfilled: true,
+      flagsCount: 0,
+    },
+  },
+}
+
+const mockBackfillFlagMeasureNotActive = {
+  config: {
+    isTimeScaleEnabled: true,
+  },
+  owner: {
+    repository: {
+      flagsMeasurementsActive: false,
+      flagsMeasurementsBackfilled: true,
+      flagsCount: 4,
+    },
+  },
+}
+
 const queryClient = new QueryClient()
 const server = setupServer()
 
@@ -87,10 +139,16 @@ afterAll(() => {
 
 describe('FlagMultiSelect', () => {
   function setup(
-    { flagValue = true, isIntersecting = false, noNextPage = false } = {
+    {
+      flagValue = true,
+      isIntersecting = false,
+      noNextPage = false,
+      backfillData = mockBackfillHasFlagsAndActive,
+    } = {
       flagValue: false,
       isIntersecting: false,
       noNextPage: false,
+      mockBackfillHasFlagsAndActive: mockBackfillHasFlagsAndActive,
     }
   ) {
     const user = userEvent.setup()
@@ -111,6 +169,9 @@ describe('FlagMultiSelect', () => {
         }
 
         return res(ctx.status(200), ctx.data(mockFirstResponse))
+      }),
+      graphql.query('BackfillFlagMemberships', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(backfillData))
       })
     )
 
@@ -217,6 +278,46 @@ describe('FlagMultiSelect', () => {
             filters: { term: 'flag2' },
           })
         )
+      })
+    })
+
+    describe('when flag count is zero', () => {
+      it('does not show multi select', async () => {
+        setup({ flagValue: true, backfillData: mockBackfillNoFlagsPresent })
+
+        const { container } = render(<FlagMultiSelect />, { wrapper })
+
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
+
+        await waitFor(() => expect(container).toBeEmptyDOMElement())
+      })
+    })
+
+    describe('when timescale is disabled', () => {
+      it('renders disabled multi select', async () => {
+        setup({ flagValue: true, backfillData: mockBackfillTimeScaleDisabled })
+
+        render(<FlagMultiSelect />, { wrapper })
+
+        const select = await screen.findByRole('button')
+        expect(select).toBeInTheDocument()
+        expect(select).toBeDisabled()
+      })
+    })
+
+    describe('when no flag measurement are not active', () => {
+      it('renders disabled multi select', async () => {
+        setup({
+          flagValue: true,
+          backfillData: mockBackfillFlagMeasureNotActive,
+        })
+
+        render(<FlagMultiSelect />, { wrapper })
+
+        const select = await screen.findByRole('button')
+        expect(select).toBeInTheDocument()
+        expect(select).toBeDisabled()
       })
     })
   })
