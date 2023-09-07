@@ -58,8 +58,8 @@ function ResponsiveExampleWithReactTable() {
             <dd className="mt-1 truncate text-gray-700">
               {info.row.getValue('title')}
             </dd>
-            <dt className="sr-only @md/table:hidden">Email</dt>
-            <dd className="mt-1 truncate @md/table:hidden">
+            <dt className="sr-only @lg/table:hidden">Email</dt>
+            <dd className="mt-1 truncate @lg/table:hidden">
               {info.row.getValue('email')}
             </dd>
           </dl>
