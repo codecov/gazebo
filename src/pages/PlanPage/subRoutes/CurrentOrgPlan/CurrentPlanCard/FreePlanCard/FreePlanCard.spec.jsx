@@ -317,8 +317,6 @@ describe('FreePlanCard', () => {
           plans: allPlans,
         })
 
-        // ['Up to 1 user', 'Unlimited public repositories'],
-
         render(<FreePlanCard plan={freePlan} />, {
           wrapper,
         })
