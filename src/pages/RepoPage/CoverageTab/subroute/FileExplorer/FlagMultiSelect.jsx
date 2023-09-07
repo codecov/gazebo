@@ -1,9 +1,10 @@
-import { isUndefined } from 'lodash'
+import eq from 'lodash/eq'
+import isUndefined from 'lodash/isUndefined'
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 
 import { useLocationParams } from 'services/navigation'
-import { useRepoFlagsSelect } from 'services/repo'
+import { useRepoBackfilled, useRepoFlagsSelect } from 'services/repo'
 import { useFlags } from 'shared/featureFlags'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'
@@ -19,6 +20,12 @@ function FlagMultiSelect() {
   const [selectedFlags, setSelectedFlags] = useState(params?.flags)
   const [flagSearch, setFlagSearch] = useState(null)
 
+  const { data: repoBackfilledData } = useRepoBackfilled()
+
+  const isTimeScaleEnabled = !!repoBackfilledData?.isTimeScaleEnabled
+  const flagsMeasurementsActive = !!repoBackfilledData?.flagsMeasurementsActive
+  const noFlagsPresent = eq(repoBackfilledData?.flagsCount, 0)
+
   const { coverageTabFlagMultiSelect } = useFlags({
     coverageTabFlagMultiSelect: false,
   })
@@ -32,23 +39,29 @@ function FlagMultiSelect() {
     filters: { term: flagSearch },
     options: {
       suspense: false,
-      enabled: !!coverageTabFlagMultiSelect,
+      enabled:
+        !!coverageTabFlagMultiSelect ||
+        (flagsMeasurementsActive && !noFlagsPresent && isTimeScaleEnabled),
     },
   })
 
-  if (!coverageTabFlagMultiSelect) {
+  if (!coverageTabFlagMultiSelect || noFlagsPresent) {
     return null
   }
 
-  const flagNames = new Set(params?.flags)
+  const flagNames = new Set()
+  if (flagsMeasurementsActive) {
+    params?.flags?.forEach((flag) => flagNames.add(flag))
 
-  if (!isUndefined(flagsData)) {
-    flagsData?.forEach((flag) => flagNames.add(flag?.name))
+    if (!isUndefined(flagsData)) {
+      flagsData?.forEach((flag) => flagNames.add(flag?.name))
+    }
   }
 
   return (
     <div className="w-1/6">
       <MultiSelect
+        disabled={!flagsMeasurementsActive || !isTimeScaleEnabled}
         dataMarketing="coverage-tab-flag-multi-select"
         hook="coverage-tab-flag-multi-select"
         ariaName="Select flags to show"
