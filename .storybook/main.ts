@@ -1,12 +1,13 @@
-module.exports = {
+import type { StorybookConfig } from '@storybook/react-webpack5'
+import remarkGfm from 'remark-gfm'
+
+
+const config: StorybookConfig = {
   framework: {
     name: '@storybook/react-webpack5',
     options: {
       fastRefresh: true,
     },
-  },
-  features: {
-    react18: false,
   },
   stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],
   addons: [
@@ -14,18 +15,20 @@ module.exports = {
     '@storybook/addon-links',
     '@storybook/addon-essentials',
     '@storybook/preset-create-react-app',
-  ],
-  parameters: {
-    backgrounds: {
-      default: 'dark',
+    {
+      name: '@storybook/addon-docs',
+      options: {
+        mdxPluginOptions: {
+          mdxCompileOptions: {
+            remarkPlugins: [remarkGfm],
+          },
+        },
+      },
     },
-  },
+  ],
   docs: {
     autodocs: true,
-    theme: {
-      base: 'dark',
-      brandTitle: 'Pavilion Storybook',
-      brandUrl: 'https://app.codecov.io',
-    },
   },
 }
+
+export default config
