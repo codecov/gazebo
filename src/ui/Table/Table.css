@@ -23,7 +23,7 @@
 }
 
 .tableui td {
-  @apply py-3 sm:px-4;
+  @apply py-3 @sm/table:px-4;
 }
 
 /* <div className="tableui" data-highlight-row="onHover"> */
@@ -52,7 +52,6 @@
   @apply cursor-pointer select-none;
 }
 
-/* TODO make hover whole th */
 .tableui [data-sort-direction] {
   @apply transform opacity-0 transition-opacity ease-in duration-100;
 }
@@ -63,4 +62,9 @@
 
 .tableui [data-sort-direction='desc'] {
   @apply opacity-100 rotate-180;
+}
+
+/* <element data-expanded="false"> */
+.tableui [data-expanded='false'] {
+  @apply hidden;
 }
