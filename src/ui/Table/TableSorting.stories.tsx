@@ -4,11 +4,11 @@ import {
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  SortingState,
   useReactTable,
 } from '@tanstack/react-table'
+import type { SortingState } from '@tanstack/react-table'
 import cs from 'classnames'
-import React from 'react'
+import { useState } from 'react'
 
 import Icon from '../Icon'
 
@@ -45,7 +45,7 @@ const people: Person[] = [
 const columnHelper = createColumnHelper<Person>()
 
 function SortingExampleWithReactTable() {
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [sorting, setSorting] = useState<SortingState>([])
   const columns = [
     columnHelper.accessor('name', {
       header: () => 'Name',
@@ -93,7 +93,11 @@ function SortingExampleWithReactTable() {
                   {...{
                     onClick: header.column.getToggleSortingHandler(),
                   }}
-                  data-type={header.id === 'seatNumber' ? 'numeric' : ''}
+                  {...(header.id === 'seatNumber'
+                    ? {
+                        'data-type': 'numeric',
+                      }
+                    : {})}
                 >
                   <div
                     className={cs('flex gap-1', {
@@ -124,7 +128,11 @@ function SortingExampleWithReactTable() {
               {row.getVisibleCells().map((cell) => (
                 <td
                   key={cell.id}
-                  data-type={cell.column.id === 'seatNumber' ? 'numeric' : ''}
+                  {...(cell.column.id === 'seatNumber'
+                    ? {
+                        'data-type': 'numeric',
+                      }
+                    : {})}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>

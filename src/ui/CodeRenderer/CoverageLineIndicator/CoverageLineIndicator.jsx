@@ -41,7 +41,7 @@ function CoverageHitCounter({ coverage, hitCount }) {
     return (
       <span
         className={cs(
-          'text-white flex justify-center content-center items-center px-1.5 rounded-full text-center',
+          'text-white flex justify-center content-center items-center px-1.5 rounded-full text-center whitespace-nowrap',
           {
             'bg-ds-primary-red': coverage === LINE_STATE.UNCOVERED,
             'bg-ds-primary-yellow': coverage === LINE_STATE.PARTIAL,
