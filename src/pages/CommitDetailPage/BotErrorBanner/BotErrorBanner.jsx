@@ -40,14 +40,14 @@ const BotErrorContent = () => {
 
   if (ghWithNoApp) {
     return (
-      <div className="gap-1 lg:flex lg:w-max">
+      <p>
         <span>
           The bot posts the coverage report comment on pull requests. If
           you&apos;re using GitHub, the best way to integrate with Codecov.io is
           to Install
         </span>
         <A to={{ pageName: 'codecovGithubApp' }}> Codecov&apos;s GitHub App.</A>
-      </div>
+      </p>
     )
   }
   if (glProvider) {
