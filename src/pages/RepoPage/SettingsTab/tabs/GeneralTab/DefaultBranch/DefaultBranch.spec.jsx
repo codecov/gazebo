@@ -333,6 +333,7 @@ describe('DefaultBranch', () => {
       await waitFor(() =>
         expect(fetchFilters).toBeCalledWith({
           searchValue: 'cool branch name',
+          mergedBranches: true,
         })
       )
     })
