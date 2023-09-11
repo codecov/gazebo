@@ -40,6 +40,15 @@ export function useBranches({ provider, owner, repo, filters, opts = {} }) {
     filters,
   }
 
+  if (
+    filters &&
+    !!filters.searchValue &&
+    filters.mergedBranches === undefined
+  ) {
+    // include merged branches when we're searching
+    filters.mergedBranches = true
+  }
+
   const { data, ...rest } = useInfiniteQuery({
     queryKey: ['GetBranches', provider, owner, repo, variables, query],
     queryFn: ({ pageParam, signal }) =>
