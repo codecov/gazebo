@@ -93,7 +93,7 @@ function Example() {
           {row.getCanExpand() ? (
             <Icon
               size="md"
-              name={row.getIsExpanded() ? 'chevron-down' : 'chevron-right'}
+              name={row.getIsExpanded() ? 'chevronDown' : 'chevronRight'}
               variant="solid"
             />
           ) : (
