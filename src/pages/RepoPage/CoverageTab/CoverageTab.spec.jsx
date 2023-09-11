@@ -2,7 +2,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import CoverageTab from './CoverageTab'
@@ -11,7 +10,6 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: false,
-      suspense: true,
     },
   },
 })
@@ -25,7 +23,7 @@ const wrapper =
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={initialEntries}>
           <Route path="/:provider/:owner/:repo" exact={true}>
-            <Suspense fallback={null}>{children}</Suspense>
+            {children}
           </Route>
         </MemoryRouter>
       </QueryClientProvider>
@@ -42,6 +40,7 @@ const mockRepo = {
 const repoConfigMock = {
   owner: {
     repository: {
+      __typename: 'Repository',
       repositoryConfig: {
         indicationRange: { upperRange: 80, lowerRange: 60 },
       },
@@ -49,7 +48,7 @@ const repoConfigMock = {
   },
 }
 
-const treeMock = { name: 'repoName', children: [] }
+const treeMock = [{ name: 'repoName', children: [] }]
 
 const overviewMock = {
   owner: { repository: { private: false, defaultBranch: 'main' } },
@@ -58,6 +57,7 @@ const overviewMock = {
 const branchesMock = {
   owner: {
     repository: {
+      __typename: 'Repository',
       branches: {
         edges: [
           {
@@ -95,6 +95,7 @@ const branchesMock = {
 }
 
 const branchMock = {
+  __typename: 'Repository',
   branch: {
     name: 'main',
     head: {
@@ -107,6 +108,7 @@ const branchesContentsMock = {
   owner: {
     username: 'critical-role',
     repository: {
+      __typename: 'Repository',
       repositoryConfig: {
         indicationRange: {
           upperRange: 80,
@@ -118,10 +120,10 @@ const branchesContentsMock = {
           pathContents: {
             results: [
               {
-                name: 'flag1',
-                filePath: null,
+                name: 'src',
+                path: 'src',
                 percentCovered: 100.0,
-                type: 'dir',
+                __typename: 'PathContentDir',
               },
             ],
           },
@@ -131,13 +133,41 @@ const branchesContentsMock = {
   },
 }
 
+const mockBranchMeasurements = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      measurements: [
+        {
+          timestamp: '2023-01-01T00:00:00+00:00',
+          max: 85,
+        },
+        {
+          timestamp: '2023-01-02T00:00:00+00:00',
+          max: 80,
+        },
+        {
+          timestamp: '2023-01-03T00:00:00+00:00',
+          max: 90,
+        },
+        {
+          timestamp: '2023-01-04T00:00:00+00:00',
+          max: 100,
+        },
+      ],
+    },
+  },
+}
+
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })
 })
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
+
 afterAll(() => {
   server.close()
 })
@@ -152,7 +182,12 @@ describe('Coverage Tab', () => {
         res(ctx.status(200), ctx.data(branchesMock))
       ),
       graphql.query('GetBranch', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner: { repository: branchMock } }))
+        res(
+          ctx.status(200),
+          ctx.data({
+            owner: { repository: { __typename: 'Repository', ...branchMock } },
+          })
+        )
       ),
       graphql.query('BranchContents', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(branchesContentsMock))
@@ -167,12 +202,12 @@ describe('Coverage Tab', () => {
         res(ctx.status(200), ctx.data({}))
       ),
       graphql.query('GetBranchCoverageMeasurements', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({}))
+        res(ctx.status(200), ctx.data(mockBranchMeasurements))
       ),
       rest.get(
         '/internal/:provider/:owner/:repo/coverage/tree',
         (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json({ data: treeMock }))
+          return res(ctx.status(200), ctx.json(treeMock))
         }
       ),
       rest.post(
@@ -191,7 +226,7 @@ describe('Coverage Tab', () => {
   it('renders the sunburst chart', async () => {
     setup()
 
-    render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/test-repo']) })
+    render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/repoName']) })
 
     await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
     await waitFor(() => expect(queryClient.isFetching()).toBe(0))

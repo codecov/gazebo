@@ -79,6 +79,7 @@ const mockOverview = {
 const mockBranch = (branchName) => ({
   owner: {
     repository: {
+      __typename: 'Repository',
       branch: {
         name: branchName,
         head: {
@@ -135,7 +136,7 @@ describe('CommitsTab', () => {
           return res(ctx.status(200), ctx.data(mockBranch(returnBranch)))
         }
 
-        return res(ctx.status(200), ctx.data({}))
+        return res(ctx.status(200), ctx.data({ owner: null }))
       }),
       graphql.query('GetRepo', (req, res, ctx) =>
         res(ctx.status(200), ctx.data({}))

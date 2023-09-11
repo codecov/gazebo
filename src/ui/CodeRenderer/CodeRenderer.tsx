@@ -1,14 +1,25 @@
 import Highlight, { defaultProps } from 'prism-react-renderer'
-import PropTypes from 'prop-types'
 
 import 'shared/utils/prisimTheme.css'
 import { CODE_RENDERER_TYPE } from 'shared/utils/fileviewer'
 import { prismLanguageMapper } from 'shared/utils/prismLanguageMapper'
 import './CodeRenderer.css'
 
-function CodeRenderer({ code, fileName, LineComponent, rendererType }) {
+type CodeRendererProps = {
+  code: string
+  fileName: string
+  rendererType: keyof typeof CODE_RENDERER_TYPE
+  LineComponent: React.FC<{}>
+}
+
+function CodeRenderer({
+  code,
+  fileName,
+  LineComponent,
+  rendererType,
+}: CodeRendererProps) {
   return (
-    <table className="box-border w-full table-auto border-collapse whitespace-pre-wrap border border-solid border-ds-gray-tertiary font-mono">
+    <table className="coderenderer box-border w-full table-auto border-collapse whitespace-pre-wrap border border-solid border-ds-gray-tertiary font-mono">
       <colgroup>
         <col width="40" />
         {rendererType === CODE_RENDERER_TYPE.DIFF && <col width="40" />}
@@ -30,16 +41,6 @@ function CodeRenderer({ code, fileName, LineComponent, rendererType }) {
       </tbody>
     </table>
   )
-}
-
-CodeRenderer.propTypes = {
-  code: PropTypes.string.isRequired,
-  fileName: PropTypes.string.isRequired,
-  rendererType: PropTypes.oneOf([
-    CODE_RENDERER_TYPE.DIFF,
-    CODE_RENDERER_TYPE.SINGLE_LINE,
-  ]),
-  LineComponent: PropTypes.func.isRequired,
 }
 
 export default CodeRenderer

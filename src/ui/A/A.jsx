@@ -26,12 +26,21 @@ const variantClasses = {
   blueSeptenary: `text-ds-blue-septenary`,
 }
 
+const getHostnameFromRegex = (url) => {
+  // run against regex
+  const matches = url.match(/^https?:\/\/([^/?#]+)(?:[/?#]|$)/i)
+  // extract hostname (will be null if no match is found)
+  return matches && matches[1]
+}
+
 function _adjustPathForGLSubgroups(path) {
   // Adjusts external url's for any gitlab owners who have subgroups. Gitlab subgroups look like
   // this => "user:subgroup", but Gitlab URLs look like this => "user/subgroup". Hence, this function
   // is to detect if we have a gitlab user with a subgroup and adjust it accordingly. The regex identifies the
   // domain + owner (by selecting everything till the next forward slash) and selecting everything else
-  if (!path.includes('gitlab.com')) {
+  const host = getHostnameFromRegex(path)
+  const acceptedPaths = ['gitlab.com']
+  if (!acceptedPaths.includes(host)) {
     return path
   }
 

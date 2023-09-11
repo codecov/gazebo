@@ -5,6 +5,7 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 import ReactModal from 'react-modal'
 import { Router } from 'react-router-dom'
+import { CompatRouter } from 'react-router-dom-v5-compat'
 
 import ErrorBoundary from 'layouts/shared/ErrorBoundary'
 import { withFeatureFlagProvider } from 'shared/featureFlags'
@@ -51,7 +52,9 @@ root.render(
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <Router history={history}>
-          <ProfiledApp />
+          <CompatRouter>
+            <ProfiledApp />
+          </CompatRouter>
         </Router>
       </QueryClientProvider>
     </ErrorBoundary>
