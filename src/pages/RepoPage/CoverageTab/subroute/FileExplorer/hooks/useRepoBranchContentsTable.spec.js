@@ -265,6 +265,40 @@ describe('useRepoBranchContentsTable', () => {
     })
   })
 
+  describe('when there is a flags param', () => {
+    beforeEach(() => {
+      useLocationParams.mockReturnValue({
+        params: { flags: ['flag-1'] },
+      })
+
+      setup()
+    })
+
+    it('makes a gql request with the flags param', async () => {
+      renderHook(() => useRepoBranchContentsTable(), {
+        wrapper: wrapper(),
+      })
+
+      await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+      expect(calledCommitContents).toHaveBeenCalled()
+      expect(calledCommitContents).toHaveBeenCalledWith({
+        branch: 'main',
+        filters: {
+          flags: ['flag-1'],
+          ordering: {
+            direction: 'ASC',
+            parameter: 'NAME',
+          },
+        },
+        name: 'test-org',
+        repo: 'test-repo',
+        path: '',
+      })
+    })
+  })
+
   describe('when handleSort is triggered', () => {
     beforeEach(() => {
       useLocationParams.mockReturnValue({
