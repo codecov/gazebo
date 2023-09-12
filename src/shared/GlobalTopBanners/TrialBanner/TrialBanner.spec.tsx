@@ -9,14 +9,10 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import config from 'config'
 
 import { TrialStatuses } from 'services/account'
-import { useFlags } from 'shared/featureFlags'
 
 import TrialBanner from './TrialBanner'
 
 jest.mock('config')
-jest.mock('shared/featureFlags')
-
-const mockedUseFlags = useFlags as jest.Mock<{ codecovTrialMvp: boolean }>
 
 const proPlanMonth = {
   marketingName: 'Pro Team',
@@ -100,7 +96,6 @@ afterAll(() => {
 interface SetupArgs {
   trialStatus?: keyof typeof TrialStatuses
   isSentryPlan?: boolean
-  flagValue?: boolean
   isCurrentUserPartOfOrg?: boolean
   isTrialPlan?: boolean
   isProPlan?: boolean
@@ -112,7 +107,6 @@ interface SetupArgs {
 describe('TrialBanner', () => {
   function setup({
     trialStatus = TrialStatuses.NOT_STARTED,
-    flagValue = false,
     isCurrentUserPartOfOrg = false,
     isTrialPlan = false,
     isProPlan = false,
@@ -121,10 +115,6 @@ describe('TrialBanner', () => {
     isSelfHosted = false,
   }: SetupArgs) {
     const user = userEvent.setup()
-
-    mockedUseFlags.mockReturnValue({
-      codecovTrialMvp: flagValue,
-    })
 
     config.IS_SELF_HOSTED = isSelfHosted
 
@@ -172,182 +162,126 @@ describe('TrialBanner', () => {
     }
   }
 
-  describe('when flag is enabled', () => {
-    describe('owner is undefined', () => {
-      beforeAll(() => {
-        jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
-      })
-
-      afterAll(() => {
-        jest.useRealTimers()
-      })
-
-      it('renders nothing', async () => {
-        setup({ flagValue: true })
-
-        const { container } = render(<TrialBanner />, {
-          wrapper: wrapper('/gh', '/:provider'),
-        })
-
-        expect(container).toBeEmptyDOMElement()
-      })
+  describe('owner is undefined', () => {
+    beforeAll(() => {
+      jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
     })
 
-    describe('owner does not belong to org', () => {
-      beforeAll(() => {
-        jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
-      })
-
-      afterAll(() => {
-        jest.useRealTimers()
-      })
-
-      it('renders nothing', async () => {
-        setup({ flagValue: true, isCurrentUserPartOfOrg: false })
-
-        const { container } = render(<TrialBanner />, {
-          wrapper: wrapper(),
-        })
-
-        await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
-        await waitFor(() => expect(queryClient.isFetching()).toBe(0))
-
-        expect(container).toBeEmptyDOMElement()
-      })
+    afterAll(() => {
+      jest.useRealTimers()
     })
 
+    it('renders nothing', async () => {
+      setup({})
+
+      const { container } = render(<TrialBanner />, {
+        wrapper: wrapper('/gh', '/:provider'),
+      })
+
+      expect(container).toBeEmptyDOMElement()
+    })
+  })
+
+  describe('owner does not belong to org', () => {
+    beforeAll(() => {
+      jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
+    })
+
+    afterAll(() => {
+      jest.useRealTimers()
+    })
+
+    it('renders nothing', async () => {
+      setup({ isCurrentUserPartOfOrg: false })
+
+      const { container } = render(<TrialBanner />, {
+        wrapper: wrapper(),
+      })
+
+      await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+      expect(container).toBeEmptyDOMElement()
+    })
+  })
+
+  describe('trial is ongoing', () => {
     describe('trial is ongoing', () => {
-      describe('trial is ongoing', () => {
-        describe('date diff is less then 4', () => {
-          beforeAll(() => {
-            jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
-          })
-
-          afterEach(() => {
-            jest.runOnlyPendingTimers()
-            jest.useRealTimers()
-          })
-
-          it('renders ongoing banner', async () => {
-            setup({
-              flagValue: true,
-              trialStatus: TrialStatuses.ONGOING,
-              isCurrentUserPartOfOrg: true,
-              isTrialPlan: true,
-              trialStartDate: '2021-01-01',
-              trialEndDate: '2021-01-02',
-            })
-
-            render(<TrialBanner />, {
-              wrapper: wrapper(),
-            })
-
-            const text = await screen.findByText(/Your trial ends in 1 day/)
-            expect(text).toBeInTheDocument()
-          })
+      describe('date diff is less then 4', () => {
+        beforeAll(() => {
+          jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
         })
 
-        describe('date diff is greater then 4', () => {
-          beforeAll(() => {
-            jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
-          })
-
-          afterAll(() => {
-            jest.useRealTimers()
-          })
-
-          it('renders nothing', async () => {
-            setup({
-              flagValue: true,
-              trialStatus: TrialStatuses.ONGOING,
-              isCurrentUserPartOfOrg: true,
-              isTrialPlan: true,
-              trialStartDate: '2021-01-01',
-              trialEndDate: '2021-01-14',
-            })
-
-            const { container } = render(<TrialBanner />, {
-              wrapper: wrapper(),
-            })
-
-            await waitFor(() =>
-              expect(queryClient.isFetching()).toBeGreaterThan(0)
-            )
-            await waitFor(() => expect(queryClient.isFetching()).toBe(0))
-
-            expect(container).toBeEmptyDOMElement()
-          })
+        afterEach(() => {
+          jest.runOnlyPendingTimers()
+          jest.useRealTimers()
         })
 
-        describe('date diff is less then 0', () => {
-          beforeAll(() => {
-            jest.useFakeTimers().setSystemTime(new Date('2021-01-02'))
-          })
-
-          afterAll(() => {
-            jest.useRealTimers()
-          })
-
-          it('renders nothing', async () => {
-            setup({
-              flagValue: true,
-              trialStatus: TrialStatuses.ONGOING,
-              isCurrentUserPartOfOrg: true,
-              isTrialPlan: true,
-              trialStartDate: '2021-01-02',
-              trialEndDate: '2021-01-01',
-            })
-
-            const { container } = render(<TrialBanner />, {
-              wrapper: wrapper(),
-            })
-
-            await waitFor(() =>
-              expect(queryClient.isFetching()).toBeGreaterThan(0)
-            )
-            await waitFor(() => expect(queryClient.isFetching()).toBe(0))
-
-            expect(container).toBeEmptyDOMElement()
-          })
-        })
-      })
-    })
-
-    describe('trial is expired', () => {
-      beforeAll(() => {
-        jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
-      })
-
-      afterAll(() => {
-        jest.useRealTimers()
-      })
-
-      describe('user is on a free plan', () => {
-        it('renders expired banner', async () => {
+        it('renders ongoing banner', async () => {
           setup({
-            flagValue: true,
-            trialStatus: TrialStatuses.EXPIRED,
+            trialStatus: TrialStatuses.ONGOING,
             isCurrentUserPartOfOrg: true,
+            isTrialPlan: true,
+            trialStartDate: '2021-01-01',
+            trialEndDate: '2021-01-02',
           })
 
           render(<TrialBanner />, {
             wrapper: wrapper(),
           })
 
-          const banner = await screen.findByText(
-            /The org's 14-day free Codecov Pro trial has ended./
-          )
-          expect(banner).toBeInTheDocument()
+          const text = await screen.findByText(/Your trial ends in 1 day/)
+          expect(text).toBeInTheDocument()
         })
       })
 
-      describe('user is on a paid plan', () => {
+      describe('date diff is greater then 4', () => {
+        beforeAll(() => {
+          jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
+        })
+
+        afterAll(() => {
+          jest.useRealTimers()
+        })
+
         it('renders nothing', async () => {
           setup({
-            flagValue: true,
-            isProPlan: true,
-            trialStatus: TrialStatuses.EXPIRED,
+            trialStatus: TrialStatuses.ONGOING,
             isCurrentUserPartOfOrg: true,
+            isTrialPlan: true,
+            trialStartDate: '2021-01-01',
+            trialEndDate: '2021-01-14',
+          })
+
+          const { container } = render(<TrialBanner />, {
+            wrapper: wrapper(),
+          })
+
+          await waitFor(() =>
+            expect(queryClient.isFetching()).toBeGreaterThan(0)
+          )
+          await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+          expect(container).toBeEmptyDOMElement()
+        })
+      })
+
+      describe('date diff is less then 0', () => {
+        beforeAll(() => {
+          jest.useFakeTimers().setSystemTime(new Date('2021-01-02'))
+        })
+
+        afterAll(() => {
+          jest.useRealTimers()
+        })
+
+        it('renders nothing', async () => {
+          setup({
+            trialStatus: TrialStatuses.ONGOING,
+            isCurrentUserPartOfOrg: true,
+            isTrialPlan: true,
+            trialStartDate: '2021-01-02',
+            trialEndDate: '2021-01-01',
           })
 
           const { container } = render(<TrialBanner />, {
@@ -363,37 +297,9 @@ describe('TrialBanner', () => {
         })
       })
     })
-
-    describe('running in self hosted mode', () => {
-      beforeAll(() => {
-        jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
-      })
-
-      afterAll(() => {
-        jest.useRealTimers()
-      })
-
-      it('renders nothing', async () => {
-        setup({
-          flagValue: true,
-          trialStatus: TrialStatuses.ONGOING,
-          isCurrentUserPartOfOrg: true,
-          isTrialPlan: true,
-          trialStartDate: '2021-01-01',
-          trialEndDate: '2021-01-02',
-          isSelfHosted: true,
-        })
-
-        const { container } = render(<TrialBanner />, {
-          wrapper: wrapper('/gh', '/:provider'),
-        })
-
-        expect(container).toBeEmptyDOMElement()
-      })
-    })
   })
 
-  describe('when flag is disabled', () => {
+  describe('trial is expired', () => {
     beforeAll(() => {
       jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
     })
@@ -402,13 +308,66 @@ describe('TrialBanner', () => {
       jest.useRealTimers()
     })
 
-    it('displays nothing', async () => {
-      setup({ flagValue: false })
+    describe('user is on a free plan', () => {
+      it('renders expired banner', async () => {
+        setup({
+          trialStatus: TrialStatuses.EXPIRED,
+          isCurrentUserPartOfOrg: true,
+        })
 
-      const { container } = render(<TrialBanner />, { wrapper: wrapper() })
+        render(<TrialBanner />, {
+          wrapper: wrapper(),
+        })
 
-      await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
-      await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+        const banner = await screen.findByText(
+          /The org's 14-day free Codecov Pro trial has ended./
+        )
+        expect(banner).toBeInTheDocument()
+      })
+    })
+
+    describe('user is on a paid plan', () => {
+      it('renders nothing', async () => {
+        setup({
+          isProPlan: true,
+          trialStatus: TrialStatuses.EXPIRED,
+          isCurrentUserPartOfOrg: true,
+        })
+
+        const { container } = render(<TrialBanner />, {
+          wrapper: wrapper(),
+        })
+
+        await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
+        await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+        expect(container).toBeEmptyDOMElement()
+      })
+    })
+  })
+
+  describe('running in self hosted mode', () => {
+    beforeAll(() => {
+      jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
+    })
+
+    afterAll(() => {
+      jest.useRealTimers()
+    })
+
+    it('renders nothing', async () => {
+      setup({
+        trialStatus: TrialStatuses.ONGOING,
+        isCurrentUserPartOfOrg: true,
+        isTrialPlan: true,
+        trialStartDate: '2021-01-01',
+        trialEndDate: '2021-01-02',
+        isSelfHosted: true,
+      })
+
+      const { container } = render(<TrialBanner />, {
+        wrapper: wrapper('/gh', '/:provider'),
+      })
 
       expect(container).toBeEmptyDOMElement()
     })
