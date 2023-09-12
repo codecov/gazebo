@@ -42,7 +42,7 @@ function GitHubHelpBanner() {
     <Banner variant="plain">
       <BannerHeading>
         <div className="flex gap-1 text-sm">
-          <Icon size="sm" name="light-bulb" variant="solid" />
+          <Icon size="sm" name="lightBulb" variant="solid" />
           <h2 className="font-semibold">Don&apos;t see your organization? </h2>
           <A hook="help finding an org" to={{ pageName: 'codecovGithubApp' }}>
             Install the Codecov GitHub App.

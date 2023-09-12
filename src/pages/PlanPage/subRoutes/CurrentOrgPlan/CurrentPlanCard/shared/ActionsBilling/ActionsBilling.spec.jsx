@@ -6,11 +6,8 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
-import { useFlags } from 'shared/featureFlags'
 
 import ActionsBilling from './ActionsBilling'
-
-jest.mock('shared/featureFlags')
 
 const allPlans = [
   {
@@ -176,17 +173,18 @@ const wrapper = ({ children }) => (
 
 describe('Actions Billing', () => {
   function setup(
-    accountDetails = mockedFreeAccountDetails,
-    plans = allPlans,
-    codecovTrialFlag = false,
-    trialPlanData = mockTrialData
+    {
+      accountDetails = mockedFreeAccountDetails,
+      plans = allPlans,
+      trialPlanData = mockTrialData,
+    } = {
+      accountDetails: mockedFreeAccountDetails,
+      plans: allPlans,
+      trialPlanData: mockTrialData,
+    }
   ) {
     const user = userEvent.setup()
     const mockMutationVars = jest.fn()
-
-    useFlags.mockReturnValue({
-      codecovTrialMvp: codecovTrialFlag,
-    })
 
     server.use(
       rest.get('/internal/gh/critical-role/account-details/', (req, res, ctx) =>
@@ -209,100 +207,92 @@ describe('Actions Billing', () => {
 
   describe('rendering component', () => {
     describe('user has a free plan', () => {
-      describe('flag is false', () => {
-        it('renders upgrade to pro plan', async () => {
-          setup()
-
-          render(<ActionsBilling />, { wrapper })
-
-          const upgradeLink = await screen.findByRole('link', {
-            name: /Upgrade to Pro Team plan/,
-          })
-          expect(upgradeLink).toBeInTheDocument()
-          expect(upgradeLink).toHaveAttribute(
-            'href',
-            '/plan/gh/critical-role/upgrade'
-          )
+      it('renders start trial button', async () => {
+        setup({
+          accountDetails: mockedFreeAccountDetails,
+          plans: allPlans,
+          trialPlanData: {
+            plan: {
+              ...mockTrialData.plan,
+              trialStatus: TrialStatuses.NOT_STARTED,
+            },
+          },
         })
+
+        render(<ActionsBilling />, { wrapper })
+
+        const startTrialButton = await screen.findByRole('button', {
+          name: 'Start trial',
+        })
+        expect(startTrialButton).toBeInTheDocument()
       })
 
-      describe('flag is true', () => {
-        it('renders start trial button', async () => {
-          setup(mockedFreeAccountDetails, allPlans, true, {
+      it('renders upgrade now link', async () => {
+        setup({
+          accountDetails: mockedFreeAccountDetails,
+          plans: allPlans,
+          trialPlanData: {
             plan: {
               ...mockTrialData.plan,
               trialStatus: TrialStatuses.NOT_STARTED,
+            },
+          },
+        })
+
+        render(<ActionsBilling />, { wrapper })
+
+        const upgradeNowLink = await screen.findByRole('link', {
+          name: 'upgrade now',
+        })
+        expect(upgradeNowLink).toBeInTheDocument()
+        expect(upgradeNowLink).toHaveAttribute(
+          'href',
+          '/plan/gh/critical-role/upgrade'
+        )
+      })
+
+      describe('user clicks start trial', () => {
+        it('triggers the mutation', async () => {
+          const { mockMutationVars, user } = setup({
+            accountDetails: mockedFreeAccountDetails,
+            plans: allPlans,
+            trialPlanData: {
+              plan: {
+                ...mockTrialData.plan,
+                trialStatus: TrialStatuses.NOT_STARTED,
+              },
             },
           })
 
           render(<ActionsBilling />, { wrapper })
 
-          const startTrialButton = await screen.findByRole('button', {
+          const startTrialBtn = await screen.findByRole('button', {
             name: 'Start trial',
           })
-          expect(startTrialButton).toBeInTheDocument()
-        })
+          expect(startTrialBtn).toBeInTheDocument()
 
-        it('renders upgrade now link', async () => {
-          setup(mockedFreeAccountDetails, allPlans, true, {
-            plan: {
-              ...mockTrialData.plan,
-              trialStatus: TrialStatuses.NOT_STARTED,
-            },
-          })
+          await user.click(startTrialBtn)
 
-          render(<ActionsBilling />, { wrapper })
-
-          const upgradeNowLink = await screen.findByRole('link', {
-            name: 'upgrade now',
-          })
-          expect(upgradeNowLink).toBeInTheDocument()
-          expect(upgradeNowLink).toHaveAttribute(
-            'href',
-            '/plan/gh/critical-role/upgrade'
-          )
-        })
-
-        describe('user clicks start trial', () => {
-          it('triggers the mutation', async () => {
-            const { mockMutationVars, user } = setup(
-              mockedFreeAccountDetails,
-              allPlans,
-              true,
-              {
-                plan: {
-                  ...mockTrialData.plan,
-                  trialStatus: TrialStatuses.NOT_STARTED,
-                },
-              }
-            )
-
-            render(<ActionsBilling />, { wrapper })
-
-            const startTrialBtn = await screen.findByRole('button', {
-              name: 'Start trial',
+          await waitFor(() => expect(mockMutationVars).toBeCalled())
+          await waitFor(() =>
+            expect(mockMutationVars).toBeCalledWith({
+              input: { orgUsername: 'critical-role' },
             })
-            expect(startTrialBtn).toBeInTheDocument()
-
-            await user.click(startTrialBtn)
-
-            await waitFor(() => expect(mockMutationVars).toBeCalled())
-            await waitFor(() =>
-              expect(mockMutationVars).toBeCalledWith({
-                input: { orgUsername: 'critical-role' },
-              })
-            )
-          })
+          )
         })
       })
     })
 
     describe('user has a trial plan', () => {
       it('renders upgrade link', async () => {
-        setup(mockTrialAccountDetails, allPlans, true, {
-          plan: {
-            ...mockTrialData.plan,
-            trialStatus: TrialStatuses.ONGOING,
+        setup({
+          accountDetails: mockTrialAccountDetails,
+          plans: allPlans,
+          trialPlanData: {
+            plan: {
+              ...mockTrialData.plan,
+              trialStatus: TrialStatuses.ONGOING,
+            },
           },
         })
 
@@ -321,7 +311,9 @@ describe('Actions Billing', () => {
 
     describe('user has a pro plan', () => {
       it('renders manage plan link', async () => {
-        setup(mockedProAccountDetails)
+        setup({
+          accountDetails: mockedProAccountDetails,
+        })
 
         render(<ActionsBilling />, { wrapper })
 
@@ -338,7 +330,9 @@ describe('Actions Billing', () => {
 
     describe('owner is a user', () => {
       it('renders view billing', async () => {
-        setup({ rootOrganization: { username: 'critical-role' } })
+        setup({
+          accountDetails: { rootOrganization: { username: 'critical-role' } },
+        })
 
         render(<ActionsBilling />, { wrapper })
 
@@ -353,7 +347,9 @@ describe('Actions Billing', () => {
       })
 
       it('renders the description', async () => {
-        setup({ rootOrganization: { username: 'critical-role' } })
+        setup({
+          accountDetails: { rootOrganization: { username: 'critical-role' } },
+        })
 
         render(<ActionsBilling />, { wrapper })
 
@@ -366,7 +362,9 @@ describe('Actions Billing', () => {
 
     describe('plan is managed by github', () => {
       it('renders the description', async () => {
-        setup({ planProvider: 'github' })
+        setup({
+          accountDetails: { planProvider: 'github' },
+        })
 
         render(<ActionsBilling />, { wrapper })
 
@@ -377,7 +375,7 @@ describe('Actions Billing', () => {
       })
 
       it('renders manage billing in GitHub link', async () => {
-        setup({ planProvider: 'github' })
+        setup({ accountDetails: { planProvider: 'github' } })
 
         render(<ActionsBilling />, { wrapper })
 
@@ -393,9 +391,95 @@ describe('Actions Billing', () => {
     })
 
     describe('user can upgrade to sentry plan', () => {
-      describe('flag is false', () => {
-        it('renders upgrade to sentry plan', async () => {
-          setup(mockedProAccountDetails, sentryPlans)
+      describe('user is on a free plan', () => {
+        it('renders start trial button', async () => {
+          setup({
+            accountDetails: mockedFreeAccountDetails,
+            plans: sentryPlans,
+            trialPlanData: {
+              plan: {
+                ...mockTrialData.plan,
+                trialStatus: TrialStatuses.NOT_STARTED,
+              },
+            },
+          })
+
+          render(<ActionsBilling />, { wrapper })
+
+          const startTrialBtn = await screen.findByRole('button', {
+            name: /Start trial/,
+          })
+          expect(startTrialBtn).toBeInTheDocument()
+        })
+
+        it('renders upgrade now link', async () => {
+          setup({
+            accountDetails: mockedFreeAccountDetails,
+            plans: sentryPlans,
+            trialPlanData: {
+              plan: {
+                ...mockTrialData.plan,
+                trialStatus: TrialStatuses.NOT_STARTED,
+              },
+            },
+          })
+
+          render(<ActionsBilling />, { wrapper })
+
+          const upgradeLink = await screen.findByRole('link', {
+            name: /upgrade now/,
+          })
+          expect(upgradeLink).toBeInTheDocument()
+          expect(upgradeLink).toHaveAttribute(
+            'href',
+            '/plan/gh/critical-role/upgrade'
+          )
+        })
+
+        describe('user click start trial', () => {
+          it('triggers the mutation', async () => {
+            const { mockMutationVars, user } = setup({
+              accountDetails: mockedFreeAccountDetails,
+              plans: sentryPlans,
+              trialPlanData: {
+                plan: {
+                  ...mockTrialData.plan,
+                  trialStatus: TrialStatuses.NOT_STARTED,
+                },
+              },
+            })
+
+            render(<ActionsBilling />, { wrapper })
+
+            const startTrialBtn = await screen.findByRole('button', {
+              name: /Start trial/,
+            })
+            expect(startTrialBtn).toBeInTheDocument()
+
+            await user.click(startTrialBtn)
+
+            await waitFor(() => expect(mockMutationVars).toBeCalled())
+            await waitFor(() =>
+              expect(mockMutationVars).toBeCalledWith({
+                input: { orgUsername: 'critical-role' },
+              })
+            )
+          })
+        })
+      })
+
+      describe('user has a trial ongoing', () => {
+        it('renders upgrade link', async () => {
+          setup({
+            accountDetails: mockTrialAccountDetails,
+            plans: sentryPlans,
+            trialPlanData: {
+              plan: {
+                ...mockTrialData.plan,
+                trialStatus: TrialStatuses.ONGOING,
+              },
+            },
+          })
 
           render(<ActionsBilling />, { wrapper })
 
@@ -409,105 +493,14 @@ describe('Actions Billing', () => {
           )
         })
       })
-
-      describe('flag is true', () => {
-        describe('user is on a free plan', () => {
-          it('renders start trial button', async () => {
-            setup(mockedFreeAccountDetails, sentryPlans, true, {
-              plan: {
-                ...mockTrialData.plan,
-                trialStatus: TrialStatuses.NOT_STARTED,
-              },
-            })
-
-            render(<ActionsBilling />, { wrapper })
-
-            const startTrialBtn = await screen.findByRole('button', {
-              name: /Start trial/,
-            })
-            expect(startTrialBtn).toBeInTheDocument()
-          })
-
-          it('renders upgrade now link', async () => {
-            setup(mockedFreeAccountDetails, sentryPlans, true, {
-              plan: {
-                ...mockTrialData.plan,
-                trialStatus: TrialStatuses.NOT_STARTED,
-              },
-            })
-
-            render(<ActionsBilling />, { wrapper })
-
-            const upgradeLink = await screen.findByRole('link', {
-              name: /upgrade now/,
-            })
-            expect(upgradeLink).toBeInTheDocument()
-            expect(upgradeLink).toHaveAttribute(
-              'href',
-              '/plan/gh/critical-role/upgrade'
-            )
-          })
-
-          describe('user click start trial', () => {
-            it('triggers the mutation', async () => {
-              const { mockMutationVars, user } = setup(
-                mockedFreeAccountDetails,
-                sentryPlans,
-                true,
-                {
-                  plan: {
-                    ...mockTrialData.plan,
-                    trialStatus: TrialStatuses.NOT_STARTED,
-                  },
-                }
-              )
-
-              render(<ActionsBilling />, { wrapper })
-
-              const startTrialBtn = await screen.findByRole('button', {
-                name: /Start trial/,
-              })
-              expect(startTrialBtn).toBeInTheDocument()
-
-              await user.click(startTrialBtn)
-
-              await waitFor(() => expect(mockMutationVars).toBeCalled())
-              await waitFor(() =>
-                expect(mockMutationVars).toBeCalledWith({
-                  input: { orgUsername: 'critical-role' },
-                })
-              )
-            })
-          })
-        })
-
-        describe('user has a trial ongoing', () => {
-          it('renders upgrade link', async () => {
-            setup(mockTrialAccountDetails, sentryPlans, true, {
-              plan: {
-                ...mockTrialData.plan,
-                trialStatus: TrialStatuses.ONGOING,
-              },
-            })
-
-            render(<ActionsBilling />, { wrapper })
-
-            const upgradeLink = await screen.findByRole('link', {
-              name: /Upgrade to Sentry Pro Team plan/,
-            })
-            expect(upgradeLink).toBeInTheDocument()
-            expect(upgradeLink).toHaveAttribute(
-              'href',
-              '/plan/gh/critical-role/upgrade'
-            )
-          })
-        })
-      })
     })
 
     describe('user has a sentry plan', () => {
       it('renders manage plan', async () => {
-        setup(sentryMockedAccountDetails, sentryPlans)
+        setup({
+          accountDetails: sentryMockedAccountDetails,
+          plans: sentryPlans,
+        })
 
         render(<ActionsBilling />, { wrapper })
 
