@@ -20,6 +20,7 @@ const mockRepoOverview = {
 }
 
 const mockMainBranchSearch = {
+  __typename: 'Repository',
   branches: {
     edges: [
       {
@@ -48,6 +49,7 @@ const mockBranch = {
 }
 
 const mockBranches = (hasNextPage = false) => ({
+  __typename: 'Repository',
   branches: {
     edges: [
       {

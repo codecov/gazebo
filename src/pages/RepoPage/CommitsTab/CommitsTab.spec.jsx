@@ -34,6 +34,7 @@ afterAll(() => {
 const mockBranches = (hasNextPage = false) => ({
   owner: {
     repository: {
+      __typename: 'Repository',
       branches: {
         edges: [
           {
@@ -47,7 +48,7 @@ const mockBranches = (hasNextPage = false) => ({
         ],
         pageInfo: {
           hasNextPage,
-          endCursor: hasNextPage ? 'some cursor' : undefined,
+          endCursor: hasNextPage ? 'some cursor' : null,
         },
       },
     },
@@ -111,7 +112,7 @@ describe('CommitsTab', () => {
         if (hasBranches) {
           return res(
             ctx.status(200),
-            ctx.data({ owner: { repository: { branches: {} } } })
+            ctx.data({ owner: { repository: { branches: null } } })
           )
         }
 
