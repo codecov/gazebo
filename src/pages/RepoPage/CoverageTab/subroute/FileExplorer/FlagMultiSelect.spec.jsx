@@ -55,7 +55,7 @@ const mockSecondResponse = {
 
 const mockBackfillHasFlagsAndActive = {
   config: {
-    isTimeScaleEnabled: true,
+    isTimescaleEnabled: true,
   },
   owner: {
     repository: {
@@ -68,7 +68,7 @@ const mockBackfillHasFlagsAndActive = {
 
 const mockBackfillTimeScaleDisabled = {
   config: {
-    isTimeScaleEnabled: false,
+    isTimescaleEnabled: false,
   },
   owner: {
     repository: {
@@ -81,7 +81,7 @@ const mockBackfillTimeScaleDisabled = {
 
 const mockBackfillNoFlagsPresent = {
   config: {
-    isTimeScaleEnabled: true,
+    isTimescaleEnabled: true,
   },
   owner: {
     repository: {
@@ -94,7 +94,7 @@ const mockBackfillNoFlagsPresent = {
 
 const mockBackfillFlagMeasureNotActive = {
   config: {
-    isTimeScaleEnabled: true,
+    isTimescaleEnabled: true,
   },
   owner: {
     repository: {
@@ -155,7 +155,7 @@ describe('FlagMultiSelect', () => {
     const mockApiVars = jest.fn()
 
     useFlags.mockReturnValue({
-      coverageTabFlagMultiSelect: flagValue,
+      coverageTabFlagMutliSelect: flagValue,
     })
 
     useIntersection.mockReturnValue({ isIntersecting: isIntersecting })

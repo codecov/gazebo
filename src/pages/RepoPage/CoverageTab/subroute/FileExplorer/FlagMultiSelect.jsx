@@ -22,12 +22,12 @@ function FlagMultiSelect() {
 
   const { data: repoBackfilledData } = useRepoBackfilled()
 
-  const isTimeScaleEnabled = !!repoBackfilledData?.isTimeScaleEnabled
+  const isTimescaleEnabled = !!repoBackfilledData?.isTimescaleEnabled
   const flagsMeasurementsActive = !!repoBackfilledData?.flagsMeasurementsActive
   const noFlagsPresent = eq(repoBackfilledData?.flagsCount, 0)
 
-  const { coverageTabFlagMultiSelect } = useFlags({
-    coverageTabFlagMultiSelect: false,
+  const { coverageTabFlagMutliSelect } = useFlags({
+    coverageTabFlagMutliSelect: false,
   })
 
   const {
@@ -40,12 +40,12 @@ function FlagMultiSelect() {
     options: {
       suspense: false,
       enabled:
-        !!coverageTabFlagMultiSelect ||
-        (flagsMeasurementsActive && !noFlagsPresent && isTimeScaleEnabled),
+        !!coverageTabFlagMutliSelect ||
+        (flagsMeasurementsActive && !noFlagsPresent && isTimescaleEnabled),
     },
   })
 
-  if (!coverageTabFlagMultiSelect || noFlagsPresent) {
+  if (!coverageTabFlagMutliSelect || noFlagsPresent) {
     return null
   }
 
@@ -61,7 +61,7 @@ function FlagMultiSelect() {
   return (
     <div className="w-1/6">
       <MultiSelect
-        disabled={!flagsMeasurementsActive || !isTimeScaleEnabled}
+        disabled={!flagsMeasurementsActive || !isTimescaleEnabled}
         dataMarketing="coverage-tab-flag-multi-select"
         hook="coverage-tab-flag-multi-select"
         ariaName="Select flags to show"
