@@ -158,5 +158,6 @@ export const useBranchCoverageMeasurements = ({
           measurements: data?.owner?.repository?.measurements ?? [],
         }
       }),
+    retry: 3,
     ...opts,
   })
