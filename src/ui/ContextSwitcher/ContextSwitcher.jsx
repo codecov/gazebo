@@ -60,7 +60,12 @@ ModalSection.propTypes = {
   ModalControl: PropTypes.func,
 }
 
-function ContextItem({ context, currentContext, defaultOrgUsername }) {
+function ContextItem({
+  context,
+  currentContext,
+  defaultOrgUsername,
+  setToggle,
+}) {
   const { owner, pageName } = context
   const orgUsername = owner?.username
   const isActiveContext =
@@ -77,6 +82,7 @@ function ContextItem({ context, currentContext, defaultOrgUsername }) {
         to={{ pageName: pageName, options: { owner: orgUsername } }}
         variant="listbox"
         onClick={() => {
+          setToggle(false)
           if (defaultOrgUsername === orgUsername) return
 
           mutate({ username: orgUsername })
@@ -99,6 +105,7 @@ ContextItem.propTypes = {
     owner: PropTypes.shape({ username: PropTypes.string }),
   }),
   defaultOrgUsername: PropTypes.string,
+  setToggle: PropTypes.func.isRequired,
 }
 
 function useCloseOnLooseFocus({ setToggle }) {
@@ -213,6 +220,7 @@ function ContextSwitcher({
             context={context}
             key={context?.owner?.username}
             currentContext={currentContext}
+            setToggle={setToggle}
           />
         ))}
         <Loader isLoading={isLoading} />
