@@ -156,7 +156,8 @@ const sortingParameter = Object.freeze({
 const getQueryFilters = ({ params, sortBy }) => {
   return {
     ...(params?.search && { searchValue: params.search }),
-    ...(params?.flags && { flags: params.flags }),
+    // doing a ternary here because it's an array and arrays + && do not go well
+    ...(params?.flags ? { flags: params.flags } : {}),
     ...(params?.displayType && {
       displayType: displayTypeParameter[params?.displayType],
     }),
