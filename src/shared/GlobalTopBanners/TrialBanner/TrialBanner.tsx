@@ -6,7 +6,6 @@ import config from 'config'
 
 import { TrialStatuses, usePlanData } from 'services/account'
 import { useOwner } from 'services/user'
-import { useFlags } from 'shared/featureFlags'
 import { isFreePlan, isTrialPlan } from 'shared/utils/billing'
 
 import ExpiredBanner from './ExpiredBanner'
@@ -33,11 +32,7 @@ interface UrlParams {
 const TrialBanner: React.FC = () => {
   const { provider, owner } = useParams<UrlParams>()
 
-  const { codecovTrialMvp } = useFlags({
-    codecovTrialMvp: false,
-  })
-
-  const enableQuery = !!owner || codecovTrialMvp
+  const enableQuery = !!owner
 
   const { data: planData } = usePlanData({
     provider,
@@ -60,8 +55,7 @@ const TrialBanner: React.FC = () => {
   if (
     isUndefined(owner) ||
     !ownerData?.isCurrentUserPartOfOrg ||
-    config.IS_SELF_HOSTED ||
-    !codecovTrialMvp
+    config.IS_SELF_HOSTED
   ) {
     return null
   }
