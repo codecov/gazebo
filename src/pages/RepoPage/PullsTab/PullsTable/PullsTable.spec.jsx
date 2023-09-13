@@ -13,12 +13,18 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 const wrapper = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov/Test/pulls']}>
@@ -41,14 +47,15 @@ describe('Pulls Table', () => {
           node: {
             author: { username: 'cool-user', avatarUrl: 'random' },
             compareWithBase: {
+              __typename: 'Comparison',
               changeCoverage: 14,
-              patchCoverage: {
-                change: 32,
+              patchTotals: {
+                percentCovered: 32,
               },
             },
             head: {
               totals: {
-                coverage: 45,
+                percentCovered: 45,
               },
             },
             pullId: 746,
@@ -76,6 +83,7 @@ describe('Pulls Table', () => {
     const defaultPull = {
       owner: {
         repository: {
+          __typename: 'Repository',
           pulls: {
             ...edges,
             pageInfo: {
@@ -200,11 +208,13 @@ describe('Pulls Table', () => {
       setup({
         overrideDetails: {
           compareWithBase: {
+            __typename: 'Comparison',
+            patchTotals: null,
             changeCoverage: null,
           },
           head: {
             totals: {
-              coverage: null,
+              percentCovered: null,
             },
           },
         },
