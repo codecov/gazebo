@@ -6,6 +6,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { usePrefetchBranchFileEntry } from './usePrefetchBranchFileEntry'
 
+const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -19,6 +20,7 @@ const queryClient = new QueryClient({
     error: () => {},
   },
 })
+
 const wrapper = ({ children }) => (
   <MemoryRouter
     initialEntries={['/gh/codecov/test-repo/tree/main/src/file.js']}
@@ -29,13 +31,18 @@ const wrapper = ({ children }) => (
   </MemoryRouter>
 )
 
-const server = setupServer()
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 beforeEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 const mockData = {
   owner: {
@@ -89,11 +96,9 @@ describe('usePrefetchBranchFileEntry', () => {
     )
   }
 
-  beforeEach(async () => {
-    setup()
-  })
-
   it('returns runPrefetch function', () => {
+    setup()
+
     const { result } = renderHook(
       () => usePrefetchBranchFileEntry({ branch: 'main', path: 'src/file.js' }),
       { wrapper }
@@ -104,6 +109,8 @@ describe('usePrefetchBranchFileEntry', () => {
   })
 
   it('queries the api', async () => {
+    setup()
+
     const { result } = renderHook(
       () => usePrefetchBranchFileEntry({ branch: 'main', path: 'src/file.js' }),
       { wrapper }
