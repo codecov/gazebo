@@ -53,8 +53,6 @@ const useUserAccessGate = () => {
     enabled: !!provider && !config.IS_SELF_HOSTED,
   })
 
-  useOnboardingRedirect({ username: userData?.user?.username })
-
   const {
     data: internalUser,
     isLoading: internalUserIsLoading,
@@ -65,9 +63,11 @@ const useUserAccessGate = () => {
     enabled: !config.IS_SELF_HOSTED,
   })
 
-  const foundUser = !userData && userIsSuccess
-  const foundInternalUser = !internalUser && internalUserIsSuccess
-  const isGuest = foundUser || foundInternalUser
+  useOnboardingRedirect({ username: userData?.user?.username })
+
+  const missingUser = !userData && userIsSuccess
+  const missingInternalUser = !internalUser && internalUserIsSuccess
+  const isGuest = missingUser || missingInternalUser
 
   let showAgreeToTerms = false
   let showDefaultOrgSelector = false
