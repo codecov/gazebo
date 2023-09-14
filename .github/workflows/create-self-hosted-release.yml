@@ -1,10 +1,10 @@
-name: Create Release PR
+name: Create Self Hosted Release PR
 
 on:
   workflow_dispatch:
     inputs:
       versionName:
-        description: 'Name of version  (ie v5.0.0)'
+        description: 'Name of version  (ie 23.9.5)'
         required: true
 
 jobs:
@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Initialize mandatory git config
         run: |
           git config user.name "GitHub Actions"
@@ -23,10 +23,11 @@ jobs:
       - name: Update version file
         id: make-commit
         run: |
+          echo ${{ github.event.inputs.versionName }} > VERSION
           echo -n $(tr -d '\n' < VERSION) > VERSION
           git add VERSION
           git commit --allow-empty --message "Prepare release ${{ github.event.inputs.versionName }}"
-          echo "::set-output name=commit::$(git rev-parse HEAD)"
+          echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       - name: Push release branch
         run: git push origin release/${{ github.event.inputs.versionName }}
       - name: Create pull request into main
