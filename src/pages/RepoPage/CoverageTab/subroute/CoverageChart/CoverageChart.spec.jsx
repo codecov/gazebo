@@ -50,6 +50,7 @@ const overviewMock = {
 const branchesMock = {
   owner: {
     repository: {
+      __typename: 'Repository',
       branches: {
         edges: [
           {

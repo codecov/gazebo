@@ -1,0 +1,70 @@
+.tableui {
+  @apply @container/table text-ds-gray-octonary overflow-auto;
+}
+
+.tableui table {
+  @apply min-w-full divide-y divide-ds-gray-tertiary border-t border-ds-gray-tertiary;
+}
+
+.tableui thead {
+  @apply whitespace-nowrap;
+}
+
+.tableui caption {
+  @apply sr-only caption-top;
+}
+
+.tableui tr {
+  @apply text-left border-b border-gray-200 last:border-b-0;
+}
+
+.tableui th {
+  @apply font-sans text-sm font-semibold text-ds-gray-quinary py-2 px-3.5;
+}
+
+.tableui td {
+  @apply py-3 @sm/table:px-4;
+}
+
+/* <div className="tableui" data-highlight-row="onHover"> */
+/* <tr data-highlight-row="onHover"> */
+.tableui[data-highlight-row='onHover'] tr,
+.tableui tr[data-highlight-row='onHover'] {
+  @apply hover:bg-ds-gray-primary;
+}
+
+/* <div  className="tableui" data-type="numeric"> */
+/* <td data-type="numeric"> */
+.tableui[data-type='numeric'] td,
+.tableui td[data-type='numeric'] {
+  @apply font-mono text-right;
+}
+
+/* <div className="tableui" data-type="numeric"> */
+/* <th data-type="numeric"> */
+.tableui[data-type='numeric'] th,
+.tableui th[data-type='numeric'] {
+  @apply text-right;
+}
+
+/* <th data-sortable="true"> */
+.tableui th[data-sortable='true'] {
+  @apply cursor-pointer select-none;
+}
+
+.tableui [data-sort-direction] {
+  @apply transform opacity-0 transition-opacity ease-in duration-100;
+}
+
+.tableui [data-sort-direction='asc'] {
+  @apply opacity-100;
+}
+
+.tableui [data-sort-direction='desc'] {
+  @apply opacity-100 rotate-180;
+}
+
+/* <element data-expanded="false"> */
+.tableui [data-expanded='false'] {
+  @apply hidden;
+}

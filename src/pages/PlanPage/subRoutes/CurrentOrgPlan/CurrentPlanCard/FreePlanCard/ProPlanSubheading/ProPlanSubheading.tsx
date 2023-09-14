@@ -1,7 +1,6 @@
 import { useParams } from 'react-router-dom'
 
 import { TrialStatuses, usePlanData } from 'services/account'
-import { useFlags } from 'shared/featureFlags'
 import { isFreePlan, isTrialPlan } from 'shared/utils/billing'
 import A from 'ui/A'
 
@@ -12,17 +11,11 @@ interface Params {
 
 function ProPlanSubheading() {
   const { provider, owner } = useParams<Params>()
-  const { codecovTrialMvp } = useFlags({
-    codecovTrialMvp: false,
-  })
 
   const { data: planData } = usePlanData({
     provider,
     owner,
-    opts: { enabled: codecovTrialMvp },
   })
-
-  if (!codecovTrialMvp) return null
 
   // user can start a trial
   // - user on a free plan

@@ -5,7 +5,6 @@ import config from 'config'
 
 import { TrialStatuses, usePlanData } from 'services/account'
 import { useOwner } from 'services/user'
-import { useFlags } from 'shared/featureFlags'
 import { isFreePlan } from 'shared/utils/billing'
 import A from 'ui/A/A'
 
@@ -38,20 +37,16 @@ const determineDateDiff = ({
 const TrialReminder: React.FC = () => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
 
-  const { codecovTrialMvp } = useFlags({
-    codecovTrialMvp: false,
-  })
-
   const { data: ownerData } = useOwner({
     username: owner,
-    opts: { enabled: codecovTrialMvp },
+    opts: { enabled: !config.IS_SELF_HOSTED },
   })
 
   const { data: planData } = usePlanData({
     provider,
     owner,
     opts: {
-      enabled: codecovTrialMvp,
+      enabled: !config.IS_SELF_HOSTED,
     },
   })
 
@@ -69,8 +64,7 @@ const TrialReminder: React.FC = () => {
     (!isFreePlan(planValue) && !trialOngoing) ||
     cannotTrial ||
     !ownerData?.isCurrentUserPartOfOrg ||
-    config.IS_SELF_HOSTED ||
-    !codecovTrialMvp
+    config.IS_SELF_HOSTED
   ) {
     return null
   }

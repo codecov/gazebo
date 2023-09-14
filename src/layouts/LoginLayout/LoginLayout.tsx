@@ -1,6 +1,5 @@
 import { Suspense } from 'react'
 
-// @ts-expect-error
 import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
 import Footer from 'layouts/Footer'
 import A from 'ui/A'

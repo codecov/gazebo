@@ -18,6 +18,7 @@ const queryClient = new QueryClient({
 const server = setupServer()
 
 const mockMainBranchSearch = {
+  __typename: 'Repository',
   branches: {
     edges: [
       {
@@ -37,6 +38,7 @@ const mockMainBranchSearch = {
 }
 
 const mockBranches = {
+  __typename: 'Repository',
   branches: {
     edges: [
       {
