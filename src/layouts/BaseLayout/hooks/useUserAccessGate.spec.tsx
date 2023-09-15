@@ -186,7 +186,6 @@ type SetupArgs = {
   termsOfServicePage: boolean
   defaultOrgSelectorPage: boolean
   sentryLoginProvider: boolean
-  userAuthenticated: boolean
 }
 
 describe('useUserAccessGate', () => {
@@ -197,14 +196,12 @@ describe('useUserAccessGate', () => {
       termsOfServicePage = false,
       defaultOrgSelectorPage = false,
       sentryLoginProvider = false,
-      userAuthenticated = true,
     }: SetupArgs = {
       user: loggedInUser,
       internalUser: internalUserHasSyncedProviders,
       termsOfServicePage: false,
       defaultOrgSelectorPage: false,
       sentryLoginProvider: false,
-      userAuthenticated: true,
     }
   ) {
     const mockedUseFlags = jest.mocked(useFlags)
@@ -220,14 +217,7 @@ describe('useUserAccessGate', () => {
       rest.get('/internal/user', (req, res, ctx) => {
         return res(ctx.status(200), ctx.json(internalUser))
       }),
-      rest.get('/internal/authenticated', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            authenticated: userAuthenticated,
-          })
-        )
-      }),
+
       graphql.query('CurrentUser', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(user))
       }),
@@ -266,7 +256,7 @@ describe('useUserAccessGate', () => {
         isSelfHosted: false,
         defaultOrgSelectorPage: false,
         sentryLoginProvider: false,
-        userAuthenticated: true,
+
         expected: {
           beforeSettled: {
             isFullExperience: true,
@@ -296,7 +286,7 @@ describe('useUserAccessGate', () => {
         isSelfHosted: false,
         defaultOrgSelectorPage: false,
         sentryLoginProvider: false,
-        userAuthenticated: true,
+
         expected: {
           beforeSettled: {
             isFullExperience: true,
@@ -326,7 +316,7 @@ describe('useUserAccessGate', () => {
         isSelfHosted: false,
         defaultOrgSelectorPage: false,
         sentryLoginProvider: false,
-        userAuthenticated: true,
+
         expected: {
           beforeSettled: {
             isFullExperience: true,
@@ -356,7 +346,7 @@ describe('useUserAccessGate', () => {
         isSelfHosted: false,
         defaultOrgSelectorPage: false,
         sentryLoginProvider: false,
-        userAuthenticated: true,
+
         expected: {
           beforeSettled: {
             isFullExperience: true,
@@ -386,7 +376,7 @@ describe('useUserAccessGate', () => {
         isSelfHosted: false,
         defaultOrgSelectorPage: false,
         sentryLoginProvider: false,
-        userAuthenticated: true,
+
         expected: {
           beforeSettled: {
             isFullExperience: true,
@@ -416,7 +406,7 @@ describe('useUserAccessGate', () => {
         isSelfHosted: false,
         defaultOrgSelectorPage: false,
         sentryLoginProvider: false,
-        userAuthenticated: true,
+
         expected: {
           beforeSettled: {
             isFullExperience: true,
@@ -446,7 +436,7 @@ describe('useUserAccessGate', () => {
         isSelfHosted: false,
         defaultOrgSelectorPage: false,
         sentryLoginProvider: false,
-        userAuthenticated: true,
+
         expected: {
           beforeSettled: {
             isFullExperience: true,
@@ -476,7 +466,7 @@ describe('useUserAccessGate', () => {
         isSelfHosted: false,
         defaultOrgSelectorPage: true,
         sentryLoginProvider: false,
-        userAuthenticated: true,
+
         expected: {
           beforeSettled: {
             isFullExperience: false,
@@ -506,7 +496,7 @@ describe('useUserAccessGate', () => {
         isSelfHosted: false,
         defaultOrgSelectorPage: true,
         sentryLoginProvider: false,
-        userAuthenticated: true,
+
         expected: {
           beforeSettled: {
             isFullExperience: false,
@@ -536,11 +526,11 @@ describe('useUserAccessGate', () => {
         isSelfHosted: true,
         defaultOrgSelectorPage: false,
         sentryLoginProvider: false,
-        userAuthenticated: true,
+
         expected: {
           beforeSettled: {
             isFullExperience: true,
-            isLoading: true,
+            isLoading: false,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
             redirectToSyncPage: false,
@@ -566,11 +556,11 @@ describe('useUserAccessGate', () => {
         isSelfHosted: true,
         defaultOrgSelectorPage: false,
         sentryLoginProvider: false,
-        userAuthenticated: true,
+
         expected: {
           beforeSettled: {
             isFullExperience: true,
-            isLoading: true,
+            isLoading: false,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
             redirectToSyncPage: false,
@@ -596,11 +586,11 @@ describe('useUserAccessGate', () => {
         isSelfHosted: true,
         defaultOrgSelectorPage: false,
         sentryLoginProvider: false,
-        userAuthenticated: true,
+
         expected: {
           beforeSettled: {
             isFullExperience: true,
-            isLoading: true,
+            isLoading: false,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
             redirectToSyncPage: false,
@@ -626,11 +616,11 @@ describe('useUserAccessGate', () => {
         isSelfHosted: true,
         defaultOrgSelectorPage: false,
         sentryLoginProvider: false,
-        userAuthenticated: true,
+
         expected: {
           beforeSettled: {
             isFullExperience: true,
-            isLoading: true,
+            isLoading: false,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
             redirectToSyncPage: false,
@@ -656,11 +646,11 @@ describe('useUserAccessGate', () => {
         isSelfHosted: true,
         defaultOrgSelectorPage: false,
         sentryLoginProvider: false,
-        userAuthenticated: true,
+
         expected: {
           beforeSettled: {
             isFullExperience: true,
-            isLoading: true,
+            isLoading: false,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
             redirectToSyncPage: false,
@@ -686,11 +676,11 @@ describe('useUserAccessGate', () => {
         isSelfHosted: true,
         defaultOrgSelectorPage: false,
         sentryLoginProvider: false,
-        userAuthenticated: true,
+
         expected: {
           beforeSettled: {
             isFullExperience: true,
-            isLoading: true,
+            isLoading: false,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
             redirectToSyncPage: false,
@@ -716,11 +706,11 @@ describe('useUserAccessGate', () => {
         isSelfHosted: true,
         defaultOrgSelectorPage: false,
         sentryLoginProvider: false,
-        userAuthenticated: true,
+
         expected: {
           beforeSettled: {
             isFullExperience: true,
-            isLoading: true,
+            isLoading: false,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
             redirectToSyncPage: false,
@@ -746,11 +736,11 @@ describe('useUserAccessGate', () => {
         isSelfHosted: true,
         defaultOrgSelectorPage: false,
         sentryLoginProvider: false,
-        userAuthenticated: true,
+
         expected: {
           beforeSettled: {
             isFullExperience: true,
-            isLoading: true,
+            isLoading: false,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
             redirectToSyncPage: false,
@@ -776,7 +766,7 @@ describe('useUserAccessGate', () => {
         isSelfHosted: false,
         defaultOrgSelectorPage: false,
         sentryLoginProvider: true,
-        userAuthenticated: true,
+
         expected: {
           beforeSettled: {
             isFullExperience: true,
@@ -806,7 +796,7 @@ describe('useUserAccessGate', () => {
         isSelfHosted: false,
         defaultOrgSelectorPage: false,
         sentryLoginProvider: true,
-        userAuthenticated: true,
+
         expected: {
           beforeSettled: {
             isFullExperience: true,
@@ -825,36 +815,6 @@ describe('useUserAccessGate', () => {
         },
       },
     ],
-    [
-      'cloud',
-      'User unauthenticated',
-      'sets isFullExperience true',
-      {
-        user: loggedInUser,
-        internalUser: internalUserNoSyncedProviders,
-        termsOfServicePage: false,
-        isSelfHosted: false,
-        defaultOrgSelectorPage: false,
-        sentryLoginProvider: true,
-        userAuthenticated: false,
-        expected: {
-          beforeSettled: {
-            isFullExperience: true,
-            isLoading: true,
-            showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
-            redirectToSyncPage: false,
-          },
-          afterSettled: {
-            isFullExperience: true,
-            isLoading: false,
-            showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
-            redirectToSyncPage: false,
-          },
-        },
-      },
-    ],
   ])(
     '%s:',
     (
@@ -869,7 +829,6 @@ describe('useUserAccessGate', () => {
         expected,
         defaultOrgSelectorPage,
         sentryLoginProvider,
-        userAuthenticated,
       }
     ) => {
       describe(`${termsFlagStatus}`, () => {
@@ -882,7 +841,6 @@ describe('useUserAccessGate', () => {
               termsOfServicePage,
               defaultOrgSelectorPage,
               sentryLoginProvider,
-              userAuthenticated,
             })
           })
           it(`return values are expect while useUser resolves`, async () => {
@@ -914,7 +872,6 @@ describe('useUserAccessGate', () => {
         termsOfServicePage: true,
         defaultOrgSelectorPage: true,
         sentryLoginProvider: true,
-        userAuthenticated: true,
       })
 
       const { result } = renderHook(() => useUserAccessGate(), {
@@ -938,7 +895,6 @@ describe('useUserAccessGate', () => {
         termsOfServicePage: true,
         defaultOrgSelectorPage: true,
         sentryLoginProvider: true,
-        userAuthenticated: true,
       })
 
       const { result } = renderHook(() => useUserAccessGate(), {

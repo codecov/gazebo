@@ -6,11 +6,7 @@ import config from 'config'
 
 import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
 import { useLocationParams } from 'services/navigation'
-import {
-  useInternalAuthenticated,
-  useInternalUser,
-  useUser,
-} from 'services/user'
+import { useInternalUser, useUser } from 'services/user'
 import { useFlags } from 'shared/featureFlags'
 
 const SetUpActions = Object.freeze({
@@ -47,39 +43,32 @@ const useUserAccessGate = () => {
     })
 
   const {
-    data: internalAuthenticatedData,
-    isLoading: internalAuthenticatedIsLoading,
-    isFetching: internalAuthenticatedIsFetching,
-    isSuccess: internalAuthenticatedIsSuccess,
-  } = useInternalAuthenticated({
-    suspense: false,
-  })
-
-  const userAuthenticated =
-    !!internalAuthenticatedData?.authenticated && internalAuthenticatedIsSuccess
-
-  const {
     data: userData,
     isLoading: userIsLoading,
     isFetching: userIsFetching,
+    isSuccess: userIsSuccess,
   } = useUser({
     suspense: false,
-    enabled: userAuthenticated && !!provider && !config.IS_SELF_HOSTED,
+    enabled: !!provider && !config.IS_SELF_HOSTED,
   })
 
   const {
     data: internalUser,
     isLoading: internalUserIsLoading,
     isFetching: internalUserIsFetching,
+    isSuccess: internalUserIsSuccess,
   } = useInternalUser({
+    enabled: !config.IS_SELF_HOSTED,
+    retry: 0,
+    retryOnMount: false,
     suspense: false,
-    staleTme: 5 * 60 * 1000,
-    enabled: userAuthenticated && !config.IS_SELF_HOSTED,
   })
 
   useOnboardingRedirect({ username: userData?.user?.username })
 
-  const isGuest = !userAuthenticated && internalAuthenticatedIsSuccess
+  const missingUser = !userData && userIsSuccess
+  const missingInternalUser = !internalUser && internalUserIsSuccess
+  const isGuest = missingUser || missingInternalUser
 
   let showAgreeToTerms = false
   let showDefaultOrgSelector = false
@@ -113,10 +102,7 @@ const useUserAccessGate = () => {
   // is loading rather then both ... since we won't be able to fetch both.
   let isLoading = internalUserIsLoading && internalUserIsFetching
   if (!isUndefined(provider)) {
-    isLoading =
-      (userIsLoading && userIsFetching) ||
-      (internalUserIsLoading && internalUserIsFetching) ||
-      (internalAuthenticatedIsLoading && internalAuthenticatedIsFetching)
+    isLoading = (userIsLoading && userIsFetching) || isLoading
   }
 
   // Not fully tested logic yet, waiting on API to be available.

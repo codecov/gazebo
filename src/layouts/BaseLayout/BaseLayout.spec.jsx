@@ -131,13 +131,11 @@ describe('BaseLayout', () => {
       termsOfServicePage = false,
       defaultOrgSelectorPage = false,
       sentryLoginProvider = false,
-      authenticatedUser = true,
     } = {
       termsOfServicePage: false,
       currentUser: loggedInUser,
       defaultOrgSelectorPage: false,
       sentryLoginProvider: false,
-      authenticatedUser: true,
     }
   ) {
     useImage.mockReturnValue({
@@ -155,14 +153,6 @@ describe('BaseLayout', () => {
     server.use(
       rest.get('/internal/user', (req, res, ctx) => {
         return res(ctx.status(200), ctx.json(internalUser))
-      }),
-      rest.get('/internal/authenticated', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            authenticated: authenticatedUser,
-          })
-        )
       }),
       graphql.query('CurrentUser', (_, res, ctx) =>
         res(ctx.status(200), ctx.data(currentUser))
@@ -365,22 +355,6 @@ describe('BaseLayout', () => {
       expect(await screen.findByText(/InstallationHelpBanner/)).toBeTruthy()
       const selectInput = screen.getByText(/InstallationHelpBanner/)
       expect(selectInput).toBeInTheDocument()
-    })
-  })
-
-  describe('user is unAuthenticated', () => {
-    it('renders the page', async () => {
-      setup({
-        internalUser: internalUserHasSyncedProviders,
-        userAuthenticated: true,
-      })
-
-      render(<BaseLayout>hello</BaseLayout>, {
-        wrapper: wrapper(),
-      })
-
-      const text = await screen.findByText('hello')
-      expect(text).toBeInTheDocument()
     })
   })
 })
