@@ -25,7 +25,7 @@ const determineDateDiff = ({
 }
 
 interface UrlParams {
-  provider: string
+  provider?: string
   owner?: string
 }
 
@@ -34,8 +34,13 @@ const TrialBanner: React.FC = () => {
 
   const enableQuery = !!owner
 
+  let providerString = ''
+  if (provider) {
+    providerString = provider
+  }
+
   const { data: planData } = usePlanData({
-    provider,
+    provider: providerString,
     owner: owner || '',
     opts: { enabled: enableQuery },
   })
@@ -53,6 +58,7 @@ const TrialBanner: React.FC = () => {
 
   // hide on "global" pages, trial flag, and if user does not belong to the org
   if (
+    isUndefined(provider) ||
     isUndefined(owner) ||
     !ownerData?.isCurrentUserPartOfOrg ||
     config.IS_SELF_HOSTED
