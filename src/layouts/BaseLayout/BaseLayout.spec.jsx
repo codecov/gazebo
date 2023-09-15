@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -62,24 +62,6 @@ const guestUser = {
   me: null,
 }
 
-const internalUserNoSyncedProviders = {
-  email: userSignedInIdentity.email,
-  name: userSignedInIdentity.name,
-  externalId: '123',
-  owners: [],
-}
-
-const internalUserHasSyncedProviders = {
-  email: userSignedInIdentity.email,
-  name: userSignedInIdentity.name,
-  externalId: '123',
-  owners: [
-    {
-      service: 'github',
-    },
-  ],
-}
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -89,7 +71,6 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-let testLocation
 const wrapper =
   (initialEntries = ['/bb/batman/batcave']) =>
   ({ children }) =>
@@ -97,13 +78,6 @@ const wrapper =
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={initialEntries}>
           <Route path="/:provider/:owner/:repo">{children}</Route>
-          <Route
-            path="*"
-            render={({ location }) => {
-              testLocation = location
-              return null
-            }}
-          />
         </MemoryRouter>
       </QueryClientProvider>
     )
@@ -111,31 +85,24 @@ const wrapper =
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })
 })
-
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-
-afterAll(() => {
-  server.close()
-})
+afterAll(() => server.close())
 
 describe('BaseLayout', () => {
   afterEach(() => jest.resetAllMocks())
   function setup(
     {
-      currentUser = loggedInUser,
-      internalUser = internalUserHasSyncedProviders,
-      isImpersonating = false,
       termsOfServicePage = false,
+      currentUser = loggedInUser,
       defaultOrgSelectorPage = false,
-      sentryLoginProvider = false,
+      isImpersonating = false,
     } = {
       termsOfServicePage: false,
       currentUser: loggedInUser,
       defaultOrgSelectorPage: false,
-      sentryLoginProvider: false,
     }
   ) {
     useImage.mockReturnValue({
@@ -146,14 +113,10 @@ describe('BaseLayout', () => {
     useFlags.mockReturnValue({
       termsOfServicePage,
       defaultOrgSelectorPage,
-      sentryLoginProvider,
     })
     useImpersonate.mockReturnValue({ isImpersonating })
 
     server.use(
-      rest.get('/internal/user', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json(internalUser))
-      }),
       graphql.query('CurrentUser', (_, res, ctx) =>
         res(ctx.status(200), ctx.data(currentUser))
       ),
@@ -283,7 +246,7 @@ describe('BaseLayout', () => {
     })
   })
 
-  describe('selector flag is on and set up action param is install', () => {
+  describe('feature flag is on and set up action param is install', () => {
     it('renders the select org page with banner', async () => {
       setup({ defaultOrgSelectorPage: true, currentUser: loggedInUser })
 
@@ -308,38 +271,6 @@ describe('BaseLayout', () => {
 
       const selectInput = screen.queryByText(/DefaultOrgSelector/)
       expect(selectInput).not.toBeInTheDocument()
-    })
-  })
-
-  describe('sentryLoginProvider flag is on', () => {
-    describe('user has not synced with providers', () => {
-      it('redirects the user', async () => {
-        setup({
-          internalUser: internalUserNoSyncedProviders,
-          sentryLoginProvider: true,
-        })
-
-        render(<BaseLayout>hello</BaseLayout>, {
-          wrapper: wrapper(),
-        })
-
-        await waitFor(() => expect(testLocation.pathname).toBe('/sync'))
-      })
-    })
-    describe('user has synced providers', () => {
-      it('renders the page', async () => {
-        setup({
-          internalUser: internalUserHasSyncedProviders,
-          sentryLoginProvider: true,
-        })
-
-        render(<BaseLayout>hello</BaseLayout>, {
-          wrapper: wrapper(),
-        })
-
-        const text = await screen.findByText('hello')
-        expect(text).toBeInTheDocument()
-      })
     })
   })
 
