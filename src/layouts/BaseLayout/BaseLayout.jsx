@@ -1,5 +1,4 @@
 import { lazy, Suspense } from 'react'
-import { Redirect } from 'react-router-dom'
 
 import Footer from 'layouts/Footer'
 import Header from 'layouts/Header'
@@ -26,34 +25,24 @@ const FullPageLoader = () => (
 )
 
 const OnboardingOrChildren = ({ children }) => {
-  const {
-    isFullExperience,
-    showAgreeToTerms,
-    showDefaultOrgSelector,
-    redirectToSyncPage,
-  } = useUserAccessGate()
+  const { isFullExperience, showAgreeToTerms, showDefaultOrgSelector } =
+    useUserAccessGate()
 
   const { isImpersonating } = useImpersonate()
 
-  if (showAgreeToTerms && !isFullExperience) {
+  if (showAgreeToTerms && !isFullExperience)
     return (
       <Suspense fallback={null}>
         <TermsOfService />
       </Suspense>
     )
-  }
 
-  if (redirectToSyncPage && !isFullExperience) {
-    return <Redirect to="/sync" />
-  }
-
-  if (showDefaultOrgSelector && !isFullExperience && !isImpersonating) {
+  if (showDefaultOrgSelector && !isFullExperience && !isImpersonating)
     return (
       <Suspense fallback={null}>
         <DefaultOrgSelector />
       </Suspense>
     )
-  }
 
   return children
 }
