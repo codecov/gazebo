@@ -1,4 +1,3 @@
-export * from './useInternalAuthenticated'
 export * from './useInternalUser'
 export * from './useIsCurrentUserAnAdmin'
 export * from './useMyContexts'
