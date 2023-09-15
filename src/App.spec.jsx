@@ -97,6 +97,9 @@ describe('App', () => {
       rest.get('/internal/user', (_, res, ctx) => {
         return res(ctx.status(200), ctx.json({}))
       }),
+      rest.get('/internal/authenticated', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.body({ authenticated: true }))
+      }),
       graphql.query('DetailOwner', (_, res, ctx) =>
         res(ctx.status(200), ctx.data({ owner: 'codecov' }))
       ),
