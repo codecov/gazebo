@@ -6,8 +6,11 @@ import config from 'config'
 
 import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
 import { useLocationParams } from 'services/navigation'
-import { useUser } from 'services/user'
-import { useInternalUser } from 'services/user/useInternalUser'
+import {
+  useInternalAuthenticated,
+  useInternalUser,
+  useUser,
+} from 'services/user'
 import { useFlags } from 'shared/featureFlags'
 
 const SetUpActions = Object.freeze({
@@ -44,30 +47,39 @@ const useUserAccessGate = () => {
     })
 
   const {
+    data: internalAuthenticatedData,
+    isLoading: internalAuthenticatedIsLoading,
+    isFetching: internalAuthenticatedIsFetching,
+    isSuccess: internalAuthenticatedIsSuccess,
+  } = useInternalAuthenticated({
+    suspense: false,
+  })
+
+  const userAuthenticated =
+    !!internalAuthenticatedData?.authenticated && internalAuthenticatedIsSuccess
+
+  const {
     data: userData,
     isLoading: userIsLoading,
-    isSuccess: userIsSuccess,
     isFetching: userIsFetching,
   } = useUser({
     suspense: false,
-    enabled: !!provider && !config.IS_SELF_HOSTED,
+    enabled: userAuthenticated && !!provider && !config.IS_SELF_HOSTED,
   })
 
   const {
     data: internalUser,
     isLoading: internalUserIsLoading,
-    isSuccess: internalUserIsSuccess,
     isFetching: internalUserIsFetching,
   } = useInternalUser({
     suspense: false,
-    enabled: !config.IS_SELF_HOSTED,
+    staleTme: 5 * 60 * 1000,
+    enabled: userAuthenticated && !config.IS_SELF_HOSTED,
   })
 
   useOnboardingRedirect({ username: userData?.user?.username })
 
-  const missingUser = !userData && userIsSuccess
-  const missingInternalUser = !internalUser && internalUserIsSuccess
-  const isGuest = missingUser || missingInternalUser
+  const isGuest = !userAuthenticated && internalAuthenticatedIsSuccess
 
   let showAgreeToTerms = false
   let showDefaultOrgSelector = false
@@ -103,7 +115,8 @@ const useUserAccessGate = () => {
   if (!isUndefined(provider)) {
     isLoading =
       (userIsLoading && userIsFetching) ||
-      (internalUserIsLoading && internalUserIsFetching)
+      (internalUserIsLoading && internalUserIsFetching) ||
+      (internalAuthenticatedIsLoading && internalAuthenticatedIsFetching)
   }
 
   // Not fully tested logic yet, waiting on API to be available.
