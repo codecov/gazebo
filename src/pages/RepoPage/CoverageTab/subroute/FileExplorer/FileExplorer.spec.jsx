@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -13,7 +14,7 @@ jest.mock(
   () => () => 'Display type button'
 )
 jest.mock('shared/ContentsTable/FileBreadcrumb', () => () => 'File breadcrumb')
-jest.mock('ui/SearchField', () => () => 'Search field')
+jest.mock('./FlagMultiSelect', () => () => 'FlagMultiSelect')
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -88,6 +89,7 @@ const mockOverview = {
   owner: { repository: { private: false, defaultBranch: 'main' } },
 }
 
+let testLocation
 const wrapper =
   (initialEntries = ['/gh/codecov/cool-repo/tree/main/a/b/c']) =>
   ({ children }) => {
@@ -97,6 +99,13 @@ const wrapper =
           <Route path="/:provider/:owner/:repo/tree/:branch/:path+">
             {children}
           </Route>
+          <Route
+            path="*"
+            render={({ location }) => {
+              testLocation = location
+              return null
+            }}
+          />
         </MemoryRouter>
       </QueryClientProvider>
     )
@@ -115,6 +124,8 @@ afterAll(() => {
 
 describe('FileExplorer', () => {
   function setup() {
+    const user = userEvent.setup()
+
     server.use(
       graphql.query('BranchContents', (req, res, ctx) => {
         if (
@@ -130,6 +141,8 @@ describe('FileExplorer', () => {
         return res(ctx.status(200), ctx.data(mockOverview))
       })
     )
+
+    return { user }
   }
 
   describe('renders', () => {
@@ -149,11 +162,19 @@ describe('FileExplorer', () => {
       expect(breadcrumb).toBeInTheDocument()
     })
 
+    it('renders flag multi select', async () => {
+      setup()
+      render(<FileExplorer />, { wrapper: wrapper() })
+
+      const flagMultiSelect = await screen.findByText(/FlagMultiSelect/)
+      expect(flagMultiSelect).toBeInTheDocument()
+    })
+
     it('renders search field', async () => {
       setup()
       render(<FileExplorer />, { wrapper: wrapper() })
 
-      const searchField = await screen.findByText(/Search field/)
+      const searchField = await screen.findByText(/Search for files/)
       expect(searchField).toBeInTheDocument()
     })
 
@@ -165,8 +186,27 @@ describe('FileExplorer', () => {
       expect(table).toBeInTheDocument()
     })
 
+    describe('user searches for a file', () => {
+      it('updates the url state', async () => {
+        const { user } = setup()
+
+        render(<FileExplorer />, { wrapper: wrapper() })
+
+        const searchField = await screen.findByText(/Search for files/)
+        expect(searchField).toBeInTheDocument()
+        await user.type(searchField, 'cool-search')
+
+        await waitFor(() =>
+          expect(testLocation.state).toStrictEqual({
+            search: 'cool-search',
+          })
+        )
+      })
+    })
+
     describe('display type is set to list', () => {
       it('renders file list table', async () => {
+        setup()
         render(<FileExplorer />, {
           wrapper: wrapper([
             '/gh/codecov/cool-repo/tree/main/a/b/c?displayType=list',
