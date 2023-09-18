@@ -19,7 +19,7 @@ describe('Coverage', () => {
       setup({
         head: {
           totals: {
-            coverage: 45,
+            percentCovered: 45,
           },
         },
         pullId: 746,
@@ -32,14 +32,14 @@ describe('Coverage', () => {
       expect(id).toBeInTheDocument()
     })
 
-    it('renders covergae of pull', () => {
-      const covergae = screen.getByText(/45.00%/)
-      expect(covergae).toBeInTheDocument()
+    it('renders coverage of pull', () => {
+      const coverage = screen.getByText(/45.00%/)
+      expect(coverage).toBeInTheDocument()
     })
 
-    it('renders covergae state', () => {
-      const covergae = screen.getByText(/merge.svg/)
-      expect(covergae).toBeInTheDocument()
+    it('renders coverage state', () => {
+      const coverage = screen.getByText(/merge.svg/)
+      expect(coverage).toBeInTheDocument()
     })
   })
 
