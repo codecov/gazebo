@@ -9,7 +9,6 @@ import {
   usePlans,
 } from 'services/account'
 import { useStartTrial } from 'services/trial'
-import { useFlags } from 'shared/featureFlags'
 import {
   canApplySentryUpgrade,
   isFreePlan,
@@ -22,14 +21,10 @@ import Button from 'ui/Button'
 function PlansActionsBilling({ plan }) {
   const { provider, owner } = useParams()
   const { data: plans } = usePlans(provider)
-  const { codecovTrialMvp } = useFlags({
-    codecovTrialMvp: false,
-  })
 
   const { data: planData } = usePlanData({
     provider,
     owner,
-    opts: { enabled: codecovTrialMvp },
   })
 
   const { mutate, isLoading } = useStartTrial()
@@ -45,6 +40,7 @@ function PlansActionsBilling({ plan }) {
           onClick={() => {
             mutate({ owner })
           }}
+          hook="start-trial"
           variant="primary"
           isLoading={isLoading}
         >

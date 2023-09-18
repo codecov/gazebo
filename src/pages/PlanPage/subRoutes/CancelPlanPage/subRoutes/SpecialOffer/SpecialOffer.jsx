@@ -73,7 +73,7 @@ function SpecialOffer() {
         </Button>
         <A variant="blueSeptenary" to={{ pageName: 'downgradePlanPage' }}>
           No thanks, I&apos;ll proceed to the basic plan
-          <Icon name="chevron-right" variant="solid" size="sm" />
+          <Icon name="chevronRight" variant="solid" size="sm" />
         </A>
       </div>
       <p>

@@ -13,7 +13,7 @@ const ExpiredBanner: React.FC = () => {
           {/* @ts-expect-error */}
           <A to={{ pageName: 'upgradeOrgPlan' }}>
             Add payment method
-            <Icon name="chevron-right" size="sm" variant="solid" />
+            <Icon name="chevronRight" size="sm" variant="solid" />
           </A>
         </p>
       </TopBanner.Start>

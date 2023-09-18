@@ -64,7 +64,7 @@ const SentryBanner: React.FC<SentryBannerProps> = ({
         /per month
       </p>
       <div className="flex flex-row gap-1">
-        <Icon size="sm" name="light-bulb" variant="solid" />
+        <Icon size="sm" name="lightBulb" variant="solid" />
         <p>
           You save{' '}
           <span className="font-semibold">
@@ -159,7 +159,7 @@ const TotalBanner: React.FC<TotalBannerProps> = ({
         /per month
       </p>
       <div className="flex flex-row gap-1">
-        <Icon size="sm" name="light-bulb" variant="solid" />
+        <Icon size="sm" name="lightBulb" variant="solid" />
         <p>
           You could save{' '}
           <span className="font-semibold">

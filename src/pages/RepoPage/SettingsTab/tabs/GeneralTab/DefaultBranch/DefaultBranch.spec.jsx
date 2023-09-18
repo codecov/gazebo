@@ -13,9 +13,10 @@ import DefaultBranch from './DefaultBranch'
 jest.mock('services/toastNotification')
 jest.mock('react-use/lib/useIntersection')
 
-const mockBranches = (hasNextPage) => ({
+const mockBranches = (hasNextPage = false) => ({
   owner: {
     repository: {
+      __typename: 'Repository',
       branches: {
         edges: [
           {
@@ -52,9 +53,10 @@ const mockBranches = (hasNextPage) => ({
   },
 })
 
-const mockNextBranches = (hasNextPage) => ({
+const mockNextBranches = (hasNextPage = false) => ({
   owner: {
     repository: {
+      __typename: 'Repository',
       branches: {
         edges: [
           {
@@ -333,6 +335,7 @@ describe('DefaultBranch', () => {
       await waitFor(() =>
         expect(fetchFilters).toBeCalledWith({
           searchValue: 'cool branch name',
+          mergedBranches: true,
         })
       )
     })
