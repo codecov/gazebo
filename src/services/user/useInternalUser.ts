@@ -6,7 +6,7 @@ import Api from 'shared/api'
 const OwnerSchema = z
   .object({
     avatarUrl: z.string().nullish(),
-    integrationId: z.string().nullish(),
+    integrationId: z.number().nullish(),
     name: z.string().nullish(),
     ownerid: z.number().nullish(),
     service: z.string().nullish(),
