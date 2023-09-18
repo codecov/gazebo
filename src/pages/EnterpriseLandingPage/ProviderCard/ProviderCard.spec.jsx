@@ -1,7 +1,5 @@
 import { render, screen } from '@testing-library/react'
 
-import config from 'config'
-
 import { LoginProvidersEnum } from 'services/loginProviders'
 
 import ProviderCard from './ProviderCard'
@@ -28,7 +26,7 @@ describe('ProviderCard', () => {
           name: 'Login via Bitbucket',
         })
         expect(element).toBeInTheDocument()
-        expect(element).toHaveAttribute('href', `${config.BASE_URL}/login/bb`)
+        expect(element).toHaveAttribute('href', '/login/bb')
       })
 
       it('renders self hosted login link', () => {
@@ -36,7 +34,7 @@ describe('ProviderCard', () => {
           name: 'Login via Bitbucket Server',
         })
         expect(element).toBeInTheDocument()
-        expect(element).toHaveAttribute('href', `${config.BASE_URL}/login/bbs`)
+        expect(element).toHaveAttribute('href', '/login/bbs')
       })
     })
   })
@@ -51,7 +49,7 @@ describe('ProviderCard', () => {
       it('renders external login button', () => {
         const element = screen.getByRole('link', { name: 'Login via GitHub' })
         expect(element).toBeInTheDocument()
-        expect(element).toHaveAttribute('href', `${config.BASE_URL}/login/gh`)
+        expect(element).toHaveAttribute('href', '/login/gh')
       })
 
       it('renders self hosted login link', () => {
@@ -59,7 +57,7 @@ describe('ProviderCard', () => {
           name: 'Login via GitHub Enterprise',
         })
         expect(element).toBeInTheDocument()
-        expect(element).toHaveAttribute('href', `${config.BASE_URL}/login/ghe`)
+        expect(element).toHaveAttribute('href', '/login/ghe')
       })
     })
   })
@@ -74,7 +72,7 @@ describe('ProviderCard', () => {
       it('renders external login button', () => {
         const element = screen.getByRole('link', { name: 'Login via GitLab' })
         expect(element).toBeInTheDocument()
-        expect(element).toHaveAttribute('href', `${config.BASE_URL}/login/gl`)
+        expect(element).toHaveAttribute('href', '/login/gl')
       })
 
       it('renders self hosted login link', () => {
@@ -82,7 +80,7 @@ describe('ProviderCard', () => {
           name: 'Login via GitLab CE/EE',
         })
         expect(element).toBeInTheDocument()
-        expect(element).toHaveAttribute('href', `${config.BASE_URL}/login/gle`)
+        expect(element).toHaveAttribute('href', '/login/gle')
       })
     })
   })
