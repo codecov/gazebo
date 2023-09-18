@@ -52,7 +52,7 @@ export const TitleFlags = () => {
 
   const { data: repoBackfilledData } = useRepoBackfilled()
 
-  const isTimeScaleEnabled = !!repoBackfilledData?.isTimeScaleEnabled
+  const isTimescaleEnabled = !!repoBackfilledData?.isTimescaleEnabled
   const flagsMeasurementsActive = !!repoBackfilledData?.flagsMeasurementsActive
   const noFlagsPresent = eq(repoBackfilledData?.flagsCount, 0)
 
@@ -72,7 +72,7 @@ export const TitleFlags = () => {
       suspense: false,
       enabled:
         !!coverageTabFlagMutliSelect ||
-        (flagsMeasurementsActive && !noFlagsPresent && isTimeScaleEnabled),
+        (flagsMeasurementsActive && !noFlagsPresent && isTimescaleEnabled),
     },
   })
 
@@ -93,7 +93,7 @@ export const TitleFlags = () => {
     <div className="w-full sm:w-52">
       <MultiSelect
         disabled={
-          !flagsMeasurementsActive || !isTimeScaleEnabled || flagsInitialLoading
+          !flagsMeasurementsActive || !isTimescaleEnabled || flagsInitialLoading
         }
         dataMarketing="fileviwer-filter-by-flags"
         ariaName="Filter by flags"
