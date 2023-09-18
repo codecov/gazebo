@@ -87,7 +87,7 @@ describe('Dropdown', () => {
         expect(link).toBeVisible()
         expect(link).toHaveAttribute(
           'href',
-          '/logout/gh?to=https%3A%2F%2Fabout.codecov.io'
+          '/logout/gh?to=http%3A%2F%2Flocalhost%2Flogin'
         )
       })
 
@@ -146,7 +146,7 @@ describe('Dropdown', () => {
         expect(link).toBeVisible()
         expect(link).toHaveAttribute(
           'href',
-          '/logout/gl?to=https%3A%2F%2Fabout.codecov.io'
+          '/logout/gl?to=http%3A%2F%2Flocalhost%2Flogin'
         )
       })
 
