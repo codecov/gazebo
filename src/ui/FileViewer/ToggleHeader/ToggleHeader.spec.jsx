@@ -71,7 +71,7 @@ afterAll(() => {
 describe('ToggleHeader', () => {
   function setup() {
     useFlags.mockReturnValue({
-      coverageTabFlagMultiSelect: true,
+      coverageTabFlagMutliSelect: true,
     })
 
     server.use(

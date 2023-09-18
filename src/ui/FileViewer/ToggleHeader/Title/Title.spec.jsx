@@ -191,7 +191,7 @@ describe('TitleFlags', () => {
     const mockApiVars = jest.fn()
 
     useFlags.mockReturnValue({
-      coverageTabFlagMultiSelect: flagValue,
+      coverageTabFlagMutliSelect: flagValue,
     })
 
     useIntersection.mockReturnValue({ isIntersecting: isIntersecting })

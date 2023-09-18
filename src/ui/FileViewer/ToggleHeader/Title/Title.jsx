@@ -56,8 +56,8 @@ export const TitleFlags = () => {
   const flagsMeasurementsActive = !!repoBackfilledData?.flagsMeasurementsActive
   const noFlagsPresent = eq(repoBackfilledData?.flagsCount, 0)
 
-  const { coverageTabFlagMultiSelect } = useFlags({
-    coverageTabFlagMultiSelect: false,
+  const { coverageTabFlagMutliSelect } = useFlags({
+    coverageTabFlagMutliSelect: false,
   })
 
   const {
@@ -71,7 +71,7 @@ export const TitleFlags = () => {
     options: {
       suspense: false,
       enabled:
-        !!coverageTabFlagMultiSelect ||
+        !!coverageTabFlagMutliSelect ||
         (flagsMeasurementsActive && !noFlagsPresent && isTimeScaleEnabled),
     },
   })
@@ -85,7 +85,7 @@ export const TitleFlags = () => {
     }
   }
 
-  if (!coverageTabFlagMultiSelect || noFlagsPresent) {
+  if (!coverageTabFlagMutliSelect || noFlagsPresent) {
     return null
   }
 
