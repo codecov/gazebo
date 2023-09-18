@@ -59,7 +59,7 @@ const useUserAccessGate = () => {
     isSuccess: internalUserIsSuccess,
   } = useInternalUser({
     enabled: !config.IS_SELF_HOSTED,
-    retry: 0,
+    retry: false,
     retryOnMount: false,
     suspense: false,
   })
