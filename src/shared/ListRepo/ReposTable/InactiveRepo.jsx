@@ -17,7 +17,7 @@ function InactiveRepo({ owner, repoName, isCurrentUserPartOfOrg, isActive }) {
       }}
     >
       Setup repo
-      <Icon name="chevron-right" variant="solid" size="sm" />
+      <Icon name="chevronRight" variant="solid" size="sm" />
     </AppLink>
   )
 }

@@ -32,6 +32,7 @@ const mockMainBranchSearch = {
 }
 
 const mockBranches = {
+  __typename: 'Repository',
   branches: {
     edges: [
       {
@@ -129,7 +130,7 @@ describe('useSummary', () => {
       ),
       graphql.query('GetBranches', (req, res, ctx) => {
         if (hasNoBranches) {
-          return res(ctx.status(200), ctx.data({}))
+          return res(ctx.status(200), ctx.data({ owner: null }))
         }
 
         if (req.variables?.filters?.searchValue === 'main') {

@@ -6,7 +6,6 @@ import config from 'config'
 
 import { TrialStatuses, usePlanData } from 'services/account'
 import { useOwner } from 'services/user'
-import { useFlags } from 'shared/featureFlags'
 import { isFreePlan, isTrialPlan } from 'shared/utils/billing'
 
 import ExpiredBanner from './ExpiredBanner'
@@ -26,21 +25,22 @@ const determineDateDiff = ({
 }
 
 interface UrlParams {
-  provider: string
+  provider?: string
   owner?: string
 }
 
 const TrialBanner: React.FC = () => {
   const { provider, owner } = useParams<UrlParams>()
 
-  const { codecovTrialMvp } = useFlags({
-    codecovTrialMvp: false,
-  })
+  const enableQuery = !!owner
 
-  const enableQuery = !!owner || codecovTrialMvp
+  let providerString = ''
+  if (provider) {
+    providerString = provider
+  }
 
   const { data: planData } = usePlanData({
-    provider,
+    provider: providerString,
     owner: owner || '',
     opts: { enabled: enableQuery },
   })
@@ -58,10 +58,10 @@ const TrialBanner: React.FC = () => {
 
   // hide on "global" pages, trial flag, and if user does not belong to the org
   if (
+    isUndefined(provider) ||
     isUndefined(owner) ||
     !ownerData?.isCurrentUserPartOfOrg ||
-    config.IS_SELF_HOSTED ||
-    !codecovTrialMvp
+    config.IS_SELF_HOSTED
   ) {
     return null
   }

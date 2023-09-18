@@ -1,18 +1,18 @@
-tbody,
-tr,
-td {
+.coderenderer tbody,
+.coderenderer tr,
+.coderenderer td {
   tab-size: 8;
 }
 
-tbody tr:first-child td {
+.coderenderer tbody tr:first-child td {
   @apply pt-2;
 }
 
-tbody tr:last-child td {
+.coderenderer tbody tr:last-child td {
   @apply pb-2;
 }
 
-/* I inspected the page took the selectors and overode the background to be transparent */
+/* I inspected the page took the selectors and overrode the background to be transparent */
 .token.operator,
 .token.entity,
 .token.url,

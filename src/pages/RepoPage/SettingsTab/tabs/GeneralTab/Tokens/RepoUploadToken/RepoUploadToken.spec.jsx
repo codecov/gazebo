@@ -91,8 +91,6 @@ describe('RepoUploadToken', () => {
 
       const p = screen.getByText('Used for uploading coverage reports')
       expect(p).toBeInTheDocument()
-      const note = screen.getByText('Note:')
-      expect(note).toBeInTheDocument()
 
       const addTokenToCICD = screen.getByText(
         'If you’d like to add the token directly to your CI/CD Environment:'

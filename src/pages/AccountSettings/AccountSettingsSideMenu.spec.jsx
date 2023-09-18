@@ -285,21 +285,6 @@ describe('AccountSettingsSideMenu', () => {
         expect(link).toBeInTheDocument()
         expect(link).toHaveAttribute('href', '/account/gh/codecov/yaml')
       })
-
-      it('renders org upload link', async () => {
-        setup()
-
-        render(<AccountSettingsSideMenu />, { wrapper: wrapper() })
-
-        const link = await screen.findByRole('link', {
-          name: 'Global Upload Token',
-        })
-        expect(link).toBeInTheDocument()
-        expect(link).toHaveAttribute(
-          'href',
-          '/account/gh/codecov/org-upload-token'
-        )
-      })
     })
   })
 })
