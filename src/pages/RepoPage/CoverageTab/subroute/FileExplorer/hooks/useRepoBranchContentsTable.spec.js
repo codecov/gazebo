@@ -2,17 +2,11 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import qs from 'qs'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { act } from 'react-test-renderer'
 
-import { useLocationParams } from 'services/navigation'
-
 import { useRepoBranchContentsTable } from './useRepoBranchContentsTable'
-
-jest.mock('services/navigation', () => ({
-  ...jest.requireActual('services/navigation'),
-  useLocationParams: jest.fn(),
-}))
 
 const mockCommitContentData = {
   owner: {
@@ -73,11 +67,11 @@ const queryClient = new QueryClient({
 const server = setupServer()
 
 const wrapper =
-  (initialEntries = ['/gh/test-org/test-repo/tree/main']) =>
+  (initialEntries = '/gh/test-org/test-repo/tree/main') =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
+        <MemoryRouter initialEntries={[initialEntries]}>
           <Route path={'/:provider/:owner/:repo/tree/:branch'}>
             {children}
           </Route>
@@ -104,9 +98,9 @@ const mockOverview = {
 }
 
 describe('useRepoBranchContentsTable', () => {
-  const calledCommitContents = jest.fn()
-
   function setup({ noData } = { noData: false }) {
+    const calledCommitContents = jest.fn()
+
     server.use(
       graphql.query('BranchContents', (req, res, ctx) => {
         calledCommitContents(req?.variables)
@@ -121,20 +115,15 @@ describe('useRepoBranchContentsTable', () => {
         return res(ctx.status(200), ctx.data(mockOverview))
       })
     )
+
+    return { calledCommitContents }
   }
 
   describe('calling the hook', () => {
     describe('when there is data to be returned', () => {
-      beforeEach(() => {
-        useLocationParams.mockReturnValue({
-          params: {},
-        })
-
-        setup()
-      })
-
       describe('on root path', () => {
         it('returns directory contents', async () => {
+          setup()
           const { result } = renderHook(() => useRepoBranchContentsTable(), {
             wrapper: wrapper(),
           })
@@ -150,8 +139,9 @@ describe('useRepoBranchContentsTable', () => {
 
       describe('on child path', () => {
         it('returns directory contents', async () => {
+          setup()
           const { result } = renderHook(() => useRepoBranchContentsTable(), {
-            wrapper: wrapper(['/gh/test-org/test-repo/tree/main/src/dir']),
+            wrapper: wrapper('/gh/test-org/test-repo/tree/main/src/dir'),
           })
 
           await waitFor(() =>
@@ -164,6 +154,7 @@ describe('useRepoBranchContentsTable', () => {
       })
 
       it('sets the correct headers', async () => {
+        setup()
         const { result } = renderHook(() => useRepoBranchContentsTable(), {
           wrapper: wrapper(),
         })
@@ -176,15 +167,8 @@ describe('useRepoBranchContentsTable', () => {
     })
 
     describe('when there is no data', () => {
-      beforeEach(() => {
-        useLocationParams.mockReturnValue({
-          params: {},
-        })
-
-        setup({ noData: true })
-      })
-
       it('returns an empty array', async () => {
+        setup({ noData: true })
         const { result } = renderHook(() => useRepoBranchContentsTable(), {
           wrapper: wrapper(),
         })
@@ -198,17 +182,15 @@ describe('useRepoBranchContentsTable', () => {
   })
 
   describe('when there is a search param', () => {
-    beforeEach(() => {
-      useLocationParams.mockReturnValue({
-        params: { search: 'file.js' },
-      })
-
-      setup()
-    })
-
     it('makes a gql request with the search value', async () => {
+      const { calledCommitContents } = setup()
       renderHook(() => useRepoBranchContentsTable(), {
-        wrapper: wrapper(),
+        wrapper: wrapper(
+          `/gh/test-org/test-repo/tree/main${qs.stringify(
+            { search: 'file.js' },
+            { addQueryPrefix: true }
+          )}`
+        ),
       })
 
       await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
@@ -219,6 +201,7 @@ describe('useRepoBranchContentsTable', () => {
         branch: 'main',
         filters: {
           searchValue: 'file.js',
+          flags: [],
           ordering: {
             direction: 'ASC',
             parameter: 'NAME',
@@ -232,17 +215,15 @@ describe('useRepoBranchContentsTable', () => {
   })
 
   describe('when called with the list param', () => {
-    beforeEach(() => {
-      useLocationParams.mockReturnValue({
-        params: { displayType: 'list' },
-      })
-
-      setup()
-    })
-
     it('makes a gql request with the list param', async () => {
+      const { calledCommitContents } = setup()
       renderHook(() => useRepoBranchContentsTable(), {
-        wrapper: wrapper(),
+        wrapper: wrapper(
+          `/gh/test-org/test-repo/tree/main${qs.stringify(
+            { displayType: 'list' },
+            { addQueryPrefix: true }
+          )}`
+        ),
       })
 
       await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
@@ -253,6 +234,7 @@ describe('useRepoBranchContentsTable', () => {
         branch: 'main',
         filters: {
           displayType: 'LIST',
+          flags: [],
           ordering: {
             direction: 'DESC',
             parameter: 'MISSES',
@@ -265,16 +247,41 @@ describe('useRepoBranchContentsTable', () => {
     })
   })
 
-  describe('when handleSort is triggered', () => {
-    beforeEach(() => {
-      useLocationParams.mockReturnValue({
-        params: {},
+  describe('when there is a flags param', () => {
+    it('makes a gql request with the flags param', async () => {
+      const { calledCommitContents } = setup()
+      renderHook(() => useRepoBranchContentsTable(), {
+        wrapper: wrapper(
+          `/gh/test-org/test-repo/tree/main${qs.stringify(
+            { flags: ['flag-1'] },
+            { addQueryPrefix: true }
+          )}`
+        ),
       })
 
-      setup()
-    })
+      await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0))
 
+      expect(calledCommitContents).toHaveBeenCalled()
+      expect(calledCommitContents).toHaveBeenCalledWith({
+        branch: 'main',
+        filters: {
+          flags: ['flag-1'],
+          ordering: {
+            direction: 'ASC',
+            parameter: 'NAME',
+          },
+        },
+        name: 'test-org',
+        repo: 'test-repo',
+        path: '',
+      })
+    })
+  })
+
+  describe('when handleSort is triggered', () => {
     it('makes a gql request with the updated params', async () => {
+      const { calledCommitContents } = setup()
       const { result } = renderHook(() => useRepoBranchContentsTable(), {
         wrapper: wrapper(),
       })
@@ -293,6 +300,7 @@ describe('useRepoBranchContentsTable', () => {
       expect(calledCommitContents).toHaveBeenNthCalledWith(2, {
         branch: 'main',
         filters: {
+          flags: [],
           ordering: {
             direction: 'DESC',
             parameter: 'NAME',
