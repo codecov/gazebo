@@ -1,13 +1,15 @@
+//@ts-expect-error
 import rocketImg from 'assets/enterprise-rocket.png'
-import { LoginProvidersEnum } from 'services/loginProviders'
+import { LoginProvidersEnum } from 'shared/utils/loginProviders'
 
 import ProviderCard from './ProviderCard/ProviderCard'
 import { useEnterpriseRedirect } from './useEnterpriseRedirect'
 import { useServiceProviders } from './useServiceProviders'
 
 function EnterpriseLandingPage() {
-  const { data } = useServiceProviders()
   useEnterpriseRedirect()
+
+  const { data } = useServiceProviders()
 
   return (
     <div className="flex flex-col gap-5">
@@ -16,7 +18,7 @@ function EnterpriseLandingPage() {
           <img className="h-3/4" alt="codecov space shuttle" src={rocketImg} />
         </div>
       </div>
-      <div className="flex flex-col justify-center gap-8 text-center md:flex-row md:gap-36">
+      <div className="flex flex-col flex-wrap justify-center gap-6 text-center sm:flex-row lg:gap-x-16 ">
         {data?.github && (
           <ProviderCard
             provider={LoginProvidersEnum.GITHUB}
@@ -32,6 +34,12 @@ function EnterpriseLandingPage() {
         {data?.bitbucket && (
           <ProviderCard
             provider={LoginProvidersEnum.BITBUCKET}
+            providers={data?.providerList}
+          />
+        )}
+        {data?.okta && (
+          <ProviderCard
+            provider={LoginProvidersEnum.OKTA}
             providers={data?.providerList}
           />
         )}
