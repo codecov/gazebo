@@ -6,7 +6,12 @@ import Api from 'shared/api'
 
 import { queryForCommitFile as query } from '../../constants'
 
-export function usePrefetchBranchFileEntry({ branch, path, options = {} }) {
+export function usePrefetchBranchFileEntry({
+  branch,
+  path,
+  flags = [],
+  options = {},
+}) {
   const { provider, owner, repo } = useParams()
   const queryClient = useQueryClient()
 
@@ -21,6 +26,7 @@ export function usePrefetchBranchFileEntry({ branch, path, options = {} }) {
         path,
         query,
         extractCoverageFromResponse,
+        flags,
       ],
       queryFn: () =>
         Api.graphql({
@@ -32,6 +38,7 @@ export function usePrefetchBranchFileEntry({ branch, path, options = {} }) {
             repo,
             ref: branch,
             path,
+            flags,
           },
         }).then(extractCoverageFromResponse),
       staleTime: 10000,

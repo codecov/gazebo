@@ -4,6 +4,7 @@ query CoverageForFile(
   $repo: String!
   $ref: String!
   $path: String!
+  $flags: [String]
 ) {
   owner(username: $owner) {
     repository: repositoryDeprecated(name: $repo) {
@@ -23,7 +24,7 @@ query CoverageForFile(
 fragment CoverageForFile on Commit {
   commitid
   flagNames
-  coverageFile(path: $path) {
+  coverageFile(path: $path, flags: $flags) {
     hashedPath
     isCriticalFile
     content
@@ -35,5 +36,4 @@ fragment CoverageForFile on Commit {
       coverage # Absolute coverage of the commit
     }
   }
-}
-`
+}`
