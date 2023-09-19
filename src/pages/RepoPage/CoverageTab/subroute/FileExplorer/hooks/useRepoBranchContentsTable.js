@@ -237,6 +237,7 @@ export function useRepoBranchContentsTable() {
     data,
     headers,
     handleSort,
+    hasFlagsSelected: params?.flags ? params?.flags?.length > 0 : false,
     isLoading: isLoadingRepo || isLoading,
     isSearching: !!params?.search,
     isMissingHeadReport:
