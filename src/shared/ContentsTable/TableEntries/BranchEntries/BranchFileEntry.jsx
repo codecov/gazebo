@@ -12,10 +12,14 @@ function BranchFileEntry({
   name,
   urlPath,
   displayType,
+  filters,
 }) {
+  const flags = filters?.flags?.length > 0 ? filters?.flags : []
+
   const { runPrefetch } = usePrefetchBranchFileEntry({
     branch,
     path,
+    flags,
   })
 
   return (
@@ -38,6 +42,9 @@ BranchFileEntry.propTypes = {
   name: PropTypes.string.isRequired,
   displayType: PropTypes.oneOf(Object.values(displayTypeParameter)),
   urlPath: PropTypes.string.isRequired,
+  filters: PropTypes.shape({
+    flags: PropTypes.arrayOf(PropTypes.string),
+  }),
 }
 
 export default BranchFileEntry

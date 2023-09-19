@@ -62,6 +62,7 @@ function createTableData({
               path={path}
               displayType={displayType}
               isCriticalFile={isCriticalFile}
+              filters={filters}
             />
           ),
         lines,
