@@ -1,27 +1,28 @@
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter, Route } from 'react-router-dom'
 
-import { LoginProvidersEnum } from 'services/loginProviders'
+import { LoginProvidersEnum } from 'shared/utils/loginProviders'
 
 import ProviderCard from './ProviderCard'
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: () => ({}),
-}))
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
+  <MemoryRouter initialEntries={['/']}>
+    <Route path="/">{children}</Route>
+  </MemoryRouter>
+)
 
 describe('ProviderCard', () => {
-  function setup({ provider, data }) {
-    render(<ProviderCard provider={provider} providers={data} />)
-  }
-
   describe('Bitbucket', () => {
     describe('when system is configured with Bitbucket', () => {
-      beforeEach(() => {
-        const data = ['BITBUCKET', 'BITBUCKET_SERVER']
-        setup({ provider: LoginProvidersEnum.BITBUCKET, data })
-      })
-
       it('renders external login button', () => {
+        render(
+          <ProviderCard
+            provider={LoginProvidersEnum.BITBUCKET}
+            providers={['BITBUCKET', 'BITBUCKET_SERVER']}
+          />,
+          { wrapper }
+        )
+
         const element = screen.getByRole('link', {
           name: 'Login via Bitbucket',
         })
@@ -30,6 +31,14 @@ describe('ProviderCard', () => {
       })
 
       it('renders self hosted login link', () => {
+        render(
+          <ProviderCard
+            provider={LoginProvidersEnum.BITBUCKET}
+            providers={['BITBUCKET', 'BITBUCKET_SERVER']}
+          />,
+          { wrapper }
+        )
+
         const element = screen.getByRole('link', {
           name: 'Login via Bitbucket Server',
         })
@@ -41,18 +50,29 @@ describe('ProviderCard', () => {
 
   describe('GitHub', () => {
     describe('when system is configured with GitHub', () => {
-      beforeEach(() => {
-        const data = ['GITHUB', 'GITHUB_ENTERPRISE']
-        setup({ provider: LoginProvidersEnum.GITHUB, data })
-      })
-
       it('renders external login button', () => {
+        render(
+          <ProviderCard
+            provider={LoginProvidersEnum.GITHUB}
+            providers={['GITHUB', 'GITHUB_ENTERPRISE']}
+          />,
+          { wrapper }
+        )
+
         const element = screen.getByRole('link', { name: 'Login via GitHub' })
         expect(element).toBeInTheDocument()
         expect(element).toHaveAttribute('href', '/login/gh')
       })
 
       it('renders self hosted login link', () => {
+        render(
+          <ProviderCard
+            provider={LoginProvidersEnum.GITHUB}
+            providers={['GITHUB', 'GITHUB_ENTERPRISE']}
+          />,
+          { wrapper }
+        )
+
         const element = screen.getByRole('link', {
           name: 'Login via GitHub Enterprise',
         })
@@ -64,23 +84,52 @@ describe('ProviderCard', () => {
 
   describe('GitLab', () => {
     describe('when system is configured with GitLab', () => {
-      beforeEach(() => {
-        const data = ['GITLAB', 'GITLAB_ENTERPRISE']
-        setup({ provider: LoginProvidersEnum.GITLAB, data })
-      })
-
       it('renders external login button', () => {
+        render(
+          <ProviderCard
+            provider={LoginProvidersEnum.GITLAB}
+            providers={['GITLAB', 'GITLAB_ENTERPRISE']}
+          />,
+          { wrapper }
+        )
+
         const element = screen.getByRole('link', { name: 'Login via GitLab' })
         expect(element).toBeInTheDocument()
         expect(element).toHaveAttribute('href', '/login/gl')
       })
 
       it('renders self hosted login link', () => {
+        render(
+          <ProviderCard
+            provider={LoginProvidersEnum.GITLAB}
+            providers={['GITLAB', 'GITLAB_ENTERPRISE']}
+          />,
+          { wrapper }
+        )
+
         const element = screen.getByRole('link', {
           name: 'Login via GitLab CE/EE',
         })
         expect(element).toBeInTheDocument()
         expect(element).toHaveAttribute('href', '/login/gle')
+      })
+    })
+  })
+
+  describe('Okta', () => {
+    describe('when system is configured with Okta', () => {
+      it('renders external login button', () => {
+        render(
+          <ProviderCard
+            provider={LoginProvidersEnum.OKTA}
+            providers={['OKTA']}
+          />,
+          { wrapper }
+        )
+
+        const element = screen.getByRole('link', { name: 'Login via Okta' })
+        expect(element).toBeInTheDocument()
+        expect(element).toHaveAttribute('href', '/login/okta')
       })
     })
   })
