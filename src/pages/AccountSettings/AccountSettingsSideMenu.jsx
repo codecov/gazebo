@@ -9,7 +9,6 @@ function defaultLinks({ internalAccessTab }) {
   return [
     ...(internalAccessTab ? [{ pageName: internalAccessTab }] : []),
     { pageName: 'yamlTab' },
-    { pageName: 'orgUploadToken' },
   ]
 }
 
