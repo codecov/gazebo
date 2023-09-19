@@ -402,7 +402,7 @@ describe('TrialBanner', () => {
         })
 
         const banner = await screen.findByText(
-          /The org's 14-day free Codecov Pro trial has ended./
+          /The organization's 14-day free Codecov Pro trial has ended./
         )
         expect(banner).toBeInTheDocument()
       })
