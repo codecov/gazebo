@@ -10,12 +10,12 @@ interface DayCountProps {
 }
 
 const DayCount: React.FC<DayCountProps> = ({ dateDiff }) => {
-  if (dateDiff === 0) {
+  if (dateDiff <= 0) {
     return <span>Your trial ends today.</span>
   }
 
-  if (dateDiff <= 1) {
-    return <span>Your trial ends in {dateDiff} day.</span>
+  if (dateDiff === 1) {
+    return <span>Your trial ends in 1 day.</span>
   }
 
   return <span>Your trial ends in {dateDiff} days.</span>
