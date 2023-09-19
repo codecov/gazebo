@@ -63,7 +63,6 @@ export const TitleFlags = () => {
   const {
     data: flagsData,
     isLoading: flagsIsLoading,
-    isInitialLoading: flagsInitialLoading,
     hasNextPage: flagsHasNextPage,
     fetchNextPage: flagsFetchNextPage,
   } = useRepoFlagsSelect({
@@ -92,9 +91,7 @@ export const TitleFlags = () => {
   return (
     <div className="w-full sm:w-52">
       <MultiSelect
-        disabled={
-          !flagsMeasurementsActive || !isTimescaleEnabled || flagsInitialLoading
-        }
+        disabled={!flagsMeasurementsActive || !isTimescaleEnabled}
         dataMarketing="fileviwer-filter-by-flags"
         ariaName="Filter by flags"
         items={[...flagNames]}
