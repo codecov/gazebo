@@ -35,12 +35,10 @@ const useUserAccessGate = () => {
   const { provider } = useParams()
   const currentRoute = useRouteMatch()
 
-  const { termsOfServicePage, defaultOrgSelectorPage, sentryLoginProvider } =
-    useFlags({
-      termsOfServicePage: false,
-      defaultOrgSelectorPage: false,
-      sentryLoginProvider: false,
-    })
+  const { termsOfServicePage, defaultOrgSelectorPage } = useFlags({
+    termsOfServicePage: false,
+    defaultOrgSelectorPage: false,
+  })
 
   const {
     data: userData,
@@ -58,7 +56,6 @@ const useUserAccessGate = () => {
     isFetching: internalUserIsFetching,
     isSuccess: internalUserIsSuccess,
   } = useInternalUser({
-    enabled: !config.IS_SELF_HOSTED,
     retry: false,
     retryOnMount: false,
     suspense: false,
@@ -86,13 +83,18 @@ const useUserAccessGate = () => {
   }
 
   const onSyncPage = currentRoute.path === '/sync'
-  if (sentryLoginProvider && !isGuest && !onSyncPage) {
+  if (!isGuest && !onSyncPage) {
     // owners array contains a list of the synced providers
     // if it is zero then they haven't synced any other providers
     redirectToSyncPage = isEqual(internalUser?.owners?.length, 0)
   }
 
-  if (defaultOrgSelectorPage && !isUndefined(provider) && !isGuest) {
+  if (
+    defaultOrgSelectorPage &&
+    !isUndefined(provider) &&
+    !isGuest &&
+    !config.IS_SELF_HOSTED
+  ) {
     showDefaultOrgSelector = !userData?.owner?.defaultOrgUsername
   }
 
@@ -106,11 +108,9 @@ const useUserAccessGate = () => {
   }
 
   // Not fully tested logic yet, waiting on API to be available.
-  // Assuming self hosted users do not need to sign
   return {
     isFullExperience:
-      !!config.IS_SELF_HOSTED ||
-      (!showAgreeToTerms && !redirectToSyncPage && !showDefaultOrgSelector),
+      !showAgreeToTerms && !redirectToSyncPage && !showDefaultOrgSelector,
     isLoading,
     showAgreeToTerms,
     showDefaultOrgSelector,
