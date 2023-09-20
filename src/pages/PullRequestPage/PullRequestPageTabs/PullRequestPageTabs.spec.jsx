@@ -24,6 +24,8 @@ const mockPullData = {
       private: true,
       pull: {
         pullId: 1,
+        firstPull: false,
+        state: 'OPEN',
         head: {
           commitid: '123',
         },

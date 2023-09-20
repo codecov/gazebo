@@ -15,7 +15,30 @@ jest.mock('../subroute/ComponentsTab', () => () => 'ComponentsTab')
 jest.mock('../subroute/FileExplorer', () => () => 'FileExplorer')
 jest.mock('../subroute/FileViewer', () => () => 'FileViewer')
 
-const mockPullData = (resultType) => {
+const mockPullData = (resultType, firstPull) => {
+  if (resultType === ComparisonReturnType.MISSING_BASE_COMMIT && firstPull) {
+    return {
+      owner: {
+        isCurrentUserPartOfOrg: true,
+        repository: {
+          __typename: 'Repository',
+          private: false,
+          pull: {
+            pullId: 1,
+            firstPull: true,
+            state: 'OPEN',
+            head: {
+              commitid: '123',
+            },
+            compareWithBase: {
+              __typename: resultType,
+              message: resultType,
+            },
+          },
+        },
+      },
+    }
+  }
   if (resultType === ComparisonReturnType.MISSING_BASE_COMMIT) {
     return {
       owner: {
@@ -25,6 +48,8 @@ const mockPullData = (resultType) => {
           private: false,
           pull: {
             pullId: 1,
+            firstPull: false,
+            state: 'OPEN',
             head: {
               commitid: '123',
             },
@@ -46,6 +71,8 @@ const mockPullData = (resultType) => {
         private: false,
         pull: {
           pullId: 1,
+          firstPull: false,
+          state: 'OPEN',
           head: {
             commitid: '123',
           },
@@ -100,10 +127,13 @@ afterAll(() => {
 })
 
 describe('PullRequestPageContent', () => {
-  function setup(resultType = ComparisonReturnType.SUCCESSFUL_COMPARISON) {
+  function setup(
+    resultType = ComparisonReturnType.SUCCESSFUL_COMPARISON,
+    pullData = mockPullData(resultType)
+  ) {
     server.use(
       graphql.query('PullPageData', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockPullData(resultType)))
+        res(ctx.status(200), ctx.data(pullData))
       )
     )
   }
@@ -118,6 +148,19 @@ describe('PullRequestPageContent', () => {
         name: 'Missing Base Commit',
       })
       expect(errorBanner).toBeInTheDocument()
+    })
+  })
+
+  describe('result type was not successful and first pull', () => {
+    beforeEach(() => setup(ComparisonReturnType.MISSING_BASE_COMMIT, true))
+
+    it('does not render an error banner', () => {
+      render(<PullRequestPageContent />, { wrapper: wrapper() })
+
+      const errorBanner = screen.queryByRole('heading', {
+        name: 'Missing Base Commit',
+      })
+      expect(errorBanner).not.toBeInTheDocument()
     })
   })
 

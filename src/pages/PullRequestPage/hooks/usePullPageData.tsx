@@ -16,11 +16,16 @@ import {
 import Api from 'shared/api'
 import A from 'ui/A'
 
+// state could be state  OPEN | CLOSED | MERGED
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   pull: z
     .object({
       pullId: z.number().nullable(),
+      firstPull: z.boolean(),
+      state: z
+        .union([z.literal('OPEN'), z.literal('CLOSED'), z.literal('MERGED')])
+        .nullable(),
       head: z
         .object({
           commitid: z.string().nullable(),
@@ -71,6 +76,8 @@ query PullPageData($owner: String!, $repo: String!, $pullId: Int!) {
         private
         pull(id: $pullId) {
           pullId
+          firstPull
+          state
           head {
             commitid
           }

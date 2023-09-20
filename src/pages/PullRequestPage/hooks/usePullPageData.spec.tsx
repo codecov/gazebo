@@ -11,6 +11,8 @@ const mockPullData = {
       __typename: 'Repository',
       pull: {
         pullId: 1,
+        firstPull: false,
+        state: 'OPEN',
         head: {
           commitid: '123',
         },
@@ -130,6 +132,8 @@ describe('usePullPageData', () => {
             expect(result.current.data).toStrictEqual({
               pull: {
                 pullId: 1,
+                firstPull: false,
+                state: 'OPEN',
                 head: {
                   commitid: '123',
                 },
