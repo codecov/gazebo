@@ -7,10 +7,8 @@ import { usePullPageData } from './usePullPageData'
 
 const mockPullData = {
   owner: {
-    isCurrentUserPartOfOrg: true,
     repository: {
       __typename: 'Repository',
-      private: true,
       pull: {
         pullId: 1,
         head: {
@@ -31,7 +29,6 @@ const mockPullData = {
 
 const mockNotFoundError = {
   owner: {
-    isCurrentUserPartOfOrg: true,
     repository: {
       __typename: 'NotFoundError',
       message: 'commit not found',
@@ -41,7 +38,6 @@ const mockNotFoundError = {
 
 const mockOwnerNotActivatedError = {
   owner: {
-    isCurrentUserPartOfOrg: true,
     repository: {
       __typename: 'OwnerNotActivatedError',
       message: 'owner not activated',
@@ -132,7 +128,6 @@ describe('usePullPageData', () => {
 
           await waitFor(() =>
             expect(result.current.data).toStrictEqual({
-              hasAccess: true,
               pull: {
                 pullId: 1,
                 head: {
@@ -174,7 +169,6 @@ describe('usePullPageData', () => {
 
           await waitFor(() =>
             expect(result.current.data).toStrictEqual({
-              hasAccess: true,
               pull: null,
             })
           )
