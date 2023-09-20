@@ -23,7 +23,7 @@ function PullRequestPage() {
   const { owner, repo, pullId, provider } = useParams()
   const { data, isLoading } = usePullPageData({ provider, owner, repo, pullId })
 
-  if (!isLoading && (!data?.hasAccess || !data?.pull)) {
+  if (!isLoading && !data?.pull) {
     return <NotFound />
   }
 
