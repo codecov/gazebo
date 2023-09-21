@@ -1,3 +1,4 @@
+import isArray from 'lodash/isArray'
 import isNull from 'lodash/isNull'
 import isUndefined from 'lodash/isUndefined'
 
@@ -38,7 +39,11 @@ export function mapEdges<TNode>(
   }
 
   let edges = []
-  if (!isUndefined(connection) && !isNull(connection)) {
+  if (
+    !isUndefined(connection) &&
+    !isNull(connection) &&
+    isArray(connection.edges)
+  ) {
     for (const edge of connection.edges) {
       if (edge?.node) {
         edges.push(edge.node)
