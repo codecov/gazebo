@@ -43,7 +43,7 @@ interface InternalProviderButtonProps {
   provider: Provider
 }
 
-const InternalProviderButton: React.FC<InternalProviderButtonProps> = ({
+export const InternalProviderButton: React.FC<InternalProviderButtonProps> = ({
   provider,
 }) => {
   if (provider.name === LoginProvidersEnum.OKTA.name) {

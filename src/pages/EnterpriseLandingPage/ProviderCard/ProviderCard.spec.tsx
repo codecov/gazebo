@@ -3,7 +3,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { LoginProvidersEnum } from 'shared/utils/loginProviders'
 
-import ProviderCard from './ProviderCard'
+import ProviderCard, { InternalProviderButton } from './ProviderCard'
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/']}>
@@ -18,7 +18,7 @@ describe('ProviderCard', () => {
         render(
           <ProviderCard
             provider={LoginProvidersEnum.BITBUCKET}
-            providers={['BITBUCKET', 'BITBUCKET_SERVER']}
+            providers={['BITBUCKET']}
           />,
           { wrapper }
         )
@@ -34,7 +34,7 @@ describe('ProviderCard', () => {
         render(
           <ProviderCard
             provider={LoginProvidersEnum.BITBUCKET}
-            providers={['BITBUCKET', 'BITBUCKET_SERVER']}
+            providers={['BITBUCKET_SERVER']}
           />,
           { wrapper }
         )
@@ -54,7 +54,7 @@ describe('ProviderCard', () => {
         render(
           <ProviderCard
             provider={LoginProvidersEnum.GITHUB}
-            providers={['GITHUB', 'GITHUB_ENTERPRISE']}
+            providers={['GITHUB']}
           />,
           { wrapper }
         )
@@ -68,7 +68,7 @@ describe('ProviderCard', () => {
         render(
           <ProviderCard
             provider={LoginProvidersEnum.GITHUB}
-            providers={['GITHUB', 'GITHUB_ENTERPRISE']}
+            providers={['GITHUB_ENTERPRISE']}
           />,
           { wrapper }
         )
@@ -88,7 +88,7 @@ describe('ProviderCard', () => {
         render(
           <ProviderCard
             provider={LoginProvidersEnum.GITLAB}
-            providers={['GITLAB', 'GITLAB_ENTERPRISE']}
+            providers={['GITLAB']}
           />,
           { wrapper }
         )
@@ -102,7 +102,7 @@ describe('ProviderCard', () => {
         render(
           <ProviderCard
             provider={LoginProvidersEnum.GITLAB}
-            providers={['GITLAB', 'GITLAB_ENTERPRISE']}
+            providers={['GITLAB_ENTERPRISE']}
           />,
           { wrapper }
         )
@@ -131,6 +131,17 @@ describe('ProviderCard', () => {
         expect(element).toBeInTheDocument()
         expect(element).toHaveAttribute('href', '/login/okta')
       })
+    })
+
+    describe('InternalProviderButton returns null', () => {
+      const { container } = render(
+        <InternalProviderButton provider={LoginProvidersEnum.OKTA} />,
+        {
+          wrapper,
+        }
+      )
+
+      expect(container).toBeEmptyDOMElement()
     })
   })
 })
