@@ -1,4 +1,3 @@
-//@ts-expect-error
 import rocketImg from 'assets/enterprise-rocket.png'
 import { LoginProvidersEnum } from 'shared/utils/loginProviders'
 
