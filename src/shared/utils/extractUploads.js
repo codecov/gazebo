@@ -4,10 +4,7 @@ import groupBy from 'lodash/groupBy'
 import { UploadStateEnum, UploadTypeEnum } from 'shared/utils/commit'
 
 function humanReadableOverview(state, count) {
-  const plural = (count) => (count > 1 ? 'are' : 'is')
   if (state === UploadStateEnum.error) return 'errored'
-  if (state === UploadStateEnum.uploaded || state === UploadStateEnum.pending)
-    return `${plural(count)} pending`
   if (state === UploadStateEnum.processed) return 'successful'
   if (state === UploadStateEnum.complete) return 'carried forward'
   if (state === UploadStateEnum.started) return 'started'
