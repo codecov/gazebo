@@ -328,7 +328,7 @@ export function useCommit({
         const uploadEdges = data?.owner?.repository?.commit?.uploads
 
         const uploads = mapEdges(uploadEdges).map((upload) => {
-          const errors = mapEdges(upload.errors)
+          const errors = mapEdges(upload?.errors)
 
           return {
             ...upload,
