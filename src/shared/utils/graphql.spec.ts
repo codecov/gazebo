@@ -9,19 +9,7 @@ describe('mapEdges', () => {
 
       const mapped = mapEdges(connection)
 
-      expect(mapped).toStrictEqual([{ hello: 'world' }])
-    })
-
-    describe('include null nodes option is true', () => {
-      it('returns the mapped edges', () => {
-        const connection = {
-          edges: [{ node: { hello: 'world' } }, null],
-        }
-
-        const mapped = mapEdges(connection, { includeNullNodes: true })
-
-        expect(mapped).toStrictEqual([{ hello: 'world' }, null])
-      })
+      expect(mapped).toStrictEqual([{ hello: 'world' }, null])
     })
   })
 
