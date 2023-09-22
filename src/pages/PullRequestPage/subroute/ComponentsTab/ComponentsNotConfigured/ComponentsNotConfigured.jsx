@@ -1,4 +1,4 @@
-import frontendAndBackend from 'assets/frontendAndBackend.svg'
+import frontendAndBackend from 'assets/frontendAndBackend.jpg'
 import A from 'ui/A'
 
 function ComponentsNotConfigured() {

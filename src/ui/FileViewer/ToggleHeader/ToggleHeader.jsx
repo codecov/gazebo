@@ -12,12 +12,10 @@ function ToggleHeader({
 }) {
   return (
     <Title title={title} sticky={sticky}>
-      <div className="flex flex-row gap-2">
-        <TitleCoverage coverage={LINE_STATE.UNCOVERED} />
-        <TitleCoverage coverage={LINE_STATE.PARTIAL} />
-        <TitleCoverage coverage={LINE_STATE.COVERED} />
-        <TitleHitCount showHitCount={showHitCount} />
-      </div>
+      <TitleCoverage coverage={LINE_STATE.UNCOVERED} />
+      <TitleCoverage coverage={LINE_STATE.PARTIAL} />
+      <TitleCoverage coverage={LINE_STATE.COVERED} />
+      <TitleHitCount showHitCount={showHitCount} />
       {showFlagsSelect && <TitleFlags />}
     </Title>
   )
