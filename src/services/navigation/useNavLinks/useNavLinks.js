@@ -5,7 +5,15 @@ import { useParams } from 'react-router-dom'
 import config from 'config'
 
 export function useNavLinks() {
-  const { provider: p, owner: o, repo: r, id: i, pullId: pi } = useParams()
+  const {
+    provider: p,
+    owner: o,
+    repo: r,
+    id: i,
+    pullId: pi,
+    commit: c,
+    path: pa,
+  } = useParams()
 
   const utmCookie = Cookie.get('utmParams')
   const utmCookieObj = qs.parse(utmCookie, {
@@ -363,13 +371,17 @@ export function useNavLinks() {
     },
     pullDetail: {
       path: (
-        { provider = p, owner = o, repo = r, pullId = pi } = {
+        { provider = p, owner = o, repo = r, pullId = pi, flags = {} } = {
           provider: p,
           owner: o,
           repo: r,
           pullId: pi,
         }
-      ) => `/${provider}/${owner}/${repo}/pull/${pullId}`,
+      ) => {
+        const query = qs.stringify({ flags }, { addQueryPrefix: true }) || ''
+
+        return `/${provider}/${owner}/${repo}/pull/${pullId}${query}`
+      },
       text: 'Files changed',
     },
     settings: {
@@ -452,13 +464,16 @@ export function useNavLinks() {
     pullIndirectChanges: {
       text: 'Indirect changes',
       path: (
-        { provider = p, owner = o, repo = r, pullId = pi } = {
+        { provider = p, owner = o, repo = r, pullId = pi, flags = {} } = {
           provider: p,
           owner: o,
           repo: r,
           pullId: pi,
         }
-      ) => `/${provider}/${owner}/${repo}/pull/${pullId}/indirect-changes`,
+      ) => {
+        const query = qs.stringify({ flags }, { addQueryPrefix: true }) || ''
+        return `/${provider}/${owner}/${repo}/pull/${pullId}/indirect-changes${query}`
+      },
       isExternalLink: false,
     },
     commitIndirectChanges: {
@@ -483,66 +498,88 @@ export function useNavLinks() {
     pullCommits: {
       text: 'Commits',
       path: (
-        { provider = p, owner = o, repo = r, pullId = pi } = {
+        { provider = p, owner = o, repo = r, pullId = pi, flags = {} } = {
           provider: p,
           owner: o,
           repo: r,
           pullId: pi,
         }
-      ) => `/${provider}/${owner}/${repo}/pull/${pullId}/commits`,
+      ) => {
+        const query = qs.stringify({ flags }, { addQueryPrefix: true }) || ''
+        return `/${provider}/${owner}/${repo}/pull/${pullId}/commits${query}`
+      },
       isExternalLink: false,
     },
     pullFlags: {
       text: 'Flags',
       path: (
-        { provider = p, owner = o, repo = r, pullId = pi } = {
+        { provider = p, owner = o, repo = r, pullId = pi, flags = {} } = {
           provider: p,
           owner: o,
           repo: r,
           pullId: pi,
         }
-      ) => `/${provider}/${owner}/${repo}/pull/${pullId}/flags`,
+      ) => {
+        const query = qs.stringify({ flags }, { addQueryPrefix: true }) || ''
+        return `/${provider}/${owner}/${repo}/pull/${pullId}/flags${query}`
+      },
       isExternalLink: false,
     },
     pullComponents: {
       text: 'Flags',
       path: (
-        { provider = p, owner = o, repo = r, pullId = pi } = {
-          provider: p,
-          owner: o,
-          repo: r,
-          pullId: pi,
-        }
-      ) => `/${provider}/${owner}/${repo}/pull/${pullId}/components`,
-      isExternalLink: false,
-    },
-    pullTreeView: {
-      text: 'Pull tree view',
-      path: (
-        { provider = p, owner = o, repo = r, pullId = pi, tree } = {
+        { provider = p, owner = o, repo = r, pullId = pi, flags = [] } = {
           provider: p,
           owner: o,
           repo: r,
           pullId: pi,
         }
       ) => {
-        if (tree) {
-          return `/${provider}/${owner}/${repo}/pull/${pullId}/tree/${tree}`
+        const query = qs.stringify({ flags }, { addQueryPrefix: true }) || ''
+        return `/${provider}/${owner}/${repo}/pull/${pullId}/components${query}`
+      },
+      isExternalLink: false,
+    },
+    // Tree vs blogs gets strange, for some reason the code relies on a route param path not tree despite the path label. Could likely use a refactor.
+    pullTreeView: {
+      text: 'Pull tree view',
+      path: (
+        { provider = p, owner = o, repo = r, pullId = pi, tree, flags = {} } = {
+          provider: p,
+          owner: o,
+          repo: r,
+          pullId: pi,
         }
-        return `/${provider}/${owner}/${repo}/pull/${pullId}/tree`
+      ) => {
+        // TODO: doesn't default to tree in the url, this diverges from the rest of the links how ever the breadcrumbs rely on it. We should make an alternative solution for the breadcrumb / to support converting to typescript.
+        const query = qs.stringify({ flags }, { addQueryPrefix: true }) || ''
+
+        if (tree) {
+          return `/${provider}/${owner}/${repo}/pull/${pullId}/tree/${tree}${query}`
+        }
+        return `/${provider}/${owner}/${repo}/pull/${pullId}/tree${query}`
       },
       isExternalLink: false,
     },
     pullFileView: {
       path: (
-        { provider = p, owner = o, repo = r, tree, pullId = pi } = {
+        {
+          provider = p,
+          owner = o,
+          repo = r,
+          tree = pa,
+          pullId = pi,
+          flags = {},
+        } = {
           provider: p,
           owner: o,
           repo: r,
           pullId: pi,
+          tree: pa,
         }
       ) => {
-        return `/${provider}/${owner}/${repo}/pull/${pullId}/blob/${tree}`
+        const query = qs.stringify({ flags }, { addQueryPrefix: true }) || ''
+        return `/${provider}/${owner}/${repo}/pull/${pullId}/blob/${tree}${query}`
       },
       isExternalLink: false,
       text: 'Pull File View',

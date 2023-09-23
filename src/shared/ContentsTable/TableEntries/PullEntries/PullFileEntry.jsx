@@ -1,4 +1,6 @@
 import PropTypes from 'prop-types'
+import qs from 'qs'
+import { useLocation } from 'react-router-dom'
 
 import { usePrefetchPullFileEntry } from 'services/pathContents/pull/file'
 
@@ -13,6 +15,10 @@ function PullFileEntry({
   urlPath,
   displayType,
 }) {
+  const { search } = useLocation()
+  const searchParams = qs.parse(search, { ignoreQueryPrefix: true })
+  const flags = searchParams?.flags ?? []
+
   const { runPrefetch } = usePrefetchPullFileEntry({
     path,
     ref: commitSHA,
@@ -27,6 +33,7 @@ function PullFileEntry({
       path={path}
       runPrefetch={runPrefetch}
       pageName="pullFileView"
+      flags={flags}
     />
   )
 }

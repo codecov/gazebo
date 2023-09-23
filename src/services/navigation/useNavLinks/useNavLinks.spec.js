@@ -20,10 +20,21 @@ const wrapper =
           {children}
         </Route>
         <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
+        <Route path="/:provider/:owner/:repo/pull/:pullId/commits">
+          {children}
+        </Route>
+        <Route path="/:provider/:owner/:repo/pull/:pullId/blob/:path+">
+          {children}
+        </Route>
+        <Route path="/:provider/:owner/:repo/pull/:pullId/tree/:path+">
+          {children}
+        </Route>
         <Route path="/admin/:provider/access">{children}</Route>
         <Route path="/admin/:provider/users">{children}</Route>
         <Route path="/admin/:provider/:owner/access">{children}</Route>
         <Route path="/admin/:provider/:owner/users">{children}</Route>
+        <Route path="/account/:provider/:owner">{children}</Route>
+        <Route path="/account/:provider/:owner/billing">{children}</Route>
       </MemoryRouter>
     )
 
@@ -1153,6 +1164,20 @@ describe('useNavLinks', () => {
       })
       expect(path).toBe('/bb/test-owner/test-repo/pull/123')
     })
+
+    it('passes flags selected through to url', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/doggo/squirrel-locator/pull/409'),
+      })
+
+      const path = result.current.pullDetail.path({
+        flags: ['myFlag'],
+      })
+
+      expect(path).toBe(
+        '/gl/doggo/squirrel-locator/pull/409?flags%5B0%5D=myFlag'
+      )
+    })
   })
 
   describe('pull commits', () => {
@@ -1203,6 +1228,19 @@ describe('useNavLinks', () => {
       })
       expect(path).toBe('/bb/test-owner/test-repo/pull/123/flags')
     })
+    it('passes flags selected through to url', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/doggo/squirrel-locator/pull/409/flags'),
+      })
+
+      const path = result.current.pullFlags.path({
+        flags: ['myFlag'],
+      })
+
+      expect(path).toBe(
+        '/gl/doggo/squirrel-locator/pull/409/flags?flags%5B0%5D=myFlag'
+      )
+    })
   })
 
   describe('pull components', () => {
@@ -1227,6 +1265,131 @@ describe('useNavLinks', () => {
         pullId: 888,
       })
       expect(path).toBe('/bb/test-owner/test-repo/pull/888/components')
+    })
+    it('passes flags selected through to url', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/doggo/squirrel-locator/pull/409/components'),
+      })
+
+      const path = result.current.pullComponents.path({
+        flags: ['myFlag'],
+      })
+
+      expect(path).toBe(
+        '/gl/doggo/squirrel-locator/pull/409/components?flags%5B0%5D=myFlag'
+      )
+    })
+  })
+
+  describe('pull tree view', () => {
+    it('returns the correct link with nothing passed', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/doggo/squirrel-locator/pull/409/tree'),
+      })
+
+      const path = result.current.pullTreeView.path()
+      expect(path).toBe('/gl/doggo/squirrel-locator/pull/409/tree')
+    })
+
+    it('can override the params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/doggo/squirrel-locator/pull/409/tree'),
+      })
+
+      const path = result.current.pullTreeView.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+        pullId: 888,
+      })
+      expect(path).toBe('/bb/test-owner/test-repo/pull/888/tree')
+    })
+    describe('with tree option', () => {
+      it('returns the correct link with nothing passed', () => {
+        const { result } = renderHook(() => useNavLinks(), {
+          wrapper: wrapper('/gl/doggo/squirrel-locator/pull/409/tree/src/foo'),
+        })
+
+        const path = result.current.pullTreeView.path()
+        expect(path).toBe('/gl/doggo/squirrel-locator/pull/409/tree')
+      })
+
+      it('can override the params', () => {
+        const { result } = renderHook(() => useNavLinks(), {
+          wrapper: wrapper('/gl/doggo/squirrel-locator/pull/409/tree/src/foo'),
+        })
+
+        const path = result.current.pullTreeView.path({
+          provider: 'bb',
+          owner: 'test-owner',
+          repo: 'test-repo',
+          pullId: 888,
+          tree: 'src/bar',
+        })
+        expect(path).toBe('/bb/test-owner/test-repo/pull/888/tree/src/bar')
+      })
+    })
+    it('passes flags selected through to url', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/doggo/squirrel-locator/pull/409/tree'),
+      })
+
+      const path = result.current.pullTreeView.path({
+        flags: ['myFlag'],
+      })
+
+      expect(path).toBe(
+        '/gl/doggo/squirrel-locator/pull/409/tree?flags%5B0%5D=myFlag'
+      )
+    })
+  })
+
+  describe('pull blob view', () => {
+    it('returns the correct link with nothing passed', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper(
+          '/gl/doggo/squirrel-locator/pull/409/blob/src/some/repo/structure/main.go'
+        ),
+      })
+
+      const path = result.current.pullFileView.path()
+      expect(path).toBe(
+        '/gl/doggo/squirrel-locator/pull/409/blob/src/some/repo/structure/main.go'
+      )
+    })
+
+    it('can override the params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper(
+          '/gl/doggo/squirrel-locator/pull/409/blob/src/some/repo/structure/main.go'
+        ),
+      })
+
+      const path = result.current.pullFileView.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+        pullId: 888,
+        tree: 'another/repo/structure/main.go',
+      })
+      expect(path).toBe(
+        '/bb/test-owner/test-repo/pull/888/blob/another/repo/structure/main.go'
+      )
+    })
+    it('passes flags selected through to url', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper(
+          '/gl/doggo/squirrel-locator/pull/409/blob/src/some/repo/structure/main.go'
+        ),
+      })
+
+      const path = result.current.pullFileView.path({
+        flags: ['myFlag'],
+      })
+
+      expect(path).toBe(
+        '/gl/doggo/squirrel-locator/pull/409/blob/src/some/repo/structure/main.go?flags%5B0%5D=myFlag'
+      )
     })
   })
 
@@ -1256,6 +1419,21 @@ describe('useNavLinks', () => {
         pullId: 888,
       })
       expect(path).toBe('/bb/test-owner/test-repo/pull/888/indirect-changes')
+    })
+    it('passes flags selected through to url', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper(
+          '/gl/doggo/squirrel-locator/pull/409/indirect-changes'
+        ),
+      })
+
+      const path = result.current.pullIndirectChanges.path({
+        flags: ['myFlag'],
+      })
+
+      expect(path).toBe(
+        '/gl/doggo/squirrel-locator/pull/409/indirect-changes?flags%5B0%5D=myFlag'
+      )
     })
   })
 
@@ -1451,6 +1629,34 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('circleCIEnvVars', () => {
+    it('returns the correct link with nothing passed', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov/cool-repo'),
+      })
+
+      const path = result.current.circleCIEnvVars.path()
+      expect(path).toBe(
+        'https://app.circleci.com/settings/project/gh/codecov/cool-repo/environment-variables'
+      )
+    })
+
+    it('can override the params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov/cool-repo'),
+      })
+
+      const path = result.current.circleCIEnvVars.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+      })
+      expect(path).toBe(
+        'https://app.circleci.com/settings/project/bb/test-owner/test-repo/environment-variables'
+      )
+    })
+  })
+
   describe('circleCI yaml', () => {
     it('returns the correct link with nothing passed', () => {
       const { result } = renderHook(() => useNavLinks(), {
@@ -1476,6 +1682,52 @@ describe('useNavLinks', () => {
       expect(path).toBe(
         'https://github.com/test-owner/test-repo/tree/master/.circleci/config'
       )
+    })
+  })
+
+  describe('billingAndUsers', () => {
+    it('returns the correct link with nothing passed', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/account/gh/codecov/billing'),
+      })
+
+      const path = result.current.billingAndUsers.path()
+      expect(path).toBe('/account/gh/codecov/billing')
+    })
+
+    it('can override the params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/account/gh/codecov/billing'),
+      })
+
+      const path = result.current.billingAndUsers.path({
+        provider: 'bb',
+        owner: 'test-owner',
+      })
+      expect(path).toBe('/account/bb/test-owner/billing')
+    })
+  })
+
+  describe('Profile', () => {
+    it('returns the correct link with nothing passed', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/account/gh/codecov'),
+      })
+
+      const path = result.current.profile.path()
+      expect(path).toBe('/account/gh/codecov')
+    })
+
+    it('can override the params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/account/gh/codecov'),
+      })
+
+      const path = result.current.profile.path({
+        provider: 'bb',
+        owner: 'test-owner',
+      })
+      expect(path).toBe('/account/bb/test-owner')
     })
   })
 })

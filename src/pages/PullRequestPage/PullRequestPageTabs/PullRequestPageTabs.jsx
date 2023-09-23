@@ -1,3 +1,4 @@
+import qs from 'qs'
 import { useLocation, useParams } from 'react-router-dom'
 
 import {
@@ -18,8 +19,10 @@ function PullRequestPageTabs() {
     commitsCount,
   } = useTabsCounts()
 
-  const { pathname } = useLocation()
+  const { pathname, search } = useLocation()
   const { provider, owner, repo, pullId } = useParams()
+  const searchParams = qs.parse(search, { ignoreQueryPrefix: true })
+  const flags = searchParams?.flags ?? []
 
   const blobPath = pathname.includes(
     `/${provider}/${pullFileviewString({ owner, repo, pullId })}`
@@ -47,6 +50,7 @@ function PullRequestPageTabs() {
               <sup className="text-xs">{directChangedFilesCount}</sup>
             </>
           ),
+          options: { flags },
           exact: true,
         },
         {
@@ -57,6 +61,7 @@ function PullRequestPageTabs() {
               <sup className="text-xs">{indirectChangesCount}</sup>
             </>
           ),
+          options: { flags },
         },
         {
           pageName: 'pullCommits',
@@ -66,6 +71,7 @@ function PullRequestPageTabs() {
               <sup className="text-xs">{commitsCount}</sup>
             </>
           ),
+          options: { flags },
         },
         {
           pageName: 'pullFlags',
@@ -75,6 +81,7 @@ function PullRequestPageTabs() {
               <sup className="text-xs">{flagsCount}</sup>
             </>
           ),
+          options: { flags },
         },
         {
           pageName: 'pullComponents',
@@ -84,6 +91,7 @@ function PullRequestPageTabs() {
               <sup className="text-xs">{componentsCount}</sup>
             </>
           ),
+          options: { flags },
         },
         {
           pageName: 'pullTreeView',
