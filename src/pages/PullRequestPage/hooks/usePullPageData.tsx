@@ -68,7 +68,6 @@ query PullPageData($owner: String!, $repo: String!, $pullId: Int!) {
     repository(name: $repo) {
       __typename
       ... on Repository {
-        private
         pull(id: $pullId) {
           pullId
           head {
@@ -96,6 +95,9 @@ query PullPageData($owner: String!, $repo: String!, $pullId: Int!) {
               message
             }
             ... on MissingHeadReport {
+              message
+            }
+            ... on FirstPullRequest {
               message
             }
           }
