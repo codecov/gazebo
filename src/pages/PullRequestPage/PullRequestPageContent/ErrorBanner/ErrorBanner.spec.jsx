@@ -2,8 +2,9 @@ import { render, screen } from 'custom-testing-library'
 
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { ComparisonReturnType } from './constants'
 import ErrorBanner from './ErrorBanner'
+
+import { ComparisonReturnType } from '../../constants'
 
 describe('ErrorBanner Card', () => {
   function setup({ errorType }) {

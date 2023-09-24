@@ -8,6 +8,7 @@ import {
   MissingHeadCommitSchema,
   MissingHeadReportSchema,
 } from 'services/comparison'
+import { FirstPullRequestSchema } from 'services/comparison/schemas/FirstPullRequst'
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
@@ -40,6 +41,7 @@ const RepositorySchema = z.object({
           MissingComparisonSchema,
           MissingHeadCommitSchema,
           MissingHeadReportSchema,
+          FirstPullRequestSchema,
         ])
         .nullable(),
     })

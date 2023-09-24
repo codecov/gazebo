@@ -7,6 +7,8 @@ import ImpactedFiles from './IndirectChangedFiles'
 import { useIndirectChangedFilesTable } from './IndirectChangedFiles/hooks'
 import IndirectChangesInfo from './IndirectChangesInfo'
 
+import { ComparisonReturnType } from '../../constants'
+
 function hasImpactedFiles(impactedFiles) {
   return impactedFiles && impactedFiles?.length > 0
 }
@@ -31,12 +33,14 @@ const Loader = () => (
 
 function IndirectChangesTab() {
   const { data, isLoading } = useIndirectChangedFilesTable()
+  const isFirstPull =
+    data?.compareWithBaseType === ComparisonReturnType.FIRST_PULL_REQUEST
 
   if (isLoading) {
     return <Loader />
   }
 
-  if (data?.headState === CommitStateEnum.ERROR) {
+  if (data?.headState === CommitStateEnum.ERROR && !isFirstPull) {
     return (
       <>
         <IndirectChangesInfo />
@@ -62,7 +66,8 @@ function IndirectChangesTab() {
       pullHeadCoverage: data?.pullHeadCoverage,
       pullBaseCoverage: data?.pullBaseCoverage,
       pullPatchCoverage: data?.pullPatchCoverage,
-    })
+    }) ||
+    isFirstPull
   ) {
     return (
       <>

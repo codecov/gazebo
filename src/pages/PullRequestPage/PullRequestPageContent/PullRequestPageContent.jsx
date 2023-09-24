@@ -7,8 +7,8 @@ import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import Spinner from 'ui/Spinner'
 
 import ErrorBanner from './ErrorBanner'
-import { ComparisonReturnType } from './ErrorBanner/constants'
 
+import { ComparisonReturnType } from '../constants'
 import { usePullPageData } from '../hooks'
 
 const FilesChangedTab = lazy(() => import('../subroute/FilesChangedTab'))
@@ -31,7 +31,10 @@ function PullRequestPageContent() {
 
   const resultType = data?.pull?.compareWithBase?.__typename
 
-  if (resultType !== ComparisonReturnType.SUCCESSFUL_COMPARISON) {
+  if (
+    resultType !== ComparisonReturnType.SUCCESSFUL_COMPARISON &&
+    resultType !== ComparisonReturnType.FIRST_PULL_REQUEST
+  ) {
     return <ErrorBanner errorType={resultType} />
   }
 

@@ -6,6 +6,8 @@ import Spinner from 'ui/Spinner'
 import FilesChanged from './FilesChanged'
 import { useImpactedFilesTable } from './FilesChanged/hooks'
 
+import { ComparisonReturnType } from '../../constants'
+
 const Loader = () => (
   <div className="flex items-center justify-center py-16">
     <Spinner />
@@ -30,12 +32,15 @@ function hasReportWithoutChanges({
 
 function FilesChangedTab() {
   const { data, isLoading } = useImpactedFilesTable()
+  const isFirstPull =
+    data.pull.compareWithBase.__typename ===
+    ComparisonReturnType.FIRST_PULL_REQUEST
 
   if (isLoading) {
     return <Loader />
   }
 
-  if (data?.headState === CommitStateEnum.ERROR) {
+  if (data?.headState === CommitStateEnum.ERROR && !isFirstPull) {
     return (
       <div className="flex flex-col gap-2">
         <p>
@@ -59,7 +64,8 @@ function FilesChangedTab() {
       pullHeadCoverage: data?.pullHeadCoverage,
       pullBaseCoverage: data?.pullBaseCoverage,
       pullPatchCoverage: data?.pullPatchCoverage,
-    })
+    }) ||
+    isFirstPull
   ) {
     return (
       <div className="flex flex-col gap-2">
