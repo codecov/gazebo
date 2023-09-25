@@ -18,7 +18,7 @@ export default function Title({ title, children, sticky = false }) {
       data-testid="title-wrapper-div"
       className={cs(
         { 'z-10 sticky top-[4.5rem]': sticky },
-        'flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 flex-wrap bg-white px-3 sm:px-0'
+        'flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 flex-wrap bg-white px-0 w-full lg:w-auto flex-1 lg:flex-none md:mb-1'
       )}
     >
       {title && (
@@ -26,7 +26,7 @@ export default function Title({ title, children, sticky = false }) {
           {title}
         </span>
       )}
-      <div className="flex flex-col items-center justify-between gap-2 sm:flex-row">
+      <div className="flex w-full flex-wrap items-center justify-between gap-2 md:w-auto">
         {children}
       </div>
     </div>

@@ -3,24 +3,18 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { usePullPageData } from './usePullPageData'
+import { useCompareTotals } from './useCompareTotals'
 
-const mockPullData = {
+const mockResponse = {
   owner: {
     repository: {
       __typename: 'Repository',
-      pull: {
-        pullId: 1,
-        head: {
-          commitid: '123',
-        },
-        compareWithBase: {
+      commit: {
+        compareWithParent: {
           __typename: 'Comparison',
-          impactedFilesCount: 4,
-          indirectChangedFilesCount: 0,
-          flagComparisonsCount: 1,
-          componentComparisonsCount: 6,
-          directChangedFilesCount: 0,
+          state: 'pending',
+          patchTotals: null,
+          impactedFiles: [],
         },
       },
     },
@@ -29,6 +23,7 @@ const mockPullData = {
 
 const mockNotFoundError = {
   owner: {
+    isCurrentUserPartOfOrg: true,
     repository: {
       __typename: 'NotFoundError',
       message: 'commit not found',
@@ -38,6 +33,7 @@ const mockNotFoundError = {
 
 const mockOwnerNotActivatedError = {
   owner: {
+    isCurrentUserPartOfOrg: true,
     repository: {
       __typename: 'OwnerNotActivatedError',
       message: 'owner not activated',
@@ -51,10 +47,10 @@ const mockNullOwner = {
 
 const mockUnsuccessfulParseError = {}
 
+const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const server = setupServer()
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -63,12 +59,10 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 beforeAll(() => {
   server.listen()
 })
-
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-
 afterAll(() => {
   server.close()
 })
@@ -80,7 +74,7 @@ interface SetupArgs {
   isNullOwner?: boolean
 }
 
-describe('usePullPageData', () => {
+describe('useCompareTotals', () => {
   function setup({
     isNotFoundError = false,
     isOwnerNotActivatedError = false,
@@ -88,7 +82,7 @@ describe('usePullPageData', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('PullPageData', (req, res, ctx) => {
+      graphql.query('CompareTotals', (req, res, ctx) => {
         if (isNotFoundError) {
           return res(ctx.status(200), ctx.data(mockNotFoundError))
         } else if (isOwnerNotActivatedError) {
@@ -98,48 +92,41 @@ describe('usePullPageData', () => {
         } else if (isNullOwner) {
           return res(ctx.status(200), ctx.data(mockNullOwner))
         } else {
-          return res(ctx.status(200), ctx.data(mockPullData))
+          return res(ctx.status(200), ctx.data(mockResponse))
         }
       })
     )
   }
 
   describe('calling hook', () => {
-    describe('repository __typename of Repository', () => {
-      describe('there is data', () => {
-        it('returns the correct data', async () => {
+    describe('returns repository typename of Repository', () => {
+      describe('there is valid data', () => {
+        it('fetches the branch data', async () => {
           setup({})
-
           const { result } = renderHook(
             () =>
-              usePullPageData({
+              useCompareTotals({
                 provider: 'gh',
                 owner: 'codecov',
                 repo: 'cool-repo',
-                pullId: '1',
+                commitid: '123',
               }),
-            {
-              wrapper,
-            }
+            { wrapper }
           )
-
-          await waitFor(() => result.current.isLoading)
-          await waitFor(() => !result.current.isLoading)
 
           await waitFor(() =>
             expect(result.current.data).toStrictEqual({
-              pull: {
-                pullId: 1,
-                head: {
-                  commitid: '123',
-                },
-                compareWithBase: {
-                  __typename: 'Comparison',
-                  impactedFilesCount: 4,
-                  indirectChangedFilesCount: 0,
-                  flagComparisonsCount: 1,
-                  componentComparisonsCount: 6,
-                  directChangedFilesCount: 0,
+              owner: {
+                repository: {
+                  __typename: 'Repository',
+                  commit: {
+                    compareWithParent: {
+                      __typename: 'Comparison',
+                      state: 'pending',
+                      patchTotals: null,
+                      impactedFiles: [],
+                    },
+                  },
                 },
               },
             })
@@ -147,29 +134,23 @@ describe('usePullPageData', () => {
         })
       })
 
-      describe('there is no data', () => {
-        it('returns the correct data', async () => {
+      describe('there is a null owner', () => {
+        it('returns a null value', async () => {
           setup({ isNullOwner: true })
-
           const { result } = renderHook(
             () =>
-              usePullPageData({
+              useCompareTotals({
                 provider: 'gh',
                 owner: 'codecov',
                 repo: 'cool-repo',
-                pullId: '1',
+                commitid: '123',
               }),
-            {
-              wrapper,
-            }
+            { wrapper }
           )
-
-          await waitFor(() => result.current.isLoading)
-          await waitFor(() => !result.current.isLoading)
 
           await waitFor(() =>
             expect(result.current.data).toStrictEqual({
-              pull: null,
+              owner: null,
             })
           )
         })
@@ -177,29 +158,25 @@ describe('usePullPageData', () => {
     })
 
     describe('returns NotFoundError __typename', () => {
-      let oldConsoleError = console.error
-
-      beforeEach(() => {
-        console.error = () => null
+      beforeAll(() => {
+        jest.spyOn(console, 'error')
       })
 
-      afterEach(() => {
-        console.error = oldConsoleError
+      afterAll(() => {
+        jest.resetAllMocks()
       })
 
       it('throws a 404', async () => {
         setup({ isNotFoundError: true })
         const { result } = renderHook(
           () =>
-            usePullPageData({
+            useCompareTotals({
               provider: 'gh',
               owner: 'codecov',
               repo: 'cool-repo',
-              pullId: '1',
+              commitid: '123',
             }),
-          {
-            wrapper,
-          }
+          { wrapper }
         )
 
         await waitFor(() => expect(result.current.isError).toBeTruthy())
@@ -214,29 +191,25 @@ describe('usePullPageData', () => {
     })
 
     describe('returns OwnerNotActivatedError __typename', () => {
-      let oldConsoleError = console.error
-
-      beforeEach(() => {
-        console.error = () => null
+      beforeAll(() => {
+        jest.spyOn(console, 'error')
       })
 
-      afterEach(() => {
-        console.error = oldConsoleError
+      afterAll(() => {
+        jest.resetAllMocks()
       })
 
       it('throws a 403', async () => {
         setup({ isOwnerNotActivatedError: true })
         const { result } = renderHook(
           () =>
-            usePullPageData({
+            useCompareTotals({
               provider: 'gh',
               owner: 'codecov',
               repo: 'cool-repo',
-              pullId: '1',
+              commitid: '123',
             }),
-          {
-            wrapper,
-          }
+          { wrapper }
         )
 
         await waitFor(() => expect(result.current.isError).toBeTruthy())
@@ -251,29 +224,25 @@ describe('usePullPageData', () => {
     })
 
     describe('unsuccessful parse of zod schema', () => {
-      let oldConsoleError = console.error
-
-      beforeEach(() => {
-        console.error = () => null
+      beforeAll(() => {
+        jest.spyOn(console, 'error')
       })
 
-      afterEach(() => {
-        console.error = oldConsoleError
+      afterAll(() => {
+        jest.resetAllMocks()
       })
 
       it('throws a 404', async () => {
         setup({ isUnsuccessfulParseError: true })
         const { result } = renderHook(
           () =>
-            usePullPageData({
+            useCompareTotals({
               provider: 'gh',
               owner: 'codecov',
               repo: 'cool-repo',
-              pullId: '1',
+              commitid: '123',
             }),
-          {
-            wrapper,
-          }
+          { wrapper }
         )
 
         await waitFor(() => expect(result.current.isError).toBeTruthy())

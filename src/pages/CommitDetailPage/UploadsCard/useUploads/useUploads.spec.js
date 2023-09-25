@@ -47,7 +47,10 @@ describe('useUploads', () => {
     beforeEach(() => {
       setup(commitEmptyUploads)
     })
-    afterEach(() => server.resetHandlers())
+
+    afterEach(() => {
+      server.resetHandlers()
+    })
 
     describe('when data is loaded', () => {
       it('returns sortedUploads', () => {
@@ -80,7 +83,10 @@ describe('useUploads', () => {
     beforeEach(() => {
       setup(commitErrored)
     })
-    afterEach(() => server.resetHandlers())
+
+    afterEach(() => {
+      server.resetHandlers()
+    })
 
     describe('when data is loaded', () => {
       it('returns uploadsOverview', async () => {
@@ -95,7 +101,7 @@ describe('useUploads', () => {
         )
 
         expect(result.current.uploadsOverview).toEqual(
-          '2 errored, 3 are pending, 1 successful'
+          '2 errored, 3 started, 1 successful'
         )
       })
 
@@ -111,6 +117,7 @@ describe('useUploads', () => {
             result.current.sortedUploads
           )
         )
+
         expect(result.current.sortedUploads).toMatchObject({
           'github actions': [
             {
@@ -172,7 +179,7 @@ describe('useUploads', () => {
               flags: ['backend', 'front-end', 'end2end', 'unit', 'worker'],
               jobCode: '1234',
               provider: 'travis',
-              state: 'PENDING',
+              state: 'STARTED',
               updatedAt: '2020-08-25T16:36:19.679868+00:00',
               uploadType: 'UPLOADED',
             },
@@ -184,7 +191,7 @@ describe('useUploads', () => {
               flags: ['backend', 'front-end'],
               jobCode: '1234',
               provider: 'travis',
-              state: 'PENDING',
+              state: 'STARTED',
               updatedAt: '2020-08-25T16:36:19.679868+00:00',
               uploadType: 'UPLOADED',
             },
@@ -196,7 +203,7 @@ describe('useUploads', () => {
               flags: ['backend', 'front-end'],
               jobCode: '1234',
               provider: 'travis',
-              state: 'PENDING',
+              state: 'STARTED',
               updatedAt: '2020-08-25T16:36:19.679868+00:00',
               uploadType: 'UPLOADED',
             },
@@ -244,7 +251,11 @@ describe('useUploads', () => {
       beforeEach(() => {
         setup(commitOneCarriedForward)
       })
-      afterEach(() => server.resetHandlers())
+
+      afterEach(() => {
+        server.resetHandlers()
+      })
+
       it('returns uploadsOverview', async () => {
         const { result } = renderHook(() => useUploads(), {
           wrapper,
@@ -259,11 +270,16 @@ describe('useUploads', () => {
         expect(result.current.uploadsOverview).toEqual('1 carried forward')
       })
     })
+
     describe('commit with out a carried forward flag', () => {
       beforeEach(() => {
         setup(commitOnePending)
       })
-      afterEach(() => server.resetHandlers())
+
+      afterEach(() => {
+        server.resetHandlers()
+      })
+
       it('returns uploadsOverview', async () => {
         const { result } = renderHook(() => useUploads(), {
           wrapper,
@@ -278,29 +294,6 @@ describe('useUploads', () => {
         expect(result.current.uploadsOverview).not.toContain(
           '1 carried forward'
         )
-      })
-    })
-  })
-
-  describe('handles singular pending case', () => {
-    beforeEach(async () => {
-      setup(commitOnePending)
-    })
-    afterEach(() => server.resetHandlers())
-
-    describe('when data is loaded', () => {
-      it('returns uploadsOverview', async () => {
-        const { result } = renderHook(() => useUploads(), {
-          wrapper,
-        })
-
-        const initUploadsOverview = result.current.uploadsOverview
-
-        await waitFor(() =>
-          expect(initUploadsOverview).not.toBe(result.current.uploadsOverview)
-        )
-
-        expect(result.current.uploadsOverview).toEqual('1 is pending')
       })
     })
   })
