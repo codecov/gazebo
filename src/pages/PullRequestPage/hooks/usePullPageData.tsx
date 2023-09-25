@@ -83,6 +83,9 @@ query PullPageData($owner: String!, $repo: String!, $pullId: Int!) {
               flagComparisonsCount
               componentComparisonsCount
             }
+            ... on FirstPullRequest {
+              message
+            }
             ... on MissingBaseCommit {
               message
             }
@@ -96,9 +99,6 @@ query PullPageData($owner: String!, $repo: String!, $pullId: Int!) {
               message
             }
             ... on MissingHeadReport {
-              message
-            }
-            ... on FirstPullRequest {
               message
             }
           }

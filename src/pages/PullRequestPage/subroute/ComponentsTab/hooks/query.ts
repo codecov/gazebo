@@ -21,6 +21,9 @@ export const query = `
                   }
                 }
               }
+              ... on FirstPullRequest {
+                message
+              }
               ... on MissingBaseCommit {
                 message
               }
@@ -34,9 +37,6 @@ export const query = `
                 message
               }
               ... on MissingHeadReport {
-                message
-              }
-              ... on FirstPullRequest {
                 message
               }
             }
