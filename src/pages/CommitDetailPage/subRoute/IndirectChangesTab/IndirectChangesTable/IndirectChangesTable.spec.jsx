@@ -53,10 +53,29 @@ describe('IndirectChangesTable', () => {
           ctx.data({
             owner: {
               repository: {
+                __typename: 'Repository',
                 commit: {
+                  totals: {
+                    coverage: 100,
+                  },
                   state,
                   commitid: '123',
-                  compareWithParent: { impactedFiles: data },
+                  pullId: 1,
+                  branchName: null,
+                  createdAt: null,
+                  author: null,
+                  uploads: null,
+                  message: null,
+                  ciPassed: null,
+                  parent: null,
+                  compareWithParent: {
+                    __typename: 'Comparison',
+                    state: 'processed',
+                    indirectChangedFilesCount: 2,
+                    directChangedFilesCount: 2,
+                    patchTotals: null,
+                    impactedFiles: data,
+                  },
                 },
               },
             },
@@ -117,9 +136,9 @@ describe('IndirectChangesTable', () => {
       setup([
         {
           headName: '',
-          baseCoverage: {},
-          headCoverage: {},
-          patchCoverage: {},
+          baseCoverage: null,
+          headCoverage: null,
+          patchCoverage: null,
         },
       ])
     })
@@ -144,7 +163,7 @@ describe('IndirectChangesTable', () => {
       setup([
         {
           headName: '',
-          baseCoverage: {},
+          baseCoverage: null,
           headCoverage: {
             coverage: 67,
           },

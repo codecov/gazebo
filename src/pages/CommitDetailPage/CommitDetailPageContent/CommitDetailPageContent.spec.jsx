@@ -21,19 +21,46 @@ jest.mock('../subRoute/IndirectChangesTab', () => () => 'IndirectChangesTab')
 const mockCommitData = {
   owner: {
     repository: {
+      __typename: 'Repository',
       commit: {
-        compareWithParent: {
-          indirectChangedFilesCount: 99,
-          directChangedFilesCount: 19,
-        },
+        totals: null,
+        state: null,
+        commitid: null,
+        pullId: null,
+        branchName: null,
+        createdAt: null,
+        author: null,
+        message: null,
+        ciPassed: null,
+        parent: null,
         uploads: {
           edges: [
             {
               node: {
+                state: 'STARTED',
+                id: null,
                 name: 'upload-1',
+                provider: null,
+                createdAt: '',
+                updatedAt: '',
+                flags: null,
+                jobCode: null,
+                downloadUrl: null,
+                ciUrl: null,
+                uploadType: null,
+                buildCode: null,
+                errors: null,
               },
             },
           ],
+        },
+        compareWithParent: {
+          __typename: 'Comparison',
+          indirectChangedFilesCount: 99,
+          directChangedFilesCount: 19,
+          state: 'state',
+          patchTotals: null,
+          impactedFiles: [],
         },
       },
     },
@@ -43,16 +70,46 @@ const mockCommitData = {
 const mockCommitErroredData = {
   owner: {
     repository: {
+      __typename: 'Repository',
       commit: {
+        totals: null,
+        state: null,
+        commitid: null,
+        pullId: null,
+        branchName: null,
+        createdAt: null,
+        author: null,
+        message: null,
+        ciPassed: null,
+        parent: null,
         uploads: {
           edges: [
             {
               node: {
-                name: 'upload-1',
                 state: 'ERROR',
+                id: null,
+                name: 'upload-1',
+                provider: null,
+                createdAt: '',
+                updatedAt: '',
+                flags: null,
+                jobCode: null,
+                downloadUrl: null,
+                ciUrl: null,
+                uploadType: null,
+                buildCode: null,
+                errors: null,
               },
             },
           ],
+        },
+        compareWithParent: {
+          __typename: 'Comparison',
+          indirectChangedFilesCount: 99,
+          directChangedFilesCount: 19,
+          state: 'state',
+          patchTotals: null,
+          impactedFiles: [],
         },
       },
     },
