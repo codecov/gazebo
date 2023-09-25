@@ -74,7 +74,8 @@ function IndirectChangesTab() {
       pullHeadCoverage: data?.pullHeadCoverage,
       pullBaseCoverage: data?.pullBaseCoverage,
       pullPatchCoverage: data?.pullPatchCoverage,
-    })
+    }) ||
+    isFirstPull
   ) {
     return (
       <>
