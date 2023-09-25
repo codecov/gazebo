@@ -41,24 +41,6 @@ fragment SummaryOnPullFragment on Pull {
       changeCoverage
       hasDifferentNumberOfHeadAndBaseReports
     }
-    ... on FirstPullRequest {
-      message
-    }
-    ... on MissingBaseCommit {
-      message
-    }
-    ... on MissingHeadCommit {
-      message
-    }
-    ... on MissingComparison {
-      message
-    }
-    ... on MissingBaseReport {
-      message
-    }
-    ... on MissingHeadReport {
-      message
-    }
   }
   commits {
     edges {
@@ -106,24 +88,6 @@ fragment FlagComparisonsOnPull on Pull {
       }
     }
   }
-  ... on FirstPullRequest {
-    message
-  }
-  ... on MissingBaseCommit {
-    message
-  }
-  ... on MissingHeadCommit {
-    message
-  }
-  ... on MissingComparison {
-    message
-  }
-  ... on MissingBaseReport {
-    message
-  }
-  ... on MissingHeadReport {
-    message
-  }
 }
 `
 
@@ -161,24 +125,6 @@ fragment ImpactedFilesOnPull on Pull {
         }
         changeCoverage
       }
-    }
-    ... on FirstPullRequest {
-      message
-    }
-    ... on MissingBaseCommit {
-      message
-    }
-    ... on MissingHeadCommit {
-      message
-    }
-    ... on MissingComparison {
-      message
-    }
-    ... on MissingBaseReport {
-      message
-    }
-    ... on MissingHeadReport {
-      message
     }
   }
 }
@@ -226,24 +172,6 @@ fragment FileComparisonWithBase on Pull {
           }
         }
       }
-    }
-    ... on FirstPullRequest {
-      message
-    }
-    ... on MissingBaseCommit {
-      message
-    }
-    ... on MissingHeadCommit {
-      message
-    }
-    ... on MissingComparison {
-      message
-    }
-    ... on MissingBaseReport {
-      message
-    }
-    ... on MissingHeadReport {
-      message
     }
   }
 }
