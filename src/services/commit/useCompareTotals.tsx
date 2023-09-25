@@ -2,6 +2,7 @@ import { useQuery, type UseQueryOptions } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import {
+  FirstPullRequestSchema,
   MissingBaseCommitSchema,
   MissingBaseReportSchema,
   MissingComparisonSchema,
@@ -36,6 +37,7 @@ const ComparisonSchema = z.object({
 const CompareWithParentSchema = z
   .discriminatedUnion('__typename', [
     ComparisonSchema,
+    FirstPullRequestSchema,
     MissingBaseCommitSchema,
     MissingBaseReportSchema,
     MissingComparisonSchema,
@@ -96,6 +98,9 @@ query CompareTotals(
                   coverage: percentCovered
                 }
               }
+            }
+            ... on FirstPullRequest {
+              message
             }
             ... on MissingBaseCommit {
               message
