@@ -40,7 +40,15 @@ function IndirectChangesTab() {
     return <Loader />
   }
 
-  if (data?.headState === CommitStateEnum.ERROR && !isFirstPull) {
+  if (isFirstPull) {
+    return (
+      <p className="mt-4">
+        No comparison made since it&apos;s your first commit with Codecov
+      </p>
+    )
+  }
+
+  if (data?.headState === CommitStateEnum.ERROR) {
     return (
       <>
         <IndirectChangesInfo />
@@ -66,8 +74,7 @@ function IndirectChangesTab() {
       pullHeadCoverage: data?.pullHeadCoverage,
       pullBaseCoverage: data?.pullBaseCoverage,
       pullPatchCoverage: data?.pullPatchCoverage,
-    }) ||
-    isFirstPull
+    })
   ) {
     return (
       <>

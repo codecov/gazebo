@@ -12,7 +12,7 @@ jest.mock('shared/featureFlags')
 jest.mock('./Summary', () => () => 'CompareSummary')
 jest.mock('./PullRequestPageContent', () => () => 'PullRequestPageContent')
 jest.mock('./PullRequestPageTabs', () => () => 'PullRequestPageTabs')
-jest.mock('./FirstPullRequest', () => () => 'FirstPullRequest')
+jest.mock('./FirstPullBanner', () => () => 'FirstPullBanner')
 
 const mockPullHeadData = {
   owner: {
@@ -133,7 +133,7 @@ describe('PullRequestPage', () => {
     it('renders compare summary', async () => {
       render(<PullRequestPage />, { wrapper: wrapper() })
 
-      const compareSummary = await screen.findByText('CompareSummary')
+      const compareSummary = await screen.findByText(/CompareSummary/)
       expect(compareSummary).toBeInTheDocument()
     })
 
@@ -156,7 +156,7 @@ describe('PullRequestPage', () => {
     it('renders the first pull request banner', async () => {
       render(<PullRequestPage />, { wrapper: wrapper() })
 
-      const firstPullRequestBanner = await screen.findByText(/FirstPullRequest/)
+      const firstPullRequestBanner = await screen.findByText(/FirstPullBanner/)
       expect(firstPullRequestBanner).toBeInTheDocument()
     })
   })

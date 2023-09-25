@@ -9,6 +9,8 @@ import { CommitStateEnum } from 'shared/utils/commit'
 
 import FilesChangedTab from './FilesChangedTab'
 
+import { ComparisonReturnType } from '../../constants'
+
 jest.mock('./FilesChanged', () => () => 'Files Changed Component')
 
 const mockImpactedFiles = [
@@ -52,9 +54,10 @@ const mockPull = {
       pull: {
         pullId: 14,
         head: {
-          state: 'COMPLETE',
+          state: CommitStateEnum.COMPLETE,
         },
         compareWithBase: {
+          __typename: ComparisonReturnType.SUCCESSFUL_COMPARISON,
           patchTotals: {
             percentCovered: 92.12,
           },
@@ -131,9 +134,10 @@ describe('FilesChanged', () => {
             pull: {
               pullId: 14,
               head: {
-                state: 'COMPLETE',
+                state: CommitStateEnum.COMPLETE,
               },
               compareWithBase: {
+                __typename: ComparisonReturnType.SUCCESSFUL_COMPARISON,
                 patchTotals: {
                   percentCovered: 92.12,
                 },
@@ -152,6 +156,7 @@ describe('FilesChanged', () => {
       }
       setup({ overrideData })
     })
+
     it('renders no change text', async () => {
       render(<FilesChangedTab />, { wrapper })
 
@@ -175,6 +180,7 @@ describe('FilesChanged', () => {
     beforeEach(() => {
       setup({ overrideData: {} })
     })
+
     it('renders no changed files text', async () => {
       render(<FilesChangedTab />, { wrapper })
 
@@ -196,6 +202,9 @@ describe('FilesChanged', () => {
           repository: {
             pull: {
               pullId: 14,
+              compareWithBase: {
+                __typename: ComparisonReturnType.MISSING_BASE_COMMIT,
+              },
               head: {
                 state: CommitStateEnum.ERROR,
               },
@@ -213,6 +222,31 @@ describe('FilesChanged', () => {
         'Cannot display changed files because most recent commit is in an error state.'
       )
       expect(error).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered for first pull request', () => {
+    it('renders first pull request copy', async () => {
+      setup({
+        overrideData: {
+          owner: {
+            repository: {
+              pull: {
+                pullId: 14,
+                compareWithBase: {
+                  __typename: ComparisonReturnType.FIRST_PULL_REQUEST,
+                },
+              },
+            },
+          },
+        },
+      })
+      render(<FilesChangedTab />, { wrapper })
+
+      const firstPullRequestCopy = await screen.findByText(
+        /No comparison made since it's your first commit with Codecov/
+      )
+      expect(firstPullRequestCopy).toBeInTheDocument()
     })
   })
 })

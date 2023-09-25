@@ -33,14 +33,21 @@ function hasReportWithoutChanges({
 function FilesChangedTab() {
   const { data, isLoading } = useImpactedFilesTable()
   const isFirstPull =
-    data.pull.compareWithBase.__typename ===
-    ComparisonReturnType.FIRST_PULL_REQUEST
+    data?.compareWithBaseType === ComparisonReturnType.FIRST_PULL_REQUEST
 
   if (isLoading) {
     return <Loader />
   }
 
-  if (data?.headState === CommitStateEnum.ERROR && !isFirstPull) {
+  if (isFirstPull) {
+    return (
+      <p className="mt-4">
+        No comparison made since it&apos;s your first commit with Codecov
+      </p>
+    )
+  }
+
+  if (data?.headState === CommitStateEnum.ERROR) {
     return (
       <div className="flex flex-col gap-2">
         <p>
@@ -64,8 +71,7 @@ function FilesChangedTab() {
       pullHeadCoverage: data?.pullHeadCoverage,
       pullBaseCoverage: data?.pullBaseCoverage,
       pullPatchCoverage: data?.pullPatchCoverage,
-    }) ||
-    isFirstPull
+    })
   ) {
     return (
       <div className="flex flex-col gap-2">

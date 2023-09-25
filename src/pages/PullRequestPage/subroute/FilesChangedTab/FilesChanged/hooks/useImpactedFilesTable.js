@@ -60,6 +60,7 @@ function transformImpactedFilesData({ pull }) {
     pullHeadCoverage: compareWithBase?.headTotals?.percentCovered,
     pullPatchCoverage: compareWithBase?.patchTotals?.percentCovered,
     pullBaseCoverage: compareWithBase?.baseTotals?.percentCovered,
+    compareWithBaseType: compareWithBase?.__typename,
   }
 }
 
