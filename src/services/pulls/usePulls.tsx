@@ -6,6 +6,7 @@ import isArray from 'lodash/isArray'
 import { z } from 'zod'
 
 import {
+  FirstPullRequestSchema,
   MissingBaseCommitSchema,
   MissingBaseReportSchema,
   MissingComparisonSchema,
@@ -59,6 +60,7 @@ const PullSchema = z
             .nullable(),
           changeCoverage: z.number().nullable(),
         }),
+        FirstPullRequestSchema,
         MissingBaseCommitSchema,
         MissingBaseReportSchema,
         MissingComparisonSchema,
@@ -145,6 +147,9 @@ query GetPulls(
                     percentCovered
                   }
                   changeCoverage
+                }
+                ... on FirstPullRequest {
+                  message
                 }
                 ... on MissingBaseCommit {
                   message

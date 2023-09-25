@@ -21,6 +21,9 @@ export const query = `
                   }
                 }
               }
+              ... on FirstPullRequest {
+                message
+              }
               ... on MissingBaseCommit {
                 message
               }
