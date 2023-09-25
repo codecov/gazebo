@@ -597,7 +597,7 @@ describe('useNavLinks', () => {
       expect(dirPath).toBe('/gl/doggo/watch/tree/ref/src%2Fview')
     })
 
-    it('accepts a queryParams option', () => {
+    it('appends other args as query params', () => {
       const { result } = renderHook(() => useNavLinks(), {
         wrapper: wrapper('/gl/doggo/watch/src'),
       })
@@ -605,9 +605,7 @@ describe('useNavLinks', () => {
       const filePath = result.current.treeView.path({
         ref: 'main',
         tree: 'src/',
-        queryParams: {
-          flags: ['flag-1'],
-        },
+        flags: ['flag-1'],
       })
       expect(filePath).toBe(
         '/gl/doggo/watch/tree/main/src%2F?flags%5B0%5D=flag-1'
@@ -662,7 +660,7 @@ describe('useNavLinks', () => {
       expect(path4).toBe('/gh/codecov-owner/another-test/blob/test-br/index.js')
     })
 
-    it('accepts a queryParams option', () => {
+    it('appends other args as query params', () => {
       const { result } = renderHook(() => useNavLinks(), {
         wrapper: wrapper('/gh/codecov-owner/another-test/blob/main/index.js'),
       })
@@ -670,9 +668,7 @@ describe('useNavLinks', () => {
       const filePath = result.current.fileViewer.path({
         ref: 'main',
         tree: 'index.js',
-        queryParams: {
-          flags: ['flag-1'],
-        },
+        flags: ['flag-1'],
       })
       expect(filePath).toBe(
         '/gh/codecov-owner/another-test/blob/main/index.js?flags%5B0%5D=flag-1'

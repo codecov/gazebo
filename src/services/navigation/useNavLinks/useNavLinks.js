@@ -177,15 +177,15 @@ export function useNavLinks() {
     },
     treeView: {
       path: (
-        { provider = p, owner = o, repo = r, tree, ref, queryParams } = {
+        { provider = p, owner = o, repo = r, tree, ref, ...queryParams } = {
           provider: p,
           owner: o,
           repo: r,
-          queryParams: null,
+          queryParams: {},
         }
       ) => {
         let query = ''
-        if (queryParams) {
+        if (Object.keys(queryParams).length > 0) {
           query = qs.stringify(queryParams, { addQueryPrefix: true })
         }
 
@@ -207,16 +207,20 @@ export function useNavLinks() {
     },
     fileViewer: {
       path: (
-        { provider = p, owner = o, repo = r, ref, tree, queryParams } = {
+        { provider = p, owner = o, repo = r, ref, tree, ...queryParams } = {
           provider: p,
           owner: o,
           repo: r,
-          queryParams: null,
+          queryParams: {},
         }
       ) => {
         const encodedRef = encodeURIComponent(ref)
         const encodedTree = encodeURIComponent(tree)
-        const query = qs.stringify(queryParams, { addQueryPrefix: true })
+
+        let query = ''
+        if (Object.keys(queryParams).length > 0) {
+          query = qs.stringify(queryParams, { addQueryPrefix: true })
+        }
 
         return `/${provider}/${owner}/${repo}/blob/${encodedRef}/${encodedTree}${query}`
       },
