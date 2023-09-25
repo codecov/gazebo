@@ -9,7 +9,6 @@ import {
   MissingHeadCommitSchema,
   MissingHeadReportSchema,
 } from 'services/comparison'
-import { FirstPullRequestSchema } from 'services/comparison/schemas/FirstPullRequst'
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
@@ -43,7 +42,6 @@ const RepositorySchema = z.object({
           MissingComparisonSchema,
           MissingHeadCommitSchema,
           MissingHeadReportSchema,
-          FirstPullRequestSchema,
         ])
         .nullable(),
     })
@@ -100,9 +98,6 @@ query PullPageData($owner: String!, $repo: String!, $pullId: Int!) {
               message
             }
             ... on MissingHeadReport {
-              message
-            }
-            ... on FirstPullRequest {
               message
             }
           }
