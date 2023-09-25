@@ -36,6 +36,9 @@ export const query = `
               ... on MissingHeadReport {
                 message
               }
+              ... on FirstPullRequest {
+                message
+              }
             }
           }
         }
