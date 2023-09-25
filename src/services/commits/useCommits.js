@@ -30,6 +30,24 @@ function fetchRepoCommits({ provider, owner, repo, variables, after, signal }) {
                 coverage
             }
           }
+          ... on FirstPullRequest {
+            message
+          }
+          ... on MissingBaseCommit {
+            message
+          }
+          ... on MissingHeadCommit {
+            message
+          }
+          ... on MissingComparison {
+            message
+          }
+          ... on MissingBaseReport {
+            message
+          }
+          ... on MissingHeadReport {
+            message
+          }
         }
     }
   `
