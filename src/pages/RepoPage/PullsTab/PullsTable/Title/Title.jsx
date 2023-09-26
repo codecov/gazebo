@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 
+import { ComparisonReturnType } from 'shared/utils/comparison'
 import { formatTimeToNow } from 'shared/utils/dates'
 import A from 'ui/A'
 import Avatar, { DefaultAuthor } from 'ui/Avatar'
@@ -10,7 +11,9 @@ const Title = ({ author, pullId, title, updatestamp, compareWithBaseType }) => {
     username: author?.username || DefaultAuthor.USERNAME,
   }
   const pageName =
-    compareWithBaseType === 'FirstPullRequest' ? 'pullTreeView' : 'pullDetail'
+    compareWithBaseType === ComparisonReturnType.FIRST_PULL_REQUEST
+      ? 'pullTreeView'
+      : 'pullDetail'
 
   return (
     <div className="flex w-96 flex-row lg:w-auto">
