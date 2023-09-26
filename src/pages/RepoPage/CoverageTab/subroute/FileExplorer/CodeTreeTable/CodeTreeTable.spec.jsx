@@ -308,7 +308,7 @@ describe('CodeTreeTable', () => {
         })
 
         const message = await screen.findByText(
-          'No coverage report uploaded for the selected flags'
+          "No coverage report uploaded for the selected flags in this branch's head commit"
         )
         expect(message).toBeInTheDocument()
       })

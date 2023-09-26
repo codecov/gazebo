@@ -18,7 +18,8 @@ function RepoContentsResult({
   if (hasFlagsSelected) {
     return (
       <p className="flex flex-1 justify-center">
-        No coverage report uploaded for the selected flags
+        No coverage report uploaded for the selected flags in this branch&apos;s
+        head commit
       </p>
     )
   }

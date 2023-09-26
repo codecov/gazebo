@@ -596,6 +596,21 @@ describe('useNavLinks', () => {
       })
       expect(dirPath).toBe('/gl/doggo/watch/tree/ref/src%2Fview')
     })
+
+    it('appends other args as query params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/doggo/watch/src'),
+      })
+
+      const filePath = result.current.treeView.path({
+        ref: 'main',
+        tree: 'src/',
+        flags: ['flag-1'],
+      })
+      expect(filePath).toBe(
+        '/gl/doggo/watch/tree/main/src%2F?flags%5B0%5D=flag-1'
+      )
+    })
   })
 
   describe('fileViewer link', () => {
@@ -643,6 +658,21 @@ describe('useNavLinks', () => {
         tree: 'index.js',
       })
       expect(path4).toBe('/gh/codecov-owner/another-test/blob/test-br/index.js')
+    })
+
+    it('appends other args as query params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov-owner/another-test/blob/main/index.js'),
+      })
+
+      const filePath = result.current.fileViewer.path({
+        ref: 'main',
+        tree: 'index.js',
+        flags: ['flag-1'],
+      })
+      expect(filePath).toBe(
+        '/gh/codecov-owner/another-test/blob/main/index.js?flags%5B0%5D=flag-1'
+      )
     })
   })
 

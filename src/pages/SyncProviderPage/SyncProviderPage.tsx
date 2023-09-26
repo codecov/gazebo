@@ -2,16 +2,11 @@ import gt from 'lodash/gt'
 import { Redirect } from 'react-router-dom'
 
 import { useInternalUser } from 'services/user/useInternalUser'
-import { useFlags } from 'shared/featureFlags'
 import { loginProviderToShortName } from 'shared/utils/loginProviders'
 
 import SyncButton from './SyncButton'
 
 function SyncProviderPage() {
-  const { sentryLoginProvider } = useFlags({
-    sentryLoginProvider: false,
-  })
-
   const { data: internalUser } = useInternalUser({})
 
   // will be false if 0 | undefined | null
@@ -26,7 +21,7 @@ function SyncProviderPage() {
   // --
   // once we allow users to sync multiple providers need change this logic
   // to allow them to view this page
-  if (!sentryLoginProvider || hasSynced) {
+  if (hasSynced) {
     const service = internalUser?.owners?.[0]?.service
     if (service) {
       const provider = loginProviderToShortName(service)

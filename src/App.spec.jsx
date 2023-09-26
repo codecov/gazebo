@@ -449,6 +449,16 @@ describe('App', () => {
         },
       },
     ],
+    [
+      {
+        testLabel: 'SyncProviderPage',
+        pathname: '/sync',
+        expected: {
+          page: /SyncProviderPage/i,
+          location: '/sync',
+        },
+      },
+    ],
   ]
 
   describe.each(selfHostedFullRouterCases)(
