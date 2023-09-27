@@ -6,18 +6,13 @@ import { useIntersection } from 'react-use'
 import useClickAway from 'react-use/lib/useClickAway'
 
 import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
+import { useOwner } from 'services/user'
 import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A'
 import Avatar from 'ui/Avatar'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
-
-function getCurrentContext({ activeContext, contexts }) {
-  return contexts.find((context) => {
-    return context.owner.username.toLowerCase() === activeContext?.toLowerCase()
-  })
-}
 
 function LoadMoreTrigger({ intersectionRef, onLoadMore }) {
   if (!onLoadMore) {
@@ -60,17 +55,10 @@ ModalSection.propTypes = {
   ModalControl: PropTypes.func,
 }
 
-function ContextItem({
-  context,
-  currentContext,
-  defaultOrgUsername,
-  setToggle,
-}) {
-  const { owner, pageName } = context
-  const orgUsername = owner?.username
-  const isActiveContext =
-    orgUsername?.toLowerCase() ===
-    currentContext?.owner?.username?.toLowerCase()
+function ContextItem({ context, defaultOrgUsername, setToggle }) {
+  const { owner } = useParams()
+  const { owner: contextOwner, pageName } = context
+  const orgUsername = contextOwner?.username
   const { mutate } = useUpdateDefaultOrganization()
 
   return (
@@ -88,8 +76,8 @@ function ContextItem({
           mutate({ username: orgUsername })
         }}
       >
-        <Avatar user={owner} bordered />
-        <div className={cs('mx-1', { 'font-semibold': isActiveContext })}>
+        <Avatar user={contextOwner} bordered />
+        <div className={cs('mx-1', { 'font-semibold': owner === orgUsername })}>
           {orgUsername}
         </div>
       </Button>
@@ -100,9 +88,6 @@ ContextItem.propTypes = {
   context: PropTypes.shape({
     owner: PropTypes.shape({ username: PropTypes.string }),
     pageName: PropTypes.string,
-  }),
-  currentContext: PropTypes.shape({
-    owner: PropTypes.shape({ username: PropTypes.string }),
   }),
   defaultOrgUsername: PropTypes.string,
   setToggle: PropTypes.func.isRequired,
@@ -153,7 +138,6 @@ Loader.propTypes = {
 
 function ContextSwitcher({
   buttonVariant = 'default',
-  activeContext,
   contexts,
   currentUser,
   isLoading,
@@ -161,11 +145,11 @@ function ContextSwitcher({
   ModalControl,
   ModalComponent,
 }) {
+  const { provider, owner } = useParams()
   const [toggle, setToggle] = useState(false)
   const wrapperRef = useCloseOnLooseFocus({ setToggle })
   const intersectionRef = useLoadMore({ onLoadMore })
-  const currentContext = getCurrentContext({ activeContext, contexts })
-  const { provider } = useParams()
+  const { data: currentContext } = useOwner({ username: owner })
   const defaultOrgUsername = currentUser?.defaultOrgUsername
 
   const isGh = providerToName(provider) === 'Github'
@@ -186,8 +170,8 @@ function ContextSwitcher({
         aria-expanded={toggle}
         onClick={() => setToggle((toggle) => !toggle)}
       >
-        <Avatar user={currentContext.owner} bordered />
-        <p className="ml-1">{currentContext.owner.username}</p>
+        <Avatar user={currentContext} bordered />
+        <p className="ml-1">{currentContext?.username}</p>
         <span
           aria-hidden="true"
           className={cs('transition-transform', {
@@ -243,7 +227,6 @@ function ContextSwitcher({
 
 ContextSwitcher.propTypes = {
   buttonVariant: PropTypes.oneOf(['default', 'outlined']),
-  activeContext: PropTypes.string,
   contexts: PropTypes.arrayOf(
     PropTypes.shape({
       owner: PropTypes.shape({

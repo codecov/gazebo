@@ -14,10 +14,7 @@ function Header() {
         <Suspense fallback={null}>
           <HeaderBanners />
         </Suspense>
-        <MyContextSwitcher
-          pageName="owner"
-          activeContext={ownerData?.username}
-        />
+        <MyContextSwitcher pageName="owner" />
       </>
     )
   }

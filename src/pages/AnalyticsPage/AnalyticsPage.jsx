@@ -52,7 +52,7 @@ function AnalyticsPage() {
 
   return (
     <div className="mt-2 flex flex-col gap-4">
-      <Header owner={ownerData} />
+      <Header />
       <div>{ownerData?.isCurrentUserPartOfOrg && <Tabs />}</div>
       <ChartSelectors
         params={params}
