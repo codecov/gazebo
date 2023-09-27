@@ -6,10 +6,9 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { CommitStateEnum } from 'shared/utils/commit'
+import { ComparisonReturnType } from 'shared/utils/comparison'
 
 import FilesChangedTab from './FilesChangedTab'
-
-import { ComparisonReturnType } from '../../constants'
 
 jest.mock('./FilesChanged', () => () => 'Files Changed Component')
 

@@ -1,12 +1,11 @@
 import isNil from 'lodash/isNil'
 
 import { CommitStateEnum } from 'shared/utils/commit'
+import { ComparisonReturnType } from 'shared/utils/comparison'
 import Spinner from 'ui/Spinner'
 
 import FilesChanged from './FilesChanged'
 import { useImpactedFilesTable } from './FilesChanged/hooks'
-
-import { ComparisonReturnType } from '../../constants'
 
 const Loader = () => (
   <div className="flex items-center justify-center py-16">

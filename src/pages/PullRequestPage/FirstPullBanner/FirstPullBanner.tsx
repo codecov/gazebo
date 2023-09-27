@@ -1,10 +1,10 @@
 import { useParams } from 'react-router-dom'
 
+import { ComparisonReturnType } from 'shared/utils/comparison'
 import Banner from 'ui/Banner'
 import BannerContent from 'ui/Banner/BannerContent'
 import BannerHeading from 'ui/Banner/BannerHeading'
 
-import { ComparisonReturnType } from '../constants'
 import { usePullPageData } from '../hooks'
 
 const FirstPullBanner: React.FC = () => {

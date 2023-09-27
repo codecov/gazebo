@@ -4,9 +4,9 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import FirstPullBanner from './FirstPullBanner'
+import { ComparisonReturnType } from 'shared/utils/comparison'
 
-import { ComparisonReturnType } from '../constants'
+import FirstPullBanner from './FirstPullBanner'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },

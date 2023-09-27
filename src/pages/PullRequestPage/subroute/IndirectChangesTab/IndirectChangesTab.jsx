@@ -1,13 +1,12 @@
 import isNil from 'lodash/isNil'
 
 import { CommitStateEnum } from 'shared/utils/commit'
+import { ComparisonReturnType } from 'shared/utils/comparison'
 import Spinner from 'ui/Spinner'
 
 import ImpactedFiles from './IndirectChangedFiles'
 import { useIndirectChangedFilesTable } from './IndirectChangedFiles/hooks'
 import IndirectChangesInfo from './IndirectChangesInfo'
-
-import { ComparisonReturnType } from '../../constants'
 
 function hasImpactedFiles(impactedFiles) {
   return impactedFiles && impactedFiles?.length > 0

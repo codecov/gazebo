@@ -6,10 +6,9 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { CommitStateEnum } from 'shared/utils/commit'
+import { ComparisonReturnType } from 'shared/utils/comparison'
 
 import IndirectChangesTab from './IndirectChangesTab'
-
-import { ComparisonReturnType } from '../../constants'
 
 jest.mock(
   './IndirectChangedFiles/IndirectChangedFiles',
