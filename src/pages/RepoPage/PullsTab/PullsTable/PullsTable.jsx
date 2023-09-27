@@ -84,6 +84,7 @@ function transformPullToTable(pulls, isLoading) {
           pullId={pullId}
           title={title}
           updatestamp={updatestamp}
+          compareWithBaseType={compareWithBase?.__typename}
         />
       ),
       coverage: <Coverage head={head} state={state} pullId={pullId} />,
