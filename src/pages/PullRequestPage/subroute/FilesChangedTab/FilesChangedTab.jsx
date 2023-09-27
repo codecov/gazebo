@@ -70,8 +70,7 @@ function FilesChangedTab() {
       pullHeadCoverage: data?.pullHeadCoverage,
       pullBaseCoverage: data?.pullBaseCoverage,
       pullPatchCoverage: data?.pullPatchCoverage,
-    }) ||
-    isFirstPull
+    })
   ) {
     return (
       <div className="flex flex-col gap-2">
