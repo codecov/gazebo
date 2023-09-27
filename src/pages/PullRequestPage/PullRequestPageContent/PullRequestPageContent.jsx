@@ -4,10 +4,10 @@ import { Redirect, Switch, useParams } from 'react-router-dom'
 import { SentryRoute } from 'sentry'
 
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
+import { ComparisonReturnType } from 'shared/utils/comparison'
 import Spinner from 'ui/Spinner'
 
 import ErrorBanner from './ErrorBanner'
-import { ComparisonReturnType } from './ErrorBanner/constants'
 
 import { usePullPageData } from '../hooks'
 
