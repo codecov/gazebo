@@ -42,7 +42,7 @@ function IndirectChangesTab() {
   if (isFirstPull) {
     return (
       <p className="mt-4">
-        No comparison made since it&apos;s your first commit with Codecov
+        No comparison made since it&apos;s your first commit with Codecov.
       </p>
     )
   }
