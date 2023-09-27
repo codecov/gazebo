@@ -77,6 +77,13 @@ const variantClasses = {
     text-white hover:text-bitbucket
     transition-colors duration-75 ease-in
   `,
+  okta: `
+    justify-center font-semibold
+    border border-solid border-okta
+    bg-okta hover:bg-white
+    text-white hover:text-okta
+    transition-colors duration-75 ease-in
+  `,
 }
 
 const loadingVariantClasses = {
