@@ -35,9 +35,11 @@ let testLocation: { pathname: string; search: string } = {
   pathname: '',
   search: '',
 }
+
 type WrapperClosure = (
   initialEntries?: string[]
 ) => React.FC<React.PropsWithChildren>
+
 const wrapper: WrapperClosure =
   (initialEntries = ['/gh']) =>
   ({ children }) =>
@@ -185,7 +187,6 @@ type SetupArgs = {
   internalUser: InternalUser
   termsOfServicePage: boolean
   defaultOrgSelectorPage: boolean
-  sentryLoginProvider: boolean
 }
 
 describe('useUserAccessGate', () => {
@@ -195,13 +196,11 @@ describe('useUserAccessGate', () => {
       internalUser = internalUserHasSyncedProviders,
       termsOfServicePage = false,
       defaultOrgSelectorPage = false,
-      sentryLoginProvider = false,
     }: SetupArgs = {
       user: loggedInUser,
       internalUser: internalUserHasSyncedProviders,
       termsOfServicePage: false,
       defaultOrgSelectorPage: false,
-      sentryLoginProvider: false,
     }
   ) {
     const mockedUseFlags = jest.mocked(useFlags)
@@ -210,7 +209,6 @@ describe('useUserAccessGate', () => {
     mockedUseFlags.mockReturnValue({
       termsOfServicePage,
       defaultOrgSelectorPage,
-      sentryLoginProvider,
     })
 
     server.use(
@@ -255,8 +253,6 @@ describe('useUserAccessGate', () => {
         termsOfServicePage: true,
         isSelfHosted: false,
         defaultOrgSelectorPage: false,
-        sentryLoginProvider: false,
-
         expected: {
           beforeSettled: {
             isFullExperience: true,
@@ -285,8 +281,6 @@ describe('useUserAccessGate', () => {
         termsOfServicePage: true,
         isSelfHosted: false,
         defaultOrgSelectorPage: false,
-        sentryLoginProvider: false,
-
         expected: {
           beforeSettled: {
             isFullExperience: true,
@@ -315,8 +309,6 @@ describe('useUserAccessGate', () => {
         termsOfServicePage: false,
         isSelfHosted: false,
         defaultOrgSelectorPage: false,
-        sentryLoginProvider: false,
-
         expected: {
           beforeSettled: {
             isFullExperience: true,
@@ -345,8 +337,6 @@ describe('useUserAccessGate', () => {
         termsOfServicePage: false,
         isSelfHosted: false,
         defaultOrgSelectorPage: false,
-        sentryLoginProvider: false,
-
         expected: {
           beforeSettled: {
             isFullExperience: true,
@@ -375,8 +365,6 @@ describe('useUserAccessGate', () => {
         termsOfServicePage: true,
         isSelfHosted: false,
         defaultOrgSelectorPage: false,
-        sentryLoginProvider: false,
-
         expected: {
           beforeSettled: {
             isFullExperience: true,
@@ -405,8 +393,6 @@ describe('useUserAccessGate', () => {
         termsOfServicePage: false,
         isSelfHosted: false,
         defaultOrgSelectorPage: false,
-        sentryLoginProvider: false,
-
         expected: {
           beforeSettled: {
             isFullExperience: true,
@@ -435,8 +421,6 @@ describe('useUserAccessGate', () => {
         termsOfServicePage: false,
         isSelfHosted: false,
         defaultOrgSelectorPage: false,
-        sentryLoginProvider: false,
-
         expected: {
           beforeSettled: {
             isFullExperience: true,
@@ -465,8 +449,6 @@ describe('useUserAccessGate', () => {
         termsOfServicePage: false,
         isSelfHosted: false,
         defaultOrgSelectorPage: true,
-        sentryLoginProvider: false,
-
         expected: {
           beforeSettled: {
             isFullExperience: false,
@@ -495,8 +477,6 @@ describe('useUserAccessGate', () => {
         termsOfServicePage: false,
         isSelfHosted: false,
         defaultOrgSelectorPage: true,
-        sentryLoginProvider: false,
-
         expected: {
           beforeSettled: {
             isFullExperience: false,
@@ -525,12 +505,10 @@ describe('useUserAccessGate', () => {
         termsOfServicePage: true,
         isSelfHosted: true,
         defaultOrgSelectorPage: false,
-        sentryLoginProvider: false,
-
         expected: {
           beforeSettled: {
             isFullExperience: true,
-            isLoading: false,
+            isLoading: true,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
             redirectToSyncPage: false,
@@ -555,12 +533,10 @@ describe('useUserAccessGate', () => {
         termsOfServicePage: true,
         isSelfHosted: true,
         defaultOrgSelectorPage: false,
-        sentryLoginProvider: false,
-
         expected: {
           beforeSettled: {
             isFullExperience: true,
-            isLoading: false,
+            isLoading: true,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
             redirectToSyncPage: false,
@@ -585,12 +561,10 @@ describe('useUserAccessGate', () => {
         termsOfServicePage: true,
         isSelfHosted: true,
         defaultOrgSelectorPage: false,
-        sentryLoginProvider: false,
-
         expected: {
           beforeSettled: {
             isFullExperience: true,
-            isLoading: false,
+            isLoading: true,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
             redirectToSyncPage: false,
@@ -615,12 +589,10 @@ describe('useUserAccessGate', () => {
         termsOfServicePage: true,
         isSelfHosted: true,
         defaultOrgSelectorPage: false,
-        sentryLoginProvider: false,
-
         expected: {
           beforeSettled: {
             isFullExperience: true,
-            isLoading: false,
+            isLoading: true,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
             redirectToSyncPage: false,
@@ -645,12 +617,10 @@ describe('useUserAccessGate', () => {
         termsOfServicePage: false,
         isSelfHosted: true,
         defaultOrgSelectorPage: false,
-        sentryLoginProvider: false,
-
         expected: {
           beforeSettled: {
             isFullExperience: true,
-            isLoading: false,
+            isLoading: true,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
             redirectToSyncPage: false,
@@ -675,12 +645,10 @@ describe('useUserAccessGate', () => {
         termsOfServicePage: false,
         isSelfHosted: true,
         defaultOrgSelectorPage: false,
-        sentryLoginProvider: false,
-
         expected: {
           beforeSettled: {
             isFullExperience: true,
-            isLoading: false,
+            isLoading: true,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
             redirectToSyncPage: false,
@@ -705,12 +673,10 @@ describe('useUserAccessGate', () => {
         termsOfServicePage: false,
         isSelfHosted: true,
         defaultOrgSelectorPage: false,
-        sentryLoginProvider: false,
-
         expected: {
           beforeSettled: {
             isFullExperience: true,
-            isLoading: false,
+            isLoading: true,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
             redirectToSyncPage: false,
@@ -735,12 +701,10 @@ describe('useUserAccessGate', () => {
         termsOfServicePage: false,
         isSelfHosted: true,
         defaultOrgSelectorPage: false,
-        sentryLoginProvider: false,
-
         expected: {
           beforeSettled: {
             isFullExperience: true,
-            isLoading: false,
+            isLoading: true,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
             redirectToSyncPage: false,
@@ -757,7 +721,7 @@ describe('useUserAccessGate', () => {
     ],
     [
       'cloud',
-      'Sentry login provider flag: ON',
+      'Sentry login provider',
       'has synced a provider',
       {
         user: loggedInUser,
@@ -765,8 +729,6 @@ describe('useUserAccessGate', () => {
         termsOfServicePage: false,
         isSelfHosted: false,
         defaultOrgSelectorPage: false,
-        sentryLoginProvider: true,
-
         expected: {
           beforeSettled: {
             isFullExperience: true,
@@ -787,7 +749,7 @@ describe('useUserAccessGate', () => {
     ],
     [
       'cloud',
-      'Sentry login provider flag: ON',
+      'Sentry login provider',
       'has not synced a provider',
       {
         user: loggedInUser,
@@ -795,8 +757,62 @@ describe('useUserAccessGate', () => {
         termsOfServicePage: false,
         isSelfHosted: false,
         defaultOrgSelectorPage: false,
-        sentryLoginProvider: true,
-
+        expected: {
+          beforeSettled: {
+            isFullExperience: true,
+            isLoading: true,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
+          },
+          afterSettled: {
+            isFullExperience: false,
+            isLoading: false,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
+            redirectToSyncPage: true,
+          },
+        },
+      },
+    ],
+    [
+      'self hosted',
+      'Sentry login provider',
+      'has synced a provider',
+      {
+        user: loggedInUser,
+        internalUser: internalUserHasSyncedProviders,
+        termsOfServicePage: false,
+        isSelfHosted: true,
+        defaultOrgSelectorPage: false,
+        expected: {
+          beforeSettled: {
+            isFullExperience: true,
+            isLoading: true,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
+          },
+          afterSettled: {
+            isFullExperience: true,
+            isLoading: false,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
+          },
+        },
+      },
+    ],
+    [
+      'self hosted',
+      'Sentry login provider',
+      'has not synced a provider',
+      {
+        user: loggedInUser,
+        internalUser: internalUserNoSyncedProviders,
+        termsOfServicePage: false,
+        isSelfHosted: true,
+        defaultOrgSelectorPage: false,
         expected: {
           beforeSettled: {
             isFullExperience: true,
@@ -828,7 +844,6 @@ describe('useUserAccessGate', () => {
         isSelfHosted,
         expected,
         defaultOrgSelectorPage,
-        sentryLoginProvider,
       }
     ) => {
       describe(`${termsFlagStatus}`, () => {
@@ -840,9 +855,9 @@ describe('useUserAccessGate', () => {
               internalUser,
               termsOfServicePage,
               defaultOrgSelectorPage,
-              sentryLoginProvider,
             })
           })
+
           it(`return values are expect while useUser resolves`, async () => {
             const { result } = renderHook(() => useUserAccessGate(), {
               wrapper: wrapper(['/gh?']),
@@ -865,13 +880,16 @@ describe('useUserAccessGate', () => {
   )
 
   describe('feature flag is on and set up action param is request', () => {
+    beforeEach(() => {
+      config.IS_SELF_HOSTED = false
+    })
+
     it('renders children', async () => {
       setup({
         user: loggedInUser,
         internalUser: internalUserHasSyncedProviders,
         termsOfServicePage: true,
         defaultOrgSelectorPage: true,
-        sentryLoginProvider: true,
       })
 
       const { result } = renderHook(() => useUserAccessGate(), {
@@ -894,7 +912,6 @@ describe('useUserAccessGate', () => {
         internalUser: internalUserHasSyncedProviders,
         termsOfServicePage: true,
         defaultOrgSelectorPage: true,
-        sentryLoginProvider: true,
       })
 
       const { result } = renderHook(() => useUserAccessGate(), {
