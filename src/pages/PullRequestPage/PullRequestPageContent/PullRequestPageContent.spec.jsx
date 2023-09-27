@@ -122,6 +122,19 @@ describe('PullRequestPageContent', () => {
     })
   })
 
+  describe('result type is first pull request', () => {
+    beforeEach(() => setup(ComparisonReturnType.FIRST_PULL_REQUEST))
+
+    it('does not render the error banner', () => {
+      render(<PullRequestPageContent />, { wrapper: wrapper() })
+
+      const errorBanner = screen.queryByRole('heading', {
+        name: 'Missing Base Commit',
+      })
+      expect(errorBanner).not.toBeInTheDocument()
+    })
+  })
+
   describe('result type was successful', () => {
     beforeEach(() => setup())
 
