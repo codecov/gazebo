@@ -31,7 +31,10 @@ function PullRequestPageContent() {
 
   const resultType = data?.pull?.compareWithBase?.__typename
 
-  if (resultType !== ComparisonReturnType.SUCCESSFUL_COMPARISON) {
+  if (
+    resultType !== ComparisonReturnType.SUCCESSFUL_COMPARISON &&
+    resultType !== ComparisonReturnType.FIRST_PULL_REQUEST
+  ) {
     return <ErrorBanner errorType={resultType} />
   }
 
