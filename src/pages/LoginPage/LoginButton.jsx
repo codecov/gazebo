@@ -1,34 +1,17 @@
 import PropTypes from 'prop-types'
-import { Redirect, useLocation } from 'react-router-dom'
 
 import { useNavLinks } from 'services/navigation'
-import { useFlags } from 'shared/featureFlags'
 import {
-  LOGIN_PROVIDER_NAMES,
   loginProviderImage,
   loginProviderToName,
 } from 'shared/utils/loginProviders'
 
-// temp disabling because of flag
-
 function LoginButton({ provider }) {
-  const { sentryLoginProvider } = useFlags({
-    sentryLoginProvider: false,
-  })
-  const location = useLocation()
   const { signIn } = useNavLinks()
 
   const to = `${window.location.protocol}//${window.location.host}/${provider}`
   const providerName = loginProviderToName(provider)
   const providerImage = loginProviderImage(provider)
-
-  if (!sentryLoginProvider && providerName === LOGIN_PROVIDER_NAMES.sentry) {
-    if (location.pathname === '/login') {
-      return null
-    }
-
-    return <Redirect to="/login" />
-  }
 
   return (
     <a

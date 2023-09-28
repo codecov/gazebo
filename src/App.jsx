@@ -55,13 +55,11 @@ const MainAppRoutes = () => (
         <AccountSettings />
       </BaseLayout>
     </SentryRoute>
-    {!config.IS_SELF_HOSTED && (
-      <SentryRoute path="/sync" exact>
-        <BaseLayout>
-          <SyncProviderPage />
-        </BaseLayout>
-      </SentryRoute>
-    )}
+    <SentryRoute path="/sync" exact>
+      <BaseLayout>
+        <SyncProviderPage />
+      </BaseLayout>
+    </SentryRoute>
     {config.IS_SELF_HOSTED && (
       <SentryRoute path="/admin/:provider">
         <BaseLayout>

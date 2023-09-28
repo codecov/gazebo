@@ -22,6 +22,10 @@ function BranchFileEntry({
     flags,
   })
 
+  const queryParams = {
+    flags: filters?.flags,
+  }
+
   return (
     <FileEntry
       linkRef={branch}
@@ -31,6 +35,7 @@ function BranchFileEntry({
       displayType={displayType}
       urlPath={urlPath}
       runPrefetch={runPrefetch}
+      queryParams={queryParams}
     />
   )
 }

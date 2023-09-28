@@ -61,6 +61,27 @@ describe('DirEntry', () => {
     })
   })
 
+  describe('query params value is passed', () => {
+    it('sets the correct href', () => {
+      const runPrefetchMock = jest.fn()
+      render(
+        <DirEntry
+          linkRef="branch"
+          name="dir"
+          runPrefetch={runPrefetchMock}
+          queryParams={{ flags: ['flag-1'] }}
+        />,
+        { wrapper }
+      )
+
+      const a = screen.getByRole('link')
+      expect(a).toHaveAttribute(
+        'href',
+        '/gh/codecov/test-repo/tree/branch/dir?flags%5B0%5D=flag-1'
+      )
+    })
+  })
+
   it('fires the prefetch function on hover', async () => {
     const user = userEvent.setup()
     const runPrefetchMock = jest.fn()

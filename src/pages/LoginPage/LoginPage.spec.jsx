@@ -1,11 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
-
 import LoginPage from './LoginPage'
-
-jest.mock('shared/featureFlags')
 
 const wrapper =
   (initialEntries) =>
@@ -20,11 +16,9 @@ const wrapper =
     )
 
 describe('LoginPage', () => {
-  function setup(flagValue = false) {
+  function setup() {
     const mockSetItem = jest.spyOn(window.localStorage.__proto__, 'setItem')
     const mockGetItem = jest.spyOn(window.localStorage.__proto__, 'getItem')
-
-    useFlags.mockReturnValue({ sentryLoginProvider: flagValue })
 
     return { mockSetItem, mockGetItem }
   }
@@ -32,75 +26,40 @@ describe('LoginPage', () => {
   afterEach(() => jest.resetAllMocks())
 
   describe('when the url is /login', () => {
-    describe('flag is not enabled', () => {
-      beforeEach(() => setup())
+    it('renders github login button', () => {
+      render(<LoginPage />, { wrapper: wrapper('/login') })
 
-      it('renders github login button', () => {
-        render(<LoginPage />, { wrapper: wrapper('/login') })
-
-        const githubLink = screen.getByRole('link', {
-          name: /login with github/i,
-        })
-        expect(githubLink).toBeInTheDocument()
+      const githubLink = screen.getByRole('link', {
+        name: /login with github/i,
       })
-
-      it('renders gitlab login button', () => {
-        render(<LoginPage />, { wrapper: wrapper('/login') })
-
-        const gitlabLink = screen.getByRole('link', {
-          name: /login with gitlab/i,
-        })
-        expect(gitlabLink).toBeInTheDocument()
-      })
-
-      it('renders bitbucket login button', () => {
-        render(<LoginPage />, { wrapper: wrapper('/login') })
-
-        const bitBucketLink = screen.getByRole('link', {
-          name: /login with bitbucket/i,
-        })
-        expect(bitBucketLink).toBeInTheDocument()
-      })
+      expect(githubLink).toBeInTheDocument()
     })
 
-    describe('flag is enabled', () => {
-      beforeEach(() => setup(true))
+    it('renders sentry login button', () => {
+      render(<LoginPage />, { wrapper: wrapper('/login') })
 
-      it('renders github login button', () => {
-        render(<LoginPage />, { wrapper: wrapper('/login') })
-
-        const githubLink = screen.getByRole('link', {
-          name: /login with github/i,
-        })
-        expect(githubLink).toBeInTheDocument()
+      const sentryLink = screen.getByRole('link', {
+        name: /login with sentry/i,
       })
+      expect(sentryLink).toBeInTheDocument()
+    })
 
-      it('renders sentry login button', () => {
-        render(<LoginPage />, { wrapper: wrapper('/login') })
+    it('renders gitlab login button', () => {
+      render(<LoginPage />, { wrapper: wrapper('/login') })
 
-        const sentryLink = screen.getByRole('link', {
-          name: /login with sentry/i,
-        })
-        expect(sentryLink).toBeInTheDocument()
+      const gitlabLink = screen.getByRole('link', {
+        name: /login with gitlab/i,
       })
+      expect(gitlabLink).toBeInTheDocument()
+    })
 
-      it('renders gitlab login button', () => {
-        render(<LoginPage />, { wrapper: wrapper('/login') })
+    it('renders bitbucket login button', () => {
+      render(<LoginPage />, { wrapper: wrapper('/login') })
 
-        const gitlabLink = screen.getByRole('link', {
-          name: /login with gitlab/i,
-        })
-        expect(gitlabLink).toBeInTheDocument()
+      const bitBucketLink = screen.getByRole('link', {
+        name: /login with bitbucket/i,
       })
-
-      it('renders bitbucket login button', () => {
-        render(<LoginPage />, { wrapper: wrapper('/login') })
-
-        const bitBucketLink = screen.getByRole('link', {
-          name: /login with bitbucket/i,
-        })
-        expect(bitBucketLink).toBeInTheDocument()
-      })
+      expect(bitBucketLink).toBeInTheDocument()
     })
   })
 

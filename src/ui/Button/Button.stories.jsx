@@ -61,6 +61,11 @@ BitbucketButton.args = {
   children: 'Bitbucket Button',
   variant: 'bitbucket',
 }
+export const OktaButton = Template.bind({})
+OktaButton.args = {
+  children: 'Okta Button',
+  variant: 'okta',
+}
 
 export const MixedButton = Template.bind({})
 MixedButton.args = {
