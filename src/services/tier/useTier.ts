@@ -12,7 +12,15 @@ export const TierNames = {
 
 export const TierSchema = z
   .object({
-    tierName: z.nativeEnum(TierNames),
+    owner: z
+      .object({
+        plan: z
+          .object({
+            tierName: z.nativeEnum(TierNames),
+          })
+          .nullish(),
+      })
+      .nullish(),
   })
   .nullish()
 
@@ -43,6 +51,15 @@ export const useTier = ({ provider, owner }: UseTierArgs) =>
           owner,
         },
       }).then((res) => {
-        return TierSchema.parse(res?.data?.owner?.plan) ?? {}
+        const parsedRes = TierSchema.safeParse(res?.data)
+
+        if (!parsedRes.success) {
+          return Promise.reject({
+            status: 404,
+            data: null,
+          })
+        }
+
+        return parsedRes.data?.owner?.plan?.tierName
       }),
   })

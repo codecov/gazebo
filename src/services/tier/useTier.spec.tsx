@@ -57,11 +57,7 @@ describe('useTier', () => {
         { wrapper }
       )
       await waitFor(() => result.current.isSuccess)
-      await waitFor(() =>
-        expect(result.current.data).toEqual({
-          tierName: 'pro',
-        })
-      )
+      await waitFor(() => expect(result.current.data).toEqual('pro'))
     })
   })
 })
