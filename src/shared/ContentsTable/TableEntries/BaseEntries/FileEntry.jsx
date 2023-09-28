@@ -30,6 +30,7 @@ function FileEntry({
   runPrefetch,
   pageName = 'fileViewer',
   commitSha,
+  queryParams,
 }) {
   const displayAsList = displayType === displayTypeParameter.list
   return (
@@ -48,6 +49,7 @@ function FileEntry({
               : !!urlPath
               ? `${urlPath}/${name}`
               : name,
+            ...(!!queryParams && queryParams),
           },
         }}
       >
@@ -72,6 +74,7 @@ FileEntry.propTypes = {
   runPrefetch: PropTypes.func,
   pageName: PropTypes.string,
   commitSha: PropTypes.string,
+  queryParams: PropTypes.object,
 }
 
 export default FileEntry

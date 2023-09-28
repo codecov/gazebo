@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import {
+  FirstPullRequestSchema,
   MissingBaseCommitSchema,
   MissingBaseReportSchema,
   MissingComparisonSchema,
@@ -93,6 +94,7 @@ const ComparisonSchema = z.object({
 
 const CompareWithParentSchema = z.discriminatedUnion('__typename', [
   ComparisonSchema,
+  FirstPullRequestSchema,
   MissingBaseCommitSchema,
   MissingBaseReportSchema,
   MissingComparisonSchema,
@@ -219,6 +221,9 @@ query Commit(
                 }
               }
             }
+            ... on FirstPullRequest {
+              message
+            }
             ... on MissingBaseCommit {
               message
             }
@@ -292,7 +297,6 @@ export function useCommit({
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          console.debug(parsedRes.error)
           return Promise.reject({
             status: 404,
             data: null,

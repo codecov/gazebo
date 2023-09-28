@@ -4,7 +4,8 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { ComparisonReturnType } from './ErrorBanner/constants'
+import { ComparisonReturnType } from 'shared/utils/comparison'
+
 import PullRequestPageContent from './PullRequestPageContent'
 
 jest.mock('../subroute/FilesChangedTab', () => () => 'FilesChangedTab')
@@ -118,6 +119,19 @@ describe('PullRequestPageContent', () => {
         name: 'Missing Base Commit',
       })
       expect(errorBanner).toBeInTheDocument()
+    })
+  })
+
+  describe('result type is first pull request', () => {
+    beforeEach(() => setup(ComparisonReturnType.FIRST_PULL_REQUEST))
+
+    it('does not render the error banner', () => {
+      render(<PullRequestPageContent />, { wrapper: wrapper() })
+
+      const errorBanner = screen.queryByRole('heading', {
+        name: 'Missing Base Commit',
+      })
+      expect(errorBanner).not.toBeInTheDocument()
     })
   })
 

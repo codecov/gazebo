@@ -130,12 +130,10 @@ describe('BaseLayout', () => {
       isImpersonating = false,
       termsOfServicePage = false,
       defaultOrgSelectorPage = false,
-      sentryLoginProvider = false,
     } = {
       termsOfServicePage: false,
       currentUser: loggedInUser,
       defaultOrgSelectorPage: false,
-      sentryLoginProvider: false,
     }
   ) {
     useImage.mockReturnValue({
@@ -146,7 +144,6 @@ describe('BaseLayout', () => {
     useFlags.mockReturnValue({
       termsOfServicePage,
       defaultOrgSelectorPage,
-      sentryLoginProvider,
     })
     useImpersonate.mockReturnValue({ isImpersonating })
 
@@ -311,36 +308,32 @@ describe('BaseLayout', () => {
     })
   })
 
-  describe('sentryLoginProvider flag is on', () => {
-    describe('user has not synced with providers', () => {
-      it('redirects the user', async () => {
-        setup({
-          internalUser: internalUserNoSyncedProviders,
-          sentryLoginProvider: true,
-        })
-
-        render(<BaseLayout>hello</BaseLayout>, {
-          wrapper: wrapper(),
-        })
-
-        await waitFor(() => expect(testLocation.pathname).toBe('/sync'))
+  describe('user has not synced with providers', () => {
+    it('redirects the user to /sync', async () => {
+      setup({
+        internalUser: internalUserNoSyncedProviders,
       })
+
+      render(<BaseLayout>hello</BaseLayout>, {
+        wrapper: wrapper(),
+      })
+
+      await waitFor(() => expect(testLocation.pathname).toBe('/sync'))
     })
+  })
 
-    describe('user has synced providers', () => {
-      it('renders the page', async () => {
-        setup({
-          internalUser: internalUserHasSyncedProviders,
-          sentryLoginProvider: true,
-        })
-
-        render(<BaseLayout>hello</BaseLayout>, {
-          wrapper: wrapper(),
-        })
-
-        const text = await screen.findByText('hello')
-        expect(text).toBeInTheDocument()
+  describe('user has synced providers', () => {
+    it('renders the page', async () => {
+      setup({
+        internalUser: internalUserHasSyncedProviders,
       })
+
+      render(<BaseLayout>hello</BaseLayout>, {
+        wrapper: wrapper(),
+      })
+
+      const text = await screen.findByText('hello')
+      expect(text).toBeInTheDocument()
     })
   })
 

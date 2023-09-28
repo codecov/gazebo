@@ -11,7 +11,7 @@ jest.mock('config')
 const server = setupServer()
 const queryClient = new QueryClient()
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/']}>
       <Route path="/">{children}</Route>
@@ -28,6 +28,7 @@ const mockServiceProviders = {
       'GITLAB_ENTERPRISE',
       'BITBUCKET',
       'BITBUCKET_SERVER',
+      'OKTA',
     ],
   },
 }
@@ -45,8 +46,14 @@ afterAll(() => {
   server.close()
 })
 
+interface SetupArgs {
+  sendProviders: boolean
+}
+
 describe('EnterpriseLandingPage', () => {
-  function setup({ sendProviders = true } = { sendProviders: true }) {
+  function setup(
+    { sendProviders = true }: SetupArgs = { sendProviders: true }
+  ) {
     server.use(
       graphql.query('GetServiceProviders', (req, res, ctx) => {
         if (sendProviders) {
@@ -84,6 +91,13 @@ describe('EnterpriseLandingPage', () => {
       render(<EnterpriseLandingPage />, { wrapper })
 
       const element = await screen.findByRole('heading', { name: 'Bitbucket' })
+      expect(element).toBeInTheDocument()
+    })
+
+    it('displays okta card', async () => {
+      render(<EnterpriseLandingPage />, { wrapper })
+
+      const element = await screen.findByRole('heading', { name: 'Okta' })
       expect(element).toBeInTheDocument()
     })
   })
