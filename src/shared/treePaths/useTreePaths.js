@@ -46,7 +46,7 @@ export function useTreePaths(passedPath) {
     options: {
       tree: getTreeLocation(filePaths, location, index),
       ref: branch ?? ref ?? defaultBranch,
-      queryParams,
+      ...queryParams,
     },
   }))
 
@@ -55,7 +55,7 @@ export function useTreePaths(passedPath) {
     text: repo,
     options: {
       ref: branch ?? ref ?? defaultBranch,
-      queryParams,
+      ...queryParams,
     },
   }
 
