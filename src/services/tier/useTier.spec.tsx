@@ -19,6 +19,8 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
+const mockUnsuccessfulParseError = {}
+
 const wrapper = ({ children }: { children: ReactNode }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 )
@@ -37,27 +39,68 @@ afterAll(() => {
 })
 
 describe('useTier', () => {
-  function setup() {
+  function setup({ isUnsuccessfulParseError = false }) {
     server.use(
       graphql.query('OwnerTier', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockOwnerTier))
+        if (isUnsuccessfulParseError) {
+          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+        } else {
+          return res(ctx.status(200), ctx.data(mockOwnerTier))
+        }
       })
     )
   }
 
-  describe('calling hook', () => {
-    beforeEach(() => setup())
-    it('returns the owners tier', async () => {
-      const { result } = renderHook(
-        () =>
-          useTier({
-            provider: 'gh',
-            owner: 'codecov',
-          }),
-        { wrapper }
-      )
-      await waitFor(() => result.current.isSuccess)
-      await waitFor(() => expect(result.current.data).toEqual('pro'))
+  describe('when useTier is called', () => {
+    describe('api returns valid response', () => {
+      beforeEach(() => {
+        setup({})
+      })
+      it('returns the owners tier', async () => {
+        const { result } = renderHook(
+          () =>
+            useTier({
+              provider: 'gh',
+              owner: 'codecov',
+            }),
+          { wrapper }
+        )
+        await waitFor(() => result.current.isSuccess)
+        await waitFor(() => expect(result.current.data).toEqual('pro'))
+      })
+    })
+
+    describe('unsuccessful parse of zod schema', () => {
+      beforeEach(() => {
+        jest.spyOn(console, 'error')
+      })
+
+      afterEach(() => {
+        jest.resetAllMocks()
+      })
+
+      it('throws a 404', async () => {
+        setup({ isUnsuccessfulParseError: true })
+        const { result } = renderHook(
+          () =>
+            useTier({
+              provider: 'gh',
+              owner: 'codecov',
+            }),
+          {
+            wrapper,
+          }
+        )
+
+        await waitFor(() => expect(result.current.isError).toBeTruthy())
+        await waitFor(() =>
+          expect(result.current.error).toEqual(
+            expect.objectContaining({
+              status: 404,
+            })
+          )
+        )
+      })
     })
   })
 })
