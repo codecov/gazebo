@@ -1,6 +1,7 @@
 import dropRight from 'lodash/dropRight'
 import { useParams } from 'react-router-dom'
 
+import { useLocationParams } from 'services/navigation'
 import { getFilePathParts } from 'shared/utils/url'
 
 function getTreeLocation(paths, location, index) {
@@ -8,8 +9,14 @@ function getTreeLocation(paths, location, index) {
 }
 
 export function useCommitTreePaths() {
+  const { params } = useLocationParams()
   const { repo, path, commit } = useParams()
   const filePaths = getFilePathParts(path)
+
+  let queryParams = {}
+  if (Object.keys(params).length > 0) {
+    queryParams = params
+  }
 
   const paths = filePaths?.map((location, index) => ({
     pageName: 'commitTreeView',
@@ -17,13 +24,14 @@ export function useCommitTreePaths() {
     options: {
       tree: getTreeLocation(filePaths, location, index),
       commit,
+      ...queryParams,
     },
   }))
 
   const repoPath = {
     pageName: 'commitTreeView',
     text: repo,
-    options: { commit },
+    options: { commit, ...queryParams },
   }
   const treePaths = [repoPath, ...paths]
   return { treePaths }
