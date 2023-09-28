@@ -12,13 +12,15 @@ export const TierNames = {
 
 export const TierSchema = z
   .object({
-    owner: z.object({
-      plan: z
-        .object({
-          tierName: z.nativeEnum(TierNames),
-        })
-        .nullish(),
-    }),
+    owner: z
+      .object({
+        plan: z
+          .object({
+            tierName: z.nativeEnum(TierNames),
+          })
+          .nullish(),
+      })
+      .nullable(),
   })
   .nullable()
 
@@ -58,6 +60,6 @@ export const useTier = ({ provider, owner }: UseTierArgs) =>
           })
         }
 
-        return parsedRes.data?.owner?.plan?.tierName
+        return parsedRes.data?.owner?.plan?.tierName ?? null
       }),
   })
