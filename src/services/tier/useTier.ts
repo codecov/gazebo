@@ -18,7 +18,7 @@ export const TierSchema = z
           .object({
             tierName: z.nativeEnum(TierNames),
           })
-          .nullish(),
+          .nullable(),
       })
       .nullable(),
   })
