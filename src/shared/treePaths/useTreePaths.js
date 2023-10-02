@@ -1,6 +1,7 @@
 import dropRight from 'lodash/dropRight'
 import { useParams } from 'react-router-dom'
 
+import { useLocationParams } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import { getFilePathParts } from 'shared/utils/url'
 
@@ -9,6 +10,7 @@ function getTreeLocation(paths, location, index) {
 }
 
 export function useTreePaths(passedPath) {
+  const { params } = useLocationParams()
   const {
     provider,
     owner,
@@ -17,11 +19,7 @@ export function useTreePaths(passedPath) {
     repo,
     ref: urlRef,
   } = useParams()
-  const branch = urlBranch && decodeURIComponent(urlBranch)
-  const ref = urlRef && decodeURIComponent(urlRef)
-  const path = urlPath && decodeURIComponent(urlPath)
 
-  const filePaths = getFilePathParts(passedPath || path)
   const { data: repoOverview } = useRepoOverview(
     {
       provider,
@@ -30,7 +28,17 @@ export function useTreePaths(passedPath) {
     },
     { suspense: false }
   )
+
+  const branch = urlBranch && decodeURIComponent(urlBranch)
+  const ref = urlRef && decodeURIComponent(urlRef)
+  const path = urlPath && decodeURIComponent(urlPath)
+  const filePaths = getFilePathParts(passedPath || path)
   const defaultBranch = repoOverview?.defaultBranch
+
+  let queryParams = {}
+  if (Object.keys(params).length > 0) {
+    queryParams = params
+  }
 
   const paths = filePaths?.map((location, index) => ({
     pageName: 'treeView',
@@ -38,14 +46,20 @@ export function useTreePaths(passedPath) {
     options: {
       tree: getTreeLocation(filePaths, location, index),
       ref: branch ?? ref ?? defaultBranch,
+      ...queryParams,
     },
   }))
 
   const repoPath = {
     pageName: 'treeView',
     text: repo,
-    options: { ref: branch ?? ref ?? defaultBranch },
+    options: {
+      ref: branch ?? ref ?? defaultBranch,
+      ...queryParams,
+    },
   }
+
   const treePaths = [repoPath, ...paths]
+
   return { treePaths }
 }

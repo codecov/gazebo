@@ -30,6 +30,7 @@ function getFilters({ sortBy }) {
 
 function transformIndirectChangesData({ pull }) {
   const compareWithBase = pull?.compareWithBase
+  const compareWithBaseType = compareWithBase?.__typename
   const impactedFiles = compareWithBase?.impactedFiles?.map((impactedFile) => {
     const headCoverage = impactedFile?.headCoverage?.percentCovered
     const patchCoverage = impactedFile?.patchCoverage?.percentCovered
@@ -52,6 +53,7 @@ function transformIndirectChangesData({ pull }) {
       fileName: impactedFile?.fileName,
       isCriticalFile: impactedFile?.isCriticalFile,
       pullId: pull?.pullId,
+      compareWithBaseType,
     }
   })
   return {
@@ -60,6 +62,7 @@ function transformIndirectChangesData({ pull }) {
     pullHeadCoverage: compareWithBase?.headTotals?.percentCovered,
     pullPatchCoverage: compareWithBase?.patchTotals?.percentCovered,
     pullBaseCoverage: compareWithBase?.baseTotals?.percentCovered,
+    compareWithBaseType: compareWithBase?.__typename,
   }
 }
 

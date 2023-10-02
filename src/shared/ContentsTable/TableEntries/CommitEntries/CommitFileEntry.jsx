@@ -12,10 +12,14 @@ function CommitFileEntry({
   name,
   urlPath,
   displayType,
+  filters,
 }) {
+  const flags = filters?.flags?.length > 0 ? filters?.flags : []
+
   const { runPrefetch } = usePrefetchCommitFileEntry({
     path,
     commitSha,
+    flags,
   })
 
   return (
@@ -39,6 +43,9 @@ CommitFileEntry.propTypes = {
   name: PropTypes.string.isRequired,
   displayType: PropTypes.oneOf(Object.values(displayTypeParameter)),
   path: PropTypes.string,
+  filters: PropTypes.shape({
+    flags: PropTypes.arrayOf(PropTypes.string),
+  }),
 }
 
 export default CommitFileEntry

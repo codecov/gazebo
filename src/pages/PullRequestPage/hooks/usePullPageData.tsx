@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import {
+  FirstPullRequestSchema,
   MissingBaseCommitSchema,
   MissingBaseReportSchema,
   MissingComparisonSchema,
@@ -35,6 +36,7 @@ const RepositorySchema = z.object({
             flagComparisonsCount: z.number(),
             componentComparisonsCount: z.number(),
           }),
+          FirstPullRequestSchema,
           MissingBaseCommitSchema,
           MissingBaseReportSchema,
           MissingComparisonSchema,
@@ -66,7 +68,6 @@ query PullPageData($owner: String!, $repo: String!, $pullId: Int!) {
     repository(name: $repo) {
       __typename
       ... on Repository {
-        private
         pull(id: $pullId) {
           pullId
           head {
@@ -80,6 +81,9 @@ query PullPageData($owner: String!, $repo: String!, $pullId: Int!) {
               directChangedFilesCount
               flagComparisonsCount
               componentComparisonsCount
+            }
+            ... on FirstPullRequest {
+              message
             }
             ... on MissingBaseCommit {
               message

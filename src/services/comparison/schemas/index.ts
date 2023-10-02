@@ -1,3 +1,4 @@
+export * from './FirstPullRequest'
 export * from './MissingBaseCommit'
 export * from './MissingBaseReport'
 export * from './MissingComparison'

@@ -2,10 +2,10 @@ import {
   useInfiniteQuery,
   type UseInfiniteQueryOptions,
 } from '@tanstack/react-query'
-import isArray from 'lodash/isArray'
 import { z } from 'zod'
 
 import {
+  FirstPullRequestSchema,
   MissingBaseCommitSchema,
   MissingBaseReportSchema,
   MissingComparisonSchema,
@@ -17,6 +17,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
+import { mapEdges } from 'shared/utils/graphql'
 import A from 'ui/A'
 
 const PullStatesSchema = z.union([
@@ -59,6 +60,7 @@ const PullSchema = z
             .nullable(),
           changeCoverage: z.number().nullable(),
         }),
+        FirstPullRequestSchema,
         MissingBaseCommitSchema,
         MissingBaseReportSchema,
         MissingComparisonSchema,
@@ -145,6 +147,9 @@ query GetPulls(
                     percentCovered
                   }
                   changeCoverage
+                }
+                ... on FirstPullRequest {
+                  message
                 }
                 ... on MissingBaseCommit {
                   message
@@ -250,22 +255,10 @@ export function usePulls({
           })
         }
 
-        const edges = data?.owner?.repository?.pulls?.edges
-        let branches: Array<Pull | null> = []
-        if (isArray(edges)) {
-          for (const edge of edges) {
-            if (edge?.node) {
-              branches.push(edge.node)
-            }
-
-            if (edge === null) {
-              branches.push(edge)
-            }
-          }
-        }
+        const pulls = mapEdges(data?.owner?.repository?.pulls)
 
         return {
-          pulls: branches,
+          pulls,
           pageInfo: data?.owner?.repository?.pulls?.pageInfo ?? null,
         }
       })
