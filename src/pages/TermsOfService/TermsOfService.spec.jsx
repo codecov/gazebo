@@ -18,18 +18,15 @@ const queryClient = new QueryClient({
 const server = setupServer()
 let errorMock
 
-const wrapper =
-  (initialEntries = ['/gh/codecov/cool-repo']) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route path="/:provider/:owner/:repo">
-            <Suspense fallback={null}>{children}</Suspense>
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh/codecov/cool-repo']}>
+      <Route path="/:provider/:owner/:repo">
+        <Suspense fallback={null}>{children}</Suspense>
+      </Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
 
 beforeAll(() => {
   server.listen({
@@ -48,19 +45,15 @@ describe('TermsOfService', () => {
   beforeEach(() => jest.resetModules())
 
   function setup({
-    myOrganizationsData,
     useUserData,
     isValidationError = false,
     isUnAuthError = false,
     isUnknownError = false,
-  }) {
+  } = {}) {
     const mockMutationVariables = jest.fn()
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('UseMyOrganizations', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(myOrganizationsData))
-      }),
       graphql.query('CurrentUser', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(useUserData))
       }),
@@ -78,14 +71,6 @@ describe('TermsOfService', () => {
                   },
                 },
               }),
-              ...(req.variables?.defaultOrgInput && {
-                updateDefaultOrganization: {
-                  error: {
-                    __typename: 'UnauthenticatedError',
-                    message: 'unauthenticatedError error',
-                  },
-                },
-              }),
             })
           )
         }
@@ -95,14 +80,6 @@ describe('TermsOfService', () => {
             ctx.data({
               ...(req.variables?.tosInput && {
                 saveTermsAgreement: {
-                  __typename: 'ValidationError',
-                  error: {
-                    message: 'validation error',
-                  },
-                },
-              }),
-              ...(req.variables?.defaultOrgInput && {
-                updateDefaultOrganization: {
                   __typename: 'ValidationError',
                   error: {
                     message: 'validation error',
@@ -135,19 +112,11 @@ describe('TermsOfService', () => {
             termsAgreement: false,
           },
         },
-        myOrganizationsData: {
-          me: {
-            myOrganizations: {
-              edges: [],
-              pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
-            },
-          },
-        },
       })
     )
 
     it('only renders the component after a valid user is returned from the useUser hook', async () => {
-      render(<TermsOfService />, { wrapper: wrapper() })
+      render(<TermsOfService />, { wrapper })
 
       let welcome = screen.queryByText(/Welcome to Codecov/i)
       expect(welcome).not.toBeInTheDocument()
@@ -157,21 +126,21 @@ describe('TermsOfService', () => {
     })
 
     it('renders welcome message', async () => {
-      render(<TermsOfService />, { wrapper: wrapper() })
+      render(<TermsOfService />, { wrapper })
 
       const welcome = await screen.findByText(/Welcome to Codecov/i)
       expect(welcome).toBeInTheDocument()
     })
 
     it('submit button is disabled initially', async () => {
-      render(<TermsOfService />, { wrapper: wrapper() })
+      render(<TermsOfService />, { wrapper })
 
       const submit = await screen.findByRole('button', { name: /Continue/ })
       expect(submit).toBeDisabled()
     })
 
     it('links to the privacy policy', async () => {
-      render(<TermsOfService />, { wrapper: wrapper() })
+      render(<TermsOfService />, { wrapper })
 
       const privacyPolicy = await screen.findByRole('link', {
         name: /Privacy Policy/i,
@@ -183,7 +152,7 @@ describe('TermsOfService', () => {
     })
 
     it('links to the terms of service', async () => {
-      render(<TermsOfService />, { wrapper: wrapper() })
+      render(<TermsOfService />, { wrapper })
 
       const termsOfService = await screen.findByRole('link', {
         name: /Terms of Service/i,
@@ -191,18 +160,6 @@ describe('TermsOfService', () => {
       expect(termsOfService).toHaveAttribute(
         'href',
         'https://about.codecov.io/terms-of-service'
-      )
-    })
-
-    it('links to help finding your org', async () => {
-      render(<TermsOfService />, { wrapper: wrapper() })
-
-      const helpFindingOrg = await screen.findByRole('link', {
-        name: /Help finding org/i,
-      })
-      expect(helpFindingOrg).toHaveAttribute(
-        'href',
-        'https://docs.codecov.com/docs/video-guide-connecting-codecov-to-github'
       )
     })
   })
@@ -226,17 +183,9 @@ describe('TermsOfService', () => {
             },
           },
         },
-        myOrganizationsData: {
-          me: {
-            myOrganizations: {
-              edges: [],
-              pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
-            },
-          },
-        },
       })
 
-      render(<TermsOfService />, { wrapper: wrapper() })
+      render(<TermsOfService />, { wrapper })
 
       const welcome = await screen.findByText(/Welcome to Codecov/i)
       expect(welcome).toBeInTheDocument()
@@ -282,17 +231,9 @@ describe('TermsOfService', () => {
             },
           },
         },
-        myOrganizationsData: {
-          me: {
-            myOrganizations: {
-              edges: [],
-              pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
-            },
-          },
-        },
       })
 
-      render(<TermsOfService />, { wrapper: wrapper() })
+      render(<TermsOfService />, { wrapper })
 
       const welcome = await screen.findByText(/Welcome to Codecov/i)
       expect(welcome).toBeInTheDocument()
@@ -316,74 +257,6 @@ describe('TermsOfService', () => {
         })
       )
     })
-
-    it('Sign TOS, select a default org, sends the correct inputs to the server', async () => {
-      const { user, mockMutationVariables } = setup({
-        useUserData: {
-          me: {
-            email: 'personal@cr.com',
-            trackingMetadata: {
-              ownerid: '1234',
-            },
-            user: {
-              username: 'chetney',
-            },
-          },
-        },
-        myOrganizationsData: {
-          me: {
-            myOrganizations: {
-              edges: [
-                {
-                  node: {
-                    avatarUrl:
-                      'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
-                    username: 'criticalRole',
-                    ownerid: 1,
-                  },
-                },
-              ],
-              pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
-            },
-          },
-        },
-      })
-
-      render(<TermsOfService />, { wrapper: wrapper() })
-
-      const welcome = await screen.findByText(/Welcome to Codecov/i)
-      expect(welcome).toBeInTheDocument()
-
-      const select = screen.getByRole('button', {
-        name: 'Select an organization',
-      })
-
-      await user.click(select)
-
-      const orgInList = screen.getByRole('option', { name: 'criticalRole' })
-
-      await user.click(orgInList)
-
-      const selected = screen.getByText(new RegExp('criticalRole', 'i'))
-      expect(selected).toBeInTheDocument()
-
-      const selectedTos = screen.getByLabelText(
-        /I agree to the TOS and privacy policy/i
-      )
-
-      await user.click(selectedTos)
-
-      const submit = await screen.findByRole('button', { name: /Continue/ })
-
-      await user.click(submit)
-
-      await waitFor(() =>
-        expect(mockMutationVariables).toHaveBeenLastCalledWith({
-          tosInput: { businessEmail: 'personal@cr.com', termsAgreement: true },
-          defaultOrgInput: { username: 'criticalRole' },
-        })
-      )
-    })
   })
 
   /*
@@ -400,7 +273,7 @@ describe('TermsOfService', () => {
       'case #1',
       {
         validationDescription:
-          'user selects an org, signs TOS, submit is now enabled',
+          'user has email, signs TOS, submit is now enabled',
         useUserData: {
           me: {
             email: 'personal@cr.com',
@@ -409,7 +282,6 @@ describe('TermsOfService', () => {
         },
       },
       [expectPageIsReady],
-      [expectUserSelectsOrg, { orgName: 'criticalRole' }],
       [expectSubmitIsDisabled],
       [expectUserSignsTOS],
       [expectSubmitIsEnabled],
@@ -436,7 +308,7 @@ describe('TermsOfService', () => {
       'case #3',
       {
         validationDescription:
-          'user selects a default org, user wants to receive emails, signs TOS, submit is now enabled',
+          'user has email, user wants to receive emails, signs TOS, submit is now enabled',
         useUserData: {
           me: {
             email: 'chetney@cr.com',
@@ -445,7 +317,6 @@ describe('TermsOfService', () => {
         },
       },
       [expectPageIsReady],
-      [expectUserSelectsOrg, { orgName: 'criticalRole' }],
       [expectSubmitIsDisabled],
       [expectUserSelectsMarketingWithFoundEmail, { email: 'chetney@cr.com' }],
       [expectSubmitIsDisabled],
@@ -582,25 +453,6 @@ describe('TermsOfService', () => {
       [expectClickSubmit],
       [expectRendersServerFailureResult, 'validation error'],
     ],
-    [
-      'case #10',
-      {
-        validationDescription:
-          'server validation error notification (default org)',
-        isValidationError: true,
-        useUserData: {
-          me: {
-            termsAgreement: false,
-            email: 'personal@cr.com',
-          },
-        },
-      },
-      [expectPageIsReady],
-      [expectUserSelectsOrg, { orgName: 'criticalRole' }],
-      [expectUserSignsTOS],
-      [expectClickSubmit],
-      [expectRendersServerFailureResult, 'validation error'],
-    ],
   ])('form validation, %s', (_, initializeTest, ...steps) => {
     beforeEach(() => {
       const spy = jest.spyOn(console, 'error')
@@ -626,28 +478,8 @@ describe('TermsOfService', () => {
           isValidationError: initializeTest.isValidationError,
           isUnAuthError: initializeTest.isUnAuthError,
           useUserData: initializeTest.useUserData,
-          myOrganizationsData: {
-            me: {
-              myOrganizations: {
-                edges: [
-                  {
-                    node: {
-                      avatarUrl:
-                        'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
-                      username: 'criticalRole',
-                      ownerid: 1,
-                    },
-                  },
-                ],
-                pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
-              },
-            },
-          },
         })
-        render(<TermsOfService />, { wrapper: wrapper() })
-
-        await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(1))
-        await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+        render(<TermsOfService />, { wrapper })
 
         for (const [step, args] of steps) {
           await step(user, args)
@@ -662,21 +494,6 @@ describe('TermsOfService', () => {
 async function expectPageIsReady() {
   const welcome = await screen.findByText(/Welcome to Codecov/i)
   expect(welcome).toBeInTheDocument()
-}
-
-async function expectUserSelectsOrg(user, args) {
-  const select = screen.getByRole('button', {
-    name: 'Select an organization',
-  })
-
-  await user.click(select)
-
-  const orgInList = screen.getByRole('option', { name: args.orgName })
-
-  await user.click(orgInList)
-
-  const selected = screen.getByText(new RegExp(args.orgName, 'i'))
-  expect(selected).toBeInTheDocument()
 }
 
 async function expectUserSignsTOS(user) {
@@ -729,12 +546,12 @@ async function expectUserIsWarnedTOS() {
 }
 
 async function expectUserIsWarnedForValidEmail() {
-  const warning = screen.getByText(/This is not a valid email./i)
+  const warning = screen.getByText(/Invalid email/i)
   expect(warning).toBeInTheDocument()
 }
 
 async function expectUserIsNotWarnedForValidEmail() {
-  const warning = screen.queryByText(/This is not a valid email./i)
+  const warning = screen.queryByText(/Invalid email/i)
   expect(warning).not.toBeInTheDocument()
 }
 

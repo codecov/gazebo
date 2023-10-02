@@ -1,22 +1,17 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Controller, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import { trackSegmentEvent } from 'services/tracking/segment'
 import { useUser } from 'services/user'
-import { mapEdges } from 'shared/utils/graphql'
 import A from 'ui/A'
 import Button from 'ui/Button'
-import Icon from 'ui/Icon'
-import Select from 'ui/Select'
 import TextInput from 'ui/TextInput'
 
-import { useMyOrganizations } from './hooks/useMyOrganizations'
 import { useSaveTermsAgreement } from './hooks/useTermsOfService'
 
 const FormSchema = z.object({
-  select: z.string().nullish(),
-  marketingEmail: z.string().email('This is not a valid email.').nullish(),
+  marketingEmail: z.string().email().nullish(),
   marketingConsent: z.boolean().nullish(),
   tos: z.literal(true),
 })
@@ -26,11 +21,10 @@ function isDisabled({ isValid, isDirty }) {
 }
 
 export default function TermsOfService() {
-  const { register, control, handleSubmit, formState, setValue, setError } =
-    useForm({
-      resolver: zodResolver(FormSchema),
-      mode: 'onChange',
-    })
+  const { register, handleSubmit, formState, setError } = useForm({
+    resolver: zodResolver(FormSchema),
+    mode: 'onChange',
+  })
   const { mutate } = useSaveTermsAgreement({
     onSuccess: ({ data }) => {
       if (data?.updateDefaultOrganization?.error) {
@@ -44,20 +38,6 @@ export default function TermsOfService() {
     onError: (error) => setError('apiError', error),
   })
   const { data: currentUser, isLoading: userIsLoading } = useUser()
-
-  const {
-    data: myOrganizations,
-    hasNextPage,
-    fetchNextPage,
-    isFetching,
-  } = useMyOrganizations({
-    select: ({ pages }) => {
-      const [organizations] = pages.map((org) =>
-        mapEdges(org?.me?.myOrganizations)
-      )
-      return organizations
-    },
-  })
 
   const onSubmit = (data) => {
     if (data.marketingConsent) {
@@ -88,51 +68,15 @@ export default function TermsOfService() {
 
   return (
     <div className="mx-auto w-full max-w-[38rem] text-sm text-ds-gray-octonary">
-      <h1 className="pb-3 pt-20 text-2xl font-semibold">Welcome to Codecov</h1>
+      <h1 className="mt-14 text-2xl font-semibold">Welcome to Codecov</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="mb-4 border-y border-ds-gray-tertiary pt-6">
-          <p className="font-semibold">Select organization</p>
-          <div className="max-w-[15rem] py-1">
-            <Controller
-              name="select"
-              control={control}
-              render={() => (
-                <Select
-                  register={register}
-                  required
-                  placeholder="Select an organization"
-                  items={myOrganizations || []}
-                  renderItem={(item) => item?.username}
-                  onChange={(value) =>
-                    setValue('select', value?.username, {
-                      shouldDirty: true,
-                      shouldValidate: true,
-                    })
-                  }
-                  onLoadMore={() => hasNextPage && fetchNextPage()}
-                  isLoading={isFetching}
-                  ariaName="Select an organization"
-                  dataMarketing="Select an organization"
-                />
-              )}
-            />
-          </div>
-          <p className="text-xs text-ds-gray-quaternary">
-            Don&apos;t see your org?{' '}
-            <A
-              href="https://docs.codecov.com/docs/video-guide-connecting-codecov-to-github"
-              hook="help finding an org"
-              isExternal
-            >
-              Help finding org
-              <Icon name="chevronRight" size="sm" variant="solid" />
-            </A>
-          </p>
+        <div className="mt-4 border-y border-ds-gray-tertiary">
           {/* Prompt user for an email if their email is not shared through the provider, needed for marketing consent */}
           {!currentUser?.email && (
-            <div className="mt-3 flex flex-col gap-1">
+            <div className="mt-6 flex flex-col gap-1">
               <label htmlFor="marketingEmail" className="cursor-pointer">
-                <span className="font-semibold">Contact email</span> required
+                <span className="font-semibold">Contact email</span>{' '}
+                <small className="text-xs">required</small>
               </label>
               <div className="flex max-w-xs flex-col gap-2">
                 <TextInput
@@ -202,7 +146,7 @@ export default function TermsOfService() {
                     privacy policy
                   </A>
                 </span>{' '}
-                required
+                <small className="text-xs">required</small>
               </label>
             </div>
             {formState.errors?.tos && (
@@ -219,13 +163,15 @@ export default function TermsOfService() {
             <A to={{ pageName: 'support' }}>Contact support</A>.
           </p>
         )}
-        <Button
-          disabled={isDisabled(formState)}
-          type="submit"
-          hook="user signed tos"
-        >
-          Continue
-        </Button>
+        <div className="mt-3 flex justify-end">
+          <Button
+            disabled={isDisabled(formState)}
+            type="submit"
+            hook="user signed tos"
+          >
+            Continue
+          </Button>
+        </div>
       </form>
     </div>
   )

@@ -20,8 +20,7 @@ import Icon from 'ui/Icon/Icon'
 import Select from 'ui/Select'
 
 import GitHubHelpBanner from './GitHubHelpBanner'
-
-import { useMyOrganizations } from '../TermsOfService/hooks/useMyOrganizations'
+import { useMyOrganizations } from './hooks/useMyOrganizations'
 
 const FormSchema = z.object({
   select: z.string().nullish(),
