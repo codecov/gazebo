@@ -2,8 +2,6 @@ name: Gazebo CI
 
 on:
   push:
-    tags:
-      - self-hosted-*
     branches:
       - main
       - staging
@@ -275,6 +273,15 @@ jobs:
         run: |
           npm run build
 
+  build-self-hosted:
+    name: Build Self Hosted Image
+    secrets: inherit
+    if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
+    uses: codecov/gha-workflows/.github/workflows/self-hosted.yml@v1.0.0
+    with:
+      repo: ${{ vars.CODECOV_IMAGE_V2 || 'codecov/self-hosted-frontend' }}
+      cache_requirements: false
+
   self-hosted:
     name: Push Self Hosted Image
     needs: [ build-self-hosted, test ]
@@ -283,5 +290,5 @@ jobs:
     uses: codecov/gha-workflows/.github/workflows/self-hosted.yml@v1.0.0
     with:
       push_rolling: true
-      repo: ${{ vars.CODECOV_IMAGE_V2 || 'codecov/self-hosted-api' }}
+      repo: ${{ vars.CODECOV_IMAGE_V2 || 'codecov/self-hosted-frontend' }}
       cache_requirements: false
