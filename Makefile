@@ -26,7 +26,7 @@ push.self-hosted-rolling:
 	docker push ${dockerhub_image}:rolling
 
 save.self-hosted:
-	docker save -o self-hosted.tar ${release_version}-${sha}
+	docker save -o self-hosted.tar ${dockerhub_image}:${release_version}-${sha}
 
 load.self-hosted:
 	docker load --input self-hosted.tar
