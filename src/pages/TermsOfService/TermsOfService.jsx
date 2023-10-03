@@ -1,4 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import PropType from 'prop-types'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -20,11 +22,45 @@ function isDisabled({ isValid, isDirty }) {
   return (!isValid && isDirty) || !isDirty
 }
 
+function EmailInput({ register, marketingEmailMessage, showEmailRequired }) {
+  if (!showEmailRequired) return null
+
+  return (
+    <div className="mb-4 mt-2 flex flex-col gap-1">
+      <label htmlFor="marketingEmail" className="cursor-pointer">
+        <span className="font-semibold">Contact email</span>{' '}
+        <small className="text-xs">required</small>
+      </label>
+      <div className="flex max-w-xs flex-col gap-2">
+        <TextInput
+          {...register('marketingEmail', {
+            required: true,
+          })}
+          type="text"
+          id="marketingEmail"
+          placeholder="Email to receive updates"
+          dataMarketing="Email to receive updates"
+        />
+        {marketingEmailMessage && (
+          <p className="mt-1 text-codecov-red">{marketingEmailMessage}</p>
+        )}
+      </div>
+    </div>
+  )
+}
+
+EmailInput.propTypes = {
+  register: PropType.func.isRequired,
+  marketingEmailMessage: PropType.string,
+  showEmailRequired: PropType.bool.isRequired,
+}
+
 export default function TermsOfService() {
-  const { register, handleSubmit, formState, setError } = useForm({
-    resolver: zodResolver(FormSchema),
-    mode: 'onChange',
-  })
+  const { register, handleSubmit, formState, setError, watch, unregister } =
+    useForm({
+      resolver: zodResolver(FormSchema),
+      mode: 'onChange',
+    })
   const { mutate } = useSaveTermsAgreement({
     onSuccess: ({ data }) => {
       if (data?.updateDefaultOrganization?.error) {
@@ -57,12 +93,20 @@ export default function TermsOfService() {
       termsAgreement: true,
     }
 
-    if (data.select) {
-      input.defaultOrg = data.select
-    }
-
     mutate(input)
   }
+
+  useEffect(() => {
+    // https://reacthookform.caitouyun.com/api/useform/watch/
+    const subscription = watch((value, { name }) => {
+      if (name === 'marketingConsent') {
+        if (value) {
+          unregister('marketingEmail')
+        }
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [watch, unregister])
 
   if (userIsLoading) return null
 
@@ -71,31 +115,6 @@ export default function TermsOfService() {
       <h1 className="mt-14 text-2xl font-semibold">Welcome to Codecov</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mt-4 border-y border-ds-gray-tertiary">
-          {/* Prompt user for an email if their email is not shared through the provider, needed for marketing consent */}
-          {!currentUser?.email && (
-            <div className="mt-6 flex flex-col gap-1">
-              <label htmlFor="marketingEmail" className="cursor-pointer">
-                <span className="font-semibold">Contact email</span>{' '}
-                <small className="text-xs">required</small>
-              </label>
-              <div className="flex max-w-xs flex-col gap-2">
-                <TextInput
-                  {...register('marketingEmail', {
-                    required: !!currentUser?.email,
-                  })}
-                  type="text"
-                  id="marketingEmail"
-                  placeholder="Email to receive updates"
-                  dataMarketing="Email to receive updates"
-                />
-                {formState.errors?.marketingEmail && (
-                  <p className="mt-1 text-codecov-red">
-                    {formState.errors?.marketingEmail.message}
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
           <div className="my-6 flex flex-col gap-2">
             <div className="flex gap-2">
               <input
@@ -116,6 +135,13 @@ export default function TermsOfService() {
                 )}
               </label>
             </div>
+            <EmailInput
+              register={register}
+              marketingEmailMessage={formState.errors?.marketingEmail?.message}
+              showEmailRequired={
+                watch('marketingConsent') && !currentUser?.email
+              }
+            />
             <div className="flex gap-2">
               <input
                 {...register('tos', { required: true })}

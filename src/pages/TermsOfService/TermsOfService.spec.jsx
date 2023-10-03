@@ -347,7 +347,7 @@ describe('TermsOfService', () => {
       'case #5',
       {
         validationDescription:
-          'user must provide a valid email and sign TOS (check email validation messages)',
+          'user checks marketing consent and is required to provide an email, sign TOS (check email validation messages)',
         useUserData: {
           me: {
             termsAgreement: false,
@@ -356,6 +356,7 @@ describe('TermsOfService', () => {
       },
       [expectPageIsReady],
       [expectSubmitIsDisabled],
+      [expectEmailRequired],
       [expectUserTextEntryEmailField, { email: 'chetney' }],
       [expectUserIsWarnedForValidEmail],
       [expectSubmitIsDisabled],
@@ -371,7 +372,7 @@ describe('TermsOfService', () => {
       'case #6',
       {
         validationDescription:
-          'user cannot sign tos without providing an email',
+          'user checks marketing consent and does not provide an email, sign TOS (check email validation messages)',
         useUserData: {
           me: {
             termsAgreement: false,
@@ -379,6 +380,7 @@ describe('TermsOfService', () => {
         },
       },
       [expectPageIsReady],
+      [expectEmailRequired],
       [expectSubmitIsDisabled],
       [expectUserSignsTOS],
       [expectSubmitIsDisabled],
@@ -525,7 +527,7 @@ async function expectUserSelectsMarketing(user, args) {
 }
 
 async function expectUserTextEntryEmailField(user, args) {
-  const emailInput = screen.getByLabelText(/Contact email required/i)
+  const emailInput = screen.getByLabelText(/Contact email/i)
 
   await user.type(emailInput, args.email)
 }
@@ -559,6 +561,17 @@ async function expectClickSubmit(user) {
   const submit = screen.getByRole('button', { name: /Continue/ })
 
   await user.click(submit)
+}
+
+async function expectEmailRequired(user) {
+  const selectedMarketing = screen.getByLabelText(
+    /I would like to receive updates via email/i
+  )
+
+  await user.click(selectedMarketing)
+
+  const emailRequired = screen.getByText(/Contact email/i)
+  expect(emailRequired).toBeInTheDocument()
 }
 
 async function expectRendersServerFailureResult(user, expectedError = {}) {
