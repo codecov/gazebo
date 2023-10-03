@@ -1,10 +1,12 @@
 import PropTypes from 'prop-types'
+import qs from 'qs'
 import { useLocation, useParams } from 'react-router-dom'
 
 import {
   commitFileviewString,
   commitTreeviewString,
 } from 'pages/RepoPage/utils'
+import { useLocationParams } from 'services/navigation'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import TabNavigation from 'ui/TabNavigation'
 
@@ -13,8 +15,14 @@ function CommitDetailPageTabs({
   indirectChangedFilesCount,
   directChangedFilesCount,
 }) {
+  const { params } = useLocationParams()
   const { pathname } = useLocation()
   const { provider, owner, repo } = useParams()
+
+  let queryParams = {}
+  if (Object.keys(params).length > 0) {
+    queryParams = params
+  }
 
   const blobPath = pathname.includes(
     `/${provider}/${commitFileviewString({ owner, repo, commitSHA })}`
@@ -26,8 +34,9 @@ function CommitDetailPageTabs({
 
   let customLocation = undefined
   if (blobPath || filePath) {
+    let queryString = qs.stringify(queryParams, { addQueryPrefix: true })
     customLocation = {
-      pathname: `/${provider}/${owner}/${repo}/commit/${commitSHA}/tree`,
+      pathname: `/${provider}/${owner}/${repo}/commit/${commitSHA}/tree${queryString}`,
     }
   }
 
@@ -42,12 +51,12 @@ function CommitDetailPageTabs({
               <sup className="text-xs">{directChangedFilesCount}</sup>
             </>
           ),
-          options: { commit: commitSHA },
+          options: { commit: commitSHA, ...queryParams },
           exact: true,
         },
         {
           pageName: 'commitIndirectChanges',
-          options: { commit: commitSHA },
+          options: { commit: commitSHA, ...queryParams },
           children: (
             <>
               Indirect changes
@@ -58,7 +67,7 @@ function CommitDetailPageTabs({
         {
           pageName: 'commitTreeView',
           children: 'File explorer',
-          options: { commit: commitSHA },
+          options: { commit: commitSHA, ...queryParams },
           location: customLocation,
         },
       ]}
