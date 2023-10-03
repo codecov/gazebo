@@ -13,6 +13,24 @@ export const query = `
         commit(id: $commitid) {
           compareWithParent {
             ...ComparisonFragment
+            ... on FirstPullRequest {
+              message
+            }
+            ... on MissingBaseCommit {
+              message
+            }
+            ... on MissingHeadCommit {
+              message
+            }
+            ... on MissingComparison {
+              message
+            }
+            ... on MissingBaseReport {
+              message
+            }
+            ... on MissingHeadReport {
+              message
+            }
           }
         }
       }
