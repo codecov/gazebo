@@ -155,15 +155,14 @@ export function useNavLinks() {
     },
     commit: {
       path: (
-        { provider = p, owner = o, repo = r, commit, ...queryParams } = {
+        { provider = p, owner = o, repo = r, commit, queryParams } = {
           provider: p,
           owner: o,
           repo: r,
-          queryParams: {},
         }
       ) => {
         let query = ''
-        if (Object.keys(queryParams).length > 0) {
+        if (queryParams && Object.keys(queryParams).length > 0) {
           query = qs.stringify(queryParams, { addQueryPrefix: true })
         }
 
@@ -185,15 +184,14 @@ export function useNavLinks() {
     },
     treeView: {
       path: (
-        { provider = p, owner = o, repo = r, tree, ref, ...queryParams } = {
+        { provider = p, owner = o, repo = r, tree, ref, queryParams } = {
           provider: p,
           owner: o,
           repo: r,
-          queryParams: {},
         }
       ) => {
         let query = ''
-        if (Object.keys(queryParams).length > 0) {
+        if (queryParams && Object.keys(queryParams).length > 0) {
           query = qs.stringify(queryParams, { addQueryPrefix: true })
         }
 
@@ -215,18 +213,17 @@ export function useNavLinks() {
     },
     fileViewer: {
       path: (
-        { provider = p, owner = o, repo = r, ref, tree, ...queryParams } = {
+        { provider = p, owner = o, repo = r, ref, tree, queryParams } = {
           provider: p,
           owner: o,
           repo: r,
-          queryParams: {},
         }
       ) => {
         const encodedRef = encodeURIComponent(ref)
         const encodedTree = encodeURIComponent(tree)
 
         let query = ''
-        if (Object.keys(queryParams).length > 0) {
+        if (queryParams && Object.keys(queryParams).length > 0) {
           query = qs.stringify(queryParams, { addQueryPrefix: true })
         }
 
@@ -237,15 +234,14 @@ export function useNavLinks() {
     },
     commitTreeView: {
       path: (
-        { provider = p, owner = o, repo = r, tree, commit, ...queryParams } = {
+        { provider = p, owner = o, repo = r, tree, commit, queryParams } = {
           provider: p,
           owner: o,
           repo: r,
-          queryParams: {},
         }
       ) => {
         let query = ''
-        if (Object.keys(queryParams).length > 0) {
+        if (queryParams && Object.keys(queryParams).length > 0) {
           query = qs.stringify(queryParams, { addQueryPrefix: true })
         }
 
@@ -259,15 +255,14 @@ export function useNavLinks() {
     },
     commitFileDiff: {
       path: (
-        { provider = p, owner = o, repo = r, tree, commit, ...queryParams } = {
+        { provider = p, owner = o, repo = r, tree, commit, queryParams } = {
           provider: p,
           owner: o,
           repo: r,
-          queryParams: {},
         }
       ) => {
         let query = ''
-        if (Object.keys(queryParams).length > 0) {
+        if (queryParams && Object.keys(queryParams).length > 0) {
           query = qs.stringify(queryParams, { addQueryPrefix: true })
         }
 
@@ -450,15 +445,14 @@ export function useNavLinks() {
     commitIndirectChanges: {
       text: 'Indirect changes',
       path: (
-        { provider = p, owner = o, repo = r, commit, ...queryParams } = {
+        { provider = p, owner = o, repo = r, commit, queryParams } = {
           provider: p,
           owner: o,
           repo: r,
-          queryParams: {},
         }
       ) => {
         let query = ''
-        if (Object.keys(queryParams).length > 0) {
+        if (queryParams && Object.keys(queryParams).length > 0) {
           query = qs.stringify(queryParams, { addQueryPrefix: true })
         }
 

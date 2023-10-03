@@ -519,7 +519,7 @@ describe('useNavLinks', () => {
         owner: 'test-owner',
         repo: 'test-repo',
         commit: '1ab3',
-        flags: ['myFlag'],
+        queryParams: { flags: ['myFlag'] },
       })
       expect(path).toBe(
         '/bb/test-owner/test-repo/commit/1ab3?flags%5B0%5D=myFlag'
@@ -648,7 +648,7 @@ describe('useNavLinks', () => {
       const filePath = result.current.treeView.path({
         ref: 'main',
         tree: 'src/',
-        flags: ['flag-1'],
+        queryParams: { flags: ['flag-1'] },
       })
       expect(filePath).toBe(
         '/gl/doggo/watch/tree/main/src%2F?flags%5B0%5D=flag-1'
@@ -711,7 +711,7 @@ describe('useNavLinks', () => {
       const filePath = result.current.fileViewer.path({
         ref: 'main',
         tree: 'index.js',
-        flags: ['flag-1'],
+        queryParams: { flags: ['flag-1'] },
       })
       expect(filePath).toBe(
         '/gh/codecov-owner/another-test/blob/main/index.js?flags%5B0%5D=flag-1'
@@ -785,7 +785,7 @@ describe('useNavLinks', () => {
 
       const path = result.current.commitTreeView.path({
         commit: 'sha256',
-        flags: ['flag-1'],
+        queryParams: { flags: ['flag-1'] },
       })
       expect(path).toBe(
         '/gh/codecov-owner/another-test/commit/sha256/tree?flags%5B0%5D=flag-1'
@@ -833,7 +833,7 @@ describe('useNavLinks', () => {
       const path = result.current.commitFileDiff.path({
         commit: 'sha256',
         tree: 'index.js',
-        flags: ['flag-1'],
+        queryParams: { flags: ['flag-1'] },
       })
       expect(path).toBe(
         '/gh/codecov-owner/another-test/commit/sha256/blob/index.js?flags%5B0%5D=flag-1'
@@ -1292,7 +1292,7 @@ describe('useNavLinks', () => {
 
       const path = result.current.commitIndirectChanges.path({
         commit: 409,
-        flags: ['flag-1'],
+        queryParams: { flags: ['flag-1'] },
       })
       expect(path).toBe(
         '/gl/doggo/squirrel-locator/commit/409/indirect-changes?flags%5B0%5D=flag-1'
