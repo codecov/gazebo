@@ -35,7 +35,7 @@ export function useTreePaths(passedPath) {
   const filePaths = getFilePathParts(passedPath || path)
   const defaultBranch = repoOverview?.defaultBranch
 
-  let queryParams = {}
+  let queryParams = undefined
   if (Object.keys(params).length > 0) {
     queryParams = params
   }
@@ -46,7 +46,7 @@ export function useTreePaths(passedPath) {
     options: {
       tree: getTreeLocation(filePaths, location, index),
       ref: branch ?? ref ?? defaultBranch,
-      ...queryParams,
+      queryParams,
     },
   }))
 
@@ -55,7 +55,7 @@ export function useTreePaths(passedPath) {
     text: repo,
     options: {
       ref: branch ?? ref ?? defaultBranch,
-      ...queryParams,
+      queryParams,
     },
   }
 
