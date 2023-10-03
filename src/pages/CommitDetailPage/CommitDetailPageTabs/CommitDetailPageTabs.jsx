@@ -1,5 +1,5 @@
+import omit from 'lodash/omit'
 import PropTypes from 'prop-types'
-import qs from 'qs'
 import { useLocation, useParams } from 'react-router-dom'
 
 import {
@@ -10,18 +10,23 @@ import { useLocationParams } from 'services/navigation'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import TabNavigation from 'ui/TabNavigation'
 
+const defaultQueryParams = {
+  search: '',
+  flags: [],
+}
+
 function CommitDetailPageTabs({
   commitSHA,
   indirectChangedFilesCount,
   directChangedFilesCount,
 }) {
-  const { params } = useLocationParams()
+  const { params } = useLocationParams(defaultQueryParams)
   const { pathname } = useLocation()
   const { provider, owner, repo } = useParams()
 
-  let queryParams = {}
+  let queryParams = undefined
   if (Object.keys(params).length > 0) {
-    queryParams = params
+    queryParams = omit(params, ['search'])
   }
 
   const blobPath = pathname.includes(
@@ -34,9 +39,8 @@ function CommitDetailPageTabs({
 
   let customLocation = undefined
   if (blobPath || filePath) {
-    let queryString = qs.stringify(queryParams, { addQueryPrefix: true })
     customLocation = {
-      pathname: `/${provider}/${owner}/${repo}/commit/${commitSHA}/tree${queryString}`,
+      pathname: `/${provider}/${owner}/${repo}/commit/${commitSHA}/tree`,
     }
   }
 
@@ -51,12 +55,12 @@ function CommitDetailPageTabs({
               <sup className="text-xs">{directChangedFilesCount}</sup>
             </>
           ),
-          options: { commit: commitSHA, ...queryParams },
+          options: { commit: commitSHA, queryParams },
           exact: true,
         },
         {
           pageName: 'commitIndirectChanges',
-          options: { commit: commitSHA, ...queryParams },
+          options: { commit: commitSHA, queryParams },
           children: (
             <>
               Indirect changes
@@ -67,7 +71,7 @@ function CommitDetailPageTabs({
         {
           pageName: 'commitTreeView',
           children: 'File explorer',
-          options: { commit: commitSHA, ...queryParams },
+          options: { commit: commitSHA, queryParams },
           location: customLocation,
         },
       ]}
