@@ -182,15 +182,23 @@ describe('useCommitTreePaths', () => {
         {
           pageName: 'commitTreeView',
           text: 'cool-repo',
-          options: { commit: 'sha256', flags: ['flag-1'] },
+          options: { commit: 'sha256', queryParams: { flags: ['flag-1'] } },
         },
         {
-          options: { tree: 'src', commit: 'sha256', flags: ['flag-1'] },
+          options: {
+            tree: 'src',
+            commit: 'sha256',
+            queryParams: { flags: ['flag-1'] },
+          },
           pageName: 'commitTreeView',
           text: 'src',
         },
         {
-          options: { tree: 'src/tests', commit: 'sha256', flags: ['flag-1'] },
+          options: {
+            tree: 'src/tests',
+            commit: 'sha256',
+            queryParams: { flags: ['flag-1'] },
+          },
           pageName: 'commitTreeView',
           text: 'tests',
         },

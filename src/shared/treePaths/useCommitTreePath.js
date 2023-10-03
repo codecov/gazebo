@@ -13,7 +13,7 @@ export function useCommitTreePaths() {
   const { repo, path, commit } = useParams()
   const filePaths = getFilePathParts(path)
 
-  let queryParams = {}
+  let queryParams = undefined
   if (Object.keys(params).length > 0) {
     queryParams = params
   }
@@ -24,14 +24,14 @@ export function useCommitTreePaths() {
     options: {
       tree: getTreeLocation(filePaths, location, index),
       commit,
-      ...queryParams,
+      queryParams,
     },
   }))
 
   const repoPath = {
     pageName: 'commitTreeView',
     text: repo,
-    options: { commit, ...queryParams },
+    options: { commit, queryParams },
   }
   const treePaths = [repoPath, ...paths]
   return { treePaths }
