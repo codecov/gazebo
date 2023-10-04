@@ -1,39 +1,37 @@
 import omit from 'lodash/omit'
 import PropTypes from 'prop-types'
+import qs from 'qs'
 import { useLocation, useParams } from 'react-router-dom'
 
 import {
   commitFileviewString,
   commitTreeviewString,
 } from 'pages/RepoPage/utils'
-import { useLocationParams } from 'services/navigation'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import TabNavigation from 'ui/TabNavigation'
-
-const defaultQueryParams = {
-  search: '',
-  flags: [],
-}
 
 function CommitDetailPageTabs({
   commitSHA,
   indirectChangedFilesCount,
   directChangedFilesCount,
 }) {
-  const { params } = useLocationParams(defaultQueryParams)
-  const { pathname } = useLocation()
   const { provider, owner, repo } = useParams()
+  const location = useLocation()
+  const params = qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+    depth: 1,
+  })
 
   let queryParams = undefined
   if (Object.keys(params).length > 0) {
     queryParams = omit(params, ['search'])
   }
 
-  const blobPath = pathname.includes(
+  const blobPath = location.pathname.includes(
     `/${provider}/${commitFileviewString({ owner, repo, commitSHA })}`
   )
 
-  const filePath = pathname.includes(
+  const filePath = location.pathname.includes(
     `/${provider}/${commitTreeviewString({ owner, repo, commitSHA })}`
   )
 
