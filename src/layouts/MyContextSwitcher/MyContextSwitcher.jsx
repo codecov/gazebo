@@ -1,17 +1,18 @@
 import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
-import { useMyContexts } from 'services/user'
+import { useMyContexts, useOwner } from 'services/user'
 import ContextSwitcher from 'ui/ContextSwitcher'
 
 function MyContextSwitcher({ pageName }) {
-  const { provider } = useParams()
+  const { provider, owner } = useParams()
   const {
     data: myContexts,
     hasNextPage,
     fetchNextPage,
     isLoading,
   } = useMyContexts({ provider })
+  const { data: activeContext } = useOwner({ username: owner })
 
   if (!myContexts || !myContexts?.currentUser) return null
 
@@ -31,6 +32,7 @@ function MyContextSwitcher({ pageName }) {
   return (
     <div className="max-w-[350px]">
       <ContextSwitcher
+        activeContext={activeContext}
         contexts={contexts}
         currentUser={currentUser}
         isLoading={isLoading}

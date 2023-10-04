@@ -36,13 +36,13 @@ const ModalComponent = ({ closeFn }) => <div onClick={closeFn}>component</div>
 const ModalControl = ({ onClick }) => <button onClick={onClick}>display</button>
 
 const wrapper =
-  (initialEntries = '/gh/random') =>
+  (initialEntries = '/gh') =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={[initialEntries]}>
           <Switch>
-            <Route path="/:provider/:owner" exact>
+            <Route path="/:provider" exact>
               <div>Click away</div>
               {children}
             </Route>
@@ -62,17 +62,6 @@ describe('ContextSwitcher', () => {
         mutate(req.variables)
 
         return res(ctx.status(200), ctx.json({ username: 'spotify' }))
-      }),
-      graphql.query('DetailOwner', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
-            owner: {
-              username: 'laudna',
-              avatarUrl: 'some-url',
-            },
-          })
-        )
       })
     )
     return { user, mutate }
@@ -85,6 +74,7 @@ describe('ContextSwitcher', () => {
     it('does not render the listed items initially', () => {
       render(
         <ContextSwitcher
+          activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
           contexts={[
             {
               owner: {
@@ -118,7 +108,7 @@ describe('ContextSwitcher', () => {
           error={null}
         />,
         {
-          wrapper: wrapper('/gh/laudna'),
+          wrapper: wrapper(),
         }
       )
 
@@ -133,6 +123,7 @@ describe('ContextSwitcher', () => {
       const { user } = setup()
       render(
         <ContextSwitcher
+          activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
           contexts={[
             {
               owner: {
@@ -166,7 +157,7 @@ describe('ContextSwitcher', () => {
           error={null}
         />,
         {
-          wrapper: wrapper('/gh/laudna'),
+          wrapper: wrapper(),
         }
       )
 
@@ -190,6 +181,7 @@ describe('ContextSwitcher', () => {
       const { user } = setup()
       render(
         <ContextSwitcher
+          activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
           contexts={[
             {
               owner: {
@@ -223,7 +215,7 @@ describe('ContextSwitcher', () => {
           error={null}
         />,
         {
-          wrapper: wrapper('/gh/laudna'),
+          wrapper: wrapper(),
         }
       )
 
@@ -251,6 +243,7 @@ describe('ContextSwitcher', () => {
     it('renders manage access restrictions', async () => {
       render(
         <ContextSwitcher
+          activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
           contexts={[
             {
               owner: {
@@ -284,7 +277,7 @@ describe('ContextSwitcher', () => {
           error={null}
         />,
         {
-          wrapper: wrapper('/gh/laudna'),
+          wrapper: wrapper(),
         }
       )
 
@@ -305,6 +298,7 @@ describe('ContextSwitcher', () => {
         const { user } = setup()
         render(
           <ContextSwitcher
+            activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
             contexts={[
               {
                 owner: {
@@ -338,7 +332,7 @@ describe('ContextSwitcher', () => {
             error={null}
           />,
           {
-            wrapper: wrapper('/gh/laudna'),
+            wrapper: wrapper(),
           }
         )
 
@@ -356,6 +350,7 @@ describe('ContextSwitcher', () => {
         const { user } = setup()
         render(
           <ContextSwitcher
+            activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
             contexts={[
               {
                 owner: {
@@ -389,7 +384,7 @@ describe('ContextSwitcher', () => {
             error={null}
           />,
           {
-            wrapper: wrapper('/gh/laudna'),
+            wrapper: wrapper(),
           }
         )
 
@@ -413,6 +408,7 @@ describe('ContextSwitcher', () => {
       const onLoadMoreFunc = jest.fn()
       render(
         <ContextSwitcher
+          activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
           contexts={[
             {
               owner: {
@@ -447,7 +443,7 @@ describe('ContextSwitcher', () => {
           onLoadMore={onLoadMoreFunc}
         />,
         {
-          wrapper: wrapper('/gh/laudna'),
+          wrapper: wrapper(),
         }
       )
 
@@ -465,6 +461,7 @@ describe('ContextSwitcher', () => {
       const { user } = setup()
       render(
         <ContextSwitcher
+          activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
           contexts={[
             {
               owner: {
@@ -520,6 +517,7 @@ describe('ContextSwitcher', () => {
         const { user, mutate } = setup()
         render(
           <ContextSwitcher
+            activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
             contexts={[
               {
                 owner: {
@@ -551,7 +549,7 @@ describe('ContextSwitcher', () => {
             error={null}
           />,
           {
-            wrapper: wrapper('/gh/laudna'),
+            wrapper: wrapper(),
           }
         )
 
@@ -574,6 +572,7 @@ describe('ContextSwitcher', () => {
         const { user, mutate } = setup()
         render(
           <ContextSwitcher
+            activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
             contexts={[
               {
                 owner: {
@@ -605,7 +604,7 @@ describe('ContextSwitcher', () => {
             error={null}
           />,
           {
-            wrapper: wrapper('/gh/laudna'),
+            wrapper: wrapper(),
           }
         )
 

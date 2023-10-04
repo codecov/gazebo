@@ -6,7 +6,6 @@ import { useIntersection } from 'react-use'
 import useClickAway from 'react-use/lib/useClickAway'
 
 import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
-import { useOwner } from 'services/user'
 import { providerToName } from 'shared/utils/provider'
 import A from 'ui/A'
 import Avatar from 'ui/Avatar'
@@ -144,12 +143,12 @@ function ContextSwitcher({
   onLoadMore,
   ModalControl,
   ModalComponent,
+  activeContext,
 }) {
-  const { provider, owner } = useParams()
+  const { provider } = useParams()
   const [toggle, setToggle] = useState(false)
   const wrapperRef = useCloseOnLooseFocus({ setToggle })
   const intersectionRef = useLoadMore({ onLoadMore })
-  const { data: currentContext } = useOwner({ username: owner })
   const defaultOrgUsername = currentUser?.defaultOrgUsername
 
   const isGh = providerToName(provider) === 'Github'
@@ -170,8 +169,8 @@ function ContextSwitcher({
         aria-expanded={toggle}
         onClick={() => setToggle((toggle) => !toggle)}
       >
-        <Avatar user={currentContext} bordered />
-        <p className="ml-1">{currentContext?.username}</p>
+        <Avatar user={activeContext} bordered />
+        <p className="ml-1">{activeContext?.username}</p>
         <span
           aria-hidden="true"
           className={cs('transition-transform', {
@@ -203,7 +202,7 @@ function ContextSwitcher({
             defaultOrgUsername={defaultOrgUsername}
             context={context}
             key={context?.owner?.username}
-            currentContext={currentContext}
+            currentContext={activeContext}
             setToggle={setToggle}
           />
         ))}
@@ -243,6 +242,10 @@ ContextSwitcher.propTypes = {
   isLoading: PropTypes.bool,
   ModalComponent: PropTypes.func,
   ModalControl: PropTypes.func,
+  activeContext: PropTypes.shape({
+    avatarUrl: PropTypes.string.isRequired,
+    username: PropTypes.string.isRequired,
+  }),
 }
 
 export default ContextSwitcher
