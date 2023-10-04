@@ -4,7 +4,6 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import { trackSegmentEvent } from 'services/tracking/segment'
 import { useUser } from 'services/user'
 import A from 'ui/A'
 import Button from 'ui/Button'
@@ -76,24 +75,10 @@ export default function TermsOfService() {
   const { data: currentUser, isLoading: userIsLoading } = useUser()
 
   const onSubmit = (data) => {
-    if (data.marketingConsent) {
-      const segmentEvent = {
-        event: 'Onboarding email opt in',
-        data: {
-          email: data?.marketingEmail || currentUser?.email,
-          ownerid: currentUser?.trackingMetadata?.ownerid,
-          username: currentUser?.user?.username,
-        },
-      }
-      trackSegmentEvent(segmentEvent)
-    }
-
-    const input = {
+    mutate({
       businessEmail: data?.marketingEmail || currentUser?.email,
       termsAgreement: true,
-    }
-
-    mutate(input)
+    })
   }
 
   useEffect(() => {

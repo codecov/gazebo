@@ -6,11 +6,7 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { trackSegmentEvent } from 'services/tracking/segment'
-
 import TermsOfService from './TermsOfService'
-
-jest.mock('services/tracking/segment')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -166,55 +162,6 @@ describe('TermsOfService', () => {
 
   describe('on submit', () => {
     beforeEach(() => jest.resetAllMocks())
-
-    it('tracks the segment event', async () => {
-      const segmentMock = jest.fn()
-      trackSegmentEvent.mockReturnValue(segmentMock)
-
-      const { user } = setup({
-        useUserData: {
-          me: {
-            email: 'personal@cr.com',
-            trackingMetadata: {
-              ownerid: '1234',
-            },
-            user: {
-              username: 'chetney',
-            },
-          },
-        },
-      })
-
-      render(<TermsOfService />, { wrapper })
-
-      const welcome = await screen.findByText(/Welcome to Codecov/i)
-      expect(welcome).toBeInTheDocument()
-
-      const selectedMarketing = screen.getByLabelText(
-        /I would like to receive updates via email/i
-      )
-
-      await user.click(selectedMarketing)
-
-      const selectedTos = screen.getByLabelText(
-        /I agree to the TOS and privacy policy/i
-      )
-
-      await user.click(selectedTos)
-
-      const submit = await screen.findByRole('button', { name: /Continue/ })
-
-      await user.click(submit)
-
-      expect(trackSegmentEvent).toHaveBeenLastCalledWith({
-        event: 'Onboarding email opt in',
-        data: {
-          email: 'personal@cr.com',
-          ownerid: '1234',
-          username: 'chetney',
-        },
-      })
-    })
 
     // Into the realm of testing implementation details, but I want to make sure
     // that the correct inputs are being sent to the server.
