@@ -155,10 +155,11 @@ export function useNavLinks() {
     },
     commit: {
       path: (
-        { provider = p, owner = o, repo = r, commit, queryParams } = {
+        { provider = p, owner = o, repo = r, commit, queryParams = {} } = {
           provider: p,
           owner: o,
           repo: r,
+          queryParams: {},
         }
       ) => {
         let query = ''
@@ -184,10 +185,11 @@ export function useNavLinks() {
     },
     treeView: {
       path: (
-        { provider = p, owner = o, repo = r, tree, ref, queryParams } = {
+        { provider = p, owner = o, repo = r, tree, ref, queryParams = {} } = {
           provider: p,
           owner: o,
           repo: r,
+          queryParams: {},
         }
       ) => {
         let query = ''
@@ -213,10 +215,11 @@ export function useNavLinks() {
     },
     fileViewer: {
       path: (
-        { provider = p, owner = o, repo = r, ref, tree, queryParams } = {
+        { provider = p, owner = o, repo = r, ref, tree, queryParams = {} } = {
           provider: p,
           owner: o,
           repo: r,
+          queryParams: {},
         }
       ) => {
         const encodedRef = encodeURIComponent(ref)
@@ -234,10 +237,18 @@ export function useNavLinks() {
     },
     commitTreeView: {
       path: (
-        { provider = p, owner = o, repo = r, tree, commit, queryParams } = {
+        {
+          provider = p,
+          owner = o,
+          repo = r,
+          tree,
+          commit,
+          queryParams = {},
+        } = {
           provider: p,
           owner: o,
           repo: r,
+          queryParams: {},
         }
       ) => {
         let query = ''
@@ -255,10 +266,18 @@ export function useNavLinks() {
     },
     commitFileDiff: {
       path: (
-        { provider = p, owner = o, repo = r, tree, commit, queryParams } = {
+        {
+          provider = p,
+          owner = o,
+          repo = r,
+          tree,
+          commit,
+          queryParams = {},
+        } = {
           provider: p,
           owner: o,
           repo: r,
+          queryParams: {},
         }
       ) => {
         let query = ''
@@ -445,10 +464,11 @@ export function useNavLinks() {
     commitIndirectChanges: {
       text: 'Indirect changes',
       path: (
-        { provider = p, owner = o, repo = r, commit, queryParams } = {
+        { provider = p, owner = o, repo = r, commit, queryParams = {} } = {
           provider: p,
           owner: o,
           repo: r,
+          queryParams: {},
         }
       ) => {
         let query = ''
