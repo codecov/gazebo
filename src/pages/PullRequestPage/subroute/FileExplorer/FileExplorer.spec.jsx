@@ -281,7 +281,7 @@ describe('FileExplorer', () => {
           const links = await within(table).findAllByRole('link')
           expect(links[0]).toHaveAttribute(
             'href',
-            '/gh/codecov/cool-repo/pull/123/blob/a/b/c/file.js'
+            '/gh/codecov/cool-repo/pull/123/blob/a/b/c/file.js?displayType=list'
           )
         })
       })
