@@ -4,6 +4,8 @@ import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
+// Note to Terry, when we have more time automate all paths to pass through query search params.
+
 export function useNavLinks() {
   const {
     provider: p,
@@ -167,6 +169,7 @@ export function useNavLinks() {
           provider: p,
           owner: o,
           repo: r,
+          commit: c,
           queryParams: {},
         }
       ) => {
@@ -569,16 +572,21 @@ export function useNavLinks() {
           repo = r,
           tree = pa,
           pullId = pi,
-          flags = {},
+          queryParams = {},
         } = {
           provider: p,
           owner: o,
           repo: r,
           pullId: pi,
           tree: pa,
+          queryParams: {},
         }
       ) => {
-        const query = qs.stringify({ flags }, { addQueryPrefix: true }) || ''
+        let query = ''
+        if (Object.keys(queryParams).length > 0) {
+          query = qs.stringify(queryParams, { addQueryPrefix: true })
+        }
+
         return `/${provider}/${owner}/${repo}/pull/${pullId}/blob/${tree}${query}`
       },
       isExternalLink: false,

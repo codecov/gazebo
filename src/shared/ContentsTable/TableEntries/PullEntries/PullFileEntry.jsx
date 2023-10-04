@@ -16,8 +16,7 @@ function PullFileEntry({
   displayType,
 }) {
   const { search } = useLocation()
-  const searchParams = qs.parse(search, { ignoreQueryPrefix: true })
-  const flags = searchParams?.flags ?? []
+  const queryParams = qs.parse(search, { ignoreQueryPrefix: true })
 
   const { runPrefetch } = usePrefetchPullFileEntry({
     path,
@@ -33,7 +32,7 @@ function PullFileEntry({
       path={path}
       runPrefetch={runPrefetch}
       pageName="pullFileView"
-      flags={flags}
+      queryParams={queryParams}
     />
   )
 }

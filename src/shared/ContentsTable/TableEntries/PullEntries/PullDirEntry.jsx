@@ -9,7 +9,6 @@ import DirEntry from '../BaseEntries/DirEntry'
 function PullDirEntry({ pullId, urlPath, name, filters }) {
   const { search } = useLocation()
   const searchParams = qs.parse(search, { ignoreQueryPrefix: true })
-  const flags = searchParams?.flags ?? []
 
   const { runPrefetch } = usePrefetchPullDirEntry({
     pullId,
@@ -23,7 +22,7 @@ function PullDirEntry({ pullId, urlPath, name, filters }) {
       urlPath={urlPath}
       runPrefetch={runPrefetch}
       pageName="pullTreeView"
-      flags={flags}
+      queryParams={searchParams}
     />
   )
 }

@@ -5,6 +5,7 @@ import {
   pullFileviewString,
   pullTreeviewString,
 } from 'pages/PullRequestPage/utils'
+import { useFlags } from 'shared/featureFlags'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import TabNavigation from 'ui/TabNavigation'
 
@@ -18,6 +19,9 @@ function PullRequestPageTabs() {
     directChangedFilesCount,
     commitsCount,
   } = useTabsCounts()
+  const { pullRequestPageFlagMultiSelect } = useFlags({
+    pullRequestPageFlagMultiSelect: false,
+  })
 
   const { pathname, search } = useLocation()
   const { provider, owner, repo, pullId } = useParams()
@@ -100,7 +104,13 @@ function PullRequestPageTabs() {
           location: customLocation,
         },
       ]}
-      component={<ToggleHeader coverageIsLoading={false} showHitCount={true} />}
+      component={
+        <ToggleHeader
+          coverageIsLoading={false}
+          showHitCount={true}
+          showFlagsSelect={pullRequestPageFlagMultiSelect}
+        />
+      }
     />
   )
 }
