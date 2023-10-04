@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
+import umbrellaSvg from 'assets/svg/umbrella.svg'
 import { useUser } from 'services/user'
 import A from 'ui/A'
 import Button from 'ui/Button'
@@ -97,7 +98,10 @@ export default function TermsOfService() {
 
   return (
     <div className="mx-auto w-full max-w-[38rem] text-sm text-ds-gray-octonary">
-      <h1 className="mt-14 text-2xl font-semibold">Welcome to Codecov</h1>
+      <div className="mt-14 flex gap-2">
+        <h1 className="text-2xl font-semibold">Welcome to Codecov</h1>
+        <img src={umbrellaSvg} alt="codecov-umbrella" width="30px" />
+      </div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mt-4 border-y border-ds-gray-tertiary">
           <div className="my-12 flex flex-col gap-2">

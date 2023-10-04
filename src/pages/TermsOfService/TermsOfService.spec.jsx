@@ -128,6 +128,15 @@ describe('TermsOfService', () => {
       expect(welcome).toBeInTheDocument()
     })
 
+    it('renders img of Codecov umbrella', async () => {
+      render(<TermsOfService />, { wrapper })
+
+      const umbrella = await screen.findByRole('img', {
+        name: /codecov-umbrella/i,
+      })
+      expect(umbrella).toBeInTheDocument()
+    })
+
     it('submit button is disabled initially', async () => {
       render(<TermsOfService />, { wrapper })
 
