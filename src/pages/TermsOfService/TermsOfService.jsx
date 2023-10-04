@@ -100,7 +100,7 @@ export default function TermsOfService() {
       <h1 className="mt-14 text-2xl font-semibold">Welcome to Codecov</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mt-4 border-y border-ds-gray-tertiary">
-          <div className="my-6 flex flex-col gap-2">
+          <div className="my-12 flex flex-col gap-2">
             <div className="flex gap-2">
               <input
                 {...register('marketingConsent')}
