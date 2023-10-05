@@ -54,8 +54,7 @@ ModalSection.propTypes = {
   ModalControl: PropTypes.func,
 }
 
-function ContextItem({ context, defaultOrgUsername, setToggle }) {
-  const { owner } = useParams()
+function ContextItem({ context, defaultOrgUsername, setToggle, owner }) {
   const { owner: contextOwner, pageName } = context
   const orgUsername = contextOwner?.username
   const { mutate } = useUpdateDefaultOrganization()
@@ -90,6 +89,7 @@ ContextItem.propTypes = {
   }),
   defaultOrgUsername: PropTypes.string,
   setToggle: PropTypes.func.isRequired,
+  owner: PropTypes.string,
 }
 
 function useCloseOnLooseFocus({ setToggle }) {
@@ -204,6 +204,7 @@ function ContextSwitcher({
             key={context?.owner?.username}
             currentContext={activeContext}
             setToggle={setToggle}
+            owner={activeContext?.username}
           />
         ))}
         <Loader isLoading={isLoading} />
