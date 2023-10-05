@@ -49,7 +49,7 @@ function FileEntry({
               : !!urlPath
               ? `${urlPath}/${name}`
               : name,
-            ...(!!queryParams && queryParams),
+            queryParams,
           },
         }}
       >

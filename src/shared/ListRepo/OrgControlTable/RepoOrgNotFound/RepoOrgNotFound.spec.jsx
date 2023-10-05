@@ -1,101 +1,119 @@
-import { render, screen } from 'custom-testing-library'
-
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter, useParams } from 'react-router-dom'
-
-import { useResyncUser } from 'services/user'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
+import { MemoryRouter, Route, Switch } from 'react-router-dom'
 
 import RepoOrgNotFound from './RepoOrgNotFound'
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
-  useParams: jest.fn(),
-}))
-jest.mock('services/user')
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+
+const server = setupServer()
+
+beforeAll(() => {
+  server.listen()
+})
+beforeEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => {
+  server.close()
+})
+
+const wrapper = ({ children }) => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/gh/codecov']}>
+        <Switch>
+          <Route path="/:provider">{children}</Route>
+        </Switch>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
+}
 
 describe('RepoOrgNotFound', () => {
-  function setup(
-    provider,
-    returnValueResync = {
-      isSyncing: false,
-    }
-  ) {
-    const trigger = jest.fn()
+  function setup() {
+    const triggerResync = jest.fn()
 
-    const resyncUser = { triggerResync: trigger, ...returnValueResync }
+    server.use(
+      graphql.query('IsSyncing', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            me: {
+              isSyncing: false,
+            },
+          })
+        )
+      }),
+      graphql.mutation('SyncData', (req, res, ctx) => {
+        triggerResync(req.variables)
 
-    useParams.mockReturnValue({ provider })
-    useResyncUser.mockReturnValue(resyncUser)
+        return res(
+          ctx.status(200),
+          ctx.data({
+            syncWithGitProvider: {
+              me: {
+                isSyncing: true,
+              },
+            },
+          })
+        )
+      })
+    )
 
-    return { trigger }
+    return { triggerResync, user: userEvent.setup() }
   }
 
-  describe('when rendered with gh provider and the sync is not in progress', () => {
-    it('renders the button to resync', () => {
-      setup('gh')
-      render(<RepoOrgNotFound />, { wrapper: MemoryRouter })
+  describe('when  sync is not in progress', () => {
+    it("renders can't find your repo", async () => {
+      setup()
+      render(<RepoOrgNotFound />, { wrapper })
 
-      expect(
-        screen.getByRole('button', {
-          name: /re-sync/i,
-        })
-      ).toBeInTheDocument()
+      const copy = await screen.findByText(/Can't find your repo/i)
+      expect(copy).toBeInTheDocument()
     })
 
-    it('renders text related to gh provider', () => {
-      setup('gh')
-      render(<RepoOrgNotFound />, { wrapper: MemoryRouter })
+    it('renders the button to resync', () => {
+      setup()
+      render(<RepoOrgNotFound />, { wrapper })
 
-      expect(screen.getByText(/installing the Codecov app/)).toBeInTheDocument()
-      expect(screen.getByText(/Check out/)).toBeInTheDocument()
+      const resyncButton = screen.getByRole('button', {
+        name: /re-sync/i,
+      })
+      expect(resyncButton).toBeInTheDocument()
     })
 
     describe('when the user clicks on the button', () => {
-      it('calls the triggerResync from the service', async () => {
-        const { trigger } = setup('gh')
-        const user = userEvent.setup()
-        render(<RepoOrgNotFound />, { wrapper: MemoryRouter })
+      it('calls the triggerResync mutation', async () => {
+        const { triggerResync, user } = setup()
+        render(<RepoOrgNotFound />, { wrapper })
 
-        await user.click(
-          screen.getByRole('button', {
-            name: /re-sync/i,
-          })
-        )
+        const resyncButton = screen.getByRole('button', {
+          name: /re-sync/i,
+        })
+        await user.click(resyncButton)
 
-        expect(trigger).toHaveBeenCalled()
+        expect(triggerResync).toHaveBeenCalledTimes(1)
       })
-    })
-  })
 
-  describe('when rendered without gh provider and the sync is not in progress', () => {
-    beforeEach(() => setup('not-gh'))
+      it('renders a loading message', async () => {
+        const { user } = setup()
+        render(<RepoOrgNotFound />, { wrapper })
 
-    it(`shouldn't render text related to gh provider`, () => {
-      render(<RepoOrgNotFound />, { wrapper: MemoryRouter })
+        const resyncButton = screen.getByRole('button', {
+          name: /re-sync/i,
+        })
+        await user.click(resyncButton)
 
-      expect(screen.queryByText(/or org?/)).toBeNull()
-      expect(screen.queryByText(/installing the Codecov app/)).toBeNull()
-    })
-  })
-
-  describe('when the syncing is in progress', () => {
-    beforeEach(() => {
-      setup('gh', {
-        isSyncing: true,
-        triggerResync: () => null,
+        const loadingMessage = await screen.findByText(/Syncing\.\.\./i)
+        expect(loadingMessage).toBeInTheDocument()
       })
-    })
-
-    it('renders a loading message', () => {
-      render(<RepoOrgNotFound />, { wrapper: MemoryRouter })
-
-      expect(screen.getByText(/Syncing\.\.\./i)).toBeInTheDocument()
-    })
-
-    it('renders rest of the help message', () => {
-      render(<RepoOrgNotFound />, { wrapper: MemoryRouter })
-
-      expect(screen.getByText(/installing the Codecov app/)).toBeInTheDocument()
     })
   })
 })

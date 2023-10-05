@@ -1,7 +1,7 @@
 import dropRight from 'lodash/dropRight'
-import { useParams } from 'react-router-dom'
+import qs from 'qs'
+import { useLocation, useParams } from 'react-router-dom'
 
-import { useLocationParams } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import { getFilePathParts } from 'shared/utils/url'
 
@@ -10,7 +10,12 @@ function getTreeLocation(paths, location, index) {
 }
 
 export function useTreePaths(passedPath) {
-  const { params } = useLocationParams()
+  const location = useLocation()
+  const params = qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+    depth: 1,
+  })
+
   const {
     provider,
     owner,
@@ -35,7 +40,7 @@ export function useTreePaths(passedPath) {
   const filePaths = getFilePathParts(passedPath || path)
   const defaultBranch = repoOverview?.defaultBranch
 
-  let queryParams = {}
+  let queryParams = undefined
   if (Object.keys(params).length > 0) {
     queryParams = params
   }
@@ -46,7 +51,7 @@ export function useTreePaths(passedPath) {
     options: {
       tree: getTreeLocation(filePaths, location, index),
       ref: branch ?? ref ?? defaultBranch,
-      ...queryParams,
+      queryParams,
     },
   }))
 
@@ -55,7 +60,7 @@ export function useTreePaths(passedPath) {
     text: repo,
     options: {
       ref: branch ?? ref ?? defaultBranch,
-      ...queryParams,
+      queryParams,
     },
   }
 
