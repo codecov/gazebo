@@ -107,7 +107,7 @@ jobs:
 
   codecovstartup:
     name: Codecov Startup
-    needs: build
+    needs: install
     uses: codecov/gha-workflows/.github/workflows/codecov-startup.yml@v1.2.0
     secrets: inherit
 
