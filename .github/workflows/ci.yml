@@ -2,6 +2,8 @@ name: Gazebo CI
 
 on:
   push:
+    tags:
+      - self-hosted-*
     branches:
       - main
       - staging
@@ -105,6 +107,12 @@ jobs:
         run: |
           npm run type-check
 
+  codecovstartup:
+    name: Codecov Startup
+    needs: build
+    uses: codecov/gha-workflows/.github/workflows/codecov-startup.yml@v1.2.0
+    secrets: inherit
+
   runner-indexes:
     runs-on: ubuntu-latest
     name: Generate runner indexes
@@ -122,7 +130,7 @@ jobs:
 
   test:
     name: 'Test Runner #${{ matrix.runner-index }}'
-    needs: [install, runner-indexes]
+    needs: [install, codecovstartup, runner-indexes]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -173,22 +181,22 @@ jobs:
       - name: Upload to Production
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
         run: |
-          codecovcli upload-process -t ${{ secrets.CODECOV_ORG_TOKEN }} --fail-on-error
+          codecovcli do-upload -t ${{ secrets.CODECOV_ORG_TOKEN }} --fail-on-error
 
       - name: Upload to Staging
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
         run: |
-          codecovcli -u ${{ secrets.CODECOV_STAGING_URL }} upload-process -t ${{ secrets.CODECOV_ORG_TOKEN_STAGING }} --fail-on-error
+          codecovcli -u ${{ secrets.CODECOV_STAGING_URL }} do-upload -t ${{ secrets.CODECOV_ORG_TOKEN_STAGING }} --fail-on-error
 
       - name: Upload to QA
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
         run: |
-          codecovcli -u ${{ secrets.CODECOV_QA_URL }} upload-process -t ${{ secrets.CODECOV_QA_TOKEN }} --fail-on-error
+          codecovcli -u ${{ secrets.CODECOV_QA_URL }} do-upload -t ${{ secrets.CODECOV_QA_TOKEN }} --fail-on-error
 
       - name: Upload to Public QA
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
         run: |
-          codecovcli -u ${{ secrets.CODECOV_PUBLIC_QA_URL }} upload-process -t ${{ secrets.CODECOV_PUBLIC_QA_TOKEN }} --fail-on-error
+          codecovcli -u ${{ secrets.CODECOV_PUBLIC_QA_URL }} do-upload -t ${{ secrets.CODECOV_PUBLIC_QA_TOKEN }} --fail-on-error
 
   storybook:
     name: Run storybook
@@ -277,7 +285,7 @@ jobs:
     name: Build Self Hosted Image
     secrets: inherit
     if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
-    uses: codecov/gha-workflows/.github/workflows/self-hosted.yml@v1.0.0
+    uses: codecov/gha-workflows/.github/workflows/self-hosted.yml@v1.2.0
     with:
       repo: ${{ vars.CODECOV_IMAGE_V2 || 'codecov/self-hosted-frontend' }}
       cache_requirements: false
@@ -287,7 +295,7 @@ jobs:
     needs: [ build-self-hosted, test ]
     secrets: inherit
     if: ${{ github.event_name == 'push' && github.event.ref == 'refs/heads/main' && github.repository_owner == 'codecov' }}
-    uses: codecov/gha-workflows/.github/workflows/self-hosted.yml@v1.0.0
+    uses: codecov/gha-workflows/.github/workflows/self-hosted.yml@v1.2.0
     with:
       push_rolling: true
       repo: ${{ vars.CODECOV_IMAGE_V2 || 'codecov/self-hosted-frontend' }}
