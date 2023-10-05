@@ -83,7 +83,7 @@
     "victory": "^36.6.11",
     "web-vitals": "^2.1.4",
     "yup": "^0.32.11",
-    "zod": "^3.21.4"
+    "zod": "^3.22.3"
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
