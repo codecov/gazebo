@@ -2,8 +2,6 @@ name: Gazebo CI
 
 on:
   push:
-    tags:
-      - self-hosted-*
     branches:
       - main
       - staging
