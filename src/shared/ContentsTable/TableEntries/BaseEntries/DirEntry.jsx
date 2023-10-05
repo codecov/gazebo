@@ -21,7 +21,7 @@ function DirEntry({
             ref: linkRef,
             commit: commitSha,
             tree: !!urlPath ? `${urlPath}/${name}` : name,
-            ...(!!queryParams && queryParams),
+            queryParams,
           },
         }}
       >

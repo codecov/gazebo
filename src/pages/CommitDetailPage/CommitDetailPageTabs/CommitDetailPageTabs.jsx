@@ -1,4 +1,6 @@
+import omit from 'lodash/omit'
 import PropTypes from 'prop-types'
+import qs from 'qs'
 import { useLocation, useParams } from 'react-router-dom'
 
 import {
@@ -13,14 +15,23 @@ function CommitDetailPageTabs({
   indirectChangedFilesCount,
   directChangedFilesCount,
 }) {
-  const { pathname } = useLocation()
   const { provider, owner, repo } = useParams()
+  const location = useLocation()
+  const params = qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+    depth: 1,
+  })
 
-  const blobPath = pathname.includes(
+  let queryParams = undefined
+  if (Object.keys(params).length > 0) {
+    queryParams = omit(params, ['search'])
+  }
+
+  const blobPath = location.pathname.includes(
     `/${provider}/${commitFileviewString({ owner, repo, commitSHA })}`
   )
 
-  const filePath = pathname.includes(
+  const filePath = location.pathname.includes(
     `/${provider}/${commitTreeviewString({ owner, repo, commitSHA })}`
   )
 
@@ -42,12 +53,12 @@ function CommitDetailPageTabs({
               <sup className="text-xs">{directChangedFilesCount}</sup>
             </>
           ),
-          options: { commit: commitSHA },
+          options: { commit: commitSHA, queryParams },
           exact: true,
         },
         {
           pageName: 'commitIndirectChanges',
-          options: { commit: commitSHA },
+          options: { commit: commitSHA, queryParams },
           children: (
             <>
               Indirect changes
@@ -58,7 +69,7 @@ function CommitDetailPageTabs({
         {
           pageName: 'commitTreeView',
           children: 'File explorer',
-          options: { commit: commitSHA },
+          options: { commit: commitSHA, queryParams },
           location: customLocation,
         },
       ]}

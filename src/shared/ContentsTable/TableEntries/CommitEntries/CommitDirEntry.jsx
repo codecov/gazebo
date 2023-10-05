@@ -5,6 +5,8 @@ import { usePrefetchCommitDirEntry } from 'services/pathContents/commit/dir'
 import DirEntry from '../BaseEntries/DirEntry'
 
 function CommitDirEntry({ commitSha, urlPath, name, filters }) {
+  const flags = filters?.flags?.length > 0 ? filters?.flags : []
+
   const { runPrefetch } = usePrefetchCommitDirEntry({
     commit: commitSha,
     path: name,
@@ -18,6 +20,7 @@ function CommitDirEntry({ commitSha, urlPath, name, filters }) {
       runPrefetch={runPrefetch}
       pageName="commitTreeView"
       commitSha={commitSha}
+      queryParams={{ flags }}
     />
   )
 }
@@ -32,6 +35,7 @@ CommitDirEntry.propTypes = {
       parameter: PropTypes.any,
     }),
     searchValue: PropTypes.any,
+    flags: PropTypes.arrayOf(PropTypes.string),
   }),
 }
 
