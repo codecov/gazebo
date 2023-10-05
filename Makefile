@@ -42,4 +42,4 @@ push.self-hosted-release:
 	docker push ${dockerhub_image}:latest-calver
 
 test_env.install_cli:
-	pip install codecovcli
+	pip install --no-cache-dir codecov-cli

@@ -173,7 +173,7 @@ jobs:
       - name: Install CLI
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
         run: |
-          pip install --no-cache-dir codecov-cli
+          make test_env.install_cli
 
       ## Don't upload on forks for now.
       - name: Upload to Production
