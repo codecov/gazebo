@@ -22,7 +22,7 @@ function Header() {
   const { data } = usePullHeadData({ provider, owner, repo, pullId })
 
   return (
-    <div className="flex justify-between border-b border-ds-gray-secondary pb-2 text-xs">
+    <div className="flex flex-col justify-between gap-2 border-b border-ds-gray-secondary pb-2 text-xs md:flex-row">
       <div>
         <h1 className="flex items-center gap-2 text-lg font-semibold">
           {data?.pull?.title}

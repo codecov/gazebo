@@ -14,34 +14,44 @@ const commit = (state = 'complete') => ({
   branchName: 'main',
   createdAt: '2022-03-10T19:14:13',
   author: { username: 'cool-user' },
-  uploads: [
-    {
-      state: 'PROCESSED',
-      provider: null,
-      createdAt: '2022-03-10T19:14:33.148945+00:00',
-      updatedAt: '2022-03-10T19:14:33.347403+00:00',
-      flags: [],
-      jobCode: null,
-      downloadUrl: 'secret-file.txt',
-      ciUrl: null,
-      uploadType: 'UPLOADED',
-      buildCode: null,
-      errors: [],
-    },
-    {
-      state: 'PROCESSED',
-      provider: null,
-      createdAt: '2022-03-14T12:49:29.568415+00:00',
-      updatedAt: '2022-03-14T12:49:30.157909+00:00',
-      flags: [],
-      jobCode: null,
-      downloadUrl: 'secret-file.txt',
-      ciUrl: null,
-      uploadType: 'UPLOADED',
-      buildCode: null,
-      errors: [],
-    },
-  ],
+  uploads: {
+    edges: [
+      {
+        node: {
+          id: null,
+          state: 'PROCESSED',
+          provider: null,
+          createdAt: '2022-03-10T19:14:33.148945+00:00',
+          updatedAt: '2022-03-10T19:14:33.347403+00:00',
+          flags: [],
+          jobCode: null,
+          downloadUrl: 'secret-file.txt',
+          ciUrl: null,
+          uploadType: 'UPLOADED',
+          buildCode: null,
+          errors: null,
+          name: null,
+        },
+      },
+      {
+        node: {
+          id: null,
+          state: 'PROCESSED',
+          provider: null,
+          createdAt: '2022-03-14T12:49:29.568415+00:00',
+          updatedAt: '2022-03-14T12:49:30.157909+00:00',
+          flags: [],
+          jobCode: null,
+          downloadUrl: 'secret-file.txt',
+          ciUrl: null,
+          uploadType: 'UPLOADED',
+          buildCode: null,
+          errors: null,
+          name: null,
+        },
+      },
+    ],
+  },
   message: 'Test commit message',
   ciPassed: true,
   parent: {
@@ -49,8 +59,11 @@ const commit = (state = 'complete') => ({
     totals: { coverage: 100 },
   },
   compareWithParent: {
+    __typename: 'Comparison',
     state: 'processed',
     patchTotals: { coverage: 75 },
+    indirectChangedFilesCount: 1,
+    directChangedFilesCount: 1,
     impactedFiles: [
       {
         patchCoverage: { coverage: 75 },
@@ -89,13 +102,24 @@ describe('CommitDetailSummary', () => {
         if (hasErrored) {
           return res(
             ctx.status(200),
-            ctx.data({ owner: { repository: { commit: commit('ERROR') } } })
+            ctx.data({
+              owner: {
+                repository: {
+                  __typename: 'Repository',
+                  commit: commit('ERROR'),
+                },
+              },
+            })
           )
         }
 
         return res(
           ctx.status(200),
-          ctx.data({ owner: { repository: { commit: commit() } } })
+          ctx.data({
+            owner: {
+              repository: { __typename: 'Repository', commit: commit() },
+            },
+          })
         )
       })
     )

@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
+import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -20,6 +20,7 @@ const queryClient = new QueryClient({
     },
     queries: {
       retry: false,
+      suspense: false,
     },
   },
   logger: {
@@ -34,9 +35,11 @@ let testLocation: { pathname: string; search: string } = {
   pathname: '',
   search: '',
 }
+
 type WrapperClosure = (
   initialEntries?: string[]
 ) => React.FC<React.PropsWithChildren>
+
 const wrapper: WrapperClosure =
   (initialEntries = ['/gh']) =>
   ({ children }) =>
@@ -139,32 +142,64 @@ const guestUser = {
   me: null,
 }
 
+const internalUserNoSyncedProviders = {
+  email: userSignedInIdentity.email,
+  name: userSignedInIdentity.name,
+  externalId: '123',
+  owners: [],
+}
+
+const internalUserHasSyncedProviders = {
+  email: userSignedInIdentity.email,
+  name: userSignedInIdentity.name,
+  externalId: '123',
+  owners: [
+    {
+      service: 'github',
+    },
+  ],
+}
+
+type InternalUser =
+  | typeof internalUserNoSyncedProviders
+  | typeof internalUserHasSyncedProviders
+
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })
 })
+
+beforeEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
+
 afterAll(() => {
   server.close()
 })
 
-type Setup = {
-  termsOfServicePage: boolean
+type SetupArgs = {
   user: UserPartial
+  internalUser: InternalUser
+  termsOfServicePage: boolean
   defaultOrgSelectorPage: boolean
 }
 
 describe('useUserAccessGate', () => {
   function setup(
     {
-      termsOfServicePage = false,
       user = loggedInUser,
+      internalUser = internalUserHasSyncedProviders,
+      termsOfServicePage = false,
       defaultOrgSelectorPage = false,
-    }: Setup = {
-      termsOfServicePage: false,
+    }: SetupArgs = {
       user: loggedInUser,
+      internalUser: internalUserHasSyncedProviders,
+      termsOfServicePage: false,
       defaultOrgSelectorPage: false,
     }
   ) {
@@ -177,6 +212,10 @@ describe('useUserAccessGate', () => {
     })
 
     server.use(
+      rest.get('/internal/user', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.json(internalUser))
+      }),
+
       graphql.query('CurrentUser', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(user))
       }),
@@ -210,6 +249,7 @@ describe('useUserAccessGate', () => {
       'signed TOS',
       {
         user: loggedInUser,
+        internalUser: internalUserHasSyncedProviders,
         termsOfServicePage: true,
         isSelfHosted: false,
         defaultOrgSelectorPage: false,
@@ -219,12 +259,14 @@ describe('useUserAccessGate', () => {
             isLoading: true,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
         },
       },
@@ -235,6 +277,7 @@ describe('useUserAccessGate', () => {
       'guest',
       {
         user: guestUser,
+        internalUser: internalUserHasSyncedProviders,
         termsOfServicePage: true,
         isSelfHosted: false,
         defaultOrgSelectorPage: false,
@@ -244,12 +287,14 @@ describe('useUserAccessGate', () => {
             isLoading: true,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
         },
       },
@@ -260,6 +305,7 @@ describe('useUserAccessGate', () => {
       'signed TOS',
       {
         user: loggedInUser,
+        internalUser: internalUserHasSyncedProviders,
         termsOfServicePage: false,
         isSelfHosted: false,
         defaultOrgSelectorPage: false,
@@ -269,12 +315,14 @@ describe('useUserAccessGate', () => {
             isLoading: true,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
         },
       },
@@ -285,6 +333,7 @@ describe('useUserAccessGate', () => {
       'guest',
       {
         user: guestUser,
+        internalUser: internalUserHasSyncedProviders,
         termsOfServicePage: false,
         isSelfHosted: false,
         defaultOrgSelectorPage: false,
@@ -294,12 +343,14 @@ describe('useUserAccessGate', () => {
             isLoading: true,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
         },
       },
@@ -310,6 +361,7 @@ describe('useUserAccessGate', () => {
       'unsigned TOS',
       {
         user: loggedInUnsignedUser,
+        internalUser: internalUserHasSyncedProviders,
         termsOfServicePage: true,
         isSelfHosted: false,
         defaultOrgSelectorPage: false,
@@ -319,12 +371,14 @@ describe('useUserAccessGate', () => {
             isLoading: true,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: false,
             isLoading: false,
             showAgreeToTerms: true,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
         },
       },
@@ -335,6 +389,7 @@ describe('useUserAccessGate', () => {
       'legacy',
       {
         user: loggedInLegacyUser,
+        internalUser: internalUserHasSyncedProviders,
         termsOfServicePage: false,
         isSelfHosted: false,
         defaultOrgSelectorPage: false,
@@ -344,12 +399,14 @@ describe('useUserAccessGate', () => {
             isLoading: true,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
         },
       },
@@ -360,6 +417,7 @@ describe('useUserAccessGate', () => {
       'unsigned TOS',
       {
         user: loggedInUnsignedUser,
+        internalUser: internalUserHasSyncedProviders,
         termsOfServicePage: false,
         isSelfHosted: false,
         defaultOrgSelectorPage: false,
@@ -369,12 +427,14 @@ describe('useUserAccessGate', () => {
             isLoading: true,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
         },
       },
@@ -385,6 +445,7 @@ describe('useUserAccessGate', () => {
       'has default org',
       {
         user: userHasDefaultOrg,
+        internalUser: internalUserHasSyncedProviders,
         termsOfServicePage: false,
         isSelfHosted: false,
         defaultOrgSelectorPage: true,
@@ -394,12 +455,14 @@ describe('useUserAccessGate', () => {
             isLoading: true,
             showAgreeToTerms: false,
             showDefaultOrgSelector: true,
+            redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
         },
       },
@@ -410,6 +473,7 @@ describe('useUserAccessGate', () => {
       'does not have a default org',
       {
         user: loggedInUser,
+        internalUser: internalUserHasSyncedProviders,
         termsOfServicePage: false,
         isSelfHosted: false,
         defaultOrgSelectorPage: true,
@@ -419,12 +483,14 @@ describe('useUserAccessGate', () => {
             isLoading: true,
             showAgreeToTerms: false,
             showDefaultOrgSelector: true,
+            redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: false,
             isLoading: false,
             showAgreeToTerms: false,
             showDefaultOrgSelector: true,
+            redirectToSyncPage: false,
           },
         },
       },
@@ -435,6 +501,7 @@ describe('useUserAccessGate', () => {
       'signed TOS',
       {
         user: loggedInUser,
+        internalUser: internalUserHasSyncedProviders,
         termsOfServicePage: true,
         isSelfHosted: true,
         defaultOrgSelectorPage: false,
@@ -444,12 +511,14 @@ describe('useUserAccessGate', () => {
             isLoading: true,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
         },
       },
@@ -460,6 +529,7 @@ describe('useUserAccessGate', () => {
       'guest',
       {
         user: guestUser,
+        internalUser: internalUserHasSyncedProviders,
         termsOfServicePage: true,
         isSelfHosted: true,
         defaultOrgSelectorPage: false,
@@ -469,12 +539,14 @@ describe('useUserAccessGate', () => {
             isLoading: true,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
         },
       },
@@ -485,6 +557,7 @@ describe('useUserAccessGate', () => {
       'legacy',
       {
         user: loggedInLegacyUser,
+        internalUser: internalUserHasSyncedProviders,
         termsOfServicePage: true,
         isSelfHosted: true,
         defaultOrgSelectorPage: false,
@@ -494,12 +567,14 @@ describe('useUserAccessGate', () => {
             isLoading: true,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
         },
       },
@@ -510,6 +585,7 @@ describe('useUserAccessGate', () => {
       'unsigned TOS',
       {
         user: loggedInUnsignedUser,
+        internalUser: internalUserHasSyncedProviders,
         termsOfServicePage: true,
         isSelfHosted: true,
         defaultOrgSelectorPage: false,
@@ -519,12 +595,14 @@ describe('useUserAccessGate', () => {
             isLoading: true,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
-            showAgreeToTerms: true,
+            showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
         },
       },
@@ -535,6 +613,7 @@ describe('useUserAccessGate', () => {
       'signed TOS',
       {
         user: loggedInUser,
+        internalUser: internalUserHasSyncedProviders,
         termsOfServicePage: false,
         isSelfHosted: true,
         defaultOrgSelectorPage: false,
@@ -544,12 +623,14 @@ describe('useUserAccessGate', () => {
             isLoading: true,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
         },
       },
@@ -560,6 +641,7 @@ describe('useUserAccessGate', () => {
       'guest',
       {
         user: guestUser,
+        internalUser: internalUserHasSyncedProviders,
         termsOfServicePage: false,
         isSelfHosted: true,
         defaultOrgSelectorPage: false,
@@ -569,12 +651,14 @@ describe('useUserAccessGate', () => {
             isLoading: true,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
         },
       },
@@ -585,6 +669,7 @@ describe('useUserAccessGate', () => {
       'legacy',
       {
         user: loggedInLegacyUser,
+        internalUser: internalUserHasSyncedProviders,
         termsOfServicePage: false,
         isSelfHosted: true,
         defaultOrgSelectorPage: false,
@@ -594,12 +679,14 @@ describe('useUserAccessGate', () => {
             isLoading: true,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
         },
       },
@@ -610,6 +697,7 @@ describe('useUserAccessGate', () => {
       'unsigned TOS',
       {
         user: loggedInUnsignedUser,
+        internalUser: internalUserHasSyncedProviders,
         termsOfServicePage: false,
         isSelfHosted: true,
         defaultOrgSelectorPage: false,
@@ -619,12 +707,126 @@ describe('useUserAccessGate', () => {
             isLoading: true,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
           },
           afterSettled: {
             isFullExperience: true,
             isLoading: false,
             showAgreeToTerms: false,
             showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
+          },
+        },
+      },
+    ],
+    [
+      'cloud',
+      'Sentry login provider',
+      'has synced a provider',
+      {
+        user: loggedInUser,
+        internalUser: internalUserHasSyncedProviders,
+        termsOfServicePage: false,
+        isSelfHosted: false,
+        defaultOrgSelectorPage: false,
+        expected: {
+          beforeSettled: {
+            isFullExperience: true,
+            isLoading: true,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
+          },
+          afterSettled: {
+            isFullExperience: true,
+            isLoading: false,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
+          },
+        },
+      },
+    ],
+    [
+      'cloud',
+      'Sentry login provider',
+      'has not synced a provider',
+      {
+        user: loggedInUser,
+        internalUser: internalUserNoSyncedProviders,
+        termsOfServicePage: false,
+        isSelfHosted: false,
+        defaultOrgSelectorPage: false,
+        expected: {
+          beforeSettled: {
+            isFullExperience: true,
+            isLoading: true,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
+          },
+          afterSettled: {
+            isFullExperience: false,
+            isLoading: false,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
+            redirectToSyncPage: true,
+          },
+        },
+      },
+    ],
+    [
+      'self hosted',
+      'Sentry login provider',
+      'has synced a provider',
+      {
+        user: loggedInUser,
+        internalUser: internalUserHasSyncedProviders,
+        termsOfServicePage: false,
+        isSelfHosted: true,
+        defaultOrgSelectorPage: false,
+        expected: {
+          beforeSettled: {
+            isFullExperience: true,
+            isLoading: true,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
+          },
+          afterSettled: {
+            isFullExperience: true,
+            isLoading: false,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
+          },
+        },
+      },
+    ],
+    [
+      'self hosted',
+      'Sentry login provider',
+      'has not synced a provider',
+      {
+        user: loggedInUser,
+        internalUser: internalUserNoSyncedProviders,
+        termsOfServicePage: false,
+        isSelfHosted: true,
+        defaultOrgSelectorPage: false,
+        expected: {
+          beforeSettled: {
+            isFullExperience: true,
+            isLoading: true,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
+          },
+          afterSettled: {
+            isFullExperience: false,
+            isLoading: false,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
+            redirectToSyncPage: true,
           },
         },
       },
@@ -637,6 +839,7 @@ describe('useUserAccessGate', () => {
       userType,
       {
         user,
+        internalUser,
         termsOfServicePage,
         isSelfHosted,
         expected,
@@ -648,11 +851,13 @@ describe('useUserAccessGate', () => {
           beforeEach(() => {
             config.IS_SELF_HOSTED = isSelfHosted
             setup({
-              termsOfServicePage,
               user,
+              internalUser,
+              termsOfServicePage,
               defaultOrgSelectorPage,
             })
           })
+
           it(`return values are expect while useUser resolves`, async () => {
             const { result } = renderHook(() => useUserAccessGate(), {
               wrapper: wrapper(['/gh?']),
@@ -675,9 +880,14 @@ describe('useUserAccessGate', () => {
   )
 
   describe('feature flag is on and set up action param is request', () => {
+    beforeEach(() => {
+      config.IS_SELF_HOSTED = false
+    })
+
     it('renders children', async () => {
       setup({
         user: loggedInUser,
+        internalUser: internalUserHasSyncedProviders,
         termsOfServicePage: true,
         defaultOrgSelectorPage: true,
       })
@@ -699,6 +909,7 @@ describe('useUserAccessGate', () => {
     it('fires update default org mutation', async () => {
       const { mockMutationVariables } = setup({
         user: loggedInUser,
+        internalUser: internalUserHasSyncedProviders,
         termsOfServicePage: true,
         defaultOrgSelectorPage: true,
       })

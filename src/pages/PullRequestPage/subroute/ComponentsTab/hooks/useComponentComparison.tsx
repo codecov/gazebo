@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import {
+  FirstPullRequestSchema,
   MissingBaseCommitSchema,
   MissingBaseReportSchema,
   MissingComparisonSchema,
@@ -44,6 +45,7 @@ const RepositorySchema = z.object({
             )
             .nullable(),
         }),
+        FirstPullRequestSchema,
         MissingBaseCommitSchema,
         MissingBaseReportSchema,
         MissingComparisonSchema,

@@ -249,18 +249,35 @@ describe('AccountSettings', () => {
   })
 
   describe('on org upload token route', () => {
-    it('renders org upload token tab', async () => {
-      setup()
+    describe('user is an admin', () => {
+      it('renders org upload token tab', async () => {
+        setup({ isAdmin: true, username: 'cool-user' })
 
-      render(<AccountSettings />, {
-        wrapper: wrapper({
-          initialEntries: '/account/gh/codecov/org-upload-token',
-          path: '/account/:provider/:owner/org-upload-token',
-        }),
+        render(<AccountSettings />, {
+          wrapper: wrapper({
+            initialEntries: '/account/gh/codecov/org-upload-token',
+            path: '/account/:provider/:owner/org-upload-token',
+          }),
+        })
+
+        const orgUploadTab = await screen.findByText('OrgUploadToken')
+        expect(orgUploadTab).toBeInTheDocument()
       })
+    })
 
-      const orgUploadTab = await screen.findByText('OrgUploadToken')
-      expect(orgUploadTab).toBeInTheDocument()
+    describe('user is not an admin', () => {
+      it('redirects user to yaml tab', async () => {
+        setup({ isAdmin: false, username: 'cool-user' })
+
+        render(<AccountSettings />, {
+          wrapper: wrapper({
+            initialEntries: '/account/gh/codecov/org-upload-token',
+          }),
+        })
+
+        const yamlTab = await screen.findByText('YAML')
+        expect(yamlTab).toBeInTheDocument()
+      })
     })
   })
 })

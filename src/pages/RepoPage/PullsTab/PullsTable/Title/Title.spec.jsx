@@ -24,8 +24,9 @@ describe('Title', () => {
         { wrapper }
       )
 
-      const text = screen.getByText(/Test1/)
+      const text = screen.getByRole('link', { name: 'Test1' })
       expect(text).toBeInTheDocument()
+      expect(text).toHaveAttribute('href', '/gh/owner/repo/pull/746')
     })
 
     it('renders pull author', () => {
@@ -57,6 +58,25 @@ describe('Title', () => {
       const dt = formatTimeToNow('2021-08-30T19:33:49.819672')
       const dt1 = screen.getByText('last updated ' + dt)
       expect(dt1).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered for first pull request', () => {
+    it('renders pull title', () => {
+      render(
+        <Title
+          author={{ username: 'RulaKhaled', avatarUrl: 'random' }}
+          pullId={746}
+          title="Test1"
+          updatestamp="2021-08-30T19:33:49.819672"
+          compareWithBaseType="FirstPullRequest"
+        />,
+        { wrapper }
+      )
+
+      const text = screen.getByRole('link', { name: 'Test1' })
+      expect(text).toBeInTheDocument()
+      expect(text).toHaveAttribute('href', '/gh/owner/repo/pull/746/tree')
     })
   })
 })

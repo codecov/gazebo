@@ -10,8 +10,12 @@ interface DayCountProps {
 }
 
 const DayCount: React.FC<DayCountProps> = ({ dateDiff }) => {
-  if (dateDiff <= 1) {
-    return <span>Your trial ends in {dateDiff} day.</span>
+  if (dateDiff <= 0) {
+    return <span>Your trial ends today.</span>
+  }
+
+  if (dateDiff === 1) {
+    return <span>Your trial ends in 1 day.</span>
   }
 
   return <span>Your trial ends in {dateDiff} days.</span>
@@ -30,7 +34,7 @@ const OngoingBanner: React.FC<OngoingBannerProps> = ({ dateDiff }) => {
           <span className="font-semibold">
             <DayCount dateDiff={dateDiff} />
             {/* @ts-expect-error */}
-            <A to={{ pageName: 'upgradeOrgPlan' }}>Upgrade now</A>.
+            <A to={{ pageName: 'upgradeOrgPlan' }}>&nbsp;Upgrade now</A>.
           </span>
         </p>
       </TopBanner.Start>

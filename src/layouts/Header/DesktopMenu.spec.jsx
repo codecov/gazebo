@@ -316,7 +316,7 @@ describe('LoginPrompt', () => {
       expect(loginLink).toBeInTheDocument()
       expect(loginLink).toHaveAttribute(
         'href',
-        'https://stage-web.codecov.dev/login/gh?to=http%3A%2F%2Flocalhost%2F'
+        '/login/gh?to=http%3A%2F%2Flocalhost%2F'
       )
 
       const signUpLink = within(loginPrompt).getByText('Sign up')

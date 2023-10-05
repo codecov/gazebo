@@ -12,6 +12,7 @@ jest.mock('shared/featureFlags')
 jest.mock('./Summary', () => () => 'CompareSummary')
 jest.mock('./PullRequestPageContent', () => () => 'PullRequestPageContent')
 jest.mock('./PullRequestPageTabs', () => () => 'PullRequestPageTabs')
+jest.mock('./FirstPullBanner', () => () => 'FirstPullBanner')
 
 const mockPullHeadData = {
   owner: {
@@ -77,7 +78,7 @@ afterAll(() => {
 })
 
 describe('PullRequestPage', () => {
-  function setup({ hasAccess = false, pullData = mockPullPageData }) {
+  function setup({ pullData = mockPullPageData }) {
     server.use(
       graphql.query('PullHeadData', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockPullHeadData))
@@ -87,10 +88,8 @@ describe('PullRequestPage', () => {
           ctx.status(200),
           ctx.data({
             owner: {
-              isCurrentUserPartOfOrg: hasAccess,
               repository: {
                 __typename: 'Repository',
-                private: true,
                 pull: pullData,
               },
             },
@@ -100,8 +99,8 @@ describe('PullRequestPage', () => {
     )
   }
 
-  describe('when user has access and pull data', () => {
-    beforeEach(() => setup({ hasAccess: true }))
+  describe('when pull data is available', () => {
+    beforeEach(() => setup({}))
 
     it('renders breadcrumb', async () => {
       render(<PullRequestPage />, { wrapper: wrapper() })
@@ -134,7 +133,7 @@ describe('PullRequestPage', () => {
     it('renders compare summary', async () => {
       render(<PullRequestPage />, { wrapper: wrapper() })
 
-      const compareSummary = await screen.findByText('CompareSummary')
+      const compareSummary = await screen.findByText(/CompareSummary/)
       expect(compareSummary).toBeInTheDocument()
     })
 
@@ -153,21 +152,17 @@ describe('PullRequestPage', () => {
       )
       expect(pullRequestPageContent).toBeInTheDocument()
     })
-  })
 
-  describe('when user does not have access', () => {
-    beforeEach(() => setup({ hasAccess: false }))
-
-    it('renders not found', async () => {
+    it('renders the first pull request banner', async () => {
       render(<PullRequestPage />, { wrapper: wrapper() })
 
-      const notFound = await screen.findByText(/Not found/)
-      expect(notFound).toBeInTheDocument()
+      const firstPullRequestBanner = await screen.findByText(/FirstPullBanner/)
+      expect(firstPullRequestBanner).toBeInTheDocument()
     })
   })
 
   describe('when there is no pull data', () => {
-    beforeEach(() => setup({ hasAccess: true, pullData: null }))
+    beforeEach(() => setup({ pullData: null }))
 
     it('renders not found', async () => {
       render(<PullRequestPage />, { wrapper: wrapper() })

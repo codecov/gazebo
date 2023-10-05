@@ -1,17 +1,12 @@
 import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
-import { useFlags } from 'shared/featureFlags'
 import { loginProviderToShortName } from 'shared/utils/loginProviders'
 import A from 'ui/A'
 
 import LoginButton from './LoginButton'
 
 function LoginPage() {
-  const { sentryLoginProvider } = useFlags({
-    sentryLoginProvider: false,
-  })
-
   const { provider } = useParams()
   const { params } = useLocationParams()
   const providerName = loginProviderToShortName(provider)
@@ -33,7 +28,7 @@ function LoginPage() {
         ) : (
           <div className="space-y-4">
             <LoginButton provider="gh" />
-            {sentryLoginProvider && <LoginButton provider="sentry" />}
+            <LoginButton provider="sentry" />
             <LoginButton provider="bb" />
             <LoginButton provider="gl" />
           </div>

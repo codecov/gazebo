@@ -129,6 +129,7 @@ module.exports = {
         github: withOpacity('--color-github'),
         gitlab: withOpacity('--color-gitlab'),
         bitbucket: withOpacity('--color-bitbucket'),
+        okta: withOpacity('--color-okta'),
       },
       screens: {
         print: { raw: 'print' },

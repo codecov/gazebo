@@ -167,8 +167,27 @@ describe('TrialBanner', () => {
       jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
     })
 
-    afterAll(() => {
-      jest.useRealTimers()
+    describe('owner does not belong to org', () => {
+      beforeAll(() => {
+        jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
+      })
+
+      afterAll(() => {
+        jest.useRealTimers()
+      })
+
+      it('renders nothing', async () => {
+        setup({ isCurrentUserPartOfOrg: false })
+
+        const { container } = render(<TrialBanner />, {
+          wrapper: wrapper(),
+        })
+
+        await waitFor(() => queryClient.isFetching())
+        await waitFor(() => !queryClient.isFetching())
+
+        expect(container).toBeEmptyDOMElement()
+      })
     })
 
     it('renders nothing', async () => {
@@ -212,12 +231,77 @@ describe('TrialBanner', () => {
           jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
         })
 
-        afterEach(() => {
-          jest.runOnlyPendingTimers()
-          jest.useRealTimers()
+        describe('date diff is greater then 4', () => {
+          beforeAll(() => {
+            jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
+          })
+
+          afterAll(() => {
+            jest.useRealTimers()
+          })
+
+          it('renders nothing', async () => {
+            setup({
+              trialStatus: TrialStatuses.ONGOING,
+              isCurrentUserPartOfOrg: true,
+              isTrialPlan: true,
+              trialStartDate: '2021-01-01',
+              trialEndDate: '2021-01-14',
+            })
+
+            const { container } = render(<TrialBanner />, {
+              wrapper: wrapper(),
+            })
+
+            await waitFor(() => queryClient.isFetching())
+            await waitFor(() => !queryClient.isFetching())
+
+            expect(container).toBeEmptyDOMElement()
+          })
         })
 
-        it('renders ongoing banner', async () => {
+        describe('date diff is less then 0', () => {
+          beforeAll(() => {
+            jest.useFakeTimers().setSystemTime(new Date('2021-01-02'))
+          })
+
+          afterAll(() => {
+            jest.useRealTimers()
+          })
+
+          it('renders nothing', async () => {
+            setup({
+              trialStatus: TrialStatuses.ONGOING,
+              isCurrentUserPartOfOrg: true,
+              isTrialPlan: true,
+              trialStartDate: '2021-01-02',
+              trialEndDate: '2021-01-01',
+            })
+
+            const { container } = render(<TrialBanner />, {
+              wrapper: wrapper(),
+            })
+
+            await waitFor(() => queryClient.isFetching())
+            await waitFor(() => !queryClient.isFetching())
+
+            expect(container).toBeEmptyDOMElement()
+          })
+        })
+      })
+    })
+
+    describe('trial is expired', () => {
+      beforeAll(() => {
+        jest.useFakeTimers().setSystemTime(new Date('2021-01-01'))
+      })
+
+      afterAll(() => {
+        jest.useRealTimers()
+      })
+
+      describe('user is on a free plan', () => {
+        it('renders expired banner', async () => {
           setup({
             trialStatus: TrialStatuses.ONGOING,
             isCurrentUserPartOfOrg: true,
@@ -288,10 +372,8 @@ describe('TrialBanner', () => {
             wrapper: wrapper(),
           })
 
-          await waitFor(() =>
-            expect(queryClient.isFetching()).toBeGreaterThan(0)
-          )
-          await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+          await waitFor(() => queryClient.isFetching())
+          await waitFor(() => !queryClient.isFetching())
 
           expect(container).toBeEmptyDOMElement()
         })
@@ -320,7 +402,7 @@ describe('TrialBanner', () => {
         })
 
         const banner = await screen.findByText(
-          /The org's 14-day free Codecov Pro trial has ended./
+          /The organization's 14-day free Codecov Pro trial has ended./
         )
         expect(banner).toBeInTheDocument()
       })

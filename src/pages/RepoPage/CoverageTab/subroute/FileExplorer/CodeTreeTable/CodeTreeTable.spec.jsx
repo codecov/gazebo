@@ -3,6 +3,7 @@ import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import qs from 'qs'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import CodeTreeTable from './CodeTreeTable'
@@ -84,11 +85,11 @@ const mockOverview = {
 }
 
 const wrapper =
-  (initialEntries = ['/gh/codecov/cool-repo/tree/main/a/b/c']) =>
+  (initialEntries = '/gh/codecov/cool-repo/tree/main/a/b/c') =>
   ({ children }) => {
     return (
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
+        <MemoryRouter initialEntries={[initialEntries]}>
           <Route path="/:provider/:owner/:repo/tree/:branch/:path+">
             {children}
           </Route>
@@ -100,16 +101,24 @@ const wrapper =
 beforeAll(() => {
   server.listen()
 })
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
+
 afterAll(() => {
   server.close()
 })
 
 describe('CodeTreeTable', () => {
-  function setup(noFiles = false, noHeadReport = false) {
+  function setup(
+    { noFiles = false, noHeadReport = false, noFlagCoverage = false } = {
+      noFiles: false,
+      noHeadReport: false,
+      noFlagCoverage: false,
+    }
+  ) {
     const user = userEvent.setup()
     const requestFilters = jest.fn()
 
@@ -127,6 +136,10 @@ describe('CodeTreeTable', () => {
           return res(ctx.status(200), ctx.data({ owner: mockNoFiles }))
         }
 
+        if (noFlagCoverage) {
+          return res(ctx.status(200), ctx.data({ owner: mockNoFiles }))
+        }
+
         return res(ctx.status(200), ctx.data({ owner: mockTreeData }))
       }),
       graphql.query('GetRepoOverview', (req, res, ctx) => {
@@ -139,9 +152,8 @@ describe('CodeTreeTable', () => {
 
   describe('rendering table', () => {
     describe('displaying the table head', () => {
-      beforeEach(() => setup())
-
       it('has a files column', async () => {
+        setup()
         render(<CodeTreeTable />, { wrapper: wrapper() })
 
         const files = await screen.findByText('Files')
@@ -149,6 +161,7 @@ describe('CodeTreeTable', () => {
       })
 
       it('has a tracked lines column', async () => {
+        setup()
         render(<CodeTreeTable />, { wrapper: wrapper() })
 
         const trackedLines = await screen.findByText('Tracked lines')
@@ -156,6 +169,7 @@ describe('CodeTreeTable', () => {
       })
 
       it('has a covered column', async () => {
+        setup()
         render(<CodeTreeTable />, { wrapper: wrapper() })
 
         const covered = await screen.findByText('Covered')
@@ -163,6 +177,7 @@ describe('CodeTreeTable', () => {
       })
 
       it('has a partial column', async () => {
+        setup()
         render(<CodeTreeTable />, { wrapper: wrapper() })
 
         const partial = await screen.findByText('Partial')
@@ -170,6 +185,7 @@ describe('CodeTreeTable', () => {
       })
 
       it('has a missed column', async () => {
+        setup()
         render(<CodeTreeTable />, { wrapper: wrapper() })
 
         const missed = await screen.findByText('Missed')
@@ -177,6 +193,7 @@ describe('CodeTreeTable', () => {
       })
 
       it('has a coverage column', async () => {
+        setup()
         render(<CodeTreeTable />, { wrapper: wrapper() })
 
         const coverage = await screen.findByText('Coverage %')
@@ -196,17 +213,18 @@ describe('CodeTreeTable', () => {
           await waitFor(() => expect(queryClient.isFetching()).toBe(0))
 
           await waitFor(() =>
-            expect(requestFilters).toBeCalledWith({
-              ordering: { direction: 'ASC', parameter: 'NAME' },
-            })
+            expect(requestFilters).toBeCalledWith(
+              expect.objectContaining({
+                ordering: { direction: 'ASC', parameter: 'NAME' },
+              })
+            )
           )
         })
       })
 
       describe('displaying a directory', () => {
-        beforeEach(() => setup())
-
         it('has the correct url', async () => {
+          setup()
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
           expect(await screen.findByText('src')).toBeTruthy()
@@ -224,9 +242,8 @@ describe('CodeTreeTable', () => {
       })
 
       describe('displaying a file', () => {
-        beforeEach(() => setup())
-
         it('has the correct url', async () => {
+          setup()
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
           expect(await screen.findByText('file.js')).toBeTruthy()
@@ -245,11 +262,8 @@ describe('CodeTreeTable', () => {
     })
 
     describe('there is no results found', () => {
-      beforeEach(() => {
-        setup(true)
-      })
-
       it('displays error fetching data message', async () => {
+        setup({ noFiles: true })
         render(<CodeTreeTable />, { wrapper: wrapper() })
 
         expect(
@@ -265,11 +279,8 @@ describe('CodeTreeTable', () => {
     })
 
     describe('when head commit has no reports', () => {
-      beforeEach(() => {
-        setup(false, true)
-      })
-
       it('renders no report uploaded message', async () => {
+        setup({ noHeadReport: true })
         render(<CodeTreeTable />, { wrapper: wrapper() })
 
         expect(
@@ -279,6 +290,25 @@ describe('CodeTreeTable', () => {
         ).toBeTruthy()
         const message = screen.getByText(
           'No coverage report uploaded for this branch head commit'
+        )
+        expect(message).toBeInTheDocument()
+      })
+    })
+
+    describe('when flags are selected with no coverage', () => {
+      it('renders no flag coverage message', async () => {
+        setup({ noFlagCoverage: true })
+        render(<CodeTreeTable />, {
+          wrapper: wrapper(
+            `/gh/codecov/cool-repo/tree/main/a/b/c${qs.stringify(
+              { flags: ['flag-1'] },
+              { addQueryPrefix: true }
+            )}`
+          ),
+        })
+
+        const message = await screen.findByText(
+          "No coverage report uploaded for the selected flags in this branch's head commit"
         )
         expect(message).toBeInTheDocument()
       })
@@ -298,9 +328,11 @@ describe('CodeTreeTable', () => {
           await user.click(files)
 
           await waitFor(() =>
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'ASC', parameter: 'NAME' },
-            })
+            expect(requestFilters).toHaveBeenCalledWith(
+              expect.objectContaining({
+                ordering: { direction: 'ASC', parameter: 'NAME' },
+              })
+            )
           )
         })
       })
@@ -319,9 +351,11 @@ describe('CodeTreeTable', () => {
           await user.click(files)
 
           await waitFor(() => {
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'DESC', parameter: 'NAME' },
-            })
+            expect(requestFilters).toHaveBeenCalledWith(
+              expect.objectContaining({
+                ordering: { direction: 'DESC', parameter: 'NAME' },
+              })
+            )
           })
         })
       })
@@ -338,9 +372,11 @@ describe('CodeTreeTable', () => {
           await user.click(trackedLines)
 
           await waitFor(() =>
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'ASC', parameter: 'LINES' },
-            })
+            expect(requestFilters).toHaveBeenCalledWith(
+              expect.objectContaining({
+                ordering: { direction: 'ASC', parameter: 'LINES' },
+              })
+            )
           )
         })
       })
@@ -359,9 +395,11 @@ describe('CodeTreeTable', () => {
           await user.click(trackedLines)
 
           await waitFor(() => {
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'DESC', parameter: 'LINES' },
-            })
+            expect(requestFilters).toHaveBeenCalledWith(
+              expect.objectContaining({
+                ordering: { direction: 'DESC', parameter: 'LINES' },
+              })
+            )
           })
         })
       })
@@ -378,9 +416,11 @@ describe('CodeTreeTable', () => {
           await user.click(covered)
 
           await waitFor(() =>
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'ASC', parameter: 'HITS' },
-            })
+            expect(requestFilters).toHaveBeenCalledWith(
+              expect.objectContaining({
+                ordering: { direction: 'ASC', parameter: 'HITS' },
+              })
+            )
           )
         })
       })
@@ -399,9 +439,11 @@ describe('CodeTreeTable', () => {
           await user.click(covered)
 
           await waitFor(() => {
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'DESC', parameter: 'HITS' },
-            })
+            expect(requestFilters).toHaveBeenCalledWith(
+              expect.objectContaining({
+                ordering: { direction: 'DESC', parameter: 'HITS' },
+              })
+            )
           })
         })
       })
@@ -418,9 +460,11 @@ describe('CodeTreeTable', () => {
           await user.click(partial)
 
           await waitFor(() =>
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'ASC', parameter: 'PARTIALS' },
-            })
+            expect(requestFilters).toHaveBeenCalledWith(
+              expect.objectContaining({
+                ordering: { direction: 'ASC', parameter: 'PARTIALS' },
+              })
+            )
           )
         })
       })
@@ -439,9 +483,11 @@ describe('CodeTreeTable', () => {
           await user.click(partial)
 
           await waitFor(() => {
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'DESC', parameter: 'PARTIALS' },
-            })
+            expect(requestFilters).toHaveBeenCalledWith(
+              expect.objectContaining({
+                ordering: { direction: 'DESC', parameter: 'PARTIALS' },
+              })
+            )
           })
         })
       })
@@ -457,9 +503,11 @@ describe('CodeTreeTable', () => {
           const missed = screen.getByText('Missed')
           await user.click(missed)
 
-          expect(requestFilters).toHaveBeenCalledWith({
-            ordering: { direction: 'ASC', parameter: 'MISSES' },
-          })
+          expect(requestFilters).toHaveBeenCalledWith(
+            expect.objectContaining({
+              ordering: { direction: 'ASC', parameter: 'MISSES' },
+            })
+          )
         })
       })
 
@@ -477,9 +525,11 @@ describe('CodeTreeTable', () => {
           await user.click(missed)
 
           await waitFor(() => {
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'DESC', parameter: 'MISSES' },
-            })
+            expect(requestFilters).toHaveBeenCalledWith(
+              expect.objectContaining({
+                ordering: { direction: 'DESC', parameter: 'MISSES' },
+              })
+            )
           })
         })
       })

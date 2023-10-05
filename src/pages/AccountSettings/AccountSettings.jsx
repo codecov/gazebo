@@ -60,7 +60,11 @@ function AccountSettings() {
               path="/account/:provider/:owner/org-upload-token"
               exact
             >
-              <OrgUploadToken />
+              {isAdmin ? (
+                <OrgUploadToken />
+              ) : (
+                <Redirect to={`/account/${provider}/${owner}/yaml/`} />
+              )}
             </SentryRoute>
             <SentryRoute path="/account/:provider/:owner/*">
               <NotFound />

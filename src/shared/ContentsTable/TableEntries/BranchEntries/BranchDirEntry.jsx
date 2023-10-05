@@ -11,12 +11,17 @@ function BranchDirEntry({ branch, urlPath, name, filters }) {
     filters,
   })
 
+  const queryParams = {
+    flags: filters?.flags,
+  }
+
   return (
     <DirEntry
       linkRef={branch}
       name={name}
       urlPath={urlPath}
       runPrefetch={runPrefetch}
+      queryParams={queryParams}
     />
   )
 }
@@ -31,6 +36,7 @@ BranchDirEntry.propTypes = {
       parameter: PropTypes.any,
     }),
     searchValue: PropTypes.any,
+    flags: PropTypes.arrayOf(PropTypes.string),
   }),
 }
 

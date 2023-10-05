@@ -29,6 +29,15 @@ describe('OngoingBanner', () => {
       })
     })
 
+    describe('date diff eq to 0', () => {
+      it('renders left side text', () => {
+        render(<OngoingBanner dateDiff={0} />, { wrapper })
+
+        const leftText = screen.getByText('Your trial ends today.')
+        expect(leftText).toBeInTheDocument()
+      })
+    })
+
     describe('date diff lt or eq to 1', () => {
       it('renders left side text', () => {
         render(<OngoingBanner dateDiff={1} />, { wrapper })

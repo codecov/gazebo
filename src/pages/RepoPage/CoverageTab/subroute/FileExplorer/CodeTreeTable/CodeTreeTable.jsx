@@ -11,6 +11,7 @@ function CodeTreeTable() {
     isSearching,
     isMissingHeadReport,
     isLoading,
+    hasFlagsSelected,
   } = useRepoBranchContentsTable()
 
   return (
@@ -23,12 +24,13 @@ function CodeTreeTable() {
         defaultSort={[{ id: 'name', desc: false }]}
       />
       <Loader isLoading={isLoading} />
-      {data?.length === 0 && !isLoading && (
+      {data?.length === 0 && !isLoading ? (
         <RepoContentsResult
           isSearching={isSearching}
           isMissingHeadReport={isMissingHeadReport}
+          hasFlagsSelected={hasFlagsSelected}
         />
-      )}
+      ) : null}
     </div>
   )
 }

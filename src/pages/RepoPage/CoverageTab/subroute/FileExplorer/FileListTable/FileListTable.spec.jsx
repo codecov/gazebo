@@ -3,6 +3,7 @@ import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import qs from 'qs'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import FileListTable from './FileListTable'
@@ -74,11 +75,11 @@ const mockOverview = {
 }
 
 const wrapper =
-  (initialEntries = ['/gh/codecov/cool-repo/tree/main/a/b/c']) =>
+  (initialEntries = '/gh/codecov/cool-repo/tree/main/a/b/c') =>
   ({ children }) => {
     return (
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
+        <MemoryRouter initialEntries={[initialEntries]}>
           <Route path="/:provider/:owner/:repo/tree/:branch/:path+">
             {children}
           </Route>
@@ -99,7 +100,13 @@ afterAll(() => {
 })
 
 describe('FileListTable', () => {
-  function setup(noFiles = false, noHeadReport = false) {
+  function setup(
+    { noFiles = false, noHeadReport = false, noFlagCoverage = false } = {
+      noFiles: false,
+      noHeadReport: false,
+      noFlagCoverage: false,
+    }
+  ) {
     const user = userEvent.setup()
     const requestFilters = jest.fn()
 
@@ -117,6 +124,10 @@ describe('FileListTable', () => {
           return res(ctx.status(200), ctx.data({ owner: mockNoFiles }))
         }
 
+        if (noFlagCoverage) {
+          return res(ctx.status(200), ctx.data({ owner: mockNoFiles }))
+        }
+
         return res(ctx.status(200), ctx.data({ owner: mockListData }))
       }),
       graphql.query('GetRepoOverview', (req, res, ctx) => {
@@ -129,9 +140,8 @@ describe('FileListTable', () => {
 
   describe('rendering table', () => {
     describe('displaying the table head', () => {
-      beforeEach(() => setup())
-
       it('has a files column', async () => {
+        setup()
         render(<FileListTable />, { wrapper: wrapper() })
 
         const files = await screen.findByText('Files')
@@ -139,6 +149,7 @@ describe('FileListTable', () => {
       })
 
       it('has a tracked lines column', async () => {
+        setup()
         render(<FileListTable />, { wrapper: wrapper() })
 
         const trackedLines = await screen.findByText('Tracked lines')
@@ -146,6 +157,7 @@ describe('FileListTable', () => {
       })
 
       it('has a covered column', async () => {
+        setup()
         render(<FileListTable />, { wrapper: wrapper() })
 
         const covered = await screen.findByText('Covered')
@@ -153,6 +165,7 @@ describe('FileListTable', () => {
       })
 
       it('has a partial column', async () => {
+        setup()
         render(<FileListTable />, { wrapper: wrapper() })
 
         const partial = await screen.findByText('Partial')
@@ -160,6 +173,7 @@ describe('FileListTable', () => {
       })
 
       it('has a missed column', async () => {
+        setup()
         render(<FileListTable />, { wrapper: wrapper() })
 
         const missed = await screen.findByText('Missed')
@@ -167,6 +181,7 @@ describe('FileListTable', () => {
       })
 
       it('has a coverage column', async () => {
+        setup()
         render(<FileListTable />, { wrapper: wrapper() })
 
         const coverage = await screen.findByText('Coverage %')
@@ -179,28 +194,35 @@ describe('FileListTable', () => {
         it('set to list', async () => {
           const { requestFilters } = setup()
           render(<FileListTable />, {
-            wrapper: wrapper([
-              '/gh/codecov/cool-repo/tree/main/a/b/c?displayType=list',
-            ]),
+            wrapper: wrapper(
+              `/gh/codecov/cool-repo/tree/main/a/b/c${qs.stringify(
+                { displayType: 'list' },
+                { addQueryPrefix: true }
+              )}`
+            ),
           })
 
           await waitFor(() =>
-            expect(requestFilters).toBeCalledWith({
-              displayType: 'LIST',
-              ordering: { direction: 'DESC', parameter: 'MISSES' },
-            })
+            expect(requestFilters).toBeCalledWith(
+              expect.objectContaining({
+                displayType: 'LIST',
+                ordering: { direction: 'DESC', parameter: 'MISSES' },
+              })
+            )
           )
         })
       })
 
       describe('displaying a file', () => {
-        beforeEach(() => setup())
-
         it('has the correct url', async () => {
+          setup()
           render(<FileListTable />, {
-            wrapper: wrapper([
-              '/gh/codecov/cool-repo/tree/main/a/b/c?displayType=list',
-            ]),
+            wrapper: wrapper(
+              `/gh/codecov/cool-repo/tree/main/a/b/c${qs.stringify(
+                { displayType: 'list' },
+                { addQueryPrefix: true }
+              )}`
+            ),
           })
 
           const links = await within(
@@ -215,11 +237,8 @@ describe('FileListTable', () => {
     })
 
     describe('there is no results found', () => {
-      beforeEach(() => {
-        setup(true)
-      })
-
       it('displays error fetching data message', async () => {
+        setup({ noFiles: true })
         render(<FileListTable />, { wrapper: wrapper() })
 
         const message = await screen.findByText(
@@ -230,15 +249,31 @@ describe('FileListTable', () => {
     })
 
     describe('when head commit has no reports', () => {
-      beforeEach(() => {
-        setup(false, true)
-      })
-
       it('renders no report uploaded message', async () => {
+        setup({ noHeadReport: true })
         render(<FileListTable />, { wrapper: wrapper() })
 
         const message = await screen.findByText(
           'No coverage report uploaded for this branch head commit'
+        )
+        expect(message).toBeInTheDocument()
+      })
+    })
+
+    describe('when there is no flag coverage', () => {
+      it('renders no flag coverage message', async () => {
+        setup({ noFlagCoverage: true })
+        render(<FileListTable />, {
+          wrapper: wrapper(
+            `/gh/codecov/cool-repo/tree/main/a/b/c${qs.stringify(
+              { displayType: 'list', flags: ['flag-1'] },
+              { addQueryPrefix: true }
+            )}`
+          ),
+        })
+
+        const message = await screen.findByText(
+          "No coverage report uploaded for the selected flags in this branch's head commit"
         )
         expect(message).toBeInTheDocument()
       })
@@ -256,9 +291,11 @@ describe('FileListTable', () => {
           let files = await screen.findByText('Files')
           await user.click(files)
 
-          expect(requestFilters).toHaveBeenCalledWith({
-            ordering: { direction: 'ASC', parameter: 'NAME' },
-          })
+          expect(requestFilters).toHaveBeenCalledWith(
+            expect.objectContaining({
+              ordering: { direction: 'ASC', parameter: 'NAME' },
+            })
+          )
         })
       })
 
@@ -273,9 +310,11 @@ describe('FileListTable', () => {
           await user.click(files)
 
           await waitFor(() => {
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'DESC', parameter: 'NAME' },
-            })
+            expect(requestFilters).toHaveBeenCalledWith(
+              expect.objectContaining({
+                ordering: { direction: 'DESC', parameter: 'NAME' },
+              })
+            )
           })
         })
       })
@@ -293,9 +332,11 @@ describe('FileListTable', () => {
           trackedLines = await screen.findByText('Tracked lines')
           await user.click(trackedLines)
 
-          expect(requestFilters).toHaveBeenCalledWith({
-            ordering: { direction: 'ASC', parameter: 'LINES' },
-          })
+          expect(requestFilters).toHaveBeenCalledWith(
+            expect.objectContaining({
+              ordering: { direction: 'ASC', parameter: 'LINES' },
+            })
+          )
         })
       })
 
@@ -311,9 +352,11 @@ describe('FileListTable', () => {
           await user.click(trackedLines)
 
           await waitFor(() => {
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'DESC', parameter: 'LINES' },
-            })
+            expect(requestFilters).toHaveBeenCalledWith(
+              expect.objectContaining({
+                ordering: { direction: 'DESC', parameter: 'LINES' },
+              })
+            )
           })
         })
       })
@@ -329,9 +372,11 @@ describe('FileListTable', () => {
           await user.click(covered)
 
           await waitFor(() =>
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'ASC', parameter: 'HITS' },
-            })
+            expect(requestFilters).toHaveBeenCalledWith(
+              expect.objectContaining({
+                ordering: { direction: 'ASC', parameter: 'HITS' },
+              })
+            )
           )
         })
       })
@@ -348,9 +393,11 @@ describe('FileListTable', () => {
           await user.click(covered)
 
           await waitFor(() => {
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'DESC', parameter: 'HITS' },
-            })
+            expect(requestFilters).toHaveBeenCalledWith(
+              expect.objectContaining({
+                ordering: { direction: 'DESC', parameter: 'HITS' },
+              })
+            )
           })
         })
       })
@@ -368,9 +415,11 @@ describe('FileListTable', () => {
           partial = await screen.findByText('Partial')
           await user.click(partial)
 
-          expect(requestFilters).toHaveBeenCalledWith({
-            ordering: { direction: 'ASC', parameter: 'PARTIALS' },
-          })
+          expect(requestFilters).toHaveBeenCalledWith(
+            expect.objectContaining({
+              ordering: { direction: 'ASC', parameter: 'PARTIALS' },
+            })
+          )
         })
       })
 
@@ -386,9 +435,11 @@ describe('FileListTable', () => {
           await user.click(partial)
 
           await waitFor(() => {
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'DESC', parameter: 'PARTIALS' },
-            })
+            expect(requestFilters).toHaveBeenCalledWith(
+              expect.objectContaining({
+                ordering: { direction: 'DESC', parameter: 'PARTIALS' },
+              })
+            )
           })
         })
       })
@@ -407,9 +458,11 @@ describe('FileListTable', () => {
           await user.click(missed)
 
           await waitFor(() => {
-            expect(requestFilters).toHaveBeenCalledWith({
-              ordering: { direction: 'DESC', parameter: 'MISSES' },
-            })
+            expect(requestFilters).toHaveBeenCalledWith(
+              expect.objectContaining({
+                ordering: { direction: 'DESC', parameter: 'MISSES' },
+              })
+            )
           })
         })
       })

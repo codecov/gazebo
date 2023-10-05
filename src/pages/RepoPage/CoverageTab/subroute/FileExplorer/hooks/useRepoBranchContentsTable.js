@@ -62,6 +62,7 @@ function createTableData({
               path={path}
               displayType={displayType}
               isCriticalFile={isCriticalFile}
+              filters={filters}
             />
           ),
         lines,
@@ -141,6 +142,7 @@ const headers = [
 const defaultQueryParams = {
   search: '',
   displayType: '',
+  flags: [],
 }
 
 const sortingParameter = Object.freeze({
@@ -155,6 +157,8 @@ const sortingParameter = Object.freeze({
 const getQueryFilters = ({ params, sortBy }) => {
   return {
     ...(params?.search && { searchValue: params.search }),
+    // doing a ternary here because it's an array and arrays + && do not go well
+    ...(params?.flags ? { flags: params.flags } : {}),
     ...(params?.displayType && {
       displayType: displayTypeParameter[params?.displayType],
     }),
@@ -168,7 +172,13 @@ const getQueryFilters = ({ params, sortBy }) => {
 }
 
 export function useRepoBranchContentsTable() {
-  const { provider, owner, repo, path: urlPath, branch } = useParams()
+  const {
+    provider,
+    owner,
+    repo,
+    path: pathParam,
+    branch: branchParam,
+  } = useParams()
   const { params } = useLocationParams(defaultQueryParams)
   const { treePaths } = useTreePaths()
   const [sortBy, setSortBy] = useTableDefaultSort()
@@ -179,13 +189,17 @@ export function useRepoBranchContentsTable() {
     owner,
   })
 
+  const branch = branchParam || repoOverview?.defaultBranch
+  const filters = getQueryFilters({ params, sortBy: sortBy[0] })
+  const urlPath = pathParam || ''
+
   const { data: branchData, isLoading } = useRepoBranchContents({
     provider,
     owner,
     repo,
-    branch: branch || repoOverview?.defaultBranch,
-    path: urlPath || '',
-    filters: getQueryFilters({ params, sortBy: sortBy[0] }),
+    filters,
+    branch,
+    path: urlPath,
     suspense: false,
   })
 
@@ -193,20 +207,20 @@ export function useRepoBranchContentsTable() {
     () =>
       createTableData({
         tableData: branchData?.results,
-        branch: branch || repoOverview?.defaultBranch,
-        urlPath: urlPath || '',
+        branch,
+        urlPath,
         isSearching: !!params?.search,
-        filters: getQueryFilters({ params, sortBy: sortBy[0] }),
+        filters,
         treePaths,
         indicationRange: branchData?.indicationRange,
       }),
     [
-      branchData,
+      branchData?.results,
+      branchData?.indicationRange,
       branch,
-      repoOverview?.defaultBranch,
       urlPath,
-      params,
-      sortBy,
+      params?.search,
+      filters,
       treePaths,
     ]
   )
@@ -224,6 +238,7 @@ export function useRepoBranchContentsTable() {
     data,
     headers,
     handleSort,
+    hasFlagsSelected: params?.flags ? params?.flags?.length > 0 : false,
     isLoading: isLoadingRepo || isLoading,
     isSearching: !!params?.search,
     isMissingHeadReport:

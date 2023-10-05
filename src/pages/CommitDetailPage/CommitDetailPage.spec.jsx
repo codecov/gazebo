@@ -47,6 +47,7 @@ const mockCommitHeaderData = {
 const mockCommitNoYamlErrors = {
   owner: {
     repository: {
+      __typename: 'Repository',
       commit: {
         yamlErrors: {
           edges: [],
@@ -62,6 +63,7 @@ const mockCommitNoYamlErrors = {
 const mockCommitYamlErrors = {
   owner: {
     repository: {
+      __typename: 'Repository',
       commit: {
         yamlErrors: {
           edges: [{ node: { errorCode: 'invalid_yaml' } }],
@@ -141,7 +143,9 @@ describe('CommitPage', () => {
       graphql.query('Commit', (req, res, ctx) =>
         res(
           ctx.status(200),
-          ctx.data({ owner: { repository: { commit: null } } })
+          ctx.data({
+            owner: { repository: { __typename: 'Repository', commit: null } },
+          })
         )
       ),
       graphql.query('CommitPageData', (req, res, ctx) => {

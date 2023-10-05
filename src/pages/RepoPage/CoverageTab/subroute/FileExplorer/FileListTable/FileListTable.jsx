@@ -11,6 +11,7 @@ function FileListTable() {
     isSearching,
     isMissingHeadReport,
     isLoading,
+    hasFlagsSelected,
   } = useRepoBranchContentsTable()
 
   return (
@@ -23,12 +24,13 @@ function FileListTable() {
         defaultSort={[{ id: 'misses', desc: true }]}
       />
       <Loader isLoading={isLoading} />
-      {data?.length === 0 && !isLoading && (
+      {data?.length === 0 && !isLoading ? (
         <RepoContentsResult
           isSearching={isSearching}
           isMissingHeadReport={isMissingHeadReport}
+          hasFlagsSelected={hasFlagsSelected}
         />
-      )}
+      ) : null}
     </div>
   )
 }

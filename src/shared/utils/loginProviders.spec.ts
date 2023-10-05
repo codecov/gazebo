@@ -16,16 +16,16 @@ describe('loginProviderImage', () => {
 
   describe('invalid value is passed in', () => {
     describe('value is not in the object', () => {
-      it('returns null', () => {
+      it('returns undefined', () => {
         const data = loginProviderImage('random value')
-        expect(data).toBe(null)
+        expect(data).toBe(undefined)
       })
     })
 
     describe('passed value is undefined', () => {
-      it('returns null', () => {
+      it('returns undefined', () => {
         const data = loginProviderImage()
-        expect(data).toBe(null)
+        expect(data).toBe(undefined)
       })
     })
   })
@@ -41,16 +41,16 @@ describe('loginProviderToName', () => {
 
   describe('invalid value is passed in', () => {
     describe('value is not in object', () => {
-      it('returns null', () => {
+      it('returns undefined', () => {
         const data = loginProviderToName('blah')
-        expect(data).toBe(null)
+        expect(data).toBe(undefined)
       })
     })
 
     describe('value is undefined', () => {
-      it('returns null', () => {
+      it('returns undefined', () => {
         const data = loginProviderToName()
-        expect(data).toBe(null)
+        expect(data).toBe(undefined)
       })
     })
   })
@@ -66,16 +66,16 @@ describe('loginProviderToShortName', () => {
 
   describe('invalid value is passed in', () => {
     describe('value is not in object', () => {
-      it('returns null', () => {
+      it('returns undefined', () => {
         const data = loginProviderToShortName('blah')
-        expect(data).toBe(null)
+        expect(data).toBe(undefined)
       })
     })
 
     describe('value is undefined', () => {
-      it('returns null', () => {
+      it('returns undefined', () => {
         const data = loginProviderToShortName()
-        expect(data).toBe(null)
+        expect(data).toBe(undefined)
       })
     })
   })

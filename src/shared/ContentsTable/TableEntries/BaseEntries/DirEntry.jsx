@@ -10,6 +10,7 @@ function DirEntry({
   runPrefetch,
   pageName = 'treeView',
   commitSha,
+  queryParams,
 }) {
   return (
     <div className="flex gap-3" onMouseEnter={async () => await runPrefetch()}>
@@ -20,6 +21,7 @@ function DirEntry({
             ref: linkRef,
             commit: commitSha,
             tree: !!urlPath ? `${urlPath}/${name}` : name,
+            ...(!!queryParams && queryParams),
           },
         }}
       >
@@ -37,6 +39,7 @@ DirEntry.propTypes = {
   runPrefetch: PropTypes.func,
   pageName: PropTypes.string,
   commitSha: PropTypes.string,
+  queryParams: PropTypes.object,
 }
 
 export default DirEntry

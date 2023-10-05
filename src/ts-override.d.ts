@@ -3,3 +3,8 @@ declare module '*.svg' {
     React.SVGAttributes<SVGElement>
   >
 }
+
+declare module '*.png' {
+  const value: any
+  export = value
+}

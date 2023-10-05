@@ -19,50 +19,65 @@ const data = {
     branchName: 'main',
     createdAt: '2022-03-10T19:14:13',
     author: { username: 'Rabee-AbuBaker' },
-    uploads: [
-      {
-        state: 'PROCESSED',
-        provider: null,
-        createdAt: '2022-03-10T19:14:33.148945+00:00',
-        updatedAt: '2022-03-10T19:14:33.347403+00:00',
-        flags: [],
-        jobCode: null,
-        downloadUrl:
-          '/upload/gh/Rabee-AbuBaker/another-test/download?path=v4/raw/2022-03-10/8D515A8AC57CA50377BBB7743D7BDB0B/ca3fe8ad0632288b67909ba9793b00e5d109547b/71a6b706-7135-43e3-9098-34bba60312c2.txt',
-        ciUrl: null,
-        uploadType: 'UPLOADED',
-        buildCode: null,
-        errors: [],
-      },
-      {
-        state: 'PROCESSED',
-        provider: null,
-        createdAt: '2022-03-14T12:49:29.568415+00:00',
-        updatedAt: '2022-03-14T12:49:30.157909+00:00',
-        flags: [],
-        jobCode: null,
-        downloadUrl:
-          '/upload/gh/Rabee-AbuBaker/another-test/download?path=v4/raw/2022-03-14/8D515A8AC57CA50377BBB7743D7BDB0B/ca3fe8ad0632288b67909ba9793b00e5d109547b/e83fec55-633d-4621-b509-35678628ffd0.txt',
-        ciUrl: null,
-        uploadType: 'UPLOADED',
-        buildCode: null,
-        errors: [],
-      },
-      {
-        state: 'COMPLETE',
-        provider: null,
-        createdAt: '2022-03-14T12:49:29.568415+00:00',
-        updatedAt: '2022-03-14T12:49:30.157909+00:00',
-        flags: [],
-        jobCode: null,
-        downloadUrl:
-          '/upload/gh/Rabee-AbuBaker/another-test/download?path=v4/raw/2022-03-14/8D515A8AC57CA50377BBB7743D7BDB0B/ca3fe8ad0632288b67909ba9793b00e5d109547b/e83fec55-633d-4621-b509-35678628ffd0.txt',
-        ciUrl: null,
-        uploadType: 'CARRIEDFORWARD',
-        buildCode: null,
-        errors: [],
-      },
-    ],
+    uploads: {
+      edges: [
+        {
+          node: {
+            id: null,
+            name: null,
+            state: 'PROCESSED',
+            provider: null,
+            createdAt: '2022-03-10T19:14:33.148945+00:00',
+            updatedAt: '2022-03-10T19:14:33.347403+00:00',
+            flags: [],
+            jobCode: null,
+            downloadUrl:
+              '/upload/gh/Rabee-AbuBaker/another-test/download?path=v4/raw/2022-03-10/8D515A8AC57CA50377BBB7743D7BDB0B/ca3fe8ad0632288b67909ba9793b00e5d109547b/71a6b706-7135-43e3-9098-34bba60312c2.txt',
+            ciUrl: null,
+            uploadType: 'UPLOADED',
+            buildCode: null,
+            errors: null,
+          },
+        },
+        {
+          node: {
+            id: null,
+            name: null,
+            state: 'PROCESSED',
+            provider: null,
+            createdAt: '2022-03-14T12:49:29.568415+00:00',
+            updatedAt: '2022-03-14T12:49:30.157909+00:00',
+            flags: [],
+            jobCode: null,
+            downloadUrl:
+              '/upload/gh/Rabee-AbuBaker/another-test/download?path=v4/raw/2022-03-14/8D515A8AC57CA50377BBB7743D7BDB0B/ca3fe8ad0632288b67909ba9793b00e5d109547b/e83fec55-633d-4621-b509-35678628ffd0.txt',
+            ciUrl: null,
+            uploadType: 'UPLOADED',
+            buildCode: null,
+            errors: null,
+          },
+        },
+        {
+          node: {
+            id: null,
+            name: null,
+            state: 'COMPLETE',
+            provider: null,
+            createdAt: '2022-03-14T12:49:29.568415+00:00',
+            updatedAt: '2022-03-14T12:49:30.157909+00:00',
+            flags: [],
+            jobCode: null,
+            downloadUrl:
+              '/upload/gh/Rabee-AbuBaker/another-test/download?path=v4/raw/2022-03-14/8D515A8AC57CA50377BBB7743D7BDB0B/ca3fe8ad0632288b67909ba9793b00e5d109547b/e83fec55-633d-4621-b509-35678628ffd0.txt',
+            ciUrl: null,
+            uploadType: 'CARRIEDFORWARD',
+            buildCode: null,
+            errors: null,
+          },
+        },
+      ],
+    },
+
     message: 'Test commit',
     ciPassed: true,
     parent: {
@@ -70,8 +85,11 @@ const data = {
       totals: { coverage: 100 },
     },
     compareWithParent: {
+      __typename: 'Comparison',
       state: 'processed',
       patchTotals: { coverage: 75 },
+      indirectChangedFilesCount: 1,
+      directChangedFilesCount: 1,
       impactedFiles: [
         {
           patchCoverage: { coverage: 75 },
@@ -111,18 +129,29 @@ const wrapper = ({ children }) => (
   </QueryClientProvider>
 )
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('usePullForCompareSummary', () => {
   function setup() {
     server.use(
       graphql.query('Commit', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner: { repository: data } }))
+        res(
+          ctx.status(200),
+          ctx.data({
+            owner: { repository: { __typename: 'Repository', ...data } },
+          })
+        )
       )
     )
   }

@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
-import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
 import { useCommitBasedCoverageForFileViewer } from 'services/file'
+import { useLocationParams } from 'services/navigation'
 import { useOwner } from 'services/user'
 import { CODE_RENDERER_TYPE } from 'shared/utils/fileviewer'
 import { unsupportedExtensionsMapper } from 'shared/utils/unsupportedExtensionsMapper'
@@ -31,7 +31,7 @@ function FileTitle({
   sticky,
   withKey,
   coverageIsLoading,
-  setSelectedFlags,
+  showFlagsSelect,
 }) {
   if (withKey) {
     return (
@@ -39,7 +39,7 @@ function FileTitle({
         title={title}
         sticky={sticky}
         coverageIsLoading={coverageIsLoading}
-        onFlagsChange={setSelectedFlags}
+        showFlagsSelect={showFlagsSelect}
       />
     )
   }
@@ -51,7 +51,7 @@ FileTitle.propTypes = {
   sticky: PropTypes.bool,
   withKey: PropTypes.bool,
   coverageIsLoading: PropTypes.bool,
-  setSelectedFlags: PropTypes.func,
+  showFlagsSelect: PropTypes.bool,
 }
 
 function CodeRendererContent({
@@ -95,13 +95,17 @@ function CodeRendererContent({
 
 CodeRendererContent.propTypes = {
   isUnsupportedFileType: PropTypes.bool,
-  content: PropTypes.object,
+  content: PropTypes.string,
   path: PropTypes.string,
   coverageData: PropTypes.object,
-  stickyPadding: PropTypes.bool,
+  stickyPadding: PropTypes.number,
 }
 
-// Note: This component is both used in the standalone fileviewer page and in the overview page. Changing this
+const defaultQueryParams = {
+  flags: [],
+}
+
+// Note: This component is both used in the standalone file viewer page and in the overview page. Changing this
 // component will affect both places
 function RawFileViewer({
   title,
@@ -109,11 +113,13 @@ function RawFileViewer({
   withKey = true,
   stickyPadding,
   commit,
+  showFlagsSelect,
 }) {
   const { owner, repo, provider, path: urlPath } = useParams()
+  const { params } = useLocationParams(defaultQueryParams)
   const path = decodeURIComponent(urlPath)
   const { data: ownerData } = useOwner({ username: owner })
-  const [selectedFlags, setSelectedFlags] = useState([])
+
   const isUnsupportedFileType = unsupportedExtensionsMapper({ path })
 
   // TODO: This hook needs revision/enhancement
@@ -121,7 +127,6 @@ function RawFileViewer({
     content,
     totals: fileCoverage,
     coverage: coverageData,
-    isLoading: coverageIsLoading,
     isCriticalFile,
   } = useCommitBasedCoverageForFileViewer({
     owner,
@@ -129,7 +134,7 @@ function RawFileViewer({
     provider,
     commit,
     path,
-    selectedFlags,
+    selectedFlags: params?.flags,
     opts: {
       enabled: !isUnsupportedFileType,
     },
@@ -140,13 +145,12 @@ function RawFileViewer({
   }
 
   return (
-    <div className="flex flex-col" data-testid="file-viewer-wrapper">
+    <div className="flex flex-col gap-3 py-3" data-testid="file-viewer-wrapper">
       <FileTitle
         withKey={withKey}
         title={title}
         sticky={sticky}
-        coverageIsLoading={coverageIsLoading}
-        onFlagsChange={setSelectedFlags}
+        showFlagsSelect={showFlagsSelect}
       />
       <div id={path} className="target:ring">
         <CodeRendererProgressHeader path={path} fileCoverage={fileCoverage} />
@@ -169,6 +173,7 @@ RawFileViewer.propTypes = {
   withKey: PropTypes.bool,
   stickyPadding: PropTypes.number,
   commit: PropTypes.string,
+  showFlagsSelect: PropTypes.bool,
 }
 
 export default RawFileViewer

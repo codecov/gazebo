@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import {
+  FirstPullRequestSchema,
   MissingBaseCommitSchema,
   MissingBaseReportSchema,
   MissingComparisonSchema,
@@ -13,12 +14,10 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
-import { userHasAccess } from 'shared/utils/user'
 import A from 'ui/A'
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
-  private: z.boolean(),
   pull: z
     .object({
       pullId: z.number().nullable(),
@@ -37,6 +36,7 @@ const RepositorySchema = z.object({
             flagComparisonsCount: z.number(),
             componentComparisonsCount: z.number(),
           }),
+          FirstPullRequestSchema,
           MissingBaseCommitSchema,
           MissingBaseReportSchema,
           MissingComparisonSchema,
@@ -51,7 +51,6 @@ const RepositorySchema = z.object({
 const PullPageDataSchema = z.object({
   owner: z
     .object({
-      isCurrentUserPartOfOrg: z.boolean(),
       repository: z
         .discriminatedUnion('__typename', [
           RepositorySchema,
@@ -66,11 +65,9 @@ const PullPageDataSchema = z.object({
 const query = `
 query PullPageData($owner: String!, $repo: String!, $pullId: Int!) {
   owner(username: $owner) {
-    isCurrentUserPartOfOrg
     repository(name: $repo) {
       __typename
       ... on Repository {
-        private
         pull(id: $pullId) {
           pullId
           head {
@@ -84,6 +81,9 @@ query PullPageData($owner: String!, $repo: String!, $pullId: Int!) {
               directChangedFilesCount
               flagComparisonsCount
               componentComparisonsCount
+            }
+            ... on FirstPullRequest {
+              message
             }
             ... on MissingBaseCommit {
               message
@@ -175,10 +175,6 @@ export const usePullPageData = ({
         }
 
         return {
-          hasAccess: userHasAccess({
-            privateRepo: data?.owner?.repository?.private,
-            isCurrentUserPartOfOrg: data?.owner?.isCurrentUserPartOfOrg,
-          }),
           pull: data?.owner?.repository?.pull ?? null,
         }
       }),

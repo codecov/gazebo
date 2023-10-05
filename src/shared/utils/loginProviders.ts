@@ -4,7 +4,48 @@ import isString from 'lodash/isString'
 import bitbucketLogo from 'assets/providers/bitbucket-icon.svg'
 import githubLogo from 'assets/providers/github-icon.svg'
 import gitlabLogo from 'assets/providers/gitlab-icon.svg'
+import oktaLogo from 'assets/providers/okta-icon.svg'
 import sentryLogo from 'assets/providers/sentry-icon.svg'
+
+export const LoginProvidersEnum = {
+  BITBUCKET: {
+    provider: 'bb',
+    name: 'Bitbucket',
+    external: 'BITBUCKET',
+    externalKey: 'bb',
+    selfHosted: 'BITBUCKET_SERVER',
+    selfHostedKey: 'bbs',
+    selfHostedName: 'Bitbucket Server',
+    variant: 'bitbucket',
+  },
+  GITHUB: {
+    provider: 'gh',
+    name: 'GitHub',
+    external: 'GITHUB',
+    externalKey: 'gh',
+    selfHosted: 'GITHUB_ENTERPRISE',
+    selfHostedKey: 'ghe',
+    selfHostedName: 'GitHub Enterprise',
+    variant: 'github',
+  },
+  GITLAB: {
+    provider: 'gl',
+    name: 'GitLab',
+    external: 'GITLAB',
+    externalKey: 'gl',
+    selfHosted: 'GITLAB_ENTERPRISE',
+    selfHostedKey: 'gle',
+    selfHostedName: 'GitLab CE/EE',
+    variant: 'gitlab',
+  },
+  OKTA: {
+    provider: 'okta',
+    name: 'Okta',
+    external: 'OKTA',
+    externalKey: 'okta',
+    variant: 'okta',
+  },
+} as const
 
 export const LOGIN_PROVIDER_SHORT_NAMES = {
   gh: 'gh',
@@ -14,11 +55,12 @@ export const LOGIN_PROVIDER_SHORT_NAMES = {
   gl: 'gl',
   gitlab: 'gl',
   sentry: 'sentry',
+  okta: 'okta',
 } as const
 
 export function loginProviderToShortName(loginProvider?: string) {
   if (!isString(loginProvider)) {
-    return null
+    return undefined
   }
 
   const providerName = loginProvider.toLowerCase()
@@ -32,7 +74,7 @@ export function loginProviderToShortName(loginProvider?: string) {
     }
   }
 
-  return null
+  return undefined
 }
 
 export const LOGIN_PROVIDER_NAMES = {
@@ -49,11 +91,12 @@ export const LOGIN_PROVIDER_NAMES = {
   gitlab_enterprise: 'Gitlab Enterprise',
   bitbucket_server: 'BitBucket Server',
   sentry: 'Sentry',
+  okta: 'Okta',
 } as const
 
 export function loginProviderToName(loginProvider?: string) {
   if (!isString(loginProvider)) {
-    return null
+    return undefined
   }
 
   const providerName = loginProvider.toLowerCase()
@@ -67,7 +110,7 @@ export function loginProviderToName(loginProvider?: string) {
     }
   }
 
-  return null
+  return undefined
 }
 
 export const LOGIN_PROVIDER_IMAGES = {
@@ -78,11 +121,12 @@ export const LOGIN_PROVIDER_IMAGES = {
   'Gitlab Enterprise': gitlabLogo,
   'BitBucket Server': bitbucketLogo,
   Sentry: sentryLogo,
+  Okta: oktaLogo,
 } as const
 
 export function loginProviderImage(loginProvider?: string) {
   if (!isString(loginProvider)) {
-    return null
+    return undefined
   }
 
   const providerName = loginProviderToName(loginProvider)
@@ -96,5 +140,5 @@ export function loginProviderImage(loginProvider?: string) {
     }
   }
 
-  return null
+  return undefined
 }

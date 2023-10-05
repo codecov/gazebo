@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types'
 
+import { ComparisonReturnType } from 'shared/utils/comparison'
 import A from 'ui/A'
 import Banner from 'ui/Banner'
-
-import { ComparisonReturnType } from './constants'
 
 function BannerContent({ errorType }) {
   if (errorType === ComparisonReturnType.MISSING_BASE_COMMIT) {

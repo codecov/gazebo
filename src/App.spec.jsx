@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
+import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -22,6 +22,7 @@ jest.mock('./pages/PullRequestPage', () => () => 'PullRequestPage')
 jest.mock('./pages/RepoPage', () => () => 'RepoPage')
 jest.mock('./pages/TermsOfService', () => () => 'TermsOfService')
 jest.mock('./pages/EnterpriseLandingPage', () => () => 'EnterpriseLandingPage')
+jest.mock('./pages/SyncProviderPage', () => () => 'SyncProviderPage')
 
 jest.mock('./shared/GlobalBanners', () => () => '')
 jest.mock('./shared/GlobalTopBanners', () => () => '')
@@ -73,12 +74,16 @@ const wrapper =
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })
 })
+
 afterEach(() => {
   config.IS_SELF_HOSTED = false
   queryClient.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('App', () => {
   function setup(
@@ -89,6 +94,9 @@ describe('App', () => {
     })
 
     server.use(
+      rest.get('/internal/user', (_, res, ctx) => {
+        return res(ctx.status(200), ctx.json({}))
+      }),
       graphql.query('DetailOwner', (_, res, ctx) =>
         res(ctx.status(200), ctx.data({ owner: 'codecov' }))
       ),
@@ -255,6 +263,16 @@ describe('App', () => {
         expected: {
           page: /LoginPage/i,
           location: '/login/gh',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'SyncProviderPage',
+        pathname: '/sync',
+        expected: {
+          page: /SyncProviderPage/i,
+          location: '/sync',
         },
       },
     ],
@@ -428,6 +446,16 @@ describe('App', () => {
         expected: {
           page: /EnterpriseLandingPage/i,
           location: '/',
+        },
+      },
+    ],
+    [
+      {
+        testLabel: 'SyncProviderPage',
+        pathname: '/sync',
+        expected: {
+          page: /SyncProviderPage/i,
+          location: '/sync',
         },
       },
     ],

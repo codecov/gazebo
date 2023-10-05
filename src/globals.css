@@ -73,5 +73,7 @@
     --color-github: 51, 51, 51;
     --color-gitlab: 252, 109, 38;
     --color-bitbucket: 0, 82, 204;
+    /* --color-okta: 0, 41, 122; */
+    --color-okta: 25, 25, 25;
   }
 }

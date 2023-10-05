@@ -1,6 +1,7 @@
 import isNil from 'lodash/isNil'
 
 import { CommitStateEnum } from 'shared/utils/commit'
+import { ComparisonReturnType } from 'shared/utils/comparison'
 import Spinner from 'ui/Spinner'
 
 import ImpactedFiles from './IndirectChangedFiles'
@@ -31,9 +32,19 @@ const Loader = () => (
 
 function IndirectChangesTab() {
   const { data, isLoading } = useIndirectChangedFilesTable()
+  const isFirstPull =
+    data?.compareWithBaseType === ComparisonReturnType.FIRST_PULL_REQUEST
 
   if (isLoading) {
     return <Loader />
+  }
+
+  if (isFirstPull) {
+    return (
+      <p className="mt-4">
+        No comparison made since it&apos;s your first commit with Codecov.
+      </p>
+    )
   }
 
   if (data?.headState === CommitStateEnum.ERROR) {

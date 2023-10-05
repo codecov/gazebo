@@ -6,6 +6,7 @@ export const commitErrored = graphql.query('Commit', (req, res, ctx) => {
     ctx.data({
       owner: {
         repository: {
+          __typename: 'Repository',
           commit: commitDataError,
         },
       },
@@ -19,13 +20,18 @@ export const commitOnePending = graphql.query('Commit', (req, res, ctx) => {
     ctx.data({
       owner: {
         repository: {
+          __typename: 'Repository',
           commit: {
             ...commitDataError,
+            branchName: null,
             uploads: {
               edges: [
                 {
                   node: {
-                    state: 'PENDING',
+                    id: null,
+                    name: null,
+                    errors: null,
+                    state: 'STARTED',
                     provider: 'travis',
                     createdAt: '2020-08-25T16:36:19.559474+00:00',
                     updatedAt: '2020-08-25T16:36:19.679868+00:00',
@@ -54,12 +60,17 @@ export const commitOneCarriedForward = graphql.query(
       ctx.data({
         owner: {
           repository: {
+            __typename: 'Repository',
             commit: {
+              branchName: null,
               ...commitDataError,
               uploads: {
                 edges: [
                   {
                     node: {
+                      id: null,
+                      name: null,
+                      errors: null,
                       state: 'COMPLETE',
                       provider: 'travis',
                       createdAt: '2020-08-25T16:36:19.559474+00:00',
@@ -88,6 +99,7 @@ export const commitEmptyUploads = graphql.query('Commit', (req, res, ctx) => {
     ctx.data({
       owner: {
         repository: {
+          __typename: 'Repository',
           commit: commitDataEmpty,
         },
       },
@@ -98,7 +110,7 @@ export const commitEmptyUploads = graphql.query('Commit', (req, res, ctx) => {
 export const compareTotalsEmpty = graphql.query(
   'CompareTotals',
   (req, res, ctx) => {
-    return res(ctx.status(200), ctx.data({}))
+    return res(ctx.status(200), ctx.data({ owner: null }))
   }
 )
 
@@ -109,6 +121,8 @@ const commitDataError = {
       coverage: null,
     },
   },
+  branchName: null,
+  id: null,
   commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
   pullId: 10,
   createdAt: '2020-08-25T16:35:32',
@@ -120,6 +134,8 @@ const commitDataError = {
     edges: [
       {
         node: {
+          id: null,
+          name: null,
           state: 'ERROR',
           provider: 'travis',
           createdAt: '2020-08-25T16:36:19.559474+00:00',
@@ -143,7 +159,9 @@ const commitDataError = {
       },
       {
         node: {
-          state: 'PENDING',
+          id: null,
+          name: null,
+          state: 'STARTED',
           provider: 'travis',
           createdAt: '2020-08-25T16:36:19.559474+00:00',
           updatedAt: '2020-08-25T16:36:19.679868+00:00',
@@ -152,11 +170,15 @@ const commitDataError = {
           uploadType: 'UPLOADED',
           jobCode: '1234',
           buildCode: '1234',
+          ciUrl: null,
+          errors: null,
         },
       },
       {
         node: {
-          state: 'PENDING',
+          id: null,
+          name: null,
+          state: 'STARTED',
           provider: 'travis',
           createdAt: '2020-08-25T16:36:19.559474+00:00',
           updatedAt: '2020-08-25T16:36:19.679868+00:00',
@@ -165,11 +187,15 @@ const commitDataError = {
           uploadType: 'UPLOADED',
           jobCode: '1234',
           buildCode: '1234',
+          ciUrl: null,
+          errors: null,
         },
       },
       {
         node: {
-          state: 'PENDING',
+          id: null,
+          name: null,
+          state: 'STARTED',
           provider: 'travis',
           createdAt: '2020-08-25T16:36:19.559474+00:00',
           updatedAt: '2020-08-25T16:36:19.679868+00:00',
@@ -178,10 +204,14 @@ const commitDataError = {
           uploadType: 'UPLOADED',
           jobCode: '1234',
           buildCode: '1234',
+          ciUrl: null,
+          errors: null,
         },
       },
       {
         node: {
+          id: null,
+          name: null,
           state: 'ERROR',
           provider: 'github actions',
           createdAt: '2020-08-25T16:36:19.559474+00:00',
@@ -191,6 +221,7 @@ const commitDataError = {
           uploadType: 'UPLOADED',
           jobCode: '1234',
           buildCode: '1234',
+          flags: [],
           errors: {
             edges: [
               {
@@ -214,24 +245,36 @@ const commitDataError = {
       },
       {
         node: {
+          id: null,
+          name: null,
           state: 'PROCESSED',
           provider: 'github actions',
           createdAt: '2020-08-25T16:36:25.820340+00:00',
           updatedAt: '2020-08-25T16:36:25.859889+00:00',
           flags: ['front-end'],
+          downloadUrl: null,
           uploadType: 'UPLOADED',
           jobCode: '1234',
+          ciUrl: null,
+          errors: null,
+          buildCode: null,
         },
       },
       {
         node: {
+          id: null,
+          name: null,
           state: 'COMPLETE',
           provider: 'github actions',
           createdAt: '2020-08-25T16:36:25.820340+00:00',
           updatedAt: '2020-08-25T16:36:25.859889+00:00',
+          downloadUrl: null,
           flags: ['front-end'],
           uploadType: 'CARRIEDFORWARD',
           jobCode: '1234',
+          ciUrl: null,
+          errors: null,
+          buildCode: null,
         },
       },
     ],
@@ -239,7 +282,12 @@ const commitDataError = {
   message: 'paths test',
   ciPassed: true,
   compareWithParent: {
+    __typename: 'Comparison',
     state: 'pending',
+    indirectChangedFilesCount: 1,
+    directChangedFilesCount: 1,
+    patchTotals: null,
+    impactedFiles: [],
   },
   parent: {
     commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
@@ -269,6 +317,7 @@ const commitDataEmpty = {
   message: 'paths test',
   ciPassed: true,
   compareWithParent: {
+    __typename: 'Comparison',
     state: 'pending',
   },
   parent: {

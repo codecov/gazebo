@@ -2,10 +2,12 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import qs from 'qs'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useTreePaths } from './useTreePaths'
 
+const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -14,14 +16,12 @@ const queryClient = new QueryClient({
   },
 })
 
-const server = setupServer()
-
 const wrapper =
-  (initialEntries = ['/gh/owner/coolrepo/tree/main/src%2Ftests']) =>
+  (initialEntries = '/gh/owner/coolrepo/tree/main/src%2Ftests') =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
+        <MemoryRouter initialEntries={[initialEntries]}>
           <Route path="/:provider/:owner/:repo">
             <div>{children}</div>
           </Route>
@@ -44,10 +44,12 @@ const wrapper =
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })
 })
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
+
 afterAll(() => {
   server.close()
 })
@@ -65,16 +67,16 @@ describe('useTreePaths', () => {
     )
   }
   describe('a path is provided', () => {
-    beforeEach(() => {
-      setup({
-        repoOverviewData: overviewMock,
-      })
-    })
     describe('no duplicate names in path', () => {
       it('returns a list of objects', () => {
+        setup({
+          repoOverviewData: overviewMock,
+        })
+
         const { result } = renderHook(() => useTreePaths(), {
           wrapper: wrapper(),
         })
+
         expect(result.current.treePaths).toEqual([
           {
             pageName: 'treeView',
@@ -94,12 +96,17 @@ describe('useTreePaths', () => {
         ])
       })
     })
+
     describe('path has duplicate names', () => {
       it('returns a list of objects', () => {
+        setup({
+          repoOverviewData: overviewMock,
+        })
+
         const { result } = renderHook(() => useTreePaths(), {
-          wrapper: wrapper([
-            '/gh/owner/coolrepo/tree/main/src%2Ftemp%2Fsrc%2Ftemp%2Fcomponent',
-          ]),
+          wrapper: wrapper(
+            '/gh/owner/coolrepo/tree/main/src%2Ftemp%2Fsrc%2Ftemp%2Fcomponent'
+          ),
         })
 
         expect(result.current.treePaths).toEqual([
@@ -139,14 +146,13 @@ describe('useTreePaths', () => {
   })
 
   describe('no path is given', () => {
-    beforeEach(() => {
+    it('returns a list of objects', () => {
       setup({
         repoOverviewData: overviewMock,
       })
-    })
-    it('returns a list of objects', () => {
+
       const { result } = renderHook(() => useTreePaths(), {
-        wrapper: wrapper(['/gh/owner/coolrepo/tree/main']),
+        wrapper: wrapper('/gh/owner/coolrepo/tree/main'),
       })
 
       expect(result.current.treePaths).toEqual([
@@ -160,15 +166,14 @@ describe('useTreePaths', () => {
   })
 
   describe('viewing a file', () => {
-    beforeEach(() => {
-      setup({
-        repoOverviewData: overviewMock,
-      })
-    })
     describe('a path is provided', () => {
       it('returns a list of objects', async () => {
+        setup({
+          repoOverviewData: overviewMock,
+        })
+
         const { result } = renderHook(() => useTreePaths(), {
-          wrapper: wrapper(['/gh/owner/coolrepo/tree/main/src%2Ffile.js']),
+          wrapper: wrapper('/gh/owner/coolrepo/tree/main/src%2Ffile.js'),
         })
 
         await waitFor(() =>
@@ -195,18 +200,16 @@ describe('useTreePaths', () => {
   })
 
   describe('falls back to default branch', () => {
-    beforeEach(() => {
-      setup({
-        repoOverviewData: {
-          owner: { repository: { private: false, defaultBranch: 'banana' } },
-        },
-      })
-    })
-
     describe('correctly generates paths', () => {
       it('returns a list of objects', async () => {
+        setup({
+          repoOverviewData: {
+            owner: { repository: { private: false, defaultBranch: 'banana' } },
+          },
+        })
+
         const { result } = renderHook(() => useTreePaths(), {
-          wrapper: wrapper(['/gh/owner/coolrepo']),
+          wrapper: wrapper('/gh/owner/coolrepo'),
         })
 
         await waitFor(() =>
@@ -219,6 +222,49 @@ describe('useTreePaths', () => {
           ])
         )
       })
+    })
+  })
+
+  describe('query string params are passed along', () => {
+    it('returns a list of objects with query params in the options', () => {
+      setup({
+        repoOverviewData: overviewMock,
+      })
+
+      const { result } = renderHook(() => useTreePaths(), {
+        wrapper: wrapper(
+          `/gh/owner/coolrepo/tree/main/src%2Ftests${qs.stringify(
+            { flags: ['flag-1'] },
+            { addQueryPrefix: true }
+          )}`
+        ),
+      })
+
+      expect(result.current.treePaths).toEqual([
+        {
+          pageName: 'treeView',
+          text: 'coolrepo',
+          options: { ref: 'main', flags: ['flag-1'] },
+        },
+        {
+          options: {
+            tree: 'src',
+            ref: 'main',
+            flags: ['flag-1'],
+          },
+          pageName: 'treeView',
+          text: 'src',
+        },
+        {
+          options: {
+            tree: 'src/tests',
+            ref: 'main',
+            flags: ['flag-1'],
+          },
+          pageName: 'treeView',
+          text: 'tests',
+        },
+      ])
     })
   })
 })

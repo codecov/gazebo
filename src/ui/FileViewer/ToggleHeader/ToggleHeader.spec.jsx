@@ -1,109 +1,129 @@
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen } from '@testing-library/react'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
+import { MemoryRouter, Route } from 'react-router-dom'
+
+import { useFlags } from 'shared/featureFlags'
 
 import ToggleHeader from './ToggleHeader'
 
+jest.mock('shared/featureFlags')
+jest.mock('react-use/lib/useIntersection')
+
+const mockFlagResponse = {
+  owner: {
+    repository: {
+      flags: {
+        edges: [
+          {
+            node: {
+              name: 'flag-2',
+            },
+          },
+        ],
+        pageInfo: {
+          hasNextPage: false,
+          endCursor: null,
+        },
+      },
+    },
+  },
+}
+
+const mockBackfillResponse = {
+  config: {
+    isTimeScaleEnabled: true,
+  },
+  owner: {
+    repository: {
+      flagsMeasurementsActive: true,
+      flagsMeasurementsBackfilled: true,
+      flagsCount: 1,
+    },
+  },
+}
+
+const queryClient = new QueryClient()
+const server = setupServer()
+
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh/codecov/cool-repo']}>
+      <Route path="/:provider/:owner/:repo">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
+
+beforeAll(() => {
+  server.listen()
+})
+
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
+
 describe('ToggleHeader', () => {
   function setup() {
-    const user = userEvent.setup()
-    const onFlagsChange = jest.fn()
-
-    return { user, onFlagsChange }
-  }
-
-  describe('when there is no flags data', () => {
-    it('renders title', () => {
-      const { onFlagsChange } = setup()
-      render(
-        <ToggleHeader
-          title={'sample title'}
-          onFlagsChange={onFlagsChange}
-          coverageIsLoading={false}
-          flagNames={[]}
-        />
-      )
-
-      const title = screen.getByText('sample title')
-      expect(title).toBeInTheDocument()
+    useFlags.mockReturnValue({
+      coverageTabFlagMutliSelect: true,
     })
 
-    it('does not render flags multi-select', () => {
-      const { onFlagsChange } = setup()
-      render(
-        <ToggleHeader
-          title={'sample title'}
-          onFlagsChange={onFlagsChange}
-          coverageIsLoading={false}
-          flagNames={[]}
-        />
-      )
+    server.use(
+      graphql.query('BackfillFlagMemberships', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockBackfillResponse))
+      }),
+      graphql.query('FlagsSelect', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockFlagResponse))
+      })
+    )
+  }
 
-      const multiSelect = screen.queryByText('All Flags')
-      expect(multiSelect).not.toBeInTheDocument()
+  describe('renders title coverage', () => {
+    it('renders uncovered title coverage component', () => {
+      render(<ToggleHeader />, { wrapper })
+
+      const uncovered = screen.getByText('uncovered')
+      expect(uncovered).toBeInTheDocument()
+    })
+
+    it('renders partial title coverage component', () => {
+      render(<ToggleHeader />, { wrapper })
+
+      const partial = screen.getByText('partial')
+      expect(partial).toBeInTheDocument()
+    })
+
+    it('renders covered title coverage component', () => {
+      render(<ToggleHeader />, { wrapper })
+
+      const covered = screen.getByText('covered')
+      expect(covered).toBeInTheDocument()
     })
   })
 
-  describe('when there is flags data', () => {
-    it('renders all flags title', async () => {
-      const { onFlagsChange, user } = setup()
-      render(
-        <ToggleHeader
-          title={'sample title'}
-          onFlagsChange={onFlagsChange}
-          coverageIsLoading={false}
-          flagNames={['flag1', 'flag2']}
-        />
-      )
+  describe('showFlagsSelect prop is passed', () => {
+    describe('prop is true', () => {
+      it('renders flag multi select', async () => {
+        setup()
+        render(<ToggleHeader showFlagsSelect={true} />, { wrapper })
 
-      const button = screen.getByText('All Flags')
-      await user.click(button)
-
-      const title = screen.getByRole('button', {
-        name: /Filter by flags/i,
+        const flagMultiSelect = await screen.findByText(/All flags/)
+        expect(flagMultiSelect).toBeInTheDocument()
       })
-
-      expect(title).toHaveTextContent(/All Flags/)
     })
 
-    it('renders flags in the list', async () => {
-      const { onFlagsChange, user } = setup()
-      render(
-        <ToggleHeader
-          title={'sample title'}
-          onFlagsChange={onFlagsChange}
-          coverageIsLoading={false}
-          flagNames={['flag1', 'flag2']}
-        />
-      )
+    describe('prop is false', () => {
+      it('does not render prop', () => {
+        render(<ToggleHeader showFlagsSelect={false} />, { wrapper })
 
-      const button = screen.getByText('All Flags')
-      await user.click(button)
-
-      expect(screen.getByText('flag1')).toBeInTheDocument()
-      expect(screen.getByText('flag2')).toBeInTheDocument()
-    })
-
-    describe('when a flag is selected', () => {
-      it('calls onFlagsChange with the value', async () => {
-        const { onFlagsChange, user } = setup()
-        render(
-          <ToggleHeader
-            title={'sample title'}
-            onFlagsChange={onFlagsChange}
-            coverageIsLoading={false}
-            flagNames={['flag1', 'flag2']}
-          />
-        )
-
-        const button = screen.getByText('All Flags')
-        await user.click(button)
-
-        const flag1Click = screen.getByText(/flag1/)
-        await user.click(flag1Click)
-
-        await waitFor(() =>
-          expect(onFlagsChange).toHaveBeenCalledWith(['flag1'])
-        )
+        const flagMultiSelect = screen.queryByText(/All flags/)
+        expect(flagMultiSelect).not.toBeInTheDocument()
       })
     })
   })
@@ -111,13 +131,9 @@ describe('ToggleHeader', () => {
   describe('when showHitCount prop is passed', () => {
     describe('prop is set to true', () => {
       it('renders legend', () => {
-        render(
-          <ToggleHeader
-            title={'sample title'}
-            coverageIsLoading={false}
-            showHitCount={true}
-          />
-        )
+        render(<ToggleHeader title={'sample title'} showHitCount={true} />, {
+          wrapper,
+        })
 
         const hitIcon = screen.getByText('n')
         expect(hitIcon).toBeInTheDocument()
@@ -134,7 +150,8 @@ describe('ToggleHeader', () => {
             title={'sample title'}
             coverageIsLoading={false}
             showHitCount={false}
-          />
+          />,
+          { wrapper }
         )
 
         const hitIcon = screen.queryByText('n')

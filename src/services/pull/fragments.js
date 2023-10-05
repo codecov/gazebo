@@ -41,6 +41,24 @@ fragment SummaryOnPullFragment on Pull {
       changeCoverage
       hasDifferentNumberOfHeadAndBaseReports
     }
+    ... on FirstPullRequest {
+      message
+    }
+    ... on MissingBaseCommit {
+      message
+    }
+    ... on MissingHeadCommit {
+      message
+    }
+    ... on MissingComparison {
+      message
+    }
+    ... on MissingBaseReport {
+      message
+    }
+    ... on MissingHeadReport {
+      message
+    }
   }
   commits {
     edges {
@@ -66,8 +84,7 @@ fragment CommitsOnPullFragment on Pull {
       }
     }
   }
-}
-`
+}`
 
 export const FlagComparisonsOnPull = `
 fragment FlagComparisonsOnPull on Pull {
@@ -87,9 +104,26 @@ fragment FlagComparisonsOnPull on Pull {
         }
       }
     }
+    ... on FirstPullRequest {
+      message
+    }
+    ... on MissingBaseCommit {
+      message
+    }
+    ... on MissingHeadCommit {
+      message
+    }
+    ... on MissingComparison {
+      message
+    }
+    ... on MissingBaseReport {
+      message
+    }
+    ... on MissingHeadReport {
+      message
+    }
   }
-}
-`
+}`
 
 export const ImpactedFilesOnPull = `
 fragment ImpactedFilesOnPull on Pull {
@@ -109,7 +143,7 @@ fragment ImpactedFilesOnPull on Pull {
       headTotals {
         percentCovered
       }
-      impactedFiles(filters:$filters) {
+      impactedFiles(filters: $filters) {
         fileName
         headName
         isCriticalFile
@@ -126,9 +160,26 @@ fragment ImpactedFilesOnPull on Pull {
         changeCoverage
       }
     }
+    ... on FirstPullRequest {
+      message
+    }
+    ... on MissingBaseCommit {
+      message
+    }
+    ... on MissingHeadCommit {
+      message
+    }
+    ... on MissingComparison {
+      message
+    }
+    ... on MissingBaseReport {
+      message
+    }
+    ... on MissingHeadReport {
+      message
+    }
   }
-}
-`
+}`
 
 export const FileComparisonWithBase = `
 fragment FileComparisonWithBase on Pull {
@@ -152,7 +203,7 @@ fragment FileComparisonWithBase on Pull {
           percentCovered
         }
         changeCoverage
-        segments (filters: $filters) {
+        segments(filters: $filters) {
           ... on SegmentComparisons {
             results {
               header
@@ -173,6 +224,23 @@ fragment FileComparisonWithBase on Pull {
         }
       }
     }
+    ... on FirstPullRequest {
+      message
+    }
+    ... on MissingBaseCommit {
+      message
+    }
+    ... on MissingHeadCommit {
+      message
+    }
+    ... on MissingComparison {
+      message
+    }
+    ... on MissingBaseReport {
+      message
+    }
+    ... on MissingHeadReport {
+      message
+    }
   }
-}
-`
+}`

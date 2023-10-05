@@ -21,13 +21,13 @@ PullState.propTypes = {
 }
 
 const Coverage = ({ head, state, pullId, plain = false }) =>
-  typeof head?.totals?.coverage === 'number' ? (
+  typeof head?.totals?.percentCovered === 'number' ? (
     <div className="flex flex-1 flex-wrap justify-end md:flex-row md:flex-nowrap">
       <PullState state={state} />
       <A to={{ pageName: 'pullDetail', options: { pullId } }}>
         <span className="mx-6 font-mono text-ds-gray-quinary">#{pullId}</span>
       </A>
-      <TotalsNumber value={head?.totals?.coverage} plain />
+      <TotalsNumber value={head?.totals?.percentCovered} plain />
     </div>
   ) : (
     <div className="flex flex-1 flex-wrap justify-end md:flex-row md:flex-nowrap">
@@ -44,7 +44,7 @@ const Coverage = ({ head, state, pullId, plain = false }) =>
 Coverage.propTypes = {
   head: PropTypes.shape({
     totals: PropTypes.shape({
-      coverage: PropTypes.number,
+      percentCovered: PropTypes.number,
     }),
   }),
   pullId: PropTypes.number,

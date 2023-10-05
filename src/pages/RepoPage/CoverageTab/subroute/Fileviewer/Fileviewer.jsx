@@ -18,6 +18,7 @@ function FileView() {
       commit={commit}
       sticky
       stickyPadding={215}
+      showFlagsSelect={true}
     />
   )
 }

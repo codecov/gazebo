@@ -60,6 +60,39 @@ const mockCoverage = {
   branch: null,
 }
 
+const mockFlagResponse = {
+  owner: {
+    repository: {
+      flags: {
+        edges: [
+          {
+            node: {
+              name: 'flag-2',
+            },
+          },
+        ],
+        pageInfo: {
+          hasNextPage: false,
+          endCursor: null,
+        },
+      },
+    },
+  },
+}
+
+const mockBackfillResponse = {
+  config: {
+    isTimeScaleEnabled: true,
+  },
+  owner: {
+    repository: {
+      flagsMeasurementsActive: true,
+      flagsMeasurementsBackfilled: true,
+      flagsCount: 1,
+    },
+  },
+}
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
@@ -110,7 +143,13 @@ describe('FileView', () => {
       ),
       graphql.query('GetRepoOverview', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockOverview))
-      )
+      ),
+      graphql.query('BackfillFlagMemberships', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockBackfillResponse))
+      }),
+      graphql.query('FlagsSelect', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockFlagResponse))
+      })
     )
   }
 

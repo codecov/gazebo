@@ -70,9 +70,8 @@ function transformPullToTable(pulls, isLoading) {
     ]
   }
 
-  return pulls?.map((pullNode) => {
-    if (!pullNode) return handleOnNull()
-    const pull = pullNode.node
+  return pulls?.map((pull) => {
+    if (!pull) return handleOnNull()
     const { author, compareWithBase, head, pullId, state, title, updatestamp } =
       pull
 
@@ -85,6 +84,7 @@ function transformPullToTable(pulls, isLoading) {
           pullId={pullId}
           title={title}
           updatestamp={updatestamp}
+          compareWithBaseType={compareWithBase?.__typename}
         />
       ),
       coverage: <Coverage head={head} state={state} pullId={pullId} />,
@@ -128,7 +128,7 @@ function PullsTab() {
         state: prStates,
       },
       orderingDirection: order,
-      options: {
+      opts: {
         suspense: false,
       },
     })

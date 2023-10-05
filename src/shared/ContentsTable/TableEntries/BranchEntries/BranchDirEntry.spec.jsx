@@ -64,18 +64,19 @@ afterAll(() => server.close())
 
 describe('BranchDirEntry', () => {
   function setup() {
+    const user = userEvent.setup()
+
     server.use(
       graphql.query('BranchContents', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockData))
       )
     )
+
+    return { user }
   }
 
-  beforeEach(() => {
-    setup()
-  })
-
   it('displays the directory name', async () => {
+    setup()
     render(
       <BranchDirEntry branch="branch" name="dir" urlPath="path/to/directory" />,
       { wrapper }
@@ -86,6 +87,7 @@ describe('BranchDirEntry', () => {
   })
 
   it('sets the correct href', async () => {
+    setup()
     render(
       <BranchDirEntry branch="branch" name="dir" urlPath="path/to/directory" />,
       { wrapper }
@@ -98,8 +100,32 @@ describe('BranchDirEntry', () => {
     )
   })
 
+  describe('flags filters is passed', () => {
+    it('sets the correct href', async () => {
+      setup()
+      render(
+        <BranchDirEntry
+          branch="branch"
+          name="dir"
+          urlPath="path/to/directory"
+          filters={{
+            flags: ['flag-1'],
+          }}
+        />,
+        { wrapper }
+      )
+
+      const a = await screen.findByRole('link')
+      expect(a).toHaveAttribute(
+        'href',
+        '/gh/codecov/test-repo/tree/branch/path%2Fto%2Fdirectory%2Fdir?flags%5B0%5D=flag-1'
+      )
+    })
+  })
+
   it('fires the prefetch function on hover', async () => {
-    const user = userEvent.setup()
+    const { user } = setup()
+
     render(
       <BranchDirEntry branch="branch" name="dir" urlPath="path/to/directory" />,
       { wrapper }

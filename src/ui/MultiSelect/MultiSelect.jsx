@@ -89,7 +89,7 @@ function DropdownList({
       className={cs(
         SelectClasses.listContainer,
         {
-          'border border-gray-ds-tertiary max-h-72 overflow-scroll': isOpen,
+          'border border-gray-ds-tertiary max-h-72 overflow-y-scroll': isOpen,
         },
         onSearch ? 'top-16' : 'top-8'
       )}

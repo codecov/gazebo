@@ -12,6 +12,7 @@ import CompareSummarySkeleton from './Summary/CompareSummarySkeleton'
 const CompareSummary = lazy(() => import('./Summary'))
 const PullRequestPageTabs = lazy(() => import('./PullRequestPageTabs'))
 const PullRequestPageContent = lazy(() => import('./PullRequestPageContent'))
+const FirstPullBanner = lazy(() => import('./FirstPullBanner'))
 
 const Loader = () => (
   <div className="flex items-center justify-center py-16">
@@ -23,7 +24,7 @@ function PullRequestPage() {
   const { owner, repo, pullId, provider } = useParams()
   const { data, isLoading } = usePullPageData({ provider, owner, repo, pullId })
 
-  if (!isLoading && (!data?.hasAccess || !data?.pull)) {
+  if (!isLoading && !data?.pull) {
     return <NotFound />
   }
 
@@ -45,6 +46,7 @@ function PullRequestPage() {
       <Header />
       <Suspense fallback={<CompareSummarySkeleton />}>
         <CompareSummary />
+        <FirstPullBanner />
       </Suspense>
       <Suspense fallback={<Loader />}>
         <div className="grid grid-cols-1 gap-4 space-y-2 lg:grid-cols-2">

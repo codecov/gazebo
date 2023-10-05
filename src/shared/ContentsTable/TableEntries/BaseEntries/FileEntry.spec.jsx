@@ -134,7 +134,7 @@ describe('FileEntry', () => {
     })
   })
 
-  describe('passed pageName and commit props', () => {
+  describe('passed pageName commit props', () => {
     const runPrefetchMock = jest.fn()
     it('sets the correct href', () => {
       render(
@@ -156,6 +156,32 @@ describe('FileEntry', () => {
       expect(fileEntry).toHaveAttribute(
         'href',
         '/gh/codecov/test-repo/commit/coolCommitSha/blob/dir/file.js'
+      )
+    })
+  })
+
+  describe('passed queryParams prop', () => {
+    it('sets the correct href', () => {
+      const runPrefetchMock = jest.fn()
+      render(
+        <FileEntry
+          linkRef="main"
+          path="dir/file.js"
+          name="file.js"
+          urlPath="dir"
+          isCriticalFile={false}
+          displayType={displayTypeParameter.list}
+          runPrefetch={runPrefetchMock}
+          queryParams={{ flags: ['flag-1'] }}
+        />,
+        { wrapper }
+      )
+
+      const link = screen.getByRole('link')
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute(
+        'href',
+        '/gh/codecov/test-repo/blob/main/dir%2Ffile.js?flags%5B0%5D=flag-1'
       )
     })
   })

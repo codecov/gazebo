@@ -14,6 +14,8 @@ function Dropdown({ currentUser }) {
   const { provider } = useParams()
   const isGh = providerToName(provider) === 'Github'
 
+  const to = `${window.location.protocol}//${window.location.host}/login`
+
   const items =
     !config.IS_SELF_HOSTED && isGh
       ? [
@@ -34,7 +36,12 @@ function Dropdown({ currentUser }) {
       },
       children: 'Settings',
     },
-    { props: { to: { pageName: 'signOut' } }, children: 'Sign Out' }
+    {
+      props: {
+        to: { pageName: 'signOut', options: { to } },
+      },
+      children: 'Sign Out',
+    }
   )
 
   const {

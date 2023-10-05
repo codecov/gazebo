@@ -24,7 +24,7 @@ describe('ExpiredBanner', () => {
       render(<ExpiredBanner />, { wrapper })
 
       const leftText = screen.getByText(
-        /The org's 14-day free Codecov Pro trial has ended./
+        /The organization's 14-day free Codecov Pro trial has ended./
       )
       expect(leftText).toBeInTheDocument()
     })
