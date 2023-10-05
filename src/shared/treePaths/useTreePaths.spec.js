@@ -244,13 +244,13 @@ describe('useTreePaths', () => {
         {
           pageName: 'treeView',
           text: 'coolrepo',
-          options: { ref: 'main', flags: ['flag-1'] },
+          options: { ref: 'main', queryParams: { flags: ['flag-1'] } },
         },
         {
           options: {
             tree: 'src',
             ref: 'main',
-            flags: ['flag-1'],
+            queryParams: { flags: ['flag-1'] },
           },
           pageName: 'treeView',
           text: 'src',
@@ -259,7 +259,7 @@ describe('useTreePaths', () => {
           options: {
             tree: 'src/tests',
             ref: 'main',
-            flags: ['flag-1'],
+            queryParams: { flags: ['flag-1'] },
           },
           pageName: 'treeView',
           text: 'tests',

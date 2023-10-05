@@ -139,7 +139,6 @@ describe('FileEntry', () => {
     it('sets the correct href', () => {
       render(
         <FileEntry
-          linkRef="main"
           path="dir/file.js"
           name="file.js"
           urlPath="dir"

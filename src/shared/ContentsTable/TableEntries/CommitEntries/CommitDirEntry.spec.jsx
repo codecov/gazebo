@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import qs from 'qs'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import CommitDirEntry from './CommitDirEntry'
@@ -53,10 +54,12 @@ const wrapper = ({ children }) => (
 beforeAll(() => {
   server.listen()
 })
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
+
 afterAll(() => {
   server.close()
 })
@@ -104,6 +107,29 @@ describe('CommitDirEntry', () => {
         '/gh/codecov/test-repo/commit/1234/tree/path/to/directory/dir'
       )
     })
+
+    describe('filters are passed', () => {
+      it('sets the correct href', () => {
+        render(
+          <CommitDirEntry
+            commitSha="1234"
+            name="dir"
+            urlPath="path/to/directory"
+            filters={{ flags: ['flag-1'] }}
+          />,
+          { wrapper }
+        )
+
+        const a = screen.getByRole('link')
+        expect(a).toHaveAttribute(
+          'href',
+          `/gh/codecov/test-repo/commit/1234/tree/path/to/directory/dir${qs.stringify(
+            { flags: ['flag-1'] },
+            { addQueryPrefix: true }
+          )}`
+        )
+      })
+    })
   })
 
   describe('no path is provided', () => {
@@ -115,6 +141,28 @@ describe('CommitDirEntry', () => {
         'href',
         '/gh/codecov/test-repo/commit/1234/tree/dir'
       )
+    })
+
+    describe('filters are passed', () => {
+      it('sets the correct href', () => {
+        render(
+          <CommitDirEntry
+            commitSha="1234"
+            name="dir"
+            filters={{ flags: ['flag-1'] }}
+          />,
+          { wrapper }
+        )
+
+        const a = screen.getByRole('link')
+        expect(a).toHaveAttribute(
+          'href',
+          `/gh/codecov/test-repo/commit/1234/tree/dir${qs.stringify(
+            { flags: ['flag-1'] },
+            { addQueryPrefix: true }
+          )}`
+        )
+      })
     })
   })
 
