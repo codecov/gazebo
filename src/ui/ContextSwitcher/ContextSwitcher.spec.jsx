@@ -74,7 +74,7 @@ describe('ContextSwitcher', () => {
     it('does not render the listed items initially', () => {
       render(
         <ContextSwitcher
-          activeContext="laudna"
+          activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
           contexts={[
             {
               owner: {
@@ -123,7 +123,7 @@ describe('ContextSwitcher', () => {
       const { user } = setup()
       render(
         <ContextSwitcher
-          activeContext="laudna"
+          activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
           contexts={[
             {
               owner: {
@@ -181,7 +181,7 @@ describe('ContextSwitcher', () => {
       const { user } = setup()
       render(
         <ContextSwitcher
-          activeContext="laudna"
+          activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
           contexts={[
             {
               owner: {
@@ -243,7 +243,7 @@ describe('ContextSwitcher', () => {
     it('renders manage access restrictions', async () => {
       render(
         <ContextSwitcher
-          activeContext="laudna"
+          activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
           contexts={[
             {
               owner: {
@@ -298,7 +298,7 @@ describe('ContextSwitcher', () => {
         const { user } = setup()
         render(
           <ContextSwitcher
-            activeContext="laudna"
+            activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
             contexts={[
               {
                 owner: {
@@ -350,7 +350,7 @@ describe('ContextSwitcher', () => {
         const { user } = setup()
         render(
           <ContextSwitcher
-            activeContext="laudna"
+            activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
             contexts={[
               {
                 owner: {
@@ -408,7 +408,7 @@ describe('ContextSwitcher', () => {
       const onLoadMoreFunc = jest.fn()
       render(
         <ContextSwitcher
-          activeContext="laudna"
+          activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
           contexts={[
             {
               owner: {
@@ -461,7 +461,7 @@ describe('ContextSwitcher', () => {
       const { user } = setup()
       render(
         <ContextSwitcher
-          activeContext="laudna"
+          activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
           contexts={[
             {
               owner: {
@@ -517,7 +517,7 @@ describe('ContextSwitcher', () => {
         const { user, mutate } = setup()
         render(
           <ContextSwitcher
-            activeContext="laudna"
+            activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
             contexts={[
               {
                 owner: {
@@ -572,7 +572,7 @@ describe('ContextSwitcher', () => {
         const { user, mutate } = setup()
         render(
           <ContextSwitcher
-            activeContext="laudna"
+            activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
             contexts={[
               {
                 owner: {

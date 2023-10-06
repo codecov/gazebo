@@ -1,17 +1,18 @@
 import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
-import { useMyContexts } from 'services/user'
+import { useMyContexts, useOwner } from 'services/user'
 import ContextSwitcher from 'ui/ContextSwitcher'
 
-function MyContextSwitcher({ activeContext, pageName }) {
-  const { provider } = useParams()
+function MyContextSwitcher({ pageName }) {
+  const { provider, owner } = useParams()
   const {
     data: myContexts,
     hasNextPage,
     fetchNextPage,
     isLoading,
   } = useMyContexts({ provider })
+  const { data: activeContext } = useOwner({ username: owner })
 
   if (!myContexts || !myContexts?.currentUser) return null
 
@@ -42,13 +43,6 @@ function MyContextSwitcher({ activeContext, pageName }) {
 }
 
 MyContextSwitcher.propTypes = {
-  /*
-   ** The active user
-   */
-  activeContext: PropTypes.string,
-  /*
-   ** The page name where each context will point to
-   */
   pageName: PropTypes.string.isRequired,
 }
 
