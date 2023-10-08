@@ -148,13 +148,14 @@ describe('PullDirEntry', () => {
         pullId="123"
         name="dir"
         urlPath="path/to/directory"
-        filters={{ ordering: { direction: 'asc', parameter: 'name' } }}
+        filters={{
+          ordering: { direction: 'asc', parameter: 'name' },
+          flags: ['a', 'b'],
+        }}
       />,
       {
         wrapper: wrapper({
-          initialEntries: [
-            '/gh/codecov/test-repo/pull/123/tree?flags[0]=a&flags[1]=b',
-          ],
+          initialEntries: ['/gh/codecov/test-repo/pull/123/tree'],
         }),
       }
     )

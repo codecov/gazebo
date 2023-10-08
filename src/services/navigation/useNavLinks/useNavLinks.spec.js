@@ -1171,7 +1171,7 @@ describe('useNavLinks', () => {
       })
 
       const path = result.current.pullDetail.path({
-        flags: ['myFlag'],
+        queryParams: { flags: ['myFlag'] },
       })
 
       expect(path).toBe(
@@ -1234,7 +1234,7 @@ describe('useNavLinks', () => {
       })
 
       const path = result.current.pullFlags.path({
-        flags: ['myFlag'],
+        queryParams: { flags: ['myFlag'] },
       })
 
       expect(path).toBe(
@@ -1272,7 +1272,7 @@ describe('useNavLinks', () => {
       })
 
       const path = result.current.pullComponents.path({
-        flags: ['myFlag'],
+        queryParams: { flags: ['myFlag'] },
       })
 
       expect(path).toBe(
@@ -1335,7 +1335,7 @@ describe('useNavLinks', () => {
       })
 
       const path = result.current.pullTreeView.path({
-        flags: ['myFlag'],
+        queryParams: { flags: ['myFlag'] },
       })
 
       expect(path).toBe(
@@ -1384,7 +1384,7 @@ describe('useNavLinks', () => {
       })
 
       const path = result.current.pullFileView.path({
-        flags: ['myFlag'],
+        queryParams: { flags: ['myFlag'] },
       })
 
       expect(path).toBe(
@@ -1428,7 +1428,7 @@ describe('useNavLinks', () => {
       })
 
       const path = result.current.pullIndirectChanges.path({
-        flags: ['myFlag'],
+        queryParams: { flags: ['myFlag'] },
       })
 
       expect(path).toBe(

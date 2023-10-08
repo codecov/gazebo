@@ -44,8 +44,8 @@ function CommitErrorBanners() {
 }
 
 function CommitDetailPage() {
-  const { provider, owner, repo, commit: commitSHA } = useParams()
-  const shortSHA = commitSHA?.slice(0, 7)
+  const { provider, owner, repo, commit: commitSha } = useParams()
+  const shortSHA = commitSha?.slice(0, 7)
 
   // reset cache when user navigates to the commit detail page
   const queryClient = useQueryClient()
@@ -55,7 +55,7 @@ function CommitDetailPage() {
     provider,
     owner,
     repo,
-    commitId: commitSHA,
+    commitId: commitSha,
   })
 
   if (
@@ -75,7 +75,7 @@ function CommitDetailPage() {
           { pageName: 'commits', text: 'commits' },
           {
             pageName: 'commit',
-            options: { commitSHA },
+            options: { commitSha },
             readOnly: true,
             text: shortSHA,
           },

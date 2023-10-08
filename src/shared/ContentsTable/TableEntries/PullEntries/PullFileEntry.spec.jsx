@@ -86,7 +86,7 @@ describe('PullFileEntry', () => {
           name="file.js"
           urlPath="dir"
           isCriticalFile={false}
-          commitSHA="1234"
+          commitSha="1234"
           displayType={displayTypeParameter.list}
         />,
         { wrapper: wrapper() }
@@ -108,7 +108,7 @@ describe('PullFileEntry', () => {
           name="file.js"
           urlPath="dir"
           isCriticalFile={false}
-          commitSHA="1234"
+          commitSha="1234"
           displayType={displayTypeParameter.tree}
         />,
         { wrapper: wrapper() }
@@ -124,7 +124,7 @@ describe('PullFileEntry', () => {
           name="file.js"
           urlPath="dir"
           isCriticalFile={false}
-          commitSHA="1234"
+          commitSha="1234"
           displayType={displayTypeParameter.tree}
         />,
         { wrapper: wrapper() }
@@ -145,7 +145,7 @@ describe('PullFileEntry', () => {
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
-          commitSHA="1234"
+          commitSha="1234"
           isCriticalFile={true}
           displayType={displayTypeParameter.tree}
         />,
@@ -168,7 +168,7 @@ describe('PullFileEntry', () => {
           name="file.js"
           urlPath="dir"
           isCriticalFile={false}
-          commitSHA="1234"
+          commitSha="1234"
           displayType={displayTypeParameter.list}
         />,
         { wrapper: wrapper() }
@@ -191,7 +191,7 @@ describe('PullFileEntry', () => {
           name="file.js"
           urlPath="dir"
           isCriticalFile={false}
-          commitSHA="1234"
+          commitSha="1234"
           displayType={displayTypeParameter.tree}
         />,
         { wrapper: wrapper() }
@@ -217,21 +217,20 @@ describe('PullFileEntry', () => {
       )
     })
   })
-  it('passes the flags search param through to the file link', () => {
+  it('passes the flags filter through to the file link', () => {
     render(
       <PullFileEntry
         path="dir/file.js"
         name="file.js"
         urlPath="dir"
         isCriticalFile={false}
-        commitSHA="1234"
+        commitSha="1234"
         displayType={displayTypeParameter.tree}
+        filters={{ flags: ['a', 'b'] }}
       />,
       {
         wrapper: wrapper({
-          initialEntries: [
-            '/gh/codecov/test-repo/coolCommitSha/blob/file.js?flags[0]=a&flags[1]=b',
-          ],
+          initialEntries: ['/gh/codecov/test-repo/coolCommitSha/blob/file.js'],
         }),
       }
     )

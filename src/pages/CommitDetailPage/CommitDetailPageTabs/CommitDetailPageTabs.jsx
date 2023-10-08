@@ -11,7 +11,7 @@ import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import TabNavigation from 'ui/TabNavigation'
 
 function CommitDetailPageTabs({
-  commitSHA,
+  commitSha,
   indirectChangedFilesCount,
   directChangedFilesCount,
 }) {
@@ -28,17 +28,17 @@ function CommitDetailPageTabs({
   }
 
   const blobPath = location.pathname.includes(
-    `/${provider}/${commitFileviewString({ owner, repo, commitSHA })}`
+    `/${provider}/${commitFileviewString({ owner, repo, commitSha })}`
   )
 
   const filePath = location.pathname.includes(
-    `/${provider}/${commitTreeviewString({ owner, repo, commitSHA })}`
+    `/${provider}/${commitTreeviewString({ owner, repo, commitSha })}`
   )
 
   let customLocation = undefined
   if (blobPath || filePath) {
     customLocation = {
-      pathname: `/${provider}/${owner}/${repo}/commit/${commitSHA}/tree`,
+      pathname: `/${provider}/${owner}/${repo}/commit/${commitSha}/tree`,
     }
   }
 
@@ -53,12 +53,12 @@ function CommitDetailPageTabs({
               <sup className="text-xs">{directChangedFilesCount}</sup>
             </>
           ),
-          options: { commit: commitSHA, queryParams },
+          options: { commit: commitSha, queryParams },
           exact: true,
         },
         {
           pageName: 'commitIndirectChanges',
-          options: { commit: commitSHA, queryParams },
+          options: { commit: commitSha, queryParams },
           children: (
             <>
               Indirect changes
@@ -69,7 +69,7 @@ function CommitDetailPageTabs({
         {
           pageName: 'commitTreeView',
           children: 'File explorer',
-          options: { commit: commitSHA, queryParams },
+          options: { commit: commitSha, queryParams },
           location: customLocation,
         },
       ]}
@@ -79,7 +79,7 @@ function CommitDetailPageTabs({
 }
 
 CommitDetailPageTabs.propTypes = {
-  commitSHA: PropTypes.string,
+  commitSha: PropTypes.string,
   indirectChangedFilesCount: PropTypes.number,
   directChangedFilesCount: PropTypes.number,
 }

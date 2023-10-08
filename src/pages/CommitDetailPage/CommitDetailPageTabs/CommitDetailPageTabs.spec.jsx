@@ -26,7 +26,7 @@ const wrapper =
 describe('CommitDetailPageTabs', () => {
   describe('on base route', () => {
     it('highlights files changed tab', () => {
-      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+      render(<CommitDetailPageTabs commitSha="sha256" />, {
         wrapper: wrapper(),
       })
 
@@ -36,7 +36,7 @@ describe('CommitDetailPageTabs', () => {
     })
 
     it('does not highlight files tab', () => {
-      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+      render(<CommitDetailPageTabs commitSha="sha256" />, {
         wrapper: wrapper(),
       })
 
@@ -48,7 +48,7 @@ describe('CommitDetailPageTabs', () => {
 
   describe('on indirect changes route', () => {
     it('highlights indirect changes tab', () => {
-      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+      render(<CommitDetailPageTabs commitSha="sha256" />, {
         wrapper: wrapper([
           '/gh/codecov/cool-repo/commit/sha256/indirect-changes',
         ]),
@@ -60,7 +60,7 @@ describe('CommitDetailPageTabs', () => {
     })
 
     it('does not highlight files changed tab', () => {
-      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+      render(<CommitDetailPageTabs commitSha="sha256" />, {
         wrapper: wrapper([
           '/gh/codecov/cool-repo/commit/sha256/indirect-changes',
         ]),
@@ -75,7 +75,7 @@ describe('CommitDetailPageTabs', () => {
   describe('on files route', () => {
     describe('on tree route', () => {
       it('highlights files tab', () => {
-        render(<CommitDetailPageTabs commitSHA="sha256" />, {
+        render(<CommitDetailPageTabs commitSha="sha256" />, {
           wrapper: wrapper(['/gh/codecov/cool-repo/commit/sha256/tree']),
         })
 
@@ -85,7 +85,7 @@ describe('CommitDetailPageTabs', () => {
       })
 
       it('does not highlight files changed tab', () => {
-        render(<CommitDetailPageTabs commitSHA="sha256" />, {
+        render(<CommitDetailPageTabs commitSha="sha256" />, {
           wrapper: wrapper(['/gh/codecov/cool-repo/commit/sha256/tree']),
         })
 
@@ -97,7 +97,7 @@ describe('CommitDetailPageTabs', () => {
 
     describe('on a blob route', () => {
       it('highlights files tab', () => {
-        render(<CommitDetailPageTabs commitSHA="sha256" />, {
+        render(<CommitDetailPageTabs commitSha="sha256" />, {
           wrapper: wrapper([
             '/gh/codecov/cool-repo/commit/sha256/blob/index.js',
           ]),
@@ -109,7 +109,7 @@ describe('CommitDetailPageTabs', () => {
       })
 
       it('does not highlight files changed tab', () => {
-        render(<CommitDetailPageTabs commitSHA="sha256" />, {
+        render(<CommitDetailPageTabs commitSha="sha256" />, {
           wrapper: wrapper(['/gh/codecov/cool-repo/commit/sha256/tree']),
         })
 
@@ -122,7 +122,7 @@ describe('CommitDetailPageTabs', () => {
 
   describe('rendering toggle header', () => {
     it('renders uncovered legend', () => {
-      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+      render(<CommitDetailPageTabs commitSha="sha256" />, {
         wrapper: wrapper(),
       })
 
@@ -131,7 +131,7 @@ describe('CommitDetailPageTabs', () => {
     })
 
     it('renders partial legend', () => {
-      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+      render(<CommitDetailPageTabs commitSha="sha256" />, {
         wrapper: wrapper(),
       })
 
@@ -140,7 +140,7 @@ describe('CommitDetailPageTabs', () => {
     })
 
     it('renders covered legend', () => {
-      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+      render(<CommitDetailPageTabs commitSha="sha256" />, {
         wrapper: wrapper(),
       })
 
@@ -149,7 +149,7 @@ describe('CommitDetailPageTabs', () => {
     })
 
     it('renders hit count legend', () => {
-      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+      render(<CommitDetailPageTabs commitSha="sha256" />, {
         wrapper: wrapper(),
       })
 
@@ -167,7 +167,7 @@ describe('CommitDetailPageTabs', () => {
         { flags: ['flag-1'] },
         { addQueryPrefix: true }
       )
-      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+      render(<CommitDetailPageTabs commitSha="sha256" />, {
         wrapper: wrapper([`/gh/codecov/cool-repo/commit/sha256${queryString}`]),
       })
 
@@ -184,7 +184,7 @@ describe('CommitDetailPageTabs', () => {
         { flags: ['flag-1'] },
         { addQueryPrefix: true }
       )
-      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+      render(<CommitDetailPageTabs commitSha="sha256" />, {
         wrapper: wrapper([`/gh/codecov/cool-repo/commit/sha256${queryString}`]),
       })
 
@@ -203,7 +203,7 @@ describe('CommitDetailPageTabs', () => {
         { flags: ['flag-1'] },
         { addQueryPrefix: true }
       )
-      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+      render(<CommitDetailPageTabs commitSha="sha256" />, {
         wrapper: wrapper([`/gh/codecov/cool-repo/commit/sha256${queryString}`]),
       })
 

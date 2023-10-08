@@ -1,6 +1,4 @@
 import PropTypes from 'prop-types'
-import qs from 'qs'
-import { useLocation } from 'react-router-dom'
 
 import { usePrefetchPullFileEntry } from 'services/pathContents/pull/file'
 
@@ -8,19 +6,20 @@ import { displayTypeParameter } from '../../constants'
 import FileEntry from '../BaseEntries/FileEntry'
 
 function PullFileEntry({
-  commitSHA,
+  commitSha,
   path,
   isCriticalFile,
   name,
   urlPath,
   displayType,
+  filters,
 }) {
-  const { search } = useLocation()
-  const queryParams = qs.parse(search, { ignoreQueryPrefix: true })
+  const flags = filters?.flags?.length > 0 ? filters?.flags : []
 
   const { runPrefetch } = usePrefetchPullFileEntry({
     path,
-    ref: commitSHA,
+    commitSha,
+    flags,
   })
 
   return (
@@ -32,19 +31,22 @@ function PullFileEntry({
       path={path}
       runPrefetch={runPrefetch}
       pageName="pullFileView"
-      queryParams={queryParams}
+      queryParams={{ flags }}
     />
   )
 }
 
 PullFileEntry.propTypes = {
-  commitSHA: PropTypes.string.isRequired,
+  commitSha: PropTypes.string.isRequired,
   pullId: PropTypes.string,
   urlPath: PropTypes.string,
   isCriticalFile: PropTypes.bool,
   name: PropTypes.string.isRequired,
   displayType: PropTypes.oneOf(Object.values(displayTypeParameter)),
   path: PropTypes.string,
+  filters: PropTypes.shape({
+    flags: PropTypes.arrayOf(PropTypes.string),
+  }),
 }
 
 export default PullFileEntry

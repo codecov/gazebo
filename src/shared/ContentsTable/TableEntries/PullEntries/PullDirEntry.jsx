@@ -1,14 +1,11 @@
 import PropTypes from 'prop-types'
-import qs from 'qs'
-import { useLocation } from 'react-router-dom'
 
 import { usePrefetchPullDirEntry } from 'services/pathContents/pull/dir'
 
 import DirEntry from '../BaseEntries/DirEntry'
 
 function PullDirEntry({ pullId, urlPath, name, filters }) {
-  const { search } = useLocation()
-  const searchParams = qs.parse(search, { ignoreQueryPrefix: true })
+  const flags = filters?.flags?.length > 0 ? filters?.flags : []
 
   const { runPrefetch } = usePrefetchPullDirEntry({
     pullId,
@@ -22,7 +19,7 @@ function PullDirEntry({ pullId, urlPath, name, filters }) {
       urlPath={urlPath}
       runPrefetch={runPrefetch}
       pageName="pullTreeView"
-      queryParams={searchParams}
+      queryParams={{ flags }}
     />
   )
 }
@@ -37,6 +34,7 @@ PullDirEntry.propTypes = {
       parameter: PropTypes.any,
     }),
     searchValue: PropTypes.any,
+    flags: PropTypes.arrayOf(PropTypes.string),
   }),
 }
 
