@@ -1,16 +1,12 @@
-import { useParams } from 'react-router-dom'
-
 import config from 'config'
 
 import MyContextSwitcher from 'layouts/MyContextSwitcher'
 import TabNavigation from 'ui/TabNavigation'
 
 function Header() {
-  const { owner } = useParams()
-
   return (
     <>
-      <MyContextSwitcher pageName="accountAdmin" activeContext={owner} />
+      <MyContextSwitcher pageName="accountAdmin" />
       <TabNavigation
         tabs={[
           { pageName: 'owner', children: 'Repos' },
