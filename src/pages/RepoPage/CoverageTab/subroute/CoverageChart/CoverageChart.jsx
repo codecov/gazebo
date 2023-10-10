@@ -8,7 +8,7 @@ import CoverageAreaChart from 'ui/CoverageAreaChart'
 import { useBranchSelector, useRepoCoverageTimeseries } from '../../hooks'
 
 function makeDesc({ first, last, repo, data }) {
-  if (!data) return ''
+  if (!data || !first || !last) return ''
   const firstDateFormatted = format(new Date(first.date), 'MMM dd, yyy')
   const lastDateFormatted = format(new Date(last.date), 'MMM dd, yyy')
   const coverageDiff = Math.abs(first.coverage, last.coverage)

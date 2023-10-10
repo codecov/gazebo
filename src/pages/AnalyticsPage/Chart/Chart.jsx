@@ -6,7 +6,7 @@ import CoverageAreaChart from 'ui/CoverageAreaChart'
 import { useCoverage } from './useCoverage'
 
 const makeDesc = ({ data, first, last, repos }) => {
-  if (!data || data?.length === 0) return ''
+  if (!data || !first || !last) return ''
   const firstDateFormatted = format(new Date(first.date), 'MMM dd, yyy')
   const lastDateFormatted = format(new Date(last.date), 'MMM dd, yyy')
   const coverageDiff = Math.abs(first.coverage, last.coverage)

@@ -57,7 +57,7 @@ describe('Analytics coverage chart', () => {
     server.use(
       graphql.query('GetReposCoverageMeasurements', (req, res, ctx) => {
         if (hasNoData) {
-          return res(ctx.status(200), ctx.data({}))
+          return res(ctx.status(200), ctx.data({ owner: { measurements: [] } }))
         }
 
         if (hasSingleData) {
