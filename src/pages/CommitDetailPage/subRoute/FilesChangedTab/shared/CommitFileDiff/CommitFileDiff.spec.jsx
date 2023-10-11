@@ -67,6 +67,17 @@ const mockImpactedFile = {
               hitUploadIds: null,
             },
           },
+          {
+            baseNumber: null,
+            headNumber: '4',
+            baseCoverage: null,
+            headCoverage: 'H',
+            content: '# cool python comment',
+            coverageInfo: {
+              hitCount: null,
+              hitUploadIds: null,
+            },
+          },
         ],
       },
     ],
