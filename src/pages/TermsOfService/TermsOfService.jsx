@@ -63,9 +63,6 @@ export default function TermsOfService() {
     })
   const { mutate } = useSaveTermsAgreement({
     onSuccess: ({ data }) => {
-      if (data?.updateDefaultOrganization?.error) {
-        setError('apiError', data?.updateDefaultOrganization?.error)
-      }
       if (data?.saveTermsAgreement?.error) {
         setError('apiError', data?.saveTermsAgreement?.error)
         console.error('validation error')
