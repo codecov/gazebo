@@ -126,6 +126,65 @@ jobs:
           INDEX_JSON=$(jq --null-input --compact-output '. |= [inputs]' <<< ${INDEX_LIST})
           echo "::set-output name=json::${INDEX_JSON}"
 
+  full_test:
+    name: 'Test Full Suite'
+    needs: [install, codecovstartup]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.8.0'
+
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-gazebo-node-modules
+        with:
+          path: |
+            node_modules
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-
+
+      - name: Bring test env up
+        run: |
+          CI=true npm run test:ci -- --maxWorkers=2
+        env:
+          JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
+
+      - name: Install CLI
+        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
+        run: |
+          make test_env.install_cli
+
+      ## Don't upload on forks for now.
+      - name: Upload to Production
+        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
+        run: |
+          codecovcli do-upload -t ${{ secrets.CODECOV_ORG_TOKEN }} --fail-on-error -f full-test
+
+      - name: Upload to Staging
+        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
+        run: |
+          codecovcli -u ${{ secrets.CODECOV_STAGING_URL }} do-upload -t ${{ secrets.CODECOV_ORG_TOKEN_STAGING }} --fail-on-error -f full-test
+
+      - name: Upload to QA
+        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
+        run: |
+          codecovcli -u ${{ secrets.CODECOV_QA_URL }} do-upload -t ${{ secrets.CODECOV_QA_TOKEN }} --fail-on-error -f full-test
+
+      - name: Upload to Public QA
+        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
+        run: |
+          codecovcli -u ${{ secrets.CODECOV_PUBLIC_QA_URL }} do-upload -t ${{ secrets.CODECOV_PUBLIC_QA_TOKEN }} --fail-on-error -f full-test
+
   test:
     name: 'Test Runner #${{ matrix.runner-index }}'
     needs: [install, codecovstartup, runner-indexes]
