@@ -1,10 +1,12 @@
 import { lazy, Suspense } from 'react'
-import { useParams } from 'react-router-dom'
+import { Redirect, useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
 import { useLocationParams } from 'services/navigation'
 import { orderingOptions } from 'services/repos'
+import { TierNames, useTier } from 'services/tier'
 import { useOwner } from 'services/user'
+import { useFlags } from 'shared/featureFlags'
 import ReposTable from 'shared/ListRepo/ReposTable'
 import LoadingLogo from 'ui/LoadingLogo'
 
@@ -34,8 +36,12 @@ const defaultQueryParams = {
 
 function AnalyticsPage() {
   const { params, updateParams } = useLocationParams(defaultQueryParams)
-  const { owner } = useParams()
+  const { owner, provider } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
+  const { data: tierName } = useTier({ owner, provider })
+  const { multipleTiers: isTeamTier } = useFlags({
+    multipleTiers: true,
+  })
 
   const orderOptions = orderingOptions
 
@@ -48,6 +54,10 @@ function AnalyticsPage() {
 
   if (!ownerData) {
     return <NotFound />
+  }
+
+  if (tierName === TierNames.TEAM && isTeamTier) {
+    return <Redirect to={`/${provider}/${owner}`} />
   }
 
   return (
