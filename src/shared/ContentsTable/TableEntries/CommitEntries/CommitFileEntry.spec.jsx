@@ -96,7 +96,37 @@ describe('CommitFileEntry', () => {
         { wrapper }
       )
 
-      expect(screen.getByText('dir/file.js')).toBeInTheDocument()
+      const path = screen.getByRole('link', { name: 'dir/file.js' })
+      expect(path).toBeInTheDocument()
+      expect(path).toHaveAttribute(
+        'href',
+        '/gh/codecov/test-repo/commit/1234/blob/dir/file.js'
+      )
+    })
+
+    describe('filters with flags key passed', () => {
+      it('sets the correct query params', () => {
+        setup()
+        render(
+          <CommitFileEntry
+            commitSha="1234"
+            path="dir/file.js"
+            name="file.js"
+            urlPath="dir"
+            isCriticalFile={false}
+            displayType={displayTypeParameter.list}
+            filters={{ flags: ['flag-1'] }}
+          />,
+          { wrapper }
+        )
+
+        const path = screen.getByRole('link', { name: 'dir/file.js' })
+        expect(path).toBeInTheDocument()
+        expect(path).toHaveAttribute(
+          'href',
+          '/gh/codecov/test-repo/commit/1234/blob/dir/file.js?flags%5B0%5D=flag-1'
+        )
+      })
     })
   })
 
@@ -115,10 +145,15 @@ describe('CommitFileEntry', () => {
         { wrapper }
       )
 
-      expect(screen.getByText('file.js')).toBeInTheDocument()
+      const path = screen.getByRole('link', { name: /file.js/ })
+      expect(path).toBeInTheDocument()
+      expect(path).toHaveAttribute(
+        'href',
+        '/gh/codecov/test-repo/commit/1234/blob/dir/file.js'
+      )
     })
 
-    it('does not display the file name', () => {
+    it('does not display the file path label', () => {
       setup()
       render(
         <CommitFileEntry
@@ -132,7 +167,33 @@ describe('CommitFileEntry', () => {
         { wrapper }
       )
 
-      expect(screen.queryByText('dir/file.js')).not.toBeInTheDocument()
+      const path = screen.queryByText('dir/file.js')
+      expect(path).not.toBeInTheDocument()
+    })
+
+    describe('filters with flags key passed', () => {
+      it('sets the correct query params', () => {
+        setup()
+        render(
+          <CommitFileEntry
+            commitSha="1234"
+            path="dir/file.js"
+            name="file.js"
+            urlPath="dir"
+            isCriticalFile={false}
+            displayType={displayTypeParameter.tree}
+            filters={{ flags: ['flag-1'] }}
+          />,
+          { wrapper }
+        )
+
+        const path = screen.getByRole('link', { name: /file.js/ })
+        expect(path).toBeInTheDocument()
+        expect(path).toHaveAttribute(
+          'href',
+          '/gh/codecov/test-repo/commit/1234/blob/dir/file.js?flags%5B0%5D=flag-1'
+        )
+      })
     })
   })
 
@@ -151,26 +212,8 @@ describe('CommitFileEntry', () => {
         { wrapper }
       )
 
-      expect(screen.getByText('Critical File')).toBeInTheDocument()
-    })
-  })
-
-  describe('is displaying a list', () => {
-    it('displays the file path label', () => {
-      setup()
-      render(
-        <CommitFileEntry
-          commitSha="1234"
-          path="dir/file.js"
-          name="file.js"
-          urlPath="dir"
-          isCriticalFile={false}
-          displayType={displayTypeParameter.list}
-        />,
-        { wrapper }
-      )
-
-      expect(screen.getByText('dir/file.js')).toBeInTheDocument()
+      const label = screen.getByText('Critical File')
+      expect(label).toBeInTheDocument()
     })
   })
 

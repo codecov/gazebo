@@ -32,6 +32,7 @@ function CommitFileEntry({
       path={path}
       runPrefetch={runPrefetch}
       pageName="commitFileDiff"
+      queryParams={{ flags }}
     />
   )
 }

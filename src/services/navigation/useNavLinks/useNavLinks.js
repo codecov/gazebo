@@ -155,12 +155,20 @@ export function useNavLinks() {
     },
     commit: {
       path: (
-        { provider = p, owner = o, repo = r, commit } = {
+        { provider = p, owner = o, repo = r, commit, queryParams = {} } = {
           provider: p,
           owner: o,
           repo: r,
+          queryParams: {},
         }
-      ) => `/${provider}/${owner}/${repo}/commit/${commit}`,
+      ) => {
+        let query = ''
+        if (queryParams && Object.keys(queryParams).length > 0) {
+          query = qs.stringify(queryParams, { addQueryPrefix: true })
+        }
+
+        return `/${provider}/${owner}/${repo}/commit/${commit}${query}`
+      },
       isExternalLink: false,
       text: 'Commit',
     },
@@ -177,7 +185,7 @@ export function useNavLinks() {
     },
     treeView: {
       path: (
-        { provider = p, owner = o, repo = r, tree, ref, ...queryParams } = {
+        { provider = p, owner = o, repo = r, tree, ref, queryParams = {} } = {
           provider: p,
           owner: o,
           repo: r,
@@ -185,7 +193,7 @@ export function useNavLinks() {
         }
       ) => {
         let query = ''
-        if (Object.keys(queryParams).length > 0) {
+        if (queryParams && Object.keys(queryParams).length > 0) {
           query = qs.stringify(queryParams, { addQueryPrefix: true })
         }
 
@@ -207,7 +215,7 @@ export function useNavLinks() {
     },
     fileViewer: {
       path: (
-        { provider = p, owner = o, repo = r, ref, tree, ...queryParams } = {
+        { provider = p, owner = o, repo = r, ref, tree, queryParams = {} } = {
           provider: p,
           owner: o,
           repo: r,
@@ -218,7 +226,7 @@ export function useNavLinks() {
         const encodedTree = encodeURIComponent(tree)
 
         let query = ''
-        if (Object.keys(queryParams).length > 0) {
+        if (queryParams && Object.keys(queryParams).length > 0) {
           query = qs.stringify(queryParams, { addQueryPrefix: true })
         }
 
@@ -229,29 +237,55 @@ export function useNavLinks() {
     },
     commitTreeView: {
       path: (
-        { provider = p, owner = o, repo = r, tree, commit } = {
+        {
+          provider = p,
+          owner = o,
+          repo = r,
+          tree,
+          commit,
+          queryParams = {},
+        } = {
           provider: p,
           owner: o,
           repo: r,
+          queryParams: {},
         }
       ) => {
-        if (tree) {
-          return `/${provider}/${owner}/${repo}/commit/${commit}/tree/${tree}`
+        let query = ''
+        if (queryParams && Object.keys(queryParams).length > 0) {
+          query = qs.stringify(queryParams, { addQueryPrefix: true })
         }
-        return `/${provider}/${owner}/${repo}/commit/${commit}/tree`
+
+        if (tree) {
+          return `/${provider}/${owner}/${repo}/commit/${commit}/tree/${tree}${query}`
+        }
+        return `/${provider}/${owner}/${repo}/commit/${commit}/tree${query}`
       },
       isExternalLink: false,
       text: 'Commit Tree View',
     },
     commitFileDiff: {
       path: (
-        { provider = p, owner = o, repo = r, tree, commit } = {
+        {
+          provider = p,
+          owner = o,
+          repo = r,
+          tree,
+          commit,
+          queryParams = {},
+        } = {
           provider: p,
           owner: o,
           repo: r,
+          queryParams: {},
         }
       ) => {
-        return `/${provider}/${owner}/${repo}/commit/${commit}/blob/${tree}`
+        let query = ''
+        if (queryParams && Object.keys(queryParams).length > 0) {
+          query = qs.stringify(queryParams, { addQueryPrefix: true })
+        }
+
+        return `/${provider}/${owner}/${repo}/commit/${commit}/blob/${tree}${query}`
       },
       isExternalLink: false,
       text: 'Commit File View',
@@ -430,12 +464,20 @@ export function useNavLinks() {
     commitIndirectChanges: {
       text: 'Indirect changes',
       path: (
-        { provider = p, owner = o, repo = r, commit } = {
+        { provider = p, owner = o, repo = r, commit, queryParams = {} } = {
           provider: p,
           owner: o,
           repo: r,
+          queryParams: {},
         }
-      ) => `/${provider}/${owner}/${repo}/commit/${commit}/indirect-changes`,
+      ) => {
+        let query = ''
+        if (queryParams && Object.keys(queryParams).length > 0) {
+          query = qs.stringify(queryParams, { addQueryPrefix: true })
+        }
+
+        return `/${provider}/${owner}/${repo}/commit/${commit}/indirect-changes${query}`
+      },
       isExternalLink: false,
     },
     pullCommits: {

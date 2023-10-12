@@ -15,6 +15,7 @@ const wrapper =
         <Route path="/:provider/:owner">{children}</Route>
         <Route path="/:provider/:owner/:repo">{children}</Route>
         <Route path="/:provider/:owner/:repo/:id">{children}</Route>
+        <Route path="/:provider/:owner/:repo/commit/:commit">{children}</Route>
         <Route path="/:provider/:owner/:repo/commit/:commit/file/:path">
           {children}
         </Route>
@@ -484,6 +485,48 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('commit link', () => {
+    it('returns the correct link with nothing passed', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/doggo/squirrel-locator/commit/123'),
+      })
+
+      const path = result.current.commit.path({ commit: 123 })
+      expect(path).toBe('/gl/doggo/squirrel-locator/commit/123')
+    })
+
+    it('can override the params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/doggo/squirrel-locator'),
+      })
+
+      const path = result.current.commit.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+        commit: '1ab3',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo/commit/1ab3')
+    })
+
+    it('passes flags into the url', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/doggo/squirrel-locator'),
+      })
+
+      const path = result.current.commit.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+        commit: '1ab3',
+        queryParams: { flags: ['myFlag'] },
+      })
+      expect(path).toBe(
+        '/bb/test-owner/test-repo/commit/1ab3?flags%5B0%5D=myFlag'
+      )
+    })
+  })
+
   describe('commits link', () => {
     it('returns the correct link with nothing passed', () => {
       const { result } = renderHook(() => useNavLinks(), {
@@ -605,7 +648,7 @@ describe('useNavLinks', () => {
       const filePath = result.current.treeView.path({
         ref: 'main',
         tree: 'src/',
-        flags: ['flag-1'],
+        queryParams: { flags: ['flag-1'] },
       })
       expect(filePath).toBe(
         '/gl/doggo/watch/tree/main/src%2F?flags%5B0%5D=flag-1'
@@ -668,7 +711,7 @@ describe('useNavLinks', () => {
       const filePath = result.current.fileViewer.path({
         ref: 'main',
         tree: 'index.js',
-        flags: ['flag-1'],
+        queryParams: { flags: ['flag-1'] },
       })
       expect(filePath).toBe(
         '/gh/codecov-owner/another-test/blob/main/index.js?flags%5B0%5D=flag-1'
@@ -734,6 +777,20 @@ describe('useNavLinks', () => {
       })
       expect(subPath).toBe('/gl/doggo/watch/commit/sha128/tree/src/view')
     })
+
+    it('appends other args as query params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov-owner/another-test/blob/main/index.js'),
+      })
+
+      const path = result.current.commitTreeView.path({
+        commit: 'sha256',
+        queryParams: { flags: ['flag-1'] },
+      })
+      expect(path).toBe(
+        '/gh/codecov-owner/another-test/commit/sha256/tree?flags%5B0%5D=flag-1'
+      )
+    })
   })
 
   describe('commitFileDiff link', () => {
@@ -765,6 +822,21 @@ describe('useNavLinks', () => {
       })
       expect(path).toBe(
         '/bb/test-owner/test-repo/commit/sha256/blob/flags1/mafs.js'
+      )
+    })
+
+    it('appends other args as query params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov-owner/another-test/blob/main/index.js'),
+      })
+
+      const path = result.current.commitFileDiff.path({
+        commit: 'sha256',
+        tree: 'index.js',
+        queryParams: { flags: ['flag-1'] },
+      })
+      expect(path).toBe(
+        '/gh/codecov-owner/another-test/commit/sha256/blob/index.js?flags%5B0%5D=flag-1'
       )
     })
   })
@@ -1211,6 +1283,20 @@ describe('useNavLinks', () => {
         commit: 888,
       })
       expect(path).toBe('/bb/test-owner/test-repo/commit/888/indirect-changes')
+    })
+
+    it('appends other args as query params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/doggo/squirrel-locator'),
+      })
+
+      const path = result.current.commitIndirectChanges.path({
+        commit: 409,
+        queryParams: { flags: ['flag-1'] },
+      })
+      expect(path).toBe(
+        '/gl/doggo/squirrel-locator/commit/409/indirect-changes?flags%5B0%5D=flag-1'
+      )
     })
   })
 
