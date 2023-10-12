@@ -208,7 +208,7 @@ query Commit(
               patchTotals {
                 coverage: percentCovered
               }
-              impactedFiles(filters: $filters) {
+              impactedFiles: impactedFilesDeprecated(filters: $filters) {
                 patchCoverage {
                   coverage: percentCovered
                 }

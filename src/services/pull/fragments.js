@@ -143,7 +143,7 @@ fragment ImpactedFilesOnPull on Pull {
       headTotals {
         percentCovered
       }
-      impactedFiles(filters: $filters) {
+      impactedFilesDeprecated (filters: $filters) {
         fileName
         headName
         isCriticalFile
