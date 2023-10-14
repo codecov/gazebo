@@ -170,6 +170,7 @@ jobs:
         run: |
           TESTS=$(echo $TEST_LIST | jq -cr 'join(" ")')
           npm run test:ci -- --maxWorkers=2 $TESTS
+          ls reports/junit
         env:
           JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
           TEST_LIST: ${{ tojson(fromjson(needs.runner-indexes.outputs.test_list_array)[matrix.runner-index]) }}
@@ -179,7 +180,7 @@ jobs:
         if: success() || failure()
         with:
           name: JEST Tests
-          path: reports/jest-*.xml
+          path: reports/junit/jest-*.xml
           reporter: jest-junit
 
       - name: Install CLI
