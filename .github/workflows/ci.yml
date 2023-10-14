@@ -115,75 +115,24 @@ jobs:
     runs-on: ubuntu-latest
     name: Generate runner indexes
     needs: install
+    env:
+      TEST_SPLIT_NUMBER: 80
     outputs:
       json: ${{ steps.generate-index-list.outputs.json }}
+      test_list_array: ${{ steps.generate-index-list.outputs.test_list_array }}
     steps:
       - name: Generate test index list
         id: generate-index-list
         run: |
-          MAX_INDEX=$((${{ env.total-runners }}-1))
+          shopt -s globstar
+          TEST_LIST=$(ls src/**/*.spec.js src/**/*.test.js src/**/*.spec.jsx src/**/*.spec.ts src/**/*.spec.tsx | jq -R -s -c 'split("\n")[:-1]')
+          TEST_LENGTH=$(echo $TEST_LIST | jq length)
+          MAX_INDEX=$((($TEST_LENGTH/${{ env.TEST_SPLIT_NUMBER }})-1))
+          MAX_INDEX=$(($MAX_INDEX < 0 ? 0 : $MAX_INDEX))
           INDEX_LIST=$(seq 0 ${MAX_INDEX})
           INDEX_JSON=$(jq --null-input --compact-output '. |= [inputs]' <<< ${INDEX_LIST})
-          echo "::set-output name=json::${INDEX_JSON}"
-
-  full_test:
-    name: 'Test Full Suite'
-    needs: [install, codecovstartup]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18.8.0'
-
-      - name: Cache node_modules
-        id: cache-node-modules
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-gazebo-node-modules
-        with:
-          path: |
-            node_modules
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ env.cache-name }}-
-
-      - name: Bring test env up
-        run: |
-          CI=true npm run test:ci -- --maxWorkers=2
-        env:
-          JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
-
-      - name: Install CLI
-        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
-        run: |
-          make test_env.install_cli
-
-      ## Don't upload on forks for now.
-      - name: Upload to Production
-        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
-        run: |
-          codecovcli do-upload -t ${{ secrets.CODECOV_ORG_TOKEN }} --fail-on-error -f full-test
-
-      - name: Upload to Staging
-        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
-        run: |
-          codecovcli -u ${{ secrets.CODECOV_STAGING_URL }} do-upload -t ${{ secrets.CODECOV_ORG_TOKEN_STAGING }} --fail-on-error -f full-test
-
-      - name: Upload to QA
-        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
-        run: |
-          codecovcli -u ${{ secrets.CODECOV_QA_URL }} do-upload -t ${{ secrets.CODECOV_QA_TOKEN }} --fail-on-error -f full-test
-
-      - name: Upload to Public QA
-        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
-        run: |
-          codecovcli -u ${{ secrets.CODECOV_PUBLIC_QA_URL }} do-upload -t ${{ secrets.CODECOV_PUBLIC_QA_TOKEN }} --fail-on-error -f full-test
+          echo json=${INDEX_JSON} >> $GITHUB_OUTPUT
+          echo test_list_array=$(echo ${TEST_LIST} | jq -c '[_nwise(${{ env.TEST_SPLIT_NUMBER }})]') >> $GITHUB_OUTPUT
 
   test:
     name: 'Test Runner #${{ matrix.runner-index }}'
@@ -215,19 +164,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}-
 
-      - name: Split tests
-        uses: chaosaffe/split-tests@v1-alpha.1
-        id: split-tests
-        with:
-          glob: '"src/**/*.spec.js" "src/**/*.test.js" "src/**/*.spec.jsx" "src/**/*.test.jsx" "src/**/*.spec.ts" "src/**/*.test.ts" "src/**/*.spec.tsx" "src/**/*.test.tsx"'
-          split-total: ${{ env.total-runners }}
-          split-index: ${{ matrix.runner-index }}
-
-      - name: Bring test env up
+      - name: Run tests
         run: |
-          CI=true npm run test:ci -- --maxWorkers=2 ${{ steps.split-tests.outputs.test-suite }}
+          TESTS=$(echo $TEST_LIST | jq -cr 'join(" ")')
+          npm run test:ci -- --maxWorkers=2 $TESTS
         env:
           JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
+          TEST_LIST: ${{ tojson(fromjson(needs.runner-indexes.outputs.test_list_array)[matrix.runner-index]) }}
 
       - name: Install CLI
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
