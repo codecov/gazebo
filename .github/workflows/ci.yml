@@ -121,6 +121,8 @@ jobs:
       json: ${{ steps.generate-index-list.outputs.json }}
       test_list_array: ${{ steps.generate-index-list.outputs.test_list_array }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Generate test index list
         id: generate-index-list
         run: |
