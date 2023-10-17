@@ -3,7 +3,6 @@ import { useUser } from 'services/user'
 import { useTrackFeatureFlags } from './featureFlags'
 import { gtmUser, setDataLayer } from './gtm'
 import { firePendo, pendoDefaultUser, useUpdatePendoWithOwner } from './pendo'
-import { identifySegmentUser, segmentUser, useSegmentPage } from './segment'
 import { getUserData } from './utils'
 
 const trackingInfo = [
@@ -11,11 +10,6 @@ const trackingInfo = [
     name: 'GTM',
     callback: setDataLayer,
     defaultUser: gtmUser,
-  },
-  {
-    name: 'Segment',
-    callback: identifySegmentUser,
-    defaultUser: segmentUser,
   },
   {
     name: 'Pendo',
@@ -50,7 +44,6 @@ export function useTracking() {
   })
 
   useTrackFeatureFlags(user) // TODO: Can probably delete
-  useSegmentPage()
   useUpdatePendoWithOwner(user)
 
   return { data: user, ...all }
