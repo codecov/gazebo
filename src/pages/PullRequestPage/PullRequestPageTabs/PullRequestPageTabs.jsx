@@ -54,7 +54,7 @@ function PullRequestPageTabs() {
               <sup className="text-xs">{directChangedFilesCount}</sup>
             </>
           ),
-          options: { flags },
+          options: { queryParams: { flags } },
           exact: true,
         },
         {
@@ -65,7 +65,7 @@ function PullRequestPageTabs() {
               <sup className="text-xs">{indirectChangesCount}</sup>
             </>
           ),
-          options: { flags },
+          options: { queryParams: { flags } },
         },
         {
           pageName: 'pullCommits',
@@ -75,7 +75,7 @@ function PullRequestPageTabs() {
               <sup className="text-xs">{commitsCount}</sup>
             </>
           ),
-          options: { flags },
+          options: { queryParams: { flags } },
         },
         {
           pageName: 'pullFlags',
@@ -85,7 +85,7 @@ function PullRequestPageTabs() {
               <sup className="text-xs">{flagsCount}</sup>
             </>
           ),
-          options: { flags },
+          options: { queryParams: { flags } },
         },
         {
           pageName: 'pullComponents',
@@ -95,12 +95,12 @@ function PullRequestPageTabs() {
               <sup className="text-xs">{componentsCount}</sup>
             </>
           ),
-          options: { flags },
+          options: { queryParams: { flags } },
         },
         {
           pageName: 'pullTreeView',
           children: 'File explorer',
-          options: { pullId },
+          options: { pullId, queryParams: { flags } },
           location: customLocation,
         },
       ]}
