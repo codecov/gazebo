@@ -147,7 +147,7 @@ interface URLParams {
   commit: string
 }
 
-export default function FilesChangedTableLite() {
+export default function FilesChangedTableTeam() {
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'missedLines', desc: true },
