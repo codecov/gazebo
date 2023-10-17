@@ -82,8 +82,6 @@ const ImpactedFileSchema = z.object({
   headCoverage: CoverageObjSchema.nullable(),
 })
 
-export type ImpactedFile = z.infer<typeof ImpactedFileSchema>
-
 const ImpactedFileResultsSchema = z.object({
   __typename: z.literal('ImpactedFiles'),
   results: z.array(ImpactedFileSchema.nullable()),
