@@ -7,6 +7,7 @@ import {
   commitFileviewString,
   commitTreeviewString,
 } from 'pages/RepoPage/utils'
+import { useFlags } from 'shared/featureFlags'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import TabNavigation from 'ui/TabNavigation'
 
@@ -26,6 +27,10 @@ function CommitDetailPageTabs({
   if (Object.keys(params).length > 0) {
     queryParams = omit(params, ['search'])
   }
+
+  const { commitTabFlagMultiSelect } = useFlags({
+    commitTabFlagMultiSelect: false,
+  })
 
   const blobPath = location.pathname.includes(
     `/${provider}/${commitFileviewString({ owner, repo, commitSHA })}`
@@ -73,7 +78,13 @@ function CommitDetailPageTabs({
           location: customLocation,
         },
       ]}
-      component={<ToggleHeader coverageIsLoading={false} showHitCount={true} />}
+      component={
+        <ToggleHeader
+          coverageIsLoading={false}
+          showHitCount={true}
+          showFlagsSelect={commitTabFlagMultiSelect}
+        />
+      }
     />
   )
 }

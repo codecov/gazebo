@@ -31,7 +31,14 @@ const headers = [
       </>
     ),
     accessorKey: 'coverage',
-    width: 'w-3/12 justify-end',
+    width: 'w-2/12 justify-end',
+    cell: (info) => info.getValue(),
+  },
+  {
+    id: 'patch',
+    header: <span>Patch</span>,
+    accessorKey: 'patch',
+    width: 'w-2/12 justify-end',
     cell: (info) => info.getValue(),
   },
   {
@@ -42,7 +49,7 @@ const headers = [
       </>
     ),
     accessorKey: 'change',
-    width: 'w-3/12 justify-end',
+    width: 'w-2/12 justify-end',
     cell: (info) => info.getValue(),
   },
 ]
@@ -64,6 +71,7 @@ function transformPullToTable(pulls, isLoading) {
     return [
       {
         title: <span className="text-sm">no results found</span>,
+        patch: null,
         coverage: null,
         change: null,
       },
@@ -76,6 +84,7 @@ function transformPullToTable(pulls, isLoading) {
       pull
 
     const change = compareWithBase?.changeCoverage
+    const patch = compareWithBase?.patchTotals?.percentCovered
 
     return {
       title: (
@@ -88,6 +97,7 @@ function transformPullToTable(pulls, isLoading) {
         />
       ),
       coverage: <Coverage head={head} state={state} pullId={pullId} />,
+      patch: <TotalsNumber value={patch} data-testid="patch-value" />,
       change: (
         <TotalsNumber value={change} showChange data-testid="change-value" />
       ),
