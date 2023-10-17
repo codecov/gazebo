@@ -3,7 +3,6 @@ import { useState } from 'react'
 
 import config from 'config'
 
-import { useOnboardingTracking } from 'services/user'
 import CopyClipboard from 'ui/CopyClipboard'
 
 const systemsEnum = Object.freeze({
@@ -61,7 +60,6 @@ const WindowsSystemInstructions = () => {
 }
 
 export default function InstructionBox() {
-  const { terminalUploaderCommandClicked } = useOnboardingTracking()
   const [curSystem, setCurSystem] = useState(systemsEnum.LINUX)
 
   const handleInstructionClick = (e) => {
@@ -116,7 +114,6 @@ export default function InstructionBox() {
                 ? "$ProgressPreference = 'SilentlyContinue' Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe .\\codecov.exe"
                 : `curl -Os https://uploader.codecov.io/latest/${systemsMapper[curSystem]}/codecov chmod +x codecov ./codecov`
             }
-            onClick={terminalUploaderCommandClicked}
           />
         </span>
       </div>

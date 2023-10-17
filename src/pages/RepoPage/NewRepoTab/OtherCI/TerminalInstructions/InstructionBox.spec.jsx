@@ -1,10 +1,8 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 
 import config from 'config'
-
-import { useOnboardingTracking } from 'services/user'
 
 import InstructionBox from '.'
 
@@ -19,18 +17,6 @@ describe('InstructionBox', () => {
 
     config.BASE_URL = 'https://app.codecov.io'
     config.IS_SELF_HOSTED = isSelfHosted
-
-    useOnboardingTracking.mockReturnValue({
-      terminalUploaderCommandClicked: () => {
-        mockTerminalUploaderCommandClicked({
-          data: {
-            category: 'Onboarding',
-            userId: 12345,
-          },
-          event: 'User Onboarding Terminal Uploader Command Clicked',
-        })
-      },
-    })
 
     graphql.query('CurrentUser', (_, res, ctx) =>
       res(
@@ -181,28 +167,6 @@ describe('InstructionBox', () => {
         /curl -Os https:\/\/uploader.codecov.io\/latest\/macos\/codecov/
       )
       expect(instruction).toBeInTheDocument()
-    })
-  })
-
-  describe('when the user clicks on the clipboard copy link', () => {
-    it('calls the trackSegmentEvent', async () => {
-      const { terminalUploaderCommandClicked, user } = setup()
-      render(<InstructionBox />)
-
-      const clipboard = screen.getByRole('button', {
-        name: 'clipboard-copy.svg copy',
-      })
-      await user.click(clipboard)
-
-      await waitFor(() => {
-        expect(terminalUploaderCommandClicked).toHaveBeenCalledWith({
-          event: 'User Onboarding Terminal Uploader Command Clicked',
-          data: {
-            category: 'Onboarding',
-            userId: 12345,
-          },
-        })
-      })
     })
   })
 })

@@ -1,11 +1,7 @@
 import PropTypes from 'prop-types'
 import { useState } from 'react'
-import { useParams } from 'react-router-dom'
 
 import { useRegenerateRepositoryToken } from 'services/repositoryToken'
-import { trackSegmentEvent } from 'services/tracking/segment'
-import { useUser } from 'services/user'
-import { snakeifyKeys } from 'shared/utils/snakeifyKeys'
 import A from 'ui/A'
 import Button from 'ui/Button'
 import TokenWrapper from 'ui/TokenWrapper'
@@ -19,8 +15,6 @@ function ImpactAnalysisToken({ profilingToken }) {
   const { mutate, isLoading } = useRegenerateRepositoryToken({
     tokenType: TokenType.PROFILING,
   })
-  const { data: user } = useUser()
-  const { owner, repo } = useParams()
 
   if (!profilingToken) {
     return null
@@ -42,22 +36,7 @@ function ImpactAnalysisToken({ profilingToken }) {
           </A>
         </span>
         <div className="mt-4">
-          <TokenWrapper
-            token={profilingToken}
-            onClick={() => {
-              trackSegmentEvent(
-                snakeifyKeys({
-                  event: 'Impact Analysis Profiling Token Copied',
-                  data: {
-                    id: user?.trackingMetadata?.ownerid,
-                    userOwnerid: user?.trackingMetadata?.ownerid,
-                    ownerSlug: owner,
-                    repoSlug: repo,
-                  },
-                })
-              )
-            }}
-          />
+          <TokenWrapper token={profilingToken} />
         </div>
       </div>
       <div>
