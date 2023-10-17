@@ -159,10 +159,16 @@ function FilesChangedTable() {
   })
 
   const commit = commitData?.commit
-  const filesChanged = commit?.compareWithParent?.impactedFiles
-
   if (isLoading || commit?.state === 'pending') {
     return <Loader />
+  }
+
+  let filesChanged = []
+  if (
+    commit?.compareWithParent?.__typename === 'Comparison' &&
+    commit?.compareWithParent?.impactedFiles?.__typename === 'ImpactedFiles'
+  ) {
+    filesChanged = commit?.compareWithParent?.impactedFiles?.results
   }
 
   if (isEmpty(filesChanged)) {
