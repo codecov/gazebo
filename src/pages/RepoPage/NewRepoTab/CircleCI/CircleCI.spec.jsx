@@ -1,16 +1,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { trackSegmentEvent } from 'services/tracking/segment'
-
 import CircleCI from './CircleCI'
-
-jest.mock('services/tracking/segment')
 
 const mockCurrentUser = {
   me: {
@@ -79,8 +74,6 @@ describe('CircleCI', () => {
         res(ctx.status(200), ctx.data(mockCurrentUser))
       )
     )
-
-    trackSegmentEvent.mockImplementation((data) => data)
   }
 
   describe('step one', () => {
@@ -121,34 +114,6 @@ describe('CircleCI', () => {
         /9e6a6189-20f1-482d-ab62-ecfaa2629295/
       )
       expect(tokenValue).toBeInTheDocument()
-    })
-
-    describe('user copies token', () => {
-      it('fires segment event', async () => {
-        const user = userEvent.setup()
-        render(<CircleCI />, { wrapper })
-
-        // this is needed to wait for all the data to be loaded
-        const tokenValue = await screen.findByText(
-          /9e6a6189-20f1-482d-ab62-ecfaa2629295/
-        )
-        expect(tokenValue).toBeInTheDocument()
-
-        const buttons = await screen.findAllByTestId('clipboard')
-        const button = buttons[0]
-
-        await user.click(button)
-
-        expect(trackSegmentEvent).toBeCalled()
-        expect(trackSegmentEvent).toBeCalledWith({
-          data: {
-            category: 'Onboarding',
-            tokenHash: 'a2629295',
-            userId: 'user-owner-id',
-          },
-          event: 'User Onboarding Copied CI Token',
-        })
-      })
     })
   })
 

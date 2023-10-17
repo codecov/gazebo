@@ -1,8 +1,6 @@
 import { useParams } from 'react-router-dom'
 
 import { useActivateFlagMeasurements } from 'services/repo'
-import { trackSegmentEvent } from 'services/tracking/segment'
-import { useUser } from 'services/user'
 import Banner from 'ui/Banner'
 import BannerContent from 'ui/Banner/BannerContent'
 import BannerHeading from 'ui/Banner/BannerHeading'
@@ -12,17 +10,9 @@ import Icon from 'ui/Icon'
 function TriggerSyncBanner() {
   const { provider, owner, repo } = useParams()
   const { mutate } = useActivateFlagMeasurements({ provider, owner, repo })
-  const { data: user } = useUser()
 
   const enableFlagAnalytics = () => {
     mutate({ provider, owner, repo })
-    trackSegmentEvent({
-      event: 'Flags Analytics Enabled',
-      data: {
-        userId: user?.trackingMetadata?.ownerid,
-        repoName: repo,
-      },
-    })
   }
 
   return (
