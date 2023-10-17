@@ -1,4 +1,7 @@
+import { useParams } from 'react-router-dom'
+
 import { useRepoSettings } from 'services/repo'
+import { useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 
 import GraphToken from './GraphToken'
@@ -7,12 +10,27 @@ import RepoUploadToken from './RepoUploadToken'
 import StaticAnalysisToken from './StaticAnalysisToken'
 
 function Tokens() {
-  const { data } = useRepoSettings()
-  const repository = data?.repository
+  const { provider, owner } = useParams()
+  const { data: tierData } = useTier({ provider, owner })
+  const { data: repoData } = useRepoSettings()
+  const repository = repoData?.repository
 
-  const { staticAnalysisToken: showStaticToken } = useFlags({
-    staticAnalysisToken: false,
-  })
+  const { staticAnalysisToken: showStaticToken, multipleTiers: isTeamTier } =
+    useFlags({
+      staticAnalysisToken: false,
+      multipleTiers: false,
+    })
+
+  if (tierData === 'team' && isTeamTier) {
+    return (
+      <>
+        <h2 className="text-lg font-semibold">Tokens</h2>
+        <hr />
+        <RepoUploadToken uploadToken={repository?.uploadToken} />
+        <GraphToken graphToken={repository?.graphToken} />
+      </>
+    )
+  }
 
   return (
     <>

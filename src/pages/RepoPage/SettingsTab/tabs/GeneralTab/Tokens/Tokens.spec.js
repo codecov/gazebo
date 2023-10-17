@@ -4,6 +4,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TierNames } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 
 import Tokens from './Tokens'
@@ -34,9 +35,15 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('Tokens', () => {
-  function setup({ showStaticAnalysis = true } = { showStaticAnalysis: true }) {
+  function setup(
+    { showStaticAnalysis = true, multipleTiers = false } = {
+      showStaticAnalysis: true,
+      multipleTiers: false,
+    }
+  ) {
     useFlags.mockReturnValue({
       staticAnalysisToken: showStaticAnalysis,
+      multipleTiers,
     })
 
     server.use(
@@ -54,6 +61,15 @@ describe('Tokens', () => {
             },
           })
         )
+      }),
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        if (multipleTiers) {
+          return res(
+            ctx.status(200),
+            ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
+          )
+        }
+        return res(ctx.status(200), ctx.data({ tierName: TierNames.PRO }))
       })
     )
   }
@@ -95,6 +111,40 @@ describe('Tokens', () => {
   describe('when static analysis flag is disabled', () => {
     beforeEach(() => {
       setup({ showStaticAnalysis: false })
+    })
+
+    it('does not render static token component', () => {
+      render(<Tokens />, { wrapper })
+
+      const title = screen.queryByText(/Static analysis token/)
+      expect(title).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when user has team tier', () => {
+    beforeEach(() => {
+      setup({ showStaticAnalysis: false, multipleTiers: true })
+    })
+
+    it('renders Repository upload token component', async () => {
+      render(<Tokens />, { wrapper })
+
+      const title = await screen.findByText(/Repository upload token/)
+      expect(title).toBeInTheDocument()
+    })
+
+    it('renders graph token component', async () => {
+      render(<Tokens />, { wrapper })
+
+      const title = await screen.findByText(/Graphing token/)
+      expect(title).toBeInTheDocument()
+    })
+
+    it('does not render impact analysis component', () => {
+      render(<Tokens />, { wrapper })
+
+      const title = screen.queryByText(/Impact analysis token/)
+      expect(title).not.toBeInTheDocument()
     })
 
     it('does not render static token component', () => {
