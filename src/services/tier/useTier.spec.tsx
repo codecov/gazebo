@@ -14,7 +14,7 @@ const mockOwnerTier = {
   },
 }
 
-const mockNulOwner = {
+const mockNullOwner = {
   owner: null,
 }
 
@@ -57,7 +57,7 @@ describe('useTier', () => {
         if (isUnsuccessfulParseError) {
           return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
         } else if (isNullOwner) {
-          return res(ctx.status(200), ctx.data(mockNulOwner))
+          return res(ctx.status(200), ctx.data(mockNullOwner))
         } else {
           return res(ctx.status(200), ctx.data(mockOwnerTier))
         }
