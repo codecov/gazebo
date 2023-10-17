@@ -5,6 +5,8 @@ import { usePrefetchPullDirEntry } from 'services/pathContents/pull/dir'
 import DirEntry from '../BaseEntries/DirEntry'
 
 function PullDirEntry({ pullId, urlPath, name, filters }) {
+  const flags = filters?.flags?.length > 0 ? filters?.flags : []
+
   const { runPrefetch } = usePrefetchPullDirEntry({
     pullId,
     path: name,
@@ -17,6 +19,7 @@ function PullDirEntry({ pullId, urlPath, name, filters }) {
       urlPath={urlPath}
       runPrefetch={runPrefetch}
       pageName="pullTreeView"
+      queryParams={{ flags }}
     />
   )
 }
@@ -31,6 +34,7 @@ PullDirEntry.propTypes = {
       parameter: PropTypes.any,
     }),
     searchValue: PropTypes.any,
+    flags: PropTypes.arrayOf(PropTypes.string),
   }),
 }
 

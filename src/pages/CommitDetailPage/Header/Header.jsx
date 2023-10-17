@@ -11,14 +11,14 @@ import { useCommitHeaderData } from './hooks'
 import PullLabel from './PullLabel'
 
 function Header() {
-  const { provider, owner, repo, commit: commitSHA } = useParams()
-  const shortSHA = commitSHA?.slice(0, 7)
+  const { provider, owner, repo, commit: commitSha } = useParams()
+  const shortSHA = commitSha?.slice(0, 7)
 
   const { data: headerData } = useCommitHeaderData({
     provider,
     owner,
     repo,
-    commitId: commitSHA,
+    commitId: commitSha,
   })
 
   const providerPullUrl = getProviderPullURL({
@@ -32,7 +32,7 @@ function Header() {
     provider,
     owner,
     repo,
-    commit: commitSHA,
+    commit: commitSha,
   })
 
   return (
