@@ -30,12 +30,12 @@ const org2 = {
 }
 
 const wrapper =
-  (initialEntries = '/gl') =>
+  (initialEntries = '/gh') =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/:provider" exact>
+          <Route path="/:provider/:owner" exact>
             {children}
           </Route>
         </MemoryRouter>
@@ -83,6 +83,20 @@ describe('MyContextSwitcher', () => {
         }
 
         return res(ctx.status(200), ctx.data(queryData))
+      }),
+      graphql.query('DetailOwner', (req, res, ctx) => {
+        if (noData) {
+          return res(ctx.status(200), ctx.data({}))
+        }
+
+        const queryData = {
+          owner: {
+            username: 'codecov',
+            avatarUrl: 'some-url',
+          },
+        }
+
+        return res(ctx.status(200), ctx.data(queryData))
       })
     )
 
@@ -96,7 +110,7 @@ describe('MyContextSwitcher', () => {
 
     it('renders nothing', async () => {
       const { container } = render(
-        <MyContextSwitcher activeContext={null} pageName="accountPage" />,
+        <MyContextSwitcher pageName="accountPage" />,
         {
           wrapper: wrapper(),
         }
@@ -106,11 +120,11 @@ describe('MyContextSwitcher', () => {
     })
   })
 
-  describe('when the user has some contexts and activeContext is passed to an organization', () => {
+  describe('when the user has some contexts', () => {
     it('renders the button with the organization', async () => {
       setup()
-      render(<MyContextSwitcher activeContext="codecov" pageName="owner" />, {
-        wrapper: wrapper(),
+      render(<MyContextSwitcher pageName="owner" />, {
+        wrapper: wrapper('/gh/codecov'),
       })
 
       const button = await screen.findByRole('button', {
@@ -127,8 +141,8 @@ describe('MyContextSwitcher', () => {
     })
 
     it('loads second item', async () => {
-      render(<MyContextSwitcher activeContext="codecov" pageName="owner" />, {
-        wrapper: wrapper(),
+      render(<MyContextSwitcher pageName="owner" />, {
+        wrapper: wrapper('/gh/codecov'),
       })
 
       const button = await screen.findByRole('button', {

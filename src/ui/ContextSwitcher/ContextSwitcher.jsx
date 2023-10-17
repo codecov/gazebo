@@ -13,12 +13,6 @@ import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 
-function getCurrentContext({ activeContext, contexts }) {
-  return contexts.find((context) => {
-    return context.owner.username.toLowerCase() === activeContext?.toLowerCase()
-  })
-}
-
 function LoadMoreTrigger({ intersectionRef, onLoadMore }) {
   if (!onLoadMore) {
     return null
@@ -60,17 +54,9 @@ ModalSection.propTypes = {
   ModalControl: PropTypes.func,
 }
 
-function ContextItem({
-  context,
-  currentContext,
-  defaultOrgUsername,
-  setToggle,
-}) {
-  const { owner, pageName } = context
-  const orgUsername = owner?.username
-  const isActiveContext =
-    orgUsername?.toLowerCase() ===
-    currentContext?.owner?.username?.toLowerCase()
+function ContextItem({ context, defaultOrgUsername, setToggle, owner }) {
+  const { owner: contextOwner, pageName } = context
+  const orgUsername = contextOwner?.username
   const { mutate } = useUpdateDefaultOrganization()
 
   return (
@@ -88,8 +74,8 @@ function ContextItem({
           mutate({ username: orgUsername })
         }}
       >
-        <Avatar user={owner} bordered />
-        <div className={cs('mx-1', { 'font-semibold': isActiveContext })}>
+        <Avatar user={contextOwner} bordered />
+        <div className={cs('mx-1', { 'font-semibold': owner === orgUsername })}>
           {orgUsername}
         </div>
       </Button>
@@ -101,11 +87,9 @@ ContextItem.propTypes = {
     owner: PropTypes.shape({ username: PropTypes.string }),
     pageName: PropTypes.string,
   }),
-  currentContext: PropTypes.shape({
-    owner: PropTypes.shape({ username: PropTypes.string }),
-  }),
   defaultOrgUsername: PropTypes.string,
   setToggle: PropTypes.func.isRequired,
+  owner: PropTypes.string,
 }
 
 function useCloseOnLooseFocus({ setToggle }) {
@@ -153,19 +137,18 @@ Loader.propTypes = {
 
 function ContextSwitcher({
   buttonVariant = 'default',
-  activeContext,
   contexts,
   currentUser,
   isLoading,
   onLoadMore,
   ModalControl,
   ModalComponent,
+  activeContext,
 }) {
+  const { provider } = useParams()
   const [toggle, setToggle] = useState(false)
   const wrapperRef = useCloseOnLooseFocus({ setToggle })
   const intersectionRef = useLoadMore({ onLoadMore })
-  const currentContext = getCurrentContext({ activeContext, contexts })
-  const { provider } = useParams()
   const defaultOrgUsername = currentUser?.defaultOrgUsername
 
   const isGh = providerToName(provider) === 'Github'
@@ -186,8 +169,8 @@ function ContextSwitcher({
         aria-expanded={toggle}
         onClick={() => setToggle((toggle) => !toggle)}
       >
-        <Avatar user={currentContext.owner} bordered />
-        <p className="ml-1">{currentContext.owner.username}</p>
+        <Avatar user={activeContext} bordered />
+        <p className="ml-1">{activeContext?.username}</p>
         <span
           aria-hidden="true"
           className={cs('transition-transform', {
@@ -219,8 +202,9 @@ function ContextSwitcher({
             defaultOrgUsername={defaultOrgUsername}
             context={context}
             key={context?.owner?.username}
-            currentContext={currentContext}
+            currentContext={activeContext}
             setToggle={setToggle}
+            owner={activeContext?.username}
           />
         ))}
         <Loader isLoading={isLoading} />
@@ -243,7 +227,6 @@ function ContextSwitcher({
 
 ContextSwitcher.propTypes = {
   buttonVariant: PropTypes.oneOf(['default', 'outlined']),
-  activeContext: PropTypes.string,
   contexts: PropTypes.arrayOf(
     PropTypes.shape({
       owner: PropTypes.shape({
@@ -260,6 +243,10 @@ ContextSwitcher.propTypes = {
   isLoading: PropTypes.bool,
   ModalComponent: PropTypes.func,
   ModalControl: PropTypes.func,
+  activeContext: PropTypes.shape({
+    avatarUrl: PropTypes.string.isRequired,
+    username: PropTypes.string.isRequired,
+  }),
 }
 
 export default ContextSwitcher
