@@ -4,7 +4,11 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useFlags } from 'shared/featureFlags'
+
 import PullRequestPageTabs from './PullRequestPageTabs'
+
+jest.mock('shared/featureFlags')
 
 const mockCommits = {
   owner: {
@@ -77,13 +81,23 @@ afterAll(() => {
 })
 
 describe('PullRequestPageTabs', () => {
-  function setup() {
+  function setup(
+    { pullRequestPageFlagMultiSelect = false } = {
+      pullRequestPageFlagMultiSelect: false,
+    }
+  ) {
+    useFlags.mockReturnValue({
+      pullRequestPageFlagMultiSelect,
+    })
     server.use(
       graphql.query('PullPageData', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockPullData))
       ),
       graphql.query('GetCommits', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockCommits))
+      ),
+      graphql.query('BackfillFlagMemberships', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({}))
       )
     )
   }
@@ -285,4 +299,17 @@ describe('PullRequestPageTabs', () => {
       expect(legend).toBeInTheDocument()
     })
   })
+
+  // describe('flags select dropdown', () => {
+  //   beforeEach(() => setup({ pullRequestPageFlagMultiSelect: true }))
+
+  //   it('renders flags select dropdown', async () => {
+  //     render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+  //     const multiSelect = await screen.findByRole('button', {
+  //       name: 'All Flags',
+  //     })
+  //     expect(multiSelect).toBeInTheDocument()
+  //   })
+  // })
 })
