@@ -14,12 +14,16 @@ const mockOwnerTier = {
   },
 }
 
+const mockNullOwner = {
+  owner: null,
+}
+
+const mockUnsuccessfulParseError = {}
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 const server = setupServer()
-
-const mockUnsuccessfulParseError = {}
 
 const wrapper = ({ children }: { children: ReactNode }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -38,12 +42,22 @@ afterAll(() => {
   server.close()
 })
 
+interface SetupArgs {
+  isNullOwner?: boolean
+  isUnsuccessfulParseError?: boolean
+}
+
 describe('useTier', () => {
-  function setup({ isUnsuccessfulParseError = false }) {
+  function setup({
+    isUnsuccessfulParseError = false,
+    isNullOwner = false,
+  }: SetupArgs) {
     server.use(
       graphql.query('OwnerTier', (req, res, ctx) => {
         if (isUnsuccessfulParseError) {
           return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+        } else if (isNullOwner) {
+          return res(ctx.status(200), ctx.data(mockNullOwner))
         } else {
           return res(ctx.status(200), ctx.data(mockOwnerTier))
         }
@@ -53,20 +67,38 @@ describe('useTier', () => {
 
   describe('when useTier is called', () => {
     describe('api returns valid response', () => {
-      beforeEach(() => {
-        setup({})
+      describe('tier field is resolved', () => {
+        it('returns the owners tier', async () => {
+          setup({})
+          const { result } = renderHook(
+            () =>
+              useTier({
+                provider: 'gh',
+                owner: 'codecov',
+              }),
+            { wrapper }
+          )
+
+          await waitFor(() => result.current.isSuccess)
+          await waitFor(() => expect(result.current.data).toEqual('pro'))
+        })
       })
-      it('returns the owners tier', async () => {
-        const { result } = renderHook(
-          () =>
-            useTier({
-              provider: 'gh',
-              owner: 'codecov',
-            }),
-          { wrapper }
-        )
-        await waitFor(() => result.current.isSuccess)
-        await waitFor(() => expect(result.current.data).toEqual('pro'))
+
+      describe('parent field is resolved as null', () => {
+        it('returns null value', async () => {
+          setup({ isNullOwner: true })
+
+          const { result } = renderHook(
+            () =>
+              useTier({
+                provider: 'gh',
+                owner: 'codecov',
+              }),
+            { wrapper }
+          )
+
+          await waitFor(() => expect(result.current.data).toBeNull())
+        })
       })
     })
 

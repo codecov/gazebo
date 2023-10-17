@@ -5,7 +5,7 @@ import Api from 'shared/api'
 
 export const TierNames = {
   BASIC: 'basic',
-  LITE: 'lite',
+  TEAM: 'team',
   PRO: 'pro',
   ENTERPRISE: 'enterprise',
 } as const
