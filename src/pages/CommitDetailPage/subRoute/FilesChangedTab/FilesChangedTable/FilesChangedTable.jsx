@@ -2,7 +2,7 @@ import cs from 'classnames'
 import isEmpty from 'lodash/isEmpty'
 import isNumber from 'lodash/isNumber'
 import PropTypes from 'prop-types'
-import { lazy, Suspense, useMemo } from 'react'
+import { lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
 import Table from 'old_ui/Table'
@@ -12,17 +12,22 @@ import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 import TotalsNumber from 'ui/TotalsNumber'
 
-const CommitFileDiff = lazy(() => import('./CommitFileDiff'))
+const CommitFileDiff = lazy(() => import('../shared/CommitFileDiff'))
 
 const getFileData = (row, commit) => {
   const headCov = row?.headCoverage?.coverage
   const patchCov = row?.patchCoverage?.coverage
   const baseCov = row?.baseCoverage?.coverage
 
-  const change =
-    isNumber(headCov) && isNumber(baseCov) ? headCov - baseCov : Number.NaN
+  let change = Number.NaN
+  if (isNumber(headCov) && isNumber(baseCov)) {
+    change = headCov - baseCov
+  }
 
-  const hasData = isNumber(headCov) || isNumber(patchCov)
+  let hasData = false
+  if (isNumber(headCov) || isNumber(patchCov)) {
+    hasData = true
+  }
 
   return {
     headCoverage: headCov,
@@ -89,15 +94,8 @@ const table = [
 ]
 
 function createTable({ tableData }) {
-  if (tableData?.length <= 0) {
-    return [{ name: null, coverage: null, patch: null, change: null }]
-  }
-
-  return tableData?.map((row) => {
-    const { headName, headCoverage, hasData, change, patchCoverage, commit } =
-      row
-
-    return {
+  return tableData?.map(
+    ({ headName, headCoverage, hasData, change, patchCoverage, commit }) => ({
       name: (
         <div className="flex flex-col break-all">
           <A
@@ -121,8 +119,8 @@ function createTable({ tableData }) {
       ) : (
         <span className="ml-4 text-sm text-ds-gray-quinary">No data</span>
       ),
-    }
-  })
+    })
+  )
 }
 
 const Loader = () => (
@@ -163,16 +161,16 @@ function FilesChangedTable() {
   const commit = commitData?.commit
   const filesChanged = commit?.compareWithParent?.impactedFiles
 
-  const formattedData = useMemo(
-    () => filesChanged?.map((row) => getFileData(row, commit)),
-    [filesChanged, commit]
-  )
-  const tableContent = createTable({ tableData: formattedData })
+  if (isLoading || commit?.state === 'pending') {
+    return <Loader />
+  }
 
-  if (isLoading || commit?.state === 'pending') return <Loader />
-
-  if (isEmpty(filesChanged))
+  if (isEmpty(filesChanged)) {
     return <p className="m-4">No files covered by tests were changed</p>
+  }
+
+  const formattedData = filesChanged?.map((row) => getFileData(row, commit))
+  const tableContent = createTable({ tableData: formattedData })
 
   return (
     <Table
