@@ -4,10 +4,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useSegmentPage } from './segment'
 import { useTracking } from './useTracking'
-
-jest.mock('./segment')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -104,7 +101,6 @@ describe('useTracking', () => {
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
 
-      await waitFor(() => expect(useSegmentPage).toHaveBeenCalled())
       await waitFor(() =>
         expect(window.dataLayer[0]).toEqual({
           codecov: {
@@ -188,7 +184,6 @@ describe('useTracking', () => {
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
 
-      await waitFor(() => expect(useSegmentPage).toHaveBeenCalled())
       await waitFor(() =>
         expect(window.dataLayer[0]).toEqual({
           codecov: {
@@ -239,7 +234,6 @@ describe('useTracking', () => {
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
 
-      await waitFor(() => expect(useSegmentPage).toHaveBeenCalled())
       await waitFor(() =>
         expect(window.dataLayer[0]).toEqual({
           codecov: {

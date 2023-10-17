@@ -2,7 +2,6 @@ import { useParams } from 'react-router-dom'
 
 import patchAndProject from 'assets/repoConfig/patch-and-project.svg'
 import { useRepo } from 'services/repo'
-import { useOnboardingTracking } from 'services/user'
 import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
 
@@ -11,7 +10,6 @@ import TerminalInstructions from './TerminalInstructions'
 function OtherCI() {
   const { provider, owner, repo } = useParams()
   const { data } = useRepo({ provider, owner, repo })
-  const { copiedCIToken, downloadUploaderClicked } = useOnboardingTracking()
 
   return (
     <div className="flex flex-col gap-6">
@@ -21,21 +19,13 @@ function OtherCI() {
         </h2>
         <pre className="flex items-center gap-2 overflow-auto rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
           CODECOV_TOKEN={data?.repository?.uploadToken}
-          <CopyClipboard
-            string={data?.repository?.uploadToken}
-            onClick={() => copiedCIToken(data?.repository?.uploadToken)}
-          />
+          <CopyClipboard string={data?.repository?.uploadToken} />
         </pre>
       </div>
       <div className="flex flex-col gap-3">
         <h2 className="text-base font-semibold">
           Step 2: add Codecov{' '}
-          <A
-            to={{ pageName: 'uploader' }}
-            data-testid="uploader"
-            onClick={() => downloadUploaderClicked()}
-            isExternal
-          >
+          <A to={{ pageName: 'uploader' }} data-testid="uploader" isExternal>
             uploader to your CI workflow
           </A>
         </h2>
