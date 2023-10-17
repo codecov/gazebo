@@ -8,8 +8,40 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import FilesChangedTable from './FilesChangedTable'
 
-jest.mock('./CommitFileDiff', () => () => 'CommitFileDiff')
+jest.mock('../shared/CommitFileDiff', () => () => 'CommitFileDiff')
 
+const mockCommitData = ({ data, state }) => ({
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      commit: {
+        totals: {
+          coverage: 100,
+        },
+        state,
+        commitid: '123',
+        pullId: 1,
+        branchName: null,
+        createdAt: null,
+        author: null,
+        uploads: null,
+        message: null,
+        ciPassed: null,
+        parent: null,
+        compareWithParent: {
+          __typename: 'Comparison',
+          state: 'processed',
+          indirectChangedFilesCount: 2,
+          directChangedFilesCount: 2,
+          patchTotals: null,
+          impactedFiles: data,
+        },
+      },
+    },
+  },
+})
+
+const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -18,14 +50,19 @@ const queryClient = new QueryClient({
     },
   },
 })
-const server = setupServer()
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 beforeEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>
@@ -45,41 +82,9 @@ const wrapper = ({ children }) => (
 describe('FilesChangedTable', () => {
   function setup(data = [], state = 'processed') {
     server.use(
-      graphql.query('Commit', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
-            owner: {
-              repository: {
-                __typename: 'Repository',
-                commit: {
-                  totals: {
-                    coverage: 100,
-                  },
-                  state,
-                  commitid: '123',
-                  pullId: 1,
-                  branchName: null,
-                  createdAt: null,
-                  author: null,
-                  uploads: null,
-                  message: null,
-                  ciPassed: null,
-                  parent: null,
-                  compareWithParent: {
-                    __typename: 'Comparison',
-                    state: 'processed',
-                    indirectChangedFilesCount: 2,
-                    directChangedFilesCount: 2,
-                    patchTotals: null,
-                    impactedFiles: data,
-                  },
-                },
-              },
-            },
-          })
-        )
-      )
+      graphql.query('Commit', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockCommitData({ data, state })))
+      })
     )
   }
 
@@ -243,6 +248,29 @@ describe('FilesChangedTable', () => {
 
       const commitFileDiff = await screen.findByText('CommitFileDiff')
       expect(commitFileDiff).toBeInTheDocument()
+    })
+  })
+
+  describe('when state is pending', () => {
+    beforeEach(() => {
+      setup(
+        [
+          {
+            headName: '',
+            baseCoverage: null,
+            headCoverage: null,
+            patchCoverage: null,
+          },
+        ],
+        'pending'
+      )
+    })
+
+    it('renders spinner', async () => {
+      render(<FilesChangedTable />, { wrapper })
+
+      const spinner = await screen.findByTestId('spinner')
+      expect(spinner).toBeInTheDocument()
     })
   })
 })
