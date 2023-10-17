@@ -18,7 +18,7 @@ function PullFileEntry({
 
   const { runPrefetch } = usePrefetchPullFileEntry({
     path,
-    commitSha,
+    ref: commitSha,
     flags,
   })
 
