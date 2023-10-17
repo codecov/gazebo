@@ -156,6 +156,16 @@ describe('Pulls Table', () => {
       expect(cov1).toBeInTheDocument()
     })
 
+    it('renders pulls patch', async () => {
+      render(<PullsTable />, { wrapper })
+
+      const spinner = screen.queryByTestId('spinner')
+      await waitFor(() => expect(spinner).not.toBeInTheDocument())
+
+      const cov1 = await screen.findByText(/32.00%/)
+      expect(cov1).toBeInTheDocument()
+    })
+
     it('renders pulls change from base', async () => {
       render(<PullsTable />, { wrapper })
 
