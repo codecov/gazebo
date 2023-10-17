@@ -40,7 +40,7 @@
   @apply text-right justify-end;
 }
 
-/* <element data-type="numeric"> */
+/* <element className="filelistui-row" data-type="numeric"> */
 .filelistui .filelistui-row [data-type='numeric'] {
   @apply font-mono text-right justify-end;
 }
