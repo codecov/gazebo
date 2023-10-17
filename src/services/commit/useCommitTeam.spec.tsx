@@ -5,15 +5,6 @@ import { setupServer } from 'msw/node'
 
 import { useCommitTeam } from './useCommitTeam'
 
-const mockNullCompareData = {
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      commit: null,
-    },
-  },
-}
-
 const mockCompareData = {
   owner: {
     repository: {
@@ -426,23 +417,17 @@ describe('useCommitTeam', () => {
 })
 
 describe('useCommitTeam polling', () => {
-  let nbCallCompare = 0
-
   function setup() {
-    nbCallCompare = 0
+    let nbCallCompare = 0
     server.use(
       graphql.query(`GetCommitTeam`, (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockCommitData))
       }),
       graphql.query(`GetCompareTotalsTeam`, (req, res, ctx) => {
         nbCallCompare++
-        // after 10 calls, the server returns that the commit is processed
-        if (nbCallCompare < 8) {
-          return res(ctx.status(200), ctx.data(mockCommitData))
-        }
 
         if (nbCallCompare < 9) {
-          return res(ctx.status(200), ctx.data(mockNullCompareData))
+          return res(ctx.status(200), ctx.data(mockCommitData))
         }
 
         return res(ctx.status(200), ctx.data(mockCompareData))
@@ -455,7 +440,7 @@ describe('useCommitTeam polling', () => {
       setup()
     })
 
-    it.only('returns commit data merged with what polling fetched', async () => {
+    it('returns commit data merged with what polling fetched', async () => {
       const { result } = renderHook(
         () =>
           useCommitTeam({
