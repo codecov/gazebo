@@ -106,7 +106,34 @@ describe('CompareSummary', () => {
       setup({
         owner: {
           repository: {
-            pull: { commits: { edges: [{ node: { state: 'error' } }] } },
+            pull: {
+              commits: { edges: [{ node: { state: 'error' } }] },
+              behindBy: 82367894,
+              behindByCommit: '1798hvs8ofhn',
+              head: {
+                commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
+                totals: {
+                  percentCovered: 78.33,
+                },
+                uploads: {
+                  totalCount: 4,
+                },
+              },
+              comparedTo: {
+                commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
+                uploads: {
+                  totalCount: 1,
+                },
+              },
+              compareWithBase: {
+                hasDifferentNumberOfHeadAndBaseReports: false,
+                patchTotals: {
+                  percentCovered: 92.12,
+                },
+                changeCoverage: 38.94,
+              },
+            },
+            defaultBranch: 'main',
           },
         },
       })
@@ -118,6 +145,35 @@ describe('CompareSummary', () => {
         /There is an error processing the coverage reports with/i
       )
       expect(card).toBeInTheDocument()
+
+      const baseCommitLink = screen.getByRole('link', {
+        name: /2d6c42f/i,
+      })
+      expect(baseCommitLink).toBeInTheDocument()
+      expect(baseCommitLink).toHaveAttribute(
+        'href',
+        '/gh/test-org/test-repo/commit/2d6c42fe217c61b007b2c17544a9d85840381857'
+      )
+    })
+
+    it('renders a error card with flags selected', async () => {
+      render(<CompareSummary />, {
+        wrapper: wrapper(['/gh/test-org/test-repo/pull/5?flags=a,b,c']),
+      })
+
+      const card = await screen.findByText(
+        /There is an error processing the coverage reports with/i
+      )
+      expect(card).toBeInTheDocument()
+
+      const baseCommitLink = screen.getByRole('link', {
+        name: /2d6c42f/i,
+      })
+      expect(baseCommitLink).toBeInTheDocument()
+      expect(baseCommitLink).toHaveAttribute(
+        'href',
+        '/gh/test-org/test-repo/commit/2d6c42fe217c61b007b2c17544a9d85840381857?flags=a%2Cb%2Cc'
+      )
     })
   })
 
@@ -189,8 +245,72 @@ describe('CompareSummary', () => {
       const headCommitIds = await screen.findAllByText('fc43199')
       expect(headCommitIds).toHaveLength(2)
 
-      const baseCommitIds = await screen.findAllByText('2d6c42f')
-      expect(baseCommitIds).toHaveLength(1)
+      const headCommitLink = screen.getByRole('link', {
+        name: /fc43199/i,
+      })
+      expect(headCommitLink).toBeInTheDocument()
+      expect(headCommitLink).toHaveAttribute(
+        'href',
+        '/gh/test-org/test-repo/commit/fc43199b07c52cf3d6c19b7cdb368f74387c38ab'
+      )
+
+      const baseCommitLink = screen.getByRole('link', {
+        name: /2d6c42f/i,
+      })
+      expect(baseCommitLink).toBeInTheDocument()
+      expect(baseCommitLink).toHaveAttribute(
+        'href',
+        '/gh/test-org/test-repo/commit/2d6c42fe217c61b007b2c17544a9d85840381857'
+      )
+    })
+
+    it('renders a card for every valid field with flags', async () => {
+      render(<CompareSummary />, {
+        wrapper: wrapper(['/gh/test-org/test-repo/pull/5?flags=a,b,c']),
+      })
+      const headCardTitle = await screen.findByText('HEAD')
+      expect(headCardTitle).toBeInTheDocument()
+      const headCardValue = await screen.findByText('78.33%')
+      expect(headCardValue).toBeInTheDocument()
+
+      const patchCardTitle = await screen.findByText('Patch')
+      expect(patchCardTitle).toBeInTheDocument()
+      const patchCardValue = await screen.findByText('92.12%')
+      expect(patchCardValue).toBeInTheDocument()
+
+      const changeCardTitle = await screen.findByText('Change')
+      expect(changeCardTitle).toBeInTheDocument()
+      const changeCardValue = await screen.findByText('38.94%')
+      expect(changeCardValue).toBeInTheDocument()
+      expect(changeCardValue).toHaveClass("before:content-['+']")
+
+      const sourceCardTitle = await screen.findByText('Source')
+      expect(sourceCardTitle).toBeInTheDocument()
+      const coverageBasedOnText = await screen.findByText(
+        /Coverage data is based on/i
+      )
+      expect(coverageBasedOnText).toBeInTheDocument()
+
+      const headCommitIds = await screen.findAllByText('fc43199')
+      expect(headCommitIds).toHaveLength(2)
+
+      const headCommitLink = screen.getByRole('link', {
+        name: /fc43199/i,
+      })
+      expect(headCommitLink).toBeInTheDocument()
+      expect(headCommitLink).toHaveAttribute(
+        'href',
+        '/gh/test-org/test-repo/commit/fc43199b07c52cf3d6c19b7cdb368f74387c38ab?flags=a%2Cb%2Cc'
+      )
+
+      const baseCommitLink = screen.getByRole('link', {
+        name: /2d6c42f/i,
+      })
+      expect(baseCommitLink).toBeInTheDocument()
+      expect(baseCommitLink).toHaveAttribute(
+        'href',
+        '/gh/test-org/test-repo/commit/2d6c42fe217c61b007b2c17544a9d85840381857?flags=a%2Cb%2Cc'
+      )
     })
 
     it('renders a card with the behind by information', async () => {
@@ -271,6 +391,65 @@ describe('CompareSummary', () => {
       )
       expect(await screen.findByText(/(4 uploads)/i)).toBeInTheDocument()
       expect(await screen.findByText(/(1 uploads)/i)).toBeInTheDocument()
+
+      const headCommitLink = screen.getByRole('link', {
+        name: /fc43199/i,
+      })
+      expect(headCommitLink).toBeInTheDocument()
+      expect(headCommitLink).toHaveAttribute(
+        'href',
+        '/gh/test-org/test-repo/commit/fc43199b07c52cf3d6c19b7cdb368f74387c38ab'
+      )
+
+      const baseCommitLink = screen.getByRole('link', {
+        name: /2d6c42f/i,
+      })
+      expect(baseCommitLink).toBeInTheDocument()
+      expect(baseCommitLink).toHaveAttribute(
+        'href',
+        '/gh/test-org/test-repo/commit/2d6c42fe217c61b007b2c17544a9d85840381857'
+      )
+    })
+
+    it('renders a card for every valid field with flags', async () => {
+      render(<CompareSummary />, {
+        wrapper: wrapper(['/gh/test-org/test-repo/pull/5?flags=a,b,c']),
+      })
+      const sourceCardTitle = await screen.findByText('Source')
+      expect(sourceCardTitle).toBeInTheDocument()
+
+      const differentUploadsText = await screen.findByText(
+        /Commits have different number of coverage report uploads/i
+      )
+      expect(differentUploadsText).toBeInTheDocument()
+      const learnMore = screen.getByRole('link', {
+        name: /learn more/i,
+      })
+      expect(learnMore).toBeInTheDocument()
+      expect(learnMore).toHaveAttribute(
+        'href',
+        'https://docs.codecov.com/docs/unexpected-coverage-changes#mismatching-base-and-head-commit-upload-counts'
+      )
+      expect(await screen.findByText(/(4 uploads)/i)).toBeInTheDocument()
+      expect(await screen.findByText(/(1 uploads)/i)).toBeInTheDocument()
+
+      const headCommitLink = screen.getByRole('link', {
+        name: /fc43199/i,
+      })
+      expect(headCommitLink).toBeInTheDocument()
+      expect(headCommitLink).toHaveAttribute(
+        'href',
+        '/gh/test-org/test-repo/commit/fc43199b07c52cf3d6c19b7cdb368f74387c38ab?flags=a%2Cb%2Cc'
+      )
+
+      const baseCommitLink = screen.getByRole('link', {
+        name: /2d6c42f/i,
+      })
+      expect(baseCommitLink).toBeInTheDocument()
+      expect(baseCommitLink).toHaveAttribute(
+        'href',
+        '/gh/test-org/test-repo/commit/2d6c42fe217c61b007b2c17544a9d85840381857?flags=a%2Cb%2Cc'
+      )
     })
   })
 

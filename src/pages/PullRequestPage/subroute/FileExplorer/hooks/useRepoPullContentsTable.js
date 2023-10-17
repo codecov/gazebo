@@ -23,7 +23,7 @@ function determineDisplayType({ filters, isSearching }) {
 function createTableData({
   tableData,
   pullId,
-  commitSHA,
+  commitSha,
   urlPath,
   isSearching,
   filters,
@@ -55,7 +55,7 @@ function createTableData({
             />
           ) : (
             <PullFileEntry
-              commitSHA={commitSHA}
+              commitSha={commitSha}
               name={name}
               pullId={pullId}
               urlPath={urlPath}
@@ -190,7 +190,7 @@ export function useRepoPullContentsTable() {
       createTableData({
         tableData: pullData?.results,
         pullId,
-        commitSHA: pullData?.commitid,
+        commitSha: pullData?.commitid,
         urlPath: urlPath || '',
         isSearching: !!params?.search,
         filters: getQueryFilters({ params, sortBy: sortBy[0] }),
