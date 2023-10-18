@@ -1,11 +1,11 @@
 import { useParams } from 'react-router-dom'
 
+import { useRepoDefaultBranch } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 
 import DangerZone from './DangerZone'
 import DefaultBranch from './DefaultBranch'
-import { useRepoDefaultBranch } from './hooks'
 import { Tokens, TokensTeam } from './Tokens'
 
 function GeneralTab() {

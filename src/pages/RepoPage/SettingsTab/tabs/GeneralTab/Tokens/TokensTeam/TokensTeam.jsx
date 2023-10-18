@@ -1,4 +1,4 @@
-import { useRepoSettingsTeam } from './hooks'
+import { useRepoSettingsTeam } from 'services/repo'
 
 import GraphToken from '../GraphToken'
 import RepoUploadToken from '../RepoUploadToken'
