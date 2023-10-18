@@ -285,7 +285,12 @@ describe('BaseLayout', () => {
 
   describe('user has not accepted terms of service', () => {
     it('redirects the user to /terms', async () => {
-      setup({ termsOfServicePage: true })
+      setup({
+        termsOfServicePage: true,
+        internalUser: {
+          termsAgreement: false,
+        },
+      })
 
       render(<BaseLayout>hello</BaseLayout>, {
         wrapper: wrapper(),

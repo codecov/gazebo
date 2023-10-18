@@ -79,7 +79,7 @@ const useUserAccessGate = () => {
     !isGuest &&
     !config.IS_SELF_HOSTED
   ) {
-    showAgreeToTerms = userData?.termsAgreement === false
+    showAgreeToTerms = internalUser?.termsAgreement === false
   }
 
   const onSyncPage = currentRoute.path === '/sync'
