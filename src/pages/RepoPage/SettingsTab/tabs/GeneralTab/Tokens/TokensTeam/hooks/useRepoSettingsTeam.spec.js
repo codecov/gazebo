@@ -30,7 +30,7 @@ afterAll(() => server.close())
 describe('useRepoSettingsTeam', () => {
   function setup(data) {
     server.use(
-      graphql.query('GetRepoSettings', (req, res, ctx) => {
+      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(data))
       })
     )

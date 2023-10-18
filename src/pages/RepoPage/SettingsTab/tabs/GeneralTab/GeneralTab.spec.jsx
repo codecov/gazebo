@@ -12,6 +12,7 @@ import GeneralTab from './GeneralTab'
 jest.mock('./Tokens/TokensTeam', () => () => 'Tokens Team Component')
 jest.mock('./Tokens/Tokens', () => () => 'Tokens Component')
 jest.mock('./DangerZone', () => () => 'DangerZone Component')
+jest.mock('./DefaultBranch', () => () => 'Default Branch')
 jest.mock('shared/featureFlags')
 
 const queryClient = new QueryClient({
@@ -38,38 +39,42 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('GeneralTab', () => {
-  function setup({
-    uploadToken,
-    defaultBranch,
-    profilingToken,
-    graphToken,
-    multipleTiers,
-  }) {
+  function setup(
+    { hasDefaultBranch = false, multipleTiers = false } = {
+      hasDefaultBranch: false,
+      multipleTiers: false,
+    }
+  ) {
     useFlags.mockReturnValue({
       multipleTiers,
     })
 
     server.use(
-      graphql.query('GetRepoSettings', (req, res, ctx) => {
+      graphql.query('RepoDefaultBranch', (req, res, ctx) => {
+        if (hasDefaultBranch) {
+          return res(
+            ctx.status(200),
+            ctx.data({
+              owner: {
+                repository: {
+                  __typename: 'Repository',
+                  defaultBranch: 'main',
+                },
+              },
+            })
+          )
+        }
         return res(
           ctx.status(200),
           ctx.data({
             owner: {
               repository: {
-                uploadToken,
-                defaultBranch,
-                profilingToken,
-                graphToken,
+                __typename: 'Repository',
+                defaultBranch: null,
               },
             },
           })
         )
-      }),
-      graphql.query('GetBranches', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({}))
-      }),
-      graphql.query('CurrentUser', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({}))
       }),
       graphql.query('OwnerTier', (req, res, ctx) => {
         if (multipleTiers) {
@@ -86,7 +91,7 @@ describe('GeneralTab', () => {
   describe('when rendered', () => {
     describe('when rendered with defaultBranch', () => {
       beforeEach(() => {
-        setup({ defaultBranch: 'master' })
+        setup({ hasDefaultBranch: true })
       })
 
       it('renders Default Branch component', async () => {
@@ -99,7 +104,7 @@ describe('GeneralTab', () => {
 
     describe('when rendered with no defaultBranch', () => {
       beforeEach(() => {
-        setup({ defaultBranch: null })
+        setup({ hasDefaultBranch: false })
       })
 
       it('does not render  Default Branch component', () => {

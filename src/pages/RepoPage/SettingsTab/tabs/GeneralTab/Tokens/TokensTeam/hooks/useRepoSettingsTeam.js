@@ -5,7 +5,7 @@ import Api from 'shared/api'
 
 function fetchRepoSettingsDetails({ provider, owner, repo, signal }) {
   const query = `
-    query GetRepoSettings($name: String!, $repo: String!){
+    query GetRepoSettingsTeam($name: String!, $repo: String!){
       owner(username:$name){
         repository: repositoryDeprecated(name:$repo){
           private
