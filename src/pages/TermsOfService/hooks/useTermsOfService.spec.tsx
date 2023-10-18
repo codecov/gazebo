@@ -150,9 +150,7 @@ describe('useSaveTermsAgreement', () => {
         })
 
         await waitFor(() =>
-          expect(spyErrorMock).toBeCalledWith(
-            'POST /graphql/gh net::ERR_FAILED'
-          )
+          expect(spyErrorMock).toBeCalledWith('POST /graphql/ net::ERR_FAILED')
         )
 
         expect(errorFn).toBeCalledWith('error')

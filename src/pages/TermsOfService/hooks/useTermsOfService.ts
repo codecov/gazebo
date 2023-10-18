@@ -1,9 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import { assertIsString } from 'shared/asserts'
 
 const SaveTermsAgreementInputConfig = z.object({
   businessEmail: z.string().optional(),
@@ -31,21 +29,16 @@ export type SaveTermsAgreementPayload = z.infer<
   typeof SaveTermsAgreementPayloadConfig
 >
 
-interface Params {
-  provider?: string
-}
 interface SaveTermsAgreementOptions {
   onSuccess?: (data: SaveTermsAgreementPayload) => void
   onError?: (error: Error) => void
 }
 export function useSaveTermsAgreement(options: SaveTermsAgreementOptions = {}) {
-  const { provider } = useParams<Params>()
   const queryClient = useQueryClient()
   const { onSuccess, ...rest } = options
   return useMutation({
     mutationFn: (input: SaveTermsAgreementInput) => {
       const parsedInput = SaveTermsAgreementInputConfig.parse(input)
-      provider && assertIsString(provider)
 
       const { businessEmail, termsAgreement, marketingConsent } = parsedInput
 
@@ -67,7 +60,6 @@ export function useSaveTermsAgreement(options: SaveTermsAgreementOptions = {}) {
       }
       return Api.graphqlMutation({
         mutationPath: 'saveTermsAgreement',
-        provider,
         query: querySignAgreement,
         variables,
         supportsServiceless: true,
