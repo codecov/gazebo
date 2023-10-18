@@ -1,11 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import gt from 'lodash/gt'
 import PropType from 'prop-types'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
+import { Redirect } from 'react-router-dom'
 import { z } from 'zod'
 
 import umbrellaSvg from 'assets/svg/umbrella.svg'
-import { useUser } from 'services/user'
+import { useInternalUser } from 'services/user'
+import { useFlags } from 'shared/featureFlags'
+import { loginProviderToShortName } from 'shared/utils/loginProviders'
 import A from 'ui/A'
 import Button from 'ui/Button'
 import TextInput from 'ui/TextInput'
@@ -18,8 +22,8 @@ const FormSchema = z.object({
   tos: z.literal(true),
 })
 
-function isDisabled({ isValid, isDirty }) {
-  return (!isValid && isDirty) || !isDirty
+function isDisabled({ isValid, isDirty, isMutationLoading }) {
+  return (!isValid && isDirty) || !isDirty || isMutationLoading
 }
 
 function EmailInput({ register, marketingEmailMessage, showEmailRequired }) {
@@ -61,7 +65,7 @@ export default function TermsOfService() {
       resolver: zodResolver(FormSchema),
       mode: 'onChange',
     })
-  const { mutate } = useSaveTermsAgreement({
+  const { mutate, isLoading: isMutationLoading } = useSaveTermsAgreement({
     onSuccess: ({ data }) => {
       if (data?.saveTermsAgreement?.error) {
         setError('apiError', data?.saveTermsAgreement?.error)
@@ -70,12 +74,18 @@ export default function TermsOfService() {
     },
     onError: (error) => setError('apiError', error),
   })
-  const { data: currentUser, isLoading: userIsLoading } = useUser()
+  const { data: currentUser, isLoading: userIsLoading } = useInternalUser()
+  const hasSynced = gt(currentUser?.owners?.length, 0)
+
+  const { termsOfServicePage } = useFlags({
+    termsOfServicePage: false,
+  })
 
   const onSubmit = (data) => {
     mutate({
       businessEmail: data?.marketingEmail || currentUser?.email,
       termsAgreement: true,
+      marketingConsent: data?.marketingConsent,
     })
   }
 
@@ -92,6 +102,18 @@ export default function TermsOfService() {
   }, [watch, unregister])
 
   if (userIsLoading) return null
+
+  if (!termsOfServicePage || currentUser?.termsAgreement) {
+    if (hasSynced) {
+      const service = currentUser?.owners?.[0]?.service
+      const owner = currentUser?.owners?.[0]?.username
+      if (service) {
+        const provider = loginProviderToShortName(service)
+        return <Redirect to={`/${provider}/${owner}`} />
+      }
+    }
+    return <Redirect to="/sync" />
+  }
 
   return (
     <div className="mx-auto w-full max-w-[38rem] text-sm text-ds-gray-octonary">
@@ -177,7 +199,7 @@ export default function TermsOfService() {
         )}
         <div className="mt-3 flex justify-end">
           <Button
-            disabled={isDisabled(formState)}
+            disabled={isDisabled(formState, isMutationLoading)}
             type="submit"
             hook="user signed tos"
           >

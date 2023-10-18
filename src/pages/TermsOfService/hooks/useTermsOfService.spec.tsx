@@ -89,7 +89,9 @@ describe('useSaveTermsAgreement', () => {
 
         await waitFor(() => expect(successFn).toBeCalledWith('completed'))
 
-        expect(invalidateQueries).toHaveBeenCalledWith(['currentUser', 'gh'])
+        expect(invalidateQueries).toHaveBeenCalledWith({
+          queryKey: ['InternalUser'],
+        })
       })
     })
 
@@ -113,12 +115,13 @@ describe('useSaveTermsAgreement', () => {
         result.current.mutate({
           businessEmail: 'test@test.com',
           termsAgreement: true,
-          defaultOrg: 'codecov',
         })
 
         await waitFor(() => expect(successFn).toBeCalledWith('completed'))
 
-        expect(invalidateQueries).toHaveBeenCalledWith(['currentUser', 'gh'])
+        expect(invalidateQueries).toHaveBeenCalledWith({
+          queryKey: ['InternalUser'],
+        })
       })
     })
 

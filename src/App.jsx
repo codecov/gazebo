@@ -25,6 +25,7 @@ const OwnerPage = lazy(() => import('./pages/OwnerPage'))
 const PullRequestPage = lazy(() => import('./pages/PullRequestPage'))
 const RepoPage = lazy(() => import('./pages/RepoPage'))
 const SyncProviderPage = lazy(() => import('./pages/SyncProviderPage'))
+const TermsOfService = lazy(() => import('pages/TermsOfService'))
 
 const HomePageRedirect = () => {
   const { provider } = useParams()
@@ -58,6 +59,11 @@ const MainAppRoutes = () => (
     <SentryRoute path="/sync" exact>
       <BaseLayout>
         <SyncProviderPage />
+      </BaseLayout>
+    </SentryRoute>
+    <SentryRoute path="/terms" exact>
+      <BaseLayout>
+        <TermsOfService />
       </BaseLayout>
     </SentryRoute>
     {config.IS_SELF_HOSTED && (

@@ -17,7 +17,6 @@ import { useUserAccessGate } from './hooks/useUserAccessGate'
 const LimitedHeader = lazy(() => import('layouts/LimitedHeader'))
 const DefaultOrgSelector = lazy(() => import('pages/DefaultOrgSelector'))
 const InstallationHelpBanner = lazy(() => import('./InstallationHelpBanner'))
-const TermsOfService = lazy(() => import('pages/TermsOfService'))
 
 const FullPageLoader = () => (
   <div className="mt-16 flex flex-1 items-center justify-center">
@@ -36,11 +35,7 @@ const OnboardingOrChildren = ({ children }) => {
   const { isImpersonating } = useImpersonate()
 
   if (showAgreeToTerms && !isFullExperience) {
-    return (
-      <Suspense fallback={null}>
-        <TermsOfService />
-      </Suspense>
-    )
+    return <Redirect to="/terms" />
   }
 
   if (redirectToSyncPage && !isFullExperience) {

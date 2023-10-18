@@ -6,9 +6,9 @@ import Api from 'shared/api'
 import { assertIsString } from 'shared/asserts'
 
 const SaveTermsAgreementInputConfig = z.object({
-  businessEmail: z.string(),
+  businessEmail: z.string().optional(),
   termsAgreement: z.boolean(),
-  defaultOrg: z.string().nullish().optional(),
+  marketingConsent: z.boolean().optional(),
 })
 
 export type SaveTermsAgreementInput = z.infer<
@@ -21,7 +21,11 @@ const ResolverError = z.object({
   message: z.string(),
 })
 const SaveTermsAgreementPayloadConfig = z.object({
-  error: z.union([ResolverError, ResolverError]).nullish(),
+  data: z.object({
+    saveTermsAgreement: z.object({
+      error: z.union([ResolverError, ResolverError]).nullish(),
+    }),
+  }),
 })
 export type SaveTermsAgreementPayload = z.infer<
   typeof SaveTermsAgreementPayloadConfig
@@ -32,7 +36,7 @@ interface Params {
 }
 interface SaveTermsAgreementOptions {
   onSuccess?: (data: SaveTermsAgreementPayload) => void
-  onError?: () => void
+  onError?: (error: Error) => void
 }
 export function useSaveTermsAgreement(options: SaveTermsAgreementOptions = {}) {
   const { provider } = useParams<Params>()
@@ -41,9 +45,9 @@ export function useSaveTermsAgreement(options: SaveTermsAgreementOptions = {}) {
   return useMutation({
     mutationFn: (input: SaveTermsAgreementInput) => {
       const parsedInput = SaveTermsAgreementInputConfig.parse(input)
-      assertIsString(provider)
+      provider && assertIsString(provider)
 
-      const { businessEmail, defaultOrg, termsAgreement } = parsedInput
+      const { businessEmail, termsAgreement, marketingConsent } = parsedInput
 
       const querySignAgreement = `
         mutation SigningTermsAgreement($tosInput: SaveTermsAgreementInput!) {
@@ -58,50 +62,19 @@ export function useSaveTermsAgreement(options: SaveTermsAgreementOptions = {}) {
         }
       `
 
-      const queryWithDefaultOrg = `
-        mutation SigningTermsAgreement($tosInput: SaveTermsAgreementInput!, $defaultOrgInput: UpdateDefaultOrganizationInput!) {
-          saveTermsAgreement(input: $tosInput) {
-            error {
-              __typename
-              ... on ResolverError {
-                message
-              }
-            }
-          }
-          updateDefaultOrganization(input: $defaultOrgInput) {
-            error {
-              __typename
-              ... on ResolverError {
-                message
-              }
-            }
-          }
-        }
-      `
-
-      if (defaultOrg) {
-        const variables = {
-          tosInput: { businessEmail, termsAgreement },
-          defaultOrgInput: { username: defaultOrg },
-        }
-        return Api.graphqlMutation({
-          mutationPath: 'saveTermsAgreement',
-          provider,
-          query: queryWithDefaultOrg,
-          variables,
-        })
+      const variables = {
+        tosInput: { businessEmail, termsAgreement, marketingConsent },
       }
-
-      const variables = { tosInput: { businessEmail, termsAgreement } }
       return Api.graphqlMutation({
         mutationPath: 'saveTermsAgreement',
         provider,
         query: querySignAgreement,
         variables,
+        supportsServiceless: true,
       })
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries(['currentUser', provider])
+      queryClient.invalidateQueries({ queryKey: ['InternalUser'] })
       onSuccess && onSuccess(data)
     },
     ...rest,
