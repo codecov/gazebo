@@ -39,7 +39,7 @@ function AnalyticsPage() {
   const { owner, provider } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
   const { data: tierName } = useTier({ owner, provider })
-  const { multipleTiers: isTeamTier } = useFlags({
+  const { multipleTiers } = useFlags({
     multipleTiers: true,
   })
 
@@ -56,7 +56,7 @@ function AnalyticsPage() {
     return <NotFound />
   }
 
-  if (tierName === TierNames.TEAM && isTeamTier) {
+  if (tierName === TierNames.TEAM && multipleTiers) {
     return <Redirect to={`/${provider}/${owner}`} />
   }
 

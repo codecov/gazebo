@@ -10,7 +10,7 @@ import TabNavigation from 'ui/TabNavigation'
 function Header() {
   const { owner, provider } = useParams()
   const { data: tierName } = useTier({ owner, provider })
-  const { multipleTiers: isTeamTier } = useFlags({
+  const { multipleTiers } = useFlags({
     multipleTiers: true,
   })
   return (
@@ -19,7 +19,7 @@ function Header() {
       <TabNavigation
         tabs={[
           { pageName: 'owner', children: 'Repos' },
-          ...(tierName === TierNames.TEAM && isTeamTier
+          ...(tierName === TierNames.TEAM && multipleTiers
             ? []
             : [
                 {

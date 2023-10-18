@@ -13,7 +13,7 @@ const TrialReminder = lazy(() => import('./TrialReminder'))
 function Tabs() {
   const { owner, provider } = useParams()
   const { data: tierName } = useTier({ owner, provider })
-  const { multipleTiers: isTeamTier } = useFlags({
+  const { multipleTiers } = useFlags({
     multipleTiers: true,
   })
 
@@ -24,7 +24,7 @@ function Tabs() {
           pageName: 'owner',
           children: 'Repos',
         },
-        ...(tierName === TierNames.TEAM && isTeamTier
+        ...(tierName === TierNames.TEAM && multipleTiers
           ? []
           : [
               {
