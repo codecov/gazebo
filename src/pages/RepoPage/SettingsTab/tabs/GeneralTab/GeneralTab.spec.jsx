@@ -4,10 +4,15 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TierNames } from 'services/tier'
+import { useFlags } from 'shared/featureFlags'
+
 import GeneralTab from './GeneralTab'
 
-jest.mock('./Tokens', () => () => 'Tokens Component')
+jest.mock('./Tokens/TokensTeam', () => () => 'Tokens Team Component')
+jest.mock('./Tokens/Tokens', () => () => 'Tokens Component')
 jest.mock('./DangerZone', () => () => 'DangerZone Component')
+jest.mock('shared/featureFlags')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -33,7 +38,17 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('GeneralTab', () => {
-  function setup({ uploadToken, defaultBranch, profilingToken, graphToken }) {
+  function setup({
+    uploadToken,
+    defaultBranch,
+    profilingToken,
+    graphToken,
+    multipleTiers,
+  }) {
+    useFlags.mockReturnValue({
+      multipleTiers,
+    })
+
     server.use(
       graphql.query('GetRepoSettings', (req, res, ctx) => {
         return res(
@@ -55,6 +70,15 @@ describe('GeneralTab', () => {
       }),
       graphql.query('CurrentUser', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data({}))
+      }),
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        if (multipleTiers) {
+          return res(
+            ctx.status(200),
+            ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
+          )
+        }
+        return res(ctx.status(200), ctx.data({ tierName: TierNames.PRO }))
       })
     )
   }
@@ -87,9 +111,31 @@ describe('GeneralTab', () => {
     })
 
     it('render tokens component', () => {
+      setup({ multipleTiers: false })
       render(<GeneralTab />, { wrapper })
 
       const tokensComponent = screen.getByText(/Tokens Component/)
+      expect(tokensComponent).toBeInTheDocument()
+    })
+
+    it('render danger zone component', () => {
+      setup({ multipleTiers: false })
+      render(<GeneralTab />, { wrapper })
+
+      const tokensComponent = screen.getByText(/DangerZone Component/)
+      expect(tokensComponent).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with team tier', () => {
+    beforeEach(() => {
+      setup({ multipleTiers: true })
+    })
+
+    it('render tokens team component', async () => {
+      render(<GeneralTab />, { wrapper })
+
+      const tokensComponent = await screen.findByText(/Tokens Team Component/)
       expect(tokensComponent).toBeInTheDocument()
     })
 
