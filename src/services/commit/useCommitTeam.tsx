@@ -22,7 +22,23 @@ import {
 import { mapEdges } from 'shared/utils/graphql'
 import A from 'ui/A'
 
-import { useCompareTotals } from './useCompareTotals'
+import { useCompareTotalsTeam } from './useCompareTotalsTeam'
+
+export const OrderingDirection = {
+  desc: 'DESC',
+  asc: 'ASC',
+} as const
+
+export const OrderingParameter = {
+  FILE_NAME: 'FILE_NAME',
+  MISSES_COUNT: 'MISSES_COUNT',
+  PATCH_COVERAGE: 'PATCH_COVERAGE',
+} as const
+
+const ImpactedFilesOrdering = z.object({
+  direction: z.nativeEnum(OrderingDirection).optional(),
+  parameter: z.nativeEnum(OrderingParameter).optional(),
+})
 
 const CoverageObjSchema = z.object({
   coverage: z.number().nullable(),
@@ -74,22 +90,23 @@ const UploadsSchema = z.object({
   ),
 })
 
+const ImpactedFileSchema = z
+  .object({
+    headName: z.string().nullable(),
+    missesCount: z.number(),
+    patchCoverage: CoverageObjSchema.nullable(),
+  })
+  .nullable()
+
+export type ImpactedFile = z.infer<typeof ImpactedFileSchema>
+
 const ComparisonSchema = z.object({
   __typename: z.literal('Comparison'),
   indirectChangedFilesCount: z.number(),
   directChangedFilesCount: z.number(),
   state: z.string(),
   patchTotals: CoverageObjSchema.nullable(),
-  impactedFiles: z.array(
-    z
-      .object({
-        headName: z.string().nullable(),
-        patchCoverage: CoverageObjSchema.nullable(),
-        baseCoverage: CoverageObjSchema.nullable(),
-        headCoverage: CoverageObjSchema.nullable(),
-      })
-      .nullable()
-  ),
+  impactedFiles: z.array(ImpactedFileSchema),
 })
 
 const CompareWithParentSchema = z.discriminatedUnion('__typename', [
@@ -103,7 +120,6 @@ const CompareWithParentSchema = z.discriminatedUnion('__typename', [
 ])
 
 const CommitSchema = z.object({
-  totals: CoverageObjSchema.nullable(),
   state: z.string().nullable(),
   commitid: z.string().nullable(),
   pullId: z.number().nullable(),
@@ -117,12 +133,6 @@ const CommitSchema = z.object({
   uploads: UploadsSchema.nullable(),
   message: z.string().nullable(),
   ciPassed: z.boolean().nullable(),
-  parent: z
-    .object({
-      commitid: z.string().nullable(),
-      totals: CoverageObjSchema.nullable(),
-    })
-    .nullable(),
   compareWithParent: CompareWithParentSchema.nullable(),
 })
 
@@ -143,8 +153,7 @@ const RequestSchema = z.object({
     .nullable(),
 })
 
-const query = `
-query Commit(
+const query = `query GetCommitTeam(
   $owner: String!
   $repo: String!
   $commitid: String!
@@ -155,9 +164,6 @@ query Commit(
       __typename
       ... on Repository {
         commit(id: $commitid) {
-          totals {
-            coverage: percentCovered # Absolute coverage of the commit
-          }
           state
           commitid
           pullId
@@ -193,12 +199,6 @@ query Commit(
           }
           message
           ciPassed
-          parent {
-            commitid # commitid of the parent, used for the comparison
-            totals {
-              coverage: percentCovered # coverage of the parent
-            }
-          }
           compareWithParent {
             __typename
             ... on Comparison {
@@ -209,14 +209,9 @@ query Commit(
                 coverage: percentCovered
               }
               impactedFiles: impactedFilesDeprecated(filters: $filters) {
-                patchCoverage {
-                  coverage: percentCovered
-                }
                 headName
-                baseCoverage {
-                  coverage: percentCovered
-                }
-                headCoverage {
+                missesCount
+                patchCoverage {
                   coverage: percentCovered
                 }
               }
@@ -252,35 +247,40 @@ query Commit(
   }
 }`
 
-/*
-TODO This/useCommit was not implemented correctly and needs a refactor, leaving for the moment.
-- useCommit is not reusable and also does not let you fetch commit data without polling files which is another call
-- Refer to the following PR for the change where props of the component are replaced with this hook and for such cases
- we need to address the issue above and refactor the hook for better usage. https://github.com/codecov/gazebo/pull/1248
-*/
-
-interface UseCommitArgs {
+interface UseCommitTeamArgs {
   provider: string
   owner: string
   repo: string
   commitid: string
-  filters?: {}
+  filters?: {
+    hasUnintendedChanges?: boolean
+    flags?: Array<string>
+    ordering?: z.infer<typeof ImpactedFilesOrdering>
+  }
   refetchInterval?: number
 }
 
-export function useCommit({
+export function useCommitTeam({
   provider,
   owner,
   repo,
   commitid,
   filters = {},
   refetchInterval = 2000,
-}: UseCommitArgs) {
+}: UseCommitTeamArgs) {
   const queryClient = useQueryClient()
-  const tempKey = ['commit', provider, owner, repo, commitid, query, filters]
+  const commitKey = [
+    'GetCommitTeam',
+    provider,
+    owner,
+    repo,
+    commitid,
+    query,
+    filters,
+  ]
 
   const commitQuery = useQuery({
-    queryKey: tempKey,
+    queryKey: commitKey,
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
@@ -352,6 +352,7 @@ export function useCommit({
           },
         }
       }),
+    suspense: false,
   })
 
   let shouldPoll = false
@@ -362,7 +363,7 @@ export function useCommit({
       commitQuery?.data?.commit?.compareWithParent?.state === 'pending'
   }
 
-  useCompareTotals({
+  useCompareTotalsTeam({
     provider,
     owner,
     repo,
@@ -371,10 +372,11 @@ export function useCommit({
     opts: {
       refetchInterval,
       enabled: shouldPoll,
+      suspense: false,
       onSuccess: (data) => {
-        let compareWithParent
-        if (data?.owner?.repository?.__typename === 'Repository') {
-          compareWithParent = data?.owner?.repository?.commit?.compareWithParent
+        let compareWithParent = undefined
+        if (data?.compareWithParent?.__typename === 'Comparison') {
+          compareWithParent = data?.compareWithParent
         }
 
         const impactedFileData = {
@@ -384,7 +386,7 @@ export function useCommit({
             compareWithParent,
           },
         }
-        queryClient.setQueryData(tempKey, impactedFileData)
+        queryClient.setQueryData(commitKey, impactedFileData)
       },
     },
   })

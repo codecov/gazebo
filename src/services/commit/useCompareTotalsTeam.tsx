@@ -17,7 +17,7 @@ import Api from 'shared/api'
 import A from 'ui/A'
 
 const CoverageObjSchema = z.object({
-  percentCovered: z.number().nullable(),
+  coverage: z.number().nullable(),
 })
 
 const ComparisonSchema = z.object({
@@ -28,8 +28,6 @@ const ComparisonSchema = z.object({
     z.object({
       headName: z.string().nullable(),
       patchCoverage: CoverageObjSchema.nullable(),
-      baseCoverage: CoverageObjSchema.nullable(),
-      headCoverage: CoverageObjSchema.nullable(),
     })
   ),
 })
@@ -46,13 +44,12 @@ const CompareWithParentSchema = z
   ])
   .nullable()
 
+const CommitSchema = z.object({
+  compareWithParent: CompareWithParentSchema.nullable(),
+})
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
-  commit: z
-    .object({
-      compareWithParent: CompareWithParentSchema.nullable(),
-    })
-    .nullable(),
+  commit: CommitSchema.nullable(),
 })
 
 const RequestSchema = z.object({
@@ -68,7 +65,7 @@ const RequestSchema = z.object({
 })
 
 const query = `
-query CompareTotals(
+query GetCompareTotalsTeam(
   $owner: String!
   $repo: String!
   $commitid: String!
@@ -89,12 +86,6 @@ query CompareTotals(
               impactedFiles: impactedFilesDeprecated(filters: $filters) {
                 headName
                 patchCoverage {
-                  coverage: percentCovered
-                }
-                baseCoverage {
-                  coverage: percentCovered
-                }
-                headCoverage {
                   coverage: percentCovered
                 }
               }
@@ -130,26 +121,26 @@ query CompareTotals(
   }
 }`
 
-interface UseCompareTotalsArgs {
+interface UseCompareTotalsTeamArgs {
   provider: string
   owner: string
   repo: string
   commitid: string
   filters?: {}
-  opts?: UseQueryOptions<z.infer<typeof RequestSchema>>
+  opts?: UseQueryOptions<z.infer<typeof CommitSchema> | null>
 }
 
-export function useCompareTotals({
+export function useCompareTotalsTeam({
   provider,
   owner,
   repo,
   commitid,
   filters = {},
   opts,
-}: UseCompareTotalsArgs) {
+}: UseCompareTotalsTeamArgs) {
   return useQuery({
     queryKey: [
-      'impactedFiles',
+      'GetCompareTotalsTeam',
       provider,
       owner,
       repo,
@@ -203,7 +194,7 @@ export function useCompareTotals({
           })
         }
 
-        return data
+        return data?.owner?.repository?.commit ?? null
       })
     },
     ...(!!opts && opts),

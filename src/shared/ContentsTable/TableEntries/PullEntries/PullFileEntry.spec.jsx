@@ -5,7 +5,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import CommitFileEntry from './PullFileEntry'
+import PullFileEntry from './PullFileEntry'
 
 import { displayTypeParameter } from '../../constants'
 
@@ -37,17 +37,22 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter
-      initialEntries={['/gh/codecov/test-repo/coolCommitSha/blob/file.js']}
-    >
-      <Route path="/:provider/:owner/:repo/:commit/blob/:path+">
-        {children}
-      </Route>
-    </MemoryRouter>
-  </QueryClientProvider>
-)
+const wrapper =
+  (
+    { initialEntries } = {
+      initialEntries: ['/gh/codecov/test-repo/coolCommitSha/blob/file.js'],
+    }
+  ) =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Route path="/:provider/:owner/:repo/:commit/blob/:path+">
+            {children}
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
 beforeAll(() => {
   server.listen()
@@ -60,7 +65,7 @@ afterAll(() => {
   server.close()
 })
 
-describe('CommitFileEntry', () => {
+describe('PullFileEntry', () => {
   function setup() {
     server.use(
       graphql.query('CoverageForFile', (req, res, ctx) =>
@@ -76,16 +81,15 @@ describe('CommitFileEntry', () => {
 
     it('displays the file path', () => {
       render(
-        <CommitFileEntry
-          commitSha="1234"
+        <PullFileEntry
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
           isCriticalFile={false}
-          commitSHA="1234"
+          commitSha="1234"
           displayType={displayTypeParameter.list}
         />,
-        { wrapper }
+        { wrapper: wrapper() }
       )
 
       expect(screen.getByText('dir/file.js')).toBeInTheDocument()
@@ -99,16 +103,15 @@ describe('CommitFileEntry', () => {
 
     it('displays the file name', () => {
       render(
-        <CommitFileEntry
-          commitSha="1234"
+        <PullFileEntry
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
           isCriticalFile={false}
-          commitSHA="1234"
+          commitSha="1234"
           displayType={displayTypeParameter.tree}
         />,
-        { wrapper }
+        { wrapper: wrapper() }
       )
 
       expect(screen.getByText('file.js')).toBeInTheDocument()
@@ -116,16 +119,15 @@ describe('CommitFileEntry', () => {
 
     it('does not display the file name', () => {
       render(
-        <CommitFileEntry
-          commitSha="1234"
+        <PullFileEntry
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
           isCriticalFile={false}
-          commitSHA="1234"
+          commitSha="1234"
           displayType={displayTypeParameter.tree}
         />,
-        { wrapper }
+        { wrapper: wrapper() }
       )
 
       expect(screen.queryByText('dir/file.js')).not.toBeInTheDocument()
@@ -139,16 +141,15 @@ describe('CommitFileEntry', () => {
 
     it('displays critical file label', () => {
       render(
-        <CommitFileEntry
-          commitSha="1234"
+        <PullFileEntry
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
-          commitSHA="1234"
+          commitSha="1234"
           isCriticalFile={true}
           displayType={displayTypeParameter.tree}
         />,
-        { wrapper }
+        { wrapper: wrapper() }
       )
 
       expect(screen.getByText('Critical File')).toBeInTheDocument()
@@ -162,16 +163,15 @@ describe('CommitFileEntry', () => {
 
     it('displays the file path label', () => {
       render(
-        <CommitFileEntry
-          commitSha="1234"
+        <PullFileEntry
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
           isCriticalFile={false}
-          commitSHA="1234"
+          commitSha="1234"
           displayType={displayTypeParameter.list}
         />,
-        { wrapper }
+        { wrapper: wrapper() }
       )
 
       expect(screen.getByText('dir/file.js')).toBeInTheDocument()
@@ -186,16 +186,15 @@ describe('CommitFileEntry', () => {
     it('fires the prefetch function on hover', async () => {
       const user = userEvent.setup()
       render(
-        <CommitFileEntry
-          commitSha="1234"
+        <PullFileEntry
           path="dir/file.js"
           name="file.js"
           urlPath="dir"
           isCriticalFile={false}
-          commitSHA="1234"
+          commitSha="1234"
           displayType={displayTypeParameter.tree}
         />,
-        { wrapper }
+        { wrapper: wrapper() }
       )
 
       await user.hover(screen.getByText('file.js'))
@@ -217,5 +216,29 @@ describe('CommitFileEntry', () => {
         })
       )
     })
+  })
+  it('passes the flags filter through to the file link', () => {
+    render(
+      <PullFileEntry
+        path="dir/file.js"
+        name="file.js"
+        urlPath="dir"
+        isCriticalFile={false}
+        commitSha="1234"
+        displayType={displayTypeParameter.tree}
+        filters={{ flags: ['a', 'b'] }}
+      />,
+      {
+        wrapper: wrapper({
+          initialEntries: ['/gh/codecov/test-repo/coolCommitSha/blob/file.js'],
+        }),
+      }
+    )
+
+    const a = screen.getByRole('link')
+    expect(a).toHaveAttribute(
+      'href',
+      '/gh/codecov/test-repo/pull/undefined/blob/dir/file.js?flags%5B0%5D=a&flags%5B1%5D=b'
+    )
   })
 })
