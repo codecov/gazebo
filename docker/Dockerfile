@@ -49,7 +49,7 @@ ENV REACT_APP_ENV=$REACT_APP_ENV_ARG
 ENV REACT_APP_CODECOV_VERSION=$REACT_APP_CODECOV_VERSION
 ENV GENERATE_SOURCEMAP=false
 RUN mkdir /home/workspace
-COPY --from=bun /home/workspace/node_modules /home/workspace/node_modules
+COPY --from=npm /home/workspace/node_modules /home/workspace/node_modules
 WORKDIR /home/workspace
 RUN apk -U add git
 COPY . /home/workspace
