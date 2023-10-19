@@ -17,6 +17,7 @@ jest.mock('services/impersonate')
 jest.mock('shared/featureFlags')
 jest.mock('shared/GlobalTopBanners', () => () => 'GlobalTopBanners')
 jest.mock('./InstallationHelpBanner', () => () => 'InstallationHelpBanner')
+jest.mock('pages/TermsOfService', () => () => 'TermsOfService')
 jest.mock('pages/DefaultOrgSelector', () => () => 'DefaultOrgSelector')
 
 const mockOwner = {
@@ -77,6 +78,7 @@ const internalUserHasSyncedProviders = {
       service: 'github',
     },
   ],
+  termsAgreement: false,
 }
 
 const queryClient = new QueryClient({
@@ -166,6 +168,9 @@ describe('BaseLayout', () => {
       graphql.query('Seats', (_, res, ctx) =>
         res(ctx.status(200), ctx.data({}))
       ),
+      graphql.query('TermsOfService', (_, res, ctx) =>
+        res(ctx.status(200), ctx.data({}))
+      ),
       graphql.query('UseMyOrganizations', (_, res, ctx) =>
         res(
           ctx.status(200),
@@ -214,6 +219,9 @@ describe('BaseLayout', () => {
 
         const defaultOrg = screen.queryByText(/DefaultOrgSelector/)
         expect(defaultOrg).not.toBeInTheDocument()
+
+        const termsOfService = screen.queryByText(/TermsOfService/)
+        expect(termsOfService).not.toBeInTheDocument()
       })
     })
 
@@ -232,6 +240,9 @@ describe('BaseLayout', () => {
 
         const defaultOrg = screen.queryByText(/DefaultOrgSelector/)
         expect(defaultOrg).not.toBeInTheDocument()
+
+        const termsOfService = screen.queryByText(/TermsOfService/)
+        expect(termsOfService).not.toBeInTheDocument()
       })
     })
 
@@ -251,7 +262,22 @@ describe('BaseLayout', () => {
 
         const defaultOrg = screen.queryByText(/DefaultOrgSelector/)
         expect(defaultOrg).not.toBeInTheDocument()
+
+        const termsOfService = screen.queryByText(/TermsOfService/)
+        expect(termsOfService).not.toBeInTheDocument()
       })
+    })
+
+    it(`renders the ${expectedPage}`, async () => {
+      setup({ termsOfServicePage: true, currentUser: loggedInUser })
+
+      render(<BaseLayout>hello</BaseLayout>, {
+        wrapper: wrapper(),
+      })
+
+      expect(await screen.findByText(expectedMatcher)).toBeTruthy()
+      const tos = screen.getByText(expectedMatcher)
+      expect(tos).toBeInTheDocument()
     })
   })
 
@@ -280,23 +306,6 @@ describe('BaseLayout', () => {
 
       const selectInput = screen.queryByText(/DefaultOrgSelector/)
       expect(selectInput).not.toBeInTheDocument()
-    })
-  })
-
-  describe('user has not accepted terms of service', () => {
-    it('redirects the user to /terms', async () => {
-      setup({
-        termsOfServicePage: true,
-        internalUser: {
-          termsAgreement: false,
-        },
-      })
-
-      render(<BaseLayout>hello</BaseLayout>, {
-        wrapper: wrapper(),
-      })
-
-      await waitFor(() => expect(testLocation.pathname).toBe('/terms'))
     })
   })
 

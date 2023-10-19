@@ -1,15 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import gt from 'lodash/gt'
 import PropType from 'prop-types'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { Redirect } from 'react-router-dom'
 import { z } from 'zod'
 
 import umbrellaSvg from 'assets/svg/umbrella.svg'
 import { useInternalUser } from 'services/user'
-import { useFlags } from 'shared/featureFlags'
-import { loginProviderToShortName } from 'shared/utils/loginProviders'
 import A from 'ui/A'
 import Button from 'ui/Button'
 import TextInput from 'ui/TextInput'
@@ -75,11 +71,6 @@ export default function TermsOfService() {
     onError: (error) => setError('apiError', error),
   })
   const { data: currentUser, isLoading: userIsLoading } = useInternalUser()
-  const hasSynced = gt(currentUser?.owners?.length, 0)
-
-  const { termsOfServicePage } = useFlags({
-    termsOfServicePage: false,
-  })
 
   const onSubmit = (data) => {
     mutate({
@@ -102,18 +93,6 @@ export default function TermsOfService() {
   }, [watch, unregister])
 
   if (userIsLoading) return null
-
-  if (!termsOfServicePage || currentUser?.termsAgreement) {
-    if (hasSynced) {
-      const service = currentUser?.owners?.[0]?.service
-      const owner = currentUser?.owners?.[0]?.username
-      if (service) {
-        const provider = loginProviderToShortName(service)
-        return <Redirect to={`/${provider}/${owner}`} />
-      }
-    }
-    return <Redirect to="/sync" />
-  }
 
   return (
     <div className="mx-auto w-full max-w-[38rem] text-sm text-ds-gray-octonary">

@@ -276,16 +276,6 @@ describe('App', () => {
         },
       },
     ],
-    [
-      {
-        testLabel: 'TOSPage',
-        pathname: '/terms',
-        expected: {
-          page: /TermsOfService/i,
-          location: '/terms',
-        },
-      },
-    ],
   ]
 
   describe.each(cloudFullRouterCases)(

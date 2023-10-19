@@ -422,7 +422,7 @@ describe('TermsOfService', () => {
       'case #10',
       {
         validationDescription:
-          'redirects to owner page if user has already synced a provider',
+          'redirects to main root if user has already synced a provider',
         isValidationError: true,
         internalUserData: {
           termsAgreement: true,
@@ -430,21 +430,7 @@ describe('TermsOfService', () => {
           owners: [{ service: 'github', username: 'chetney' }],
         },
       },
-      [expectRedirectTo, '/gh/chetney'],
-    ],
-    [
-      'case #11',
-      {
-        validationDescription:
-          'redirects to "/" if user has not synced provider',
-        isValidationError: true,
-        internalUserData: {
-          termsAgreement: true,
-          email: '',
-          owners: [],
-        },
-      },
-      [expectRedirectTo, '/sync'],
+      [expectRedirectTo, '/gh/codecov/cool-repo'],
     ],
   ])('form validation, %s', (_, initializeTest, ...steps) => {
     beforeEach(() => {
