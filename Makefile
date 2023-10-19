@@ -11,6 +11,7 @@ build.local:
 build.self-hosted:
 	docker build -f docker/Dockerfile . -t ${dockerhub_image}:rolling \
 	-t ${dockerhub_image}:${release_version}-${sha} \
+	--no-cache \
 	--build-arg REACT_APP_STAGE=${ENV} \
 	--build-arg REACT_APP_CODECOV_VERSION=${release_version} \
 	--build-arg REACT_APP_ENV_ARG=${ENV} \
