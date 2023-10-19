@@ -82,6 +82,7 @@ const mockOwner = {
   },
 }
 
+const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -90,7 +91,6 @@ const queryClient = new QueryClient({
     },
   },
 })
-const server = setupServer()
 
 const wrapper =
   (
@@ -184,51 +184,57 @@ describe('CommitPage', () => {
 
   describe('rendering component', () => {
     describe('testing not found', () => {
-      beforeEach(() => {
-        setup({ noCommit: true })
-      })
-
       it('renders not found page', async () => {
+        setup({ noCommit: true })
         render(<CommitPage />, {
           wrapper: wrapper(),
         })
 
-        const notFound = await screen.findByText('Error 404')
+        expect(await screen.findByText('Error 404')).toBeTruthy()
+        const notFound = screen.getByText('Error 404')
         expect(notFound).toBeInTheDocument()
       })
     })
 
     describe('testing breadcrumb', () => {
-      beforeEach(() => {
-        setup()
-      })
-
       it('renders owner link', async () => {
+        setup()
         render(<CommitPage />, {
           wrapper: wrapper(),
         })
 
-        const ownerLink = await screen.findByRole('link', { name: 'codecov' })
+        expect(
+          await screen.findByRole('link', { name: 'codecov' })
+        ).toBeTruthy()
+        const ownerLink = screen.getByRole('link', { name: 'codecov' })
         expect(ownerLink).toBeInTheDocument()
         expect(ownerLink).toHaveAttribute('href', '/gh/codecov')
       })
 
       it('renders repo link', async () => {
+        setup()
         render(<CommitPage />, {
           wrapper: wrapper(),
         })
 
-        const ownerLink = await screen.findByRole('link', { name: 'cool-repo' })
+        expect(
+          await screen.findByRole('link', { name: 'cool-repo' })
+        ).toBeTruthy()
+        const ownerLink = screen.getByRole('link', { name: 'cool-repo' })
         expect(ownerLink).toBeInTheDocument()
         expect(ownerLink).toHaveAttribute('href', '/gh/codecov/cool-repo')
       })
 
       it('renders commits page link', async () => {
+        setup()
         render(<CommitPage />, {
           wrapper: wrapper(),
         })
 
-        const ownerLink = await screen.findByRole('link', { name: 'commits' })
+        expect(
+          await screen.findByRole('link', { name: 'commits' })
+        ).toBeTruthy()
+        const ownerLink = screen.getByRole('link', { name: 'commits' })
         expect(ownerLink).toBeInTheDocument()
         expect(ownerLink).toHaveAttribute(
           'href',
@@ -237,45 +243,44 @@ describe('CommitPage', () => {
       })
 
       it('renders read only current short sha', async () => {
+        setup()
         render(<CommitPage />, {
           wrapper: wrapper(),
         })
 
-        const ownerLink = await screen.findAllByText('e736f78')
+        expect(await screen.findAllByText('e736f78')).toBeTruthy()
+        const ownerLink = screen.getAllByText('e736f78')
         expect(ownerLink.length).toBeGreaterThanOrEqual(1)
       })
     })
 
     describe('testing commit error banners', () => {
-      beforeEach(() => {
-        setup({ hasYamlErrors: true })
-      })
-
       it('displays bot error banner', async () => {
+        setup({ hasYamlErrors: true })
         render(<CommitPage />, {
           wrapper: wrapper(),
         })
 
-        const teamBot = await screen.findByText(/Team bot/)
+        expect(await screen.findByText(/Team bot/)).toBeTruthy()
+        const teamBot = screen.getByText(/Team bot/)
         expect(teamBot).toBeInTheDocument()
       })
 
       it('displays yaml error banner', async () => {
+        setup({ hasYamlErrors: true })
         render(<CommitPage />, {
           wrapper: wrapper(),
         })
 
-        const yamlError = await screen.findByText('Commit YAML is invalid')
+        expect(await screen.findByText('Commit YAML is invalid')).toBeTruthy()
+        const yamlError = screen.getByText('Commit YAML is invalid')
         expect(yamlError).toBeInTheDocument()
       })
     })
 
     describe('testing setting of query cache', () => {
-      beforeEach(() => {
-        setup({ hasYamlErrors: true })
-      })
-
       it('sets ignore upload ids to empty array', async () => {
+        setup({ hasYamlErrors: true })
         render(<CommitPage />, {
           wrapper: wrapper(),
         })
