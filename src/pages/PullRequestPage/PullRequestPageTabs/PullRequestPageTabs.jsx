@@ -1,9 +1,11 @@
+import qs from 'qs'
 import { useLocation, useParams } from 'react-router-dom'
 
 import {
   pullFileviewString,
   pullTreeviewString,
 } from 'pages/PullRequestPage/utils'
+import { useFlags } from 'shared/featureFlags'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import TabNavigation from 'ui/TabNavigation'
 
@@ -17,9 +19,14 @@ function PullRequestPageTabs() {
     directChangedFilesCount,
     commitsCount,
   } = useTabsCounts()
+  const { pullRequestPageFlagMultiSelect } = useFlags({
+    pullRequestPageFlagMultiSelect: false,
+  })
 
-  const { pathname } = useLocation()
+  const { pathname, search } = useLocation()
   const { provider, owner, repo, pullId } = useParams()
+  const searchParams = qs.parse(search, { ignoreQueryPrefix: true })
+  const flags = searchParams?.flags ?? []
 
   const blobPath = pathname.includes(
     `/${provider}/${pullFileviewString({ owner, repo, pullId })}`
@@ -47,6 +54,7 @@ function PullRequestPageTabs() {
               <sup className="text-xs">{directChangedFilesCount}</sup>
             </>
           ),
+          options: { queryParams: { flags } },
           exact: true,
         },
         {
@@ -57,6 +65,7 @@ function PullRequestPageTabs() {
               <sup className="text-xs">{indirectChangesCount}</sup>
             </>
           ),
+          options: { queryParams: { flags } },
         },
         {
           pageName: 'pullCommits',
@@ -66,6 +75,7 @@ function PullRequestPageTabs() {
               <sup className="text-xs">{commitsCount}</sup>
             </>
           ),
+          options: { queryParams: { flags } },
         },
         {
           pageName: 'pullFlags',
@@ -75,6 +85,7 @@ function PullRequestPageTabs() {
               <sup className="text-xs">{flagsCount}</sup>
             </>
           ),
+          options: { queryParams: { flags } },
         },
         {
           pageName: 'pullComponents',
@@ -84,15 +95,22 @@ function PullRequestPageTabs() {
               <sup className="text-xs">{componentsCount}</sup>
             </>
           ),
+          options: { queryParams: { flags } },
         },
         {
           pageName: 'pullTreeView',
           children: 'File explorer',
-          options: { pullId },
+          options: { pullId, queryParams: { flags } },
           location: customLocation,
         },
       ]}
-      component={<ToggleHeader coverageIsLoading={false} showHitCount={true} />}
+      component={
+        <ToggleHeader
+          coverageIsLoading={false}
+          showHitCount={true}
+          showFlagsSelect={pullRequestPageFlagMultiSelect}
+        />
+      }
     />
   )
 }

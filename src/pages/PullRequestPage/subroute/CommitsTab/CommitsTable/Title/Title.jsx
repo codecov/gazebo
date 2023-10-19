@@ -4,7 +4,7 @@ import { formatTimeToNow } from 'shared/utils/dates'
 import A from 'ui/A'
 import Avatar, { DefaultAuthor } from 'ui/Avatar'
 
-const Title = ({ message, author, commitid, createdAt }) => {
+const Title = ({ message, author, commitid, createdAt, flags = [] }) => {
   const user = {
     avatarUrl: author?.avatarUrl || DefaultAuthor.AVATAR_URL,
     username: author?.username || DefaultAuthor.USERNAME,
@@ -23,7 +23,7 @@ const Title = ({ message, author, commitid, createdAt }) => {
     <div className="flex flex-1 flex-row items-center gap-4 lg:w-auto">
       <Avatar user={user} bordered />
       <div className="flex flex-col">
-        <A to={{ pageName: 'commit', options: { commit: commitid } }}>
+        <A to={{ pageName: 'commit', options: { commit: commitid, flags } }}>
           <h2 className="text-sm font-semibold text-black">
             {commitMessage()}
           </h2>
@@ -52,6 +52,7 @@ Title.propTypes = {
   commitid: PropTypes.string,
   message: PropTypes.string,
   createdAt: PropTypes.string,
+  flags: PropTypes.arrayOf(PropTypes.string),
 }
 
 export default Title

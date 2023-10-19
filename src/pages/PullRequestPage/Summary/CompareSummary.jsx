@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
-import { useParams } from 'react-router-dom'
+import qs from 'qs'
+import { useLocation, useParams } from 'react-router-dom'
 
 import { getProviderCommitURL } from 'shared/utils'
 import A from 'ui/A'
@@ -90,18 +91,29 @@ function CardWithDifferentNumberOfUploads({
   behindBy,
   behindByCommit,
   defaultBranch,
+  flags = [],
 }) {
   return (
     <div className="flex flex-col gap-1">
       <p className="text-sm text-ds-gray-octonary">
         Coverage data is based on{' '}
         <span className="font-medium uppercase">head</span>{' '}
-        <A to={{ pageName: 'commit', options: { commit: headCommit } }}>
+        <A
+          to={{
+            pageName: 'commit',
+            options: { commit: headCommit, queryParams: { flags } },
+          }}
+        >
           {headCommit?.slice(0, 7)}
           <span>({head?.uploads?.totalCount} uploads)</span>
         </A>{' '}
         compared to <span className="font-medium uppercase">base</span>{' '}
-        <A to={{ pageName: 'commit', options: { commit: baseCommit } }}>
+        <A
+          to={{
+            pageName: 'commit',
+            options: { commit: baseCommit, queryParams: { flags } },
+          }}
+        >
           {baseCommit?.slice(0, 7)}
           <span>({base?.uploads?.totalCount} uploads)</span>
         </A>{' '}
@@ -149,6 +161,7 @@ CardWithDifferentNumberOfUploads.propTypes = {
   behindBy: PropTypes.number,
   behindByCommit: PropTypes.string,
   defaultBranch: PropTypes.string,
+  flags: PropTypes.array,
 }
 
 function CardWithSameNumberOfUploads({
@@ -157,16 +170,27 @@ function CardWithSameNumberOfUploads({
   behindBy,
   behindByCommit,
   defaultBranch,
+  flags = [],
 }) {
   return (
     <p className="text-sm text-ds-gray-octonary">
       Coverage data is based on{' '}
       <span className="font-medium uppercase">head</span>{' '}
-      <A to={{ pageName: 'commit', options: { commit: headCommit } }}>
+      <A
+        to={{
+          pageName: 'commit',
+          options: { commit: headCommit, queryParams: { flags } },
+        }}
+      >
         {headCommit?.slice(0, 7)}
       </A>{' '}
       compared to <span className="font-medium uppercase">base</span>{' '}
-      <A to={{ pageName: 'commit', options: { commit: baseCommit } }}>
+      <A
+        to={{
+          pageName: 'commit',
+          options: { commit: baseCommit, queryParams: { flags } },
+        }}
+      >
         {baseCommit?.slice(0, 7)}
       </A>{' '}
       <BehindByCommits
@@ -184,6 +208,7 @@ CardWithSameNumberOfUploads.propTypes = {
   behindBy: PropTypes.number,
   behindByCommit: PropTypes.string,
   defaultBranch: PropTypes.string,
+  flags: PropTypes.array,
 }
 
 function compareCards({
@@ -193,6 +218,7 @@ function compareCards({
   behindBy,
   behindByCommit,
   defaultBranch,
+  flags = [],
 }) {
   const headCommit = head?.commitid
   const baseCommit = base?.commitid
@@ -212,6 +238,7 @@ function compareCards({
                 behindBy={behindBy}
                 behindByCommit={behindByCommit}
                 defaultBranch={defaultBranch}
+                flags={flags}
               />
             ) : (
               <CardWithSameNumberOfUploads
@@ -220,6 +247,7 @@ function compareCards({
                 behindBy={behindBy}
                 behindByCommit={behindByCommit}
                 defaultBranch={defaultBranch}
+                flags={flags}
               />
             )}
           </>
@@ -247,7 +275,7 @@ function pendingCard({ patchCoverage, headCoverage, changeCoverage }) {
   return card
 }
 
-function lastCommitErrorCard({ recentCommit }) {
+function lastCommitErrorCard({ recentCommit, flags = [] }) {
   const card = []
 
   if (recentCommit?.state?.toLowerCase() === 'error') {
@@ -263,7 +291,10 @@ function lastCommitErrorCard({ recentCommit }) {
             <A
               to={{
                 pageName: 'commit',
-                options: { commit: recentCommit?.commitid },
+                options: {
+                  commit: recentCommit?.commitid,
+                  queryParams: { flags },
+                },
               }}
             >
               {recentCommit?.commitid?.slice(0, 7)}
@@ -290,6 +321,9 @@ function CompareSummary() {
     behindByCommit,
     defaultBranch,
   } = usePullForCompareSummary()
+  const { search } = useLocation()
+  const searchParams = qs.parse(search, { ignoreQueryPrefix: true })
+  const flags = searchParams?.flags ?? []
 
   const fields = [
     ...totalsCards({
@@ -305,9 +339,10 @@ function CompareSummary() {
       behindBy,
       behindByCommit,
       defaultBranch,
+      flags,
     }),
-    ...pendingCard({ patchCoverage, headCoverage, changeCoverage }),
-    ...lastCommitErrorCard({ recentCommit }),
+    ...pendingCard({ patchCoverage, headCoverage, changeCoverage, flags }),
+    ...lastCommitErrorCard({ recentCommit, flags }),
   ]
 
   return (

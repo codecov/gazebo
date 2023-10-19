@@ -20,7 +20,7 @@ describe('fileviewString', () => {
 describe('commitTreeviewString', () => {
   it('returns a string', () => {
     expect(
-      commitTreeviewString({ owner: 'foo', repo: 'bar', commitSHA: 'sha256' })
+      commitTreeviewString({ owner: 'foo', repo: 'bar', commitSha: 'sha256' })
     ).toBe('foo/bar/commit/sha256/tree')
   })
 })
@@ -28,7 +28,7 @@ describe('commitTreeviewString', () => {
 describe('commitFileviewString', () => {
   it('returns a string', () => {
     expect(
-      commitFileviewString({ owner: 'foo', repo: 'bar', commitSHA: 'sha256' })
+      commitFileviewString({ owner: 'foo', repo: 'bar', commitSha: 'sha256' })
     ).toBe('foo/bar/commit/sha256/blob')
   })
 })

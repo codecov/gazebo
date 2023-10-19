@@ -6,16 +6,20 @@ import { displayTypeParameter } from '../../constants'
 import FileEntry from '../BaseEntries/FileEntry'
 
 function PullFileEntry({
-  commitSHA,
+  commitSha,
   path,
   isCriticalFile,
   name,
   urlPath,
   displayType,
+  filters,
 }) {
+  const flags = filters?.flags?.length > 0 ? filters?.flags : []
+
   const { runPrefetch } = usePrefetchPullFileEntry({
     path,
-    ref: commitSHA,
+    ref: commitSha,
+    flags,
   })
 
   return (
@@ -27,18 +31,22 @@ function PullFileEntry({
       path={path}
       runPrefetch={runPrefetch}
       pageName="pullFileView"
+      queryParams={{ flags }}
     />
   )
 }
 
 PullFileEntry.propTypes = {
-  commitSHA: PropTypes.string.isRequired,
+  commitSha: PropTypes.string.isRequired,
   pullId: PropTypes.string,
   urlPath: PropTypes.string,
   isCriticalFile: PropTypes.bool,
   name: PropTypes.string.isRequired,
   displayType: PropTypes.oneOf(Object.values(displayTypeParameter)),
   path: PropTypes.string,
+  filters: PropTypes.shape({
+    flags: PropTypes.arrayOf(PropTypes.string),
+  }),
 }
 
 export default PullFileEntry

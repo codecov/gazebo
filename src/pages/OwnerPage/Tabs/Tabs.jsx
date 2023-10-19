@@ -1,13 +1,22 @@
 import PropTypes from 'prop-types'
 import { lazy, Suspense } from 'react'
+import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
+import { TierNames, useTier } from 'services/tier'
+import { useFlags } from 'shared/featureFlags'
 import TabNavigation from 'ui/TabNavigation'
 
 const TrialReminder = lazy(() => import('./TrialReminder'))
 
-function Tabs({ provider, owner }) {
+function Tabs() {
+  const { owner, provider } = useParams()
+  const { data: tierName } = useTier({ owner, provider })
+  const { multipleTiers } = useFlags({
+    multipleTiers: true,
+  })
+
   return (
     <TabNavigation
       tabs={[
@@ -15,10 +24,14 @@ function Tabs({ provider, owner }) {
           pageName: 'owner',
           children: 'Repos',
         },
-        {
-          pageName: 'analytics',
-          children: 'Analytics',
-        },
+        ...(tierName === TierNames.TEAM && multipleTiers
+          ? []
+          : [
+              {
+                pageName: 'analytics',
+                children: 'Analytics',
+              },
+            ]),
         ...(config.IS_SELF_HOSTED
           ? []
           : [{ pageName: 'membersTab' }, { pageName: 'planTab' }]),

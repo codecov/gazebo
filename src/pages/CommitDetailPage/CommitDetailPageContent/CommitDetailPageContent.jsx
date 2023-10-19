@@ -27,13 +27,13 @@ const Loader = () => (
 )
 
 function CommitDetailPageContent() {
-  const { provider, owner, repo, commit: commitSHA } = useParams()
+  const { provider, owner, repo, commit: commitSha } = useParams()
 
   const { data: commitData } = useCommit({
     provider,
     owner,
     repo,
-    commitid: commitSHA,
+    commitid: commitSha,
   })
 
   const { erroredUploads } = extractUploads({
@@ -52,7 +52,7 @@ function CommitDetailPageContent() {
   return (
     <>
       <CommitPageTabs
-        commitSHA={commitSHA}
+        commitSha={commitSha}
         indirectChangedFilesCount={indirectChangedFilesCount}
         directChangedFilesCount={directChangedFilesCount}
       />

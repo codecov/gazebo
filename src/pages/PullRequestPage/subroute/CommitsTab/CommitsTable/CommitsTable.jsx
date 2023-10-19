@@ -1,4 +1,5 @@
-import { useParams } from 'react-router-dom'
+import qs from 'qs'
+import { useLocation, useParams } from 'react-router-dom'
 
 import Table from 'old_ui/Table'
 import { useCommits } from 'services/commits'
@@ -63,7 +64,7 @@ const handleOnNull = () => {
   }
 }
 
-function transformPullToTable(commits) {
+function transformPullToTable(commits, flags) {
   if (commits?.length > 0) {
     return commits.map((commit) => {
       if (!commit) return handleOnNull()
@@ -89,6 +90,7 @@ function transformPullToTable(commits) {
             author={author}
             commitid={commitid}
             createdAt={createdAt}
+            flags={flags}
           />
         ),
         ciStatus: (
@@ -120,6 +122,9 @@ const Loader = () => (
 
 function CommitsTable() {
   const { provider, owner, repo, pullId } = useParams()
+  const { search } = useLocation()
+  const searchParams = qs.parse(search, { ignoreQueryPrefix: true })
+  const flags = searchParams?.flags ?? []
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useCommits({
@@ -134,7 +139,7 @@ function CommitsTable() {
 
   const commits = data?.commits
 
-  const dataTable = transformPullToTable(commits)
+  const dataTable = transformPullToTable(commits, flags)
 
   return (
     <>
