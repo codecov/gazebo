@@ -98,7 +98,7 @@ describe('Flags Tab', () => {
       setup({ multipleTiers: true })
     })
 
-    it('renders a blurred image of the table', async () => {
+    it('redirects to the coverage tab', async () => {
       render(<FlagsTab />, { wrapper })
 
       await waitFor(() =>
