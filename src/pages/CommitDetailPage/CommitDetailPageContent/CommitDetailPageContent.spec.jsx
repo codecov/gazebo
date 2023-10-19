@@ -5,6 +5,8 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TierNames } from 'services/tier'
+
 import CommitDetailPageContent from './CommitDetailPageContent'
 
 jest.mock(
@@ -167,6 +169,12 @@ describe('CommitDetailPageContent', () => {
         }
 
         return res(ctx.status(200), ctx.data(mockCommitData))
+      }),
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({ owner: { plan: { tierName: TierNames.PRO } } })
+        )
       })
     )
 
