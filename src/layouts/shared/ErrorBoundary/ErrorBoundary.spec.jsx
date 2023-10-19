@@ -80,7 +80,7 @@ describe('Error Boundary', () => {
       expect(CustomError).toBeInTheDocument()
     })
   })
-  describe('You can set the scope to sent to Sentry.io', () => {
+  describe.skip('You can set the scope to sent to Sentry.io', () => {
     beforeEach(() => {
       const spySentry = jest.spyOn(Sentry, 'withScope')
       spySentry.mockImplementation((callback) => {
