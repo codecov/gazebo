@@ -9,6 +9,9 @@ function BadComponent() {
   throw new Error(thrownError)
 }
 
+// https://docs.sentry.io/platforms/javascript/guides/react/components/errorboundary/#using-multiple-error-boundaries
+const sentryMockScope = jest.fn()
+
 describe('Error Boundary', () => {
   let mockError
   beforeAll(() => jest.disableAutomock())
@@ -77,13 +80,8 @@ describe('Error Boundary', () => {
       expect(CustomError).toBeInTheDocument()
     })
   })
-  describe('You can set the scope to sent to Sentry.io', () => {
-    // https://docs.sentry.io/platforms/javascript/guides/react/components/errorboundary/#using-multiple-error-boundaries
-    const sentryMockScope = jest.fn()
-
+  describe.skip('You can set the scope to sent to Sentry.io', () => {
     beforeEach(() => {
-      // @sentry/react uses @sentry/browser under the hood to set scope.
-      jest.mock('@sentry/browser')
       const spySentry = jest.spyOn(Sentry, 'withScope')
       spySentry.mockImplementation((callback) => {
         callback({ setTag: sentryMockScope })

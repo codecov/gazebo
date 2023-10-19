@@ -37,15 +37,22 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/codecov/test-repo/pull/123/tree']}>
-      <Route path="/:provider/:owner/:repo/pull/:pullId/:path+">
-        {children}
-      </Route>
-    </MemoryRouter>
-  </QueryClientProvider>
-)
+const wrapper =
+  (
+    { initialEntries } = {
+      initialEntries: ['/gh/codecov/test-repo/pull/123/tree'],
+    }
+  ) =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Route path="/:provider/:owner/:repo/pull/:pullId/:path+">
+            {children}
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
 beforeAll(() => {
   server.listen()
@@ -74,7 +81,7 @@ describe('PullDirEntry', () => {
   it('displays the directory name', () => {
     render(
       <PullDirEntry pullId="123" name="dir" urlPath="path/to/directory" />,
-      { wrapper }
+      { wrapper: wrapper() }
     )
 
     expect(screen.getByText('dir')).toBeInTheDocument()
@@ -84,7 +91,7 @@ describe('PullDirEntry', () => {
     it('sets the correct href', () => {
       render(
         <PullDirEntry pullId="123" name="dir" urlPath="path/to/directory" />,
-        { wrapper }
+        { wrapper: wrapper() }
       )
 
       const a = screen.getByRole('link')
@@ -97,7 +104,7 @@ describe('PullDirEntry', () => {
 
   describe('no path is provided', () => {
     it('sets the correct href', () => {
-      render(<PullDirEntry pullId="123" name="dir" />, { wrapper })
+      render(<PullDirEntry pullId="123" name="dir" />, { wrapper: wrapper() })
 
       const a = screen.getByRole('link')
       expect(a).toHaveAttribute(
@@ -111,7 +118,7 @@ describe('PullDirEntry', () => {
     const user = userEvent.setup()
     render(
       <PullDirEntry pullId="123" name="dir" urlPath="path/to/directory" />,
-      { wrapper }
+      { wrapper: wrapper() }
     )
 
     const dir = screen.getByText('dir')
@@ -132,6 +139,31 @@ describe('PullDirEntry', () => {
           },
         ],
       })
+    )
+  })
+
+  it('passes flags from the search params', () => {
+    render(
+      <PullDirEntry
+        pullId="123"
+        name="dir"
+        urlPath="path/to/directory"
+        filters={{
+          ordering: { direction: 'asc', parameter: 'name' },
+          flags: ['a', 'b'],
+        }}
+      />,
+      {
+        wrapper: wrapper({
+          initialEntries: ['/gh/codecov/test-repo/pull/123/tree'],
+        }),
+      }
+    )
+
+    const a = screen.getByRole('link')
+    expect(a).toHaveAttribute(
+      'href',
+      '/gh/codecov/test-repo/pull/123/tree/path/to/directory/dir?flags%5B0%5D=a&flags%5B1%5D=b'
     )
   })
 })

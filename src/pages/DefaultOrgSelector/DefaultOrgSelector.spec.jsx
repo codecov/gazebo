@@ -7,11 +7,8 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { useIntersection } from 'react-use'
 
-import { trackSegmentEvent } from 'services/tracking/segment'
-
 import DefaultOrgSelector from './DefaultOrgSelector'
 
-jest.mock('services/tracking/segment')
 jest.mock('react-use/lib/useIntersection')
 jest.mock('./GitHubHelpBanner', () => () => 'GitHubHelpBanner')
 
@@ -377,73 +374,6 @@ describe('DefaultOrgSelector', () => {
 
   describe('on submit', () => {
     beforeEach(() => jest.resetAllMocks())
-
-    it('tracks the segment event', async () => {
-      const segmentMock = jest.fn()
-      trackSegmentEvent.mockReturnValue(segmentMock)
-
-      const { user } = setup({
-        useUserData: {
-          me: {
-            email: 'personal@cr.com',
-            trackingMetadata: {
-              ownerid: '1234',
-            },
-            user: {
-              username: 'chetney',
-            },
-          },
-        },
-        myOrganizationsData: {
-          me: {
-            myOrganizations: {
-              edges: [
-                {
-                  node: {
-                    avatarUrl:
-                      'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
-                    username: 'criticalRole',
-                    ownerid: 1,
-                  },
-                },
-              ],
-              pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
-            },
-          },
-        },
-      })
-
-      render(<DefaultOrgSelector />, { wrapper: wrapper() })
-
-      const selectLabel = await screen.findByText(
-        /Which organization are you using today?/
-      )
-      expect(selectLabel).toBeInTheDocument()
-
-      const selectOrg = screen.getByRole('button', {
-        name: 'Select an organization',
-      })
-      await user.click(selectOrg)
-
-      const orgInList = screen.getByRole('option', { name: 'criticalRole' })
-      await user.click(orgInList)
-
-      const submit = await screen.findByRole('button', {
-        name: /Continue/,
-      })
-
-      await user.click(submit)
-
-      expect(trackSegmentEvent).toHaveBeenLastCalledWith({
-        event: 'Onboarding default org selector',
-        data: {
-          org: 'criticalRole',
-          ownerid: '1234',
-          username: 'chetney',
-        },
-      })
-    })
-
     it('fires update default org mutation', async () => {
       const { user, mockMutationVariables } = setup({
         useUserData: {
@@ -573,9 +503,6 @@ describe('DefaultOrgSelector', () => {
     beforeEach(() => jest.resetAllMocks())
 
     it('redirects to self org page', async () => {
-      const segmentMock = jest.fn()
-      trackSegmentEvent.mockReturnValue(segmentMock)
-
       const { user, mockMutationVariables } = setup({
         useUserData: {
           me: {
@@ -937,9 +864,6 @@ describe('DefaultOrgSelector', () => {
     beforeEach(() => jest.resetAllMocks())
 
     it('redirects to self org page', async () => {
-      const segmentMock = jest.fn()
-      trackSegmentEvent.mockReturnValue(segmentMock)
-
       const { user, mockMutationVariables } = setup({
         useUserData: {
           me: {

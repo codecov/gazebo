@@ -135,13 +135,13 @@ RenderSubComponent.propTypes = {
 }
 
 function IndirectChangesTable() {
-  const { provider, owner, repo, commit: commitSHA } = useParams()
+  const { provider, owner, repo, commit: commitSha } = useParams()
 
   const { data: commitData, isLoading } = useCommit({
     provider,
     owner,
     repo,
-    commitid: commitSHA,
+    commitid: commitSha,
     filters: {
       hasUnintendedChanges: true,
     },

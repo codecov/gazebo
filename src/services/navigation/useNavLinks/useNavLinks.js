@@ -4,8 +4,18 @@ import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
+// Note to Terry, when we have more time automate all paths to pass through query search params.
+
 export function useNavLinks() {
-  const { provider: p, owner: o, repo: r, id: i, pullId: pi } = useParams()
+  const {
+    provider: p,
+    owner: o,
+    repo: r,
+    id: i,
+    pullId: pi,
+    commit: c,
+    path: pa,
+  } = useParams()
 
   const utmCookie = Cookie.get('utmParams')
   const utmCookieObj = qs.parse(utmCookie, {
@@ -159,6 +169,7 @@ export function useNavLinks() {
           provider: p,
           owner: o,
           repo: r,
+          commit: c,
           queryParams: {},
         }
       ) => {
@@ -363,13 +374,21 @@ export function useNavLinks() {
     },
     pullDetail: {
       path: (
-        { provider = p, owner = o, repo = r, pullId = pi } = {
+        { provider = p, owner = o, repo = r, pullId = pi, queryParams = {} } = {
           provider: p,
           owner: o,
           repo: r,
           pullId: pi,
+          queryParams: {},
         }
-      ) => `/${provider}/${owner}/${repo}/pull/${pullId}`,
+      ) => {
+        let query = ''
+        if (queryParams && Object.keys(queryParams).length > 0) {
+          query = qs.stringify(queryParams, { addQueryPrefix: true })
+        }
+
+        return `/${provider}/${owner}/${repo}/pull/${pullId}${query}`
+      },
       text: 'Files changed',
     },
     settings: {
@@ -452,13 +471,20 @@ export function useNavLinks() {
     pullIndirectChanges: {
       text: 'Indirect changes',
       path: (
-        { provider = p, owner = o, repo = r, pullId = pi } = {
+        { provider = p, owner = o, repo = r, pullId = pi, queryParams = {} } = {
           provider: p,
           owner: o,
           repo: r,
           pullId: pi,
+          queryParams: {},
         }
-      ) => `/${provider}/${owner}/${repo}/pull/${pullId}/indirect-changes`,
+      ) => {
+        let query = ''
+        if (queryParams && Object.keys(queryParams).length > 0) {
+          query = qs.stringify(queryParams, { addQueryPrefix: true })
+        }
+        return `/${provider}/${owner}/${repo}/pull/${pullId}/indirect-changes${query}`
+      },
       isExternalLink: false,
     },
     commitIndirectChanges: {
@@ -483,66 +509,116 @@ export function useNavLinks() {
     pullCommits: {
       text: 'Commits',
       path: (
-        { provider = p, owner = o, repo = r, pullId = pi } = {
+        { provider = p, owner = o, repo = r, pullId = pi, queryParams = {} } = {
           provider: p,
           owner: o,
           repo: r,
           pullId: pi,
+          queryParams: {},
         }
-      ) => `/${provider}/${owner}/${repo}/pull/${pullId}/commits`,
+      ) => {
+        let query = ''
+        if (Object.keys(queryParams).length > 0) {
+          query = qs.stringify(queryParams, { addQueryPrefix: true })
+        }
+        return `/${provider}/${owner}/${repo}/pull/${pullId}/commits${query}`
+      },
       isExternalLink: false,
     },
     pullFlags: {
       text: 'Flags',
       path: (
-        { provider = p, owner = o, repo = r, pullId = pi } = {
+        { provider = p, owner = o, repo = r, pullId = pi, queryParams = {} } = {
           provider: p,
           owner: o,
           repo: r,
           pullId: pi,
+          queryParams: {},
         }
-      ) => `/${provider}/${owner}/${repo}/pull/${pullId}/flags`,
+      ) => {
+        let query = ''
+        if (Object.keys(queryParams).length > 0) {
+          query = qs.stringify(queryParams, { addQueryPrefix: true })
+        }
+        return `/${provider}/${owner}/${repo}/pull/${pullId}/flags${query}`
+      },
       isExternalLink: false,
     },
     pullComponents: {
       text: 'Flags',
       path: (
-        { provider = p, owner = o, repo = r, pullId = pi } = {
+        { provider = p, owner = o, repo = r, pullId = pi, queryParams = {} } = {
           provider: p,
           owner: o,
           repo: r,
           pullId: pi,
+          queryParams: {},
         }
-      ) => `/${provider}/${owner}/${repo}/pull/${pullId}/components`,
+      ) => {
+        let query = ''
+        if (Object.keys(queryParams).length > 0) {
+          query = qs.stringify(queryParams, { addQueryPrefix: true })
+        }
+        return `/${provider}/${owner}/${repo}/pull/${pullId}/components${query}`
+      },
       isExternalLink: false,
     },
+    // Tree vs blogs gets strange, for some reason the code relies on a route param path not tree despite the path label. Could likely use a refactor.
     pullTreeView: {
       text: 'Pull tree view',
       path: (
-        { provider = p, owner = o, repo = r, pullId = pi, tree } = {
+        {
+          provider = p,
+          owner = o,
+          repo = r,
+          pullId = pi,
+          tree,
+          queryParams = {},
+        } = {
           provider: p,
           owner: o,
           repo: r,
           pullId: pi,
+          queryParams: {},
         }
       ) => {
-        if (tree) {
-          return `/${provider}/${owner}/${repo}/pull/${pullId}/tree/${tree}`
+        // TODO: doesn't default to tree in the url, this diverges from the rest of the links how ever the breadcrumbs rely on it. We should make an alternative solution for the breadcrumb / to support converting to typescript.
+        let query = ''
+        if (Object.keys(queryParams).length > 0) {
+          query = qs.stringify(queryParams, { addQueryPrefix: true })
         }
-        return `/${provider}/${owner}/${repo}/pull/${pullId}/tree`
+
+        if (tree) {
+          return `/${provider}/${owner}/${repo}/pull/${pullId}/tree/${tree}${query}`
+        }
+        return `/${provider}/${owner}/${repo}/pull/${pullId}/tree${query}`
       },
       isExternalLink: false,
     },
     pullFileView: {
       path: (
-        { provider = p, owner = o, repo = r, tree, pullId = pi } = {
+        {
+          provider = p,
+          owner = o,
+          repo = r,
+          tree = pa,
+          pullId = pi,
+          queryParams = {},
+        } = {
           provider: p,
           owner: o,
           repo: r,
           pullId: pi,
+          tree: pa,
+          queryParams: {},
         }
       ) => {
-        return `/${provider}/${owner}/${repo}/pull/${pullId}/blob/${tree}`
+        let query = ''
+        if (Object.keys(queryParams).length > 0) {
+          query = qs.stringify(queryParams, { addQueryPrefix: true })
+        }
+
+        return `/${provider}/${owner}/${repo}/pull/${pullId}/blob/${tree}${query}`
       },
       isExternalLink: false,
       text: 'Pull File View',

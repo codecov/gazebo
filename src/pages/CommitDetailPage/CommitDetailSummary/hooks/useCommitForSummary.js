@@ -27,13 +27,13 @@ export function getCommitDataForSummary({
 }
 
 export function useCommitForSummary() {
-  const { provider, owner, repo, commit: commitSHA } = useParams()
+  const { provider, owner, repo, commit: commitSha } = useParams()
 
   const { data } = useCommit({
     provider,
     owner,
     repo,
-    commitid: commitSHA,
+    commitid: commitSha,
   })
 
   const compareWithParent = data?.commit?.compareWithParent

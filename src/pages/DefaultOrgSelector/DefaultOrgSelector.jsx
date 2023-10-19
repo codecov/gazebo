@@ -7,7 +7,6 @@ import { z } from 'zod'
 import { TrialStatuses, usePlanData } from 'services/account'
 import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
 import { useStaticNavLinks } from 'services/navigation'
-import { trackSegmentEvent } from 'services/tracking/segment'
 import { useStartTrial } from 'services/trial'
 import { useUser } from 'services/user'
 import { isBasicPlan } from 'shared/utils/billing'
@@ -100,16 +99,6 @@ function DefaultOrgSelector() {
   })
 
   const onSubmit = () => {
-    const segmentEvent = {
-      event: 'Onboarding default org selector',
-      data: {
-        ownerid: currentUser?.trackingMetadata?.ownerid,
-        username: currentUser?.user?.username,
-        org: selectedOrg,
-      },
-    }
-
-    trackSegmentEvent(segmentEvent)
     updateDefaultOrg({ username: selectedOrg })
 
     if (
