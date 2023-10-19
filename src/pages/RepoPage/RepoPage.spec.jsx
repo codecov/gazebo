@@ -7,6 +7,8 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
+import { TierNames } from 'services/tier'
+import { useFlags } from 'shared/featureFlags'
 
 import { RepoBreadcrumbProvider } from './context'
 import RepoPage from './RepoPage'
@@ -17,6 +19,7 @@ jest.mock('./NewRepoTab', () => () => 'NewRepoTab')
 jest.mock('./PullsTab', () => () => 'PullsTab')
 jest.mock('./FlagsTab', () => () => 'FlagsTab')
 jest.mock('./SettingsTab', () => () => 'SettingsTab')
+jest.mock('shared/featureFlags')
 
 const mockGetRepo = (
   noUploadToken,
@@ -108,6 +111,7 @@ describe('RepoPage', () => {
       isRepoPrivate,
       isRepoActivated,
       isRepoActive,
+      multipleTiers,
     } = {
       noUploadToken: false,
       isCurrentUserPartOfOrg: true,
@@ -115,9 +119,14 @@ describe('RepoPage', () => {
       isRepoPrivate: false,
       isRepoActivated: true,
       isRepoActive: true,
+      multipleTiers: false,
     }
   ) {
     const user = userEvent.setup()
+
+    useFlags.mockReturnValue({
+      multipleTiers,
+    })
 
     server.use(
       graphql.query('GetRepo', (req, res, ctx) => {
@@ -137,6 +146,18 @@ describe('RepoPage', () => {
         }
 
         return res(ctx.status(200), ctx.data({ owner: {} }))
+      }),
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        if (multipleTiers) {
+          return res(
+            ctx.status(200),
+            ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
+          )
+        }
+        return res(
+          ctx.status(200),
+          ctx.data({ owner: { plan: { tierName: TierNames.PRO } } })
+        )
       })
     )
 
@@ -219,6 +240,93 @@ describe('RepoPage', () => {
 
       it('has a settings tab', async () => {
         const { user } = setup()
+        render(<RepoPage />, { wrapper: wrapper() })
+
+        const tab = await screen.findByRole('link', { name: 'Settings' })
+        expect(tab).toBeInTheDocument()
+        expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/settings')
+
+        await user.click(tab)
+
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/settings')
+        )
+      })
+    })
+
+    describe('user is part of org and has team tier', () => {
+      it('has a coverage tab', async () => {
+        const { user } = setup({
+          multipleTiers: true,
+          hasRepoData: true,
+        })
+        render(<RepoPage />, {
+          wrapper: wrapper('/gh/codecov/cool-repo/flags'),
+        })
+
+        const tab = await screen.findByRole('link', { name: 'Coverage' })
+        expect(tab).toBeInTheDocument()
+        expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo')
+
+        await user.click(tab)
+
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe('/gh/codecov/cool-repo')
+        )
+      })
+
+      it('does not have a flags tab', () => {
+        setup({
+          multipleTiers: true,
+          hasRepoData: true,
+        })
+        render(<RepoPage />, { wrapper: wrapper() })
+
+        const tab = screen.queryByRole('link', { name: 'Flags' })
+        expect(tab).not.toBeInTheDocument()
+      })
+
+      it('has a commits tab', async () => {
+        const { user } = setup({
+          multipleTiers: true,
+          hasRepoData: true,
+        })
+        render(<RepoPage />, { wrapper: wrapper() })
+
+        const tab = await screen.findByRole('link', { name: 'Commits' })
+        expect(tab).toBeInTheDocument()
+        expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/commits')
+
+        await user.click(tab)
+
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/commits')
+        )
+      })
+
+      it('has a pulls tab', async () => {
+        const { user } = setup({
+          multipleTiers: true,
+          hasRepoData: true,
+        })
+        render(<RepoPage />, { wrapper: wrapper() })
+
+        const tab = await screen.findByRole('link', { name: 'Pulls' })
+        expect(tab).toBeInTheDocument()
+        expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/pulls')
+
+        await user.click(tab)
+
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/pulls')
+        )
+      })
+
+      it('has a settings tab', async () => {
+        const { user } = setup({
+          multipleTiers: true,
+          hasRepoData: true,
+        })
         render(<RepoPage />, { wrapper: wrapper() })
 
         const tab = await screen.findByRole('link', { name: 'Settings' })
