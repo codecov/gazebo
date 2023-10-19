@@ -83,25 +83,17 @@ const mockOwner = {
 }
 
 const server = setupServer()
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      suspense: true,
-      retry: false,
-    },
-  },
-})
 
 const wrapper =
-  (
-    initialEntries = [
-      '/gh/codecov/cool-repo/commit/e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed',
-    ]
-  ) =>
+  (queryClient) =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
+        <MemoryRouter
+          initialEntries={[
+            '/gh/codecov/cool-repo/commit/e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed',
+          ]}
+        >
           <Route
             path={[
               '/:provider/:owner/:repo/commit/:commit/blob/:path+',
@@ -122,7 +114,6 @@ beforeAll(() => {
 })
 
 afterEach(() => {
-  queryClient.clear()
   server.resetHandlers()
 })
 
@@ -134,6 +125,15 @@ describe('CommitPage', () => {
   function setup(
     { hasYamlErrors, noCommit } = { hasYamlErrors: false, noCommit: false }
   ) {
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          suspense: true,
+          retry: false,
+        },
+      },
+    })
+
     useTruncation.mockImplementation(() => ({
       ref: () => {},
       canTruncate: false,
@@ -180,61 +180,53 @@ describe('CommitPage', () => {
         return res(ctx.status(200), ctx.json({}))
       })
     )
+
+    return { queryClient }
   }
 
   describe('rendering component', () => {
     describe('testing not found', () => {
       it('renders not found page', async () => {
-        setup({ noCommit: true })
+        const { queryClient } = setup({ noCommit: true })
         render(<CommitPage />, {
-          wrapper: wrapper(),
+          wrapper: wrapper(queryClient),
         })
 
-        expect(await screen.findByText('Error 404')).toBeTruthy()
-        const notFound = screen.getByText('Error 404')
+        const notFound = await screen.findByText('Error 404')
         expect(notFound).toBeInTheDocument()
       })
     })
 
     describe('testing breadcrumb', () => {
       it('renders owner link', async () => {
-        setup()
+        const { queryClient } = setup()
         render(<CommitPage />, {
-          wrapper: wrapper(),
+          wrapper: wrapper(queryClient),
         })
 
-        expect(
-          await screen.findByRole('link', { name: 'codecov' })
-        ).toBeTruthy()
-        const ownerLink = screen.getByRole('link', { name: 'codecov' })
+        const ownerLink = await screen.findByRole('link', { name: 'codecov' })
         expect(ownerLink).toBeInTheDocument()
         expect(ownerLink).toHaveAttribute('href', '/gh/codecov')
       })
 
       it('renders repo link', async () => {
-        setup()
+        const { queryClient } = setup()
         render(<CommitPage />, {
-          wrapper: wrapper(),
+          wrapper: wrapper(queryClient),
         })
 
-        expect(
-          await screen.findByRole('link', { name: 'cool-repo' })
-        ).toBeTruthy()
-        const ownerLink = screen.getByRole('link', { name: 'cool-repo' })
+        const ownerLink = await screen.findByRole('link', { name: 'cool-repo' })
         expect(ownerLink).toBeInTheDocument()
         expect(ownerLink).toHaveAttribute('href', '/gh/codecov/cool-repo')
       })
 
       it('renders commits page link', async () => {
-        setup()
+        const { queryClient } = setup()
         render(<CommitPage />, {
-          wrapper: wrapper(),
+          wrapper: wrapper(queryClient),
         })
 
-        expect(
-          await screen.findByRole('link', { name: 'commits' })
-        ).toBeTruthy()
-        const ownerLink = screen.getByRole('link', { name: 'commits' })
+        const ownerLink = await screen.findByRole('link', { name: 'commits' })
         expect(ownerLink).toBeInTheDocument()
         expect(ownerLink).toHaveAttribute(
           'href',
@@ -243,46 +235,43 @@ describe('CommitPage', () => {
       })
 
       it('renders read only current short sha', async () => {
-        setup()
+        const { queryClient } = setup()
         render(<CommitPage />, {
-          wrapper: wrapper(),
+          wrapper: wrapper(queryClient),
         })
 
-        expect(await screen.findAllByText('e736f78')).toBeTruthy()
-        const ownerLink = screen.getAllByText('e736f78')
+        const ownerLink = await screen.findAllByText('e736f78')
         expect(ownerLink.length).toBeGreaterThanOrEqual(1)
       })
     })
 
     describe('testing commit error banners', () => {
       it('displays bot error banner', async () => {
-        setup({ hasYamlErrors: true })
+        const { queryClient } = setup({ hasYamlErrors: true })
         render(<CommitPage />, {
-          wrapper: wrapper(),
+          wrapper: wrapper(queryClient),
         })
 
-        expect(await screen.findByText(/Team bot/)).toBeTruthy()
-        const teamBot = screen.getByText(/Team bot/)
+        const teamBot = await screen.findByText(/Team bot/)
         expect(teamBot).toBeInTheDocument()
       })
 
       it('displays yaml error banner', async () => {
-        setup({ hasYamlErrors: true })
+        const { queryClient } = setup({ hasYamlErrors: true })
         render(<CommitPage />, {
-          wrapper: wrapper(),
+          wrapper: wrapper(queryClient),
         })
 
-        expect(await screen.findByText('Commit YAML is invalid')).toBeTruthy()
-        const yamlError = screen.getByText('Commit YAML is invalid')
+        const yamlError = await screen.findByText('Commit YAML is invalid')
         expect(yamlError).toBeInTheDocument()
       })
     })
 
     describe('testing setting of query cache', () => {
       it('sets ignore upload ids to empty array', async () => {
-        setup({ hasYamlErrors: true })
+        const { queryClient } = setup({ hasYamlErrors: true })
         render(<CommitPage />, {
-          wrapper: wrapper(),
+          wrapper: wrapper(queryClient),
         })
 
         await waitFor(() =>
