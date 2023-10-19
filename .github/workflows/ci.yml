@@ -11,9 +11,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
-env:
-  total-runners: 6
-
 jobs:
   install:
     name: Install deps
@@ -39,14 +36,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}-
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
-        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
+#      - name: Setup Bun
+#        uses: oven-sh/setup-bun@v1
+#        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
 
       - name: Install packages
         if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
         run: |
-          bun install
+          npm install
   lint:
     name: Run Lint
     runs-on: ubuntu-latest
