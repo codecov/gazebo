@@ -7,12 +7,10 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import config from 'config'
 
 import { TierNames } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 
 import Tabs from './Tabs'
 
 jest.mock('config')
-jest.mock('shared/featureFlags')
 
 const queryClient = new QueryClient()
 const server = setupServer()
@@ -39,20 +37,16 @@ afterAll(() => {
 
 describe('Tabs', () => {
   function setup(
-    { isSelfHosted = false, multipleTiers = false } = {
+    { isSelfHosted = false, tierValue = TierNames.TEAM } = {
       isSelfHosted: false,
-      multipleTiers: false,
+      tierValue: TierNames.PRO,
     }
   ) {
     config.IS_SELF_HOSTED = isSelfHosted
 
-    useFlags.mockReturnValue({
-      multipleTiers,
-    })
-
     server.use(
       graphql.query('OwnerTier', (req, res, ctx) => {
-        if (multipleTiers) {
+        if (tierValue === TierNames.TEAM) {
           return res(
             ctx.status(200),
             ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
@@ -125,7 +119,7 @@ describe('Tabs', () => {
 
   describe('when user has team tier', () => {
     it('renders links to the home page', () => {
-      setup({ multipleTiers: true })
+      setup({ multipleTiers: TierNames.TEAM })
       render(<Tabs />, { wrapper })
 
       expect(
@@ -136,7 +130,7 @@ describe('Tabs', () => {
     })
 
     it('does not render links to the analytics page', async () => {
-      setup({ multipleTiers: true })
+      setup({ multipleTiers: TierNames.TEAM })
       render(<Tabs />, { wrapper })
 
       const analyticsLink = screen.queryByText(/Analytics/)
@@ -144,7 +138,7 @@ describe('Tabs', () => {
     })
 
     it('renders links to the settings page', () => {
-      setup({ multipleTiers: true })
+      setup({ multipleTiers: TierNames.TEAM })
       render(<Tabs />, { wrapper })
 
       expect(
@@ -155,7 +149,7 @@ describe('Tabs', () => {
     })
 
     it('renders link to plan page', () => {
-      setup({ multipleTiers: true })
+      setup({ multipleTiers: TierNames.TEAM })
       render(<Tabs />, { wrapper })
 
       expect(
@@ -166,7 +160,7 @@ describe('Tabs', () => {
     })
 
     it('renders link to members page', () => {
-      setup({ multipleTiers: true })
+      setup({ multipleTiers: TierNames.TEAM })
       render(<Tabs />, { wrapper })
 
       expect(

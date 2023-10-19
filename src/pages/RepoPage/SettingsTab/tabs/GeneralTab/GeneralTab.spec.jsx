@@ -5,7 +5,6 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 
 import GeneralTab from './GeneralTab'
 
@@ -13,7 +12,6 @@ jest.mock('./Tokens/TokensTeam', () => () => 'Tokens Team Component')
 jest.mock('./Tokens/Tokens', () => () => 'Tokens Component')
 jest.mock('./DangerZone', () => () => 'DangerZone Component')
 jest.mock('./DefaultBranch', () => () => 'Default Branch')
-jest.mock('shared/featureFlags')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -40,15 +38,11 @@ afterAll(() => server.close())
 
 describe('GeneralTab', () => {
   function setup(
-    { hasDefaultBranch = false, multipleTiers = false } = {
+    { hasDefaultBranch = false, tierValue = TierNames.TEAM } = {
       hasDefaultBranch: false,
-      multipleTiers: false,
+      tierValue: TierNames.PRO,
     }
   ) {
-    useFlags.mockReturnValue({
-      multipleTiers,
-    })
-
     server.use(
       graphql.query('RepoDefaultBranch', (req, res, ctx) => {
         if (hasDefaultBranch) {
@@ -77,7 +71,7 @@ describe('GeneralTab', () => {
         )
       }),
       graphql.query('OwnerTier', (req, res, ctx) => {
-        if (multipleTiers) {
+        if (tierValue === TierNames.TEAM) {
           return res(
             ctx.status(200),
             ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
@@ -134,7 +128,7 @@ describe('GeneralTab', () => {
 
   describe('when rendered with team tier', () => {
     beforeEach(() => {
-      setup({ multipleTiers: true })
+      setup({ multipleTiers: TierNames.TEAM })
     })
 
     it('render tokens team component', async () => {

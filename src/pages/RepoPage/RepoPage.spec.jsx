@@ -8,7 +8,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
 import { TierNames } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 
 import { RepoBreadcrumbProvider } from './context'
 import RepoPage from './RepoPage'
@@ -111,7 +110,7 @@ describe('RepoPage', () => {
       isRepoPrivate,
       isRepoActivated,
       isRepoActive,
-      multipleTiers,
+      tierValue,
     } = {
       noUploadToken: false,
       isCurrentUserPartOfOrg: true,
@@ -119,14 +118,10 @@ describe('RepoPage', () => {
       isRepoPrivate: false,
       isRepoActivated: true,
       isRepoActive: true,
-      multipleTiers: false,
+      tierValue: TierNames.PRO,
     }
   ) {
     const user = userEvent.setup()
-
-    useFlags.mockReturnValue({
-      multipleTiers,
-    })
 
     server.use(
       graphql.query('GetRepo', (req, res, ctx) => {
@@ -148,7 +143,7 @@ describe('RepoPage', () => {
         return res(ctx.status(200), ctx.data({ owner: {} }))
       }),
       graphql.query('OwnerTier', (req, res, ctx) => {
-        if (multipleTiers) {
+        if (tierValue === TierNames.TEAM) {
           return res(
             ctx.status(200),
             ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
@@ -257,7 +252,7 @@ describe('RepoPage', () => {
     describe('user is part of org and has team tier', () => {
       it('has a coverage tab', async () => {
         const { user } = setup({
-          multipleTiers: true,
+          multipleTiers: TierNames.TEAM,
           hasRepoData: true,
         })
         render(<RepoPage />, {
@@ -277,7 +272,7 @@ describe('RepoPage', () => {
 
       it('does not have a flags tab', () => {
         setup({
-          multipleTiers: true,
+          multipleTiers: TierNames.TEAM,
           hasRepoData: true,
         })
         render(<RepoPage />, { wrapper: wrapper() })
@@ -288,7 +283,7 @@ describe('RepoPage', () => {
 
       it('has a commits tab', async () => {
         const { user } = setup({
-          multipleTiers: true,
+          multipleTiers: TierNames.TEAM,
           hasRepoData: true,
         })
         render(<RepoPage />, { wrapper: wrapper() })
@@ -306,7 +301,7 @@ describe('RepoPage', () => {
 
       it('has a pulls tab', async () => {
         const { user } = setup({
-          multipleTiers: true,
+          multipleTiers: TierNames.TEAM,
           hasRepoData: true,
         })
         render(<RepoPage />, { wrapper: wrapper() })
@@ -324,7 +319,7 @@ describe('RepoPage', () => {
 
       it('has a settings tab', async () => {
         const { user } = setup({
-          multipleTiers: true,
+          multipleTiers: TierNames.TEAM,
           hasRepoData: true,
         })
         render(<RepoPage />, { wrapper: wrapper() })

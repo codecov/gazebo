@@ -7,7 +7,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { useLocationParams } from 'services/navigation'
 import { TierNames } from 'services/tier'
 import { useOwner } from 'services/user'
-import { useFlags } from 'shared/featureFlags'
 
 import AnalyticsPage from './AnalyticsPage'
 
@@ -19,7 +18,6 @@ jest.mock('./Tabs', () => () => 'Tabs')
 jest.mock('./ChartSelectors', () => () => 'Chart Selectors')
 jest.mock('./Chart', () => () => 'Line Chart')
 jest.mock('../../shared/ListRepo/ReposTable', () => () => 'ReposTable')
-jest.mock('shared/featureFlags')
 
 const queryClient = new QueryClient()
 const server = setupServer()
@@ -56,7 +54,7 @@ afterAll(() => {
 })
 
 describe('AnalyticsPage', () => {
-  function setup({ owner, params, multipleTiers = false }) {
+  function setup({ owner, params, tierValue = TierNames.TEAM }) {
     useOwner.mockReturnValue({
       data: owner,
     })
@@ -67,13 +65,9 @@ describe('AnalyticsPage', () => {
       },
     })
 
-    useFlags.mockReturnValue({
-      multipleTiers,
-    })
-
     server.use(
       graphql.query('OwnerTier', (req, res, ctx) => {
-        if (multipleTiers) {
+        if (tierValue === TierNames.TEAM) {
           return res(
             ctx.status(200),
             ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
@@ -194,7 +188,7 @@ describe('AnalyticsPage', () => {
           username: 'codecov',
           isCurrentUserPartOfOrg: true,
         },
-        multipleTiers: true,
+        multipleTiers: TierNames.TEAM,
       })
       render(<AnalyticsPage />, { wrapper })
 
