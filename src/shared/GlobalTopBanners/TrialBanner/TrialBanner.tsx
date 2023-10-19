@@ -1,6 +1,6 @@
 import { differenceInCalendarDays } from 'date-fns'
 import isUndefined from 'lodash/isUndefined'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 
 import config from 'config'
 
@@ -24,6 +24,10 @@ const determineDateDiff = ({
   return dateDiff
 }
 
+const startsWithPlan = (pathName: string): boolean => {
+  return pathName.startsWith('/plan')
+}
+
 interface UrlParams {
   provider?: string
   owner?: string
@@ -31,6 +35,7 @@ interface UrlParams {
 
 const TrialBanner: React.FC = () => {
   const { provider, owner } = useParams<UrlParams>()
+  const pathStartsWithPlan = startsWithPlan(useLocation().pathname)
 
   const enableQuery = !!owner
 
@@ -61,7 +66,8 @@ const TrialBanner: React.FC = () => {
     isUndefined(provider) ||
     isUndefined(owner) ||
     !ownerData?.isCurrentUserPartOfOrg ||
-    config.IS_SELF_HOSTED
+    config.IS_SELF_HOSTED ||
+    pathStartsWithPlan
   ) {
     return null
   }
