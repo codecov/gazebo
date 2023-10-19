@@ -6,6 +6,7 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import useIntersection from 'react-use/lib/useIntersection'
 
+import { TierNames } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 
 import FlagMultiSelect from './FlagMultiSelect'
@@ -144,11 +145,13 @@ describe('FlagMultiSelect', () => {
       isIntersecting = false,
       noNextPage = false,
       backfillData = mockBackfillHasFlagsAndActive,
+      tierValue = TierNames.PRO,
     } = {
       flagValue: false,
       isIntersecting: false,
       noNextPage: false,
       mockBackfillHasFlagsAndActive: mockBackfillHasFlagsAndActive,
+      tierValue: TierNames.PRO,
     }
   ) {
     const user = userEvent.setup()
@@ -172,6 +175,18 @@ describe('FlagMultiSelect', () => {
       }),
       graphql.query('BackfillFlagMemberships', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(backfillData))
+      }),
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        if (tierValue === TierNames.TEAM) {
+          return res(
+            ctx.status(200),
+            ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
+          )
+        }
+        return res(
+          ctx.status(200),
+          ctx.data({ owner: { plan: { tierName: TierNames.PRO } } })
+        )
       })
     )
 
@@ -284,6 +299,19 @@ describe('FlagMultiSelect', () => {
     describe('when flag count is zero', () => {
       it('does not show multi select', async () => {
         setup({ flagValue: true, backfillData: mockBackfillNoFlagsPresent })
+
+        const { container } = render(<FlagMultiSelect />, { wrapper })
+
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
+
+        await waitFor(() => expect(container).toBeEmptyDOMElement())
+      })
+    })
+
+    describe('when on team plan', () => {
+      it('does not show multi select', async () => {
+        setup({ flagValue: true, tierValue: TierNames.TEAM })
 
         const { container } = render(<FlagMultiSelect />, { wrapper })
 
