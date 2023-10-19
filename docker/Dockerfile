@@ -1,10 +1,10 @@
 # syntax = docker/dockerfile:1.3
-FROM oven/bun:alpine as bun
+FROM node:18.8.0-alpine3.15 as npm
 RUN apk -U add git
 RUN mkdir /home/workspace
 COPY package.json /home/workspace
 WORKDIR /home/workspace
-RUN bun install
+RUN npm install
 
 FROM            alpine:3.17 as uploader
 USER            root
