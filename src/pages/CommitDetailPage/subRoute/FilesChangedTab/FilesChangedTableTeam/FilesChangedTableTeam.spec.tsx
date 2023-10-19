@@ -197,33 +197,29 @@ const mockEmptyFilesComparison = {
 }
 
 const server = setupServer()
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
-})
 
-const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/codecov/test-repo/commit/s2h5a6']}>
-      <Route path="/:provider/:owner/:repo/commit/:commit">{children}</Route>
-    </MemoryRouter>
-  </QueryClientProvider>
-)
+const wrapper =
+  (queryClient: QueryClient): React.FC<React.PropsWithChildren> =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/gh/codecov/test-repo/commit/s2h5a6']}>
+          <Route path="/:provider/:owner/:repo/commit/:commit">
+            {children}
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
 beforeAll(() => {
   server.listen()
 })
 
 beforeEach(() => {
-  queryClient.clear()
   server.resetHandlers()
 })
 
 afterEach(() => {
-  queryClient.clear()
   server.resetHandlers()
 })
 
@@ -234,17 +230,26 @@ afterAll(() => {
 interface SetupArgs {
   pendingCommit?: boolean
   noCoveredFiles?: boolean
+  temp?: string
 }
 
 describe('FilesChangedTableTeam', () => {
   function setup(
-    { pendingCommit, noCoveredFiles }: SetupArgs = {
+    { pendingCommit = false, noCoveredFiles = false, temp }: SetupArgs = {
       pendingCommit: false,
       noCoveredFiles: false,
     }
   ) {
     const user = userEvent.setup()
     const mockVars = jest.fn()
+
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+        },
+      },
+    })
 
     server.use(
       graphql.query('GetCommitTeam', (req, res, ctx) => {
@@ -275,29 +280,29 @@ describe('FilesChangedTableTeam', () => {
       })
     )
 
-    return { user, mockVars }
+    return { user, mockVars, queryClient }
   }
 
   describe('renders header', () => {
     it('renders name column', async () => {
-      setup()
-      render(<FilesChangedTableTeam />, { wrapper })
+      const { queryClient } = setup()
+      render(<FilesChangedTableTeam />, { wrapper: wrapper(queryClient) })
 
       const nameHeader = await screen.findByText('Name')
       expect(nameHeader).toBeInTheDocument()
     })
 
     it('renders missed lines column', async () => {
-      setup()
-      render(<FilesChangedTableTeam />, { wrapper })
+      const { queryClient } = setup()
+      render(<FilesChangedTableTeam />, { wrapper: wrapper(queryClient) })
 
       const nameHeader = await screen.findByText('Missed lines')
       expect(nameHeader).toBeInTheDocument()
     })
 
     it('renders patch % column', async () => {
-      setup()
-      render(<FilesChangedTableTeam />, { wrapper })
+      const { queryClient } = setup()
+      render(<FilesChangedTableTeam />, { wrapper: wrapper(queryClient) })
 
       const nameHeader = await screen.findByText('Patch %')
       expect(nameHeader).toBeInTheDocument()
@@ -306,8 +311,8 @@ describe('FilesChangedTableTeam', () => {
 
   describe('renders data rows', () => {
     it('renders name column', async () => {
-      setup()
-      render(<FilesChangedTableTeam />, { wrapper })
+      const { queryClient } = setup()
+      render(<FilesChangedTableTeam />, { wrapper: wrapper(queryClient) })
 
       await expect(await screen.findByText('src/App.jsx')).toBeTruthy()
 
@@ -316,8 +321,8 @@ describe('FilesChangedTableTeam', () => {
     })
 
     it('renders missed lines column', async () => {
-      setup()
-      render(<FilesChangedTableTeam />, { wrapper })
+      const { queryClient } = setup()
+      render(<FilesChangedTableTeam />, { wrapper: wrapper(queryClient) })
 
       await expect(await screen.findByText('0')).toBeTruthy()
 
@@ -326,8 +331,8 @@ describe('FilesChangedTableTeam', () => {
     })
 
     it('renders patch % column', async () => {
-      setup()
-      render(<FilesChangedTableTeam />, { wrapper })
+      const { queryClient } = setup()
+      render(<FilesChangedTableTeam />, { wrapper: wrapper(queryClient) })
 
       await expect(await screen.findByText('100.00%')).toBeTruthy()
 
@@ -338,8 +343,8 @@ describe('FilesChangedTableTeam', () => {
 
   describe('commit is pending', () => {
     it('renders spinner', async () => {
-      setup({ pendingCommit: true })
-      render(<FilesChangedTableTeam />, { wrapper })
+      const { queryClient } = setup({ pendingCommit: true })
+      render(<FilesChangedTableTeam />, { wrapper: wrapper(queryClient) })
 
       await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
       await waitFor(() => expect(queryClient.isFetching()).toBe(0))
@@ -351,8 +356,8 @@ describe('FilesChangedTableTeam', () => {
 
   describe('no files were changed', () => {
     it('renders no file covered message', async () => {
-      setup({ noCoveredFiles: true })
-      render(<FilesChangedTableTeam />, { wrapper })
+      const { queryClient } = setup({ noCoveredFiles: true })
+      render(<FilesChangedTableTeam />, { wrapper: wrapper(queryClient) })
 
       const noFiles = await screen.findByText(
         'No files covered by tests were changed'
@@ -363,8 +368,8 @@ describe('FilesChangedTableTeam', () => {
 
   describe('expanding file diffs', () => {
     it('renders commit file diff', async () => {
-      const { user } = setup({})
-      render(<FilesChangedTableTeam />, { wrapper })
+      const { queryClient, user } = setup()
+      render(<FilesChangedTableTeam />, { wrapper: wrapper(queryClient) })
 
       expect(await screen.findByTestId('file-diff-expand')).toBeTruthy()
       const expander = screen.getByTestId('file-diff-expand')

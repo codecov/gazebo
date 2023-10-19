@@ -82,26 +82,18 @@ const mockOwner = {
   },
 }
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      suspense: true,
-      retry: false,
-    },
-  },
-})
 const server = setupServer()
 
 const wrapper =
-  (
-    initialEntries = [
-      '/gh/codecov/cool-repo/commit/e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed',
-    ]
-  ) =>
+  (queryClient) =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
+        <MemoryRouter
+          initialEntries={[
+            '/gh/codecov/cool-repo/commit/e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed',
+          ]}
+        >
           <Route
             path={[
               '/:provider/:owner/:repo/commit/:commit/blob/:path+',
@@ -122,7 +114,6 @@ beforeAll(() => {
 })
 
 afterEach(() => {
-  queryClient.clear()
   server.resetHandlers()
 })
 
@@ -134,6 +125,15 @@ describe('CommitPage', () => {
   function setup(
     { hasYamlErrors, noCommit } = { hasYamlErrors: false, noCommit: false }
   ) {
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          suspense: true,
+          retry: false,
+        },
+      },
+    })
+
     useTruncation.mockImplementation(() => ({
       ref: () => {},
       canTruncate: false,
@@ -180,17 +180,16 @@ describe('CommitPage', () => {
         return res(ctx.status(200), ctx.json({}))
       })
     )
+
+    return { queryClient }
   }
 
   describe('rendering component', () => {
     describe('testing not found', () => {
-      beforeEach(() => {
-        setup({ noCommit: true })
-      })
-
       it('renders not found page', async () => {
+        const { queryClient } = setup({ noCommit: true })
         render(<CommitPage />, {
-          wrapper: wrapper(),
+          wrapper: wrapper(queryClient),
         })
 
         const notFound = await screen.findByText('Error 404')
@@ -199,13 +198,10 @@ describe('CommitPage', () => {
     })
 
     describe('testing breadcrumb', () => {
-      beforeEach(() => {
-        setup()
-      })
-
       it('renders owner link', async () => {
+        const { queryClient } = setup()
         render(<CommitPage />, {
-          wrapper: wrapper(),
+          wrapper: wrapper(queryClient),
         })
 
         const ownerLink = await screen.findByRole('link', { name: 'codecov' })
@@ -214,8 +210,9 @@ describe('CommitPage', () => {
       })
 
       it('renders repo link', async () => {
+        const { queryClient } = setup()
         render(<CommitPage />, {
-          wrapper: wrapper(),
+          wrapper: wrapper(queryClient),
         })
 
         const ownerLink = await screen.findByRole('link', { name: 'cool-repo' })
@@ -224,8 +221,9 @@ describe('CommitPage', () => {
       })
 
       it('renders commits page link', async () => {
+        const { queryClient } = setup()
         render(<CommitPage />, {
-          wrapper: wrapper(),
+          wrapper: wrapper(queryClient),
         })
 
         const ownerLink = await screen.findByRole('link', { name: 'commits' })
@@ -237,8 +235,9 @@ describe('CommitPage', () => {
       })
 
       it('renders read only current short sha', async () => {
+        const { queryClient } = setup()
         render(<CommitPage />, {
-          wrapper: wrapper(),
+          wrapper: wrapper(queryClient),
         })
 
         const ownerLink = await screen.findAllByText('e736f78')
@@ -247,13 +246,10 @@ describe('CommitPage', () => {
     })
 
     describe('testing commit error banners', () => {
-      beforeEach(() => {
-        setup({ hasYamlErrors: true })
-      })
-
       it('displays bot error banner', async () => {
+        const { queryClient } = setup({ hasYamlErrors: true })
         render(<CommitPage />, {
-          wrapper: wrapper(),
+          wrapper: wrapper(queryClient),
         })
 
         const teamBot = await screen.findByText(/Team bot/)
@@ -261,8 +257,9 @@ describe('CommitPage', () => {
       })
 
       it('displays yaml error banner', async () => {
+        const { queryClient } = setup({ hasYamlErrors: true })
         render(<CommitPage />, {
-          wrapper: wrapper(),
+          wrapper: wrapper(queryClient),
         })
 
         const yamlError = await screen.findByText('Commit YAML is invalid')
@@ -271,13 +268,10 @@ describe('CommitPage', () => {
     })
 
     describe('testing setting of query cache', () => {
-      beforeEach(() => {
-        setup({ hasYamlErrors: true })
-      })
-
       it('sets ignore upload ids to empty array', async () => {
+        const { queryClient } = setup({ hasYamlErrors: true })
         render(<CommitPage />, {
-          wrapper: wrapper(),
+          wrapper: wrapper(queryClient),
         })
 
         await waitFor(() =>
