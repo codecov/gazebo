@@ -79,7 +79,10 @@ describe('AnalyticsPage', () => {
             ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
           )
         }
-        return res(ctx.status(200), ctx.data({ tierName: TierNames.PRO }))
+        return res(
+          ctx.status(200),
+          ctx.data({ owner: { plan: { tierName: TierNames.PRO } } })
+        )
       })
     )
   }
