@@ -3,8 +3,10 @@ import { render, screen } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import qs from 'qs'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TierNames } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 
 import CommitDetailPageTabs from './CommitDetailPageTabs'
@@ -45,7 +47,14 @@ const mockBackfillResponse = {
 }
 
 const server = setupServer()
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      suspense: true,
+      retry: false,
+    },
+  },
+})
 const wrapper =
   (initialEntries = ['/gh/codecov/cool-repo/commit/sha256']) =>
   ({ children }) =>
@@ -61,7 +70,7 @@ const wrapper =
               '/:provider/:owner/:repo/commit/:commit/blob/:path+',
             ]}
           >
-            {children}
+            <Suspense fallback={null}>{children}</Suspense>
           </Route>
         </MemoryRouter>
       </QueryClientProvider>
@@ -81,7 +90,12 @@ afterAll(() => {
 })
 
 describe('CommitDetailPageTabs', () => {
-  function setup({ flagValue = false } = { flagValue: false }) {
+  function setup(
+    { flagValue = false, tierValue = TierNames.PRO } = {
+      flagValue: false,
+      tierValue: TierNames.PRO,
+    }
+  ) {
     useFlags.mockReturnValue({
       commitTabFlagMultiSelect: flagValue,
       coverageTabFlagMutliSelect: flagValue,
@@ -93,57 +107,69 @@ describe('CommitDetailPageTabs', () => {
       }),
       graphql.query('BackfillFlagMemberships', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockBackfillResponse))
+      }),
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        if (tierValue === TierNames.Team) {
+          return res(
+            ctx.status(200),
+            ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
+          )
+        }
+        return res(
+          ctx.status(200),
+          ctx.data({ owner: { plan: { tierName: TierNames.PRO } } })
+        )
       })
     )
   }
 
   describe('on base route', () => {
-    it('highlights files changed tab', () => {
+    it('highlights files changed tab', async () => {
       setup()
-      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+      render(<CommitDetailPageTabs commitSha="sha256" />, {
         wrapper: wrapper(),
       })
 
-      const filesChanged = screen.getByText('Files changed')
+      const filesChanged = await screen.findByText('Files changed')
       expect(filesChanged).toBeInTheDocument()
       expect(filesChanged).toHaveAttribute('aria-current', 'page')
     })
 
-    it('does not highlight files tab', () => {
+    it('does not highlight files tab', async () => {
       setup()
-      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+      render(<CommitDetailPageTabs commitSha="sha256" />, {
         wrapper: wrapper(),
       })
 
-      const filesExplorerTab = screen.getByText('File explorer')
+      const filesExplorerTab = await screen.findByText('File explorer')
       expect(filesExplorerTab).toBeInTheDocument()
       expect(filesExplorerTab).not.toHaveAttribute('aria-current', 'page')
     })
   })
 
   describe('on indirect changes route', () => {
-    it('highlights indirect changes tab', () => {
+    it('highlights indirect changes tab', async () => {
       setup()
-      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+      render(<CommitDetailPageTabs commitSha="sha256" />, {
         wrapper: wrapper([
           '/gh/codecov/cool-repo/commit/sha256/indirect-changes',
         ]),
       })
 
-      const filesChanged = screen.getByText('Indirect changes')
+      const filesChanged = await screen.findByText('Indirect changes')
       expect(filesChanged).toBeInTheDocument()
       expect(filesChanged).toHaveAttribute('aria-current', 'page')
     })
 
-    it('does not highlight files changed tab', () => {
+    it('does not highlight files changed tab', async () => {
       setup()
-      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+      render(<CommitDetailPageTabs commitSha="sha256" />, {
         wrapper: wrapper([
           '/gh/codecov/cool-repo/commit/sha256/indirect-changes',
         ]),
       })
 
-      const filesChanged = screen.getByText('Files changed')
+      const filesChanged = await screen.findByText('Files changed')
       expect(filesChanged).toBeInTheDocument()
       expect(filesChanged).not.toHaveAttribute('aria-current', 'page')
     })
@@ -151,50 +177,50 @@ describe('CommitDetailPageTabs', () => {
 
   describe('on files route', () => {
     describe('on tree route', () => {
-      it('highlights files tab', () => {
+      it('highlights files tab', async () => {
         setup()
-        render(<CommitDetailPageTabs commitSHA="sha256" />, {
+        render(<CommitDetailPageTabs commitSha="sha256" />, {
           wrapper: wrapper(['/gh/codecov/cool-repo/commit/sha256/tree']),
         })
 
-        const filesExplorerTab = screen.getByText('File explorer')
+        const filesExplorerTab = await screen.findByText('File explorer')
         expect(filesExplorerTab).toBeInTheDocument()
         expect(filesExplorerTab).toHaveAttribute('aria-current', 'page')
       })
 
-      it('does not highlight files changed tab', () => {
+      it('does not highlight files changed tab', async () => {
         setup()
-        render(<CommitDetailPageTabs commitSHA="sha256" />, {
+        render(<CommitDetailPageTabs commitSha="sha256" />, {
           wrapper: wrapper(['/gh/codecov/cool-repo/commit/sha256/tree']),
         })
 
-        const filesChanged = screen.getByText('Files changed')
+        const filesChanged = await screen.findByText('Files changed')
         expect(filesChanged).toBeInTheDocument()
         expect(filesChanged).not.toHaveAttribute('aria-current', 'page')
       })
     })
 
     describe('on a blob route', () => {
-      it('highlights files tab', () => {
+      it('highlights files tab', async () => {
         setup()
-        render(<CommitDetailPageTabs commitSHA="sha256" />, {
+        render(<CommitDetailPageTabs commitSha="sha256" />, {
           wrapper: wrapper([
             '/gh/codecov/cool-repo/commit/sha256/blob/index.js',
           ]),
         })
 
-        const filesExplorerTab = screen.getByText('File explorer')
+        const filesExplorerTab = await screen.findByText('File explorer')
         expect(filesExplorerTab).toBeInTheDocument()
         expect(filesExplorerTab).toHaveAttribute('aria-current', 'page')
       })
 
-      it('does not highlight files changed tab', () => {
+      it('does not highlight files changed tab', async () => {
         setup()
-        render(<CommitDetailPageTabs commitSHA="sha256" />, {
+        render(<CommitDetailPageTabs commitSha="sha256" />, {
           wrapper: wrapper(['/gh/codecov/cool-repo/commit/sha256/tree']),
         })
 
-        const filesChanged = screen.getByText('Files changed')
+        const filesChanged = await screen.findByText('Files changed')
         expect(filesChanged).toBeInTheDocument()
         expect(filesChanged).not.toHaveAttribute('aria-current', 'page')
       })
@@ -202,62 +228,64 @@ describe('CommitDetailPageTabs', () => {
   })
 
   describe('rendering toggle header', () => {
-    it('renders uncovered legend', () => {
+    it('renders uncovered legend', async () => {
       setup()
-      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+      render(<CommitDetailPageTabs commitSha="sha256" />, {
         wrapper: wrapper(),
       })
 
-      const legend = screen.getByText('uncovered')
+      const legend = await screen.findByText('uncovered')
       expect(legend).toBeInTheDocument()
     })
 
-    it('renders partial legend', () => {
+    it('renders partial legend', async () => {
       setup()
-      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+      render(<CommitDetailPageTabs commitSha="sha256" />, {
         wrapper: wrapper(),
       })
 
-      const legend = screen.getByText('partial')
+      const legend = await screen.findByText('partial')
       expect(legend).toBeInTheDocument()
     })
 
-    it('renders covered legend', () => {
+    it('renders covered legend', async () => {
       setup()
-      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+      render(<CommitDetailPageTabs commitSha="sha256" />, {
         wrapper: wrapper(),
       })
 
-      const legend = screen.getByText('covered')
+      const legend = await screen.findByText('covered')
       expect(legend).toBeInTheDocument()
     })
 
-    it('renders hit count legend', () => {
+    it('renders hit count legend', async () => {
       setup()
-      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+      render(<CommitDetailPageTabs commitSha="sha256" />, {
         wrapper: wrapper(),
       })
 
-      const hitIcon = screen.getByText('n')
+      const hitIcon = await screen.findByText('n')
       expect(hitIcon).toBeInTheDocument()
 
-      const legendText = screen.getByText('upload #')
+      const legendText = await screen.findByText('upload #')
       expect(legendText).toBeInTheDocument()
     })
   })
 
   describe('there are query params in the url', () => {
-    it('appends them to the files changed tab link', () => {
+    it('appends them to the files changed tab link', async () => {
       const queryString = qs.stringify(
         { flags: ['flag-1'] },
         { addQueryPrefix: true }
       )
       setup()
-      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+      render(<CommitDetailPageTabs commitSha="sha256" />, {
         wrapper: wrapper([`/gh/codecov/cool-repo/commit/sha256${queryString}`]),
       })
 
-      const filesChanged = screen.getByRole('link', { name: /Files changed/ })
+      const filesChanged = await screen.findByRole('link', {
+        name: /Files changed/,
+      })
       expect(filesChanged).toBeInTheDocument()
       expect(filesChanged).toHaveAttribute(
         'href',
@@ -265,17 +293,17 @@ describe('CommitDetailPageTabs', () => {
       )
     })
 
-    it('appends them to the indirect changes tab link', () => {
+    it('appends them to the indirect changes tab link', async () => {
       const queryString = qs.stringify(
         { flags: ['flag-1'] },
         { addQueryPrefix: true }
       )
       setup()
-      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+      render(<CommitDetailPageTabs commitSha="sha256" />, {
         wrapper: wrapper([`/gh/codecov/cool-repo/commit/sha256${queryString}`]),
       })
 
-      const indirectChanges = screen.getByRole('link', {
+      const indirectChanges = await screen.findByRole('link', {
         name: /Indirect changes/,
       })
       expect(indirectChanges).toBeInTheDocument()
@@ -285,17 +313,19 @@ describe('CommitDetailPageTabs', () => {
       )
     })
 
-    it('appends them to the file explorer tab link', () => {
+    it('appends them to the file explorer tab link', async () => {
       const queryString = qs.stringify(
         { flags: ['flag-1'] },
         { addQueryPrefix: true }
       )
       setup()
-      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+      render(<CommitDetailPageTabs commitSha="sha256" />, {
         wrapper: wrapper([`/gh/codecov/cool-repo/commit/sha256${queryString}`]),
       })
 
-      const fileExplorer = screen.getByRole('link', { name: /File explorer/ })
+      const fileExplorer = await screen.findByRole('link', {
+        name: /File explorer/,
+      })
       expect(fileExplorer).toBeInTheDocument()
       expect(fileExplorer).toHaveAttribute(
         'href',
@@ -307,12 +337,24 @@ describe('CommitDetailPageTabs', () => {
   describe('flags multi-select', () => {
     it('renders flag multi-select', async () => {
       setup({ flagValue: true })
-      render(<CommitDetailPageTabs commitSHA="sha256" />, {
+      render(<CommitDetailPageTabs commitSha="sha256" />, {
         wrapper: wrapper(),
       })
 
       const flagSelect = await screen.findByText('All flags')
       expect(flagSelect).toBeInTheDocument()
+    })
+
+    describe('user is on a team plan', () => {
+      it('does not render the multi select', async () => {
+        setup({ flagValue: true, tierValue: TierNames.TEAM })
+        render(<CommitDetailPageTabs commitSha="sha256" />, {
+          wrapper: wrapper(),
+        })
+
+        const flagSelect = screen.queryByText('All flags')
+        expect(flagSelect).not.toBeInTheDocument()
+      })
     })
   })
 })
