@@ -93,7 +93,6 @@ function fetchReposForOwner({
           }
         }
       }
-
       ${repositoryFragment}
   `
 

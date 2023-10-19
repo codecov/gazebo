@@ -12,7 +12,7 @@ const queryClient = new QueryClient({
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/some-owner']}>
-      <Route path="/:provider">{children}</Route>
+      <Route path="/:provider/:owner">{children}</Route>
     </MemoryRouter>
   </QueryClientProvider>
 )
@@ -20,40 +20,48 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 const repo1 = {
   name: 'codecov-bash',
   active: true,
-  lines: 99,
+  activated: true,
   private: false,
   latestCommitAt: '2021-04-22T14:09:39.826948+00:00',
+  lines: 99,
   author: {
     username: 'codecov',
   },
 }
 
 const repo2 = {
-  name: 'codecov-circleci-orb',
-  active: null,
-  lines: 99,
+  name: 'codecov-bash-2',
+  active: true,
+  activated: true,
   private: false,
   latestCommitAt: '2021-04-22T14:09:39.826948+00:00',
+  lines: 99,
   author: {
     username: 'codecov',
   },
 }
 
 const repo3 = {
-  name: 'react',
-  active: null,
+  name: 'codecov-bash-3',
+  active: true,
+  activated: true,
   private: false,
+  latestCommitAt: '2021-04-22T14:09:39.826948+00:00',
+  lines: 99,
   author: {
-    username: 'facebook',
+    username: 'codecov',
   },
 }
 
 const repo4 = {
-  name: 'python',
-  active: null,
+  name: 'codecov-bash-4',
+  active: true,
+  activated: true,
   private: false,
+  latestCommitAt: '2021-04-22T14:09:39.826948+00:00',
+  lines: 99,
   author: {
-    username: 'felipe',
+    username: 'codecov',
   },
 }
 
@@ -69,15 +77,15 @@ afterAll(() => server.close())
 describe('useReposTeam', () => {
   function setup() {
     server.use(
-      graphql.query('MyRepos', (req, res, ctx) => {
+      graphql.query('GetReposTeam', (req, res, ctx) => {
         const data = {
-          me: {
-            user: {
-              username: 'febg',
-            },
-            viewableRepositories: {
+          owner: {
+            repositories: {
               edges: req.variables.after
                 ? [
+                    {
+                      node: repo3,
+                    },
                     {
                       node: repo4,
                     },
@@ -88,9 +96,6 @@ describe('useReposTeam', () => {
                     },
                     {
                       node: repo2,
-                    },
-                    {
-                      node: repo3,
                     },
                   ],
               pageInfo: {
@@ -103,33 +108,11 @@ describe('useReposTeam', () => {
           },
         }
         return res(ctx.status(200), ctx.data(data))
-      }),
-      graphql.query('GetReposTeam', (req, res, ctx) => {
-        const data = {
-          owner: {
-            username: 'codecov',
-            repositories: {
-              edges: [
-                {
-                  node: repo1,
-                },
-                {
-                  node: repo2,
-                },
-              ],
-              pageInfo: {
-                hasNextPage: false,
-                endCursor: 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
-              },
-            },
-          },
-        }
-        return res(ctx.status(200), ctx.data(data))
       })
     )
   }
 
-  describe('when called and user is authenticated', () => {
+  describe('when called', () => {
     beforeEach(() => {
       setup()
     })
@@ -140,25 +123,7 @@ describe('useReposTeam', () => {
           useReposTeam({
             activated: true,
             owner: 'codecov',
-            first: 2,
           }),
-        {
-          wrapper,
-        }
-      )
-
-      await waitFor(() =>
-        expect(result.current.data).toEqual({
-          repos: [repo1, repo2, repo3],
-        })
-      )
-    })
-  })
-
-  describe('when called', () => {
-    it('returns repositories of the owner', async () => {
-      const { result } = renderHook(
-        () => useReposTeam({ owner: 'codecov', activated: true }),
         {
           wrapper,
         }
