@@ -1,15 +1,16 @@
 import { render, screen } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import ImpactedFiles from './FilesChanged'
+import { CommitStateEnum } from 'shared/utils/commit'
+import { ComparisonReturnType } from 'shared/utils/comparison'
 
-jest.mock('../FileDiff', () => () => 'FileDiff Component')
+import FilesChanged from './FilesChanged'
+
+jest.mock('./Table', () => () => 'Files Changed Table')
 
 const mockImpactedFiles = [
   {
@@ -21,10 +22,28 @@ const mockImpactedFiles = [
     },
     headCoverage: {
       percentCovered: 90.23,
+      missesCount: 3,
     },
     patchCoverage: {
       percentCovered: 27.43,
     },
+    missesInComparison: 3,
+  },
+  {
+    isCriticalFile: true,
+    fileName: 'quarg.js',
+    headName: 'flag2/quarg.js',
+    baseCoverage: {
+      percentCovered: 39,
+    },
+    headCoverage: {
+      percentCovered: 80,
+      missesCount: 7,
+    },
+    patchCoverage: {
+      percentCovered: 48.23,
+    },
+    missesInComparison: 7,
   },
 ]
 
@@ -34,9 +53,10 @@ const mockPull = {
       pull: {
         pullId: 14,
         head: {
-          state: 'PROCESSED',
+          state: CommitStateEnum.COMPLETE,
         },
         compareWithBase: {
+          __typename: ComparisonReturnType.SUCCESSFUL_COMPARISON,
           patchTotals: {
             percentCovered: 92.12,
           },
@@ -54,362 +74,176 @@ const mockPull = {
   },
 }
 
-const mockNoImpactedFiles = {
-  owner: {
-    repository: {
-      pull: {
-        pullId: 14,
-        head: {
-          state: 'PROCESSED',
-        },
-        compareWithBase: {
-          patchTotals: {
-            percentCovered: 92.12,
-          },
-          headTotals: {
-            percentCovered: 74.2,
-          },
-          baseTotals: {
-            percentCovered: 27.35,
-          },
-          changeCoverage: 38.94,
-          impactedFiles: [],
-        },
-      },
-    },
-  },
-}
-
-const mockNoChange = {
-  owner: {
-    repository: {
-      pull: {
-        pullId: 14,
-        head: {
-          state: 'PROCESSED',
-        },
-        compareWithBase: {
-          patchTotals: {
-            percentCovered: 92.12,
-          },
-          headTotals: {
-            percentCovered: 74.2,
-          },
-          baseTotals: {
-            percentCovered: 27.35,
-          },
-          changeCoverage: 38.94,
-          impactedFiles: [
-            {
-              isCriticalFile: true,
-              fileName: 'mafs.js',
-              headName: 'flag1/mafs.js',
-              baseCoverage: {
-                percentCovered: null,
-              },
-              headCoverage: {
-                percentCovered: null,
-              },
-              patchCoverage: {
-                percentCovered: null,
-              },
-            },
-          ],
-        },
-      },
-    },
-  },
-}
-
-const mockSingularImpactedFilesData = {
-  owner: {
-    repository: {
-      pull: {
-        pullId: 14,
-        compareWithBase: {
-          impactedFile: {
-            headName: 'file A',
-            isNewFile: true,
-            isRenamedFile: false,
-            isDeletedFile: false,
-            isCriticalFile: false,
-            headCoverage: {
-              percentCovered: 90.23,
-            },
-            baseCoverage: {
-              percentCovered: 23.42,
-            },
-            patchCoverage: {
-              percentCovered: 27.43,
-            },
-            changeCoverage: 58.333333333333336,
-            segments: [
-              {
-                header: '@@ -0,0 1,45 @@',
-                lines: [
-                  {
-                    baseNumber: null,
-                    headNumber: '1',
-                    baseCoverage: null,
-                    headCoverage: 'H',
-                    content: 'export default class Calculator {',
-                  },
-                ],
-              },
-            ],
-          },
-        },
-      },
-    },
-  },
-}
-
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 const server = setupServer()
 
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh/test-org/test-repo/pull/12']}>
+      <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
+
 beforeAll(() => {
   server.listen()
+  console.error = () => {}
 })
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-afterAll(() => {
-  server.close()
-})
+afterAll(() => server.close())
 
-const wrapper =
-  (initialEntries = ['/gh/test-org/test-repo/pull/12']) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
-
-describe('ImpactedFiles', () => {
-  function setup(overrideData) {
+describe('FilesChanged', () => {
+  function setup({ overrideData } = {}) {
     server.use(
-      graphql.query('Pull', (req, res, ctx) => {
+      graphql.query('Pull', (_, res, ctx) => {
         if (overrideData) {
           return res(ctx.status(200), ctx.data(overrideData))
         }
 
         return res(ctx.status(200), ctx.data(mockPull))
-      }),
-
-      graphql.query('ImpactedFileComparison', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockSingularImpactedFilesData))
-      )
+      })
     )
   }
 
   describe('when rendered with changed files', () => {
-    beforeEach(() => setup())
-    it('renders spinner', () => {
-      render(<ImpactedFiles />, { wrapper: wrapper() })
-
-      const spinner = screen.getByTestId('spinner')
-      expect(spinner).toBeInTheDocument()
-    })
-
-    describe('renders the headers of the table', () => {
-      it('renders name column', async () => {
-        render(<ImpactedFiles />, { wrapper: wrapper() })
-
-        await waitFor(() =>
-          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-        )
-
-        const name = await screen.findByText('Name')
-        expect(name).toBeInTheDocument()
-      })
-
-      it('renders HEAD column', async () => {
-        render(<ImpactedFiles />, { wrapper: wrapper() })
-
-        await waitFor(() =>
-          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-        )
-
-        const head = await screen.findByText('HEAD %')
-        expect(head).toBeInTheDocument()
-      })
-
-      it('renders patch column', async () => {
-        render(<ImpactedFiles />, { wrapper: wrapper() })
-
-        await waitFor(() =>
-          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-        )
-
-        const patch = await screen.findByText('Patch %')
-        expect(patch).toBeInTheDocument()
-      })
-
-      it('renders change', async () => {
-        render(<ImpactedFiles />, { wrapper: wrapper() })
-
-        await waitFor(() =>
-          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-        )
-        const change = await screen.findByText('Change')
-        expect(change).toBeInTheDocument()
-      })
-    })
-
-    describe('rendering the file content', () => {
-      it('renders the file name', async () => {
-        render(<ImpactedFiles />, { wrapper: wrapper() })
-
-        await waitFor(() =>
-          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-        )
-
-        const link = await screen.findByRole('link', {
-          name: 'flag1/mafs.js',
-        })
-        expect(link).toBeInTheDocument()
-        expect(link).toHaveAttribute(
-          'href',
-          '/gh/test-org/test-repo/pull/12/blob/flag1/mafs.js'
-        )
-      })
-
-      it('renders file coverage', async () => {
-        render(<ImpactedFiles />, { wrapper: wrapper() })
-
-        await waitFor(() =>
-          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-        )
-
-        const fileCoverage = await screen.findByText(/90.23%/i)
-        expect(fileCoverage).toBeInTheDocument()
-      })
-
-      it('renders patch coverage', async () => {
-        render(<ImpactedFiles />, { wrapper: wrapper() })
-
-        await waitFor(() =>
-          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-        )
-
-        const patchCoverage = await screen.findByText(/27.43%/i)
-        expect(patchCoverage).toBeInTheDocument()
-      })
-
-      it('renders change coverage', async () => {
-        render(<ImpactedFiles />, { wrapper: wrapper() })
-
-        await waitFor(() =>
-          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-        )
-
-        const changeCoverage = await screen.findByText(/44.85%/i)
-        expect(changeCoverage).toBeInTheDocument()
-      })
-
-      it('renders critical file label', async () => {
-        render(<ImpactedFiles />, { wrapper: wrapper() })
-
-        await waitFor(() =>
-          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-        )
-
-        const criticalFileLabel = await screen.findByText(/Critical File/i)
-        expect(criticalFileLabel).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('when expanding the name column', () => {
     beforeEach(() => {
       setup()
     })
 
-    it('renders the FileDiff component', async () => {
-      const user = userEvent.setup()
-      render(<ImpactedFiles />, { wrapper: wrapper() })
+    it('renders changed files component', async () => {
+      render(<FilesChanged />, { wrapper })
 
-      await waitFor(() =>
-        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-      )
-
-      const nameExpander = await screen.findByTestId('name-expand')
-      await user.click(nameExpander)
-
-      const fileDiff = await screen.findByText('FileDiff Component')
-      expect(fileDiff).toBeInTheDocument()
+      const filesChangedTable = await screen.findByText(/Files Changed Table/)
+      expect(filesChangedTable).toBeInTheDocument()
     })
   })
 
-  describe('when rendered without change', () => {
+  describe('when rendered without changes', () => {
     beforeEach(() => {
-      setup(mockNoChange)
+      const overrideData = {
+        owner: {
+          repository: {
+            pull: {
+              pullId: 14,
+              head: {
+                state: CommitStateEnum.COMPLETE,
+              },
+              compareWithBase: {
+                __typename: ComparisonReturnType.SUCCESSFUL_COMPARISON,
+                patchTotals: {
+                  percentCovered: 92.12,
+                },
+                headTotals: {
+                  percentCovered: 74.2,
+                },
+                baseTotals: {
+                  percentCovered: 27.35,
+                },
+                changeCoverage: 38.94,
+                impactedFiles: [],
+              },
+            },
+          },
+        },
+      }
+      setup({ overrideData })
     })
 
-    it('renders no data for the change', async () => {
-      render(<ImpactedFiles />, { wrapper: wrapper() })
+    it('renders no change text', async () => {
+      render(<FilesChanged />, { wrapper })
 
-      await waitFor(() =>
-        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      const noChangesText = await screen.findByText(
+        'Everything is accounted for! No changes detected that need to be reviewed.'
       )
+      expect(noChangesText).toBeInTheDocument()
 
-      const noData = await screen.findByText('No data')
-      expect(noData).toBeInTheDocument()
+      const body = await screen.findByText(
+        'Lines, not adjusted in diff, that have changed coverage data.'
+      )
+      expect(body).toBeInTheDocument()
+
+      expect(
+        screen.queryByText('ImpactedFiles Component')
+      ).not.toBeInTheDocument()
     })
   })
 
-  describe('when rendered with an empty list of changed files', () => {
+  describe('when rendered without changed files or changes', () => {
     beforeEach(() => {
-      setup(mockNoImpactedFiles)
+      setup({ overrideData: {} })
     })
 
-    it('renders name column', async () => {
-      render(<ImpactedFiles />, { wrapper: wrapper() })
+    it('renders no changed files text', async () => {
+      render(<FilesChanged />, { wrapper })
 
-      await waitFor(() =>
-        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      const warning = await screen.findByText(
+        'No Files covered by tests were changed'
       )
 
-      const name = await screen.findByText('Name')
-      expect(name).toBeInTheDocument()
+      expect(warning).toBeInTheDocument()
+      expect(
+        screen.queryByText('ImpactedFiles Component')
+      ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with head commit errored out', () => {
+    beforeEach(() => {
+      const overrideData = {
+        owner: {
+          repository: {
+            pull: {
+              pullId: 14,
+              compareWithBase: {
+                __typename: ComparisonReturnType.MISSING_BASE_COMMIT,
+              },
+              head: {
+                state: CommitStateEnum.ERROR,
+              },
+            },
+          },
+        },
+      }
+      setup({ overrideData })
     })
 
-    it('renders HEAD column', async () => {
-      render(<ImpactedFiles />, { wrapper: wrapper() })
+    it('renders no head commit error text', async () => {
+      render(<FilesChanged />, { wrapper })
 
-      await waitFor(() =>
-        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      const error = await screen.findByText(
+        'Cannot display changed files because most recent commit is in an error state.'
       )
-
-      const head = await screen.findByText('HEAD %')
-      expect(head).toBeInTheDocument()
+      expect(error).toBeInTheDocument()
     })
+  })
 
-    it('renders patch column', async () => {
-      render(<ImpactedFiles />, { wrapper: wrapper() })
+  describe('when rendered for first pull request', () => {
+    it('renders first pull request copy', async () => {
+      setup({
+        overrideData: {
+          owner: {
+            repository: {
+              pull: {
+                pullId: 14,
+                compareWithBase: {
+                  __typename: ComparisonReturnType.FIRST_PULL_REQUEST,
+                },
+              },
+            },
+          },
+        },
+      })
+      render(<FilesChanged />, { wrapper })
 
-      await waitFor(() =>
-        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      const firstPullRequestCopy = await screen.findByText(
+        /No comparison made since it's your first commit with Codecov/
       )
-
-      const patch = await screen.findByText('Patch %')
-      expect(patch).toBeInTheDocument()
-    })
-
-    it('renders change', async () => {
-      render(<ImpactedFiles />, { wrapper: wrapper() })
-
-      await waitFor(() =>
-        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
-      )
-      const change = await screen.findByText('Change')
-      expect(change).toBeInTheDocument()
+      expect(firstPullRequestCopy).toBeInTheDocument()
     })
   })
 })
