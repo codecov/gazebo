@@ -252,7 +252,7 @@ describe('RepoPage', () => {
     describe('user is part of org and has team tier', () => {
       it('has a coverage tab', async () => {
         const { user } = setup({
-          multipleTiers: TierNames.TEAM,
+          tierValue: TierNames.TEAM,
           hasRepoData: true,
         })
         render(<RepoPage />, {
@@ -272,7 +272,7 @@ describe('RepoPage', () => {
 
       it('does not have a flags tab', () => {
         setup({
-          multipleTiers: TierNames.TEAM,
+          tierValue: TierNames.TEAM,
           hasRepoData: true,
         })
         render(<RepoPage />, { wrapper: wrapper() })
@@ -283,7 +283,7 @@ describe('RepoPage', () => {
 
       it('has a commits tab', async () => {
         const { user } = setup({
-          multipleTiers: TierNames.TEAM,
+          tierValue: TierNames.TEAM,
           hasRepoData: true,
         })
         render(<RepoPage />, { wrapper: wrapper() })
@@ -301,7 +301,7 @@ describe('RepoPage', () => {
 
       it('has a pulls tab', async () => {
         const { user } = setup({
-          multipleTiers: TierNames.TEAM,
+          tierValue: TierNames.TEAM,
           hasRepoData: true,
         })
         render(<RepoPage />, { wrapper: wrapper() })
@@ -319,7 +319,7 @@ describe('RepoPage', () => {
 
       it('has a settings tab', async () => {
         const { user } = setup({
-          multipleTiers: TierNames.TEAM,
+          tierValue: TierNames.TEAM,
           hasRepoData: true,
         })
         render(<RepoPage />, { wrapper: wrapper() })

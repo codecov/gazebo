@@ -188,7 +188,7 @@ describe('AnalyticsPage', () => {
           username: 'codecov',
           isCurrentUserPartOfOrg: true,
         },
-        multipleTiers: TierNames.TEAM,
+        tierValue: TierNames.TEAM,
       })
       render(<AnalyticsPage />, { wrapper })
 
