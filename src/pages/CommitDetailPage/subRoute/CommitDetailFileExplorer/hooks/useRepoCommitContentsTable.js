@@ -10,6 +10,7 @@ import CommitDirEntry from 'shared/ContentsTable/TableEntries/CommitEntries/Comm
 import CommitFileEntry from 'shared/ContentsTable/TableEntries/CommitEntries/CommitFileEntry'
 import { useTableDefaultSort } from 'shared/ContentsTable/useTableDefaultSort'
 import { adjustListIfUpDir } from 'shared/ContentsTable/utils'
+import { useFlags } from 'shared/featureFlags'
 import { useCommitTreePaths } from 'shared/treePaths'
 import { determineProgressColor } from 'shared/utils/determineProgressColor'
 import CoverageProgress from 'ui/CoverageProgress'
@@ -151,9 +152,15 @@ const sortingParameter = Object.freeze({
   lines: 'LINES',
 })
 
-const getQueryFilters = ({ params, sortBy }) => {
+const getQueryFilters = ({ params, sortBy, enableFlags }) => {
+  let flags = {}
+  if (params?.flags && enableFlags) {
+    flags = { flags: params?.flags }
+  }
+
   return {
     ...(params?.search && { searchValue: params.search }),
+    ...flags,
     ...(params?.displayType && {
       displayType: displayTypeParameter[params?.displayType],
     }),
@@ -172,6 +179,10 @@ export function useRepoCommitContentsTable() {
   const { treePaths } = useCommitTreePaths()
   const [sortBy, setSortBy] = useTableDefaultSort()
 
+  const { commitTabFlagMultiSelect } = useFlags({
+    commitTabFlagMultiSelect: false,
+  })
+
   const { data: commitData, isLoading: commitIsLoading } =
     useRepoCommitContents({
       provider,
@@ -179,7 +190,11 @@ export function useRepoCommitContentsTable() {
       repo,
       commit,
       path: urlPath || '',
-      filters: getQueryFilters({ params, sortBy: sortBy[0] }),
+      filters: getQueryFilters({
+        params,
+        sortBy: sortBy[0],
+        enableFlags: commitTabFlagMultiSelect,
+      }),
       opts: {
         suspense: false,
       },
