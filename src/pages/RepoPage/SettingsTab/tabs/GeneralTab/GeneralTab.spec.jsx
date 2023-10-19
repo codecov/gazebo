@@ -38,7 +38,7 @@ afterAll(() => server.close())
 
 describe('GeneralTab', () => {
   function setup(
-    { hasDefaultBranch = false, tierValue = TierNames.TEAM } = {
+    { hasDefaultBranch = false, tierValue = TierNames.PRO } = {
       hasDefaultBranch: false,
       tierValue: TierNames.PRO,
     }
@@ -110,7 +110,7 @@ describe('GeneralTab', () => {
     })
 
     it('render tokens component', () => {
-      setup({ multipleTiers: false })
+      setup({ tierValue: TierNames.TEAM })
       render(<GeneralTab />, { wrapper })
 
       const tokensComponent = screen.getByText(/Tokens Component/)
@@ -118,7 +118,7 @@ describe('GeneralTab', () => {
     })
 
     it('render danger zone component', () => {
-      setup({ multipleTiers: false })
+      setup({ tierValue: TierNames.TEAM })
       render(<GeneralTab />, { wrapper })
 
       const tokensComponent = screen.getByText(/DangerZone Component/)
@@ -128,7 +128,7 @@ describe('GeneralTab', () => {
 
   describe('when rendered with team tier', () => {
     beforeEach(() => {
-      setup({ multipleTiers: TierNames.TEAM })
+      setup({ tierValue: TierNames.TEAM })
     })
 
     it('render tokens team component', async () => {

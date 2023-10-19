@@ -54,7 +54,7 @@ afterAll(() => {
 })
 
 describe('AnalyticsPage', () => {
-  function setup({ owner, params, tierValue = TierNames.TEAM }) {
+  function setup({ owner, params, tierValue = TierNames.PRO }) {
     useOwner.mockReturnValue({
       data: owner,
     })

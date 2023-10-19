@@ -38,7 +38,7 @@ afterAll(() => {
 
 describe('Tabs', () => {
   function setup(
-    { isSelfHosted = false, tierValue = TierNames.TEAM } = {
+    { isSelfHosted = false, tierValue = TierNames.PRO } = {
       isSelfHosted: false,
       tierValue: TierNames.PRO,
     }
@@ -125,7 +125,7 @@ describe('Tabs', () => {
 
   describe('when user has team tier', () => {
     it('renders links to the home page', () => {
-      setup({ multipleTiers: TierNames.TEAM })
+      setup({ tierValue: TierNames.TEAM })
       render(<Tabs owner={{ username: 'kelly' }} provider="gh" />, { wrapper })
 
       expect(
@@ -136,7 +136,7 @@ describe('Tabs', () => {
     })
 
     it('does not render links to the analytics page', async () => {
-      setup({ multipleTiers: TierNames.TEAM })
+      setup({ tierValue: TierNames.TEAM })
       render(<Tabs owner={{ username: 'kelly' }} provider="gh" />, { wrapper })
 
       const analyticsLink = screen.queryByText(/Analytics/)
@@ -144,7 +144,7 @@ describe('Tabs', () => {
     })
 
     it('renders links to the settings page', () => {
-      setup({ multipleTiers: TierNames.TEAM })
+      setup({ tierValue: TierNames.TEAM })
       render(<Tabs owner={{ username: 'kelly' }} provider="gh" />, { wrapper })
 
       expect(
@@ -155,7 +155,7 @@ describe('Tabs', () => {
     })
 
     it('renders link to plan page', () => {
-      setup({ multipleTiers: TierNames.TEAM })
+      setup({ tierValue: TierNames.TEAM })
       render(<Tabs owner={{ username: 'kelly' }} provider="gh" />, { wrapper })
 
       expect(
@@ -166,7 +166,7 @@ describe('Tabs', () => {
     })
 
     it('renders link to members page', () => {
-      setup({ multipleTiers: TierNames.TEAM })
+      setup({ tierValue: TierNames.TEAM })
       render(<Tabs owner={{ username: 'kelly' }} provider="gh" />, { wrapper })
 
       expect(

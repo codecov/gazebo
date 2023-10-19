@@ -37,7 +37,7 @@ afterAll(() => {
 
 describe('Header', () => {
   function setup(
-    { isSelfHosted = false, tierValue = TierNames.TEAM } = {
+    { isSelfHosted = false, tierValue = TierNames.PRO } = {
       isSelfHosted: false,
       tierValue: TierNames.PRO,
     }
@@ -143,7 +143,7 @@ describe('Header', () => {
 
   describe('when user has team tier', () => {
     it('renders links to the home page', () => {
-      setup({ multipleTiers: TierNames.TEAM })
+      setup({ tierValue: TierNames.TEAM })
       render(<Header />, { wrapper })
 
       expect(
@@ -154,7 +154,7 @@ describe('Header', () => {
     })
 
     it('does not render links to the analytics page', async () => {
-      setup({ multipleTiers: TierNames.TEAM })
+      setup({ tierValue: TierNames.TEAM })
       render(<Header />, { wrapper })
 
       const analyticsLink = screen.queryByText(/Analytics/)
@@ -162,7 +162,7 @@ describe('Header', () => {
     })
 
     it('renders links to the settings page', () => {
-      setup({ multipleTiers: TierNames.TEAM })
+      setup({ tierValue: TierNames.TEAM })
       render(<Header />, { wrapper })
 
       expect(
@@ -173,7 +173,7 @@ describe('Header', () => {
     })
 
     it('renders link to plan page', () => {
-      setup({ multipleTiers: TierNames.TEAM })
+      setup({ tierValue: TierNames.TEAM })
       render(<Header />, { wrapper })
 
       expect(
@@ -184,7 +184,7 @@ describe('Header', () => {
     })
 
     it('renders link to members page', () => {
-      setup({ multipleTiers: TierNames.TEAM })
+      setup({ tierValue: TierNames.TEAM })
       render(<Header />, { wrapper })
 
       expect(
