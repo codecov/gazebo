@@ -7,7 +7,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useRepoBackfilled, useRepoFlagsSelect } from 'services/repo'
 import { TierNames } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 
 import FlagsTab from './FlagsTab'
 
@@ -69,17 +68,13 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('Flags Tab', () => {
-  function setup({ data = {}, flags = flagsData, multipleTiers = false }) {
+  function setup({ data = {}, flags = flagsData, tierValue = TierNames.PRO }) {
     useRepoFlagsSelect.mockReturnValue({ data: flags })
     useRepoBackfilled.mockReturnValue(data)
 
-    useFlags.mockReturnValue({
-      multipleTiers,
-    })
-
     server.use(
       graphql.query('OwnerTier', (req, res, ctx) => {
-        if (multipleTiers) {
+        if (tierValue === TierNames.TEAM) {
           return res(
             ctx.status(200),
             ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
@@ -95,7 +90,7 @@ describe('Flags Tab', () => {
 
   describe('when user has a team tier', () => {
     beforeEach(() => {
-      setup({ multipleTiers: true })
+      setup({ tierValue: TierNames.TEAM })
     })
 
     it('redirects to the coverage tab', async () => {
