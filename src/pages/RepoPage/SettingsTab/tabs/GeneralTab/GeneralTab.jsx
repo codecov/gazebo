@@ -1,7 +1,6 @@
 import { useParams } from 'react-router-dom'
 
 import { TierNames, useTier } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 
 import DangerZone from './DangerZone'
 import DefaultBranch from './DefaultBranch'
@@ -17,18 +16,10 @@ function GeneralTab() {
   })
   const { data: tierData } = useTier({ provider, owner })
 
-  const { multipleTiers } = useFlags({
-    multipleTiers: false,
-  })
-
   return (
     <div className="flex flex-col gap-6">
       {defaultBranch && <DefaultBranch defaultBranch={defaultBranch} />}
-      {tierData === TierNames.TEAM && multipleTiers ? (
-        <TokensTeam />
-      ) : (
-        <Tokens />
-      )}
+      {tierData === TierNames.TEAM ? <TokensTeam /> : <Tokens />}
       <DangerZone />
     </div>
   )

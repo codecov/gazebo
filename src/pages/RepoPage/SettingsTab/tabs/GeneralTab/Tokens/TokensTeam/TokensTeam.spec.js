@@ -52,7 +52,7 @@ describe('TokensTeam', () => {
 
   describe('when rendered', () => {
     beforeEach(() => {
-      setup({ showStaticAnalysis: false, multipleTiers: true })
+      setup({ showStaticAnalysis: false })
     })
 
     it('renders Repository upload token component', async () => {
