@@ -65,14 +65,17 @@ const commit = (state = 'complete') => ({
     patchTotals: { coverage: 75 },
     indirectChangedFilesCount: 1,
     directChangedFilesCount: 1,
-    impactedFiles: [
-      {
-        patchCoverage: { coverage: 75 },
-        headName: 'flag1/mafs.js',
-        baseCoverage: { coverage: 100 },
-        headCoverage: { coverage: 90 },
-      },
-    ],
+    impactedFiles: {
+      __typename: 'ImpactedFiles',
+      results: [
+        {
+          patchCoverage: { coverage: 75 },
+          headName: 'flag1/mafs.js',
+          baseCoverage: { coverage: 100 },
+          headCoverage: { coverage: 90 },
+        },
+      ],
+    },
   },
 })
 
