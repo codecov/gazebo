@@ -2,7 +2,7 @@ import cs from 'classnames'
 import isEmpty from 'lodash/isEmpty'
 import isNumber from 'lodash/isNumber'
 import PropTypes from 'prop-types'
-import { lazy, Suspense, useMemo } from 'react'
+import { lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
 import Table from 'old_ui/Table'
@@ -80,10 +80,6 @@ const table = [
 ]
 
 function createTable({ tableData }) {
-  if (tableData?.length <= 0) {
-    return [{ name: null, coverage: null, patch: null, change: null }]
-  }
-
   return tableData?.map((row) => {
     const { headName, headCoverage, hasData, change, commit } = row
 
@@ -152,18 +148,27 @@ function IndirectChangesTable() {
   })
 
   const commit = commitData?.commit
-  const indirectChangedFiles = commit?.compareWithParent?.impactedFiles
 
-  const formattedData = useMemo(
-    () => indirectChangedFiles?.map((row) => getFileData(row, commit)),
-    [indirectChangedFiles, commit]
+  if (isLoading || commit?.state === 'pending') {
+    return <Loader />
+  }
+
+  let indirectChangedFiles = []
+  if (
+    commit?.compareWithParent?.__typename === 'Comparison' &&
+    commit?.compareWithParent?.impactedFiles?.__typename === 'ImpactedFiles'
+  ) {
+    indirectChangedFiles = commit?.compareWithParent?.impactedFiles?.results
+  }
+
+  if (isEmpty(indirectChangedFiles)) {
+    return <p className="m-4">No files covered by tests were changed</p>
+  }
+
+  const formattedData = indirectChangedFiles?.map((row) =>
+    getFileData(row, commit)
   )
   const tableContent = createTable({ tableData: formattedData })
-
-  if (isLoading || commit?.state === 'pending') return <Loader />
-
-  if (isEmpty(indirectChangedFiles))
-    return <p className="m-4">No files covered by tests were changed</p>
 
   return (
     <Table
