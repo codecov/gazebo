@@ -27,6 +27,8 @@ function CommitDetailFileExplorer() {
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const { treePaths } = useCommitTreePaths()
 
+  const hasFlagsSelected = params?.flags?.length > 0
+
   return (
     <div className="mt-2 flex flex-col gap-2">
       <ContentsTableHeader>
@@ -49,7 +51,10 @@ function CommitDetailFileExplorer() {
       />
       {isLoading && <Loader />}
       {data?.length === 0 && !isLoading && (
-        <MissingFileData isSearching={isSearching} />
+        <MissingFileData
+          isSearching={isSearching}
+          hasFlagsSelected={hasFlagsSelected}
+        />
       )}
     </div>
   )
