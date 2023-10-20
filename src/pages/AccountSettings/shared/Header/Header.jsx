@@ -4,22 +4,18 @@ import config from 'config'
 
 import MyContextSwitcher from 'layouts/MyContextSwitcher'
 import { TierNames, useTier } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 import TabNavigation from 'ui/TabNavigation'
 
 function Header() {
   const { owner, provider } = useParams()
   const { data: tierName } = useTier({ owner, provider })
-  const { multipleTiers } = useFlags({
-    multipleTiers: true,
-  })
   return (
     <>
       <MyContextSwitcher pageName="accountAdmin" />
       <TabNavigation
         tabs={[
           { pageName: 'owner', children: 'Repos' },
-          ...(tierName === TierNames.TEAM && multipleTiers
+          ...(tierName === TierNames.TEAM
             ? []
             : [
                 {
