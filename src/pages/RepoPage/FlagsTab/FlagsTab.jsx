@@ -4,7 +4,6 @@ import { SentryRoute } from 'sentry'
 
 import { useRepoFlagsSelect } from 'services/repo/useRepoFlagsSelect'
 import { TierNames, useTier } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 import FlagsNotConfigured from 'shared/FlagsNotConfigured'
 
 import blurredTable from './assets/blurredTable.png'
@@ -32,7 +31,6 @@ function FlagsTab() {
   const { data: flagsData } = useRepoFlagsSelect()
   const { provider, owner, repo } = useParams()
   const { data: tierData } = useTier({ owner, provider })
-  const { multipleTiers } = useFlags({ multipleTiers: true })
 
   const {
     flagsMeasurementsActive,
@@ -41,7 +39,7 @@ function FlagsTab() {
     isTimescaleEnabled,
   } = useRepoBackfillingStatus()
 
-  if (tierData === TierNames.TEAM && multipleTiers) {
+  if (tierData === TierNames.TEAM) {
     return <Redirect to={`/${provider}/${owner}/${repo}`} />
   }
 

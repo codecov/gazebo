@@ -2,7 +2,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useTruncation } from 'ui/TruncatedMessage/hooks'
@@ -103,7 +102,7 @@ const wrapper =
               '/:provider/:owner/:repo/commit/:commit',
             ]}
           >
-            <Suspense fallback={null}>{children}</Suspense>
+            {children}
           </Route>
         </MemoryRouter>
       </QueryClientProvider>
@@ -128,7 +127,6 @@ describe('CommitPage', () => {
     const queryClient = new QueryClient({
       defaultOptions: {
         queries: {
-          suspense: true,
           retry: false,
         },
       },

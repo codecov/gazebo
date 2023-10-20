@@ -36,7 +36,10 @@ const compareDoneData = {
           indirectChangedFilesCount: 1,
           directChangedFilesCount: 1,
           patchTotals: null,
-          impactedFiles: [],
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [],
+          },
         },
         parent: {
           commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
@@ -116,7 +119,10 @@ const dataReturned = {
           indirectChangedFilesCount: 1,
           directChangedFilesCount: 1,
           patchTotals: null,
-          impactedFiles: [],
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [],
+          },
         },
         parent: {
           commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
@@ -253,9 +259,14 @@ describe('useCommit', () => {
             commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
             compareWithParent: {
               __typename: 'Comparison',
-              impactedFiles: [],
+              impactedFiles: {
+                __typename: 'ImpactedFiles',
+                results: [],
+              },
               patchTotals: null,
-              state: 'PROCESSED',
+              state: 'pending',
+              indirectChangedFilesCount: 1,
+              directChangedFilesCount: 1,
             },
             createdAt: '2020-08-25T16:35:32',
             message: 'paths test',
@@ -513,8 +524,13 @@ describe('useCommit polling', () => {
             ciPassed: true,
             compareWithParent: {
               __typename: 'Comparison',
-              state: 'PROCESSED',
-              impactedFiles: [],
+              state: 'pending',
+              directChangedFilesCount: 1,
+              indirectChangedFilesCount: 1,
+              impactedFiles: {
+                __typename: 'ImpactedFiles',
+                results: [],
+              },
               patchTotals: null,
             },
             parent: {

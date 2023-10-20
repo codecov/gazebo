@@ -6,7 +6,6 @@ import { useLocationParams } from 'services/navigation'
 import { orderingOptions } from 'services/repos'
 import { TierNames, useTier } from 'services/tier'
 import { useOwner } from 'services/user'
-import { useFlags } from 'shared/featureFlags'
 import ReposTable from 'shared/ListRepo/ReposTable'
 import LoadingLogo from 'ui/LoadingLogo'
 
@@ -39,9 +38,6 @@ function AnalyticsPage() {
   const { owner, provider } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
   const { data: tierName } = useTier({ owner, provider })
-  const { multipleTiers } = useFlags({
-    multipleTiers: true,
-  })
 
   const orderOptions = orderingOptions
 
@@ -56,7 +52,7 @@ function AnalyticsPage() {
     return <NotFound />
   }
 
-  if (tierName === TierNames.TEAM && multipleTiers) {
+  if (tierName === TierNames.TEAM) {
     return <Redirect to={`/${provider}/${owner}`} />
   }
 
