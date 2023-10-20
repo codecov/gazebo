@@ -5,7 +5,6 @@ import { useParams } from 'react-router-dom'
 import config from 'config'
 
 import { TierNames, useTier } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 import TabNavigation from 'ui/TabNavigation'
 
 const TrialReminder = lazy(() => import('./TrialReminder'))
@@ -13,9 +12,6 @@ const TrialReminder = lazy(() => import('./TrialReminder'))
 function Tabs() {
   const { owner, provider } = useParams()
   const { data: tierName } = useTier({ owner, provider })
-  const { multipleTiers } = useFlags({
-    multipleTiers: true,
-  })
 
   return (
     <TabNavigation
@@ -24,7 +20,7 @@ function Tabs() {
           pageName: 'owner',
           children: 'Repos',
         },
-        ...(tierName === TierNames.TEAM && multipleTiers
+        ...(tierName === TierNames.TEAM
           ? []
           : [
               {
