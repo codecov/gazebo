@@ -35,7 +35,8 @@ interface UrlParams {
 
 const TrialBanner: React.FC = () => {
   const { provider, owner } = useParams<UrlParams>()
-  const pathStartsWithPlan = startsWithPlan(useLocation().pathname)
+  const currentPathName = useLocation().pathname
+  const pathStartsWithPlan = startsWithPlan(currentPathName)
 
   const enableQuery = !!owner
 
