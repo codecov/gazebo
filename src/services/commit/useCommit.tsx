@@ -279,7 +279,19 @@ interface UseCommitArgs {
   owner: string
   repo: string
   commitid: string
-  filters?: {}
+  filters?: {
+    hasUnintendedChanges?: boolean
+    flags?: Array<string>
+    ordering?: {
+      direction?: 'DESC' | 'ASC'
+      parameter?:
+        | 'FILE_NAME'
+        | 'CHANGE_COVERAGE'
+        | 'HEAD_COVERAGE'
+        | 'MISSES_COUNT'
+        | 'PATCH_COVERAGE'
+    }
+  }
   refetchInterval?: number
 }
 
