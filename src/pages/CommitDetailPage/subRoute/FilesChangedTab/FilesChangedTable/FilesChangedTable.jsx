@@ -164,7 +164,7 @@ function FilesChangedTable() {
   const flags =
     queryParams?.flags?.length > 0 && commitTabFlagMultiSelect
       ? queryParams?.flags
-      : null
+      : undefined
 
   const { data: commitData, isLoading } = useCommit({
     provider,
@@ -173,7 +173,7 @@ function FilesChangedTable() {
     commitid: commitSha,
     filters: {
       hasUnintendedChanges: false,
-      flags,
+      flags: flags,
     },
   })
 
