@@ -87,20 +87,23 @@ describe('IndirectChangesTable', () => {
 
   describe('when data is available', () => {
     beforeEach(() =>
-      setup([
-        {
-          headName: 'src/index2.py',
-          baseCoverage: {
-            coverage: 62.5,
+      setup({
+        __typename: 'ImpactedFiles',
+        results: [
+          {
+            headName: 'src/index2.py',
+            baseCoverage: {
+              coverage: 62.5,
+            },
+            headCoverage: {
+              coverage: 50.0,
+            },
+            patchCoverage: {
+              coverage: 37.5,
+            },
           },
-          headCoverage: {
-            coverage: 50.0,
-          },
-          patchCoverage: {
-            coverage: 37.5,
-          },
-        },
-      ])
+        ],
+      })
     )
 
     it('renders name', async () => {
@@ -133,14 +136,17 @@ describe('IndirectChangesTable', () => {
 
   describe('when all data is missing', () => {
     beforeEach(() => {
-      setup([
-        {
-          headName: '',
-          baseCoverage: null,
-          headCoverage: null,
-          patchCoverage: null,
-        },
-      ])
+      setup({
+        __typename: 'ImpactedFiles',
+        results: [
+          {
+            headName: '',
+            baseCoverage: null,
+            headCoverage: null,
+            patchCoverage: null,
+          },
+        ],
+      })
     })
 
     it('does not render coverage', () => {
@@ -160,18 +166,21 @@ describe('IndirectChangesTable', () => {
 
   describe('when some data is missing', () => {
     beforeEach(() => {
-      setup([
-        {
-          headName: '',
-          baseCoverage: null,
-          headCoverage: {
-            coverage: 67,
+      setup({
+        __typename: 'ImpactedFiles',
+        results: [
+          {
+            headName: '',
+            baseCoverage: null,
+            headCoverage: {
+              coverage: 67,
+            },
+            patchCoverage: {
+              coverage: 98,
+            },
           },
-          patchCoverage: {
-            coverage: 98,
-          },
-        },
-      ])
+        ],
+      })
     })
 
     it('renders head coverage', async () => {
@@ -190,23 +199,52 @@ describe('IndirectChangesTable', () => {
   })
 
   describe('when no changes', () => {
-    beforeEach(() => {
-      setup()
+    describe('returns an empty results array', () => {
+      beforeEach(() => {
+        setup({
+          __typename: 'ImpactedFiles',
+          results: [],
+        })
+      })
+
+      it('renders coverage', async () => {
+        render(<IndirectChangesTable />, { wrapper })
+
+        const coverage = await screen.findByText(
+          'No files covered by tests were changed'
+        )
+        expect(coverage).toBeInTheDocument()
+      })
     })
 
-    it('renders coverage', async () => {
-      render(<IndirectChangesTable />, { wrapper })
+    describe('returns __typename of unknown flags', () => {
+      beforeEach(() => {
+        setup({
+          __typename: 'UnknownFlags',
+          message: 'no flags found',
+        })
+      })
 
-      const coverage = await screen.findByText(
-        'No files covered by tests were changed'
-      )
-      expect(coverage).toBeInTheDocument()
+      it('renders coverage', async () => {
+        render(<IndirectChangesTable />, { wrapper })
+
+        const coverage = await screen.findByText(
+          'No files covered by tests were changed'
+        )
+        expect(coverage).toBeInTheDocument()
+      })
     })
   })
 
   describe('when impacted files are in pending state', () => {
     beforeEach(() => {
-      setup([], 'pending')
+      setup(
+        {
+          __typename: 'ImpactedFiles',
+          results: [],
+        },
+        'pending'
+      )
     })
 
     it('renders spinner', async () => {
@@ -219,20 +257,23 @@ describe('IndirectChangesTable', () => {
 
   describe('when expanding the name column', () => {
     beforeEach(() => {
-      setup([
-        {
-          headName: 'src/index2.py',
-          baseCoverage: {
-            coverage: 62.5,
+      setup({
+        __typename: 'ImpactedFiles',
+        results: [
+          {
+            headName: 'src/index2.py',
+            baseCoverage: {
+              coverage: 62.5,
+            },
+            headCoverage: {
+              coverage: 50.0,
+            },
+            patchCoverage: {
+              coverage: 37.5,
+            },
           },
-          headCoverage: {
-            coverage: 50.0,
-          },
-          patchCoverage: {
-            coverage: 37.5,
-          },
-        },
-      ])
+        ],
+      })
     })
 
     it('renders the CommitFileDiff component', async () => {

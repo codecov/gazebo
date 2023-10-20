@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import qs from 'qs'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import CommitDetailSummary from './CommitDetailSummary'
@@ -64,14 +65,17 @@ const commit = (state = 'complete') => ({
     patchTotals: { coverage: 75 },
     indirectChangedFilesCount: 1,
     directChangedFilesCount: 1,
-    impactedFiles: [
-      {
-        patchCoverage: { coverage: 75 },
-        headName: 'flag1/mafs.js',
-        baseCoverage: { coverage: 100 },
-        headCoverage: { coverage: 90 },
-      },
-    ],
+    impactedFiles: {
+      __typename: 'ImpactedFiles',
+      results: [
+        {
+          patchCoverage: { coverage: 75 },
+          headName: 'flag1/mafs.js',
+          baseCoverage: { coverage: 100 },
+          headCoverage: { coverage: 90 },
+        },
+      ],
+    },
   },
 })
 
@@ -80,20 +84,31 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/codecov/cool-repo/commit/sha256']}>
-      <Route path="/:provider/:owner/:repo/commit/:commit">{children}</Route>
-    </MemoryRouter>
-  </QueryClientProvider>
-)
+const wrapper =
+  (initialEntries = '/gh/codecov/cool-repo/commit/sha256') =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path="/:provider/:owner/:repo/commit/:commit">
+            {children}
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('CommitDetailSummary', () => {
   function setup(hasErrored = false) {
@@ -132,7 +147,7 @@ describe('CommitDetailSummary', () => {
 
     describe('renders a card for every valid field', () => {
       it('has a head card', async () => {
-        render(<CommitDetailSummary />, { wrapper })
+        render(<CommitDetailSummary />, { wrapper: wrapper() })
 
         const headCardTitle = await screen.findByText('HEAD')
         expect(headCardTitle).toBeInTheDocument()
@@ -142,7 +157,7 @@ describe('CommitDetailSummary', () => {
       })
 
       it('has a patch card', async () => {
-        render(<CommitDetailSummary />, { wrapper })
+        render(<CommitDetailSummary />, { wrapper: wrapper() })
 
         const patchCardTitle = await screen.findByText('Patch')
         expect(patchCardTitle).toBeInTheDocument()
@@ -152,7 +167,7 @@ describe('CommitDetailSummary', () => {
       })
 
       it('has a change card', async () => {
-        render(<CommitDetailSummary />, { wrapper })
+        render(<CommitDetailSummary />, { wrapper: wrapper() })
 
         const changeCardTitle = await screen.findByText('Change')
         expect(changeCardTitle).toBeInTheDocument()
@@ -162,7 +177,7 @@ describe('CommitDetailSummary', () => {
       })
 
       it('has a source card', async () => {
-        render(<CommitDetailSummary />, { wrapper })
+        render(<CommitDetailSummary />, { wrapper: wrapper() })
 
         const sourceCardTitle = await screen.findByText('Source')
         expect(sourceCardTitle).toBeInTheDocument()
@@ -189,7 +204,7 @@ describe('CommitDetailSummary', () => {
     })
 
     it('renders error message', async () => {
-      render(<CommitDetailSummary />, { wrapper })
+      render(<CommitDetailSummary />, { wrapper: wrapper() })
 
       const errorMsg = await screen.findByText(
         /There is an error processing the coverage reports/
@@ -198,7 +213,7 @@ describe('CommitDetailSummary', () => {
     })
 
     it('suggests support links', async () => {
-      render(<CommitDetailSummary />, { wrapper })
+      render(<CommitDetailSummary />, { wrapper: wrapper() })
 
       const pathFix = await screen.findByRole('link', {
         name: 'files paths external-link.svg',
@@ -214,6 +229,33 @@ describe('CommitDetailSummary', () => {
       expect(errorRef).toHaveAttribute(
         'href',
         'https://docs.codecov.com/docs/error-reference'
+      )
+    })
+  })
+
+  describe('when rendered with a flag query param', () => {
+    it('appends flag query param to commit id link', async () => {
+      setup()
+
+      render(<CommitDetailSummary />, {
+        wrapper: wrapper(
+          `/gh/codecov/cool-repo/commit/sha256${qs.stringify(
+            { flags: ['flag-1'] },
+            { addQueryPrefix: true }
+          )}`
+        ),
+      })
+
+      const parentCommitId = await screen.findByText(
+        commit().parent.commitid.slice(0, 7)
+      )
+      expect(parentCommitId).toBeInTheDocument()
+      expect(parentCommitId).toHaveAttribute(
+        'href',
+        `/gh/codecov/cool-repo/commit/fc43199b07c52cf3d6c19b7cdb368f74387c38ab${qs.stringify(
+          { flags: ['flag-1'] },
+          { addQueryPrefix: true }
+        )}`
       )
     })
   })
