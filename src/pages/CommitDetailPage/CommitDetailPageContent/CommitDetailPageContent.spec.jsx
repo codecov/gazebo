@@ -62,7 +62,10 @@ const mockCommitData = {
           directChangedFilesCount: 19,
           state: 'state',
           patchTotals: null,
-          impactedFiles: [],
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [],
+          },
         },
       },
     },
@@ -111,7 +114,10 @@ const mockCommitErroredData = {
           directChangedFilesCount: 19,
           state: 'state',
           patchTotals: null,
-          impactedFiles: [],
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [],
+          },
         },
       },
     },
