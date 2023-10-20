@@ -2,6 +2,14 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import {
+  FirstPullRequestSchema,
+  MissingBaseCommitSchema,
+  MissingBaseReportSchema,
+  MissingComparisonSchema,
+  MissingHeadCommitSchema,
+  MissingHeadReportSchema,
+} from 'services/comparison/schemas'
+import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
@@ -19,6 +27,12 @@ const ComparisonSchema = z.object({
 
 const CompareWithBaseSchema = z.discriminatedUnion('__typename', [
   ComparisonSchema,
+  FirstPullRequestSchema,
+  MissingBaseCommitSchema,
+  MissingBaseReportSchema,
+  MissingComparisonSchema,
+  MissingHeadCommitSchema,
+  MissingHeadReportSchema,
 ])
 
 const RepositorySchema = z.object({
@@ -85,6 +99,24 @@ const query = `
                 patchTotals {
                   percentCovered
                 }
+              }
+              ... on FirstPullRequest {
+                message
+              }
+              ... on MissingBaseCommit {
+                message
+              }
+              ... on MissingHeadCommit {
+                message
+              }
+              ... on MissingComparison {
+                message
+              }
+              ... on MissingBaseReport {
+                message
+              }
+              ... on MissingHeadReport {
+                message
               }
             }
           }
