@@ -12,12 +12,13 @@ import Header from './Header'
 jest.mock('./HeaderDefault', () => () => 'Default Header')
 jest.mock('./HeaderTeam', () => () => 'Team Header')
 jest.mock('shared/featureFlags')
+const mockedUseFlags = useFlags as jest.Mock<{ multipleTiers: boolean }>
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 const server = setupServer()
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/test-org/test-repo/pull/12']}>
       <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
@@ -38,9 +39,13 @@ afterAll(() => {
   server.close()
 })
 
+interface SetupArgs {
+  multipleTiers: boolean
+}
+
 describe('Header', () => {
-  function setup({ multipleTiers = false } = { multipleTiers: false }) {
-    useFlags.mockReturnValue({
+  function setup({ multipleTiers = false }: SetupArgs) {
+    mockedUseFlags.mockReturnValue({
       multipleTiers,
     })
 
