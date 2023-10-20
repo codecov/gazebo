@@ -1,33 +1,17 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TierNames } from 'services/tier'
+import { useFlags } from 'shared/featureFlags'
+
 import Header from './Header'
 
+jest.mock('./HeaderDefault', () => () => 'Default Header')
+jest.mock('./HeaderTeam', () => () => 'Team Header')
 jest.mock('shared/featureFlags')
-
-const mockPullData = {
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      pull: {
-        pullId: 1,
-        title: 'Cool Pull Request',
-        state: 'OPEN',
-        author: {
-          username: 'cool-user',
-        },
-        head: {
-          branchName: 'cool-branch',
-          ciPassed: true,
-        },
-        updatestamp: '2020-01-01T12:00:00.000000',
-      },
-    },
-  },
-}
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -55,35 +39,56 @@ afterAll(() => {
 })
 
 describe('Header', () => {
-  function setup() {
+  function setup({ multipleTiers = false } = { multipleTiers: false }) {
+    useFlags.mockReturnValue({
+      multipleTiers,
+    })
+
     server.use(
-      graphql.query('PullHeadData', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockPullData))
-      )
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        if (multipleTiers) {
+          return res(
+            ctx.status(200),
+            ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
+          )
+        }
+        return res(
+          ctx.status(200),
+          ctx.data({ owner: { plan: { tierName: TierNames.PRO } } })
+        )
+      })
     )
   }
 
-  describe('when rendered', () => {
+  describe('when rendered and customer is not team tier', () => {
     beforeEach(() => {
-      setup()
+      setup({ multipleTiers: false })
     })
 
-    it('renders the pr overview', async () => {
+    it('renders the default header component', async () => {
       render(<Header />, { wrapper })
 
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
+      const defaultHeader = await screen.findByText(/Default Header/)
+      expect(defaultHeader).toBeInTheDocument()
 
-      const heading = await screen.findByRole('heading', {
-        name: /Cool Pull Request/,
-      })
-      expect(heading).toBeInTheDocument()
+      const teamHeader = screen.queryByText(/Team Header/)
+      expect(teamHeader).not.toBeInTheDocument()
+    })
+  })
 
-      const open = await screen.findByText(/open/i)
-      expect(open).toBeInTheDocument()
+  describe('when rendered and customer has team tier', () => {
+    beforeEach(() => {
+      setup({ multipleTiers: true })
+    })
 
-      const prNumber = await screen.findByText(/#1/i)
-      expect(prNumber).toBeInTheDocument()
+    it('renders the team header component', async () => {
+      render(<Header />, { wrapper })
+
+      const teamHeader = await screen.findByText(/Team Header/)
+      expect(teamHeader).toBeInTheDocument()
+
+      const defaultHeader = screen.queryByText(/Default Header/)
+      expect(defaultHeader).not.toBeInTheDocument()
     })
   })
 })
