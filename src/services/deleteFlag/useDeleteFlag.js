@@ -35,7 +35,7 @@ export function useDeleteFlag() {
     onSuccess: ({ data }) => {
       const error = data?.deleteFlag?.error?.__typename
       if (error) {
-        // TODO: adjust backend to provide a message so wacn tailor the message here
+        // TODO: adjust backend to provide a message so we can tailor the message here
         addToast({
           type: 'error',
           text: 'There was an error deleting your flag',
