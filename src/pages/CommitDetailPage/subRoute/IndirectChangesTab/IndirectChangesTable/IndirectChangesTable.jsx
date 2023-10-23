@@ -180,19 +180,21 @@ function IndirectChangesTable() {
     indirectChangedFiles = commit?.compareWithParent?.impactedFiles?.results
   }
 
-  if (isEmpty(indirectChangedFiles)) {
-    if (
-      isArray(flags) ||
+  if (
+    isEmpty(indirectChangedFiles) &&
+    (isArray(flags) ||
       (commit?.compareWithParent?.__typename === 'Comparison' &&
-        commit?.compareWithParent?.impactedFiles?.__typename === 'UnknownFlags')
-    ) {
-      return (
-        <p className="m-4">
-          No files covered by tests and selected flags were changed
-        </p>
-      )
-    }
+        commit?.compareWithParent?.impactedFiles?.__typename ===
+          'UnknownFlags'))
+  ) {
+    return (
+      <p className="m-4">
+        No files covered by tests and selected flags were changed
+      </p>
+    )
+  }
 
+  if (isEmpty(indirectChangedFiles)) {
     return <p className="m-4">No files covered by tests were changed</p>
   }
 
