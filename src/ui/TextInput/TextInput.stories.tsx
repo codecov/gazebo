@@ -34,4 +34,7 @@ export const TextInputWithIcon: Story = {
     icon: 'search',
     placeholder: 'Search',
   },
+  render: (args) => {
+    return <TextInput {...args} />
+  },
 }
