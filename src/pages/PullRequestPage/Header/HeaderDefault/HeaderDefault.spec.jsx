@@ -4,9 +4,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import Header from './Header'
-
-jest.mock('shared/featureFlags')
+import Header from './HeaderDefault'
 
 const mockPullData = {
   owner: {
