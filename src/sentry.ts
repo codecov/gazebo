@@ -78,7 +78,7 @@ export const setupSentry = ({
     tracesSampleRate: config?.SENTRY_TRACING_SAMPLE_RATE,
     beforeSend: (event, _hint) => {
       if (event.tags) {
-        const browser = event.tags['browser.name']
+        const browser = event.tags?.['browser.name']
 
         if (browser === 'Bytespider') {
           return null
