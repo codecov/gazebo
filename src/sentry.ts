@@ -77,7 +77,7 @@ export const setupSentry = ({
     integrations: [browserTracing, replay],
     tracesSampleRate: config?.SENTRY_TRACING_SAMPLE_RATE,
     beforeSend: (event, _hint) => {
-      if (window?.navigator?.userAgent.includes('Bytespider')) {
+      if (window?.navigator?.userAgent?.includes('Bytespider')) {
         return null
       }
 
