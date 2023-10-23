@@ -9,6 +9,7 @@ import PullRequestPage from './PullRequestPage'
 
 jest.mock('shared/featureFlags')
 
+jest.mock('./Header', () => () => 'Header')
 jest.mock('./Summary', () => () => 'CompareSummary')
 jest.mock('./PullRequestPageContent', () => () => 'PullRequestPageContent')
 jest.mock('./PullRequestPageTabs', () => () => 'PullRequestPageTabs')
@@ -124,10 +125,8 @@ describe('PullRequestPage', () => {
     it('renders header', async () => {
       render(<PullRequestPage />, { wrapper: wrapper() })
 
-      const title = await screen.findByRole('heading', {
-        name: /Cool New Pull Request/,
-      })
-      expect(title).toBeInTheDocument()
+      const header = await screen.findByText(/Header/)
+      expect(header).toBeInTheDocument()
     })
 
     it('renders compare summary', async () => {
