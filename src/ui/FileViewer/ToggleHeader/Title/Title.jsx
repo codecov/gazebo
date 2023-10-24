@@ -6,7 +6,6 @@ import { useState } from 'react'
 
 import { useLocationParams } from 'services/navigation'
 import { useRepoBackfilled, useRepoFlagsSelect } from 'services/repo'
-import { useFlags } from 'shared/featureFlags'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'
 
@@ -56,10 +55,6 @@ export const TitleFlags = () => {
   const flagsMeasurementsActive = !!repoBackfilledData?.flagsMeasurementsActive
   const noFlagsPresent = eq(repoBackfilledData?.flagsCount, 0)
 
-  const { coverageTabFlagMutliSelect } = useFlags({
-    coverageTabFlagMutliSelect: false,
-  })
-
   const {
     data: flagsData,
     isLoading: flagsIsLoading,
@@ -69,9 +64,7 @@ export const TitleFlags = () => {
     filters: { term: flagSearch },
     options: {
       suspense: false,
-      enabled:
-        !!coverageTabFlagMutliSelect ||
-        (flagsMeasurementsActive && !noFlagsPresent && isTimescaleEnabled),
+      enabled: flagsMeasurementsActive && !noFlagsPresent && isTimescaleEnabled,
     },
   })
 
@@ -84,7 +77,7 @@ export const TitleFlags = () => {
     }
   }
 
-  if (!coverageTabFlagMutliSelect || noFlagsPresent) {
+  if (noFlagsPresent) {
     return null
   }
 
