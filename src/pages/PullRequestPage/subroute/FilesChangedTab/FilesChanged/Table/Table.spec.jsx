@@ -37,6 +37,7 @@ const mockPull = {
           state: 'PROCESSED',
         },
         compareWithBase: {
+          __typename: 'Comparison',
           patchTotals: {
             percentCovered: 92.12,
           },
@@ -47,7 +48,7 @@ const mockPull = {
             percentCovered: 27.35,
           },
           changeCoverage: 38.94,
-          impactedFiles: mockTable,
+          impactedFiles: { __typename: 'ImpactedFiles', results: mockTable },
         },
       },
     },
@@ -63,6 +64,7 @@ const mockNoTable = {
           state: 'PROCESSED',
         },
         compareWithBase: {
+          __typename: 'Comparison',
           patchTotals: {
             percentCovered: 92.12,
           },
@@ -73,7 +75,7 @@ const mockNoTable = {
             percentCovered: 27.35,
           },
           changeCoverage: 38.94,
-          impactedFiles: [],
+          impactedFiles: { __typename: 'ImpactedFiles', results: [] },
         },
       },
     },
@@ -89,6 +91,7 @@ const mockNoChange = {
           state: 'PROCESSED',
         },
         compareWithBase: {
+          __typename: 'Comparison',
           patchTotals: {
             percentCovered: 92.12,
           },
@@ -99,22 +102,25 @@ const mockNoChange = {
             percentCovered: 27.35,
           },
           changeCoverage: 38.94,
-          impactedFiles: [
-            {
-              isCriticalFile: true,
-              fileName: 'mafs.js',
-              headName: 'flag1/mafs.js',
-              baseCoverage: {
-                percentCovered: null,
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [
+              {
+                isCriticalFile: true,
+                fileName: 'mafs.js',
+                headName: 'flag1/mafs.js',
+                baseCoverage: {
+                  percentCovered: null,
+                },
+                headCoverage: {
+                  percentCovered: null,
+                },
+                patchCoverage: {
+                  percentCovered: null,
+                },
               },
-              headCoverage: {
-                percentCovered: null,
-              },
-              patchCoverage: {
-                percentCovered: null,
-              },
-            },
-          ],
+            ],
+          },
         },
       },
     },
@@ -127,6 +133,7 @@ const mockSingularTableData = {
       pull: {
         pullId: 14,
         compareWithBase: {
+          __typename: 'Comparison',
           impactedFile: {
             headName: 'file A',
             isNewFile: true,

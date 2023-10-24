@@ -2,6 +2,7 @@ import isNil from 'lodash/isNil'
 
 import { CommitStateEnum } from 'shared/utils/commit'
 import { ComparisonReturnType } from 'shared/utils/comparison'
+import A from 'ui/A'
 import Spinner from 'ui/Spinner'
 
 import { useImpactedFilesTable } from './hooks'
@@ -12,10 +13,6 @@ const Loader = () => (
     <Spinner />
   </div>
 )
-
-function hasImpactedFiles(impactedFiles) {
-  return impactedFiles && impactedFiles?.length > 0
-}
 
 function hasReportWithoutChanges({
   pullHeadCoverage,
@@ -57,10 +54,27 @@ function FilesChangedTab() {
     )
   }
 
-  if (hasImpactedFiles(data?.impactedFiles)) {
+  if (
+    data?.impactedFilesType === 'ImpactedFiles' &&
+    data?.impactedFiles.length > 0
+  ) {
     return (
       <div className="flex flex-col gap-2">
         <Table />
+      </div>
+    )
+  }
+
+  if (data?.impactedFilesType === 'UnknownFlags') {
+    return (
+      <div className="flex flex-col gap-2">
+        <p className="mt-4">
+          {data?.impactedFiles?.message}. One possible solution is to look into{' '}
+          <A href="https://docs.codecov.com/docs/carryforward-flags">
+            Carryforward Flags
+          </A>
+          .
+        </p>
       </div>
     )
   }
