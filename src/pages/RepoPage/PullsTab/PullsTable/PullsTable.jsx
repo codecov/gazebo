@@ -8,10 +8,9 @@ import Button from 'ui/Button'
 import Spinner from 'ui/Spinner'
 import TotalsNumber from 'ui/TotalsNumber'
 
-import Coverage from './Coverage'
-import Title from './Title'
-
 import { orderingEnum } from '../enums'
+import Coverage from '../shared/Coverage'
+import Title from '../shared/Title'
 import { PullRequestType } from '../types'
 
 const headers = [
