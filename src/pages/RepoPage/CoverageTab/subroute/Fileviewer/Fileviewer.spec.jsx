@@ -1,13 +1,16 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TierNames } from 'services/tier'
+import { useFlags } from 'shared/featureFlags'
 import { useScrollToLine } from 'ui/CodeRenderer/hooks/useScrollToLine'
 
 import FileView from './Fileviewer'
 
+jest.mock('shared/featureFlags')
 jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
 
 const mockOwner = {
@@ -93,10 +96,10 @@ const mockBackfillResponse = {
   },
 }
 
+const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const server = setupServer()
 
 const wrapper =
   (
@@ -127,12 +130,16 @@ afterAll(() => {
 })
 
 describe('FileView', () => {
-  function setup() {
+  function setup({ tierName = TierNames.PRO } = { tierName: TierNames.PRO }) {
     useScrollToLine.mockImplementation(() => ({
       lineRef: () => {},
       handleClick: jest.fn(),
       targeted: false,
     }))
+
+    useFlags.mockReturnValue({
+      coverageTabFlagMutliSelect: true,
+    })
 
     server.use(
       graphql.query('DetailOwner', (req, res, ctx) =>
@@ -149,15 +156,26 @@ describe('FileView', () => {
       }),
       graphql.query('FlagsSelect', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockFlagResponse))
+      }),
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        if (tierName === TierNames.TEAM) {
+          return res(
+            ctx.status(200),
+            ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
+          )
+        }
+        return res(
+          ctx.status(200),
+          ctx.data({ owner: { plan: { tierName: TierNames.PRO } } })
+        )
       })
     )
   }
 
   describe('rendering component', () => {
-    beforeEach(() => setup())
-
     describe('displaying the tree path', () => {
       it('displays repo link', async () => {
+        setup()
         render(<FileView />, { wrapper: wrapper() })
 
         const repoName = await screen.findByRole('link', { name: 'mightynein' })
@@ -169,6 +187,7 @@ describe('FileView', () => {
       })
 
       it('displays directory link', async () => {
+        setup()
         render(<FileView />, { wrapper: wrapper() })
 
         const repoName = await screen.findByRole('link', { name: 'folder' })
@@ -180,6 +199,7 @@ describe('FileView', () => {
       })
 
       it('displays file name', async () => {
+        setup()
         render(<FileView />, { wrapper: wrapper() })
 
         const fileName = await screen.findByText('file.js')
@@ -189,6 +209,7 @@ describe('FileView', () => {
 
     describe('displaying the file viewer', () => {
       it('sets the correct url link', async () => {
+        setup()
         render(<FileView />, { wrapper: wrapper() })
 
         const copyLink = await screen.findByRole('link', {
@@ -196,6 +217,30 @@ describe('FileView', () => {
         })
         expect(copyLink).toBeInTheDocument()
         expect(copyLink).toHaveAttribute('href', '#folder/file.js')
+      })
+    })
+
+    describe('displaying the flag selector', () => {
+      it('renders the flag multi select', async () => {
+        setup()
+        render(<FileView />, { wrapper: wrapper() })
+
+        const select = await screen.findByText('All flags')
+        expect(select).toBeInTheDocument()
+      })
+
+      describe('on a team plan', () => {
+        it('does not render the flag multi select', async () => {
+          setup({ tierName: TierNames.TEAM })
+          render(<FileView />, { wrapper: wrapper() })
+
+          await waitFor(() => queryClient.isFetching)
+          await waitFor(() => !queryClient.isFetching)
+
+          await waitFor(() =>
+            expect(screen.queryByText('All flags')).not.toBeInTheDocument()
+          )
+        })
       })
     })
   })
