@@ -6,35 +6,59 @@ import PullsTab from './PullsTab'
 
 import { repoPageRender, screen } from '../repo-jest-setup'
 
-jest.mock('./PullsTable/PullsTable', () => () => 'PullsTable')
+jest.mock('./PullsTable', () => () => 'PullsTable')
+jest.mock('./PullsTableTeam', () => () => 'PullsTableTeam')
 
 const server = setupServer()
 
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })
 })
+
 afterEach(() => {
   server.resetHandlers()
 })
+
 afterAll(() => {
   server.close()
 })
 
+interface SetupArgs {
+  tierValue?: 'pro' | 'team'
+}
+
 describe('Pulls Tab', () => {
-  function setup() {
+  function setup({ tierValue = 'pro' }: SetupArgs) {
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('GetRepo', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({}))
-      )
+      graphql.query('GetRepo', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({}))
+      }),
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        if (tierValue === 'team') {
+          return res(
+            ctx.status(200),
+            ctx.data({
+              owner: { plan: { tierName: 'team' } },
+            })
+          )
+        }
+
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: { plan: { tierName: 'pro' } },
+          })
+        )
+      })
     )
 
     return { user }
   }
 
-  describe('when rendered', () => {
-    beforeEach(() => setup())
+  describe('rendering table controls', () => {
+    beforeEach(() => setup({}))
 
     it('renders select by updatestamp label', () => {
       repoPageRender({
@@ -77,9 +101,37 @@ describe('Pulls Tab', () => {
     })
   })
 
+  describe('rendering table', () => {
+    describe('on non-team tier', () => {
+      it('renders PullsTable component', async () => {
+        setup({})
+        repoPageRender({
+          initialEntries: ['/gh/codecov/gazebo/pulls'],
+          renderPulls: () => <PullsTab />,
+        })
+
+        const table = await screen.findByText('PullsTable')
+        expect(table).toBeInTheDocument()
+      })
+    })
+
+    describe('on team tier', () => {
+      it('renders PullsTableTeam component', async () => {
+        setup({ tierValue: 'team' })
+        repoPageRender({
+          initialEntries: ['/gh/codecov/gazebo/pulls'],
+          renderPulls: () => <PullsTab />,
+        })
+
+        const table = await screen.findByText('PullsTableTeam')
+        expect(table).toBeInTheDocument()
+      })
+    })
+  })
+
   describe('view by state', () => {
     it('renders all options', async () => {
-      const { user } = setup()
+      const { user } = setup({})
       repoPageRender({
         initialEntries: ['/gh/codecov/gazebo/pulls'],
         renderPulls: () => <PullsTab />,
@@ -101,7 +153,7 @@ describe('Pulls Tab', () => {
 
   describe('order by updatestamp', () => {
     it('renders all options', async () => {
-      const { user } = setup()
+      const { user } = setup({})
       repoPageRender({
         initialEntries: ['/gh/codecov/gazebo/pulls'],
         renderPulls: () => <PullsTab />,
@@ -115,9 +167,9 @@ describe('Pulls Tab', () => {
     })
   })
 
-  describe('order by Oldest', () => {
+  describe('order by oldest', () => {
     it('renders the selected option', async () => {
-      const { user } = setup()
+      const { user } = setup({})
       repoPageRender({
         initialEntries: ['/gh/codecov/gazebo/pulls'],
         renderPulls: () => <PullsTab />,
@@ -137,9 +189,9 @@ describe('Pulls Tab', () => {
     })
   })
 
-  describe('view by Merged', () => {
+  describe('view by merged', () => {
     it('renders the number of selected options', async () => {
-      const { user } = setup()
+      const { user } = setup({})
       repoPageRender({
         initialEntries: ['/gh/codecov/gazebo/pulls'],
         renderPulls: () => <PullsTab />,
@@ -149,7 +201,10 @@ describe('Pulls Tab', () => {
       await user.click(select)
 
       const state = screen.getAllByRole('option')[2]
-      await user.click(state)
+
+      if (state) {
+        await user.click(state)
+      }
 
       const itemSelected = await screen.findByText(/1 selected/)
       expect(itemSelected).toBeInTheDocument()
