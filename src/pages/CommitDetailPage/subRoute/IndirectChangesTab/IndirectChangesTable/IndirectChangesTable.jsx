@@ -1,12 +1,15 @@
 import cs from 'classnames'
+import isArray from 'lodash/isArray'
 import isEmpty from 'lodash/isEmpty'
 import isNumber from 'lodash/isNumber'
 import PropTypes from 'prop-types'
+import qs from 'qs'
 import { lazy, Suspense } from 'react'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 
 import Table from 'old_ui/Table'
 import { useCommit } from 'services/commit'
+import { useFlags } from 'shared/featureFlags'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
@@ -136,6 +139,21 @@ RenderSubComponent.propTypes = {
 
 function IndirectChangesTable() {
   const { provider, owner, repo, commit: commitSha } = useParams()
+  const location = useLocation()
+
+  const { commitTabFlagMultiSelect } = useFlags({
+    commitTabFlagMultiSelect: false,
+  })
+
+  const queryParams = qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+    depth: 1,
+  })
+
+  const flags =
+    queryParams?.flags?.length > 0 && commitTabFlagMultiSelect
+      ? queryParams?.flags
+      : undefined
 
   const { data: commitData, isLoading } = useCommit({
     provider,
@@ -144,6 +162,7 @@ function IndirectChangesTable() {
     commitid: commitSha,
     filters: {
       hasUnintendedChanges: true,
+      flags: flags,
     },
   })
 
@@ -159,6 +178,20 @@ function IndirectChangesTable() {
     commit?.compareWithParent?.impactedFiles?.__typename === 'ImpactedFiles'
   ) {
     indirectChangedFiles = commit?.compareWithParent?.impactedFiles?.results
+  }
+
+  if (
+    isEmpty(indirectChangedFiles) &&
+    (isArray(flags) ||
+      (commit?.compareWithParent?.__typename === 'Comparison' &&
+        commit?.compareWithParent?.impactedFiles?.__typename ===
+          'UnknownFlags'))
+  ) {
+    return (
+      <p className="m-4">
+        No files covered by tests and selected flags were changed
+      </p>
+    )
   }
 
   if (isEmpty(indirectChangedFiles)) {
