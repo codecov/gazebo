@@ -30,7 +30,7 @@ const CommitStates = {
 
 const CommitStatesEnumSchema = z.nativeEnum(CommitStates)
 
-type CommitStatsEnum = z.infer<typeof CommitStatesEnumSchema>
+export type CommitStatsEnum = z.infer<typeof CommitStatesEnumSchema>
 
 const AuthorSchema = z.object({
   username: z.string().nullable(),
@@ -63,7 +63,7 @@ const CommitSchema = z.object({
     .nullable(),
 })
 
-type Commit = z.infer<typeof CommitSchema>
+export type Commit = z.infer<typeof CommitSchema>
 
 const PageInfoSchema = z.object({
   hasNextPage: z.boolean(),
