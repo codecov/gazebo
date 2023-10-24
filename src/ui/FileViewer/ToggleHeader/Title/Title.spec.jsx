@@ -6,8 +6,6 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import useIntersection from 'react-use/lib/useIntersection'
 
-import { useFlags } from 'shared/featureFlags'
-
 import Title, { TitleFlags, TitleHitCount } from './Title'
 
 jest.mock('shared/featureFlags')
@@ -176,7 +174,6 @@ describe('Title', () => {
 describe('TitleFlags', () => {
   function setup(
     {
-      flagValue = true,
       isIntersecting = false,
       noNextPage = false,
       backfillData = mockBackfillHasFlagsAndActive,
@@ -189,10 +186,6 @@ describe('TitleFlags', () => {
   ) {
     const user = userEvent.setup()
     const mockApiVars = jest.fn()
-
-    useFlags.mockReturnValue({
-      coverageTabFlagMutliSelect: flagValue,
-    })
 
     useIntersection.mockReturnValue({ isIntersecting: isIntersecting })
 
