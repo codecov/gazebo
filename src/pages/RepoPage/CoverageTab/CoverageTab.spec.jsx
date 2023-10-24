@@ -4,6 +4,8 @@ import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TierNames } from 'services/tier'
+
 import CoverageTab from './CoverageTab'
 
 const queryClient = new QueryClient({
@@ -207,6 +209,12 @@ describe('Coverage Tab', () => {
       graphql.query('BackfillFlagMemberships', (req, res, ctx) =>
         res(ctx.status(200), ctx.data({}))
       ),
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({ owner: { plan: { tierName: TierNames.PRO } } })
+        )
+      }),
       rest.get(
         '/internal/:provider/:owner/:repo/coverage/tree',
         (req, res, ctx) => {
