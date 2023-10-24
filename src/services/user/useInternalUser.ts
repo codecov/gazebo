@@ -27,6 +27,7 @@ const InternalUserSchema = z
     name: z.string().nullish(),
     externalId: z.string().nullish(),
     owners: z.array(OwnerSchema).nullish(),
+    termsAgreement: z.boolean().nullish(),
   })
   .nullish()
 

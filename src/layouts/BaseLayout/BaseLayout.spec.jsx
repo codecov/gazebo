@@ -78,6 +78,7 @@ const internalUserHasSyncedProviders = {
       service: 'github',
     },
   ],
+  termsAgreement: false,
 }
 
 const queryClient = new QueryClient({

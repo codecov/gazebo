@@ -1,10 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
+import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
+
+import { useFlags } from 'shared/featureFlags'
 
 import TermsOfService from './TermsOfService'
 
@@ -14,12 +16,23 @@ const queryClient = new QueryClient({
 const server = setupServer()
 let errorMock
 
+let testLocation = {
+  pathname: '',
+}
+
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/cool-repo']}>
       <Route path="/:provider/:owner/:repo">
         <Suspense fallback={null}>{children}</Suspense>
       </Route>
+      <Route
+        path="*"
+        render={({ location }) => {
+          testLocation = location
+          return null
+        }}
+      />
     </MemoryRouter>
   </QueryClientProvider>
 )
@@ -37,22 +50,37 @@ afterAll(() => {
   server.close()
 })
 
+const mockedUserData = {
+  email: null,
+  name: null,
+  externalId: null,
+  owners: [],
+  termsAgreement: false,
+}
+
+jest.mock('shared/featureFlags')
+
 describe('TermsOfService', () => {
   beforeEach(() => jest.resetModules())
 
   function setup({
-    useUserData,
+    internalUserData = mockedUserData,
     isValidationError = false,
     isUnAuthError = false,
     isUnknownError = false,
+    termsOfServicePageFlag = true,
   } = {}) {
     const mockMutationVariables = jest.fn()
     const user = userEvent.setup()
 
+    useFlags.mockReturnValue({
+      termsOfServicePage: termsOfServicePageFlag,
+    })
+
     server.use(
-      graphql.query('CurrentUser', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(useUserData))
-      }),
+      rest.get('/internal/user', (req, res, ctx) =>
+        res(ctx.status(200), ctx.json(internalUserData))
+      ),
       graphql.mutation('SigningTermsAgreement', (req, res, ctx) => {
         mockMutationVariables(req.variables)
         if (isUnAuthError) {
@@ -176,16 +204,12 @@ describe('TermsOfService', () => {
     // that the correct inputs are being sent to the server.
     it('Sign TOS, sends the correct inputs to the server', async () => {
       const { user, mockMutationVariables } = setup({
-        useUserData: {
-          me: {
-            email: 'personal@cr.com',
-            trackingMetadata: {
-              ownerid: '1234',
-            },
-            user: {
-              username: 'chetney',
-            },
-          },
+        internalUserData: {
+          email: 'personal@cr.com',
+          name: 'Chetney',
+          externalId: '1234',
+          owners: [],
+          termsAgreement: false,
         },
       })
 
@@ -209,6 +233,7 @@ describe('TermsOfService', () => {
           tosInput: {
             businessEmail: 'personal@cr.com',
             termsAgreement: true,
+            marketingConsent: false,
           },
         })
       )
@@ -230,11 +255,9 @@ describe('TermsOfService', () => {
       {
         validationDescription:
           'user has email, signs TOS, submit is now enabled',
-        useUserData: {
-          me: {
-            email: 'personal@cr.com',
-            termsAgreement: false,
-          },
+        internalUserData: {
+          email: 'personal@cr.com',
+          termsAgreement: false,
         },
       },
       [expectPageIsReady],
@@ -247,11 +270,9 @@ describe('TermsOfService', () => {
       {
         validationDescription:
           'user wants to receive emails, signs TOS, submit is now enabled',
-        useUserData: {
-          me: {
-            email: 'chetney@cr.com',
-            termsAgreement: false,
-          },
+        internalUserData: {
+          email: 'chetney@cr.com',
+          termsAgreement: false,
         },
       },
       [expectPageIsReady],
@@ -265,11 +286,9 @@ describe('TermsOfService', () => {
       {
         validationDescription:
           'user has email, user wants to receive emails, signs TOS, submit is now enabled',
-        useUserData: {
-          me: {
-            email: 'chetney@cr.com',
-            termsAgreement: false,
-          },
+        internalUserData: {
+          email: 'chetney@cr.com',
+          termsAgreement: false,
         },
       },
       [expectPageIsReady],
@@ -284,11 +303,9 @@ describe('TermsOfService', () => {
       {
         validationDescription:
           'signs TOS, decides not to, is warned they must sign and cannot submit',
-        useUserData: {
-          me: {
-            email: 'chetney@cr.com',
-            termsAgreement: false,
-          },
+        internalUserData: {
+          email: 'chetney@cr.com',
+          termsAgreement: false,
         },
       },
       [expectPageIsReady],
@@ -304,10 +321,8 @@ describe('TermsOfService', () => {
       {
         validationDescription:
           'user checks marketing consent and is required to provide an email, sign TOS (check email validation messages)',
-        useUserData: {
-          me: {
-            termsAgreement: false,
-          },
+        internalUserData: {
+          termsAgreement: false,
         },
       },
       [expectPageIsReady],
@@ -329,10 +344,8 @@ describe('TermsOfService', () => {
       {
         validationDescription:
           'user checks marketing consent and does not provide an email, sign TOS (check email validation messages)',
-        useUserData: {
-          me: {
-            termsAgreement: false,
-          },
+        internalUserData: {
+          termsAgreement: false,
         },
       },
       [expectPageIsReady],
@@ -346,11 +359,9 @@ describe('TermsOfService', () => {
       {
         validationDescription: 'server unknown error notification',
         isUnknownError: true,
-        useUserData: {
-          me: {
-            termsAgreement: false,
-            email: 'personal@cr.com',
-          },
+        internalUserData: {
+          termsAgreement: false,
+          email: 'personal@cr.com',
         },
       },
       [expectPageIsReady],
@@ -375,11 +386,9 @@ describe('TermsOfService', () => {
       {
         validationDescription: 'server failure error notification',
         isUnAuthError: true,
-        useUserData: {
-          me: {
-            termsAgreement: false,
-            email: 'personal@cr.com',
-          },
+        internalUserData: {
+          termsAgreement: false,
+          email: 'personal@cr.com',
         },
       },
       [expectPageIsReady],
@@ -399,17 +408,29 @@ describe('TermsOfService', () => {
         validationDescription:
           'server validation error notification (saveTerms)',
         isValidationError: true,
-        useUserData: {
-          me: {
-            termsAgreement: false,
-            email: 'personal@cr.com',
-          },
+        internalUserData: {
+          termsAgreement: false,
+          email: 'personal@cr.com',
         },
       },
       [expectPageIsReady],
       [expectUserSignsTOS],
       [expectClickSubmit],
       [expectRendersServerFailureResult, 'validation error'],
+    ],
+    [
+      'case #10',
+      {
+        validationDescription:
+          'redirects to main root if user has already synced a provider',
+        isValidationError: true,
+        internalUserData: {
+          termsAgreement: true,
+          email: '',
+          owners: [{ service: 'github', username: 'chetney' }],
+        },
+      },
+      [expectRedirectTo, '/gh/codecov/cool-repo'],
     ],
   ])('form validation, %s', (_, initializeTest, ...steps) => {
     beforeEach(() => {
@@ -423,9 +444,9 @@ describe('TermsOfService', () => {
     })
 
     describe(`
-      Has signed in: ${!!initializeTest.useUserData.me}
-      Has a email via oauth: ${initializeTest.useUserData.me?.email}
-    `, () => {
+        Has signed in: ${!!initializeTest.internalUserData}
+        Has a email via oauth: ${initializeTest.internalUserData?.email}
+      `, () => {
       jest.mock('./hooks/useTermsOfService', () => ({
         useSaveTermsAgreement: jest.fn(() => ({ data: 'mocked' })),
       }))
@@ -435,7 +456,7 @@ describe('TermsOfService', () => {
           isUnknownError: initializeTest.isUnknownError,
           isValidationError: initializeTest.isValidationError,
           isUnAuthError: initializeTest.isUnAuthError,
-          useUserData: initializeTest.useUserData,
+          internalUserData: initializeTest.internalUserData,
         })
         render(<TermsOfService />, { wrapper })
 
@@ -551,4 +572,8 @@ async function expectRendersServerFailureResult(user, expectedError = {}) {
   const issueLink = screen.getByRole('link', { name: /contact support/i })
   expect(issueLink).toBeInTheDocument()
   expect(issueLink.href).toBe('https://codecovpro.zendesk.com/hc/en-us')
+}
+
+async function expectRedirectTo(user, to) {
+  await waitFor(() => expect(testLocation.pathname).toBe(to))
 }
