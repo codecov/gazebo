@@ -1,7 +1,11 @@
-import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, waitFor } from '@testing-library/react'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
+import { TierNames } from 'services/tier'
 import { useOwner } from 'services/user'
 
 import AnalyticsPage from './AnalyticsPage'
@@ -15,8 +19,42 @@ jest.mock('./ChartSelectors', () => () => 'Chart Selectors')
 jest.mock('./Chart', () => () => 'Line Chart')
 jest.mock('../../shared/ListRepo/ReposTable', () => () => 'ReposTable')
 
+const queryClient = new QueryClient()
+const server = setupServer()
+
+let testLocation = {
+  pathname: '',
+}
+
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
+      <Route path="/analytics/:provider/:owner">{children}</Route>
+      <Route
+        path="*"
+        render={({ location }) => {
+          testLocation.pathname = location.pathname
+          return null
+        }}
+      />
+    </MemoryRouter>
+  </QueryClientProvider>
+)
+
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: 'warn' })
+  console.error = () => {}
+})
+beforeEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => {
+  server.close()
+})
+
 describe('AnalyticsPage', () => {
-  function setup({ owner, params }) {
+  function setup({ owner, params, tierValue = TierNames.PRO }) {
     useOwner.mockReturnValue({
       data: owner,
     })
@@ -26,12 +64,20 @@ describe('AnalyticsPage', () => {
         direction: params?.direction,
       },
     })
-    render(
-      <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
-        <Route path="/analytics/:provider/:owner">
-          <AnalyticsPage />
-        </Route>
-      </MemoryRouter>
+
+    server.use(
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        if (tierValue === TierNames.TEAM) {
+          return res(
+            ctx.status(200),
+            ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
+          )
+        }
+        return res(
+          ctx.status(200),
+          ctx.data({ owner: { plan: { tierName: TierNames.PRO } } })
+        )
+      })
     )
   }
 
@@ -50,22 +96,27 @@ describe('AnalyticsPage', () => {
     })
 
     it('renders the header', () => {
+      render(<AnalyticsPage />, { wrapper })
       expect(screen.getByText(/Header/)).toBeInTheDocument()
     })
 
     it('renders tabs associated with the page', () => {
+      render(<AnalyticsPage />, { wrapper })
       expect(screen.getByText(/Tabs/)).toBeInTheDocument()
     })
 
     it('renders a table displaying repository list', () => {
+      render(<AnalyticsPage />, { wrapper })
       expect(screen.getByText(/Repos/)).toBeInTheDocument()
     })
 
     it('renders a selectors displaying chart options list', () => {
+      render(<AnalyticsPage />, { wrapper })
       expect(screen.getByText(/Chart Selectors/)).toBeInTheDocument()
     })
 
     it('renders the line chart', () => {
+      render(<AnalyticsPage />, { wrapper })
       expect(screen.getByText(/Line Chart/)).toBeInTheDocument()
     })
   })
@@ -79,10 +130,12 @@ describe('AnalyticsPage', () => {
     })
 
     it('does not render the header', () => {
+      render(<AnalyticsPage />, { wrapper })
       expect(screen.queryByText(/Header/)).not.toBeInTheDocument()
     })
 
     it('renders a not found error page', () => {
+      render(<AnalyticsPage />, { wrapper })
       expect(
         screen.getByRole('heading', {
           name: /not found/i,
@@ -91,14 +144,17 @@ describe('AnalyticsPage', () => {
     })
 
     it('does not renders a repository table', () => {
+      render(<AnalyticsPage />, { wrapper })
       expect(screen.queryByText(/Repos/)).not.toBeInTheDocument()
     })
 
     it('does not render a selectors displaying chart options list', () => {
+      render(<AnalyticsPage />, { wrapper })
       expect(screen.queryByText(/Chart Selectors/)).not.toBeInTheDocument()
     })
 
     it('does not render the line chart', () => {
+      render(<AnalyticsPage />, { wrapper })
       expect(screen.queryByText(/Line Chart/)).not.toBeInTheDocument()
     })
   })
@@ -120,7 +176,23 @@ describe('AnalyticsPage', () => {
     })
 
     it('does not render Tabs', () => {
+      render(<AnalyticsPage />, { wrapper })
       expect(screen.queryByText(/Tabs/)).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when user has team tier', () => {
+    it('redirects to the owners page', async () => {
+      setup({
+        owner: {
+          username: 'codecov',
+          isCurrentUserPartOfOrg: true,
+        },
+        tierValue: TierNames.TEAM,
+      })
+      render(<AnalyticsPage />, { wrapper })
+
+      await waitFor(() => expect(testLocation.pathname).toBe('/gh/codecov'))
     })
   })
 })

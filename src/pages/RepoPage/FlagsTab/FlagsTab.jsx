@@ -1,6 +1,9 @@
+import { Redirect, useParams } from 'react-router-dom'
+
 import { SentryRoute } from 'sentry'
 
 import { useRepoFlagsSelect } from 'services/repo/useRepoFlagsSelect'
+import { TierNames, useTier } from 'services/tier'
 import FlagsNotConfigured from 'shared/FlagsNotConfigured'
 
 import blurredTable from './assets/blurredTable.png'
@@ -26,6 +29,8 @@ const showFlagsData = ({ flagsData }) => {
 
 function FlagsTab() {
   const { data: flagsData } = useRepoFlagsSelect()
+  const { provider, owner, repo } = useParams()
+  const { data: tierData } = useTier({ owner, provider })
 
   const {
     flagsMeasurementsActive,
@@ -33,6 +38,10 @@ function FlagsTab() {
     flagsMeasurementsBackfilled,
     isTimescaleEnabled,
   } = useRepoBackfillingStatus()
+
+  if (tierData === TierNames.TEAM) {
+    return <Redirect to={`/${provider}/${owner}/${repo}`} />
+  }
 
   if (!isTimescaleEnabled) {
     return <TimescaleDisabled />

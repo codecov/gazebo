@@ -287,7 +287,10 @@ const commitDataError = {
     indirectChangedFilesCount: 1,
     directChangedFilesCount: 1,
     patchTotals: null,
-    impactedFiles: [],
+    impactedFiles: {
+      __typename: 'ImpactedFiles',
+      results: [],
+    },
   },
   parent: {
     commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',

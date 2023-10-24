@@ -4,10 +4,14 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TierNames } from 'services/tier'
+
 import GeneralTab from './GeneralTab'
 
-jest.mock('./Tokens', () => () => 'Tokens Component')
+jest.mock('./Tokens/TokensTeam', () => () => 'Tokens Team Component')
+jest.mock('./Tokens/Tokens', () => () => 'Tokens Component')
 jest.mock('./DangerZone', () => () => 'DangerZone Component')
+jest.mock('./DefaultBranch', () => () => 'Default Branch')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -33,28 +37,47 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('GeneralTab', () => {
-  function setup({ uploadToken, defaultBranch, profilingToken, graphToken }) {
+  function setup(
+    { hasDefaultBranch = false, tierValue = TierNames.PRO } = {
+      hasDefaultBranch: false,
+      tierValue: TierNames.PRO,
+    }
+  ) {
     server.use(
-      graphql.query('GetRepoSettings', (req, res, ctx) => {
+      graphql.query('RepoDefaultBranch', (req, res, ctx) => {
+        if (hasDefaultBranch) {
+          return res(
+            ctx.status(200),
+            ctx.data({
+              owner: {
+                repository: {
+                  __typename: 'Repository',
+                  defaultBranch: 'main',
+                },
+              },
+            })
+          )
+        }
         return res(
           ctx.status(200),
           ctx.data({
             owner: {
               repository: {
-                uploadToken,
-                defaultBranch,
-                profilingToken,
-                graphToken,
+                __typename: 'Repository',
+                defaultBranch: null,
               },
             },
           })
         )
       }),
-      graphql.query('GetBranches', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({}))
-      }),
-      graphql.query('CurrentUser', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({}))
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        if (tierValue === TierNames.TEAM) {
+          return res(
+            ctx.status(200),
+            ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
+          )
+        }
+        return res(ctx.status(200), ctx.data({ tierName: TierNames.PRO }))
       })
     )
   }
@@ -62,7 +85,7 @@ describe('GeneralTab', () => {
   describe('when rendered', () => {
     describe('when rendered with defaultBranch', () => {
       beforeEach(() => {
-        setup({ defaultBranch: 'master' })
+        setup({ hasDefaultBranch: true })
       })
 
       it('renders Default Branch component', async () => {
@@ -75,7 +98,7 @@ describe('GeneralTab', () => {
 
     describe('when rendered with no defaultBranch', () => {
       beforeEach(() => {
-        setup({ defaultBranch: null })
+        setup({ hasDefaultBranch: false })
       })
 
       it('does not render  Default Branch component', () => {
@@ -87,9 +110,31 @@ describe('GeneralTab', () => {
     })
 
     it('render tokens component', () => {
+      setup({ tierValue: TierNames.TEAM })
       render(<GeneralTab />, { wrapper })
 
       const tokensComponent = screen.getByText(/Tokens Component/)
+      expect(tokensComponent).toBeInTheDocument()
+    })
+
+    it('render danger zone component', () => {
+      setup({ tierValue: TierNames.TEAM })
+      render(<GeneralTab />, { wrapper })
+
+      const tokensComponent = screen.getByText(/DangerZone Component/)
+      expect(tokensComponent).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with team tier', () => {
+    beforeEach(() => {
+      setup({ tierValue: TierNames.TEAM })
+    })
+
+    it('render tokens team component', async () => {
+      render(<GeneralTab />, { wrapper })
+
+      const tokensComponent = await screen.findByText(/Tokens Team Component/)
       expect(tokensComponent).toBeInTheDocument()
     })
 

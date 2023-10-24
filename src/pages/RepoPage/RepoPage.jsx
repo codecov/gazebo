@@ -5,6 +5,7 @@ import { SentryRoute } from 'sentry'
 
 import NotFound from 'pages/NotFound'
 import { useRepo } from 'services/repo'
+import { TierNames, useTier } from 'services/tier'
 import CustomError from 'shared/CustomError'
 import A from 'ui/A'
 import LoadingLogo from 'ui/LoadingLogo'
@@ -31,6 +32,7 @@ const getRepoTabs = ({
   provider,
   owner,
   repo,
+  tierData,
 }) => {
   let location = undefined
   if (matchTree) {
@@ -46,7 +48,7 @@ const getRepoTabs = ({
       exact: !matchTree && !matchBlobs,
       location,
     },
-    { pageName: 'flagsTab' },
+    ...(tierData === TierNames.TEAM ? [] : [{ pageName: 'flagsTab' }]),
     { pageName: 'commits' },
     { pageName: 'pulls' },
     ...(isCurrentUserPartOfOrg ? [{ pageName: 'settings' }] : []),
@@ -62,6 +64,7 @@ const Loader = () => (
 function RepoPage() {
   const { provider, owner, repo } = useParams()
   const [refetchEnabled, setRefetchEnabled] = useState(false)
+  const { data: tierData } = useTier({ owner, provider })
 
   const { data: repoData } = useRepo({
     provider,
@@ -112,6 +115,7 @@ function RepoPage() {
                 provider,
                 owner,
                 repo,
+                tierData,
               })}
             />
           </div>
