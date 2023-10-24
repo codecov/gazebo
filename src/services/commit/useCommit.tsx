@@ -9,6 +9,7 @@ import {
   MissingHeadCommitSchema,
   MissingHeadReportSchema,
 } from 'services/comparison/schemas'
+import { UnknownFlagsSchema } from 'services/impactedFiles/schemas'
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
@@ -74,22 +75,28 @@ const UploadsSchema = z.object({
   ),
 })
 
+const ImpactedFileSchema = z.object({
+  headName: z.string().nullable(),
+  patchCoverage: CoverageObjSchema.nullable(),
+  baseCoverage: CoverageObjSchema.nullable(),
+  headCoverage: CoverageObjSchema.nullable(),
+})
+
+const ImpactedFileResultsSchema = z.object({
+  __typename: z.literal('ImpactedFiles'),
+  results: z.array(ImpactedFileSchema.nullable()),
+})
+
 const ComparisonSchema = z.object({
   __typename: z.literal('Comparison'),
   indirectChangedFilesCount: z.number(),
   directChangedFilesCount: z.number(),
   state: z.string(),
   patchTotals: CoverageObjSchema.nullable(),
-  impactedFiles: z.array(
-    z
-      .object({
-        headName: z.string().nullable(),
-        patchCoverage: CoverageObjSchema.nullable(),
-        baseCoverage: CoverageObjSchema.nullable(),
-        headCoverage: CoverageObjSchema.nullable(),
-      })
-      .nullable()
-  ),
+  impactedFiles: z.discriminatedUnion('__typename', [
+    ImpactedFileResultsSchema,
+    UnknownFlagsSchema,
+  ]),
 })
 
 const CompareWithParentSchema = z.discriminatedUnion('__typename', [
@@ -208,16 +215,24 @@ query Commit(
               patchTotals {
                 coverage: percentCovered
               }
-              impactedFiles: impactedFilesDeprecated(filters: $filters) {
-                patchCoverage {
-                  coverage: percentCovered
+              impactedFiles(filters: $filters) {
+                __typename
+                ... on ImpactedFiles {
+                  results {
+                    patchCoverage {
+                      coverage: percentCovered
+                    }
+                    headName
+                    baseCoverage {
+                      coverage: percentCovered
+                    }
+                    headCoverage {
+                      coverage: percentCovered
+                    }
+                  }
                 }
-                headName
-                baseCoverage {
-                  coverage: percentCovered
-                }
-                headCoverage {
-                  coverage: percentCovered
+                ... on UnknownFlags {
+                  message
                 }
               }
             }
@@ -264,7 +279,19 @@ interface UseCommitArgs {
   owner: string
   repo: string
   commitid: string
-  filters?: {}
+  filters?: {
+    hasUnintendedChanges?: boolean
+    flags?: Array<string>
+    ordering?: {
+      direction?: 'DESC' | 'ASC'
+      parameter?:
+        | 'FILE_NAME'
+        | 'CHANGE_COVERAGE'
+        | 'HEAD_COVERAGE'
+        | 'MISSES_COUNT'
+        | 'PATCH_COVERAGE'
+    }
+  }
   refetchInterval?: number
 }
 

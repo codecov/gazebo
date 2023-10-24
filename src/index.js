@@ -13,7 +13,7 @@ import { withFeatureFlagProvider } from 'shared/featureFlags'
 import App from './App'
 import './globals.css'
 import reportWebVitals from './reportWebVitals'
-import { setupSentry } from './sentry.js'
+import { setupSentry } from './sentry'
 
 if (
   process.env.NODE_ENV === 'development' &&
