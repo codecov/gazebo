@@ -2,9 +2,11 @@ import eq from 'lodash/eq'
 import isUndefined from 'lodash/isUndefined'
 import PropTypes from 'prop-types'
 import { useState } from 'react'
+import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
 import { useRepoBackfilled, useRepoFlagsSelect } from 'services/repo'
+import { TierNames, useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'
@@ -16,10 +18,12 @@ const defaultQueryParams = {
 }
 
 function FlagMultiSelect() {
+  const { provider, owner } = useParams()
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const [selectedFlags, setSelectedFlags] = useState(params?.flags)
   const [flagSearch, setFlagSearch] = useState(null)
 
+  const { data: tierName } = useTier({ provider, owner })
   const { data: repoBackfilledData } = useRepoBackfilled()
 
   const isTimescaleEnabled = !!repoBackfilledData?.isTimescaleEnabled
@@ -45,7 +49,11 @@ function FlagMultiSelect() {
     },
   })
 
-  if (!coverageTabFlagMutliSelect || noFlagsPresent) {
+  if (
+    !coverageTabFlagMutliSelect ||
+    noFlagsPresent ||
+    tierName === TierNames.TEAM
+  ) {
     return null
   }
 
