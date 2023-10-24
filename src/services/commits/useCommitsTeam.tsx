@@ -199,7 +199,7 @@ export function useCommitsTeam({
     includeTotalCount: isNumber(filters?.pullId),
   }
 
-  const { data, ...rest } = useInfiniteQuery({
+  return useInfiniteQuery({
     queryKey: ['GetCommitsTeam', provider, owner, repo, variables],
     queryFn: ({ pageParam, signal }) => {
       return Api.graphql({
@@ -256,15 +256,12 @@ export function useCommitsTeam({
         return { commits, commitsCount, pageInfo }
       })
     },
-    getNextPageParam: (data) =>
-      data?.pageInfo?.hasNextPage ? data?.pageInfo.endCursor : undefined,
+    getNextPageParam: (data) => {
+      if (data?.pageInfo?.hasNextPage) {
+        return data?.pageInfo.endCursor
+      }
+      return undefined
+    },
     ...opts,
   })
-  return {
-    data: {
-      commits: data?.pages.map((page) => page?.commits).flat(),
-      commitsCount: data?.pages[0]?.commitsCount,
-    },
-    ...rest,
-  }
 }
