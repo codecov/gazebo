@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
+import { TierNames, useTier } from 'services/tier'
 import Breadcrumb from 'ui/Breadcrumb'
 import Spinner from 'ui/Spinner'
 
@@ -23,6 +24,7 @@ const Loader = () => (
 function PullRequestPage() {
   const { owner, repo, pullId, provider } = useParams()
   const { data, isLoading } = usePullPageData({ provider, owner, repo, pullId })
+  const { data: tierName } = useTier({ owner, provider })
 
   if (!isLoading && !data?.pull) {
     return <NotFound />
@@ -45,7 +47,7 @@ function PullRequestPage() {
       />
       <Header />
       <Suspense fallback={<CompareSummarySkeleton />}>
-        <CompareSummary />
+        {tierName !== TierNames.TEAM && <CompareSummary />}
         <FirstPullBanner />
       </Suspense>
       <Suspense fallback={<Loader />}>

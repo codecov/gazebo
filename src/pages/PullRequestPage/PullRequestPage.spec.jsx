@@ -1,9 +1,11 @@
-import { render, screen } from 'custom-testing-library'
+import { render, screen, waitFor } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
+
+import { TierNames } from 'services/tier'
 
 import PullRequestPage from './PullRequestPage'
 
@@ -79,7 +81,7 @@ afterAll(() => {
 })
 
 describe('PullRequestPage', () => {
-  function setup({ pullData = mockPullPageData }) {
+  function setup({ pullData = mockPullPageData, tierValue = TierNames.PRO }) {
     server.use(
       graphql.query('PullHeadData', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockPullHeadData))
@@ -96,7 +98,19 @@ describe('PullRequestPage', () => {
             },
           })
         )
-      )
+      ),
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        if (tierValue === TierNames.TEAM) {
+          return res(
+            ctx.status(200),
+            ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
+          )
+        }
+        return res(
+          ctx.status(200),
+          ctx.data({ owner: { plan: { tierName: TierNames.PRO } } })
+        )
+      })
     )
   }
 
@@ -134,6 +148,71 @@ describe('PullRequestPage', () => {
 
       const compareSummary = await screen.findByText(/CompareSummary/)
       expect(compareSummary).toBeInTheDocument()
+    })
+
+    it('renders pull request page tabs', async () => {
+      render(<PullRequestPage />, { wrapper: wrapper() })
+
+      const pullRequestPageTabs = await screen.findByText(/PullRequestPageTabs/)
+      expect(pullRequestPageTabs).toBeInTheDocument()
+    })
+
+    it('renders pull request page content', async () => {
+      render(<PullRequestPage />, { wrapper: wrapper() })
+
+      const pullRequestPageContent = await screen.findByText(
+        /PullRequestPageContent/
+      )
+      expect(pullRequestPageContent).toBeInTheDocument()
+    })
+
+    it('renders the first pull request banner', async () => {
+      render(<PullRequestPage />, { wrapper: wrapper() })
+
+      const firstPullRequestBanner = await screen.findByText(/FirstPullBanner/)
+      expect(firstPullRequestBanner).toBeInTheDocument()
+    })
+  })
+
+  describe('when there is pull data and the customer is team tier', () => {
+    beforeEach(() => {
+      setup({ tierValue: TierNames.TEAM })
+    })
+
+    it('renders breadcrumb', async () => {
+      render(<PullRequestPage />, { wrapper: wrapper() })
+
+      const org = await screen.findByRole('link', { name: 'test-org' })
+      expect(org).toBeInTheDocument()
+      expect(org).toHaveAttribute('href', '/gh/test-org')
+
+      const repo = await screen.findByRole('link', { name: 'test-repo' })
+      expect(repo).toBeInTheDocument()
+      expect(repo).toHaveAttribute('href', '/gh/test-org/test-repo')
+
+      const pulls = await screen.findByRole('link', { name: 'Pulls' })
+      expect(pulls).toBeInTheDocument()
+      expect(pulls).toHaveAttribute('href', '/gh/test-org/test-repo/pulls')
+
+      const pullId = await screen.findByText('12')
+      expect(pullId).toBeInTheDocument()
+    })
+
+    it('renders header', async () => {
+      render(<PullRequestPage />, { wrapper: wrapper() })
+
+      const header = await screen.findByText(/Header/)
+      expect(header).toBeInTheDocument()
+    })
+
+    it('does not render compare summary', async () => {
+      render(<PullRequestPage />, { wrapper: wrapper() })
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+
+      const compareSummary = screen.queryByText(/CompareSummary/)
+      expect(compareSummary).not.toBeInTheDocument()
     })
 
     it('renders pull request page tabs', async () => {
