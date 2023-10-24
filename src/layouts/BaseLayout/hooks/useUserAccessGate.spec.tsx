@@ -160,6 +160,30 @@ const internalUserHasSyncedProviders = {
   ],
 }
 
+const internalUserWithSignedTOS = {
+  email: userSignedInIdentity.email,
+  name: userSignedInIdentity.name,
+  externalId: '123',
+  owners: [
+    {
+      service: 'github',
+    },
+  ],
+  termsAgreement: true,
+}
+
+const internalUserWithUnsignedTOS = {
+  email: userSignedInIdentity.email,
+  name: userSignedInIdentity.name,
+  externalId: '123',
+  owners: [
+    {
+      service: 'github',
+    },
+  ],
+  termsAgreement: false,
+}
+
 type InternalUser =
   | typeof internalUserNoSyncedProviders
   | typeof internalUserHasSyncedProviders
@@ -249,7 +273,7 @@ describe('useUserAccessGate', () => {
       'signed TOS',
       {
         user: loggedInUser,
-        internalUser: internalUserHasSyncedProviders,
+        internalUser: internalUserWithSignedTOS,
         termsOfServicePage: true,
         isSelfHosted: false,
         defaultOrgSelectorPage: false,
@@ -361,7 +385,7 @@ describe('useUserAccessGate', () => {
       'unsigned TOS',
       {
         user: loggedInUnsignedUser,
-        internalUser: internalUserHasSyncedProviders,
+        internalUser: internalUserWithUnsignedTOS,
         termsOfServicePage: true,
         isSelfHosted: false,
         defaultOrgSelectorPage: false,
