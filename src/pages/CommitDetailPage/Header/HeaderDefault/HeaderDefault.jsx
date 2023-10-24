@@ -8,9 +8,10 @@ import Icon from 'ui/Icon'
 import TruncatedMessage from 'ui/TruncatedMessage/TruncatedMessage'
 
 import { useCommitHeaderData } from './hooks'
-import PullLabel from './PullLabel'
 
-function Header() {
+import PullLabel from '../PullLabel'
+
+function HeaderDefault() {
   const { provider, owner, repo, commit: commitSha } = useParams()
   const shortSHA = commitSha?.slice(0, 7)
 
@@ -85,4 +86,4 @@ function Header() {
   )
 }
 
-export default Header
+export default HeaderDefault
