@@ -24,6 +24,22 @@ import A from 'ui/A'
 
 import { useCompareTotalsTeam } from './useCompareTotalsTeam'
 
+export const OrderingDirection = {
+  desc: 'DESC',
+  asc: 'ASC',
+} as const
+
+export const OrderingParameter = {
+  FILE_NAME: 'FILE_NAME',
+  MISSES_COUNT: 'MISSES_COUNT',
+  PATCH_COVERAGE: 'PATCH_COVERAGE',
+} as const
+
+const ImpactedFilesOrdering = z.object({
+  direction: z.nativeEnum(OrderingDirection).optional(),
+  parameter: z.nativeEnum(OrderingParameter).optional(),
+})
+
 const CoverageObjSchema = z.object({
   coverage: z.number().nullable(),
 })
@@ -239,10 +255,7 @@ interface UseCommitTeamArgs {
   filters?: {
     hasUnintendedChanges?: boolean
     flags?: Array<string>
-    ordering?: {
-      direction?: 'DESC' | 'ASC'
-      parameter?: 'FILE_NAME' | 'MISSES_COUNT' | 'PATCH_COVERAGE'
-    }
+    ordering?: z.infer<typeof ImpactedFilesOrdering>
   }
   refetchInterval?: number
 }
