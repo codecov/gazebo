@@ -1,54 +1,75 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import qs from 'qs'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useFlags } from 'shared/featureFlags'
+
 import IndirectChangesTable from '../IndirectChangesTable'
 
+jest.mock('shared/featureFlags')
 jest.mock('./CommitFileDiff', () => () => 'CommitFileDiff')
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      suspense: true,
-      retry: false,
-    },
-  },
-})
 const server = setupServer()
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 beforeEach(() => {
   server.resetHandlers()
-  queryClient.clear()
 })
-afterAll(() => server.close())
 
-const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter
-      initialEntries={['/gh/vex/trinket/commit/123/indirect-changes']}
-    >
-      <Route
-        path={[
-          '/:provider/:owner/:repo/commit/:commit/indirect-changes',
-          '/:provider/:owner/:repo/commit/:commit/blob/:path+',
-        ]}
-      >
-        <Suspense fallback="Loading...">{children}</Suspense>
-      </Route>
-    </MemoryRouter>
-  </QueryClientProvider>
-)
+afterAll(() => {
+  server.close()
+})
+
+const wrapper =
+  (
+    queryClient,
+    initialEntries = '/gh/codecov/cool-repo/commit/123/indirect-changes'
+  ) =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route
+            path={[
+              '/:provider/:owner/:repo/commit/:commit/indirect-changes',
+              '/:provider/:owner/:repo/commit/:commit/blob/:path+',
+            ]}
+          >
+            <Suspense fallback="Loading...">{children}</Suspense>
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
 describe('IndirectChangesTable', () => {
   function setup(data = [], state = 'processed') {
+    const user = userEvent.setup()
+    const mockVars = jest.fn()
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          suspense: true,
+          retry: false,
+        },
+      },
+    })
+
+    useFlags.mockReturnValue({
+      commitTabFlagMultiSelect: true,
+    })
+
     server.use(
-      graphql.query('Commit', (req, res, ctx) =>
-        res(
+      graphql.query('Commit', (req, res, ctx) => {
+        mockVars(req.variables)
+        return res(
           ctx.status(200),
           ctx.data({
             owner: {
@@ -81,33 +102,34 @@ describe('IndirectChangesTable', () => {
             },
           })
         )
-      )
-    )
-  }
-
-  describe('when data is available', () => {
-    beforeEach(() =>
-      setup({
-        __typename: 'ImpactedFiles',
-        results: [
-          {
-            headName: 'src/index2.py',
-            baseCoverage: {
-              coverage: 62.5,
-            },
-            headCoverage: {
-              coverage: 50.0,
-            },
-            patchCoverage: {
-              coverage: 37.5,
-            },
-          },
-        ],
       })
     )
 
+    return { mockVars, queryClient, user }
+  }
+
+  describe('when data is available', () => {
+    const mockData = {
+      __typename: 'ImpactedFiles',
+      results: [
+        {
+          headName: 'src/index2.py',
+          baseCoverage: {
+            coverage: 62.5,
+          },
+          headCoverage: {
+            coverage: 50.0,
+          },
+          patchCoverage: {
+            coverage: 37.5,
+          },
+        },
+      ],
+    }
+
     it('renders name', async () => {
-      render(<IndirectChangesTable />, { wrapper })
+      const { queryClient } = setup(mockData)
+      render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
 
       const link = await screen.findByRole('link', {
         name: 'src/index2.py',
@@ -115,49 +137,77 @@ describe('IndirectChangesTable', () => {
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute(
         'href',
-        '/gh/vex/trinket/commit/123/blob/src/index2.py'
+        '/gh/codecov/cool-repo/commit/123/blob/src/index2.py'
       )
     })
 
     it('renders coverage', async () => {
-      render(<IndirectChangesTable />, { wrapper })
+      const { queryClient } = setup(mockData)
+      render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
 
       const coverage = await screen.findByText(/50.00%/)
       expect(coverage).toBeInTheDocument()
     })
 
     it('render change', async () => {
-      render(<IndirectChangesTable />, { wrapper })
+      const { queryClient } = setup(mockData)
+      render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
 
       const noData = await screen.findByText(/-12.50%/)
       expect(noData).toBeInTheDocument()
     })
+
+    describe('flag is present in query params', () => {
+      it('fetches with flags filter', async () => {
+        const { queryClient, mockVars } = setup(mockData)
+        const path = `/gh/codecov/cool-repo/commit/123/indirect-changes${qs.stringify(
+          { flags: ['flag-1'] },
+          { addQueryPrefix: true }
+        )}`
+        render(<IndirectChangesTable />, {
+          wrapper: wrapper(queryClient, path),
+        })
+
+        await waitFor(() =>
+          expect(mockVars).toBeCalledWith({
+            commitid: '123',
+            filters: {
+              hasUnintendedChanges: true,
+              flags: ['flag-1'],
+            },
+            owner: 'codecov',
+            provider: 'gh',
+            repo: 'cool-repo',
+          })
+        )
+      })
+    })
   })
 
   describe('when all data is missing', () => {
-    beforeEach(() => {
-      setup({
-        __typename: 'ImpactedFiles',
-        results: [
-          {
-            headName: '',
-            baseCoverage: null,
-            headCoverage: null,
-            patchCoverage: null,
-          },
-        ],
-      })
-    })
+    const mockData = {
+      __typename: 'ImpactedFiles',
+      results: [
+        {
+          headName: '',
+          baseCoverage: null,
+          headCoverage: null,
+          patchCoverage: null,
+        },
+      ],
+    }
 
     it('does not render coverage', () => {
-      render(<IndirectChangesTable />, { wrapper })
+      const { queryClient } = setup(mockData)
+      render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
 
       const coverage = screen.queryByText(/0.00%/)
       expect(coverage).not.toBeInTheDocument()
     })
 
     it('renders no available data copy', async () => {
-      render(<IndirectChangesTable />, { wrapper })
+      const { queryClient } = setup(mockData)
+      render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
 
       const copy = await screen.findByText('No data')
       expect(copy).toBeInTheDocument()
@@ -165,33 +215,33 @@ describe('IndirectChangesTable', () => {
   })
 
   describe('when some data is missing', () => {
-    beforeEach(() => {
-      setup({
-        __typename: 'ImpactedFiles',
-        results: [
-          {
-            headName: '',
-            baseCoverage: null,
-            headCoverage: {
-              coverage: 67,
-            },
-            patchCoverage: {
-              coverage: 98,
-            },
+    const mockData = {
+      __typename: 'ImpactedFiles',
+      results: [
+        {
+          headName: '',
+          baseCoverage: null,
+          headCoverage: {
+            coverage: 67,
           },
-        ],
-      })
-    })
+          patchCoverage: {
+            coverage: 98,
+          },
+        },
+      ],
+    }
 
     it('renders head coverage', async () => {
-      render(<IndirectChangesTable />, { wrapper })
+      const { queryClient } = setup(mockData)
+      render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
 
       const coverage = await screen.findByText(/67.00%/)
       expect(coverage).toBeInTheDocument()
     })
 
     it('renders dash for change', async () => {
-      render(<IndirectChangesTable />, { wrapper })
+      const { queryClient } = setup(mockData)
+      render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
 
       const dash = await screen.findByText('-')
       expect(dash).toBeInTheDocument()
@@ -200,36 +250,51 @@ describe('IndirectChangesTable', () => {
 
   describe('when no changes', () => {
     describe('returns an empty results array', () => {
-      beforeEach(() => {
-        setup({
+      it('renders no files covered error message', async () => {
+        const { queryClient } = setup({
           __typename: 'ImpactedFiles',
           results: [],
         })
-      })
-
-      it('renders coverage', async () => {
-        render(<IndirectChangesTable />, { wrapper })
+        render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
 
         const coverage = await screen.findByText(
           'No files covered by tests were changed'
         )
         expect(coverage).toBeInTheDocument()
       })
+
+      describe('flags param in url is set', () => {
+        it('renders flags no files error message', async () => {
+          const { queryClient } = setup({
+            __typename: 'ImpactedFiles',
+            results: [],
+          })
+          const path = `/gh/codecov/cool-repo/commit/123/indirect-changes${qs.stringify(
+            { flags: ['flag-1'] },
+            { addQueryPrefix: true }
+          )}`
+          render(<IndirectChangesTable />, {
+            wrapper: wrapper(queryClient, path),
+          })
+
+          const coverage = await screen.findByText(
+            'No files covered by tests and selected flags were changed'
+          )
+          expect(coverage).toBeInTheDocument()
+        })
+      })
     })
 
     describe('returns __typename of unknown flags', () => {
-      beforeEach(() => {
-        setup({
+      it('renders flags no files error message', async () => {
+        const { queryClient } = setup({
           __typename: 'UnknownFlags',
           message: 'no flags found',
         })
-      })
-
-      it('renders coverage', async () => {
-        render(<IndirectChangesTable />, { wrapper })
+        render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
 
         const coverage = await screen.findByText(
-          'No files covered by tests were changed'
+          'No files covered by tests and selected flags were changed'
         )
         expect(coverage).toBeInTheDocument()
       })
@@ -237,18 +302,15 @@ describe('IndirectChangesTable', () => {
   })
 
   describe('when impacted files are in pending state', () => {
-    beforeEach(() => {
-      setup(
+    it('renders spinner', async () => {
+      const { queryClient } = setup(
         {
           __typename: 'ImpactedFiles',
           results: [],
         },
         'pending'
       )
-    })
-
-    it('renders spinner', async () => {
-      render(<IndirectChangesTable />, { wrapper })
+      render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
 
       const spinner = await screen.findByTestId('spinner')
       expect(spinner).toBeInTheDocument()
@@ -256,29 +318,27 @@ describe('IndirectChangesTable', () => {
   })
 
   describe('when expanding the name column', () => {
-    beforeEach(() => {
-      setup({
-        __typename: 'ImpactedFiles',
-        results: [
-          {
-            headName: 'src/index2.py',
-            baseCoverage: {
-              coverage: 62.5,
-            },
-            headCoverage: {
-              coverage: 50.0,
-            },
-            patchCoverage: {
-              coverage: 37.5,
-            },
+    const mockData = {
+      __typename: 'ImpactedFiles',
+      results: [
+        {
+          headName: 'src/index2.py',
+          baseCoverage: {
+            coverage: 62.5,
           },
-        ],
-      })
-    })
+          headCoverage: {
+            coverage: 50.0,
+          },
+          patchCoverage: {
+            coverage: 37.5,
+          },
+        },
+      ],
+    }
 
     it('renders the CommitFileDiff component', async () => {
-      const user = userEvent.setup()
-      render(<IndirectChangesTable />, { wrapper })
+      const { queryClient, user } = setup(mockData)
+      render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
 
       const nameExpander = await screen.findByText('src/index2.py')
       await user.click(nameExpander)
