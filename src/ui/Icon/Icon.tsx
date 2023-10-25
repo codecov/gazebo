@@ -13,7 +13,7 @@ const iconComponentCollection = {
 type IconCollection = typeof iconComponentCollection
 type Variant = keyof IconCollection
 
-type OutlineIconCollection = typeof svgOutline
+export type OutlineIconCollection = typeof svgOutline
 type SolidIconCollection = typeof svgSolid
 type DeveloperIconCollection = typeof svgDeveloper
 

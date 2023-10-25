@@ -1,11 +1,18 @@
 import cs from 'classnames'
-import defaultTo from 'lodash/defaultTo'
-import uniqueId from 'lodash/uniqueId'
-import PropTypes from 'prop-types'
-import { forwardRef } from 'react'
+import { defaultTo, uniqueId } from 'lodash'
+import { forwardRef, HTMLProps, Ref } from 'react'
 
-import { dataMarketingType } from 'shared/propTypes'
 import Icon from 'ui/Icon'
+import { OutlineIconCollection } from 'ui/Icon/Icon'
+
+
+interface TextInputProps extends HTMLProps<HTMLInputElement> {
+  label?: string
+  icon?: keyof OutlineIconCollection
+  placeholder?: string
+  variant?: 'default' | 'topRounded'
+  dataMarketing?: string
+}
 
 const VariantClasses = {
   default: 'rounded border',
@@ -22,8 +29,15 @@ const styles = {
 
 const TextInput = forwardRef(
   (
-    { type = 'text', icon, label, placeholder, variant = 'default', ...props },
-    ref
+    {
+      type = 'text',
+      icon,
+      label,
+      placeholder,
+      variant = 'default',
+      ...props
+    }: TextInputProps,
+    ref: Ref<HTMLInputElement>
   ) => {
     const id = uniqueId('text-input')
     const { className, dataMarketing, ...newProps } = props
@@ -65,16 +79,5 @@ const TextInput = forwardRef(
 )
 
 TextInput.displayName = 'TextInput'
-
-TextInput.propTypes = {
-  label: PropTypes.string,
-  type: PropTypes.string,
-  icon: PropTypes.string,
-  placeholder: PropTypes.string,
-  onChange: PropTypes.func,
-  value: PropTypes.string,
-  variant: PropTypes.oneOf(['default', 'topRounded']),
-  dataMarketing: dataMarketingType,
-}
 
 export default TextInput
