@@ -3,7 +3,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import Sparkline, { SparklineProps } from './Sparkline'
 
 export default {
-  title: 'Components/SparkLine',
+  title: 'Components/Sparkline',
   component: Sparkline,
 } as Meta
 
@@ -51,13 +51,13 @@ export const NormalSparkline: Story = {
   },
 }
 
-const createTestDataWMissing = Array(30)
+const createTestDataWithMissingValues = Array(30)
   .fill(0)
   .map(() => (Math.random() > 0.4 ? Math.random() * range - range / 2 : null))
 
 export const SparklineWithMissingData: Story = {
   args: {
-    datum: createTestDataWMissing,
+    datum: createTestDataWithMissingValues,
     description: 'storybook sparkline',
     dataTemplate: (d) => `Foo ${d}%`,
   },
@@ -66,13 +66,13 @@ export const SparklineWithMissingData: Story = {
   },
 }
 
-const createTestDataWMissingBeginning = Array(7)
+const createTestDataWithMissingValuesBeginning = Array(7)
   .fill(0)
   .map((_, i) => (i > 2 ? Math.random() * range - range / 2 : null))
 
 export const SparklineWithMissingDataBeginning: Story = {
   args: {
-    datum: createTestDataWMissingBeginning,
+    datum: createTestDataWithMissingValuesBeginning,
     description: 'storybook sparkline',
     dataTemplate: (d) => `Foo ${d}%`,
   },
@@ -81,13 +81,13 @@ export const SparklineWithMissingDataBeginning: Story = {
   },
 }
 
-const createTestDataWMissingEnding = Array(20)
+const createTestDataWithMissingValuesEnding = Array(20)
   .fill(0)
   .map((_, i) => (i < 18 ? Math.random() * range - range / 2 : null))
 
 export const SparklineWithMissingDataEnding: Story = {
   args: {
-    datum: createTestDataWMissingEnding,
+    datum: createTestDataWithMissingValuesEnding,
     description: 'storybook sparkline',
     dataTemplate: (d) => `Foo ${d}%`,
   },
