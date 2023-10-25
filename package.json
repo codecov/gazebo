@@ -127,7 +127,7 @@
     "jest-junit": "^13.0.0",
     "lint-staged": "^13.2.2",
     "msw": "^1.2.1",
-    "postcss": "^8.4.12",
+    "postcss": "^8.4.31",
     "prettier": "^2.8.8",
     "react-scripts": "^5.0.1",
     "react-test-renderer": "^18.2.0",
