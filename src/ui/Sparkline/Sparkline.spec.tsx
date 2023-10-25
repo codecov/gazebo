@@ -4,7 +4,7 @@ import Sparkline from '.'
 
 describe('Sparkline', () => {
   function setup(props: {
-    datum: (number | undefined | null)[]
+    datum: any[]
     description: string
     dataTemplate: (d: number | null | undefined) => string
   }) {
