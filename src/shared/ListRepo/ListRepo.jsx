@@ -35,6 +35,8 @@ function ListRepo({ canRefetch }) {
     multipleTiers: false,
   })
 
+  const showTeamRepos = tierData === 'team' && multipleTiers
+
   const repoDisplay = useContext(ActiveContext)
 
   const orderOptions =
@@ -76,9 +78,10 @@ function ListRepo({ canRefetch }) {
           updateParams({ search })
         }}
         canRefetch={canRefetch}
+        showTeamRepos={showTeamRepos}
       />
       <Suspense fallback={loadingState}>
-        {tierData === 'team' && multipleTiers ? (
+        {showTeamRepos ? (
           <ReposTableTeam searchValue={params.search} />
         ) : (
           <ReposTable

@@ -29,6 +29,7 @@ function OrgControlTable({
   setSearchValue,
   searchValue,
   canRefetch,
+  showTeamRepos,
 }) {
   const [search, setSearch] = useState(searchValue)
 
@@ -55,18 +56,20 @@ function OrgControlTable({
         data-testid="org-control-search"
       />
       {canRefetch && <RepoOrgNotFound />}
-      <Select
-        dataMarketing="repo-list-order-selector"
-        ariaName="Sort Order"
-        value={sortItem}
-        items={
-          repoDisplay === repoDisplayOptions.INACTIVE.text
-            ? nonActiveOrderingOptions
-            : orderingOptions
-        }
-        onChange={setSortItem}
-        renderItem={(option) => option.text}
-      />
+      {!showTeamRepos && (
+        <Select
+          dataMarketing="repo-list-order-selector"
+          ariaName="Sort Order"
+          value={sortItem}
+          items={
+            repoDisplay === repoDisplayOptions.INACTIVE.text
+              ? nonActiveOrderingOptions
+              : orderingOptions
+          }
+          onChange={setSortItem}
+          renderItem={(option) => option.text}
+        />
+      )}
     </div>
   )
 }
@@ -79,6 +82,7 @@ OrgControlTable.propTypes = {
   setSearchValue: PropTypes.func.isRequired,
   searchValue: PropTypes.string.isRequired,
   canRefetch: PropTypes.bool.isRequired,
+  showTeamRepos: PropTypes.bool.isRequired,
 }
 
 export default OrgControlTable
