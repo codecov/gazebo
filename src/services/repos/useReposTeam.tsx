@@ -136,7 +136,7 @@ interface UseReposTeamArgs {
   term?: string
   owner: string
   sortItem?: {
-    ordering: string
+    ordering?: string
     direction: string
   }
   first?: number
@@ -174,7 +174,6 @@ export function useReposTeam({
     {
       getNextPageParam: (data) =>
         data?.pageInfo?.hasNextPage ? data.pageInfo.endCursor : undefined,
-      suspense: false,
       ...options,
     }
   )

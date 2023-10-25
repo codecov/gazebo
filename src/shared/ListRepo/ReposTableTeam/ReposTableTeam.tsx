@@ -2,18 +2,26 @@ import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
+  getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import type { SortingState } from '@tanstack/react-table'
 import cs from 'classnames'
 import isEmpty from 'lodash/isEmpty'
 import PropTypes from 'prop-types'
-import { useContext, useMemo } from 'react'
+import { useContext, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { Repository, useReposTeam } from 'services/repos'
+import {
+  OrderingDirection,
+  Repository,
+  TeamOrdering,
+  useReposTeam,
+} from 'services/repos'
 import { ActiveContext } from 'shared/context'
 import { formatTimeToNow } from 'shared/utils/dates'
 import Button from 'ui/Button'
+import Icon from 'ui/Icon'
 
 import InactiveRepo from '../InactiveRepo'
 import { repoDisplayOptions } from '../ListRepo'
@@ -21,14 +29,34 @@ import NoReposBlock from '../NoReposBlock'
 import 'ui/Table/Table.css'
 import RepoTitleLink from '../RepoTitleLink'
 
+export function getSortingOption(
+  sorting: Array<{ id: string; desc: boolean }>
+) {
+  const state = sorting.at(0)
+
+  if (state) {
+    const direction = state?.desc
+      ? OrderingDirection.DESC
+      : OrderingDirection.ASC
+
+    let ordering
+    if (state.id === 'name') {
+      ordering = TeamOrdering.NAME
+    }
+
+    if (state.id === 'latestCommitAt') {
+      ordering = TeamOrdering.COMMIT_DATE
+    }
+
+    return { direction, ordering }
+  }
+
+  return undefined
+}
+
 const columnHelper = createColumnHelper<Repository>()
 
 interface ReposTableTeamProps {
-  sortItem: {
-    text: string
-    ordering: string
-    direction: string
-  }
   searchValue: string
 }
 
@@ -43,6 +71,7 @@ const getColumns = ({
     return [
       columnHelper.accessor('name', {
         header: 'Name',
+        id: 'name',
         cell: (info) => {
           const repo = info.row.original
           return (
@@ -57,6 +86,7 @@ const getColumns = ({
       }),
       columnHelper.accessor('lines', {
         header: '',
+        id: 'lines',
         cell: (info) => {
           const repo = info.row.original
           return (
@@ -74,6 +104,7 @@ const getColumns = ({
   return [
     columnHelper.accessor('name', {
       header: 'Name',
+      id: 'name',
       cell: (info) => {
         const repo = info.row.original
         return (
@@ -88,6 +119,7 @@ const getColumns = ({
     }),
     columnHelper.accessor('latestCommitAt', {
       header: 'Last Updated',
+      id: 'latestCommitAt',
       cell: (info) => {
         return (
           <span className="text-ds-gray-quinary">
@@ -97,7 +129,8 @@ const getColumns = ({
       },
     }),
     columnHelper.accessor('lines', {
-      header: ' Tracked Lines',
+      header: 'Tracked Lines',
+      id: 'lines',
       cell: (info) => {
         const repo = info.row.original
         return typeof repo?.lines === 'number' && !!repo?.active ? (
@@ -115,7 +148,13 @@ const getColumns = ({
   ]
 }
 
-const ReposTableTeam = ({ sortItem, searchValue }: ReposTableTeamProps) => {
+const ReposTableTeam = ({ searchValue }: ReposTableTeamProps) => {
+  const [sorting, setSorting] = useState<SortingState>([
+    {
+      id: 'latestCommitAt',
+      desc: true,
+    },
+  ])
   const { owner } = useParams<{ owner: string }>()
 
   const repoDisplay = useContext(ActiveContext)
@@ -132,7 +171,7 @@ const ReposTableTeam = ({ sortItem, searchValue }: ReposTableTeamProps) => {
     isFetchingNextPage,
   } = useReposTeam({
     activated,
-    sortItem,
+    sortItem: getSortingOption(sorting),
     term: searchValue,
     owner,
   })
@@ -150,6 +189,11 @@ const ReposTableTeam = ({ sortItem, searchValue }: ReposTableTeamProps) => {
     }),
     getCoreRowModel: getCoreRowModel(),
     data: tableData ?? [],
+    state: {
+      sorting,
+    },
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
   })
 
   if (!isFetching && isEmpty(tableData)) {
@@ -172,11 +216,30 @@ const ReposTableTeam = ({ sortItem, searchValue }: ReposTableTeamProps) => {
                       }
                     : {})}
                   scope="col"
+                  data-sortable={
+                    header.column.getCanSort() && header.column.id !== 'lines'
+                  }
+                  {...(header.column.id !== 'lines'
+                    ? { onClick: header.column.getToggleSortingHandler() }
+                    : {})}
                 >
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
+                  <div
+                    className={cs('flex gap-1', {
+                      // reverse the order of the icon and text so the text is aligned well when not active.
+                      'flex-row-reverse': header.id === 'lines',
+                    })}
+                  >
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+                    <span
+                      className="text-ds-blue-darker group-hover/columnheader:opacity-100"
+                      data-sort-direction={header.column.getIsSorted()}
+                    >
+                      <Icon name="arrowUp" size="sm" />
+                    </span>
+                  </div>
                 </th>
               ))}
             </tr>
@@ -188,7 +251,7 @@ const ReposTableTeam = ({ sortItem, searchValue }: ReposTableTeamProps) => {
               {row.getVisibleCells().map((cell) => (
                 <td
                   key={cell.id}
-                  className={cs('', {
+                  className={cs({
                     'flex justify-end': cell.column.id === 'lines',
                   })}
                 >
@@ -217,11 +280,6 @@ const ReposTableTeam = ({ sortItem, searchValue }: ReposTableTeamProps) => {
 }
 
 ReposTableTeam.propTypes = {
-  sortItem: PropTypes.shape({
-    text: PropTypes.string.isRequired,
-    ordering: PropTypes.string.isRequired,
-    direction: PropTypes.string.isRequired,
-  }).isRequired,
   searchValue: PropTypes.string.isRequired,
 }
 

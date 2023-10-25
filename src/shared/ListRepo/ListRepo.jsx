@@ -79,7 +79,7 @@ function ListRepo({ canRefetch }) {
       />
       <Suspense fallback={loadingState}>
         {tierData === 'team' && multipleTiers ? (
-          <ReposTableTeam sortItem={sortItem} searchValue={params.search} />
+          <ReposTableTeam searchValue={params.search} />
         ) : (
           <ReposTable
             sortItem={sortItem}
