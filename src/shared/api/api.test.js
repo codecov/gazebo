@@ -320,4 +320,22 @@ describe('when using a graphql mutation', () => {
       })
     })
   })
+
+  describe('when the mutation supports serviceless', () => {
+    beforeAll(() => {
+      result = Api.graphqlMutation({
+        query: 'query MyInfo { me }',
+        mutationPath: 'me',
+        supportsServiceless: true,
+      })
+    })
+
+    it('resolves with the data', async () => {
+      return expect(result).resolves.toEqual({
+        data: {
+          me: 'Codecov',
+        },
+      })
+    })
+  })
 })
