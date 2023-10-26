@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import umbrellaSvg from 'assets/svg/umbrella.svg'
-import { useUser } from 'services/user'
+import { useInternalUser } from 'services/user'
 import A from 'ui/A'
 import Button from 'ui/Button'
 import TextInput from 'ui/TextInput'
@@ -18,8 +18,8 @@ const FormSchema = z.object({
   tos: z.literal(true),
 })
 
-function isDisabled({ isValid, isDirty }) {
-  return (!isValid && isDirty) || !isDirty
+function isDisabled({ isValid, isDirty, isMutationLoading }) {
+  return (!isValid && isDirty) || !isDirty || isMutationLoading
 }
 
 function EmailInput({ register, marketingEmailMessage, showEmailRequired }) {
@@ -61,7 +61,7 @@ export default function TermsOfService() {
       resolver: zodResolver(FormSchema),
       mode: 'onChange',
     })
-  const { mutate } = useSaveTermsAgreement({
+  const { mutate, isLoading: isMutationLoading } = useSaveTermsAgreement({
     onSuccess: ({ data }) => {
       if (data?.saveTermsAgreement?.error) {
         setError('apiError', data?.saveTermsAgreement?.error)
@@ -70,12 +70,13 @@ export default function TermsOfService() {
     },
     onError: (error) => setError('apiError', error),
   })
-  const { data: currentUser, isLoading: userIsLoading } = useUser()
+  const { data: currentUser, isLoading: userIsLoading } = useInternalUser()
 
   const onSubmit = (data) => {
     mutate({
       businessEmail: data?.marketingEmail || currentUser?.email,
       termsAgreement: true,
+      marketingConsent: data?.marketingConsent,
     })
   }
 
@@ -177,7 +178,7 @@ export default function TermsOfService() {
         )}
         <div className="mt-3 flex justify-end">
           <Button
-            disabled={isDisabled(formState)}
+            disabled={isDisabled(formState, isMutationLoading)}
             type="submit"
             hook="user signed tos"
           >
