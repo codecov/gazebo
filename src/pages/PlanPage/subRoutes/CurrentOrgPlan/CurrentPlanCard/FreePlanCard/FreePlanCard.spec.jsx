@@ -6,10 +6,12 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
+import { useFlags } from 'shared/featureFlags'
 
 import FreePlanCard from './FreePlanCard'
 
 jest.mock('./PlanUpgradeTeam', () => () => 'PlanUpgradeTeam')
+jest.mock('shared/featureFlags')
 
 const allPlans = [
   {
@@ -175,6 +177,7 @@ describe('FreePlanCard', () => {
       trialStatus = TrialStatuses.CANNOT_TRIAL,
       planValue = 'users-basic',
       planUserCount = 1,
+      flagValue = false,
     } = {
       owner: {
         username: 'codecov',
@@ -187,6 +190,10 @@ describe('FreePlanCard', () => {
       planUserCount: 1,
     }
   ) {
+    useFlags.mockReturnValue({
+      multipleTiers: flagValue,
+    })
+
     server.use(
       graphql.query('PlanPageData', (req, res, ctx) =>
         res(ctx.status(200), ctx.data({ owner }))
@@ -362,6 +369,7 @@ describe('FreePlanCard', () => {
           trialStatus: TrialStatuses.ONGOING,
           plans: allPlans,
           planUserCount: 4,
+          flagValue: true,
         })
 
         render(<FreePlanCard plan={freePlan} />, {
