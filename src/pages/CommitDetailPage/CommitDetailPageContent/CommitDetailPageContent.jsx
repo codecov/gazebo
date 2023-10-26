@@ -5,6 +5,7 @@ import { Redirect, Switch, useParams } from 'react-router-dom'
 import { SentryRoute } from 'sentry'
 
 import { useCommit } from 'services/commit'
+import { TierNames, useTier } from 'services/tier'
 import { extractUploads } from 'shared/utils/extractUploads'
 import Spinner from 'ui/Spinner'
 
@@ -28,6 +29,7 @@ const Loader = () => (
 
 function CommitDetailPageContent() {
   const { provider, owner, repo, commit: commitSha } = useParams()
+  const { data: tierName } = useTier({ owner, provider })
 
   const { data: commitData } = useCommit({
     provider,
@@ -72,12 +74,14 @@ function CommitDetailPageContent() {
           <SentryRoute path="/:provider/:owner/:repo/commit/:commit" exact>
             <FilesChangedTab />
           </SentryRoute>
-          <SentryRoute
-            path="/:provider/:owner/:repo/commit/:commit/indirect-changes"
-            exact
-          >
-            <IndirectChangesTab />
-          </SentryRoute>
+          {tierName !== TierNames.TEAM && (
+            <SentryRoute
+              path="/:provider/:owner/:repo/commit/:commit/indirect-changes"
+              exact
+            >
+              <IndirectChangesTab />
+            </SentryRoute>
+          )}
           <Redirect
             from="/:provider/:owner/:repo/commit/:commit/*"
             to="/:provider/:owner/:repo/commit/:commit"
