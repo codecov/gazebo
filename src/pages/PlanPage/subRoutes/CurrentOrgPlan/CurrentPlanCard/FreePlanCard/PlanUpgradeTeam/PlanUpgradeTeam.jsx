@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom'
 import { planPropType, usePlanData } from 'services/account'
 import BenefitList from 'shared/plan/BenefitList'
 import { findTeamPlans, isFreePlan } from 'shared/utils/billing'
-import A from 'ui/A'
 import Button from 'ui/Button'
 
 function PlanUpgradeTeam() {
@@ -18,8 +17,8 @@ function PlanUpgradeTeam() {
   const { teamPlanMonth, teamPlanYear } = findTeamPlans({
     availablePlans: planData?.availablePlans,
   })
-  const benefits = teamPlanMonth?.benefits
-  const marketingName = teamPlanMonth?.marketingName
+  const monthlyTeamBenefits = teamPlanMonth?.benefits
+  const monthlyMarketingName = teamPlanMonth?.marketingName
   const monthlyUnitPrice = teamPlanMonth?.baseUnitPrice
   const yearlyUnitPrice = teamPlanYear?.baseUnitPrice
 
@@ -27,17 +26,14 @@ function PlanUpgradeTeam() {
     <div className="flex flex-col gap-4">
       <div className="flex flex-col border">
         <div className="flex flex-row gap-2 p-4">
-          <h2 className="font-semibold">{marketingName} plan</h2>
-          <A to={{ pageName: 'root' }} variant="semibold">
-            Learn more
-          </A>
+          <h2 className="font-semibold">{monthlyMarketingName} plan</h2>
         </div>
         <hr />
         <div className="grid gap-4 p-4 sm:grid-cols-2 sm:gap-0">
           <div className="flex flex-col gap-2">
             <p className="text-xs font-semibold">Includes</p>
             <BenefitList
-              benefits={benefits}
+              benefits={monthlyTeamBenefits}
               iconName="check"
               iconColor="text-ds-pink-quinary"
             />
