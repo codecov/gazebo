@@ -2,6 +2,7 @@ import isNil from 'lodash/isNil'
 
 import { CommitStateEnum } from 'shared/utils/commit'
 import { ComparisonReturnType } from 'shared/utils/comparison'
+import { ImpactedFilesReturnType } from 'shared/utils/impactedFiles'
 import Spinner from 'ui/Spinner'
 
 import { useImpactedFilesTable } from './hooks'
@@ -53,7 +54,7 @@ function FilesChangedTab() {
     )
   }
 
-  if (data?.impactedFilesType === 'UnknownFlags') {
+  if (data?.impactedFilesType === ImpactedFilesReturnType.UNKNOWN_FLAGS) {
     return (
       <div className="flex flex-col gap-2">
         <p className="mt-4">
@@ -65,7 +66,7 @@ function FilesChangedTab() {
   }
 
   if (
-    data?.impactedFilesType === 'ImpactedFiles' &&
+    data?.impactedFilesType === ImpactedFilesReturnType.IMPACTED_FILES &&
     data?.impactedFiles.length > 0
   ) {
     return (

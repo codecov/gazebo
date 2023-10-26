@@ -7,6 +7,8 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { ImpactedFilesReturnType } from 'shared/utils/impactedFiles'
+
 import IndirectChangedFiles from './IndirectChangedFiles'
 
 jest.mock('../FileDiff', () => () => 'FileDiff Component')
@@ -48,7 +50,7 @@ const mockPull = {
           },
           changeCoverage: 38.94,
           impactedFiles: {
-            __typename: 'ImpactedFiles',
+            __typename: ImpactedFilesReturnType.IMPACTED_FILES,
             results: mockImpactedFiles,
           },
         },
@@ -77,7 +79,7 @@ const mockNoImpactedFiles = {
           },
           changeCoverage: 38.94,
           impactedFiles: {
-            __typename: 'ImpactedFiles',
+            __typename: ImpactedFilesReturnType.IMPACTED_FILES,
             results: [],
           },
         },
@@ -106,7 +108,7 @@ const mockNoChange = {
           },
           changeCoverage: 38.94,
           impactedFiles: {
-            __typename: 'ImpactedFiles',
+            __typename: ImpactedFilesReturnType.IMPACTED_FILES,
             results: [
               {
                 isCriticalFile: true,

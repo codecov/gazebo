@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { usePull } from 'services/pull'
+import { ImpactedFilesReturnType } from 'shared/utils/impactedFiles'
 
 const orderingDirection = Object.freeze({
   desc: 'DESC',
@@ -63,7 +64,8 @@ function transformIndirectChangesData({ pull }) {
 
   // Keep old way but just pass the plain impactedFiles if the status is not ImpactedFile
   const impactedFiles =
-    compareWithBase?.impactedFiles?.__typename === 'ImpactedFiles'
+    compareWithBase?.impactedFiles?.__typename ===
+    ImpactedFilesReturnType.IMPACTED_FILES
       ? mutatedImpactedFiles
       : compareWithBase?.impactedFiles
 

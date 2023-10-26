@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { act } from 'react-test-renderer'
 
 import { usePull } from 'services/pull'
+import { ImpactedFilesReturnType } from 'shared/utils/impactedFiles'
 
 import { useIndirectChangedFilesTable } from './useIndirectChangedFilesTable'
 
@@ -50,7 +51,7 @@ let mockPull = {
         },
         changeCoverage: 38.94,
         impactedFiles: {
-          __typename: 'ImpactedFiles',
+          __typename: ImpactedFilesReturnType.IMPACTED_FILES,
           results: mockImpactedFiles,
         },
       },
@@ -132,7 +133,7 @@ describe('useRepoContentsTable', () => {
       expect(result.current.data).toEqual({
         headState: 'PROCESSED',
         compareWithBaseType: 'Comparison',
-        impactedFilesType: 'ImpactedFiles',
+        impactedFilesType: ImpactedFilesReturnType.IMPACTED_FILES,
         impactedFiles: [
           {
             changeCoverage: 44.85,
@@ -145,7 +146,7 @@ describe('useRepoContentsTable', () => {
             patchCoverage: 27.43,
             pullId: 14,
             compareWithBaseType: 'Comparison',
-            impactedFilesType: 'ImpactedFiles',
+            impactedFilesType: ImpactedFilesReturnType.IMPACTED_FILES,
           },
         ],
         pullBaseCoverage: 27.35,
@@ -158,7 +159,7 @@ describe('useRepoContentsTable', () => {
   describe('when called with no head or base coverage on the impacted files', () => {
     beforeEach(() => {
       const mockImpactedFilesWithoutCoverage = {
-        __typename: 'ImpactedFiles',
+        __typename: ImpactedFilesReturnType.IMPACTED_FILES,
         results: [
           {
             missesCount: 0,
@@ -188,11 +189,11 @@ describe('useRepoContentsTable', () => {
       expect(result.current.data).toEqual({
         headState: 'PROCESSED',
         compareWithBaseType: 'Comparison',
-        impactedFilesType: 'ImpactedFiles',
+        impactedFilesType: ImpactedFilesReturnType.IMPACTED_FILES,
         impactedFiles: [
           {
             compareWithBaseType: 'Comparison',
-            impactedFilesType: 'ImpactedFiles',
+            impactedFilesType: ImpactedFilesReturnType.IMPACTED_FILES,
             changeCoverage: NaN,
             fileName: 'mafs.js',
             hasHeadOrPatchCoverage: true,

@@ -5,6 +5,8 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { act } from 'react-test-renderer'
 
+import { ImpactedFilesReturnType } from 'shared/utils/impactedFiles'
+
 import {
   orderingParameter,
   useImpactedFilesTable,
@@ -66,7 +68,7 @@ let mockPull = {
           },
           changeCoverage: 38.94,
           impactedFiles: {
-            __typename: 'ImpactedFiles',
+            __typename: ImpactedFilesReturnType.IMPACTED_FILES,
             results: mockImpactedFiles,
           },
         },
@@ -171,7 +173,7 @@ describe('useImpactedFilesTable', () => {
                 pullId: 14,
               },
             ],
-            impactedFilesType: 'ImpactedFiles',
+            impactedFilesType: ImpactedFilesReturnType.IMPACTED_FILES,
             pullBaseCoverage: 27.35,
             pullHeadCoverage: 74.2,
             pullPatchCoverage: 92.12,
@@ -185,7 +187,7 @@ describe('useImpactedFilesTable', () => {
     beforeEach(() => {
       const pull = mockPull
       const mockImpactedFilesWithoutCoverage = {
-        __typename: 'ImpactedFiles',
+        __typename: ImpactedFilesReturnType.IMPACTED_FILES,
         results: [
           {
             missesCount: 0,
@@ -217,7 +219,7 @@ describe('useImpactedFilesTable', () => {
 
       await waitFor(() =>
         expect(result.current.data).toEqual({
-          impactedFilesType: 'ImpactedFiles',
+          impactedFilesType: ImpactedFilesReturnType.IMPACTED_FILES,
           compareWithBaseType: 'Comparison',
           headState: 'PROCESSED',
           impactedFiles: [

@@ -7,6 +7,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { CommitStateEnum } from 'shared/utils/commit'
 import { ComparisonReturnType } from 'shared/utils/comparison'
+import { ImpactedFilesReturnType } from 'shared/utils/impactedFiles'
 
 import IndirectChangesTab from './IndirectChangesTab'
 
@@ -84,7 +85,7 @@ const mockPull = {
           },
           changeCoverage: 38.94,
           impactedFiles: {
-            __typename: 'ImpactedFiles',
+            __typename: ImpactedFilesReturnType.IMPACTED_FILES,
             results: mockImpactedFiles,
           },
         },
@@ -151,7 +152,10 @@ describe('IndirectChangesTab', () => {
                     percentCovered: 27.35,
                   },
                   changeCoverage: 38.94,
-                  impactedFiles: { __typename: 'ImpactedFiles', results: [] },
+                  impactedFiles: {
+                    __typename: ImpactedFilesReturnType.IMPACTED_FILES,
+                    results: [],
+                  },
                 },
               },
             },
@@ -319,7 +323,7 @@ describe('IndirectChangesTab', () => {
                 },
                 changeCoverage: 38.94,
                 impactedFiles: {
-                  __typename: 'UnknownFlags',
+                  __typename: ImpactedFilesReturnType.UNKNOWN_FLAGS,
                   message: 'Unkown flags detected',
                 },
               },

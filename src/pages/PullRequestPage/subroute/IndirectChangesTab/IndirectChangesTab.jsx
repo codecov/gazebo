@@ -2,6 +2,7 @@ import isNil from 'lodash/isNil'
 
 import { CommitStateEnum } from 'shared/utils/commit'
 import { ComparisonReturnType } from 'shared/utils/comparison'
+import { ImpactedFilesReturnType } from 'shared/utils/impactedFiles'
 import Spinner from 'ui/Spinner'
 
 import ImpactedFiles from './IndirectChangedFiles'
@@ -67,7 +68,7 @@ function IndirectChangesTab() {
   }
 
   if (
-    data?.impactedFilesType === 'ImpactedFiles' &&
+    data?.impactedFilesType === ImpactedFilesReturnType.IMPACTED_FILES &&
     data?.impactedFiles.length > 0
   ) {
     return (
