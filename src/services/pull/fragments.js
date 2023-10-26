@@ -143,21 +143,29 @@ fragment ImpactedFilesOnPull on Pull {
       headTotals {
         percentCovered
       }
-      impactedFiles: impactedFilesDeprecated(filters: $filters) {
-        fileName
-        headName
-        isCriticalFile
-        missesCount
-        baseCoverage {
-          percentCovered
+      impactedFiles(filters: $filters) {
+        __typename
+        ... on ImpactedFiles {
+          results {
+            fileName
+            headName
+            isCriticalFile
+            missesCount
+            baseCoverage {
+              percentCovered
+            }
+            headCoverage {
+              percentCovered
+            }
+            patchCoverage {
+              percentCovered
+            }
+            changeCoverage
+          }
         }
-        headCoverage {
-          percentCovered
+        ... on UnknownFlags {
+          message
         }
-        patchCoverage {
-          percentCovered
-        }
-        changeCoverage
       }
     }
     ... on FirstPullRequest {
