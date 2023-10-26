@@ -94,6 +94,7 @@ const mockPlanData = {
   trialEndDate: '',
   trialTotalDays: 0,
   pretrialUsersCount: 0,
+  planUserCount: 1,
 }
 
 const trialPlan = {

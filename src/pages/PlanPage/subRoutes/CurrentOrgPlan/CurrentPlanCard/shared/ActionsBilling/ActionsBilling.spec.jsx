@@ -142,6 +142,7 @@ const mockTrialData = {
     trialEndDate: '2023-01-10T08:55:25',
     trialTotalDays: 0,
     pretrialUsersCount: 0,
+    planUserCount: 1,
   },
 }
 
@@ -299,7 +300,7 @@ describe('Actions Billing', () => {
         render(<ActionsBilling />, { wrapper })
 
         const upgradeLink = await screen.findByRole('link', {
-          name: /Upgrade to Pro Team plan/,
+          name: /Upgrade to Pro/,
         })
         expect(upgradeLink).toBeInTheDocument()
         expect(upgradeLink).toHaveAttribute(
@@ -484,7 +485,7 @@ describe('Actions Billing', () => {
           render(<ActionsBilling />, { wrapper })
 
           const upgradeLink = await screen.findByRole('link', {
-            name: /Upgrade to Sentry Pro Team plan/,
+            name: /Upgrade to Sentry Pro/,
           })
           expect(upgradeLink).toBeInTheDocument()
           expect(upgradeLink).toHaveAttribute(

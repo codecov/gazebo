@@ -18,6 +18,7 @@ const mockTrialData = {
     trialEndDate: '2023-01-10T08:55:25',
     trialTotalDays: 0,
     pretrialUsersCount: 0,
+    planUserCount: 1,
   },
   pretrialPlan: {
     baseUnitPrice: 10,
@@ -27,6 +28,24 @@ const mockTrialData = {
     monthlyUploadLimit: 250,
     planName: 'users-basic',
   },
+  availablePlans: [
+    {
+      baseUnitPrice: 0,
+      benefits: ['blah'],
+      billingRate: 'monthly',
+      marketingName: 'Users Basic',
+      monthlyUploadLimit: 250,
+      planName: 'users-basic',
+    },
+    {
+      baseUnitPrice: 5,
+      benefits: ['blah'],
+      billingRate: 'monthly',
+      marketingName: 'Pro Team',
+      monthlyUploadLimit: 0,
+      planName: 'users-pr-inappy',
+    },
+  ],
 }
 
 const queryClient = new QueryClient({
@@ -88,6 +107,7 @@ describe('usePlanData', () => {
               trialEndDate: '2023-01-10T08:55:25',
               trialTotalDays: 0,
               pretrialUsersCount: 0,
+              planUserCount: 1,
             },
             pretrialPlan: {
               baseUnitPrice: 10,
@@ -97,6 +117,24 @@ describe('usePlanData', () => {
               monthlyUploadLimit: 250,
               planName: 'users-basic',
             },
+            availablePlans: [
+              {
+                baseUnitPrice: 0,
+                benefits: ['blah'],
+                billingRate: 'monthly',
+                marketingName: 'Users Basic',
+                monthlyUploadLimit: 250,
+                planName: 'users-basic',
+              },
+              {
+                baseUnitPrice: 5,
+                benefits: ['blah'],
+                billingRate: 'monthly',
+                marketingName: 'Pro Team',
+                monthlyUploadLimit: 0,
+                planName: 'users-pr-inappy',
+              },
+            ],
           })
         )
       })

@@ -1,11 +1,13 @@
 import { renderHook } from '@testing-library/react'
 
+import { TrialStatuses } from 'services/account'
 import { useFlags } from 'shared/featureFlags'
 
 import {
   canApplySentryUpgrade,
   EnterprisePlans,
   findSentryPlans,
+  findTeamPlans,
   formatNumberToUSD,
   getNextBillingDate,
   isAnnualPlan,
@@ -15,8 +17,10 @@ import {
   isMonthlyPlan,
   isPaidPlan,
   isSentryPlan,
+  isTeamPlan,
   isTrialPlan,
   Plans,
+  shouldDisplayTeamCard,
   useProPlans,
 } from './billing'
 
@@ -112,6 +116,37 @@ function getPlans() {
   ]
 }
 
+function availablePlansGql() {
+  return [
+    {
+      marketingName: 'Team',
+      planName: 'users-teamm',
+      billingRate: 'monthly',
+      baseUnitPrice: 6,
+      benefits: [
+        'Up to 10 users',
+        'Unlimited repositories',
+        '2500 repositories',
+        'Patch coverage analysis',
+      ],
+      trialDays: null,
+    },
+    {
+      marketingName: 'Team',
+      planName: 'users-teamy',
+      billingRate: 'yearly',
+      baseUnitPrice: 5,
+      benefits: [
+        'Up to 10 users',
+        'Unlimited repositories',
+        '2500 repositories',
+        'Patch coverage analysis',
+      ],
+      trialDays: null,
+    },
+  ]
+}
+
 describe('isFreePlan', () => {
   it('supports old free plan', () => {
     expect(isFreePlan('users-free')).toBe(true)
@@ -129,6 +164,48 @@ describe('isFreePlan', () => {
     expect(isFreePlan(undefined)).toBe(false)
     expect(isFreePlan(12345)).toBe(false)
     expect(isFreePlan({})).toBe(false)
+  })
+})
+
+describe('shouldDisplayTeamCard', () => {
+  it('returns true if plan is trialing and there are less than 10 users', () => {
+    const currentPlan = {
+      trialStatus: TrialStatuses.ONGOING,
+      planName: Plans.USERS_TRIAL,
+      planUserCount: 5,
+    }
+
+    expect(shouldDisplayTeamCard({ currentPlan })).toBe(true)
+  })
+
+  it('returns true if plan is trial is expired and there are less than 10 users', () => {
+    const currentPlan = {
+      trialStatus: TrialStatuses.EXPIRED,
+      planName: Plans.USERS_BASIC,
+      planUserCount: 5,
+    }
+
+    expect(shouldDisplayTeamCard({ currentPlan })).toBe(true)
+  })
+
+  it('returns true if plan is team plan and there are less than 10 users', () => {
+    const currentPlan = {
+      trialStatus: TrialStatuses.EXPIRED,
+      planName: Plans.teamPlanMonth,
+      planUserCount: 5,
+    }
+
+    expect(shouldDisplayTeamCard({ currentPlan })).toBe(true)
+  })
+
+  it('returns false if plan is more than 10 users', () => {
+    const currentPlan = {
+      trialStatus: TrialStatuses.ONGOING,
+      planName: Plans.USERS_TRIAL,
+      planUserCount: 11,
+    }
+
+    expect(shouldDisplayTeamCard({ currentPlan })).toBe(false)
   })
 })
 
@@ -405,6 +482,50 @@ describe('findSentryPlans', () => {
   })
 })
 
+describe('findTeamPlans', () => {
+  it('contains monthly plan', () => {
+    const plans = availablePlansGql()
+    const { teamPlanMonth } = findTeamPlans({ availablePlans: plans })
+
+    const expectedResult = {
+      marketingName: 'Team',
+      planName: 'users-teamm',
+      billingRate: 'monthly',
+      baseUnitPrice: 6,
+      benefits: [
+        'Up to 10 users',
+        'Unlimited repositories',
+        '2500 repositories',
+        'Patch coverage analysis',
+      ],
+      trialDays: null,
+    }
+
+    expect(teamPlanMonth).toStrictEqual(expectedResult)
+  })
+
+  it('contains annual plan', () => {
+    const plans = availablePlansGql()
+    const { teamPlanYear } = findTeamPlans({ availablePlans: plans })
+
+    const expectedResult = {
+      marketingName: 'Team',
+      planName: 'users-teamy',
+      billingRate: 'yearly',
+      baseUnitPrice: 5,
+      benefits: [
+        'Up to 10 users',
+        'Unlimited repositories',
+        '2500 repositories',
+        'Patch coverage analysis',
+      ],
+      trialDays: null,
+    }
+
+    expect(teamPlanYear).toStrictEqual(expectedResult)
+  })
+})
+
 describe('canApplySentryUpgrade', () => {
   it('returns true when list contains monthly plan', () => {
     const result = canApplySentryUpgrade({
@@ -459,6 +580,27 @@ describe('isBasicPlan', () => {
     expect(isBasicPlan(123)).toBeFalsy()
     expect(isBasicPlan({})).toBeFalsy()
     expect(isBasicPlan([])).toBeFalsy()
+  })
+})
+
+describe('isTeamPlan', () => {
+  it('returns true when plan is team monthly or yearly', () => {
+    expect(isTeamPlan(Plans.USERS_TEAMM)).toBeTruthy()
+    expect(isTeamPlan(Plans.USERS_TEAMY)).toBeTruthy()
+  })
+
+  it('returns false when plan is not team monthly or yearly', () => {
+    expect(isTeamPlan(Plans.USERS_FREE)).toBeFalsy()
+    expect(isTeamPlan(Plans.USERS_BASIC)).toBeFalsy()
+    expect(isTeamPlan(Plans.USERS_INAPP)).toBeFalsy()
+    expect(isTeamPlan(Plans.USERS_ENTERPRISEM)).toBeFalsy()
+    expect(isTeamPlan(Plans.USERS_SENTRYM)).toBeFalsy()
+  })
+
+  it('returns false when plan is not a string', () => {
+    expect(isTeamPlan(123)).toBeFalsy()
+    expect(isTeamPlan({})).toBeFalsy()
+    expect(isTeamPlan([])).toBeFalsy()
   })
 })
 

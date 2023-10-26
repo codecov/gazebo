@@ -2,6 +2,7 @@ import { format, fromUnixTime } from 'date-fns'
 import isArray from 'lodash/isArray'
 import isString from 'lodash/isString'
 
+import { TrialStatuses } from 'services/account'
 import { useFlags } from 'shared/featureFlags'
 
 export const Plans = Object.freeze({
@@ -14,6 +15,8 @@ export const Plans = Object.freeze({
   USERS_PR_INAPPY: 'users-pr-inappy',
   USERS_SENTRYM: 'users-sentrym',
   USERS_SENTRYY: 'users-sentryy',
+  USERS_TEAMM: 'users-teamm',
+  USERS_TEAMY: 'users-teamy',
   USERS_ENTERPRISEM: 'users-enterprisem',
   USERS_ENTERPRISEY: 'users-enterprisey',
 })
@@ -33,6 +36,13 @@ export function isEnterprisePlan(plan) {
 export function isFreePlan(plan) {
   if (isString(plan)) {
     if (plan === Plans.USERS_BASIC || plan === Plans.USERS_FREE) return true
+  }
+  return false
+}
+
+export function isTeamPlan(plan) {
+  if (isString(plan)) {
+    if (plan === Plans.USERS_TEAMM || plan === Plans.USERS_TEAMY) return true
   }
   return false
 }
@@ -136,6 +146,21 @@ export const findSentryPlans = ({ plans }) => {
   }
 }
 
+// This fn expects to use the availablePlans resolver, not the rest endpoint, hence the plan.planName instead of plan.value
+export const findTeamPlans = ({ availablePlans }) => {
+  const teamPlanMonth = availablePlans?.find(
+    (plan) => plan.planName === Plans.USERS_TEAMM
+  )
+  const teamPlanYear = availablePlans?.find(
+    (plan) => plan.planName === Plans.USERS_TEAMY
+  )
+
+  return {
+    teamPlanMonth,
+    teamPlanYear,
+  }
+}
+
 export const canApplySentryUpgrade = ({ plan, plans }) => {
   if (isEnterprisePlan(plan) || !isArray(plans)) {
     return false
@@ -145,6 +170,20 @@ export const canApplySentryUpgrade = ({ plan, plans }) => {
     (plan) =>
       plan?.value === Plans.USERS_SENTRYM || plan?.value === Plans.USERS_SENTRYY
   )
+}
+
+export const shouldDisplayTeamCard = ({ currentPlan }) => {
+  const isOngoingOrExpiredTrial =
+    currentPlan?.trialStatus === TrialStatuses.ONGOING ||
+    currentPlan?.trialStatus === TrialStatuses.EXPIRED
+
+  if (
+    (isOngoingOrExpiredTrial || isTeamPlan(currentPlan?.planName)) &&
+    currentPlan?.planUserCount <= 10
+  ) {
+    return true
+  }
+  return false
 }
 
 export const formatNumberToUSD = (value) =>
