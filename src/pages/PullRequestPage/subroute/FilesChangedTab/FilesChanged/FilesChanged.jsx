@@ -2,6 +2,7 @@ import isNil from 'lodash/isNil'
 
 import { CommitStateEnum } from 'shared/utils/commit'
 import { ComparisonReturnType } from 'shared/utils/comparison'
+import { ImpactedFilesReturnType } from 'shared/utils/impactedFiles'
 import Spinner from 'ui/Spinner'
 
 import { useImpactedFilesTable } from './hooks'
@@ -12,10 +13,6 @@ const Loader = () => (
     <Spinner />
   </div>
 )
-
-function hasImpactedFiles(impactedFiles) {
-  return impactedFiles && impactedFiles?.length > 0
-}
 
 function hasReportWithoutChanges({
   pullHeadCoverage,
@@ -57,7 +54,21 @@ function FilesChangedTab() {
     )
   }
 
-  if (hasImpactedFiles(data?.impactedFiles)) {
+  if (data?.impactedFilesType === ImpactedFilesReturnType.UNKNOWN_FLAGS) {
+    return (
+      <div className="flex flex-col gap-2">
+        <p className="mt-4">
+          No coverage report uploaded for the selected flags in this pull
+          request&apos;s head commit.
+        </p>
+      </div>
+    )
+  }
+
+  if (
+    data?.impactedFilesType === ImpactedFilesReturnType.IMPACTED_FILES &&
+    data?.impactedFiles.length > 0
+  ) {
     return (
       <div className="flex flex-col gap-2">
         <Table />
@@ -65,6 +76,7 @@ function FilesChangedTab() {
     )
   }
 
+  // TODO to be replaced by new comparison types
   if (
     hasReportWithoutChanges({
       pullHeadCoverage: data?.pullHeadCoverage,
