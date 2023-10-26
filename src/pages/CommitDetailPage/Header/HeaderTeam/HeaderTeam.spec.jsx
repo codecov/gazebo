@@ -6,7 +6,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useTruncation } from 'ui/TruncatedMessage/hooks'
 
-import HeaderDefault from './HeaderTeam'
+import HeaderTeam from './HeaderTeam'
 
 jest.mock('ui/TruncatedMessage/hooks')
 
@@ -55,7 +55,7 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 
-describe('HeaderDefault', () => {
+describe('HeaderTeam', () => {
   function setup(pullId = 1234) {
     useTruncation.mockImplementation(() => ({
       ref: () => {},
@@ -75,21 +75,21 @@ describe('HeaderDefault', () => {
     })
 
     it('renders commit message', async () => {
-      render(<HeaderDefault />, { wrapper })
+      render(<HeaderTeam />, { wrapper })
 
       const message = await screen.findByText('Test Commit')
       expect(message).toBeInTheDocument()
     })
 
     it('The summary header', async () => {
-      render(<HeaderDefault />, { wrapper })
+      render(<HeaderTeam />, { wrapper })
 
       const authored = await screen.findByText(/authored commit/)
       expect(authored).toBeInTheDocument()
     })
 
     it('renders commit id and link', async () => {
-      render(<HeaderDefault />, { wrapper })
+      render(<HeaderTeam />, { wrapper })
 
       const commitLink = await screen.findByRole('link', {
         name: /id-1/i,
@@ -101,21 +101,21 @@ describe('HeaderDefault', () => {
     })
 
     it('renders CI Passed', async () => {
-      render(<HeaderDefault />, { wrapper })
+      render(<HeaderTeam />, { wrapper })
 
       const ciPassed = await screen.findByText('CI Passed')
       expect(ciPassed).toBeInTheDocument()
     })
 
     it('renders branch name', async () => {
-      render(<HeaderDefault />, { wrapper })
+      render(<HeaderTeam />, { wrapper })
 
       const branchName = await screen.findByText('cool-branch')
       expect(branchName).toBeInTheDocument()
     })
 
     it('renders the patch coverage', async () => {
-      render(<HeaderDefault />, { wrapper })
+      render(<HeaderTeam />, { wrapper })
 
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)
@@ -134,7 +134,7 @@ describe('HeaderDefault', () => {
     })
 
     it('does not render the pull label', async () => {
-      render(<HeaderDefault />, { wrapper })
+      render(<HeaderTeam />, { wrapper })
 
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)

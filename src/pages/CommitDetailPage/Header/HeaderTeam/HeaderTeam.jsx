@@ -12,7 +12,7 @@ import { useCommitHeaderDataTeam } from './hooks'
 
 import PullLabel from '../PullLabel'
 
-function HeaderDefault() {
+function HeaderTeam() {
   const { provider, owner, repo, commit: commitSha } = useParams()
   const shortSHA = commitSha?.slice(0, 7)
 
@@ -100,4 +100,4 @@ function HeaderDefault() {
   )
 }
 
-export default HeaderDefault
+export default HeaderTeam
