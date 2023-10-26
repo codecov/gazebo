@@ -7,6 +7,8 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { ImpactedFilesReturnType } from 'shared/utils/impactedFiles'
+
 import IndirectChangedFiles from './IndirectChangedFiles'
 
 jest.mock('../FileDiff', () => () => 'FileDiff Component')
@@ -47,7 +49,10 @@ const mockPull = {
             percentCovered: 27.35,
           },
           changeCoverage: 38.94,
-          impactedFiles: mockImpactedFiles,
+          impactedFiles: {
+            __typename: ImpactedFilesReturnType.IMPACTED_FILES,
+            results: mockImpactedFiles,
+          },
         },
       },
     },
@@ -73,7 +78,10 @@ const mockNoImpactedFiles = {
             percentCovered: 27.35,
           },
           changeCoverage: 38.94,
-          impactedFiles: [],
+          impactedFiles: {
+            __typename: ImpactedFilesReturnType.IMPACTED_FILES,
+            results: [],
+          },
         },
       },
     },
@@ -99,22 +107,25 @@ const mockNoChange = {
             percentCovered: 27.35,
           },
           changeCoverage: 38.94,
-          impactedFiles: [
-            {
-              isCriticalFile: true,
-              fileName: 'mafs.js',
-              headName: 'flag1/mafs.js',
-              baseCoverage: {
-                percentCovered: null,
+          impactedFiles: {
+            __typename: ImpactedFilesReturnType.IMPACTED_FILES,
+            results: [
+              {
+                isCriticalFile: true,
+                fileName: 'mafs.js',
+                headName: 'flag1/mafs.js',
+                baseCoverage: {
+                  percentCovered: null,
+                },
+                headCoverage: {
+                  percentCovered: null,
+                },
+                patchCoverage: {
+                  percentCovered: null,
+                },
               },
-              headCoverage: {
-                percentCovered: null,
-              },
-              patchCoverage: {
-                percentCovered: null,
-              },
-            },
-          ],
+            ],
+          },
         },
       },
     },

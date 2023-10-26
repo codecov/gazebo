@@ -7,6 +7,8 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { ImpactedFilesReturnType } from 'shared/utils/impactedFiles'
+
 import Table from './Table'
 
 jest.mock('../../shared/FileDiff', () => () => 'FileDiff Component')
@@ -37,6 +39,7 @@ const mockPull = {
           state: 'PROCESSED',
         },
         compareWithBase: {
+          __typename: 'Comparison',
           patchTotals: {
             percentCovered: 92.12,
           },
@@ -47,7 +50,10 @@ const mockPull = {
             percentCovered: 27.35,
           },
           changeCoverage: 38.94,
-          impactedFiles: mockTable,
+          impactedFiles: {
+            __typename: ImpactedFilesReturnType.IMPACTED_FILES,
+            results: mockTable,
+          },
         },
       },
     },
@@ -63,6 +69,7 @@ const mockNoTable = {
           state: 'PROCESSED',
         },
         compareWithBase: {
+          __typename: 'Comparison',
           patchTotals: {
             percentCovered: 92.12,
           },
@@ -73,7 +80,10 @@ const mockNoTable = {
             percentCovered: 27.35,
           },
           changeCoverage: 38.94,
-          impactedFiles: [],
+          impactedFiles: {
+            __typename: ImpactedFilesReturnType.IMPACTED_FILES,
+            results: [],
+          },
         },
       },
     },
@@ -89,6 +99,7 @@ const mockNoChange = {
           state: 'PROCESSED',
         },
         compareWithBase: {
+          __typename: 'Comparison',
           patchTotals: {
             percentCovered: 92.12,
           },
@@ -99,22 +110,25 @@ const mockNoChange = {
             percentCovered: 27.35,
           },
           changeCoverage: 38.94,
-          impactedFiles: [
-            {
-              isCriticalFile: true,
-              fileName: 'mafs.js',
-              headName: 'flag1/mafs.js',
-              baseCoverage: {
-                percentCovered: null,
+          impactedFiles: {
+            __typename: ImpactedFilesReturnType.IMPACTED_FILES,
+            results: [
+              {
+                isCriticalFile: true,
+                fileName: 'mafs.js',
+                headName: 'flag1/mafs.js',
+                baseCoverage: {
+                  percentCovered: null,
+                },
+                headCoverage: {
+                  percentCovered: null,
+                },
+                patchCoverage: {
+                  percentCovered: null,
+                },
               },
-              headCoverage: {
-                percentCovered: null,
-              },
-              patchCoverage: {
-                percentCovered: null,
-              },
-            },
-          ],
+            ],
+          },
         },
       },
     },
@@ -127,6 +141,7 @@ const mockSingularTableData = {
       pull: {
         pullId: 14,
         compareWithBase: {
+          __typename: 'Comparison',
           impactedFile: {
             headName: 'file A',
             isNewFile: true,
