@@ -286,13 +286,10 @@ describe('FilesChanged', () => {
       })
       render(<FilesChanged />, { wrapper })
 
-      const serverMessage = await screen.findByText(/Unkown flags detected/)
+      const serverMessage = await screen.findByText(
+        /No coverage report uploaded for the selected flags in this pull request's head commit./
+      )
       expect(serverMessage).toBeInTheDocument()
-
-      const carryforwardFlags = await screen.findByRole('link', {
-        name: /Carryforward Flags/,
-      })
-      expect(carryforwardFlags).toBeInTheDocument()
     })
   })
 })

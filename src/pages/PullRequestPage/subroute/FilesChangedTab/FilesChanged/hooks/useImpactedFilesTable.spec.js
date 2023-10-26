@@ -188,6 +188,7 @@ describe('useImpactedFilesTable', () => {
         __typename: 'ImpactedFiles',
         results: [
           {
+            missesCount: 0,
             isCriticalFile: true,
             fileName: 'mafs.js',
             headName: 'flag1/mafs.js',

@@ -34,7 +34,7 @@ function transformIndirectChangesData({ pull }) {
   const impactedFiles = compareWithBase?.impactedFiles?.map((impactedFile) => {
     const headCoverage = impactedFile?.headCoverage?.percentCovered
     const patchCoverage = impactedFile?.patchCoverage?.percentCovered
-    const missesCount = impactedFile?.missesCount || 0
+    const missesCount = impactedFile?.missesCount
     const baseCoverage = impactedFile?.baseCoverage?.percentCovered
     const changeCoverage =
       isNumber(headCoverage) && isNumber(baseCoverage)

@@ -36,7 +36,7 @@ function transformImpactedFilesData({ pull }) {
   const mutatedImpactedFiles = compareWithBase?.impactedFiles?.results?.map(
     (impactedFile) => {
       const headCoverage = impactedFile?.headCoverage?.percentCovered
-      const missesCount = impactedFile?.missesCount || 0
+      const missesCount = impactedFile?.missesCount
       const patchCoverage = impactedFile?.patchCoverage?.percentCovered
       const baseCoverage = impactedFile?.baseCoverage?.percentCovered
       const changeCoverage =

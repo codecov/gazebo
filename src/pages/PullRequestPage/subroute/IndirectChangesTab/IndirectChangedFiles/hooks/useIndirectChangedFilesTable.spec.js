@@ -14,6 +14,7 @@ jest.mock('services/pull')
 
 const mockImpactedFiles = [
   {
+    missesCount: 0,
     isCriticalFile: true,
     fileName: 'mafs.js',
     headName: 'flag1/mafs.js',
@@ -150,6 +151,7 @@ describe('useRepoContentsTable', () => {
     beforeEach(() => {
       const mockImpactedFilesWithoutCoverage = [
         {
+          missesCount: 0,
           isCriticalFile: true,
           fileName: 'mafs.js',
           headName: 'flag1/mafs.js',
