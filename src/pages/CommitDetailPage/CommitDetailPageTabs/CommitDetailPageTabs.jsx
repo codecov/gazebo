@@ -67,16 +67,20 @@ function CommitDetailPageTabs({
           options: { commit: commitSha, queryParams },
           exact: true,
         },
-        {
-          pageName: 'commitIndirectChanges',
-          options: { commit: commitSha, queryParams },
-          children: (
-            <>
-              Indirect changes
-              <sup className="text-xs">{indirectChangedFilesCount}</sup>
-            </>
-          ),
-        },
+        ...(tierName !== TierNames.TEAM
+          ? [
+              {
+                pageName: 'commitIndirectChanges',
+                options: { commit: commitSha, queryParams },
+                children: (
+                  <>
+                    Indirect changes
+                    <sup className="text-xs">{indirectChangedFilesCount}</sup>
+                  </>
+                ),
+              },
+            ]
+          : []),
         {
           pageName: 'commitTreeView',
           children: 'File explorer',

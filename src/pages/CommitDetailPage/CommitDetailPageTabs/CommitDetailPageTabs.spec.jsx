@@ -46,7 +46,6 @@ const mockBackfillResponse = {
   },
 }
 
-const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -55,6 +54,8 @@ const queryClient = new QueryClient({
     },
   },
 })
+const server = setupServer()
+
 const wrapper =
   (initialEntries = ['/gh/codecov/cool-repo/commit/sha256']) =>
   ({ children }) =>
@@ -109,19 +110,31 @@ describe('CommitDetailPageTabs', () => {
         return res(ctx.status(200), ctx.data(mockBackfillResponse))
       }),
       graphql.query('OwnerTier', (req, res, ctx) => {
-        if (tierValue === TierNames.Team) {
-          return res(
-            ctx.status(200),
-            ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
-          )
-        }
         return res(
           ctx.status(200),
-          ctx.data({ owner: { plan: { tierName: TierNames.PRO } } })
+          ctx.data({ owner: { plan: { tierName: tierValue } } })
         )
       })
     )
   }
+
+  describe('user is on a team plan', () => {
+    it('does not render the indirect changes tab', async () => {
+      setup({ tierValue: TierNames.TEAM })
+      render(<CommitDetailPageTabs commitSha="sha256" />, {
+        wrapper: wrapper(),
+      })
+
+      const filesChanged = await screen.findByText('Files changed')
+      expect(filesChanged).toBeInTheDocument()
+
+      const indirectChanges = screen.queryByText('Indirect changes')
+      expect(indirectChanges).not.toBeInTheDocument()
+
+      const filesExplorerTab = await screen.findByText('File explorer')
+      expect(filesExplorerTab).toBeInTheDocument()
+    })
+  })
 
   describe('on base route', () => {
     it('highlights files changed tab', async () => {
