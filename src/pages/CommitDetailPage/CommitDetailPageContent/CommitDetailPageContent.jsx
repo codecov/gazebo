@@ -5,6 +5,7 @@ import { Redirect, Switch, useParams } from 'react-router-dom'
 import { SentryRoute } from 'sentry'
 
 import { useCommit } from 'services/commit'
+import { useRepoSettingsTeam } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { extractUploads } from 'shared/utils/extractUploads'
 import Spinner from 'ui/Spinner'
@@ -30,6 +31,7 @@ const Loader = () => (
 function CommitDetailPageContent() {
   const { provider, owner, repo, commit: commitSha } = useParams()
   const { data: tierName } = useTier({ owner, provider })
+  const { data: repoData } = useRepoSettingsTeam()
 
   const { data: commitData } = useCommit({
     provider,
@@ -46,6 +48,8 @@ function CommitDetailPageContent() {
     return <ErroredUploads erroredUploads={erroredUploads} />
   }
 
+  const showIndirectChanges =
+    !repoData?.repository?.private && tierName !== TierNames.TEAM
   const indirectChangedFilesCount =
     commitData?.commit?.compareWithParent?.indirectChangedFilesCount ?? 0
   const directChangedFilesCount =
@@ -74,7 +78,7 @@ function CommitDetailPageContent() {
           <SentryRoute path="/:provider/:owner/:repo/commit/:commit" exact>
             <FilesChangedTab />
           </SentryRoute>
-          {tierName !== TierNames.TEAM && (
+          {showIndirectChanges && (
             <SentryRoute
               path="/:provider/:owner/:repo/commit/:commit/indirect-changes"
               exact

@@ -124,6 +124,21 @@ const mockCommitErroredData = {
   },
 }
 
+const mockRepoSettings = (isPrivate = false) => ({
+  owner: {
+    repository: {
+      defaultBranch: 'master',
+      private: isPrivate,
+      uploadToken: 'token',
+      graphToken: 'token',
+      yaml: 'yaml',
+      bot: {
+        username: 'test',
+      },
+    },
+  },
+})
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
@@ -172,9 +187,10 @@ afterAll(() => {
 
 describe('CommitDetailPageContent', () => {
   function setup(
-    { erroredUploads = false, tierValue = TierNames.PRO } = {
+    { erroredUploads = false, tierValue = TierNames.PRO, isPrivate = false } = {
       erroredUploads: false,
       tierValue: TierNames.PRO,
+      isPrivate: false,
     }
   ) {
     const user = userEvent.setup()
@@ -192,6 +208,9 @@ describe('CommitDetailPageContent', () => {
           ctx.status(200),
           ctx.data({ owner: { plan: { tierName: tierValue } } })
         )
+      }),
+      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
       })
     )
 
@@ -288,16 +307,34 @@ describe('CommitDetailPageContent', () => {
     })
 
     describe('user is on a team plan', () => {
-      it('redirects user to files changed tab', async () => {
-        setup({ tierValue: TierNames.TEAM })
-        render(<CommitDetailPageContent />, {
-          wrapper: wrapper(
-            '/gh/codecov/cool-repo/commit/sha256/indirect-changes'
-          ),
-        })
+      describe('user has a public repo', () => {
+        it('renders the indirect changes tab', async () => {
+          setup({ tierValue: TierNames.TEAM, isPrivate: false })
+          render(<CommitDetailPageContent />, {
+            wrapper: wrapper(
+              '/gh/codecov/cool-repo/commit/sha256/indirect-changes'
+            ),
+          })
 
-        const filesChangedTab = await screen.findByText('FilesChangedTab')
-        expect(filesChangedTab).toBeInTheDocument()
+          const indirectChangesTab = await screen.findByText(
+            'IndirectChangesTab'
+          )
+          expect(indirectChangesTab).toBeInTheDocument()
+        })
+      })
+
+      describe('user has a private repo', () => {
+        it('redirects user to files changed tab', async () => {
+          setup({ tierValue: TierNames.TEAM, isPrivate: true })
+          render(<CommitDetailPageContent />, {
+            wrapper: wrapper(
+              '/gh/codecov/cool-repo/commit/sha256/indirect-changes'
+            ),
+          })
+
+          const filesChangedTab = await screen.findByText('FilesChangedTab')
+          expect(filesChangedTab).toBeInTheDocument()
+        })
       })
     })
   })

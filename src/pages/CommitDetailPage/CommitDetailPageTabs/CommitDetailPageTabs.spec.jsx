@@ -46,6 +46,21 @@ const mockBackfillResponse = {
   },
 }
 
+const mockRepoSettings = (isPrivate = false) => ({
+  owner: {
+    repository: {
+      defaultBranch: 'master',
+      private: isPrivate,
+      uploadToken: 'token',
+      graphToken: 'token',
+      yaml: 'yaml',
+      bot: {
+        username: 'test',
+      },
+    },
+  },
+})
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -92,9 +107,10 @@ afterAll(() => {
 
 describe('CommitDetailPageTabs', () => {
   function setup(
-    { flagValue = false, tierValue = TierNames.PRO } = {
+    { flagValue = false, tierValue = TierNames.PRO, isPrivate = false } = {
       flagValue: false,
       tierValue: TierNames.PRO,
+      isPrivate: false,
     }
   ) {
     useFlags.mockReturnValue({
@@ -114,25 +130,31 @@ describe('CommitDetailPageTabs', () => {
           ctx.status(200),
           ctx.data({ owner: { plan: { tierName: tierValue } } })
         )
+      }),
+      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
       })
     )
   }
 
   describe('user is on a team plan', () => {
-    it('does not render the indirect changes tab', async () => {
-      setup({ tierValue: TierNames.TEAM })
-      render(<CommitDetailPageTabs commitSha="sha256" />, {
-        wrapper: wrapper(),
+    describe('repo is public', () => {})
+    describe('repo is private', () => {
+      it('does not render the indirect changes tab', async () => {
+        setup({ tierValue: TierNames.TEAM, isPrivate: false })
+        render(<CommitDetailPageTabs commitSha="sha256" />, {
+          wrapper: wrapper(),
+        })
+
+        const filesChanged = await screen.findByText('Files changed')
+        expect(filesChanged).toBeInTheDocument()
+
+        const indirectChanges = await screen.findByText('Indirect changes')
+        expect(indirectChanges).toBeInTheDocument()
+
+        const filesExplorerTab = await screen.findByText('File explorer')
+        expect(filesExplorerTab).toBeInTheDocument()
       })
-
-      const filesChanged = await screen.findByText('Files changed')
-      expect(filesChanged).toBeInTheDocument()
-
-      const indirectChanges = screen.queryByText('Indirect changes')
-      expect(indirectChanges).not.toBeInTheDocument()
-
-      const filesExplorerTab = await screen.findByText('File explorer')
-      expect(filesExplorerTab).toBeInTheDocument()
     })
   })
 
