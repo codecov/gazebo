@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useTruncation } from 'ui/TruncatedMessage/hooks'
@@ -102,7 +103,7 @@ const wrapper =
               '/:provider/:owner/:repo/commit/:commit',
             ]}
           >
-            {children}
+            <Suspense fallback={null}>{children}</Suspense>
           </Route>
         </MemoryRouter>
       </QueryClientProvider>
@@ -122,12 +123,17 @@ afterAll(() => {
 
 describe('CommitPage', () => {
   function setup(
-    { hasYamlErrors, noCommit } = { hasYamlErrors: false, noCommit: false }
+    { hasYamlErrors, noCommit, suspense = false } = {
+      hasYamlErrors: false,
+      noCommit: false,
+      suspense: false,
+    }
   ) {
     const queryClient = new QueryClient({
       defaultOptions: {
         queries: {
           retry: false,
+          suspense,
         },
       },
     })
@@ -185,7 +191,7 @@ describe('CommitPage', () => {
   describe('rendering component', () => {
     describe('testing not found', () => {
       it('renders not found page', async () => {
-        const { queryClient } = setup({ noCommit: true })
+        const { queryClient } = setup({ noCommit: true, suspense: true })
         render(<CommitPage />, {
           wrapper: wrapper(queryClient),
         })
