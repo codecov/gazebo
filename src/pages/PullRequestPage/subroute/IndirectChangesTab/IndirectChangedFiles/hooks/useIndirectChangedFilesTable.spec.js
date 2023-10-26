@@ -38,6 +38,7 @@ let mockPull = {
         state: 'PROCESSED',
       },
       compareWithBase: {
+        __typename: 'Comparison',
         patchTotals: {
           percentCovered: 92.12,
         },
@@ -48,7 +49,10 @@ let mockPull = {
           percentCovered: 27.35,
         },
         changeCoverage: 38.94,
-        impactedFiles: mockImpactedFiles,
+        impactedFiles: {
+          __typename: 'ImpactedFiles',
+          results: mockImpactedFiles,
+        },
       },
     },
   },
@@ -127,6 +131,8 @@ describe('useRepoContentsTable', () => {
 
       expect(result.current.data).toEqual({
         headState: 'PROCESSED',
+        compareWithBaseType: 'Comparison',
+        impactedFilesType: 'ImpactedFiles',
         impactedFiles: [
           {
             changeCoverage: 44.85,
@@ -138,6 +144,8 @@ describe('useRepoContentsTable', () => {
             missesCount: 0,
             patchCoverage: 27.43,
             pullId: 14,
+            compareWithBaseType: 'Comparison',
+            impactedFilesType: 'ImpactedFiles',
           },
         ],
         pullBaseCoverage: 27.35,
@@ -149,23 +157,26 @@ describe('useRepoContentsTable', () => {
 
   describe('when called with no head or base coverage on the impacted files', () => {
     beforeEach(() => {
-      const mockImpactedFilesWithoutCoverage = [
-        {
-          missesCount: 0,
-          isCriticalFile: true,
-          fileName: 'mafs.js',
-          headName: 'flag1/mafs.js',
-          baseCoverage: {
-            percentCovered: undefined,
+      const mockImpactedFilesWithoutCoverage = {
+        __typename: 'ImpactedFiles',
+        results: [
+          {
+            missesCount: 0,
+            isCriticalFile: true,
+            fileName: 'mafs.js',
+            headName: 'flag1/mafs.js',
+            baseCoverage: {
+              percentCovered: undefined,
+            },
+            headCoverage: {
+              percentCovered: undefined,
+            },
+            patchCoverage: {
+              percentCovered: 27.43,
+            },
           },
-          headCoverage: {
-            percentCovered: undefined,
-          },
-          patchCoverage: {
-            percentCovered: 27.43,
-          },
-        },
-      ]
+        ],
+      }
       mockPull.data.pull.compareWithBase.impactedFiles =
         mockImpactedFilesWithoutCoverage
       setup(mockPull)
@@ -176,8 +187,12 @@ describe('useRepoContentsTable', () => {
 
       expect(result.current.data).toEqual({
         headState: 'PROCESSED',
+        compareWithBaseType: 'Comparison',
+        impactedFilesType: 'ImpactedFiles',
         impactedFiles: [
           {
+            compareWithBaseType: 'Comparison',
+            impactedFilesType: 'ImpactedFiles',
             changeCoverage: NaN,
             fileName: 'mafs.js',
             hasHeadOrPatchCoverage: true,

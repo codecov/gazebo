@@ -30,32 +30,43 @@ function getFilters({ sortBy }) {
 
 function transformIndirectChangesData({ pull }) {
   const compareWithBase = pull?.compareWithBase
-  const compareWithBaseType = compareWithBase?.__typename
-  const impactedFiles = compareWithBase?.impactedFiles?.map((impactedFile) => {
-    const headCoverage = impactedFile?.headCoverage?.percentCovered
-    const patchCoverage = impactedFile?.patchCoverage?.percentCovered
-    const missesCount = impactedFile?.missesCount
-    const baseCoverage = impactedFile?.baseCoverage?.percentCovered
-    const changeCoverage =
-      isNumber(headCoverage) && isNumber(baseCoverage)
-        ? headCoverage - baseCoverage
-        : Number.NaN
-    const hasHeadOrPatchCoverage =
-      isNumber(headCoverage) || isNumber(patchCoverage)
 
-    return {
-      missesCount,
-      headCoverage,
-      patchCoverage,
-      changeCoverage,
-      hasHeadOrPatchCoverage,
-      headName: impactedFile?.headName,
-      fileName: impactedFile?.fileName,
-      isCriticalFile: impactedFile?.isCriticalFile,
-      pullId: pull?.pullId,
-      compareWithBaseType,
+  const mutatedImpactedFiles = compareWithBase?.impactedFiles?.results?.map(
+    (impactedFile) => {
+      const headCoverage = impactedFile?.headCoverage?.percentCovered
+      const patchCoverage = impactedFile?.patchCoverage?.percentCovered
+      const missesCount = impactedFile?.missesCount
+      const baseCoverage = impactedFile?.baseCoverage?.percentCovered
+      const changeCoverage =
+        isNumber(headCoverage) && isNumber(baseCoverage)
+          ? headCoverage - baseCoverage
+          : Number.NaN
+      const hasHeadOrPatchCoverage =
+        isNumber(headCoverage) || isNumber(patchCoverage)
+
+      return {
+        missesCount,
+        headCoverage,
+        patchCoverage,
+        changeCoverage,
+        hasHeadOrPatchCoverage,
+        headName: impactedFile?.headName,
+        fileName: impactedFile?.fileName,
+        isCriticalFile: impactedFile?.isCriticalFile,
+        pullId: pull?.pullId,
+        // Not sure why the below is needed
+        compareWithBaseType: compareWithBase?.__typename,
+        impactedFilesType: compareWithBase?.impactedFiles?.__typename,
+      }
     }
-  })
+  )
+
+  // Keep old way but just pass the plain impactedFiles if the status is not ImpactedFile
+  const impactedFiles =
+    compareWithBase?.impactedFiles?.__typename === 'ImpactedFiles'
+      ? mutatedImpactedFiles
+      : compareWithBase?.impactedFiles
+
   return {
     headState: pull?.head?.state,
     impactedFiles,
@@ -63,6 +74,7 @@ function transformIndirectChangesData({ pull }) {
     pullPatchCoverage: compareWithBase?.patchTotals?.percentCovered,
     pullBaseCoverage: compareWithBase?.baseTotals?.percentCovered,
     compareWithBaseType: compareWithBase?.__typename,
+    impactedFilesType: compareWithBase?.impactedFiles?.__typename,
   }
 }
 

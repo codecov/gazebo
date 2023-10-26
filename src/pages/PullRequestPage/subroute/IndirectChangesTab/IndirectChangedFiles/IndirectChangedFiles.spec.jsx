@@ -47,7 +47,10 @@ const mockPull = {
             percentCovered: 27.35,
           },
           changeCoverage: 38.94,
-          impactedFiles: mockImpactedFiles,
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: mockImpactedFiles,
+          },
         },
       },
     },
@@ -73,7 +76,10 @@ const mockNoImpactedFiles = {
             percentCovered: 27.35,
           },
           changeCoverage: 38.94,
-          impactedFiles: [],
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [],
+          },
         },
       },
     },
@@ -99,22 +105,25 @@ const mockNoChange = {
             percentCovered: 27.35,
           },
           changeCoverage: 38.94,
-          impactedFiles: [
-            {
-              isCriticalFile: true,
-              fileName: 'mafs.js',
-              headName: 'flag1/mafs.js',
-              baseCoverage: {
-                percentCovered: null,
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [
+              {
+                isCriticalFile: true,
+                fileName: 'mafs.js',
+                headName: 'flag1/mafs.js',
+                baseCoverage: {
+                  percentCovered: null,
+                },
+                headCoverage: {
+                  percentCovered: null,
+                },
+                patchCoverage: {
+                  percentCovered: null,
+                },
               },
-              headCoverage: {
-                percentCovered: null,
-              },
-              patchCoverage: {
-                percentCovered: null,
-              },
-            },
-          ],
+            ],
+          },
         },
       },
     },

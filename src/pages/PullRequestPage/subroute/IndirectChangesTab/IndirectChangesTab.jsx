@@ -8,10 +8,6 @@ import ImpactedFiles from './IndirectChangedFiles'
 import { useIndirectChangedFilesTable } from './IndirectChangedFiles/hooks'
 import IndirectChangesInfo from './IndirectChangesInfo'
 
-function hasImpactedFiles(impactedFiles) {
-  return impactedFiles && impactedFiles?.length > 0
-}
-
 function hasReportWithoutChanges({
   pullHeadCoverage,
   pullBaseCoverage,
@@ -59,7 +55,21 @@ function IndirectChangesTab() {
     )
   }
 
-  if (hasImpactedFiles(data?.impactedFiles)) {
+  if (data?.impactedFilesType === 'UnknownFlags') {
+    return (
+      <div className="flex flex-col gap-2">
+        <p className="mt-4">
+          No coverage report uploaded for the selected flags in this pull
+          request&apos;s head commit.
+        </p>
+      </div>
+    )
+  }
+
+  if (
+    data?.impactedFilesType === 'ImpactedFiles' &&
+    data?.impactedFiles.length > 0
+  ) {
     return (
       <>
         <IndirectChangesInfo />
@@ -68,6 +78,7 @@ function IndirectChangesTab() {
     )
   }
 
+  // TODO to be replaced by new comparison types
   if (
     hasReportWithoutChanges({
       pullHeadCoverage: data?.pullHeadCoverage,
