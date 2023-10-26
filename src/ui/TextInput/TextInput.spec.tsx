@@ -1,12 +1,18 @@
 import { render, screen } from '@testing-library/react'
 
+import { OutlineIconCollection } from 'ui/Icon/Icon'
+
 import TextInput from './TextInput'
 
-describe('TextInput', () => {
-  let wrapper
+interface TextInputSetupArgs {
+  label?: string
+  icon?: keyof OutlineIconCollection
+  placeholder?: string
+}
 
-  function setup(props) {
-    wrapper = render(<TextInput {...props} />)
+describe('TextInput', () => {
+  function setup(props: TextInputSetupArgs) {
+    render(<TextInput {...props} />)
   }
 
   describe('when rendered', () => {
@@ -17,9 +23,9 @@ describe('TextInput', () => {
     })
 
     it('renders the textbox with the name of the label', () => {
-      screen.getByRole('textbox', {
-        name: /label/i,
-      })
+      expect(
+        screen.getByRole('textbox', { name: /label/i })
+      ).toBeInTheDocument()
     })
   })
 
@@ -31,9 +37,9 @@ describe('TextInput', () => {
     })
 
     it('renders the textbox with the placeholder as the label', () => {
-      screen.getByRole('textbox', {
-        name: /search orgs/i,
-      })
+      expect(
+        screen.getByRole('textbox', { name: /search orgs/i })
+      ).toBeInTheDocument()
     })
   })
 
@@ -45,7 +51,8 @@ describe('TextInput', () => {
     })
 
     it('renders an icon', () => {
-      expect(wrapper.container.querySelector('svg')).not.toBeNull()
+      const icon = screen.getByText(/search.svg/)
+      expect(icon).toBeInTheDocument()
     })
   })
 })
