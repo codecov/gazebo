@@ -35,9 +35,8 @@ const useUserAccessGate = () => {
   const { provider } = useParams()
   const currentRoute = useRouteMatch()
 
-  const { termsOfServicePage, defaultOrgSelectorPage } = useFlags({
+  const { termsOfServicePage } = useFlags({
     termsOfServicePage: false,
-    defaultOrgSelectorPage: false,
   })
 
   const {
@@ -84,12 +83,7 @@ const useUserAccessGate = () => {
     redirectToSyncPage = isEqual(internalUser?.owners?.length, 0)
   }
 
-  if (
-    defaultOrgSelectorPage &&
-    !isUndefined(provider) &&
-    !isGuest &&
-    !config.IS_SELF_HOSTED
-  ) {
+  if (!isUndefined(provider) && !isGuest && !config.IS_SELF_HOSTED) {
     showDefaultOrgSelector = !userData?.owner?.defaultOrgUsername
   }
 
