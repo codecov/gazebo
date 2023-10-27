@@ -69,8 +69,9 @@ function CommitDetailPage() {
   ) {
     return <NotFound />
   }
-  const showCommitSummary =
-    !repoSettings?.repository?.private && tierName !== TierNames.TEAM
+
+  const hideCommitSummary =
+    repoSettings?.repository?.private && tierName === TierNames.TEAM
 
   return (
     <div className="flex flex-col gap-4 px-3 sm:px-0">
@@ -88,11 +89,11 @@ function CommitDetailPage() {
         ]}
       />
       <Header />
-      {showCommitSummary ? (
+      {hideCommitSummary ? null : (
         <Suspense fallback={<CommitDetailSummarySkeleton />}>
           <CommitDetailSummary />
         </Suspense>
-      ) : null}
+      )}
       {/**we are currently capturing a single error*/}
       <CommitErrorBanners />
       <div className="flex flex-col gap-8 md:flex-row-reverse">
