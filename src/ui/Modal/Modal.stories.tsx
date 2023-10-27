@@ -7,6 +7,7 @@ import Button from 'ui/Button'
 import BaseModal from './BaseModal'
 import Modal, { ModalProps } from './Modal'
 
+
 export default {
   title: 'Components/Modal',
   component: Modal,

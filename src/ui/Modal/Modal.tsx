@@ -17,7 +17,6 @@ export interface ModalProps {
   subtitle?: ReactElement | string
   hasCloseButton?: boolean
   size?: 'medium' | 'small'
-  [key: string]: any
 }
 
 const Modal: React.FC<ModalProps> = ({
