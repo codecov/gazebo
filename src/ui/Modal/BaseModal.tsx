@@ -1,15 +1,24 @@
-import PropTypes from 'prop-types'
+import React, { ReactElement } from 'react'
 
 import Icon from 'ui/Icon'
 
-function BaseModal({
+interface BaseModalProps {
+  hasCloseButton?: boolean
+  onClose: () => void
+  title: ReactElement | string
+  subtitle?: ReactElement | string
+  body: ReactElement | string
+  footer?: ReactElement
+}
+
+const BaseModal: React.FC<BaseModalProps> = ({
   onClose,
   body,
   footer,
   title,
   subtitle,
   hasCloseButton = true,
-}) {
+}) => {
   return (
     <div className="rounded bg-white">
       <header className="flex items-center justify-between px-4 pt-4">
@@ -37,15 +46,6 @@ function BaseModal({
       )}
     </div>
   )
-}
-
-BaseModal.propTypes = {
-  hasCloseButton: PropTypes.bool,
-  onClose: PropTypes.func.isRequired,
-  title: PropTypes.oneOfType([PropTypes.element, PropTypes.string]).isRequired,
-  subtitle: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),
-  body: PropTypes.oneOfType([PropTypes.element, PropTypes.string]).isRequired,
-  footer: PropTypes.element,
 }
 
 export default BaseModal
