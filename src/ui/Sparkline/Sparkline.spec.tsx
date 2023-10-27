@@ -3,7 +3,11 @@ import { render, screen } from '@testing-library/react'
 import Sparkline from '.'
 
 describe('Sparkline', () => {
-  function setup(props) {
+  function setup(props: {
+    datum: any[]
+    description: string
+    dataTemplate: (d: number | null | undefined) => string
+  }) {
     render(<Sparkline {...props} />)
   }
 
@@ -31,12 +35,14 @@ describe('Sparkline', () => {
     it("renders the correct number of tr's", () => {
       expect(screen.queryAllByRole('cell').length).toBe(8)
     })
+
     it('lines have an normal state', () => {
       expect(screen.queryAllByRole('cell')[0]).toHaveAttribute(
         'data-mode',
         'normal'
       )
     })
+
     it('lines have an empty state', () => {
       expect(screen.queryAllByRole('cell')[4]).toHaveAttribute(
         'data-mode',
