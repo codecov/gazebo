@@ -22,7 +22,7 @@ const mockRepository = {
         compareWithParent: {
           __typename: 'Comparison',
           patchTotals: {
-            coverage: 100,
+            percentCovered: 100,
           },
         },
       },
@@ -141,7 +141,7 @@ describe('useCommitHeaderDataTeam', () => {
               compareWithParent: {
                 __typename: 'Comparison',
                 patchTotals: {
-                  coverage: 100,
+                  percentCovered: 100,
                 },
               },
             },
