@@ -1,6 +1,7 @@
 import { render, screen } from 'custom-testing-library'
 
 import userEvent from '@testing-library/user-event'
+import React from 'react'
 
 import BaseModal from './BaseModal'
 import Modal from './Modal'
@@ -52,7 +53,6 @@ describe('Modal', () => {
   describe('when clicking on the close button', () => {
     it('calls the close handler', async () => {
       const onClose = jest.fn()
-      const user = userEvent.setup()
       render(
         <Modal
           isOpen={true}
@@ -62,7 +62,7 @@ describe('Modal', () => {
         />
       )
 
-      await user.click(screen.getByLabelText('Close'))
+      await userEvent.click(screen.getByLabelText('Close'))
       expect(onClose).toHaveBeenCalled()
     })
   })

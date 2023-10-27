@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types'
+import React, { ReactElement } from 'react'
 import ReactModal from 'react-modal'
 
 import BaseModal from './BaseModal'
@@ -8,7 +8,19 @@ const modalSizes = Object.freeze({
   small: 'w-3/4 md:w-2/4 xl:w-2/4 2xl:w-1/4',
 })
 
-function Modal({
+export interface ModalProps {
+  isOpen: boolean
+  onClose: () => void
+  body: ReactElement | string
+  footer?: ReactElement
+  title: ReactElement | string
+  subtitle?: ReactElement | string
+  hasCloseButton?: boolean
+  size?: 'medium' | 'small'
+  [key: string]: any
+}
+
+const Modal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
   body,
@@ -18,8 +30,9 @@ function Modal({
   hasCloseButton = true,
   size = 'medium',
   ...rest
-}) {
+}) => {
   if (!isOpen) return null
+
   return (
     <ReactModal
       isOpen={isOpen}
@@ -40,17 +53,6 @@ function Modal({
       </div>
     </ReactModal>
   )
-}
-
-Modal.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  hasCloseButton: PropTypes.bool,
-  onClose: PropTypes.func.isRequired,
-  title: PropTypes.oneOfType([PropTypes.element, PropTypes.string]).isRequired,
-  subtitle: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),
-  body: PropTypes.oneOfType([PropTypes.element, PropTypes.string]).isRequired,
-  footer: PropTypes.element,
-  size: PropTypes.string,
 }
 
 export default Modal
