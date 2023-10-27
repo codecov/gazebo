@@ -1,7 +1,6 @@
 import { render, screen } from 'custom-testing-library'
 
 import userEvent from '@testing-library/user-event'
-import React from 'react'
 
 import BaseModal from './BaseModal'
 import Modal from './Modal'
