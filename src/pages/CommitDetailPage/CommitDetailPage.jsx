@@ -4,6 +4,8 @@ import { useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
 import { useCommitErrors } from 'services/commitErrors'
+import { useRepoSettingsTeam } from 'services/repo'
+import { TierNames, useTier } from 'services/tier'
 import { useOwner } from 'services/user'
 import Breadcrumb from 'ui/Breadcrumb'
 import Spinner from 'ui/Spinner'
@@ -46,6 +48,8 @@ function CommitErrorBanners() {
 function CommitDetailPage() {
   const { provider, owner, repo, commit: commitSha } = useParams()
   const shortSHA = commitSha?.slice(0, 7)
+  const { data: tierName } = useTier({ provider, owner })
+  const { data: repoSettings } = useRepoSettingsTeam()
 
   // reset cache when user navigates to the commit detail page
   const queryClient = useQueryClient()
@@ -65,6 +69,8 @@ function CommitDetailPage() {
   ) {
     return <NotFound />
   }
+  const showCommitSummary =
+    !repoSettings?.repository?.private && tierName !== TierNames.TEAM
 
   return (
     <div className="flex flex-col gap-4 px-3 sm:px-0">
@@ -82,9 +88,11 @@ function CommitDetailPage() {
         ]}
       />
       <Header />
-      <Suspense fallback={<CommitDetailSummarySkeleton />}>
-        <CommitDetailSummary />
-      </Suspense>
+      {showCommitSummary ? (
+        <Suspense fallback={<CommitDetailSummarySkeleton />}>
+          <CommitDetailSummary />
+        </Suspense>
+      ) : null}
       {/**we are currently capturing a single error*/}
       <CommitErrorBanners />
       <div className="flex flex-col gap-8 md:flex-row-reverse">
