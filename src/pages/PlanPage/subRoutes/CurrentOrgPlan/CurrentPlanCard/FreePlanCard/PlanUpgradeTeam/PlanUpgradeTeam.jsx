@@ -1,7 +1,7 @@
 import PropType from 'prop-types'
 import { useParams } from 'react-router-dom'
 
-import { planPropType, usePlanData } from 'services/account'
+import { planPropType, useAvailablePlans, usePlanData } from 'services/account'
 import BenefitList from 'shared/plan/BenefitList'
 import { findTeamPlans, isFreePlan } from 'shared/utils/billing'
 import Button from 'ui/Button'
@@ -13,9 +13,10 @@ function PlanUpgradeTeam() {
     owner,
   })
   const currentPlan = planData?.plan
+  const { data: plans } = useAvailablePlans({ provider, owner })
 
   const { teamPlanMonth, teamPlanYear } = findTeamPlans({
-    availablePlans: planData?.availablePlans,
+    plans,
   })
   const monthlyTeamBenefits = teamPlanMonth?.benefits
   const monthlyMarketingName = teamPlanMonth?.marketingName

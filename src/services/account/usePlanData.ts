@@ -12,20 +12,6 @@ export const TrialStatuses = {
 
 const PlanDataSchema = z
   .object({
-    availablePlans: z
-      .array(
-        z
-          .object({
-            baseUnitPrice: z.number(),
-            benefits: z.array(z.string()),
-            billingRate: z.string().nullable(),
-            marketingName: z.string(),
-            monthlyUploadLimit: z.number().nullable(),
-            planName: z.string(),
-          })
-          .nullish()
-      )
-      .nullish(),
     plan: z
       .object({
         baseUnitPrice: z.number(),
@@ -60,14 +46,6 @@ type TPlanData = z.infer<typeof PlanDataSchema>
 export const query = `
   query GetPlanData($owner: String!) {
     owner(username: $owner) {
-      availablePlans {
-        baseUnitPrice
-        benefits
-        billingRate
-        marketingName
-        monthlyUploadLimit
-        planName
-      }
       plan {
         baseUnitPrice
         benefits

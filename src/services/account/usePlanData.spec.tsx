@@ -28,24 +28,6 @@ const mockTrialData = {
     monthlyUploadLimit: 250,
     planName: 'users-basic',
   },
-  availablePlans: [
-    {
-      baseUnitPrice: 0,
-      benefits: ['blah'],
-      billingRate: 'monthly',
-      marketingName: 'Users Basic',
-      monthlyUploadLimit: 250,
-      planName: 'users-basic',
-    },
-    {
-      baseUnitPrice: 5,
-      benefits: ['blah'],
-      billingRate: 'monthly',
-      marketingName: 'Pro Team',
-      monthlyUploadLimit: 0,
-      planName: 'users-pr-inappy',
-    },
-  ],
 }
 
 const queryClient = new QueryClient({
@@ -117,24 +99,6 @@ describe('usePlanData', () => {
               monthlyUploadLimit: 250,
               planName: 'users-basic',
             },
-            availablePlans: [
-              {
-                baseUnitPrice: 0,
-                benefits: ['blah'],
-                billingRate: 'monthly',
-                marketingName: 'Users Basic',
-                monthlyUploadLimit: 250,
-                planName: 'users-basic',
-              },
-              {
-                baseUnitPrice: 5,
-                benefits: ['blah'],
-                billingRate: 'monthly',
-                marketingName: 'Pro Team',
-                monthlyUploadLimit: 0,
-                planName: 'users-pr-inappy',
-              },
-            ],
           })
         )
       })

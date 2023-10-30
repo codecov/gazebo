@@ -1,6 +1,5 @@
 import { renderHook } from '@testing-library/react'
 
-import { TrialStatuses } from 'services/account'
 import { useFlags } from 'shared/featureFlags'
 
 import {
@@ -113,14 +112,9 @@ function getPlans() {
       ],
       trialDays: 14,
     },
-  ]
-}
-
-function availablePlansGql() {
-  return [
     {
       marketingName: 'Team',
-      planName: 'users-teamm',
+      value: 'users-teamm',
       billingRate: 'monthly',
       baseUnitPrice: 6,
       benefits: [
@@ -133,7 +127,7 @@ function availablePlansGql() {
     },
     {
       marketingName: 'Team',
-      planName: 'users-teamy',
+      value: 'users-teamy',
       billingRate: 'yearly',
       baseUnitPrice: 5,
       benefits: [
@@ -168,44 +162,39 @@ describe('isFreePlan', () => {
 })
 
 describe('shouldDisplayTeamCard', () => {
-  it('returns true if plan is trialing and there are less than 10 users', () => {
-    const currentPlan = {
-      trialStatus: TrialStatuses.ONGOING,
-      planName: Plans.USERS_TRIAL,
-      planUserCount: 5,
-    }
-
-    expect(shouldDisplayTeamCard({ currentPlan })).toBe(true)
+  it('returns true if the availablePlans list includes team plans', () => {
+    const plans = getPlans()
+    expect(shouldDisplayTeamCard({ plans })).toBe(true)
   })
 
-  it('returns true if plan is trial is expired and there are less than 10 users', () => {
-    const currentPlan = {
-      trialStatus: TrialStatuses.EXPIRED,
-      planName: Plans.USERS_BASIC,
-      planUserCount: 5,
-    }
-
-    expect(shouldDisplayTeamCard({ currentPlan })).toBe(true)
-  })
-
-  it('returns true if plan is team plan and there are less than 10 users', () => {
-    const currentPlan = {
-      trialStatus: TrialStatuses.EXPIRED,
-      planName: Plans.teamPlanMonth,
-      planUserCount: 5,
-    }
-
-    expect(shouldDisplayTeamCard({ currentPlan })).toBe(true)
-  })
-
-  it('returns false if plan is more than 10 users', () => {
-    const currentPlan = {
-      trialStatus: TrialStatuses.ONGOING,
-      planName: Plans.USERS_TRIAL,
-      planUserCount: 11,
-    }
-
-    expect(shouldDisplayTeamCard({ currentPlan })).toBe(false)
+  it('returns false if the availablePlans list does not include team plans', () => {
+    const plans = [
+      {
+        marketingName: 'Pro Team',
+        value: 'users-pr-inappm',
+        billingRate: 'monthly',
+        baseUnitPrice: 12,
+        benefits: [
+          'Configureable # of users',
+          'Unlimited public repositories',
+          'Unlimited private repositories',
+          'Priorty Support',
+        ],
+      },
+      {
+        marketingName: 'Pro Team',
+        value: 'users-pr-inappy',
+        billingRate: 'annually',
+        baseUnitPrice: 10,
+        benefits: [
+          'Configureable # of users',
+          'Unlimited public repositories',
+          'Unlimited private repositories',
+          'Priorty Support',
+        ],
+      },
+    ]
+    expect(shouldDisplayTeamCard({ plans })).toBe(false)
   })
 })
 
@@ -484,12 +473,12 @@ describe('findSentryPlans', () => {
 
 describe('findTeamPlans', () => {
   it('contains monthly plan', () => {
-    const plans = availablePlansGql()
-    const { teamPlanMonth } = findTeamPlans({ availablePlans: plans })
+    const plans = getPlans()
+    const { teamPlanMonth } = findTeamPlans({ plans })
 
     const expectedResult = {
       marketingName: 'Team',
-      planName: 'users-teamm',
+      value: 'users-teamm',
       billingRate: 'monthly',
       baseUnitPrice: 6,
       benefits: [
@@ -505,12 +494,12 @@ describe('findTeamPlans', () => {
   })
 
   it('contains annual plan', () => {
-    const plans = availablePlansGql()
-    const { teamPlanYear } = findTeamPlans({ availablePlans: plans })
+    const plans = getPlans()
+    const { teamPlanYear } = findTeamPlans({ plans })
 
     const expectedResult = {
       marketingName: 'Team',
-      planName: 'users-teamy',
+      value: 'users-teamy',
       billingRate: 'yearly',
       baseUnitPrice: 5,
       benefits: [

@@ -1,8 +1,8 @@
 import { format, fromUnixTime } from 'date-fns'
+import { isUndefined } from 'lodash'
 import isArray from 'lodash/isArray'
 import isString from 'lodash/isString'
 
-import { TrialStatuses } from 'services/account'
 import { useFlags } from 'shared/featureFlags'
 
 export const Plans = Object.freeze({
@@ -146,14 +146,9 @@ export const findSentryPlans = ({ plans }) => {
   }
 }
 
-// This fn expects to use the availablePlans resolver, not the rest endpoint, hence the plan.planName instead of plan.value
-export const findTeamPlans = ({ availablePlans }) => {
-  const teamPlanMonth = availablePlans?.find(
-    (plan) => plan.planName === Plans.USERS_TEAMM
-  )
-  const teamPlanYear = availablePlans?.find(
-    (plan) => plan.planName === Plans.USERS_TEAMY
-  )
+export const findTeamPlans = ({ plans }) => {
+  const teamPlanMonth = plans?.find((plan) => plan.value === Plans.USERS_TEAMM)
+  const teamPlanYear = plans?.find((plan) => plan.value === Plans.USERS_TEAMY)
 
   return {
     teamPlanMonth,
@@ -172,18 +167,10 @@ export const canApplySentryUpgrade = ({ plan, plans }) => {
   )
 }
 
-export const shouldDisplayTeamCard = ({ currentPlan }) => {
-  const isOngoingOrExpiredTrial =
-    currentPlan?.trialStatus === TrialStatuses.ONGOING ||
-    currentPlan?.trialStatus === TrialStatuses.EXPIRED
+export const shouldDisplayTeamCard = ({ plans }) => {
+  const { teamPlanMonth, teamPlanYear } = findTeamPlans({ plans })
 
-  if (
-    (isOngoingOrExpiredTrial || isTeamPlan(currentPlan?.planName)) &&
-    currentPlan?.planUserCount <= 10
-  ) {
-    return true
-  }
-  return false
+  return !isUndefined(teamPlanMonth) && !isUndefined(teamPlanYear)
 }
 
 export const formatNumberToUSD = (value) =>

@@ -43,20 +43,84 @@ const mockPlanPro = {
 
 const mockAvailablePlans = [
   {
+    marketingName: 'Basic',
+    value: 'users-basic',
+    billingRate: null,
+    baseUnitPrice: 0,
+    benefits: [
+      'Up to 5 users',
+      'Unlimited public repositories',
+      'Unlimited private repositories',
+    ],
+    monthlyUploadLimit: 250,
+  },
+  {
+    marketingName: 'Pro Team',
+    value: 'users-pr-inappm',
+    billingRate: 'monthly',
+    baseUnitPrice: 12,
+    benefits: [
+      'Configurable # of users',
+      'Unlimited public repositories',
+      'Unlimited private repositories',
+      'Priority Support',
+    ],
+    monthlyUploadLimit: null,
+  },
+  {
+    marketingName: 'Pro Team',
+    value: 'users-pr-inappy',
+    billingRate: 'annually',
+    baseUnitPrice: 10,
+    benefits: [
+      'Configurable # of users',
+      'Unlimited public repositories',
+      'Unlimited private repositories',
+      'Priority Support',
+    ],
+    monthlyUploadLimit: null,
+  },
+  {
+    marketingName: 'Pro Team',
+    value: 'users-enterprisem',
+    billingRate: 'monthly',
+    baseUnitPrice: 12,
+    benefits: [
+      'Configurable # of users',
+      'Unlimited public repositories',
+      'Unlimited private repositories',
+      'Priority Support',
+    ],
+    monthlyUploadLimit: null,
+  },
+  {
+    marketingName: 'Pro Team',
+    value: 'users-enterprisey',
+    billingRate: 'annually',
+    baseUnitPrice: 10,
+    benefits: [
+      'Configurable # of users',
+      'Unlimited public repositories',
+      'Unlimited private repositories',
+      'Priority Support',
+    ],
+    monthlyUploadLimit: null,
+  },
+  {
     baseUnitPrice: 6,
     benefits: ['Up to 10 users'],
     billingRate: 'monthly',
-    marketingName: 'Team',
+    marketingName: 'Users Team',
     monthlyUploadLimit: 2500,
-    planName: 'users-teamm',
+    value: 'users-teamm',
   },
   {
     baseUnitPrice: 5,
     benefits: ['Up to 10 users'],
     billingRate: 'yearly',
-    marketingName: 'Team',
+    marketingName: 'Users Team',
     monthlyUploadLimit: 2500,
-    planName: 'users-teamy',
+    value: 'users-teamy',
   },
 ]
 
@@ -106,11 +170,16 @@ describe('PlanUpgradeTeam', () => {
           ctx.status(200),
           ctx.data({
             owner: {
-              availablePlans: mockAvailablePlans,
               pretrialPlan: mockPreTrialPlanInfo,
               plan,
             },
           })
+        )
+      ),
+      graphql.query('GetAvailablePlans', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({ owner: { availablePlans: mockAvailablePlans } })
         )
       )
     )

@@ -78,6 +78,22 @@ const allPlans = [
     ],
     monthlyUploadLimit: null,
   },
+  {
+    baseUnitPrice: 6,
+    benefits: ['Up to 10 users'],
+    billingRate: 'monthly',
+    marketingName: 'Users Team',
+    monthlyUploadLimit: 2500,
+    value: 'users-teamm',
+  },
+  {
+    baseUnitPrice: 5,
+    benefits: ['Up to 10 users'],
+    billingRate: 'yearly',
+    marketingName: 'Users Team',
+    monthlyUploadLimit: 2500,
+    value: 'users-teamy',
+  },
 ]
 
 const sentryPlans = [
@@ -127,17 +143,6 @@ const mockPlanData = {
   trialTotalDays: 0,
   pretrialUsersCount: 0,
 }
-
-const mockAvailablePlans = [
-  {
-    baseUnitPrice: 5,
-    benefits: ['Up to 10 users'],
-    billingRate: 'monthly',
-    marketingName: 'Users Team',
-    monthlyUploadLimit: 2500,
-    planName: 'users-teamm',
-  },
-]
 
 const mockPreTrialPlanInfo = {
   baseUnitPrice: 0,
@@ -217,7 +222,6 @@ describe('FreePlanCard', () => {
                 planName: planValue,
                 planUserCount,
               },
-              availablePlans: mockAvailablePlans,
               pretrialPlan: mockPreTrialPlanInfo,
             },
           })

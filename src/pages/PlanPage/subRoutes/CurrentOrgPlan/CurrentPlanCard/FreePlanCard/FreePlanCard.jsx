@@ -89,8 +89,7 @@ function FreePlanCard({ plan, scheduledPhase }) {
           </div>
         </div>
       </div>
-      {shouldDisplayTeamCard({ currentPlan: planData?.plan }) &&
-        multipleTiers && <PlanUpgradeTeam />}
+      {shouldDisplayTeamCard({ plans }) && multipleTiers && <PlanUpgradeTeam />}
       <PlanUpgradePro
         isSentryUpgrade={canApplySentryUpgrade({ plan, plans })}
         plans={plans}
