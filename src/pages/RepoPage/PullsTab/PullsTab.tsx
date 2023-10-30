@@ -2,7 +2,8 @@ import { lazy, Suspense, useLayoutEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
-import { useTier } from 'services/tier'
+import { useRepoSettingsTeam } from 'services/repo'
+import { TierNames, useTier } from 'services/tier'
 import MultiSelect from 'ui/MultiSelect'
 import Select from 'ui/Select'
 import Spinner from 'ui/Spinner'
@@ -70,6 +71,7 @@ function PullsTab() {
   const { provider, owner } = useParams<URLParams>()
   const setCrumbs = useSetCrumbs()
 
+  const { data: repoSettingsTeam } = useRepoSettingsTeam()
   const { data: tierData } = useTier({ provider, owner })
 
   const {
@@ -98,6 +100,9 @@ function PullsTab() {
     setSelectedStates(prStates)
     updateParams({ prStates })
   }
+
+  const showTeamTable =
+    repoSettingsTeam?.repository?.private && tierData === TierNames.TEAM
 
   return (
     <div className="flex flex-1 flex-col gap-4">
@@ -131,7 +136,7 @@ function PullsTab() {
         </div>
       </div>
       <Suspense fallback={<Loader />}>
-        {tierData === 'team' ? <PullsTableTeam /> : <PullsTable />}
+        {showTeamTable ? <PullsTableTeam /> : <PullsTable />}
       </Suspense>
     </div>
   )

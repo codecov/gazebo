@@ -2,12 +2,29 @@ import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
+import { TierNames } from 'services/tier'
+
 import PullsTab from './PullsTab'
 
 import { repoPageRender, screen } from '../repo-jest-setup'
 
 jest.mock('./PullsTable', () => () => 'PullsTable')
 jest.mock('./PullsTableTeam', () => () => 'PullsTableTeam')
+
+const mockRepoSettings = (isPrivate = false) => ({
+  owner: {
+    repository: {
+      defaultBranch: 'master',
+      private: isPrivate,
+      uploadToken: 'token',
+      graphToken: 'token',
+      yaml: 'yaml',
+      bot: {
+        username: 'test',
+      },
+    },
+  },
+})
 
 const server = setupServer()
 
@@ -25,10 +42,11 @@ afterAll(() => {
 
 interface SetupArgs {
   tierValue?: 'pro' | 'team'
+  isPrivate?: boolean
 }
 
 describe('Pulls Tab', () => {
-  function setup({ tierValue = 'pro' }: SetupArgs) {
+  function setup({ tierValue = 'pro', isPrivate = false }: SetupArgs) {
     const user = userEvent.setup()
 
     server.use(
@@ -36,11 +54,11 @@ describe('Pulls Tab', () => {
         return res(ctx.status(200), ctx.data({}))
       }),
       graphql.query('OwnerTier', (req, res, ctx) => {
-        if (tierValue === 'team') {
+        if (tierValue === TierNames.TEAM) {
           return res(
             ctx.status(200),
             ctx.data({
-              owner: { plan: { tierName: 'team' } },
+              owner: { plan: { tierName: TierNames.TEAM } },
             })
           )
         }
@@ -51,6 +69,9 @@ describe('Pulls Tab', () => {
             owner: { plan: { tierName: 'pro' } },
           })
         )
+      }),
+      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
       })
     )
 
@@ -116,15 +137,30 @@ describe('Pulls Tab', () => {
     })
 
     describe('on team tier', () => {
-      it('renders PullsTableTeam component', async () => {
-        setup({ tierValue: 'team' })
-        repoPageRender({
-          initialEntries: ['/gh/codecov/gazebo/pulls'],
-          renderPulls: () => <PullsTab />,
-        })
+      describe('repo is public', () => {
+        it('renders PullsTable component', async () => {
+          setup({ tierValue: TierNames.TEAM, isPrivate: false })
+          repoPageRender({
+            initialEntries: ['/gh/codecov/gazebo/pulls'],
+            renderPulls: () => <PullsTab />,
+          })
 
-        const table = await screen.findByText('PullsTableTeam')
-        expect(table).toBeInTheDocument()
+          const table = await screen.findByText('PullsTable')
+          expect(table).toBeInTheDocument()
+        })
+      })
+
+      describe('repo is private', () => {
+        it('renders PullsTableTeam component', async () => {
+          setup({ tierValue: TierNames.TEAM, isPrivate: true })
+          repoPageRender({
+            initialEntries: ['/gh/codecov/gazebo/pulls'],
+            renderPulls: () => <PullsTab />,
+          })
+
+          const table = await screen.findByText('PullsTableTeam')
+          expect(table).toBeInTheDocument()
+        })
       })
     })
   })
