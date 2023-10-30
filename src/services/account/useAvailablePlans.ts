@@ -18,9 +18,9 @@ const PlansSchema = z
                 monthlyUploadLimit: z.number().nullable(),
                 value: z.string(),
               })
-              .nullish()
+              .nullable()
           )
-          .nullish(),
+          .nullable(),
       })
       .nullable(),
   })
@@ -50,7 +50,6 @@ export const useAvailablePlans = ({
   provider,
   owner,
 }: UseAvailablePlansArgs) => {
-  // the plans are very static data
   return useQuery({
     queryKey: ['GetAvailablePlans', provider, owner, query],
     queryFn: ({ signal }) =>
@@ -73,5 +72,6 @@ export const useAvailablePlans = ({
 
         return parsedRes.data?.owner?.availablePlans ?? null
       }),
+    staleTime: 1000 * 10,
   })
 }
