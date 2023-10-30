@@ -73,13 +73,8 @@ const useUserAccessGate = () => {
 
   // the undefined provider check can be removed when the ToS has
   // been refactored to no longer use a provider
-  if (
-    termsOfServicePage &&
-    !isUndefined(provider) &&
-    !isGuest &&
-    !config.IS_SELF_HOSTED
-  ) {
-    showAgreeToTerms = userData?.termsAgreement === false
+  if (termsOfServicePage && !isGuest && !config.IS_SELF_HOSTED) {
+    showAgreeToTerms = internalUser?.termsAgreement === false
   }
 
   const onSyncPage = currentRoute.path === '/sync'

@@ -6,7 +6,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useTruncation } from 'ui/TruncatedMessage/hooks'
 
-import Header from './Header'
+import HeaderDefault from './HeaderDefault'
 
 jest.mock('ui/TruncatedMessage/hooks')
 
@@ -49,7 +49,7 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 
-describe('Header', () => {
+describe('HeaderDefault', () => {
   function setup(pullId = 1234) {
     useTruncation.mockImplementation(() => ({
       ref: () => {},
@@ -69,21 +69,21 @@ describe('Header', () => {
     })
 
     it('renders commit message', async () => {
-      render(<Header />, { wrapper })
+      render(<HeaderDefault />, { wrapper })
 
       const message = await screen.findByText('Test Commit')
       expect(message).toBeInTheDocument()
     })
 
     it('The summary header', async () => {
-      render(<Header />, { wrapper })
+      render(<HeaderDefault />, { wrapper })
 
       const authored = await screen.findByText(/authored commit/)
       expect(authored).toBeInTheDocument()
     })
 
     it('renders commit id and link', async () => {
-      render(<Header />, { wrapper })
+      render(<HeaderDefault />, { wrapper })
 
       const commitLink = await screen.findByRole('link', {
         name: /id-1/i,
@@ -95,14 +95,14 @@ describe('Header', () => {
     })
 
     it('renders CI Passed', async () => {
-      render(<Header />, { wrapper })
+      render(<HeaderDefault />, { wrapper })
 
       const ciPassed = await screen.findByText('CI Passed')
       expect(ciPassed).toBeInTheDocument()
     })
 
     it('renders branch name', async () => {
-      render(<Header />, { wrapper })
+      render(<HeaderDefault />, { wrapper })
 
       const branchName = await screen.findByText('cool-branch')
       expect(branchName).toBeInTheDocument()
@@ -115,7 +115,7 @@ describe('Header', () => {
     })
 
     it('does not render the pull label', async () => {
-      render(<Header />, { wrapper })
+      render(<HeaderDefault />, { wrapper })
 
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)

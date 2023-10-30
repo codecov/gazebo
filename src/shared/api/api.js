@@ -55,8 +55,19 @@ function prefillMethod(method) {
     })
 }
 
-function graphql({ provider, query, variables = {}, signal }) {
-  const uri = `${config.API_URL}/graphql/${provider}`
+function graphql({
+  provider,
+  query,
+  variables = {},
+  signal,
+  supportsServiceless = false,
+}) {
+  let uri = `${config.API_URL}/graphql/${provider}`
+
+  if (supportsServiceless && !provider) {
+    uri = `${config.API_URL}/graphql/`
+  }
+
   const headers = {
     Accept: 'application/json',
     'Content-Type': 'application/json; charset=utf-8',

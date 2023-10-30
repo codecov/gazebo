@@ -7,6 +7,7 @@ import {
   commitFileviewString,
   commitTreeviewString,
 } from 'pages/RepoPage/utils'
+import { TierNames, useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import TabNavigation from 'ui/TabNavigation'
@@ -18,6 +19,15 @@ function CommitDetailPageTabs({
 }) {
   const { provider, owner, repo } = useParams()
   const location = useLocation()
+  const { data: tierName } = useTier({ owner, provider })
+
+  const { commitTabFlagMultiSelect } = useFlags({
+    commitTabFlagMultiSelect: false,
+  })
+
+  const showFlagMultiSelect =
+    commitTabFlagMultiSelect && tierName !== TierNames.TEAM
+
   const params = qs.parse(location.search, {
     ignoreQueryPrefix: true,
     depth: 1,
@@ -27,10 +37,6 @@ function CommitDetailPageTabs({
   if (Object.keys(params).length > 0) {
     queryParams = omit(params, ['search'])
   }
-
-  const { commitTabFlagMultiSelect } = useFlags({
-    commitTabFlagMultiSelect: false,
-  })
 
   const blobPath = location.pathname.includes(
     `/${provider}/${commitFileviewString({ owner, repo, commitSha })}`
@@ -82,7 +88,7 @@ function CommitDetailPageTabs({
         <ToggleHeader
           coverageIsLoading={false}
           showHitCount={true}
-          showFlagsSelect={commitTabFlagMultiSelect}
+          showFlagsSelect={showFlagMultiSelect}
         />
       }
     />
