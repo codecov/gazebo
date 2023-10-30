@@ -27,7 +27,7 @@ function CancelPlanPage() {
   const { data: planData } = usePlanData({ provider, owner })
 
   const isOnTrial =
-    isTrialPlan(planData?.plan?.planName) &&
+    isTrialPlan(planData?.plan?.value) &&
     planData?.plan?.trialStatus === TrialStatuses.ONGOING
 
   // redirect right away if the user is on an enterprise plan

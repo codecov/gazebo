@@ -38,8 +38,8 @@ describe('ProPlanCard', () => {
         wrapper,
       })
 
-      const planName = screen.getByText(/Pro Team plan/)
-      expect(planName).toBeInTheDocument()
+      const planValue = screen.getByText(/Pro Team plan/)
+      expect(planValue).toBeInTheDocument()
     })
 
     it('renders the benefits', () => {
