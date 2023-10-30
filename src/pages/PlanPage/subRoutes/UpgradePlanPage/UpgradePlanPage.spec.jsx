@@ -28,6 +28,7 @@ const plans = [
       'Unlimited public repositories',
       'Unlimited private repositories',
     ],
+    monthlyUploadLimit: 250,
   },
   {
     marketingName: 'Pro Team',
@@ -40,6 +41,7 @@ const plans = [
       'Unlimited private repositories',
       'Priority Support',
     ],
+    monthlyUploadLimit: null,
   },
   {
     marketingName: 'Pro Team',
@@ -52,6 +54,7 @@ const plans = [
       'Unlimited private repositories',
       'Priority Support',
     ],
+    monthlyUploadLimit: null,
   },
   {
     marketingName: 'Pro Team',
@@ -64,6 +67,7 @@ const plans = [
       'Unlimited private repositories',
       'Priority Support',
     ],
+    monthlyUploadLimit: null,
   },
   {
     marketingName: 'Pro Team',
@@ -76,6 +80,7 @@ const plans = [
       'Unlimited private repositories',
       'Priority Support',
     ],
+    monthlyUploadLimit: null,
   },
 ]
 
@@ -90,6 +95,7 @@ const sentryPlanMonth = {
     'Unlimited private repositories',
     'Priority Support',
   ],
+  monthlyUploadLimit: null,
   trialDays: 14,
 }
 
@@ -104,6 +110,7 @@ const sentryPlanYear = {
     'Unlimited private repositories',
     'Priority Support',
   ],
+  monthlyUploadLimit: null,
   trialDays: 14,
 }
 
@@ -187,15 +194,21 @@ describe('UpgradePlanPage', () => {
           })
         )
       ),
-      rest.get('/internal/plans', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.json([
-            ...plans,
-            ...(!!includeSentryPlans ? [sentryPlanMonth, sentryPlanYear] : []),
-          ])
-        )
-      ),
+      graphql.query('GetAvailablePlans', (req, res, ctx) => {
+        if (includeSentryPlans) {
+          return res(
+            ctx.status(200),
+            ctx.data({
+              owner: { availablePlans: [sentryPlanMonth, sentryPlanYear] },
+            })
+          )
+        } else {
+          return res(
+            ctx.status(200),
+            ctx.data({ owner: { availablePlans: plans } })
+          )
+        }
+      }),
       rest.get('/internal/gh/codecov/account-details', (req, res, ctx) => {
         if (planValue === Plans.USERS_SENTRYY) {
           return res(

@@ -6,8 +6,8 @@ import { usePlanPageData } from 'pages/PlanPage/hooks'
 import {
   planPropType,
   TrialStatuses,
+  useAvailablePlans,
   usePlanData,
-  usePlans,
 } from 'services/account'
 import { useFlags } from 'shared/featureFlags'
 import BenefitList from 'shared/plan/BenefitList'
@@ -31,7 +31,7 @@ function FreePlanCard({ plan, scheduledPhase }) {
     provider,
     owner,
   })
-  const { data: plans } = usePlans(provider)
+  const { data: plans } = useAvailablePlans({ provider, owner })
   const { multipleTiers } = useFlags({
     multipleTiers: false,
   })
