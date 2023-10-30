@@ -1,7 +1,7 @@
 import { useLayoutEffect } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
 
-import { useAccountDetails, usePlans } from 'services/account'
+import { useAccountDetails, useAvailablePlans } from 'services/account'
 import {
   findSentryPlans,
   isEnterprisePlan,
@@ -18,7 +18,7 @@ function UpgradePlanPage() {
   const { provider, owner } = useParams()
   const setCrumbs = useSetCrumbs()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
-  const { data: plans } = usePlans(provider)
+  const { data: plans } = useAvailablePlans({ provider, owner })
   const { proPlanMonth, proPlanYear } = useProPlans({ plans })
   const { sentryPlanMonth, sentryPlanYear } = findSentryPlans({ plans })
 

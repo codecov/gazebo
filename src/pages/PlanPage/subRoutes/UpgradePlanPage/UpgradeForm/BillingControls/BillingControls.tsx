@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { PlanType, usePlans } from 'services/account'
+import { useAvailablePlans } from 'services/account'
 import {
   findSentryPlans,
   isAnnualPlan,
@@ -20,8 +20,8 @@ const BillingText: React.FC<BillingTextProps> = ({
   isSentryUpgrade,
   option,
 }) => {
-  const { provider } = useParams<{ provider: string }>()
-  const { data: plans } = usePlans(provider)
+  const { provider, owner } = useParams<{ provider: string; owner: string }>()
+  const { data: plans } = useAvailablePlans({ provider, owner })
   const { proPlanMonth, proPlanYear } = useProPlans({ plans })
   const { sentryPlanMonth, sentryPlanYear } = findSentryPlans({ plans })
 
@@ -74,8 +74,8 @@ const BillingControls: React.FC<BillingControlsProps> = ({
     }
   }, [planString, option])
 
-  let annualPlan: PlanType['value'] = Plans.USERS_PR_INAPPY
-  let monthlyPlan: PlanType['value'] = Plans.USERS_PR_INAPPM
+  let annualPlan: string = Plans.USERS_PR_INAPPY
+  let monthlyPlan: string = Plans.USERS_PR_INAPPM
 
   if (isSentryUpgrade) {
     annualPlan = Plans.USERS_SENTRYY

@@ -5,8 +5,8 @@ import {
   planPropType,
   TrialStatuses,
   useAccountDetails,
+  useAvailablePlans,
   usePlanData,
-  usePlans,
 } from 'services/account'
 import { useStartTrial } from 'services/trial'
 import {
@@ -20,7 +20,7 @@ import Button from 'ui/Button'
 
 function PlansActionsBilling({ plan }) {
   const { provider, owner } = useParams()
-  const { data: plans } = usePlans(provider)
+  const { data: plans } = useAvailablePlans({ provider, owner })
 
   const { data: planData } = usePlanData({
     provider,

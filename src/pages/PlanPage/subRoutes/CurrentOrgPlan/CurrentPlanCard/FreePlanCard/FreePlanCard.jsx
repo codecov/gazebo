@@ -6,8 +6,8 @@ import { usePlanPageData } from 'pages/PlanPage/hooks'
 import {
   planPropType,
   TrialStatuses,
+  useAvailablePlans,
   usePlanData,
-  usePlans,
 } from 'services/account'
 import BenefitList from 'shared/plan/BenefitList'
 import ScheduledPlanDetails from 'shared/plan/ScheduledPlanDetails'
@@ -120,7 +120,7 @@ function FreePlanCard({ plan, scheduledPhase }) {
     owner,
   })
 
-  const { data: plans } = usePlans(provider)
+  const { data: plans } = useAvailablePlans({ provider, owner })
 
   const uploadsNumber = ownerData?.numberOfUploads
   const trialOngoing =
