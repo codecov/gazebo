@@ -118,7 +118,7 @@ const getColumns = ({
       },
     }),
     columnHelper.accessor('latestCommitAt', {
-      header: 'Last Updated',
+      header: 'Last updated',
       id: 'latestCommitAt',
       cell: (info) => {
         return (
@@ -129,7 +129,7 @@ const getColumns = ({
       },
     }),
     columnHelper.accessor('lines', {
-      header: 'Tracked Lines',
+      header: 'Tracked lines',
       id: 'lines',
       cell: (info) => {
         const repo = info.row.original

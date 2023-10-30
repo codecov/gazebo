@@ -56,7 +56,7 @@ function OrgControlTable({
         data-testid="org-control-search"
       />
       {canRefetch && <RepoOrgNotFound />}
-      {!showTeamRepos && (
+      {!showTeamRepos && ( // remove select once table is refactored
         <Select
           dataMarketing="repo-list-order-selector"
           ariaName="Sort Order"
