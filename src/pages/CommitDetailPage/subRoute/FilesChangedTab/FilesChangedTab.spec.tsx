@@ -31,6 +31,21 @@ const mockProTier = {
   },
 }
 
+const mockRepoSettings = (isPrivate: boolean) => ({
+  owner: {
+    repository: {
+      defaultBranch: 'master',
+      private: isPrivate,
+      uploadToken: 'token',
+      graphToken: 'token',
+      yaml: 'yaml',
+      bot: {
+        username: 'test',
+      },
+    },
+  },
+})
+
 const server = setupServer()
 const queryClient = new QueryClient()
 
@@ -58,10 +73,11 @@ afterAll(() => {
 interface SetupArgs {
   planValue: 'team' | 'pro'
   flagValue: boolean
+  isPrivate?: boolean
 }
 
 describe('FilesChangedTab', () => {
-  function setup({ planValue, flagValue }: SetupArgs) {
+  function setup({ planValue, flagValue, isPrivate = false }: SetupArgs) {
     mockedUseFlags.mockReturnValue({
       multipleTiers: flagValue,
     })
@@ -73,13 +89,16 @@ describe('FilesChangedTab', () => {
         }
 
         return res(ctx.status(200), ctx.data(mockProTier))
+      }),
+      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
       })
     )
   }
 
   describe('user has pro tier', () => {
     it('renders files changed table', async () => {
-      setup({ planValue: 'pro', flagValue: false })
+      setup({ planValue: TierNames.PRO, flagValue: false })
       render(<FilesChangedTab />, { wrapper })
 
       const table = await screen.findByText('FilesChangedTable')
@@ -88,13 +107,25 @@ describe('FilesChangedTab', () => {
   })
 
   describe('user has team tier', () => {
-    it('renders team files changed table', async () => {
-      setup({ planValue: 'team', flagValue: true })
+    describe('repo is private', () => {
+      it('renders team files changed table', async () => {
+        setup({ planValue: TierNames.TEAM, flagValue: true, isPrivate: true })
 
-      render(<FilesChangedTab />, { wrapper })
+        render(<FilesChangedTab />, { wrapper })
 
-      const table = await screen.findByText('FilesChangedTableTeam')
-      expect(table).toBeInTheDocument()
+        const table = await screen.findByText('FilesChangedTableTeam')
+        expect(table).toBeInTheDocument()
+      })
+    })
+
+    describe('repo is public', () => {
+      it('renders files changed table', async () => {
+        setup({ planValue: TierNames.TEAM, flagValue: false, isPrivate: false })
+        render(<FilesChangedTab />, { wrapper })
+
+        const table = await screen.findByText('FilesChangedTable')
+        expect(table).toBeInTheDocument()
+      })
     })
   })
 })
