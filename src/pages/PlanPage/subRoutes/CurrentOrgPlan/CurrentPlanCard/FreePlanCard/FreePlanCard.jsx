@@ -45,6 +45,7 @@ function FreePlanCard({ plan, scheduledPhase }) {
   let planValue = plan?.value
   let baseUnitPrice = plan?.baseUnitPrice
   let marketingName = plan?.marketingName
+
   if (trialOngoing) {
     benefits = planData?.pretrialPlan?.benefits
     planValue = planData?.pretrialPlan?.value

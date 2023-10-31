@@ -17,7 +17,7 @@ const mockPlanBasic = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  planName: 'users-basic',
+  value: 'users-basic',
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -32,7 +32,7 @@ const mockPlanPro = {
   billingRate: 'monthly',
   marketingName: 'Pro',
   monthlyUploadLimit: null,
-  planName: 'users-pr-inappm',
+  value: 'users-pr-inappm',
   trialStatus: TrialStatuses.CANNOT_TRIAL,
   trialStartDate: '',
   trialEndDate: '',
@@ -130,7 +130,7 @@ const mockPreTrialPlanInfo = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  planName: 'users-basic',
+  value: 'users-basic',
 }
 
 const server = setupServer()
@@ -199,7 +199,6 @@ describe('PlanUpgradeTeam', () => {
     })
 
     it('show the benefits list', async () => {
-      setup()
       render(<PlanUpgradeTeam />, {
         wrapper,
       })

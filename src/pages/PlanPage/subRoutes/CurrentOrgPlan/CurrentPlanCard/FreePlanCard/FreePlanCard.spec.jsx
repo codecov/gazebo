@@ -142,6 +142,7 @@ const mockPlanData = {
   trialEndDate: '',
   trialTotalDays: 0,
   pretrialUsersCount: 0,
+  planUserCount: 1,
 }
 
 const mockPreTrialPlanInfo = {
@@ -189,8 +190,8 @@ describe('FreePlanCard', () => {
       plans,
       trialStatus = TrialStatuses.CANNOT_TRIAL,
       planValue = 'users-basic',
-      planUserCount = 1,
       flagValue = false,
+      planUserCount = 1,
     } = {
       owner: {
         username: 'codecov',
@@ -220,6 +221,7 @@ describe('FreePlanCard', () => {
                 ...mockPlanData,
                 trialStatus,
                 value: planValue,
+                planUserCount,
               },
               pretrialPlan: mockPreTrialPlanInfo,
             },
@@ -379,7 +381,6 @@ describe('FreePlanCard', () => {
           planValue: 'users-trial',
           trialStatus: TrialStatuses.ONGOING,
           plans: allPlans,
-          planUserCount: 4,
           flagValue: true,
         })
 
@@ -396,7 +397,6 @@ describe('FreePlanCard', () => {
           planValue: 'users-trial',
           trialStatus: TrialStatuses.ONGOING,
           plans: allPlans,
-          planUserCount: 4,
         })
 
         render(<FreePlanCard plan={freePlan} />, {

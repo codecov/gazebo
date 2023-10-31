@@ -91,7 +91,6 @@ export const usePlanData = ({ provider, owner, opts }: UseTrialArgs) => {
         },
       }).then((res) => {
         const parsedRes = PlanDataSchema?.safeParse(res?.data?.owner)
-
         if (!parsedRes.success) {
           return {}
         }

@@ -51,7 +51,7 @@ function PlanUpgradeTeam() {
             </div>
             <div className="flex self-start">
               <Button to={{ pageName: 'upgradeOrgPlan' }} variant="primary">
-                {isFreePlan(currentPlan?.planName)
+                {isFreePlan(currentPlan?.value)
                   ? 'Upgrade to Team'
                   : 'Manage plan'}
               </Button>
