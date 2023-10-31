@@ -20,6 +20,7 @@ const allPlans = [
       'Unlimited public repositories',
       'Unlimited private repositories',
     ],
+    monthlyUploadLimit: 250,
   },
   {
     marketingName: 'Pro Team',
@@ -32,6 +33,7 @@ const allPlans = [
       'Unlimited private repositories',
       'Priorty Support',
     ],
+    monthlyUploadLimit: null,
   },
   {
     marketingName: 'Pro Team',
@@ -44,6 +46,7 @@ const allPlans = [
       'Unlimited private repositories',
       'Priorty Support',
     ],
+    monthlyUploadLimit: null,
   },
   {
     marketingName: 'Pro Team',
@@ -56,6 +59,7 @@ const allPlans = [
       'Unlimited private repositories',
       'Priorty Support',
     ],
+    monthlyUploadLimit: null,
   },
   {
     marketingName: 'Pro Team',
@@ -68,6 +72,7 @@ const allPlans = [
       'Unlimited private repositories',
       'Priorty Support',
     ],
+    monthlyUploadLimit: null,
   },
 ]
 
@@ -76,6 +81,7 @@ const sentryPlans = [
     marketingName: 'Pro Team for Sentry',
     baseUnitPrice: 12,
     benefits: ['Configurable # of users', 'Unlimited repos'],
+    monthlyUploadLimit: null,
     value: 'users-sentrym',
     billingRate: 'monthly',
   },
@@ -136,7 +142,7 @@ const mockTrialData = {
     billingRate: 'monthly',
     marketingName: 'Users Basic',
     monthlyUploadLimit: 250,
-    planName: 'users-basic',
+    value: 'users-basic',
     trialStatus: 'ONGOING',
     trialStartDate: '2023-01-01T08:55:25',
     trialEndDate: '2023-01-10T08:55:25',
@@ -190,8 +196,8 @@ describe('Actions Billing', () => {
       rest.get('/internal/gh/critical-role/account-details/', (req, res, ctx) =>
         res(ctx.status(200), ctx.json(accountDetails))
       ),
-      rest.get('/internal/plans', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json(plans))
+      graphql.query('GetAvailablePlans', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({ owner: { availablePlans: plans } }))
       ),
       graphql.query('GetPlanData', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data({ owner: trialPlanData }))

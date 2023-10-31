@@ -5,8 +5,8 @@ import {
   planPropType,
   TrialStatuses,
   useAccountDetails,
+  useAvailablePlans,
   usePlanData,
-  usePlans,
 } from 'services/account'
 import { useStartTrial } from 'services/trial'
 import {
@@ -20,7 +20,7 @@ import Button from 'ui/Button'
 
 function PlansActionsBilling({ plan }) {
   const { provider, owner } = useParams()
-  const { data: plans } = usePlans(provider)
+  const { data: plans } = useAvailablePlans({ provider, owner })
 
   const { data: planData } = usePlanData({
     provider,
@@ -31,7 +31,7 @@ function PlansActionsBilling({ plan }) {
 
   const canStartTrial =
     planData?.plan?.trialStatus === TrialStatuses.NOT_STARTED &&
-    isFreePlan(planData?.plan?.planName)
+    isFreePlan(planData?.plan?.value)
 
   if (canStartTrial) {
     return (

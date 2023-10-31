@@ -26,6 +26,7 @@ const freePlan = {
     'Unlimited private repositories',
   ],
   quantity: 1,
+  monthlyUploadLimit: 250,
 }
 
 const proPlanMonth = {
@@ -40,6 +41,7 @@ const proPlanMonth = {
     'Priority Support',
   ],
   quantity: 10,
+  monthlyUploadLimit: null,
 }
 
 const sentryPlanMonth = {
@@ -53,6 +55,7 @@ const sentryPlanMonth = {
     'Unlimited private repositories',
     'Priority Support',
   ],
+  monthlyUploadLimit: null,
   trialDays: 14,
   quantity: 10,
 }
@@ -68,6 +71,7 @@ const sentryPlanYear = {
     'Unlimited private repositories',
     'Priority Support',
   ],
+  monthlyUploadLimit: null,
   trialDays: 14,
   quantity: 10,
 }
@@ -83,6 +87,7 @@ const proPlanYear = {
     'Unlimited private repositories',
     'Priority Support',
   ],
+  monthlyUploadLimit: null,
   quantity: 10,
 }
 
@@ -92,7 +97,7 @@ const mockPlanData = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  planName: 'users-basic',
+  value: 'users-basic',
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -178,16 +183,30 @@ describe('UpgradeForm', () => {
           return res(ctx.status(200), ctx.json({ success: true }))
         }
       ),
-      rest.get('internal/plans', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json([
-            freePlan,
-            proPlanMonth,
-            proPlanYear,
-            ...(includeSentryPlans ? [sentryPlanMonth, sentryPlanYear] : []),
-          ])
-        )
+      graphql.query('GetAvailablePlans', (req, res, ctx) => {
+        if (includeSentryPlans) {
+          return res(
+            ctx.status(200),
+            ctx.data({
+              owner: {
+                availablePlans: [
+                  freePlan,
+                  proPlanMonth,
+                  proPlanYear,
+                  sentryPlanMonth,
+                  sentryPlanYear,
+                ],
+              },
+            })
+          )
+        } else {
+          return res(
+            ctx.status(200),
+            ctx.data({
+              owner: { availablePlans: [freePlan, proPlanMonth, proPlanYear] },
+            })
+          )
+        }
       })
     )
 

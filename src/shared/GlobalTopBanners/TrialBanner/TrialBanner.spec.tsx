@@ -138,7 +138,7 @@ describe('TrialBanner', () => {
                 billingRate: null,
                 marketingName: plan.marketingName,
                 monthlyUploadLimit: null,
-                planName: plan.value,
+                value: plan.value,
                 trialStatus,
                 trialStartDate,
                 trialEndDate,

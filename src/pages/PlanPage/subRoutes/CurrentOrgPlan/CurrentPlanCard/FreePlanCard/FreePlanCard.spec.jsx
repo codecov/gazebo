@@ -20,6 +20,7 @@ const allPlans = [
       'Unlimited public repositories',
       'Unlimited private repositories',
     ],
+    monthlyUploadLimit: 250,
   },
   {
     marketingName: 'Pro Team',
@@ -32,6 +33,7 @@ const allPlans = [
       'Unlimited private repositories',
       'Priority Support',
     ],
+    monthlyUploadLimit: null,
   },
   {
     marketingName: 'Pro Team',
@@ -44,6 +46,7 @@ const allPlans = [
       'Unlimited private repositories',
       'Priority Support',
     ],
+    monthlyUploadLimit: null,
   },
   {
     marketingName: 'Pro Team',
@@ -56,6 +59,7 @@ const allPlans = [
       'Unlimited private repositories',
       'Priority Support',
     ],
+    monthlyUploadLimit: null,
   },
   {
     marketingName: 'Pro Team',
@@ -68,6 +72,7 @@ const allPlans = [
       'Unlimited private repositories',
       'Priority Support',
     ],
+    monthlyUploadLimit: null,
   },
 ]
 
@@ -78,6 +83,7 @@ const sentryPlans = [
     billingRate: null,
     baseUnitPrice: 0,
     benefits: ['Includes 5 seats', 'Unlimited public repositories'],
+    monthlyUploadLimit: null,
   },
   {
     marketingName: 'Sentry',
@@ -85,6 +91,7 @@ const sentryPlans = [
     billingRate: null,
     baseUnitPrice: 10,
     benefits: ['Includes 5 seats', 'Unlimited private repositories'],
+    monthlyUploadLimit: null,
   },
 ]
 
@@ -94,6 +101,7 @@ const freePlan = {
   billingRate: null,
   baseUnitPrice: 0,
   benefits: ['Up to 1 user', '250 free uploads'],
+  monthlyUploadLimit: null,
 }
 
 const scheduledPhase = {
@@ -108,7 +116,7 @@ const mockPlanData = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  planName: 'users-basic',
+  value: 'users-basic',
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -122,7 +130,7 @@ const mockPreTrialPlanInfo = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  planName: 'users-basic',
+  value: 'users-basic',
 }
 
 const server = setupServer()
@@ -184,15 +192,15 @@ describe('FreePlanCard', () => {
               plan: {
                 ...mockPlanData,
                 trialStatus,
-                planName: planValue,
+                value: planValue,
               },
               pretrialPlan: mockPreTrialPlanInfo,
             },
           })
         )
       ),
-      rest.get('/internal/plans', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json(plans))
+      graphql.query('GetAvailablePlans', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({ owner: { availablePlans: plans } }))
       ),
       rest.get('/internal/bb/critical-role/account-details/', (req, res, ctx) =>
         res(ctx.status(200), ctx.json({ numberOfUploads: 250 }))
