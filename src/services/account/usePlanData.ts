@@ -19,7 +19,7 @@ const PlanDataSchema = z
         billingRate: z.string().nullable(),
         marketingName: z.string(),
         monthlyUploadLimit: z.number().nullable(),
-        planName: z.string(),
+        value: z.string(),
         pretrialUsersCount: z.number().nullable(),
         trialEndDate: z.string().nullable(),
         trialStatus: z.nativeEnum(TrialStatuses),
@@ -35,7 +35,7 @@ const PlanDataSchema = z
         billingRate: z.string().nullable(),
         marketingName: z.string(),
         monthlyUploadLimit: z.number().nullable(),
-        planName: z.string(),
+        value: z.string(),
       })
       .nullish(),
   })
@@ -52,7 +52,7 @@ export const query = `
         billingRate
         marketingName
         monthlyUploadLimit
-        planName
+        value
         pretrialUsersCount
         trialEndDate
         trialStatus
@@ -66,7 +66,7 @@ export const query = `
         billingRate
         marketingName
         monthlyUploadLimit
-        planName
+        value
       }
     }
   }

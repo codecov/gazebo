@@ -31,7 +31,7 @@ function PlansActionsBilling({ plan }) {
 
   const canStartTrial =
     planData?.plan?.trialStatus === TrialStatuses.NOT_STARTED &&
-    isFreePlan(planData?.plan?.planName)
+    isFreePlan(planData?.plan?.value)
 
   if (canStartTrial) {
     return (

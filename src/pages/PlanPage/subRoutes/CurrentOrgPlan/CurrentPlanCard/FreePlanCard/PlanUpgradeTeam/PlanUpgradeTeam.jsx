@@ -1,7 +1,6 @@
-import PropType from 'prop-types'
 import { useParams } from 'react-router-dom'
 
-import { planPropType, useAvailablePlans, usePlanData } from 'services/account'
+import { useAvailablePlans, usePlanData } from 'services/account'
 import BenefitList from 'shared/plan/BenefitList'
 import { findTeamPlans, isFreePlan } from 'shared/utils/billing'
 import Button from 'ui/Button'
@@ -62,15 +61,6 @@ function PlanUpgradeTeam() {
       </div>
     </div>
   )
-}
-
-PlanUpgradeTeam.propTypes = {
-  plan: planPropType,
-  scheduledPhase: PropType.shape({
-    quantity: PropType.number.isRequired,
-    plan: PropType.string.isRequired,
-    startDate: PropType.number.isRequired,
-  }),
 }
 
 export default PlanUpgradeTeam
