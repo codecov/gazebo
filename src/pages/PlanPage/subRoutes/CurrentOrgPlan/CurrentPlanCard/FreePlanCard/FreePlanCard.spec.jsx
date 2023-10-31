@@ -116,7 +116,7 @@ const mockPlanData = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  planName: 'users-basic',
+  value: 'users-basic',
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
@@ -130,7 +130,7 @@ const mockPreTrialPlanInfo = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  planName: 'users-basic',
+  value: 'users-basic',
 }
 
 const server = setupServer()
@@ -192,7 +192,7 @@ describe('FreePlanCard', () => {
               plan: {
                 ...mockPlanData,
                 trialStatus,
-                planName: planValue,
+                value: planValue,
               },
               pretrialPlan: mockPreTrialPlanInfo,
             },

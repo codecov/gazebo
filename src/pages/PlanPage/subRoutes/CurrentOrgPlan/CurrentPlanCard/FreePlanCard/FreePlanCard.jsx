@@ -124,16 +124,16 @@ function FreePlanCard({ plan, scheduledPhase }) {
 
   const uploadsNumber = ownerData?.numberOfUploads
   const trialOngoing =
-    isTrialPlan(planData?.plan?.planName) &&
+    isTrialPlan(planData?.plan?.value) &&
     planData?.plan.trialStatus === TrialStatuses.ONGOING
 
   let benefits = plan?.benefits
-  let planName = plan?.value
+  let planValue = plan?.value
   let baseUnitPrice = plan?.baseUnitPrice
   let marketingName = plan?.marketingName
   if (trialOngoing) {
     benefits = planData?.pretrialPlan?.benefits
-    planName = planData?.pretrialPlan?.planName
+    planValue = planData?.pretrialPlan?.value
     baseUnitPrice = planData?.pretrialPlan?.baseUnitPrice
     marketingName = planData?.pretrialPlan?.marketingName
   }
@@ -161,7 +161,7 @@ function FreePlanCard({ plan, scheduledPhase }) {
           </div>
           <div className="flex flex-col gap-3 border-t pt-2 sm:border-0 sm:p-0">
             <p className="text-xs font-semibold">Pricing</p>
-            <PlanPricing value={planName} baseUnitPrice={baseUnitPrice} />
+            <PlanPricing value={planValue} baseUnitPrice={baseUnitPrice} />
             <div>
               {isNumber(uploadsNumber) && (
                 <p className="mt-4 text-xs text-ds-gray-senary">

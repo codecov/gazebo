@@ -102,7 +102,7 @@ function DefaultOrgSelector() {
     updateDefaultOrg({ username: selectedOrg })
 
     if (
-      isBasicPlan(planData?.plan?.planName) &&
+      isBasicPlan(planData?.plan?.value) &&
       selectedOrg !== currentUser?.user?.username &&
       isNewTrial
     ) {

@@ -27,7 +27,7 @@ const mockInvoice = ({ status = 'paid' } = {}) => {
         amount: -9449,
         currency: 'usd',
         period: { end: 1610473200, start: 1609298708 },
-        planName: 'users-pr-inappm',
+        value: 'users-pr-inappm',
         quantity: 19,
       },
       {
@@ -35,7 +35,7 @@ const mockInvoice = ({ status = 'paid' } = {}) => {
         amount: 72000,
         currency: 'usd',
         period: { end: 1640834708, start: 1609298708 },
-        planName: 'users-pr-inappy',
+        value: 'users-pr-inappy',
         quantity: 6,
       },
       {
@@ -43,7 +43,7 @@ const mockInvoice = ({ status = 'paid' } = {}) => {
         amount: 72000,
         currency: 'usd',
         period: { end: null, start: null },
-        planName: 'same period doesnt render date',
+        value: 'same period doesnt render date',
         quantity: 1,
       },
     ],

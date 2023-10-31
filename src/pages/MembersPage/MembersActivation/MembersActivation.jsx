@@ -21,7 +21,7 @@ function MemberActivation() {
 
   const showAutoActivate =
     !isUndefined(planAutoActivate) &&
-    !isTrialPlan(planData?.plan?.planName) &&
+    !isTrialPlan(planData?.plan?.value) &&
     planData?.plan?.trialStatus !== TrialStatuses.ONGOING
 
   return (

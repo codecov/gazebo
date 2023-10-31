@@ -28,7 +28,7 @@ InvoiceItems.propTypes = {
         quantity: PropTypes.number.isRequired,
         amount: PropTypes.number.isRequired,
         description: PropTypes.string,
-        planName: PropTypes.string,
+        value: PropTypes.string,
         period: PropTypes.shape({
           start: PropTypes.number,
           end: PropTypes.number,

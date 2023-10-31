@@ -142,7 +142,7 @@ const mockTrialData = {
     billingRate: 'monthly',
     marketingName: 'Users Basic',
     monthlyUploadLimit: 250,
-    planName: 'users-basic',
+    value: 'users-basic',
     trialStatus: 'ONGOING',
     trialStartDate: '2023-01-01T08:55:25',
     trialEndDate: '2023-01-10T08:55:25',
