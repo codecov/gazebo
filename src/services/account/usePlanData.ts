@@ -25,6 +25,7 @@ const PlanDataSchema = z
         trialStatus: z.nativeEnum(TrialStatuses),
         trialStartDate: z.string().nullable(),
         trialTotalDays: z.number().nullable(),
+        planUserCount: z.number(),
       })
       .nullish(),
     pretrialPlan: z
@@ -57,6 +58,7 @@ export const query = `
         trialStatus
         trialStartDate
         trialTotalDays
+        planUserCount
       }
       pretrialPlan {
         baseUnitPrice
@@ -89,7 +91,6 @@ export const usePlanData = ({ provider, owner, opts }: UseTrialArgs) => {
         },
       }).then((res) => {
         const parsedRes = PlanDataSchema?.safeParse(res?.data?.owner)
-
         if (!parsedRes.success) {
           return {}
         }

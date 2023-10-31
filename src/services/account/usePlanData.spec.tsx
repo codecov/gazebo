@@ -18,6 +18,7 @@ const mockTrialData = {
     trialEndDate: '2023-01-10T08:55:25',
     trialTotalDays: 0,
     pretrialUsersCount: 0,
+    planUserCount: 1,
   },
   pretrialPlan: {
     baseUnitPrice: 10,
@@ -88,6 +89,7 @@ describe('usePlanData', () => {
               trialEndDate: '2023-01-10T08:55:25',
               trialTotalDays: 0,
               pretrialUsersCount: 0,
+              planUserCount: 1,
             },
             pretrialPlan: {
               baseUnitPrice: 10,
