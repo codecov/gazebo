@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
 import { nonActiveOrderingOptions, orderingOptions } from 'services/repos'
-import { useTier } from 'services/tier'
+import { TierNames, useTier } from 'services/tier'
 import { ActiveContext } from 'shared/context'
 import { useFlags } from 'shared/featureFlags'
 import Spinner from 'ui/Spinner'
@@ -35,7 +35,7 @@ function ListRepo({ canRefetch }) {
     multipleTiers: false,
   })
 
-  const showTeamRepos = tierData === 'team' && multipleTiers
+  const showTeamRepos = tierData === TierNames.TEAM && multipleTiers
 
   const repoDisplay = useContext(ActiveContext)
 
