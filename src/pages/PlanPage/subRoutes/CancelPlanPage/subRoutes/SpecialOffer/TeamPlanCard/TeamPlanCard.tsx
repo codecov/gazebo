@@ -1,19 +1,15 @@
-import { Redirect, useParams } from 'react-router-dom'
-
-import { usePlans } from 'services/account'
 import BenefitList from 'shared/plan/BenefitList'
-import { useTeamPlans } from 'shared/utils/billing'
 import Button from 'ui/Button'
 
-const ProPlanCard: React.FC = () => {
-  const { provider } = useParams<{ provider: string }>()
-  const { data: plans } = usePlans(provider) // use the useAvailablePlans hook instead
-  const { teamPlanMonth, teamPlanYear } = useTeamPlans({ plans })
+interface TeamPlanCardParams {
+  teamPlanYear: any
+  teamPlanMonth: any
+}
 
-  if (!teamPlanMonth || !teamPlanYear) {
-    return <Redirect to="/somewhere" />
-  }
-
+const TeamPlanCard: React.FC<TeamPlanCardParams> = ({
+  teamPlanYear,
+  teamPlanMonth,
+}) => {
   return (
     <div className="flex flex-col border">
       <h2 className="p-4 font-semibold">{teamPlanYear.marketingName} plan</h2>
@@ -46,7 +42,7 @@ const ProPlanCard: React.FC = () => {
               disabled={undefined}
               hook="upgrade plan"
             >
-              Change to Patch plan
+              Change to Team plan
             </Button>
           </div>
         </div>
@@ -55,4 +51,4 @@ const ProPlanCard: React.FC = () => {
   )
 }
 
-export default ProPlanCard
+export default TeamPlanCard
