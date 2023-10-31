@@ -1,18 +1,28 @@
-import { useLayoutEffect, useState } from 'react'
+import { lazy, Suspense, useLayoutEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
-import { useRepoOverview } from 'services/repo'
+import { useRepoOverview, useRepoSettingsTeam } from 'services/repo'
+import { TierNames, useTier } from 'services/tier'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'
 import SearchField from 'ui/SearchField'
 import Select from 'ui/Select'
+import Spinner from 'ui/Spinner'
 
-import CommitsTable from './CommitsTable'
 import { filterItems, statusEnum, statusNames } from './enums'
 import { useCommitsTabBranchSelector } from './hooks'
 
 import { useSetCrumbs } from '../context'
+
+const CommitsTable = lazy(() => import('./CommitsTable'))
+const CommitsTableTeam = lazy(() => import('./CommitsTableTeam'))
+
+const Loader = () => (
+  <div className="flex flex-1 justify-center">
+    <Spinner />
+  </div>
+)
 
 const useControlParams = ({ defaultBranch }) => {
   const defaultParams = {
@@ -46,7 +56,14 @@ const useControlParams = ({ defaultBranch }) => {
 
 function CommitsTab() {
   const setCrumbs = useSetCrumbs()
-  const { repo, owner, provider } = useParams()
+  const { provider, owner, repo } = useParams()
+
+  const { data: repoSettings } = useRepoSettingsTeam()
+  const { data: tierData } = useTier({ provider, owner })
+
+  const showTeamTable =
+    repoSettings?.repository?.private && tierData === TierNames.TEAM
+
   const { data: overview } = useRepoOverview({
     provider,
     repo,
@@ -160,11 +177,21 @@ function CommitsTab() {
           />
         </div>
       </div>
-      <CommitsTable
-        branch={branch}
-        states={selectedStates?.map((state) => state?.toUpperCase())}
-        search={search}
-      />
+      <Suspense fallback={<Loader />}>
+        {showTeamTable ? (
+          <CommitsTableTeam
+            branch={branch}
+            states={selectedStates?.map((state) => state?.toUpperCase())}
+            search={search}
+          />
+        ) : (
+          <CommitsTable
+            branch={branch}
+            states={selectedStates?.map((state) => state?.toUpperCase())}
+            search={search}
+          />
+        )}
+      </Suspense>
     </div>
   )
 }
