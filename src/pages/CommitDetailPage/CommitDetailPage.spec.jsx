@@ -5,6 +5,7 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TierNames } from 'services/tier'
 import { useTruncation } from 'ui/TruncatedMessage/hooks'
 
 import CommitPage from './CommitDetailPage'
@@ -12,6 +13,29 @@ import CommitPage from './CommitDetailPage'
 jest.mock('./CommitDetailPageContent', () => () => 'CommitDetailPageContent')
 jest.mock('./UploadsCard', () => () => 'UploadsCard')
 jest.mock('ui/TruncatedMessage/hooks')
+
+const mockProTier = {
+  owner: {
+    plan: {
+      tierName: TierNames.PRO,
+    },
+  },
+}
+
+const mockRepoSettings = (isPrivate) => ({
+  owner: {
+    repository: {
+      defaultBranch: 'master',
+      private: isPrivate,
+      uploadToken: 'token',
+      graphToken: 'token',
+      yaml: 'yaml',
+      bot: {
+        username: 'test',
+      },
+    },
+  },
+})
 
 const mockCommit = {
   owner: {
@@ -182,6 +206,12 @@ describe('CommitPage', () => {
       }),
       rest.get('/internal/gh/codecov/account-details/', (req, res, ctx) => {
         return res(ctx.status(200), ctx.json({}))
+      }),
+      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoSettings(false)))
+      }),
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockProTier))
       })
     )
 
