@@ -236,7 +236,7 @@ export function usePullsTeam({
               detail: (
                 <p>
                   Activation is required to view this repo, please{' '}
-                  {/* @ts-expect-error */}
+                  {/* @ts-expect-error - disable because of non-ts component and type mismatch */}
                   <A to={{ pageName: 'membersTab' }}>click here </A> to activate
                   your account.
                 </p>

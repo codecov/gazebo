@@ -39,7 +39,7 @@ const Coverage: React.FC<CoverageProps> = ({
     return (
       <div className="flex flex-1 flex-wrap justify-end md:flex-row md:flex-nowrap">
         <PullState state={state} />
-        {/* @ts-expect-error */}
+        {/* @ts-expect-error - disable because of non-ts component and type mismatch */}
         <A to={{ pageName: 'pullDetail', options: { pullId } }}>
           <span className="mx-6 font-mono text-ds-gray-quinary">#{pullId}</span>
         </A>
@@ -57,7 +57,7 @@ const Coverage: React.FC<CoverageProps> = ({
   return (
     <div className="flex flex-1 flex-wrap justify-end md:flex-row md:flex-nowrap">
       <PullState state={state} />
-      {/* @ts-expect-error */}
+      {/* @ts-expect-error - disable because of non-ts component and type mismatch */}
       <A to={{ pageName: 'pullDetail', options: { pullId } }}>
         <span className="mx-6 font-mono text-ds-gray-quinary">#{pullId}</span>
       </A>

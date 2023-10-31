@@ -82,10 +82,12 @@ export default function PullsTableTeam() {
     owner,
     repo,
     filters: {
-      /* @ts-expect-errors */
+      // useLocationParams needs to be updated to have full types
+      // @ts-expect-errors
       state: params?.prStates,
     },
-    /* @ts-expect-error */
+    // useLocationParams needs to be updated to have full types
+    // @ts-expect-error
     orderingDirection: params?.order,
   })
 

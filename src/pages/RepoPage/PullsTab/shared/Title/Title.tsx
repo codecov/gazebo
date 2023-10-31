@@ -37,7 +37,7 @@ const Title: React.FC<TitleProps> = ({
         <Avatar user={user} bordered />
       </span>
       <div className="flex w-5/6 flex-col lg:w-auto">
-        {/* @ts-expect-error */}
+        {/* @ts-expect-error - disable because of non-ts component and type mismatch */}
         <A
           to={{
             pageName,
@@ -47,7 +47,7 @@ const Title: React.FC<TitleProps> = ({
           <h2 className="text-sm font-semibold text-black">{title}</h2>
         </A>
         <p className="text-xs">
-          {/* @ts-expect-error */}
+          {/* @ts-expect-error - disable because of non-ts component and type mismatch */}
           <A to={{ pageName: 'owner' }}>
             <span className="text-black">{author?.username}</span>
           </A>
