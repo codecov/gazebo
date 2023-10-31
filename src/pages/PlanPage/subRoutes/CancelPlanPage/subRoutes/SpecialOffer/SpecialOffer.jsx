@@ -6,9 +6,12 @@ import { useSetCrumbs } from 'pages/PlanPage/context'
 import { useNavLinks } from 'services/navigation'
 import { useAddNotification } from 'services/toastNotification'
 import Api from 'shared/api'
+import { useFlags } from 'shared/featureFlags'
 import A from 'ui/A'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
+
+import TeamPlanSpecialOffer from './TeamPlanSpecialOffer'
 
 function SpecialOffer() {
   const { provider, owner } = useParams()
@@ -48,9 +51,22 @@ function SpecialOffer() {
     },
   })
 
+  const { multipleTiers } = useFlags({
+    multipleTiers: false,
+  })
+
+  if (!multipleTiers) {
+    return <TeamPlanSpecialOffer />
+  }
+
+  //if user has less than 11 members we show the team plan card we check for seats and if plans exist for user or just check if it exisst as the API takes care of this?
+
+  // if user has > 11 active memebers
+  // return <TeamPlanCard />
+
   return (
     <div className="flex w-5/12 flex-col gap-8">
-      <div className="">
+      <div>
         <h2 className="text-lg font-semibold">
           We&apos;d love to keep you under our umbrella.
         </h2>
