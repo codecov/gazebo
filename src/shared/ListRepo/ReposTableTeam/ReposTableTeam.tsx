@@ -35,7 +35,7 @@ export function getSortingOption(
   const state = sorting.at(0)
 
   if (state) {
-    const direction = state?.desc
+    const direction = state.desc
       ? OrderingDirection.DESC
       : OrderingDirection.ASC
 
@@ -67,23 +67,25 @@ const getColumns = ({
   inactive: boolean
   isCurrentUserPartOfOrg: boolean
 }) => {
+  const nameColumn = columnHelper.accessor('name', {
+    header: 'Name',
+    id: 'name',
+    cell: (info) => {
+      const repo = info.row.original
+      return (
+        <RepoTitleLink
+          repo={repo}
+          showRepoOwner={!!repo?.author?.username}
+          pageName={!!repo?.active ? 'repo' : 'new'}
+          disabledLink={!isCurrentUserPartOfOrg && !repo?.active}
+        />
+      )
+    },
+  })
+
   if (inactive) {
     return [
-      columnHelper.accessor('name', {
-        header: 'Name',
-        id: 'name',
-        cell: (info) => {
-          const repo = info.row.original
-          return (
-            <RepoTitleLink
-              repo={repo}
-              showRepoOwner={!!repo?.author?.username}
-              pageName={!!repo?.active ? 'repo' : 'new'}
-              disabledLink={!isCurrentUserPartOfOrg && !repo?.active}
-            />
-          )
-        },
-      }),
+      nameColumn,
       columnHelper.accessor('lines', {
         header: '',
         id: 'lines',
@@ -102,21 +104,7 @@ const getColumns = ({
     ]
   }
   return [
-    columnHelper.accessor('name', {
-      header: 'Name',
-      id: 'name',
-      cell: (info) => {
-        const repo = info.row.original
-        return (
-          <RepoTitleLink
-            repo={repo}
-            showRepoOwner={!!repo?.author?.username}
-            pageName={!!repo?.active ? 'repo' : 'new'}
-            disabledLink={!isCurrentUserPartOfOrg && !repo?.active}
-          />
-        )
-      },
-    }),
+    nameColumn,
     columnHelper.accessor('latestCommitAt', {
       header: 'Last updated',
       id: 'latestCommitAt',

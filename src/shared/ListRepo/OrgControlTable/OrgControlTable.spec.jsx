@@ -199,7 +199,7 @@ describe('OrgControlTable', () => {
   })
 
   describe('when show team plan passed in', () => {
-    it('does nto render the ordering select', () => {
+    it('does not render the ordering select', () => {
       render(
         <OrgControlTable
           sortItem={orderingOptions[0]}
