@@ -10,14 +10,10 @@ import ExceededUploadsAlert from './ExceededUploadsAlert'
 import GithubConfigBanner from './GithubConfigBanner'
 import ReachingUploadLimit from './ReachingUploadLimit'
 
-const useUploadsInfo = () => {
-  const { owner, provider } = useParams()
+const useUploadsInfo = (planData) => {
+  const { owner } = useParams()
   const { data: ownerData } = useOwnerPageData({ username: owner })
   const numberOfUploads = ownerData?.numberOfUploads
-  const { data: planData } = usePlanData({
-    provider,
-    owner,
-  })
 
   // If monthlyUploadLimit is not defined, we consider the account can have an
   // unlimited amount of uploads
@@ -69,11 +65,12 @@ export default function HeaderBanners() {
     provider,
     owner,
   })
-  const { isUploadsExceeded, isUploadsReachingLimit } = useUploadsInfo()
+
   const { data: planData } = usePlanData({
     provider,
     owner,
   })
+  const { isUploadsExceeded, isUploadsReachingLimit } = useUploadsInfo(planData)
 
   const hasGhApp = !!accountDetails?.integrationId
 
