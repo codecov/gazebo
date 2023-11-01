@@ -1,19 +1,21 @@
+import PropTypes from 'prop-types'
+
 import A from 'ui/A'
 import Banner from 'ui/Banner'
 import BannerContent from 'ui/Banner/BannerContent'
 import BannerHeading from 'ui/Banner/BannerHeading'
 import Button from 'ui/Button'
 
-const ExceededUploadsAlert = () => (
+const ExceededUploadsAlert = ({ planName, monthlyUploadLimit }) => (
   <Banner>
     <BannerHeading>
       <h2 className="font-semibold">Upload limit has been reached</h2>
     </BannerHeading>
     <BannerContent>
       <p>
-        This org is currently on the free plan; which includes 250 free uploads
-        monthly. This month&apos;s period has been reached and the reports will
-        not generate. To resolve this,{' '}
+        This org is currently on the {planName} plan; which includes{' '}
+        {monthlyUploadLimit} free uploads monthly. This month&apos;s limit has
+        been reached and the reports will not generate. To resolve this,{' '}
         <A to={{ pageName: 'upgradeOrgPlan' }}>upgrade plan</A> and you&apos;ll
         have unlimited uploads.
       </p>
@@ -29,5 +31,10 @@ const ExceededUploadsAlert = () => (
     </BannerContent>
   </Banner>
 )
+
+ExceededUploadsAlert.propTypes = {
+  planName: PropTypes.string.isRequired,
+  monthlyUploadLimit: PropTypes.number.isRequired,
+}
 
 export default ExceededUploadsAlert

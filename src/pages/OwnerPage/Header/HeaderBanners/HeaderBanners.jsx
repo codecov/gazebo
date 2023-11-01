@@ -4,25 +4,28 @@ import { useParams } from 'react-router-dom'
 import config from 'config'
 
 import { useOwnerPageData } from 'pages/OwnerPage/hooks'
-import { useAccountDetails } from 'services/account'
+import { useAccountDetails , usePlanData } from 'services/account'
 
 import ExceededUploadsAlert from './ExceededUploadsAlert'
 import GithubConfigBanner from './GithubConfigBanner'
 import ReachingUploadLimit from './ReachingUploadLimit'
 
-const MAX_UPLOADS_NUMBER = 250
-const REACHING_UPLOAD_LIMIT = 225
-
 const useUploadsInfo = () => {
-  const { owner } = useParams()
+  const { owner, provider } = useParams()
   const { data: ownerData } = useOwnerPageData({ username: owner })
   const numberOfUploads = ownerData?.numberOfUploads
+  const { data: planData } = usePlanData({
+    provider,
+    owner,
+  })
 
-  const isUploadsExceeded = numberOfUploads >= MAX_UPLOADS_NUMBER
-  const isUploadsReachingLimit =
-    numberOfUploads < MAX_UPLOADS_NUMBER &&
-    numberOfUploads >= REACHING_UPLOAD_LIMIT
-
+  const monthlyUploadLimit = planData?.plan?.monthlyUploadLimit
+  const isUploadsExceeded = monthlyUploadLimit
+    ? numberOfUploads >= monthlyUploadLimit
+    : false
+  const isUploadsReachingLimit = monthlyUploadLimit
+    ? !isUploadsExceeded && numberOfUploads >= 0.9 * monthlyUploadLimit
+    : false
   return { isUploadsExceeded, isUploadsReachingLimit }
 }
 
@@ -30,14 +33,21 @@ const AlertBanners = ({
   isUploadsExceeded,
   isUploadsReachingLimit,
   hasGhApp,
+  plan,
 }) => {
   return (
     <>
       {!hasGhApp && <GithubConfigBanner />}
       {isUploadsExceeded ? (
-        <ExceededUploadsAlert />
+        <ExceededUploadsAlert
+          planName={plan.marketingName}
+          monthlyUploadLimit={plan.monthlyUploadLimit}
+        />
       ) : isUploadsReachingLimit ? (
-        <ReachingUploadLimit />
+        <ReachingUploadLimit
+          planName={plan.marketingName}
+          monthlyUploadLimit={plan.monthlyUploadLimit}
+        />
       ) : null}
     </>
   )
@@ -47,6 +57,7 @@ AlertBanners.propTypes = {
   isUploadsExceeded: PropTypes.bool.isRequired,
   isUploadsReachingLimit: PropTypes.bool.isRequired,
   hasGhApp: PropTypes.bool.isRequired,
+  plan: PropTypes.object,
 }
 
 export default function HeaderBanners() {
@@ -57,6 +68,10 @@ export default function HeaderBanners() {
     owner,
   })
   const { isUploadsExceeded, isUploadsReachingLimit } = useUploadsInfo()
+  const { data: planData } = usePlanData({
+    provider,
+    owner,
+  })
 
   const hasGhApp = !!accountDetails?.integrationId
 
@@ -70,6 +85,7 @@ export default function HeaderBanners() {
         isUploadsExceeded={isUploadsExceeded}
         isUploadsReachingLimit={isUploadsReachingLimit}
         hasGhApp={hasGhApp}
+        plan={planData?.plan}
       />
     </>
   )

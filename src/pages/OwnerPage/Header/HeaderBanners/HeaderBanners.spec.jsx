@@ -6,6 +6,9 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
+import { TrialStatuses } from 'services/account'
+
+
 import HeaderBanners from './HeaderBanners'
 
 jest.mock('config')
@@ -22,6 +25,26 @@ const wrapper = ({ children }) => (
     </MemoryRouter>
   </QueryClientProvider>
 )
+
+const mockPlanDataResponse = {
+  baseUnitPrice: 10,
+  benefits: [],
+  billingRate: 'monthly',
+  marketingName: 'Pro Team',
+  monthlyUploadLimit: 250,
+  value: 'test-plan',
+  trialStatus: TrialStatuses.NOT_STARTED,
+  trialStartDate: '',
+  trialEndDate: '',
+  trialTotalDays: 0,
+  pretrialUsersCount: 0,
+  planUserCount: 1,
+}
+
+const mockPlanDataResponseNoUploadLimit = {
+  ...mockPlanDataResponse,
+  monthlyUploadLimit: null,
+}
 
 beforeAll(() => {
   server.listen()
@@ -67,6 +90,16 @@ describe('HeaderBanners', () => {
         }
 
         return res(ctx.status(200), ctx.data({}))
+      }),
+      graphql.query('GetPlanData', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              plan: mockPlanDataResponse,
+            },
+          })
+        )
       }),
       rest.get('/internal/gh/codecov/account-details/', (req, res, ctx) =>
         res(ctx.status(200), ctx.json({ integrationId }))
@@ -159,6 +192,38 @@ describe('HeaderBanners', () => {
         const banner = screen.queryByText('Upload limit almost reached')
         expect(banner).not.toBeInTheDocument()
       })
+    })
+  })
+
+  describe('org has no monthlyUploadLimit defined', () => {
+    beforeEach(() => {
+      setup({
+        isSelfHosted: true,
+      })
+      server.use(
+        graphql.query('GetPlanData', (req, res, ctx) => {
+          return res(
+            ctx.status(200),
+            ctx.data({
+              owner: {
+                plan: mockPlanDataResponseNoUploadLimit,
+              },
+            })
+          )
+        })
+      )
+    })
+
+    it('treats monthly uploads as unlimited', () => {
+      const { container } = render(
+        <HeaderBanners
+          provider="gh"
+          owner={{ username: 'codecov', isCurrentUserPartOfOrg: true }}
+        />,
+        { wrapper }
+      )
+
+      expect(container).toBeEmptyDOMElement()
     })
   })
 
