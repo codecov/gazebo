@@ -11,52 +11,51 @@ export const createPullsTableTeamData = ({
 }: {
   pages?: Array<{ pulls: Array<Pull> }>
 }) => {
-  // only map through if there's actual pulls to map
-  let pulls: Array<Pull> = []
-  if (isArray(pages) && !isEmpty(pages)) {
-    pulls = pages?.map((pull) => pull?.pulls).flat()
+  if (!isArray(pages)) {
+    return []
   }
 
-  if (!isEmpty(pulls)) {
-    return pulls.filter(Boolean).map((pull) => {
-      let patch = <p className="text-right">No report uploaded</p>
-      if (pull?.compareWithBase?.__typename === 'Comparison') {
-        const patchPercentage =
-          pull?.compareWithBase?.patchTotals?.percentCovered ?? 0
-        patch = (
-          <div className="text-right">
-            <TotalsNumber
-              plain={true}
-              large={false}
-              light={false}
-              value={patchPercentage}
-              showChange={false}
-            />
-          </div>
-        )
-      }
+  const pulls = pages?.map((pull) => pull?.pulls).flat()
 
-      const updatestamp = pull?.updatestamp ?? undefined
-      const title = pull?.title ?? 'Pull Request'
-      const pullId = pull?.pullId ?? NaN
-
-      return {
-        title: (
-          <Title
-            author={{
-              username: pull?.author?.username,
-              avatarUrl: pull?.author?.avatarUrl,
-            }}
-            pullId={pullId}
-            title={title}
-            updatestamp={updatestamp}
-            compareWithBaseType={pull?.compareWithBase?.__typename}
+  if (isEmpty(pulls)) {
+    return []
+  }
+  return pulls.filter(Boolean).map((pull) => {
+    let patch = <p className="text-right">No report uploaded</p>
+    if (pull?.compareWithBase?.__typename === 'Comparison') {
+      const patchPercentage =
+        pull?.compareWithBase?.patchTotals?.percentCovered ?? 0
+      patch = (
+        <div className="text-right">
+          <TotalsNumber
+            plain={true}
+            large={false}
+            light={false}
+            value={patchPercentage}
+            showChange={false}
           />
-        ),
-        patch,
-      }
-    })
-  }
+        </div>
+      )
+    }
 
-  return []
+    const updatestamp = pull?.updatestamp ?? undefined
+    const title = pull?.title ?? 'Pull Request'
+    const pullId = pull?.pullId ?? NaN
+
+    return {
+      title: (
+        <Title
+          author={{
+            username: pull?.author?.username,
+            avatarUrl: pull?.author?.avatarUrl,
+          }}
+          pullId={pullId}
+          title={title}
+          updatestamp={updatestamp}
+          compareWithBaseType={pull?.compareWithBase?.__typename}
+        />
+      ),
+      patch,
+    }
+  })
 }
