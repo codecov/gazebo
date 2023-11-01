@@ -1,11 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
+import { render, screen } from '@testing-library/react'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
-import { TierNames } from 'services/tier'
 import { useOwner } from 'services/user'
 
 import AnalyticsPage from './AnalyticsPage'
@@ -22,21 +20,10 @@ jest.mock('../../shared/ListRepo/ReposTable', () => () => 'ReposTable')
 const queryClient = new QueryClient()
 const server = setupServer()
 
-let testLocation = {
-  pathname: '',
-}
-
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
       <Route path="/analytics/:provider/:owner">{children}</Route>
-      <Route
-        path="*"
-        render={({ location }) => {
-          testLocation.pathname = location.pathname
-          return null
-        }}
-      />
     </MemoryRouter>
   </QueryClientProvider>
 )
@@ -54,7 +41,7 @@ afterAll(() => {
 })
 
 describe('AnalyticsPage', () => {
-  function setup({ owner, params, tierValue = TierNames.PRO }) {
+  function setup({ owner, params }) {
     useOwner.mockReturnValue({
       data: owner,
     })
@@ -64,21 +51,6 @@ describe('AnalyticsPage', () => {
         direction: params?.direction,
       },
     })
-
-    server.use(
-      graphql.query('OwnerTier', (req, res, ctx) => {
-        if (tierValue === TierNames.TEAM) {
-          return res(
-            ctx.status(200),
-            ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
-          )
-        }
-        return res(
-          ctx.status(200),
-          ctx.data({ owner: { plan: { tierName: TierNames.PRO } } })
-        )
-      })
-    )
   }
 
   describe('when the owner exists', () => {
@@ -178,21 +150,6 @@ describe('AnalyticsPage', () => {
     it('does not render Tabs', () => {
       render(<AnalyticsPage />, { wrapper })
       expect(screen.queryByText(/Tabs/)).not.toBeInTheDocument()
-    })
-  })
-
-  describe('when user has team tier', () => {
-    it('redirects to the owners page', async () => {
-      setup({
-        owner: {
-          username: 'codecov',
-          isCurrentUserPartOfOrg: true,
-        },
-        tierValue: TierNames.TEAM,
-      })
-      render(<AnalyticsPage />, { wrapper })
-
-      await waitFor(() => expect(testLocation.pathname).toBe('/gh/codecov'))
     })
   })
 })
