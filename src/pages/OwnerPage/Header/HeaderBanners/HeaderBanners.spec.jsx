@@ -8,7 +8,6 @@ import config from 'config'
 
 import { TrialStatuses } from 'services/account'
 
-
 import HeaderBanners from './HeaderBanners'
 
 jest.mock('config')
@@ -198,7 +197,7 @@ describe('HeaderBanners', () => {
   describe('org has no monthlyUploadLimit defined', () => {
     beforeEach(() => {
       setup({
-        isSelfHosted: true,
+        hasReachedLimit: true,
       })
       server.use(
         graphql.query('GetPlanData', (req, res, ctx) => {
