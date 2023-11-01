@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
@@ -140,7 +141,7 @@ const mockRepoSettings = (isPrivate = false) => ({
 })
 
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
+  defaultOptions: { queries: { retry: false, suspense: true } },
 })
 const server = setupServer()
 
@@ -159,7 +160,7 @@ const wrapper =
               '/:provider/:owner/:repo/commit/:commit',
             ]}
           >
-            {children}
+            <Suspense fallback={null}>{children}</Suspense>
           </Route>
           <Route
             path="*"

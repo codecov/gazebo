@@ -48,8 +48,10 @@ function CommitDetailPageContent() {
     return <ErroredUploads erroredUploads={erroredUploads} />
   }
 
-  const showIndirectChanges =
-    !repoData?.repository?.private && tierName !== TierNames.TEAM
+  let showIndirectChanges = !(
+    repoData?.repository?.private && tierName === TierNames.TEAM
+  )
+
   const indirectChangedFilesCount =
     commitData?.commit?.compareWithParent?.indirectChangedFilesCount ?? 0
   const directChangedFilesCount =
