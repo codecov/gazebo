@@ -56,7 +56,7 @@ const TrialBanner: React.FC = () => {
     opts: { enabled: enableQuery },
   })
 
-  const planName = planData?.plan?.planName
+  const planValue = planData?.plan?.value
   const trialStatus = planData?.plan?.trialStatus
   const dateDiff = determineDateDiff({
     trialEndDate: planData?.plan?.trialEndDate,
@@ -76,7 +76,7 @@ const TrialBanner: React.FC = () => {
   // user is not on a free plan, trial is currently on going
   // there are 3 or less days left, so display ongoing banner
   if (
-    isTrialPlan(planName) &&
+    isTrialPlan(planValue) &&
     trialStatus === TrialStatuses.ONGOING &&
     dateDiff < 4 &&
     dateDiff >= 0
@@ -85,7 +85,7 @@ const TrialBanner: React.FC = () => {
   }
 
   // user has a free plan again, and the trial status is expired
-  if (isFreePlan(planName) && trialStatus === TrialStatuses.EXPIRED) {
+  if (isFreePlan(planValue) && trialStatus === TrialStatuses.EXPIRED) {
     return <ExpiredBanner />
   }
 
