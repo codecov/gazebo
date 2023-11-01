@@ -61,7 +61,7 @@ const PullSchema = z
   })
   .nullable()
 
-type Pull = z.infer<typeof PullSchema>
+export type Pull = z.infer<typeof PullSchema>
 
 const PageInfoSchema = z.object({
   hasNextPage: z.boolean(),
@@ -189,7 +189,7 @@ export function usePullsTeam({
   orderingDirection,
   opts = {},
 }: UsePullsTeamArgs) {
-  const { data, ...rest } = useInfiniteQuery({
+  return useInfiniteQuery({
     queryKey: [
       'GetPullsTeam',
       provider,
@@ -236,7 +236,7 @@ export function usePullsTeam({
               detail: (
                 <p>
                   Activation is required to view this repo, please{' '}
-                  {/* @ts-expect-error */}
+                  {/* @ts-expect-error - disable because of non-ts component and type mismatch */}
                   <A to={{ pageName: 'membersTab' }}>click here </A> to activate
                   your account.
                 </p>
@@ -246,20 +246,18 @@ export function usePullsTeam({
         }
 
         const pulls = mapEdges(data?.owner?.repository?.pulls)
+        const pageInfo = data?.owner?.repository?.pulls?.pageInfo ?? null
 
-        return {
-          pulls,
-          pageInfo: data?.owner?.repository?.pulls?.pageInfo ?? null,
-        }
+        return { pulls, pageInfo }
       })
     },
-    getNextPageParam: (data) =>
-      data?.pageInfo?.hasNextPage ? data.pageInfo.endCursor : undefined,
+    getNextPageParam: (data) => {
+      if (data?.pageInfo?.hasNextPage) {
+        return data?.pageInfo?.endCursor
+      }
+
+      return undefined
+    },
     ...opts,
   })
-
-  return {
-    data: { pulls: data?.pages.map((page) => page?.pulls).flat() },
-    ...rest,
-  }
 }

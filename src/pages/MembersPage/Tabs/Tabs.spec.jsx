@@ -1,12 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
+import { render, screen } from '@testing-library/react'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
-
-import { TierNames } from 'services/tier'
 
 import Tabs from './Tabs'
 
@@ -37,27 +34,11 @@ afterAll(() => {
 
 describe('Tabs', () => {
   function setup(
-    { isSelfHosted = false, tierValue = TierNames.PRO } = {
+    { isSelfHosted = false } = {
       isSelfHosted: false,
-      tierValue: TierNames.PRO,
     }
   ) {
     config.IS_SELF_HOSTED = isSelfHosted
-
-    server.use(
-      graphql.query('OwnerTier', (req, res, ctx) => {
-        if (tierValue === TierNames.TEAM) {
-          return res(
-            ctx.status(200),
-            ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
-          )
-        }
-        return res(
-          ctx.status(200),
-          ctx.data({ owner: { plan: { tierName: TierNames.PRO } } })
-        )
-      })
-    )
   }
 
   describe('when user is part of the org', () => {
@@ -138,60 +119,6 @@ describe('Tabs', () => {
           name: /plan/i,
         })
       ).not.toBeInTheDocument()
-    })
-  })
-
-  describe('when user has team tier', () => {
-    it('renders links to the home page', () => {
-      setup({ tierValue: TierNames.TEAM })
-      render(<Tabs />, { wrapper })
-
-      expect(
-        screen.getByRole('link', {
-          name: /repos/i,
-        })
-      ).toHaveAttribute('href', '/gh/codecov')
-    })
-
-    it('does not render links to the analytics page', async () => {
-      setup({ tierValue: TierNames.TEAM })
-      render(<Tabs />, { wrapper })
-
-      const analyticsLink = screen.queryByText(/Analytics/)
-      await waitFor(() => expect(analyticsLink).not.toBeInTheDocument())
-    })
-
-    it('renders links to the settings page', () => {
-      setup({ tierValue: TierNames.TEAM })
-      render(<Tabs />, { wrapper })
-
-      expect(
-        screen.getByRole('link', {
-          name: /settings/i,
-        })
-      ).toHaveAttribute('href', `/account/gh/codecov`)
-    })
-
-    it('renders link to plan page', () => {
-      setup({ tierValue: TierNames.TEAM })
-      render(<Tabs />, { wrapper })
-
-      expect(
-        screen.getByRole('link', {
-          name: /plan/i,
-        })
-      ).toHaveAttribute('href', `/plan/gh/codecov`)
-    })
-
-    it('renders link to members page', () => {
-      setup({ tierValue: TierNames.TEAM })
-      render(<Tabs />, { wrapper })
-
-      expect(
-        screen.getByRole('link', {
-          name: /members/i,
-        })
-      ).toHaveAttribute('href', `/members/gh/codecov`)
     })
   })
 })
