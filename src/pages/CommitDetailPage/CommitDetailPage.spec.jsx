@@ -14,15 +14,7 @@ jest.mock('./CommitDetailPageContent', () => () => 'CommitDetailPageContent')
 jest.mock('./UploadsCard', () => () => 'UploadsCard')
 jest.mock('ui/TruncatedMessage/hooks')
 
-const mockProTier = {
-  owner: {
-    plan: {
-      tierName: TierNames.PRO,
-    },
-  },
-}
-
-const mockRepoSettings = (isPrivate) => ({
+const mockRepoSettings = (isPrivate = false) => ({
   owner: {
     repository: {
       defaultBranch: 'master',
@@ -147,10 +139,18 @@ afterAll(() => {
 
 describe('CommitPage', () => {
   function setup(
-    { hasYamlErrors, noCommit, suspense = false } = {
+    {
+      hasYamlErrors,
+      noCommit,
+      suspense = false,
+      tierValue = TierNames.PRO,
+      isPrivate = false,
+    } = {
       hasYamlErrors: false,
       noCommit: false,
       suspense: false,
+      tierValue: TierNames.PRO,
+      isPrivate: false,
     }
   ) {
     const queryClient = new QueryClient({
@@ -207,11 +207,14 @@ describe('CommitPage', () => {
       rest.get('/internal/gh/codecov/account-details/', (req, res, ctx) => {
         return res(ctx.status(200), ctx.json({}))
       }),
-      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockRepoSettings(false)))
-      }),
       graphql.query('OwnerTier', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockProTier))
+        return res(
+          ctx.status(200),
+          ctx.data({ owner: { plan: { tierName: tierValue } } })
+        )
+      }),
+      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
       })
     )
 
@@ -313,6 +316,63 @@ describe('CommitPage', () => {
             []
           )
         )
+      })
+    })
+
+    describe('testing hiding of summary component', () => {
+      describe('user is on team tier', () => {
+        describe('repo is public', () => {
+          it('renders the commit summary', async () => {
+            const { queryClient } = setup({
+              tierValue: TierNames.TEAM,
+              isPrivate: false,
+              suspense: true,
+            })
+            render(<CommitPage />, {
+              wrapper: wrapper(queryClient),
+            })
+
+            const head = await screen.findByText(/HEAD/)
+            expect(head).toBeInTheDocument()
+
+            const patch = await screen.findByText(/Patch/)
+            expect(patch).toBeInTheDocument()
+
+            const change = await screen.findByText(/Change/)
+            expect(change).toBeInTheDocument()
+
+            const source = await screen.findByText(/Source/)
+            expect(source).toBeInTheDocument()
+          })
+        })
+
+        describe('repo is private', () => {
+          it('does not render the commit summary', async () => {
+            const { queryClient } = setup({
+              tierValue: TierNames.TEAM,
+              isPrivate: true,
+              suspense: true,
+            })
+            render(<CommitPage />, {
+              wrapper: wrapper(queryClient),
+            })
+
+            const commitMessage = await screen.findByText('Cool Commit Message')
+            expect(commitMessage).toBeInTheDocument()
+
+            const head = screen.queryByText(/HEAD/)
+            expect(head).not.toBeInTheDocument()
+
+            const patch = screen.queryByText(/Patch/)
+            expect(patch).not.toBeInTheDocument()
+
+            const change = screen.queryByText(/Change/)
+            expect(change).not.toBeInTheDocument()
+
+            const source = screen.queryByText(/Source/)
+            expect(source).not.toBeInTheDocument()
+          })
+        })
       })
     })
   })
