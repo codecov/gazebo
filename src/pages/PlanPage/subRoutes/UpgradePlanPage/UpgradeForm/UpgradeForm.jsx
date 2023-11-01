@@ -6,8 +6,8 @@ import { useHistory, useParams } from 'react-router-dom'
 import {
   accountDetailsPropType,
   planPropType,
+  useAvailablePlans,
   usePlanData,
-  usePlans,
   useUpgradePlan,
 } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
@@ -159,7 +159,7 @@ function UpgradeForm({
   accountDetails,
 }) {
   const { provider, owner } = useParams()
-  const { data: plans } = usePlans(provider)
+  const { data: plans } = useAvailablePlans({ provider, owner })
   const { data: planData } = usePlanData({ owner, provider })
 
   const nextBillingDate = getNextBillingDate(accountDetails)

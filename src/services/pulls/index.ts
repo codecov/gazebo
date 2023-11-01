@@ -1,2 +1,2 @@
 export * from './usePulls'
-export * from './usePullsTeam'
+export { usePullsTeam } from './usePullsTeam'

@@ -14,12 +14,13 @@ const mockResponse = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  planName: 'users-basic',
+  value: 'users-basic',
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
   trialTotalDays: 0,
   pretrialUsersCount: 0,
+  planUserCount: 1,
 }
 
 const server = setupServer()
@@ -67,7 +68,7 @@ describe('ProPlanSubheading', () => {
               plan: {
                 ...mockResponse,
                 trialStatus,
-                planName: planValue,
+                value: planValue,
               },
             },
           })

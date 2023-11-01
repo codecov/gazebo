@@ -50,7 +50,7 @@ const TrialReminder: React.FC = () => {
     },
   })
 
-  const planValue = planData?.plan?.planName
+  const planValue = planData?.plan?.value
 
   const { trialNotStarted, trialOngoing, trialExpired, cannotTrial } =
     determineTrialStates({

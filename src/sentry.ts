@@ -71,7 +71,7 @@ export const setupSentry = ({
 
   return Sentry.init({
     dsn: config.SENTRY_DSN,
-    debug: config.node_env !== 'production',
+    debug: config.NODE_ENV !== 'production',
     release: config.SENTRY_RELEASE,
     environment: config.SENTRY_ENVIRONMENT,
     integrations: [browserTracing, replay],

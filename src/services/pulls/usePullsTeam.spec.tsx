@@ -198,7 +198,15 @@ describe('GetPulls', () => {
           await waitFor(() => !result.current.isLoading)
 
           await waitFor(() =>
-            expect(result.current.data.pulls).toEqual([node1, node2])
+            expect(result.current.data?.pages).toEqual([
+              {
+                pageInfo: {
+                  endCursor: 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
+                  hasNextPage: true,
+                },
+                pulls: [node1, node2],
+              },
+            ])
           )
         })
       })
@@ -232,7 +240,22 @@ describe('GetPulls', () => {
           await waitFor(() => !result.current.isFetching)
 
           await waitFor(() =>
-            expect(result.current.data.pulls).toEqual([node1, node2, node3])
+            expect(result.current.data?.pages).toEqual([
+              {
+                pageInfo: {
+                  endCursor: 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
+                  hasNextPage: true,
+                },
+                pulls: [node1, node2],
+              },
+              {
+                pageInfo: {
+                  endCursor: 'aa',
+                  hasNextPage: false,
+                },
+                pulls: [node3],
+              },
+            ])
           )
         })
       })
@@ -261,7 +284,14 @@ describe('GetPulls', () => {
         await waitFor(() => result.current.isLoading)
         await waitFor(() => !result.current.isLoading)
 
-        await waitFor(() => expect(result.current.data.pulls).toEqual([]))
+        await waitFor(() =>
+          expect(result.current.data?.pages).toEqual([
+            {
+              pageInfo: null,
+              pulls: [],
+            },
+          ])
+        )
       })
     })
   })
