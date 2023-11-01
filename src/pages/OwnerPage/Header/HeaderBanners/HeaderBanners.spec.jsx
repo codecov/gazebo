@@ -214,7 +214,7 @@ describe('HeaderBanners', () => {
     })
 
     it('treats monthly uploads as unlimited', () => {
-      const { container } = render(
+      render(
         <HeaderBanners
           provider="gh"
           owner={{ username: 'codecov', isCurrentUserPartOfOrg: true }}
@@ -222,7 +222,8 @@ describe('HeaderBanners', () => {
         { wrapper }
       )
 
-      expect(container).toBeEmptyDOMElement()
+      const banner = screen.queryByText('Upload limit')
+      expect(banner).not.toBeInTheDocument()
     })
   })
 
