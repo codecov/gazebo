@@ -23,12 +23,13 @@ const mockTrialData = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  planName: 'users-basic',
+  value: 'users-basic',
   trialStatus: 'ONGOING',
   trialStartDate: '2023-01-01T08:55:25',
   trialEndDate: '2023-01-10T08:55:25',
   trialTotalDays: 0,
   pretrialUsersCount: 0,
+  planUserCount: 1,
 }
 
 let testLocation
@@ -73,7 +74,7 @@ describe('DefaultOrgSelector', () => {
     useUserData,
     isValidUser = true,
     trialStatus = 'NOT_STARTED',
-    planName = 'users-basic',
+    value = 'users-basic',
   } = {}) {
     const mockMutationVariables = jest.fn()
     const mockTrialMutationVariables = jest.fn()
@@ -103,7 +104,7 @@ describe('DefaultOrgSelector', () => {
               plan: {
                 ...mockTrialData,
                 trialStatus,
-                planName,
+                value,
               },
               pretrialPlan: {
                 baseUnitPrice: 10,
@@ -111,7 +112,7 @@ describe('DefaultOrgSelector', () => {
                 billingRate: 'monthly',
                 marketingName: 'Users Basic',
                 monthlyUploadLimit: 250,
-                planName: 'users-basic',
+                value: 'users-basic',
               },
             },
           })
@@ -677,7 +678,7 @@ describe('DefaultOrgSelector', () => {
             },
           },
         },
-        planName: 'users-free',
+        value: 'users-free',
         myOrganizationsData: {
           me: {
             myOrganizations: {
@@ -956,7 +957,7 @@ describe('DefaultOrgSelector', () => {
             },
           },
         },
-        planName: 'users-basic',
+        value: 'users-basic',
       })
 
       render(<DefaultOrgSelector />, { wrapper: wrapper() })

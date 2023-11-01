@@ -7,6 +7,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { CommitStateEnum } from 'shared/utils/commit'
 import { ComparisonReturnType } from 'shared/utils/comparison'
+import { ImpactedFilesReturnType } from 'shared/utils/impactedFiles'
 
 import FilesChanged from './FilesChanged'
 
@@ -67,7 +68,10 @@ const mockPull = {
             percentCovered: 27.35,
           },
           changeCoverage: 38.94,
-          impactedFiles: mockImpactedFiles,
+          impactedFiles: {
+            __typename: ImpactedFilesReturnType.IMPACTED_FILES,
+            results: mockImpactedFiles,
+          },
         },
       },
     },
@@ -145,7 +149,10 @@ describe('FilesChanged', () => {
                   percentCovered: 27.35,
                 },
                 changeCoverage: 38.94,
-                impactedFiles: [],
+                impactedFiles: {
+                  __typename: ImpactedFilesReturnType.IMPACTED_FILES,
+                  results: [],
+                },
               },
             },
           },
@@ -244,6 +251,49 @@ describe('FilesChanged', () => {
         /No comparison made since it's your first commit with Codecov/
       )
       expect(firstPullRequestCopy).toBeInTheDocument()
+    })
+  })
+
+  describe('unknown flag status', () => {
+    it('Displays server message + suggests carryforward flags', async () => {
+      const overrideData = {
+        owner: {
+          repository: {
+            pull: {
+              pullId: 14,
+              head: {
+                state: CommitStateEnum.COMPLETE,
+              },
+              compareWithBase: {
+                __typename: ComparisonReturnType.SUCCESSFUL_COMPARISON,
+                patchTotals: {
+                  percentCovered: 92.12,
+                },
+                headTotals: {
+                  percentCovered: 74.2,
+                },
+                baseTotals: {
+                  percentCovered: 27.35,
+                },
+                changeCoverage: 38.94,
+                impactedFiles: {
+                  __typename: 'UnknownFlags',
+                  message: 'Unkown flags detected',
+                },
+              },
+            },
+          },
+        },
+      }
+      setup({
+        overrideData,
+      })
+      render(<FilesChanged />, { wrapper })
+
+      const serverMessage = await screen.findByText(
+        /No coverage report uploaded for the selected flags in this pull request's head commit./
+      )
+      expect(serverMessage).toBeInTheDocument()
     })
   })
 })

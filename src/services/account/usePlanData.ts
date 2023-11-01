@@ -19,12 +19,13 @@ const PlanDataSchema = z
         billingRate: z.string().nullable(),
         marketingName: z.string(),
         monthlyUploadLimit: z.number().nullable(),
-        planName: z.string(),
+        value: z.string(),
         pretrialUsersCount: z.number().nullable(),
         trialEndDate: z.string().nullable(),
         trialStatus: z.nativeEnum(TrialStatuses),
         trialStartDate: z.string().nullable(),
         trialTotalDays: z.number().nullable(),
+        planUserCount: z.number(),
       })
       .nullish(),
     pretrialPlan: z
@@ -34,7 +35,7 @@ const PlanDataSchema = z
         billingRate: z.string().nullable(),
         marketingName: z.string(),
         monthlyUploadLimit: z.number().nullable(),
-        planName: z.string(),
+        value: z.string(),
       })
       .nullish(),
   })
@@ -51,12 +52,13 @@ export const query = `
         billingRate
         marketingName
         monthlyUploadLimit
-        planName
+        value
         pretrialUsersCount
         trialEndDate
         trialStatus
         trialStartDate
         trialTotalDays
+        planUserCount
       }
       pretrialPlan {
         baseUnitPrice
@@ -64,7 +66,7 @@ export const query = `
         billingRate
         marketingName
         monthlyUploadLimit
-        planName
+        value
       }
     }
   }
@@ -89,7 +91,6 @@ export const usePlanData = ({ provider, owner, opts }: UseTrialArgs) => {
         },
       }).then((res) => {
         const parsedRes = PlanDataSchema?.safeParse(res?.data?.owner)
-
         if (!parsedRes.success) {
           return {}
         }

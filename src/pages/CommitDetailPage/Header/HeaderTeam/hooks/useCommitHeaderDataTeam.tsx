@@ -17,7 +17,7 @@ import Api from 'shared/api'
 import A from 'ui/A'
 
 const CoverageObjSchema = z.object({
-  coverage: z.number().nullable(),
+  percentCovered: z.number().nullable(),
 })
 
 const ComparisonSchema = z.object({
@@ -95,7 +95,7 @@ const query = `
               __typename
               ... on Comparison {
                 patchTotals {
-                  coverage: percentCovered
+                  percentCovered
                 }
               }
               ... on FirstPullRequest {
@@ -144,7 +144,14 @@ export const useCommitHeaderDataTeam = ({
   commitId,
 }: UseCommitHeaderDataTeamArgs) =>
   useQuery({
-    queryKey: ['CommitPageHeaderData', provider, owner, repo, commitId, query],
+    queryKey: [
+      'CommitPageHeaderDataTeam',
+      provider,
+      owner,
+      repo,
+      commitId,
+      query,
+    ],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,

@@ -88,12 +88,13 @@ const mockPlanData = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  planName: 'users-basic',
+  value: 'users-basic',
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
   trialTotalDays: 0,
   pretrialUsersCount: 0,
+  planUserCount: 1,
 }
 
 const trialPlan = {
@@ -154,9 +155,7 @@ describe('UpgradeDetails', () => {
                 trialStatus: isOngoingTrial
                   ? TrialStatuses.ONGOING
                   : TrialStatuses.CANNOT_TRIAL,
-                planName: isOngoingTrial
-                  ? Plans.USERS_TRIAL
-                  : Plans.USERS_BASIC,
+                value: isOngoingTrial ? Plans.USERS_TRIAL : Plans.USERS_BASIC,
               },
             },
           })

@@ -12,12 +12,13 @@ const mockTrialData = {
     billingRate: 'monthly',
     marketingName: 'Users Basic',
     monthlyUploadLimit: 250,
-    planName: 'users-basic',
+    value: 'users-basic',
     trialStatus: 'ONGOING',
     trialStartDate: '2023-01-01T08:55:25',
     trialEndDate: '2023-01-10T08:55:25',
     trialTotalDays: 0,
     pretrialUsersCount: 0,
+    planUserCount: 1,
   },
   pretrialPlan: {
     baseUnitPrice: 10,
@@ -25,7 +26,7 @@ const mockTrialData = {
     billingRate: 'monthly',
     marketingName: 'Users Basic',
     monthlyUploadLimit: 250,
-    planName: 'users-basic',
+    value: 'users-basic',
   },
 }
 
@@ -82,12 +83,13 @@ describe('usePlanData', () => {
               billingRate: 'monthly',
               marketingName: 'Users Basic',
               monthlyUploadLimit: 250,
-              planName: 'users-basic',
+              value: 'users-basic',
               trialStatus: 'ONGOING',
               trialStartDate: '2023-01-01T08:55:25',
               trialEndDate: '2023-01-10T08:55:25',
               trialTotalDays: 0,
               pretrialUsersCount: 0,
+              planUserCount: 1,
             },
             pretrialPlan: {
               baseUnitPrice: 10,
@@ -95,7 +97,7 @@ describe('usePlanData', () => {
               billingRate: 'monthly',
               marketingName: 'Users Basic',
               monthlyUploadLimit: 250,
-              planName: 'users-basic',
+              value: 'users-basic',
             },
           })
         )

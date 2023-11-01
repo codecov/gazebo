@@ -2,8 +2,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TierNames } from 'services/tier'
 import { useTruncation } from 'ui/TruncatedMessage/hooks'
 
 import CommitPage from './CommitDetailPage'
@@ -11,6 +13,29 @@ import CommitPage from './CommitDetailPage'
 jest.mock('./CommitDetailPageContent', () => () => 'CommitDetailPageContent')
 jest.mock('./UploadsCard', () => () => 'UploadsCard')
 jest.mock('ui/TruncatedMessage/hooks')
+
+const mockProTier = {
+  owner: {
+    plan: {
+      tierName: TierNames.PRO,
+    },
+  },
+}
+
+const mockRepoSettings = (isPrivate) => ({
+  owner: {
+    repository: {
+      defaultBranch: 'master',
+      private: isPrivate,
+      uploadToken: 'token',
+      graphToken: 'token',
+      yaml: 'yaml',
+      bot: {
+        username: 'test',
+      },
+    },
+  },
+})
 
 const mockCommit = {
   owner: {
@@ -102,7 +127,7 @@ const wrapper =
               '/:provider/:owner/:repo/commit/:commit',
             ]}
           >
-            {children}
+            <Suspense fallback={null}>{children}</Suspense>
           </Route>
         </MemoryRouter>
       </QueryClientProvider>
@@ -122,12 +147,17 @@ afterAll(() => {
 
 describe('CommitPage', () => {
   function setup(
-    { hasYamlErrors, noCommit } = { hasYamlErrors: false, noCommit: false }
+    { hasYamlErrors, noCommit, suspense = false } = {
+      hasYamlErrors: false,
+      noCommit: false,
+      suspense: false,
+    }
   ) {
     const queryClient = new QueryClient({
       defaultOptions: {
         queries: {
           retry: false,
+          suspense,
         },
       },
     })
@@ -176,6 +206,12 @@ describe('CommitPage', () => {
       }),
       rest.get('/internal/gh/codecov/account-details/', (req, res, ctx) => {
         return res(ctx.status(200), ctx.json({}))
+      }),
+      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoSettings(false)))
+      }),
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockProTier))
       })
     )
 
@@ -185,7 +221,7 @@ describe('CommitPage', () => {
   describe('rendering component', () => {
     describe('testing not found', () => {
       it('renders not found page', async () => {
-        const { queryClient } = setup({ noCommit: true })
+        const { queryClient } = setup({ noCommit: true, suspense: true })
         render(<CommitPage />, {
           wrapper: wrapper(queryClient),
         })
