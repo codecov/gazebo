@@ -38,6 +38,7 @@ const mockResponse = {
   trialEndDate: '',
   trialTotalDays: 0,
   pretrialUsersCount: 0,
+  planUserCount: 1,
 }
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => {
