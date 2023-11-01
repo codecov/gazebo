@@ -1,6 +1,9 @@
 import { lazy, Suspense, useLayoutEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
+import { useRepoSettingsTeam } from 'services/repo'
+import { TierNames, useTier } from 'services/tier'
 import MultiSelect from 'ui/MultiSelect'
 import Select from 'ui/Select'
 import Spinner from 'ui/Spinner'
@@ -17,12 +20,17 @@ import {
 import { useSetCrumbs } from '../context'
 
 const PullsTable = lazy(() => import('./PullsTable'))
+const PullsTableTeam = lazy(() => import('./PullsTableTeam'))
 
-const Loader = (
+const Loader = () => (
   <div className="flex flex-1 justify-center">
-    <Spinner size={60} />
+    <Spinner />
   </div>
 )
+
+type Order = keyof typeof orderNames
+type SelectedStatesNames = Array<keyof typeof stateNames>
+type SelectedStatesEnum = Array<keyof typeof stateEnum>
 
 const defaultParams = {
   order: orderingEnum.Newest.order,
@@ -31,7 +39,10 @@ const defaultParams = {
 
 function useControlParams() {
   const { params, updateParams } = useLocationParams(defaultParams)
-  const { order, prStates } = params
+  const { order, prStates } = params as {
+    order: Order
+    prStates: SelectedStatesNames
+  }
   const paramOrderName = orderNames[order]
 
   const paramStatesNames = prStates.map((filter) => {
@@ -51,8 +62,17 @@ function useControlParams() {
   }
 }
 
+interface URLParams {
+  provider: string
+  owner: string
+}
+
 function PullsTab() {
+  const { provider, owner } = useParams<URLParams>()
   const setCrumbs = useSetCrumbs()
+
+  const { data: repoSettingsTeam } = useRepoSettingsTeam()
+  const { data: tierData } = useTier({ provider, owner })
 
   const {
     updateParams,
@@ -66,13 +86,13 @@ function PullsTab() {
     setCrumbs()
   }, [setCrumbs])
 
-  const handleOrderChange = (selectedOrder) => {
+  const handleOrderChange = (selectedOrder: keyof typeof orderingEnum) => {
     const { order } = orderingEnum[selectedOrder]
     setSelectedOrder(selectedOrder)
     updateParams({ order })
   }
 
-  const handleStatesChange = (selectedStates) => {
+  const handleStatesChange = (selectedStates: SelectedStatesEnum) => {
     const prStates = selectedStates.map((filter) => {
       const { state } = stateEnum[filter]
       return state
@@ -81,6 +101,9 @@ function PullsTab() {
     updateParams({ prStates })
   }
 
+  const showTeamTable =
+    repoSettingsTeam?.repository?.private && tierData === TierNames.TEAM
+
   return (
     <div className="flex flex-1 flex-col gap-4">
       <div className="flex flex-row gap-3">
@@ -88,6 +111,7 @@ function PullsTab() {
           <label className="text-sm font-semibold">View:</label>
           <div>
             <MultiSelect
+              // @ts-expect-error - need to play around with forward refs and types
               dataMarketing="pulls-filter-by-state"
               ariaName="Filter by state"
               value={selectedStates}
@@ -101,6 +125,7 @@ function PullsTab() {
           <label className="text-sm font-semibold ">Sort by:</label>
           <div>
             <Select
+              // @ts-expect-error - need to play around with forward refs and types
               dataMarketing="pulls-sort-by-selector"
               ariaName="Sort order"
               value={selectedOrder}
@@ -110,8 +135,8 @@ function PullsTab() {
           </div>
         </div>
       </div>
-      <Suspense fallback={Loader}>
-        <PullsTable />
+      <Suspense fallback={<Loader />}>
+        {showTeamTable ? <PullsTableTeam /> : <PullsTable />}
       </Suspense>
     </div>
   )

@@ -183,7 +183,19 @@ describe('GetCommits', () => {
           )
 
           await waitFor(() =>
-            expect(result.current.data.commits).toEqual([node1, node2])
+            expect(result.current.data).toEqual({
+              pageParams: [undefined],
+              pages: [
+                {
+                  commits: [node1, node2],
+                  commitsCount: null,
+                  pageInfo: {
+                    endCursor: 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
+                    hasNextPage: true,
+                  },
+                },
+              ],
+            })
           )
         })
       })
@@ -201,10 +213,34 @@ describe('GetCommits', () => {
 
           result.current.fetchNextPage()
 
-          await waitFor(() => expect(result.current.status).toBe('success'))
+          await waitFor(() => result.current.isFetching)
+          await waitFor(() => !result.current.isFetching)
 
           await waitFor(() =>
-            expect(result.current.data.commits).toEqual([node1, node2, node3])
+            expect(result.current.data).toEqual({
+              pageParams: [
+                undefined,
+                'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
+              ],
+              pages: [
+                {
+                  commits: [node1, node2],
+                  commitsCount: null,
+                  pageInfo: {
+                    endCursor: 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
+                    hasNextPage: true,
+                  },
+                },
+                {
+                  commits: [node3],
+                  commitsCount: null,
+                  pageInfo: {
+                    endCursor: 'aa',
+                    hasNextPage: false,
+                  },
+                },
+              ],
+            })
           )
         })
       })
@@ -222,7 +258,18 @@ describe('GetCommits', () => {
         await waitFor(() => result.current.isLoading)
         await waitFor(() => !result.current.isLoading)
 
-        await waitFor(() => expect(result.current.data.commits).toEqual([]))
+        await waitFor(() =>
+          expect(result.current.data).toEqual({
+            pageParams: [undefined],
+            pages: [
+              {
+                commits: [],
+                commitsCount: null,
+                pageInfo: null,
+              },
+            ],
+          })
+        )
       })
     })
   })
