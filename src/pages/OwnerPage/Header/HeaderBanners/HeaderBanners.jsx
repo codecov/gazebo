@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 import config from 'config'
 
 import { useOwnerPageData } from 'pages/OwnerPage/hooks'
-import { useAccountDetails , usePlanData } from 'services/account'
+import { useAccountDetails, usePlanData } from 'services/account'
 
 import ExceededUploadsAlert from './ExceededUploadsAlert'
 import GithubConfigBanner from './GithubConfigBanner'
@@ -19,6 +19,8 @@ const useUploadsInfo = () => {
     owner,
   })
 
+  // If monthlyUploadLimit is not defined, we consider the account can have an
+  // unlimited amount of uploads
   const monthlyUploadLimit = planData?.plan?.monthlyUploadLimit
   const isUploadsExceeded = monthlyUploadLimit
     ? numberOfUploads >= monthlyUploadLimit
