@@ -138,8 +138,7 @@ describe('CommitDetailPageTabs', () => {
   }
 
   describe('user is on a team plan', () => {
-    describe('repo is public', () => {})
-    describe('repo is private', () => {
+    describe('repo is public', () => {
       it('does not render the indirect changes tab', async () => {
         setup({ tierValue: TierNames.TEAM, isPrivate: false })
         render(<CommitDetailPageTabs commitSha="sha256" />, {
@@ -151,6 +150,23 @@ describe('CommitDetailPageTabs', () => {
 
         const indirectChanges = await screen.findByText('Indirect changes')
         expect(indirectChanges).toBeInTheDocument()
+
+        const filesExplorerTab = await screen.findByText('File explorer')
+        expect(filesExplorerTab).toBeInTheDocument()
+      })
+    })
+    describe('repo is private', () => {
+      it('does not render the indirect changes tab', async () => {
+        setup({ tierValue: TierNames.TEAM, isPrivate: true })
+        render(<CommitDetailPageTabs commitSha="sha256" />, {
+          wrapper: wrapper(),
+        })
+
+        const filesChanged = await screen.findByText('Files changed')
+        expect(filesChanged).toBeInTheDocument()
+
+        const indirectChanges = screen.queryByText('Indirect changes')
+        expect(indirectChanges).not.toBeInTheDocument()
 
         const filesExplorerTab = await screen.findByText('File explorer')
         expect(filesExplorerTab).toBeInTheDocument()

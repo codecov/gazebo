@@ -27,8 +27,9 @@ function CommitDetailPageTabs({
     commitTabFlagMultiSelect: false,
   })
 
-  const hideIndirectChanges =
+  const showIndirectChanges = !(
     repoData?.repository?.private && tierName === TierNames.TEAM
+  )
 
   const showFlagMultiSelect =
     commitTabFlagMultiSelect && tierName !== TierNames.TEAM
@@ -72,9 +73,8 @@ function CommitDetailPageTabs({
           options: { commit: commitSha, queryParams },
           exact: true,
         },
-        ...(hideIndirectChanges
-          ? []
-          : [
+        ...(showIndirectChanges
+          ? [
               {
                 pageName: 'commitIndirectChanges',
                 options: { commit: commitSha, queryParams },
@@ -85,7 +85,8 @@ function CommitDetailPageTabs({
                   </>
                 ),
               },
-            ]),
+            ]
+          : []),
         {
           pageName: 'commitTreeView',
           children: 'File explorer',
