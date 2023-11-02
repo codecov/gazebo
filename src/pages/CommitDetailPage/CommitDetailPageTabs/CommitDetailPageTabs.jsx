@@ -32,7 +32,8 @@ function CommitDetailPageTabs({
   )
 
   const showFlagMultiSelect =
-    commitTabFlagMultiSelect && tierName !== TierNames.TEAM
+    !(tierName === TierNames.TEAM && repoData?.repository?.private) &&
+    commitTabFlagMultiSelect
 
   const params = qs.parse(location.search, {
     ignoreQueryPrefix: true,
