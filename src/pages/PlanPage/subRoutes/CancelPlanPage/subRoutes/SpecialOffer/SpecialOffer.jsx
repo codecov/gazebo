@@ -8,7 +8,7 @@ import { useNavLinks } from 'services/navigation'
 import { useAddNotification } from 'services/toastNotification'
 import Api from 'shared/api'
 import { useFlags } from 'shared/featureFlags'
-import { useTeamPlans } from 'shared/utils/billing'
+import { shouldDisplayTeamCard } from 'shared/utils/billing'
 import A from 'ui/A'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
@@ -57,13 +57,11 @@ function SpecialOffer() {
     provider,
     owner,
   })
-  const { teamPlanMonth, teamPlanYear } = useTeamPlans({ plans })
-
   const { multipleTiers } = useFlags({
     multipleTiers: false,
   })
 
-  if (multipleTiers && teamPlanMonth && teamPlanYear) {
+  if (multipleTiers && shouldDisplayTeamCard({ plans })) {
     return (
       <div className="flex w-3/5 flex-col gap-4">
         <div>
@@ -75,10 +73,7 @@ function SpecialOffer() {
             offering.
           </p>
         </div>
-        <TeamPlanCard
-          teamPlanMonth={teamPlanMonth}
-          teamPlanYear={teamPlanYear}
-        />
+        <TeamPlanCard />
         <A
           variant="blueSeptenary"
           to={{ pageName: 'downgradePlanPage' }}

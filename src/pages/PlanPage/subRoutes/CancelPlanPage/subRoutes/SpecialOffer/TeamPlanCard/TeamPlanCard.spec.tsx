@@ -1,60 +1,150 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import TeamPlanCard from './TeamPlanCard'
 
 jest.mock('shared/plan/BenefitList', () => () => 'BenefitsList')
 
-const teamPlanMonth = {
-  baseUnitPrice: 6,
-  benefits: ['Up to 10 users'],
-  billingRate: 'monthly',
-  marketingName: 'Team',
-  monthlyUploadLimit: 2500,
-  value: 'users-teamm',
-}
+const mockAvailablePlans = [
+  {
+    marketingName: 'Basic',
+    value: 'users-basic',
+    billingRate: null,
+    baseUnitPrice: 0,
+    benefits: [
+      'Up to 5 users',
+      'Unlimited public repositories',
+      'Unlimited private repositories',
+    ],
+    monthlyUploadLimit: 250,
+  },
+  {
+    marketingName: 'Pro Team',
+    value: 'users-pr-inappm',
+    billingRate: 'monthly',
+    baseUnitPrice: 12,
+    benefits: [
+      'Configurable # of users',
+      'Unlimited public repositories',
+      'Unlimited private repositories',
+      'Priority Support',
+    ],
+    monthlyUploadLimit: null,
+  },
+  {
+    marketingName: 'Pro Team',
+    value: 'users-pr-inappy',
+    billingRate: 'annually',
+    baseUnitPrice: 10,
+    benefits: [
+      'Configurable # of users',
+      'Unlimited public repositories',
+      'Unlimited private repositories',
+      'Priority Support',
+    ],
+    monthlyUploadLimit: null,
+  },
+  {
+    marketingName: 'Pro Team',
+    value: 'users-enterprisem',
+    billingRate: 'monthly',
+    baseUnitPrice: 12,
+    benefits: [
+      'Configurable # of users',
+      'Unlimited public repositories',
+      'Unlimited private repositories',
+      'Priority Support',
+    ],
+    monthlyUploadLimit: null,
+  },
+  {
+    marketingName: 'Pro Team',
+    value: 'users-enterprisey',
+    billingRate: 'annually',
+    baseUnitPrice: 10,
+    benefits: [
+      'Configurable # of users',
+      'Unlimited public repositories',
+      'Unlimited private repositories',
+      'Priority Support',
+    ],
+    monthlyUploadLimit: null,
+  },
+  {
+    baseUnitPrice: 6,
+    benefits: ['Up to 10 users'],
+    billingRate: 'monthly',
+    marketingName: 'Users Team',
+    monthlyUploadLimit: 2500,
+    value: 'users-teamm',
+  },
+  {
+    baseUnitPrice: 5,
+    benefits: ['Up to 10 users'],
+    billingRate: 'yearly',
+    marketingName: 'Users Team',
+    monthlyUploadLimit: 2500,
+    value: 'users-teamy',
+  },
+]
 
-const teamPlanYear = {
-  baseUnitPrice: 5,
-  benefits: ['Up to 10 users'],
-  billingRate: 'yearly',
-  marketingName: 'Users Team',
-  monthlyUploadLimit: 2500,
-  value: 'users-teamy',
-}
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+
+const server = setupServer()
+
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: 'warn' })
+})
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => {
+  server.close()
+})
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <MemoryRouter initialEntries={['/plan/bb/critical-role']}>
-    <Route path="/plan/:provider/:owner">{children}</Route>
-  </MemoryRouter>
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/plan/bb/critical-role']}>
+      <Route path="/plan/:provider/:owner">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
 )
 
 describe('TeamPlanCard', () => {
-  it('shows the monthly marketing name', async () => {
-    render(
-      <TeamPlanCard
-        teamPlanMonth={teamPlanMonth}
-        teamPlanYear={teamPlanYear}
-      />,
-      {
-        wrapper,
-      }
+  function setup() {
+    server.use(
+      graphql.query('GetAvailablePlans', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({ owner: { availablePlans: mockAvailablePlans } })
+        )
+      )
     )
+  }
+
+  it('shows the monthly marketing name', async () => {
+    setup()
+
+    render(<TeamPlanCard />, {
+      wrapper,
+    })
 
     const marketingName = await screen.findByText(/Users Team/)
     expect(marketingName).toBeInTheDocument()
   })
 
   it('show the benefits list', async () => {
-    render(
-      <TeamPlanCard
-        teamPlanMonth={teamPlanMonth}
-        teamPlanYear={teamPlanYear}
-      />,
-      {
-        wrapper,
-      }
-    )
+    setup()
+
+    render(<TeamPlanCard />, {
+      wrapper,
+    })
 
     const benefitsIncludes = await screen.findByText(/Includes/)
     expect(benefitsIncludes).toBeInTheDocument()
@@ -64,15 +154,11 @@ describe('TeamPlanCard', () => {
   })
 
   it('shows pricing for monthly card', async () => {
-    render(
-      <TeamPlanCard
-        teamPlanMonth={teamPlanMonth}
-        teamPlanYear={teamPlanYear}
-      />,
-      {
-        wrapper,
-      }
-    )
+    setup()
+
+    render(<TeamPlanCard />, {
+      wrapper,
+    })
 
     const yearlyPrice = await screen.findByText(/5/)
     expect(yearlyPrice).toBeInTheDocument()
@@ -85,15 +171,11 @@ describe('TeamPlanCard', () => {
   })
 
   it('shows action button', async () => {
-    render(
-      <TeamPlanCard
-        teamPlanMonth={teamPlanMonth}
-        teamPlanYear={teamPlanYear}
-      />,
-      {
-        wrapper,
-      }
-    )
+    setup()
+
+    render(<TeamPlanCard />, {
+      wrapper,
+    })
 
     const buttonText = await screen.findByText(/Change to Team plan/)
     expect(buttonText).toBeInTheDocument()

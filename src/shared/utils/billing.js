@@ -19,8 +19,6 @@ export const Plans = Object.freeze({
   USERS_TEAMY: 'users-teamy',
   USERS_ENTERPRISEM: 'users-enterprisem',
   USERS_ENTERPRISEY: 'users-enterprisey',
-  USERS_TEAMM: 'users-teamm',
-  USERS_TEAMY: 'users-teamy',
 })
 
 export const EnterprisePlans = Object.freeze({
@@ -131,16 +129,6 @@ export function useProPlans({ plans }) {
   return {
     proPlanMonth,
     proPlanYear,
-  }
-}
-
-export function useTeamPlans({ plans }) {
-  const teamPlanMonth = plans?.find((plan) => plan.value === Plans.USERS_TEAMM)
-  const teamPlanYear = plans?.find((plan) => plan.value === Plans.USERS_TEAMY)
-
-  return {
-    teamPlanMonth,
-    teamPlanYear,
   }
 }
 
