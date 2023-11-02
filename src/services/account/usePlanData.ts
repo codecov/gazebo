@@ -94,6 +94,7 @@ export const usePlanData = ({ provider, owner, opts }: UseTrialArgs) => {
         if (!parsedRes.success) {
           return {}
         }
+
         return parsedRes.data
       }),
     ...(!!opts && opts),
