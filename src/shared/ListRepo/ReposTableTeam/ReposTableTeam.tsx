@@ -166,17 +166,17 @@ const ReposTableTeam = ({ searchValue }: ReposTableTeamProps) => {
 
   const isCurrentUserPartOfOrg = !!reposData?.pages?.[0]?.isCurrentUserPartOfOrg
 
-  const tableData = useMemo(
-    () => reposData?.pages?.map((page) => page?.repos).flat(),
-    [reposData?.pages]
-  )
+  const tableData = useMemo(() => {
+    const data = reposData?.pages?.map((page) => page?.repos).flat()
+    return data ?? []
+  }, [reposData?.pages])
   const table = useReactTable({
     columns: getColumns({
       inactive: repoDisplay === repoDisplayOptions.INACTIVE.text,
       isCurrentUserPartOfOrg: isCurrentUserPartOfOrg,
     }),
     getCoreRowModel: getCoreRowModel(),
-    data: tableData ?? [],
+    data: tableData,
     state: {
       sorting,
     },
