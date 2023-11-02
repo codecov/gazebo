@@ -188,6 +188,36 @@ const mockPullCriticalFileData = {
   },
 }
 
+const mockNoChangeFileData = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      pull: {
+        pullId: 10,
+        state: 'completed',
+        compareWithBase: {
+          __typename: 'Comparison',
+          state: 'processed',
+          patchTotals: {
+            coverage: 100,
+          },
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [
+              {
+                headName: 'src/App.tsx',
+                missesCount: 0,
+                isCriticalFile: false,
+                patchCoverage: { coverage: null },
+              },
+            ],
+          },
+        },
+      },
+    },
+  },
+}
+
 const server = setupServer()
 
 const wrapper =
@@ -221,6 +251,7 @@ interface SetupArgs {
   pendingPull?: boolean
   noCoveredFiles?: boolean
   criticalFile?: boolean
+  noChange?: boolean
 }
 
 describe('TableTeam', () => {
@@ -229,10 +260,12 @@ describe('TableTeam', () => {
       pendingPull = false,
       noCoveredFiles = false,
       criticalFile = false,
+      noChange = false,
     }: SetupArgs = {
       pendingPull: false,
       noCoveredFiles: false,
       criticalFile: false,
+      noChange: false,
     }
   ) {
     const user = userEvent.setup()
@@ -262,6 +295,10 @@ describe('TableTeam', () => {
           return res(ctx.status(200), ctx.data(mockPullCriticalFileData))
         }
 
+        if (noChange) {
+          return res(ctx.status(200), ctx.data(mockNoChangeFileData))
+        }
+
         return res(ctx.status(200), ctx.data(mockPullLiteData))
       }),
       graphql.query('GetPullCompareTotalsTeam', (req, res, ctx) => {
@@ -277,6 +314,10 @@ describe('TableTeam', () => {
 
         if (criticalFile) {
           return res(ctx.status(200), ctx.data(mockPullCriticalFileData))
+        }
+
+        if (noChange) {
+          return res(ctx.status(200), ctx.data(mockNoChangeFileData))
         }
 
         return res(ctx.status(200), ctx.data(mockComparisonLiteData))
@@ -404,6 +445,16 @@ describe('TableTeam', () => {
 
       const nonCriticalFile = screen.queryByText('Critical File')
       expect(nonCriticalFile).not.toBeInTheDocument()
+    })
+  })
+
+  describe('patch coverage renderer', () => {
+    it('renders critical file', async () => {
+      const { queryClient } = setup({ noChange: true })
+      render(<TableTeam />, { wrapper: wrapper(queryClient) })
+
+      const noChange = await screen.findByText('-')
+      expect(noChange).toBeInTheDocument()
     })
   })
 
