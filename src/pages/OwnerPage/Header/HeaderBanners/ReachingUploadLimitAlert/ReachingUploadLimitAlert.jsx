@@ -7,25 +7,25 @@ import BannerContent from 'ui/Banner/BannerContent'
 import BannerHeading from 'ui/Banner/BannerHeading'
 import Button from 'ui/Button'
 
-const ExceededUploadsAlert = () => {
+const ReachingUploadLimitAlert = () => {
   const { owner, provider } = useParams()
   const { data: planData } = usePlanData({
     provider,
     owner,
   })
 
-  const planName = planData?.plan.marketingName
-  const monthlyUploadLimit = planData?.plan.monthlyUploadLimit
+  const planName = planData?.plan?.marketingName
+  const monthlyUploadLimit = planData?.plan?.monthlyUploadLimit
   return (
     <Banner>
       <BannerHeading>
-        <h2 className="font-semibold">Upload limit has been reached</h2>
+        <h2 className="font-semibold">Upload limit almost reached</h2>
       </BannerHeading>
       <BannerContent>
         <p>
           This org is currently on the {planName} plan; which includes{' '}
-          {monthlyUploadLimit} free uploads monthly. This month&apos;s limit has
-          been reached and the reports will not generate. To resolve this,{' '}
+          {monthlyUploadLimit} free uploads monthly. This month&apos;s limit is
+          nearly reached and the reports will not generate. To resolve this,{' '}
           <A to={{ pageName: 'upgradeOrgPlan' }}>upgrade plan</A> and
           you&apos;ll have unlimited uploads.
         </p>
@@ -43,4 +43,4 @@ const ExceededUploadsAlert = () => {
   )
 }
 
-export default ExceededUploadsAlert
+export default ReachingUploadLimitAlert

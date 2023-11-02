@@ -8,54 +8,50 @@ import { useAccountDetails, usePlanData } from 'services/account'
 
 import ExceededUploadsAlert from './ExceededUploadsAlert'
 import GithubConfigBanner from './GithubConfigBanner'
-import ReachingUploadLimit from './ReachingUploadLimit'
+import ReachingUploadLimitAlert from './ReachingUploadLimitAlert'
 
-const useUploadsInfo = (planData) => {
-  const { owner } = useParams()
+const useUploadsInfo = () => {
+  const { owner, provider } = useParams()
   const { data: ownerData } = useOwnerPageData({ username: owner })
   const numberOfUploads = ownerData?.numberOfUploads
+  const { data: planData } = usePlanData({
+    provider,
+    owner,
+  })
 
   // If monthlyUploadLimit is not defined, we consider the account can have an
   // unlimited amount of uploads
   const monthlyUploadLimit = planData?.plan?.monthlyUploadLimit
-  const isUploadsExceeded = monthlyUploadLimit
+  const isUploadLimitExceeded = monthlyUploadLimit
     ? numberOfUploads >= monthlyUploadLimit
     : false
-  const isUploadsReachingLimit = monthlyUploadLimit
-    ? !isUploadsExceeded && numberOfUploads >= 0.9 * monthlyUploadLimit
+  const isApproachingUploadLimit = monthlyUploadLimit
+    ? !isUploadLimitExceeded && numberOfUploads >= 0.9 * monthlyUploadLimit
     : false
-  return { isUploadsExceeded, isUploadsReachingLimit }
+  return { isUploadLimitExceeded, isApproachingUploadLimit }
 }
 
 const AlertBanners = ({
-  isUploadsExceeded,
-  isUploadsReachingLimit,
+  isUploadLimitExceeded,
+  isApproachingUploadLimit,
   hasGhApp,
-  plan,
 }) => {
   return (
     <>
       {!hasGhApp && <GithubConfigBanner />}
-      {isUploadsExceeded ? (
-        <ExceededUploadsAlert
-          planName={plan.marketingName}
-          monthlyUploadLimit={plan.monthlyUploadLimit}
-        />
-      ) : isUploadsReachingLimit ? (
-        <ReachingUploadLimit
-          planName={plan.marketingName}
-          monthlyUploadLimit={plan.monthlyUploadLimit}
-        />
+      {isUploadLimitExceeded ? (
+        <ExceededUploadsAlert />
+      ) : isApproachingUploadLimit ? (
+        <ReachingUploadLimitAlert />
       ) : null}
     </>
   )
 }
 
 AlertBanners.propTypes = {
-  isUploadsExceeded: PropTypes.bool.isRequired,
-  isUploadsReachingLimit: PropTypes.bool.isRequired,
+  isUploadLimitExceeded: PropTypes.bool.isRequired,
+  isApproachingUploadLimit: PropTypes.bool.isRequired,
   hasGhApp: PropTypes.bool.isRequired,
-  plan: PropTypes.object,
 }
 
 export default function HeaderBanners() {
@@ -66,11 +62,7 @@ export default function HeaderBanners() {
     owner,
   })
 
-  const { data: planData } = usePlanData({
-    provider,
-    owner,
-  })
-  const { isUploadsExceeded, isUploadsReachingLimit } = useUploadsInfo(planData)
+  const { isUploadLimitExceeded, isApproachingUploadLimit } = useUploadsInfo()
 
   const hasGhApp = !!accountDetails?.integrationId
 
@@ -81,10 +73,9 @@ export default function HeaderBanners() {
   return (
     <>
       <AlertBanners
-        isUploadsExceeded={isUploadsExceeded}
-        isUploadsReachingLimit={isUploadsReachingLimit}
+        isUploadLimitExceeded={isUploadLimitExceeded}
+        isApproachingUploadLimit={isApproachingUploadLimit}
         hasGhApp={hasGhApp}
-        plan={planData?.plan}
       />
     </>
   )
