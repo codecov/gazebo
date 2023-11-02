@@ -13,6 +13,21 @@ import FileView from './Fileviewer'
 jest.mock('shared/featureFlags')
 jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
 
+const mockRepoSettings = (isPrivate) => ({
+  owner: {
+    repository: {
+      defaultBranch: 'main',
+      private: isPrivate,
+      uploadToken: 'token',
+      graphToken: 'token',
+      yaml: 'yaml',
+      bot: {
+        username: 'test',
+      },
+    },
+  },
+})
+
 const mockOwner = {
   username: 'cool-user',
 }
@@ -130,7 +145,12 @@ afterAll(() => {
 })
 
 describe('FileView', () => {
-  function setup({ tierName = TierNames.PRO } = { tierName: TierNames.PRO }) {
+  function setup(
+    { tierName = TierNames.PRO, isPrivate = false } = {
+      tierName: TierNames.PRO,
+      isPrivate: false,
+    }
+  ) {
     useScrollToLine.mockImplementation(() => ({
       lineRef: () => {},
       handleClick: jest.fn(),
@@ -158,16 +178,13 @@ describe('FileView', () => {
         return res(ctx.status(200), ctx.data(mockFlagResponse))
       }),
       graphql.query('OwnerTier', (req, res, ctx) => {
-        if (tierName === TierNames.TEAM) {
-          return res(
-            ctx.status(200),
-            ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
-          )
-        }
         return res(
           ctx.status(200),
-          ctx.data({ owner: { plan: { tierName: TierNames.PRO } } })
+          ctx.data({ owner: { plan: { tierName: tierName } } })
         )
+      }),
+      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
       })
     )
   }
@@ -221,25 +238,40 @@ describe('FileView', () => {
     })
 
     describe('displaying the flag selector', () => {
-      it('renders the flag multi select', async () => {
-        setup()
-        render(<FileView />, { wrapper: wrapper() })
+      describe('user is not on a team plan', () => {
+        it('renders the flag multi select', async () => {
+          setup()
+          render(<FileView />, { wrapper: wrapper() })
 
-        const select = await screen.findByText('All flags')
-        expect(select).toBeInTheDocument()
+          const select = await screen.findByText('All flags')
+          expect(select).toBeInTheDocument()
+        })
       })
 
       describe('on a team plan', () => {
-        it('does not render the flag multi select', async () => {
-          setup({ tierName: TierNames.TEAM })
-          render(<FileView />, { wrapper: wrapper() })
+        describe('repo is public', () => {
+          it('renders the flag multi select', async () => {
+            setup({ tierName: TierNames.TEAM, isPrivate: false })
 
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
+            render(<FileView />, { wrapper: wrapper() })
 
-          await waitFor(() =>
-            expect(screen.queryByText('All flags')).not.toBeInTheDocument()
-          )
+            const select = await screen.findByText('All flags')
+            expect(select).toBeInTheDocument()
+          })
+        })
+
+        describe('repo is private', () => {
+          it('does not render the flag multi select', async () => {
+            setup({ tierName: TierNames.TEAM, isPrivate: true })
+            render(<FileView />, { wrapper: wrapper() })
+
+            await waitFor(() => queryClient.isFetching)
+            await waitFor(() => !queryClient.isFetching)
+
+            await waitFor(() =>
+              expect(screen.queryByText('All flags')).not.toBeInTheDocument()
+            )
+          })
         })
       })
     })

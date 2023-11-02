@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom'
 
+import { useRepoSettingsTeam } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 import RawFileviewer from 'shared/RawFileviewer'
@@ -9,6 +10,7 @@ import Breadcrumb from 'ui/Breadcrumb'
 function FileView() {
   const { treePaths } = useTreePaths()
   const { provider, owner, ref: commit } = useParams()
+  const { data: repoData } = useRepoSettingsTeam()
 
   const { coverageTabFlagMutliSelect } = useFlags({
     coverageTabFlagMutliSelect: false,
@@ -17,7 +19,8 @@ function FileView() {
   const { data: tierName } = useTier({ provider, owner })
 
   const showFlagSelector =
-    coverageTabFlagMutliSelect && tierName !== TierNames.TEAM
+    !(tierName === TierNames.TEAM && repoData?.repository?.private) &&
+    coverageTabFlagMutliSelect
 
   return (
     <RawFileviewer
