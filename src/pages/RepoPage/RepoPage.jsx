@@ -103,8 +103,6 @@ function RepoPage() {
       ),
     })
 
-  console.log(isRepoActive)
-
   return (
     <RepoBreadcrumbProvider>
       <div>

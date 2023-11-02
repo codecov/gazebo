@@ -20,12 +20,11 @@ function Header() {
   })
   const { data: repoSettingsTeam } = useRepoSettingsTeam()
 
-  const showHeaderTeam =
+  if (
     repoSettingsTeam?.repository?.private &&
     multipleTiers &&
     tierData === TierNames.TEAM
-
-  if (showHeaderTeam) {
+  ) {
     return <HeaderTeam />
   }
 
