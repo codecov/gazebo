@@ -6,6 +6,7 @@ import { useFlags } from 'shared/featureFlags'
 import Spinner from 'ui/Spinner'
 
 const FilesChangedTable = lazy(() => import('./FilesChanged'))
+const TeamFilesChangedTable = lazy(() => import('./FilesChanged/TableTeam'))
 
 const Loader = () => (
   <div className="flex items-center justify-center py-16">
@@ -32,7 +33,11 @@ function FilesChangedTab() {
   }
 
   if (tierData === 'team' && multipleTiers) {
-    return <Suspense fallback={<Loader />}>Hi</Suspense>
+    return (
+      <Suspense fallback={<Loader />}>
+        <TeamFilesChangedTable />
+      </Suspense>
+    )
   }
 
   return (

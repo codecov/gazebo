@@ -30,6 +30,35 @@ const mockProTier = {
   },
 }
 
+const mockCompareData = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      pull: {
+        pullId: 10,
+        compareWithBase: {
+          __typename: 'Comparison',
+          state: 'processed',
+          patchTotals: {
+            coverage: 100,
+          },
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [
+              {
+                headName: 'src/App.tsx',
+                missesCount: 0,
+                isCriticalFile: false,
+                patchCoverage: { coverage: 100 },
+              },
+            ],
+          },
+        },
+      },
+    },
+  },
+}
+
 const server = setupServer()
 const queryClient = new QueryClient()
 
@@ -72,6 +101,9 @@ describe('FilesChangedTab', () => {
         }
 
         return res(ctx.status(200), ctx.data(mockProTier))
+      }),
+      graphql.query('GetPullTeam', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockCompareData))
       })
     )
   }
@@ -92,7 +124,7 @@ describe('FilesChangedTab', () => {
 
       render(<FilesChangedTab />, { wrapper })
 
-      const table = await screen.findByText('Hi')
+      const table = await screen.findByText('100.00%')
       expect(table).toBeInTheDocument()
     })
   })
