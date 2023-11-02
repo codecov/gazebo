@@ -61,21 +61,6 @@ const mockBackfillResponse = {
   },
 }
 
-const mockRepoSettings = (isPrivate = false) => ({
-  owner: {
-    repository: {
-      defaultBranch: 'master',
-      private: isPrivate,
-      uploadToken: 'token',
-      graphToken: 'token',
-      yaml: 'yaml',
-      bot: {
-        username: 'test',
-      },
-    },
-  },
-})
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
