@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom'
 
+import { useRepoSettingsTeam } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 
@@ -17,8 +18,14 @@ function Header() {
   const { multipleTiers } = useFlags({
     multipleTiers: false,
   })
+  const { data: repoSettingsTeam } = useRepoSettingsTeam()
 
-  if (multipleTiers && tierData === TierNames.TEAM) {
+  const showHeaderTeam =
+    repoSettingsTeam?.repository?.private &&
+    multipleTiers &&
+    tierData === TierNames.TEAM
+
+  if (showHeaderTeam) {
     return <HeaderTeam />
   }
 

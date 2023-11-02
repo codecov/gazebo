@@ -3,13 +3,14 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { useRepoDefaultBranch } from './useRepoDefaultBranch'
+import { useRepoForTokensTeam } from './useRepoForTokensTeam'
 
 const mockRepoData = {
   owner: {
     repository: {
       __typename: 'Repository',
       defaultBranch: 'main',
+      private: false,
     },
   },
 }
@@ -67,7 +68,7 @@ interface SetupArgs {
   isNullOwner?: boolean
 }
 
-describe('useRepoDefaultBranch', () => {
+describe('useRepoForTokensTeam', () => {
   function setup({
     isNotFoundError = false,
     isOwnerNotActivatedError = false,
@@ -75,7 +76,7 @@ describe('useRepoDefaultBranch', () => {
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('RepoDefaultBranch', (req, res, ctx) => {
+      graphql.query('RepoDataTokensTeam', (req, res, ctx) => {
         if (isNotFoundError) {
           return res(ctx.status(200), ctx.data(mockNotFoundError))
         } else if (isOwnerNotActivatedError) {
@@ -99,7 +100,7 @@ describe('useRepoDefaultBranch', () => {
 
           const { result } = renderHook(
             () =>
-              useRepoDefaultBranch({
+              useRepoForTokensTeam({
                 provider: 'gh',
                 owner: 'codecov',
                 repo: 'cool-repo',
@@ -110,7 +111,11 @@ describe('useRepoDefaultBranch', () => {
           await waitFor(() => result.current.isLoading)
           await waitFor(() => !result.current.isLoading)
 
-          const expectedResult = 'main'
+          const expectedResult = {
+            __typename: 'Repository',
+            defaultBranch: 'main',
+            private: false,
+          }
 
           await waitFor(() =>
             expect(result.current.data).toStrictEqual(expectedResult)
@@ -123,7 +128,7 @@ describe('useRepoDefaultBranch', () => {
 
           const { result } = renderHook(
             () =>
-              useRepoDefaultBranch({
+              useRepoForTokensTeam({
                 provider: 'gh',
                 owner: 'codecov',
                 repo: 'cool-repo',
@@ -155,7 +160,7 @@ describe('useRepoDefaultBranch', () => {
 
         const { result } = renderHook(
           () =>
-            useRepoDefaultBranch({
+            useRepoForTokensTeam({
               provider: 'gh',
               owner: 'codecov',
               repo: 'cool-repo',
@@ -190,7 +195,7 @@ describe('useRepoDefaultBranch', () => {
 
         const { result } = renderHook(
           () =>
-            useRepoDefaultBranch({
+            useRepoForTokensTeam({
               provider: 'gh',
               owner: 'codecov',
               repo: 'cool-repo',
@@ -225,7 +230,7 @@ describe('useRepoDefaultBranch', () => {
 
         const { result } = renderHook(
           () =>
-            useRepoDefaultBranch({
+            useRepoForTokensTeam({
               provider: 'gh',
               owner: 'codecov',
               repo: 'cool-repo',
