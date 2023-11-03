@@ -19,7 +19,6 @@ const mockPullHeadData = {
   owner: {
     repository: {
       __typename: 'Repository',
-      private: false,
       pull: {
         pullId: 12,
         title: 'Cool New Pull Request',
@@ -92,7 +91,6 @@ describe('PullRequestPage', () => {
             owner: {
               repository: {
                 __typename: 'Repository',
-                private: false,
                 pull: pullData,
               },
             },
