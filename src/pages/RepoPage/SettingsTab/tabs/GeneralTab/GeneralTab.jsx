@@ -4,22 +4,25 @@ import { TierNames, useTier } from 'services/tier'
 
 import DangerZone from './DangerZone'
 import DefaultBranch from './DefaultBranch'
-import { useRepoDefaultBranch } from './hooks'
+import { useRepoForTokensTeam } from './hooks'
 import { Tokens, TokensTeam } from './Tokens'
 
 function GeneralTab() {
   const { provider, owner, repo } = useParams()
-  const { data: defaultBranch } = useRepoDefaultBranch({
+  const { data: repoData } = useRepoForTokensTeam({
     provider,
     owner,
     repo,
   })
   const { data: tierData } = useTier({ provider, owner })
+  const defaultBranch = repoData?.defaultBranch
+  const isPrivate = repoData?.private
+  const showTokensTeam = isPrivate && tierData === TierNames.TEAM
 
   return (
     <div className="flex flex-col gap-6">
       {defaultBranch && <DefaultBranch defaultBranch={defaultBranch} />}
-      {tierData === TierNames.TEAM ? <TokensTeam /> : <Tokens />}
+      {showTokensTeam ? <TokensTeam /> : <Tokens />}
       <DangerZone />
     </div>
   )
