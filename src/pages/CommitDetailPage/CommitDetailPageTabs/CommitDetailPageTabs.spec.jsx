@@ -46,7 +46,21 @@ const mockBackfillResponse = {
   },
 }
 
-const server = setupServer()
+const mockRepoSettings = (isPrivate = false) => ({
+  owner: {
+    repository: {
+      defaultBranch: 'master',
+      private: isPrivate,
+      uploadToken: 'token',
+      graphToken: 'token',
+      yaml: 'yaml',
+      bot: {
+        username: 'test',
+      },
+    },
+  },
+})
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -55,6 +69,8 @@ const queryClient = new QueryClient({
     },
   },
 })
+const server = setupServer()
+
 const wrapper =
   (initialEntries = ['/gh/codecov/cool-repo/commit/sha256']) =>
   ({ children }) =>
@@ -91,9 +107,10 @@ afterAll(() => {
 
 describe('CommitDetailPageTabs', () => {
   function setup(
-    { flagValue = false, tierValue = TierNames.PRO } = {
+    { flagValue = false, tierValue = TierNames.PRO, isPrivate = false } = {
       flagValue: false,
       tierValue: TierNames.PRO,
+      isPrivate: false,
     }
   ) {
     useFlags.mockReturnValue({
@@ -109,19 +126,53 @@ describe('CommitDetailPageTabs', () => {
         return res(ctx.status(200), ctx.data(mockBackfillResponse))
       }),
       graphql.query('OwnerTier', (req, res, ctx) => {
-        if (tierValue === TierNames.Team) {
-          return res(
-            ctx.status(200),
-            ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
-          )
-        }
         return res(
           ctx.status(200),
-          ctx.data({ owner: { plan: { tierName: TierNames.PRO } } })
+          ctx.data({ owner: { plan: { tierName: tierValue } } })
         )
+      }),
+      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
       })
     )
   }
+
+  describe('user is on a team plan', () => {
+    describe('repo is public', () => {
+      it('does not render the indirect changes tab', async () => {
+        setup({ tierValue: TierNames.TEAM, isPrivate: false })
+        render(<CommitDetailPageTabs commitSha="sha256" />, {
+          wrapper: wrapper(),
+        })
+
+        const filesChanged = await screen.findByText('Files changed')
+        expect(filesChanged).toBeInTheDocument()
+
+        const indirectChanges = await screen.findByText('Indirect changes')
+        expect(indirectChanges).toBeInTheDocument()
+
+        const filesExplorerTab = await screen.findByText('File explorer')
+        expect(filesExplorerTab).toBeInTheDocument()
+      })
+    })
+    describe('repo is private', () => {
+      it('does not render the indirect changes tab', async () => {
+        setup({ tierValue: TierNames.TEAM, isPrivate: true })
+        render(<CommitDetailPageTabs commitSha="sha256" />, {
+          wrapper: wrapper(),
+        })
+
+        const filesChanged = await screen.findByText('Files changed')
+        expect(filesChanged).toBeInTheDocument()
+
+        const indirectChanges = screen.queryByText('Indirect changes')
+        expect(indirectChanges).not.toBeInTheDocument()
+
+        const filesExplorerTab = await screen.findByText('File explorer')
+        expect(filesExplorerTab).toBeInTheDocument()
+      })
+    })
+  })
 
   describe('on base route', () => {
     it('highlights files changed tab', async () => {
