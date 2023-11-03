@@ -6,7 +6,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
 
-import ExceededUploadsAlert from './ExceededUploadsAlert'
+import ReachingUploadLimitAlert from './ReachingUploadLimitAlert'
 
 const server = setupServer()
 
@@ -26,8 +26,8 @@ const mockPlanDataResponse = {
   baseUnitPrice: 10,
   benefits: [],
   billingRate: 'monthly',
-  marketingName: 'some-name',
-  monthlyUploadLimit: 123,
+  marketingName: 'Pro Team',
+  monthlyUploadLimit: 341,
   value: 'test-plan',
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
@@ -50,7 +50,7 @@ afterAll(() => {
   server.close()
 })
 
-describe('ExceededUploadsAlert', () => {
+describe('ReachingUploadLimitAlert', () => {
   function setup() {
     server.use(
       graphql.query('GetPlanData', (req, res, ctx) => {
@@ -67,45 +67,50 @@ describe('ExceededUploadsAlert', () => {
       })
     )
   }
+
   describe('rendering banner', () => {
     beforeEach(() => {
       setup()
     })
 
     it('has header content', () => {
-      render(<ExceededUploadsAlert />, { wrapper })
-      const heading = screen.getByText('Upload limit has been reached')
+      render(<ReachingUploadLimitAlert />, { wrapper })
+
+      const heading = screen.getByText('Upload limit almost reached')
       expect(heading).toBeInTheDocument()
     })
 
     it('has body content', () => {
-      render(<ExceededUploadsAlert />, { wrapper })
+      render(<ReachingUploadLimitAlert />, { wrapper })
+
       const body = screen.getByText(/This org is currently/)
       expect(body).toBeInTheDocument()
     })
 
     it('has the correct plan name', async () => {
-      render(<ExceededUploadsAlert />, { wrapper })
-      const body = await screen.findByText(/some-name/)
+      render(<ReachingUploadLimitAlert />, { wrapper })
+
+      const body = await screen.findByText(/Pro Team/)
       expect(body).toBeInTheDocument()
     })
 
     it('has the correct upload limit', async () => {
-      render(<ExceededUploadsAlert />, { wrapper })
-
-      const body = await screen.findByText(/includes 123 free uploads/)
+      render(<ReachingUploadLimitAlert />, { wrapper })
+      const body = await screen.findByText(/includes 341 free uploads/)
       expect(body).toBeInTheDocument()
     })
 
     it('has links to upgrade org plan', () => {
-      render(<ExceededUploadsAlert />, { wrapper })
+      render(<ReachingUploadLimitAlert />, { wrapper })
+
       const links = screen.getAllByRole('link', { name: /upgrade plan/i })
       expect(links.length).toBe(2)
       expect(links[0]).toHaveAttribute('href', '/plan/gh/codecov/upgrade')
     })
 
     it('has link to email sales team', () => {
-      render(<ExceededUploadsAlert />, { wrapper })
+      render(<ReachingUploadLimitAlert />, { wrapper })
+
       const link = screen.getByRole('link', { name: /sales@codecov.io/ })
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute('href', 'https://about.codecov.io/sales')
