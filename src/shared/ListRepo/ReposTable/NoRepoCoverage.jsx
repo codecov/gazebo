@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-import InactiveRepo from './InactiveRepo'
+import InactiveRepo from '../InactiveRepo'
 
 function NoRepoCoverage({
   activated,
