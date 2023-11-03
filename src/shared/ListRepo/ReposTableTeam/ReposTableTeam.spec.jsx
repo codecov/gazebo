@@ -764,64 +764,64 @@ describe('ReposTableTeam', () => {
       })
     })
   })
+})
 
-  describe('getSortingOption', () => {
-    it('returns the correct sorting options for name column', () => {
-      const nameAsc = getSortingOption([
-        {
-          id: 'name',
-          desc: false,
-        },
-      ])
+describe('getSortingOption', () => {
+  it('returns the correct sorting options for name column', () => {
+    const nameAsc = getSortingOption([
+      {
+        id: 'name',
+        desc: false,
+      },
+    ])
 
-      expect(nameAsc).toEqual({
-        ordering: TeamOrdering.NAME,
-        direction: OrderingDirection.ASC,
-      })
-
-      const nameDesc = getSortingOption([
-        {
-          id: 'name',
-          desc: true,
-        },
-      ])
-
-      expect(nameDesc).toEqual({
-        ordering: TeamOrdering.NAME,
-        direction: OrderingDirection.DESC,
-      })
+    expect(nameAsc).toEqual({
+      ordering: TeamOrdering.NAME,
+      direction: OrderingDirection.ASC,
     })
 
-    it('returns the correct sorting options for last updated column', () => {
-      const lastUpdatedAsc = getSortingOption([
-        {
-          id: 'latestCommitAt',
-          desc: false,
-        },
-      ])
+    const nameDesc = getSortingOption([
+      {
+        id: 'name',
+        desc: true,
+      },
+    ])
 
-      expect(lastUpdatedAsc).toEqual({
-        ordering: TeamOrdering.COMMIT_DATE,
-        direction: OrderingDirection.ASC,
-      })
+    expect(nameDesc).toEqual({
+      ordering: TeamOrdering.NAME,
+      direction: OrderingDirection.DESC,
+    })
+  })
 
-      const lastUpdatedDesc = getSortingOption([
-        {
-          id: 'latestCommitAt',
-          desc: true,
-        },
-      ])
+  it('returns the correct sorting options for last updated column', () => {
+    const lastUpdatedAsc = getSortingOption([
+      {
+        id: 'latestCommitAt',
+        desc: false,
+      },
+    ])
 
-      expect(lastUpdatedDesc).toEqual({
-        ordering: TeamOrdering.COMMIT_DATE,
-        direction: OrderingDirection.DESC,
-      })
+    expect(lastUpdatedAsc).toEqual({
+      ordering: TeamOrdering.COMMIT_DATE,
+      direction: OrderingDirection.ASC,
     })
 
-    it('returns undefined otherwise', () => {
-      const noSorting = getSortingOption([])
+    const lastUpdatedDesc = getSortingOption([
+      {
+        id: 'latestCommitAt',
+        desc: true,
+      },
+    ])
 
-      expect(noSorting).toBe(undefined)
+    expect(lastUpdatedDesc).toEqual({
+      ordering: TeamOrdering.COMMIT_DATE,
+      direction: OrderingDirection.DESC,
     })
+  })
+
+  it('returns undefined otherwise', () => {
+    const noSorting = getSortingOption([])
+
+    expect(noSorting).toBe(undefined)
   })
 })
