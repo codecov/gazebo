@@ -38,13 +38,17 @@ afterAll(() => server.close())
 
 describe('GeneralTab', () => {
   function setup(
-    { hasDefaultBranch = false, tierValue = TierNames.PRO } = {
+    {
+      hasDefaultBranch = false,
+      tierValue = TierNames.PRO,
+      isPrivate = false,
+    } = {
       hasDefaultBranch: false,
       tierValue: TierNames.PRO,
     }
   ) {
     server.use(
-      graphql.query('RepoDefaultBranch', (req, res, ctx) => {
+      graphql.query('RepoDataTokensTeam', (req, res, ctx) => {
         if (hasDefaultBranch) {
           return res(
             ctx.status(200),
@@ -53,6 +57,7 @@ describe('GeneralTab', () => {
                 repository: {
                   __typename: 'Repository',
                   defaultBranch: 'main',
+                  private: isPrivate,
                 },
               },
             })
@@ -65,6 +70,7 @@ describe('GeneralTab', () => {
               repository: {
                 __typename: 'Repository',
                 defaultBranch: null,
+                private: isPrivate,
               },
             },
           })
@@ -127,22 +133,44 @@ describe('GeneralTab', () => {
   })
 
   describe('when rendered with team tier', () => {
-    beforeEach(() => {
-      setup({ tierValue: TierNames.TEAM })
+    describe('when the repository is private', () => {
+      beforeEach(() => {
+        setup({ tierValue: TierNames.TEAM, isPrivate: true })
+      })
+
+      it('render tokens team component', async () => {
+        render(<GeneralTab />, { wrapper })
+
+        const tokensComponent = await screen.findByText(/Tokens Team Component/)
+        expect(tokensComponent).toBeInTheDocument()
+      })
+
+      it('render danger zone component', () => {
+        render(<GeneralTab />, { wrapper })
+
+        const tokensComponent = screen.getByText(/DangerZone Component/)
+        expect(tokensComponent).toBeInTheDocument()
+      })
     })
 
-    it('render tokens team component', async () => {
-      render(<GeneralTab />, { wrapper })
+    describe('when the repository is public', () => {
+      beforeEach(() => {
+        setup({ tierValue: TierNames.TEAM, isPrivate: false })
+      })
 
-      const tokensComponent = await screen.findByText(/Tokens Team Component/)
-      expect(tokensComponent).toBeInTheDocument()
-    })
+      it('render tokens component', () => {
+        render(<GeneralTab />, { wrapper })
 
-    it('render danger zone component', () => {
-      render(<GeneralTab />, { wrapper })
+        const tokensComponent = screen.getByText(/Tokens Component/)
+        expect(tokensComponent).toBeInTheDocument()
+      })
 
-      const tokensComponent = screen.getByText(/DangerZone Component/)
-      expect(tokensComponent).toBeInTheDocument()
+      it('render danger zone component', () => {
+        render(<GeneralTab />, { wrapper })
+
+        const tokensComponent = screen.getByText(/DangerZone Component/)
+        expect(tokensComponent).toBeInTheDocument()
+      })
     })
   })
 })
