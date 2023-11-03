@@ -122,7 +122,7 @@ export const calculatePrice = ({
 export const calculateNonBundledCost = ({ baseUnitPrice }) =>
   MIN_SENTRY_SEATS * baseUnitPrice * 12 - SENTRY_PRICE * 12
 
-export function shouldRenderCancelLink(accountDetails, plan, trialStatus) {
+export function shouldRenderCancelLink(cancelAtPeriodEnd, plan, trialStatus) {
   // cant cancel a free plan
   if (isFreePlan(plan?.value)) {
     return false
@@ -134,7 +134,7 @@ export function shouldRenderCancelLink(accountDetails, plan, trialStatus) {
   }
 
   // plan is already set for cancellation
-  if (accountDetails?.subscriptionDetail?.cancelAtPeriodEnd) {
+  if (cancelAtPeriodEnd) {
     return false
   }
 
