@@ -7,6 +7,7 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { orderingOptions } from 'services/repos'
+import { TierNames } from 'services/tier'
 import { ActiveContext } from 'shared/context'
 
 import ReposTable from './ReposTable'
@@ -45,6 +46,7 @@ describe('ReposTable', () => {
     edges = [],
     isCurrentUserPartOfOrg = true,
     privateAccess = true,
+    tierValue = TierNames.PRO,
   }) {
     server.use(
       graphql.query('CurrentUser', (req, res, ctx) => {
@@ -61,13 +63,19 @@ describe('ReposTable', () => {
           ctx.data({ owner: { isCurrentUserPartOfOrg } })
         )
       }),
-      graphql.query('ReposForOwner', (req, res, ctx) => {
+      graphql.query('ReposForOwner', async (req, res, ctx) => {
+        const body = await req.json()
+        const isPublic = body.variables.filters.isPublic
+        let filteredEdges = edges
+        if (isPublic) {
+          filteredEdges = edges.filter((edge) => edge.node.private === false)
+        }
         return res(
           ctx.status(200),
           ctx.data({
             owner: {
               repositories: {
-                edges,
+                edges: filteredEdges,
                 pageInfo: {
                   hasNextPage: true,
                   endCursor: '2',
@@ -75,6 +83,12 @@ describe('ReposTable', () => {
               },
             },
           })
+        )
+      }),
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({ owner: { plan: { tierName: tierValue } } })
         )
       }),
       graphql.query('MyRepos', (req, res, ctx) => {
@@ -465,6 +479,72 @@ describe('ReposTable', () => {
         const repo1 = screen.queryByText('setup repo')
         expect(repo1).not.toBeInTheDocument()
       })
+    })
+  })
+
+  describe('when user is in team tier', () => {
+    beforeEach(() => {
+      setup({
+        tierValue: TierNames.TEAM,
+        edges: [
+          {
+            node: {
+              private: false,
+              activated: true,
+              author: {
+                username: 'owner1',
+              },
+              name: 'Repo name 1',
+              latestCommitAt: subDays(new Date(), 3).toISOString(),
+              coverage: 43,
+              active: true,
+              lines: 99,
+            },
+          },
+          {
+            node: {
+              private: true,
+              activated: true,
+              author: {
+                username: 'owner1',
+              },
+              name: 'Repo name 2',
+              latestCommitAt: subDays(new Date(), 2).toISOString(),
+              coverage: 100,
+              active: true,
+              lines: 101,
+            },
+          },
+          {
+            node: {
+              private: true,
+              activated: true,
+              author: {
+                username: 'owner1',
+              },
+              name: 'Repo name 3',
+              latestCommitAt: null,
+              active: true,
+              lines: 207,
+            },
+          },
+        ],
+      })
+    })
+
+    it('only renders public repos', async () => {
+      render(
+        <ReposTable
+          searchValue=""
+          sortItem={orderingOptions[0]}
+          owner="owner1"
+        />,
+        {
+          wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
+        }
+      )
+      const buttons = await screen.findAllByText(/Repo name/)
+      expect(buttons.length).toBe(1)
     })
   })
 
