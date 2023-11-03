@@ -11,7 +11,7 @@ import {
 } from '@tanstack/react-table'
 import cs from 'classnames'
 import isEmpty from 'lodash/isEmpty'
-import { Fragment, lazy, Suspense, useState } from 'react'
+import { Fragment, lazy, Suspense, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import {
@@ -168,21 +168,25 @@ export default function FilesChangedTableTeam() {
     },
   })
 
-  let filesChanged = undefined
   let mostRecentCompare = undefined
   if (pullData?.pull?.compareWithBase?.__typename === 'Comparison') {
-    if (
-      pullData?.pull?.compareWithBase?.impactedFiles?.__typename ===
-      'ImpactedFiles'
-    ) {
-      filesChanged = pullData?.pull?.compareWithBase?.impactedFiles?.results
-    }
     mostRecentCompare = pullData?.pull?.compareWithBase
   }
 
+  const data = useMemo(() => {
+    if (
+      pullData?.pull?.compareWithBase?.__typename === 'Comparison' &&
+      pullData?.pull?.compareWithBase?.impactedFiles?.__typename ===
+        'ImpactedFiles'
+    ) {
+      return pullData?.pull?.compareWithBase?.impactedFiles?.results
+    }
+    return []
+  }, [pullData?.pull?.compareWithBase])
+
   const table = useReactTable({
     columns: getColumns({ pullId }),
-    data: filesChanged ?? [],
+    data,
     state: {
       expanded,
       sorting,
@@ -199,7 +203,7 @@ export default function FilesChangedTableTeam() {
     return <Loader />
   }
 
-  if (isEmpty(filesChanged) && !isLoading) {
+  if (isEmpty(data) && !isLoading) {
     return <p className="m-4">No files covered by tests were changed</p>
   }
 
