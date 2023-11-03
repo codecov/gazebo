@@ -24,7 +24,7 @@ function RepoTitleLink({ repo, showRepoOwner, pageName, disabledLink }) {
 
   if (disabledLink) {
     return (
-      <>
+      <div className="flex">
         <div className="flex cursor-default items-center text-ds-gray-quinary">
           <Icon
             size="sm"
@@ -38,12 +38,12 @@ function RepoTitleLink({ repo, showRepoOwner, pageName, disabledLink }) {
         </div>
         {isRepoPrivate && <Badge>Private</Badge>}
         {active && !activated && <Badge>Deactivated</Badge>}
-      </>
+      </div>
     )
   }
 
   return (
-    <>
+    <div className="flex">
       <AppLink
         pageName={pageName}
         options={options}
@@ -61,14 +61,14 @@ function RepoTitleLink({ repo, showRepoOwner, pageName, disabledLink }) {
       </AppLink>
       {isRepoPrivate && <Badge>Private</Badge>}
       {active && !activated && <Badge>Deactivated</Badge>}
-    </>
+    </div>
   )
 }
 
 RepoTitleLink.propTypes = {
   repo: PropTypes.shape({
     private: PropTypes.bool.isRequired,
-    activated: PropTypes.bool.isRequired,
+    activated: PropTypes.bool,
     active: PropTypes.bool.isRequired,
     author: PropTypes.shape({
       username: PropTypes.string,
