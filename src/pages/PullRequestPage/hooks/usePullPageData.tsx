@@ -18,6 +18,7 @@ import A from 'ui/A'
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
+  private: z.boolean(),
   pull: z
     .object({
       pullId: z.number().nullable(),
@@ -68,6 +69,7 @@ query PullPageData($owner: String!, $repo: String!, $pullId: Int!) {
     repository(name: $repo) {
       __typename
       ... on Repository {
+        private
         pull(id: $pullId) {
           pullId
           head {
@@ -176,6 +178,7 @@ export const usePullPageData = ({
 
         return {
           pull: data?.owner?.repository?.pull ?? null,
+          private: data?.owner?.repository?.private ?? false,
         }
       }),
   })

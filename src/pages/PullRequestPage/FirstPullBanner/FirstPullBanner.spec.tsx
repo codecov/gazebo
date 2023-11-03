@@ -41,6 +41,7 @@ const mockPullData = ({ resultType }: SetupArgs) => {
       owner: {
         repository: {
           __typename: 'Repository',
+          private: false,
           pull: {
             pullId: 1,
             head: {
@@ -60,6 +61,7 @@ const mockPullData = ({ resultType }: SetupArgs) => {
     owner: {
       repository: {
         __typename: 'Repository',
+        private: false,
         pull: {
           pullId: 1,
           head: {

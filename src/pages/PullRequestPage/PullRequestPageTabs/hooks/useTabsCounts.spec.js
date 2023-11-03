@@ -99,6 +99,7 @@ describe('useTabsCount', () => {
           directChangedFilesCount: 4,
           indirectChangesCount: 0,
           commitsCount: 11,
+          isPrivateRepo: true,
         })
       )
     })
