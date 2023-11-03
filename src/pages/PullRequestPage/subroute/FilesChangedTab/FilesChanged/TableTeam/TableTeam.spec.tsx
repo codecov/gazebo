@@ -39,7 +39,7 @@ const mockComparisonTeamData = {
   },
 }
 
-const mockPullLiteData = {
+const mockPullTeamData = {
   owner: {
     repository: {
       __typename: 'Repository',
@@ -299,7 +299,7 @@ describe('TableTeam', () => {
           return res(ctx.status(200), ctx.data(mockNoChangeFileData))
         }
 
-        return res(ctx.status(200), ctx.data(mockPullLiteData))
+        return res(ctx.status(200), ctx.data(mockPullTeamData))
       }),
       graphql.query('GetPullCompareTotalsTeam', (req, res, ctx) => {
         mockVars(req.variables)

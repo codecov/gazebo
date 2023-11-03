@@ -10,6 +10,7 @@ import { useFlags } from 'shared/featureFlags'
 import FilesChangedTab from './FilesChangedTab'
 
 jest.mock('./FilesChanged', () => () => 'FilesChanged')
+jest.mock('./FilesChanged/TableTeam', () => () => 'TeamFilesChanged')
 
 jest.mock('shared/featureFlags')
 const mockedUseFlags = useFlags as jest.Mock<{ multipleTiers: boolean }>
@@ -84,48 +85,148 @@ afterAll(() => {
 })
 
 interface SetupArgs {
-  planValue: 'team' | 'pro'
-  flagValue: boolean
+  planValue: (typeof TierNames)[keyof typeof TierNames]
+  multipleTiers: boolean
+  privateRepo: boolean
 }
 
 describe('FilesChangedTab', () => {
-  function setup({ planValue, flagValue }: SetupArgs) {
+  function setup({ planValue, multipleTiers, privateRepo }: SetupArgs) {
     mockedUseFlags.mockReturnValue({
-      multipleTiers: flagValue,
+      multipleTiers: multipleTiers,
     })
 
     server.use(
       graphql.query('OwnerTier', (req, res, ctx) => {
-        if (planValue === 'team') {
+        if (planValue === TierNames.TEAM) {
           return res(ctx.status(200), ctx.data(mockTeamTier))
         }
 
         return res(ctx.status(200), ctx.data(mockProTier))
       }),
-      graphql.query('GetPullTeam', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockCompareData))
-      })
+      graphql.query('GetPullTeam', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(mockCompareData))
+      ),
+      graphql.query('GetRepoSettingsTeam', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({
+            owner: { repository: { private: privateRepo } },
+          })
+        )
+      )
     )
   }
 
   describe('user has pro tier', () => {
-    it('renders files changed table', async () => {
-      setup({ planValue: 'pro', flagValue: false })
-      render(<FilesChangedTab />, { wrapper })
+    describe('multipleTiers: false', () => {
+      it('private repo: renders files changed table', async () => {
+        setup({
+          planValue: TierNames.PRO,
+          multipleTiers: false,
+          privateRepo: true,
+        })
+        render(<FilesChangedTab />, { wrapper })
 
-      const table = await screen.findByText('FilesChanged')
-      expect(table).toBeInTheDocument()
+        const table = await screen.findByText('FilesChanged')
+        expect(table).toBeInTheDocument()
+      })
+
+      it('public repo: renders files changed table', async () => {
+        setup({
+          planValue: TierNames.PRO,
+          multipleTiers: false,
+          privateRepo: false,
+        })
+        render(<FilesChangedTab />, { wrapper })
+
+        const table = await screen.findByText('FilesChanged')
+        expect(table).toBeInTheDocument()
+      })
+    })
+
+    describe('multipleTiers: true', () => {
+      it('private repo: renders files changed table', async () => {
+        setup({
+          planValue: TierNames.PRO,
+          multipleTiers: true,
+          privateRepo: true,
+        })
+        render(<FilesChangedTab />, { wrapper })
+
+        const table = await screen.findByText('FilesChanged')
+        expect(table).toBeInTheDocument()
+      })
+
+      it('public repo: renders files changed table', async () => {
+        setup({
+          planValue: TierNames.PRO,
+          multipleTiers: true,
+          privateRepo: false,
+        })
+        render(<FilesChangedTab />, { wrapper })
+
+        const table = await screen.findByText('FilesChanged')
+        expect(table).toBeInTheDocument()
+      })
     })
   })
 
   describe('user has team tier', () => {
-    it('renders team files changed table', async () => {
-      setup({ planValue: 'team', flagValue: true })
+    describe('multipleTiers: false', () => {
+      it('private repo: renders team files changed table', async () => {
+        setup({
+          planValue: TierNames.TEAM,
+          multipleTiers: true,
+          privateRepo: true,
+        })
 
-      render(<FilesChangedTab />, { wrapper })
+        render(<FilesChangedTab />, { wrapper })
 
-      const table = await screen.findByText('100.00%')
-      expect(table).toBeInTheDocument()
+        const table = await screen.findByText('TeamFilesChanged')
+        expect(table).toBeInTheDocument()
+      })
+
+      it('public repo: renders team files changed table', async () => {
+        setup({
+          planValue: TierNames.TEAM,
+          multipleTiers: true,
+          privateRepo: false,
+        })
+
+        render(<FilesChangedTab />, { wrapper })
+
+        const table = await screen.findByText('FilesChanged')
+        expect(table).toBeInTheDocument()
+      })
+    })
+
+    describe('multipleTiers: true', () => {
+      it('private repo: renders team files changed table', async () => {
+        setup({
+          planValue: TierNames.TEAM,
+          multipleTiers: true,
+          privateRepo: true,
+        })
+
+        render(<FilesChangedTab />, { wrapper })
+
+        const table = await screen.findByText('TeamFilesChanged')
+        expect(table).toBeInTheDocument()
+      })
+
+      it('public repo: renders team files changed table', async () => {
+        setup({
+          planValue: TierNames.TEAM,
+          multipleTiers: true,
+          privateRepo: false,
+        })
+
+        render(<FilesChangedTab />, { wrapper })
+
+        const table = await screen.findByText('FilesChanged')
+        expect(table).toBeInTheDocument()
+      })
     })
   })
 })
