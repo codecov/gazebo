@@ -23,7 +23,6 @@ function UpgradePlanPage() {
   const { sentryPlanMonth, sentryPlanYear } = findSentryPlans({ plans })
 
   const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
-  const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
 
   useLayoutEffect(() => {
     setCrumbs([
@@ -41,16 +40,7 @@ function UpgradePlanPage() {
 
   return (
     <div className="flex flex-col gap-8 md:w-11/12 md:flex-row lg:w-10/12">
-      <UpgradeDetails
-        accountDetails={accountDetails}
-        plan={plan}
-        plans={plans}
-        proPlanMonth={proPlanMonth}
-        proPlanYear={proPlanYear}
-        sentryPlanMonth={sentryPlanMonth}
-        sentryPlanYear={sentryPlanYear}
-        scheduledPhase={scheduledPhase}
-      />
+      <UpgradeDetails />
       <UpgradeForm
         accountDetails={accountDetails}
         proPlanYear={proPlanYear}

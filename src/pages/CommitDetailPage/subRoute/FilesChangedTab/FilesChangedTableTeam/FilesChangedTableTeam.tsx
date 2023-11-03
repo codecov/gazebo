@@ -11,7 +11,7 @@ import {
 } from '@tanstack/react-table'
 import cs from 'classnames'
 import isEmpty from 'lodash/isEmpty'
-import { Fragment, lazy, Suspense, useState } from 'react'
+import { Fragment, lazy, Suspense, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import {
@@ -165,14 +165,17 @@ export default function FilesChangedTableTeam() {
     },
   })
 
-  let filesChanged = undefined
-  if (commitData?.commit?.compareWithParent?.__typename === 'Comparison') {
-    filesChanged = commitData?.commit?.compareWithParent?.impactedFiles
-  }
+  const filesChanged = useMemo(() => {
+    if (commitData?.commit?.compareWithParent?.__typename === 'Comparison') {
+      return commitData?.commit?.compareWithParent?.impactedFiles
+    }
+
+    return []
+  }, [commitData])
 
   const table = useReactTable({
     columns: getColumns({ commitId: commitSHA }),
-    data: filesChanged ?? [],
+    data: filesChanged,
     state: {
       expanded,
       sorting,
