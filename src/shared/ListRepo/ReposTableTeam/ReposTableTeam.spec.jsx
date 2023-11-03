@@ -6,9 +6,10 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { OrderingDirection, TeamOrdering } from 'services/repos'
 import { ActiveContext } from 'shared/context'
 
-import ReposTableTeam from './ReposTableTeam'
+import ReposTableTeam, { getSortingOption } from './ReposTableTeam'
 
 import { repoDisplayOptions } from '../ListRepo'
 
@@ -761,6 +762,66 @@ describe('ReposTableTeam', () => {
         expect(buttonsInDescendingOrder[1]).toHaveTextContent('Repo name 2')
         expect(buttonsInDescendingOrder[2]).toHaveTextContent('Repo name 1')
       })
+    })
+  })
+
+  describe('getSortingOption', () => {
+    it('returns the correct sorting options for name column', () => {
+      const nameAsc = getSortingOption([
+        {
+          id: 'name',
+          desc: false,
+        },
+      ])
+
+      expect(nameAsc).toEqual({
+        ordering: TeamOrdering.NAME,
+        direction: OrderingDirection.ASC,
+      })
+
+      const nameDesc = getSortingOption([
+        {
+          id: 'name',
+          desc: true,
+        },
+      ])
+
+      expect(nameDesc).toEqual({
+        ordering: TeamOrdering.NAME,
+        direction: OrderingDirection.DESC,
+      })
+    })
+
+    it('returns the correct sorting options for last updated column', () => {
+      const lastUpdatedAsc = getSortingOption([
+        {
+          id: 'latestCommitAt',
+          desc: false,
+        },
+      ])
+
+      expect(lastUpdatedAsc).toEqual({
+        ordering: TeamOrdering.COMMIT_DATE,
+        direction: OrderingDirection.ASC,
+      })
+
+      const lastUpdatedDesc = getSortingOption([
+        {
+          id: 'latestCommitAt',
+          desc: true,
+        },
+      ])
+
+      expect(lastUpdatedDesc).toEqual({
+        ordering: TeamOrdering.COMMIT_DATE,
+        direction: OrderingDirection.DESC,
+      })
+    })
+
+    it('returns undefined otherwise', () => {
+      const noSorting = getSortingOption([])
+
+      expect(noSorting).toBe(undefined)
     })
   })
 })
