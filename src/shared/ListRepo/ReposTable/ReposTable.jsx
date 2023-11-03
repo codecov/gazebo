@@ -1,9 +1,11 @@
 import isEmpty from 'lodash/isEmpty'
 import PropTypes from 'prop-types'
 import { useContext } from 'react'
+import { useParams } from 'react-router-dom'
 
 import Table from 'old_ui/Table'
 import { useRepos } from 'services/repos'
+import { TierNames, useTier } from 'services/tier'
 import { useOwner, useUser } from 'services/user'
 import { ActiveContext } from 'shared/context'
 import { formatTimeToNow } from 'shared/utils/dates'
@@ -134,6 +136,9 @@ function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
   const { data: ownerData } = useOwner({
     username: owner || userData?.user?.username,
   })
+  const { provider } = useParams()
+  const { data: tierName } = useTier({ provider, owner })
+  const isPublic = tierName === TierNames.TEAM ? true : null
 
   const repoDisplay = useContext(ActiveContext)
   const activated = repoDisplayOptions[repoDisplay.toUpperCase()].status
@@ -146,6 +151,7 @@ function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
       repoNames: filterValues,
       owner,
       suspense: false,
+      isPublic,
     })
 
   const dataTable = transformRepoToTable({
