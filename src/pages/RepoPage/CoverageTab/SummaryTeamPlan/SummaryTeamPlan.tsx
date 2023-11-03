@@ -1,16 +1,11 @@
 import { useLayoutEffect } from 'react'
-import { Redirect, useParams } from 'react-router-dom'
+import { Redirect } from 'react-router-dom'
 
 import { useSetCrumbs } from 'pages/RepoPage/context'
-import { useRepoConfig } from 'services/repo/useRepoConfig'
-import { determineProgressColor } from 'shared/utils/determineProgressColor'
 import A from 'ui/A'
-import CoverageProgress from 'ui/CoverageProgress'
 import Icon from 'ui/Icon'
 import Select from 'ui/Select'
 import { SummaryField, SummaryRoot } from 'ui/Summary'
-
-import CoverageTrend from './CoverageTrend'
 
 import { useCoverageRedirect, useSummary } from '../SummaryHooks'
 
@@ -19,10 +14,8 @@ const YAML_STATE = Object.freeze({
 })
 
 const Summary = () => {
-  const { provider, owner, repo } = useParams()
   const setCrumbs = useSetCrumbs()
   const { setNewPath, redirectState } = useCoverageRedirect()
-  const { data: repoConfigData } = useRepoConfig({ provider, owner, repo })
 
   const {
     data,
@@ -51,7 +44,7 @@ const Summary = () => {
     ])
   }, [currentBranchSelected?.name, setCrumbs])
 
-  const onChangeHandler = ({ name }) => {
+  const onChangeHandler = ({ name }: { name: string }) => {
     setNewPath(name)
   }
 
@@ -72,10 +65,11 @@ const Summary = () => {
             <Select
               dataMarketing="branch-selector-repo-page"
               {...branchSelectorProps}
+              /*// @ts-ignore */
               ariaName="select branch"
               onChange={onChangeHandler}
               variant="gray"
-              renderItem={(item) => <span>{item?.name}</span>}
+              renderItem={(item: any) => <span>{item?.name}</span>}
               isLoading={branchListIsFetching}
               onLoadMore={() => {
                 if (branchListHasNextPage) {
@@ -83,11 +77,10 @@ const Summary = () => {
                   branchListFetchNextPage()
                 }
               }}
-              onSearch={(term) => setBranchSearchTerm(term)}
+              onSearch={(term: any) => setBranchSearchTerm(term)}
               items={branchList}
             />
           </span>
-
           {currentBranchSelected?.head?.commitid && (
             <p className="text-xs">
               <span className="font-bold">Source:</span> latest commit{' '}
@@ -96,41 +89,28 @@ const Summary = () => {
                   pageName: 'commit',
                   options: { commit: currentBranchSelected?.head?.commitid },
                 }}
+                hook="coverage-summary-branch-commit-link"
+                isExternal={false}
               >
                 {currentBranchSelected?.head?.commitid.slice(0, 7)}
               </A>
             </p>
           )}
         </SummaryField>
-        {data?.head?.totals?.percentCovered && (
-          <SummaryField>
-            <h3 className="min-w-[16rem] text-sm font-semibold  text-ds-gray-octonary">
-              Coverage on branch
-            </h3>
-            <CoverageProgress
-              label
-              amount={data?.head?.totals?.percentCovered}
-              variant="tall"
-              color={determineProgressColor({
-                coverage: data?.head?.totals?.percentCovered,
-                ...repoConfigData?.indicationRange,
-              })}
-            />
-            <p className="text-xs">
-              {data?.head?.totals?.hitsCount} of {data?.head?.totals?.lineCount}{' '}
-              lines covered
-            </p>
-          </SummaryField>
-        )}
-        <CoverageTrend />
         {data?.head?.yamlState === YAML_STATE.DEFAULT && (
           <SummaryField>
             <h3 className="min-w-[8rem] text-sm font-semibold text-ds-gray-octonary">
               Yaml Configuration
             </h3>
             <p className="pb-[2.0rem] text-sm">
-              <A to={{ pageName: 'codecovYaml' }}>Learn more</A> about PR
-              comment, target and flags
+              <A
+                to={{ pageName: 'codecovYaml' }}
+                hook="coverage-summary-yaml-link"
+                isExternal={false}
+              >
+                Learn more
+              </A>{' '}
+              about PR comment, target and flags
             </p>
           </SummaryField>
         )}
