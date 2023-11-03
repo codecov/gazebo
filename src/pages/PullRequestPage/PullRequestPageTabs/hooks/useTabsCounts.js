@@ -40,6 +40,5 @@ export const useTabsCounts = () => {
     indirectChangesCount: compareWithBase?.indirectChangedFilesCount,
     directChangedFilesCount: compareWithBase?.directChangedFilesCount,
     commitsCount: commitsData?.commitsCount,
-    isPrivateRepo: pullPageData.private,
   }
 }

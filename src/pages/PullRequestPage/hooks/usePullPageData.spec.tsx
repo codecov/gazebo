@@ -9,7 +9,6 @@ const mockPullData = {
   owner: {
     repository: {
       __typename: 'Repository',
-      private: true,
       pull: {
         pullId: 1,
         head: {
@@ -129,7 +128,6 @@ describe('usePullPageData', () => {
 
           await waitFor(() =>
             expect(result.current.data).toStrictEqual({
-              private: true,
               pull: {
                 pullId: 1,
                 head: {
@@ -171,7 +169,6 @@ describe('usePullPageData', () => {
 
           await waitFor(() =>
             expect(result.current.data).toStrictEqual({
-              private: false,
               pull: null,
             })
           )

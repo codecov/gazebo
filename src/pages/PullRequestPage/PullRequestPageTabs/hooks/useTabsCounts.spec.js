@@ -36,7 +36,6 @@ const mockPullData = {
     isCurrentUserPartOfOrg: true,
     repository: {
       __typename: 'Repository',
-      private: true,
       pull: {
         pullId: 1,
         head: {
@@ -99,7 +98,6 @@ describe('useTabsCount', () => {
           directChangedFilesCount: 4,
           indirectChangesCount: 0,
           commitsCount: 11,
-          isPrivateRepo: true,
         })
       )
     })

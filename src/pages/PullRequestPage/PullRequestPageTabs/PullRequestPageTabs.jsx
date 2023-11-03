@@ -5,6 +5,7 @@ import {
   pullFileviewString,
   pullTreeviewString,
 } from 'pages/PullRequestPage/utils'
+import { useRepoSettings } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
@@ -19,8 +20,8 @@ function PullRequestPageTabs() {
     indirectChangesCount,
     directChangedFilesCount,
     commitsCount,
-    isPrivateRepo,
   } = useTabsCounts()
+  const { data: settings, isLoading: settingsLoading } = useRepoSettings()
   const { pullRequestPageFlagMultiSelect, multipleTiers } = useFlags({
     pullRequestPageFlagMultiSelect: false,
     multipleTiers: false,
@@ -47,11 +48,15 @@ function PullRequestPageTabs() {
     }
   }
 
-  if (isLoading) {
+  if (isLoading || settingsLoading) {
     return null
   }
 
-  if (multipleTiers && tierData === TierNames.TEAM && isPrivateRepo) {
+  if (
+    multipleTiers &&
+    tierData === TierNames.TEAM &&
+    settings?.repository?.private
+  ) {
     return (
       <TabNavigation
         tabs={[
@@ -161,7 +166,7 @@ function PullRequestPageTabs() {
           showHitCount={true}
           showFlagsSelect={
             pullRequestPageFlagMultiSelect &&
-            (tierData !== TierNames.TEAM || !isPrivateRepo)
+            (tierData !== TierNames.TEAM || !settings?.repository?.private)
           }
         />
       }

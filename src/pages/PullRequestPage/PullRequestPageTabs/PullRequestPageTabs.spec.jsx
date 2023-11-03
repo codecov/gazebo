@@ -23,34 +23,8 @@ const mockCommits = {
 
 const mockPullData = {
   owner: {
-    isCurrentUserPartOfOrg: true,
     repository: {
       __typename: 'Repository',
-      private: false,
-      pull: {
-        pullId: 1,
-        head: {
-          commitid: '123',
-        },
-        compareWithBase: {
-          __typename: 'Comparison',
-          directChangedFilesCount: 4,
-          flagComparisonsCount: 3,
-          indirectChangedFilesCount: 5,
-          impactedFilesCount: 0,
-          componentComparisonsCount: 0,
-        },
-      },
-    },
-  },
-}
-
-const mockPullDataPrivate = {
-  owner: {
-    isCurrentUserPartOfOrg: true,
-    repository: {
-      __typename: 'Repository',
-      private: true,
       pull: {
         pullId: 1,
         head: {
@@ -110,12 +84,12 @@ describe('PullRequestPageTabs', () => {
     {
       pullRequestPageFlagMultiSelect = false,
       multipleTiers = false,
-      plan = TierNames.BASIC,
+      tierValue = TierNames.BASIC,
       privateRepo = false,
     } = {
       pullRequestPageFlagMultiSelect: false,
       multipleTiers: false,
-      plan: TierNames.BASIC,
+      tierValue: TierNames.BASIC,
       privateRepo: false,
     }
   ) {
@@ -125,21 +99,25 @@ describe('PullRequestPageTabs', () => {
     })
     server.use(
       graphql.query('PullPageData', (req, res, ctx) => {
-        if (privateRepo) {
-          return res(ctx.status(200), ctx.data(mockPullDataPrivate))
-        }
         return res(ctx.status(200), ctx.data(mockPullData))
       }),
       graphql.query('GetCommits', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockCommits))
       ),
-      graphql.query('BackfillFlagMemberships', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({}))
-      ),
       graphql.query('OwnerTier', (req, res, ctx) =>
         res(
           ctx.status(200),
-          ctx.data({ owner: { plan: { tierName: plan.toLowerCase() } } })
+          ctx.data({
+            owner: { plan: { tierName: tierValue.toLowerCase() } },
+          })
+        )
+      ),
+      graphql.query('GetRepoSettings', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({
+            owner: { repository: { private: privateRepo } },
+          })
         )
       )
     )
@@ -349,7 +327,7 @@ describe('PullRequestPageTabs', () => {
         describe('is a team plan on a public repo', () => {
           beforeEach(() =>
             setup({
-              plan: TierNames.TEAM,
+              tierValue: TierNames.TEAM,
               multipleTiers: true,
               privateRepo: false,
               pullRequestPageFlagMultiSelect: true,
@@ -389,7 +367,7 @@ describe('PullRequestPageTabs', () => {
         describe('is a team plan on a private repo', () => {
           beforeEach(() =>
             setup({
-              plan: TierNames.TEAM,
+              tierValue: TierNames.TEAM,
               multipleTiers: true,
               privateRepo: true,
               pullRequestPageFlagMultiSelect: true,
@@ -429,7 +407,7 @@ describe('PullRequestPageTabs', () => {
         describe('is a pro plan on a public repo', () => {
           beforeEach(() =>
             setup({
-              plan: TierNames.PRO,
+              tierValue: TierNames.PRO,
               multipleTiers: true,
               privateRepo: false,
               pullRequestPageFlagMultiSelect: true,
@@ -469,7 +447,7 @@ describe('PullRequestPageTabs', () => {
         describe('is a pro plan on a private repo', () => {
           beforeEach(() =>
             setup({
-              plan: TierNames.PRO,
+              tierValue: TierNames.PRO,
               multipleTiers: true,
               privateRepo: true,
               pullRequestPageFlagMultiSelect: true,
@@ -510,7 +488,7 @@ describe('PullRequestPageTabs', () => {
         describe('is a team plan on a public repo', () => {
           beforeEach(() =>
             setup({
-              plan: TierNames.TEAM,
+              tierValue: TierNames.TEAM,
               multipleTiers: false,
               privateRepo: false,
               pullRequestPageFlagMultiSelect: true,
@@ -550,7 +528,7 @@ describe('PullRequestPageTabs', () => {
         describe('is a team plan on a private repo', () => {
           beforeEach(() =>
             setup({
-              plan: TierNames.TEAM,
+              tierValue: TierNames.TEAM,
               multipleTiers: false,
               privateRepo: true,
               pullRequestPageFlagMultiSelect: true,
@@ -590,7 +568,7 @@ describe('PullRequestPageTabs', () => {
         describe('is a pro plan on a public repo', () => {
           beforeEach(() =>
             setup({
-              plan: TierNames.PRO,
+              tierValue: TierNames.PRO,
               multipleTiers: false,
               privateRepo: false,
               pullRequestPageFlagMultiSelect: true,
@@ -630,7 +608,7 @@ describe('PullRequestPageTabs', () => {
         describe('is a pro plan on a private repo', () => {
           beforeEach(() =>
             setup({
-              plan: TierNames.PRO,
+              tierValue: TierNames.PRO,
               multipleTiers: false,
               privateRepo: true,
               pullRequestPageFlagMultiSelect: true,
@@ -674,7 +652,7 @@ describe('PullRequestPageTabs', () => {
       describe('is a team plan on a public repo', () => {
         beforeEach(() =>
           setup({
-            plan: TierNames.TEAM,
+            tierValue: TierNames.TEAM,
             multipleTiers: true,
             privateRepo: false,
             pullRequestPageFlagMultiSelect: false,
@@ -714,7 +692,7 @@ describe('PullRequestPageTabs', () => {
       describe('is a team plan on a private repo', () => {
         beforeEach(() =>
           setup({
-            plan: TierNames.TEAM,
+            tierValue: TierNames.TEAM,
             multipleTiers: true,
             privateRepo: true,
             pullRequestPageFlagMultiSelect: false,
@@ -754,7 +732,7 @@ describe('PullRequestPageTabs', () => {
       describe('is a pro plan on a public repo', () => {
         beforeEach(() =>
           setup({
-            plan: TierNames.PRO,
+            tierValue: TierNames.PRO,
             multipleTiers: true,
             privateRepo: false,
             pullRequestPageFlagMultiSelect: false,
@@ -794,7 +772,7 @@ describe('PullRequestPageTabs', () => {
       describe('is a pro plan on a private repo', () => {
         beforeEach(() =>
           setup({
-            plan: TierNames.PRO,
+            tierValue: TierNames.PRO,
             multipleTiers: true,
             privateRepo: true,
             pullRequestPageFlagMultiSelect: false,
@@ -835,7 +813,7 @@ describe('PullRequestPageTabs', () => {
       describe('is a team plan on a public repo', () => {
         beforeEach(() =>
           setup({
-            plan: TierNames.TEAM,
+            tierValue: TierNames.TEAM,
             multipleTiers: false,
             privateRepo: false,
             pullRequestPageFlagMultiSelect: false,
@@ -875,7 +853,7 @@ describe('PullRequestPageTabs', () => {
       describe('is a team plan on a private repo', () => {
         beforeEach(() =>
           setup({
-            plan: TierNames.TEAM,
+            tierValue: TierNames.TEAM,
             multipleTiers: true,
             privateRepo: true,
             pullRequestPageFlagMultiSelect: false,
@@ -915,7 +893,7 @@ describe('PullRequestPageTabs', () => {
       describe('is a pro plan on a public repo', () => {
         beforeEach(() =>
           setup({
-            plan: TierNames.PRO,
+            tierValue: TierNames.PRO,
             multipleTiers: false,
             privateRepo: false,
             pullRequestPageFlagMultiSelect: false,
@@ -955,7 +933,7 @@ describe('PullRequestPageTabs', () => {
       describe('is a pro plan on a private repo', () => {
         beforeEach(() =>
           setup({
-            plan: TierNames.PRO,
+            tierValue: TierNames.PRO,
             multipleTiers: true,
             privateRepo: true,
             pullRequestPageFlagMultiSelect: false,
