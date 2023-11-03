@@ -11,9 +11,10 @@ import A from 'ui/A'
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   defaultBranch: z.string().nullable(),
+  private: z.boolean().nullable(),
 })
 
-const GetRepoDefaultBranchSchema = z.object({
+const GetRepoDataSchema = z.object({
   owner: z
     .object({
       repository: z
@@ -27,15 +28,16 @@ const GetRepoDefaultBranchSchema = z.object({
     .nullable(),
 })
 
-export type GetRepoDefaultBranch = z.infer<typeof GetRepoDefaultBranchSchema>
+export type RepoDataTokensTeam = z.infer<typeof GetRepoDataSchema>
 
 const query = `
-  query RepoDefaultBranch($owner: String!, $repo: String!) {
+  query RepoDataTokensTeam($owner: String!, $repo: String!) {
     owner(username: $owner) {
       repository(name: $repo) {
         __typename
         ... on Repository {
           defaultBranch
+          private
         }
         ... on NotFoundError {
           message
@@ -48,19 +50,19 @@ const query = `
   }
 `
 
-interface RepoDefaultBranchArgs {
+interface RepoDataTokensArgs {
   provider: string
   owner: string
   repo: string
 }
 
-export const useRepoDefaultBranch = ({
+export const useRepoForTokensTeam = ({
   provider,
   owner,
   repo,
-}: RepoDefaultBranchArgs) =>
+}: RepoDataTokensArgs) =>
   useQuery({
-    queryKey: ['RepoDefaultBranch', provider, owner, repo, query],
+    queryKey: ['RepoDataTokensTeam', provider, owner, repo, query],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
@@ -72,7 +74,7 @@ export const useRepoDefaultBranch = ({
           repo,
         },
       }).then((res) => {
-        const parsedData = GetRepoDefaultBranchSchema.safeParse(res?.data)
+        const parsedData = GetRepoDataSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return Promise.reject({
@@ -106,6 +108,6 @@ export const useRepoDefaultBranch = ({
           })
         }
 
-        return data?.owner?.repository?.defaultBranch ?? null
+        return data?.owner?.repository ?? null
       }),
   })

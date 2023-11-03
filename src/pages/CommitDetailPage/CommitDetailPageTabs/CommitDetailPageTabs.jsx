@@ -7,6 +7,7 @@ import {
   commitFileviewString,
   commitTreeviewString,
 } from 'pages/RepoPage/utils'
+import { useRepoSettingsTeam } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
@@ -20,10 +21,15 @@ function CommitDetailPageTabs({
   const { provider, owner, repo } = useParams()
   const location = useLocation()
   const { data: tierName } = useTier({ owner, provider })
+  const { data: repoData } = useRepoSettingsTeam()
 
   const { commitTabFlagMultiSelect } = useFlags({
     commitTabFlagMultiSelect: false,
   })
+
+  const showIndirectChanges = !(
+    repoData?.repository?.private && tierName === TierNames.TEAM
+  )
 
   const showFlagMultiSelect =
     commitTabFlagMultiSelect && tierName !== TierNames.TEAM
@@ -67,16 +73,20 @@ function CommitDetailPageTabs({
           options: { commit: commitSha, queryParams },
           exact: true,
         },
-        {
-          pageName: 'commitIndirectChanges',
-          options: { commit: commitSha, queryParams },
-          children: (
-            <>
-              Indirect changes
-              <sup className="text-xs">{indirectChangedFilesCount}</sup>
-            </>
-          ),
-        },
+        ...(showIndirectChanges
+          ? [
+              {
+                pageName: 'commitIndirectChanges',
+                options: { commit: commitSha, queryParams },
+                children: (
+                  <>
+                    Indirect changes
+                    <sup className="text-xs">{indirectChangedFilesCount}</sup>
+                  </>
+                ),
+              },
+            ]
+          : []),
         {
           pageName: 'commitTreeView',
           children: 'File explorer',

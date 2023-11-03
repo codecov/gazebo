@@ -10,7 +10,7 @@ import {
 
 import EnterprisePlanCard from './EnterprisePlanCard'
 import FreePlanCard from './FreePlanCard'
-import ProPlanCard from './ProPlanCard'
+import PaidPlanCard from './PaidPlanCard'
 
 function CurrentPlanCard() {
   const { provider, owner } = useParams()
@@ -30,7 +30,7 @@ function CurrentPlanCard() {
     return <EnterprisePlanCard plan={plan} />
   }
 
-  return <ProPlanCard plan={plan} scheduledPhase={scheduledPhase} />
+  return <PaidPlanCard />
 }
 
 export default CurrentPlanCard

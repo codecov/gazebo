@@ -5,7 +5,7 @@ import { formatTimeToNow } from 'shared/utils/dates'
 
 import Title from './Title'
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/owner/repo/pulls/9']}>
     <Route path="/:provider/:owner/:repo/pulls/:pullid">{children}</Route>
   </MemoryRouter>
@@ -16,7 +16,7 @@ describe('Title', () => {
     it('renders pull title', () => {
       render(
         <Title
-          author={{ username: 'RulaKhaled', avatarUrl: 'random' }}
+          author={{ username: 'codecov-user', avatarUrl: 'random' }}
           pullId={746}
           title="Test1"
           updatestamp="2021-08-30T19:33:49.819672"
@@ -32,7 +32,7 @@ describe('Title', () => {
     it('renders pull author', () => {
       render(
         <Title
-          author={{ username: 'RulaKhaled', avatarUrl: 'random' }}
+          author={{ username: 'codecov-user', avatarUrl: 'random' }}
           pullId={746}
           title="Test1"
           updatestamp="2021-08-30T19:33:49.819672"
@@ -40,14 +40,14 @@ describe('Title', () => {
         { wrapper }
       )
 
-      const author1 = screen.getByText(/RulaKhaled/)
+      const author1 = screen.getByText(/codecov-user/)
       expect(author1).toBeInTheDocument()
     })
 
     it('renders pull updatestamp', () => {
       render(
         <Title
-          author={{ username: 'RulaKhaled', avatarUrl: 'random' }}
+          author={{ username: 'codecov-user', avatarUrl: 'random' }}
           pullId={746}
           title="Test1"
           updatestamp="2021-08-30T19:33:49.819672"
@@ -65,7 +65,7 @@ describe('Title', () => {
     it('renders pull title', () => {
       render(
         <Title
-          author={{ username: 'RulaKhaled', avatarUrl: 'random' }}
+          author={{ username: 'codecov-user', avatarUrl: 'random' }}
           pullId={746}
           title="Test1"
           updatestamp="2021-08-30T19:33:49.819672"

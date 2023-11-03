@@ -1,4 +1,5 @@
 import { format, fromUnixTime } from 'date-fns'
+import { isUndefined } from 'lodash'
 import isArray from 'lodash/isArray'
 import isString from 'lodash/isString'
 
@@ -14,6 +15,8 @@ export const Plans = Object.freeze({
   USERS_PR_INAPPY: 'users-pr-inappy',
   USERS_SENTRYM: 'users-sentrym',
   USERS_SENTRYY: 'users-sentryy',
+  USERS_TEAMM: 'users-teamm',
+  USERS_TEAMY: 'users-teamy',
   USERS_ENTERPRISEM: 'users-enterprisem',
   USERS_ENTERPRISEY: 'users-enterprisey',
 })
@@ -33,6 +36,13 @@ export function isEnterprisePlan(plan) {
 export function isFreePlan(plan) {
   if (isString(plan)) {
     if (plan === Plans.USERS_BASIC || plan === Plans.USERS_FREE) return true
+  }
+  return false
+}
+
+export function isTeamPlan(plan) {
+  if (isString(plan)) {
+    if (plan === Plans.USERS_TEAMM || plan === Plans.USERS_TEAMY) return true
   }
   return false
 }
@@ -136,6 +146,16 @@ export const findSentryPlans = ({ plans }) => {
   }
 }
 
+export const findTeamPlans = ({ plans }) => {
+  const teamPlanMonth = plans?.find((plan) => plan.value === Plans.USERS_TEAMM)
+  const teamPlanYear = plans?.find((plan) => plan.value === Plans.USERS_TEAMY)
+
+  return {
+    teamPlanMonth,
+    teamPlanYear,
+  }
+}
+
 export const canApplySentryUpgrade = ({ plan, plans }) => {
   if (isEnterprisePlan(plan) || !isArray(plans)) {
     return false
@@ -145,6 +165,12 @@ export const canApplySentryUpgrade = ({ plan, plans }) => {
     (plan) =>
       plan?.value === Plans.USERS_SENTRYM || plan?.value === Plans.USERS_SENTRYY
   )
+}
+
+export const shouldDisplayTeamCard = ({ plans }) => {
+  const { teamPlanMonth, teamPlanYear } = findTeamPlans({ plans })
+
+  return !isUndefined(teamPlanMonth) && !isUndefined(teamPlanYear)
 }
 
 export const formatNumberToUSD = (value) =>

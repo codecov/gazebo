@@ -33,6 +33,7 @@ const getRepoTabs = ({
   owner,
   repo,
   tierData,
+  isRepoPrivate,
 }) => {
   let location = undefined
   if (matchTree) {
@@ -40,6 +41,7 @@ const getRepoTabs = ({
   } else if (matchBlobs) {
     location = { pathname: `/${provider}/${owner}/${repo}/blob` }
   }
+  const hideFlagsTab = isRepoPrivate && tierData === TierNames.TEAM
 
   return [
     {
@@ -48,7 +50,7 @@ const getRepoTabs = ({
       exact: !matchTree && !matchBlobs,
       location,
     },
-    ...(tierData === TierNames.TEAM ? [] : [{ pageName: 'flagsTab' }]),
+    ...(hideFlagsTab ? [] : [{ pageName: 'flagsTab' }]),
     { pageName: 'commits' },
     { pageName: 'pulls' },
     ...(isCurrentUserPartOfOrg ? [{ pageName: 'settings' }] : []),
@@ -116,6 +118,7 @@ function RepoPage() {
                 owner,
                 repo,
                 tierData,
+                isRepoPrivate,
               })}
             />
           </div>
