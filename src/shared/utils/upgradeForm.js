@@ -175,15 +175,16 @@ export const getDefaultValuesProUpgrade = ({
   proPlanYear,
   trialStatus,
 }) => {
-  const currentPlan = accountDetails?.plan?.value
+  const currentPlan = accountDetails?.plan
+  const planValue = currentPlan?.value
   const quantity = currentPlan?.quantity ?? 0
   const activatedUserCount = accountDetails?.activatedUserCount
   const inactiveUserCount = accountDetails?.inactiveUserCount
 
   // if the current plan is a pro plan, we return it, otherwise select by default the first pro plan
-  const newPlan = isPaidPlan(currentPlan) ? currentPlan : proPlanYear?.value
+  const newPlan = isPaidPlan(planValue) ? planValue : proPlanYear?.value
   const seats = calculateDefaultSeatsProPlan({
-    value: currentPlan,
+    value: planValue,
     quantity,
     activatedUserCount,
     inactiveUserCount,

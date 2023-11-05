@@ -14,18 +14,12 @@ import Icon from 'ui/Icon'
 interface TotalBannerProps {
   newPlan: string
   seats: number
-  // isPerYear: boolean
-  // perYearPrice: number
-  // perMonthPrice: number
   setValue: (x: string, y: string) => void
 }
 
 const TotalBanner: React.FC<TotalBannerProps> = ({
   newPlan,
   seats,
-  // isPerYear,
-  // perYearPrice,
-  // perMonthPrice,
   setValue,
 }) => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
@@ -93,9 +87,6 @@ TotalBanner.propTypes = {
   setValue: PropTypes.func.isRequired,
   newPlan: PropTypes.string.isRequired,
   seats: PropTypes.number.isRequired,
-  // isPerYear: PropTypes.bool.isRequired,
-  // perYearPrice: PropTypes.number.isRequired,
-  // perMonthPrice: PropTypes.number.isRequired,
 }
 
 export default TotalBanner

@@ -9,7 +9,6 @@ import {
 } from 'services/account'
 import { useProPlans } from 'shared/utils/billing'
 import {
-  // getInitialDataForm,
   getDefaultValuesProUpgrade,
   getSchema,
   MIN_NB_SEATS_PRO,
@@ -28,7 +27,6 @@ function ProPlanControls() {
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { data: planData } = usePlanData({ owner, provider })
-  // const { proPlanMonth, proPlanYear } = useProPlans({ plans })
   const { proPlanYear } = useProPlans({ plans })
   const { upgradePlan } = useUpgradeControls()
 
@@ -40,13 +38,10 @@ function ProPlanControls() {
     formState: { isValid, errors },
     setValue,
     getValues,
-    // reset,
   } = useForm({
     defaultValues: getDefaultValuesProUpgrade({
       accountDetails,
       proPlanYear,
-      // isSentryUpgrade,
-      // sentryPlanYear,
       trialStatus,
     }),
     resolver: zodResolver(
@@ -58,35 +53,6 @@ function ProPlanControls() {
     ),
     mode: 'onChange',
   })
-
-  // const isSentryUpgrade = canApplySentryUpgrade({
-  //   plan: accountDetails?.plan?.value,
-  //   plans,
-  // })
-  // const minSeats = isSentryUpgrade ? MIN_SENTRY_SEATS : MIN_NB_SEATS
-  // const trialStatus = planData?.plan?.trialStatus
-
-  // const {
-  //   // perYearPrice,
-  //   // perMonthPrice,
-  //   register,
-  //   handleSubmit,
-  //   // isPerYear,
-  //   setValue,
-  //   getValues,
-  //   formState: { isValid, errors },
-  //   upgradePlan,
-  //   watch,
-  // } = useProPlanControls({
-  //   proPlanYear,
-  //   proPlanMonth,
-  //   accountDetails,
-  //   // minSeats,
-  //   // sentryPrice: SENTRY_PRICE,
-  //   // sentryPlanYear,
-  //   // sentryPlanMonth,
-  //   // isSentryUpgrade,
-  // })
 
   const newPlan = getValues('newPlan')
   const seats = watch('seats')
@@ -101,11 +67,7 @@ function ProPlanControls() {
         <span>{owner}</span>
       </div>
       <div className="flex flex-col gap-2">
-        <BillingControls
-          planString={newPlan}
-          // isSentryUpgrade={isSentryUpgrade}
-          setValue={setValue}
-        />
+        <BillingControls planString={newPlan} setValue={setValue} />
       </div>
       <div className="flex flex-col gap-2 xl:w-5/12">
         <div className="w-2/6">
@@ -121,25 +83,8 @@ function ProPlanControls() {
           />
         </div>
         <UserCount />
-        {/* <UserCount
-          activatedStudentCount={accountDetails?.activatedStudentCount}
-          activatedUserCount={accountDetails?.activatedUserCount}
-          inactiveUserCount={accountDetails?.inactiveUserCount}
-          isSentryUpgrade={isSentryUpgrade}
-        /> */}
       </div>
-      <TotalBanner
-        // isPerYear={isPerYear}
-        seats={seats}
-        newPlan={newPlan}
-        // perYearPrice={perYearPrice}
-        // perMonthPrice={perMonthPrice}
-        setValue={setValue}
-        // isSentryUpgrade={isSentryUpgrade}
-        // sentryPlanYear={sentryPlanYear}
-        // sentryPlanMonth={sentryPlanMonth}
-        // seats={watch('seats')}
-      />
+      <TotalBanner seats={seats} newPlan={newPlan} setValue={setValue} />
       {/* The next invoice logic has not been working for a long time so I just deleted it. There should be a screenshot I
       attached showing how it should look, mega showing how much we haven't properly used this. Deleting for now */}
       {errors?.seats && (
@@ -148,7 +93,6 @@ function ProPlanControls() {
         </p>
       )}
       <div className="w-fit">
-        {/* This will likely stay the way it is, just moved it to a shared place */}
         <UpdateButton
           isValid={isValid}
           getValues={getValues}
