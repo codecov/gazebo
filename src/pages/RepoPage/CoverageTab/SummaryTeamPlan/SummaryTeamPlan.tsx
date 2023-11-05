@@ -7,13 +7,13 @@ import Icon from 'ui/Icon'
 import Select from 'ui/Select'
 import { SummaryField, SummaryRoot } from 'ui/Summary'
 
-import { useCoverageRedirect, useSummary } from '../SummaryHooks'
+import { useCoverageRedirect, useSummary } from '../summaryHooks'
 
 const YAML_STATE = Object.freeze({
   DEFAULT: 'DEFAULT',
 })
 
-const Summary = () => {
+const SummaryTeamPlan = () => {
   const setCrumbs = useSetCrumbs()
   const { setNewPath, redirectState } = useCoverageRedirect()
 
@@ -55,62 +55,60 @@ const Summary = () => {
       )}
       <SummaryRoot>
         <SummaryField>
-          <h3 className="flex items-center gap-1 text-sm font-semibold text-ds-gray-octonary">
-            <span className="text-ds-gray-quinary">
-              <Icon name="branch" size="sm" variant="developer" />
-            </span>
-            Branch Context
-          </h3>
-          <span className="min-w-[16rem] text-sm">
-            <Select
-              dataMarketing="branch-selector-repo-page"
-              {...branchSelectorProps}
-              /*// @ts-ignore */
-              ariaName="select branch"
-              onChange={onChangeHandler}
-              variant="gray"
-              renderItem={(item: any) => <span>{item?.name}</span>}
-              isLoading={branchListIsFetching}
-              onLoadMore={() => {
-                if (branchListHasNextPage) {
-                  branchesFetchNextPage()
-                  branchListFetchNextPage()
-                }
-              }}
-              onSearch={(term: any) => setBranchSearchTerm(term)}
-              items={branchList}
-            />
-          </span>
-          {currentBranchSelected?.head?.commitid && (
-            <p className="text-xs">
-              <span className="font-bold">Source:</span> latest commit{' '}
-              <A
-                to={{
-                  pageName: 'commit',
-                  options: { commit: currentBranchSelected?.head?.commitid },
+          <div className="flex flex-row items-center gap-2">
+            <span className="min-w-[16rem] text-sm">
+              <Select
+                dataMarketing="branch-selector-repo-page"
+                {...branchSelectorProps}
+                /*// @ts-ignore */
+                ariaName="select branch"
+                onChange={onChangeHandler}
+                variant="gray"
+                renderItem={(item: { name: any }) => <span>{item?.name}</span>}
+                isLoading={branchListIsFetching}
+                onLoadMore={() => {
+                  if (branchListHasNextPage) {
+                    branchesFetchNextPage()
+                    branchListFetchNextPage()
+                  }
                 }}
-                hook="coverage-summary-branch-commit-link"
-                isExternal={false}
-              >
-                {currentBranchSelected?.head?.commitid.slice(0, 7)}
-              </A>
-            </p>
-          )}
+                onSearch={(term: any) => setBranchSearchTerm(term)}
+                items={branchList}
+              />
+            </span>
+            {currentBranchSelected?.head?.commitid && (
+              <p className="text-xs">
+                <span className="font-bold">Source:</span> latest commit{' '}
+                <A
+                  to={{
+                    pageName: 'commit',
+                    options: { commit: currentBranchSelected?.head?.commitid },
+                  }}
+                  hook="coverage-summary-branch-commit-link"
+                  isExternal={false}
+                >
+                  {currentBranchSelected?.head?.commitid.slice(0, 7)}
+                </A>
+              </p>
+            )}
+          </div>
         </SummaryField>
         {data?.head?.yamlState === YAML_STATE.DEFAULT && (
           <SummaryField>
-            <h3 className="min-w-[8rem] text-sm font-semibold text-ds-gray-octonary">
+            <h3 className="text-sm font-semibold text-ds-gray-octonary">
               Yaml Configuration
             </h3>
-            <p className="pb-[2.0rem] text-sm">
+            <p className="text-sm">
               <A
-                to={{ pageName: 'codecovYaml' }}
-                hook="coverage-summary-yaml-link"
+                to={{
+                  pageName: 'codecovYaml',
+                }}
+                hook="codecov-yaml-link"
                 isExternal={false}
               >
                 Learn more
               </A>{' '}
-              about PR comment, target and flags
+              about PR comments, targets, and badges
             </p>
           </SummaryField>
         )}
@@ -119,4 +117,4 @@ const Summary = () => {
   )
 }
 
-export default Summary
+export default SummaryTeamPlan

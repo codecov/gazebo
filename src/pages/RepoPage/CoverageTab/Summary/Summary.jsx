@@ -12,7 +12,7 @@ import { SummaryField, SummaryRoot } from 'ui/Summary'
 
 import CoverageTrend from './CoverageTrend'
 
-import { useCoverageRedirect, useSummary } from '../SummaryHooks'
+import { useCoverageRedirect, useSummary } from '../summaryHooks'
 
 const YAML_STATE = Object.freeze({
   DEFAULT: 'DEFAULT',

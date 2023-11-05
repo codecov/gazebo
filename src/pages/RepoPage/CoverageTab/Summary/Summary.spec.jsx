@@ -9,9 +9,9 @@ import useIntersection from 'react-use/lib/useIntersection'
 
 import Summary from './Summary'
 
-import { useCoverageRedirect } from '../SummaryHooks/useCoverageRedirect'
+import { useCoverageRedirect } from '../summaryHooks'
 
-jest.mock('./hooks/useCoverageRedirect')
+jest.mock('../summaryHooks/useCoverageRedirect')
 jest.mock('./CoverageTrend', () => () => 'CoverageTrend')
 jest.mock('react-use/lib/useIntersection')
 
