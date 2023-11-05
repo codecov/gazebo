@@ -1,21 +1,46 @@
 import PropTypes from 'prop-types'
+import { useParams } from 'react-router-dom'
 
-import { formatNumberToUSD, Plans } from 'shared/utils/billing'
+import { useAvailablePlans } from 'services/account'
+import {
+  formatNumberToUSD,
+  isAnnualPlan,
+  Plans,
+  useProPlans,
+} from 'shared/utils/billing'
+import { calculatePriceProPlan } from 'shared/utils/upgradeForm'
 import Icon from 'ui/Icon'
 
 interface TotalBannerProps {
-  isPerYear: boolean
-  perYearPrice: number
-  perMonthPrice: number
+  newPlan: string
+  seats: number
+  // isPerYear: boolean
+  // perYearPrice: number
+  // perMonthPrice: number
   setValue: (x: string, y: string) => void
 }
 
 const TotalBanner: React.FC<TotalBannerProps> = ({
-  isPerYear,
-  perYearPrice,
-  perMonthPrice,
+  newPlan,
+  seats,
+  // isPerYear,
+  // perYearPrice,
+  // perMonthPrice,
   setValue,
 }) => {
+  const { provider, owner } = useParams<{ provider: string; owner: string }>()
+  const { data: plans } = useAvailablePlans({ provider, owner })
+  const { proPlanMonth, proPlanYear } = useProPlans({ plans })
+  const perMonthPrice = calculatePriceProPlan({
+    seats,
+    baseUnitPrice: proPlanMonth?.baseUnitPrice,
+  })
+  const perYearPrice = calculatePriceProPlan({
+    seats,
+    baseUnitPrice: proPlanYear?.baseUnitPrice,
+  })
+  const isPerYear = isAnnualPlan(newPlan)
+
   if (isPerYear) {
     return (
       <div className="bg-ds-gray-primary p-4">
@@ -66,9 +91,11 @@ const TotalBanner: React.FC<TotalBannerProps> = ({
 
 TotalBanner.propTypes = {
   setValue: PropTypes.func.isRequired,
-  isPerYear: PropTypes.bool.isRequired,
-  perYearPrice: PropTypes.number.isRequired,
-  perMonthPrice: PropTypes.number.isRequired,
+  newPlan: PropTypes.string.isRequired,
+  seats: PropTypes.number.isRequired,
+  // isPerYear: PropTypes.bool.isRequired,
+  // perYearPrice: PropTypes.number.isRequired,
+  // perMonthPrice: PropTypes.number.isRequired,
 }
 
 export default TotalBanner

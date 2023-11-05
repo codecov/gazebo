@@ -6,6 +6,7 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TrialStatuses } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
 import { Plans } from 'shared/utils/billing'
 
@@ -61,10 +62,20 @@ const proPlanYear = {
   quantity: 10,
 }
 
+const trialPlan = {
+  marketingName: 'Pro Trial Team',
+  value: 'users-trial',
+  billingRate: null,
+  baseUnitPrice: 12,
+  benefits: ['Configurable # of users', 'Unlimited repos'],
+  monthlyUploadLimit: null,
+}
+
 const allPlans = [
   basicPlan,
   proPlanMonth,
   proPlanYear,
+  trialPlan,
   {
     marketingName: 'Pro Team',
     value: 'users-enterprisem',
@@ -127,6 +138,27 @@ const mockAccountDetailsProYearly = {
   inactiveUserCount: 0,
 }
 
+const mockAccountDetailsTrial = {
+  plan: trialPlan,
+  activatedUserCount: 28,
+  inactiveUserCount: 0,
+}
+
+const mockPlanDataResponse = {
+  baseUnitPrice: 10,
+  benefits: [],
+  billingRate: 'monthly',
+  marketingName: 'Pro Team',
+  monthlyUploadLimit: 250,
+  value: 'test-plan',
+  trialStatus: TrialStatuses.NOT_STARTED,
+  trialStartDate: '',
+  trialEndDate: '',
+  trialTotalDays: 0,
+  pretrialUsersCount: 0,
+  planUserCount: 1,
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -175,10 +207,12 @@ describe('ProPlanControls', () => {
       planValue = Plans.USERS_BASIC,
       successfulPatchRequest = true,
       errorDetails = undefined,
+      trialStatus = undefined,
     } = {
       planValue: Plans.USERS_BASIC,
       successfulPatchRequest: true,
       errorDetails: undefined,
+      trialStatus: undefined,
     }
   ) {
     const addNotification = jest.fn()
@@ -195,6 +229,8 @@ describe('ProPlanControls', () => {
           return res(ctx.status(200), ctx.json(mockAccountDetailsProMonthly))
         } else if (planValue === Plans.USERS_PR_INAPPY) {
           return res(ctx.status(200), ctx.json(mockAccountDetailsProYearly))
+        } else if (planValue === Plans.USERS_TRIAL) {
+          return res(ctx.status(200), ctx.json(mockAccountDetailsTrial))
         }
       }),
       rest.patch(
@@ -218,6 +254,16 @@ describe('ProPlanControls', () => {
           ctx.status(200),
           ctx.data({
             owner: { availablePlans: allPlans },
+          })
+        )
+      }),
+      graphql.query('GetPlanData', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              plan: { ...mockPlanDataResponse, trialStatus },
+            },
           })
         )
       })
@@ -720,7 +766,7 @@ describe('ProPlanControls', () => {
       })
 
       describe('when the mutation is successful', () => {
-        // This test works because users-pr-inapym is the current, but by me mocking the billingControls
+        // This test works because users-pr-inappym is the current, but by me mocking the billingControls
         // I lose the ability to change that and test users-yearly > monthly. Wdyt?
         it('renders success notification', async () => {
           const { patchRequest, user } = setup({
@@ -833,6 +879,35 @@ describe('ProPlanControls', () => {
               text: 'Something went wrong',
             })
           )
+        })
+      })
+    })
+
+    describe('user is currently on a trial', () => {
+      describe('user chooses less than the number of active users', () => {
+        it('does not display an error', async () => {
+          const { user } = setup({
+            planValue: Plans.USERS_TRIAL,
+            trialStatus: TrialStatuses.ONGOING,
+          })
+          render(<ProPlanControls />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '8')
+
+          const updateButton = await screen.findByRole('button', {
+            name: 'Update',
+          })
+          await user.click(updateButton)
+
+          await waitFor(() => queryClient.isMutating)
+          await waitFor(() => !queryClient.isMutating)
+
+          const error = screen.queryByText(
+            /deactivate more users before downgrading plans/i
+          )
+          expect(error).not.toBeInTheDocument()
         })
       })
     })

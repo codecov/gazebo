@@ -1,19 +1,18 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { useHistory, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 import {
   useAccountDetails,
   useAvailablePlans,
-  useUpgradePlan,
+  usePlanData,
 } from 'services/account'
-import { useAddNotification } from 'services/toastNotification'
-import { isAnnualPlan, useProPlans } from 'shared/utils/billing'
+import { useProPlans } from 'shared/utils/billing'
 import {
-  calculatePrice,
-  getInitialDataForm,
+  // getInitialDataForm,
+  getDefaultValuesProUpgrade,
   getSchema,
-  MIN_NB_SEATS,
+  MIN_NB_SEATS_PRO,
 } from 'shared/utils/upgradeForm'
 import TextInput from 'ui/TextInput'
 
@@ -21,152 +20,76 @@ import BillingControls from './BillingControls'
 import TotalBanner from './TotalBanner'
 import UserCount from './UserCount'
 
+import { useUpgradeControls } from '../hooks'
 import UpdateButton from '../UpdateButton'
-
-const useProPlanControls = ({
-  proPlanYear,
-  proPlanMonth,
-  accountDetails,
-  minSeats,
-  // sentryPrice,
-  // sentryPlanYear,
-  // sentryPlanMonth,
-  // isSentryUpgrade,
-}) => {
-  const { provider, owner } = useParams()
-  const history = useHistory()
-  const addToast = useAddNotification()
-  const { mutate, ...rest } = useUpgradePlan({ provider, owner })
-
-  // Put this into it's own file
-  function upgradePlan({ seats, newPlan }) {
-    return mutate(
-      {
-        seats,
-        newPlan,
-      },
-      {
-        onSuccess: () => {
-          addToast({
-            type: 'success',
-            text: 'Plan successfully upgraded',
-          })
-          history.push(`/plan/${provider}/${owner}`)
-        },
-        onError: (error) => {
-          addToast({
-            type: 'error',
-            text: error?.data?.detail || 'Something went wrong',
-          })
-        },
-      }
-    )
-  }
-
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState,
-    setValue,
-    getValues,
-    reset,
-  } = useForm({
-    defaultValues: getInitialDataForm({
-      accountDetails,
-      proPlanYear,
-      // isSentryUpgrade,
-      // sentryPlanYear,
-      // trialStatus: planData?.plan?.trialStatus,
-    }),
-    resolver: zodResolver(
-      getSchema({
-        accountDetails,
-        minSeats,
-        // trialStatus: planData?.plan?.trialStatus,
-      })
-    ),
-    mode: 'onChange',
-  })
-
-  const perYearPrice = calculatePrice({
-    seats: watch('seats'),
-    baseUnitPrice: proPlanYear?.baseUnitPrice,
-    // baseUnitPrice: isSentryUpgrade
-    //   ? sentryPlanYear?.baseUnitPrice
-    //   : proPlanYear?.baseUnitPrice,
-
-    // isSentryUpgrade,
-    // sentryPrice,
-  })
-
-  const perMonthPrice = calculatePrice({
-    seats: watch('seats'),
-    baseUnitPrice: proPlanMonth?.baseUnitPrice,
-    // baseUnitPrice: isSentryUpgrade
-    //   ? sentryPlanYear?.baseUnitPrice
-    //   : proPlanMonth?.baseUnitPrice,
-
-    // isSentryUpgrade,
-    // sentryPrice,
-  })
-
-  const isPerYear = isAnnualPlan(watch('newPlan'))
-
-  return {
-    perYearPrice,
-    perMonthPrice,
-    register,
-    handleSubmit,
-    isPerYear,
-    formState,
-    setValue,
-    getValues,
-    reset,
-    watch,
-    upgradePlan,
-    ...rest,
-  }
-}
 
 function ProPlanControls() {
   const { provider, owner } = useParams()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: plans } = useAvailablePlans({ provider, owner })
-  const { proPlanMonth, proPlanYear } = useProPlans({ plans })
+  const { data: planData } = usePlanData({ owner, provider })
+  // const { proPlanMonth, proPlanYear } = useProPlans({ plans })
+  const { proPlanYear } = useProPlans({ plans })
+  const { upgradePlan } = useUpgradeControls()
+
+  const trialStatus = planData?.plan?.trialStatus
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { isValid, errors },
+    setValue,
+    getValues,
+    // reset,
+  } = useForm({
+    defaultValues: getDefaultValuesProUpgrade({
+      accountDetails,
+      proPlanYear,
+      // isSentryUpgrade,
+      // sentryPlanYear,
+      trialStatus,
+    }),
+    resolver: zodResolver(
+      getSchema({
+        accountDetails,
+        minSeats: MIN_NB_SEATS_PRO,
+        trialStatus,
+      })
+    ),
+    mode: 'onChange',
+  })
 
   // const isSentryUpgrade = canApplySentryUpgrade({
   //   plan: accountDetails?.plan?.value,
   //   plans,
   // })
   // const minSeats = isSentryUpgrade ? MIN_SENTRY_SEATS : MIN_NB_SEATS
-  const minSeats = MIN_NB_SEATS
   // const trialStatus = planData?.plan?.trialStatus
 
-  const {
-    perYearPrice,
-    perMonthPrice,
-    register,
-    handleSubmit,
-    isPerYear,
-    setValue,
-    getValues,
-    formState: { isValid, errors },
-    upgradePlan,
-    watch,
-  } = useProPlanControls({
-    proPlanYear,
-    proPlanMonth,
-    accountDetails,
-    minSeats,
-    // sentryPrice: SENTRY_PRICE,
-    // sentryPlanYear,
-    // sentryPlanMonth,
-    // isSentryUpgrade,
-  })
+  // const {
+  //   // perYearPrice,
+  //   // perMonthPrice,
+  //   register,
+  //   handleSubmit,
+  //   // isPerYear,
+  //   setValue,
+  //   getValues,
+  //   formState: { isValid, errors },
+  //   upgradePlan,
+  //   watch,
+  // } = useProPlanControls({
+  //   proPlanYear,
+  //   proPlanMonth,
+  //   accountDetails,
+  //   // minSeats,
+  //   // sentryPrice: SENTRY_PRICE,
+  //   // sentryPlanYear,
+  //   // sentryPlanMonth,
+  //   // isSentryUpgrade,
+  // })
 
-  const planString = getValues('newPlan')
-  // const isPerYear = isAnnualPlan(watch('newPlan'))
+  const newPlan = getValues('newPlan')
+  const seats = watch('seats')
 
   return (
     <form
@@ -179,7 +102,7 @@ function ProPlanControls() {
       </div>
       <div className="flex flex-col gap-2">
         <BillingControls
-          planString={planString}
+          planString={newPlan}
           // isSentryUpgrade={isSentryUpgrade}
           setValue={setValue}
         />
@@ -194,7 +117,7 @@ function ProPlanControls() {
             size="20"
             type="number"
             label="Seat count"
-            min={minSeats}
+            min={MIN_NB_SEATS_PRO}
           />
         </div>
         <UserCount />
@@ -206,16 +129,18 @@ function ProPlanControls() {
         /> */}
       </div>
       <TotalBanner
-        isPerYear={isPerYear}
-        perYearPrice={perYearPrice}
-        perMonthPrice={perMonthPrice}
+        // isPerYear={isPerYear}
+        seats={seats}
+        newPlan={newPlan}
+        // perYearPrice={perYearPrice}
+        // perMonthPrice={perMonthPrice}
         setValue={setValue}
         // isSentryUpgrade={isSentryUpgrade}
         // sentryPlanYear={sentryPlanYear}
         // sentryPlanMonth={sentryPlanMonth}
-        seats={watch('seats')}
+        // seats={watch('seats')}
       />
-      {/* The next invoice logic has not been working for a long time, I'm wondering if we should just get rid of it. There should be a screenshot I
+      {/* The next invoice logic has not been working for a long time so I just deleted it. There should be a screenshot I
       attached showing how it should look, mega showing how much we haven't properly used this. Deleting for now */}
       {errors?.seats && (
         <p className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
