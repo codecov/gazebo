@@ -7,9 +7,10 @@ import Button from 'ui/Button'
 import Spinner from 'ui/Spinner'
 import TotalsNumber from 'ui/TotalsNumber'
 
-import CIStatus from './CIStatus'
 import Coverage from './Coverage'
-import Title from './Title'
+
+import CIStatus from '../shared/CIStatus'
+import Title from '../shared/Title'
 
 const headers = [
   {
