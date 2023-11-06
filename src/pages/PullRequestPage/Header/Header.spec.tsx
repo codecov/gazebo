@@ -12,39 +12,50 @@ import Header from './Header'
 jest.mock('./HeaderDefault', () => () => 'Default Header')
 jest.mock('./HeaderTeam', () => () => 'Team Header')
 jest.mock('shared/featureFlags')
+
 const mockedUseFlags = useFlags as jest.Mock<{ multipleTiers: boolean }>
+
+const mockRepoSettings = (isPrivate = false) => ({
+  owner: {
+    repository: {
+      defaultBranch: 'master',
+      private: isPrivate,
+      uploadToken: 'token',
+      graphToken: 'token',
+      yaml: 'yaml',
+      bot: {
+        username: 'test',
+      },
+    },
+  },
+})
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 const server = setupServer()
+
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/test-org/test-repo/pull/12']}>
-      <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
+    <MemoryRouter initialEntries={['/gh/codecov/test-repo/commit/id-1']}>
+      <Route path="/:provider/:owner/:repo/commit/:commit">{children}</Route>
     </MemoryRouter>
   </QueryClientProvider>
 )
 
-beforeAll(() => {
-  server.listen()
-})
-
+beforeAll(() => server.listen())
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-
-afterAll(() => {
-  server.close()
-})
-
+afterAll(() => server.close())
 interface SetupArgs {
   multipleTiers: boolean
+  isPrivate?: boolean
 }
 
 describe('Header', () => {
-  function setup({ multipleTiers = false }: SetupArgs) {
+  function setup({ multipleTiers = false, isPrivate = false }: SetupArgs) {
     mockedUseFlags.mockReturnValue({
       multipleTiers,
     })
@@ -61,6 +72,9 @@ describe('Header', () => {
           ctx.status(200),
           ctx.data({ owner: { plan: { tierName: TierNames.PRO } } })
         )
+      }),
+      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
       })
     )
   }
@@ -82,18 +96,36 @@ describe('Header', () => {
   })
 
   describe('when rendered and customer has team tier', () => {
-    beforeEach(() => {
-      setup({ multipleTiers: true })
+    describe('when the repository is private', () => {
+      beforeEach(() => {
+        setup({ multipleTiers: true, isPrivate: true })
+      })
+
+      it('renders the team header component', async () => {
+        render(<Header />, { wrapper })
+
+        const teamHeader = await screen.findByText(/Team Header/)
+        expect(teamHeader).toBeInTheDocument()
+
+        const defaultHeader = screen.queryByText(/Default Header/)
+        expect(defaultHeader).not.toBeInTheDocument()
+      })
     })
 
-    it('renders the team header component', async () => {
-      render(<Header />, { wrapper })
+    describe('when the repository is public', () => {
+      beforeEach(() => {
+        setup({ multipleTiers: true, isPrivate: false })
+      })
 
-      const teamHeader = await screen.findByText(/Team Header/)
-      expect(teamHeader).toBeInTheDocument()
+      it('renders the default team component', async () => {
+        render(<Header />, { wrapper })
 
-      const defaultHeader = screen.queryByText(/Default Header/)
-      expect(defaultHeader).not.toBeInTheDocument()
+        const defaultHeader = await screen.findByText(/Default Header/)
+        expect(defaultHeader).toBeInTheDocument()
+
+        const teamHeader = screen.queryByText(/Team Header/)
+        expect(teamHeader).not.toBeInTheDocument()
+      })
     })
   })
 })

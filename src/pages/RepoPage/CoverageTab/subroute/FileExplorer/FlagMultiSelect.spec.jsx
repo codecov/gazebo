@@ -14,6 +14,21 @@ import FlagMultiSelect from './FlagMultiSelect'
 jest.mock('shared/featureFlags')
 jest.mock('react-use/lib/useIntersection')
 
+const mockRepoSettings = (isPrivate) => ({
+  owner: {
+    repository: {
+      defaultBranch: 'main',
+      private: isPrivate,
+      uploadToken: 'token',
+      graphToken: 'token',
+      yaml: 'yaml',
+      bot: {
+        username: 'test',
+      },
+    },
+  },
+})
+
 const mockFirstResponse = {
   owner: {
     repository: {
@@ -146,12 +161,14 @@ describe('FlagMultiSelect', () => {
       noNextPage = false,
       backfillData = mockBackfillHasFlagsAndActive,
       tierValue = TierNames.PRO,
+      isPrivate = false,
     } = {
       flagValue: false,
       isIntersecting: false,
       noNextPage: false,
       mockBackfillHasFlagsAndActive: mockBackfillHasFlagsAndActive,
       tierValue: TierNames.PRO,
+      isPrivate: false,
     }
   ) {
     const user = userEvent.setup()
@@ -177,16 +194,13 @@ describe('FlagMultiSelect', () => {
         return res(ctx.status(200), ctx.data(backfillData))
       }),
       graphql.query('OwnerTier', (req, res, ctx) => {
-        if (tierValue === TierNames.TEAM) {
-          return res(
-            ctx.status(200),
-            ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
-          )
-        }
         return res(
           ctx.status(200),
-          ctx.data({ owner: { plan: { tierName: TierNames.PRO } } })
+          ctx.data({ owner: { plan: { tierName: tierValue } } })
         )
+      }),
+      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
       })
     )
 
@@ -310,15 +324,30 @@ describe('FlagMultiSelect', () => {
     })
 
     describe('when on team plan', () => {
-      it('does not show multi select', async () => {
-        setup({ flagValue: true, tierValue: TierNames.TEAM })
+      describe('repo is public', () => {
+        it('renders multi select', async () => {
+          setup({
+            flagValue: true,
+            tierValue: TierNames.TEAM,
+            isPrivate: false,
+          })
+          render(<FlagMultiSelect />, { wrapper })
 
-        const { container } = render(<FlagMultiSelect />, { wrapper })
+          const select = await screen.findByText('All flags')
+          expect(select).toBeInTheDocument()
+        })
+      })
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+      describe('repo is private', () => {
+        it('does not show multi select', async () => {
+          setup({ flagValue: true, tierValue: TierNames.TEAM, isPrivate: true })
+          const { container } = render(<FlagMultiSelect />, { wrapper })
 
-        await waitFor(() => expect(container).toBeEmptyDOMElement())
+          await waitFor(() => queryClient.isFetching)
+          await waitFor(() => !queryClient.isFetching)
+
+          await waitFor(() => expect(container).toBeEmptyDOMElement())
+        })
       })
     })
 

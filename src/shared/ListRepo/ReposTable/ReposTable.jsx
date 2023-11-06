@@ -11,12 +11,12 @@ import Button from 'ui/Button'
 import Spinner from 'ui/Spinner'
 import TotalsNumber from 'ui/TotalsNumber'
 
-import InactiveRepo from './InactiveRepo'
 import NoRepoCoverage from './NoRepoCoverage'
-import NoReposBlock from './NoReposBlock'
-import RepoTitleLink from './RepoTitleLink'
 
+import InactiveRepo from '../InactiveRepo'
 import { repoDisplayOptions } from '../ListRepo'
+import NoReposBlock from '../NoReposBlock'
+import RepoTitleLink from '../RepoTitleLink'
 
 const Loader = () => (
   <div className="flex flex-1 justify-center">

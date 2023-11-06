@@ -53,10 +53,7 @@ function OwnerPage() {
           <Tabs owner={ownerData} provider={provider} />
         )}
         <ActiveContext.Provider value={params?.repoDisplay}>
-          <ListRepo
-            canRefetch={ownerData?.isCurrentUserPartOfOrg}
-            owner={ownerData?.username}
-          />
+          <ListRepo canRefetch={ownerData?.isCurrentUserPartOfOrg} />
         </ActiveContext.Provider>
       </div>
     </div>
