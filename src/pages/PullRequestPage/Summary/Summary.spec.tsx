@@ -100,7 +100,7 @@ describe('Summary', () => {
     'renders the normal summary',
     ({ multipleTiers, tierValue, privateRepo }) => {
       it(`multipleTiers: ${multipleTiers}, tierValue: ${tierValue}, privateRepo: ${privateRepo}`, async () => {
-        setup()
+        setup({ multipleTiers, tierValue, privateRepo })
         render(<Summary />, { wrapper: wrapper() })
 
         await waitFor(() =>
