@@ -14,9 +14,6 @@ import ProPlanControls from './ProPlanControls'
 
 jest.mock('services/toastNotification')
 jest.mock('@stripe/react-stripe-js')
-jest.mock('./BillingControls', () => () => 'Billing Controls')
-jest.mock('./TotalBanner', () => () => 'Total Banner')
-jest.mock('./UserCount', () => () => 'User Count')
 
 const basicPlan = {
   marketingName: 'Basic',
@@ -34,7 +31,7 @@ const basicPlan = {
 
 const proPlanMonth = {
   marketingName: 'Pro Team',
-  value: 'users-pr-inappm',
+  value: Plans.USERS_PR_INAPPM,
   billingRate: 'monthly',
   baseUnitPrice: 12,
   benefits: [
@@ -49,7 +46,7 @@ const proPlanMonth = {
 
 const proPlanYear = {
   marketingName: 'Pro Team',
-  value: 'users-pr-inappy',
+  value: Plans.USERS_PR_INAPPY,
   billingRate: 'annually',
   baseUnitPrice: 10,
   benefits: [
@@ -59,7 +56,7 @@ const proPlanYear = {
     'Priority Support',
   ],
   monthlyUploadLimit: null,
-  quantity: 10,
+  quantity: 13,
 }
 
 const trialPlan = {
@@ -71,54 +68,7 @@ const trialPlan = {
   monthlyUploadLimit: null,
 }
 
-const allPlans = [
-  basicPlan,
-  proPlanMonth,
-  proPlanYear,
-  trialPlan,
-  {
-    marketingName: 'Pro Team',
-    value: 'users-enterprisem',
-    billingRate: 'monthly',
-    baseUnitPrice: 12,
-    benefits: [
-      'Configurable # of users',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-      'Priority Support',
-    ],
-    monthlyUploadLimit: null,
-  },
-  {
-    marketingName: 'Pro Team',
-    value: 'users-enterprisey',
-    billingRate: 'annually',
-    baseUnitPrice: 10,
-    benefits: [
-      'Configurable # of users',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-      'Priority Support',
-    ],
-    monthlyUploadLimit: null,
-  },
-  {
-    marketingName: 'Sentry',
-    value: 'users-sentrym',
-    billingRate: null,
-    baseUnitPrice: 0,
-    benefits: ['Includes 5 seats', 'Unlimited public repositories'],
-    monthlyUploadLimit: null,
-  },
-  {
-    marketingName: 'Sentry',
-    value: 'users-sentryy',
-    billingRate: null,
-    baseUnitPrice: 10,
-    benefits: ['Includes 5 seats', 'Unlimited private repositories'],
-    monthlyUploadLimit: null,
-  },
-]
+const allPlans = [basicPlan, proPlanMonth, proPlanYear, trialPlan]
 
 const mockAccountDetailsBasic = {
   plan: basicPlan,
@@ -130,6 +80,20 @@ const mockAccountDetailsProMonthly = {
   plan: proPlanMonth,
   activatedUserCount: 7,
   inactiveUserCount: 0,
+  subscriptionDetail: {
+    latestInvoice: {
+      periodStart: 1595270468,
+      periodEnd: 1597948868,
+      dueDate: '1600544863',
+      amountPaid: 9600.0,
+      amountDue: 9600.0,
+      amountRemaining: 0.0,
+      total: 9600.0,
+      subtotal: 9600.0,
+      invoicePdf:
+        'https://pay.stripe.com/invoice/acct_14SJTOGlVGuVgOrk/invst_Hs2qfFwArnp6AMjWPlwtyqqszoBzO3q/pdf',
+    },
+  },
 }
 
 const mockAccountDetailsProYearly = {
@@ -274,31 +238,65 @@ describe('ProPlanControls', () => {
 
   describe('when rendered', () => {
     describe('when the user has a basic plan', () => {
-      it('renders organization title', async () => {
+      it('renders the organization and owner titles', async () => {
         setup({ planValue: Plans.USERS_BASIC })
         render(<ProPlanControls />, { wrapper: wrapper() })
 
         const organizationTitle = await screen.findByText(/Organization/)
         expect(organizationTitle).toBeInTheDocument()
-      })
-
-      it('renders the owner', async () => {
-        setup({ planValue: Plans.USERS_BASIC })
-        render(<ProPlanControls />, { wrapper: wrapper() })
-
         const ownerTitle = await screen.findByText(/codecov/)
         expect(ownerTitle).toBeInTheDocument()
       })
 
-      it('renders the billing controls', async () => {
+      it('renders monthly option button', async () => {
         setup({ planValue: Plans.USERS_BASIC })
         render(<ProPlanControls />, { wrapper: wrapper() })
 
-        const billingControls = await screen.findByText(/Billing Controls/)
-        expect(billingControls).toBeInTheDocument()
+        const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
+        expect(optionBtn).toBeInTheDocument()
       })
 
-      it('renders minimum seat number of 2 for basic plan', async () => {
+      it('renders annual option button', async () => {
+        setup({ planValue: Plans.USERS_BASIC })
+        render(<ProPlanControls />, { wrapper: wrapper() })
+
+        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        expect(optionBtn).toBeInTheDocument()
+      })
+
+      it('renders annual option button as "selected"', async () => {
+        setup({ planValue: Plans.USERS_BASIC })
+        render(<ProPlanControls />, { wrapper: wrapper() })
+
+        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        expect(optionBtn).toBeInTheDocument()
+        expect(optionBtn).toHaveClass('bg-ds-primary-base')
+      })
+
+      it('has the price for the year', async () => {
+        setup({ planValue: Plans.USERS_BASIC })
+        render(<ProPlanControls />, { wrapper: wrapper() })
+
+        const price = await screen.findByText(/\$240/)
+        expect(price).toBeInTheDocument()
+      })
+
+      describe('when updating to a month plan', () => {
+        it('has the price for the month', async () => {
+          const { user } = setup({ planValue: Plans.USERS_BASIC })
+          render(<ProPlanControls />, { wrapper: wrapper() })
+
+          const monthOption = await screen.findByRole('button', {
+            name: 'Monthly',
+          })
+          await user.click(monthOption)
+
+          const price = screen.getByText(/\$48/)
+          expect(price).toBeInTheDocument()
+        })
+      })
+
+      it('renders minimum seat number of 2', async () => {
         setup({ planValue: Plans.USERS_BASIC })
         render(<ProPlanControls />, { wrapper: wrapper() })
 
@@ -325,22 +323,6 @@ describe('ProPlanControls', () => {
         expect(error).toBeInTheDocument()
       })
 
-      it('renders the user count component', async () => {
-        setup({ planValue: Plans.USERS_BASIC })
-        render(<ProPlanControls />, { wrapper: wrapper() })
-
-        const userCount = await screen.findByText('User Count')
-        expect(userCount).toBeInTheDocument()
-      })
-
-      it('renders the total banner component', async () => {
-        setup({ planValue: Plans.USERS_BASIC })
-        render(<ProPlanControls />, { wrapper: wrapper() })
-
-        const totalBanner = await screen.findByText('Total Banner')
-        expect(totalBanner).toBeInTheDocument()
-      })
-
       it('renders the proceed to checkout for the update button', async () => {
         setup({ planValue: Plans.USERS_BASIC })
         render(<ProPlanControls />, { wrapper: wrapper() })
@@ -352,9 +334,7 @@ describe('ProPlanControls', () => {
       })
 
       describe('when the mutation is successful', () => {
-        // This test works because users-pr-inappy is the default choice, but by me mocking the billingControls
-        // I lose the ability to change that and test users-basic > monthly, only users-basic > yearly. Wdyt?
-        it('renders success notification', async () => {
+        it('renders success notification when upgrading seats with yearly plan', async () => {
           const { patchRequest, user } = setup({
             successfulPatchRequest: true,
             planValue: Plans.USERS_BASIC,
@@ -374,7 +354,38 @@ describe('ProPlanControls', () => {
             expect(patchRequest).toHaveBeenCalledWith({
               plan: {
                 quantity: 20,
-                value: 'users-pr-inappy',
+                value: Plans.USERS_PR_INAPPY,
+              },
+            })
+          )
+        })
+
+        it('renders success notification when upgrading seats with monthly plan', async () => {
+          const { patchRequest, user } = setup({
+            successfulPatchRequest: true,
+            planValue: Plans.USERS_BASIC,
+          })
+          render(<ProPlanControls />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '20')
+
+          const optionBtn = await screen.findByRole('button', {
+            name: 'Monthly',
+          })
+          await user.click(optionBtn)
+
+          const proceedToCheckoutButton = await screen.findByRole('button', {
+            name: /Proceed to Checkout/,
+          })
+          await user.click(proceedToCheckoutButton)
+
+          await waitFor(() =>
+            expect(patchRequest).toHaveBeenCalledWith({
+              plan: {
+                quantity: 20,
+                value: Plans.USERS_PR_INAPPM,
               },
             })
           )
@@ -470,28 +481,70 @@ describe('ProPlanControls', () => {
     })
 
     describe('when the user has a pro plan monthly', () => {
-      it('renders organization title', async () => {
+      it('renders the organization and owner titles', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
         render(<ProPlanControls />, { wrapper: wrapper() })
 
         const organizationTitle = await screen.findByText(/Organization/)
         expect(organizationTitle).toBeInTheDocument()
-      })
-
-      it('renders the owner', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPM })
-        render(<ProPlanControls />, { wrapper: wrapper() })
-
         const ownerTitle = await screen.findByText(/codecov/)
         expect(ownerTitle).toBeInTheDocument()
       })
 
-      it('renders the billing controls', async () => {
+      it('renders monthly option button', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
         render(<ProPlanControls />, { wrapper: wrapper() })
 
-        const billingControls = await screen.findByText(/Billing Controls/)
-        expect(billingControls).toBeInTheDocument()
+        const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
+        expect(optionBtn).toBeInTheDocument()
+      })
+
+      it('renders annual option button', async () => {
+        setup({ planValue: Plans.USERS_PR_INAPPM })
+        render(<ProPlanControls />, { wrapper: wrapper() })
+
+        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        expect(optionBtn).toBeInTheDocument()
+      })
+
+      it('renders monthly option button as "selected"', async () => {
+        setup({ planValue: Plans.USERS_PR_INAPPM })
+        render(<ProPlanControls />, { wrapper: wrapper() })
+
+        const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
+        expect(optionBtn).toBeInTheDocument()
+        expect(optionBtn).toHaveClass('bg-ds-primary-base')
+      })
+
+      it('renders the seat input with 10 seats (existing subscription)', async () => {
+        setup({ planValue: Plans.USERS_PR_INAPPM })
+        render(<ProPlanControls />, { wrapper: wrapper() })
+
+        const seatCount = await screen.findByRole('spinbutton')
+        expect(seatCount).toHaveValue(10)
+      })
+
+      it('has the price for the year', async () => {
+        setup({ planValue: Plans.USERS_PR_INAPPM })
+        render(<ProPlanControls />, { wrapper: wrapper() })
+
+        const price = await screen.findByText(/\$120/)
+        expect(price).toBeInTheDocument()
+      })
+
+      describe('when updating to a yearly plan', () => {
+        it('has the price for the year', async () => {
+          const { user } = setup({ planValue: Plans.USERS_PR_INAPPM })
+          render(<ProPlanControls />, { wrapper: wrapper() })
+
+          const annualOption = await screen.findByRole('button', {
+            name: 'Annual',
+          })
+          await user.click(annualOption)
+
+          const price = screen.getByText(/\$100/)
+          expect(price).toBeInTheDocument()
+        })
       })
 
       it('renders validation error when the user selects less than 2 seats', async () => {
@@ -532,22 +585,6 @@ describe('ProPlanControls', () => {
         expect(error).toBeInTheDocument()
       })
 
-      it('renders the user count component', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPM })
-        render(<ProPlanControls />, { wrapper: wrapper() })
-
-        const userCount = await screen.findByText('User Count')
-        expect(userCount).toBeInTheDocument()
-      })
-
-      it('renders the total banner component', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPM })
-        render(<ProPlanControls />, { wrapper: wrapper() })
-
-        const totalBanner = await screen.findByText('Total Banner')
-        expect(totalBanner).toBeInTheDocument()
-      })
-
       it('renders the update button', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
         render(<ProPlanControls />, { wrapper: wrapper() })
@@ -559,9 +596,7 @@ describe('ProPlanControls', () => {
       })
 
       describe('when the mutation is successful', () => {
-        // This test works because users-pr-inappm is the current, but by me mocking the billingControls
-        // I lose the ability to change that and test users-monthly > yearly. Wdyt?
-        it('renders success notification', async () => {
+        it('renders success notification when upgrading seats with monthly plan', async () => {
           const { patchRequest, user } = setup({
             successfulPatchRequest: true,
             planValue: Plans.USERS_PR_INAPPM,
@@ -581,14 +616,14 @@ describe('ProPlanControls', () => {
             expect(patchRequest).toHaveBeenCalledWith({
               plan: {
                 quantity: 20,
-                value: 'users-pr-inappm',
+                value: Plans.USERS_PR_INAPPM,
               },
             })
           )
         })
 
-        it('redirects the user to the plan page', async () => {
-          const { user } = setup({
+        it('renders success notification when upgrading seats with yearly plan', async () => {
+          const { patchRequest, user } = setup({
             successfulPatchRequest: true,
             planValue: Plans.USERS_PR_INAPPM,
           })
@@ -598,17 +633,24 @@ describe('ProPlanControls', () => {
           await user.type(input, '{backspace}{backspace}{backspace}')
           await user.type(input, '20')
 
+          const optionBtn = await screen.findByRole('button', {
+            name: 'Annual',
+          })
+          await user.click(optionBtn)
+
           const update = await screen.findByRole('button', {
             name: /Update/,
           })
           await user.click(update)
 
-          await waitFor(() => queryClient.isMutating())
-          await waitFor(() => !queryClient.isMutating())
-          await waitFor(() => queryClient.isFetching())
-          await waitFor(() => !queryClient.isFetching())
-
-          expect(testLocation.pathname).toEqual('/plan/gh/codecov')
+          await waitFor(() =>
+            expect(patchRequest).toHaveBeenCalledWith({
+              plan: {
+                quantity: 20,
+                value: Plans.USERS_PR_INAPPY,
+              },
+            })
+          )
         })
       })
 
@@ -677,28 +719,70 @@ describe('ProPlanControls', () => {
     })
 
     describe('when the user has a pro plan yearly', () => {
-      it('renders organization title', async () => {
+      it('renders the organization and owner titles', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPY })
         render(<ProPlanControls />, { wrapper: wrapper() })
 
         const organizationTitle = await screen.findByText(/Organization/)
         expect(organizationTitle).toBeInTheDocument()
-      })
-
-      it('renders the owner', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY })
-        render(<ProPlanControls />, { wrapper: wrapper() })
-
         const ownerTitle = await screen.findByText(/codecov/)
         expect(ownerTitle).toBeInTheDocument()
       })
 
-      it('renders the billing controls', async () => {
+      it('renders monthly option button', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPY })
         render(<ProPlanControls />, { wrapper: wrapper() })
 
-        const billingControls = await screen.findByText(/Billing Controls/)
-        expect(billingControls).toBeInTheDocument()
+        const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
+        expect(optionBtn).toBeInTheDocument()
+      })
+
+      it('renders annual option button', async () => {
+        setup({ planValue: Plans.USERS_PR_INAPPY })
+        render(<ProPlanControls />, { wrapper: wrapper() })
+
+        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        expect(optionBtn).toBeInTheDocument()
+      })
+
+      it('renders annual option button as "selected"', async () => {
+        setup({ planValue: Plans.USERS_PR_INAPPY })
+        render(<ProPlanControls />, { wrapper: wrapper() })
+
+        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        expect(optionBtn).toBeInTheDocument()
+        expect(optionBtn).toHaveClass('bg-ds-primary-base')
+      })
+
+      it('renders the seat input with 13 seats (existing subscription)', async () => {
+        setup({ planValue: Plans.USERS_PR_INAPPY })
+        render(<ProPlanControls />, { wrapper: wrapper() })
+
+        const seatCount = await screen.findByRole('spinbutton')
+        expect(seatCount).toHaveValue(13)
+      })
+
+      it('has the price for the year', async () => {
+        setup({ planValue: Plans.USERS_PR_INAPPY })
+        render(<ProPlanControls />, { wrapper: wrapper() })
+
+        const price = await screen.findByText(/\$130/)
+        expect(price).toBeInTheDocument()
+      })
+
+      describe('when updating to a monthly plan', () => {
+        it('has the price for the month', async () => {
+          const { user } = setup({ planValue: Plans.USERS_PR_INAPPY })
+          render(<ProPlanControls />, { wrapper: wrapper() })
+
+          const monthlyOption = await screen.findByRole('button', {
+            name: 'Monthly',
+          })
+          await user.click(monthlyOption)
+
+          const price = screen.getByText(/\$156/)
+          expect(price).toBeInTheDocument()
+        })
       })
 
       it('renders validation error when the user selects less than 2 seats', async () => {
@@ -739,22 +823,6 @@ describe('ProPlanControls', () => {
         expect(error).toBeInTheDocument()
       })
 
-      it('renders the user count component', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY })
-        render(<ProPlanControls />, { wrapper: wrapper() })
-
-        const userCount = await screen.findByText('User Count')
-        expect(userCount).toBeInTheDocument()
-      })
-
-      it('renders the total banner component', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY })
-        render(<ProPlanControls />, { wrapper: wrapper() })
-
-        const totalBanner = await screen.findByText('Total Banner')
-        expect(totalBanner).toBeInTheDocument()
-      })
-
       it('renders the update button', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPY })
         render(<ProPlanControls />, { wrapper: wrapper() })
@@ -766,9 +834,7 @@ describe('ProPlanControls', () => {
       })
 
       describe('when the mutation is successful', () => {
-        // This test works because users-pr-inappym is the current, but by me mocking the billingControls
-        // I lose the ability to change that and test users-yearly > monthly. Wdyt?
-        it('renders success notification', async () => {
+        it('renders success notification when upgrading seats with an annual plan', async () => {
           const { patchRequest, user } = setup({
             successfulPatchRequest: true,
             planValue: Plans.USERS_PR_INAPPY,
@@ -788,7 +854,38 @@ describe('ProPlanControls', () => {
             expect(patchRequest).toHaveBeenCalledWith({
               plan: {
                 quantity: 20,
-                value: 'users-pr-inappy',
+                value: Plans.USERS_PR_INAPPY,
+              },
+            })
+          )
+        })
+
+        it('renders success notification when upgrading seats with a monthly plan', async () => {
+          const { patchRequest, user } = setup({
+            successfulPatchRequest: true,
+            planValue: Plans.USERS_PR_INAPPY,
+          })
+          render(<ProPlanControls />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '20')
+
+          const optionBtn = await screen.findByRole('button', {
+            name: 'Monthly',
+          })
+          await user.click(optionBtn)
+
+          const update = await screen.findByRole('button', {
+            name: /Update/,
+          })
+          await user.click(update)
+
+          await waitFor(() =>
+            expect(patchRequest).toHaveBeenCalledWith({
+              plan: {
+                quantity: 20,
+                value: Plans.USERS_PR_INAPPM,
               },
             })
           )
@@ -909,6 +1006,21 @@ describe('ProPlanControls', () => {
           )
           expect(error).not.toBeInTheDocument()
         })
+      })
+    })
+
+    describe('if there is an invoice', () => {
+      it('renders the next billing period', async () => {
+        setup({
+          planValue: Plans.USERS_PR_INAPPM,
+        })
+        render(<ProPlanControls />, { wrapper: wrapper() })
+
+        const nextBillingData = await screen.findByText(/Next Billing Date/)
+        expect(nextBillingData).toBeInTheDocument()
+
+        const billingDate = await screen.findByText(/August 20th, 2020/)
+        expect(billingDate).toBeInTheDocument()
       })
     })
   })

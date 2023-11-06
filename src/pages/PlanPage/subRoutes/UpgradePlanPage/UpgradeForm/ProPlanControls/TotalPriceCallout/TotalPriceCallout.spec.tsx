@@ -8,7 +8,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { Plans } from 'shared/utils/billing'
 
-import TotalBanner from './TotalBanner'
+import TotalBanner from './TotalPriceCallout'
 
 const allPlans = [
   {

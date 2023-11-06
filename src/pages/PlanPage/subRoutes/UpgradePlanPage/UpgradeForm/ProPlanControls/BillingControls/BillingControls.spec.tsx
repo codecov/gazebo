@@ -6,6 +6,8 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { Plans } from 'shared/utils/billing'
+
 import BillingControls from './BillingControls'
 
 const allPlans = [
@@ -45,48 +47,6 @@ const allPlans = [
       'Unlimited private repositories',
       'Priority Support',
     ],
-    monthlyUploadLimit: null,
-  },
-  {
-    marketingName: 'Pro Team',
-    value: 'users-enterprisem',
-    billingRate: 'monthly',
-    baseUnitPrice: 12,
-    benefits: [
-      'Configurable # of users',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-      'Priority Support',
-    ],
-    monthlyUploadLimit: null,
-  },
-  {
-    marketingName: 'Pro Team',
-    value: 'users-enterprisey',
-    billingRate: 'annually',
-    baseUnitPrice: 10,
-    benefits: [
-      'Configurable # of users',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-      'Priority Support',
-    ],
-    monthlyUploadLimit: null,
-  },
-  {
-    marketingName: 'Sentry',
-    value: 'users-sentrym',
-    billingRate: null,
-    baseUnitPrice: 0,
-    benefits: ['Includes 5 seats', 'Unlimited public repositories'],
-    monthlyUploadLimit: null,
-  },
-  {
-    marketingName: 'Sentry',
-    value: 'users-sentryy',
-    billingRate: null,
-    baseUnitPrice: 10,
-    benefits: ['Includes 5 seats', 'Unlimited private repositories'],
     monthlyUploadLimit: null,
   },
 ]
@@ -145,7 +105,7 @@ describe('BillingControls', () => {
 
         render(
           <BillingControls
-            planString="users-pr-inappy"
+            planString={Plans.USERS_PR_INAPPY}
             setValue={mockSetValue}
           />,
           {
@@ -169,7 +129,7 @@ describe('BillingControls', () => {
 
         render(
           <BillingControls
-            planString="users-pr-inappy"
+            planString={Plans.USERS_PR_INAPPY}
             setValue={mockSetValue}
           />,
           {
@@ -190,7 +150,7 @@ describe('BillingControls', () => {
 
           render(
             <BillingControls
-              planString="users-pr-inappy"
+              planString={Plans.USERS_PR_INAPPY}
               setValue={mockSetValue}
             />,
             {
@@ -217,7 +177,7 @@ describe('BillingControls', () => {
 
         render(
           <BillingControls
-            planString="users-pr-inappm"
+            planString={Plans.USERS_PR_INAPPM}
             setValue={mockSetValue}
           />,
           {
@@ -241,7 +201,7 @@ describe('BillingControls', () => {
 
         render(
           <BillingControls
-            planString="users-pr-inappm"
+            planString={Plans.USERS_PR_INAPPM}
             setValue={mockSetValue}
           />,
           {
@@ -262,7 +222,7 @@ describe('BillingControls', () => {
 
           render(
             <BillingControls
-              planString="users-pr-inappm"
+              planString={Plans.USERS_PR_INAPPM}
               setValue={mockSetValue}
             />,
             {

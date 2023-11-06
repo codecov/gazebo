@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
 import { useAvailablePlans } from 'services/account'
@@ -11,13 +10,13 @@ import {
 import { calculatePriceProPlan } from 'shared/utils/upgradeForm'
 import Icon from 'ui/Icon'
 
-interface TotalBannerProps {
+interface TotalPriceCalloutProps {
   newPlan: string
   seats: number
   setValue: (x: string, y: string) => void
 }
 
-const TotalBanner: React.FC<TotalBannerProps> = ({
+const TotalPriceCallout: React.FC<TotalPriceCalloutProps> = ({
   newPlan,
   seats,
   setValue,
@@ -83,10 +82,4 @@ const TotalBanner: React.FC<TotalBannerProps> = ({
   )
 }
 
-TotalBanner.propTypes = {
-  setValue: PropTypes.func.isRequired,
-  newPlan: PropTypes.string.isRequired,
-  seats: PropTypes.number.isRequired,
-}
-
-export default TotalBanner
+export default TotalPriceCallout

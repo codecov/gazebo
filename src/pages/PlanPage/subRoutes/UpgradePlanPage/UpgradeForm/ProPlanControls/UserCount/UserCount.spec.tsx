@@ -68,7 +68,7 @@ describe('UserCount', () => {
   }
 
   describe('when rendered', () => {
-    it('returns null when activatedUserCount is not defined', () => {
+    it('does not render user count when activatedUserCount is not defined', () => {
       setup({ activatedUserCount: undefined })
       render(<UserCount />, { wrapper })
 
@@ -76,7 +76,7 @@ describe('UserCount', () => {
       expect(message).not.toBeInTheDocument()
     })
 
-    it('returns null when inactiveUserCount is not defined', () => {
+    it('does not render user count when inactiveUserCount is not defined', () => {
       setup({ inactiveUserCount: undefined })
       render(<UserCount />, { wrapper })
 
@@ -96,7 +96,7 @@ describe('UserCount', () => {
       expect(message).toBeInTheDocument()
     })
 
-    it('does not render student information when there is no activatedStudentCount', () => {
+    it('does not render student information when activatedStudentCount is not defined', () => {
       setup({
         activatedUserCount: 15,
         inactiveUserCount: 5,
@@ -124,18 +124,20 @@ describe('UserCount', () => {
       expect(message).toBeInTheDocument()
     })
 
-    it('renders plural students text when there is more than one activatedStudentCount', async () => {
-      setup({
-        activatedUserCount: 15,
-        inactiveUserCount: 5,
-        activatedStudentCount: 2,
-      })
-      render(<UserCount />, {
-        wrapper,
-      })
+    describe('when there is more than one activatedStudentCount', () => {
+      it('renders plural students text', async () => {
+        setup({
+          activatedUserCount: 15,
+          inactiveUserCount: 5,
+          activatedStudentCount: 2,
+        })
+        render(<UserCount />, {
+          wrapper,
+        })
 
-      const message = await screen.findByText(/2 active students/i)
-      expect(message).toBeInTheDocument()
+        const message = await screen.findByText(/2 active students/i)
+        expect(message).toBeInTheDocument()
+      })
     })
   })
 })

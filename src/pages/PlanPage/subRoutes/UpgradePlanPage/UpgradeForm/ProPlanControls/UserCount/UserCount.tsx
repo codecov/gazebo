@@ -13,19 +13,15 @@ const StudentText: React.FC<StudentTextProps> = ({ activatedStudents }) => {
     return null
   }
 
+  let studentText = 'students'
   if (activatedStudents === 1) {
-    return (
-      <p className="mb-4 text-xs text-ds-gray-quinary">
-        *You have {activatedStudents} active student that does not count towards
-        the number of active users.
-      </p>
-    )
+    studentText = 'student'
   }
 
   return (
     <p className="mb-4 text-xs text-ds-gray-quinary">
-      *You have {activatedStudents} active students that do not count towards
-      the number of active users.
+      *You have {activatedStudents} active {studentText} that do not count
+      towards the number of active users.
     </p>
   )
 }
@@ -55,15 +51,7 @@ UserText.propTypes = {
   inactiveUserCount: PropTypes.number.isRequired,
 }
 
-interface UserCountProps {
-  activatedUserCount?: number
-  inactiveUserCount?: number
-  activatedStudentCount?: number
-}
-
-// This component has very little different logic from sentry (just a copy change). I still think it's worth having it here
-// In a separate file, but putting it out there to see what we think
-const UserCount: React.FC<UserCountProps> = () => {
+const UserCount: React.FC = () => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
 

@@ -7,7 +7,7 @@ import {
   useAvailablePlans,
   usePlanData,
 } from 'services/account'
-import { useProPlans } from 'shared/utils/billing'
+import { getNextBillingDate, useProPlans } from 'shared/utils/billing'
 import {
   getDefaultValuesProUpgrade,
   getSchema,
@@ -16,7 +16,7 @@ import {
 import TextInput from 'ui/TextInput'
 
 import BillingControls from './BillingControls'
-import TotalBanner from './TotalBanner'
+import TotalPriceCallout from './TotalPriceCallout'
 import UserCount from './UserCount'
 
 import { useUpgradeControls } from '../hooks'
@@ -31,6 +31,7 @@ function ProPlanControls() {
   const { upgradePlan } = useUpgradeControls()
 
   const trialStatus = planData?.plan?.trialStatus
+  const nextBillingDate = getNextBillingDate(accountDetails)
   const {
     register,
     handleSubmit,
@@ -84,9 +85,13 @@ function ProPlanControls() {
         </div>
         <UserCount />
       </div>
-      <TotalBanner seats={seats} newPlan={newPlan} setValue={setValue} />
-      {/* The next invoice logic has not been working for a long time so I just deleted it. There should be a screenshot I
-      attached showing how it should look, mega showing how much we haven't properly used this. Deleting for now */}
+      <TotalPriceCallout seats={seats} newPlan={newPlan} setValue={setValue} />
+      {nextBillingDate && (
+        <p className="mt-1 flex">
+          Next Billing Date
+          <span className="ml-auto">{nextBillingDate}</span>
+        </p>
+      )}
       {errors?.seats && (
         <p className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
           {errors?.seats?.message}
