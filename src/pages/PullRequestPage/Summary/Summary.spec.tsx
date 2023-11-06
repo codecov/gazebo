@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
@@ -30,7 +31,7 @@ const wrapper: WrapperClosure =
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={initialEntries}>
           <Route path={['/:provider/:owner/:repo/pull/:pullId']}>
-            {children}
+            <Suspense fallback={'loading'}>{children}</Suspense>
           </Route>
         </MemoryRouter>
       </QueryClientProvider>
@@ -76,7 +77,7 @@ describe('Summary', () => {
           })
         )
       ),
-      graphql.query('GetRepoSettings', (req, res, ctx) =>
+      graphql.query('GetRepoSettingsTeam', (req, res, ctx) =>
         res(
           ctx.status(200),
           ctx.data({
@@ -102,8 +103,9 @@ describe('Summary', () => {
         setup()
         render(<Summary />, { wrapper: wrapper() })
 
-        await waitFor(() => queryClient.isFetching())
-        await waitFor(() => !queryClient.isFetching())
+        await waitFor(() =>
+          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+        )
 
         const head = await screen.findByText('HEAD')
         expect(head).toBeInTheDocument()
@@ -125,8 +127,9 @@ describe('Summary', () => {
     })
     render(<Summary />, { wrapper: wrapper() })
 
-    await waitFor(() => queryClient.isFetching())
-    await waitFor(() => !queryClient.isFetching())
+    await waitFor(() =>
+      expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+    )
 
     const head = screen.queryByText('HEAD')
     expect(head).not.toBeInTheDocument()
