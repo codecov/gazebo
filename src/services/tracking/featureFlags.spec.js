@@ -30,6 +30,7 @@ describe('useTrackFeatureFlags', () => {
       )
 
       expect(mockIdentifyUser).lastCalledWith({
+        kind: 'user',
         name: 'doggo',
         email: 'test@test.com',
         key: 'hello',
@@ -75,6 +76,7 @@ describe('useTrackFeatureFlags', () => {
       )
 
       expect(mockIdentifyUser).lastCalledWith({
+        kind: 'user',
         name: 'doggo',
         email: 'test@test.com',
         key: 'impersonated',
@@ -121,6 +123,7 @@ describe('useTrackFeatureFlags', () => {
       )
 
       expect(mockIdentifyUser).lastCalledWith({
+        kind: 'user',
         name: 'doggo',
         email: 'test@test.com',
         key: 'impersonated',
@@ -166,6 +169,7 @@ describe('useTrackFeatureFlags', () => {
       )
 
       expect(mockIdentifyUser).lastCalledWith({
+        kind: 'user',
         name: 'doggo',
         email: 'test@test.com',
         key: 'impersonated',
