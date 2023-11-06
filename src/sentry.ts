@@ -51,6 +51,14 @@ const deClutterConfig = {
 
 export const SentryRoute = Sentry.withSentryRouting(Route)
 
+const checkForBlockedUserAgents = () => {
+  const userAgents = ['Bytespider']
+
+  return userAgents.some((agent) =>
+    window?.navigator?.userAgent.includes(agent)
+  )
+}
+
 export const setupSentry = ({
   history,
 }: {
@@ -61,13 +69,7 @@ export const setupSentry = ({
     tracePropagationTargets: ['api.codecov.io', 'stage-api.codecov.dev'],
   })
 
-  const replay = new Replay({
-    // Capture 10% of all sessions
-    sessionSampleRate: config?.SENTRY_SESSION_SAMPLE_RATE,
-
-    // Of the remaining 90% of sessions, if an error happens start capturing
-    errorSampleRate: config?.SENTRY_ERROR_SAMPLE_RATE,
-  })
+  const replay = new Replay()
 
   return Sentry.init({
     dsn: config.SENTRY_DSN,
@@ -76,8 +78,19 @@ export const setupSentry = ({
     environment: config.SENTRY_ENVIRONMENT,
     integrations: [browserTracing, replay],
     tracesSampleRate: config?.SENTRY_TRACING_SAMPLE_RATE,
+    // Capture 10% of all sessions
+    replaysSessionSampleRate: config?.SENTRY_SESSION_SAMPLE_RATE,
+    // Of the remaining 90% of sessions, if an error happens start capturing
+    replaysOnErrorSampleRate: config?.SENTRY_ERROR_SAMPLE_RATE,
     beforeSend: (event, _hint) => {
-      if (window?.navigator?.userAgent?.includes('Bytespider')) {
+      if (checkForBlockedUserAgents()) {
+        return null
+      }
+
+      return event
+    },
+    beforeSendTransaction: (event, _hint) => {
+      if (checkForBlockedUserAgents()) {
         return null
       }
 

@@ -80,6 +80,7 @@ describe('useReposTeam', () => {
       graphql.query('GetReposTeam', (req, res, ctx) => {
         const data = {
           owner: {
+            isCurrentUserPartOfOrg: true,
             repositories: {
               edges: req.variables.after
                 ? [
@@ -131,7 +132,17 @@ describe('useReposTeam', () => {
 
       await waitFor(() =>
         expect(result.current.data).toEqual({
-          repos: [repo1, repo2],
+          pages: [
+            {
+              repos: [repo1, repo2],
+              isCurrentUserPartOfOrg: true,
+              pageInfo: {
+                hasNextPage: true,
+                endCursor: 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
+              },
+            },
+          ],
+          pageParams: [undefined],
         })
       )
     })
@@ -165,7 +176,25 @@ describe('useReposTeam', () => {
 
       await waitFor(() =>
         expect(result.current.data).toEqual({
-          repos: [repo1, repo2, repo3, repo4],
+          pages: [
+            {
+              repos: [repo1, repo2],
+              isCurrentUserPartOfOrg: true,
+              pageInfo: {
+                hasNextPage: true,
+                endCursor: 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
+              },
+            },
+            {
+              repos: [repo3, repo4],
+              isCurrentUserPartOfOrg: true,
+              pageInfo: {
+                hasNextPage: false,
+                endCursor: 'aa',
+              },
+            },
+          ],
+          pageParams: [undefined, 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA='],
         })
       )
     })

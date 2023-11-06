@@ -1,2 +1,2 @@
 export * from './useCommits'
-export * from './useCommitsTeam'
+export { useCommitsTeam } from './useCommitsTeam'

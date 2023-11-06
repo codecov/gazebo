@@ -1,14 +1,18 @@
 /* */
 import PropTypes from 'prop-types'
 import { Suspense, useContext } from 'react'
+import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
 import { nonActiveOrderingOptions, orderingOptions } from 'services/repos'
+import { TierNames, useTier } from 'services/tier'
 import { ActiveContext } from 'shared/context'
+import { useFlags } from 'shared/featureFlags'
 import Spinner from 'ui/Spinner'
 
 import OrgControlTable from './OrgControlTable'
 import ReposTable from './ReposTable'
+import ReposTableTeam from './ReposTableTeam'
 
 const defaultQueryParams = {
   search: '',
@@ -20,11 +24,18 @@ const defaultQueryParams = {
 export const repoDisplayOptions = Object.freeze({
   ACTIVE: { text: 'Active', status: true },
   INACTIVE: { text: 'Inactive', status: false },
-  ALL: { text: 'All', status: null },
+  ALL: { text: 'All', status: undefined },
 })
 
-function ListRepo({ owner, canRefetch }) {
+function ListRepo({ canRefetch }) {
+  const { provider, owner } = useParams()
   const { params, updateParams } = useLocationParams(defaultQueryParams)
+  const { data: tierData } = useTier({ provider, owner })
+  const { multipleTiers } = useFlags({
+    multipleTiers: false,
+  })
+
+  const showTeamRepos = tierData === TierNames.TEAM && multipleTiers
 
   const repoDisplay = useContext(ActiveContext)
 
@@ -67,20 +78,24 @@ function ListRepo({ owner, canRefetch }) {
           updateParams({ search })
         }}
         canRefetch={canRefetch}
+        showTeamRepos={showTeamRepos}
       />
       <Suspense fallback={loadingState}>
-        <ReposTable
-          sortItem={sortItem}
-          owner={owner}
-          searchValue={params.search}
-        />
+        {showTeamRepos ? (
+          <ReposTableTeam searchValue={params.search} />
+        ) : (
+          <ReposTable
+            sortItem={sortItem}
+            owner={owner}
+            searchValue={params.search}
+          />
+        )}
       </Suspense>
     </>
   )
 }
 
 ListRepo.propTypes = {
-  owner: PropTypes.string,
   canRefetch: PropTypes.bool.isRequired,
 }
 

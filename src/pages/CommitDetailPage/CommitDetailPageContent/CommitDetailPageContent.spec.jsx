@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
@@ -124,8 +125,23 @@ const mockCommitErroredData = {
   },
 }
 
+const mockRepoSettings = (isPrivate = false) => ({
+  owner: {
+    repository: {
+      defaultBranch: 'master',
+      private: isPrivate,
+      uploadToken: 'token',
+      graphToken: 'token',
+      yaml: 'yaml',
+      bot: {
+        username: 'test',
+      },
+    },
+  },
+})
+
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
+  defaultOptions: { queries: { retry: false, suspense: true } },
 })
 const server = setupServer()
 
@@ -144,7 +160,7 @@ const wrapper =
               '/:provider/:owner/:repo/commit/:commit',
             ]}
           >
-            {children}
+            <Suspense fallback={null}>{children}</Suspense>
           </Route>
           <Route
             path="*"
@@ -157,15 +173,27 @@ const wrapper =
       </QueryClientProvider>
     )
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('CommitDetailPageContent', () => {
-  function setup(erroredUploads = false) {
+  function setup(
+    { erroredUploads = false, tierValue = TierNames.PRO, isPrivate = false } = {
+      erroredUploads: false,
+      tierValue: TierNames.PRO,
+      isPrivate: false,
+    }
+  ) {
     const user = userEvent.setup()
 
     server.use(
@@ -179,8 +207,11 @@ describe('CommitDetailPageContent', () => {
       graphql.query('OwnerTier', (req, res, ctx) => {
         return res(
           ctx.status(200),
-          ctx.data({ owner: { plan: { tierName: TierNames.PRO } } })
+          ctx.data({ owner: { plan: { tierName: tierValue } } })
         )
+      }),
+      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
       })
     )
 
@@ -188,9 +219,8 @@ describe('CommitDetailPageContent', () => {
   }
 
   describe('rendering component', () => {
-    beforeEach(() => setup())
-
     it('renders tabs component', async () => {
+      setup()
       render(<CommitDetailPageContent />, {
         wrapper: wrapper(),
       })
@@ -201,9 +231,8 @@ describe('CommitDetailPageContent', () => {
   })
 
   describe('there are errored uploads', () => {
-    beforeEach(() => setup(true))
-
     it('displays errored uploads component', async () => {
+      setup({ erroredUploads: true })
       render(<CommitDetailPageContent />, {
         wrapper: wrapper(),
       })
@@ -214,10 +243,9 @@ describe('CommitDetailPageContent', () => {
   })
 
   describe('testing tree route', () => {
-    beforeEach(() => setup())
-
     describe('not path provided', () => {
       it('renders CommitDetailFileExplorer', async () => {
+        setup()
         render(<CommitDetailPageContent />, {
           wrapper: wrapper('/gh/codecov/cool-repo/commit/sha256/tree'),
         })
@@ -229,6 +257,7 @@ describe('CommitDetailPageContent', () => {
 
     describe('path provided', () => {
       it('renders CommitDetailFileExplorer', async () => {
+        setup()
         render(<CommitDetailPageContent />, {
           wrapper: wrapper('/gh/codecov/cool-repo/commit/sha256/tree/src/dir'),
         })
@@ -240,9 +269,8 @@ describe('CommitDetailPageContent', () => {
   })
 
   describe('testing blob path', () => {
-    beforeEach(() => setup())
-
     it('renders CommitDetailFileViewer', async () => {
+      setup()
       render(<CommitDetailPageContent />, {
         wrapper: wrapper(
           '/gh/codecov/cool-repo/commit/sha256/blob/src/file.js'
@@ -255,9 +283,8 @@ describe('CommitDetailPageContent', () => {
   })
 
   describe('testing base commit path', () => {
-    beforeEach(() => setup())
-
     it('renders files changed tab', async () => {
+      setup()
       render(<CommitDetailPageContent />, {
         wrapper: wrapper('/gh/codecov/cool-repo/commit/sha256'),
       })
@@ -268,9 +295,8 @@ describe('CommitDetailPageContent', () => {
   })
 
   describe('testing indirect changes path', () => {
-    beforeEach(() => setup())
-
     it('renders indirect changed files tab', async () => {
+      setup()
       render(<CommitDetailPageContent />, {
         wrapper: wrapper(
           '/gh/codecov/cool-repo/commit/sha256/indirect-changes'
@@ -280,12 +306,43 @@ describe('CommitDetailPageContent', () => {
       const indirectChangesTab = await screen.findByText('IndirectChangesTab')
       expect(indirectChangesTab).toBeInTheDocument()
     })
+
+    describe('user is on a team plan', () => {
+      describe('user has a public repo', () => {
+        it('renders the indirect changes tab', async () => {
+          setup({ tierValue: TierNames.TEAM, isPrivate: false })
+          render(<CommitDetailPageContent />, {
+            wrapper: wrapper(
+              '/gh/codecov/cool-repo/commit/sha256/indirect-changes'
+            ),
+          })
+
+          const indirectChangesTab = await screen.findByText(
+            'IndirectChangesTab'
+          )
+          expect(indirectChangesTab).toBeInTheDocument()
+        })
+      })
+
+      describe('user has a private repo', () => {
+        it('redirects user to files changed tab', async () => {
+          setup({ tierValue: TierNames.TEAM, isPrivate: true })
+          render(<CommitDetailPageContent />, {
+            wrapper: wrapper(
+              '/gh/codecov/cool-repo/commit/sha256/indirect-changes'
+            ),
+          })
+
+          const filesChangedTab = await screen.findByText('FilesChangedTab')
+          expect(filesChangedTab).toBeInTheDocument()
+        })
+      })
+    })
   })
 
   describe('testing random paths', () => {
-    beforeEach(() => setup())
-
     it('redirects user to base commit route', async () => {
+      setup()
       render(<CommitDetailPageContent />, {
         wrapper: wrapper('/gh/codecov/cool-repo/commit/sha256/blah'),
       })

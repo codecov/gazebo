@@ -6,6 +6,7 @@ import {
   canApplySentryUpgrade,
   EnterprisePlans,
   findSentryPlans,
+  findTeamPlans,
   formatNumberToUSD,
   getNextBillingDate,
   isAnnualPlan,
@@ -15,8 +16,10 @@ import {
   isMonthlyPlan,
   isPaidPlan,
   isSentryPlan,
+  isTeamPlan,
   isTrialPlan,
   Plans,
+  shouldDisplayTeamCard,
   useProPlans,
 } from './billing'
 
@@ -109,6 +112,32 @@ function getPlans() {
       ],
       trialDays: 14,
     },
+    {
+      marketingName: 'Team',
+      value: 'users-teamm',
+      billingRate: 'monthly',
+      baseUnitPrice: 6,
+      benefits: [
+        'Up to 10 users',
+        'Unlimited repositories',
+        '2500 repositories',
+        'Patch coverage analysis',
+      ],
+      trialDays: null,
+    },
+    {
+      marketingName: 'Team',
+      value: 'users-teamy',
+      billingRate: 'yearly',
+      baseUnitPrice: 5,
+      benefits: [
+        'Up to 10 users',
+        'Unlimited repositories',
+        '2500 repositories',
+        'Patch coverage analysis',
+      ],
+      trialDays: null,
+    },
   ]
 }
 
@@ -129,6 +158,43 @@ describe('isFreePlan', () => {
     expect(isFreePlan(undefined)).toBe(false)
     expect(isFreePlan(12345)).toBe(false)
     expect(isFreePlan({})).toBe(false)
+  })
+})
+
+describe('shouldDisplayTeamCard', () => {
+  it('returns true if the availablePlans list includes team plans', () => {
+    const plans = getPlans()
+    expect(shouldDisplayTeamCard({ plans })).toBe(true)
+  })
+
+  it('returns false if the availablePlans list does not include team plans', () => {
+    const plans = [
+      {
+        marketingName: 'Pro Team',
+        value: 'users-pr-inappm',
+        billingRate: 'monthly',
+        baseUnitPrice: 12,
+        benefits: [
+          'Configureable # of users',
+          'Unlimited public repositories',
+          'Unlimited private repositories',
+          'Priorty Support',
+        ],
+      },
+      {
+        marketingName: 'Pro Team',
+        value: 'users-pr-inappy',
+        billingRate: 'annually',
+        baseUnitPrice: 10,
+        benefits: [
+          'Configureable # of users',
+          'Unlimited public repositories',
+          'Unlimited private repositories',
+          'Priorty Support',
+        ],
+      },
+    ]
+    expect(shouldDisplayTeamCard({ plans })).toBe(false)
   })
 })
 
@@ -405,6 +471,50 @@ describe('findSentryPlans', () => {
   })
 })
 
+describe('findTeamPlans', () => {
+  it('contains monthly plan', () => {
+    const plans = getPlans()
+    const { teamPlanMonth } = findTeamPlans({ plans })
+
+    const expectedResult = {
+      marketingName: 'Team',
+      value: 'users-teamm',
+      billingRate: 'monthly',
+      baseUnitPrice: 6,
+      benefits: [
+        'Up to 10 users',
+        'Unlimited repositories',
+        '2500 repositories',
+        'Patch coverage analysis',
+      ],
+      trialDays: null,
+    }
+
+    expect(teamPlanMonth).toStrictEqual(expectedResult)
+  })
+
+  it('contains annual plan', () => {
+    const plans = getPlans()
+    const { teamPlanYear } = findTeamPlans({ plans })
+
+    const expectedResult = {
+      marketingName: 'Team',
+      value: 'users-teamy',
+      billingRate: 'yearly',
+      baseUnitPrice: 5,
+      benefits: [
+        'Up to 10 users',
+        'Unlimited repositories',
+        '2500 repositories',
+        'Patch coverage analysis',
+      ],
+      trialDays: null,
+    }
+
+    expect(teamPlanYear).toStrictEqual(expectedResult)
+  })
+})
+
 describe('canApplySentryUpgrade', () => {
   it('returns true when list contains monthly plan', () => {
     const result = canApplySentryUpgrade({
@@ -459,6 +569,27 @@ describe('isBasicPlan', () => {
     expect(isBasicPlan(123)).toBeFalsy()
     expect(isBasicPlan({})).toBeFalsy()
     expect(isBasicPlan([])).toBeFalsy()
+  })
+})
+
+describe('isTeamPlan', () => {
+  it('returns true when plan is team monthly or yearly', () => {
+    expect(isTeamPlan(Plans.USERS_TEAMM)).toBeTruthy()
+    expect(isTeamPlan(Plans.USERS_TEAMY)).toBeTruthy()
+  })
+
+  it('returns false when plan is not team monthly or yearly', () => {
+    expect(isTeamPlan(Plans.USERS_FREE)).toBeFalsy()
+    expect(isTeamPlan(Plans.USERS_BASIC)).toBeFalsy()
+    expect(isTeamPlan(Plans.USERS_INAPP)).toBeFalsy()
+    expect(isTeamPlan(Plans.USERS_ENTERPRISEM)).toBeFalsy()
+    expect(isTeamPlan(Plans.USERS_SENTRYM)).toBeFalsy()
+  })
+
+  it('returns false when plan is not a string', () => {
+    expect(isTeamPlan(123)).toBeFalsy()
+    expect(isTeamPlan({})).toBeFalsy()
+    expect(isTeamPlan([])).toBeFalsy()
   })
 })
 
