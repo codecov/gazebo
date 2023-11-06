@@ -13,6 +13,21 @@ import CommitDetailPageTabs from './CommitDetailPageTabs'
 
 jest.mock('shared/featureFlags')
 
+const mockRepoSettings = (isPrivate) => ({
+  owner: {
+    repository: {
+      defaultBranch: 'main',
+      private: isPrivate,
+      uploadToken: 'token',
+      graphToken: 'token',
+      yaml: 'yaml',
+      bot: {
+        username: 'test',
+      },
+    },
+  },
+})
+
 const mockFlagsResponse = {
   owner: {
     repository: {
@@ -45,21 +60,6 @@ const mockBackfillResponse = {
     },
   },
 }
-
-const mockRepoSettings = (isPrivate = false) => ({
-  owner: {
-    repository: {
-      defaultBranch: 'master',
-      private: isPrivate,
-      uploadToken: 'token',
-      graphToken: 'token',
-      yaml: 'yaml',
-      bot: {
-        username: 'test',
-      },
-    },
-  },
-})
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -386,25 +386,48 @@ describe('CommitDetailPageTabs', () => {
   })
 
   describe('flags multi-select', () => {
-    it('renders flag multi-select', async () => {
-      setup({ flagValue: true })
-      render(<CommitDetailPageTabs commitSha="sha256" />, {
-        wrapper: wrapper(),
-      })
-
-      const flagSelect = await screen.findByText('All flags')
-      expect(flagSelect).toBeInTheDocument()
-    })
-
-    describe('user is on a team plan', () => {
-      it('does not render the multi select', async () => {
-        setup({ flagValue: true, tierValue: TierNames.TEAM })
+    describe('user is not on a team plan', () => {
+      it('renders flag multi-select', async () => {
+        setup({ flagValue: true })
         render(<CommitDetailPageTabs commitSha="sha256" />, {
           wrapper: wrapper(),
         })
 
-        const flagSelect = screen.queryByText('All flags')
-        expect(flagSelect).not.toBeInTheDocument()
+        const flagSelect = await screen.findByText('All flags')
+        expect(flagSelect).toBeInTheDocument()
+      })
+    })
+
+    describe('user is on a team plan', () => {
+      describe('repo is public', () => {
+        it('renders flag multi-select', async () => {
+          setup({
+            flagValue: true,
+            tierValue: TierNames.TEAM,
+            isPrivate: false,
+          })
+          render(<CommitDetailPageTabs commitSha="sha256" />, {
+            wrapper: wrapper(),
+          })
+
+          const flagSelect = await screen.findByText('All flags')
+          expect(flagSelect).toBeInTheDocument()
+        })
+      })
+
+      describe('repo is private', () => {
+        it('does not render the multi select', async () => {
+          setup({ flagValue: true, tierValue: TierNames.TEAM, isPrivate: true })
+          render(<CommitDetailPageTabs commitSha="sha256" />, {
+            wrapper: wrapper(),
+          })
+
+          const filesChanged = await screen.findByText('Files changed')
+          expect(filesChanged).toBeInTheDocument()
+
+          const flagSelect = screen.queryByText('All flags')
+          expect(flagSelect).not.toBeInTheDocument()
+        })
       })
     })
   })
