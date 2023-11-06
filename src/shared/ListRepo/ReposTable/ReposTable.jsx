@@ -138,7 +138,7 @@ function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
   })
   const { provider } = useParams()
   const { data: tierName } = useTier({ provider, owner })
-  const isPublic = tierName === TierNames.TEAM ? true : null
+  const shouldDisplayPublicReposOnly = tierName === TierNames.TEAM ? true : null
 
   const repoDisplay = useContext(ActiveContext)
   const activated = repoDisplayOptions[repoDisplay.toUpperCase()].status
@@ -151,7 +151,7 @@ function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
       repoNames: filterValues,
       owner,
       suspense: false,
-      isPublic,
+      isPublic: shouldDisplayPublicReposOnly,
     })
 
   const dataTable = transformRepoToTable({
