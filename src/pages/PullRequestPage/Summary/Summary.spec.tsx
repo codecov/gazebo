@@ -102,6 +102,9 @@ describe('Summary', () => {
         setup()
         render(<Summary />, { wrapper: wrapper() })
 
+        await waitFor(() => queryClient.isFetching())
+        await waitFor(() => !queryClient.isFetching())
+
         const head = await screen.findByText('HEAD')
         expect(head).toBeInTheDocument()
 
