@@ -42,6 +42,7 @@ function createUser(user) {
   const key = staff ? `impersonated` : user.trackingMetadata.ownerid
   const { custom: defaultCustom, ...defaultTopLevel } = defaultUser
   const topLevelUser = Object.assign({}, defaultTopLevel, {
+    kind: 'user',
     key,
     name: user.user.name,
     email: user.email,
