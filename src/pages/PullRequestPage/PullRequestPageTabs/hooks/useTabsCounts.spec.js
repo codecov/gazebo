@@ -36,7 +36,6 @@ const mockPullData = {
     isCurrentUserPartOfOrg: true,
     repository: {
       __typename: 'Repository',
-      private: true,
       pull: {
         pullId: 1,
         head: {
