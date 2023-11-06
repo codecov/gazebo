@@ -5,7 +5,11 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
-import { useRepoBackfilled, useRepoFlagsSelect } from 'services/repo'
+import {
+  useRepoBackfilled,
+  useRepoFlagsSelect,
+  useRepoSettingsTeam,
+} from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 import Icon from 'ui/Icon'
@@ -24,6 +28,7 @@ function FlagMultiSelect() {
   const [flagSearch, setFlagSearch] = useState(null)
 
   const { data: tierName } = useTier({ provider, owner })
+  const { data: repoData } = useRepoSettingsTeam()
   const { data: repoBackfilledData } = useRepoBackfilled()
 
   const isTimescaleEnabled = !!repoBackfilledData?.isTimescaleEnabled
@@ -33,6 +38,9 @@ function FlagMultiSelect() {
   const { coverageTabFlagMutliSelect } = useFlags({
     coverageTabFlagMutliSelect: false,
   })
+
+  const hideFlagMultiSelect =
+    tierName === TierNames.TEAM && repoData?.repository?.private
 
   const {
     data: flagsData,
@@ -45,15 +53,12 @@ function FlagMultiSelect() {
       suspense: false,
       enabled:
         !!coverageTabFlagMutliSelect ||
+        hideFlagMultiSelect ||
         (flagsMeasurementsActive && !noFlagsPresent && isTimescaleEnabled),
     },
   })
 
-  if (
-    !coverageTabFlagMutliSelect ||
-    noFlagsPresent ||
-    tierName === TierNames.TEAM
-  ) {
+  if (!coverageTabFlagMutliSelect || noFlagsPresent || hideFlagMultiSelect) {
     return null
   }
 
