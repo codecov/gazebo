@@ -457,84 +457,84 @@ describe('TableTeam', () => {
       expect(noChange).toBeInTheDocument()
     })
   })
+})
 
-  describe('getFilter', () => {
-    describe('passed array is empty', () => {
-      it('returns undefined', () => {
-        const data = getFilter([])
+describe('getFilter', () => {
+  describe('passed array is empty', () => {
+    it('returns undefined', () => {
+      const data = getFilter([])
 
-        expect(data).toBeUndefined()
-      })
+      expect(data).toBeUndefined()
     })
+  })
 
-    describe('id is name', () => {
-      describe('desc is true', () => {
-        it('returns id name, desc direction', () => {
-          const data = getFilter([{ id: 'name', desc: true }])
+  describe('id is name', () => {
+    describe('desc is true', () => {
+      it('returns id name, desc direction', () => {
+        const data = getFilter([{ id: 'name', desc: true }])
 
-          expect(data).toStrictEqual({
-            direction: OrderingDirection.desc,
-            parameter: OrderingParameter.FILE_NAME,
-          })
-        })
-      })
-
-      describe('desc is false', () => {
-        it('returns id name, asc direction', () => {
-          const data = getFilter([{ id: 'name', desc: false }])
-
-          expect(data).toStrictEqual({
-            direction: OrderingDirection.asc,
-            parameter: OrderingParameter.FILE_NAME,
-          })
+        expect(data).toStrictEqual({
+          direction: OrderingDirection.desc,
+          parameter: OrderingParameter.FILE_NAME,
         })
       })
     })
 
-    describe('id is missedLines', () => {
-      describe('desc is true', () => {
-        it('returns id missed lines, desc direction', () => {
-          const data = getFilter([{ id: 'missedLines', desc: true }])
+    describe('desc is false', () => {
+      it('returns id name, asc direction', () => {
+        const data = getFilter([{ id: 'name', desc: false }])
 
-          expect(data).toStrictEqual({
-            direction: OrderingDirection.desc,
-            parameter: OrderingParameter.MISSES_COUNT,
-          })
+        expect(data).toStrictEqual({
+          direction: OrderingDirection.asc,
+          parameter: OrderingParameter.FILE_NAME,
         })
       })
+    })
+  })
 
-      describe('desc is false', () => {
-        it('returns id missed lines, asc direction', () => {
-          const data = getFilter([{ id: 'missedLines', desc: false }])
+  describe('id is missedLines', () => {
+    describe('desc is true', () => {
+      it('returns id missed lines, desc direction', () => {
+        const data = getFilter([{ id: 'missedLines', desc: true }])
 
-          expect(data).toStrictEqual({
-            direction: OrderingDirection.asc,
-            parameter: OrderingParameter.MISSES_COUNT,
-          })
+        expect(data).toStrictEqual({
+          direction: OrderingDirection.desc,
+          parameter: OrderingParameter.MISSES_COUNT,
         })
       })
     })
 
-    describe('id is patchPercentage', () => {
-      describe('desc is true', () => {
-        it('returns id patchPercentage, desc direction', () => {
-          const data = getFilter([{ id: 'patchPercentage', desc: true }])
+    describe('desc is false', () => {
+      it('returns id missed lines, asc direction', () => {
+        const data = getFilter([{ id: 'missedLines', desc: false }])
 
-          expect(data).toStrictEqual({
-            direction: OrderingDirection.desc,
-            parameter: OrderingParameter.PATCH_COVERAGE,
-          })
+        expect(data).toStrictEqual({
+          direction: OrderingDirection.asc,
+          parameter: OrderingParameter.MISSES_COUNT,
         })
       })
+    })
+  })
 
-      describe('desc is false', () => {
-        it('returns id patch percentage, asc direction', () => {
-          const data = getFilter([{ id: 'name', desc: false }])
+  describe('id is patchPercentage', () => {
+    describe('desc is true', () => {
+      it('returns id patchPercentage, desc direction', () => {
+        const data = getFilter([{ id: 'patchPercentage', desc: true }])
 
-          expect(data).toStrictEqual({
-            direction: OrderingDirection.asc,
-            parameter: OrderingParameter.FILE_NAME,
-          })
+        expect(data).toStrictEqual({
+          direction: OrderingDirection.desc,
+          parameter: OrderingParameter.PATCH_COVERAGE,
+        })
+      })
+    })
+
+    describe('desc is false', () => {
+      it('returns id patch percentage, asc direction', () => {
+        const data = getFilter([{ id: 'name', desc: false }])
+
+        expect(data).toStrictEqual({
+          direction: OrderingDirection.asc,
+          parameter: OrderingParameter.FILE_NAME,
         })
       })
     })
