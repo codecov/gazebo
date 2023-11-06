@@ -118,115 +118,41 @@ describe('FilesChangedTab', () => {
     )
   }
 
-  describe('user has pro tier', () => {
-    describe('multipleTiers: false', () => {
-      it('private repo: renders files changed table', async () => {
-        setup({
-          planValue: TierNames.PRO,
-          multipleTiers: false,
-          privateRepo: true,
-        })
+  describe.each`
+    multipleTiers | planValue          | privateRepo
+    ${true}       | ${TierNames.BASIC} | ${true}
+    ${true}       | ${TierNames.BASIC} | ${false}
+    ${true}       | ${TierNames.TEAM}  | ${false}
+    ${false}      | ${TierNames.BASIC} | ${true}
+    ${false}      | ${TierNames.BASIC} | ${false}
+    ${false}      | ${TierNames.TEAM}  | ${true}
+    ${false}      | ${TierNames.TEAM}  | ${false}
+  `(
+    'renders the full files changed table',
+    ({ multipleTiers, planValue, privateRepo }) => {
+      it(`multipleTiers: ${multipleTiers}, planValue: ${planValue}, privateRepo: ${privateRepo}`, async () => {
+        setup({ multipleTiers, planValue, privateRepo })
         render(<FilesChangedTab />, { wrapper })
 
         const table = await screen.findByText('FilesChanged')
         expect(table).toBeInTheDocument()
       })
+    }
+  )
 
-      it('public repo: renders files changed table', async () => {
-        setup({
-          planValue: TierNames.PRO,
-          multipleTiers: false,
-          privateRepo: false,
-        })
-        render(<FilesChangedTab />, { wrapper })
-
-        const table = await screen.findByText('FilesChanged')
-        expect(table).toBeInTheDocument()
-      })
-    })
-
-    describe('multipleTiers: true', () => {
-      it('private repo: renders files changed table', async () => {
-        setup({
-          planValue: TierNames.PRO,
-          multipleTiers: true,
-          privateRepo: true,
-        })
-        render(<FilesChangedTab />, { wrapper })
-
-        const table = await screen.findByText('FilesChanged')
-        expect(table).toBeInTheDocument()
-      })
-
-      it('public repo: renders files changed table', async () => {
-        setup({
-          planValue: TierNames.PRO,
-          multipleTiers: true,
-          privateRepo: false,
-        })
-        render(<FilesChangedTab />, { wrapper })
-
-        const table = await screen.findByText('FilesChanged')
-        expect(table).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('user has team tier', () => {
-    describe('multipleTiers: false', () => {
-      it('private repo: renders team files changed table', async () => {
-        setup({
-          planValue: TierNames.TEAM,
-          multipleTiers: true,
-          privateRepo: true,
-        })
-
+  describe.each`
+    multipleTiers | planValue         | privateRepo
+    ${true}       | ${TierNames.TEAM} | ${true}
+  `(
+    'renders the team files changed table',
+    ({ multipleTiers, planValue, privateRepo }) => {
+      it(`multipleTiers: ${multipleTiers}, planValue: ${planValue}, privateRepo: ${privateRepo}`, async () => {
+        setup({ multipleTiers, planValue, privateRepo })
         render(<FilesChangedTab />, { wrapper })
 
         const table = await screen.findByText('TeamFilesChanged')
         expect(table).toBeInTheDocument()
       })
-
-      it('public repo: renders team files changed table', async () => {
-        setup({
-          planValue: TierNames.TEAM,
-          multipleTiers: true,
-          privateRepo: false,
-        })
-
-        render(<FilesChangedTab />, { wrapper })
-
-        const table = await screen.findByText('FilesChanged')
-        expect(table).toBeInTheDocument()
-      })
-    })
-
-    describe('multipleTiers: true', () => {
-      it('private repo: renders team files changed table', async () => {
-        setup({
-          planValue: TierNames.TEAM,
-          multipleTiers: true,
-          privateRepo: true,
-        })
-
-        render(<FilesChangedTab />, { wrapper })
-
-        const table = await screen.findByText('TeamFilesChanged')
-        expect(table).toBeInTheDocument()
-      })
-
-      it('public repo: renders team files changed table', async () => {
-        setup({
-          planValue: TierNames.TEAM,
-          multipleTiers: true,
-          privateRepo: false,
-        })
-
-        render(<FilesChangedTab />, { wrapper })
-
-        const table = await screen.findByText('FilesChanged')
-        expect(table).toBeInTheDocument()
-      })
-    })
-  })
+    }
+  )
 })

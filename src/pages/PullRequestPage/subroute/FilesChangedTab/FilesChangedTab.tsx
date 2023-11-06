@@ -27,7 +27,6 @@ function FilesChangedTab() {
     multipleTiers: false,
   })
   const { data: repoSettingsTeam } = useRepoSettingsTeam()
-
   const { data: tierData, isLoading } = useTier({ provider, owner })
 
   if (isLoading) {
