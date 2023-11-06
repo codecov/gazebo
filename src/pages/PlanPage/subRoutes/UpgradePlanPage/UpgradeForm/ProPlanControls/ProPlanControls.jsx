@@ -54,7 +54,7 @@ function ProPlanControls() {
     mode: 'onChange',
   })
 
-  const newPlan = getValues('newPlan')
+  const newPlan = watch('newPlan')
   const seats = watch('seats')
 
   return (
