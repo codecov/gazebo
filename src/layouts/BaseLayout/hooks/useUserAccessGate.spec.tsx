@@ -62,7 +62,7 @@ const wrapper: WrapperClosure =
 interface UserPartial {
   me: {
     owner: {
-      defaultOrgUsername: string
+      defaultOrgUsername?: string
     }
     user: {
       username: string
@@ -472,10 +472,10 @@ describe('useUserAccessGate', () => {
         isSelfHosted: false,
         expected: {
           beforeSettled: {
-            isFullExperience: false,
+            isFullExperience: true,
             isLoading: true,
             showAgreeToTerms: false,
-            showDefaultOrgSelector: true,
+            showDefaultOrgSelector: false,
             redirectToSyncPage: false,
           },
           afterSettled: {
@@ -836,9 +836,9 @@ describe('useUserAccessGate', () => {
               wrapper: wrapper(),
             })
 
-            // await waitFor(() => result.current.isLoading)
+            await waitFor(() => result.current.isLoading)
 
-            // expect(result.current).toStrictEqual(expected.beforeSettled)
+            expect(result.current).toStrictEqual(expected.beforeSettled)
 
             await waitFor(() => result.current.isLoading)
             await waitFor(() => !result.current.isLoading)
