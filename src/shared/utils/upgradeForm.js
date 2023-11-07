@@ -6,6 +6,7 @@ import {
   isFreePlan,
   isPaidPlan,
   isSentryPlan,
+  isTeamPlan,
   isTrialPlan,
   Plans,
 } from 'shared/utils/billing'
@@ -52,8 +53,11 @@ export const getInitialDataForm = ({
 
   // if the current plan is a pro plan, we return it, otherwise select by default the first pro plan
   let newPlan = proPlanYear?.value
+
   if (isSentryUpgrade && !isSentryPlan(plan)) {
     newPlan = sentryPlanYear?.value
+  } else if (isTeamPlan(plan)) {
+    newPlan = proPlanYear?.value
   } else if (isPaidPlan(plan)) {
     newPlan = plan
   }

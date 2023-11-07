@@ -84,16 +84,6 @@ const BillingControls: React.FC<BillingControlsProps> = ({
     }
   }, [planString, option])
 
-  // used to update option selection if user selects
-  // between pro and team
-  // useEffect(() => {
-  //   if (isMonthlyPlan(planString) && isTeamPlan(planString)) {
-  //     setOption('Monthly')
-  //   } else if (isAnnualPlan(planString) && isTeamPlan(planString)) {
-  //     setOption('Annual')
-  //   }
-  // }, [planString, option])
-
   let annualPlan: string = Plans.USERS_PR_INAPPY
   let monthlyPlan: string = Plans.USERS_PR_INAPPM
 
