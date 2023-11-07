@@ -181,6 +181,6 @@ export const formatNumberToUSD = (value) =>
   }).format(value)
 
 export function getNextBillingDate(accountDetails) {
-  const timestamp = accountDetails?.latestInvoice?.periodEnd
+  const timestamp = accountDetails?.subscriptionDetail?.latestInvoice?.periodEnd
   return timestamp ? format(fromUnixTime(timestamp), 'MMMM do, yyyy') : null
 }

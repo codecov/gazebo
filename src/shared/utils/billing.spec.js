@@ -319,8 +319,10 @@ describe('getNextBillingDate', () => {
   describe('there is no timestamp', () => {
     it('returns null', () => {
       const value = getNextBillingDate({
-        latestInvoice: {
-          periodEnd: 1660000000,
+        subscriptionDetail: {
+          latestInvoice: {
+            periodEnd: 1660000000,
+          },
         },
       })
 
