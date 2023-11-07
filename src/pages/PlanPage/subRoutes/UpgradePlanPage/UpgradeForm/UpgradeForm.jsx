@@ -210,7 +210,9 @@ function UpgradeForm({
     isSentryUpgrade,
   })
 
-  const planString = watch('newPlan')
+  const planString = getValues('newPlan')
+
+  console.log(planString)
 
   return (
     <form
