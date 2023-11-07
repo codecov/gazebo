@@ -3,7 +3,7 @@ import { useLocation, useParams } from 'react-router-dom'
 
 import { formatPathPrefix } from 'shared/utils/url'
 
-import { createPath } from '../utils/paths'
+import { createPath } from '../Summary/utils/paths'
 
 const initState = {
   newPath: undefined,
