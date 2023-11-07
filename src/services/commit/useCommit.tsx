@@ -57,9 +57,9 @@ const UploadSchema = z.object({
   updatedAt: z.string(),
   flags: z.array(z.string()).nullable(),
   jobCode: z.string().nullable(),
-  downloadUrl: z.string().nullable(),
+  downloadUrl: z.string(),
   ciUrl: z.string().nullable(),
-  uploadType: UploadTypeEnumSchema.nullable(),
+  uploadType: UploadTypeEnumSchema,
   buildCode: z.string().nullable(),
   name: z.string().nullable(),
   errors: ErrorsSchema.nullable(),
@@ -112,10 +112,10 @@ const CompareWithParentSchema = z.discriminatedUnion('__typename', [
 const CommitSchema = z.object({
   totals: CoverageObjSchema.nullable(),
   state: z.string().nullable(),
-  commitid: z.string().nullable(),
-  pullId: z.number().nullable(),
+  commitid: z.string(),
+  pullId: z.number(),
   branchName: z.string().nullable(),
-  createdAt: z.string().nullable(),
+  createdAt: z.string(),
   author: z
     .object({
       username: z.string().nullable(),
@@ -126,7 +126,7 @@ const CommitSchema = z.object({
   ciPassed: z.boolean().nullable(),
   parent: z
     .object({
-      commitid: z.string().nullable(),
+      commitid: z.string(),
       totals: CoverageObjSchema.nullable(),
     })
     .nullable(),
@@ -324,6 +324,7 @@ export function useCommit({
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
+          console.debug(parsedRes.error)
           return Promise.reject({
             status: 404,
             data: null,
