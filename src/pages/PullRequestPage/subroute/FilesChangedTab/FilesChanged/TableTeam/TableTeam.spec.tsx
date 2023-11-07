@@ -5,80 +5,73 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import {
-  OrderingDirection,
-  OrderingParameter,
-} from 'services/commit/useCommitTeam'
+import { OrderingDirection, OrderingParameter } from 'services/pull/usePullTeam'
 
-import FilesChangedTableTeam, { getFilter } from './FilesChangedTableTeam'
+import TableTeam, { getFilter } from './TableTeam'
 
-jest.mock('../shared/CommitFileDiff', () => () => 'CommitFileDiff')
+jest.mock('../../shared/FileDiff', () => () => 'FileDiff')
 
 const mockComparisonTeamData = {
   owner: {
     repository: {
       __typename: 'Repository',
-      commit: {
-        compareWithParent: {
+      pull: {
+        compareWithBase: {
           __typename: 'Comparison',
           state: 'processed',
           patchTotals: {
             coverage: 100,
           },
-          impactedFiles: [
-            { headName: 'src/App.tsx', patchCoverage: { coverage: 100 } },
-          ],
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [
+              {
+                headName: 'src/App.tsx',
+                missesCount: 0,
+                isCriticalFile: false,
+                patchCoverage: { coverage: 100 },
+              },
+            ],
+          },
         },
       },
     },
   },
 }
 
-const mockCommitLiteData = {
+const mockPullTeamData = {
   owner: {
     repository: {
       __typename: 'Repository',
-      commit: {
-        branchName: null,
-        commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
+      pull: {
         pullId: 10,
-        createdAt: '2020-08-25T16:35:32',
-        author: {
-          username: 'febg',
-        },
         state: 'processed',
-        uploads: null,
-        message: 'paths test',
-        ciPassed: true,
-        compareWithParent: {
+        compareWithBase: {
           __typename: 'Comparison',
           state: 'pending',
-          indirectChangedFilesCount: 1,
-          directChangedFilesCount: 1,
           patchTotals: {
             coverage: 100,
           },
-          impactedFiles: [
-            {
-              headName: 'src/App.jsx',
-              missesCount: 0,
-              patchCoverage: {
-                coverage: 100,
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [
+              {
+                headName: 'src/App.jsx',
+                missesCount: 0,
+                isCriticalFile: false,
+                patchCoverage: {
+                  coverage: 100,
+                },
               },
-            },
-            {
-              headName: 'src/File.jsx',
-              missesCount: 5,
-              patchCoverage: {
-                coverage: null,
+              {
+                headName: 'src/File.jsx',
+                missesCount: 5,
+                isCriticalFile: false,
+                patchCoverage: {
+                  coverage: null,
+                },
               },
-            },
-          ],
-        },
-        parent: {
-          commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
-          totals: {
-            coverage: 38.30846,
+            ],
           },
         },
       },
@@ -86,37 +79,20 @@ const mockCommitLiteData = {
   },
 }
 
-const mockPendingCommit = {
+const mockPendingPull = {
   owner: {
     repository: {
       __typename: 'Repository',
-      commit: {
-        branchName: null,
-        commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
+      pull: {
         pullId: 10,
-        createdAt: '2020-08-25T16:35:32',
-        author: {
-          username: 'febg',
-        },
         state: 'pending',
-        uploads: null,
-        message: 'paths test',
-        ciPassed: true,
-        compareWithParent: {
+        compareWithBase: {
           __typename: 'Comparison',
           state: 'pending',
-          indirectChangedFilesCount: 1,
-          directChangedFilesCount: 1,
           patchTotals: {
             coverage: 100,
           },
-          impactedFiles: [],
-        },
-        parent: {
-          commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
-          totals: {
-            coverage: 38.30846,
-          },
+          impactedFiles: { __typename: 'ImpactedFiles', results: [] },
         },
       },
     },
@@ -127,51 +103,37 @@ const mockPendingComparison = {
   owner: {
     repository: {
       __typename: 'Repository',
-      commit: {
-        compareWithParent: {
+      pull: {
+        compareWithBase: {
           __typename: 'Comparison',
           state: 'pending',
           patchTotals: {
             coverage: 100,
           },
-          impactedFiles: [],
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [],
+          },
         },
       },
     },
   },
 }
 
-const mockEmptyFilesCommit = {
+const mockEmptyFilesPull = {
   owner: {
     repository: {
       __typename: 'Repository',
-      commit: {
-        branchName: null,
-        commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
+      pull: {
         pullId: 10,
-        createdAt: '2020-08-25T16:35:32',
-        author: {
-          username: 'febg',
-        },
         state: 'completed',
-        uploads: null,
-        message: 'paths test',
-        ciPassed: true,
-        compareWithParent: {
+        compareWithBase: {
           __typename: 'Comparison',
-          state: 'pending',
-          indirectChangedFilesCount: 1,
-          directChangedFilesCount: 1,
+          state: 'completed',
           patchTotals: {
             coverage: 100,
           },
-          impactedFiles: [],
-        },
-        parent: {
-          commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
-          totals: {
-            coverage: 38.30846,
-          },
+          impactedFiles: { __typename: 'ImpactedFiles', results: [] },
         },
       },
     },
@@ -182,14 +144,74 @@ const mockEmptyFilesComparison = {
   owner: {
     repository: {
       __typename: 'Repository',
-      commit: {
-        compareWithParent: {
+      pull: {
+        compareWithBase: {
           __typename: 'Comparison',
           state: 'pending',
           patchTotals: {
             coverage: 100,
           },
-          impactedFiles: [],
+          impactedFiles: { __typename: 'ImpactedFiles', results: [] },
+        },
+      },
+    },
+  },
+}
+
+const mockPullCriticalFileData = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      pull: {
+        pullId: 10,
+        state: 'completed',
+        compareWithBase: {
+          __typename: 'Comparison',
+          state: 'processed',
+          patchTotals: {
+            coverage: 100,
+          },
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [
+              {
+                headName: 'src/App.tsx',
+                missesCount: 0,
+                isCriticalFile: true,
+                patchCoverage: { coverage: 100 },
+              },
+            ],
+          },
+        },
+      },
+    },
+  },
+}
+
+const mockNoChangeFileData = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      pull: {
+        pullId: 10,
+        state: 'completed',
+        compareWithBase: {
+          __typename: 'Comparison',
+          state: 'processed',
+          patchTotals: {
+            coverage: 100,
+          },
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [
+              {
+                headName: 'src/App.tsx',
+                missesCount: 0,
+                isCriticalFile: false,
+                patchCoverage: { coverage: null },
+              },
+            ],
+          },
         },
       },
     },
@@ -203,10 +225,8 @@ const wrapper =
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={['/gh/codecov/test-repo/commit/s2h5a6']}>
-          <Route path="/:provider/:owner/:repo/commit/:commit">
-            {children}
-          </Route>
+        <MemoryRouter initialEntries={['/gh/codecov/test-repo/pull/s2h5a6']}>
+          <Route path="/:provider/:owner/:repo/pull/:pull">{children}</Route>
         </MemoryRouter>
       </QueryClientProvider>
     )
@@ -228,16 +248,24 @@ afterAll(() => {
 })
 
 interface SetupArgs {
-  pendingCommit?: boolean
+  pendingPull?: boolean
   noCoveredFiles?: boolean
-  temp?: string
+  criticalFile?: boolean
+  noChange?: boolean
 }
 
-describe('FilesChangedTableTeam', () => {
+describe('TableTeam', () => {
   function setup(
-    { pendingCommit = false, noCoveredFiles = false, temp }: SetupArgs = {
-      pendingCommit: false,
+    {
+      pendingPull = false,
+      noCoveredFiles = false,
+      criticalFile = false,
+      noChange = false,
+    }: SetupArgs = {
+      pendingPull: false,
       noCoveredFiles: false,
+      criticalFile: false,
+      noChange: false,
     }
   ) {
     const user = userEvent.setup()
@@ -252,28 +280,44 @@ describe('FilesChangedTableTeam', () => {
     })
 
     server.use(
-      graphql.query('GetCommitTeam', (req, res, ctx) => {
+      graphql.query('GetPullTeam', (req, res, ctx) => {
         mockVars(req.variables?.filters)
 
-        if (pendingCommit) {
-          return res(ctx.status(200), ctx.data(mockPendingCommit))
+        if (pendingPull) {
+          return res(ctx.status(200), ctx.data(mockPendingPull))
         }
 
         if (noCoveredFiles) {
-          return res(ctx.status(200), ctx.data(mockEmptyFilesCommit))
+          return res(ctx.status(200), ctx.data(mockEmptyFilesPull))
         }
 
-        return res(ctx.status(200), ctx.data(mockCommitLiteData))
+        if (criticalFile) {
+          return res(ctx.status(200), ctx.data(mockPullCriticalFileData))
+        }
+
+        if (noChange) {
+          return res(ctx.status(200), ctx.data(mockNoChangeFileData))
+        }
+
+        return res(ctx.status(200), ctx.data(mockPullTeamData))
       }),
-      graphql.query('GetCompareTotalsTeam', (req, res, ctx) => {
+      graphql.query('GetPullCompareTotalsTeam', (req, res, ctx) => {
         mockVars(req.variables)
 
-        if (pendingCommit) {
+        if (pendingPull) {
           return res(ctx.status(200), ctx.data(mockPendingComparison))
         }
 
         if (noCoveredFiles) {
           return res(ctx.status(200), ctx.data(mockEmptyFilesComparison))
+        }
+
+        if (criticalFile) {
+          return res(ctx.status(200), ctx.data(mockPullCriticalFileData))
+        }
+
+        if (noChange) {
+          return res(ctx.status(200), ctx.data(mockNoChangeFileData))
         }
 
         return res(ctx.status(200), ctx.data(mockComparisonTeamData))
@@ -286,7 +330,7 @@ describe('FilesChangedTableTeam', () => {
   describe('renders header', () => {
     it('renders name column', async () => {
       const { queryClient } = setup()
-      render(<FilesChangedTableTeam />, { wrapper: wrapper(queryClient) })
+      render(<TableTeam />, { wrapper: wrapper(queryClient) })
 
       const nameHeader = await screen.findByText('Name')
       expect(nameHeader).toBeInTheDocument()
@@ -294,7 +338,7 @@ describe('FilesChangedTableTeam', () => {
 
     it('renders missed lines column', async () => {
       const { queryClient } = setup()
-      render(<FilesChangedTableTeam />, { wrapper: wrapper(queryClient) })
+      render(<TableTeam />, { wrapper: wrapper(queryClient) })
 
       const nameHeader = await screen.findByText('Missed lines')
       expect(nameHeader).toBeInTheDocument()
@@ -302,7 +346,7 @@ describe('FilesChangedTableTeam', () => {
 
     it('renders patch % column', async () => {
       const { queryClient } = setup()
-      render(<FilesChangedTableTeam />, { wrapper: wrapper(queryClient) })
+      render(<TableTeam />, { wrapper: wrapper(queryClient) })
 
       const nameHeader = await screen.findByText('Patch %')
       expect(nameHeader).toBeInTheDocument()
@@ -312,17 +356,19 @@ describe('FilesChangedTableTeam', () => {
   describe('renders data rows', () => {
     it('renders name column', async () => {
       const { queryClient } = setup()
-      render(<FilesChangedTableTeam />, { wrapper: wrapper(queryClient) })
+      render(<TableTeam />, { wrapper: wrapper(queryClient) })
 
-      await expect(await screen.findByText('src/App.jsx')).toBeTruthy()
+      await expect(
+        await screen.findByRole('link', { name: 'src/App.tsx' })
+      ).toBeTruthy()
 
-      const path = screen.getByText('src/App.jsx')
+      const path = screen.getByRole('link', { name: 'src/App.tsx' })
       expect(path).toBeInTheDocument()
     })
 
     it('renders missed lines column', async () => {
       const { queryClient } = setup()
-      render(<FilesChangedTableTeam />, { wrapper: wrapper(queryClient) })
+      render(<TableTeam />, { wrapper: wrapper(queryClient) })
 
       await expect(await screen.findByText('0')).toBeTruthy()
 
@@ -332,7 +378,7 @@ describe('FilesChangedTableTeam', () => {
 
     it('renders patch % column', async () => {
       const { queryClient } = setup()
-      render(<FilesChangedTableTeam />, { wrapper: wrapper(queryClient) })
+      render(<TableTeam />, { wrapper: wrapper(queryClient) })
 
       await expect(await screen.findByText('100.00%')).toBeTruthy()
 
@@ -341,10 +387,10 @@ describe('FilesChangedTableTeam', () => {
     })
   })
 
-  describe('commit is pending', () => {
+  describe('pull is pending', () => {
     it('renders spinner', async () => {
-      const { queryClient } = setup({ pendingCommit: true })
-      render(<FilesChangedTableTeam />, { wrapper: wrapper(queryClient) })
+      const { queryClient } = setup({ pendingPull: true })
+      render(<TableTeam />, { wrapper: wrapper(queryClient) })
 
       await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
       await waitFor(() => expect(queryClient.isFetching()).toBe(0))
@@ -357,7 +403,7 @@ describe('FilesChangedTableTeam', () => {
   describe('no files were changed', () => {
     it('renders no file covered message', async () => {
       const { queryClient } = setup({ noCoveredFiles: true })
-      render(<FilesChangedTableTeam />, { wrapper: wrapper(queryClient) })
+      render(<TableTeam />, { wrapper: wrapper(queryClient) })
 
       const noFiles = await screen.findByText(
         'No files covered by tests were changed'
@@ -367,17 +413,48 @@ describe('FilesChangedTableTeam', () => {
   })
 
   describe('expanding file diffs', () => {
-    it('renders commit file diff', async () => {
+    it('renders pull file diff', async () => {
       const { queryClient, user } = setup()
-      render(<FilesChangedTableTeam />, { wrapper: wrapper(queryClient) })
+      render(<TableTeam />, { wrapper: wrapper(queryClient) })
 
       expect(await screen.findByTestId('file-diff-expand')).toBeTruthy()
       const expander = screen.getByTestId('file-diff-expand')
       expect(expander).toBeInTheDocument()
       await user.click(expander)
 
-      const commitFileDiff = await screen.findByText('CommitFileDiff')
-      expect(commitFileDiff).toBeInTheDocument()
+      const pullFileDiff = await screen.findByText('FileDiff')
+      expect(pullFileDiff).toBeInTheDocument()
+    })
+  })
+
+  describe('highlights critical files', () => {
+    it('renders critical file', async () => {
+      const { queryClient } = setup({ criticalFile: true })
+      render(<TableTeam />, { wrapper: wrapper(queryClient) })
+
+      const criticalFile = await screen.findByText('Critical File')
+      expect(criticalFile).toBeInTheDocument()
+    })
+
+    it('renders non-critical file', async () => {
+      const { queryClient } = setup({ criticalFile: false })
+      render(<TableTeam />, { wrapper: wrapper(queryClient) })
+
+      const file = await screen.findByText('src/App.tsx')
+      expect(file).toBeInTheDocument()
+
+      const nonCriticalFile = screen.queryByText('Critical File')
+      expect(nonCriticalFile).not.toBeInTheDocument()
+    })
+  })
+
+  describe('patch coverage renderer', () => {
+    it('renders critical file', async () => {
+      const { queryClient } = setup({ noChange: true })
+      render(<TableTeam />, { wrapper: wrapper(queryClient) })
+
+      const noChange = await screen.findByText('-')
+      expect(noChange).toBeInTheDocument()
     })
   })
 })
