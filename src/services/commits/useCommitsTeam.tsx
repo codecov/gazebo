@@ -216,7 +216,6 @@ export function useCommitsTeam({
         const parsedData = GetCommitsTeamSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          console.debug(parsedData.error)
           return Promise.reject({
             status: 404,
             data: {},
