@@ -20,10 +20,10 @@ const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   pull: z
     .object({
-      pullId: z.number().nullable(),
+      pullId: z.number(),
       head: z
         .object({
-          commitid: z.string().nullable(),
+          commitid: z.string(),
         })
         .nullable(),
       compareWithBase: z
