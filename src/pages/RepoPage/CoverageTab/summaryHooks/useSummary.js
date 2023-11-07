@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 import { useBranches } from 'services/branches'
 import { useRepoCoverage, useRepoOverview } from 'services/repo'
 
-import { useBranchSelector } from '../../hooks'
+import { useBranchSelector } from '../hooks'
 
 export function useSummary() {
   const [branchSearchTerm, setBranchSearchTerm] = useState()

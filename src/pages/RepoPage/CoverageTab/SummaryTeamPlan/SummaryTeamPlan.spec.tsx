@@ -7,12 +7,11 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 import useIntersection from 'react-use/lib/useIntersection'
 
-import Summary from './Summary'
+import SummaryTeamPlan from './SummaryTeamPlan'
 
 import { useCoverageRedirect } from '../summaryHooks'
 
 jest.mock('../summaryHooks/useCoverageRedirect')
-jest.mock('./CoverageTrend', () => () => 'CoverageTrend')
 jest.mock('react-use/lib/useIntersection')
 
 const mockRepoOverview = {
@@ -91,15 +90,6 @@ const mockRepoCoverage = {
   },
 }
 
-const mockRepoConfig = {
-  repositoryConfig: {
-    indicationRange: {
-      upperRange: 80,
-      lowerRange: 60,
-    },
-  },
-}
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -111,7 +101,9 @@ const queryClient = new QueryClient({
 const server = setupServer()
 
 const wrapper =
-  (initialEntries = '/gh/test/critical-role') =>
+  (
+    initialEntries = '/gh/test/critical-role'
+  ): React.FC<React.PropsWithChildren> =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
@@ -138,6 +130,7 @@ afterAll(() => {
 describe('Summary', () => {
   function setup(
     {
+      isIntersecting,
       hasNextPage,
       coverageRedirectData = {
         redirectState: {
@@ -146,6 +139,16 @@ describe('Summary', () => {
         },
         setNewPath: jest.fn(),
       },
+    }: {
+      isIntersecting?: boolean
+      hasNextPage?: boolean
+      coverageRedirectData?: {
+        redirectState: {
+          isRedirectionEnabled: boolean
+          newPath?: string
+        }
+        setNewPath: jest.Mock
+      }
     } = {
       hasNextPage: false,
       coverageRedirectData: {
@@ -161,7 +164,14 @@ describe('Summary', () => {
     const fetchNextPage = jest.fn()
     const mockSearching = jest.fn()
 
-    useCoverageRedirect.mockReturnValue(coverageRedirectData)
+    const mockUseCoverageRedirect = useCoverageRedirect as jest.Mock
+    mockUseCoverageRedirect.mockReturnValue(coverageRedirectData)
+
+    const mockUseIntersection = useIntersection as jest.Mock
+    mockUseIntersection.mockReturnValue({
+      isIntersecting,
+    })
+
     server.use(
       graphql.query('GetRepoOverview', (req, res, ctx) =>
         res(
@@ -203,12 +213,6 @@ describe('Summary', () => {
           ctx.status(200),
           ctx.data({ owner: { repository: mockRepoCoverage } })
         )
-      ),
-      graphql.query('RepoConfig', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({ owner: { repository: mockRepoConfig } })
-        )
       )
     )
 
@@ -220,29 +224,22 @@ describe('Summary', () => {
       setup()
     })
 
-    it('renders the branch selector', async () => {
-      render(<Summary />, { wrapper: wrapper() })
-
-      const branchContext = await screen.findByText(/Branch Context/)
-      expect(branchContext).toBeInTheDocument()
-    })
-
     it('renders default branch as selected branch', async () => {
-      render(<Summary />, { wrapper: wrapper() })
+      render(<SummaryTeamPlan />, { wrapper: wrapper() })
 
       const dropDownBtn = await screen.findByText('main')
       expect(dropDownBtn).toBeInTheDocument()
     })
 
     it('renders the source commit short sha', async () => {
-      render(<Summary />, { wrapper: wrapper() })
+      render(<SummaryTeamPlan />, { wrapper: wrapper() })
 
       const shortSha = await screen.findByText(/321fdsa/)
       expect(shortSha).toBeInTheDocument()
     })
 
     it('renders the yaml configuration for default yaml prompt', async () => {
-      render(<Summary />, { wrapper: wrapper() })
+      render(<SummaryTeamPlan />, { wrapper: wrapper() })
 
       const yamlConfigurationTitle = await screen.findByText(
         /Yaml Configuration/
@@ -259,28 +256,9 @@ describe('Summary', () => {
       )
 
       const yamlConfigurationBody = await screen.findByText(
-        /about PR comment, target and flags/
+        /about PR comments, targets, and badges/
       )
       expect(yamlConfigurationBody).toBeInTheDocument()
-    })
-  })
-
-  describe('branch coverage', () => {
-    beforeEach(() => {
-      setup()
-    })
-
-    it('renders the branch coverage', async () => {
-      render(<Summary />, { wrapper: wrapper() })
-
-      const percentage = await screen.findByText('95.00%')
-      expect(percentage).toBeInTheDocument()
-    })
-    it('renders the lines covered', async () => {
-      render(<Summary />, { wrapper: wrapper() })
-
-      const lineCoverage = await screen.findByText('100 of 100 lines covered')
-      expect(lineCoverage).toBeInTheDocument()
     })
   })
 
@@ -298,7 +276,7 @@ describe('Summary', () => {
       const { user } = setup({
         coverageRedirectData: coverageRedirectData,
       })
-      render(<Summary />, { wrapper: wrapper() })
+      render(<SummaryTeamPlan />, { wrapper: wrapper() })
 
       const button = await screen.findByText('main')
       await user.click(button)
@@ -324,7 +302,7 @@ describe('Summary', () => {
       const { user } = setup({
         coverageRedirectData: coverageRedirectData,
       })
-      render(<Summary />, { wrapper: wrapper() })
+      render(<SummaryTeamPlan />, { wrapper: wrapper() })
 
       const main = await screen.findByText('main')
       await user.click(main)
@@ -342,6 +320,7 @@ describe('Summary', () => {
       it('calls fetchNextPage', async () => {
         const mockSetNewPath = jest.fn()
         const { fetchNextPage, user } = setup({
+          isIntersecting: true,
           hasNextPage: true,
           coverageRedirectData: {
             redirectState: {
@@ -351,10 +330,7 @@ describe('Summary', () => {
             setNewPath: mockSetNewPath,
           },
         })
-        useIntersection.mockReturnValue({
-          isIntersecting: true,
-        })
-        render(<Summary />, { wrapper: wrapper() })
+        render(<SummaryTeamPlan />, { wrapper: wrapper() })
 
         const select = await screen.findByRole('button', {
           name: 'select branch',
@@ -375,6 +351,7 @@ describe('Summary', () => {
         const mockSetNewPath = jest.fn()
 
         const { user } = setup({
+          isIntersecting: true,
           hasNextPage: false,
           coverageRedirectData: {
             redirectState: {
@@ -384,12 +361,7 @@ describe('Summary', () => {
             setNewPath: mockSetNewPath,
           },
         })
-
-        useIntersection.mockReturnValue({
-          isIntersecting: true,
-        })
-
-        render(<Summary />, { wrapper: wrapper() })
+        render(<SummaryTeamPlan />, { wrapper: wrapper() })
 
         const select = await screen.findByRole('button', {
           name: 'select branch',
@@ -404,7 +376,7 @@ describe('Summary', () => {
   describe('user searches for branch', () => {
     it('calls the api with the search value', async () => {
       const { mockSearching, user } = setup()
-      render(<Summary />, { wrapper: wrapper() })
+      render(<SummaryTeamPlan />, { wrapper: wrapper() })
 
       const select = await screen.findByText('main')
       await user.click(select)
