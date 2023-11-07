@@ -46,10 +46,10 @@ const RepositorySchema = z.object({
         .nullable(),
       branchName: z.string().nullable(),
       ciPassed: z.boolean().nullable(),
-      commitid: z.string().nullable(),
-      createdAt: z.string().nullable(),
+      commitid: z.string(),
+      createdAt: z.string(),
       message: z.string().nullable(),
-      pullId: z.number().nullable(),
+      pullId: z.number(),
       compareWithParent: CompareWithParentSchema.nullable(),
     })
     .nullable(),
