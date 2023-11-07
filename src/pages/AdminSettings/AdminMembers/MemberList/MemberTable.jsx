@@ -96,12 +96,7 @@ function MemberTable() {
     onSuccess: () => {
       queryClient.invalidateQueries(['SelfHostedSettings'])
       queryClient.invalidateQueries(['Seats'])
-      queryClient.invalidateQueries([
-        'SelfHostedUserList',
-        params?.activated,
-        params?.search,
-        params?.isAdmin,
-      ])
+      queryClient.invalidateQueries(['SelfHostedUserList'])
     },
   })
 
