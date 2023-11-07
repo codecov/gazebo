@@ -2,11 +2,17 @@ import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
 import { useAvailablePlans } from 'services/account'
-import { findSentryPlans, formatNumberToUSD, Plans } from 'shared/utils/billing'
+import {
+  findSentryPlans,
+  formatNumberToUSD,
+  isTeamPlan,
+  Plans,
+} from 'shared/utils/billing'
 import { calculateNonBundledCost } from 'shared/utils/upgradeForm'
 import Icon from 'ui/Icon'
 
 interface SentryBannerProps {
+  planString: string
   isPerYear: boolean
   perYearPrice: number
   perMonthPrice: number
@@ -20,6 +26,7 @@ const SentryBanner: React.FC<SentryBannerProps> = ({
   perMonthPrice,
   setValue,
   seats,
+  planString,
 }) => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
@@ -81,7 +88,13 @@ const SentryBanner: React.FC<SentryBannerProps> = ({
               a year with an annual plan{' '}
               <button
                 className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
-                onClick={() => setValue('newPlan', Plans.USERS_SENTRYY)}
+                onClick={() => {
+                  if (isTeamPlan(planString)) {
+                    setValue('newPlan', Plans.USERS_TEAMY)
+                  } else {
+                    setValue('newPlan', Plans.USERS_SENTRYY)
+                  }
+                }}
               >
                 switch to annual
               </button>
@@ -102,6 +115,7 @@ SentryBanner.propTypes = {
 }
 
 interface TotalBannerProps {
+  planString: string
   isPerYear: boolean
   perYearPrice: number
   perMonthPrice: number
@@ -111,6 +125,7 @@ interface TotalBannerProps {
 }
 
 const TotalBanner: React.FC<TotalBannerProps> = ({
+  planString,
   isPerYear,
   perYearPrice,
   perMonthPrice,
@@ -121,6 +136,7 @@ const TotalBanner: React.FC<TotalBannerProps> = ({
   if (isSentryUpgrade) {
     return (
       <SentryBanner
+        planString={planString}
         isPerYear={isPerYear}
         perYearPrice={perYearPrice}
         perMonthPrice={perMonthPrice}
@@ -168,7 +184,13 @@ const TotalBanner: React.FC<TotalBannerProps> = ({
           a year with the annual plan,{' '}
           <button
             className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
-            onClick={() => setValue('newPlan', Plans.USERS_PR_INAPPY)}
+            onClick={() => {
+              if (isTeamPlan(planString)) {
+                setValue('newPlan', Plans.USERS_TEAMY)
+              } else {
+                setValue('newPlan', Plans.USERS_PR_INAPPY)
+              }
+            }}
           >
             switch to annual
           </button>

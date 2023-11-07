@@ -1,8 +1,9 @@
-import { useLayoutEffect } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
 
 import { useAccountDetails, useAvailablePlans } from 'services/account'
 import {
+  canApplySentryUpgrade,
   findSentryPlans,
   isEnterprisePlan,
   isFreePlan,
@@ -24,6 +25,10 @@ function UpgradePlanPage() {
 
   const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
 
+  const isSentryUpgrade = canApplySentryUpgrade({ plan, plans })
+  const defaultPaidYearlyPlan = isSentryUpgrade ? sentryPlanYear : proPlanYear
+  const [selectedPlan, setSelectedPlan] = useState(defaultPaidYearlyPlan)
+
   useLayoutEffect(() => {
     setCrumbs([
       {
@@ -40,13 +45,14 @@ function UpgradePlanPage() {
 
   return (
     <div className="flex flex-col gap-8 md:w-11/12 md:flex-row lg:w-10/12">
-      <UpgradeDetails />
+      <UpgradeDetails selectedPlan={selectedPlan} />
       <UpgradeForm
         accountDetails={accountDetails}
         proPlanYear={proPlanYear}
         proPlanMonth={proPlanMonth}
         sentryPlanYear={sentryPlanYear}
         sentryPlanMonth={sentryPlanMonth}
+        setSelectedPlan={setSelectedPlan}
       />
     </div>
   )

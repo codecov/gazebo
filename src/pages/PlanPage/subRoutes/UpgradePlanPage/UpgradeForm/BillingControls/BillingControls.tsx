@@ -4,8 +4,10 @@ import { useParams } from 'react-router-dom'
 import { useAvailablePlans } from 'services/account'
 import {
   findSentryPlans,
+  findTeamPlans,
   isAnnualPlan,
   isMonthlyPlan,
+  isTeamPlan,
   Plans,
   useProPlans,
 } from 'shared/utils/billing'
@@ -14,16 +16,19 @@ import OptionButton from 'ui/OptionButton'
 interface BillingTextProps {
   option: 'Annual' | 'Monthly'
   isSentryUpgrade: boolean
+  planString: string
 }
 
 const BillingText: React.FC<BillingTextProps> = ({
   isSentryUpgrade,
   option,
+  planString,
 }) => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { proPlanMonth, proPlanYear } = useProPlans({ plans })
   const { sentryPlanMonth, sentryPlanYear } = findSentryPlans({ plans })
+  const { teamPlanMonth, teamPlanYear } = findTeamPlans({ plans })
 
   let annualPlan = proPlanYear
   let monthlyPlan = proPlanMonth
@@ -31,6 +36,11 @@ const BillingText: React.FC<BillingTextProps> = ({
   if (isSentryUpgrade) {
     annualPlan = sentryPlanYear
     monthlyPlan = sentryPlanMonth
+  }
+
+  if (isTeamPlan(planString)) {
+    annualPlan = teamPlanYear
+    monthlyPlan = teamPlanMonth
   }
 
   let baseUnitPrice = annualPlan?.baseUnitPrice
@@ -74,12 +84,27 @@ const BillingControls: React.FC<BillingControlsProps> = ({
     }
   }, [planString, option])
 
+  // used to update option selection if user selects
+  // between pro and team
+  useEffect(() => {
+    if (isMonthlyPlan(planString) && isTeamPlan(planString)) {
+      setOption('Monthly')
+    } else if (isAnnualPlan(planString) && isTeamPlan(planString)) {
+      setOption('Annual')
+    }
+  }, [planString, option])
+
   let annualPlan: string = Plans.USERS_PR_INAPPY
   let monthlyPlan: string = Plans.USERS_PR_INAPPM
 
   if (isSentryUpgrade) {
     annualPlan = Plans.USERS_SENTRYY
     monthlyPlan = Plans.USERS_SENTRYM
+  }
+
+  if (isTeamPlan(planString)) {
+    annualPlan = Plans.USERS_TEAMY
+    monthlyPlan = Plans.USERS_TEAMM
   }
 
   return (
@@ -107,7 +132,11 @@ const BillingControls: React.FC<BillingControlsProps> = ({
             },
           ]}
         />
-        <BillingText isSentryUpgrade={isSentryUpgrade} option={option} />
+        <BillingText
+          planString={planString}
+          isSentryUpgrade={isSentryUpgrade}
+          option={option}
+        />
       </div>
     </div>
   )

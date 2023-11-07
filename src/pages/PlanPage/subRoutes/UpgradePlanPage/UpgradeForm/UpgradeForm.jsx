@@ -15,6 +15,7 @@ import {
   canApplySentryUpgrade,
   getNextBillingDate,
   isAnnualPlan,
+  shouldDisplayTeamCard,
 } from 'shared/utils/billing'
 import {
   calculatePrice,
@@ -30,6 +31,8 @@ import BillingControls from './BillingControls/BillingControls'
 import TotalBanner from './TotalBanner'
 import UpdateButton from './UpdateButton'
 import UserCount from './UserCount'
+
+import PlanDetailsControls from '../PlanDetailsControls'
 
 const useUpgradeForm = ({
   proPlanYear,
@@ -133,22 +136,37 @@ const useUpgradeForm = ({
   }
 }
 
-const PlanDetails = ({ isSentryUpgrade, trialStatus }) => {
-  if (!isSentryUpgrade) {
+const PlanDetails = ({
+  isSentryUpgrade,
+  hasTeamPlans,
+  setSelectedPlan,
+  setValue,
+}) => {
+  if (hasTeamPlans) {
+    return (
+      <PlanDetailsControls
+        setValue={setValue}
+        setSelectedPlan={setSelectedPlan}
+        isSentryUpgrade={isSentryUpgrade}
+      />
+    )
+  } else if (isSentryUpgrade) {
+    return (
+      <div>
+        <h3 className="font-semibold">Plan</h3>
+        <p>$29 monthly includes 5 seats.</p>
+      </div>
+    )
+  } else {
     return null
   }
-
-  return (
-    <div>
-      <h3 className="font-semibold">Plan</h3>
-      <p>$29 monthly includes 5 seats.</p>
-    </div>
-  )
 }
 
 PlanDetails.propTypes = {
+  setSelectedPlan: PropTypes.func,
+  setValue: PropTypes.func,
   isSentryUpgrade: PropTypes.bool,
-  trialStatus: PropTypes.string,
+  hasTeamPlans: PropTypes.bool,
 }
 
 function UpgradeForm({
@@ -157,18 +175,18 @@ function UpgradeForm({
   sentryPlanYear,
   sentryPlanMonth,
   accountDetails,
+  setSelectedPlan,
 }) {
   const { provider, owner } = useParams()
   const { data: plans } = useAvailablePlans({ provider, owner })
-  const { data: planData } = usePlanData({ owner, provider })
 
   const nextBillingDate = getNextBillingDate(accountDetails)
   const isSentryUpgrade = canApplySentryUpgrade({
     plan: accountDetails?.plan?.value,
     plans,
   })
+  const hasTeamPlans = shouldDisplayTeamCard({ plans })
   const minSeats = isSentryUpgrade ? MIN_SENTRY_SEATS : MIN_NB_SEATS
-  const trialStatus = planData?.plan?.trialStatus
 
   const {
     perYearPrice,
@@ -192,7 +210,7 @@ function UpgradeForm({
     isSentryUpgrade,
   })
 
-  const planString = getValues('newPlan')
+  const planString = watch('newPlan')
 
   return (
     <form
@@ -204,14 +222,16 @@ function UpgradeForm({
         <span>{owner}</span>
       </div>
       <PlanDetails
+        setValue={setValue}
+        setSelectedPlan={setSelectedPlan}
         isSentryUpgrade={isSentryUpgrade}
-        trialStatus={trialStatus}
+        hasTeamPlans={hasTeamPlans}
       />
       <div className="flex flex-col gap-2">
         <BillingControls
           planString={planString}
-          isSentryUpgrade={isSentryUpgrade}
           setValue={setValue}
+          isSentryUpgrade={isSentryUpgrade}
         />
       </div>
       <div className="flex flex-col gap-2 xl:w-5/12">
@@ -235,6 +255,7 @@ function UpgradeForm({
         />
       </div>
       <TotalBanner
+        planString={planString}
         isPerYear={isPerYear}
         perYearPrice={perYearPrice}
         perMonthPrice={perMonthPrice}
@@ -273,6 +294,7 @@ UpgradeForm.propTypes = {
   accountDetails: accountDetailsPropType,
   sentryPlanYear: planPropType,
   sentryPlanMonth: planPropType,
+  setSelectedPlan: PropTypes.func,
 }
 
 export default UpgradeForm

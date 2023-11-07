@@ -13,6 +13,7 @@ import {
 export const MIN_NB_SEATS = 2
 export const MIN_SENTRY_SEATS = 5
 export const SENTRY_PRICE = 29
+export const TEAM_PLAN_MAX_ACTIVE_USERS = 10
 
 export function extractSeats({
   quantity,

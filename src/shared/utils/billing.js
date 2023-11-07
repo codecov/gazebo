@@ -78,6 +78,7 @@ export function isAnnualPlan(plan) {
     return (
       plan === Plans.USERS_INAPPY ||
       plan === Plans.USERS_PR_INAPPY ||
+      plan === Plans.USERS_TEAMY ||
       plan === Plans.USERS_SENTRYY ||
       plan === Plans.USERS_ENTERPRISEY
     )
