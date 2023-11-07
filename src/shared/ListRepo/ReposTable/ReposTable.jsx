@@ -1,9 +1,11 @@
 import isEmpty from 'lodash/isEmpty'
 import PropTypes from 'prop-types'
 import { useContext } from 'react'
+import { useParams } from 'react-router-dom'
 
 import Table from 'old_ui/Table'
 import { useRepos } from 'services/repos'
+import { TierNames, useTier } from 'services/tier'
 import { useOwner, useUser } from 'services/user'
 import { ActiveContext } from 'shared/context'
 import { formatTimeToNow } from 'shared/utils/dates'
@@ -11,12 +13,12 @@ import Button from 'ui/Button'
 import Spinner from 'ui/Spinner'
 import TotalsNumber from 'ui/TotalsNumber'
 
-import InactiveRepo from './InactiveRepo'
 import NoRepoCoverage from './NoRepoCoverage'
-import NoReposBlock from './NoReposBlock'
-import RepoTitleLink from './RepoTitleLink'
 
+import InactiveRepo from '../InactiveRepo'
 import { repoDisplayOptions } from '../ListRepo'
+import NoReposBlock from '../NoReposBlock'
+import RepoTitleLink from '../RepoTitleLink'
 
 const Loader = () => (
   <div className="flex flex-1 justify-center">
@@ -134,6 +136,9 @@ function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
   const { data: ownerData } = useOwner({
     username: owner || userData?.user?.username,
   })
+  const { provider } = useParams()
+  const { data: tierName } = useTier({ provider, owner })
+  const shouldDisplayPublicReposOnly = tierName === TierNames.TEAM ? true : null
 
   const repoDisplay = useContext(ActiveContext)
   const activated = repoDisplayOptions[repoDisplay.toUpperCase()].status
@@ -146,6 +151,7 @@ function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
       repoNames: filterValues,
       owner,
       suspense: false,
+      isPublic: shouldDisplayPublicReposOnly,
     })
 
   const dataTable = transformRepoToTable({

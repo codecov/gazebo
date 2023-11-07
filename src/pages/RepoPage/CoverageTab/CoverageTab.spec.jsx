@@ -181,6 +181,21 @@ const mockBranchMeasurements = {
   },
 }
 
+const mockRepoSettings = {
+  owner: {
+    repository: {
+      defaultBranch: 'main',
+      private: false,
+      uploadToken: 'token',
+      graphToken: 'token',
+      yaml: 'yaml',
+      bot: {
+        username: 'test',
+      },
+    },
+  },
+}
+
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })
 })
@@ -244,6 +259,9 @@ describe('Coverage Tab', () => {
           ctx.status(200),
           ctx.data({ owner: { plan: { tierName: tierValue } } })
         )
+      }),
+      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoSettings))
       }),
       rest.get(
         '/internal/:provider/:owner/:repo/coverage/tree',

@@ -402,7 +402,7 @@ describe('shouldRenderCancelLink', () => {
   it('returns true', () => {
     // eslint-disable-next-line testing-library/render-result-naming-convention
     const value = shouldRenderCancelLink(
-      {},
+      false,
       { value: Plans.USERS_PR_INAPPY },
       ''
     )
@@ -413,7 +413,11 @@ describe('shouldRenderCancelLink', () => {
   describe('user is on a free plan', () => {
     it('returns false', () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
-      const value = shouldRenderCancelLink({}, { value: Plans.USERS_BASIC }, '')
+      const value = shouldRenderCancelLink(
+        false,
+        { value: Plans.USERS_BASIC },
+        ''
+      )
 
       expect(value).toBeFalsy()
     })
@@ -423,7 +427,7 @@ describe('shouldRenderCancelLink', () => {
     it('returns false', () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
       const value = shouldRenderCancelLink(
-        {},
+        false,
         { value: Plans.USERS_TRIAL },
         TrialStatuses.ONGOING
       )
@@ -436,7 +440,7 @@ describe('shouldRenderCancelLink', () => {
     it('returns false', () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
       const value = shouldRenderCancelLink(
-        { subscriptionDetail: { cancelAtPeriodEnd: true } },
+        true,
         { value: Plans.USERS_PR_INAPPY },
         ''
       )

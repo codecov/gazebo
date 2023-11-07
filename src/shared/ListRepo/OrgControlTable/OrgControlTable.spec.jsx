@@ -197,4 +197,26 @@ describe('OrgControlTable', () => {
       expect(screen.queryByText(/RepoOrgNotFound/)).not.toBeInTheDocument()
     })
   })
+
+  describe('when show team plan passed in', () => {
+    it('does not render the ordering select', () => {
+      render(
+        <OrgControlTable
+          sortItem={orderingOptions[0]}
+          setSortItem={jest.fn()}
+          repoDisplay="All"
+          setRepoDisplay={jest.fn()}
+          setSearchValue={jest.fn()}
+          searchValue=""
+          canRefetch={false}
+          showTeamRepos={true}
+        />
+      )
+
+      const select = screen.queryByRole('combobox', {
+        name: /Sort Order/i,
+      })
+      expect(select).not.toBeInTheDocument()
+    })
+  })
 })
