@@ -385,17 +385,19 @@ describe('UpgradeForm', () => {
               activatedUserCount: 9,
               inactiveUserCount: 0,
               plan: null,
-              latestInvoice: {
-                periodStart: 1595270468,
-                periodEnd: 1597948868,
-                dueDate: '1600544863',
-                amountPaid: 9600.0,
-                amountDue: 9600.0,
-                amountRemaining: 0.0,
-                total: 9600.0,
-                subtotal: 9600.0,
-                invoicePdf:
-                  'https://pay.stripe.com/invoice/acct_14SJTOGlVGuVgOrk/invst_Hs2qfFwArnp6AMjWPlwtyqqszoBzO3q/pdf',
+              subscriptionDetail: {
+                latestInvoice: {
+                  periodStart: 1595270468,
+                  periodEnd: 1597948868,
+                  dueDate: '1600544863',
+                  amountPaid: 9600.0,
+                  amountDue: 9600.0,
+                  amountRemaining: 0.0,
+                  total: 9600.0,
+                  subtotal: 9600.0,
+                  invoicePdf:
+                    'https://pay.stripe.com/invoice/acct_14SJTOGlVGuVgOrk/invst_Hs2qfFwArnp6AMjWPlwtyqqszoBzO3q/pdf',
+                },
               },
             }}
           />,
@@ -686,17 +688,19 @@ describe('UpgradeForm', () => {
               activatedUserCount: 9,
               inactiveUserCount: 0,
               plan: null,
-              latestInvoice: {
-                periodStart: 1595270468,
-                periodEnd: 1597948868,
-                dueDate: '1600544863',
-                amountPaid: 9600.0,
-                amountDue: 9600.0,
-                amountRemaining: 0.0,
-                total: 9600.0,
-                subtotal: 9600.0,
-                invoicePdf:
-                  'https://pay.stripe.com/invoice/acct_14SJTOGlVGuVgOrk/invst_Hs2qfFwArnp6AMjWPlwtyqqszoBzO3q/pdf',
+              subscriptionDetail: {
+                latestInvoice: {
+                  periodStart: 1595270468,
+                  periodEnd: 1597948868,
+                  dueDate: '1600544863',
+                  amountPaid: 9600.0,
+                  amountDue: 9600.0,
+                  amountRemaining: 0.0,
+                  total: 9600.0,
+                  subtotal: 9600.0,
+                  invoicePdf:
+                    'https://pay.stripe.com/invoice/acct_14SJTOGlVGuVgOrk/invst_Hs2qfFwArnp6AMjWPlwtyqqszoBzO3q/pdf',
+                },
               },
             }}
           />,
