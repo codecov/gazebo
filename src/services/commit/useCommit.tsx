@@ -324,7 +324,6 @@ export function useCommit({
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          console.debug(parsedRes.error)
           return Promise.reject({
             status: 404,
             data: null,

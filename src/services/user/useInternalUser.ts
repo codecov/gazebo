@@ -48,7 +48,6 @@ export const useInternalUser = (opts: UseInternalUserArgs) =>
         const parsedData = InternalUserSchema.safeParse(res)
 
         if (!parsedData.success) {
-          console.debug(parsedData.error)
           return Promise.reject({
             status: 404,
             data: null,

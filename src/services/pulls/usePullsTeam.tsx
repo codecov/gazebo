@@ -214,7 +214,6 @@ export function usePullsTeam({
         const parsedData = GetPullsSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          console.debug(parsedData.error)
           return Promise.reject({
             status: 404,
             data: {},
