@@ -38,8 +38,8 @@ describe('createCommitsTableTeamData', () => {
         const commitData = {
           ciPassed: null,
           message: null,
-          commitid: null,
-          createdAt: null,
+          commitid: 'commit-123',
+          createdAt: '2021-11-01T19:44:10.795533+00:00',
           author: null,
           compareWithParent: {
             __typename: 'MissingBaseCommit',
@@ -62,8 +62,8 @@ describe('createCommitsTableTeamData', () => {
         const commitData = {
           ciPassed: null,
           message: null,
-          commitid: null,
-          createdAt: null,
+          commitid: 'commit-123',
+          createdAt: '2021-11-01T19:44:10.795533+00:00',
           author: null,
           compareWithParent: {
             __typename: 'Comparison',
@@ -95,8 +95,8 @@ describe('createCommitsTableTeamData', () => {
           const commitData = {
             ciPassed: null,
             message: null,
-            commitid: null,
-            createdAt: null,
+            commitid: 'commit-123',
+            createdAt: '2021-11-01T19:44:10.795533+00:00',
             author: null,
             compareWithParent: {
               __typename: 'Comparison',

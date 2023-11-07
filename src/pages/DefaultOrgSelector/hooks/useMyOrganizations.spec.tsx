@@ -39,7 +39,10 @@ describe('useMyOrganizations', () => {
     MyOrganizationsData?: MyOrganizationsData
     apiError?: boolean
   }
-  function setup({ MyOrganizationsData = {}, apiError = false }: Setup) {
+  function setup({
+    MyOrganizationsData = { me: null },
+    apiError = false,
+  }: Setup) {
     const spy = jest.spyOn(console, 'error')
     const thrownMock = jest.fn()
     spy.mockImplementation(thrownMock)
