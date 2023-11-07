@@ -79,7 +79,10 @@ describe('TermsOfService', () => {
 
     server.use(
       rest.get('/internal/user', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json(internalUserData))
+        res(
+          ctx.status(200),
+          ctx.json({ ...mockedUserData, ...internalUserData })
+        )
       ),
       graphql.mutation('SigningTermsAgreement', (req, res, ctx) => {
         mockMutationVariables(req.variables)
@@ -427,7 +430,17 @@ describe('TermsOfService', () => {
         internalUserData: {
           termsAgreement: true,
           email: '',
-          owners: [{ service: 'github', username: 'chetney' }],
+          owners: [
+            {
+              avatarUrl: 'http://127.0.0.1/avatar-url',
+              integrationId: null,
+              name: null,
+              ownerid: null,
+              stats: null,
+              service: 'github',
+              username: 'chetney',
+            },
+          ],
         },
       },
       [expectRedirectTo, '/gh/codecov/cool-repo'],

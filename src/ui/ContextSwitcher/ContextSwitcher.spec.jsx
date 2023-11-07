@@ -74,7 +74,10 @@ describe('ContextSwitcher', () => {
     it('does not render the listed items initially', () => {
       render(
         <ContextSwitcher
-          activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
+          activeContext={{
+            username: 'laudna',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
+          }}
           contexts={[
             {
               owner: {
@@ -123,7 +126,10 @@ describe('ContextSwitcher', () => {
       const { user } = setup()
       render(
         <ContextSwitcher
-          activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
+          activeContext={{
+            username: 'laudna',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
+          }}
           contexts={[
             {
               owner: {
@@ -181,7 +187,10 @@ describe('ContextSwitcher', () => {
       const { user } = setup()
       render(
         <ContextSwitcher
-          activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
+          activeContext={{
+            username: 'laudna',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
+          }}
           contexts={[
             {
               owner: {
@@ -243,7 +252,10 @@ describe('ContextSwitcher', () => {
     it('renders manage access restrictions', async () => {
       render(
         <ContextSwitcher
-          activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
+          activeContext={{
+            username: 'laudna',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
+          }}
           contexts={[
             {
               owner: {
@@ -298,7 +310,10 @@ describe('ContextSwitcher', () => {
         const { user } = setup()
         render(
           <ContextSwitcher
-            activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
+            activeContext={{
+              username: 'laudna',
+              avatarUrl: 'http://127.0.0.1/avatar-url',
+            }}
             contexts={[
               {
                 owner: {
@@ -350,7 +365,10 @@ describe('ContextSwitcher', () => {
         const { user } = setup()
         render(
           <ContextSwitcher
-            activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
+            activeContext={{
+              username: 'laudna',
+              avatarUrl: 'http://127.0.0.1/avatar-url',
+            }}
             contexts={[
               {
                 owner: {
@@ -408,7 +426,10 @@ describe('ContextSwitcher', () => {
       const onLoadMoreFunc = jest.fn()
       render(
         <ContextSwitcher
-          activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
+          activeContext={{
+            username: 'laudna',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
+          }}
           contexts={[
             {
               owner: {
@@ -461,7 +482,10 @@ describe('ContextSwitcher', () => {
       const { user } = setup()
       render(
         <ContextSwitcher
-          activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
+          activeContext={{
+            username: 'laudna',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
+          }}
           contexts={[
             {
               owner: {
@@ -517,26 +541,29 @@ describe('ContextSwitcher', () => {
         const { user, mutate } = setup()
         render(
           <ContextSwitcher
-            activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
+            activeContext={{
+              username: 'laudna',
+              avatarUrl: 'http://127.0.0.1/avatar-url',
+            }}
             contexts={[
               {
                 owner: {
                   username: 'laudna',
-                  avatarUrl: '',
+                  avatarUrl: 'http://127.0.0.1/avatar-url',
                 },
                 pageName: 'provider',
               },
               {
                 owner: {
                   username: 'spotify',
-                  avatarUrl: '',
+                  avatarUrl: 'http://127.0.0.1/avatar-url',
                 },
                 pageName: 'owner',
               },
               {
                 owner: {
                   username: 'codecov',
-                  avatarUrl: '',
+                  avatarUrl: 'http://127.0.0.1/avatar-url',
                 },
                 pageName: 'owner',
               },
@@ -572,26 +599,29 @@ describe('ContextSwitcher', () => {
         const { user, mutate } = setup()
         render(
           <ContextSwitcher
-            activeContext={{ username: 'laudna', avatarUrl: 'laudna-url' }}
+            activeContext={{
+              username: 'laudna',
+              avatarUrl: 'http://127.0.0.1/avatar-url',
+            }}
             contexts={[
               {
                 owner: {
                   username: 'laudna',
-                  avatarUrl: '',
+                  avatarUrl: 'http://127.0.0.1/avatar-url',
                 },
                 pageName: 'provider',
               },
               {
                 owner: {
                   username: 'spotify',
-                  avatarUrl: '',
+                  avatarUrl: 'http://127.0.0.1/avatar-url',
                 },
                 pageName: 'owner',
               },
               {
                 owner: {
                   username: 'codecov',
-                  avatarUrl: '',
+                  avatarUrl: 'http://127.0.0.1/avatar-url',
                 },
                 pageName: 'owner',
               },

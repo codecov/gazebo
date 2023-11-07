@@ -66,6 +66,7 @@ const internalUserNoSyncedProviders = {
   email: userSignedInIdentity.email,
   name: userSignedInIdentity.name,
   externalId: '123',
+  termsAgreement: false,
   owners: [],
 }
 
@@ -75,6 +76,12 @@ const internalUserHasSyncedProviders = {
   externalId: '123',
   owners: [
     {
+      avatarUrl: 'http://127.0.0.1/cool-user',
+      integrationId: null,
+      name: null,
+      ownerid: null,
+      stats: null,
+      username: null,
       service: 'github',
     },
   ],

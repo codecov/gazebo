@@ -32,7 +32,7 @@ const mockCommits = ({ hasNextPage } = { hasNextPage: false }) =>
           createdAt: '2021-08-30T19:33:49.819672',
           author: {
             username: 'user-1',
-            avatarUrl: 'cool-avatar-url',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
           },
           totals: {
             coverage: 100,
@@ -57,7 +57,7 @@ const mockCommits = ({ hasNextPage } = { hasNextPage: false }) =>
           createdAt: '2021-08-30T19:33:49.819672',
           author: {
             username: 'user-1',
-            avatarUrl: 'cool-avatar-url',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
           },
           totals: {
             coverage: 100,
@@ -90,7 +90,7 @@ const mockInvalidPatchCommit = genMockWrapper({
         createdAt: '2021-08-30T19:33:49.819672',
         author: {
           username: 'user-1',
-          avatarUrl: 'cool-avatar-url',
+          avatarUrl: 'http://127.0.0.1/avatar-url',
         },
         totals: {
           coverage: 100,

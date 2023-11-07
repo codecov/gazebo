@@ -134,7 +134,7 @@ describe('createCommitsTableTeamData', () => {
           createdAt: '2023-04-25T15:38:48.046832',
           author: {
             username: 'cool-user',
-            avatarUrl: 'cool-avatar',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
           },
           compareWithParent: {
             __typename: 'Comparison',
@@ -151,7 +151,7 @@ describe('createCommitsTableTeamData', () => {
         expect(result[0]?.name).toStrictEqual(
           <Title
             author={{
-              avatarUrl: 'cool-avatar',
+              avatarUrl: 'http://127.0.0.1/avatar-url',
               username: 'cool-user',
             }}
             commitid="commit123"
@@ -169,7 +169,7 @@ describe('createCommitsTableTeamData', () => {
           createdAt: '2023-04-25T15:38:48.046832',
           author: {
             username: 'cool-user',
-            avatarUrl: 'cool-avatar',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
           },
           compareWithParent: {
             __typename: 'Comparison',
