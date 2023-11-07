@@ -30,14 +30,14 @@ type PullStates = z.infer<typeof PullStatesSchema>
 
 const PullSchema = z
   .object({
-    pullId: z.number().nullable(),
+    pullId: z.number(),
     title: z.string().nullable(),
     state: PullStatesSchema,
     updatestamp: z.string().nullable(),
     author: z
       .object({
         username: z.string().nullable(),
-        avatarUrl: z.string().nullable(),
+        avatarUrl: z.string().url('not a valid url'),
       })
       .nullable(),
     compareWithBase: z
@@ -214,6 +214,7 @@ export function usePullsTeam({
         const parsedData = GetPullsSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
+          console.debug(parsedData.error)
           return Promise.reject({
             status: 404,
             data: {},
