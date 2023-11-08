@@ -11,6 +11,7 @@ import {
   useUpgradePlan,
 } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
+import { useFlags } from 'shared/featureFlags'
 import {
   canApplySentryUpgrade,
   findTeamPlans,
@@ -158,8 +159,9 @@ const PlanDetails = ({
   hasTeamPlans,
   setSelectedPlan,
   setValue,
+  multipleTiers,
 }) => {
-  if (hasTeamPlans) {
+  if (hasTeamPlans && multipleTiers) {
     return (
       <PlanDetailsControls
         setValue={setValue}
@@ -184,6 +186,7 @@ PlanDetails.propTypes = {
   setValue: PropTypes.func,
   isSentryUpgrade: PropTypes.bool,
   hasTeamPlans: PropTypes.bool,
+  multipleTiers: PropTypes.bool,
 }
 
 function UpgradeForm({
@@ -198,6 +201,9 @@ function UpgradeForm({
   const { provider, owner } = useParams()
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { teamPlanMonth, teamPlanYear } = findTeamPlans({ plans })
+  const { multipleTiers } = useFlags({
+    multipleTiers: false,
+  })
 
   const nextBillingDate = getNextBillingDate(accountDetails)
   const isSentryUpgrade = canApplySentryUpgrade({
@@ -250,6 +256,7 @@ function UpgradeForm({
         setSelectedPlan={setSelectedPlan}
         isSentryUpgrade={isSentryUpgrade}
         hasTeamPlans={hasTeamPlans}
+        multipleTiers={multipleTiers}
       />
       <div className="flex flex-col gap-2">
         <BillingControls
