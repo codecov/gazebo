@@ -6,23 +6,21 @@ import Api from 'shared/api'
 export const useAdminAccessList = () => {
   const { provider } = useParams()
 
-  return useInfiniteQuery(
-    ['AdminAccessList'],
-    ({ pageParam = 1, signal }) =>
+  return useInfiniteQuery({
+    queryKey: ['AdminAccessList', provider],
+    queryFn: ({ pageParam = 1, signal }) =>
       Api.get({
         path: `/users?is_admin=true&page=${pageParam}`,
         signal,
         provider,
       }),
-    {
-      select: ({ pages }) => pages.map(({ results }) => results).flat(),
-      getNextPageParam: (data) => {
-        if (data?.next) {
-          const { searchParams } = new URL(data.next)
-          return searchParams.get('page')
-        }
-        return undefined
-      },
-    }
-  )
+    select: ({ pages }) => pages.map(({ results }) => results).flat(),
+    getNextPageParam: (data) => {
+      if (data?.next) {
+        const { searchParams } = new URL(data.next)
+        return searchParams.get('page')
+      }
+      return undefined
+    },
+  })
 }
