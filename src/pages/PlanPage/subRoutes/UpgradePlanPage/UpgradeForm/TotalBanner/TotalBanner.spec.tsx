@@ -157,55 +157,26 @@ describe('TotalBanner', () => {
       })
 
       describe('user switches to annual plan', () => {
-        describe('when selected plan is not a team plan', () => {
-          it('calls mock set value with pro annual plan', async () => {
-            const { mockSetValue, user } = setup()
-            render(
-              <TotalBanner
-                {...props}
-                seats={10}
-                setValue={mockSetValue}
-                planString={Plans.USERS_SENTRYM}
-              />,
-              { wrapper }
-            )
+        it('calls mock set value with pro annual plan', async () => {
+          const { mockSetValue, user } = setup()
+          render(
+            <TotalBanner
+              {...props}
+              seats={10}
+              setValue={mockSetValue}
+              planString={Plans.USERS_SENTRYM}
+            />,
+            { wrapper }
+          )
 
-            const switchToAnnual = await screen.findByRole('button', {
-              name: 'switch to annual',
-            })
-            expect(switchToAnnual).toBeInTheDocument()
-
-            await user.click(switchToAnnual)
-
-            expect(mockSetValue).toBeCalledWith(
-              'newPlan',
-              Plans.USERS_PR_INAPPY
-            )
+          const switchToAnnual = await screen.findByRole('button', {
+            name: 'switch to annual',
           })
-        })
+          expect(switchToAnnual).toBeInTheDocument()
 
-        describe('when selected plan is a team plan', () => {
-          it('calls mock set value with pro annual plan', async () => {
-            const { mockSetValue, user } = setup()
-            render(
-              <TotalBanner
-                {...props}
-                seats={10}
-                setValue={mockSetValue}
-                planString={Plans.USERS_TEAMM}
-              />,
-              { wrapper }
-            )
+          await user.click(switchToAnnual)
 
-            const switchToAnnual = await screen.findByRole('button', {
-              name: 'switch to annual',
-            })
-            expect(switchToAnnual).toBeInTheDocument()
-
-            await user.click(switchToAnnual)
-
-            expect(mockSetValue).toBeCalledWith('newPlan', Plans.USERS_TEAMY)
-          })
+          expect(mockSetValue).toBeCalledWith('newPlan', Plans.USERS_PR_INAPPY)
         })
       })
     })
@@ -297,52 +268,113 @@ describe('TotalBanner', () => {
       })
 
       describe('user switches to annual plan', () => {
-        describe('when selected plan is not a team plan', () => {
-          it('calls mock set value with pro annual plan', async () => {
-            const { mockSetValue, user } = setup()
-            render(
-              <TotalBanner
-                {...props}
-                seats={10}
-                setValue={mockSetValue}
-                planString={Plans.USERS_SENTRYM}
-              />,
-              { wrapper }
-            )
+        it('calls mock set value with pro annual plan', async () => {
+          const { mockSetValue, user } = setup()
+          render(
+            <TotalBanner
+              {...props}
+              seats={10}
+              setValue={mockSetValue}
+              planString={Plans.USERS_SENTRYM}
+            />,
+            { wrapper }
+          )
 
-            const switchToAnnual = await screen.findByRole('button', {
-              name: 'switch to annual',
-            })
-            expect(switchToAnnual).toBeInTheDocument()
-
-            await user.click(switchToAnnual)
-
-            expect(mockSetValue).toBeCalledWith('newPlan', Plans.USERS_SENTRYY)
+          const switchToAnnual = await screen.findByRole('button', {
+            name: 'switch to annual',
           })
+          expect(switchToAnnual).toBeInTheDocument()
+
+          await user.click(switchToAnnual)
+
+          expect(mockSetValue).toBeCalledWith('newPlan', Plans.USERS_SENTRYY)
         })
+      })
+    })
+  })
 
-        describe('when selected plan is a team plan', () => {
-          it('calls mock set value with pro annual plan', async () => {
-            const { mockSetValue, user } = setup()
-            render(
-              <TotalBanner
-                {...props}
-                seats={10}
-                setValue={mockSetValue}
-                planString={Plans.USERS_TEAMM}
-              />,
-              { wrapper }
-            )
+  describe('user can apply team upgrade', () => {
+    describe('isPerYear is set to true', () => {
+      const props = {
+        isPerYear: true,
+        perYearPrice: 25,
+        perMonthPrice: 30,
+        isSentryUpgrade: false,
+        seats: 5,
+        planString: Plans.USERS_TEAMY,
+      }
 
-            const switchToAnnual = await screen.findByRole('button', {
-              name: 'switch to annual',
-            })
-            expect(switchToAnnual).toBeInTheDocument()
+      it('displays per month price', () => {
+        const { mockSetValue } = setup()
 
-            await user.click(switchToAnnual)
+        render(<TotalBanner {...props} setValue={mockSetValue} />)
 
-            expect(mockSetValue).toBeCalledWith('newPlan', Plans.USERS_TEAMY)
+        const perMonthPrice = screen.getByText(/\$25.00/)
+        expect(perMonthPrice).toBeInTheDocument()
+      })
+
+      it('displays billed annually at price', () => {
+        const { mockSetValue } = setup()
+
+        render(<TotalBanner {...props} setValue={mockSetValue} />)
+
+        const annualPrice = screen.getByText(
+          /\/per month billed annually at \$300.00/
+        )
+        expect(annualPrice).toBeInTheDocument()
+      })
+
+      it('displays how much the user saves', () => {
+        const { mockSetValue } = setup()
+
+        render(<TotalBanner {...props} setValue={mockSetValue} />)
+
+        const moneySaved = screen.getByText(/save \$60.00/)
+        expect(moneySaved).toBeInTheDocument()
+      })
+    })
+
+    describe('isPerYear is set to false', () => {
+      const props = {
+        isPerYear: false,
+        perYearPrice: 25,
+        perMonthPrice: 30,
+        isSentryUpgrade: false,
+        seats: 5,
+        planString: Plans.USERS_TEAMY,
+      }
+
+      it('displays the monthly price', () => {
+        const { mockSetValue } = setup()
+        render(<TotalBanner {...props} setValue={mockSetValue} />)
+
+        const monthlyPrice = screen.getByText(/\$30.00/)
+        expect(monthlyPrice).toBeInTheDocument()
+      })
+
+      it('displays what the user could save with annual plan', () => {
+        const { mockSetValue } = setup()
+        render(<TotalBanner {...props} setValue={mockSetValue} />)
+
+        const savings = screen.getByText(/\$60.00/)
+        expect(savings).toBeInTheDocument()
+      })
+
+      describe('user switches to annual plan', () => {
+        it('calls mock set value with team annual plan', async () => {
+          const { mockSetValue, user } = setup()
+          render(<TotalBanner {...props} setValue={mockSetValue} />, {
+            wrapper,
           })
+
+          const switchToAnnual = await screen.findByRole('button', {
+            name: 'switch to annual',
+          })
+          expect(switchToAnnual).toBeInTheDocument()
+
+          await user.click(switchToAnnual)
+
+          expect(mockSetValue).toBeCalledWith('newPlan', Plans.USERS_TEAMY)
         })
       })
     })

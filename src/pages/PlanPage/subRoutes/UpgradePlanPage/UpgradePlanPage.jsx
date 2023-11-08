@@ -52,6 +52,7 @@ function UpgradePlanPage() {
         proPlanMonth={proPlanMonth}
         sentryPlanYear={sentryPlanYear}
         sentryPlanMonth={sentryPlanMonth}
+        selectedPlan={selectedPlan}
         setSelectedPlan={setSelectedPlan}
       />
     </div>

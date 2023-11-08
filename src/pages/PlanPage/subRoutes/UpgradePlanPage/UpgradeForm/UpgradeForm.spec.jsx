@@ -91,6 +91,24 @@ const proPlanYear = {
   quantity: 10,
 }
 
+const teamPlanMonth = {
+  baseUnitPrice: 6,
+  benefits: ['Up to 10 users'],
+  billingRate: 'monthly',
+  marketingName: 'Users Team',
+  monthlyUploadLimit: 2500,
+  value: 'users-teamm',
+}
+
+const teamPlanYear = {
+  baseUnitPrice: 5,
+  benefits: ['Up to 10 users'],
+  billingRate: 'annually',
+  marketingName: 'Users Team',
+  monthlyUploadLimit: 2500,
+  value: 'users-teamy',
+}
+
 const mockPlanData = {
   baseUnitPrice: 10,
   benefits: [],
@@ -146,11 +164,13 @@ describe('UpgradeForm', () => {
       errorDetails = undefined,
       includeSentryPlans = false,
       trialStatus = undefined,
+      hasTeamPlans = false,
     } = {
       successfulRequest: true,
       errorDetails: undefined,
       includeSentryPlans: false,
       trialStatus: undefined,
+      hasTeamPlans: false,
     }
   ) {
     const addNotification = jest.fn()
@@ -196,6 +216,7 @@ describe('UpgradeForm', () => {
                   proPlanYear,
                   sentryPlanMonth,
                   sentryPlanYear,
+                  ...(hasTeamPlans ? [teamPlanMonth, teamPlanYear] : []),
                 ],
               },
             })
@@ -204,7 +225,14 @@ describe('UpgradeForm', () => {
           return res(
             ctx.status(200),
             ctx.data({
-              owner: { availablePlans: [freePlan, proPlanMonth, proPlanYear] },
+              owner: {
+                availablePlans: [
+                  freePlan,
+                  proPlanMonth,
+                  proPlanYear,
+                  ...(hasTeamPlans ? [teamPlanMonth, teamPlanYear] : []),
+                ],
+              },
             })
           )
         }
@@ -263,6 +291,7 @@ describe('UpgradeForm', () => {
           plan: freePlan,
           latestInvoice: null,
         },
+        setSelectedPlan: jest.fn(),
       }
 
       it('renders annual option button as "selected"', async () => {
@@ -280,6 +309,43 @@ describe('UpgradeForm', () => {
 
         const numberInput = await screen.findByRole('spinbutton')
         expect(numberInput).toHaveValue(9)
+      })
+
+      describe('when the user has team plans available', () => {
+        it('renders the Pro button as "selected"', async () => {
+          setup({ hasTeamPlans: true })
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const optionBtn = await screen.findByRole('button', { name: 'Pro' })
+          expect(optionBtn).toBeInTheDocument()
+          expect(optionBtn).toHaveClass('bg-ds-primary-base')
+        })
+
+        it('renders team option button', async () => {
+          setup({ hasTeamPlans: true })
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const optionBtn = await screen.findByRole('button', { name: 'Team' })
+          expect(optionBtn).toBeInTheDocument()
+        })
+
+        describe('when updating to a team plan', () => {
+          it('renders up to 10 seats text', async () => {
+            const { user } = setup({ hasTeamPlans: true })
+            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+            const teamOption = await screen.findByRole('button', {
+              name: 'Team',
+            })
+
+            await user.click(teamOption)
+
+            const auxiliaryText = await screen.findByText(/Up to 10 users/)
+            expect(auxiliaryText).toBeInTheDocument()
+          })
+
+          it('renders the appropriate price', async () => {})
+        })
       })
     })
 

@@ -114,10 +114,11 @@ export const calculatePrice = ({
   baseUnitPrice,
   isSentryUpgrade,
   sentryPrice,
+  isSelectedPlanTeam,
 }) => {
   let price = Math.floor(seats) * baseUnitPrice
 
-  if (isSentryUpgrade) {
+  if (isSentryUpgrade && !isSelectedPlanTeam) {
     price = sentryPrice
     if (seats > 5) {
       price += Math.floor(seats - 5) * baseUnitPrice
