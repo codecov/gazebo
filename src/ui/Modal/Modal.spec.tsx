@@ -52,6 +52,7 @@ describe('Modal', () => {
   describe('when clicking on the close button', () => {
     it('calls the close handler', async () => {
       const onClose = jest.fn()
+      const user = userEvent.setup()
       render(
         <Modal
           isOpen={true}
@@ -60,8 +61,7 @@ describe('Modal', () => {
           title="modal title"
         />
       )
-
-      await userEvent.click(screen.getByLabelText('Close'))
+      await user.click(screen.getByLabelText('Close'))
       expect(onClose).toHaveBeenCalled()
     })
   })
