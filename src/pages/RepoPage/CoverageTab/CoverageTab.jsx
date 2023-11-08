@@ -1,12 +1,16 @@
 import { lazy, Suspense } from 'react'
-import { Switch } from 'react-router-dom'
+import { Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
+import { useRepoSettingsTeam } from 'services/repo'
+import { TierNames, useTier } from 'services/tier'
+import { useFlags } from 'shared/featureFlags'
 import Spinner from 'ui/Spinner'
 
 import Summary from './Summary'
+import SummaryTeamPlan from './SummaryTeamPlan'
 import ToggleElement from './ToggleElement'
 
 const FileViewer = lazy(() => import('./subroute/Fileviewer'))
@@ -21,34 +25,48 @@ const Loader = () => (
 )
 
 function CoverageTab() {
+  const { data: repoData } = useRepoSettingsTeam()
+  const { multipleTiers } = useFlags({
+    multipleTiers: false,
+  })
+  const { provider, owner } = useParams()
+  const { data: tierName } = useTier({ provider, owner })
+
+  const showTeamSummary =
+    tierName === TierNames.TEAM &&
+    repoData?.repository?.private &&
+    multipleTiers
+
   return (
     <div className="mx-4 flex flex-col gap-2 divide-y border-solid border-ds-gray-secondary sm:mx-0">
-      <Summary />
-      <SentryRoute
-        path={[
-          '/:provider/:owner/:repo/tree/:branch/:path+',
-          '/:provider/:owner/:repo/tree/:branch',
-          '/:provider/:owner/:repo',
-        ]}
-        exact
-      >
-        <Suspense fallback={null}>
-          <ToggleElement
-            showElement="Show Chart"
-            hideElement="Hide Chart"
-            localStorageKey="is-chart-hidden"
-          >
-            <div className="col-span-9 inline-table">
-              <SilentNetworkErrorWrapper>
-                <CoverageChart />
-              </SilentNetworkErrorWrapper>
-            </div>
-            <div className="sticky top-[8rem] col-span-3 flex aspect-square flex-col justify-center gap-4 px-8 py-4">
-              <Sunburst />
-            </div>
-          </ToggleElement>
-        </Suspense>
-      </SentryRoute>
+      {showTeamSummary ? <SummaryTeamPlan /> : <Summary />}
+      {!showTeamSummary && (
+        <SentryRoute
+          path={[
+            '/:provider/:owner/:repo/tree/:branch/:path+',
+            '/:provider/:owner/:repo/tree/:branch',
+            '/:provider/:owner/:repo',
+          ]}
+          exact
+        >
+          <Suspense fallback={null}>
+            <ToggleElement
+              showElement="Show Chart"
+              hideElement="Hide Chart"
+              localStorageKey="is-chart-hidden"
+            >
+              <div className="col-span-9 inline-table">
+                <SilentNetworkErrorWrapper>
+                  <CoverageChart />
+                </SilentNetworkErrorWrapper>
+              </div>
+              <div className="sticky top-[8rem] col-span-3 flex aspect-square flex-col justify-center gap-4 px-8 py-4">
+                <Sunburst />
+              </div>
+            </ToggleElement>
+          </Suspense>
+        </SentryRoute>
+      )}
       <Switch>
         <SentryRoute path="/:provider/:owner/:repo/blob/:ref/:path+" exact>
           <Suspense fallback={<Loader />}>

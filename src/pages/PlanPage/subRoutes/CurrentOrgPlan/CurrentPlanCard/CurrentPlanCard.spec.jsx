@@ -7,7 +7,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import CurrentPlanCard from './CurrentPlanCard'
 
 jest.mock('./FreePlanCard', () => () => 'Free plan card')
-jest.mock('./ProPlanCard', () => () => 'Pro plan card')
+jest.mock('./PaidPlanCard', () => () => 'Paid plan card')
 jest.mock('./EnterprisePlanCard', () => () => 'Enterprise plan card')
 
 const proPlanDetails = {
@@ -122,8 +122,8 @@ describe('CurrentPlanCard', () => {
         wrapper,
       })
 
-      const proPlanCard = await screen.findByText(/Pro plan card/)
-      expect(proPlanCard).toBeInTheDocument()
+      const PaidPlanCard = await screen.findByText(/Paid plan card/)
+      expect(PaidPlanCard).toBeInTheDocument()
     })
   })
 

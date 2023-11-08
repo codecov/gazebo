@@ -7,17 +7,21 @@ import { mapEdges } from 'shared/utils/graphql'
 
 import { orderingOptions } from './config'
 
-const RepositorySchema = z.object({
-  name: z.string(),
-  active: z.boolean(),
-  activated: z.boolean(),
-  private: z.boolean(),
-  latestCommitAt: z.string().nullable(),
-  lines: z.number().nullable(),
-  author: z.object({
-    username: z.string().nullable(),
-  }),
-})
+const RepositorySchema = z
+  .object({
+    name: z.string(),
+    active: z.boolean(),
+    activated: z.boolean().nullable(),
+    private: z.boolean(),
+    latestCommitAt: z.string().nullable(),
+    lines: z.number().nullable(),
+    author: z.object({
+      username: z.string().nullable(),
+    }),
+  })
+  .nullable()
+
+export type Repository = z.infer<typeof RepositorySchema>
 
 const repositoryFragment = `
   fragment RepoForList on Repository {
@@ -38,7 +42,7 @@ interface FetchReposTeamArgs {
   owner: string
   variables: {
     filters: {
-      activated: boolean
+      activated?: boolean
       term?: string
       repoNames?: string[]
     }
@@ -53,6 +57,7 @@ interface FetchReposTeamArgs {
 const RequestSchema = z.object({
   owner: z
     .object({
+      isCurrentUserPartOfOrg: z.boolean(),
       repositories: z
         .object({
           edges: z.array(
@@ -80,6 +85,7 @@ function fetchReposForOwner({
   const query = `
     query GetReposTeam($filters: RepositorySetFilters!, $owner: String!, $ordering: RepositoryOrdering!, $direction: OrderingDirection!, $after: String, $first: Int) {
         owner(username: $owner) {
+          isCurrentUserPartOfOrg
           repositories(filters: $filters, ordering: $ordering, orderingDirection: $direction, first: $first, after: $after) {
             edges {
               node {
@@ -120,16 +126,17 @@ function fetchReposForOwner({
     return {
       repos: mapEdges(owner?.repositories),
       pageInfo: owner?.repositories?.pageInfo,
+      isCurrentUserPartOfOrg: !!owner?.isCurrentUserPartOfOrg,
     }
   })
 }
 
 interface UseReposTeamArgs {
-  activated: boolean
+  activated?: boolean
   term?: string
   owner: string
   sortItem?: {
-    ordering: string
+    ordering?: string
     direction: string
   }
   first?: number
@@ -153,7 +160,7 @@ export function useReposTeam({
     first,
   }
 
-  const { data, ...rest } = useInfiniteQuery(
+  return useInfiniteQuery(
     ['GetReposTeam', provider, variables, owner],
     ({ pageParam, signal }) => {
       return fetchReposForOwner({
@@ -170,8 +177,4 @@ export function useReposTeam({
       ...options,
     }
   )
-  return {
-    data: { repos: data?.pages.map((page) => page.repos).flat() },
-    ...rest,
-  }
 }

@@ -19,7 +19,7 @@ function Activation() {
   const planQuantity = accountDetails?.plan?.quantity || 0
 
   if (
-    isTrialPlan(planData?.plan?.planName) &&
+    isTrialPlan(planData?.plan?.value) &&
     planData?.plan?.trialStatus === TrialStatuses.ONGOING
   ) {
     return (
@@ -42,7 +42,7 @@ function Activation() {
   }
 
   if (
-    isFreePlan(planData?.plan?.planName) &&
+    isFreePlan(planData?.plan?.value) &&
     planData?.plan?.trialStatus === TrialStatuses.EXPIRED
   ) {
     return (

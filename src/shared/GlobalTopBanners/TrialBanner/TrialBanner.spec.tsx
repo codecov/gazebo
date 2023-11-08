@@ -28,6 +28,7 @@ const proPlanMonth = {
   quantity: 10,
   trialTotalDays: 0,
   pretrialUsersCount: 0,
+  planUserCount: 1,
 }
 
 const trialPlan = {
@@ -44,6 +45,7 @@ const trialPlan = {
   quantity: 10,
   trialTotalDays: 0,
   pretrialUsersCount: 0,
+  planUserCount: 1,
 }
 
 const basicPlan = {
@@ -59,6 +61,7 @@ const basicPlan = {
   quantity: 1,
   trialTotalDays: 0,
   pretrialUsersCount: 0,
+  planUserCount: 1,
 }
 
 const queryClient = new QueryClient()
@@ -138,12 +141,13 @@ describe('TrialBanner', () => {
                 billingRate: null,
                 marketingName: plan.marketingName,
                 monthlyUploadLimit: null,
-                planName: plan.value,
+                value: plan.value,
                 trialStatus,
                 trialStartDate,
                 trialEndDate,
                 trialTotalDays: plan.trialTotalDays,
                 pretrialUsersCount: plan.pretrialUsersCount,
+                planUserCount: plan.planUserCount,
               },
             },
           })

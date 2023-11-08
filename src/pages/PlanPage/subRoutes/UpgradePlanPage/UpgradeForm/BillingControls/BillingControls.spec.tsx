@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { rest } from 'msw'
+import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -19,6 +19,7 @@ const proPlanMonth = {
     'Unlimited private repositories',
     'Priority Support',
   ],
+  monthlyUploadLimit: 250,
   quantity: 10,
 }
 
@@ -33,6 +34,7 @@ const proPlanYear = {
     'Unlimited private repositories',
     'Priority Support',
   ],
+  monthlyUploadLimit: 250,
   quantity: 10,
 }
 
@@ -47,6 +49,7 @@ const sentryPlanMonth = {
     'Unlimited private repositories',
     'Priority Support',
   ],
+  monthlyUploadLimit: 250,
   trialDays: 14,
 }
 
@@ -61,6 +64,7 @@ const sentryPlanYear = {
     'Unlimited private repositories',
     'Priority Support',
   ],
+  monthlyUploadLimit: 250,
   trialDays: 14,
 }
 
@@ -93,12 +97,21 @@ afterAll(() => {
 describe('BillingControls', () => {
   function setup() {
     server.use(
-      rest.get('internal/plans', (req, res, ctx) => {
-        return res(
+      graphql.query('GetAvailablePlans', (req, res, ctx) =>
+        res(
           ctx.status(200),
-          ctx.json([proPlanMonth, proPlanYear, sentryPlanMonth, sentryPlanYear])
+          ctx.data({
+            owner: {
+              availablePlans: [
+                proPlanMonth,
+                proPlanYear,
+                sentryPlanMonth,
+                sentryPlanYear,
+              ],
+            },
+          })
         )
-      })
+      )
     )
 
     const mockSetValue = jest.fn()

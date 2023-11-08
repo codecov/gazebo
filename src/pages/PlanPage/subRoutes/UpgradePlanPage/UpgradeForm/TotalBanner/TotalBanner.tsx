@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
-import { usePlans } from 'services/account'
+import { useAvailablePlans } from 'services/account'
 import { findSentryPlans, formatNumberToUSD, Plans } from 'shared/utils/billing'
 import { calculateNonBundledCost } from 'shared/utils/upgradeForm'
 import Icon from 'ui/Icon'
@@ -21,8 +21,8 @@ const SentryBanner: React.FC<SentryBannerProps> = ({
   setValue,
   seats,
 }) => {
-  const { provider } = useParams<{ provider: string }>()
-  const { data: plans } = usePlans(provider)
+  const { provider, owner } = useParams<{ provider: string; owner: string }>()
+  const { data: plans } = useAvailablePlans({ provider, owner })
   const { sentryPlanMonth, sentryPlanYear } = findSentryPlans({ plans })
 
   if (isPerYear) {

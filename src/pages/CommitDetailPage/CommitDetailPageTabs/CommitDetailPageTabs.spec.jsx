@@ -13,6 +13,21 @@ import CommitDetailPageTabs from './CommitDetailPageTabs'
 
 jest.mock('shared/featureFlags')
 
+const mockRepoSettings = (isPrivate) => ({
+  owner: {
+    repository: {
+      defaultBranch: 'main',
+      private: isPrivate,
+      uploadToken: 'token',
+      graphToken: 'token',
+      yaml: 'yaml',
+      bot: {
+        username: 'test',
+      },
+    },
+  },
+})
+
 const mockFlagsResponse = {
   owner: {
     repository: {
@@ -46,7 +61,6 @@ const mockBackfillResponse = {
   },
 }
 
-const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -55,6 +69,8 @@ const queryClient = new QueryClient({
     },
   },
 })
+const server = setupServer()
+
 const wrapper =
   (initialEntries = ['/gh/codecov/cool-repo/commit/sha256']) =>
   ({ children }) =>
@@ -91,9 +107,10 @@ afterAll(() => {
 
 describe('CommitDetailPageTabs', () => {
   function setup(
-    { flagValue = false, tierValue = TierNames.PRO } = {
+    { flagValue = false, tierValue = TierNames.PRO, isPrivate = false } = {
       flagValue: false,
       tierValue: TierNames.PRO,
+      isPrivate: false,
     }
   ) {
     useFlags.mockReturnValue({
@@ -109,19 +126,53 @@ describe('CommitDetailPageTabs', () => {
         return res(ctx.status(200), ctx.data(mockBackfillResponse))
       }),
       graphql.query('OwnerTier', (req, res, ctx) => {
-        if (tierValue === TierNames.Team) {
-          return res(
-            ctx.status(200),
-            ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
-          )
-        }
         return res(
           ctx.status(200),
-          ctx.data({ owner: { plan: { tierName: TierNames.PRO } } })
+          ctx.data({ owner: { plan: { tierName: tierValue } } })
         )
+      }),
+      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
       })
     )
   }
+
+  describe('user is on a team plan', () => {
+    describe('repo is public', () => {
+      it('does not render the indirect changes tab', async () => {
+        setup({ tierValue: TierNames.TEAM, isPrivate: false })
+        render(<CommitDetailPageTabs commitSha="sha256" />, {
+          wrapper: wrapper(),
+        })
+
+        const filesChanged = await screen.findByText('Files changed')
+        expect(filesChanged).toBeInTheDocument()
+
+        const indirectChanges = await screen.findByText('Indirect changes')
+        expect(indirectChanges).toBeInTheDocument()
+
+        const filesExplorerTab = await screen.findByText('File explorer')
+        expect(filesExplorerTab).toBeInTheDocument()
+      })
+    })
+    describe('repo is private', () => {
+      it('does not render the indirect changes tab', async () => {
+        setup({ tierValue: TierNames.TEAM, isPrivate: true })
+        render(<CommitDetailPageTabs commitSha="sha256" />, {
+          wrapper: wrapper(),
+        })
+
+        const filesChanged = await screen.findByText('Files changed')
+        expect(filesChanged).toBeInTheDocument()
+
+        const indirectChanges = screen.queryByText('Indirect changes')
+        expect(indirectChanges).not.toBeInTheDocument()
+
+        const filesExplorerTab = await screen.findByText('File explorer')
+        expect(filesExplorerTab).toBeInTheDocument()
+      })
+    })
+  })
 
   describe('on base route', () => {
     it('highlights files changed tab', async () => {
@@ -335,25 +386,48 @@ describe('CommitDetailPageTabs', () => {
   })
 
   describe('flags multi-select', () => {
-    it('renders flag multi-select', async () => {
-      setup({ flagValue: true })
-      render(<CommitDetailPageTabs commitSha="sha256" />, {
-        wrapper: wrapper(),
-      })
-
-      const flagSelect = await screen.findByText('All flags')
-      expect(flagSelect).toBeInTheDocument()
-    })
-
-    describe('user is on a team plan', () => {
-      it('does not render the multi select', async () => {
-        setup({ flagValue: true, tierValue: TierNames.TEAM })
+    describe('user is not on a team plan', () => {
+      it('renders flag multi-select', async () => {
+        setup({ flagValue: true })
         render(<CommitDetailPageTabs commitSha="sha256" />, {
           wrapper: wrapper(),
         })
 
-        const flagSelect = screen.queryByText('All flags')
-        expect(flagSelect).not.toBeInTheDocument()
+        const flagSelect = await screen.findByText('All flags')
+        expect(flagSelect).toBeInTheDocument()
+      })
+    })
+
+    describe('user is on a team plan', () => {
+      describe('repo is public', () => {
+        it('renders flag multi-select', async () => {
+          setup({
+            flagValue: true,
+            tierValue: TierNames.TEAM,
+            isPrivate: false,
+          })
+          render(<CommitDetailPageTabs commitSha="sha256" />, {
+            wrapper: wrapper(),
+          })
+
+          const flagSelect = await screen.findByText('All flags')
+          expect(flagSelect).toBeInTheDocument()
+        })
+      })
+
+      describe('repo is private', () => {
+        it('does not render the multi select', async () => {
+          setup({ flagValue: true, tierValue: TierNames.TEAM, isPrivate: true })
+          render(<CommitDetailPageTabs commitSha="sha256" />, {
+            wrapper: wrapper(),
+          })
+
+          const filesChanged = await screen.findByText('Files changed')
+          expect(filesChanged).toBeInTheDocument()
+
+          const flagSelect = screen.queryByText('All flags')
+          expect(flagSelect).not.toBeInTheDocument()
+        })
       })
     })
   })
