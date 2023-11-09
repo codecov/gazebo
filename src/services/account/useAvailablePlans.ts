@@ -3,24 +3,22 @@ import { z } from 'zod'
 
 import Api from 'shared/api'
 
+export const IndividualPlanSchema = z
+  .object({
+    baseUnitPrice: z.number(),
+    benefits: z.array(z.string()),
+    billingRate: z.string().nullable(),
+    marketingName: z.string(),
+    monthlyUploadLimit: z.number().nullable(),
+    value: z.string(),
+  })
+  .nullable()
+
 const PlansSchema = z
   .object({
     owner: z
       .object({
-        availablePlans: z
-          .array(
-            z
-              .object({
-                baseUnitPrice: z.number(),
-                benefits: z.array(z.string()),
-                billingRate: z.string().nullable(),
-                marketingName: z.string(),
-                monthlyUploadLimit: z.number().nullable(),
-                value: z.string(),
-              })
-              .nullable()
-          )
-          .nullable(),
+        availablePlans: z.array(IndividualPlanSchema).nullable(),
       })
       .nullable(),
   })

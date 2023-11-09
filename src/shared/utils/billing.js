@@ -46,7 +46,6 @@ export function isTeamPlan(plan) {
   }
   return false
 }
-
 export function isBasicPlan(plan) {
   if (isString(plan)) {
     return plan === Plans.USERS_BASIC
@@ -67,6 +66,7 @@ export function isMonthlyPlan(plan) {
       plan === Plans.USERS_INAPP ||
       plan === Plans.USERS_PR_INAPPM ||
       plan === Plans.USERS_SENTRYM ||
+      plan === Plans.USERS_TEAMM ||
       plan === Plans.USERS_ENTERPRISEM
     )
   }
@@ -78,6 +78,7 @@ export function isAnnualPlan(plan) {
     return (
       plan === Plans.USERS_INAPPY ||
       plan === Plans.USERS_PR_INAPPY ||
+      plan === Plans.USERS_TEAMY ||
       plan === Plans.USERS_SENTRYY ||
       plan === Plans.USERS_ENTERPRISEY
     )

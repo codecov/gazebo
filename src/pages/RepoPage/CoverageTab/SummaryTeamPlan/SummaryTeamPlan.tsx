@@ -74,6 +74,11 @@ const SummaryTeamPlan = () => {
                 }}
                 onSearch={(term: any) => setBranchSearchTerm(term)}
                 items={branchList}
+                buttonIcon={
+                  <span className="text-ds-gray-quinary">
+                    <Icon name="branch" size="sm" variant="developer" />
+                  </span>
+                }
               />
             </span>
             {currentBranchSelected?.head?.commitid && (

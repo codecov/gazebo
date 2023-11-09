@@ -347,6 +347,11 @@ describe('isAnnualPlan', () => {
     expect(isAnnualPlan(Plans.USERS_PR_INAPPY)).toBe(true)
   })
 
+  it('supports annual team plan', () => {
+    expect(isAnnualPlan('users-teamy')).toBe(true)
+    expect(isAnnualPlan(Plans.USERS_PR_INAPPY)).toBe(true)
+  })
+
   it('defaults to false otherwise', () => {
     expect(isAnnualPlan('users-pro')).toBe(false)
     expect(isAnnualPlan('rable rable')).toBe(false)
