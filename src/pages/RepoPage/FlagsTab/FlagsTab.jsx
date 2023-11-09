@@ -2,6 +2,7 @@ import { Redirect, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
+import { useRepoSettingsTeam } from 'services/repo'
 import { useRepoFlagsSelect } from 'services/repo/useRepoFlagsSelect'
 import { TierNames, useTier } from 'services/tier'
 import FlagsNotConfigured from 'shared/FlagsNotConfigured'
@@ -13,9 +14,9 @@ import Header from './Header'
 import FlagsTable from './subroute/FlagsTable/FlagsTable'
 import TimescaleDisabled from './TimescaleDisabled'
 
-const isDisabled = ({ flagsMeasurementsActive, isRepoBackfilling }) =>
-  !flagsMeasurementsActive || isRepoBackfilling
-
+const isDisabled = ({ flagsMeasurementsActive, isRepoBackfilling }) => {
+  return !flagsMeasurementsActive || isRepoBackfilling
+}
 const showFlagsTable = ({
   flagsMeasurementsActive,
   flagsMeasurementsBackfilled,
@@ -31,6 +32,7 @@ function FlagsTab() {
   const { data: flagsData } = useRepoFlagsSelect()
   const { provider, owner, repo } = useParams()
   const { data: tierData } = useTier({ owner, provider })
+  const { data: repoSettings } = useRepoSettingsTeam()
 
   const {
     flagsMeasurementsActive,
@@ -39,7 +41,7 @@ function FlagsTab() {
     isTimescaleEnabled,
   } = useRepoBackfillingStatus()
 
-  if (tierData === TierNames.TEAM) {
+  if (tierData === TierNames.TEAM && repoSettings?.repository?.private) {
     return <Redirect to={`/${provider}/${owner}/${repo}`} />
   }
 
