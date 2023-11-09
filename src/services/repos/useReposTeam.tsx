@@ -160,9 +160,9 @@ export function useReposTeam({
     first,
   }
 
-  return useInfiniteQuery(
-    ['GetReposTeam', provider, variables, owner],
-    ({ pageParam, signal }) => {
+  return useInfiniteQuery({
+    queryKey: ['GetReposTeam', provider, variables, owner],
+    queryFn: ({ pageParam, signal }) => {
       return fetchReposForOwner({
         provider,
         variables,
@@ -171,10 +171,8 @@ export function useReposTeam({
         signal,
       })
     },
-    {
-      getNextPageParam: (data) =>
-        data?.pageInfo?.hasNextPage ? data.pageInfo.endCursor : undefined,
-      ...options,
-    }
-  )
+    getNextPageParam: (data) =>
+      data?.pageInfo?.hasNextPage ? data.pageInfo.endCursor : undefined,
+    ...options,
+  })
 }

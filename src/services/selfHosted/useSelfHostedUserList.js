@@ -6,9 +6,9 @@ import Api from 'shared/api'
 export const useSelfHostedUserList = ({ activated, search, isAdmin }) => {
   const { provider } = useParams()
 
-  return useInfiniteQuery(
-    ['SelfHostedUserList', activated, search, isAdmin],
-    ({ pageParam = 1, signal }) => {
+  return useInfiniteQuery({
+    queryKey: ['SelfHostedUserList', provider, activated, search, isAdmin],
+    queryFn: ({ pageParam = 1, signal }) => {
       return Api.get({
         provider,
         path: '/users',
@@ -21,15 +21,13 @@ export const useSelfHostedUserList = ({ activated, search, isAdmin }) => {
         },
       })
     },
-    {
-      select: ({ pages }) => pages.map(({ results }) => results).flat(),
-      getNextPageParam: (data) => {
-        if (data?.next) {
-          const { searchParams } = new URL(data.next)
-          return searchParams.get('page')
-        }
-        return undefined
-      },
-    }
-  )
+    select: ({ pages }) => pages.map(({ results }) => results).flat(),
+    getNextPageParam: (data) => {
+      if (data?.next) {
+        const { searchParams } = new URL(data.next)
+        return searchParams.get('page')
+      }
+      return undefined
+    },
+  })
 }

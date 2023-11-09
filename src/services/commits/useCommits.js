@@ -105,9 +105,10 @@ export function useCommits({ provider, owner, repo, filters, opts = {} }) {
     filters,
     includeTotalCount: isNumber(filters?.pullId),
   }
-  const { data, ...rest } = useInfiniteQuery(
-    ['commits', provider, owner, repo, variables],
-    ({ pageParam, signal }) =>
+
+  const { data, ...rest } = useInfiniteQuery({
+    queryKey: ['commits', provider, owner, repo, variables],
+    queryFn: ({ pageParam, signal }) =>
       fetchRepoCommits({
         provider,
         owner,
@@ -116,12 +117,11 @@ export function useCommits({ provider, owner, repo, filters, opts = {} }) {
         after: pageParam,
         signal,
       }),
-    {
-      getNextPageParam: (data) =>
-        data?.pageInfo?.hasNextPage ? data?.pageInfo.endCursor : undefined,
-      ...opts,
-    }
-  )
+    getNextPageParam: (data) =>
+      data?.pageInfo?.hasNextPage ? data?.pageInfo.endCursor : undefined,
+    ...opts,
+  })
+
   return {
     data: {
       commits: data?.pages.map((page) => page?.commits).flat(),

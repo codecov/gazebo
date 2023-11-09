@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
@@ -229,6 +229,14 @@ describe('Summary', () => {
 
       const dropDownBtn = await screen.findByText('main')
       expect(dropDownBtn).toBeInTheDocument()
+    })
+
+    it('renders branch icon inside select button', async () => {
+      render(<SummaryTeamPlan />, { wrapper: wrapper() })
+
+      const dropDownBtn = await screen.findByRole('button')
+      const icon = await within(dropDownBtn).findByText('branch.svg')
+      expect(icon).toBeInTheDocument()
     })
 
     it('renders the source commit short sha', async () => {
