@@ -1,5 +1,7 @@
 import { render, screen } from '@testing-library/react'
 
+import { Plans } from 'shared/utils/billing'
+
 import UserCount from './UserCount'
 
 /*
@@ -16,6 +18,7 @@ describe('UserCount', () => {
           activatedUserCount={10}
           inactiveUserCount={10}
           isSentryUpgrade={false}
+          planString={Plans.USERS_PR_INAPPM}
         />
       )
 
@@ -25,24 +28,49 @@ describe('UserCount', () => {
   })
 
   describe('it is a sentry plan', () => {
-    it('renders 5 users included in plan', () => {
-      render(
-        <UserCount
-          activatedUserCount={10}
-          inactiveUserCount={10}
-          isSentryUpgrade={true}
-        />
-      )
+    describe('when the selected plan is a team plan', () => {
+      it('renders 5 users included in plan', () => {
+        render(
+          <UserCount
+            activatedUserCount={10}
+            inactiveUserCount={10}
+            isSentryUpgrade={true}
+            planString={Plans.USERS_TEAMM}
+          />
+        )
 
-      const message = screen.getByText(/5 seats already included in this plan/i)
-      expect(message).toBeInTheDocument()
+        const message = screen.getByText(/Your organization has 20 members./)
+        expect(message).toBeInTheDocument()
+      })
+    })
+
+    describe('when the selected plan is not a team plan', () => {
+      it('renders 5 users included in plan', () => {
+        render(
+          <UserCount
+            activatedUserCount={10}
+            inactiveUserCount={10}
+            isSentryUpgrade={true}
+            planString={Plans.USERS_SENTRYY}
+          />
+        )
+
+        const message = screen.getByText(
+          /5 seats already included in this plan/i
+        )
+        expect(message).toBeInTheDocument()
+      })
     })
   })
 
   describe('activatedUserCount is undefined', () => {
     it('returns empty container', () => {
       const { container } = render(
-        <UserCount activatedUserCount={undefined} isSentryUpgrade={false} />
+        <UserCount
+          activatedUserCount={undefined}
+          isSentryUpgrade={false}
+          planString={Plans.USERS_BASIC}
+        />
       )
 
       expect(container).toBeEmptyDOMElement()
@@ -52,7 +80,11 @@ describe('UserCount', () => {
   describe('inactiveUserCount is undefined', () => {
     it('returns empty container', () => {
       const { container } = render(
-        <UserCount inactiveUserCount={undefined} isSentryUpgrade={false} />
+        <UserCount
+          inactiveUserCount={undefined}
+          isSentryUpgrade={false}
+          planString={Plans.USERS_BASIC}
+        />
       )
 
       expect(container).toBeEmptyDOMElement()
@@ -67,6 +99,7 @@ describe('UserCount', () => {
           inactiveUserCount={10}
           activatedStudentCount={0}
           isSentryUpgrade={false}
+          planString={Plans.USERS_BASIC}
         />
       )
 
@@ -82,6 +115,7 @@ describe('UserCount', () => {
         inactiveUserCount={30}
         activatedStudentCount={1}
         isSentryUpgrade={false}
+        planString={Plans.USERS_BASIC}
       />
     )
 
@@ -96,6 +130,7 @@ describe('UserCount', () => {
         inactiveUserCount={30}
         activatedStudentCount={2}
         isSentryUpgrade={false}
+        planString={Plans.USERS_BASIC}
       />
     )
 

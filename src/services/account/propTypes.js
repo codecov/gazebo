@@ -13,6 +13,7 @@ export const planPropType = PropType.shape({
   benefits: PropType.arrayOf(PropType.string).isRequired,
   quantity: PropType.number,
   value: PropType.string.isRequired,
+  monthlyUploadLimit: PropType.number,
 })
 
 export const subscriptionDetailType = PropType.shape({
