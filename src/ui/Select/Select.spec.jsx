@@ -108,6 +108,25 @@ describe('Select', () => {
     })
   })
 
+  describe('rendering with a button icon', () => {
+    it('renders the correct icon', async () => {
+      const onChange = jest.fn()
+      render(
+        <Select
+          ariaName="select test"
+          dataMarketing="select test"
+          items={['item1', 'item2', 'item3']}
+          onChange={onChange}
+          resourceName="item"
+          buttonIcon={<p>Super cool icon</p>}
+        />
+      )
+
+      const icon = screen.getByText(/Super cool icon/)
+      expect(icon).toBeInTheDocument()
+    })
+  })
+
   describe('when rendering with a value', () => {
     it('renders the default selected item', () => {
       const onChange = jest.fn()
