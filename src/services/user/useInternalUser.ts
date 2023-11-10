@@ -5,19 +5,19 @@ import Api from 'shared/api'
 
 const OwnerSchema = z
   .object({
-    avatarUrl: z.string().url('not a valid url'),
+    avatarUrl: z.string(),
     integrationId: z.number().nullable(),
     name: z.string().nullable(),
-    ownerid: z.number().nullable(),
-    service: z.string().nullable(),
+    ownerid: z.number(),
+    service: z.string(),
     stats: z
       .object({
         repos: z.number().nullable(),
       })
       .nullable(),
-    username: z.string().nullable(),
+    username: z.string(),
   })
-  .nullable()
+  .nullish()
 
 export type InternalUserOwnerData = z.infer<typeof OwnerSchema>
 

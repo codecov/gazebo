@@ -77,8 +77,8 @@ describe('SyncProviderPage', () => {
           username: 'codecov-user',
           avatarUrl: 'http://127.0.0.1/cool-user-avatar',
           integrationId: null,
-          ownerid: null,
-          service: null,
+          ownerid: 123,
+          service: 'github',
           stats: null,
         }),
       })
@@ -98,8 +98,8 @@ describe('SyncProviderPage', () => {
           username: 'codecov-user',
           avatarUrl: 'http://127.0.0.1/cool-user-avatar',
           integrationId: null,
-          ownerid: null,
-          service: null,
+          ownerid: 123,
+          service: 'github',
           stats: null,
         }),
       })
@@ -119,8 +119,8 @@ describe('SyncProviderPage', () => {
           username: 'codecov-user',
           avatarUrl: 'http://127.0.0.1/cool-user-avatar',
           integrationId: null,
-          ownerid: null,
-          service: null,
+          ownerid: 123,
+          service: 'github',
           stats: null,
         }),
       })
@@ -138,8 +138,8 @@ describe('SyncProviderPage', () => {
           username: 'codecov-user',
           avatarUrl: 'http://127.0.0.1/cool-user-avatar',
           integrationId: null,
-          ownerid: null,
-          service: null,
+          ownerid: 123,
+          service: 'github',
           stats: null,
         }),
       })
@@ -157,8 +157,8 @@ describe('SyncProviderPage', () => {
           username: 'codecov-user',
           avatarUrl: 'http://127.0.0.1/cool-user-avatar',
           integrationId: null,
-          ownerid: null,
-          service: null,
+          ownerid: 123,
+          service: 'github',
           stats: null,
         }),
       })
@@ -180,7 +180,7 @@ describe('SyncProviderPage', () => {
             username: 'codecov-user',
             avatarUrl: 'http://127.0.0.1/cool-user-avatar',
             integrationId: null,
-            ownerid: null,
+            ownerid: 123,
             stats: null,
           }),
         })
@@ -193,15 +193,7 @@ describe('SyncProviderPage', () => {
     describe('user does not have a service', () => {
       it('redirects user to /', async () => {
         setup({
-          user: createMockedInternalUser({
-            name: 'github',
-            username: 'codecov-user',
-            avatarUrl: 'http://127.0.0.1/cool-user-avatar',
-            integrationId: null,
-            ownerid: null,
-            service: null,
-            stats: null,
-          }),
+          user: createMockedInternalUser(undefined),
         })
 
         render(<SyncProviderPage />, { wrapper })

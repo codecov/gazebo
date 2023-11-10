@@ -34,7 +34,7 @@ export type CommitStatsEnum = z.infer<typeof CommitStatesEnumSchema>
 
 const AuthorSchema = z.object({
   username: z.string().nullable(),
-  avatarUrl: z.string().url('not a valid url'),
+  avatarUrl: z.string(),
 })
 
 const CommitSchema = z.object({

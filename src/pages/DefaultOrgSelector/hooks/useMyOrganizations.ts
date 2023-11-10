@@ -15,14 +15,14 @@ export const MyOrganizationsConfig = z.object({
     .object({
       owner: z.object({
         username: z.string().nullable(),
-        avatarUrl: z.string().url('not a valid url'),
-        ownerid: z.number().nullable(),
+        avatarUrl: z.string(),
+        ownerid: z.number(),
       }),
       myOrganizations: z.object({
         edges: z.array(
           z.object({
             node: z.object({
-              avatarUrl: z.string().url('not a valid url'),
+              avatarUrl: z.string(),
               username: z.string().nullable(),
               ownerid: z.number().nullable(),
             }),
@@ -41,10 +41,10 @@ export type MyOrganizationsData = z.infer<typeof MyOrganizationsConfig>
 const query = `
 query UseMyOrganizations($after: String) {
   me {
-     owner {
-        username
-        avatarUrl
-        ownerid
+    owner {
+      username
+      avatarUrl
+      ownerid
     }
     myOrganizations(first: 20, after: $after) {
       edges {
@@ -60,8 +60,8 @@ query UseMyOrganizations($after: String) {
       }
     }
   }
-}
-`
+}`
+
 interface ParamTypes {
   provider?: string
 }

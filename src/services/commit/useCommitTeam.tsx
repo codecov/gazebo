@@ -122,7 +122,7 @@ const CompareWithParentSchema = z.discriminatedUnion('__typename', [
 const CommitSchema = z.object({
   state: z.string().nullable(),
   commitid: z.string(),
-  pullId: z.number(),
+  pullId: z.number().nullable(),
   branchName: z.string().nullable(),
   createdAt: z.string(),
   author: z

@@ -113,7 +113,7 @@ const CommitSchema = z.object({
   totals: CoverageObjSchema.nullable(),
   state: z.string().nullable(),
   commitid: z.string(),
-  pullId: z.number(),
+  pullId: z.number().nullable(),
   branchName: z.string().nullable(),
   createdAt: z.string(),
   author: z

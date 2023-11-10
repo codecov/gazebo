@@ -37,7 +37,7 @@ const PullSchema = z
     author: z
       .object({
         username: z.string().nullable(),
-        avatarUrl: z.string().url('not a valid url'),
+        avatarUrl: z.string(),
       })
       .nullable(),
     head: z
