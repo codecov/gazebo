@@ -138,7 +138,7 @@ function ChartSelectors({ params, updateParams, active, sortItem }) {
       {tierData === TierNames.TEAM ? (
         <p className="self-end">
           Public repos only. <A to={{ pageName: 'upgradeOrgPlan' }}>Upgrade</A>{' '}
-          to Pro to include private repos
+          to Pro to include private repos.
         </p>
       ) : null}
     </div>
