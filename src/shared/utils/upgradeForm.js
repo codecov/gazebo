@@ -93,7 +93,7 @@ export const getSchema = ({
       })
       .transform((val, ctx) => {
         if (
-          selectedPlan?.value === Plans.USERS_TEAMY &&
+          isTeamPlan(selectedPlan?.value) &&
           val > TEAM_PLAN_MAX_ACTIVE_USERS
         ) {
           ctx.addIssue({

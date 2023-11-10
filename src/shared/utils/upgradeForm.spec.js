@@ -342,7 +342,7 @@ describe('getSchema', () => {
       )
     })
 
-    it('passes when seats are below max seats', () => {
+    it('passes when seats are below max seats for team yearly plan', () => {
       const accountDetails = {
         plan: {
           value: Plans.USERS_INAPPY,
@@ -363,6 +363,28 @@ describe('getSchema', () => {
       expect(response.success).toEqual(true)
       expect(response.error).toBeUndefined()
     })
+  })
+
+  it('passes when seats are below max seats for team monthly plan', () => {
+    const accountDetails = {
+      plan: {
+        value: Plans.USERS_INAPPY,
+      },
+    }
+    const schema = getSchema({
+      accountDetails,
+      selectedPlan: {
+        value: Plans.USERS_TEAMM,
+      },
+    })
+
+    const response = schema.safeParse({
+      seats: 9,
+      newPlan: Plans.USERS_TEAMM,
+    })
+
+    expect(response.success).toEqual(true)
+    expect(response.error).toBeUndefined()
   })
 })
 
