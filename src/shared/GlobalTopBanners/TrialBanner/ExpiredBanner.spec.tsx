@@ -42,12 +42,34 @@ describe('ExpiredBanner', () => {
       )
     })
 
-    it('renders button to upgrade', () => {
-      render(<ExpiredBanner />, { wrapper })
+    describe('rendering upgrade button', () => {
+      it('renders button', () => {
+        render(<ExpiredBanner />, { wrapper })
 
-      const btn = screen.getByRole('link', { name: /Upgrade/ })
-      expect(btn).toBeInTheDocument()
-      expect(btn).toHaveAttribute('href', '/plan/gh/codecov/upgrade')
+        const btn = screen.getByRole('link', { name: /Upgrade/ })
+        expect(btn).toBeInTheDocument()
+        expect(btn).toHaveAttribute('href', '/plan/gh/codecov/upgrade')
+      })
+
+      describe('user clicks the button', () => {
+        it('calls local storage', async () => {
+          const { user, mockGetItem, mockSetItem } = setup()
+          render(<ExpiredBanner />, { wrapper })
+
+          mockGetItem.mockReturnValue(null)
+
+          const btn = screen.getByRole('link', { name: /Upgrade/ })
+          expect(btn).toBeInTheDocument()
+          await user.click(btn)
+
+          await waitFor(() =>
+            expect(mockSetItem).toHaveBeenCalledWith(
+              'dismissed-top-banners',
+              JSON.stringify({ 'global-top-expired-trial-banner': 'true' })
+            )
+          )
+        })
+      })
     })
 
     it('renders dismiss button', () => {
@@ -70,7 +92,7 @@ describe('ExpiredBanner', () => {
       await user.click(dismissBtn)
 
       await waitFor(() =>
-        expect(mockSetItem).toBeCalledWith(
+        expect(mockSetItem).toHaveBeenCalledWith(
           'dismissed-top-banners',
           JSON.stringify({ 'global-top-expired-trial-banner': 'true' })
         )
