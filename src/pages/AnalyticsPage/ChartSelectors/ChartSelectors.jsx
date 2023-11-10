@@ -3,6 +3,8 @@ import { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useRepos } from 'services/repos'
+import { TierNames, useTier } from 'services/tier'
+import A from 'ui/A'
 import DateRangePicker from 'ui/DateRangePicker'
 import MultiSelect from 'ui/MultiSelect'
 
@@ -12,7 +14,7 @@ function formatDataForMultiselect(repos) {
 
 function DateSelector({ startDate, endDate, updateParams }) {
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-2">
       <span className="font-semibold">Dates</span>
       <DateRangePicker
         startDate={startDate}
@@ -60,7 +62,7 @@ function RepoSelector({
   })
 
   return (
-    <div className="flex w-52 flex-col gap-3">
+    <div className="flex w-52 flex-col gap-2">
       <span className="font-semibold">Repositories</span>
       <MultiSelect
         hook="repo-chart-selector"
@@ -91,10 +93,12 @@ RepoSelector.propTypes = {
 }
 
 function ChartSelectors({ params, updateParams, active, sortItem }) {
+  const { provider, owner } = useParams()
   const resetRef = useRef(null)
   const { repositories, startDate, endDate } = params
-
   const [selectedRepos, setSelectedRepos] = useState(repositories)
+
+  const { data: tierData } = useTier({ provider, owner })
 
   if (selectedRepos.length > 0 && repositories.length === 0) {
     setSelectedRepos([])
@@ -111,7 +115,7 @@ function ChartSelectors({ params, updateParams, active, sortItem }) {
   }
 
   return (
-    <div className="flex flex-wrap justify-center gap-4 sm:flex-nowrap sm:justify-start">
+    <div className="flex flex-wrap justify-center gap-4 border-b border-ds-gray-tertiary pb-4 sm:flex-nowrap sm:justify-start">
       <DateSelector
         startDate={startDate}
         endDate={endDate}
@@ -126,11 +130,17 @@ function ChartSelectors({ params, updateParams, active, sortItem }) {
         resetRef={resetRef}
       />
       <button
-        className="mt-7 text-ds-blue-darker"
+        className="self-end text-ds-blue-darker md:mr-auto"
         onClick={clearFiltersHandler}
       >
         Clear filters
       </button>
+      {tierData === TierNames.TEAM ? (
+        <p className="self-end">
+          Public repos only. <A to={{ pageName: 'upgradeOrgPlan' }}>Upgrade</A>{' '}
+          to Pro to include private repos
+        </p>
+      ) : null}
     </div>
   )
 }
