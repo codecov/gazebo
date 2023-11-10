@@ -313,6 +313,57 @@ describe('getSchema', () => {
     expect(response.success).toEqual(true)
     expect(response.error).toBeUndefined()
   })
+
+  describe('when the user upgrades to team plan', () => {
+    it('fails to parse when seats are above max seats', () => {
+      const accountDetails = {
+        plan: {
+          value: Plans.USERS_INAPPY,
+        },
+      }
+      const schema = getSchema({
+        accountDetails,
+        selectedPlan: {
+          value: Plans.USERS_TEAMY,
+        },
+      })
+
+      const response = schema.safeParse({
+        seats: 12,
+        newPlan: Plans.USERS_TEAMY,
+      })
+      expect(response.success).toBe(false)
+
+      const [issue] = response.error.issues
+      expect(issue).toEqual(
+        expect.objectContaining({
+          message: 'Team plan is only available for 10 or less users',
+        })
+      )
+    })
+
+    it('passes when seats are below max seats', () => {
+      const accountDetails = {
+        plan: {
+          value: Plans.USERS_INAPPY,
+        },
+      }
+      const schema = getSchema({
+        accountDetails,
+        selectedPlan: {
+          value: Plans.USERS_TEAMY,
+        },
+      })
+
+      const response = schema.safeParse({
+        seats: 9,
+        newPlan: Plans.USERS_TEAMY,
+      })
+
+      expect(response.success).toEqual(true)
+      expect(response.error).toBeUndefined()
+    })
+  })
 })
 
 describe('calculateNonBundledCost', () => {
