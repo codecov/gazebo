@@ -5,14 +5,7 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { act } from 'react-test-renderer'
 
-import { useLocationParams } from 'services/navigation'
-
 import { useRepoPullContentsTable } from './useRepoPullContentsTable'
-
-jest.mock('services/navigation', () => ({
-  ...jest.requireActual('services/navigation'),
-  useLocationParams: jest.fn(),
-}))
 
 const mockPullContentData = {
   owner: {
@@ -104,12 +97,11 @@ afterAll(() => {
 })
 
 describe('useRepoPullContentsTable', () => {
-  const calledPullContents = jest.fn()
-
   function setup({ noData } = { noData: false }) {
+    const variablesPassed = jest.fn()
     server.use(
       graphql.query('PullPathContents', (req, res, ctx) => {
-        calledPullContents(req?.variables)
+        variablesPassed(req?.variables)
 
         if (noData) {
           return res(ctx.status(200), ctx.data(mockPullNoContentData))
@@ -118,15 +110,13 @@ describe('useRepoPullContentsTable', () => {
         return res(ctx.status(200), ctx.data(mockPullContentData))
       })
     )
+
+    return { variablesPassed }
   }
 
   describe('calling the hook', () => {
     describe('when there is data to be returned', () => {
       beforeEach(() => {
-        useLocationParams.mockReturnValue({
-          params: {},
-        })
-
         setup()
       })
 
@@ -170,10 +160,6 @@ describe('useRepoPullContentsTable', () => {
 
     describe('when there is no data', () => {
       beforeEach(() => {
-        useLocationParams.mockReturnValue({
-          params: {},
-        })
-
         setup({ noData: true })
       })
 
@@ -191,24 +177,18 @@ describe('useRepoPullContentsTable', () => {
   })
 
   describe('when there is a search param', () => {
-    beforeEach(() => {
-      useLocationParams.mockReturnValue({
-        params: { search: 'file.js' },
-      })
-
-      setup()
-    })
-
     it('makes a gql request with the search value', async () => {
+      const { variablesPassed } = setup()
       const { result } = renderHook(() => useRepoPullContentsTable(), {
-        wrapper: wrapper(),
+        wrapper: wrapper([
+          '/gh/test-org/test-repo/pull/123/tree?search=file.js',
+        ]),
       })
 
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
 
-      expect(calledPullContents).toHaveBeenCalled()
-      expect(calledPullContents).toHaveBeenCalledWith({
+      expect(variablesPassed).toHaveBeenCalledWith({
         pullId: 123,
         filters: {
           searchValue: 'file.js',
@@ -225,24 +205,18 @@ describe('useRepoPullContentsTable', () => {
   })
 
   describe('when called with the list param', () => {
-    beforeEach(() => {
-      useLocationParams.mockReturnValue({
-        params: { displayType: 'list' },
-      })
-
-      setup()
-    })
-
     it('makes a gql request with the list param', async () => {
+      const { variablesPassed } = setup()
       const { result } = renderHook(() => useRepoPullContentsTable(), {
-        wrapper: wrapper(),
+        wrapper: wrapper([
+          '/gh/test-org/test-repo/pull/123/tree?displayType=list',
+        ]),
       })
 
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
 
-      expect(calledPullContents).toHaveBeenCalled()
-      expect(calledPullContents).toHaveBeenCalledWith({
+      expect(variablesPassed).toHaveBeenCalledWith({
         pullId: 123,
         filters: {
           displayType: 'LIST',
@@ -258,16 +232,35 @@ describe('useRepoPullContentsTable', () => {
     })
   })
 
-  describe('when handleSort is triggered', () => {
-    beforeEach(() => {
-      useLocationParams.mockReturnValue({
-        params: {},
+  describe('when called with a selected flag', () => {
+    it('makes a gql request with the list param', async () => {
+      const { variablesPassed } = setup()
+      const { result } = renderHook(() => useRepoPullContentsTable(), {
+        wrapper: wrapper(['/gh/test-org/test-repo/pull/123/tree?flags=a']),
       })
 
-      setup()
-    })
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
 
+      expect(variablesPassed).toHaveBeenCalledWith({
+        pullId: 123,
+        filters: {
+          flags: 'a',
+          ordering: {
+            direction: 'ASC',
+            parameter: 'NAME',
+          },
+        },
+        owner: 'test-org',
+        repo: 'test-repo',
+        path: '',
+      })
+    })
+  })
+
+  describe('when handleSort is triggered', () => {
     it('makes a gql request with the updated params', async () => {
+      const { variablesPassed } = setup()
       const { result } = renderHook(() => useRepoPullContentsTable(), {
         wrapper: wrapper(),
       })
@@ -282,8 +275,7 @@ describe('useRepoPullContentsTable', () => {
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
 
-      expect(calledPullContents).toHaveBeenCalledTimes(2)
-      expect(calledPullContents).toHaveBeenNthCalledWith(2, {
+      expect(variablesPassed).toHaveBeenNthCalledWith(2, {
         pullId: 123,
         filters: {
           ordering: {
