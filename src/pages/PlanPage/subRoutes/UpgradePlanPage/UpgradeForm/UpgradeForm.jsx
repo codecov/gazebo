@@ -48,6 +48,7 @@ const useUpgradeForm = ({
   isSentryUpgrade,
   teamPlanMonth,
   teamPlanYear,
+  selectedPlan,
 }) => {
   const { provider, owner } = useParams()
   const history = useHistory()
@@ -100,6 +101,7 @@ const useUpgradeForm = ({
         accountDetails,
         minSeats,
         trialStatus: planData?.plan?.trialStatus,
+        selectedPlan,
       })
     ),
     mode: 'onChange',
@@ -238,6 +240,7 @@ function UpgradeForm({
     isSentryUpgrade,
     teamPlanMonth,
     teamPlanYear,
+    selectedPlan,
   })
 
   const planString = getValues('newPlan')
