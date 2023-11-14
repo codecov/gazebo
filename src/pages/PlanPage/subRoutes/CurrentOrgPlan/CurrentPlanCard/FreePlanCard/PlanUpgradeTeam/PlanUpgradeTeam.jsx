@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom'
 
 import { useAvailablePlans, usePlanData } from 'services/account'
 import BenefitList from 'shared/plan/BenefitList'
-import { findTeamPlans, isFreePlan } from 'shared/utils/billing'
+import { findTeamPlans, isFreePlan, isTrialPlan } from 'shared/utils/billing'
 import Button from 'ui/Button'
 
 function PlanUpgradeTeam() {
@@ -51,7 +51,8 @@ function PlanUpgradeTeam() {
             </div>
             <div className="flex self-start">
               <Button to={{ pageName: 'upgradeOrgPlan' }} variant="primary">
-                {isFreePlan(currentPlan?.value)
+                {isFreePlan(currentPlan?.value) ||
+                isTrialPlan(currentPlan?.value)
                   ? 'Upgrade to Team'
                   : 'Manage plan'}
               </Button>

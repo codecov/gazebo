@@ -41,6 +41,21 @@ const mockPlanPro = {
   planUserCount: 4,
 }
 
+const mockPlanTrialing = {
+  baseUnitPrice: 10,
+  benefits: ['Up to # user', 'Unlimited public repositories'],
+  billingRate: 'monthly',
+  marketingName: 'Trial',
+  monthlyUploadLimit: null,
+  value: 'users-trial',
+  trialStatus: TrialStatuses.ONGOING,
+  trialStartDate: '2023-01-01T08:55:25',
+  trialEndDate: '2023-01-10T08:55:25',
+  trialTotalDays: 0,
+  pretrialUsersCount: 0,
+  planUserCount: 4,
+}
+
 const mockAvailablePlans = [
   {
     marketingName: 'Basic',
@@ -186,10 +201,8 @@ describe('PlanUpgradeTeam', () => {
   }
 
   describe('when rendered with basic plan', () => {
-    beforeEach(() => {
-      setup({ plan: mockPlanBasic })
-    })
     it('shows the monthly marketing name', async () => {
+      setup({ plan: mockPlanBasic })
       render(<PlanUpgradeTeam />, {
         wrapper,
       })
@@ -199,6 +212,7 @@ describe('PlanUpgradeTeam', () => {
     })
 
     it('show the benefits list', async () => {
+      setup({ plan: mockPlanBasic })
       render(<PlanUpgradeTeam />, {
         wrapper,
       })
@@ -211,6 +225,7 @@ describe('PlanUpgradeTeam', () => {
     })
 
     it('shows pricing for monthly card', async () => {
+      setup({ plan: mockPlanBasic })
       render(<PlanUpgradeTeam />, {
         wrapper,
       })
@@ -226,6 +241,17 @@ describe('PlanUpgradeTeam', () => {
     })
 
     it('shows upgrade to team when plan is basic', async () => {
+      setup({ plan: mockPlanBasic })
+      render(<PlanUpgradeTeam />, {
+        wrapper,
+      })
+
+      const buttonText = await screen.findByText(/Upgrade to Team/)
+      expect(buttonText).toBeInTheDocument()
+    })
+
+    it('shows upgrade to team when plan is trial', async () => {
+      setup({ plan: mockPlanTrialing })
       render(<PlanUpgradeTeam />, {
         wrapper,
       })
