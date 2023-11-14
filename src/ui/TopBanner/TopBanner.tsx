@@ -34,6 +34,25 @@ type TopBannerContextValue = z.infer<typeof topBannerContext>
 
 const TopBannerContext = createContext<TopBannerContextValue | null>(null)
 
+export const saveToLocalStorage = (localStorageKey: string) => {
+  const currentStore = localStorage.getItem(LOCAL_STORE_ROOT_KEY)
+
+  if (isNull(currentStore)) {
+    localStorage.setItem(
+      LOCAL_STORE_ROOT_KEY,
+      JSON.stringify({ [localStorageKey]: 'true' })
+    )
+  } else {
+    localStorage.setItem(
+      LOCAL_STORE_ROOT_KEY,
+      JSON.stringify({
+        ...JSON.parse(currentStore),
+        [localStorageKey]: 'true',
+      })
+    )
+  }
+}
+
 /*
  * WARNING: not for use outside of this hook, only exported for testing purposes
  */
@@ -61,23 +80,7 @@ const DismissButton: React.FC<React.PropsWithChildren> = ({ children }) => {
         variant="plain"
         hook={`dismiss-${localStorageKey}`}
         onClick={() => {
-          const currentStore = localStorage.getItem(LOCAL_STORE_ROOT_KEY)
-
-          if (isNull(currentStore)) {
-            localStorage.setItem(
-              LOCAL_STORE_ROOT_KEY,
-              JSON.stringify({ [localStorageKey]: 'true' })
-            )
-          } else {
-            localStorage.setItem(
-              LOCAL_STORE_ROOT_KEY,
-              JSON.stringify({
-                ...JSON.parse(currentStore),
-                [localStorageKey]: 'true',
-              })
-            )
-          }
-
+          saveToLocalStorage(localStorageKey)
           setHideBanner(true)
         }}
       >

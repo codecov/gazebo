@@ -1,11 +1,13 @@
 import A from 'ui/A/A'
 import Button from 'ui/Button/Button'
 import Icon from 'ui/Icon/Icon'
-import TopBanner from 'ui/TopBanner'
+import TopBanner, { saveToLocalStorage } from 'ui/TopBanner'
+
+const localStorageKey = 'global-top-expired-trial-banner'
 
 const ExpiredBanner: React.FC = () => {
   return (
-    <TopBanner localStorageKey="global-top-expired-trial-banner">
+    <TopBanner localStorageKey={localStorageKey}>
       <TopBanner.Start>
         <p className="font-semibold">
           <span className="pr-2 text-xl">&#127881;</span>
@@ -23,6 +25,10 @@ const ExpiredBanner: React.FC = () => {
           hook="expired-trial-banner-to-upgrade-page"
           disabled={false}
           variant="primary"
+          onClick={() => {
+            // this has the side effect of hiding the banner
+            saveToLocalStorage(localStorageKey)
+          }}
         >
           Upgrade
         </Button>
