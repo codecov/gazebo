@@ -29,7 +29,7 @@ export const MyOrganizationsConfig = z.object({
           })
         ),
         pageInfo: z.object({
-          hasNextPage: z.boolean().nullable(),
+          hasNextPage: z.boolean(),
           endCursor: z.string().nullable(),
         }),
       }),
