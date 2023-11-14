@@ -14,37 +14,37 @@ export const MyOrganizationsConfig = z.object({
   me: z
     .object({
       owner: z.object({
-        username: z.string().nullish(),
-        avatarUrl: z.string().url('not a valid url').nullish(),
-        ownerid: z.number().nullish(),
+        username: z.string().nullable(),
+        avatarUrl: z.string(),
+        ownerid: z.number(),
       }),
       myOrganizations: z.object({
         edges: z.array(
           z.object({
             node: z.object({
-              avatarUrl: z.string().url('not a valid url').nullish(),
-              username: z.string().nullish(),
-              ownerid: z.number().nullish(),
+              avatarUrl: z.string(),
+              username: z.string().nullable(),
+              ownerid: z.number().nullable(),
             }),
           })
         ),
         pageInfo: z.object({
-          hasNextPage: z.boolean().nullish(),
-          endCursor: z.string().nullish(),
+          hasNextPage: z.boolean(),
+          endCursor: z.string().nullable(),
         }),
       }),
     })
-    .nullish(),
+    .nullable(),
 })
 export type MyOrganizationsData = z.infer<typeof MyOrganizationsConfig>
 
 const query = `
 query UseMyOrganizations($after: String) {
   me {
-     owner {
-        username
-        avatarUrl
-        ownerid
+    owner {
+      username
+      avatarUrl
+      ownerid
     }
     myOrganizations(first: 20, after: $after) {
       edges {
@@ -60,8 +60,8 @@ query UseMyOrganizations($after: String) {
       }
     }
   }
-}
-`
+}`
+
 interface ParamTypes {
   provider?: string
 }

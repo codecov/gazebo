@@ -16,7 +16,10 @@ describe('Title', () => {
     it('renders pull title', () => {
       render(
         <Title
-          author={{ username: 'codecov-user', avatarUrl: 'random' }}
+          author={{
+            username: 'codecov-user',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
+          }}
           pullId={746}
           title="Test1"
           updatestamp="2021-08-30T19:33:49.819672"
@@ -32,7 +35,10 @@ describe('Title', () => {
     it('renders pull author', () => {
       render(
         <Title
-          author={{ username: 'codecov-user', avatarUrl: 'random' }}
+          author={{
+            username: 'codecov-user',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
+          }}
           pullId={746}
           title="Test1"
           updatestamp="2021-08-30T19:33:49.819672"
@@ -47,7 +53,10 @@ describe('Title', () => {
     it('renders pull updatestamp', () => {
       render(
         <Title
-          author={{ username: 'codecov-user', avatarUrl: 'random' }}
+          author={{
+            username: 'codecov-user',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
+          }}
           pullId={746}
           title="Test1"
           updatestamp="2021-08-30T19:33:49.819672"
@@ -65,7 +74,10 @@ describe('Title', () => {
     it('renders pull title', () => {
       render(
         <Title
-          author={{ username: 'codecov-user', avatarUrl: 'random' }}
+          author={{
+            username: 'codecov-user',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
+          }}
           pullId={746}
           title="Test1"
           updatestamp="2021-08-30T19:33:49.819672"

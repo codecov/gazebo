@@ -14,9 +14,9 @@ const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 )
 
-const orgList1 = { username: 'org1', avatarUrl: '' }
+const orgList1 = { username: 'org1', avatarUrl: 'http://127.0.0.1/avatar-url' }
 
-const orgList2 = { username: 'org2', avatarUrl: '' }
+const orgList2 = { username: 'org2', avatarUrl: 'http://127.0.0.1/avatar-url' }
 
 beforeAll(() => {
   server.listen()
@@ -43,7 +43,7 @@ describe('useMyContexts', () => {
           me: {
             owner: {
               username: 'cool-user',
-              avatarUrl: '',
+              avatarUrl: 'http://127.0.0.1/avatar-url',
             },
             myOrganizations: {
               edges: [{ node: orgList }],
@@ -73,12 +73,12 @@ describe('useMyContexts', () => {
 
       const expectedData = {
         currentUser: {
-          avatarUrl: '',
+          avatarUrl: 'http://127.0.0.1/avatar-url',
           username: 'cool-user',
         },
         myOrganizations: [
           {
-            avatarUrl: '',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
             username: 'org1',
           },
         ],
@@ -112,16 +112,16 @@ describe('useMyContexts', () => {
 
       const expectedData = {
         currentUser: {
-          avatarUrl: '',
+          avatarUrl: 'http://127.0.0.1/avatar-url',
           username: 'cool-user',
         },
         myOrganizations: [
           {
-            avatarUrl: '',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
             username: 'org1',
           },
           {
-            avatarUrl: '',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
             username: 'org2',
           },
         ],

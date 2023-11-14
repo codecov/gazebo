@@ -39,7 +39,7 @@ const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   pull: z
     .object({
-      pullId: z.number().nullable(),
+      pullId: z.number(),
       title: z.string().nullable(),
       state: z
         .union([z.literal('OPEN'), z.literal('CLOSED'), z.literal('MERGED')])

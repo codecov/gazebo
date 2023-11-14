@@ -1,3 +1,5 @@
-import { TopBanner } from './TopBanner'
+import { saveToLocalStorage, TopBanner } from './TopBanner'
 
 export default TopBanner
+
+export { saveToLocalStorage }

@@ -39,7 +39,7 @@ const node1 = {
   createdAt: '2023',
   author: {
     username: 'codecov-user',
-    avatarUrl: 'cool-avatar-url',
+    avatarUrl: 'http://127.0.0.1/avatar-url',
   },
   compareWithParent: {
     __typename: 'Comparison',
@@ -56,7 +56,7 @@ const node2 = {
   createdAt: '2023',
   author: {
     username: 'codecov-user',
-    avatarUrl: 'cool-avatar-url',
+    avatarUrl: 'http://127.0.0.1/avatar-url',
   },
   compareWithParent: {
     __typename: 'Comparison',
@@ -73,7 +73,7 @@ const node3 = {
   createdAt: '2023',
   author: {
     username: 'codecov-user',
-    avatarUrl: 'cool-avatar-url',
+    avatarUrl: 'http://127.0.0.1/avatar-url',
   },
   compareWithParent: {
     __typename: 'Comparison',

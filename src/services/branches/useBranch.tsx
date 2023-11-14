@@ -13,7 +13,7 @@ export const BranchSchema = z
     name: z.string(),
     head: z
       .object({
-        commitid: z.string().nullable(),
+        commitid: z.string(),
       })
       .nullable(),
   })
