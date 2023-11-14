@@ -64,6 +64,26 @@ const mockFlagMeasurements = {
   },
 }
 
+const mockNoReportsUploadedMeasurements = {
+  owner: {
+    repository: {
+      flags: {
+        edges: [
+          {
+            node: {
+              name: 'flag1',
+            },
+          },
+        ],
+        pageInfo: {
+          hasNextPage: true,
+          endCursor: 'end-cursor',
+        },
+      },
+    },
+  },
+}
+
 const mockEmptyFlagMeasurements = {
   owner: {
     repository: {
@@ -109,7 +129,9 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('RepoContentsTable', () => {
-  function setup({ noData } = { noData: false }) {
+  function setup(
+    { noData, noReportsUploaded } = { noData: false, noReportsUploaded: false }
+  ) {
     const user = userEvent.setup()
     const fetchNextPage = jest.fn()
     const handleSort = jest.fn()
@@ -124,6 +146,13 @@ describe('RepoContentsTable', () => {
 
         if (noData) {
           return res(ctx.status(200), ctx.data(mockEmptyFlagMeasurements))
+        }
+
+        if (noReportsUploaded) {
+          return res(
+            ctx.status(200),
+            ctx.data(mockNoReportsUploadedMeasurements)
+          )
         }
 
         return res(ctx.status(200), ctx.data(mockFlagMeasurements))
@@ -339,6 +368,20 @@ describe('RepoContentsTable', () => {
 
       await user.click(flags)
       await waitFor(() => expect(handleSort).toHaveBeenLastCalledWith('ASC'))
+    })
+  })
+
+  describe('when no coverage report uploaded', () => {
+    it('renders no report data state', async () => {
+      setup({ noReportsUploaded: true })
+      render(<FlagsTable />, { wrapper: wrapper() })
+
+      await expect(screen.findByTestId('spinner')).resolves.toBeInTheDocument()
+      await waitFor(() =>
+        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      )
+      const dash = await screen.findByText('-')
+      expect(dash).not.toBeInTheDocument()
     })
   })
 })
