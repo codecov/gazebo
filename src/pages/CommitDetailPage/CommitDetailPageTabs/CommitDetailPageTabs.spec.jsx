@@ -7,11 +7,8 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 
 import CommitDetailPageTabs from './CommitDetailPageTabs'
-
-jest.mock('shared/featureFlags')
 
 const mockRepoSettings = (isPrivate) => ({
   owner: {
@@ -113,11 +110,6 @@ describe('CommitDetailPageTabs', () => {
       isPrivate: false,
     }
   ) {
-    useFlags.mockReturnValue({
-      commitTabFlagMultiSelect: flagValue,
-      coverageTabFlagMutliSelect: flagValue,
-    })
-
     server.use(
       graphql.query('FlagsSelect', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockFlagsResponse))
@@ -388,7 +380,7 @@ describe('CommitDetailPageTabs', () => {
   describe('flags multi-select', () => {
     describe('user is not on a team plan', () => {
       it('renders flag multi-select', async () => {
-        setup({ flagValue: true })
+        setup({})
         render(<CommitDetailPageTabs commitSha="sha256" />, {
           wrapper: wrapper(),
         })
@@ -402,7 +394,6 @@ describe('CommitDetailPageTabs', () => {
       describe('repo is public', () => {
         it('renders flag multi-select', async () => {
           setup({
-            flagValue: true,
             tierValue: TierNames.TEAM,
             isPrivate: false,
           })
@@ -417,7 +408,7 @@ describe('CommitDetailPageTabs', () => {
 
       describe('repo is private', () => {
         it('does not render the multi select', async () => {
-          setup({ flagValue: true, tierValue: TierNames.TEAM, isPrivate: true })
+          setup({ tierValue: TierNames.TEAM, isPrivate: true })
           render(<CommitDetailPageTabs commitSha="sha256" />, {
             wrapper: wrapper(),
           })

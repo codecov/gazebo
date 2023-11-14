@@ -7,11 +7,8 @@ import qs from 'qs'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
-
 import FilesChangedTable from './FilesChangedTable'
 
-jest.mock('shared/featureFlags')
 jest.mock('../shared/CommitFileDiff', () => () => 'CommitFileDiff')
 
 const mockCommitData = ({ data, state }) => ({
@@ -88,10 +85,6 @@ describe('FilesChangedTable', () => {
           retry: false,
         },
       },
-    })
-
-    useFlags.mockReturnValue({
-      commitTabFlagMultiSelect: true,
     })
 
     server.use(

@@ -140,6 +140,39 @@ const mockRepoSettings = (isPrivate = false) => ({
   },
 })
 
+const mockFlagsResponse = {
+  owner: {
+    repository: {
+      flags: {
+        edges: [
+          {
+            node: {
+              name: 'flag-1',
+            },
+          },
+        ],
+        pageInfo: {
+          hasNextPage: true,
+          endCursor: '1-flag-1',
+        },
+      },
+    },
+  },
+}
+
+const mockBackfillResponse = {
+  config: {
+    isTimescaleEnabled: true,
+  },
+  owner: {
+    repository: {
+      flagsMeasurementsActive: true,
+      flagsMeasurementsBackfilled: true,
+      flagsCount: 4,
+    },
+  },
+}
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false, suspense: true } },
 })
@@ -212,6 +245,12 @@ describe('CommitDetailPageContent', () => {
       }),
       graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
+      }),
+      graphql.query('FlagsSelect', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockFlagsResponse))
+      }),
+      graphql.query('BackfillFlagMemberships', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockBackfillResponse))
       })
     )
 
