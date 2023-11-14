@@ -12,7 +12,7 @@ const node1 = {
   updatestamp: '20-2-2021',
   author: {
     username: 'Rula',
-    avatarUrl: 'random',
+    avatarUrl: 'http://127.0.0.1/avatar-url',
   },
   head: {
     totals: {
@@ -35,7 +35,7 @@ const node2 = {
   updatestamp: '20-2-2021',
   author: {
     username: 'Rula',
-    avatarUrl: 'random',
+    avatarUrl: 'http://127.0.0.1/avatar-url',
   },
   head: {
     totals: {
@@ -58,7 +58,7 @@ const node3 = {
   updatestamp: '20-2-2021',
   author: {
     username: 'Rula',
-    avatarUrl: 'random',
+    avatarUrl: 'http://127.0.0.1/avatar-url',
   },
   head: {
     totals: {

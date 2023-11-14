@@ -45,7 +45,10 @@ describe('Pulls Table', () => {
       edges: [
         {
           node: {
-            author: { username: 'cool-user', avatarUrl: 'random' },
+            author: {
+              username: 'cool-user',
+              avatarUrl: 'http://127.0.0.1/user-avatar',
+            },
             compareWithBase: {
               __typename: 'Comparison',
               changeCoverage: 14,

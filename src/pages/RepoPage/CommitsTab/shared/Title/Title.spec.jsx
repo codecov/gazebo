@@ -35,7 +35,10 @@ describe('Title', () => {
   describe('when rendered', () => {
     beforeEach(() => {
       setup({
-        author: { username: 'RulaKhaled', avatarUrl: 'random' },
+        author: {
+          username: 'RulaKhaled',
+          avatarUrl: 'http://127.0.0.1/avatar-url',
+        },
         commitid: 'id',
         message: 'Test1',
         createdAt: '2021-08-30T19:33:49.819672',
@@ -89,7 +92,10 @@ describe('Title', () => {
   describe('when rendered with message longer than 50', () => {
     beforeEach(() => {
       setup({
-        author: { username: 'RulaKhaled', avatarUrl: 'random' },
+        author: {
+          username: 'RulaKhaled',
+          avatarUrl: 'http://127.0.0.1/avatar-url',
+        },
         commitid: 'id',
         message: 'Test1Test1Test1Test1Test1Test1Test1Test1Test1Test1Test1Test1',
         createdAt: '2021-08-30T19:33:49.819672',
@@ -107,7 +113,10 @@ describe('Title', () => {
   describe('when rendered with no commit message', () => {
     beforeEach(() => {
       setup({
-        author: { username: 'RulaKhaled', avatarUrl: 'random' },
+        author: {
+          username: 'RulaKhaled',
+          avatarUrl: 'http://127.0.0.1/avatar-url',
+        },
         commitid: 'id',
         message: null,
         createdAt: '2021-08-30T19:33:49.819672',

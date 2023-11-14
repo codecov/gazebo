@@ -72,9 +72,9 @@ const UploadSchema = z.object({
   updatedAt: z.string(),
   flags: z.array(z.string()).nullable(),
   jobCode: z.string().nullable(),
-  downloadUrl: z.string().nullable(),
+  downloadUrl: z.string(),
   ciUrl: z.string().nullable(),
-  uploadType: UploadTypeEnumSchema.nullable(),
+  uploadType: UploadTypeEnumSchema,
   buildCode: z.string().nullable(),
   name: z.string().nullable(),
   errors: ErrorsSchema.nullable(),
@@ -121,10 +121,10 @@ const CompareWithParentSchema = z.discriminatedUnion('__typename', [
 
 const CommitSchema = z.object({
   state: z.string().nullable(),
-  commitid: z.string().nullable(),
+  commitid: z.string(),
   pullId: z.number().nullable(),
   branchName: z.string().nullable(),
-  createdAt: z.string().nullable(),
+  createdAt: z.string(),
   author: z
     .object({
       username: z.string().nullable(),

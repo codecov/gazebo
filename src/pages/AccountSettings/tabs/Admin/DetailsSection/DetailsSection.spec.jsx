@@ -54,7 +54,7 @@ describe('DetailsSection', () => {
                 name: req.variables.input.name
                   ? req.variables.input.name
                   : 'donald duck',
-                avatarUrl: 'photo',
+                avatarUrl: 'http://127.0.0.1/avatar-url',
                 onboardingCompleted: false,
               },
             },

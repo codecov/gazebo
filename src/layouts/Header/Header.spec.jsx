@@ -12,7 +12,7 @@ jest.mock('services/user')
 const loggedInUser = {
   user: {
     username: 'p',
-    avatarUrl: '',
+    avatarUrl: 'http://127.0.0.1/avatar-url',
   },
 }
 

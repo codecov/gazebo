@@ -75,7 +75,12 @@ export const getInitialDataForm = ({
   }
 }
 
-export const getSchema = ({ accountDetails, minSeats, trialStatus }) =>
+export const getSchema = ({
+  accountDetails,
+  minSeats,
+  trialStatus,
+  selectedPlan,
+}) =>
   z.object({
     seats: z.coerce
       .number({
@@ -87,6 +92,16 @@ export const getSchema = ({ accountDetails, minSeats, trialStatus }) =>
         message: `You cannot purchase a per user plan for less than ${minSeats} users`,
       })
       .transform((val, ctx) => {
+        if (
+          isTeamPlan(selectedPlan?.value) &&
+          val > TEAM_PLAN_MAX_ACTIVE_USERS
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `Team plan is only available for ${TEAM_PLAN_MAX_ACTIVE_USERS} or less users`,
+          })
+        }
+
         if (
           trialStatus === TrialStatuses.ONGOING &&
           accountDetails?.plan?.value === Plans.USERS_TRIAL

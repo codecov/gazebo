@@ -14,7 +14,7 @@ const user = {
   username: 'TerrySmithDC',
   email: 'terry@terry.com',
   name: 'terry',
-  avatarUrl: 'photo',
+  avatarUrl: 'http://127.0.0.1/avatar-url',
   onboardingCompleted: false,
 }
 
@@ -86,7 +86,7 @@ describe('useUpdateProfile', () => {
 
         await waitFor(() =>
           expect(result.current.data).toStrictEqual({
-            avatarUrl: 'photo',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
             email: 'newemail@test.com',
             name: 'new name',
             onboardingCompleted: false,
@@ -107,7 +107,7 @@ describe('useUpdateProfile', () => {
 
         await waitFor(() =>
           expect(result.current.data).toStrictEqual({
-            avatarUrl: 'photo',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
             email: 'newemail@test.com',
             name: 'new name',
             onboardingCompleted: false,
@@ -155,7 +155,7 @@ describe('useUpdateProfile', () => {
 
         await waitFor(() =>
           expect(result.current.data).toStrictEqual({
-            avatarUrl: 'photo',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
             email: 'newemail@test.com',
             name: 'new name',
             onboardingCompleted: false,
