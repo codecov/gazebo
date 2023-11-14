@@ -381,7 +381,7 @@ describe('RepoContentsTable', () => {
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
       )
       const dash = await screen.findByText('-')
-      expect(dash).not.toBeInTheDocument()
+      expect(dash).toBeInTheDocument()
     })
   })
 })
