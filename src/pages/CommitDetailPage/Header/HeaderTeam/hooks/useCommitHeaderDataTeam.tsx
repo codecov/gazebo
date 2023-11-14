@@ -49,7 +49,7 @@ const RepositorySchema = z.object({
       commitid: z.string(),
       createdAt: z.string(),
       message: z.string().nullable(),
-      pullId: z.number(),
+      pullId: z.number().nullable(),
       compareWithParent: CompareWithParentSchema.nullable(),
     })
     .nullable(),
