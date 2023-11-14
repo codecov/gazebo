@@ -61,14 +61,19 @@ function createTableData({
         ({ name, percentCovered, percentChange, measurements }) => ({
           name: <span>{name}</span>,
           coverage: (
-            <CoverageProgress
-              amount={percentCovered}
-              color={determineProgressColor({
-                coverage: percentCovered,
-                ...indicationRange,
-              })}
-              label
-            />
+            <>
+              <CoverageProgress
+                amount={percentCovered}
+                color={determineProgressColor({
+                  coverage: percentCovered,
+                  ...indicationRange,
+                })}
+                label
+              />
+              {typeof percentCovered != 'number' && (
+                <span className="grow text-right font-semibold">-</span>
+              )}
+            </>
           ),
           trend: (
             <TableSparkline
