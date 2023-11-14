@@ -327,7 +327,7 @@ describe('useUserAccessGate', () => {
       'guest',
       {
         user: guestUser,
-        internalUser: internalUserHasSyncedProviders,
+        internalUser: null,
         termsOfServicePage: true,
         isSelfHosted: false,
         expected: {
