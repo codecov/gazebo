@@ -11,7 +11,7 @@ import {
 } from './upgradeForm'
 
 describe('calculatePrice', () => {
-  describe('isSentryUpgrade is true', () => {
+  describe('isSentryUpgrade is true and isSelectedPlanTeam is false', () => {
     describe('seat count is at five', () => {
       it('returns base price', () => {
         const result = calculatePrice({
@@ -19,6 +19,7 @@ describe('calculatePrice', () => {
           baseUnitPrice: 10,
           isSentryUpgrade: true,
           sentryPrice: 29,
+          isSelectedPlanTeam: false,
         })
 
         expect(result).toBe(29)
@@ -32,6 +33,7 @@ describe('calculatePrice', () => {
           baseUnitPrice: 10,
           isSentryUpgrade: true,
           sentryPrice: 29,
+          isSelectedPlanTeam: false,
         })
 
         expect(result).toBe(39)
@@ -40,15 +42,31 @@ describe('calculatePrice', () => {
   })
 
   describe('isSentryUpgrade is false', () => {
-    it('returns base price times amount of seats', () => {
-      const result = calculatePrice({
-        seats: 5,
-        baseUnitPrice: 12,
-        isSentryUpgrade: false,
-        sentryPrice: 29,
-      })
+    describe('when isSelectedPlanTeam is false', () => {
+      it('returns base price times amount of seats', () => {
+        const result = calculatePrice({
+          seats: 5,
+          baseUnitPrice: 12,
+          isSentryUpgrade: false,
+          sentryPrice: 29,
+          isSelectedPlanTeam: false,
+        })
 
-      expect(result).toBe(60)
+        expect(result).toBe(60)
+      })
+    })
+    describe('when isSelectedPlanTeam is true', () => {
+      it('returns base price times amount of seats', () => {
+        const result = calculatePrice({
+          seats: 5,
+          baseUnitPrice: 12,
+          isSentryUpgrade: false,
+          sentryPrice: 29,
+          isSelectedPlanTeam: true,
+        })
+
+        expect(result).toBe(60)
+      })
     })
   })
 })
@@ -63,6 +81,24 @@ describe('getInitialDataForm', () => {
     it('returns pro year plan if user is on a free plan', () => {
       const accountDetails = {
         plan: { value: Plans.USERS_BASIC, quantity: 1 },
+      }
+
+      const data = getInitialDataForm({
+        accountDetails,
+        proPlanYear,
+        sentryPlanYear,
+        isSentryUpgrade,
+      })
+
+      expect(data).toStrictEqual({
+        newPlan: Plans.USERS_PR_INAPPY,
+        seats: 2,
+      })
+    })
+
+    it('returns pro year plan if user is on a team plan', () => {
+      const accountDetails = {
+        plan: { value: Plans.USERS_TEAMM, quantity: 1 },
       }
 
       const data = getInitialDataForm({
@@ -132,6 +168,24 @@ describe('getInitialDataForm', () => {
 
       expect(data).toStrictEqual({
         newPlan: Plans.USERS_SENTRYM,
+        seats: 5,
+      })
+    })
+
+    it('returns sentry year plan if user is on a team plan', () => {
+      const accountDetails = {
+        plan: { value: Plans.USERS_TEAMM, quantity: 1 },
+      }
+
+      const data = getInitialDataForm({
+        accountDetails,
+        proPlanYear,
+        sentryPlanYear,
+        isSentryUpgrade,
+      })
+
+      expect(data).toStrictEqual({
+        newPlan: Plans.USERS_SENTRYY,
         seats: 5,
       })
     })

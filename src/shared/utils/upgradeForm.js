@@ -6,6 +6,7 @@ import {
   isFreePlan,
   isPaidPlan,
   isSentryPlan,
+  isTeamPlan,
   isTrialPlan,
   Plans,
 } from 'shared/utils/billing'
@@ -16,6 +17,7 @@ export const MIN_NB_SEATS = 2
 export const MIN_NB_SEATS_PRO = 2
 export const MIN_SENTRY_SEATS = 5
 export const SENTRY_PRICE = 29
+export const TEAM_PLAN_MAX_ACTIVE_USERS = 10
 
 export function extractSeats({
   quantity,
@@ -51,8 +53,11 @@ export const getInitialDataForm = ({
 
   // if the current plan is a pro plan, we return it, otherwise select by default the first pro plan
   let newPlan = proPlanYear?.value
+
   if (isSentryUpgrade && !isSentryPlan(plan)) {
     newPlan = sentryPlanYear?.value
+  } else if (isTeamPlan(plan)) {
+    newPlan = proPlanYear?.value
   } else if (isPaidPlan(plan)) {
     newPlan = plan
   }
@@ -109,10 +114,11 @@ export const calculatePrice = ({
   baseUnitPrice,
   isSentryUpgrade,
   sentryPrice,
+  isSelectedPlanTeam,
 }) => {
   let price = Math.floor(seats) * baseUnitPrice
 
-  if (isSentryUpgrade) {
+  if (isSentryUpgrade && !isSelectedPlanTeam) {
     price = sentryPrice
     if (seats > 5) {
       price += Math.floor(seats - 5) * baseUnitPrice

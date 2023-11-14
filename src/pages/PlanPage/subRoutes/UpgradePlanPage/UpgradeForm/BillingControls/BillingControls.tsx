@@ -4,8 +4,10 @@ import { useParams } from 'react-router-dom'
 import { useAvailablePlans } from 'services/account'
 import {
   findSentryPlans,
+  findTeamPlans,
   isAnnualPlan,
   isMonthlyPlan,
+  isTeamPlan,
   Plans,
   useProPlans,
 } from 'shared/utils/billing'
@@ -14,16 +16,19 @@ import OptionButton from 'ui/OptionButton'
 interface BillingTextProps {
   option: 'Annual' | 'Monthly'
   isSentryUpgrade: boolean
+  planString: string
 }
 
 const BillingText: React.FC<BillingTextProps> = ({
   isSentryUpgrade,
   option,
+  planString,
 }) => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { proPlanMonth, proPlanYear } = useProPlans({ plans })
   const { sentryPlanMonth, sentryPlanYear } = findSentryPlans({ plans })
+  const { teamPlanMonth, teamPlanYear } = findTeamPlans({ plans })
 
   let annualPlan = proPlanYear
   let monthlyPlan = proPlanMonth
@@ -31,6 +36,11 @@ const BillingText: React.FC<BillingTextProps> = ({
   if (isSentryUpgrade) {
     annualPlan = sentryPlanYear
     monthlyPlan = sentryPlanMonth
+  }
+
+  if (isTeamPlan(planString)) {
+    annualPlan = teamPlanYear
+    monthlyPlan = teamPlanMonth
   }
 
   let baseUnitPrice = annualPlan?.baseUnitPrice
@@ -82,6 +92,11 @@ const BillingControls: React.FC<BillingControlsProps> = ({
     monthlyPlan = Plans.USERS_SENTRYM
   }
 
+  if (isTeamPlan(planString)) {
+    annualPlan = Plans.USERS_TEAMY
+    monthlyPlan = Plans.USERS_TEAMM
+  }
+
   return (
     <div className="flex w-fit flex-col gap-2">
       <h3 className="font-semibold">Billing</h3>
@@ -107,7 +122,11 @@ const BillingControls: React.FC<BillingControlsProps> = ({
             },
           ]}
         />
-        <BillingText isSentryUpgrade={isSentryUpgrade} option={option} />
+        <BillingText
+          planString={planString}
+          isSentryUpgrade={isSentryUpgrade}
+          option={option}
+        />
       </div>
     </div>
   )

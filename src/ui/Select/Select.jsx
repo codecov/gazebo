@@ -83,6 +83,7 @@ const Select = forwardRef(
       onLoadMore,
       isLoading,
       searchValue = '',
+      buttonIcon,
     },
     ref
   ) => {
@@ -163,7 +164,10 @@ const Select = forwardRef(
             className={cs(SelectClasses.button, ButtonVariantClass[variant])}
             {...getToggleButtonProps()}
           >
-            {renderButton()}
+            <span className="inline-flex items-center gap-1">
+              {buttonIcon}
+              {renderButton()}
+            </span>
             <Icon
               variant="solid"
               name={isOpen ? 'chevron-up' : 'chevron-down'}
@@ -239,6 +243,7 @@ Select.propTypes = {
   onLoadMore: PropTypes.func,
   isLoading: PropTypes.bool,
   searchValue: PropTypes.string,
+  buttonIcon: PropTypes.element,
 }
 
 export default Select

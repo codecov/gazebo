@@ -1,6 +1,8 @@
 import isNumber from 'lodash/isNumber'
 import PropTypes from 'prop-types'
 
+import { isTeamPlan } from 'shared/utils/billing'
+
 interface StudentTextProps {
   activatedStudents?: number
 }
@@ -34,16 +36,17 @@ StudentText.propTypes = {
 interface UserTextProps {
   activatedUserCount: number
   inactiveUserCount: number
-
   isSentryUpgrade: boolean
+  planString: string
 }
 
 const UserText: React.FC<UserTextProps> = ({
   activatedUserCount,
   inactiveUserCount,
   isSentryUpgrade,
+  planString,
 }) => {
-  if (isSentryUpgrade) {
+  if (isSentryUpgrade && !isTeamPlan(planString)) {
     return <p>5 seats already included in this plan</p>
   }
 
@@ -65,6 +68,7 @@ interface UserCountProps {
   inactiveUserCount?: number
   activatedStudentCount?: number
   isSentryUpgrade: boolean
+  planString: string
 }
 
 const UserCount: React.FC<UserCountProps> = ({
@@ -72,6 +76,7 @@ const UserCount: React.FC<UserCountProps> = ({
   inactiveUserCount,
   activatedStudentCount,
   isSentryUpgrade,
+  planString,
 }) => {
   if (!isNumber(activatedUserCount) || !isNumber(inactiveUserCount)) {
     return null
@@ -83,6 +88,7 @@ const UserCount: React.FC<UserCountProps> = ({
         activatedUserCount={activatedUserCount}
         inactiveUserCount={inactiveUserCount}
         isSentryUpgrade={isSentryUpgrade}
+        planString={planString}
       />
       <StudentText activatedStudents={activatedStudentCount} />
     </div>
