@@ -36,7 +36,7 @@ describe('createPullsTableTeamData', () => {
       it('returns no report uploaded', () => {
         const pullData = {
           author: null,
-          pullId: null,
+          pullId: 123,
           state: 'OPEN',
           updatestamp: null,
           title: null,
@@ -60,7 +60,7 @@ describe('createPullsTableTeamData', () => {
       it('returns with patch value', () => {
         const pullData = {
           author: null,
-          pullId: null,
+          pullId: 123,
           state: 'OPEN',
           updatestamp: null,
           title: null,
@@ -93,7 +93,7 @@ describe('createPullsTableTeamData', () => {
         it('returns patch total of 0', () => {
           const pullData = {
             author: null,
-            pullId: null,
+            pullId: 123,
             state: 'OPEN',
             updatestamp: null,
             title: null,
@@ -129,7 +129,7 @@ describe('createPullsTableTeamData', () => {
         const pullData = {
           author: {
             username: 'cool-user',
-            avatarUrl: 'avatar-url',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
           },
           pullId: 123,
           state: 'OPEN',
@@ -148,7 +148,7 @@ describe('createPullsTableTeamData', () => {
         expect(result[0]?.title).toStrictEqual(
           <Title
             author={{
-              avatarUrl: 'avatar-url',
+              avatarUrl: 'http://127.0.0.1/avatar-url',
               username: 'cool-user',
             }}
             compareWithBaseType="MissingBaseCommit"

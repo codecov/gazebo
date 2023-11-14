@@ -16,7 +16,7 @@ const user = {
   username: 'CodecovUser',
   email: 'codecov@codecov.io',
   name: 'codecov',
-  avatarUrl: 'photo',
+  avatarUrl: 'http://127.0.0.1/avatar-url',
   onboardingCompleted: false,
 }
 

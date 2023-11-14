@@ -10,7 +10,7 @@ const loggedInUser = {
   me: {
     user: {
       username: 'Codecov',
-      avatarUrl: 'Codecov.svg',
+      avatarUrl: 'http://127.0.0.1/avatar-url',
     },
   },
 }

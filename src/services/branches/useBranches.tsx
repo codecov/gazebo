@@ -16,7 +16,7 @@ const BranchSchema = z.object({
   name: z.string(),
   head: z
     .object({
-      commitid: z.string().nullable(),
+      commitid: z.string(),
     })
     .nullable(),
 })
@@ -93,7 +93,7 @@ const query = `
 type GetBranchesReturn = { branches: Branch[]; pageInfo: PageInfo | null }
 
 interface UseBranchesFilters {
-  searchValue?: string,
+  searchValue?: string
   mergedBranches?: boolean
 }
 

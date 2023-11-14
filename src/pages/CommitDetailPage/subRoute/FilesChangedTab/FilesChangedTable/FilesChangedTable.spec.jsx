@@ -26,7 +26,7 @@ const mockCommitData = ({ data, state }) => ({
         commitid: '123',
         pullId: 1,
         branchName: null,
-        createdAt: null,
+        createdAt: '2023-01-01T12:00:00.000000',
         author: null,
         uploads: null,
         message: null,

@@ -11,7 +11,7 @@ import Dropdown from './Dropdown'
 const currentUser = {
   user: {
     username: 'chetney',
-    avatarUrl: 'f',
+    avatarUrl: 'http://127.0.0.1/avatar-url',
   },
 }
 

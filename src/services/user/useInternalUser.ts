@@ -5,17 +5,17 @@ import Api from 'shared/api'
 
 const OwnerSchema = z
   .object({
-    avatarUrl: z.string().nullish(),
-    integrationId: z.number().nullish(),
-    name: z.string().nullish(),
-    ownerid: z.number().nullish(),
-    service: z.string().nullish(),
+    avatarUrl: z.string(),
+    integrationId: z.number().nullable(),
+    name: z.string().nullable(),
+    ownerid: z.number(),
+    service: z.string(),
     stats: z
       .object({
-        repos: z.number().nullish(),
+        repos: z.number().nullable(),
       })
-      .nullish(),
-    username: z.string().nullish(),
+      .nullable(),
+    username: z.string(),
   })
   .nullish()
 
@@ -23,13 +23,13 @@ export type InternalUserOwnerData = z.infer<typeof OwnerSchema>
 
 const InternalUserSchema = z
   .object({
-    email: z.string().nullish(),
-    name: z.string().nullish(),
-    externalId: z.string().nullish(),
-    owners: z.array(OwnerSchema).nullish(),
-    termsAgreement: z.boolean().nullish(),
+    email: z.string().nullable(),
+    name: z.string().nullable(),
+    externalId: z.string().nullable(),
+    owners: z.array(OwnerSchema).nullable(),
+    termsAgreement: z.boolean().nullable(),
   })
-  .nullish()
+  .nullable()
 
 export type InternalUserData = z.infer<typeof InternalUserSchema>
 
@@ -44,7 +44,18 @@ export const useInternalUser = (opts: UseInternalUserArgs) =>
       return Api.get({
         path: '/user',
         signal,
-      }).then((res) => InternalUserSchema.parse(res))
+      }).then((res) => {
+        const parsedData = InternalUserSchema.safeParse(res)
+
+        if (!parsedData.success) {
+          return Promise.reject({
+            status: 404,
+            data: null,
+          })
+        }
+
+        return parsedData.data
+      })
     },
     ...(!!opts && opts),
   })

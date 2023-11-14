@@ -83,7 +83,9 @@ const userSignedInIdentity = {
   username: 'CodecovUser',
   email: 'codecov@codecov.io',
   name: 'codecov',
-  avatarUrl: 'photo',
+  avatarUrl: 'http://127.0.0.1/avatar-url',
+  termsAgreement: false,
+  owners: [],
 }
 
 const loggedInLegacyUser = {
@@ -146,6 +148,7 @@ const internalUserNoSyncedProviders = {
   email: userSignedInIdentity.email,
   name: userSignedInIdentity.name,
   externalId: '123',
+  termsAgreement: null,
   owners: [],
 }
 
@@ -153,9 +156,16 @@ const internalUserHasSyncedProviders = {
   email: userSignedInIdentity.email,
   name: userSignedInIdentity.name,
   externalId: '123',
+  termsAgreement: false,
   owners: [
     {
+      ownerid: 1,
+      name: 'cool-owner',
       service: 'github',
+      avatarUrl: 'http://127.0.0.1/avatar-url',
+      username: 'cool-user',
+      integrationId: 1,
+      stats: null,
     },
   ],
 }
@@ -166,7 +176,13 @@ const internalUserWithSignedTOS = {
   externalId: '123',
   owners: [
     {
+      ownerid: 1,
+      name: 'cool-owner',
       service: 'github',
+      avatarUrl: 'http://127.0.0.1/avatar-url',
+      username: 'cool-user',
+      integrationId: 1,
+      stats: null,
     },
   ],
   termsAgreement: true,
@@ -178,7 +194,13 @@ const internalUserWithUnsignedTOS = {
   externalId: '123',
   owners: [
     {
+      ownerid: 1,
+      name: 'cool-owner',
       service: 'github',
+      avatarUrl: 'http://127.0.0.1/avatar-url',
+      username: 'cool-user',
+      integrationId: 1,
+      stats: null,
     },
   ],
   termsAgreement: false,

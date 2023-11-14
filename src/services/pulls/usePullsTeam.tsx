@@ -30,14 +30,14 @@ type PullStates = z.infer<typeof PullStatesSchema>
 
 const PullSchema = z
   .object({
-    pullId: z.number().nullable(),
+    pullId: z.number(),
     title: z.string().nullable(),
     state: PullStatesSchema,
     updatestamp: z.string().nullable(),
     author: z
       .object({
         username: z.string().nullable(),
-        avatarUrl: z.string().nullable(),
+        avatarUrl: z.string(),
       })
       .nullable(),
     compareWithBase: z
