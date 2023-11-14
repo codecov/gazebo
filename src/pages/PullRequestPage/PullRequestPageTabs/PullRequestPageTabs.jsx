@@ -22,8 +22,7 @@ function PullRequestPageTabs() {
     commitsCount,
   } = useTabsCounts()
   const { data: settings, isLoading: settingsLoading } = useRepoSettings()
-  const { pullRequestPageFlagMultiSelect, multipleTiers } = useFlags({
-    pullRequestPageFlagMultiSelect: false,
+  const { multipleTiers } = useFlags({
     multipleTiers: false,
   })
 
@@ -165,8 +164,7 @@ function PullRequestPageTabs() {
           coverageIsLoading={false}
           showHitCount={true}
           showFlagsSelect={
-            pullRequestPageFlagMultiSelect &&
-            (tierData !== TierNames.TEAM || !settings?.repository?.private)
+            tierData !== TierNames.TEAM || !settings?.repository?.private
           }
         />
       }
