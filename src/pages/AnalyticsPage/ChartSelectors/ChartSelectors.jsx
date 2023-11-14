@@ -44,13 +44,16 @@ function RepoSelector({
   setSelectedRepos,
   resetRef,
 }) {
-  const { owner } = useParams()
+  const { owner, provider } = useParams()
   const [search, setSearch] = useState()
 
   const onSelectChangeHandler = (item) => {
     setSelectedRepos(item)
     updateParams({ repositories: item })
   }
+
+  const { data: tierName } = useTier({ provider, owner })
+  const shouldDisplayPublicReposOnly = tierName === TierNames.TEAM ? true : null
 
   const { data, isLoading, fetchNextPage, hasNextPage } = useRepos({
     active,
@@ -59,6 +62,7 @@ function RepoSelector({
     owner,
     first: Infinity,
     suspense: false,
+    isPublic: shouldDisplayPublicReposOnly,
   })
 
   return (
