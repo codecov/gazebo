@@ -35,6 +35,7 @@ describe('useInternalUser', () => {
             email: 'cool@email.com',
             name: 'cool-user',
             externalId: '1234',
+            termsAgreement: false,
             owners: [],
           })
         )
@@ -54,6 +55,7 @@ describe('useInternalUser', () => {
           name: 'cool-user',
           externalId: '1234',
           owners: [],
+          termsAgreement: false,
         })
       )
     })

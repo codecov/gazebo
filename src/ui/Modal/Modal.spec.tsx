@@ -61,7 +61,6 @@ describe('Modal', () => {
           title="modal title"
         />
       )
-
       await user.click(screen.getByLabelText('Close'))
       expect(onClose).toHaveBeenCalled()
     })

@@ -14,7 +14,7 @@ import FilesChangedTableTeam, { getFilter } from './FilesChangedTableTeam'
 
 jest.mock('../shared/CommitFileDiff', () => () => 'CommitFileDiff')
 
-const mockComparisonLiteData = {
+const mockComparisonTeamData = {
   owner: {
     repository: {
       __typename: 'Repository',
@@ -276,7 +276,7 @@ describe('FilesChangedTableTeam', () => {
           return res(ctx.status(200), ctx.data(mockEmptyFilesComparison))
         }
 
-        return res(ctx.status(200), ctx.data(mockComparisonLiteData))
+        return res(ctx.status(200), ctx.data(mockComparisonTeamData))
       })
     )
 

@@ -34,14 +34,14 @@ export type CommitStatsEnum = z.infer<typeof CommitStatesEnumSchema>
 
 const AuthorSchema = z.object({
   username: z.string().nullable(),
-  avatarUrl: z.string().nullable(),
+  avatarUrl: z.string(),
 })
 
 const CommitSchema = z.object({
   ciPassed: z.boolean().nullable(),
   message: z.string().nullable(),
-  commitid: z.string().nullable(),
-  createdAt: z.string().nullable(),
+  commitid: z.string(),
+  createdAt: z.string(),
   author: AuthorSchema.nullable(),
   compareWithParent: z
     .discriminatedUnion('__typename', [
@@ -216,7 +216,6 @@ export function useCommitsTeam({
         const parsedData = GetCommitsTeamSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          console.debug(parsedData.error)
           return Promise.reject({
             status: 404,
             data: {},

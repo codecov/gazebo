@@ -1,11 +1,13 @@
 import { lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useTier } from 'services/tier'
+import { useRepoSettingsTeam } from 'services/repo'
+import { TierNames, useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 import Spinner from 'ui/Spinner'
 
 const FilesChangedTable = lazy(() => import('./FilesChanged'))
+const TeamFilesChangedTable = lazy(() => import('./FilesChanged/TableTeam'))
 
 const Loader = () => (
   <div className="flex items-center justify-center py-16">
@@ -24,15 +26,23 @@ function FilesChangedTab() {
   const { multipleTiers } = useFlags({
     multipleTiers: false,
   })
-
+  const { data: repoSettingsTeam } = useRepoSettingsTeam()
   const { data: tierData, isLoading } = useTier({ provider, owner })
 
   if (isLoading) {
     return <Loader />
   }
 
-  if (tierData === 'team' && multipleTiers) {
-    return <Suspense fallback={<Loader />}>Hi</Suspense>
+  if (
+    multipleTiers &&
+    tierData === TierNames.TEAM &&
+    repoSettingsTeam?.repository?.private
+  ) {
+    return (
+      <Suspense fallback={<Loader />}>
+        <TeamFilesChangedTable />
+      </Suspense>
+    )
   }
 
   return (

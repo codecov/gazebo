@@ -18,7 +18,7 @@ const me = {
   },
   email: 'rula@codecov.io',
   name: 'rula',
-  avatarUrl: 'photo',
+  avatarUrl: 'http://127.0.0.1/avatar-url',
   onboardingCompleted: false,
 }
 

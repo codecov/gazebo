@@ -47,7 +47,7 @@ describe('useOwner', () => {
   describe('when called and user is authenticated', () => {
     const codecovOrg = {
       username: 'codecov',
-      avatarUrl: '',
+      avatarUrl: 'http://127.0.0.1/avatar-url',
       isCurrentUserPartOfOrg: true,
       isAdmin: false,
     }
@@ -68,7 +68,7 @@ describe('useOwner', () => {
   describe('when calling useIsCurrentUserAnAdmin for admins', () => {
     const codecovOrg = {
       username: 'codecov',
-      avatarUrl: '',
+      avatarUrl: 'http://127.0.0.1/avatar-url',
       isCurrentUserPartOfOrg: true,
       isAdmin: true,
     }
@@ -89,7 +89,7 @@ describe('useOwner', () => {
       await waitFor(() =>
         expect(firstResult.current.data).toStrictEqual({
           username: 'codecov',
-          avatarUrl: '',
+          avatarUrl: 'http://127.0.0.1/avatar-url',
           isCurrentUserPartOfOrg: true,
           isAdmin: true,
         })

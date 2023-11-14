@@ -45,7 +45,6 @@ const internalUser = {
       service: 'github',
     },
   ],
-  termsAgreement: true,
 }
 
 const user = {

@@ -12,7 +12,7 @@ const node1 = {
   updatestamp: '20-2-2021',
   author: {
     username: 'codecov-user',
-    avatarUrl: 'random',
+    avatarUrl: 'http://127.0.0.1/avatar-url',
   },
   compareWithBase: {
     __typename: 'Comparison',
@@ -29,7 +29,7 @@ const node2 = {
   updatestamp: '20-2-2021',
   author: {
     username: 'codecov-user',
-    avatarUrl: 'random',
+    avatarUrl: 'http://127.0.0.1/avatar-url',
   },
   compareWithBase: {
     __typename: 'Comparison',
@@ -46,7 +46,7 @@ const node3 = {
   updatestamp: '20-2-2021',
   author: {
     username: 'codecov-user',
-    avatarUrl: 'random',
+    avatarUrl: 'http://127.0.0.1/avatar-url',
   },
   compareWithBase: {
     __typename: 'Comparison',

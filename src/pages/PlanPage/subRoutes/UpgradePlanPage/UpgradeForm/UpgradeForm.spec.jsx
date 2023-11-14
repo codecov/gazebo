@@ -8,12 +8,14 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
+import { useFlags } from 'shared/featureFlags'
 import { Plans } from 'shared/utils/billing'
 
 import UpgradeForm from './UpgradeForm'
 
 jest.mock('services/toastNotification')
 jest.mock('@stripe/react-stripe-js')
+jest.mock('shared/featureFlags')
 
 const freePlan = {
   marketingName: 'Basic',
@@ -91,6 +93,24 @@ const proPlanYear = {
   quantity: 10,
 }
 
+const teamPlanMonth = {
+  baseUnitPrice: 6,
+  benefits: ['Up to 10 users'],
+  billingRate: 'monthly',
+  marketingName: 'Users Team',
+  monthlyUploadLimit: 2500,
+  value: 'users-teamm',
+}
+
+const teamPlanYear = {
+  baseUnitPrice: 5,
+  benefits: ['Up to 10 users'],
+  billingRate: 'annually',
+  marketingName: 'Users Team',
+  monthlyUploadLimit: 2500,
+  value: 'users-teamy',
+}
+
 const mockPlanData = {
   baseUnitPrice: 10,
   benefits: [],
@@ -146,11 +166,15 @@ describe('UpgradeForm', () => {
       errorDetails = undefined,
       includeSentryPlans = false,
       trialStatus = undefined,
+      hasTeamPlans = false,
+      multipleTiers = false,
     } = {
       successfulRequest: true,
       errorDetails: undefined,
       includeSentryPlans: false,
       trialStatus: undefined,
+      hasTeamPlans: false,
+      multipleTiers: false,
     }
   ) {
     const addNotification = jest.fn()
@@ -158,6 +182,7 @@ describe('UpgradeForm', () => {
     const patchRequest = jest.fn()
 
     useAddNotification.mockReturnValue(addNotification)
+    useFlags.mockReturnValue({ multipleTiers })
 
     server.use(
       graphql.query('GetPlanData', (_, res, ctx) =>
@@ -196,6 +221,7 @@ describe('UpgradeForm', () => {
                   proPlanYear,
                   sentryPlanMonth,
                   sentryPlanYear,
+                  ...(hasTeamPlans ? [teamPlanMonth, teamPlanYear] : []),
                 ],
               },
             })
@@ -204,7 +230,14 @@ describe('UpgradeForm', () => {
           return res(
             ctx.status(200),
             ctx.data({
-              owner: { availablePlans: [freePlan, proPlanMonth, proPlanYear] },
+              owner: {
+                availablePlans: [
+                  freePlan,
+                  proPlanMonth,
+                  proPlanYear,
+                  ...(hasTeamPlans ? [teamPlanMonth, teamPlanYear] : []),
+                ],
+              },
             })
           )
         }
@@ -263,6 +296,7 @@ describe('UpgradeForm', () => {
           plan: freePlan,
           latestInvoice: null,
         },
+        setSelectedPlan: jest.fn(),
       }
 
       it('renders annual option button as "selected"', async () => {
@@ -281,6 +315,93 @@ describe('UpgradeForm', () => {
         const numberInput = await screen.findByRole('spinbutton')
         expect(numberInput).toHaveValue(9)
       })
+
+      describe('when the user has team plans available', () => {
+        describe('when the feature flag is off', () => {
+          it('does not renders the Pro and team buttons', () => {
+            setup({ hasTeamPlans: true, multipleTiers: false })
+            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+            const proBtn = screen.queryByRole('button', { name: 'Pro' })
+            expect(proBtn).not.toBeInTheDocument()
+            const teamBtn = screen.queryByRole('button', { name: 'Team' })
+            expect(teamBtn).not.toBeInTheDocument()
+          })
+        })
+
+        describe('when the feature flag is on', () => {
+          it('renders the Pro button as "selected"', async () => {
+            setup({ hasTeamPlans: true, multipleTiers: true })
+            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+            const optionBtn = await screen.findByRole('button', { name: 'Pro' })
+            expect(optionBtn).toBeInTheDocument()
+            expect(optionBtn).toHaveClass('bg-ds-primary-base')
+          })
+
+          it('renders team option button', async () => {
+            setup({ hasTeamPlans: true, multipleTiers: true })
+            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+            const optionBtn = await screen.findByRole('button', {
+              name: 'Team',
+            })
+            expect(optionBtn).toBeInTheDocument()
+          })
+
+          describe('when updating to a team plan', () => {
+            it('renders up to 10 seats text', async () => {
+              const { user } = setup({
+                hasTeamPlans: true,
+                multipleTiers: true,
+              })
+              render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+              const teamOption = await screen.findByRole('button', {
+                name: 'Team',
+              })
+              await user.click(teamOption)
+
+              const auxiliaryText = await screen.findByText(/Up to 10 users/)
+              expect(auxiliaryText).toBeInTheDocument()
+            })
+
+            it('displays per month price when annual', async () => {
+              const { user } = setup({
+                hasTeamPlans: true,
+                multipleTiers: true,
+              })
+              render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+              const teamOption = await screen.findByRole('button', {
+                name: 'Team',
+              })
+              await user.click(teamOption)
+
+              const perMonthPrice = screen.getByText(/\$45.00/)
+              expect(perMonthPrice).toBeInTheDocument()
+            })
+
+            it('displays billed annually at price', async () => {
+              const { user } = setup({
+                hasTeamPlans: true,
+                multipleTiers: true,
+              })
+              render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+              const teamOption = await screen.findByRole('button', {
+                name: 'Team',
+              })
+              await user.click(teamOption)
+
+              const annualPrice = screen.getByText(
+                /\/per month billed annually at \$540.00/
+              )
+              expect(annualPrice).toBeInTheDocument()
+            })
+          })
+        })
+      })
     })
 
     describe('when the user have a pro year plan', () => {
@@ -293,6 +414,7 @@ describe('UpgradeForm', () => {
           plan: proPlanYear,
           latestInvoice: null,
         },
+        setSelectedPlan: jest.fn(),
       }
 
       it('renders annual option button to be "selection"', async () => {
@@ -342,6 +464,93 @@ describe('UpgradeForm', () => {
           expect(price).toBeInTheDocument()
         })
       })
+
+      describe('when the user has team plans available', () => {
+        describe('when the feature flag is off', () => {
+          it('does not renders the Pro and team buttons', () => {
+            setup({ hasTeamPlans: true, multipleTiers: false })
+            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+            const proBtn = screen.queryByRole('button', { name: 'Pro' })
+            expect(proBtn).not.toBeInTheDocument()
+            const teamBtn = screen.queryByRole('button', { name: 'Team' })
+            expect(teamBtn).not.toBeInTheDocument()
+          })
+        })
+
+        describe('when the feature flag is on', () => {
+          it('renders the Pro button as "selected"', async () => {
+            setup({ hasTeamPlans: true, multipleTiers: true })
+            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+            const optionBtn = await screen.findByRole('button', { name: 'Pro' })
+            expect(optionBtn).toBeInTheDocument()
+            expect(optionBtn).toHaveClass('bg-ds-primary-base')
+          })
+
+          it('renders team option button', async () => {
+            setup({ hasTeamPlans: true, multipleTiers: true })
+            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+            const optionBtn = await screen.findByRole('button', {
+              name: 'Team',
+            })
+            expect(optionBtn).toBeInTheDocument()
+          })
+
+          describe('when updating to a team plan', () => {
+            it('renders up to 10 seats text', async () => {
+              const { user } = setup({
+                hasTeamPlans: true,
+                multipleTiers: true,
+              })
+              render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+              const teamOption = await screen.findByRole('button', {
+                name: 'Team',
+              })
+              await user.click(teamOption)
+
+              const auxiliaryText = await screen.findByText(/Up to 10 users/)
+              expect(auxiliaryText).toBeInTheDocument()
+            })
+
+            it('displays per month price when annual with quantity 10', async () => {
+              const { user } = setup({
+                hasTeamPlans: true,
+                multipleTiers: true,
+              })
+              render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+              const teamOption = await screen.findByRole('button', {
+                name: 'Team',
+              })
+              await user.click(teamOption)
+
+              const perMonthPrice = screen.getByText(/\$50.00/)
+              expect(perMonthPrice).toBeInTheDocument()
+            })
+
+            it('displays billed annually at price', async () => {
+              const { user } = setup({
+                hasTeamPlans: true,
+                multipleTiers: true,
+              })
+              render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+              const teamOption = await screen.findByRole('button', {
+                name: 'Team',
+              })
+              await user.click(teamOption)
+
+              const annualPrice = screen.getByText(
+                /\/per month billed annually at \$600.00/
+              )
+              expect(annualPrice).toBeInTheDocument()
+            })
+          })
+        })
+      })
     })
 
     describe('when the user have a pro year monthly', () => {
@@ -385,17 +594,19 @@ describe('UpgradeForm', () => {
               activatedUserCount: 9,
               inactiveUserCount: 0,
               plan: null,
-              latestInvoice: {
-                periodStart: 1595270468,
-                periodEnd: 1597948868,
-                dueDate: '1600544863',
-                amountPaid: 9600.0,
-                amountDue: 9600.0,
-                amountRemaining: 0.0,
-                total: 9600.0,
-                subtotal: 9600.0,
-                invoicePdf:
-                  'https://pay.stripe.com/invoice/acct_14SJTOGlVGuVgOrk/invst_Hs2qfFwArnp6AMjWPlwtyqqszoBzO3q/pdf',
+              subscriptionDetail: {
+                latestInvoice: {
+                  periodStart: 1595270468,
+                  periodEnd: 1597948868,
+                  dueDate: '1600544863',
+                  amountPaid: 9600.0,
+                  amountDue: 9600.0,
+                  amountRemaining: 0.0,
+                  total: 9600.0,
+                  subtotal: 9600.0,
+                  invoicePdf:
+                    'https://pay.stripe.com/invoice/acct_14SJTOGlVGuVgOrk/invst_Hs2qfFwArnp6AMjWPlwtyqqszoBzO3q/pdf',
+                },
               },
             }}
           />,
@@ -557,6 +768,7 @@ describe('UpgradeForm', () => {
           plan: freePlan,
           latestInvoice: null,
         },
+        setSelectedPlan: jest.fn(),
       }
 
       it('renders annual option as "selected"', async () => {
@@ -577,6 +789,93 @@ describe('UpgradeForm', () => {
         const numberInput = await screen.findByRole('spinbutton')
         expect(numberInput).toHaveValue(9)
       })
+
+      describe('when the user has team plans available', () => {
+        describe('when the feature flag is off', () => {
+          it('does not renders the Pro and team buttons', () => {
+            setup({ hasTeamPlans: true, multipleTiers: false })
+            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+            const proBtn = screen.queryByRole('button', { name: 'Pro' })
+            expect(proBtn).not.toBeInTheDocument()
+            const teamBtn = screen.queryByRole('button', { name: 'Team' })
+            expect(teamBtn).not.toBeInTheDocument()
+          })
+        })
+
+        describe('when the feature flag is on', () => {
+          it('renders the Pro button as "selected"', async () => {
+            setup({ hasTeamPlans: true, multipleTiers: true })
+            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+            const optionBtn = await screen.findByRole('button', { name: 'Pro' })
+            expect(optionBtn).toBeInTheDocument()
+            expect(optionBtn).toHaveClass('bg-ds-primary-base')
+          })
+
+          it('renders team option button', async () => {
+            setup({ hasTeamPlans: true, multipleTiers: true })
+            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+            const optionBtn = await screen.findByRole('button', {
+              name: 'Team',
+            })
+            expect(optionBtn).toBeInTheDocument()
+          })
+
+          describe('when updating to a team plan', () => {
+            it('renders up to 10 seats text', async () => {
+              const { user } = setup({
+                hasTeamPlans: true,
+                multipleTiers: true,
+              })
+              render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+              const teamOption = await screen.findByRole('button', {
+                name: 'Team',
+              })
+              await user.click(teamOption)
+
+              const auxiliaryText = await screen.findByText(/Up to 10 users/)
+              expect(auxiliaryText).toBeInTheDocument()
+            })
+
+            it('displays per month price when annual', async () => {
+              const { user } = setup({
+                hasTeamPlans: true,
+                multipleTiers: true,
+              })
+              render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+              const teamOption = await screen.findByRole('button', {
+                name: 'Team',
+              })
+              await user.click(teamOption)
+
+              const perMonthPrice = screen.getByText(/\$45.00/)
+              expect(perMonthPrice).toBeInTheDocument()
+            })
+
+            it('displays billed annually at price', async () => {
+              const { user } = setup({
+                hasTeamPlans: true,
+                multipleTiers: true,
+              })
+              render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+              const teamOption = await screen.findByRole('button', {
+                name: 'Team',
+              })
+              await user.click(teamOption)
+
+              const annualPrice = screen.getByText(
+                /\/per month billed annually at \$540.00/
+              )
+              expect(annualPrice).toBeInTheDocument()
+            })
+          })
+        })
+      })
     })
 
     describe('when the user have a sentry pro year plan', () => {
@@ -591,6 +890,7 @@ describe('UpgradeForm', () => {
           plan: sentryPlanYear,
           latestInvoice: null,
         },
+        setSelectedPlan: jest.fn(),
       }
 
       it('renders annual option to be "selected"', async () => {
@@ -637,6 +937,93 @@ describe('UpgradeForm', () => {
 
           const price = screen.getByText(/\$120/)
           expect(price).toBeInTheDocument()
+        })
+      })
+
+      describe('when the user has team plans available', () => {
+        describe('when the feature flag is off', () => {
+          it('does not renders the Pro and team buttons', () => {
+            setup({ hasTeamPlans: true, multipleTiers: false })
+            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+            const proBtn = screen.queryByRole('button', { name: 'Pro' })
+            expect(proBtn).not.toBeInTheDocument()
+            const teamBtn = screen.queryByRole('button', { name: 'Team' })
+            expect(teamBtn).not.toBeInTheDocument()
+          })
+        })
+
+        describe('when the feature flag is on', () => {
+          it('renders the Pro button as "selected"', async () => {
+            setup({ hasTeamPlans: true, multipleTiers: true })
+            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+            const optionBtn = await screen.findByRole('button', { name: 'Pro' })
+            expect(optionBtn).toBeInTheDocument()
+            expect(optionBtn).toHaveClass('bg-ds-primary-base')
+          })
+
+          it('renders team option button', async () => {
+            setup({ hasTeamPlans: true, multipleTiers: true })
+            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+            const optionBtn = await screen.findByRole('button', {
+              name: 'Team',
+            })
+            expect(optionBtn).toBeInTheDocument()
+          })
+
+          describe('when updating to a team plan', () => {
+            it('renders up to 10 seats text', async () => {
+              const { user } = setup({
+                hasTeamPlans: true,
+                multipleTiers: true,
+              })
+              render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+              const teamOption = await screen.findByRole('button', {
+                name: 'Team',
+              })
+              await user.click(teamOption)
+
+              const auxiliaryText = await screen.findByText(/Up to 10 users/)
+              expect(auxiliaryText).toBeInTheDocument()
+            })
+
+            it('displays per month price when annual with quantity 10', async () => {
+              const { user } = setup({
+                hasTeamPlans: true,
+                multipleTiers: true,
+              })
+              render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+              const teamOption = await screen.findByRole('button', {
+                name: 'Team',
+              })
+              await user.click(teamOption)
+
+              const perMonthPrice = screen.getByText(/\$50.00/)
+              expect(perMonthPrice).toBeInTheDocument()
+            })
+
+            it('displays billed annually at price', async () => {
+              const { user } = setup({
+                hasTeamPlans: true,
+                multipleTiers: true,
+              })
+              render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+              const teamOption = await screen.findByRole('button', {
+                name: 'Team',
+              })
+              await user.click(teamOption)
+
+              const annualPrice = screen.getByText(
+                /\/per month billed annually at \$600.00/
+              )
+              expect(annualPrice).toBeInTheDocument()
+            })
+          })
         })
       })
     })
@@ -686,17 +1073,19 @@ describe('UpgradeForm', () => {
               activatedUserCount: 9,
               inactiveUserCount: 0,
               plan: null,
-              latestInvoice: {
-                periodStart: 1595270468,
-                periodEnd: 1597948868,
-                dueDate: '1600544863',
-                amountPaid: 9600.0,
-                amountDue: 9600.0,
-                amountRemaining: 0.0,
-                total: 9600.0,
-                subtotal: 9600.0,
-                invoicePdf:
-                  'https://pay.stripe.com/invoice/acct_14SJTOGlVGuVgOrk/invst_Hs2qfFwArnp6AMjWPlwtyqqszoBzO3q/pdf',
+              subscriptionDetail: {
+                latestInvoice: {
+                  periodStart: 1595270468,
+                  periodEnd: 1597948868,
+                  dueDate: '1600544863',
+                  amountPaid: 9600.0,
+                  amountDue: 9600.0,
+                  amountRemaining: 0.0,
+                  total: 9600.0,
+                  subtotal: 9600.0,
+                  invoicePdf:
+                    'https://pay.stripe.com/invoice/acct_14SJTOGlVGuVgOrk/invst_Hs2qfFwArnp6AMjWPlwtyqqszoBzO3q/pdf',
+                },
               },
             }}
           />,

@@ -7,7 +7,7 @@ import Spinner from 'ui/Spinner'
 
 import Header from './Header'
 import { usePullPageData } from './hooks'
-import CompareSummarySkeleton from './Summary/CompareSummarySkeleton'
+import CompareSummarySkeleton from './Summary/CompareSummary/CompareSummarySkeleton'
 
 const CompareSummary = lazy(() => import('./Summary'))
 const PullRequestPageTabs = lazy(() => import('./PullRequestPageTabs'))

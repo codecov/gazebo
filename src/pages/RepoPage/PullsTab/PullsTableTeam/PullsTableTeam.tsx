@@ -49,7 +49,7 @@ const columns = [
   }),
   columnHelper.accessor('patch', {
     id: 'patch',
-    header: () => 'Patch',
+    header: () => 'Patch %',
     cell: ({ renderValue }) => renderValue(),
   }),
 ]

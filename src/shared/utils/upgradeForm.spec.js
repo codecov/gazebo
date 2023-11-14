@@ -11,7 +11,7 @@ import {
 } from './upgradeForm'
 
 describe('calculatePrice', () => {
-  describe('isSentryUpgrade is true', () => {
+  describe('isSentryUpgrade is true and isSelectedPlanTeam is false', () => {
     describe('seat count is at five', () => {
       it('returns base price', () => {
         const result = calculatePrice({
@@ -19,6 +19,7 @@ describe('calculatePrice', () => {
           baseUnitPrice: 10,
           isSentryUpgrade: true,
           sentryPrice: 29,
+          isSelectedPlanTeam: false,
         })
 
         expect(result).toBe(29)
@@ -32,6 +33,7 @@ describe('calculatePrice', () => {
           baseUnitPrice: 10,
           isSentryUpgrade: true,
           sentryPrice: 29,
+          isSelectedPlanTeam: false,
         })
 
         expect(result).toBe(39)
@@ -40,15 +42,31 @@ describe('calculatePrice', () => {
   })
 
   describe('isSentryUpgrade is false', () => {
-    it('returns base price times amount of seats', () => {
-      const result = calculatePrice({
-        seats: 5,
-        baseUnitPrice: 12,
-        isSentryUpgrade: false,
-        sentryPrice: 29,
-      })
+    describe('when isSelectedPlanTeam is false', () => {
+      it('returns base price times amount of seats', () => {
+        const result = calculatePrice({
+          seats: 5,
+          baseUnitPrice: 12,
+          isSentryUpgrade: false,
+          sentryPrice: 29,
+          isSelectedPlanTeam: false,
+        })
 
-      expect(result).toBe(60)
+        expect(result).toBe(60)
+      })
+    })
+    describe('when isSelectedPlanTeam is true', () => {
+      it('returns base price times amount of seats', () => {
+        const result = calculatePrice({
+          seats: 5,
+          baseUnitPrice: 12,
+          isSentryUpgrade: false,
+          sentryPrice: 29,
+          isSelectedPlanTeam: true,
+        })
+
+        expect(result).toBe(60)
+      })
     })
   })
 })
@@ -63,6 +81,24 @@ describe('getInitialDataForm', () => {
     it('returns pro year plan if user is on a free plan', () => {
       const accountDetails = {
         plan: { value: Plans.USERS_BASIC, quantity: 1 },
+      }
+
+      const data = getInitialDataForm({
+        accountDetails,
+        proPlanYear,
+        sentryPlanYear,
+        isSentryUpgrade,
+      })
+
+      expect(data).toStrictEqual({
+        newPlan: Plans.USERS_PR_INAPPY,
+        seats: 2,
+      })
+    })
+
+    it('returns pro year plan if user is on a team plan', () => {
+      const accountDetails = {
+        plan: { value: Plans.USERS_TEAMM, quantity: 1 },
       }
 
       const data = getInitialDataForm({
@@ -132,6 +168,24 @@ describe('getInitialDataForm', () => {
 
       expect(data).toStrictEqual({
         newPlan: Plans.USERS_SENTRYM,
+        seats: 5,
+      })
+    })
+
+    it('returns sentry year plan if user is on a team plan', () => {
+      const accountDetails = {
+        plan: { value: Plans.USERS_TEAMM, quantity: 1 },
+      }
+
+      const data = getInitialDataForm({
+        accountDetails,
+        proPlanYear,
+        sentryPlanYear,
+        isSentryUpgrade,
+      })
+
+      expect(data).toStrictEqual({
+        newPlan: Plans.USERS_SENTRYY,
         seats: 5,
       })
     })
@@ -256,6 +310,79 @@ describe('getSchema', () => {
       seats: 10,
       newPlan: Plans.USERS_PR_INAPPY,
     })
+    expect(response.success).toEqual(true)
+    expect(response.error).toBeUndefined()
+  })
+
+  describe('when the user upgrades to team plan', () => {
+    it('fails to parse when seats are above max seats', () => {
+      const accountDetails = {
+        plan: {
+          value: Plans.USERS_INAPPY,
+        },
+      }
+      const schema = getSchema({
+        accountDetails,
+        selectedPlan: {
+          value: Plans.USERS_TEAMY,
+        },
+      })
+
+      const response = schema.safeParse({
+        seats: 12,
+        newPlan: Plans.USERS_TEAMY,
+      })
+      expect(response.success).toBe(false)
+
+      const [issue] = response.error.issues
+      expect(issue).toEqual(
+        expect.objectContaining({
+          message: 'Team plan is only available for 10 or less users',
+        })
+      )
+    })
+
+    it('passes when seats are below max seats for team yearly plan', () => {
+      const accountDetails = {
+        plan: {
+          value: Plans.USERS_INAPPY,
+        },
+      }
+      const schema = getSchema({
+        accountDetails,
+        selectedPlan: {
+          value: Plans.USERS_TEAMY,
+        },
+      })
+
+      const response = schema.safeParse({
+        seats: 9,
+        newPlan: Plans.USERS_TEAMY,
+      })
+
+      expect(response.success).toEqual(true)
+      expect(response.error).toBeUndefined()
+    })
+  })
+
+  it('passes when seats are below max seats for team monthly plan', () => {
+    const accountDetails = {
+      plan: {
+        value: Plans.USERS_INAPPY,
+      },
+    }
+    const schema = getSchema({
+      accountDetails,
+      selectedPlan: {
+        value: Plans.USERS_TEAMM,
+      },
+    })
+
+    const response = schema.safeParse({
+      seats: 9,
+      newPlan: Plans.USERS_TEAMM,
+    })
+
     expect(response.success).toEqual(true)
     expect(response.error).toBeUndefined()
   })

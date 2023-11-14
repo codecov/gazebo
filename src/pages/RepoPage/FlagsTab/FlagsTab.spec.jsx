@@ -36,6 +36,21 @@ const flagsData = [
   },
 ]
 
+const mockRepoSettings = (isPrivate = false) => ({
+  owner: {
+    repository: {
+      defaultBranch: 'master',
+      private: isPrivate,
+      uploadToken: 'token',
+      graphToken: 'token',
+      yaml: 'yaml',
+      bot: {
+        username: 'test',
+      },
+    },
+  },
+})
+
 const server = setupServer()
 const queryClient = new QueryClient()
 let testLocation = {
@@ -61,14 +76,23 @@ beforeAll(() => {
   console.error = () => {}
   server.listen()
 })
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('Flags Tab', () => {
-  function setup({ data = {}, flags = flagsData, tierValue = TierNames.PRO }) {
+  function setup({
+    data = {},
+    flags = flagsData,
+    tierValue = TierNames.PRO,
+    isPrivate = false,
+  }) {
     useRepoFlagsSelect.mockReturnValue({ data: flags })
     useRepoBackfilled.mockReturnValue(data)
 
@@ -84,21 +108,43 @@ describe('Flags Tab', () => {
           ctx.status(200),
           ctx.data({ owner: { plan: { tierName: TierNames.PRO } } })
         )
+      }),
+      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
       })
     )
   }
 
   describe('when user has a team tier', () => {
-    beforeEach(() => {
-      setup({ tierValue: TierNames.TEAM })
+    describe('the repo is public', () => {
+      it('renders the flags tab', async () => {
+        setup({
+          tierValue: TierNames.TEAM,
+          isPrivate: false,
+          data: {
+            data: {
+              flagsMeasurementsActive: true,
+              flagsMeasurementsBackfilled: true,
+              isTimescaleEnabled: true,
+            },
+          },
+        })
+        render(<FlagsTab />, { wrapper })
+
+        const header = await screen.findByText(/Flags Header Component/)
+        expect(header).toBeInTheDocument()
+      })
     })
 
-    it('redirects to the coverage tab', async () => {
-      render(<FlagsTab />, { wrapper })
+    describe('the repo is private', () => {
+      it('redirects to the coverage tab', async () => {
+        setup({ tierValue: TierNames.TEAM, isPrivate: true })
+        render(<FlagsTab />, { wrapper })
 
-      await waitFor(() =>
-        expect(testLocation.pathname).toBe('/gh/codecov/gazebo')
-      )
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe('/gh/codecov/gazebo')
+        )
+      })
     })
   })
 

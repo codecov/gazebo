@@ -7,10 +7,11 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 import useIntersection from 'react-use/lib/useIntersection'
 
-import { useCoverageRedirect } from './hooks/useCoverageRedirect'
 import Summary from './Summary'
 
-jest.mock('./hooks/useCoverageRedirect')
+import { useCoverageRedirect } from '../summaryHooks'
+
+jest.mock('../summaryHooks/useCoverageRedirect')
 jest.mock('./CoverageTrend', () => () => 'CoverageTrend')
 jest.mock('react-use/lib/useIntersection')
 

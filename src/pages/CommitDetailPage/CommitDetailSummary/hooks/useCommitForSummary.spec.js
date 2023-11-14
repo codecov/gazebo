@@ -15,7 +15,7 @@ const data = {
     totals: { coverage: 90.91 },
     state: 'complete',
     commitid: 'ca3fe8ad0632288b67909ba9793b00e5d109547b',
-    pullId: null,
+    pullId: 123,
     branchName: 'main',
     createdAt: '2022-03-10T19:14:13',
     author: { username: 'Rabee-AbuBaker' },
