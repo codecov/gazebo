@@ -115,7 +115,6 @@ describe('CommitDetailPageTabs', () => {
   ) {
     useFlags.mockReturnValue({
       commitTabFlagMultiSelect: flagValue,
-      coverageTabFlagMutliSelect: flagValue,
     })
 
     server.use(
