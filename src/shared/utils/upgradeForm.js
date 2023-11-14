@@ -6,13 +6,18 @@ import {
   isFreePlan,
   isPaidPlan,
   isSentryPlan,
+  isTeamPlan,
   isTrialPlan,
   Plans,
 } from 'shared/utils/billing'
 
+// TODO: delete when whole form control is done
 export const MIN_NB_SEATS = 2
+
+export const MIN_NB_SEATS_PRO = 2
 export const MIN_SENTRY_SEATS = 5
 export const SENTRY_PRICE = 29
+export const TEAM_PLAN_MAX_ACTIVE_USERS = 10
 
 export function extractSeats({
   quantity,
@@ -48,8 +53,11 @@ export const getInitialDataForm = ({
 
   // if the current plan is a pro plan, we return it, otherwise select by default the first pro plan
   let newPlan = proPlanYear?.value
+
   if (isSentryUpgrade && !isSentryPlan(plan)) {
     newPlan = sentryPlanYear?.value
+  } else if (isTeamPlan(plan)) {
+    newPlan = proPlanYear?.value
   } else if (isPaidPlan(plan)) {
     newPlan = plan
   }
@@ -67,7 +75,12 @@ export const getInitialDataForm = ({
   }
 }
 
-export const getSchema = ({ accountDetails, minSeats, trialStatus }) =>
+export const getSchema = ({
+  accountDetails,
+  minSeats,
+  trialStatus,
+  selectedPlan,
+}) =>
   z.object({
     seats: z.coerce
       .number({
@@ -79,6 +92,16 @@ export const getSchema = ({ accountDetails, minSeats, trialStatus }) =>
         message: `You cannot purchase a per user plan for less than ${minSeats} users`,
       })
       .transform((val, ctx) => {
+        if (
+          isTeamPlan(selectedPlan?.value) &&
+          val > TEAM_PLAN_MAX_ACTIVE_USERS
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `Team plan is only available for ${TEAM_PLAN_MAX_ACTIVE_USERS} or less users`,
+          })
+        }
+
         if (
           trialStatus === TrialStatuses.ONGOING &&
           accountDetails?.plan?.value === Plans.USERS_TRIAL
@@ -106,10 +129,11 @@ export const calculatePrice = ({
   baseUnitPrice,
   isSentryUpgrade,
   sentryPrice,
+  isSelectedPlanTeam,
 }) => {
   let price = Math.floor(seats) * baseUnitPrice
 
-  if (isSentryUpgrade) {
+  if (isSentryUpgrade && !isSelectedPlanTeam) {
     price = sentryPrice
     if (seats > 5) {
       price += Math.floor(seats - 5) * baseUnitPrice
@@ -139,4 +163,57 @@ export function shouldRenderCancelLink(cancelAtPeriodEnd, plan, trialStatus) {
   }
 
   return true
+}
+
+// Pro Plan Utils
+export const calculatePriceProPlan = ({ seats, baseUnitPrice }) => {
+  return Math.floor(seats) * baseUnitPrice
+}
+
+function calculateDefaultSeatsProPlan({
+  quantity,
+  value,
+  activatedUserCount,
+  inactiveUserCount,
+  trialStatus,
+}) {
+  const totalMembers = (inactiveUserCount ?? 0) + (activatedUserCount ?? 0)
+  const minPlansSeats = MIN_NB_SEATS_PRO
+  const freePlanSeats = Math.max(minPlansSeats, totalMembers)
+  const paidPlansSeats = Math.max(minPlansSeats, quantity)
+
+  // if their on trial their seat count is around 1000 so this resets the
+  // value to the minium value they would be going on if sentry or pro
+  if (trialStatus === TrialStatuses.ONGOING && value === Plans.USERS_TRIAL) {
+    return minPlansSeats
+  }
+
+  return isFreePlan(value) ? freePlanSeats : paidPlansSeats
+}
+
+export const getDefaultValuesProUpgrade = ({
+  accountDetails,
+  proPlanYear,
+  trialStatus,
+}) => {
+  const currentPlan = accountDetails?.plan
+  const planValue = currentPlan?.value
+  const quantity = currentPlan?.quantity ?? 0
+  const activatedUserCount = accountDetails?.activatedUserCount
+  const inactiveUserCount = accountDetails?.inactiveUserCount
+
+  // if the current plan is a pro plan, we return it, otherwise select by default the first pro plan
+  const newPlan = isPaidPlan(planValue) ? planValue : proPlanYear?.value
+  const seats = calculateDefaultSeatsProPlan({
+    value: planValue,
+    quantity,
+    activatedUserCount,
+    inactiveUserCount,
+    trialStatus,
+  })
+
+  return {
+    newPlan,
+    seats,
+  }
 }

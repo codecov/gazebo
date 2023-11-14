@@ -179,7 +179,7 @@ describe('CommitsTableTeam', () => {
         wrapper: wrapper(queryClient),
       })
 
-      const patchColumn = await screen.findByText('Patch')
+      const patchColumn = await screen.findByText('Patch %')
       expect(patchColumn).toBeInTheDocument()
     })
   })

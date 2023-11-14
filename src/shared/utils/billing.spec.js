@@ -319,8 +319,10 @@ describe('getNextBillingDate', () => {
   describe('there is no timestamp', () => {
     it('returns null', () => {
       const value = getNextBillingDate({
-        latestInvoice: {
-          periodEnd: 1660000000,
+        subscriptionDetail: {
+          latestInvoice: {
+            periodEnd: 1660000000,
+          },
         },
       })
 
@@ -342,6 +344,11 @@ describe('isAnnualPlan', () => {
 
   it('supports annual pr plan', () => {
     expect(isAnnualPlan('users-pr-inappy')).toBe(true)
+    expect(isAnnualPlan(Plans.USERS_PR_INAPPY)).toBe(true)
+  })
+
+  it('supports annual team plan', () => {
+    expect(isAnnualPlan('users-teamy')).toBe(true)
     expect(isAnnualPlan(Plans.USERS_PR_INAPPY)).toBe(true)
   })
 

@@ -62,9 +62,9 @@ export function useRepoFlagsSelect(
 ) {
   const { provider, owner, repo } = useParams()
 
-  const { data, ...rest } = useInfiniteQuery(
-    ['RepoFlagsSelect', provider, owner, repo, filters],
-    ({ pageParam: after, signal }) =>
+  const { data, ...rest } = useInfiniteQuery({
+    queryKey: ['RepoFlagsSelect', provider, owner, repo, filters],
+    queryFn: ({ pageParam: after, signal }) =>
       fetchRepoFlags({
         provider,
         owner,
@@ -73,12 +73,11 @@ export function useRepoFlagsSelect(
         after,
         signal,
       }),
-    {
-      getNextPageParam: (data) =>
-        data?.pageInfo?.hasNextPage ? data.pageInfo.endCursor : undefined,
-      ...options,
-    }
-  )
+    getNextPageParam: (data) =>
+      data?.pageInfo?.hasNextPage ? data.pageInfo.endCursor : undefined,
+    ...options,
+  })
+
   return {
     data: data?.pages?.map((page) => page?.flags).flat(),
     ...rest,

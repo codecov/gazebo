@@ -167,7 +167,7 @@ describe('PullsTableTeam', () => {
       const { queryClient } = setup({})
       render(<PullsTableTeam />, { wrapper: wrapper(queryClient) })
 
-      const patchColumn = await screen.findByText('Patch')
+      const patchColumn = await screen.findByText('Patch %')
       expect(patchColumn).toBeInTheDocument()
     })
   })
