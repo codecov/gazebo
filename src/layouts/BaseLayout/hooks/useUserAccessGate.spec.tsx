@@ -218,6 +218,7 @@ const internalUserWithUnsignedTOS = {
 type InternalUser =
   | typeof internalUserNoSyncedProviders
   | typeof internalUserHasSyncedProviders
+  | null
 
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })
