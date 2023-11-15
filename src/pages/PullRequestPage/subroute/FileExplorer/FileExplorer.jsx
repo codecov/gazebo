@@ -58,7 +58,10 @@ function FileExplorer() {
       />
       {isLoading && <Loader />}
       {data?.length === 0 && !isLoading && (
-        <MissingFileData isSearching={isSearching} hasFlagsSelected={!!flags} />
+        <MissingFileData
+          isSearching={isSearching}
+          hasFlagsSelected={flags?.length > 0}
+        />
       )}
     </div>
   )
