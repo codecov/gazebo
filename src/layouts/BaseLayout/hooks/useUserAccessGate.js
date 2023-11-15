@@ -35,9 +35,8 @@ const useUserAccessGate = () => {
   const { provider } = useParams()
   const currentRoute = useRouteMatch()
 
-  const { termsOfServicePage, defaultOrgSelectorPage } = useFlags({
+  const { termsOfServicePage } = useFlags({
     termsOfServicePage: false,
-    defaultOrgSelectorPage: false,
   })
 
   const {
@@ -63,9 +62,8 @@ const useUserAccessGate = () => {
 
   useOnboardingRedirect({ username: userData?.user?.username })
 
-  const missingUser = !userData && userIsSuccess
-  const missingInternalUser = !internalUser && internalUserIsSuccess
-  const isGuest = missingUser || missingInternalUser
+  const foundUser = userData && userIsSuccess
+  const foundInternalUser = internalUser && internalUserIsSuccess
 
   let showAgreeToTerms = false
   let showDefaultOrgSelector = false
@@ -73,23 +71,18 @@ const useUserAccessGate = () => {
 
   // the undefined provider check can be removed when the ToS has
   // been refactored to no longer use a provider
-  if (termsOfServicePage && !isGuest && !config.IS_SELF_HOSTED) {
+  if (termsOfServicePage && foundInternalUser && !config.IS_SELF_HOSTED) {
     showAgreeToTerms = internalUser?.termsAgreement === false
   }
 
   const onSyncPage = currentRoute.path === '/sync'
-  if (!isGuest && !onSyncPage) {
+  if (foundInternalUser && !onSyncPage) {
     // owners array contains a list of the synced providers
     // if it is zero then they haven't synced any other providers
     redirectToSyncPage = isEqual(internalUser?.owners?.length, 0)
   }
 
-  if (
-    defaultOrgSelectorPage &&
-    !isUndefined(provider) &&
-    !isGuest &&
-    !config.IS_SELF_HOSTED
-  ) {
+  if (!isUndefined(provider) && foundUser && !config.IS_SELF_HOSTED) {
     showDefaultOrgSelector = !userData?.owner?.defaultOrgUsername
   }
 

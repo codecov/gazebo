@@ -5,7 +5,6 @@ import { MemoryRouter, Route, Switch } from 'react-router-dom'
 import config from 'config'
 
 import { useLocationParams } from 'services/navigation'
-import { useFlags } from 'shared/featureFlags'
 
 import RequestInstallBanner from './RequestInstallBanner'
 
@@ -27,10 +26,9 @@ const wrapper =
 
 describe('RequestInstallBanner', () => {
   function setup(
-    { setUpAction, isSelfHosted, showBanner } = {
+    { setUpAction, isSelfHosted } = {
       setUpAction: 'request',
       isSelfHosted: false,
-      showBanner: true,
     }
   ) {
     const user = userEvent.setup()
@@ -41,10 +39,6 @@ describe('RequestInstallBanner', () => {
 
     useLocationParams.mockReturnValue({
       params: { setup_action: setUpAction },
-    })
-
-    useFlags.mockReturnValue({
-      defaultOrgSelectorPage: showBanner,
     })
 
     return {
@@ -156,19 +150,6 @@ describe('RequestInstallBanner', () => {
   describe('when self hosted', () => {
     it('does not render banner body', () => {
       setup({ isSelfHosted: true })
-
-      render(<RequestInstallBanner />, {
-        wrapper: wrapper({ provider: 'gh' }),
-      })
-
-      const body = screen.queryByText(/Installation request sent./)
-      expect(body).not.toBeInTheDocument()
-    })
-  })
-
-  describe('when defaultOrgSelectorPage is false', () => {
-    it('does not render banner body', () => {
-      setup({ showBanner: false })
 
       render(<RequestInstallBanner />, {
         wrapper: wrapper({ provider: 'gh' }),
