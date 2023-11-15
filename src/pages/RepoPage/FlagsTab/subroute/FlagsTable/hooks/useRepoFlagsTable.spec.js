@@ -100,7 +100,7 @@ describe('useRepoFlagsTable', () => {
       setup({ repoData: emptyRepoFlagsMock })
     })
 
-    it('calls useRepoContents with desc value', async () => {
+    it('calls useRepoFlagsTable with desc value', async () => {
       const { result } = renderHook(() => useRepoFlagsTable())
 
       act(() => {
@@ -119,7 +119,7 @@ describe('useRepoFlagsTable', () => {
       )
     })
 
-    it('calls useRepoContents with asc value when the array is empty', async () => {
+    it('calls useRepoFlagsTable with asc value when the array is empty', async () => {
       const { result } = renderHook(() => useRepoFlagsTable())
 
       act(() => {
@@ -138,7 +138,7 @@ describe('useRepoFlagsTable', () => {
       )
     })
 
-    it('calls useRepoContents with asc value', async () => {
+    it('calls useRepoFlagsTable with asc value', async () => {
       const { result } = renderHook(() => useRepoFlagsTable())
 
       act(() => {
@@ -159,7 +159,7 @@ describe('useRepoFlagsTable', () => {
   })
 
   describe('when there is search param', () => {
-    it('calls useRepoContents with correct filters value', () => {
+    it('calls useRepoFlagsTable with correct filters value', () => {
       setup({
         repoData: repoFlagsMock,
         useParamsValue: { search: 'flag1' },
@@ -187,7 +187,7 @@ describe('useRepoFlagsTable', () => {
         })
       })
 
-      it('calls useRepoContents with correct query params', () => {
+      it('calls useRepoFlagsTable with correct query params', () => {
         renderHook(() => useRepoFlagsTable())
 
         expect(useRepoFlags).toHaveBeenCalledWith({
@@ -209,7 +209,7 @@ describe('useRepoFlagsTable', () => {
         })
       })
 
-      it('calls useRepoContents with correct query params', () => {
+      it('calls useRepoFlagsTable with correct query params', () => {
         renderHook(() => useRepoFlagsTable())
 
         const afterDate = format(subMonths(new Date(), 6), 'yyyy-MM-dd')
@@ -232,7 +232,7 @@ describe('useRepoFlagsTable', () => {
         })
       })
 
-      it('calls useRepoContents with correct query params', () => {
+      it('calls useRepoFlagsTable with correct query params', () => {
         renderHook(() => useRepoFlagsTable())
 
         const afterDate = format(subDays(new Date(), 7), 'yyyy-MM-dd')
@@ -249,7 +249,7 @@ describe('useRepoFlagsTable', () => {
   })
 
   describe('when there is a flags param', () => {
-    it('calls useRepoContents with correct filters values', () => {
+    it('calls useRepoFlagsTable with correct filters values', () => {
       setup({
         repoData: repoFlagsMock,
         useParamsValue: { flags: ['flag1'] },

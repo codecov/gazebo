@@ -80,7 +80,7 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 
-describe('useRepoContentsTable', () => {
+describe('useIndirectChangedFilesTable', () => {
   function setup(overrideData = mockData) {
     const variablesPassed = jest.fn()
 
@@ -95,7 +95,7 @@ describe('useRepoContentsTable', () => {
   }
 
   describe('when handleSort is triggered', () => {
-    it('calls useRepoContents with correct filters value', async () => {
+    it('calls useIndirectChangedFilesTable with correct filters value', async () => {
       const { variablesPassed } = setup()
       const { result } = renderHook(() => useIndirectChangedFilesTable({}), {
         wrapper: wrapper(),
