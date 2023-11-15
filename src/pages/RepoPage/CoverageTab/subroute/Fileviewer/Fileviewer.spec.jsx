@@ -5,12 +5,10 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 import { useScrollToLine } from 'ui/CodeRenderer/hooks/useScrollToLine'
 
 import FileView from './Fileviewer'
 
-jest.mock('shared/featureFlags')
 jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
 
 const mockRepoSettings = (isPrivate) => ({
@@ -156,10 +154,6 @@ describe('FileView', () => {
       handleClick: jest.fn(),
       targeted: false,
     }))
-
-    useFlags.mockReturnValue({
-      coverageTabFlagMutliSelect: true,
-    })
 
     server.use(
       graphql.query('DetailOwner', (req, res, ctx) =>

@@ -9,7 +9,6 @@ import {
 } from 'pages/RepoPage/utils'
 import { useRepoSettingsTeam } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import TabNavigation from 'ui/TabNavigation'
 
@@ -23,17 +22,13 @@ function CommitDetailPageTabs({
   const { data: tierName } = useTier({ owner, provider })
   const { data: repoData } = useRepoSettingsTeam()
 
-  const { commitTabFlagMultiSelect } = useFlags({
-    commitTabFlagMultiSelect: false,
-  })
-
   const showIndirectChanges = !(
     repoData?.repository?.private && tierName === TierNames.TEAM
   )
 
-  const showFlagMultiSelect =
-    !(tierName === TierNames.TEAM && repoData?.repository?.private) &&
-    commitTabFlagMultiSelect
+  const showFlagMultiSelect = !(
+    tierName === TierNames.TEAM && repoData?.repository?.private
+  )
 
   const params = qs.parse(location.search, {
     ignoreQueryPrefix: true,
