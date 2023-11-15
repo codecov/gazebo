@@ -223,11 +223,17 @@ export default function FilesChangedTableTeam() {
                     onClick: header.column.getToggleSortingHandler(),
                   }}
                   className={cs({
-                    'w-full @4xl/w-4/12': header.id === 'name',
-                    'w-2/12 hidden @xl/filelist:block':
-                      header.id === 'missedLines',
-                    'w-2/12': header.id === 'patchPercentage',
+                    'w-8/12': header.id === 'name',
+                    'w-2/12 flex':
+                      header.id === 'missedLines' ||
+                      header.id === 'patchPercentage',
                   })}
+                  {...(header.id === 'patchPercentage' ||
+                  header.id === 'missedLines'
+                    ? {
+                        'data-type': 'numeric',
+                      }
+                    : {})}
                 >
                   <div
                     className={cs('flex gap-1 items-center', {
@@ -267,10 +273,10 @@ export default function FilesChangedTableTeam() {
                           }
                         : {})}
                       className={cs({
-                        'w-full @4xl/w-4/12': cell.column.id === 'name',
-                        'w-2/12 hidden @xl/filelist:block':
-                          cell.column.id === 'missedLines',
-                        'w-2/12': cell.column.id === 'patchPercentage',
+                        'w-8/12': cell.column.id === 'name',
+                        'w-2/12':
+                          cell.column.id === 'missedLines' ||
+                          cell.column.id === 'patchPercentage',
                       })}
                     >
                       {flexRender(

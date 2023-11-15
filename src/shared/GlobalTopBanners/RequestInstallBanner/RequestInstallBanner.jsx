@@ -3,7 +3,6 @@ import { useParams, useRouteMatch } from 'react-router-dom'
 import config from 'config'
 
 import { useLocationParams } from 'services/navigation'
-import { useFlags } from 'shared/featureFlags'
 import { providerToName } from 'shared/utils'
 import Icon from 'ui/Icon'
 import TopBanner from 'ui/TopBanner'
@@ -15,14 +14,9 @@ function RequestInstallBanner() {
 
   const { setup_action: setupAction } = params
 
-  const { defaultOrgSelectorPage: showBanner } = useFlags({
-    defaultOrgSelectorPage: false,
-  })
-
   const isGitHubProvider = provider && providerToName(provider) === 'Github'
 
   if (
-    !showBanner ||
     !isGitHubProvider ||
     !ownerMatch?.isExact ||
     setupAction !== 'request' ||
