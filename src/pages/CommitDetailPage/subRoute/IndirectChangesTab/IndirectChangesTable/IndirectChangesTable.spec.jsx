@@ -7,11 +7,8 @@ import qs from 'qs'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
-
 import IndirectChangesTable from '../IndirectChangesTable'
 
-jest.mock('shared/featureFlags')
 jest.mock('./CommitFileDiff', () => () => 'CommitFileDiff')
 
 const server = setupServer()
@@ -60,10 +57,6 @@ describe('IndirectChangesTable', () => {
           retry: false,
         },
       },
-    })
-
-    useFlags.mockReturnValue({
-      commitTabFlagMultiSelect: true,
     })
 
     server.use(

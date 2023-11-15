@@ -7,11 +7,9 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import useIntersection from 'react-use/lib/useIntersection'
 
 import { TierNames } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 
 import FlagMultiSelect from './FlagMultiSelect'
 
-jest.mock('shared/featureFlags')
 jest.mock('react-use/lib/useIntersection')
 
 const mockRepoSettings = (isPrivate) => ({
@@ -156,14 +154,12 @@ afterAll(() => {
 describe('FlagMultiSelect', () => {
   function setup(
     {
-      flagValue = true,
       isIntersecting = false,
       noNextPage = false,
       backfillData = mockBackfillHasFlagsAndActive,
       tierValue = TierNames.PRO,
       isPrivate = false,
     } = {
-      flagValue: false,
       isIntersecting: false,
       noNextPage: false,
       mockBackfillHasFlagsAndActive: mockBackfillHasFlagsAndActive,
@@ -173,10 +169,6 @@ describe('FlagMultiSelect', () => {
   ) {
     const user = userEvent.setup()
     const mockApiVars = jest.fn()
-
-    useFlags.mockReturnValue({
-      coverageTabFlagMutliSelect: flagValue,
-    })
 
     useIntersection.mockReturnValue({ isIntersecting: isIntersecting })
 
@@ -207,10 +199,31 @@ describe('FlagMultiSelect', () => {
     return { user, mockApiVars }
   }
 
-  describe('feature flag is turned on', () => {
-    describe('when selecting a flag', () => {
-      it('updates the location params', async () => {
-        const { user } = setup({ flagValue: true })
+  describe('when selecting a flag', () => {
+    it('updates the location params', async () => {
+      const { user } = setup({})
+
+      render(<FlagMultiSelect />, { wrapper })
+
+      const select = await screen.findByText('All flags')
+      expect(select).toBeInTheDocument()
+      await user.click(select)
+
+      const flag1 = await screen.findByText('flag-1')
+      expect(flag1).toBeInTheDocument()
+      await user.click(flag1)
+
+      expect(testLocation?.state).toStrictEqual({
+        search: '',
+        flags: ['flag-1'],
+      })
+    })
+  })
+
+  describe('when onLoadMore is triggered', () => {
+    describe('when there is a next page', () => {
+      it('calls fetchNextPage', async () => {
+        const { user } = setup({ isIntersecting: true })
 
         render(<FlagMultiSelect />, { wrapper })
 
@@ -220,57 +233,18 @@ describe('FlagMultiSelect', () => {
 
         const flag1 = await screen.findByText('flag-1')
         expect(flag1).toBeInTheDocument()
-        await user.click(flag1)
 
-        expect(testLocation?.state).toStrictEqual({
-          search: '',
-          flags: ['flag-1'],
-        })
+        const flag2 = await screen.findByText('flag-2')
+        expect(flag2).toBeInTheDocument()
       })
     })
 
-    describe('when onLoadMore is triggered', () => {
-      describe('when there is a next page', () => {
-        it('calls fetchNextPage', async () => {
-          const { user } = setup({ flagValue: true, isIntersecting: true })
-
-          render(<FlagMultiSelect />, { wrapper })
-
-          const select = await screen.findByText('All flags')
-          expect(select).toBeInTheDocument()
-          await user.click(select)
-
-          const flag1 = await screen.findByText('flag-1')
-          expect(flag1).toBeInTheDocument()
-
-          const flag2 = await screen.findByText('flag-2')
-          expect(flag2).toBeInTheDocument()
+    describe('there is not a next page', () => {
+      it('does not call fetch next page', async () => {
+        const { user } = setup({
+          isIntersecting: true,
+          noNextPage: true,
         })
-      })
-
-      describe('there is not a next page', () => {
-        it('does not call fetch next page', async () => {
-          const { user } = setup({
-            flagValue: true,
-            isIntersecting: true,
-            noNextPage: true,
-          })
-
-          render(<FlagMultiSelect />, { wrapper })
-
-          const select = await screen.findByText('All flags')
-          expect(select).toBeInTheDocument()
-          await user.click(select)
-
-          const flag2 = await screen.findByText('flag-2')
-          expect(flag2).toBeInTheDocument()
-        })
-      })
-    })
-
-    describe('when searching for a flag', () => {
-      it('updates the text box', async () => {
-        const { user } = setup({ flagValue: true })
 
         render(<FlagMultiSelect />, { wrapper })
 
@@ -278,42 +252,84 @@ describe('FlagMultiSelect', () => {
         expect(select).toBeInTheDocument()
         await user.click(select)
 
-        const searchBox = screen.getByPlaceholderText('Search for Flags')
-        await user.type(searchBox, 'flag2')
-
-        const searchBoxUpdated = screen.getByPlaceholderText('Search for Flags')
-        expect(searchBoxUpdated).toHaveAttribute('value', 'flag2')
+        const flag2 = await screen.findByText('flag-2')
+        expect(flag2).toBeInTheDocument()
       })
+    })
+  })
 
-      it('calls the api with search term', async () => {
-        const { user, mockApiVars } = setup({ flagValue: true })
+  describe('when searching for a flag', () => {
+    it('updates the text box', async () => {
+      const { user } = setup({})
 
+      render(<FlagMultiSelect />, { wrapper })
+
+      const select = await screen.findByText('All flags')
+      expect(select).toBeInTheDocument()
+      await user.click(select)
+
+      const searchBox = screen.getByPlaceholderText('Search for Flags')
+      await user.type(searchBox, 'flag2')
+
+      const searchBoxUpdated = screen.getByPlaceholderText('Search for Flags')
+      expect(searchBoxUpdated).toHaveAttribute('value', 'flag2')
+    })
+
+    it('calls the api with search term', async () => {
+      const { user, mockApiVars } = setup({})
+
+      render(<FlagMultiSelect />, { wrapper })
+
+      const select = await screen.findByText('All flags')
+      expect(select).toBeInTheDocument()
+      await user.click(select)
+
+      const searchBox = screen.getByPlaceholderText('Search for Flags')
+      await user.type(searchBox, 'flag2')
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+
+      await waitFor(() =>
+        expect(mockApiVars).toHaveBeenCalledWith({
+          name: 'codecov',
+          repo: 'cool-repo',
+          filters: { term: 'flag2' },
+        })
+      )
+    })
+  })
+
+  describe('when flag count is zero', () => {
+    it('does not show multi select', async () => {
+      setup({ backfillData: mockBackfillNoFlagsPresent })
+
+      const { container } = render(<FlagMultiSelect />, { wrapper })
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+
+      await waitFor(() => expect(container).toBeEmptyDOMElement())
+    })
+  })
+
+  describe('when on team plan', () => {
+    describe('repo is public', () => {
+      it('renders multi select', async () => {
+        setup({
+          tierValue: TierNames.TEAM,
+          isPrivate: false,
+        })
         render(<FlagMultiSelect />, { wrapper })
 
         const select = await screen.findByText('All flags')
         expect(select).toBeInTheDocument()
-        await user.click(select)
-
-        const searchBox = screen.getByPlaceholderText('Search for Flags')
-        await user.type(searchBox, 'flag2')
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
-
-        await waitFor(() =>
-          expect(mockApiVars).toHaveBeenCalledWith({
-            name: 'codecov',
-            repo: 'cool-repo',
-            filters: { term: 'flag2' },
-          })
-        )
       })
     })
 
-    describe('when flag count is zero', () => {
+    describe('repo is private', () => {
       it('does not show multi select', async () => {
-        setup({ flagValue: true, backfillData: mockBackfillNoFlagsPresent })
-
+        setup({ tierValue: TierNames.TEAM, isPrivate: true })
         const { container } = render(<FlagMultiSelect />, { wrapper })
 
         await waitFor(() => queryClient.isFetching)
@@ -322,60 +338,31 @@ describe('FlagMultiSelect', () => {
         await waitFor(() => expect(container).toBeEmptyDOMElement())
       })
     })
+  })
 
-    describe('when on team plan', () => {
-      describe('repo is public', () => {
-        it('renders multi select', async () => {
-          setup({
-            flagValue: true,
-            tierValue: TierNames.TEAM,
-            isPrivate: false,
-          })
-          render(<FlagMultiSelect />, { wrapper })
+  describe('when timescale is disabled', () => {
+    it('renders disabled multi select', async () => {
+      setup({ backfillData: mockBackfillTimeScaleDisabled })
 
-          const select = await screen.findByText('All flags')
-          expect(select).toBeInTheDocument()
-        })
-      })
+      render(<FlagMultiSelect />, { wrapper })
 
-      describe('repo is private', () => {
-        it('does not show multi select', async () => {
-          setup({ flagValue: true, tierValue: TierNames.TEAM, isPrivate: true })
-          const { container } = render(<FlagMultiSelect />, { wrapper })
-
-          await waitFor(() => queryClient.isFetching)
-          await waitFor(() => !queryClient.isFetching)
-
-          await waitFor(() => expect(container).toBeEmptyDOMElement())
-        })
-      })
+      const select = await screen.findByRole('button')
+      expect(select).toBeInTheDocument()
+      expect(select).toBeDisabled()
     })
+  })
 
-    describe('when timescale is disabled', () => {
-      it('renders disabled multi select', async () => {
-        setup({ flagValue: true, backfillData: mockBackfillTimeScaleDisabled })
-
-        render(<FlagMultiSelect />, { wrapper })
-
-        const select = await screen.findByRole('button')
-        expect(select).toBeInTheDocument()
-        expect(select).toBeDisabled()
+  describe('when no flag measurement are not active', () => {
+    it('renders disabled multi select', async () => {
+      setup({
+        backfillData: mockBackfillFlagMeasureNotActive,
       })
-    })
 
-    describe('when no flag measurement are not active', () => {
-      it('renders disabled multi select', async () => {
-        setup({
-          flagValue: true,
-          backfillData: mockBackfillFlagMeasureNotActive,
-        })
+      render(<FlagMultiSelect />, { wrapper })
 
-        render(<FlagMultiSelect />, { wrapper })
-
-        const select = await screen.findByRole('button')
-        expect(select).toBeInTheDocument()
-        expect(select).toBeDisabled()
-      })
+      const select = await screen.findByRole('button')
+      expect(select).toBeInTheDocument()
+      expect(select).toBeDisabled()
     })
   })
 })

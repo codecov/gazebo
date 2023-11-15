@@ -6,11 +6,9 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { act } from 'react-test-renderer'
 
 import { useLocationParams } from 'services/navigation'
-import { useFlags } from 'shared/featureFlags'
 
 import { useRepoCommitContentsTable } from './useRepoCommitContentsTable'
 
-jest.mock('shared/featureFlags')
 jest.mock('services/navigation', () => ({
   ...jest.requireActual('services/navigation'),
   useLocationParams: jest.fn(),
@@ -100,13 +98,7 @@ afterAll(() => {
 describe('useRepoCommitContentsTable', () => {
   const calledCommitContents = jest.fn()
 
-  function setup(
-    { noData = false, flagValue = false } = { noData: false, flagValue: false }
-  ) {
-    useFlags.mockReturnValue({
-      commitTabFlagMultiSelect: flagValue,
-    })
-
+  function setup({ noData = false } = { noData: false }) {
     server.use(
       graphql.query('CommitPathContents', (req, res, ctx) => {
         calledCommitContents(req?.variables)
@@ -261,37 +253,35 @@ describe('useRepoCommitContentsTable', () => {
   })
 
   describe('when there is a flags param', () => {
-    describe('feature flag is turned on', () => {
-      beforeEach(() => {
-        useLocationParams.mockReturnValue({
-          params: { flags: ['flag-1'] },
-        })
+    beforeEach(() => {
+      useLocationParams.mockReturnValue({
+        params: { flags: ['flag-1'] },
+      })
+    })
+
+    it('makes a gql request with the flags value', async () => {
+      setup({})
+
+      const { result } = renderHook(() => useRepoCommitContentsTable(), {
+        wrapper: wrapper(),
       })
 
-      it('makes a gql request with the flags value', async () => {
-        setup({ flagValue: true })
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
 
-        const { result } = renderHook(() => useRepoCommitContentsTable(), {
-          wrapper: wrapper(),
-        })
-
-        await waitFor(() => result.current.isLoading)
-        await waitFor(() => !result.current.isLoading)
-
-        expect(calledCommitContents).toHaveBeenCalled()
-        expect(calledCommitContents).toHaveBeenCalledWith({
-          commit: 'sha256',
-          filters: {
-            flags: ['flag-1'],
-            ordering: {
-              direction: 'ASC',
-              parameter: 'NAME',
-            },
+      expect(calledCommitContents).toHaveBeenCalled()
+      expect(calledCommitContents).toHaveBeenCalledWith({
+        commit: 'sha256',
+        filters: {
+          flags: ['flag-1'],
+          ordering: {
+            direction: 'ASC',
+            parameter: 'NAME',
           },
-          name: 'test-org',
-          repo: 'test-repo',
-          path: '',
-        })
+        },
+        name: 'test-org',
+        repo: 'test-repo',
+        path: '',
       })
     })
   })

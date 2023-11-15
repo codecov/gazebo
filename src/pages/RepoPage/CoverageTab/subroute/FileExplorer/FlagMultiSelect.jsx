@@ -11,7 +11,6 @@ import {
   useRepoSettingsTeam,
 } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'
 
@@ -35,10 +34,6 @@ function FlagMultiSelect() {
   const flagsMeasurementsActive = !!repoBackfilledData?.flagsMeasurementsActive
   const noFlagsPresent = eq(repoBackfilledData?.flagsCount, 0)
 
-  const { coverageTabFlagMutliSelect } = useFlags({
-    coverageTabFlagMutliSelect: false,
-  })
-
   const hideFlagMultiSelect =
     tierName === TierNames.TEAM && repoData?.repository?.private
 
@@ -52,13 +47,12 @@ function FlagMultiSelect() {
     options: {
       suspense: false,
       enabled:
-        !!coverageTabFlagMutliSelect ||
         hideFlagMultiSelect ||
         (flagsMeasurementsActive && !noFlagsPresent && isTimescaleEnabled),
     },
   })
 
-  if (!coverageTabFlagMutliSelect || noFlagsPresent || hideFlagMultiSelect) {
+  if (noFlagsPresent || hideFlagMultiSelect) {
     return null
   }
 
