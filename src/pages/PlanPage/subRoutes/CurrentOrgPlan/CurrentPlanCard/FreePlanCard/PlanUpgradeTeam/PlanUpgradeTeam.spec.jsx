@@ -211,6 +211,21 @@ describe('PlanUpgradeTeam', () => {
       expect(marketingName).toBeInTheDocument()
     })
 
+    it('shows link to learn more plan page', async () => {
+      setup({ plan: mockPlanBasic })
+      render(<PlanUpgradeTeam />, {
+        wrapper,
+      })
+
+      const learnMoreLink = await screen.findByRole('link', {
+        name: /learn more/i,
+      })
+      expect(learnMoreLink).toBeInTheDocument()
+      expect(learnMoreLink.href).toBe(
+        'https://about.codecov.io/team-plan-compare'
+      )
+    })
+
     it('show the benefits list', async () => {
       setup({ plan: mockPlanBasic })
       render(<PlanUpgradeTeam />, {

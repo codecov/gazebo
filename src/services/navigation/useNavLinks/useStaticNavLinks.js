@@ -214,6 +214,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    teamPlanAbout: {
+      text: 'Team plan',
+      path: () => 'https://about.codecov.io/team-plan-compare',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     prCommentLayout: {
       text: 'Pull request comment layout',
       path: () => 'https://docs.codecov.com/docs/pull-request-comments#layout',
