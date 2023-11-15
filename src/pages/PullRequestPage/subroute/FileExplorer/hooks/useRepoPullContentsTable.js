@@ -1,6 +1,7 @@
 import isEqual from 'lodash/isEqual'
+import qs from 'qs'
 import { useCallback, useMemo } from 'react'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 
 import { SortingDirection } from 'old_ui/Table/constants'
 import { useLocationParams } from 'services/navigation'
@@ -152,7 +153,7 @@ const sortingParameter = Object.freeze({
   lines: 'LINES',
 })
 
-const getQueryFilters = ({ params, sortBy }) => {
+const getQueryFilters = ({ params, sortBy, flags }) => {
   return {
     ...(params?.search && { searchValue: params.search }),
     ...(params?.displayType && {
@@ -164,11 +165,18 @@ const getQueryFilters = ({ params, sortBy }) => {
         parameter: sortingParameter[sortBy?.id],
       },
     }),
+    ...(flags ? { flags } : {}),
   }
 }
 
 export function useRepoPullContentsTable() {
   const { provider, owner, repo, path: urlPath, pullId } = useParams()
+  const location = useLocation()
+  const queryParams = qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+    depth: 1,
+  })
+  const flags = queryParams?.flags
   const { params } = useLocationParams(defaultQueryParams)
   const { treePaths } = usePullTreePaths()
   const [sortBy, setSortBy] = useTableDefaultSort()
@@ -179,7 +187,7 @@ export function useRepoPullContentsTable() {
     repo,
     pullId,
     path: urlPath || '',
-    filters: getQueryFilters({ params, sortBy: sortBy[0] }),
+    filters: getQueryFilters({ params, sortBy: sortBy[0], flags }),
     opts: {
       suspense: false,
     },
@@ -193,11 +201,11 @@ export function useRepoPullContentsTable() {
         commitSha: pullData?.commitid,
         urlPath: urlPath || '',
         isSearching: !!params?.search,
-        filters: getQueryFilters({ params, sortBy: sortBy[0] }),
+        filters: getQueryFilters({ params, sortBy: sortBy[0], flags }),
         treePaths,
         indicationRange: pullData?.indicationRange,
       }),
-    [pullData, urlPath, params, sortBy, treePaths, pullId]
+    [pullData, urlPath, params, sortBy, treePaths, pullId, flags]
   )
 
   const handleSort = useCallback(
