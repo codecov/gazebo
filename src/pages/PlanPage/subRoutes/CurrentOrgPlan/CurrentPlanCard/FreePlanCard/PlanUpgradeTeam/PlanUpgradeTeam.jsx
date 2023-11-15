@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useAvailablePlans, usePlanData } from 'services/account'
 import BenefitList from 'shared/plan/BenefitList'
 import { findTeamPlans, isFreePlan, isTrialPlan } from 'shared/utils/billing'
+import A from 'ui/A'
 import Button from 'ui/Button'
 
 function PlanUpgradeTeam() {
@@ -27,6 +28,7 @@ function PlanUpgradeTeam() {
       <div className="flex flex-col border">
         <div className="flex flex-row gap-2 p-4">
           <h2 className="font-semibold">{monthlyMarketingName} plan</h2>
+          <A to={{ pageName: 'teamPlanAbout' }}>Learn more</A>
         </div>
         <hr />
         <div className="grid gap-4 p-4 sm:grid-cols-2 sm:gap-0">
