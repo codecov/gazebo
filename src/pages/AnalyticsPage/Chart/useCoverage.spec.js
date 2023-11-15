@@ -2,17 +2,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { MemoryRouter, Route , useParams } from 'react-router-dom'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
 
 import { useCoverage } from './useCoverage'
 
 jest.mock('services/charts')
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
-  useParams: jest.fn(() => {}),
-}))
 
 const mockRepoMeasurements = {
   owner: {
@@ -95,7 +91,6 @@ describe('useCoverage', () => {
       tierValue: TierNames.PRO,
     }
   ) {
-    useParams.mockReturnValue({ owner: 'codecov', provider: 'gh' })
     server.use(
       graphql.query('GetReposCoverageMeasurements', (req, res, ctx) => {
         if (req.variables?.isPublic) {
