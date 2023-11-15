@@ -19,11 +19,13 @@ function TableSparkline({ measurements, change, name }) {
         datum={noData ? [null] : measurements}
         select={(d) => d?.avg}
       />
-      {noData ? (
-        <span> No Data</span>
-      ) : (
-        <TotalsNumber value={change} showChange />
-      )}
+      <div className="w-1/5 text-end">
+        {noData ? (
+          <span> No Data</span>
+        ) : (
+          <TotalsNumber value={change} showChange />
+        )}
+      </div>
     </div>
   )
 }

@@ -7,11 +7,8 @@ import qs from 'qs'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
-
 import IndirectChangesTable from '../IndirectChangesTable'
 
-jest.mock('shared/featureFlags')
 jest.mock('./CommitFileDiff', () => () => 'CommitFileDiff')
 
 const server = setupServer()
@@ -62,10 +59,6 @@ describe('IndirectChangesTable', () => {
       },
     })
 
-    useFlags.mockReturnValue({
-      commitTabFlagMultiSelect: true,
-    })
-
     server.use(
       graphql.query('Commit', (req, res, ctx) => {
         mockVars(req.variables)
@@ -83,7 +76,7 @@ describe('IndirectChangesTable', () => {
                   commitid: '123',
                   pullId: 1,
                   branchName: null,
-                  createdAt: null,
+                  createdAt: '2023-01-01T12:00:00.000000',
                   author: null,
                   uploads: null,
                   message: null,

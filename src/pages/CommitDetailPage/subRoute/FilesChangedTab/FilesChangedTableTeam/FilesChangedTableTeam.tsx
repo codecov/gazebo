@@ -212,8 +212,8 @@ export default function FilesChangedTableTeam() {
                     onClick: header.column.getToggleSortingHandler(),
                   }}
                   className={cs({
-                    'w-full @4xl/w-4/12': header.id === 'name',
-                    'w-2/12 hidden @4xl/filelist:block':
+                    'w-8/12': header.id === 'name',
+                    'w-2/12':
                       header.id === 'missedLines' ||
                       header.id === 'patchPercentage',
                   })}
@@ -223,6 +223,12 @@ export default function FilesChangedTableTeam() {
                       'flex-row-reverse justify-end': header.id === 'name',
                       'justify-end': header.id === 'patchPercentage',
                     })}
+                    {...(header.id === 'patchPercentage' ||
+                    header.id === 'missedLines'
+                      ? {
+                          'data-type': 'numeric',
+                        }
+                      : {})}
                   >
                     <span
                       className="text-ds-blue-darker"
@@ -256,8 +262,8 @@ export default function FilesChangedTableTeam() {
                           }
                         : {})}
                       className={cs({
-                        'w-full @4xl/w-4/12': cell.column.id === 'name',
-                        'w-2/12 hidden @4xl/filelist:block':
+                        'w-8/12': cell.column.id === 'name',
+                        'w-2/12':
                           cell.column.id === 'missedLines' ||
                           cell.column.id === 'patchPercentage',
                       })}

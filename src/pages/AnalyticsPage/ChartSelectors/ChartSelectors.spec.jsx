@@ -367,7 +367,7 @@ describe('ChartSelectors', () => {
         expect(searchBoxUpdated).toHaveAttribute('value', 'codecov')
 
         await waitFor(() => {
-          expect(useRepos).toBeCalledWith({
+          expect(useRepos).toHaveBeenCalledWith({
             active: true,
             first: Infinity,
             owner: 'codecov',
@@ -377,6 +377,7 @@ describe('ChartSelectors', () => {
             },
             suspense: false,
             term: 'codecov',
+            isPublic: null,
           })
         })
       })
@@ -490,6 +491,20 @@ describe('ChartSelectors', () => {
       const upgradeLink = await screen.findByRole('link', { name: 'Upgrade' })
       expect(upgradeLink).toBeInTheDocument()
       expect(upgradeLink).toHaveAttribute('href', '/plan/gh/codecov/upgrade')
+      await waitFor(() => {
+        expect(useRepos).toHaveBeenCalledWith({
+          active: true,
+          first: Infinity,
+          owner: 'codecov',
+          sortItem: {
+            direction: 'ASC',
+            ordering: 'NAME',
+          },
+          suspense: false,
+          term: '',
+          isPublic: true,
+        })
+      })
     })
   })
 })

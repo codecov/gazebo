@@ -36,12 +36,28 @@ jest.mock('@tanstack/react-query-devtools', () => ({
 jest.mock('config')
 jest.mock('shared/featureFlags')
 
+const internalUser = {
+  email: 'internal@user.com',
+  name: 'Internal User',
+  externalId: '123',
+  owners: [
+    {
+      service: 'github',
+    },
+  ],
+}
+
 const user = {
-  username: 'CodecovUser',
-  email: 'codecov@codecov.io',
-  name: 'codecov',
-  avatarUrl: 'photo',
-  termsAgreement: true,
+  me: {
+    owner: {
+      defaultOrgUsername: 'codecov',
+    },
+    user: {
+      termsAgreement: true,
+    },
+    trackingMetadata: { ownerid: 123 },
+    termsAgreement: true,
+  },
 }
 
 const queryClient = new QueryClient({
@@ -51,6 +67,7 @@ const queryClient = new QueryClient({
     },
   },
 })
+
 const server = setupServer()
 let testLocation
 const wrapper =
@@ -95,22 +112,13 @@ describe('App', () => {
 
     server.use(
       rest.get('/internal/user', (_, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}))
+        return res(ctx.status(200), ctx.json(internalUser))
       }),
       graphql.query('DetailOwner', (_, res, ctx) =>
         res(ctx.status(200), ctx.data({ owner: 'codecov' }))
       ),
       graphql.query('CurrentUser', (_, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
-            me: {
-              user: user,
-              trackingMetadata: { ownerid: 123 },
-              ...user,
-            },
-          })
-        )
+        res(ctx.status(200), ctx.data(user))
       )
     )
   }
@@ -172,7 +180,7 @@ describe('App', () => {
         pathname: '/plan/gh',
         expected: {
           page: /OwnerPage/i,
-          location: '/gh/CodecovUser',
+          location: '/gh/codecov',
         },
       },
     ],

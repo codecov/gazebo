@@ -66,6 +66,7 @@ const internalUserNoSyncedProviders = {
   email: userSignedInIdentity.email,
   name: userSignedInIdentity.name,
   externalId: '123',
+  termsAgreement: false,
   owners: [],
 }
 
@@ -75,6 +76,12 @@ const internalUserHasSyncedProviders = {
   externalId: '123',
   owners: [
     {
+      avatarUrl: 'http://127.0.0.1/cool-user',
+      integrationId: null,
+      name: null,
+      ownerid: 123,
+      stats: null,
+      username: 'cool-username',
       service: 'github',
     },
   ],
@@ -130,11 +137,9 @@ describe('BaseLayout', () => {
       internalUser = internalUserHasSyncedProviders,
       isImpersonating = false,
       termsOfServicePage = false,
-      defaultOrgSelectorPage = false,
     } = {
       termsOfServicePage: false,
       currentUser: loggedInUser,
-      defaultOrgSelectorPage: false,
     }
   ) {
     useImage.mockReturnValue({
@@ -144,7 +149,6 @@ describe('BaseLayout', () => {
     })
     useFlags.mockReturnValue({
       termsOfServicePage,
-      defaultOrgSelectorPage,
     })
     useImpersonate.mockReturnValue({ isImpersonating })
 
@@ -246,7 +250,7 @@ describe('BaseLayout', () => {
       })
     })
 
-    describe('TOS feature flag is off, org selector flag is off', () => {
+    describe('TOS feature flag is off', () => {
       it('does not render children', async () => {
         setup({
           currentUser: loggedInUser,
@@ -255,13 +259,6 @@ describe('BaseLayout', () => {
         render(<BaseLayout>hello</BaseLayout>, {
           wrapper: wrapper(),
         })
-
-        expect(await screen.findByText('hello')).toBeTruthy()
-        const hello = screen.getByText('hello')
-        expect(hello).toBeInTheDocument()
-
-        const defaultOrg = screen.queryByText(/DefaultOrgSelector/)
-        expect(defaultOrg).not.toBeInTheDocument()
 
         const termsOfService = screen.queryByText(/TermsOfService/)
         expect(termsOfService).not.toBeInTheDocument()
@@ -281,9 +278,9 @@ describe('BaseLayout', () => {
     })
   })
 
-  describe('selector flag is on and set up action param is install', () => {
+  describe('set up action param is install', () => {
     it('renders the select org page with banner', async () => {
-      setup({ defaultOrgSelectorPage: true, currentUser: loggedInUser })
+      setup({ currentUser: loggedInUser })
 
       render(<BaseLayout>hello</BaseLayout>, {
         wrapper: wrapper(['/bb/batman/batcave?setup_action=install']),
@@ -296,7 +293,6 @@ describe('BaseLayout', () => {
 
     it('does not render the select org page for users that have default org', async () => {
       setup({
-        defaultOrgSelectorPage: true,
         currentUser: userHasDefaultOrg,
       })
 
@@ -324,7 +320,7 @@ describe('BaseLayout', () => {
   })
 
   describe('user has synced providers', () => {
-    it('renders the page', async () => {
+    it('renders the default org page', async () => {
       setup({
         internalUser: internalUserHasSyncedProviders,
       })
@@ -333,14 +329,14 @@ describe('BaseLayout', () => {
         wrapper: wrapper(),
       })
 
-      const text = await screen.findByText('hello')
-      expect(text).toBeInTheDocument()
+      const defaultOrg = await screen.findByText(/DefaultOrgSelector/)
+      expect(defaultOrg).toBeInTheDocument()
     })
   })
 
   describe('user is not on full access experience', () => {
     it('renders the select org page with banner', async () => {
-      setup({ defaultOrgSelectorPage: true, currentUser: loggedInUser })
+      setup({ currentUser: loggedInUser })
 
       render(<BaseLayout>hello</BaseLayout>, {
         wrapper: wrapper(['/bb/batman/batcave?setup_action=install']),

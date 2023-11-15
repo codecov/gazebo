@@ -7,11 +7,8 @@ import qs from 'qs'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
-
 import FilesChangedTable from './FilesChangedTable'
 
-jest.mock('shared/featureFlags')
 jest.mock('../shared/CommitFileDiff', () => () => 'CommitFileDiff')
 
 const mockCommitData = ({ data, state }) => ({
@@ -26,7 +23,7 @@ const mockCommitData = ({ data, state }) => ({
         commitid: '123',
         pullId: 1,
         branchName: null,
-        createdAt: null,
+        createdAt: '2023-01-01T12:00:00.000000',
         author: null,
         uploads: null,
         message: null,
@@ -88,10 +85,6 @@ describe('FilesChangedTable', () => {
           retry: false,
         },
       },
-    })
-
-    useFlags.mockReturnValue({
-      commitTabFlagMultiSelect: true,
     })
 
     server.use(
