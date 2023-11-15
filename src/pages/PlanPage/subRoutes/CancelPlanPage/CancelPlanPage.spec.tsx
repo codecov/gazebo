@@ -370,4 +370,23 @@ describe('CancelPlanPage', () => {
       expect(specialOffer).toBeInTheDocument()
     })
   })
+
+  describe('user already on team plan', () => {
+    beforeEach(() =>
+      setup({
+        planValue: Plans.USERS_TEAMM,
+        multipleTiers: true,
+        hasTeamPlans: true,
+      })
+    )
+
+    it('shows default cancel offer', async () => {
+      render(<CancelPlanPage />, {
+        wrapper: wrapper('/plan/gh/codecov/cancel'),
+      })
+
+      const specialOffer = await screen.findByText('SpecialOffer')
+      expect(specialOffer).toBeInTheDocument()
+    })
+  })
 })
