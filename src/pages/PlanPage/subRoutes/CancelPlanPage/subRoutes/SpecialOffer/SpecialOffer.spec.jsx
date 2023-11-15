@@ -1,99 +1,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, rest } from 'msw'
+import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
-
 import SpecialOffer from './SpecialOffer'
-
-jest.mock('./TeamPlanCard', () => () => 'Team Plan Card')
-jest.mock('shared/featureFlags')
-
-const mockAvailablePlans = [
-  {
-    marketingName: 'Basic',
-    value: 'users-basic',
-    billingRate: null,
-    baseUnitPrice: 0,
-    benefits: [
-      'Up to 5 users',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-    ],
-    monthlyUploadLimit: 250,
-  },
-  {
-    marketingName: 'Pro Team',
-    value: 'users-pr-inappm',
-    billingRate: 'monthly',
-    baseUnitPrice: 12,
-    benefits: [
-      'Configurable # of users',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-      'Priority Support',
-    ],
-    monthlyUploadLimit: null,
-  },
-  {
-    marketingName: 'Pro Team',
-    value: 'users-pr-inappy',
-    billingRate: 'annually',
-    baseUnitPrice: 10,
-    benefits: [
-      'Configurable # of users',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-      'Priority Support',
-    ],
-    monthlyUploadLimit: null,
-  },
-  {
-    marketingName: 'Pro Team',
-    value: 'users-enterprisem',
-    billingRate: 'monthly',
-    baseUnitPrice: 12,
-    benefits: [
-      'Configurable # of users',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-      'Priority Support',
-    ],
-    monthlyUploadLimit: null,
-  },
-  {
-    marketingName: 'Pro Team',
-    value: 'users-enterprisey',
-    billingRate: 'annually',
-    baseUnitPrice: 10,
-    benefits: [
-      'Configurable # of users',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-      'Priority Support',
-    ],
-    monthlyUploadLimit: null,
-  },
-  {
-    baseUnitPrice: 6,
-    benefits: ['Up to 10 users'],
-    billingRate: 'monthly',
-    marketingName: 'Users Team',
-    monthlyUploadLimit: 2500,
-    value: 'users-teamm',
-  },
-  {
-    baseUnitPrice: 5,
-    benefits: ['Up to 10 users'],
-    billingRate: 'yearly',
-    marketingName: 'Users Team',
-    monthlyUploadLimit: 2500,
-    value: 'users-teamy',
-  },
-]
 
 const mockBody = jest.fn()
 const mockToast = jest.fn()
@@ -147,7 +59,6 @@ describe('SpecialOffer', () => {
     }
   ) {
     const user = userEvent.setup()
-    useFlags.mockReturnValue({ multipleTiers })
 
     server.use(
       rest.patch(
@@ -162,12 +73,6 @@ describe('SpecialOffer', () => {
 
           return res(ctx.status(200))
         }
-      ),
-      graphql.query('GetAvailablePlans', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({ owner: { availablePlans: mockAvailablePlans } })
-        )
       )
     )
 
@@ -327,37 +232,6 @@ describe('SpecialOffer', () => {
       await user.click(link)
 
       expect(testLocation.pathname).toBe('/plan/gh/codecov/cancel/downgrade')
-    })
-  })
-
-  describe('user can downgrade to team plan', () => {
-    it('renders the header', async () => {
-      setup({ multipleTiers: true })
-      render(<SpecialOffer />, { wrapper: wrapper() })
-
-      const header = await screen.findByRole('heading', {
-        name: 'Alternative plan offer',
-      })
-      expect(header).toBeInTheDocument()
-    })
-
-    it('renders team plan card', async () => {
-      setup({ multipleTiers: true })
-      render(<SpecialOffer />, { wrapper: wrapper() })
-
-      const teamPlanCard = await screen.findByText('Team Plan Card')
-      expect(teamPlanCard).toBeInTheDocument()
-    })
-
-    it('renders link to change plan', async () => {
-      setup({ multipleTiers: true })
-      render(<SpecialOffer />, { wrapper: wrapper() })
-
-      const link = await screen.findByRole('link', {
-        name: /No thanks, I'll proceed with cancellation/,
-      })
-      expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', '/plan/gh/codecov/cancel/downgrade')
     })
   })
 })
