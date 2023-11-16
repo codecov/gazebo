@@ -3,17 +3,12 @@ import { useLayoutEffect } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
 import { useSetCrumbs } from 'pages/PlanPage/context'
-import { useAvailablePlans } from 'services/account'
 import { useNavLinks } from 'services/navigation'
 import { useAddNotification } from 'services/toastNotification'
 import Api from 'shared/api'
-import { useFlags } from 'shared/featureFlags'
-import { shouldDisplayTeamCard } from 'shared/utils/billing'
 import A from 'ui/A'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
-
-import TeamPlanCard from './TeamPlanCard'
 
 function SpecialOffer() {
   const { provider, owner } = useParams()
@@ -52,40 +47,6 @@ function SpecialOffer() {
       })
     },
   })
-
-  const { data: plans } = useAvailablePlans({
-    provider,
-    owner,
-  })
-  const { multipleTiers } = useFlags({
-    multipleTiers: false,
-  })
-
-  if (multipleTiers && shouldDisplayTeamCard({ plans })) {
-    return (
-      <div className="flex w-3/5 flex-col gap-4">
-        <div>
-          <h2 className="text-lg font-semibold">Alternative plan offer</h2>
-          <p>
-            We&apos;d like to introduce you to our lighter alternative - the
-            Team Plan. Enjoy essential features at a reduced cost, tailored for
-            those who still want value without the full commitment of our pro
-            offering.
-          </p>
-        </div>
-        <TeamPlanCard />
-        <A
-          variant="blueSeptenary"
-          to={{ pageName: 'downgradePlanPage' }}
-          hook="proceed-with-basic"
-          isExternal={false}
-        >
-          No thanks, I&apos;ll proceed with cancellation
-          <Icon name="chevronRight" variant="solid" size="sm" />
-        </A>
-      </div>
-    )
-  }
 
   return (
     <div className="flex w-5/12 flex-col gap-8">
