@@ -23,9 +23,9 @@ function TeamPlanSpecialOffer() {
       <div>
         <h2 className="text-lg font-semibold">Alternative plan offer</h2>
         <p>
-          We&apos;d like to introduce you to our lighter alternative - the Team
-          Plan. Enjoy essential features at a reduced cost, tailored for those
-          who still want value without the full commitment of our pro offering.
+          We&apos;d like to introduce you to our Team Plan. Enjoy essential
+          features at a reduced cost, tailored for those who still want value
+          without the full commitment of our pro offering.
         </p>
       </div>
       <TeamPlanCard />
