@@ -56,7 +56,7 @@ function RepoSelector({
   const shouldDisplayPublicReposOnly = tierName === TierNames.TEAM ? true : null
 
   const { data, isLoading, fetchNextPage, hasNextPage } = useRepos({
-    active,
+    activated: active,
     sortItem,
     term: search,
     owner,
