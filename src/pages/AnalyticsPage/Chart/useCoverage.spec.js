@@ -4,6 +4,8 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TierNames } from 'services/tier'
+
 import { useCoverage } from './useCoverage'
 
 jest.mock('services/charts')
@@ -50,6 +52,17 @@ const mockNullFirstValRepoMeasurements = {
   },
 }
 
+const mockPublicRepoMeasurements = {
+  owner: {
+    measurements: [
+      {
+        timestamp: '2023-01-02T00:00:00+00:00',
+        max: 80,
+      },
+    ],
+  },
+}
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
@@ -72,17 +85,30 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('useCoverage', () => {
-  function setup({ nullFirstVal = false } = { nullFirstVal: false }) {
+  function setup(
+    { nullFirstVal, tierValue } = {
+      nullFirstVal: false,
+      tierValue: TierNames.PRO,
+    }
+  ) {
     server.use(
       graphql.query('GetReposCoverageMeasurements', (req, res, ctx) => {
+        if (req.variables?.isPublic) {
+          return res(ctx.status(200), ctx.data(mockPublicRepoMeasurements))
+        }
         if (nullFirstVal) {
           return res(
             ctx.status(200),
             ctx.data(mockNullFirstValRepoMeasurements)
           )
         }
-
         return res(ctx.status(200), ctx.data(mockRepoMeasurements))
+      }),
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({ owner: { plan: { tierName: tierValue } } })
+        )
       })
     )
   }
@@ -231,6 +257,31 @@ describe('useCoverage', () => {
       )
 
       await waitFor(() => expect(selectMock).toBeCalled())
+    })
+  })
+
+  describe('owner is on a team plan', () => {
+    it('gets public repos from useReposCoverageMeasurements', async () => {
+      setup({ tierValue: TierNames.TEAM })
+      const { result } = renderHook(
+        () =>
+          useCoverage({
+            params: {
+              startDate: new Date('2022/01/01'),
+              endDate: new Date('2022/01/02'),
+            },
+          }),
+        { wrapper }
+      )
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      await waitFor(() =>
+        expect(result.current.data?.coverage).toStrictEqual([
+          { coverage: 80, date: new Date('2023-01-02T00:00:00.000Z') },
+        ])
+      )
     })
   })
 })

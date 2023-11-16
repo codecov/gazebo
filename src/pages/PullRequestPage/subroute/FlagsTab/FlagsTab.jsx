@@ -1,9 +1,16 @@
-import { useParams } from 'react-router-dom'
+import qs from 'qs'
+import { useLocation, useParams } from 'react-router-dom'
 
 import Table from 'old_ui/Table'
 import { usePull } from 'services/pull'
 import FlagsNotConfigured from 'shared/FlagsNotConfigured'
 import TotalsNumber from 'ui/TotalsNumber'
+
+function getFilters({ flags }) {
+  return {
+    ...(flags ? { flags } : {}),
+  }
+}
 
 const tableColumns = [
   {
@@ -72,7 +79,22 @@ function getTableData(data) {
 
 function FlagsTab() {
   const { owner, repo, pullId, provider } = useParams()
-  const { data } = usePull({ provider, owner, repo, pullId })
+  const location = useLocation()
+  const queryParams = qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+    depth: 1,
+  })
+  const flags = queryParams?.flags
+  const filters = getFilters({ flags })
+
+  const { data } = usePull({
+    provider,
+    owner,
+    repo,
+    pullId,
+    filters,
+    options: { staleTime: 1000 * 60 * 5 },
+  })
   const flagComparison = data?.pull?.compareWithBase?.flagComparisons || []
 
   const tableData = getTableData(flagComparison)

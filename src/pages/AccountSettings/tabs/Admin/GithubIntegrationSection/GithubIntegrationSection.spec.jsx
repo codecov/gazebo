@@ -113,13 +113,14 @@ describe('GithubIntegrationSection', () => {
       expect(p).toBeInTheDocument()
     })
 
-    it('has a link to the github marketplace', async () => {
+    it('has a link to the github codecov app', async () => {
       render(<GithubIntegrationSection />, { wrapper: wrapper() })
 
       const link = await screen.findByRole('link', {
-        name: /View in GitHub Marketplace/i,
+        name: /View the Codecov App on GitHub/i,
       })
       expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute('href', 'https://github.com/apps/codecov')
     })
   })
 

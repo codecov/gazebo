@@ -35,6 +35,7 @@ describe('useStaticNavLinks', () => {
       ${links.freeTrial}               | ${`${config.MARKETING_BASE_URL}/trial`}
       ${links.demo}                    | ${`${config.MARKETING_BASE_URL}/demo`}
       ${links.oauthTroubleshoot}       | ${'https://docs.codecov.com/docs/github-oauth-application-authorization#troubleshooting'}
+      ${links.teamPlanAbout}           | ${'https://about.codecov.io/team-plan-compare'}
       ${links.flags}                   | ${'https://docs.codecov.com/docs/flags'}
       ${links.components}              | ${'https://docs.codecov.com/docs/components'}
       ${links.unexpectedChanges}       | ${'https://docs.codecov.com/docs/unexpected-coverage-changes'}

@@ -60,8 +60,10 @@ afterAll(() => server.close())
 
 describe('FlagsTab', () => {
   function setup(overrideData) {
+    const variablesPassed = jest.fn()
     server.use(
       graphql.query('Pull', (req, res, ctx) => {
+        variablesPassed(req.variables)
         if (overrideData) {
           return res(ctx.status(200), ctx.data(overrideData))
         }
@@ -69,6 +71,8 @@ describe('FlagsTab', () => {
         return res(ctx.status(200), ctx.data(mockPull))
       })
     )
+
+    return { variablesPassed }
   }
 
   describe('when rendered without flags but card is not dismissed', () => {
@@ -191,6 +195,27 @@ describe('FlagsTab', () => {
 
       const flagChangeCoverage = await screen.findByText('2.71%')
       expect(flagChangeCoverage).toBeInTheDocument()
+    })
+  })
+
+  describe('passed flags to API when flags are present in the url', () => {
+    it('will pass flags to API', async () => {
+      const { variablesPassed } = setup({})
+      render(<FlagsTab />, {
+        wrapper: wrapper(
+          '/gh/test-org/test-repo/pull/5?flags=firstTest,secondTest'
+        ),
+      })
+
+      await waitFor(() =>
+        expect(variablesPassed).toHaveBeenCalledWith({
+          provider: 'gh',
+          owner: 'test-org',
+          repo: 'test-repo',
+          pullId: 5,
+          filters: { flags: 'firstTest,secondTest' },
+        })
+      )
     })
   })
 })
