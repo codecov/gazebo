@@ -154,7 +154,6 @@ function ReposTable({ searchValue, owner, sortItem, filterValues = [] }) {
       isPublic: shouldDisplayPublicReposOnly,
     })
 
-  console.log(data)
   const dataTable = transformRepoToTable({
     repos: data.repos,
     owner,
