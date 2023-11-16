@@ -93,6 +93,20 @@ export function isSentryPlan(plan) {
   return false
 }
 
+export function isCodecovProPlan(plan) {
+  if (isString(plan)) {
+    return plan === Plans.USERS_PR_INAPPM || plan === Plans.USERS_PR_INAPPY
+  }
+  return false
+}
+
+export function isProPlan(plan) {
+  if (isString(plan)) {
+    return isSentryPlan(plan) || isCodecovProPlan(plan)
+  }
+  return false
+}
+
 export function isTrialPlan(plan) {
   if (isString(plan)) {
     return plan === Plans.USERS_TRIAL

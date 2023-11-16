@@ -13,7 +13,7 @@ import { useFlags } from 'shared/featureFlags'
 import {
   isEnterprisePlan,
   isMonthlyPlan,
-  isTeamPlan,
+  isProPlan,
   isTrialPlan,
   shouldDisplayTeamCard,
 } from 'shared/utils/billing'
@@ -61,7 +61,7 @@ function CancelPlanPage() {
   const showTeamSpecialOffer =
     multipleTiers &&
     shouldDisplayTeamCard({ plans }) &&
-    !isTeamPlan(accountDetailsData?.plan?.value)
+    isProPlan(accountDetailsData?.plan?.value)
   const showCancelPage = showSpecialOffer || showTeamSpecialOffer
 
   let redirectTo = `/plan/${provider}/${owner}/cancel/downgrade`
