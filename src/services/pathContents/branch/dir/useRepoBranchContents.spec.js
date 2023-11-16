@@ -56,7 +56,7 @@ const dataReturned = {
   },
 }
 
-describe('useRepoContents', () => {
+describe('useRepoBranchContents', () => {
   function setup() {
     server.use(
       graphql.query('BranchContents', (req, res, ctx) => {
