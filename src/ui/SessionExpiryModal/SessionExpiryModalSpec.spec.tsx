@@ -49,9 +49,10 @@ describe('SessionExpiryModal', () => {
     const expiryTime = new Date()
     Cookies.get = jest.fn().mockImplementation(() => expiryTime.toString())
 
-    render(<SessionExpiryModal />, { wrapper })
+    const { unmount } = render(<SessionExpiryModal />, { wrapper })
     const expiredText = await screen.findByText(/Your session has expired/)
     await waitFor(() => expect(expiredText).toBeInTheDocument())
+    unmount()
   })
 
   it('should not display modal when session expiry time is not set', () => {
