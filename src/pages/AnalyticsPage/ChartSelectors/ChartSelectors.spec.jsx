@@ -37,7 +37,7 @@ const repositories = [
     name: 'Repo name 1',
     latestCommitAt: subDays(new Date(), 3),
     coverage: 43,
-    active: true,
+    activated: true,
   },
   {
     private: false,
@@ -47,7 +47,7 @@ const repositories = [
     name: 'Repo name 3',
     latestCommitAt: subDays(new Date(), 4),
     coverage: 35,
-    active: false,
+    activated: false,
   },
 ]
 
@@ -368,7 +368,7 @@ describe('ChartSelectors', () => {
 
         await waitFor(() => {
           expect(useRepos).toHaveBeenCalledWith({
-            active: true,
+            activated: true,
             first: Infinity,
             owner: 'codecov',
             sortItem: {
@@ -493,7 +493,7 @@ describe('ChartSelectors', () => {
       expect(upgradeLink).toHaveAttribute('href', '/plan/gh/codecov/upgrade')
       await waitFor(() => {
         expect(useRepos).toHaveBeenCalledWith({
-          active: true,
+          activated: true,
           first: Infinity,
           owner: 'codecov',
           sortItem: {

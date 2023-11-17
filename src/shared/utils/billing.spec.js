@@ -11,10 +11,12 @@ import {
   getNextBillingDate,
   isAnnualPlan,
   isBasicPlan,
+  isCodecovProPlan,
   isEnterprisePlan,
   isFreePlan,
   isMonthlyPlan,
   isPaidPlan,
+  isProPlan,
   isSentryPlan,
   isTeamPlan,
   isTrialPlan,
@@ -617,5 +619,46 @@ describe('isTrialPlan', () => {
     expect(isTrialPlan(123)).toBeFalsy()
     expect(isTrialPlan({})).toBeFalsy()
     expect(isTrialPlan([])).toBeFalsy()
+  })
+})
+
+describe('isProPlan', () => {
+  it('returns true when plan is pro', () => {
+    expect(isProPlan(Plans.USERS_PR_INAPPM)).toBeTruthy()
+  })
+
+  it('returns true when plan is sentry pro', () => {
+    expect(isProPlan(Plans.USERS_SENTRYM)).toBeTruthy()
+  })
+
+  it('returns false when plan is not pro', () => {
+    expect(isProPlan(Plans.USERS_FREE)).toBeFalsy()
+    expect(isProPlan(Plans.USERS_ENTERPRISEM)).toBeFalsy()
+    expect(isProPlan(Plans.USERS_BASIC)).toBeFalsy()
+  })
+
+  it('returns false when plan is not a string', () => {
+    expect(isProPlan(123)).toBeFalsy()
+    expect(isProPlan({})).toBeFalsy()
+    expect(isProPlan([])).toBeFalsy()
+  })
+})
+
+describe('isCodecovProPlan', () => {
+  it('returns true when plan is codecov pro', () => {
+    expect(isCodecovProPlan(Plans.USERS_PR_INAPPM)).toBeTruthy()
+  })
+
+  it('returns false when plan is not codecov pro', () => {
+    expect(isCodecovProPlan(Plans.USERS_FREE)).toBeFalsy()
+    expect(isCodecovProPlan(Plans.USERS_ENTERPRISEM)).toBeFalsy()
+    expect(isCodecovProPlan(Plans.USERS_SENTRYM)).toBeFalsy()
+    expect(isCodecovProPlan(Plans.USERS_BASIC)).toBeFalsy()
+  })
+
+  it('returns false when plan is not a string', () => {
+    expect(isCodecovProPlan(123)).toBeFalsy()
+    expect(isCodecovProPlan({})).toBeFalsy()
+    expect(isCodecovProPlan([])).toBeFalsy()
   })
 })
