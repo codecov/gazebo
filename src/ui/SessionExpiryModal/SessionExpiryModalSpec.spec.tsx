@@ -1,4 +1,4 @@
-import { act, render, screen } from 'custom-testing-library'
+import { act, render, screen, waitFor } from 'custom-testing-library'
 
 import Cookies from 'js-cookie'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -33,7 +33,7 @@ describe('SessionExpiryModal', () => {
     ).not.toBeInTheDocument()
 
     act(() => {
-      jest.advanceTimersByTime(60 * 14 * 1000) // Advance time by 10 minutes
+      jest.advanceTimersByTime(60 * 14 * 1000)
     })
 
     const headerText = screen.getByText('Your session has expired')
@@ -42,6 +42,16 @@ describe('SessionExpiryModal', () => {
       'Please log in again to continue using Codecov'
     )
     expect(button).not.toBeDisabled()
+  })
+
+  it('using real timers', async () => {
+    jest.useRealTimers()
+    const expiryTime = new Date()
+    Cookies.get = jest.fn().mockImplementation(() => expiryTime.toString())
+
+    render(<SessionExpiryModal />, { wrapper })
+    const expiredText = await screen.findByText(/Your session has expired/)
+    await waitFor(() => expect(expiredText).toBeInTheDocument())
   })
 
   it('should not display modal when session expiry time is not set', () => {

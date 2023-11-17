@@ -31,6 +31,7 @@ const SessionExpiryModal: React.FC = () => {
       timeLeft > THIRTY_MINUTES_MILLIS ? timeLeft - THIRTY_MINUTES_MILLIS : 0
 
     const setupSessionIntervalCheck = (sessionExpiryTime: Date) => {
+      checkSession(sessionExpiryTime)
       return setInterval(
         () => checkSession(sessionExpiryTime),
         ONE_MINUTE_MILLIS
