@@ -57,7 +57,7 @@ const SessionExpiryModal: React.FC = () => {
   return (
     <Modal
       isOpen={showModal}
-      onClose={() => setShowModal(false)}
+      onClose={() => {}}
       title="Your session has expired"
       hasCloseButton={false}
       body={
