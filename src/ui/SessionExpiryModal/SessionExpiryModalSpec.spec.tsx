@@ -19,6 +19,7 @@ describe('SessionExpiryModal', () => {
 
   afterEach(() => {
     jest.useRealTimers()
+    jest.restoreAllMocks()
   })
 
   it('shows expired modal only 2 minutes before expiry or later', () => {
@@ -63,5 +64,23 @@ describe('SessionExpiryModal', () => {
       'Please log in again to continue using Codecov'
     )
     expect(button).not.toBeDisabled()
+  })
+
+  it('should clear interval and timeout on unmount', () => {
+    const expiryTime = new Date()
+    expiryTime.setMinutes(expiryTime.getMinutes() + 15)
+    Cookies.get = jest.fn().mockImplementation(() => expiryTime.toString())
+    const clearIntervalSpy = jest.spyOn(global, 'clearInterval')
+    const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout')
+
+    const { unmount } = render(<SessionExpiryModal />, { wrapper })
+
+    act(() => {
+      jest.advanceTimersByTime(60 * 14 * 1000)
+    })
+
+    unmount()
+    expect(clearIntervalSpy).toHaveBeenCalled()
+    expect(clearTimeoutSpy).toHaveBeenCalled()
   })
 })
