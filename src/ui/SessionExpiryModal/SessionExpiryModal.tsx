@@ -49,10 +49,6 @@ const SessionExpiryModal: React.FC = () => {
     }
   }, [sessionExpiryTimeString])
 
-  const handleLogout = () => {
-    setShowModal(false)
-  }
-
   if (!sessionExpiryTimeString) {
     return null
   }
@@ -60,7 +56,7 @@ const SessionExpiryModal: React.FC = () => {
   return (
     <Modal
       isOpen={showModal}
-      onClose={handleLogout}
+      onClose={() => setShowModal(false)}
       title="Your session has expired"
       hasCloseButton={false}
       body={
