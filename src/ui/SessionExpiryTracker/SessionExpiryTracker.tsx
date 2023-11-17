@@ -13,6 +13,7 @@ const LOCAL_STORAGE_SESSION_TRACKING_KEY = 'tracking-session-expiry'
 const SessionExpiryTracker: React.FC = () => {
   localStorage.setItem(LOCAL_STORAGE_SESSION_TRACKING_KEY, 'true')
   localStorage.removeItem(LOCAL_STORAGE_SESSION_EXPIRED_KEY)
+
   const [redirectToLogout, setRedirectToLogout] = useState(false)
   const sessionExpiryTimeString = Cookies.get('session_expiry')
   const getCheckDelay = (sessionExpiryTime: Date) => {
@@ -47,7 +48,7 @@ const SessionExpiryTracker: React.FC = () => {
     if (!sessionExpiryTimeString) {
       return
     }
-    const sessionExpiryTime = new Date()
+    const sessionExpiryTime = new Date(sessionExpiryTimeString)
 
     let intervalId: number
     const delayBeforeStart = getCheckDelay(sessionExpiryTime)
@@ -70,6 +71,7 @@ const SessionExpiryTracker: React.FC = () => {
 
   localStorage.setItem(LOCAL_STORAGE_SESSION_EXPIRED_KEY, 'true')
   const signOutRedirect = signOut.path()
+  localStorage.removeItem(LOCAL_STORAGE_SESSION_TRACKING_KEY)
 
   return <Redirect to={signOutRedirect} />
 }
