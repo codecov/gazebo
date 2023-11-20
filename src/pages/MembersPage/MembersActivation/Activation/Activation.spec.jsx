@@ -112,7 +112,7 @@ describe('Activation', () => {
 
       render(<Activation />, { wrapper: wrapper() })
 
-      const activeMembers = await screen.findByText(/active members of/)
+      const activeMembers = await screen.findByText(/activated members of/)
       expect(activeMembers).toBeInTheDocument()
 
       const memberCount = await screen.findByText('5')
@@ -157,7 +157,7 @@ describe('Activation', () => {
 
         render(<Activation />, { wrapper: wrapper() })
 
-        const activeMembers = await screen.findByText(/active members/)
+        const activeMembers = await screen.findByText(/activated members/)
         expect(activeMembers).toBeInTheDocument()
 
         const memberCount = await screen.findByText('5')
@@ -208,7 +208,7 @@ describe('Activation', () => {
 
         render(<Activation />, { wrapper: wrapper() })
 
-        const activeMembers = await screen.findByText(/active members of/)
+        const activeMembers = await screen.findByText(/activated members of/)
         expect(activeMembers).toBeInTheDocument()
 
         const memberCount = await screen.findByText('5')
