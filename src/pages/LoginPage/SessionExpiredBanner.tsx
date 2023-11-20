@@ -8,7 +8,7 @@ const SessionExpiredBanner: React.FC = () => {
         <span className="flex items-center">
           <Icon name="exclamationCircle" />
           <span className="ml-2 font-bold">
-            Your session has expired.&nbsp;{' '}
+            Your session has expired.&nbsp;
           </span>
           Please log in again to continue.
         </span>
