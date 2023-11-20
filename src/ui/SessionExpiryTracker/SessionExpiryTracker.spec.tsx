@@ -1,17 +1,19 @@
-import { act, render, screen, waitFor } from 'custom-testing-library'
-
+import { act, render, screen, waitFor } from '@testing-library/react'
 import Cookies from 'js-cookie'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import SessionExpiryModal from './SessionExpiryModal'
+import SessionExpiredBanner from 'pages/LoginPage/SessionExpiredBanner'
+
+import SessionExpiryTracker from './SessionExpiryTracker'
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/gh']}>
     <Route path="/:provider">{children}</Route>
+    <Route path="/logout" render={() => <SessionExpiredBanner />} />
   </MemoryRouter>
 )
 
-describe('SessionExpiryModal', () => {
+describe('SessionExpiryTracker', () => {
   beforeEach(() => {
     jest.useFakeTimers()
     jest.setSystemTime(new Date())
@@ -22,26 +24,29 @@ describe('SessionExpiryModal', () => {
     jest.restoreAllMocks()
   })
 
-  it('shows expired modal only 2 minutes before expiry or later', () => {
+  it('shows expired modal only 2 minutes before expiry or later', async () => {
     const expiryTime = new Date()
     expiryTime.setMinutes(expiryTime.getMinutes() + 15)
     Cookies.get = jest.fn().mockImplementation(() => expiryTime.toString())
+    const mockRemoveItem = jest.spyOn(
+      window.localStorage.__proto__,
+      'removeItem'
+    )
+    const mockSetItem = jest.spyOn(window.localStorage.__proto__, 'setItem')
+    render(<SessionExpiryTracker />, { wrapper })
 
-    render(<SessionExpiryModal />, { wrapper })
     expect(
       screen.queryByText('Your session has expired')
     ).not.toBeInTheDocument()
+    expect(mockRemoveItem).toHaveBeenCalled()
 
     act(() => {
-      jest.advanceTimersByTime(60 * 14 * 1000)
+      jest.advanceTimersByTime(60 * 14 * 1000) // Advance time by 14 minutes
     })
-
-    const headerText = screen.getByText('Your session has expired')
-    expect(headerText).toBeInTheDocument()
-    const button = screen.getByText(
-      'Please log in again to continue using Codecov'
-    )
-    expect(button).not.toBeDisabled()
+    await waitFor(() => {
+      expect(screen.getByText(/Your session has expired/)).toBeInTheDocument()
+    })
+    expect(mockSetItem).toHaveBeenCalled()
   })
 
   it('using real timers', async () => {
@@ -49,32 +54,26 @@ describe('SessionExpiryModal', () => {
     const expiryTime = new Date()
     Cookies.get = jest.fn().mockImplementation(() => expiryTime.toString())
 
-    const { unmount } = render(<SessionExpiryModal />, { wrapper })
-    const expiredText = await screen.findByText(/Your session has expired/)
-    await waitFor(() => expect(expiredText).toBeInTheDocument())
-    unmount()
+    render(<SessionExpiryTracker />, { wrapper })
+    await waitFor(() => {
+      expect(screen.getByText(/Your session has expired/)).toBeInTheDocument()
+    })
   })
 
   it('should not display modal when session expiry time is not set', () => {
     Cookies.get = jest.fn().mockImplementation(() => undefined)
-    render(<SessionExpiryModal />, { wrapper })
-    expect(
-      screen.queryByText('Your session has expired')
-    ).not.toBeInTheDocument()
-  })
-
-  it('has the correct sign out path', () => {
-    const expiryTime = new Date()
-    Cookies.get = jest.fn().mockImplementation(() => expiryTime.toString())
-    render(<SessionExpiryModal />, { wrapper })
-    act(() => jest.advanceTimersByTime(60 * 1000))
-
-    const headerText = screen.getByText('Your session has expired')
-    expect(headerText).toBeInTheDocument()
-    const button = screen.getByText(
-      'Please log in again to continue using Codecov'
+    const mockRemoveItem = jest.spyOn(
+      window.localStorage.__proto__,
+      'removeItem'
     )
-    expect(button).not.toBeDisabled()
+    const mockSetItem = jest.spyOn(window.localStorage.__proto__, 'setItem')
+
+    render(<SessionExpiryTracker />, { wrapper })
+    expect(
+      screen.queryByText(/Your session has expired/)
+    ).not.toBeInTheDocument()
+    expect(mockRemoveItem).toHaveBeenCalled()
+    expect(mockSetItem).not.toHaveBeenCalled()
   })
 
   it('should clear interval and timeout on unmount', () => {
@@ -84,7 +83,7 @@ describe('SessionExpiryModal', () => {
     const clearIntervalSpy = jest.spyOn(global, 'clearInterval')
     const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout')
 
-    const { unmount } = render(<SessionExpiryModal />, { wrapper })
+    const { unmount } = render(<SessionExpiryTracker />, { wrapper })
 
     act(() => {
       jest.advanceTimersByTime(60 * 14 * 1000)

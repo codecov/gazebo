@@ -11,7 +11,7 @@ import { useTracking } from 'services/tracking'
 import GlobalBanners from 'shared/GlobalBanners'
 import GlobalTopBanners from 'shared/GlobalTopBanners'
 import LoadingLogo from 'ui/LoadingLogo'
-import SessionExpiryModal from 'ui/SessionExpiryModal'
+import SessionExpiryTracker from 'ui/SessionExpiryTracker'
 
 import { useUserAccessGate } from './hooks/useUserAccessGate'
 
@@ -73,7 +73,7 @@ function BaseLayout({ children }) {
       {isFullExperience ? (
         <>
           <Header />
-          <SessionExpiryModal />
+          <SessionExpiryTracker />
           <GlobalTopBanners />
         </>
       ) : (
