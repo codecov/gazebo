@@ -28,7 +28,7 @@ function Activation() {
         <section>
           <p>
             <span className="text-lg font-semibold">{activatedUserCount}</span>{' '}
-            active members
+            activated members
           </p>
           <p className="text-xs">
             Your org is on a free trial.{' '}
@@ -51,7 +51,7 @@ function Activation() {
         <section>
           <p>
             <span className="text-lg font-semibold">{activatedUserCount}</span>{' '}
-            active members of{' '}
+            activated members of{' '}
             <span className="text-lg font-semibold">{planQuantity}</span>{' '}
             available seats{' '}
           </p>
@@ -71,7 +71,7 @@ function Activation() {
       <h3 className="text-base font-semibold">Member activation</h3>
       <p>
         <span className="text-lg font-semibold">{activatedUserCount}</span>{' '}
-        active members of{' '}
+        actived members of{' '}
         <span className="text-lg font-semibold">{planQuantity}</span> available
         seats{' '}
         {accountDetails && <ChangePlanLink accountDetails={accountDetails} />}
