@@ -4,6 +4,8 @@ import { useParams } from 'react-router-dom'
 
 import config from 'config'
 
+const LOCAL_STORAGE_SESSION_TRACKING_KEY = 'tracking-session-expiry'
+
 // Note to Terry, when we have more time automate all paths to pass through query search params.
 
 export function useNavLinks() {
@@ -27,6 +29,7 @@ export function useNavLinks() {
       text: 'Sign Out',
       path: ({ provider = p, to } = { provider: p }) => {
         const query = qs.stringify({ to }, { addQueryPrefix: true })
+        localStorage.removeItem(LOCAL_STORAGE_SESSION_TRACKING_KEY)
 
         return `${config.API_URL}/logout/${provider}${query}`
       },

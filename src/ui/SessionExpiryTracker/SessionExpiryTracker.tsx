@@ -8,11 +8,13 @@ const ONE_MINUTE_MILLIS = 60 * 1000
 const TWO_MINUTES_MILLIS = 2 * ONE_MINUTE_MILLIS
 const THIRTY_MINUTES_MILLIS = 30 * ONE_MINUTE_MILLIS
 const LOCAL_STORAGE_SESSION_EXPIRED_KEY = 'expired-session'
+const LOCAL_STORAGE_SESSION_TRACKING_KEY = 'tracking-session-expiry'
 
 const SessionExpiryTracker: React.FC = () => {
+  localStorage.setItem(LOCAL_STORAGE_SESSION_TRACKING_KEY, 'true')
+  localStorage.removeItem(LOCAL_STORAGE_SESSION_EXPIRED_KEY)
   const [redirectToLogout, setRedirectToLogout] = useState(false)
   const sessionExpiryTimeString = Cookies.get('session_expiry')
-  localStorage.removeItem(LOCAL_STORAGE_SESSION_EXPIRED_KEY)
   const getCheckDelay = (sessionExpiryTime: Date) => {
     const timeLeft = sessionExpiryTime.getTime() - new Date().getTime()
     return timeLeft > THIRTY_MINUTES_MILLIS

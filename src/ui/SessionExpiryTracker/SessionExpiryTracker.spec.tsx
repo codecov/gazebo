@@ -73,7 +73,7 @@ describe('SessionExpiryTracker', () => {
       screen.queryByText(/Your session has expired/)
     ).not.toBeInTheDocument()
     expect(mockRemoveItem).toHaveBeenCalled()
-    expect(mockSetItem).not.toHaveBeenCalled()
+    expect(mockSetItem).toHaveBeenCalled()
   })
 
   it('should clear interval and timeout on unmount', () => {
