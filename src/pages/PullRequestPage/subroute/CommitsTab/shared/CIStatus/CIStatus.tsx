@@ -3,7 +3,10 @@ import PropTypes from 'prop-types'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 
-const Status = ({ ciPassed }) => {
+interface StatusProps {
+  ciPassed: boolean | null
+}
+const Status = ({ ciPassed }: StatusProps) => {
   return (
     <div className="flex items-center gap-1">
       {ciPassed ? (
@@ -29,9 +32,15 @@ Status.propTypes = {
   ciPassed: PropTypes.bool,
 }
 
-function CIStatus({ commitid, coverage, ciPassed }) {
+interface CIStatusProps {
+  commitid?: string
+  coverage?: number
+  ciPassed?: boolean | null
+}
+function CIStatus({ commitid, coverage, ciPassed = false }: CIStatusProps) {
   return (
     <div className="flex-1 flex-col items-end lg:flex">
+      {/* @ts-ignore */}
       <A to={{ pageName: 'commit', options: { commit: commitid } }}>
         <span className="font-mono text-ds-gray-quinary">
           {commitid?.slice(0, 8)}
