@@ -7,6 +7,7 @@ import {
   calculatePriceProPlan,
   calculatePriceTeamPlan,
   extractSeats,
+  getDefaultValuesProUpgrade,
   getInitialDataForm,
   getSchema,
   shouldRenderCancelLink,
@@ -230,6 +231,58 @@ describe('getInitialDataForm', () => {
         newPlan: Plans.USERS_SENTRYY,
         seats: 5,
       })
+    })
+  })
+})
+
+describe('getDefaultValuesProUpgrade', () => {
+  const proPlanYear = { value: Plans.USERS_PR_INAPPY }
+
+  it('returns pro year plan if user is on a free plan', () => {
+    const accountDetails = {
+      plan: { value: Plans.USERS_BASIC, quantity: 1 },
+    }
+
+    const data = getDefaultValuesProUpgrade({
+      accountDetails,
+      proPlanYear,
+    })
+
+    expect(data).toStrictEqual({
+      newPlan: Plans.USERS_PR_INAPPY,
+      seats: 2,
+    })
+  })
+
+  it('returns pro year plan if user is on a team plan', () => {
+    const accountDetails = {
+      plan: { value: Plans.USERS_TEAMM, quantity: 1 },
+    }
+
+    const data = getDefaultValuesProUpgrade({
+      accountDetails,
+      proPlanYear,
+    })
+
+    expect(data).toStrictEqual({
+      newPlan: Plans.USERS_PR_INAPPY,
+      seats: 2,
+    })
+  })
+
+  it('returns current plan if the user is on a paid plan', () => {
+    const accountDetails = {
+      plan: { value: Plans.USERS_PR_INAPPM, quantity: 2 },
+    }
+
+    const data = getDefaultValuesProUpgrade({
+      accountDetails,
+      proPlanYear,
+    })
+
+    expect(data).toStrictEqual({
+      newPlan: Plans.USERS_PR_INAPPM,
+      seats: 2,
     })
   })
 })
