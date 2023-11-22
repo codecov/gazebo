@@ -3,9 +3,10 @@ import { useParams } from 'react-router-dom'
 
 import { useAvailablePlans } from 'services/account'
 import {
+  findTeamPlans,
   isAnnualPlan,
   isMonthlyPlan,
-  Plans,
+  isTeamPlan,
   useProPlans,
 } from 'shared/utils/billing'
 import OptionButton from 'ui/OptionButton'
@@ -22,6 +23,7 @@ const BillingControls: React.FC<BillingControlsProps> = ({
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { proPlanMonth, proPlanYear } = useProPlans({ plans })
+  const { teamPlanMonth, teamPlanYear } = findTeamPlans({ plans })
 
   const [option, setOption] = useState<'Annual' | 'Monthly'>(() =>
     isMonthlyPlan(planString) ? 'Monthly' : 'Annual'
@@ -37,12 +39,20 @@ const BillingControls: React.FC<BillingControlsProps> = ({
     }
   }, [planString, option])
 
+  let annualPlan = proPlanYear
+  let monthlyPlan = proPlanMonth
+
+  if (isTeamPlan(planString)) {
+    annualPlan = teamPlanYear
+    monthlyPlan = teamPlanMonth
+  }
+
   const baseUnitPrice =
     option === 'Monthly'
-      ? proPlanMonth?.baseUnitPrice
-      : proPlanYear?.baseUnitPrice
+      ? monthlyPlan?.baseUnitPrice
+      : annualPlan?.baseUnitPrice
   const billingRate =
-    option === 'Monthly' ? proPlanMonth?.billingRate : proPlanYear?.billingRate
+    option === 'Monthly' ? monthlyPlan?.billingRate : annualPlan?.billingRate
 
   return (
     <div className="flex w-fit flex-col gap-2">
@@ -53,9 +63,9 @@ const BillingControls: React.FC<BillingControlsProps> = ({
           active={option}
           onChange={({ text }) => {
             if (text === 'Annual') {
-              setValue('newPlan', Plans.USERS_PR_INAPPY)
+              setValue('newPlan', annualPlan?.value)
             } else {
-              setValue('newPlan', Plans.USERS_PR_INAPPM)
+              setValue('newPlan', monthlyPlan?.value)
             }
 
             setOption(text)

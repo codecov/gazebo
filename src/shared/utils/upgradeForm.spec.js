@@ -4,6 +4,8 @@ import { Plans } from 'shared/utils/billing'
 import {
   calculateNonBundledCost,
   calculatePrice,
+  calculatePriceProPlan,
+  calculatePriceTeamPlan,
   extractSeats,
   getInitialDataForm,
   getSchema,
@@ -68,6 +70,28 @@ describe('calculatePrice', () => {
         expect(result).toBe(60)
       })
     })
+  })
+})
+
+describe('calculatePriceProPlan', () => {
+  it('returns base price', () => {
+    const result = calculatePriceProPlan({
+      seats: 5,
+      baseUnitPrice: 10,
+    })
+
+    expect(result).toBe(50)
+  })
+})
+
+describe('calculatePriceTeamPlan', () => {
+  it('returns base price', () => {
+    const result = calculatePriceTeamPlan({
+      seats: 5,
+      baseUnitPrice: 10,
+    })
+
+    expect(result).toBe(50)
   })
 })
 

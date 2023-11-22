@@ -8,12 +8,14 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
+import { useFlags } from 'shared/featureFlags'
 import { Plans } from 'shared/utils/billing'
 
 import ProPlanControls from './ProPlanControls'
 
 jest.mock('services/toastNotification')
 jest.mock('@stripe/react-stripe-js')
+jest.mock('shared/featureFlags')
 
 const basicPlan = {
   marketingName: 'Basic',
@@ -25,7 +27,6 @@ const basicPlan = {
     'Unlimited public repositories',
     'Unlimited private repositories',
   ],
-  quantity: 1,
   monthlyUploadLimit: 250,
 }
 
@@ -59,6 +60,24 @@ const proPlanYear = {
   quantity: 13,
 }
 
+const teamPlanMonth = {
+  baseUnitPrice: 5,
+  benefits: ['Up to 10 users'],
+  billingRate: 'monthly',
+  marketingName: 'Users Team',
+  monthlyUploadLimit: 2500,
+  value: 'users-teamm',
+}
+
+const teamPlanYear = {
+  baseUnitPrice: 4,
+  benefits: ['Up to 10 users'],
+  billingRate: 'annually',
+  marketingName: 'Users Team',
+  monthlyUploadLimit: 2500,
+  value: 'users-teamy',
+}
+
 const trialPlan = {
   marketingName: 'Pro Trial Team',
   value: 'users-trial',
@@ -67,8 +86,6 @@ const trialPlan = {
   benefits: ['Configurable # of users', 'Unlimited repos'],
   monthlyUploadLimit: null,
 }
-
-const allPlans = [basicPlan, proPlanMonth, proPlanYear, trialPlan]
 
 const mockAccountDetailsBasic = {
   plan: basicPlan,
@@ -172,11 +189,15 @@ describe('ProPlanControls', () => {
       successfulPatchRequest = true,
       errorDetails = undefined,
       trialStatus = undefined,
+      multipleTiers = false,
+      hasTeamPlans = false,
     } = {
       planValue: Plans.USERS_BASIC,
       successfulPatchRequest: true,
       errorDetails: undefined,
       trialStatus: undefined,
+      hasTeamPlans: false,
+      multipleTiers: false,
     }
   ) {
     const addNotification = jest.fn()
@@ -184,6 +205,7 @@ describe('ProPlanControls', () => {
     const patchRequest = jest.fn()
 
     useAddNotification.mockReturnValue(addNotification)
+    useFlags.mockReturnValue({ multipleTiers })
 
     server.use(
       rest.get(`/internal/gh/codecov/account-details/`, (req, res, ctx) => {
@@ -217,7 +239,15 @@ describe('ProPlanControls', () => {
         return res(
           ctx.status(200),
           ctx.data({
-            owner: { availablePlans: allPlans },
+            owner: {
+              availablePlans: [
+                basicPlan,
+                proPlanMonth,
+                proPlanYear,
+                trialPlan,
+                ...(hasTeamPlans ? [teamPlanMonth, teamPlanYear] : []),
+              ],
+            },
           })
         )
       }),
@@ -237,10 +267,14 @@ describe('ProPlanControls', () => {
   }
 
   describe('when rendered', () => {
+    const props = {
+      setSelectedPlan: jest.fn(),
+      selectedPlan: Plans.USERS_PR_INAPPY,
+    }
     describe('when the user has a basic plan', () => {
       it('renders the organization and owner titles', async () => {
         setup({ planValue: Plans.USERS_BASIC })
-        render(<ProPlanControls />, { wrapper: wrapper() })
+        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
         const organizationTitle = await screen.findByText(/Organization/)
         expect(organizationTitle).toBeInTheDocument()
@@ -250,7 +284,7 @@ describe('ProPlanControls', () => {
 
       it('renders monthly option button', async () => {
         setup({ planValue: Plans.USERS_BASIC })
-        render(<ProPlanControls />, { wrapper: wrapper() })
+        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
         expect(optionBtn).toBeInTheDocument()
@@ -258,7 +292,7 @@ describe('ProPlanControls', () => {
 
       it('renders annual option button', async () => {
         setup({ planValue: Plans.USERS_BASIC })
-        render(<ProPlanControls />, { wrapper: wrapper() })
+        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(optionBtn).toBeInTheDocument()
@@ -266,7 +300,7 @@ describe('ProPlanControls', () => {
 
       it('renders annual option button as "selected"', async () => {
         setup({ planValue: Plans.USERS_BASIC })
-        render(<ProPlanControls />, { wrapper: wrapper() })
+        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(optionBtn).toBeInTheDocument()
@@ -275,30 +309,15 @@ describe('ProPlanControls', () => {
 
       it('has the price for the year', async () => {
         setup({ planValue: Plans.USERS_BASIC })
-        render(<ProPlanControls />, { wrapper: wrapper() })
+        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
         const price = await screen.findByText(/\$240/)
         expect(price).toBeInTheDocument()
       })
 
-      describe('when updating to a month plan', () => {
-        it('has the price for the month', async () => {
-          const { user } = setup({ planValue: Plans.USERS_BASIC })
-          render(<ProPlanControls />, { wrapper: wrapper() })
-
-          const monthOption = await screen.findByRole('button', {
-            name: 'Monthly',
-          })
-          await user.click(monthOption)
-
-          const price = screen.getByText(/\$48/)
-          expect(price).toBeInTheDocument()
-        })
-      })
-
       it('renders minimum seat number of 2', async () => {
         setup({ planValue: Plans.USERS_BASIC })
-        render(<ProPlanControls />, { wrapper: wrapper() })
+        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
         const minimumSeat = await screen.findByRole('spinbutton')
         expect(minimumSeat).toHaveValue(2)
@@ -306,7 +325,7 @@ describe('ProPlanControls', () => {
 
       it('renders validation error when the user selects less than 2 seats', async () => {
         const { user } = setup({ planValue: Plans.USERS_BASIC })
-        render(<ProPlanControls />, { wrapper: wrapper() })
+        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
         const input = await screen.findByRole('spinbutton')
         await user.type(input, '{backspace}{backspace}{backspace}')
@@ -325,12 +344,129 @@ describe('ProPlanControls', () => {
 
       it('renders the proceed to checkout for the update button', async () => {
         setup({ planValue: Plans.USERS_BASIC })
-        render(<ProPlanControls />, { wrapper: wrapper() })
+        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
         const proceedToCheckoutButton = await screen.findByRole('button', {
           name: /Proceed to Checkout/,
         })
         expect(proceedToCheckoutButton).toBeInTheDocument()
+      })
+
+      describe('when the user has team plans available', () => {
+        describe('when the feature flag is off', () => {
+          it('does not renders the Pro and team buttons', () => {
+            setup({
+              planValue: Plans.USERS_BASIC,
+              hasTeamPlans: true,
+              multipleTiers: false,
+            })
+            render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+
+            const proBtn = screen.queryByRole('button', { name: 'Pro' })
+            expect(proBtn).not.toBeInTheDocument()
+            const teamBtn = screen.queryByRole('button', { name: 'Team' })
+            expect(teamBtn).not.toBeInTheDocument()
+          })
+        })
+
+        describe('when the feature flag is on', () => {
+          it('renders the Pro button as "selected"', async () => {
+            setup({
+              planValue: Plans.USERS_BASIC,
+              hasTeamPlans: true,
+              multipleTiers: true,
+            })
+            render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+
+            const optionBtn = await screen.findByRole('button', { name: 'Pro' })
+            expect(optionBtn).toBeInTheDocument()
+            expect(optionBtn).toHaveClass('bg-ds-primary-base')
+          })
+
+          it('renders team option button', async () => {
+            setup({
+              planValue: Plans.USERS_BASIC,
+              hasTeamPlans: true,
+              multipleTiers: true,
+            })
+            render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+
+            const optionBtn = await screen.findByRole('button', {
+              name: 'Team',
+            })
+            expect(optionBtn).toBeInTheDocument()
+          })
+
+          describe('when updating to a team plan', () => {
+            it('renders up to 10 seats text', async () => {
+              const { user } = setup({
+                planValue: Plans.USERS_BASIC,
+                hasTeamPlans: true,
+                multipleTiers: true,
+              })
+              render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+
+              const teamOption = await screen.findByRole('button', {
+                name: 'Team',
+              })
+              await user.click(teamOption)
+
+              const auxiliaryText = await screen.findByText(/Up to 10 users/)
+              expect(auxiliaryText).toBeInTheDocument()
+            })
+
+            it('displays per month price when annual', async () => {
+              const { user } = setup({
+                planValue: Plans.USERS_BASIC,
+                hasTeamPlans: true,
+                multipleTiers: true,
+              })
+              render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+
+              const teamOption = await screen.findByRole('button', {
+                name: 'Team',
+              })
+              await user.click(teamOption)
+
+              const perMonthPrice = screen.getByText(/\$8.00/)
+              expect(perMonthPrice).toBeInTheDocument()
+            })
+
+            it('displays billed annually at price', async () => {
+              const { user } = setup({
+                planValue: Plans.USERS_BASIC,
+                hasTeamPlans: true,
+                multipleTiers: true,
+              })
+              render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+
+              const teamOption = await screen.findByRole('button', {
+                name: 'Team',
+              })
+              await user.click(teamOption)
+
+              const annualPrice = screen.getByText(
+                /\/per month billed annually at \$96.00/
+              )
+              expect(annualPrice).toBeInTheDocument()
+            })
+          })
+        })
+      })
+
+      describe('when updating to a month plan', () => {
+        it('has the price for the month', async () => {
+          const { user } = setup({ planValue: Plans.USERS_BASIC })
+          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+
+          const monthOption = await screen.findByRole('button', {
+            name: 'Monthly',
+          })
+          await user.click(monthOption)
+
+          const price = screen.getByText(/\$48/)
+          expect(price).toBeInTheDocument()
+        })
       })
 
       describe('when the mutation is successful', () => {
@@ -339,7 +475,7 @@ describe('ProPlanControls', () => {
             successfulPatchRequest: true,
             planValue: Plans.USERS_BASIC,
           })
-          render(<ProPlanControls />, { wrapper: wrapper() })
+          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -365,7 +501,7 @@ describe('ProPlanControls', () => {
             successfulPatchRequest: true,
             planValue: Plans.USERS_BASIC,
           })
-          render(<ProPlanControls />, { wrapper: wrapper() })
+          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -396,7 +532,7 @@ describe('ProPlanControls', () => {
             successfulPatchRequest: true,
             planValue: Plans.USERS_BASIC,
           })
-          render(<ProPlanControls />, { wrapper: wrapper() })
+          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -424,7 +560,7 @@ describe('ProPlanControls', () => {
             planValue: Plans.USERS_BASIC,
           })
 
-          render(<ProPlanControls />, { wrapper: wrapper() })
+          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -454,7 +590,7 @@ describe('ProPlanControls', () => {
             planValue: Plans.USERS_BASIC,
           })
 
-          render(<ProPlanControls />, { wrapper: wrapper() })
+          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -483,7 +619,7 @@ describe('ProPlanControls', () => {
     describe('when the user has a pro plan monthly', () => {
       it('renders the organization and owner titles', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
-        render(<ProPlanControls />, { wrapper: wrapper() })
+        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
         const organizationTitle = await screen.findByText(/Organization/)
         expect(organizationTitle).toBeInTheDocument()
@@ -493,7 +629,7 @@ describe('ProPlanControls', () => {
 
       it('renders monthly option button', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
-        render(<ProPlanControls />, { wrapper: wrapper() })
+        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
         expect(optionBtn).toBeInTheDocument()
@@ -501,7 +637,7 @@ describe('ProPlanControls', () => {
 
       it('renders annual option button', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
-        render(<ProPlanControls />, { wrapper: wrapper() })
+        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(optionBtn).toBeInTheDocument()
@@ -509,7 +645,7 @@ describe('ProPlanControls', () => {
 
       it('renders monthly option button as "selected"', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
-        render(<ProPlanControls />, { wrapper: wrapper() })
+        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
         expect(optionBtn).toBeInTheDocument()
@@ -518,7 +654,7 @@ describe('ProPlanControls', () => {
 
       it('renders the seat input with 10 seats (existing subscription)', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
-        render(<ProPlanControls />, { wrapper: wrapper() })
+        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
         const seatCount = await screen.findByRole('spinbutton')
         expect(seatCount).toHaveValue(10)
@@ -526,30 +662,15 @@ describe('ProPlanControls', () => {
 
       it('has the price for the year', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
-        render(<ProPlanControls />, { wrapper: wrapper() })
+        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
         const price = await screen.findByText(/\$120/)
         expect(price).toBeInTheDocument()
       })
 
-      describe('when updating to a yearly plan', () => {
-        it('has the price for the year', async () => {
-          const { user } = setup({ planValue: Plans.USERS_PR_INAPPM })
-          render(<ProPlanControls />, { wrapper: wrapper() })
-
-          const annualOption = await screen.findByRole('button', {
-            name: 'Annual',
-          })
-          await user.click(annualOption)
-
-          const price = screen.getByText(/\$100/)
-          expect(price).toBeInTheDocument()
-        })
-      })
-
       it('renders validation error when the user selects less than 2 seats', async () => {
         const { user } = setup({ planValue: Plans.USERS_PR_INAPPM })
-        render(<ProPlanControls />, { wrapper: wrapper() })
+        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
         const input = await screen.findByRole('spinbutton')
         await user.type(input, '{backspace}{backspace}{backspace}')
@@ -568,7 +689,7 @@ describe('ProPlanControls', () => {
 
       it('renders validation error when the user selects less than number of active users', async () => {
         const { user } = setup({ planValue: Plans.USERS_PR_INAPPM })
-        render(<ProPlanControls />, { wrapper: wrapper() })
+        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
         const input = await screen.findByRole('spinbutton')
         await user.type(input, '{backspace}{backspace}{backspace}')
@@ -587,12 +708,129 @@ describe('ProPlanControls', () => {
 
       it('renders the update button', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
-        render(<ProPlanControls />, { wrapper: wrapper() })
+        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
         const update = await screen.findByRole('button', {
           name: /Update/,
         })
         expect(update).toBeInTheDocument()
+      })
+
+      describe('when updating to a yearly plan', () => {
+        it('has the price for the year', async () => {
+          const { user } = setup({ planValue: Plans.USERS_PR_INAPPM })
+          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+
+          const annualOption = await screen.findByRole('button', {
+            name: 'Annual',
+          })
+          await user.click(annualOption)
+
+          const price = screen.getByText(/\$100/)
+          expect(price).toBeInTheDocument()
+        })
+      })
+
+      describe('when the user has team plans available', () => {
+        describe('when the feature flag is off', () => {
+          it('does not renders the Pro and team buttons', () => {
+            setup({
+              planValue: Plans.USERS_PR_INAPPM,
+              hasTeamPlans: true,
+              multipleTiers: false,
+            })
+            render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+
+            const proBtn = screen.queryByRole('button', { name: 'Pro' })
+            expect(proBtn).not.toBeInTheDocument()
+            const teamBtn = screen.queryByRole('button', { name: 'Team' })
+            expect(teamBtn).not.toBeInTheDocument()
+          })
+        })
+
+        describe('when the feature flag is on', () => {
+          it('renders the Pro button as "selected"', async () => {
+            setup({
+              planValue: Plans.USERS_PR_INAPPM,
+              hasTeamPlans: true,
+              multipleTiers: true,
+            })
+            render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+
+            const optionBtn = await screen.findByRole('button', { name: 'Pro' })
+            expect(optionBtn).toBeInTheDocument()
+            expect(optionBtn).toHaveClass('bg-ds-primary-base')
+          })
+
+          it('renders team option button', async () => {
+            setup({
+              planValue: Plans.USERS_PR_INAPPM,
+              hasTeamPlans: true,
+              multipleTiers: true,
+            })
+            render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+
+            const optionBtn = await screen.findByRole('button', {
+              name: 'Team',
+            })
+            expect(optionBtn).toBeInTheDocument()
+          })
+
+          describe('when updating to a team plan', () => {
+            it('renders up to 10 seats text', async () => {
+              const { user } = setup({
+                planValue: Plans.USERS_PR_INAPPM,
+                hasTeamPlans: true,
+                multipleTiers: true,
+              })
+              render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+
+              const teamOption = await screen.findByRole('button', {
+                name: 'Team',
+              })
+              await user.click(teamOption)
+
+              const auxiliaryText = await screen.findByText(/Up to 10 users/)
+              expect(auxiliaryText).toBeInTheDocument()
+            })
+
+            it('displays per month price when annual with quantity 10', async () => {
+              const { user } = setup({
+                planValue: Plans.USERS_PR_INAPPM,
+                hasTeamPlans: true,
+                multipleTiers: true,
+              })
+              render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+
+              const teamOption = await screen.findByRole('button', {
+                name: 'Team',
+              })
+              await user.click(teamOption)
+
+              const perMonthPrice = screen.getByText(/\$40.00/)
+              expect(perMonthPrice).toBeInTheDocument()
+            })
+
+            it('displays billed annually at price', async () => {
+              const { user } = setup({
+                planValue: Plans.USERS_PR_INAPPM,
+                hasTeamPlans: true,
+                multipleTiers: true,
+              })
+              render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+
+              const teamOption = await screen.findByRole('button', {
+                name: 'Team',
+              })
+              await user.click(teamOption)
+
+              const annualPrice = screen.getByText(
+                /\/per month billed annually at \$480.00/
+              )
+              expect(annualPrice).toBeInTheDocument()
+            })
+          })
+        })
       })
 
       describe('when the mutation is successful', () => {
@@ -601,7 +839,7 @@ describe('ProPlanControls', () => {
             successfulPatchRequest: true,
             planValue: Plans.USERS_PR_INAPPM,
           })
-          render(<ProPlanControls />, { wrapper: wrapper() })
+          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -627,7 +865,7 @@ describe('ProPlanControls', () => {
             successfulPatchRequest: true,
             planValue: Plans.USERS_PR_INAPPM,
           })
-          render(<ProPlanControls />, { wrapper: wrapper() })
+          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -662,7 +900,7 @@ describe('ProPlanControls', () => {
             planValue: Plans.USERS_PR_INAPPM,
           })
 
-          render(<ProPlanControls />, { wrapper: wrapper() })
+          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -692,7 +930,7 @@ describe('ProPlanControls', () => {
             planValue: Plans.USERS_PR_INAPPM,
           })
 
-          render(<ProPlanControls />, { wrapper: wrapper() })
+          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -721,7 +959,7 @@ describe('ProPlanControls', () => {
     describe('when the user has a pro plan yearly', () => {
       it('renders the organization and owner titles', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPY })
-        render(<ProPlanControls />, { wrapper: wrapper() })
+        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
         const organizationTitle = await screen.findByText(/Organization/)
         expect(organizationTitle).toBeInTheDocument()
@@ -731,7 +969,7 @@ describe('ProPlanControls', () => {
 
       it('renders monthly option button', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPY })
-        render(<ProPlanControls />, { wrapper: wrapper() })
+        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
         expect(optionBtn).toBeInTheDocument()
@@ -739,7 +977,7 @@ describe('ProPlanControls', () => {
 
       it('renders annual option button', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPY })
-        render(<ProPlanControls />, { wrapper: wrapper() })
+        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(optionBtn).toBeInTheDocument()
@@ -747,7 +985,7 @@ describe('ProPlanControls', () => {
 
       it('renders annual option button as "selected"', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPY })
-        render(<ProPlanControls />, { wrapper: wrapper() })
+        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(optionBtn).toBeInTheDocument()
@@ -756,7 +994,7 @@ describe('ProPlanControls', () => {
 
       it('renders the seat input with 13 seats (existing subscription)', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPY })
-        render(<ProPlanControls />, { wrapper: wrapper() })
+        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
         const seatCount = await screen.findByRole('spinbutton')
         expect(seatCount).toHaveValue(13)
@@ -764,30 +1002,15 @@ describe('ProPlanControls', () => {
 
       it('has the price for the year', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPY })
-        render(<ProPlanControls />, { wrapper: wrapper() })
+        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
         const price = await screen.findByText(/\$130/)
         expect(price).toBeInTheDocument()
       })
 
-      describe('when updating to a monthly plan', () => {
-        it('has the price for the month', async () => {
-          const { user } = setup({ planValue: Plans.USERS_PR_INAPPY })
-          render(<ProPlanControls />, { wrapper: wrapper() })
-
-          const monthlyOption = await screen.findByRole('button', {
-            name: 'Monthly',
-          })
-          await user.click(monthlyOption)
-
-          const price = screen.getByText(/\$156/)
-          expect(price).toBeInTheDocument()
-        })
-      })
-
       it('renders validation error when the user selects less than 2 seats', async () => {
         const { user } = setup({ planValue: Plans.USERS_PR_INAPPY })
-        render(<ProPlanControls />, { wrapper: wrapper() })
+        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
         const input = await screen.findByRole('spinbutton')
         await user.type(input, '{backspace}{backspace}{backspace}')
@@ -806,7 +1029,7 @@ describe('ProPlanControls', () => {
 
       it('renders validation error when the user selects less than number of active users', async () => {
         const { user } = setup({ planValue: Plans.USERS_PR_INAPPY })
-        render(<ProPlanControls />, { wrapper: wrapper() })
+        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
         const input = await screen.findByRole('spinbutton')
         await user.type(input, '{backspace}{backspace}{backspace}')
@@ -825,12 +1048,129 @@ describe('ProPlanControls', () => {
 
       it('renders the update button', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPY })
-        render(<ProPlanControls />, { wrapper: wrapper() })
+        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
         const update = await screen.findByRole('button', {
           name: /Update/,
         })
         expect(update).toBeInTheDocument()
+      })
+
+      describe('when updating to a monthly plan', () => {
+        it('has the price for the month', async () => {
+          const { user } = setup({ planValue: Plans.USERS_PR_INAPPY })
+          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+
+          const monthlyOption = await screen.findByRole('button', {
+            name: 'Monthly',
+          })
+          await user.click(monthlyOption)
+
+          const price = screen.getByText(/\$156/)
+          expect(price).toBeInTheDocument()
+        })
+      })
+
+      describe('when the user has team plans available', () => {
+        describe('when the feature flag is off', () => {
+          it('does not renders the Pro and team buttons', () => {
+            setup({
+              planValue: Plans.USERS_PR_INAPPY,
+              hasTeamPlans: true,
+              multipleTiers: false,
+            })
+            render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+
+            const proBtn = screen.queryByRole('button', { name: 'Pro' })
+            expect(proBtn).not.toBeInTheDocument()
+            const teamBtn = screen.queryByRole('button', { name: 'Team' })
+            expect(teamBtn).not.toBeInTheDocument()
+          })
+        })
+
+        describe('when the feature flag is on', () => {
+          it('renders the Pro button as "selected"', async () => {
+            setup({
+              planValue: Plans.USERS_PR_INAPPY,
+              hasTeamPlans: true,
+              multipleTiers: true,
+            })
+            render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+
+            const optionBtn = await screen.findByRole('button', { name: 'Pro' })
+            expect(optionBtn).toBeInTheDocument()
+            expect(optionBtn).toHaveClass('bg-ds-primary-base')
+          })
+
+          it('renders team option button', async () => {
+            setup({
+              planValue: Plans.USERS_PR_INAPPY,
+              hasTeamPlans: true,
+              multipleTiers: true,
+            })
+            render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+
+            const optionBtn = await screen.findByRole('button', {
+              name: 'Team',
+            })
+            expect(optionBtn).toBeInTheDocument()
+          })
+
+          describe('when updating to a team plan', () => {
+            it('renders up to 10 seats text', async () => {
+              const { user } = setup({
+                planValue: Plans.USERS_PR_INAPPY,
+                hasTeamPlans: true,
+                multipleTiers: true,
+              })
+              render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+
+              const teamOption = await screen.findByRole('button', {
+                name: 'Team',
+              })
+              await user.click(teamOption)
+
+              const auxiliaryText = await screen.findByText(/Up to 10 users/)
+              expect(auxiliaryText).toBeInTheDocument()
+            })
+
+            it('displays per month price when annual with quantity 13', async () => {
+              const { user } = setup({
+                planValue: Plans.USERS_PR_INAPPY,
+                hasTeamPlans: true,
+                multipleTiers: true,
+              })
+              render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+
+              const teamOption = await screen.findByRole('button', {
+                name: 'Team',
+              })
+              await user.click(teamOption)
+
+              const perMonthPrice = screen.getByText(/\$52.00/)
+              expect(perMonthPrice).toBeInTheDocument()
+            })
+
+            it('displays billed annually at price', async () => {
+              const { user } = setup({
+                planValue: Plans.USERS_PR_INAPPY,
+                hasTeamPlans: true,
+                multipleTiers: true,
+              })
+              render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+
+              const teamOption = await screen.findByRole('button', {
+                name: 'Team',
+              })
+              await user.click(teamOption)
+
+              const annualPrice = screen.getByText(
+                /\/per month billed annually at \$624.00/
+              )
+              expect(annualPrice).toBeInTheDocument()
+            })
+          })
+        })
       })
 
       describe('when the mutation is successful', () => {
@@ -839,7 +1179,7 @@ describe('ProPlanControls', () => {
             successfulPatchRequest: true,
             planValue: Plans.USERS_PR_INAPPY,
           })
-          render(<ProPlanControls />, { wrapper: wrapper() })
+          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -865,7 +1205,7 @@ describe('ProPlanControls', () => {
             successfulPatchRequest: true,
             planValue: Plans.USERS_PR_INAPPY,
           })
-          render(<ProPlanControls />, { wrapper: wrapper() })
+          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -896,7 +1236,7 @@ describe('ProPlanControls', () => {
             successfulPatchRequest: true,
             planValue: Plans.USERS_PR_INAPPY,
           })
-          render(<ProPlanControls />, { wrapper: wrapper() })
+          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -924,7 +1264,7 @@ describe('ProPlanControls', () => {
             planValue: Plans.USERS_PR_INAPPY,
           })
 
-          render(<ProPlanControls />, { wrapper: wrapper() })
+          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -954,7 +1294,7 @@ describe('ProPlanControls', () => {
             planValue: Plans.USERS_PR_INAPPY,
           })
 
-          render(<ProPlanControls />, { wrapper: wrapper() })
+          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -987,7 +1327,7 @@ describe('ProPlanControls', () => {
             planValue: Plans.USERS_TRIAL,
             trialStatus: TrialStatuses.ONGOING,
           })
-          render(<ProPlanControls />, { wrapper: wrapper() })
+          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -1014,7 +1354,7 @@ describe('ProPlanControls', () => {
         setup({
           planValue: Plans.USERS_PR_INAPPM,
         })
-        render(<ProPlanControls />, { wrapper: wrapper() })
+        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
 
         const nextBillingData = await screen.findByText(/Next Billing Date/)
         expect(nextBillingData).toBeInTheDocument()

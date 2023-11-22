@@ -19,6 +19,7 @@ export const MIN_SENTRY_SEATS = 5
 export const SENTRY_PRICE = 29
 export const TEAM_PLAN_MAX_ACTIVE_USERS = 10
 
+// TODO: Get rid of this after the final refactor in favor of Controls specific utils
 export function extractSeats({
   quantity,
   value,
@@ -170,6 +171,11 @@ export const calculatePriceProPlan = ({ seats, baseUnitPrice }) => {
   return Math.floor(seats) * baseUnitPrice
 }
 
+// Team Plan Utils
+export const calculatePriceTeamPlan = ({ seats, baseUnitPrice }) => {
+  return Math.floor(seats) * baseUnitPrice
+}
+
 function calculateDefaultSeatsProPlan({
   quantity,
   value,
@@ -203,7 +209,14 @@ export const getDefaultValuesProUpgrade = ({
   const inactiveUserCount = accountDetails?.inactiveUserCount
 
   // if the current plan is a pro plan, we return it, otherwise select by default the first pro plan
-  const newPlan = isPaidPlan(planValue) ? planValue : proPlanYear?.value
+  let newPlan = proPlanYear?.value
+
+  if (isTeamPlan(planValue)) {
+    newPlan = proPlanYear?.value
+  } else if (isPaidPlan(planValue)) {
+    newPlan = planValue
+  }
+
   const seats = calculateDefaultSeatsProPlan({
     value: planValue,
     quantity,
