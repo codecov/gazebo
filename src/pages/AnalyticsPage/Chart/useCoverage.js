@@ -3,6 +3,7 @@ import isFunction from 'lodash/isFunction'
 import { useParams } from 'react-router-dom'
 
 import { useReposCoverageMeasurements } from 'services/charts/useReposCoverageMeasurements'
+import { TierNames, useTier } from 'services/tier'
 import {
   analyticsQuery,
   TimeseriesInterval,
@@ -12,6 +13,8 @@ export const useCoverage = ({ params, options = {} }) => {
   const { provider, owner } = useParams()
 
   const { select, ...newOptions } = options
+  const { data: tierName } = useTier({ provider, owner })
+  const shouldDisplayPublicReposOnly = tierName === TierNames.TEAM ? true : null
 
   const queryVars = analyticsQuery(params)
 
@@ -22,6 +25,7 @@ export const useCoverage = ({ params, options = {} }) => {
     repos: queryVars?.repositories,
     before: queryVars?.endDate,
     after: queryVars?.startDate,
+    isPublic: shouldDisplayPublicReposOnly,
     opts: {
       select: (data) => {
         if (data?.measurements?.[0]?.max === null) {

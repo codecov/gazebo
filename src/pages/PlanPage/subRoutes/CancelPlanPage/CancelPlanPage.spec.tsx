@@ -6,12 +6,67 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
+import { useFlags } from 'shared/featureFlags'
 import { Plans } from 'shared/utils/billing'
 
 import CancelPlanPage from './CancelPlanPage'
 
 jest.mock('./subRoutes/SpecialOffer', () => () => 'SpecialOffer')
 jest.mock('./subRoutes/DowngradePlan', () => () => 'DowngradePlan')
+jest.mock(
+  './subRoutes/TeamPlanSpecialOffer',
+  () => () => 'TeamPlanSpecialOffer'
+)
+jest.mock('shared/featureFlags')
+const mockedUseFlags = useFlags as jest.Mock<{ multipleTiers: boolean }>
+
+const teamPlans = [
+  {
+    baseUnitPrice: 6,
+    benefits: ['Up to 10 users'],
+    billingRate: 'monthly',
+    marketingName: 'Users Team',
+    monthlyUploadLimit: 2500,
+    value: 'users-teamm',
+  },
+  {
+    baseUnitPrice: 5,
+    benefits: ['Up to 10 users'],
+    billingRate: 'yearly',
+    marketingName: 'Users Team',
+    monthlyUploadLimit: 2500,
+    value: 'users-teamy',
+  },
+]
+
+const mockAvailablePlans = ({ hasTeamPlans }: { hasTeamPlans: boolean }) => [
+  {
+    marketingName: 'Basic',
+    value: 'users-basic',
+    billingRate: null,
+    baseUnitPrice: 0,
+    benefits: [
+      'Up to 5 users',
+      'Unlimited public repositories',
+      'Unlimited private repositories',
+    ],
+    monthlyUploadLimit: 250,
+  },
+  {
+    marketingName: 'Pro Team',
+    value: 'users-pr-inappm',
+    billingRate: 'monthly',
+    baseUnitPrice: 12,
+    benefits: [
+      'Configurable # of users',
+      'Unlimited public repositories',
+      'Unlimited private repositories',
+      'Priority Support',
+    ],
+    monthlyUploadLimit: null,
+  },
+  ...(hasTeamPlans ? teamPlans : []),
+]
 
 const mockPlanData = {
   baseUnitPrice: 10,
@@ -38,10 +93,10 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-let testLocation
+let testLocation: { pathname: string }
 const wrapper =
   (initialEntries = '') =>
-  ({ children }) =>
+  ({ children }: { children: React.ReactNode }) =>
     (
       <QueryClientProvider client={queryClient}>
         <Suspense fallback={null}>
@@ -70,18 +125,24 @@ afterAll(() => {
   server.close()
 })
 
+interface SetupProps {
+  hasDiscount?: boolean
+  planValue?: string
+  trialStatus?: string
+  multipleTiers?: boolean
+  hasTeamPlans?: boolean
+}
+
 describe('CancelPlanPage', () => {
-  function setup(
-    {
-      hasDiscount = false,
-      planValue = Plans.USERS_PR_INAPPM,
-      trialStatus = TrialStatuses.NOT_STARTED,
-    } = {
-      hasDiscount: false,
-      planValue: Plans.USERS_PR_INAPPM,
-      trialStatus: TrialStatuses.NOT_STARTED,
-    }
-  ) {
+  function setup({
+    hasDiscount = false,
+    planValue = Plans.USERS_PR_INAPPM,
+    trialStatus = TrialStatuses.NOT_STARTED,
+    multipleTiers = false,
+    hasTeamPlans = false,
+  }: SetupProps = {}) {
+    mockedUseFlags.mockReturnValue({ multipleTiers })
+
     server.use(
       rest.get('internal/gh/codecov/account-details/', (req, res, ctx) =>
         res(
@@ -108,6 +169,16 @@ describe('CancelPlanPage', () => {
                 trialStatus,
                 value: planValue,
               },
+            },
+          })
+        )
+      ),
+      graphql.query('GetAvailablePlans', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              availablePlans: mockAvailablePlans({ hasTeamPlans }),
             },
           })
         )
@@ -271,6 +342,51 @@ describe('CancelPlanPage', () => {
       await waitFor(() =>
         expect(testLocation.pathname).toBe('/plan/gh/codecov')
       )
+    })
+  })
+
+  describe('user has team plans in available plans', () => {
+    beforeEach(() => setup({ hasTeamPlans: true, multipleTiers: true }))
+
+    it('renders team plan special offer', async () => {
+      render(<CancelPlanPage />, {
+        wrapper: wrapper('/plan/gh/codecov/cancel'),
+      })
+
+      const specialOffer = await screen.findByText('TeamPlanSpecialOffer')
+      expect(specialOffer).toBeInTheDocument()
+    })
+  })
+
+  describe('user does not have team plans in available plans', () => {
+    beforeEach(() => setup({ hasTeamPlans: false, multipleTiers: true }))
+
+    it('renders special offer', async () => {
+      render(<CancelPlanPage />, {
+        wrapper: wrapper('/plan/gh/codecov/cancel'),
+      })
+
+      const specialOffer = await screen.findByText('SpecialOffer')
+      expect(specialOffer).toBeInTheDocument()
+    })
+  })
+
+  describe('user already on team plan', () => {
+    beforeEach(() =>
+      setup({
+        planValue: Plans.USERS_TEAMM,
+        multipleTiers: true,
+        hasTeamPlans: true,
+      })
+    )
+
+    it('shows default cancel offer', async () => {
+      render(<CancelPlanPage />, {
+        wrapper: wrapper('/plan/gh/codecov/cancel'),
+      })
+
+      const specialOffer = await screen.findByText('SpecialOffer')
+      expect(specialOffer).toBeInTheDocument()
     })
   })
 })

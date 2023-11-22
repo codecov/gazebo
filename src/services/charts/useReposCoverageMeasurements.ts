@@ -27,6 +27,7 @@ export interface UseReposCoverageMeasurementsArgs {
   after?: string
   repos?: string[]
   opts?: UseQueryOptions<ReposCoverageMeasurementsData>
+  isPublic?: boolean // by default, get both public and private repos
 }
 
 const query = `
@@ -36,6 +37,7 @@ const query = `
     $after: DateTime
     $interval: MeasurementInterval!
     $repos: [String!]
+    $isPublic: Boolean
   ) {
     owner(username: $owner) {
       measurements(
@@ -43,6 +45,7 @@ const query = `
         before: $before
         interval: $interval
         repos: $repos
+        isPublic: $isPublic
       ) {
         timestamp
         max
@@ -59,6 +62,7 @@ export const useReposCoverageMeasurements = ({
   after,
   repos,
   opts,
+  isPublic, // by default, get both public and private repos
 }: UseReposCoverageMeasurementsArgs) => {
   return useQuery({
     queryKey: [
@@ -70,6 +74,7 @@ export const useReposCoverageMeasurements = ({
       before,
       after,
       repos,
+      isPublic,
     ],
     queryFn: ({ signal }) =>
       Api.graphql({
@@ -82,6 +87,7 @@ export const useReposCoverageMeasurements = ({
           before,
           after,
           repos,
+          isPublic,
         },
       }).then(
         (res) => ReposCoverageMeasurementsConfig.parse(res?.data?.owner) ?? {}

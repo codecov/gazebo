@@ -74,6 +74,7 @@ export const useStartTrial = () => {
 
       queryClient.invalidateQueries(['accountDetails'])
       queryClient.invalidateQueries(['GetPlanData'])
+      queryClient.invalidateQueries(['GetAvailablePlans'])
 
       renderToast({
         type: 'generic',

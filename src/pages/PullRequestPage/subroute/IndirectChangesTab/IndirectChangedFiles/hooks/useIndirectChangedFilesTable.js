@@ -1,7 +1,8 @@
 import isEqual from 'lodash/isEqual'
 import isNumber from 'lodash/isNumber'
+import qs from 'qs'
 import { useCallback, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 
 import { usePull } from 'services/pull'
 import { ImpactedFilesReturnType } from 'shared/utils/impactedFiles'
@@ -19,13 +20,14 @@ const orderingParameter = Object.freeze({
   missesCount: 'MISSES_COUNT',
 })
 
-function getFilters({ sortBy }) {
+function getFilters({ sortBy, flags }) {
   return {
     ordering: {
       direction: sortBy?.desc ? orderingDirection.desc : orderingDirection.asc,
       parameter: orderingParameter[sortBy?.id],
     },
     hasUnintendedChanges: true,
+    ...(flags ? { flags } : {}),
   }
 }
 
@@ -83,7 +85,13 @@ function transformIndirectChangesData({ pull }) {
 export function useIndirectChangedFilesTable() {
   const { provider, owner, repo, pullId } = useParams()
   const [sortBy, setSortBy] = useState([{ id: 'missesCount', desc: true }])
-  const filters = getFilters({ sortBy: sortBy[0] })
+  const location = useLocation()
+  const queryParams = qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+    depth: 1,
+  })
+  const flags = queryParams?.flags
+  const filters = getFilters({ sortBy: sortBy[0], flags })
 
   const { data: pullData, isLoading } = usePull({
     provider,
