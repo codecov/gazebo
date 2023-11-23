@@ -1,7 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import usePrevious from 'react-use/lib/usePrevious'
 
 import Api from 'shared/api'
 
@@ -70,15 +68,11 @@ export function useResyncUser() {
     suspense: false,
     useErrorBoundary: false,
     refetchInterval: isSyncing ? 2000 : null,
+    onSuccess: () =>
+      queryClient.refetchQueries({
+        queryKey: ['repos'],
+      }),
   })
-
-  // when isSyncing goes from true to false, we call onSyncFinish
-  const prevIsSyncing = usePrevious(isSyncing)
-  useEffect(() => {
-    if (prevIsSyncing && !isSyncing) {
-      queryClient.refetchQueries(['repos', 'UseMyOrganizations'])
-    }
-  }, [prevIsSyncing, isSyncing, queryClient])
 
   return {
     isSyncing,
