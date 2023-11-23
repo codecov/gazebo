@@ -14,6 +14,14 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 )
 
 describe('SessionExpiryTracker', () => {
+  function setup() {
+    const mockSetItem = jest.spyOn(window.localStorage.__proto__, 'setItem')
+    const mockRemoveItem = jest.spyOn(
+      window.localStorage.__proto__,
+      'removeItem'
+    )
+    return { mockSetItem, mockRemoveItem }
+  }
   beforeEach(() => {
     jest.useFakeTimers()
     jest.setSystemTime(new Date())
@@ -28,11 +36,7 @@ describe('SessionExpiryTracker', () => {
     const expiryTime = new Date()
     expiryTime.setMinutes(expiryTime.getMinutes() + 15)
     Cookies.get = jest.fn().mockImplementation(() => expiryTime.toString())
-    const mockRemoveItem = jest.spyOn(
-      window.localStorage.__proto__,
-      'removeItem'
-    )
-    const mockSetItem = jest.spyOn(window.localStorage.__proto__, 'setItem')
+    const { mockSetItem, mockRemoveItem } = setup()
     render(<SessionExpiryTracker />, { wrapper })
 
     expect(
@@ -62,11 +66,7 @@ describe('SessionExpiryTracker', () => {
 
   it('should not display modal when session expiry time is not set', () => {
     Cookies.get = jest.fn().mockImplementation(() => undefined)
-    const mockRemoveItem = jest.spyOn(
-      window.localStorage.__proto__,
-      'removeItem'
-    )
-    const mockSetItem = jest.spyOn(window.localStorage.__proto__, 'setItem')
+    const { mockSetItem, mockRemoveItem } = setup()
 
     render(<SessionExpiryTracker />, { wrapper })
     expect(

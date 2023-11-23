@@ -45,6 +45,7 @@ describe('LoginLayout', () => {
     server.use(
       graphql.query('CurrentUser', (req, res, ctx) => res(ctx.status(200)))
     )
+    jest.spyOn(window.localStorage.__proto__, 'getItem').mockReturnValue('true')
   }
 
   describe('rendering component', () => {
@@ -89,9 +90,6 @@ describe('LoginLayout', () => {
   describe('when session is expired', () => {
     it('renders the expiry banner', async () => {
       setup()
-      jest
-        .spyOn(window.localStorage.__proto__, 'getItem')
-        .mockReturnValue('true')
       render(<LoginLayout>child content</LoginLayout>, { wrapper: wrapper() })
       await waitFor(() => {
         expect(screen.getByText(/Your session has expired/)).toBeInTheDocument()

@@ -37,9 +37,14 @@ describe('Dropdown', () => {
   function setup({ selfHosted } = { selfHosted: false }) {
     useImage.mockReturnValue({ src: 'imageUrl', isLoading: false, error: null })
     config.IS_SELF_HOSTED = selfHosted
+    const mockRemoveItem = jest.spyOn(
+      window.localStorage.__proto__,
+      'removeItem'
+    )
 
     return {
       user: userEvent.setup(),
+      mockRemoveItem,
     }
   }
 
@@ -97,14 +102,9 @@ describe('Dropdown', () => {
       })
 
       it('removes session expiry tracking key on sign out', async () => {
-        const { user } = setup()
+        const { user, mockRemoveItem } = setup()
 
         jest.spyOn(console, 'error').mockImplementation()
-        const mockRemoveItem = jest.spyOn(
-          window.localStorage.__proto__,
-          'removeItem'
-        )
-
         render(<Dropdown currentUser={currentUser} />, {
           wrapper: Wrapper({ provider: 'gh' }),
         })

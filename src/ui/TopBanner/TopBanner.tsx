@@ -1,6 +1,5 @@
 import cs from 'classnames'
 import isNull from 'lodash/isNull'
-import PropTypes from 'prop-types'
 import { createContext, useContext, useState } from 'react'
 import { z } from 'zod'
 
@@ -26,7 +25,7 @@ type Variants = keyof typeof variants
 
 const topBannerContext = z.object({
   variant: z.union([z.literal('default'), z.literal('warning')]),
-  localStorageKey: z.string().nullish(),
+  localStorageKey: z.string().optional(),
   setHideBanner: z.function().args(z.boolean()).returns(z.void()),
 })
 
@@ -124,7 +123,7 @@ interface TopBannerProps {
 
 const TopBannerRoot: React.FC<React.PropsWithChildren<TopBannerProps>> = ({
   variant = 'default',
-  localStorageKey = null,
+  localStorageKey,
   children,
 }) => {
   const [hideBanner, setHideBanner] = useState(() => {
@@ -158,11 +157,6 @@ const TopBannerRoot: React.FC<React.PropsWithChildren<TopBannerProps>> = ({
       </div>
     </TopBannerContext.Provider>
   )
-}
-
-TopBannerRoot.propTypes = {
-  variant: PropTypes.oneOf(['default', 'warning']),
-  localStorageKey: PropTypes.string,
 }
 
 export const TopBanner = Object.assign(TopBannerRoot, {
