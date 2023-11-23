@@ -40,8 +40,11 @@ interface CIStatusProps {
 function CIStatus({ commitid, coverage, ciPassed = false }: CIStatusProps) {
   return (
     <div className="flex-1 flex-col items-end lg:flex">
-      {/* @ts-ignore */}
-      <A to={{ pageName: 'commit', options: { commit: commitid } }}>
+      <A
+        to={{ pageName: 'commit', options: { commit: commitid } }}
+        hook="commitid-link"
+        isExternal={false}
+      >
         <span className="font-mono text-ds-gray-quinary">
           {commitid?.slice(0, 8)}
         </span>
