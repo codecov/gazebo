@@ -170,4 +170,16 @@ describe('PullRequestPage', () => {
       expect(notFound).toBeInTheDocument()
     })
   })
+
+  // finish this test
+  describe('when user is on team plan', () => {
+    beforeEach(() => setup({ pullData: null }))
+
+    it('renders not found', async () => {
+      render(<PullRequestPage />, { wrapper: wrapper() })
+
+      const notFound = await screen.findByText(/Not found/)
+      expect(notFound).toBeInTheDocument()
+    })
+  })
 })

@@ -398,45 +398,6 @@ describe('PullRequestPageTabs', () => {
         })
       })
 
-      describe('is a team plan on a private repo', () => {
-        beforeEach(() =>
-          setup({
-            tierValue: TierNames.TEAM,
-            multipleTiers: true,
-            privateRepo: true,
-          })
-        )
-
-        it('renders correct tabs', async () => {
-          render(<PullRequestPageTabs />, { wrapper: wrapper() })
-
-          const components = await screen.findByText('Files changed')
-          expect(components).toBeInTheDocument()
-
-          const commits = await screen.findByText('Commits')
-          expect(commits).toBeInTheDocument()
-
-          const explorer = await screen.findByText('File explorer')
-          expect(explorer).toBeInTheDocument()
-
-          const indirect = screen.queryByText('Indirect changes')
-          expect(indirect).not.toBeInTheDocument()
-
-          const flags = screen.queryByText('Flags')
-          expect(flags).not.toBeInTheDocument()
-
-          const componentsTab = screen.queryByText('Components')
-          expect(componentsTab).not.toBeInTheDocument()
-        })
-
-        it('does not render the flag select', async () => {
-          render(<PullRequestPageTabs />, { wrapper: wrapper() })
-
-          const flagSelect = screen.queryByText('Search for Flags')
-          expect(flagSelect).not.toBeInTheDocument()
-        })
-      })
-
       describe('is a pro plan on a public repo', () => {
         beforeEach(() =>
           setup({
@@ -552,45 +513,6 @@ describe('PullRequestPageTabs', () => {
 
           const flagSelect = await screen.findByText('Search for Flags')
           expect(flagSelect).toBeInTheDocument()
-        })
-      })
-
-      describe('is a team plan on a private repo', () => {
-        beforeEach(() =>
-          setup({
-            tierValue: TierNames.TEAM,
-            multipleTiers: false,
-            privateRepo: true,
-          })
-        )
-
-        it('renders correct tabs', async () => {
-          render(<PullRequestPageTabs />, { wrapper: wrapper() })
-
-          const components = await screen.findByText('Files changed')
-          expect(components).toBeInTheDocument()
-
-          const commits = await screen.findByText('Commits')
-          expect(commits).toBeInTheDocument()
-
-          const explorer = await screen.findByText('File explorer')
-          expect(explorer).toBeInTheDocument()
-
-          const indirect = await screen.findByText('Indirect changes')
-          expect(indirect).toBeInTheDocument()
-
-          const flags = await screen.findByText('Flags')
-          expect(flags).toBeInTheDocument()
-
-          const componentsTab = await screen.findByText('Components')
-          expect(componentsTab).toBeInTheDocument()
-        })
-
-        it('does not render the flag select', async () => {
-          render(<PullRequestPageTabs />, { wrapper: wrapper() })
-
-          const flagSelect = screen.queryByText('Search for Flags')
-          expect(flagSelect).not.toBeInTheDocument()
         })
       })
 
