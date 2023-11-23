@@ -95,7 +95,11 @@ afterAll(() => {
 })
 
 describe('PullRequestPage', () => {
-  function setup({ pullData = mockPullPageData, tierValue = TierNames.BASIC }) {
+  function setup({
+    pullData = mockPullPageData,
+    tierValue = TierNames.BASIC,
+    privateRepo = false,
+  }) {
     useFlags.mockReturnValue({
       multipleTiers: true,
     })
@@ -133,7 +137,7 @@ describe('PullRequestPage', () => {
         return res(
           ctx.status(200),
           ctx.data({
-            owner: { repository: { private: true } },
+            owner: { repository: { private: privateRepo } },
           })
         )
       }),
@@ -220,7 +224,7 @@ describe('PullRequestPage', () => {
   })
 
   describe('when user is on team plan', () => {
-    beforeEach(() => setup({ tierValue: TierNames.TEAM }))
+    beforeEach(() => setup({ tierValue: TierNames.TEAM, privateRepo: true }))
     it('returns a valid response', async () => {
       render(<PullRequestPage />, { wrapper: wrapper() })
       const pullId = await screen.findByText('12')
