@@ -74,7 +74,7 @@ describe('CIStatus', () => {
     beforeEach(() => {
       setup({
         coverage: 0,
-        ciPassed: null,
+        ciPassed: false,
         commitid: '123456789',
       })
     })
