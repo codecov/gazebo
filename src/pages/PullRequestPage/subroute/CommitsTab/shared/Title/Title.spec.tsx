@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
-import { useImage } from 'services/image'
+import { useImage as originalUseImage } from 'services/image'
 import { formatTimeToNow } from 'shared/utils/dates'
 
 import Title from '.'
@@ -11,8 +11,22 @@ jest.mock('services/image')
 jest.mock('services/user')
 jest.mock('services/repo')
 
+const useImage = originalUseImage as jest.MockedFunction<
+  typeof originalUseImage
+>
+
+interface setupArgs {
+  author?: {
+    username?: string
+    avatarUrl?: string
+  }
+  commitid?: string
+  message?: string
+  createdAt?: string
+}
+
 describe('Title', () => {
-  function setup({ author, commitid, message, createdAt }) {
+  function setup({ author, commitid, message, createdAt }: setupArgs) {
     const queryClient = new QueryClient({
       defaultOptions: { queries: { retry: false } },
     })
@@ -65,7 +79,7 @@ describe('Title', () => {
   describe('when rendered with no owner data', () => {
     beforeEach(() => {
       setup({
-        author: null,
+        author: undefined,
         commitid: 'id',
         message: 'Test1',
         createdAt: '2021-08-30T19:33:49.819672',
@@ -84,7 +98,7 @@ describe('Title', () => {
     })
 
     it('renders default avatar', () => {
-      const avatar = screen.getByRole('img', { alt: 'avatar' })
+      const avatar = screen.getByAltText('avatar')
       expect(avatar).toBeInTheDocument()
     })
   })
@@ -118,7 +132,7 @@ describe('Title', () => {
           avatarUrl: 'http://127.0.0.1/avatar-url',
         },
         commitid: 'id',
-        message: null,
+        message: undefined,
         createdAt: '2021-08-30T19:33:49.819672',
       })
     })
