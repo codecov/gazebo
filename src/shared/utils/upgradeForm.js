@@ -3,6 +3,9 @@ import { z } from 'zod'
 
 import { TrialStatuses } from 'services/account'
 import {
+  canApplySentryUpgrade,
+  findProPlans,
+  findSentryPlans,
   isFreePlan,
   isPaidPlan,
   isSentryPlan,
@@ -19,7 +22,6 @@ export const MIN_SENTRY_SEATS = 5
 export const SENTRY_PRICE = 29
 export const TEAM_PLAN_MAX_ACTIVE_USERS = 10
 
-// TODO: Get rid of this after the final refactor in favor of Controls specific utils
 export function extractSeats({
   quantity,
   value,
@@ -42,6 +44,7 @@ export function extractSeats({
   return isFreePlan(value) ? freePlanSeats : paidPlansSeats
 }
 
+// TODO: Get rid of this after the final refactor in favor of Controls specific utils
 export const getInitialDataForm = ({
   accountDetails,
   proPlanYear,
@@ -176,53 +179,42 @@ export const calculatePriceTeamPlan = ({ seats, baseUnitPrice }) => {
   return Math.floor(seats) * baseUnitPrice
 }
 
-function calculateDefaultSeatsProPlan({
-  quantity,
-  value,
-  activatedUserCount,
-  inactiveUserCount,
-  trialStatus,
-}) {
-  const totalMembers = (inactiveUserCount ?? 0) + (activatedUserCount ?? 0)
-  const minPlansSeats = MIN_NB_SEATS_PRO
-  const freePlanSeats = Math.max(minPlansSeats, totalMembers)
-  const paidPlansSeats = Math.max(minPlansSeats, quantity)
-
-  // if their on trial their seat count is around 1000 so this resets the
-  // value to the minium value they would be going on if sentry or pro
-  if (trialStatus === TrialStatuses.ONGOING && value === Plans.USERS_TRIAL) {
-    return minPlansSeats
-  }
-
-  return isFreePlan(value) ? freePlanSeats : paidPlansSeats
-}
-
-export const getDefaultValuesProUpgrade = ({
+export const getDefaultValuesUpgradeForm = ({
   accountDetails,
-  proPlanYear,
+  plans,
   trialStatus,
 }) => {
   const currentPlan = accountDetails?.plan
-  const planValue = currentPlan?.value
+  const currentPlanValue = currentPlan?.value
   const quantity = currentPlan?.quantity ?? 0
   const activatedUserCount = accountDetails?.activatedUserCount
   const inactiveUserCount = accountDetails?.inactiveUserCount
 
+  const { proPlanYear } = findProPlans({ plans })
+  const { sentryPlanYear } = findSentryPlans({ plans })
+  const isSentryUpgrade = canApplySentryUpgrade({
+    plan: currentPlanValue,
+    plans,
+  })
+
   // if the current plan is a pro plan, we return it, otherwise select by default the first pro plan
   let newPlan = proPlanYear?.value
 
-  if (isTeamPlan(planValue)) {
+  if (isSentryUpgrade && !isSentryPlan(currentPlanValue)) {
+    newPlan = sentryPlanYear?.value
+  } else if (isTeamPlan(currentPlanValue)) {
     newPlan = proPlanYear?.value
-  } else if (isPaidPlan(planValue)) {
-    newPlan = planValue
+  } else if (isPaidPlan(currentPlanValue)) {
+    newPlan = currentPlanValue
   }
 
-  const seats = calculateDefaultSeatsProPlan({
-    value: planValue,
+  const seats = extractSeats({
+    value: currentPlanValue,
     quantity,
     activatedUserCount,
     inactiveUserCount,
     trialStatus,
+    isSentryUpgrade,
   })
 
   return {

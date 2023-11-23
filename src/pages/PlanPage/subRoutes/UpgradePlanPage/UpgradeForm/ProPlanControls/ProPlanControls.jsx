@@ -10,14 +10,16 @@ import {
 } from 'services/account'
 import { useFlags } from 'shared/featureFlags'
 import {
+  canApplySentryUpgrade,
   getNextBillingDate,
+  isTeamPlan,
   shouldDisplayTeamCard,
-  useProPlans,
 } from 'shared/utils/billing'
 import {
-  getDefaultValuesProUpgrade,
+  getDefaultValuesUpgradeForm,
   getSchema,
   MIN_NB_SEATS_PRO,
+  MIN_SENTRY_SEATS,
 } from 'shared/utils/upgradeForm'
 import TextInput from 'ui/TextInput'
 
@@ -29,17 +31,23 @@ import UserCount from './UserCount'
 import { useUpgradeControls } from '../hooks'
 import UpdateButton from '../UpdateButton'
 
-// eslint-disable-next-line react/prop-types
 function ProPlanControls({ selectedPlan, setSelectedPlan }) {
   const { provider, owner } = useParams()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { data: planData } = usePlanData({ owner, provider })
-  const { proPlanYear } = useProPlans({ plans })
   const { upgradePlan } = useUpgradeControls()
   const { multipleTiers } = useFlags({
     multipleTiers: false,
   })
+  const isSentryUpgrade = canApplySentryUpgrade({
+    plan: accountDetails?.plan?.value,
+    plans,
+  })
+  const minSeats =
+    isSentryUpgrade && !isTeamPlan(selectedPlan?.value)
+      ? MIN_SENTRY_SEATS
+      : MIN_NB_SEATS_PRO
 
   const trialStatus = planData?.plan?.trialStatus
   const nextBillingDate = getNextBillingDate(accountDetails)
@@ -51,15 +59,15 @@ function ProPlanControls({ selectedPlan, setSelectedPlan }) {
     setValue,
     getValues,
   } = useForm({
-    defaultValues: getDefaultValuesProUpgrade({
+    defaultValues: getDefaultValuesUpgradeForm({
       accountDetails,
-      proPlanYear,
+      plans,
       trialStatus,
     }),
     resolver: zodResolver(
       getSchema({
         accountDetails,
-        minSeats: MIN_NB_SEATS_PRO,
+        minSeats,
         trialStatus,
         selectedPlan,
       })

@@ -2,7 +2,12 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useAvailablePlans } from 'services/account'
-import { isAnnualPlan, isMonthlyPlan, useProPlans } from 'shared/utils/billing'
+import {
+  isAnnualPlan,
+  isMonthlyPlan,
+  Plans,
+  useProPlans,
+} from 'shared/utils/billing'
 import OptionButton from 'ui/OptionButton'
 
 interface BillingControlsProps {
@@ -48,9 +53,9 @@ const BillingControls: React.FC<BillingControlsProps> = ({
           active={option}
           onChange={({ text }) => {
             if (text === 'Annual') {
-              setValue('newPlan', proPlanYear?.value)
+              setValue('newPlan', Plans.USERS_PR_INAPPY)
             } else {
-              setValue('newPlan', proPlanMonth?.value)
+              setValue('newPlan', Plans.USERS_PR_INAPPM)
             }
 
             setOption(text)

@@ -10,48 +10,46 @@ import { Plans } from 'shared/utils/billing'
 
 import BillingControls from './BillingControls'
 
-const basicPlan = {
-  marketingName: 'Basic',
-  value: 'users-basic',
-  billingRate: null,
-  baseUnitPrice: 0,
-  benefits: [
-    'Up to 5 users',
-    'Unlimited public repositories',
-    'Unlimited private repositories',
-  ],
-  monthlyUploadLimit: 250,
-}
-
-const proPlanMonth = {
-  marketingName: 'Pro',
-  value: 'users-pr-inappm',
-  billingRate: 'monthly',
-  baseUnitPrice: 12,
-  benefits: [
-    'Configurable # of users',
-    'Unlimited public repositories',
-    'Unlimited private repositories',
-    'Priority Support',
-  ],
-  monthlyUploadLimit: 250,
-  quantity: 10,
-}
-
-const proPlanYear = {
-  marketingName: 'Pro',
-  value: 'users-pr-inappy',
-  billingRate: 'annually',
-  baseUnitPrice: 10,
-  benefits: [
-    'Configurable # of users',
-    'Unlimited public repositories',
-    'Unlimited private repositories',
-    'Priority Support',
-  ],
-  monthlyUploadLimit: 250,
-  quantity: 10,
-}
+const allPlans = [
+  {
+    marketingName: 'Basic',
+    value: 'users-basic',
+    billingRate: null,
+    baseUnitPrice: 0,
+    benefits: [
+      'Up to 5 users',
+      'Unlimited public repositories',
+      'Unlimited private repositories',
+    ],
+    monthlyUploadLimit: 250,
+  },
+  {
+    marketingName: 'Pro Team',
+    value: 'users-pr-inappm',
+    billingRate: 'monthly',
+    baseUnitPrice: 12,
+    benefits: [
+      'Configurable # of users',
+      'Unlimited public repositories',
+      'Unlimited private repositories',
+      'Priority Support',
+    ],
+    monthlyUploadLimit: null,
+  },
+  {
+    marketingName: 'Pro Team',
+    value: 'users-pr-inappy',
+    billingRate: 'annually',
+    baseUnitPrice: 10,
+    benefits: [
+      'Configurable # of users',
+      'Unlimited public repositories',
+      'Unlimited private repositories',
+      'Priority Support',
+    ],
+    monthlyUploadLimit: null,
+  },
+]
 
 const server = setupServer()
 const queryClient = new QueryClient({
@@ -82,16 +80,16 @@ afterAll(() => {
 describe('BillingControls', () => {
   function setup() {
     server.use(
-      graphql.query('GetAvailablePlans', (req, res, ctx) => {
-        return res(
+      graphql.query('GetAvailablePlans', (req, res, ctx) =>
+        res(
           ctx.status(200),
           ctx.data({
             owner: {
-              availablePlans: [basicPlan, proPlanMonth, proPlanYear],
+              availablePlans: allPlans,
             },
           })
         )
-      })
+      )
     )
 
     const mockSetValue = jest.fn()
@@ -115,9 +113,7 @@ describe('BillingControls', () => {
           }
         )
 
-        const annualBtn = await screen.findByRole('button', {
-          name: 'Annual',
-        })
+        const annualBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(annualBtn).toBeInTheDocument()
         expect(annualBtn).toHaveClass('bg-ds-primary-base')
 
@@ -189,9 +185,7 @@ describe('BillingControls', () => {
           }
         )
 
-        const annualBtn = await screen.findByRole('button', {
-          name: 'Annual',
-        })
+        const annualBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(annualBtn).toBeInTheDocument()
         expect(annualBtn).not.toHaveClass('bg-ds-primary-base')
 
