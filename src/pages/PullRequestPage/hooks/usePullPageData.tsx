@@ -16,7 +16,6 @@ import {
 import Api from 'shared/api'
 import A from 'ui/A'
 
-// Default schema + query to fetch data for all tabs for users
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   pull: z
@@ -64,7 +63,7 @@ const PullPageDataSchema = z.object({
 })
 
 const query = `
-query PullPageData($owner: String!, $repo: String!, $pullId: Int!) {
+query PullPageData($owner: String!, $repo: String!, $pullId: Int!, $isTeamPlan: Boolean!) {
   owner(username: $owner) {
     repository(name: $repo) {
       __typename
@@ -78,100 +77,10 @@ query PullPageData($owner: String!, $repo: String!, $pullId: Int!) {
             __typename
             ... on Comparison {
               impactedFilesCount
-              indirectChangedFilesCount
+              indirectChangedFilesCount @skip(if: $isTeamPlan)
               directChangedFilesCount
-              flagComparisonsCount
-              componentComparisonsCount
-            }
-            ... on FirstPullRequest {
-              message
-            }
-            ... on MissingBaseCommit {
-              message
-            }
-            ... on MissingHeadCommit {
-              message
-            }
-            ... on MissingComparison {
-              message
-            }
-            ... on MissingBaseReport {
-              message
-            }
-            ... on MissingHeadReport {
-              message
-            }
-          }
-        }
-      }
-      ... on NotFoundError {
-        message
-      }
-      ... on OwnerNotActivatedError {
-        message
-      }
-    }
-  }
-}`
-
-// Team plan specific schema + query to fetch data for a subset of tabs for users
-const RepositorySchemaTeam = z.object({
-  __typename: z.literal('Repository'),
-  pull: z
-    .object({
-      pullId: z.number(),
-      head: z
-        .object({
-          commitid: z.string(),
-        })
-        .nullable(),
-      compareWithBase: z
-        .discriminatedUnion('__typename', [
-          z.object({
-            __typename: z.literal('Comparison'),
-            directChangedFilesCount: z.number(),
-          }),
-          FirstPullRequestSchema,
-          MissingBaseCommitSchema,
-          MissingBaseReportSchema,
-          MissingComparisonSchema,
-          MissingHeadCommitSchema,
-          MissingHeadReportSchema,
-        ])
-        .nullable(),
-    })
-    .nullable(),
-})
-
-const PullPageDataTeamSchema = z.object({
-  owner: z
-    .object({
-      repository: z
-        .discriminatedUnion('__typename', [
-          RepositorySchemaTeam,
-          RepoNotFoundErrorSchema,
-          RepoOwnerNotActivatedErrorSchema,
-        ])
-        .nullable(),
-    })
-    .nullable(),
-})
-
-const queryTeam = `
-query PullPageDataTeam($owner: String!, $repo: String!, $pullId: Int!) {
-  owner(username: $owner) {
-    repository(name: $repo) {
-      __typename
-      ... on Repository {
-        pull(id: $pullId) {
-          pullId
-          head {
-            commitid
-          }
-          compareWithBase {
-            __typename
-            ... on Comparison {
-              directChangedFilesCount
+              flagComparisonsCount @skip(if: $isTeamPlan)
+              componentComparisonsCount @skip(if: $isTeamPlan)
             }
             ... on FirstPullRequest {
               message
@@ -218,9 +127,17 @@ export const usePullPageData = ({
   repo,
   pullId,
   isTeamPlan = false,
-}: UsePullPageDataArgs) => {
-  return useQuery({
-    queryKey: ['pullPageDataTeam', provider, owner, repo, pullId, queryTeam],
+}: UsePullPageDataArgs) =>
+  useQuery({
+    queryKey: [
+      'PullPageData',
+      provider,
+      owner,
+      repo,
+      pullId,
+      isTeamPlan,
+      query,
+    ],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
@@ -231,11 +148,10 @@ export const usePullPageData = ({
           owner,
           repo,
           pullId: parseInt(pullId, 10),
+          isTeamPlan,
         },
       }).then((res) => {
-        const parsedData = isTeamPlan
-          ? PullPageDataTeamSchema.safeParse(res?.data)
-          : PullPageDataSchema.safeParse(res?.data)
+        const parsedData = PullPageDataSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return Promise.reject({
@@ -274,4 +190,3 @@ export const usePullPageData = ({
         }
       }),
   })
-}
