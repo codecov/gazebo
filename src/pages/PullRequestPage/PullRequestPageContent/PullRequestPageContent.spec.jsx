@@ -4,6 +4,8 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TierNames } from 'services/tier'
+import { useFlags } from 'shared/featureFlags'
 import { ComparisonReturnType } from 'shared/utils/comparison'
 
 import PullRequestPageContent from './PullRequestPageContent'
@@ -15,6 +17,7 @@ jest.mock('../subroute/FlagsTab', () => () => 'FlagsTab')
 jest.mock('../subroute/ComponentsTab', () => () => 'ComponentsTab')
 jest.mock('../subroute/FileExplorer', () => () => 'FileExplorer')
 jest.mock('../subroute/FileViewer', () => () => 'FileViewer')
+jest.mock('shared/featureFlags')
 
 const mockPullData = (resultType) => {
   if (resultType === ComparisonReturnType.MISSING_BASE_COMMIT) {
@@ -64,6 +67,27 @@ const mockPullData = (resultType) => {
   }
 }
 
+const mockPullDataTeam = {
+  owner: {
+    isCurrentUserPartOfOrg: true,
+    repository: {
+      __typename: 'Repository',
+      private: false,
+      pull: {
+        pullId: 1,
+        head: {
+          commitid: '123',
+        },
+        compareWithBase: {
+          __typename: ComparisonReturnType.SUCCESSFUL_COMPARISON,
+          impactedFilesCount: 2,
+          directChangedFilesCount: 4,
+        },
+      },
+    },
+  },
+}
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
@@ -101,11 +125,36 @@ afterAll(() => {
 })
 
 describe('PullRequestPageContent', () => {
-  function setup(resultType = ComparisonReturnType.SUCCESSFUL_COMPARISON) {
+  function setup(
+    resultType = ComparisonReturnType.SUCCESSFUL_COMPARISON,
+    tierValue = TierNames.BASIC
+  ) {
+    useFlags.mockReturnValue({
+      multipleTiers: true,
+    })
     server.use(
-      graphql.query('PullPageData', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockPullData(resultType)))
-      )
+      graphql.query('PullPageData', (req, res, ctx) => {
+        if (req.variables.isTeamPlan) {
+          return res(ctx.status(200), ctx.data(mockPullDataTeam))
+        }
+        return res(ctx.status(200), ctx.data(mockPullData(resultType)))
+      }),
+      graphql.query('GetRepoSettings', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: { repository: { private: true } },
+          })
+        )
+      }),
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: { plan: { tierName: tierValue } },
+          })
+        )
+      })
     )
   }
 
@@ -239,6 +288,19 @@ describe('PullRequestPageContent', () => {
 
       const fileViewer = await screen.findByText('FileViewer')
       expect(fileViewer).toBeInTheDocument()
+    })
+  })
+
+  describe('user is on team plan', () => {
+    it('returns a valid response', async () => {
+      setup(ComparisonReturnType.SUCCESSFUL_COMPARISON, TierNames.TEAM)
+
+      render(<PullRequestPageContent />, {
+        wrapper: wrapper(),
+      })
+
+      const filesChangedTab = await screen.findByText('FilesChangedTab')
+      expect(filesChangedTab).toBeInTheDocument()
     })
   })
 })

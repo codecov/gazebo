@@ -31,10 +31,10 @@ const RepositorySchema = z.object({
           z.object({
             __typename: z.literal('Comparison'),
             impactedFilesCount: z.number(),
-            indirectChangedFilesCount: z.number(),
+            indirectChangedFilesCount: z.number().optional(),
             directChangedFilesCount: z.number(),
-            flagComparisonsCount: z.number(),
-            componentComparisonsCount: z.number(),
+            flagComparisonsCount: z.number().optional(),
+            componentComparisonsCount: z.number().optional(),
           }),
           FirstPullRequestSchema,
           MissingBaseCommitSchema,
@@ -118,7 +118,7 @@ interface UsePullPageDataArgs {
   owner: string
   repo: string
   pullId: string
-  isTeamPlan: boolean
+  isTeamPlan?: boolean
 }
 
 export const usePullPageData = ({

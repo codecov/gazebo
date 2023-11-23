@@ -5,6 +5,9 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TierNames } from 'services/tier'
+import { useFlags } from 'shared/featureFlags'
+
 import PullRequestPage from './PullRequestPage'
 
 jest.mock('shared/featureFlags')
@@ -14,6 +17,7 @@ jest.mock('./Summary', () => () => 'CompareSummary')
 jest.mock('./PullRequestPageContent', () => () => 'PullRequestPageContent')
 jest.mock('./PullRequestPageTabs', () => () => 'PullRequestPageTabs')
 jest.mock('./FirstPullBanner', () => () => 'FirstPullBanner')
+jest.mock('shared/featureFlags')
 
 const mockPullHeadData = {
   owner: {
@@ -51,6 +55,18 @@ const mockPullPageData = {
   },
 }
 
+const mockPullPageDataTeam = {
+  pullId: 877,
+  head: {
+    commitid: '123',
+  },
+  compareWithBase: {
+    __typename: 'Comparison',
+    impactedFilesCount: 4,
+    directChangedFilesCount: 0,
+  },
+}
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
@@ -79,13 +95,29 @@ afterAll(() => {
 })
 
 describe('PullRequestPage', () => {
-  function setup({ pullData = mockPullPageData }) {
+  function setup({ pullData = mockPullPageData, tierValue = TierNames.BASIC }) {
+    useFlags.mockReturnValue({
+      multipleTiers: true,
+    })
     server.use(
       graphql.query('PullHeadData', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockPullHeadData))
       ),
-      graphql.query('PullPageData', (req, res, ctx) =>
-        res(
+      graphql.query('PullPageData', (req, res, ctx) => {
+        if (req.variables.isTeamPlan) {
+          return res(
+            ctx.status(200),
+            ctx.data({
+              owner: {
+                repository: {
+                  __typename: 'Repository',
+                  pull: mockPullPageDataTeam,
+                },
+              },
+            })
+          )
+        }
+        return res(
           ctx.status(200),
           ctx.data({
             owner: {
@@ -96,7 +128,23 @@ describe('PullRequestPage', () => {
             },
           })
         )
-      )
+      }),
+      graphql.query('GetRepoSettings', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: { repository: { private: true } },
+          })
+        )
+      }),
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: { plan: { tierName: tierValue } },
+          })
+        )
+      })
     )
   }
 
@@ -171,15 +219,12 @@ describe('PullRequestPage', () => {
     })
   })
 
-  // finish this test
   describe('when user is on team plan', () => {
-    beforeEach(() => setup({ pullData: null }))
-
-    it('renders not found', async () => {
+    beforeEach(() => setup({ tierValue: TierNames.TEAM }))
+    it('returns a valid response', async () => {
       render(<PullRequestPage />, { wrapper: wrapper() })
-
-      const notFound = await screen.findByText(/Not found/)
-      expect(notFound).toBeInTheDocument()
+      const pullId = await screen.findByText('12')
+      expect(pullId).toBeInTheDocument()
     })
   })
 })
