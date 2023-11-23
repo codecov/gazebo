@@ -2,8 +2,17 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
-import { IndividualPlanSchema, useAvailablePlans } from 'services/account'
-import { findTeamPlans, useProPlans } from 'shared/utils/billing'
+import {
+  IndividualPlanSchema,
+  useAccountDetails,
+  useAvailablePlans,
+} from 'services/account'
+import {
+  canApplySentryUpgrade,
+  findSentryPlans,
+  findTeamPlans,
+  useProPlans,
+} from 'shared/utils/billing'
 import { TEAM_PLAN_MAX_ACTIVE_USERS } from 'shared/utils/upgradeForm'
 import OptionButton from 'ui/OptionButton'
 
@@ -18,11 +27,17 @@ const PlanDetailsControls: React.FC<PlanDetailsControlsProps> = ({
 }) => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
+  const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { proPlanYear } = useProPlans({ plans })
+  const { sentryPlanYear } = findSentryPlans({ plans })
   const { teamPlanYear } = findTeamPlans({
     plans,
   })
   const [option, setOption] = useState<'Pro' | 'Team'>('Pro')
+
+  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
+  const isSentryUpgrade = canApplySentryUpgrade({ plan, plans })
+  const yearlyProPlan = isSentryUpgrade ? sentryPlanYear : proPlanYear
 
   return (
     <div className="flex w-fit flex-col gap-2">
@@ -33,8 +48,8 @@ const PlanDetailsControls: React.FC<PlanDetailsControlsProps> = ({
           active={option}
           onChange={({ text }) => {
             if (text === 'Pro') {
-              setSelectedPlan(proPlanYear)
-              setValue('newPlan', proPlanYear?.value)
+              setSelectedPlan(yearlyProPlan)
+              setValue('newPlan', yearlyProPlan?.value)
             } else {
               setSelectedPlan(teamPlanYear)
               setValue('newPlan', teamPlanYear?.value)

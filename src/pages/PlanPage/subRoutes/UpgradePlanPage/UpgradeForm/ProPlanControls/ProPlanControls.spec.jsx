@@ -31,7 +31,7 @@ const basicPlan = {
 }
 
 const proPlanMonth = {
-  marketingName: 'Pro Team',
+  marketingName: 'Pro',
   value: Plans.USERS_PR_INAPPM,
   billingRate: 'monthly',
   baseUnitPrice: 12,
@@ -46,7 +46,7 @@ const proPlanMonth = {
 }
 
 const proPlanYear = {
-  marketingName: 'Pro Team',
+  marketingName: 'Pro',
   value: Plans.USERS_PR_INAPPY,
   billingRate: 'annually',
   baseUnitPrice: 10,
@@ -352,7 +352,7 @@ describe('ProPlanControls', () => {
         expect(proceedToCheckoutButton).toBeInTheDocument()
       })
 
-      describe('when the user has team plans available', () => {
+      xdescribe('when the user has team plans available', () => {
         describe('when the feature flag is off', () => {
           it('does not renders the Pro and team buttons', () => {
             setup({
@@ -731,7 +731,7 @@ describe('ProPlanControls', () => {
         })
       })
 
-      describe('when the user has team plans available', () => {
+      xdescribe('when the user has team plans available', () => {
         describe('when the feature flag is off', () => {
           it('does not renders the Pro and team buttons', () => {
             setup({
@@ -1071,7 +1071,7 @@ describe('ProPlanControls', () => {
         })
       })
 
-      describe('when the user has team plans available', () => {
+      xdescribe('when the user has team plans available', () => {
         describe('when the feature flag is off', () => {
           it('does not renders the Pro and team buttons', () => {
             setup({

@@ -2,34 +2,37 @@ import { useParams } from 'react-router-dom'
 
 import { useAvailablePlans } from 'services/account'
 import {
+  findTeamPlans,
   formatNumberToUSD,
   isAnnualPlan,
   Plans,
-  useProPlans,
 } from 'shared/utils/billing'
-import { calculatePriceProPlan } from 'shared/utils/upgradeForm'
+import { calculatePriceTeamPlan } from 'shared/utils/upgradeForm'
 import Icon from 'ui/Icon'
 
-interface ProBannerProps {
+interface PriceCalloutProps {
   newPlan: string
   seats: number
   setValue: (x: string, y: string) => void
 }
 
-const ProBanner: React.FC<ProBannerProps> = ({ newPlan, seats, setValue }) => {
+const PriceCallout: React.FC<PriceCalloutProps> = ({
+  newPlan,
+  seats,
+  setValue,
+}) => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
-  const { proPlanMonth, proPlanYear } = useProPlans({ plans })
-  const perMonthPrice = calculatePriceProPlan({
+  const { teamPlanMonth, teamPlanYear } = findTeamPlans({ plans })
+  const perMonthPrice = calculatePriceTeamPlan({
     seats,
-    baseUnitPrice: proPlanMonth?.baseUnitPrice,
+    baseUnitPrice: teamPlanMonth?.baseUnitPrice,
   })
-  const perYearPrice = calculatePriceProPlan({
+  const perYearPrice = calculatePriceTeamPlan({
     seats,
-    baseUnitPrice: proPlanYear?.baseUnitPrice,
+    baseUnitPrice: teamPlanYear?.baseUnitPrice,
   })
   const isPerYear = isAnnualPlan(newPlan)
-
   if (isPerYear) {
     return (
       <div className="bg-ds-gray-primary p-4">
@@ -68,7 +71,7 @@ const ProBanner: React.FC<ProBannerProps> = ({ newPlan, seats, setValue }) => {
           a year with the annual plan,{' '}
           <button
             className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
-            onClick={() => setValue('newPlan', Plans.USERS_PR_INAPPY)}
+            onClick={() => setValue('newPlan', Plans.USERS_TEAMY)}
           >
             switch to annual
           </button>
@@ -78,4 +81,4 @@ const ProBanner: React.FC<ProBannerProps> = ({ newPlan, seats, setValue }) => {
   )
 }
 
-export default ProBanner
+export default PriceCallout

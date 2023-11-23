@@ -22,7 +22,7 @@ import {
 import TextInput from 'ui/TextInput'
 
 import BillingControls from './BillingControls'
-import PlanDetailsControls from './PlanDetailControls/PlanDetailsControls'
+import PlanDetailsControls from './PlanDetailsControls'
 import TotalPriceCallout from './TotalPriceCallout'
 import UserCount from './UserCount'
 

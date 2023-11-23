@@ -8,7 +8,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { Plans } from 'shared/utils/billing'
 
-import TeamPrice from './TeamPrice'
+import PriceCallout from './PriceCallout'
 
 const availablePlans = [
   {
@@ -97,7 +97,7 @@ afterAll(() => {
   server.close()
 })
 
-describe('TeamPrice', () => {
+describe('PriceCallout', () => {
   afterEach(() => jest.resetAllMocks())
 
   function setup() {
@@ -128,7 +128,7 @@ describe('TeamPrice', () => {
       it('displays per month price', async () => {
         const { mockSetValue } = setup()
 
-        render(<TeamPrice {...props} setValue={mockSetValue} />, { wrapper })
+        render(<PriceCallout {...props} setValue={mockSetValue} />, { wrapper })
 
         const perMonthPrice = await screen.findByText(/\$40.00/)
         expect(perMonthPrice).toBeInTheDocument()
@@ -137,7 +137,7 @@ describe('TeamPrice', () => {
       it('displays billed annually at price', async () => {
         const { mockSetValue } = setup()
 
-        render(<TeamPrice {...props} setValue={mockSetValue} />, { wrapper })
+        render(<PriceCallout {...props} setValue={mockSetValue} />, { wrapper })
 
         const annualPrice = await screen.findByText(
           /\/per month billed annually at \$480.00/
@@ -148,7 +148,7 @@ describe('TeamPrice', () => {
       it('displays how much the user saves', async () => {
         const { mockSetValue } = setup()
 
-        render(<TeamPrice {...props} setValue={mockSetValue} />, { wrapper })
+        render(<PriceCallout {...props} setValue={mockSetValue} />, { wrapper })
 
         const moneySaved = await screen.findByText(/\$120.00/)
         expect(moneySaved).toBeInTheDocument()
@@ -163,7 +163,7 @@ describe('TeamPrice', () => {
 
       it('displays the monthly price', async () => {
         const { mockSetValue } = setup()
-        render(<TeamPrice {...props} setValue={mockSetValue} />, { wrapper })
+        render(<PriceCallout {...props} setValue={mockSetValue} />, { wrapper })
 
         const monthlyPrice = await screen.findByText(/\$50.00/)
         expect(monthlyPrice).toBeInTheDocument()
@@ -171,7 +171,7 @@ describe('TeamPrice', () => {
 
       it('displays what the user could save with annual plan', async () => {
         const { mockSetValue } = setup()
-        render(<TeamPrice {...props} setValue={mockSetValue} />, { wrapper })
+        render(<PriceCallout {...props} setValue={mockSetValue} />, { wrapper })
 
         const savings = await screen.findByText(/\$50.00/)
         expect(savings).toBeInTheDocument()
@@ -180,7 +180,7 @@ describe('TeamPrice', () => {
       describe('user switches to annual plan', () => {
         it('calls mock set value with team annual plan', async () => {
           const { mockSetValue, user } = setup()
-          render(<TeamPrice {...props} setValue={mockSetValue} />, {
+          render(<PriceCallout {...props} setValue={mockSetValue} />, {
             wrapper,
           })
 

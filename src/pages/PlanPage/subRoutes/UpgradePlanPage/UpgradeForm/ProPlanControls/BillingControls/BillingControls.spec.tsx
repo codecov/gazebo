@@ -24,7 +24,7 @@ const basicPlan = {
 }
 
 const proPlanMonth = {
-  marketingName: 'Pro Team',
+  marketingName: 'Pro',
   value: 'users-pr-inappm',
   billingRate: 'monthly',
   baseUnitPrice: 12,
@@ -39,7 +39,7 @@ const proPlanMonth = {
 }
 
 const proPlanYear = {
-  marketingName: 'Pro Team',
+  marketingName: 'Pro',
   value: 'users-pr-inappy',
   billingRate: 'annually',
   baseUnitPrice: 10,
@@ -51,24 +51,6 @@ const proPlanYear = {
   ],
   monthlyUploadLimit: 250,
   quantity: 10,
-}
-
-const teamPlanMonth = {
-  baseUnitPrice: 6,
-  benefits: ['Up to 10 users'],
-  billingRate: 'monthly',
-  marketingName: 'Users Team',
-  monthlyUploadLimit: 2500,
-  value: 'users-teamm',
-}
-
-const teamPlanYear = {
-  baseUnitPrice: 5,
-  benefits: ['Up to 10 users'],
-  billingRate: 'annually',
-  marketingName: 'Users Team',
-  monthlyUploadLimit: 2500,
-  value: 'users-teamy',
 }
 
 const server = setupServer()
@@ -97,28 +79,15 @@ afterAll(() => {
   server.close()
 })
 
-type SetupArgs = {
-  hasTeamPlans: boolean
-}
-
 describe('BillingControls', () => {
-  function setup(
-    { hasTeamPlans = false }: SetupArgs = { hasTeamPlans: false }
-  ) {
+  function setup() {
     server.use(
       graphql.query('GetAvailablePlans', (req, res, ctx) => {
         return res(
           ctx.status(200),
           ctx.data({
             owner: {
-              availablePlans: [
-                basicPlan,
-                proPlanMonth,
-                proPlanYear,
-                teamPlanMonth,
-                teamPlanYear,
-                ...(hasTeamPlans ? [teamPlanMonth, teamPlanYear] : []),
-              ],
+              availablePlans: [basicPlan, proPlanMonth, proPlanYear],
             },
           })
         )
@@ -133,159 +102,129 @@ describe('BillingControls', () => {
 
   describe('when rendered', () => {
     describe('planString is set to annual plan', () => {
-      describe('when plan is not a team plan', () => {
-        it('renders annual button as "selected"', async () => {
-          const { mockSetValue } = setup({ hasTeamPlans: false })
+      it('renders annual button as "selected"', async () => {
+        const { mockSetValue } = setup()
 
-          render(
-            <BillingControls
-              planString={Plans.USERS_PR_INAPPY}
-              setValue={mockSetValue}
-            />,
-            {
-              wrapper,
-            }
-          )
+        render(
+          <BillingControls
+            planString={Plans.USERS_PR_INAPPY}
+            setValue={mockSetValue}
+          />,
+          {
+            wrapper,
+          }
+        )
 
-          const annualBtn = await screen.findByRole('button', {
-            name: 'Annual',
-          })
-          expect(annualBtn).toBeInTheDocument()
-          expect(annualBtn).toHaveClass('bg-ds-primary-base')
-
-          const monthlyBtn = await screen.findByRole('button', {
-            name: 'Monthly',
-          })
-          expect(monthlyBtn).toBeInTheDocument()
-          expect(monthlyBtn).not.toHaveClass('bg-ds-primary-base')
+        const annualBtn = await screen.findByRole('button', {
+          name: 'Annual',
         })
+        expect(annualBtn).toBeInTheDocument()
+        expect(annualBtn).toHaveClass('bg-ds-primary-base')
 
-        it('renders annual pricing scheme', async () => {
-          const { mockSetValue } = setup({ hasTeamPlans: false })
-
-          render(
-            <BillingControls
-              planString={Plans.USERS_PR_INAPPY}
-              setValue={mockSetValue}
-            />,
-            {
-              wrapper,
-            }
-          )
-
-          const cost = await screen.findByText(/\$10/)
-          expect(cost).toBeInTheDocument()
-
-          const content = await screen.findByText(/\/per seat, billed annually/)
-          expect(content).toBeInTheDocument()
+        const monthlyBtn = await screen.findByRole('button', {
+          name: 'Monthly',
         })
-
-        describe('user clicks on monthly button', () => {
-          it('calls setValue', async () => {
-            const { mockSetValue, user } = setup({ hasTeamPlans: false })
-
-            render(
-              <BillingControls
-                planString={Plans.USERS_PR_INAPPY}
-                setValue={mockSetValue}
-              />,
-              {
-                wrapper,
-              }
-            )
-
-            const monthlyBtn = await screen.findByRole('button', {
-              name: 'Monthly',
-            })
-            expect(monthlyBtn).toBeInTheDocument()
-            await user.click(monthlyBtn)
-
-            await waitFor(() =>
-              expect(mockSetValue).toBeCalledWith('newPlan', 'users-pr-inappm')
-            )
-          })
-        })
+        expect(monthlyBtn).toBeInTheDocument()
+        expect(monthlyBtn).not.toHaveClass('bg-ds-primary-base')
       })
 
-      describe('when plan is a team plan', () => {
-        it('renders annual button as "selected"', async () => {
-          const { mockSetValue } = setup({ hasTeamPlans: true })
+      it('renders annual pricing scheme', async () => {
+        const { mockSetValue } = setup()
+
+        render(
+          <BillingControls
+            planString={Plans.USERS_PR_INAPPY}
+            setValue={mockSetValue}
+          />,
+          {
+            wrapper,
+          }
+        )
+
+        const cost = await screen.findByText(/\$10/)
+        expect(cost).toBeInTheDocument()
+
+        const content = await screen.findByText(/\/per seat, billed annually/)
+        expect(content).toBeInTheDocument()
+      })
+
+      describe('user clicks on monthly button', () => {
+        it('calls setValue', async () => {
+          const { mockSetValue, user } = setup()
 
           render(
             <BillingControls
-              planString={Plans.USERS_TEAMY}
+              planString={Plans.USERS_PR_INAPPY}
               setValue={mockSetValue}
             />,
             {
               wrapper,
             }
           )
-
-          const annualBtn = await screen.findByRole('button', {
-            name: 'Annual',
-          })
-          expect(annualBtn).toBeInTheDocument()
-          expect(annualBtn).toHaveClass('bg-ds-primary-base')
 
           const monthlyBtn = await screen.findByRole('button', {
             name: 'Monthly',
           })
           expect(monthlyBtn).toBeInTheDocument()
-          expect(monthlyBtn).not.toHaveClass('bg-ds-primary-base')
-        })
+          await user.click(monthlyBtn)
 
-        it('renders correct pricing scheme', async () => {
-          const { mockSetValue } = setup({ hasTeamPlans: true })
-
-          render(
-            <BillingControls
-              planString={Plans.USERS_TEAMY}
-              setValue={mockSetValue}
-            />,
-            {
-              wrapper,
-            }
+          await waitFor(() =>
+            expect(mockSetValue).toBeCalledWith('newPlan', 'users-pr-inappm')
           )
-
-          const cost = await screen.findByText(/\$5/)
-          expect(cost).toBeInTheDocument()
-
-          const content = await screen.findByText(/\/per seat, billed annually/)
-          expect(content).toBeInTheDocument()
-        })
-
-        describe('user clicks on monthly button', () => {
-          it('calls setValue', async () => {
-            const { mockSetValue, user } = setup({ hasTeamPlans: true })
-
-            render(
-              <BillingControls
-                planString={Plans.USERS_TEAMY}
-                setValue={mockSetValue}
-              />,
-              {
-                wrapper,
-              }
-            )
-
-            const monthlyBtn = await screen.findByRole('button', {
-              name: 'Monthly',
-            })
-            expect(monthlyBtn).toBeInTheDocument()
-            await user.click(monthlyBtn)
-
-            await waitFor(() =>
-              expect(mockSetValue).toBeCalledWith('newPlan', Plans.USERS_TEAMM)
-            )
-          })
         })
       })
     })
 
     describe('planString is set to a monthly plan', () => {
-      describe('when plan is not a team plan', () => {
-        it('renders monthly button as "selected"', async () => {
-          const { mockSetValue } = setup({ hasTeamPlans: false })
+      it('renders monthly button as "selected"', async () => {
+        const { mockSetValue } = setup()
+
+        render(
+          <BillingControls
+            planString={Plans.USERS_PR_INAPPM}
+            setValue={mockSetValue}
+          />,
+          {
+            wrapper,
+          }
+        )
+
+        const annualBtn = await screen.findByRole('button', {
+          name: 'Annual',
+        })
+        expect(annualBtn).toBeInTheDocument()
+        expect(annualBtn).not.toHaveClass('bg-ds-primary-base')
+
+        const monthlyBtn = await screen.findByRole('button', {
+          name: 'Monthly',
+        })
+        expect(monthlyBtn).toBeInTheDocument()
+        expect(monthlyBtn).toHaveClass('bg-ds-primary-base')
+      })
+
+      it('renders correct pricing scheme', async () => {
+        const { mockSetValue } = setup()
+
+        render(
+          <BillingControls
+            planString={Plans.USERS_PR_INAPPM}
+            setValue={mockSetValue}
+          />,
+          {
+            wrapper,
+          }
+        )
+
+        const cost = await screen.findByText(/\$12/)
+        expect(cost).toBeInTheDocument()
+
+        const content = await screen.findByText(/\/per seat, billed monthly/)
+        expect(content).toBeInTheDocument()
+      })
+
+      describe('user clicks on annual button', () => {
+        it('calls setValue', async () => {
+          const { mockSetValue, user } = setup()
 
           render(
             <BillingControls
@@ -301,87 +240,11 @@ describe('BillingControls', () => {
             name: 'Annual',
           })
           expect(annualBtn).toBeInTheDocument()
-          expect(annualBtn).not.toHaveClass('bg-ds-primary-base')
+          await user.click(annualBtn)
 
-          const monthlyBtn = await screen.findByRole('button', {
-            name: 'Monthly',
-          })
-          expect(monthlyBtn).toBeInTheDocument()
-          expect(monthlyBtn).toHaveClass('bg-ds-primary-base')
-        })
-
-        it('renders correct pricing scheme', async () => {
-          const { mockSetValue } = setup({ hasTeamPlans: false })
-
-          render(
-            <BillingControls
-              planString={Plans.USERS_PR_INAPPM}
-              setValue={mockSetValue}
-            />,
-            {
-              wrapper,
-            }
+          await waitFor(() =>
+            expect(mockSetValue).toBeCalledWith('newPlan', 'users-pr-inappy')
           )
-
-          const cost = await screen.findByText(/\$12/)
-          expect(cost).toBeInTheDocument()
-
-          const content = await screen.findByText(/\/per seat, billed monthly/)
-          expect(content).toBeInTheDocument()
-        })
-
-        describe('user clicks on annual button', () => {
-          it('calls setValue', async () => {
-            const { mockSetValue, user } = setup({ hasTeamPlans: false })
-
-            render(
-              <BillingControls
-                planString={Plans.USERS_PR_INAPPM}
-                setValue={mockSetValue}
-              />,
-              {
-                wrapper,
-              }
-            )
-
-            const annualBtn = await screen.findByRole('button', {
-              name: 'Annual',
-            })
-            expect(annualBtn).toBeInTheDocument()
-            await user.click(annualBtn)
-
-            await waitFor(() =>
-              expect(mockSetValue).toBeCalledWith('newPlan', 'users-pr-inappy')
-            )
-          })
-        })
-      })
-
-      describe('when plan is a team plan', () => {
-        describe('user clicks on annual button', () => {
-          it('calls setValue', async () => {
-            const { mockSetValue, user } = setup({ hasTeamPlans: true })
-
-            render(
-              <BillingControls
-                planString={Plans.USERS_TEAMM}
-                setValue={mockSetValue}
-              />,
-              {
-                wrapper,
-              }
-            )
-
-            const annualBtn = await screen.findByRole('button', {
-              name: 'Annual',
-            })
-            expect(annualBtn).toBeInTheDocument()
-            await user.click(annualBtn)
-
-            await waitFor(() =>
-              expect(mockSetValue).toBeCalledWith('newPlan', Plans.USERS_TEAMY)
-            )
-          })
         })
       })
     })

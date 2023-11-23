@@ -2,13 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useAvailablePlans } from 'services/account'
-import {
-  findTeamPlans,
-  isAnnualPlan,
-  isMonthlyPlan,
-  isTeamPlan,
-  useProPlans,
-} from 'shared/utils/billing'
+import { isAnnualPlan, isMonthlyPlan, useProPlans } from 'shared/utils/billing'
 import OptionButton from 'ui/OptionButton'
 
 interface BillingControlsProps {
@@ -23,7 +17,6 @@ const BillingControls: React.FC<BillingControlsProps> = ({
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { proPlanMonth, proPlanYear } = useProPlans({ plans })
-  const { teamPlanMonth, teamPlanYear } = findTeamPlans({ plans })
 
   const [option, setOption] = useState<'Annual' | 'Monthly'>(() =>
     isMonthlyPlan(planString) ? 'Monthly' : 'Annual'
@@ -39,20 +32,12 @@ const BillingControls: React.FC<BillingControlsProps> = ({
     }
   }, [planString, option])
 
-  let annualPlan = proPlanYear
-  let monthlyPlan = proPlanMonth
-
-  if (isTeamPlan(planString)) {
-    annualPlan = teamPlanYear
-    monthlyPlan = teamPlanMonth
-  }
-
   const baseUnitPrice =
     option === 'Monthly'
-      ? monthlyPlan?.baseUnitPrice
-      : annualPlan?.baseUnitPrice
+      ? proPlanMonth?.baseUnitPrice
+      : proPlanYear?.baseUnitPrice
   const billingRate =
-    option === 'Monthly' ? monthlyPlan?.billingRate : annualPlan?.billingRate
+    option === 'Monthly' ? proPlanMonth?.billingRate : proPlanYear?.billingRate
 
   return (
     <div className="flex w-fit flex-col gap-2">
@@ -63,9 +48,9 @@ const BillingControls: React.FC<BillingControlsProps> = ({
           active={option}
           onChange={({ text }) => {
             if (text === 'Annual') {
-              setValue('newPlan', annualPlan?.value)
+              setValue('newPlan', proPlanYear?.value)
             } else {
-              setValue('newPlan', monthlyPlan?.value)
+              setValue('newPlan', proPlanMonth?.value)
             }
 
             setOption(text)
