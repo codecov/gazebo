@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import PropType from 'prop-types'
 import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
@@ -7,28 +8,46 @@ import {
   useAvailablePlans,
   usePlanData,
 } from 'services/account'
-import { getNextBillingDate, useProPlans } from 'shared/utils/billing'
+import { useFlags } from 'shared/featureFlags'
 import {
-  getDefaultValuesProUpgrade,
+  canApplySentryUpgrade,
+  getNextBillingDate,
+  isTeamPlan,
+  shouldDisplayTeamCard,
+} from 'shared/utils/billing'
+import {
+  getDefaultValuesUpgradeForm,
   getSchema,
   MIN_NB_SEATS_PRO,
+  MIN_SENTRY_SEATS,
 } from 'shared/utils/upgradeForm'
 import TextInput from 'ui/TextInput'
 
 import BillingControls from './BillingControls'
+import PlanDetailsControls from './PlanDetailsControls'
 import TotalPriceCallout from './TotalPriceCallout'
 import UserCount from './UserCount'
 
 import { useUpgradeControls } from '../hooks'
 import UpdateButton from '../UpdateButton'
 
-function ProPlanControls() {
+function ProPlanControls({ selectedPlan, setSelectedPlan }) {
   const { provider, owner } = useParams()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { data: planData } = usePlanData({ owner, provider })
-  const { proPlanYear } = useProPlans({ plans })
   const { upgradePlan } = useUpgradeControls()
+  const { multipleTiers } = useFlags({
+    multipleTiers: false,
+  })
+  const isSentryUpgrade = canApplySentryUpgrade({
+    plan: accountDetails?.plan?.value,
+    plans,
+  })
+  const minSeats =
+    isSentryUpgrade && !isTeamPlan(selectedPlan?.value)
+      ? MIN_SENTRY_SEATS
+      : MIN_NB_SEATS_PRO
 
   const trialStatus = planData?.plan?.trialStatus
   const nextBillingDate = getNextBillingDate(accountDetails)
@@ -40,20 +59,22 @@ function ProPlanControls() {
     setValue,
     getValues,
   } = useForm({
-    defaultValues: getDefaultValuesProUpgrade({
+    defaultValues: getDefaultValuesUpgradeForm({
       accountDetails,
-      proPlanYear,
+      plans,
       trialStatus,
     }),
     resolver: zodResolver(
       getSchema({
         accountDetails,
-        minSeats: MIN_NB_SEATS_PRO,
+        minSeats,
         trialStatus,
+        selectedPlan,
       })
     ),
     mode: 'onChange',
   })
+  const hasTeamPlans = shouldDisplayTeamCard({ plans })
 
   const newPlan = watch('newPlan')
   const seats = watch('seats')
@@ -67,6 +88,12 @@ function ProPlanControls() {
         <h3 className="font-semibold">Organization</h3>
         <span>{owner}</span>
       </div>
+      {hasTeamPlans && multipleTiers && (
+        <PlanDetailsControls
+          setValue={setValue}
+          setSelectedPlan={setSelectedPlan}
+        />
+      )}
       <div className="flex flex-col gap-2">
         <BillingControls planString={newPlan} setValue={setValue} />
       </div>
@@ -110,3 +137,8 @@ function ProPlanControls() {
 }
 
 export default ProPlanControls
+
+ProPlanControls.propTypes = {
+  selectedPlan: PropType.string.isRequired,
+  setSelectedPlan: PropType.func.isRequired,
+}
