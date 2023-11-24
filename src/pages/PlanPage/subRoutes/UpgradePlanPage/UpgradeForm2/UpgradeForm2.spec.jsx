@@ -11,7 +11,7 @@ import { useAddNotification } from 'services/toastNotification'
 import { useFlags } from 'shared/featureFlags'
 import { Plans } from 'shared/utils/billing'
 
-import ProPlanControls from './ProPlanControls'
+import UpgradeForm2 from './UpgradeForm2'
 
 jest.mock('services/toastNotification')
 jest.mock('@stripe/react-stripe-js')
@@ -182,7 +182,7 @@ const wrapper =
       </QueryClientProvider>
     )
 
-describe('ProPlanControls', () => {
+describe('UpgradeForm2', () => {
   function setup(
     {
       planValue = Plans.USERS_BASIC,
@@ -274,7 +274,7 @@ describe('ProPlanControls', () => {
     describe('when the user has a basic plan', () => {
       it('renders the organization and owner titles', async () => {
         setup({ planValue: Plans.USERS_BASIC })
-        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
         const organizationTitle = await screen.findByText(/Organization/)
         expect(organizationTitle).toBeInTheDocument()
@@ -284,7 +284,7 @@ describe('ProPlanControls', () => {
 
       it('renders monthly option button', async () => {
         setup({ planValue: Plans.USERS_BASIC })
-        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
         expect(optionBtn).toBeInTheDocument()
@@ -292,7 +292,7 @@ describe('ProPlanControls', () => {
 
       it('renders annual option button', async () => {
         setup({ planValue: Plans.USERS_BASIC })
-        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(optionBtn).toBeInTheDocument()
@@ -300,7 +300,7 @@ describe('ProPlanControls', () => {
 
       it('renders annual option button as "selected"', async () => {
         setup({ planValue: Plans.USERS_BASIC })
-        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(optionBtn).toBeInTheDocument()
@@ -309,7 +309,7 @@ describe('ProPlanControls', () => {
 
       it('has the price for the year', async () => {
         setup({ planValue: Plans.USERS_BASIC })
-        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
         const price = await screen.findByText(/\$240/)
         expect(price).toBeInTheDocument()
@@ -317,7 +317,7 @@ describe('ProPlanControls', () => {
 
       it('renders minimum seat number of 2', async () => {
         setup({ planValue: Plans.USERS_BASIC })
-        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
         const minimumSeat = await screen.findByRole('spinbutton')
         expect(minimumSeat).toHaveValue(2)
@@ -325,7 +325,7 @@ describe('ProPlanControls', () => {
 
       it('renders validation error when the user selects less than 2 seats', async () => {
         const { user } = setup({ planValue: Plans.USERS_BASIC })
-        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
         const input = await screen.findByRole('spinbutton')
         await user.type(input, '{backspace}{backspace}{backspace}')
@@ -344,7 +344,7 @@ describe('ProPlanControls', () => {
 
       it('renders the proceed to checkout for the update button', async () => {
         setup({ planValue: Plans.USERS_BASIC })
-        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
         const proceedToCheckoutButton = await screen.findByRole('button', {
           name: /Proceed to Checkout/,
@@ -360,7 +360,7 @@ describe('ProPlanControls', () => {
               hasTeamPlans: true,
               multipleTiers: false,
             })
-            render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+            render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
             const proBtn = screen.queryByRole('button', { name: 'Pro' })
             expect(proBtn).not.toBeInTheDocument()
@@ -376,7 +376,7 @@ describe('ProPlanControls', () => {
               hasTeamPlans: true,
               multipleTiers: true,
             })
-            render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+            render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
             const optionBtn = await screen.findByRole('button', { name: 'Pro' })
             expect(optionBtn).toBeInTheDocument()
@@ -389,7 +389,7 @@ describe('ProPlanControls', () => {
               hasTeamPlans: true,
               multipleTiers: true,
             })
-            render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+            render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
             const optionBtn = await screen.findByRole('button', {
               name: 'Team',
@@ -404,7 +404,7 @@ describe('ProPlanControls', () => {
                 hasTeamPlans: true,
                 multipleTiers: true,
               })
-              render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+              render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
               const teamOption = await screen.findByRole('button', {
                 name: 'Team',
@@ -421,7 +421,7 @@ describe('ProPlanControls', () => {
                 hasTeamPlans: true,
                 multipleTiers: true,
               })
-              render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+              render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
               const teamOption = await screen.findByRole('button', {
                 name: 'Team',
@@ -438,7 +438,7 @@ describe('ProPlanControls', () => {
                 hasTeamPlans: true,
                 multipleTiers: true,
               })
-              render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+              render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
               const teamOption = await screen.findByRole('button', {
                 name: 'Team',
@@ -457,7 +457,7 @@ describe('ProPlanControls', () => {
       describe('when updating to a month plan', () => {
         it('has the price for the month', async () => {
           const { user } = setup({ planValue: Plans.USERS_BASIC })
-          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+          render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
           const monthOption = await screen.findByRole('button', {
             name: 'Monthly',
@@ -475,7 +475,7 @@ describe('ProPlanControls', () => {
             successfulPatchRequest: true,
             planValue: Plans.USERS_BASIC,
           })
-          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+          render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -501,7 +501,7 @@ describe('ProPlanControls', () => {
             successfulPatchRequest: true,
             planValue: Plans.USERS_BASIC,
           })
-          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+          render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -532,7 +532,7 @@ describe('ProPlanControls', () => {
             successfulPatchRequest: true,
             planValue: Plans.USERS_BASIC,
           })
-          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+          render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -560,7 +560,7 @@ describe('ProPlanControls', () => {
             planValue: Plans.USERS_BASIC,
           })
 
-          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+          render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -590,7 +590,7 @@ describe('ProPlanControls', () => {
             planValue: Plans.USERS_BASIC,
           })
 
-          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+          render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -619,7 +619,7 @@ describe('ProPlanControls', () => {
     describe('when the user has a pro plan monthly', () => {
       it('renders the organization and owner titles', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
-        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
         const organizationTitle = await screen.findByText(/Organization/)
         expect(organizationTitle).toBeInTheDocument()
@@ -629,7 +629,7 @@ describe('ProPlanControls', () => {
 
       it('renders monthly option button', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
-        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
         expect(optionBtn).toBeInTheDocument()
@@ -637,7 +637,7 @@ describe('ProPlanControls', () => {
 
       it('renders annual option button', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
-        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(optionBtn).toBeInTheDocument()
@@ -645,7 +645,7 @@ describe('ProPlanControls', () => {
 
       it('renders monthly option button as "selected"', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
-        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
         expect(optionBtn).toBeInTheDocument()
@@ -654,7 +654,7 @@ describe('ProPlanControls', () => {
 
       it('renders the seat input with 10 seats (existing subscription)', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
-        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
         const seatCount = await screen.findByRole('spinbutton')
         expect(seatCount).toHaveValue(10)
@@ -662,7 +662,7 @@ describe('ProPlanControls', () => {
 
       it('has the price for the year', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
-        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
         const price = await screen.findByText(/\$120/)
         expect(price).toBeInTheDocument()
@@ -670,7 +670,7 @@ describe('ProPlanControls', () => {
 
       it('renders validation error when the user selects less than 2 seats', async () => {
         const { user } = setup({ planValue: Plans.USERS_PR_INAPPM })
-        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
         const input = await screen.findByRole('spinbutton')
         await user.type(input, '{backspace}{backspace}{backspace}')
@@ -689,7 +689,7 @@ describe('ProPlanControls', () => {
 
       it('renders validation error when the user selects less than number of active users', async () => {
         const { user } = setup({ planValue: Plans.USERS_PR_INAPPM })
-        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
         const input = await screen.findByRole('spinbutton')
         await user.type(input, '{backspace}{backspace}{backspace}')
@@ -708,7 +708,7 @@ describe('ProPlanControls', () => {
 
       it('renders the update button', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
-        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
         const update = await screen.findByRole('button', {
           name: /Update/,
@@ -719,7 +719,7 @@ describe('ProPlanControls', () => {
       describe('when updating to a yearly plan', () => {
         it('has the price for the year', async () => {
           const { user } = setup({ planValue: Plans.USERS_PR_INAPPM })
-          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+          render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
           const annualOption = await screen.findByRole('button', {
             name: 'Annual',
@@ -739,7 +739,7 @@ describe('ProPlanControls', () => {
               hasTeamPlans: true,
               multipleTiers: false,
             })
-            render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+            render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
             const proBtn = screen.queryByRole('button', { name: 'Pro' })
             expect(proBtn).not.toBeInTheDocument()
@@ -755,7 +755,7 @@ describe('ProPlanControls', () => {
               hasTeamPlans: true,
               multipleTiers: true,
             })
-            render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+            render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
             const optionBtn = await screen.findByRole('button', { name: 'Pro' })
             expect(optionBtn).toBeInTheDocument()
@@ -768,7 +768,7 @@ describe('ProPlanControls', () => {
               hasTeamPlans: true,
               multipleTiers: true,
             })
-            render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+            render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
             const optionBtn = await screen.findByRole('button', {
               name: 'Team',
@@ -783,7 +783,7 @@ describe('ProPlanControls', () => {
                 hasTeamPlans: true,
                 multipleTiers: true,
               })
-              render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+              render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
               const teamOption = await screen.findByRole('button', {
                 name: 'Team',
@@ -800,7 +800,7 @@ describe('ProPlanControls', () => {
                 hasTeamPlans: true,
                 multipleTiers: true,
               })
-              render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+              render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
               const teamOption = await screen.findByRole('button', {
                 name: 'Team',
@@ -817,7 +817,7 @@ describe('ProPlanControls', () => {
                 hasTeamPlans: true,
                 multipleTiers: true,
               })
-              render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+              render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
               const teamOption = await screen.findByRole('button', {
                 name: 'Team',
@@ -839,7 +839,7 @@ describe('ProPlanControls', () => {
             successfulPatchRequest: true,
             planValue: Plans.USERS_PR_INAPPM,
           })
-          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+          render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -865,7 +865,7 @@ describe('ProPlanControls', () => {
             successfulPatchRequest: true,
             planValue: Plans.USERS_PR_INAPPM,
           })
-          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+          render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -900,7 +900,7 @@ describe('ProPlanControls', () => {
             planValue: Plans.USERS_PR_INAPPM,
           })
 
-          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+          render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -930,7 +930,7 @@ describe('ProPlanControls', () => {
             planValue: Plans.USERS_PR_INAPPM,
           })
 
-          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+          render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -959,7 +959,7 @@ describe('ProPlanControls', () => {
     describe('when the user has a pro plan yearly', () => {
       it('renders the organization and owner titles', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPY })
-        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
         const organizationTitle = await screen.findByText(/Organization/)
         expect(organizationTitle).toBeInTheDocument()
@@ -969,7 +969,7 @@ describe('ProPlanControls', () => {
 
       it('renders monthly option button', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPY })
-        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
         expect(optionBtn).toBeInTheDocument()
@@ -977,7 +977,7 @@ describe('ProPlanControls', () => {
 
       it('renders annual option button', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPY })
-        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(optionBtn).toBeInTheDocument()
@@ -985,7 +985,7 @@ describe('ProPlanControls', () => {
 
       it('renders annual option button as "selected"', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPY })
-        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(optionBtn).toBeInTheDocument()
@@ -994,7 +994,7 @@ describe('ProPlanControls', () => {
 
       it('renders the seat input with 13 seats (existing subscription)', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPY })
-        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
         const seatCount = await screen.findByRole('spinbutton')
         expect(seatCount).toHaveValue(13)
@@ -1002,7 +1002,7 @@ describe('ProPlanControls', () => {
 
       it('has the price for the year', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPY })
-        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
         const price = await screen.findByText(/\$130/)
         expect(price).toBeInTheDocument()
@@ -1010,7 +1010,7 @@ describe('ProPlanControls', () => {
 
       it('renders validation error when the user selects less than 2 seats', async () => {
         const { user } = setup({ planValue: Plans.USERS_PR_INAPPY })
-        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
         const input = await screen.findByRole('spinbutton')
         await user.type(input, '{backspace}{backspace}{backspace}')
@@ -1029,7 +1029,7 @@ describe('ProPlanControls', () => {
 
       it('renders validation error when the user selects less than number of active users', async () => {
         const { user } = setup({ planValue: Plans.USERS_PR_INAPPY })
-        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
         const input = await screen.findByRole('spinbutton')
         await user.type(input, '{backspace}{backspace}{backspace}')
@@ -1048,7 +1048,7 @@ describe('ProPlanControls', () => {
 
       it('renders the update button', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPY })
-        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
         const update = await screen.findByRole('button', {
           name: /Update/,
@@ -1059,7 +1059,7 @@ describe('ProPlanControls', () => {
       describe('when updating to a monthly plan', () => {
         it('has the price for the month', async () => {
           const { user } = setup({ planValue: Plans.USERS_PR_INAPPY })
-          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+          render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
           const monthlyOption = await screen.findByRole('button', {
             name: 'Monthly',
@@ -1079,7 +1079,7 @@ describe('ProPlanControls', () => {
               hasTeamPlans: true,
               multipleTiers: false,
             })
-            render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+            render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
             const proBtn = screen.queryByRole('button', { name: 'Pro' })
             expect(proBtn).not.toBeInTheDocument()
@@ -1095,7 +1095,7 @@ describe('ProPlanControls', () => {
               hasTeamPlans: true,
               multipleTiers: true,
             })
-            render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+            render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
             const optionBtn = await screen.findByRole('button', { name: 'Pro' })
             expect(optionBtn).toBeInTheDocument()
@@ -1108,7 +1108,7 @@ describe('ProPlanControls', () => {
               hasTeamPlans: true,
               multipleTiers: true,
             })
-            render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+            render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
             const optionBtn = await screen.findByRole('button', {
               name: 'Team',
@@ -1123,7 +1123,7 @@ describe('ProPlanControls', () => {
                 hasTeamPlans: true,
                 multipleTiers: true,
               })
-              render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+              render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
               const teamOption = await screen.findByRole('button', {
                 name: 'Team',
@@ -1140,7 +1140,7 @@ describe('ProPlanControls', () => {
                 hasTeamPlans: true,
                 multipleTiers: true,
               })
-              render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+              render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
               const teamOption = await screen.findByRole('button', {
                 name: 'Team',
@@ -1157,7 +1157,7 @@ describe('ProPlanControls', () => {
                 hasTeamPlans: true,
                 multipleTiers: true,
               })
-              render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+              render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
               const teamOption = await screen.findByRole('button', {
                 name: 'Team',
@@ -1179,7 +1179,7 @@ describe('ProPlanControls', () => {
             successfulPatchRequest: true,
             planValue: Plans.USERS_PR_INAPPY,
           })
-          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+          render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -1205,7 +1205,7 @@ describe('ProPlanControls', () => {
             successfulPatchRequest: true,
             planValue: Plans.USERS_PR_INAPPY,
           })
-          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+          render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -1236,7 +1236,7 @@ describe('ProPlanControls', () => {
             successfulPatchRequest: true,
             planValue: Plans.USERS_PR_INAPPY,
           })
-          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+          render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -1264,7 +1264,7 @@ describe('ProPlanControls', () => {
             planValue: Plans.USERS_PR_INAPPY,
           })
 
-          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+          render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -1294,7 +1294,7 @@ describe('ProPlanControls', () => {
             planValue: Plans.USERS_PR_INAPPY,
           })
 
-          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+          render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -1327,7 +1327,7 @@ describe('ProPlanControls', () => {
             planValue: Plans.USERS_TRIAL,
             trialStatus: TrialStatuses.ONGOING,
           })
-          render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+          render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -1354,7 +1354,7 @@ describe('ProPlanControls', () => {
         setup({
           planValue: Plans.USERS_PR_INAPPM,
         })
-        render(<ProPlanControls {...props} />, { wrapper: wrapper() })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
 
         const nextBillingData = await screen.findByText(/Next Billing Date/)
         expect(nextBillingData).toBeInTheDocument()

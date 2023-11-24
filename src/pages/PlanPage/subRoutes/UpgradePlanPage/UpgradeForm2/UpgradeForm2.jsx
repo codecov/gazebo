@@ -23,15 +23,14 @@ import {
 } from 'shared/utils/upgradeForm'
 import TextInput from 'ui/TextInput'
 
-import BillingControls from './BillingControls'
-import PlanDetailsControls from './PlanDetailsControls'
-import TotalPriceCallout from './TotalPriceCallout'
-import UserCount from './UserCount'
+import BillingOptions from './Controllers/ProPlanController/BillingOptions'
+import PriceCallout from './Controllers/ProPlanController/PriceCallout'
+import UserCount from './Controllers/ProPlanController/UserCount'
+import { useUpgradeControls } from './hooks'
+import PlanDetailsOptions from './PlanDetailsOptions'
+import UpdateButton from './UpdateButton'
 
-import { useUpgradeControls } from '../hooks'
-import UpdateButton from '../UpdateButton'
-
-function ProPlanControls({ selectedPlan, setSelectedPlan }) {
+function UpgradeForm2({ selectedPlan, setSelectedPlan }) {
   const { provider, owner } = useParams()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: plans } = useAvailablePlans({ provider, owner })
@@ -89,13 +88,13 @@ function ProPlanControls({ selectedPlan, setSelectedPlan }) {
         <span>{owner}</span>
       </div>
       {hasTeamPlans && multipleTiers && (
-        <PlanDetailsControls
+        <PlanDetailsOptions
           setValue={setValue}
           setSelectedPlan={setSelectedPlan}
         />
       )}
       <div className="flex flex-col gap-2">
-        <BillingControls planString={newPlan} setValue={setValue} />
+        <BillingOptions planString={newPlan} setValue={setValue} />
       </div>
       <div className="flex flex-col gap-2 xl:w-5/12">
         <div className="w-2/6">
@@ -112,7 +111,7 @@ function ProPlanControls({ selectedPlan, setSelectedPlan }) {
         </div>
         <UserCount />
       </div>
-      <TotalPriceCallout seats={seats} newPlan={newPlan} setValue={setValue} />
+      <PriceCallout seats={seats} newPlan={newPlan} setValue={setValue} />
       {nextBillingDate && (
         <p className="mt-1 flex">
           Next Billing Date
@@ -136,9 +135,9 @@ function ProPlanControls({ selectedPlan, setSelectedPlan }) {
   )
 }
 
-export default ProPlanControls
+export default UpgradeForm2
 
-ProPlanControls.propTypes = {
+UpgradeForm2.propTypes = {
   selectedPlan: PropType.string.isRequired,
   setSelectedPlan: PropType.func.isRequired,
 }

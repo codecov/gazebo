@@ -8,7 +8,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { Plans } from 'shared/utils/billing'
 
-import TotalPriceCallout from './TotalPriceCallout'
+import PriceCallout from './PriceCallout'
 
 const availablePlans = [
   {
@@ -97,7 +97,7 @@ afterAll(() => {
   server.close()
 })
 
-describe('TotalPriceCallout', () => {
+describe('PriceCallout', () => {
   afterEach(() => jest.resetAllMocks())
 
   function setup() {
@@ -128,7 +128,7 @@ describe('TotalPriceCallout', () => {
       it('displays per month price', async () => {
         const { mockSetValue } = setup()
 
-        render(<TotalPriceCallout {...props} setValue={mockSetValue} />, {
+        render(<PriceCallout {...props} setValue={mockSetValue} />, {
           wrapper,
         })
 
@@ -139,7 +139,7 @@ describe('TotalPriceCallout', () => {
       it('displays billed annually at price', async () => {
         const { mockSetValue } = setup()
 
-        render(<TotalPriceCallout {...props} setValue={mockSetValue} />, {
+        render(<PriceCallout {...props} setValue={mockSetValue} />, {
           wrapper,
         })
 
@@ -152,7 +152,7 @@ describe('TotalPriceCallout', () => {
       it('displays how much the user saves', async () => {
         const { mockSetValue } = setup()
 
-        render(<TotalPriceCallout {...props} setValue={mockSetValue} />, {
+        render(<PriceCallout {...props} setValue={mockSetValue} />, {
           wrapper,
         })
 
@@ -169,7 +169,7 @@ describe('TotalPriceCallout', () => {
 
       it('displays the monthly price', async () => {
         const { mockSetValue } = setup()
-        render(<TotalPriceCallout {...props} setValue={mockSetValue} />, {
+        render(<PriceCallout {...props} setValue={mockSetValue} />, {
           wrapper,
         })
 
@@ -179,7 +179,7 @@ describe('TotalPriceCallout', () => {
 
       it('displays what the user could save with annual plan', async () => {
         const { mockSetValue } = setup()
-        render(<TotalPriceCallout {...props} setValue={mockSetValue} />, {
+        render(<PriceCallout {...props} setValue={mockSetValue} />, {
           wrapper,
         })
 
@@ -190,7 +190,7 @@ describe('TotalPriceCallout', () => {
       describe('user switches to annual plan', () => {
         it('calls mock set value with pro annual plan', async () => {
           const { mockSetValue, user } = setup()
-          render(<TotalPriceCallout {...props} setValue={mockSetValue} />, {
+          render(<PriceCallout {...props} setValue={mockSetValue} />, {
             wrapper,
           })
 
