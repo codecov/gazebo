@@ -352,7 +352,7 @@ describe('ProPlanControls', () => {
         expect(proceedToCheckoutButton).toBeInTheDocument()
       })
 
-      xdescribe('when the user has team plans available', () => {
+      describe.skip('when the user has team plans available', () => {
         describe('when the feature flag is off', () => {
           it('does not renders the Pro and team buttons', () => {
             setup({
@@ -731,7 +731,7 @@ describe('ProPlanControls', () => {
         })
       })
 
-      xdescribe('when the user has team plans available', () => {
+      describe.skip('when the user has team plans available', () => {
         describe('when the feature flag is off', () => {
           it('does not renders the Pro and team buttons', () => {
             setup({
@@ -1071,7 +1071,7 @@ describe('ProPlanControls', () => {
         })
       })
 
-      xdescribe('when the user has team plans available', () => {
+      describe.skip('when the user has team plans available', () => {
         describe('when the feature flag is off', () => {
           it('does not renders the Pro and team buttons', () => {
             setup({
