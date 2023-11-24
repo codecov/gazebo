@@ -95,11 +95,11 @@ afterAll(() => {
 })
 
 describe('PullRequestPage', () => {
-  function setup({
+  function setup(
     pullData = mockPullPageData,
     tierValue = TierNames.BASIC,
-    privateRepo = false,
-  }) {
+    privateRepo = false
+  ) {
     useFlags.mockReturnValue({
       multipleTiers: true,
     })
@@ -153,7 +153,7 @@ describe('PullRequestPage', () => {
   }
 
   describe('when pull data is available', () => {
-    beforeEach(() => setup({}))
+    beforeEach(() => setup())
 
     it('renders breadcrumb', async () => {
       render(<PullRequestPage />, { wrapper: wrapper() })
@@ -213,7 +213,7 @@ describe('PullRequestPage', () => {
   })
 
   describe('when there is no pull data', () => {
-    beforeEach(() => setup({ pullData: null }))
+    beforeEach(() => setup(null))
 
     it('renders not found', async () => {
       render(<PullRequestPage />, { wrapper: wrapper() })
@@ -224,9 +224,24 @@ describe('PullRequestPage', () => {
   })
 
   describe('when user is on team plan', () => {
-    beforeEach(() => setup({ tierValue: TierNames.TEAM, privateRepo: true }))
+    beforeEach(() => setup(mockPullPageDataTeam, TierNames.TEAM, true))
+
     it('returns a valid response', async () => {
       render(<PullRequestPage />, { wrapper: wrapper() })
+      const header = await screen.findByText(/Header/)
+      expect(header).toBeInTheDocument()
+      const org = await screen.findByRole('link', { name: 'test-org' })
+      expect(org).toBeInTheDocument()
+      expect(org).toHaveAttribute('href', '/gh/test-org')
+
+      const repo = await screen.findByRole('link', { name: 'test-repo' })
+      expect(repo).toBeInTheDocument()
+      expect(repo).toHaveAttribute('href', '/gh/test-org/test-repo')
+
+      const pulls = await screen.findByRole('link', { name: 'Pulls' })
+      expect(pulls).toBeInTheDocument()
+      expect(pulls).toHaveAttribute('href', '/gh/test-org/test-repo/pulls')
+
       const pullId = await screen.findByText('12')
       expect(pullId).toBeInTheDocument()
     })
