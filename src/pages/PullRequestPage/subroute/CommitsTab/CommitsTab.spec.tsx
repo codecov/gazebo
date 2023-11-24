@@ -65,7 +65,7 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/cool-repo/pull/1234/commits']}>
       <Route path="/:provider/:owner/:repo/pull/:pullId/commits">
@@ -86,9 +86,14 @@ afterAll(() => {
   server.close()
 })
 
+interface setupArgs {
+  tierValue?: string
+  isPrivate?: boolean
+}
+
 describe('CommitsTab', () => {
   function setup(
-    { tierValue = TierNames.PRO, isPrivate = false } = {
+    { tierValue = TierNames.PRO, isPrivate = false }: setupArgs = {
       tierValue: TierNames.PRO,
       isPrivate: false,
     }

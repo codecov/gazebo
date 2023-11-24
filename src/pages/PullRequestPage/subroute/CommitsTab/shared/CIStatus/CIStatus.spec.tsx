@@ -3,8 +3,14 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import CIStatus from './CIStatus'
 
+interface setupArgs {
+  coverage?: number
+  ciPassed?: boolean
+  commitid?: string
+}
+
 describe('CIStatus', () => {
-  function setup(props) {
+  function setup(props: setupArgs) {
     render(
       <MemoryRouter initialEntries={['/gh/test/gazebo/commits']}>
         <Route path="/:provider/:owner/:repo/commits">
@@ -68,7 +74,7 @@ describe('CIStatus', () => {
     beforeEach(() => {
       setup({
         coverage: 0,
-        ciPassed: null,
+        ciPassed: false,
         commitid: '123456789',
       })
     })

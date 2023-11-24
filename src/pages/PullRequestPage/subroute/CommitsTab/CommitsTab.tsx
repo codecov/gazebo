@@ -14,8 +14,13 @@ const Loader = () => (
   </div>
 )
 
+interface CommitsTabProps {
+  provider: string
+  owner: string
+}
+
 function CommitsTab() {
-  const { provider, owner } = useParams()
+  const { provider, owner } = useParams<CommitsTabProps>()
   const { data: tierName } = useTier({ provider, owner })
   const { data: repoData } = useRepoSettingsTeam()
 
