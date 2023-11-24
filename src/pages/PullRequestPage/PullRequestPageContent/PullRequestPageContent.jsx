@@ -4,6 +4,9 @@ import { Redirect, Switch, useParams } from 'react-router-dom'
 import { SentryRoute } from 'sentry'
 
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
+import { useRepoSettings } from 'services/repo'
+import { TierNames, useTier } from 'services/tier'
+import { useFlags } from 'shared/featureFlags'
 import { ComparisonReturnType } from 'shared/utils/comparison'
 import Spinner from 'ui/Spinner'
 
@@ -27,7 +30,23 @@ const Loader = () => (
 
 function PullRequestPageContent() {
   const { owner, repo, pullId, provider } = useParams()
-  const { data } = usePullPageData({ provider, owner, repo, pullId })
+  const { data: settings } = useRepoSettings()
+  const { multipleTiers } = useFlags({
+    multipleTiers: false,
+  })
+  const { data: tierData } = useTier({ provider, owner })
+  const isTeamPlan =
+    multipleTiers &&
+    tierData === TierNames.TEAM &&
+    settings?.repository?.private
+
+  const { data } = usePullPageData({
+    provider,
+    owner,
+    repo,
+    pullId,
+    isTeamPlan,
+  })
 
   const resultType = data?.pull?.compareWithBase?.__typename
 
