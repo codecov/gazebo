@@ -27,7 +27,7 @@ import BillingOptions from './Controllers/ProPlanController/BillingOptions'
 import PriceCallout from './Controllers/ProPlanController/PriceCallout'
 import UserCount from './Controllers/ProPlanController/UserCount'
 import { useUpgradeControls } from './hooks'
-import PlanDetailsOptions from './PlanDetailsOptions'
+import PlanTypeOptions from './PlanTypeOptions'
 import UpdateButton from './UpdateButton'
 
 function UpgradeForm2({ selectedPlan, setSelectedPlan }) {
@@ -88,7 +88,7 @@ function UpgradeForm2({ selectedPlan, setSelectedPlan }) {
         <span>{owner}</span>
       </div>
       {hasTeamPlans && multipleTiers && (
-        <PlanDetailsOptions
+        <PlanTypeOptions
           setValue={setValue}
           setSelectedPlan={setSelectedPlan}
         />
