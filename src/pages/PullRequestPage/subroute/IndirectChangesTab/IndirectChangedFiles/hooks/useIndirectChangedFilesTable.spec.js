@@ -54,13 +54,58 @@ const mockData = {
   },
 }
 
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
-})
-const server = setupServer()
+const noHeadOrBaseCoverage = {
+  owner: {
+    repository: {
+      pull: {
+        pullId: 14,
+        head: {
+          state: 'PROCESSED',
+        },
+        compareWithBase: {
+          __typename: 'Comparison',
+          patchTotals: {
+            percentCovered: 92.12,
+          },
+          headTotals: {
+            percentCovered: 74.2,
+          },
+          baseTotals: {
+            percentCovered: 27.35,
+          },
+          changeCoverage: 38.94,
+          impactedFiles: {
+            __typename: ImpactedFilesReturnType.IMPACTED_FILES,
+            results: [
+              {
+                missesCount: 0,
+                isCriticalFile: true,
+                fileName: 'mafs.js',
+                headName: 'flag1/mafs.js',
+                baseCoverage: {
+                  percentCovered: undefined,
+                },
+                headCoverage: {
+                  percentCovered: undefined,
+                },
+                patchCoverage: {
+                  percentCovered: 27.43,
+                },
+              },
+            ],
+          },
+        },
+      },
+    },
+  },
+}
 
+const server = setupServer()
 const wrapper =
-  (initialEntries = '/gh/test-org/test-repo/pull/5?flags=a,b') =>
+  ({
+    initialEntries = '/gh/test-org/test-repo/pull/5?flags=a,b',
+    queryClient,
+  }) =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
@@ -74,15 +119,21 @@ beforeAll(() => {
   server.listen()
   console.error = () => {}
 })
+
 afterEach(() => {
-  queryClient.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('useIndirectChangedFilesTable', () => {
   function setup(overrideData = mockData) {
     const variablesPassed = jest.fn()
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    })
 
     server.use(
       graphql.query('Pull', (req, res, ctx) => {
@@ -91,14 +142,14 @@ describe('useIndirectChangedFilesTable', () => {
       })
     )
 
-    return { variablesPassed }
+    return { variablesPassed, queryClient }
   }
 
   describe('when handleSort is triggered', () => {
     it('calls useIndirectChangedFilesTable with correct filters value', async () => {
-      const { variablesPassed } = setup()
+      const { variablesPassed, queryClient } = setup()
       const { result } = renderHook(() => useIndirectChangedFilesTable({}), {
-        wrapper: wrapper(),
+        wrapper: wrapper({ queryClient }),
       })
 
       result.current.handleSort([{ desc: false, id: 'name' }])
@@ -136,13 +187,10 @@ describe('useIndirectChangedFilesTable', () => {
   })
 
   describe('when called', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('returns data', async () => {
+      const { queryClient } = setup()
       const { result } = renderHook(() => useIndirectChangedFilesTable({}), {
-        wrapper: wrapper(),
+        wrapper: wrapper({ queryClient }),
       })
 
       await waitFor(() => result.current.isLoading)
@@ -175,58 +223,10 @@ describe('useIndirectChangedFilesTable', () => {
   })
 
   describe('when called with no head or base coverage on the impacted files', () => {
-    beforeEach(() => {
-      const mockData = {
-        owner: {
-          repository: {
-            pull: {
-              pullId: 14,
-              head: {
-                state: 'PROCESSED',
-              },
-              compareWithBase: {
-                __typename: 'Comparison',
-                patchTotals: {
-                  percentCovered: 92.12,
-                },
-                headTotals: {
-                  percentCovered: 74.2,
-                },
-                baseTotals: {
-                  percentCovered: 27.35,
-                },
-                changeCoverage: 38.94,
-                impactedFiles: {
-                  __typename: ImpactedFilesReturnType.IMPACTED_FILES,
-                  results: [
-                    {
-                      missesCount: 0,
-                      isCriticalFile: true,
-                      fileName: 'mafs.js',
-                      headName: 'flag1/mafs.js',
-                      baseCoverage: {
-                        percentCovered: undefined,
-                      },
-                      headCoverage: {
-                        percentCovered: undefined,
-                      },
-                      patchCoverage: {
-                        percentCovered: 27.43,
-                      },
-                    },
-                  ],
-                },
-              },
-            },
-          },
-        },
-      }
-      setup(mockData)
-    })
-
     it('returns data', async () => {
+      const { queryClient } = setup(noHeadOrBaseCoverage)
       const { result } = renderHook(() => useIndirectChangedFilesTable({}), {
-        wrapper: wrapper(),
+        wrapper: wrapper({ queryClient }),
       })
 
       await waitFor(() => result.current.isLoading)
