@@ -126,7 +126,7 @@ jobs:
           shopt -s globstar
           TEST_LIST=$(ls src/**/*.spec.js src/**/*.test.js src/**/*.spec.jsx src/**/*.spec.ts src/**/*.spec.tsx | jq -R -s -c 'split("\n")[:-1]')
           TEST_LENGTH=$(echo $TEST_LIST | jq length)
-          MAX_INDEX=$((($TEST_LENGTH/${{ env.TEST_SPLIT_NUMBER }})-1))
+          MAX_INDEX=$((($TEST_LENGTH/${{ env.TEST_SPLIT_NUMBER }})))
           MAX_INDEX=$(($MAX_INDEX < 0 ? 0 : $MAX_INDEX))
           INDEX_LIST=$(seq 0 ${MAX_INDEX})
           INDEX_JSON=$(jq --null-input --compact-output '. |= [inputs]' <<< ${INDEX_LIST})
