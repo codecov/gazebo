@@ -8,7 +8,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { Plans } from 'shared/utils/billing'
 
-import TotalPriceCallout from './TotalPriceCallout'
+import PriceCallout from './PriceCallout'
 
 const availablePlans = [
   {
@@ -97,7 +97,7 @@ afterAll(() => {
   server.close()
 })
 
-describe('TotalPriceCallout', () => {
+describe('PriceCallout', () => {
   afterEach(() => jest.resetAllMocks())
 
   function setup() {
@@ -121,30 +121,26 @@ describe('TotalPriceCallout', () => {
   describe('when rendered', () => {
     describe('isPerYear is set to true', () => {
       const props = {
-        newPlan: Plans.USERS_PR_INAPPY,
+        newPlan: Plans.USERS_TEAMY,
         seats: 10,
       }
 
       it('displays per month price', async () => {
         const { mockSetValue } = setup()
 
-        render(<TotalPriceCallout {...props} setValue={mockSetValue} />, {
-          wrapper,
-        })
+        render(<PriceCallout {...props} setValue={mockSetValue} />, { wrapper })
 
-        const perMonthPrice = await screen.findByText(/\$100.00/)
+        const perMonthPrice = await screen.findByText(/\$40.00/)
         expect(perMonthPrice).toBeInTheDocument()
       })
 
       it('displays billed annually at price', async () => {
         const { mockSetValue } = setup()
 
-        render(<TotalPriceCallout {...props} setValue={mockSetValue} />, {
-          wrapper,
-        })
+        render(<PriceCallout {...props} setValue={mockSetValue} />, { wrapper })
 
         const annualPrice = await screen.findByText(
-          /\/per month billed annually at \$1,200.00/
+          /\/per month billed annually at \$480.00/
         )
         expect(annualPrice).toBeInTheDocument()
       })
@@ -152,45 +148,39 @@ describe('TotalPriceCallout', () => {
       it('displays how much the user saves', async () => {
         const { mockSetValue } = setup()
 
-        render(<TotalPriceCallout {...props} setValue={mockSetValue} />, {
-          wrapper,
-        })
+        render(<PriceCallout {...props} setValue={mockSetValue} />, { wrapper })
 
-        const moneySaved = await screen.findByText(/\$240.00/)
+        const moneySaved = await screen.findByText(/\$120.00/)
         expect(moneySaved).toBeInTheDocument()
       })
     })
 
     describe('isPerYear is set to false', () => {
       const props = {
-        newPlan: Plans.USERS_PR_INAPPM,
+        newPlan: Plans.USERS_TEAMM,
         seats: 10,
       }
 
       it('displays the monthly price', async () => {
         const { mockSetValue } = setup()
-        render(<TotalPriceCallout {...props} setValue={mockSetValue} />, {
-          wrapper,
-        })
+        render(<PriceCallout {...props} setValue={mockSetValue} />, { wrapper })
 
-        const monthlyPrice = await screen.findByText(/\$120.00/)
+        const monthlyPrice = await screen.findByText(/\$50.00/)
         expect(monthlyPrice).toBeInTheDocument()
       })
 
       it('displays what the user could save with annual plan', async () => {
         const { mockSetValue } = setup()
-        render(<TotalPriceCallout {...props} setValue={mockSetValue} />, {
-          wrapper,
-        })
+        render(<PriceCallout {...props} setValue={mockSetValue} />, { wrapper })
 
-        const savings = await screen.findByText(/\$240.00/)
+        const savings = await screen.findByText(/\$50.00/)
         expect(savings).toBeInTheDocument()
       })
 
       describe('user switches to annual plan', () => {
-        it('calls mock set value with pro annual plan', async () => {
+        it('calls mock set value with team annual plan', async () => {
           const { mockSetValue, user } = setup()
-          render(<TotalPriceCallout {...props} setValue={mockSetValue} />, {
+          render(<PriceCallout {...props} setValue={mockSetValue} />, {
             wrapper,
           })
 
@@ -201,7 +191,7 @@ describe('TotalPriceCallout', () => {
 
           await user.click(switchToAnnual)
 
-          expect(mockSetValue).toBeCalledWith('newPlan', Plans.USERS_PR_INAPPY)
+          expect(mockSetValue).toBeCalledWith('newPlan', Plans.USERS_TEAMY)
         })
       })
     })
