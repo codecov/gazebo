@@ -65,7 +65,7 @@ interface Filters {
   components?: string[]
 }
 
-export function usePullComponents(filters: Filters = {}) {
+export function usePullComponents(filters: Filters = {}, options = {}) {
   const { provider, owner, repo, pullId } = useParams<URLParams>()
 
   return useQuery({
@@ -108,5 +108,6 @@ export function usePullComponents(filters: Filters = {}) {
           pull: data?.owner?.repository?.pull,
         }
       }),
+    ...options,
   })
 }
