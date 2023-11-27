@@ -15,33 +15,40 @@ const defaultQueryParams = {
 function ComponentsSelector() {
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const [componentSearch, setComponentSearch] = useState('')
-  // @ts-expect-errors, useLocation params needs to be updated to have full types
   const [selectedComponents, setSelectedComponents] = useState(
+    // @ts-expect-errors, useLocation params needs to be updated to have full types
     params?.components
   )
   const { componentsSelect: componentsSelectFlag } = useFlags({
     componentsSelect: false,
   })
-  const { data, isLoading } = usePullComponents(
-    {
+  const { data, isLoading } = usePullComponents({
+    filters: {
       components: componentSearch ? [componentSearch] : undefined,
     },
-    {
+    options: {
       suspense: false,
-    }
-  )
+    },
+  })
 
-  if ((!data && !isLoading) || !componentsSelectFlag) {
+  const components =
+    data?.pull?.compareWithBase.__typename === 'Comparison'
+      ? data?.pull?.compareWithBase?.componentComparisons
+      : []
+
+  if (!components?.length || !componentsSelectFlag) {
     return null
   }
 
-  const components = data?.pull?.compareWithBase?.componentComparisons
-
   const componentsNames = new Set()
   // @ts-expect-errors, useLocation params needs to be updated to have full types
-  params?.components?.forEach((component) => componentsNames.add(component))
+  params?.components?.forEach((component: String) =>
+    componentsNames.add(component)
+  )
   if (!isUndefined(components)) {
-    components?.forEach((component) => componentsNames.add(component?.name))
+    components?.forEach((component: { name: String }) =>
+      componentsNames.add(component?.name)
+    )
   }
 
   return (
@@ -49,8 +56,8 @@ function ComponentsSelector() {
       <MultiSelect
         // @ts-expect-error
         disabled={false}
-        dataMarketing="coverage-tab-flag-multi-select"
-        hook="coverage-tab-flag-multi-select"
+        dataMarketing="coverage-tab-component-multi-select"
+        hook="coverage-tab-component-multi-select"
         ariaName="Select components to show"
         items={[...componentsNames]}
         resourceName="component"
