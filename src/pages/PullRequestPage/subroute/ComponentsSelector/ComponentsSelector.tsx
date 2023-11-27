@@ -36,7 +36,10 @@ function ComponentsSelector() {
       ? data?.pull?.compareWithBase?.componentComparisons
       : []
 
-  if (!components?.length || !componentsSelectFlag) {
+  if (
+    (!components?.length && !isLoading && !componentSearch) ||
+    !componentsSelectFlag
+  ) {
     return null
   }
 
