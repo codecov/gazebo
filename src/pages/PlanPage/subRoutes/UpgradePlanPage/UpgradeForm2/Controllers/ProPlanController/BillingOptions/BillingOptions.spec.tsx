@@ -8,7 +8,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { Plans } from 'shared/utils/billing'
 
-import BillingControls from './BillingControls'
+import BillingOptions from './BillingOptions'
 
 const allPlans = [
   {
@@ -77,7 +77,7 @@ afterAll(() => {
   server.close()
 })
 
-describe('BillingControls', () => {
+describe('BillingOptions', () => {
   function setup() {
     server.use(
       graphql.query('GetAvailablePlans', (req, res, ctx) =>
@@ -104,7 +104,7 @@ describe('BillingControls', () => {
         const { mockSetValue } = setup()
 
         render(
-          <BillingControls
+          <BillingOptions
             planString={Plans.USERS_PR_INAPPY}
             setValue={mockSetValue}
           />,
@@ -128,7 +128,7 @@ describe('BillingControls', () => {
         const { mockSetValue } = setup()
 
         render(
-          <BillingControls
+          <BillingOptions
             planString={Plans.USERS_PR_INAPPY}
             setValue={mockSetValue}
           />,
@@ -149,7 +149,7 @@ describe('BillingControls', () => {
           const { mockSetValue, user } = setup()
 
           render(
-            <BillingControls
+            <BillingOptions
               planString={Plans.USERS_PR_INAPPY}
               setValue={mockSetValue}
             />,
@@ -176,7 +176,7 @@ describe('BillingControls', () => {
         const { mockSetValue } = setup()
 
         render(
-          <BillingControls
+          <BillingOptions
             planString={Plans.USERS_PR_INAPPM}
             setValue={mockSetValue}
           />,
@@ -200,7 +200,7 @@ describe('BillingControls', () => {
         const { mockSetValue } = setup()
 
         render(
-          <BillingControls
+          <BillingOptions
             planString={Plans.USERS_PR_INAPPM}
             setValue={mockSetValue}
           />,
@@ -221,7 +221,7 @@ describe('BillingControls', () => {
           const { mockSetValue, user } = setup()
 
           render(
-            <BillingControls
+            <BillingOptions
               planString={Plans.USERS_PR_INAPPM}
               setValue={mockSetValue}
             />,
