@@ -30,8 +30,8 @@ const query = `
         ... on Repository {
           pull(id: $pullId) {
             compareWithBase {
+              __typename
               ... on Comparison {
-                __typename
                 componentComparisons(filters: $filters) {
                   name
                 }
