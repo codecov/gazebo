@@ -1,16 +1,31 @@
 import { useParams } from 'react-router-dom'
 
 import { useCommit } from 'services/commit'
+import { useRepoSettings } from 'services/repo'
+import { TierNames, useTier } from 'services/tier'
+import { useFlags } from 'shared/featureFlags'
 import { extractUploads } from 'shared/utils/extractUploads'
 
 export function useUploads() {
   const { provider, owner, repo, commit } = useParams()
+  const { data: settings } = useRepoSettings()
+  const { multipleTiers } = useFlags({
+    multipleTiers: false,
+  })
+  const { data: tierData } = useTier({ provider, owner })
+  const isTeamPlan =
+    multipleTiers &&
+    tierData === TierNames.TEAM &&
+    settings?.repository?.private
+
   const { data } = useCommit({
     provider,
     owner,
     repo,
     commitid: commit,
+    isTeamPlan,
   })
+
   const { uploadsOverview, sortedUploads, uploadsProviderList, hasNoUploads } =
     extractUploads({ unfilteredUploads: data?.commit?.uploads })
 
