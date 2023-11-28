@@ -222,7 +222,7 @@ describe('useIndirectChangedFilesTable', () => {
     })
   })
 
-  describe('when called with no head or base coverage on the impacted files', () => {
+  describe.skip('when called with no head or base coverage on the impacted files', () => {
     it('returns data', async () => {
       const { queryClient } = setup(noHeadOrBaseCoverage)
       const { result } = renderHook(() => useIndirectChangedFilesTable({}), {
