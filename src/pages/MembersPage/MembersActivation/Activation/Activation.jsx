@@ -71,7 +71,7 @@ function Activation() {
       <h3 className="text-base font-semibold">Member activation</h3>
       <p>
         <span className="text-lg font-semibold">{activatedUserCount}</span>{' '}
-        actived members of{' '}
+        activated members of{' '}
         <span className="text-lg font-semibold">{planQuantity}</span> available
         seats{' '}
         {accountDetails && <ChangePlanLink accountDetails={accountDetails} />}
