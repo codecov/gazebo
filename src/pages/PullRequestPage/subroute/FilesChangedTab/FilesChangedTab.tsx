@@ -6,6 +6,8 @@ import { TierNames, useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 import Spinner from 'ui/Spinner'
 
+import ComponentsSelector from '../ComponentsSelector'
+
 const FilesChangedTable = lazy(() => import('./FilesChanged'))
 const TeamFilesChangedTable = lazy(() => import('./FilesChanged/TableTeam'))
 
@@ -47,6 +49,9 @@ function FilesChangedTab() {
 
   return (
     <Suspense fallback={<Loader />}>
+      <div className="flex justify-end bg-ds-gray-primary p-2">
+        <ComponentsSelector />
+      </div>
       <FilesChangedTable />
     </Suspense>
   )

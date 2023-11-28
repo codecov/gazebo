@@ -115,15 +115,19 @@ describe('useImpactedFilesTable', () => {
   function setup(dataReturned = mockPull) {
     const callsHandleSort = jest.fn()
     const flagsMock = jest.fn()
+    const componentsMock = jest.fn()
+
     server.use(
       graphql.query('Pull', (req, res, ctx) => {
         const { direction, parameter } = req.variables.filters.ordering
         callsHandleSort({ direction, parameter })
         flagsMock(req.variables.filters.flags)
+        componentsMock(req.variables.filters.components)
+
         return res(ctx.status(200), ctx.data(dataReturned))
       })
     )
-    return { callsHandleSort, flagsMock }
+    return { callsHandleSort, flagsMock, componentsMock }
   }
 
   describe('when called', () => {
@@ -292,6 +296,25 @@ describe('useImpactedFilesTable', () => {
 
       await waitFor(() => expect(flagsMock).toBeCalledTimes(1))
       await waitFor(() => expect(flagsMock).toHaveBeenCalledWith('flag1,flag2'))
+    })
+  })
+
+  describe('sends components to the API', () => {
+    it('correct variables are sent to the api', async () => {
+      const { componentsMock } = setup()
+      const { result } = renderHook(() => useImpactedFilesTable(), {
+        wrapper: wrapper([
+          '/gh/frumpkin/another-test/pull/14?components=component1,component2',
+        ]),
+      })
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      await waitFor(() => expect(componentsMock).toBeCalledTimes(1))
+      await waitFor(() =>
+        expect(componentsMock).toHaveBeenCalledWith('component1,component2')
+      )
     })
   })
 })
