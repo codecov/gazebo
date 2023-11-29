@@ -12,17 +12,14 @@ import UserCount from './UserCount'
 
 import { NewPlanType } from '../../PlanTypeOptions/PlanTypeOptions'
 
-export type SelectedPlanType = 'users-pr-inappy' | 'users-sentryy'
-
 interface ProPlanControllerProps {
-  newPlan: NewPlanType
-  selectedPlan: SelectedPlanType
   seats: number
-  setFormValue: (x: string, y: string) => void
+  newPlan: NewPlanType
   register: UseFormRegister<FieldValues>
-  errors: {
-    seats: {
-      message: string
+  setFormValue: (x: string, y: string) => void
+  errors?: {
+    seats?: {
+      message?: string
     }
   }
 }
