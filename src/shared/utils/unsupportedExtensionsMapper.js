@@ -268,7 +268,6 @@ const imageFileExtensions = new Set([
   'emf',
   'eps',
   'exif',
-  'fs',
   'gbr',
   'gif',
   'gpl',

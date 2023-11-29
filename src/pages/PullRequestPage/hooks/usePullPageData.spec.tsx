@@ -27,6 +27,25 @@ const mockPullData = {
   },
 }
 
+const mockPullDataTeam = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      pull: {
+        pullId: 1,
+        head: {
+          commitid: '123',
+        },
+        compareWithBase: {
+          __typename: 'Comparison',
+          impactedFilesCount: 4,
+          directChangedFilesCount: 0,
+        },
+      },
+    },
+  },
+}
+
 const mockNotFoundError = {
   owner: {
     repository: {
@@ -98,7 +117,9 @@ describe('usePullPageData', () => {
         } else if (isNullOwner) {
           return res(ctx.status(200), ctx.data(mockNullOwner))
         } else {
-          return res(ctx.status(200), ctx.data(mockPullData))
+          return req.variables.isTeamPlan
+            ? res(ctx.status(200), ctx.data(mockPullDataTeam))
+            : res(ctx.status(200), ctx.data(mockPullData))
         }
       })
     )
@@ -283,6 +304,45 @@ describe('usePullPageData', () => {
               status: 404,
             })
           )
+        )
+      })
+    })
+
+    describe('user on team plan', () => {
+      it('returns the correct subset of data', async () => {
+        setup({})
+
+        const { result } = renderHook(
+          () =>
+            usePullPageData({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'cool-repo',
+              pullId: '1',
+              isTeamPlan: true,
+            }),
+          {
+            wrapper,
+          }
+        )
+
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+
+        await waitFor(() =>
+          expect(result.current.data).toStrictEqual({
+            pull: {
+              pullId: 1,
+              head: {
+                commitid: '123',
+              },
+              compareWithBase: {
+                __typename: 'Comparison',
+                impactedFilesCount: 4,
+                directChangedFilesCount: 0,
+              },
+            },
+          })
         )
       })
     })

@@ -8,9 +8,9 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { Plans } from 'shared/utils/billing'
 
-import TotalBanner from './TotalPriceCallout'
+import PriceCallout from './PriceCallout'
 
-const allPlans = [
+const availablePlans = [
   {
     marketingName: 'Basic',
     value: 'users-basic',
@@ -21,11 +21,10 @@ const allPlans = [
       'Unlimited public repositories',
       'Unlimited private repositories',
     ],
-    quantity: 1,
     monthlyUploadLimit: 250,
   },
   {
-    marketingName: 'Pro Team',
+    marketingName: 'Pro',
     value: 'users-pr-inappm',
     billingRate: 'monthly',
     baseUnitPrice: 12,
@@ -35,11 +34,10 @@ const allPlans = [
       'Unlimited private repositories',
       'Priority Support',
     ],
-    quantity: 10,
     monthlyUploadLimit: null,
   },
   {
-    marketingName: 'Pro Team',
+    marketingName: 'Pro',
     value: 'users-pr-inappy',
     billingRate: 'annually',
     baseUnitPrice: 10,
@@ -50,48 +48,21 @@ const allPlans = [
       'Priority Support',
     ],
     monthlyUploadLimit: null,
-    quantity: 10,
   },
   {
-    marketingName: 'Pro Team',
-    value: 'users-enterprisem',
+    marketingName: 'Team',
+    value: 'users-teamm',
     billingRate: 'monthly',
-    baseUnitPrice: 12,
-    benefits: [
-      'Configurable # of users',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-      'Priority Support',
-    ],
+    baseUnitPrice: 5,
+    benefits: ['Patch coverage analysis'],
     monthlyUploadLimit: null,
   },
   {
-    marketingName: 'Pro Team',
-    value: 'users-enterprisey',
-    billingRate: 'annually',
-    baseUnitPrice: 10,
-    benefits: [
-      'Configurable # of users',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-      'Priority Support',
-    ],
-    monthlyUploadLimit: null,
-  },
-  {
-    marketingName: 'Sentry',
-    value: 'users-sentrym',
-    billingRate: null,
-    baseUnitPrice: 0,
-    benefits: ['Includes 5 seats', 'Unlimited public repositories'],
-    monthlyUploadLimit: null,
-  },
-  {
-    marketingName: 'Sentry',
-    value: 'users-sentryy',
-    billingRate: null,
-    baseUnitPrice: 10,
-    benefits: ['Includes 5 seats', 'Unlimited private repositories'],
+    marketingName: 'Team',
+    value: 'users-teamy',
+    billingRate: 'yearly',
+    baseUnitPrice: 4,
+    benefits: ['Patch coverage analysis'],
     monthlyUploadLimit: null,
   },
 ]
@@ -126,7 +97,7 @@ afterAll(() => {
   server.close()
 })
 
-describe('TotalBanner', () => {
+describe('PriceCallout', () => {
   afterEach(() => jest.resetAllMocks())
 
   function setup() {
@@ -138,7 +109,7 @@ describe('TotalBanner', () => {
         res(
           ctx.status(200),
           ctx.data({
-            owner: { availablePlans: allPlans },
+            owner: { availablePlans },
           })
         )
       )
@@ -150,26 +121,26 @@ describe('TotalBanner', () => {
   describe('when rendered', () => {
     describe('isPerYear is set to true', () => {
       const props = {
-        newPlan: Plans.USERS_PR_INAPPY,
+        newPlan: Plans.USERS_TEAMY,
         seats: 10,
       }
 
       it('displays per month price', async () => {
         const { mockSetValue } = setup()
 
-        render(<TotalBanner {...props} setValue={mockSetValue} />, { wrapper })
+        render(<PriceCallout {...props} setValue={mockSetValue} />, { wrapper })
 
-        const perMonthPrice = await screen.findByText(/\$100.00/)
+        const perMonthPrice = await screen.findByText(/\$40.00/)
         expect(perMonthPrice).toBeInTheDocument()
       })
 
       it('displays billed annually at price', async () => {
         const { mockSetValue } = setup()
 
-        render(<TotalBanner {...props} setValue={mockSetValue} />, { wrapper })
+        render(<PriceCallout {...props} setValue={mockSetValue} />, { wrapper })
 
         const annualPrice = await screen.findByText(
-          /\/per month billed annually at \$1,200.00/
+          /\/per month billed annually at \$480.00/
         )
         expect(annualPrice).toBeInTheDocument()
       })
@@ -177,39 +148,39 @@ describe('TotalBanner', () => {
       it('displays how much the user saves', async () => {
         const { mockSetValue } = setup()
 
-        render(<TotalBanner {...props} setValue={mockSetValue} />, { wrapper })
+        render(<PriceCallout {...props} setValue={mockSetValue} />, { wrapper })
 
-        const moneySaved = await screen.findByText(/\$240.00/)
+        const moneySaved = await screen.findByText(/\$120.00/)
         expect(moneySaved).toBeInTheDocument()
       })
     })
 
     describe('isPerYear is set to false', () => {
       const props = {
-        newPlan: Plans.USERS_PR_INAPPM,
+        newPlan: Plans.USERS_TEAMM,
         seats: 10,
       }
 
       it('displays the monthly price', async () => {
         const { mockSetValue } = setup()
-        render(<TotalBanner {...props} setValue={mockSetValue} />, { wrapper })
+        render(<PriceCallout {...props} setValue={mockSetValue} />, { wrapper })
 
-        const monthlyPrice = await screen.findByText(/\$120.00/)
+        const monthlyPrice = await screen.findByText(/\$50.00/)
         expect(monthlyPrice).toBeInTheDocument()
       })
 
       it('displays what the user could save with annual plan', async () => {
         const { mockSetValue } = setup()
-        render(<TotalBanner {...props} setValue={mockSetValue} />, { wrapper })
+        render(<PriceCallout {...props} setValue={mockSetValue} />, { wrapper })
 
-        const savings = await screen.findByText(/\$240.00/)
+        const savings = await screen.findByText(/\$50.00/)
         expect(savings).toBeInTheDocument()
       })
 
       describe('user switches to annual plan', () => {
-        it('calls mock set value with pro annual plan', async () => {
+        it('calls mock set value with team annual plan', async () => {
           const { mockSetValue, user } = setup()
-          render(<TotalBanner {...props} setValue={mockSetValue} />, {
+          render(<PriceCallout {...props} setValue={mockSetValue} />, {
             wrapper,
           })
 
@@ -220,7 +191,7 @@ describe('TotalBanner', () => {
 
           await user.click(switchToAnnual)
 
-          expect(mockSetValue).toBeCalledWith('newPlan', Plans.USERS_PR_INAPPY)
+          expect(mockSetValue).toBeCalledWith('newPlan', Plans.USERS_TEAMY)
         })
       })
     })

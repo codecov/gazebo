@@ -147,6 +147,20 @@ export function useProPlans({ plans }) {
   }
 }
 
+export const findProPlans = ({ plans }) => {
+  const proPlanMonth = plans?.find(
+    (plan) => plan.value === Plans.USERS_PR_INAPPM
+  )
+  const proPlanYear = plans?.find(
+    (plan) => plan.value === Plans.USERS_PR_INAPPY
+  )
+
+  return {
+    proPlanMonth,
+    proPlanYear,
+  }
+}
+
 export const findSentryPlans = ({ plans }) => {
   const sentryPlanMonth = plans?.find(
     (plan) => plan.value === Plans.USERS_SENTRYM
