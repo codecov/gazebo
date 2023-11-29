@@ -11,7 +11,6 @@ import {
 import { useFlags } from 'shared/featureFlags'
 import {
   canApplySentryUpgrade,
-  getNextBillingDate,
   isTeamPlan,
   shouldDisplayTeamCard,
 } from 'shared/utils/billing'
@@ -21,11 +20,8 @@ import {
   MIN_NB_SEATS_PRO,
   MIN_SENTRY_SEATS,
 } from 'shared/utils/upgradeForm'
-import TextInput from 'ui/TextInput'
 
-import BillingOptions from './Controllers/ProPlanController/BillingOptions'
-import PriceCallout from './Controllers/ProPlanController/PriceCallout'
-import UserCount from './Controllers/ProPlanController/UserCount'
+import ProPlanController from './Controllers/ProPlanController'
 import { useUpgradeControls } from './hooks'
 import PlanTypeOptions from './PlanTypeOptions'
 import UpdateButton from './UpdateButton'
@@ -49,14 +45,12 @@ function UpgradeForm2({ selectedPlan, setSelectedPlan }) {
       : MIN_NB_SEATS_PRO
 
   const trialStatus = planData?.plan?.trialStatus
-  const nextBillingDate = getNextBillingDate(accountDetails)
   const {
     register,
     handleSubmit,
     watch,
     formState: { isValid, errors },
-    setValue,
-    getValues,
+    setValue: setFormValue,
   } = useForm({
     defaultValues: getDefaultValuesUpgradeForm({
       accountDetails,
@@ -89,48 +83,18 @@ function UpgradeForm2({ selectedPlan, setSelectedPlan }) {
       </div>
       {hasTeamPlans && multipleTiers && (
         <PlanTypeOptions
-          setValue={setValue}
+          setFormValue={setFormValue}
           setSelectedPlan={setSelectedPlan}
         />
       )}
-      <div className="flex flex-col gap-2">
-        <BillingOptions planString={newPlan} setValue={setValue} />
-      </div>
-      <div className="flex flex-col gap-2 xl:w-5/12">
-        <div className="w-2/6">
-          <TextInput
-            data-cy="seats"
-            dataMarketing="plan-pricing-seats"
-            {...register('seats')}
-            id="nb-seats"
-            size="20"
-            type="number"
-            label="Seat count"
-            min={MIN_NB_SEATS_PRO}
-          />
-        </div>
-        <UserCount />
-      </div>
-      <PriceCallout seats={seats} newPlan={newPlan} setValue={setValue} />
-      {nextBillingDate && (
-        <p className="mt-1 flex">
-          Next Billing Date
-          <span className="ml-auto">{nextBillingDate}</span>
-        </p>
-      )}
-      {errors?.seats && (
-        <p className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
-          {errors?.seats?.message}
-        </p>
-      )}
-      <div className="w-fit">
-        <UpdateButton
-          isValid={isValid}
-          getValues={getValues}
-          value={accountDetails?.plan?.value}
-          quantity={accountDetails?.plan?.quantity}
-        />
-      </div>
+      <ProPlanController
+        newPlan={newPlan}
+        seats={seats}
+        setFormValue={setFormValue}
+        register={register}
+        errors={errors}
+      />
+      <UpdateButton isValid={isValid} newPlan={newPlan} seats={seats} />
     </form>
   )
 }
