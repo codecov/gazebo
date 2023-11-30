@@ -16,12 +16,12 @@ import {
 import { TEAM_PLAN_MAX_ACTIVE_USERS } from 'shared/utils/upgradeForm'
 import OptionButton from 'ui/OptionButton'
 
-interface PlanDetailsControlsProps {
+interface PlanTypeOptionsProps {
   setSelectedPlan: (x: z.infer<typeof IndividualPlanSchema>) => void
   setValue: (x: string, y: string) => void
 }
 
-const PlanDetailsControls: React.FC<PlanDetailsControlsProps> = ({
+const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   setValue,
   setSelectedPlan,
 }) => {
@@ -71,4 +71,4 @@ const PlanDetailsControls: React.FC<PlanDetailsControlsProps> = ({
   )
 }
 
-export default PlanDetailsControls
+export default PlanTypeOptions

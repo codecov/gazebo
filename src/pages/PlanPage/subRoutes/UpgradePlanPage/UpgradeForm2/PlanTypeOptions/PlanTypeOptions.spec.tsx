@@ -8,7 +8,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { Plans } from 'shared/utils/billing'
 
-import PlanDetailsControls from './PlanDetailsControls'
+import PlanTypeOptions from './PlanTypeOptions'
 
 const basicPlan = {
   marketingName: 'Basic',
@@ -167,7 +167,7 @@ type SetupArgs = {
   hasSentryPlans: boolean
 }
 
-describe('PlanDetailsControls', () => {
+describe('PlanTypeOptions', () => {
   function setup(
     { planValue = Plans.USERS_BASIC, hasSentryPlans = false }: SetupArgs = {
       planValue: Plans.USERS_BASIC,
@@ -222,7 +222,7 @@ describe('PlanDetailsControls', () => {
         })
 
         render(
-          <PlanDetailsControls
+          <PlanTypeOptions
             setValue={mockSetValue}
             setSelectedPlan={mockSetSelectedPlan}
           />,
@@ -252,7 +252,7 @@ describe('PlanDetailsControls', () => {
           })
 
           render(
-            <PlanDetailsControls
+            <PlanTypeOptions
               setValue={mockSetValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -284,7 +284,7 @@ describe('PlanDetailsControls', () => {
           })
 
           render(
-            <PlanDetailsControls
+            <PlanTypeOptions
               setValue={mockSetValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -317,7 +317,7 @@ describe('PlanDetailsControls', () => {
         })
 
         render(
-          <PlanDetailsControls
+          <PlanTypeOptions
             setValue={mockSetValue}
             setSelectedPlan={mockSetSelectedPlan}
           />,
@@ -347,7 +347,7 @@ describe('PlanDetailsControls', () => {
           })
 
           render(
-            <PlanDetailsControls
+            <PlanTypeOptions
               setValue={mockSetValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -379,7 +379,7 @@ describe('PlanDetailsControls', () => {
           })
 
           render(
-            <PlanDetailsControls
+            <PlanTypeOptions
               setValue={mockSetValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -412,7 +412,7 @@ describe('PlanDetailsControls', () => {
         })
 
         render(
-          <PlanDetailsControls
+          <PlanTypeOptions
             setValue={mockSetValue}
             setSelectedPlan={mockSetSelectedPlan}
           />,
@@ -442,7 +442,7 @@ describe('PlanDetailsControls', () => {
           })
 
           render(
-            <PlanDetailsControls
+            <PlanTypeOptions
               setValue={mockSetValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -474,7 +474,7 @@ describe('PlanDetailsControls', () => {
           })
 
           render(
-            <PlanDetailsControls
+            <PlanTypeOptions
               setValue={mockSetValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -507,7 +507,7 @@ describe('PlanDetailsControls', () => {
         })
 
         render(
-          <PlanDetailsControls
+          <PlanTypeOptions
             setValue={mockSetValue}
             setSelectedPlan={mockSetSelectedPlan}
           />,
@@ -537,7 +537,7 @@ describe('PlanDetailsControls', () => {
           })
 
           render(
-            <PlanDetailsControls
+            <PlanTypeOptions
               setValue={mockSetValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -569,7 +569,7 @@ describe('PlanDetailsControls', () => {
           })
 
           render(
-            <PlanDetailsControls
+            <PlanTypeOptions
               setValue={mockSetValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -604,7 +604,7 @@ describe('PlanDetailsControls', () => {
         })
 
         render(
-          <PlanDetailsControls
+          <PlanTypeOptions
             setValue={mockSetValue}
             setSelectedPlan={mockSetSelectedPlan}
           />,
@@ -634,7 +634,7 @@ describe('PlanDetailsControls', () => {
           })
 
           render(
-            <PlanDetailsControls
+            <PlanTypeOptions
               setValue={mockSetValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -666,7 +666,7 @@ describe('PlanDetailsControls', () => {
           })
 
           render(
-            <PlanDetailsControls
+            <PlanTypeOptions
               setValue={mockSetValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -702,7 +702,7 @@ describe('PlanDetailsControls', () => {
         })
 
         render(
-          <PlanDetailsControls
+          <PlanTypeOptions
             setValue={mockSetValue}
             setSelectedPlan={mockSetSelectedPlan}
           />,
@@ -732,7 +732,7 @@ describe('PlanDetailsControls', () => {
           })
 
           render(
-            <PlanDetailsControls
+            <PlanTypeOptions
               setValue={mockSetValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -764,7 +764,7 @@ describe('PlanDetailsControls', () => {
           })
 
           render(
-            <PlanDetailsControls
+            <PlanTypeOptions
               setValue={mockSetValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -800,7 +800,7 @@ describe('PlanDetailsControls', () => {
         })
 
         render(
-          <PlanDetailsControls
+          <PlanTypeOptions
             setValue={mockSetValue}
             setSelectedPlan={mockSetSelectedPlan}
           />,
@@ -830,7 +830,7 @@ describe('PlanDetailsControls', () => {
           })
 
           render(
-            <PlanDetailsControls
+            <PlanTypeOptions
               setValue={mockSetValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -862,7 +862,7 @@ describe('PlanDetailsControls', () => {
           })
 
           render(
-            <PlanDetailsControls
+            <PlanTypeOptions
               setValue={mockSetValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -898,7 +898,7 @@ describe('PlanDetailsControls', () => {
         })
 
         render(
-          <PlanDetailsControls
+          <PlanTypeOptions
             setValue={mockSetValue}
             setSelectedPlan={mockSetSelectedPlan}
           />,
@@ -928,7 +928,7 @@ describe('PlanDetailsControls', () => {
           })
 
           render(
-            <PlanDetailsControls
+            <PlanTypeOptions
               setValue={mockSetValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -960,7 +960,7 @@ describe('PlanDetailsControls', () => {
           })
 
           render(
-            <PlanDetailsControls
+            <PlanTypeOptions
               setValue={mockSetValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,

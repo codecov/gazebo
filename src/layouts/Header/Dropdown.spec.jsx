@@ -8,6 +8,8 @@ import { useImage } from 'services/image'
 
 import Dropdown from './Dropdown'
 
+const LOCAL_STORAGE_SESSION_TRACKING_KEY = 'tracking-session-expiry'
+
 const currentUser = {
   user: {
     username: 'chetney',
@@ -35,9 +37,14 @@ describe('Dropdown', () => {
   function setup({ selfHosted } = { selfHosted: false }) {
     useImage.mockReturnValue({ src: 'imageUrl', isLoading: false, error: null })
     config.IS_SELF_HOSTED = selfHosted
+    const mockRemoveItem = jest.spyOn(
+      window.localStorage.__proto__,
+      'removeItem'
+    )
 
     return {
       user: userEvent.setup(),
+      mockRemoveItem,
     }
   }
 
@@ -55,6 +62,9 @@ describe('Dropdown', () => {
   })
 
   describe('when on GitHub', () => {
+    afterEach(() => {
+      jest.resetAllMocks()
+    })
     describe('when the avatar is clicked', () => {
       it('shows settings link', async () => {
         const { user } = setup()
@@ -88,6 +98,26 @@ describe('Dropdown', () => {
         expect(link).toHaveAttribute(
           'href',
           '/logout/gh?to=http%3A%2F%2Flocalhost%2Flogin'
+        )
+      })
+
+      it('removes session expiry tracking key on sign out', async () => {
+        const { user, mockRemoveItem } = setup()
+
+        jest.spyOn(console, 'error').mockImplementation()
+        render(<Dropdown currentUser={currentUser} />, {
+          wrapper: Wrapper({ provider: 'gh' }),
+        })
+
+        const openSelect = screen.getByRole('combobox')
+        await user.click(openSelect)
+
+        const link = screen.getByText('Sign Out')
+        expect(link).toBeVisible()
+        await user.click(link)
+
+        expect(mockRemoveItem).toHaveBeenCalledWith(
+          LOCAL_STORAGE_SESSION_TRACKING_KEY
         )
       })
 
