@@ -367,6 +367,7 @@ describe('FilesChangedTable', () => {
           owner: 'codecov',
           provider: 'gh',
           repo: 'cool-repo',
+          isTeamPlan: false,
         })
       )
     })
