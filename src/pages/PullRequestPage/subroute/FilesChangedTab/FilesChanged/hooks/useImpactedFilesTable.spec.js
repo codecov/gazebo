@@ -317,4 +317,26 @@ describe('useImpactedFilesTable', () => {
       )
     })
   })
+
+  describe('sends components and filters to the API', () => {
+    it('correct variables are sent to the api', async () => {
+      const { componentsMock, flagsMock } = setup()
+      const { result } = renderHook(() => useImpactedFilesTable(), {
+        wrapper: wrapper([
+          '/gh/frumpkin/another-test/pull/14?components=component1,component2&flags=flag1,flag2',
+        ]),
+      })
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      await waitFor(() => expect(componentsMock).toBeCalledTimes(1))
+      await waitFor(() =>
+        expect(componentsMock).toHaveBeenCalledWith('component1,component2')
+      )
+
+      await waitFor(() => expect(flagsMock).toBeCalledTimes(1))
+      await waitFor(() => expect(flagsMock).toHaveBeenCalledWith('flag1,flag2'))
+    })
+  })
 })
