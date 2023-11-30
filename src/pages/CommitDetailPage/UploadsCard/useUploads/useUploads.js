@@ -13,6 +13,8 @@ export function useUploads() {
     multipleTiers: false,
   })
   const { data: tierData } = useTier({ provider, owner })
+
+  // TODO: We need backend functionality to properly manage access to carryforward flags for team tier members
   const isTeamPlan =
     multipleTiers &&
     tierData === TierNames.TEAM &&

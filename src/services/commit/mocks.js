@@ -15,6 +15,12 @@ export const commitErrored = graphql.query('Commit', (req, res, ctx) => {
 })
 
 export const commitOnePending = graphql.query('Commit', (req, res, ctx) => {
+  let flags = ['unit']
+  let provider = 'travis'
+  if (req.variables.isTeamPlan) {
+    flags = []
+    provider = 'travisTeam'
+  }
   return res(
     ctx.status(200),
     ctx.data({
@@ -32,7 +38,7 @@ export const commitOnePending = graphql.query('Commit', (req, res, ctx) => {
                     name: null,
                     errors: null,
                     state: 'STARTED',
-                    provider: 'travis',
+                    provider,
                     createdAt: '2020-08-25T16:36:19.559474+00:00',
                     updatedAt: '2020-08-25T16:36:19.679868+00:00',
                     downloadUrl: '/test.txt',
@@ -40,7 +46,7 @@ export const commitOnePending = graphql.query('Commit', (req, res, ctx) => {
                     uploadType: 'UPLOADED',
                     jobCode: '1234',
                     buildCode: '1234',
-                    flags: ['unit'],
+                    flags,
                   },
                 },
               ],
