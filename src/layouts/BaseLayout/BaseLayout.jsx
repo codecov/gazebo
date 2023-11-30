@@ -11,8 +11,11 @@ import { useTracking } from 'services/tracking'
 import GlobalBanners from 'shared/GlobalBanners'
 import GlobalTopBanners from 'shared/GlobalTopBanners'
 import LoadingLogo from 'ui/LoadingLogo'
+import SessionExpiryTracker from 'ui/SessionExpiryTracker'
 
 import { useUserAccessGate } from './hooks/useUserAccessGate'
+
+const LOCAL_STORAGE_SESSION_TRACKING_KEY = 'tracking-session-expiry'
 
 const LimitedHeader = lazy(() => import('layouts/LimitedHeader'))
 const DefaultOrgSelector = lazy(() => import('pages/DefaultOrgSelector'))
@@ -61,7 +64,9 @@ const OnboardingOrChildren = ({ children }) => {
 function BaseLayout({ children }) {
   const { isFullExperience, showDefaultOrgSelector, isLoading } =
     useUserAccessGate()
-
+  const isTrackingSession = localStorage.getItem(
+    LOCAL_STORAGE_SESSION_TRACKING_KEY
+  )
   useTracking()
 
   // Pause rendering of a page till we know if the user is logged in or not
@@ -72,6 +77,7 @@ function BaseLayout({ children }) {
       {isFullExperience ? (
         <>
           <Header />
+          {!isTrackingSession && <SessionExpiryTracker />}
           <GlobalTopBanners />
         </>
       ) : (
