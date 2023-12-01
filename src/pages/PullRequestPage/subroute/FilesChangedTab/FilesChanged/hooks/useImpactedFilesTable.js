@@ -20,7 +20,7 @@ export const orderingParameter = Object.freeze({
   missesCount: 'MISSES_COUNT',
 })
 
-function getFilters({ sortBy, flags }) {
+function getFilters({ sortBy, flags, components }) {
   return {
     ordering: {
       direction: sortBy?.desc ? orderingDirection.desc : orderingDirection.asc,
@@ -28,6 +28,7 @@ function getFilters({ sortBy, flags }) {
     },
     hasUnintendedChanges: false,
     ...(flags ? { flags } : {}),
+    ...(components ? { components } : {}),
   }
 }
 
@@ -87,7 +88,8 @@ export function useImpactedFilesTable() {
     depth: 1,
   })
   const flags = queryParams?.flags
-  const filters = getFilters({ sortBy: sortBy[0], flags })
+  const components = queryParams?.components
+  const filters = getFilters({ sortBy: sortBy[0], flags, components })
 
   const { data: pullData, isLoading } = usePull({
     provider,

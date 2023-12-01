@@ -1,6 +1,5 @@
 import cs from 'classnames'
 import isNull from 'lodash/isNull'
-import PropTypes from 'prop-types'
 import { createContext, useContext, useState } from 'react'
 import { z } from 'zod'
 
@@ -26,7 +25,7 @@ type Variants = keyof typeof variants
 
 const topBannerContext = z.object({
   variant: z.union([z.literal('default'), z.literal('warning')]),
-  localStorageKey: z.string(),
+  localStorageKey: z.string().optional(),
   setHideBanner: z.function().args(z.boolean()).returns(z.void()),
 })
 
@@ -73,16 +72,20 @@ export const useTopBannerContext = () => {
 const DismissButton: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { localStorageKey, setHideBanner } = useTopBannerContext()
 
+  const handleClick = () => {
+    if (localStorageKey) {
+      saveToLocalStorage(localStorageKey)
+    }
+    setHideBanner(true)
+  }
+
   return (
     <>
       {/* @ts-ignore */}
       <Button
         variant="plain"
         hook={`dismiss-${localStorageKey}`}
-        onClick={() => {
-          saveToLocalStorage(localStorageKey)
-          setHideBanner(true)
-        }}
+        onClick={handleClick}
       >
         {children}
       </Button>
@@ -115,7 +118,7 @@ const IconSymbol: React.FC = () => {
 
 interface TopBannerProps {
   variant?: Variants
-  localStorageKey: string
+  localStorageKey?: string
 }
 
 const TopBannerRoot: React.FC<React.PropsWithChildren<TopBannerProps>> = ({
@@ -127,7 +130,7 @@ const TopBannerRoot: React.FC<React.PropsWithChildren<TopBannerProps>> = ({
     const rawStore = localStorage.getItem(LOCAL_STORE_ROOT_KEY)
     if (rawStore) {
       const store = JSON.parse(rawStore)
-      if (store[localStorageKey] === 'true') {
+      if (localStorageKey && store[localStorageKey] === 'true') {
         return true
       }
     }
@@ -154,11 +157,6 @@ const TopBannerRoot: React.FC<React.PropsWithChildren<TopBannerProps>> = ({
       </div>
     </TopBannerContext.Provider>
   )
-}
-
-TopBannerRoot.propTypes = {
-  variant: PropTypes.oneOf(['default', 'warning']),
-  localStorageKey: PropTypes.string.isRequired,
 }
 
 export const TopBanner = Object.assign(TopBannerRoot, {
