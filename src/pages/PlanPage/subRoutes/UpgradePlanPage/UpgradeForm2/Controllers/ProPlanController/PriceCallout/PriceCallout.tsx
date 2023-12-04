@@ -10,16 +10,18 @@ import {
 import { calculatePriceProPlan } from 'shared/utils/upgradeForm'
 import Icon from 'ui/Icon'
 
-interface TotalPriceCalloutProps {
-  newPlan: string
+import { NewPlanType } from '../../../PlanTypeOptions/PlanTypeOptions'
+
+interface PriceCalloutProps {
+  newPlan: NewPlanType
   seats: number
-  setValue: (x: string, y: string) => void
+  setFormValue: (x: string, y: string) => void
 }
 
-const TotalPriceCallout: React.FC<TotalPriceCalloutProps> = ({
+const PriceCallout: React.FC<PriceCalloutProps> = ({
   newPlan,
   seats,
-  setValue,
+  setFormValue,
 }) => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
@@ -72,7 +74,7 @@ const TotalPriceCallout: React.FC<TotalPriceCalloutProps> = ({
           a year with the annual plan,{' '}
           <button
             className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
-            onClick={() => setValue('newPlan', Plans.USERS_PR_INAPPY)}
+            onClick={() => setFormValue('newPlan', Plans.USERS_PR_INAPPY)}
           >
             switch to annual
           </button>
@@ -82,4 +84,4 @@ const TotalPriceCallout: React.FC<TotalPriceCalloutProps> = ({
   )
 }
 
-export default TotalPriceCallout
+export default PriceCallout
