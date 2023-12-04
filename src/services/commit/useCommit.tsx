@@ -55,7 +55,7 @@ const UploadSchema = z.object({
   provider: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
-  flags: z.array(z.string()).nullable(),
+  flags: z.array(z.string()).nullish(),
   jobCode: z.string().nullable(),
   downloadUrl: z.string(),
   ciUrl: z.string().nullable(),
@@ -156,6 +156,7 @@ query Commit(
   $repo: String!
   $commitid: String!
   $filters: ImpactedFilesFilters
+  $isTeamPlan: Boolean!
 ) {
   owner(username: $owner) {
     repository(name: $repo) {
@@ -181,7 +182,7 @@ query Commit(
                 provider
                 createdAt
                 updatedAt
-                flags
+                flags @skip(if: $isTeamPlan)
                 jobCode
                 downloadUrl
                 ciUrl
@@ -293,6 +294,7 @@ interface UseCommitArgs {
     }
   }
   refetchInterval?: number
+  isTeamPlan?: boolean
 }
 
 export function useCommit({
@@ -302,10 +304,19 @@ export function useCommit({
   commitid,
   filters = {},
   refetchInterval = 2000,
+  isTeamPlan = false,
 }: UseCommitArgs) {
   const queryClient = useQueryClient()
-  const tempKey = ['commit', provider, owner, repo, commitid, query, filters]
-
+  const tempKey = [
+    'commit',
+    provider,
+    owner,
+    repo,
+    commitid,
+    query,
+    filters,
+    isTeamPlan,
+  ]
   const commitQuery = useQuery({
     queryKey: tempKey,
     queryFn: ({ signal }) =>
@@ -319,6 +330,7 @@ export function useCommit({
           repo,
           commitid,
           filters,
+          isTeamPlan,
         },
       }).then((res) => {
         const parsedRes = RequestSchema.safeParse(res?.data)
