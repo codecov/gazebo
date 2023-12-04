@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
+import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -10,8 +11,14 @@ import {
   commitOnePending,
   compareTotalsEmpty,
 } from 'services/commit/mocks'
+import { TierNames } from 'services/tier'
+import { useFlags } from 'shared/featureFlags'
+
 
 import { useUploads } from './useUploads'
+
+
+jest.mock('shared/featureFlags')
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -39,8 +46,31 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('useUploads', () => {
-  function setup(query) {
+  function setup(query, tierValue = TierNames.PRO) {
     server.use(query, compareTotalsEmpty)
+
+    useFlags.mockReturnValue({
+      multipleTiers: true,
+    })
+
+    server.use(
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: { plan: { tierName: tierValue } },
+          })
+        )
+      }),
+      graphql.query('GetRepoSettings', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: { repository: { private: true } },
+          })
+        )
+      })
+    )
   }
 
   describe('empty uploads', () => {
@@ -295,6 +325,30 @@ describe('useUploads', () => {
           '1 carried forward'
         )
       })
+    })
+  })
+
+  describe('user is on team plan', () => {
+    beforeEach(() => {
+      setup(commitOnePending, TierNames.TEAM)
+    })
+
+    afterEach(() => {
+      server.resetHandlers()
+    })
+
+    it('skips fetching flag related data', async () => {
+      const { result } = renderHook(() => useUploads(), {
+        wrapper,
+      })
+      const initUploadsOverview = result.current.uploadsOverview
+
+      await waitFor(() =>
+        expect(initUploadsOverview).not.toBe(result.current.uploadsOverview)
+      )
+
+      expect(result.current.sortedUploads).toHaveProperty('travisTeam')
+      expect(result.current.uploadsProviderList).toStrictEqual(['travisTeam'])
     })
   })
 })
