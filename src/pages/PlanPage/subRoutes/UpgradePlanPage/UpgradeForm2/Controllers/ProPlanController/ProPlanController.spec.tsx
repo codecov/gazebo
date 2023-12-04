@@ -254,14 +254,6 @@ describe('ProPlanController', () => {
         expect(optionBtn).toHaveClass('bg-ds-primary-base')
       })
 
-      it.skip('renders the seat input with 10 seats (existing subscription)', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPM })
-        render(<ProPlanController {...props} />, { wrapper: wrapper() })
-
-        const seatCount = await screen.findByRole('spinbutton')
-        expect(seatCount).toHaveValue(10)
-      })
-
       it('has the price for the year', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
@@ -303,14 +295,6 @@ describe('ProPlanController', () => {
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(optionBtn).toBeInTheDocument()
         expect(optionBtn).toHaveClass('bg-ds-primary-base')
-      })
-
-      it.skip('renders the seat input with 13 seats (existing subscription)', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY })
-        render(<ProPlanController {...props} />, { wrapper: wrapper() })
-
-        const seatCount = await screen.findByRole('spinbutton')
-        expect(seatCount).toHaveValue(13)
       })
 
       it('has the price for the year', async () => {
