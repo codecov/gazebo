@@ -92,21 +92,21 @@ describe('BillingOptions', () => {
       )
     )
 
-    const mockSetValue = jest.fn()
+    const mockSetFormValue = jest.fn()
     const user = userEvent.setup()
 
-    return { user, mockSetValue }
+    return { user, mockSetFormValue }
   }
 
   describe('when rendered', () => {
     describe('planString is set to annual plan', () => {
       it('renders annual button as "selected"', async () => {
-        const { mockSetValue } = setup()
+        const { mockSetFormValue } = setup()
 
         render(
           <BillingOptions
-            planString={Plans.USERS_PR_INAPPY}
-            setValue={mockSetValue}
+            newPlan={Plans.USERS_PR_INAPPY}
+            setFormValue={mockSetFormValue}
           />,
           {
             wrapper,
@@ -125,12 +125,12 @@ describe('BillingOptions', () => {
       })
 
       it('renders annual pricing scheme', async () => {
-        const { mockSetValue } = setup()
+        const { mockSetFormValue } = setup()
 
         render(
           <BillingOptions
-            planString={Plans.USERS_PR_INAPPY}
-            setValue={mockSetValue}
+            newPlan={Plans.USERS_PR_INAPPY}
+            setFormValue={mockSetFormValue}
           />,
           {
             wrapper,
@@ -146,12 +146,12 @@ describe('BillingOptions', () => {
 
       describe('user clicks on monthly button', () => {
         it('calls setValue', async () => {
-          const { mockSetValue, user } = setup()
+          const { mockSetFormValue, user } = setup()
 
           render(
             <BillingOptions
-              planString={Plans.USERS_PR_INAPPY}
-              setValue={mockSetValue}
+              newPlan={Plans.USERS_PR_INAPPY}
+              setFormValue={mockSetFormValue}
             />,
             {
               wrapper,
@@ -165,7 +165,10 @@ describe('BillingOptions', () => {
           await user.click(monthlyBtn)
 
           await waitFor(() =>
-            expect(mockSetValue).toBeCalledWith('newPlan', 'users-pr-inappm')
+            expect(mockSetFormValue).toBeCalledWith(
+              'newPlan',
+              'users-pr-inappm'
+            )
           )
         })
       })
@@ -173,12 +176,12 @@ describe('BillingOptions', () => {
 
     describe('planString is set to a monthly plan', () => {
       it('renders monthly button as "selected"', async () => {
-        const { mockSetValue } = setup()
+        const { mockSetFormValue } = setup()
 
         render(
           <BillingOptions
-            planString={Plans.USERS_PR_INAPPM}
-            setValue={mockSetValue}
+            newPlan={Plans.USERS_PR_INAPPM}
+            setFormValue={mockSetFormValue}
           />,
           {
             wrapper,
@@ -197,12 +200,12 @@ describe('BillingOptions', () => {
       })
 
       it('renders correct pricing scheme', async () => {
-        const { mockSetValue } = setup()
+        const { mockSetFormValue } = setup()
 
         render(
           <BillingOptions
-            planString={Plans.USERS_PR_INAPPM}
-            setValue={mockSetValue}
+            newPlan={Plans.USERS_PR_INAPPM}
+            setFormValue={mockSetFormValue}
           />,
           {
             wrapper,
@@ -218,12 +221,12 @@ describe('BillingOptions', () => {
 
       describe('user clicks on annual button', () => {
         it('calls setValue', async () => {
-          const { mockSetValue, user } = setup()
+          const { mockSetFormValue, user } = setup()
 
           render(
             <BillingOptions
-              planString={Plans.USERS_PR_INAPPM}
-              setValue={mockSetValue}
+              newPlan={Plans.USERS_PR_INAPPM}
+              setFormValue={mockSetFormValue}
             />,
             {
               wrapper,
@@ -237,7 +240,10 @@ describe('BillingOptions', () => {
           await user.click(annualBtn)
 
           await waitFor(() =>
-            expect(mockSetValue).toBeCalledWith('newPlan', 'users-pr-inappy')
+            expect(mockSetFormValue).toBeCalledWith(
+              'newPlan',
+              'users-pr-inappy'
+            )
           )
         })
       })

@@ -16,13 +16,21 @@ import {
 import { TEAM_PLAN_MAX_ACTIVE_USERS } from 'shared/utils/upgradeForm'
 import OptionButton from 'ui/OptionButton'
 
+export type NewPlanType =
+  | 'users-pr-inappm'
+  | 'users-pr-inappy'
+  | 'users-sentrym'
+  | 'users-sentryy'
+  | 'users-teamm'
+  | 'users-teamy'
+
 interface PlanTypeOptionsProps {
   setSelectedPlan: (x: z.infer<typeof IndividualPlanSchema>) => void
-  setValue: (x: string, y: string) => void
+  setFormValue: (x: string, y: string) => void
 }
 
 const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
-  setValue,
+  setFormValue,
   setSelectedPlan,
 }) => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
@@ -49,10 +57,10 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
           onChange={({ text }) => {
             if (text === 'Pro') {
               setSelectedPlan(yearlyProPlan)
-              setValue('newPlan', yearlyProPlan?.value)
+              setFormValue('newPlan', yearlyProPlan?.value)
             } else {
               setSelectedPlan(teamPlanYear)
-              setValue('newPlan', teamPlanYear?.value)
+              setFormValue('newPlan', teamPlanYear?.value)
             }
             setOption(text)
           }}

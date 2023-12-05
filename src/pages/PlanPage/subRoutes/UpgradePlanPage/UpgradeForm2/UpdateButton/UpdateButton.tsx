@@ -1,37 +1,47 @@
-import PropTypes, { type InferProps } from 'prop-types'
+import React from 'react'
+import { useParams } from 'react-router-dom'
 
+import { useAccountDetails } from 'services/account'
 import { isFreePlan } from 'shared/utils/billing'
 import Button from 'ui/Button'
 
-function UpdateButton({
+import { NewPlanType } from '../PlanTypeOptions/PlanTypeOptions'
+
+interface BillingControlsProps {
+  seats: number
+  isValid: boolean
+  newPlan: NewPlanType
+}
+
+const UpdateButton: React.FC<BillingControlsProps> = ({
   isValid,
-  getValues,
-  value,
-  quantity,
-}: InferProps<typeof UpdateButton.propTypes>) {
-  const isSamePlan = getValues()?.newPlan === value
-  const noChangeInSeats = getValues()?.seats === quantity
+  newPlan,
+  seats,
+}) => {
+  const { provider, owner } = useParams<{ provider: string; owner: string }>()
+  const { data: accountDetails } = useAccountDetails({ provider, owner })
+
+  const currentPlanValue = accountDetails?.plan?.value
+  const currentPlanQuantity = accountDetails?.plan?.quantity
+
+  const isSamePlan = newPlan === currentPlanValue
+  const noChangeInSeats = seats === currentPlanQuantity
   const disabled = !isValid || (isSamePlan && noChangeInSeats)
 
   return (
-    <Button
-      data-cy="plan-page-plan-update"
-      disabled={disabled}
-      type="submit"
-      variant="primary"
-      hook="submit-upgrade"
-      to={undefined}
-    >
-      {isFreePlan(value) ? 'Proceed to Checkout' : 'Update'}
-    </Button>
+    <div className="inline-flex">
+      <Button
+        data-cy="plan-page-plan-update"
+        disabled={disabled}
+        type="submit"
+        variant="primary"
+        hook="submit-upgrade"
+        to={undefined}
+      >
+        {isFreePlan(currentPlanValue) ? 'Proceed to Checkout' : 'Update'}
+      </Button>
+    </div>
   )
-}
-
-UpdateButton.propTypes = {
-  isValid: PropTypes.bool.isRequired,
-  getValues: PropTypes.func.isRequired,
-  value: PropTypes.string,
-  quantity: PropTypes.number,
 }
 
 export default UpdateButton
