@@ -19,9 +19,18 @@ then
   echo "Replacing ${SCHEME_BASE} for ${SCHEME} on ${API_BASE} and ${WEB_BASE}"
   sed -i "s/${SCHEME_BASE}:\/\/${API_BASE}/${SCHEME}:\/\/${CODECOV_API_HOST}/g" /var/www/app/gazebo/static/js/main.*
   sed -i "s/${SCHEME_BASE}:\/\/${WEB_BASE}/${SCHEME}:\/\/${CODECOV_BASE_HOST}/g" /var/www/app/gazebo/static/js/main.*
-  sed -i "s/r\.Z\.GHE_URL/${GHE_SCHEME_BASE}:\/\/\"${GHE_URL}\"/g" /var/www/app/gazebo/static/js/main.*
-  sed -i "s/r\.Z\.GLE_URL/${GLE_SCHEME_BASE}:\/\/\"${GLE_URL}\"/g" /var/www/app/gazebo/static/js/main.*
-  sed -i "s/r\.Z\.BBS_URL/${BBS_SCHEME_BASE}:\/\/\"${BBS_URL}\"/g" /var/www/app/gazebo/static/js/main.*
+  if [[ -n "${GHE_BASE}" ]]; then
+    echo "Replacing GHE ${GHE_SCHEME_BASE}://${GHE_BASE}"
+    sed -i "s/r\.Z\.GHE_URL/${GHE_SCHEME_BASE}:\/\/\"${GHE_BASE}\"/g" /var/www/app/gazebo/static/js/main.*
+  fi
+  if [[ -n "${GLE_BASE}" ]]; then
+    echo "Replacing GLE ${GLE_SCHEME_BASE}://${GLE_BASE}"
+    sed -i "s/r\.Z\.GLE_URL/${GLE_SCHEME_BASE}:\/\/\"${GLE_BASE}\"/g" /var/www/app/gazebo/static/js/main.*
+  fi
+  if [[ -n "${BBS_BASE}" ]]; then
+    echo "Replacing BBS ${BBS_SCHEME_BASE}://${BBS_BASE}"
+    sed -i "s/r\.Z\.BBS_URL/${BBS_SCHEME_BASE}:\/\/\"${BBS_BASE}\"/g" /var/www/app/gazebo/static/js/main.*
+  fi
 
   export DOLLAR='$'
   if [ "$CODECOV_FRONTEND_IPV6_DISABLED" ]; then
