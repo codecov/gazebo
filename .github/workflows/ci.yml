@@ -105,7 +105,7 @@ jobs:
   codecovstartup:
     name: Codecov Startup
     needs: install
-    uses: codecov/gha-workflows/.github/workflows/codecov-startup.yml@v1.2.12
+    uses: codecov/gha-workflows/.github/workflows/codecov-startup.yml@${{ vars.GHA_WORKFLOW_VERSION }}
     secrets: inherit
 
   runner-indexes:
@@ -292,7 +292,7 @@ jobs:
     name: Build Self Hosted Image
     secrets: inherit
     if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
-    uses: codecov/gha-workflows/.github/workflows/self-hosted.yml@v1.2.12
+    uses: codecov/gha-workflows/.github/workflows/self-hosted.yml@${{ vars.GHA_WORKFLOW_VERSION }}
     with:
       repo: ${{ vars.CODECOV_IMAGE_V2 || 'codecov/self-hosted-frontend' }}
       cache_requirements: false
@@ -302,7 +302,7 @@ jobs:
     needs: [ build-self-hosted, test ]
     secrets: inherit
     #if: ${{ github.event_name == 'push' && github.event.ref == 'refs/heads/main' && github.repository_owner == 'codecov' }}
-    uses: codecov/gha-workflows/.github/workflows/self-hosted.yml@v1.2.12
+    uses: codecov/gha-workflows/.github/workflows/self-hosted.yml@${{ vars.GHA_WORKFLOW_VERSION }}
     with:
       push_rolling: true
       repo: ${{ vars.CODECOV_IMAGE_V2 || 'codecov/self-hosted-frontend' }}
