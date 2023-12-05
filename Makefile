@@ -11,7 +11,6 @@ build.local:
 build.self-hosted:
 	docker build -f docker/Dockerfile . -t ${dockerhub_image}:rolling \
 	-t ${dockerhub_image}:${release_version}-${sha} \
-	--no-cache \
 	--build-arg REACT_APP_STAGE=${ENV} \
 	--build-arg REACT_APP_CODECOV_VERSION=${release_version} \
 	--build-arg REACT_APP_ENV_ARG=${ENV} \
@@ -21,10 +20,10 @@ build.self-hosted:
 	--label "org.label-schema.version"="${release_version}-${sha}"
 
 tag.self-hosted-rolling:
-	docker tag ${dockerhub_image}:${release_version}-${sha} ${dockerhub_image}:rolling
+	docker tag ${dockerhub_image}:${release_version}-${sha} ${dockerhub_image}:test
 
 push.self-hosted-rolling:
-	docker push ${dockerhub_image}:rolling
+	docker push ${dockerhub_image}:test
 
 save.self-hosted:
 	docker save -o self-hosted.tar ${dockerhub_image}:${release_version}-${sha}

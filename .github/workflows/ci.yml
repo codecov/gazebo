@@ -301,7 +301,7 @@ jobs:
     name: Push Self Hosted Image
     needs: [ build-self-hosted, test ]
     secrets: inherit
-    if: ${{ github.event_name == 'push' && github.event.ref == 'refs/heads/main' && github.repository_owner == 'codecov' }}
+    #if: ${{ github.event_name == 'push' && github.event.ref == 'refs/heads/main' && github.repository_owner == 'codecov' }}
     uses: codecov/gha-workflows/.github/workflows/self-hosted.yml@v1.2.12
     with:
       push_rolling: true
