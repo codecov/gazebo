@@ -102,7 +102,7 @@ describe('PriceCallout', () => {
 
   function setup() {
     const user = userEvent.setup()
-    const mockSetValue = jest.fn()
+    const mockSetFormValue = jest.fn()
 
     server.use(
       graphql.query('GetAvailablePlans', (req, res, ctx) =>
@@ -115,7 +115,7 @@ describe('PriceCallout', () => {
       )
     )
 
-    return { mockSetValue, user }
+    return { mockSetFormValue, user }
   }
 
   describe('when rendered', () => {
@@ -126,9 +126,9 @@ describe('PriceCallout', () => {
       }
 
       it('displays per month price', async () => {
-        const { mockSetValue } = setup()
+        const { mockSetFormValue } = setup()
 
-        render(<PriceCallout {...props} setValue={mockSetValue} />, {
+        render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
           wrapper,
         })
 
@@ -137,9 +137,9 @@ describe('PriceCallout', () => {
       })
 
       it('displays billed annually at price', async () => {
-        const { mockSetValue } = setup()
+        const { mockSetFormValue } = setup()
 
-        render(<PriceCallout {...props} setValue={mockSetValue} />, {
+        render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
           wrapper,
         })
 
@@ -150,9 +150,9 @@ describe('PriceCallout', () => {
       })
 
       it('displays how much the user saves', async () => {
-        const { mockSetValue } = setup()
+        const { mockSetFormValue } = setup()
 
-        render(<PriceCallout {...props} setValue={mockSetValue} />, {
+        render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
           wrapper,
         })
 
@@ -168,8 +168,8 @@ describe('PriceCallout', () => {
       }
 
       it('displays the monthly price', async () => {
-        const { mockSetValue } = setup()
-        render(<PriceCallout {...props} setValue={mockSetValue} />, {
+        const { mockSetFormValue } = setup()
+        render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
           wrapper,
         })
 
@@ -178,8 +178,8 @@ describe('PriceCallout', () => {
       })
 
       it('displays what the user could save with annual plan', async () => {
-        const { mockSetValue } = setup()
-        render(<PriceCallout {...props} setValue={mockSetValue} />, {
+        const { mockSetFormValue } = setup()
+        render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
           wrapper,
         })
 
@@ -189,8 +189,8 @@ describe('PriceCallout', () => {
 
       describe('user switches to annual plan', () => {
         it('calls mock set value with pro annual plan', async () => {
-          const { mockSetValue, user } = setup()
-          render(<PriceCallout {...props} setValue={mockSetValue} />, {
+          const { mockSetFormValue, user } = setup()
+          render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
             wrapper,
           })
 
@@ -201,7 +201,10 @@ describe('PriceCallout', () => {
 
           await user.click(switchToAnnual)
 
-          expect(mockSetValue).toBeCalledWith('newPlan', Plans.USERS_PR_INAPPY)
+          expect(mockSetFormValue).toBeCalledWith(
+            'newPlan',
+            Plans.USERS_PR_INAPPY
+          )
         })
       })
     })

@@ -55,34 +55,32 @@ function ComponentsSelector() {
   }
 
   return (
-    <div className="w-1/6">
-      <MultiSelect
-        // @ts-expect-error
-        disabled={false}
-        dataMarketing="coverage-tab-component-multi-select"
-        hook="coverage-tab-component-multi-select"
-        ariaName="Select components to show"
-        items={[...componentsNames]}
-        resourceName="component"
-        isLoading={isLoading}
-        selectedItemsOverride={selectedComponents}
-        onChange={(components: String[]) => {
-          setSelectedComponents(components)
-          updateParams({ components })
-        }}
-        onSearch={(term: string) => setComponentSearch(term)}
-        renderSelected={(selectedItems: String[]) => (
-          <span className="flex items-center gap-2">
-            <Icon variant="solid" name="database" />
-            {selectedItems.length === 0 ? (
-              'All components'
-            ) : (
-              <span>{selectedItems.length} selected components</span>
-            )}
-          </span>
-        )}
-      />
-    </div>
+    <MultiSelect
+      // @ts-expect-error
+      disabled={false}
+      dataMarketing="coverage-tab-component-multi-select"
+      hook="coverage-tab-component-multi-select"
+      ariaName="Select components to show"
+      items={[...componentsNames]}
+      resourceName="component"
+      isLoading={isLoading}
+      selectedItemsOverride={selectedComponents}
+      onChange={(components: String[]) => {
+        setSelectedComponents(components)
+        updateParams({ components })
+      }}
+      onSearch={(term: string) => setComponentSearch(term)}
+      renderSelected={(selectedItems: String[]) => (
+        <span className="flex items-center gap-2">
+          <Icon variant="solid" name="database" />
+          {selectedItems.length === 0 ? (
+            'All components'
+          ) : (
+            <span>{selectedItems.length} selected components</span>
+          )}
+        </span>
+      )}
+    />
   )
 }
 
