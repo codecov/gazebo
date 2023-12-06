@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
@@ -33,7 +34,9 @@ const wrapper =
     (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={initialEntries}>
-          <Route path="/:provider/:owner">{children}</Route>
+          <Suspense fallback={<p>Loading</p>}>
+            <Route path="/:provider/:owner">{children}</Route>
+          </Suspense>
         </MemoryRouter>
       </QueryClientProvider>
     )
@@ -161,9 +164,15 @@ describe('SelfHostedLicenseExpiration', () => {
       setup({
         seatsUsed: 5,
         seatsLimit: 10,
-        expirationDate: '2023-08-09T00:00:00',
+        expirationDate: '2024-08-09T00:00:00',
       })
       render(<SelfHostedLicenseExpiration />, { wrapper: wrapper() })
+
+      const suspense = await screen.findByText('Loading')
+      expect(suspense).toBeInTheDocument()
+      await waitFor(() =>
+        expect(screen.queryByText('Loading')).not.toBeInTheDocument()
+      )
 
       const resolveIssueButton = screen.queryByText(/Resolve issue/)
       expect(resolveIssueButton).not.toBeInTheDocument()
@@ -307,6 +316,24 @@ describe('SelfHostedLicenseExpiration', () => {
             'href',
             'https://github.com/codecov/self-hosted/tree/main#license-generation'
           )
+        })
+
+        it('closes the modal when pressing the x button', async () => {
+          const { user } = setup(params)
+          render(<SelfHostedLicenseExpiration />, { wrapper: wrapper() })
+
+          const resolveIssueButton = await screen.findByRole('button', {
+            name: /Resolve issue/,
+          })
+          expect(resolveIssueButton).toBeInTheDocument()
+          await user.click(resolveIssueButton)
+
+          const xButton = screen.getByText('x.svg')
+          await user.click(xButton)
+
+          const seatsLimitReachedTitle =
+            screen.queryByText(/Seat limit reached/)
+          expect(seatsLimitReachedTitle).not.toBeInTheDocument()
         })
       })
     })

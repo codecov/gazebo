@@ -55,7 +55,7 @@ const SelfHostedLicenseExpiration = () => {
   const isSelfHosted = !!config.IS_SELF_HOSTED
   const { data } = useSelfHostedSeatsAndLicense({
     provider,
-    opts: { enabled: !!provider && !!config.IS_SELF_HOSTED },
+    opts: { enabled: !!provider && isSelfHosted },
   })
 
   const licenseExpirationDate = data?.selfHostedLicense?.expirationDate
