@@ -2,13 +2,13 @@ import A from 'ui/A'
 import Button from 'ui/Button'
 import Modal from 'ui/Modal'
 
-interface LicenseExpirationModalArgs {
-  isModalOpen: boolean
-  isLicenseExpired: boolean
-  isSeatsLimitReached: boolean
-  setIsModalOpen: (x: boolean) => void
-  isLicenseExpiringWithin30Days: boolean
-}
+// interface LicenseExpirationModalArgs {
+//   isModalOpen: boolean
+//   isLicenseExpired: boolean
+//   isSeatsLimitReached: boolean
+//   setIsModalOpen: (x: boolean) => void
+//   isLicenseExpiringWithin30Days: boolean
+// }
 
 const LicenseExpirationModal = ({
   isModalOpen,
@@ -16,7 +16,7 @@ const LicenseExpirationModal = ({
   isSeatsLimitReached,
   isLicenseExpired,
   isLicenseExpiringWithin30Days,
-}: LicenseExpirationModalArgs) => {
+}) => {
   return (
     <Modal
       size="small"
@@ -31,7 +31,11 @@ const LicenseExpirationModal = ({
               <span className="text-xs">
                 All of the seats on the organization&apos;s plan have been used.
                 Please reach out to {/* @ts-expect-error */}
-                <A href={'mailto:support@codecov.io'} showExternalIcon={false}>
+                <A
+                  href={'mailto:support@codecov.io'}
+                  hook="codecov-support"
+                  showExternalIcon={false}
+                >
                   support@codecov.io
                 </A>{' '}
                 to update.

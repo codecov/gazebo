@@ -98,7 +98,11 @@ const SelfHostedLicenseExpiration = () => {
             isSeatsLimitReached={isSeatsLimitReached}
             isLicenseExpiringWithin30Days={isLicenseExpiringWithin30Days}
           />
-          <Button variant="primary" onClick={() => setIsModalOpen(true)}>
+          <Button
+            variant="primary"
+            hook="license-expiration"
+            onClick={() => setIsModalOpen(true)}
+          >
             Resolve issue
           </Button>
         </div>
