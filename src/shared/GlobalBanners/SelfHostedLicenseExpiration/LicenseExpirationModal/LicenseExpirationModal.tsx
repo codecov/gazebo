@@ -2,13 +2,13 @@ import A from 'ui/A'
 import Button from 'ui/Button'
 import Modal from 'ui/Modal'
 
-// interface LicenseExpirationModalArgs {
-//   isModalOpen: boolean
-//   isLicenseExpired: boolean
-//   isSeatsLimitReached: boolean
-//   setIsModalOpen: (x: boolean) => void
-//   isLicenseExpiringWithin30Days: boolean
-// }
+interface LicenseExpirationModalArgs {
+  isModalOpen: boolean
+  isLicenseExpired: boolean
+  isSeatsLimitReached: boolean
+  setIsModalOpen: (x: boolean) => void
+  isLicenseExpiringWithin30Days: boolean
+}
 
 const LicenseExpirationModal = ({
   isModalOpen,
@@ -16,7 +16,7 @@ const LicenseExpirationModal = ({
   isSeatsLimitReached,
   isLicenseExpired,
   isLicenseExpiringWithin30Days,
-}) => {
+}: LicenseExpirationModalArgs) => {
   return (
     <Modal
       size="small"
