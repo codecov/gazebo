@@ -1,12 +1,14 @@
-import { useQuery } from '@tanstack/react-query'
+import { QueryOptions, useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
 
-export const SelfHostedLicenseSchema = z
+export const SelfHostedSeatsAndLicenseSchema = z
   .object({
     config: z
       .object({
+        seatsUsed: z.number(),
+        seatsLimit: z.number(),
         selfHostedLicense: z
           .object({
             expirationDate: z.string(),
@@ -19,11 +21,14 @@ export const SelfHostedLicenseSchema = z
 
 export interface UseTierArgs {
   provider: string
+  opts?: QueryOptions
 }
 
 const query = `
-  query SelfHostedLicense {
+  query SelfHostedSeatsAndLicense {
     config {
+      seatsUsed
+      seatsLimit
       selfHostedLicense {
         expirationDate
       }
@@ -31,16 +36,19 @@ const query = `
   }
 `
 
-export const useSelfHostedLicense = ({ provider }: UseTierArgs) =>
+export const useSelfHostedSeatsAndLicense = ({
+  provider,
+  opts = {},
+}: UseTierArgs) =>
   useQuery({
-    queryKey: ['SelfHostedLicense', provider, query],
+    queryKey: ['SelfHostedSeatsAndLicense', provider, query],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
         query,
         signal,
       }).then((res) => {
-        const parsedRes = SelfHostedLicenseSchema.safeParse(res?.data)
+        const parsedRes = SelfHostedSeatsAndLicenseSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return Promise.reject({
@@ -49,6 +57,7 @@ export const useSelfHostedLicense = ({ provider }: UseTierArgs) =>
           })
         }
 
-        return parsedRes.data?.config?.selfHostedLicense ?? null
+        return parsedRes.data?.config ?? null
       }),
+    ...(!!opts && opts),
   })
