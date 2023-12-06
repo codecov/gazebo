@@ -36,9 +36,13 @@ module.exports = {
     },
     plugins: [
       ...(process.env.SENTRY_AUTH_TOKEN ? [SentryPlugin] : []),
-      new WebpackHookPlugin({
-        onBuildStart: ['npx @spotlightjs/spotlight'],
-      }),
+      ...(process.env.NODE_ENV === 'development'
+        ? [
+            new WebpackHookPlugin({
+              onBuildStart: ['npx @spotlightjs/spotlight'],
+            }),
+          ]
+        : []),
     ],
   },
   jest: {
