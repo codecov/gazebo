@@ -208,10 +208,24 @@ describe('SelfHostedLicenseExpiration', () => {
 
           await user.click(resolveIssueButton)
 
-          const seatsLimitReachedText = await screen.findByText(
+          const seatsLimitReachedTitle = await screen.findByText(
             /Seat limit reached/
           )
+          expect(seatsLimitReachedTitle).toBeInTheDocument()
+
+          const seatsLimitReachedText = await screen.findByText(
+            /All of the seats on the organization's plan have been used./
+          )
           expect(seatsLimitReachedText).toBeInTheDocument()
+
+          const supportLink = await screen.findByRole('link', {
+            name: /support@codecov.io/,
+          })
+          expect(supportLink).toBeInTheDocument()
+          expect(supportLink).toHaveAttribute(
+            'href',
+            'mailto:support@codecov.io'
+          )
         })
 
         it('renders the license renewal section', async () => {
@@ -225,8 +239,22 @@ describe('SelfHostedLicenseExpiration', () => {
 
           await user.click(resolveIssueButton)
 
-          const licenseRenewalText = await screen.findByText(/License renewal/)
+          const licenseRenewalTitle = await screen.findByText(/License renewal/)
+          expect(licenseRenewalTitle).toBeInTheDocument()
+
+          const licenseRenewalText = await screen.findByText(
+            /Your license is about to expire. To avoid any interruption in service, please renew your license promptly. /
+          )
           expect(licenseRenewalText).toBeInTheDocument()
+
+          const stepsLink = await screen.findByRole('link', {
+            name: /these steps/,
+          })
+          expect(stepsLink).toBeInTheDocument()
+          expect(stepsLink).toHaveAttribute(
+            'href',
+            'https://github.com/codecov/self-hosted/tree/main#license-generation'
+          )
         })
 
         it('renders the control and customization section', async () => {
@@ -240,10 +268,45 @@ describe('SelfHostedLicenseExpiration', () => {
 
           await user.click(resolveIssueButton)
 
-          const controlAndCustomizationText = await screen.findByText(
+          const controlAndCustomizationTitle = await screen.findByText(
             /Looking for more control and customization?/
           )
+          expect(controlAndCustomizationTitle).toBeInTheDocument()
+
+          const controlAndCustomizationText = await screen.findByText(
+            /Consider setting up a/
+          )
           expect(controlAndCustomizationText).toBeInTheDocument()
+
+          const dedicatedNamespaceLink = await screen.findByRole('link', {
+            name: /dedicated namespace/,
+          })
+          expect(dedicatedNamespaceLink).toBeInTheDocument()
+          expect(dedicatedNamespaceLink).toHaveAttribute(
+            'href',
+            'https://docs.codecov.com/docs/codecov-dedicated-enterprise-cloud-install-steps'
+          )
+        })
+
+        it('renders the Generate New License button', async () => {
+          const { user } = setup(params)
+          render(<SelfHostedLicenseExpiration />, { wrapper: wrapper() })
+
+          const resolveIssueButton = await screen.findByRole('button', {
+            name: /Resolve issue/,
+          })
+          expect(resolveIssueButton).toBeInTheDocument()
+
+          await user.click(resolveIssueButton)
+
+          const generateNewLicenseLink = await screen.findByRole('link', {
+            name: /Generate New License/,
+          })
+          expect(generateNewLicenseLink).toBeInTheDocument()
+          expect(generateNewLicenseLink).toHaveAttribute(
+            'href',
+            'https://github.com/codecov/self-hosted/tree/main#license-generation'
+          )
         })
       })
     })
