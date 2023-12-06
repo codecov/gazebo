@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 const SentryWebpackPlugin = require('@sentry/webpack-plugin')
-// const CracoSwcPlugin = require('craco-swc')
+const WebpackHookPlugin = require('webpack-hook-plugin')
 
 const { resolve } = require('path')
 
@@ -13,11 +13,6 @@ const SentryPlugin = new SentryWebpackPlugin({
 })
 
 module.exports = {
-  // plugins: [
-  //   {
-  //     plugin: CracoSwcPlugin,
-  //   },
-  // ],
   webpack: {
     devtool: 'source-map',
     configure: {
@@ -39,7 +34,12 @@ module.exports = {
       config: resolve(__dirname, 'src/config'),
       sentry: resolve(__dirname, 'src/sentry'),
     },
-    plugins: [...(process.env.SENTRY_AUTH_TOKEN ? [SentryPlugin] : [])],
+    plugins: [
+      ...(process.env.SENTRY_AUTH_TOKEN ? [SentryPlugin] : []),
+      new WebpackHookPlugin({
+        onBuildStart: ['npx @spotlightjs/spotlight'],
+      }),
+    ],
   },
   jest: {
     configure: {
