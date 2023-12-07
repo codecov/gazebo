@@ -1,5 +1,6 @@
 import * as Sentry from '@sentry/react'
 import { Replay } from '@sentry/replay'
+import * as Spotlight from '@spotlightjs/spotlight'
 import { createBrowserHistory } from 'history'
 import { Route } from 'react-router-dom'
 
@@ -71,7 +72,7 @@ export const setupSentry = ({
 
   const replay = new Replay()
 
-  return Sentry.init({
+  Sentry.init({
     dsn: config.SENTRY_DSN,
     debug: config.NODE_ENV !== 'production',
     release: config.SENTRY_RELEASE,
@@ -98,4 +99,11 @@ export const setupSentry = ({
     },
     ...deClutterConfig,
   })
+
+  if (process.env.NODE_ENV === 'development') {
+    Spotlight.init({
+      injectImmediately: true,
+      integrations: [Spotlight.sentry()],
+    })
+  }
 }
