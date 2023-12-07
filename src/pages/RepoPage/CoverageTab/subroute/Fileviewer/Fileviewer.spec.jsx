@@ -5,11 +5,13 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
+import { useFlags } from 'shared/featureFlags'
 import { useScrollToLine } from 'ui/CodeRenderer/hooks/useScrollToLine'
 
 import FileView from './Fileviewer'
 
 jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
+jest.mock('shared/featureFlags')
 
 const mockRepoSettings = (isPrivate) => ({
   owner: {
@@ -34,6 +36,27 @@ const mockOverview = {
   owner: {
     repository: {
       defaultBranch: 'main',
+    },
+  },
+}
+
+const mockComponents = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      pull: {
+        compareWithBase: {
+          __typename: 'Comparison',
+          componentComparisons: [
+            {
+              name: 'component1',
+            },
+            {
+              name: 'component2',
+            },
+          ],
+        },
+      },
     },
   },
 }
@@ -155,6 +178,10 @@ describe('FileView', () => {
       targeted: false,
     }))
 
+    useFlags.mockReturnValue({
+      componentsSelect: true,
+    })
+
     server.use(
       graphql.query('DetailOwner', (req, res, ctx) =>
         res(ctx.status(200), ctx.data({ owner: mockOwner }))
@@ -179,6 +206,9 @@ describe('FileView', () => {
       }),
       graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
+      }),
+      graphql.query('PullComponentsSelector', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockComponents))
       })
     )
   }
@@ -228,6 +258,16 @@ describe('FileView', () => {
         })
         expect(copyLink).toBeInTheDocument()
         expect(copyLink).toHaveAttribute('href', '#folder/file.js')
+      })
+    })
+
+    describe('displaying the components selector', () => {
+      it('renders the components multi select', async () => {
+        setup()
+        render(<FileView />, { wrapper: wrapper() })
+
+        const select = await screen.findByText('All components')
+        expect(select).toBeInTheDocument()
       })
     })
 
