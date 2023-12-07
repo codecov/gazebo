@@ -110,6 +110,7 @@ describe('BranchDirEntry', () => {
           urlPath="path/to/directory"
           filters={{
             flags: ['flag-1'],
+            components: [],
           }}
         />,
         { wrapper }
@@ -119,6 +120,30 @@ describe('BranchDirEntry', () => {
       expect(a).toHaveAttribute(
         'href',
         '/gh/codecov/test-repo/tree/branch/path%2Fto%2Fdirectory%2Fdir?flags%5B0%5D=flag-1'
+      )
+    })
+  })
+
+  describe('components and flags filters is passed', () => {
+    it('sets the correct href', async () => {
+      setup()
+      render(
+        <BranchDirEntry
+          branch="branch"
+          name="dir"
+          urlPath="path/to/directory"
+          filters={{
+            flags: ['flag-1'],
+            components: ['component-1'],
+          }}
+        />,
+        { wrapper }
+      )
+
+      const a = await screen.findByRole('link')
+      expect(a).toHaveAttribute(
+        'href',
+        '/gh/codecov/test-repo/tree/branch/path%2Fto%2Fdirectory%2Fdir?flags%5B0%5D=flag-1&components%5B0%5D=component-1'
       )
     })
   })
