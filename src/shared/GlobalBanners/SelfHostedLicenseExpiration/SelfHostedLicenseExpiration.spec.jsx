@@ -160,7 +160,7 @@ describe('SelfHostedLicenseExpiration', () => {
     })
     afterEach(() => jest.resetAllMocks())
 
-    it('does not render the banner when it should not be displayed', async () => {
+    it('does not render the banner when there is not a seat limit or when the license has not expired/will expire within 30 days', async () => {
       setup({
         seatsUsed: 5,
         seatsLimit: 10,
@@ -205,7 +205,7 @@ describe('SelfHostedLicenseExpiration', () => {
         expect(resolveIssueButton).toBeInTheDocument()
       })
 
-      describe('when resolve issue button is clicked', () => {
+      describe('when resolve issue button is clicked and modal is opened', () => {
         it('renders the seat limit reached section', async () => {
           const { user } = setup(params)
           render(<SelfHostedLicenseExpiration />, { wrapper: wrapper() })
@@ -365,7 +365,7 @@ describe('SelfHostedLicenseExpiration', () => {
         expect(resolveIssueButton).toBeInTheDocument()
       })
 
-      describe('when resolve issue button is clicked', () => {
+      describe('when resolve issue button is clicked and modal is opened', () => {
         it('renders the seat limit reached section', async () => {
           const { user } = setup(params)
           render(<SelfHostedLicenseExpiration />, { wrapper: wrapper() })
@@ -444,7 +444,7 @@ describe('SelfHostedLicenseExpiration', () => {
         expect(resolveIssueButton).toBeInTheDocument()
       })
 
-      describe('when resolve issue button is clicked', () => {
+      describe('when resolve issue button is clicked and modal is opened', () => {
         it('does not render the seat limit reached section', async () => {
           const { user } = setup(params)
           render(<SelfHostedLicenseExpiration />, { wrapper: wrapper() })
@@ -521,7 +521,7 @@ describe('SelfHostedLicenseExpiration', () => {
         expect(resolveIssueButton).toBeInTheDocument()
       })
 
-      describe('when resolve issue button is clicked', () => {
+      describe('when resolve issue button is clicked and modal is opened', () => {
         it('does not render the seat limit reached section', async () => {
           const { user } = setup(params)
           render(<SelfHostedLicenseExpiration />, { wrapper: wrapper() })

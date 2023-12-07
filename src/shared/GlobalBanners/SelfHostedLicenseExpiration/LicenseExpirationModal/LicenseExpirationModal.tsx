@@ -10,13 +10,13 @@ interface LicenseExpirationModalArgs {
   isLicenseExpiringWithin30Days: boolean
 }
 
-const LicenseExpirationModal = ({
+const LicenseExpirationModal: React.FC<LicenseExpirationModalArgs> = ({
   isModalOpen,
   setIsModalOpen,
   isSeatsLimitReached,
   isLicenseExpired,
   isLicenseExpiringWithin30Days,
-}: LicenseExpirationModalArgs) => {
+}) => {
   return (
     <Modal
       size="small"

@@ -1,4 +1,4 @@
-import { QueryOptions, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
@@ -19,9 +19,11 @@ export const SelfHostedSeatsAndLicenseSchema = z
   })
   .nullable()
 
-export interface UseTierArgs {
+export interface UseSelfHostedSeatsAndLicenseArgs {
   provider: string
-  opts?: QueryOptions
+  opts?: {
+    enabled: boolean
+  }
 }
 
 const query = `
@@ -38,8 +40,10 @@ const query = `
 
 export const useSelfHostedSeatsAndLicense = ({
   provider,
-  opts = {},
-}: UseTierArgs) =>
+  opts = {
+    enabled: true,
+  },
+}: UseSelfHostedSeatsAndLicenseArgs) =>
   useQuery({
     queryKey: ['SelfHostedSeatsAndLicense', provider, query],
     queryFn: ({ signal }) =>
