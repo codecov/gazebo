@@ -10,7 +10,7 @@ import { TrialStatuses } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
 import { Plans } from 'shared/utils/billing'
 
-import ProPlanController from './ProPlanController'
+import TeamPlanController from './TeamPlanController'
 
 jest.mock('services/toastNotification')
 jest.mock('@stripe/react-stripe-js')
@@ -28,34 +28,54 @@ const basicPlan = {
   monthlyUploadLimit: 250,
 }
 
-const proPlanMonth = {
-  marketingName: 'Pro',
-  value: Plans.USERS_PR_INAPPM,
+// const proPlanMonth = {
+//   marketingName: 'Pro',
+//   value: Plans.USERS_PR_INAPPM,
+//   billingRate: 'monthly',
+//   baseUnitPrice: 12,
+//   benefits: [
+//     'Configurable # of users',
+//     'Unlimited public repositories',
+//     'Unlimited private repositories',
+//     'Priority Support',
+//   ],
+//   quantity: 10,
+//   monthlyUploadLimit: null,
+// }
+
+// const proPlanYear = {
+//   marketingName: 'Pro',
+//   value: Plans.USERS_TEAMY,
+//   billingRate: 'annually',
+//   baseUnitPrice: 10,
+//   benefits: [
+//     'Configurable # of users',
+//     'Unlimited public repositories',
+//     'Unlimited private repositories',
+//     'Priority Support',
+//   ],
+//   monthlyUploadLimit: null,
+//   quantity: 13,
+// }
+
+const teamPlanMonth = {
+  baseUnitPrice: 5,
+  benefits: ['Up to 10 users'],
   billingRate: 'monthly',
-  baseUnitPrice: 12,
-  benefits: [
-    'Configurable # of users',
-    'Unlimited public repositories',
-    'Unlimited private repositories',
-    'Priority Support',
-  ],
+  marketingName: 'Users Team',
+  monthlyUploadLimit: 2500,
+  value: 'users-teamm',
   quantity: 10,
-  monthlyUploadLimit: null,
 }
 
-const proPlanYear = {
-  marketingName: 'Pro',
-  value: Plans.USERS_PR_INAPPY,
+const teamPlanYear = {
+  baseUnitPrice: 4,
+  benefits: ['Up to 10 users'],
   billingRate: 'annually',
-  baseUnitPrice: 10,
-  benefits: [
-    'Configurable # of users',
-    'Unlimited public repositories',
-    'Unlimited private repositories',
-    'Priority Support',
-  ],
-  monthlyUploadLimit: null,
-  quantity: 13,
+  marketingName: 'Users Team',
+  monthlyUploadLimit: 2500,
+  value: 'users-teamy',
+  quantity: 5,
 }
 
 const trialPlan = {
@@ -73,8 +93,8 @@ const mockAccountDetailsBasic = {
   inactiveUserCount: 0,
 }
 
-const mockAccountDetailsProMonthly = {
-  plan: proPlanMonth,
+const mockAccountDetailsTeamMonthly = {
+  plan: teamPlanMonth,
   activatedUserCount: 7,
   inactiveUserCount: 0,
   subscriptionDetail: {
@@ -93,8 +113,8 @@ const mockAccountDetailsProMonthly = {
   },
 }
 
-const mockAccountDetailsProYearly = {
-  plan: proPlanYear,
+const mockAccountDetailsTeamYearly = {
+  plan: teamPlanYear,
   activatedUserCount: 11,
   inactiveUserCount: 0,
 }
@@ -110,7 +130,7 @@ const mockPlanDataResponse = {
   benefits: [],
   billingRate: 'monthly',
   marketingName: 'Pro Team',
-  monthlyUploadLimit: 250,
+  monthlyUploadLimit: 2500,
   value: 'test-plan',
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
@@ -164,7 +184,7 @@ interface SetupArgs {
   trialStatus?: string
 }
 
-describe('ProPlanController', () => {
+describe('TeamPlanController', () => {
   function setup(
     { planValue = Plans.USERS_BASIC, trialStatus = undefined }: SetupArgs = {
       planValue: Plans.USERS_BASIC,
@@ -181,10 +201,10 @@ describe('ProPlanController', () => {
       rest.get(`/internal/gh/codecov/account-details/`, (req, res, ctx) => {
         if (planValue === Plans.USERS_BASIC) {
           return res(ctx.status(200), ctx.json(mockAccountDetailsBasic))
-        } else if (planValue === Plans.USERS_PR_INAPPM) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsProMonthly))
-        } else if (planValue === Plans.USERS_PR_INAPPY) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsProYearly))
+        } else if (planValue === Plans.USERS_TEAMM) {
+          return res(ctx.status(200), ctx.json(mockAccountDetailsTeamMonthly))
+        } else if (planValue === Plans.USERS_TEAMY) {
+          return res(ctx.status(200), ctx.json(mockAccountDetailsTeamYearly))
         } else if (planValue === Plans.USERS_TRIAL) {
           return res(ctx.status(200), ctx.json(mockAccountDetailsTrial))
         }
@@ -200,7 +220,12 @@ describe('ProPlanController', () => {
           ctx.status(200),
           ctx.data({
             owner: {
-              availablePlans: [basicPlan, proPlanMonth, proPlanYear, trialPlan],
+              availablePlans: [
+                basicPlan,
+                teamPlanMonth,
+                teamPlanYear,
+                trialPlan,
+              ],
             },
           })
         )
@@ -221,33 +246,33 @@ describe('ProPlanController', () => {
   }
 
   describe('when rendered', () => {
-    describe('when the user has a pro plan monthly', () => {
+    describe('when the user has a team plan monthly', () => {
       const props = {
         setFormValue: jest.fn(),
         register: jest.fn(),
-        newPlan: Plans.USERS_PR_INAPPM,
+        newPlan: Plans.USERS_TEAMM,
         seats: 10,
         errors: { seats: { message: '' } },
       }
       it('renders monthly option button', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPM })
-        render(<ProPlanController {...props} />, { wrapper: wrapper() })
+        setup({ planValue: Plans.USERS_TEAMM })
+        render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
         expect(optionBtn).toBeInTheDocument()
       })
 
       it('renders annual option button', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPM })
-        render(<ProPlanController {...props} />, { wrapper: wrapper() })
+        setup({ planValue: Plans.USERS_TEAMM })
+        render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(optionBtn).toBeInTheDocument()
       })
 
       it('renders monthly option button as "selected"', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPM })
-        render(<ProPlanController {...props} />, { wrapper: wrapper() })
+        setup({ planValue: Plans.USERS_TEAMM })
+        render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
         expect(optionBtn).toBeInTheDocument()
@@ -255,16 +280,16 @@ describe('ProPlanController', () => {
       })
 
       it('has the price for the year', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPM })
-        render(<ProPlanController {...props} />, { wrapper: wrapper() })
+        setup({ planValue: Plans.USERS_TEAMM })
+        render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
         const price = await screen.findByText(/\$120/)
         expect(price).toBeInTheDocument()
       })
 
       it('shows the next billing date if available', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPM })
-        render(<ProPlanController {...props} />, { wrapper: wrapper() })
+        setup({ planValue: Plans.USERS_TEAMM })
+        render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
         const nextBillingDateTitle = await screen.findByText(
           /Next Billing Date/
@@ -273,34 +298,34 @@ describe('ProPlanController', () => {
       })
     })
 
-    describe('when the user has a pro plan yearly', () => {
+    describe('when the user has a team plan yearly', () => {
       const props = {
         setFormValue: jest.fn(),
         register: jest.fn(),
-        newPlan: Plans.USERS_PR_INAPPY,
-        seats: 13,
+        newPlan: Plans.USERS_TEAMY,
+        seats: 5,
         errors: { seats: { message: '' } },
       }
 
       it('renders monthly option button', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY })
-        render(<ProPlanController {...props} />, { wrapper: wrapper() })
+        setup({ planValue: Plans.USERS_TEAMY })
+        render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
         expect(optionBtn).toBeInTheDocument()
       })
 
       it('renders annual option button', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY })
-        render(<ProPlanController {...props} />, { wrapper: wrapper() })
+        setup({ planValue: Plans.USERS_TEAMY })
+        render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(optionBtn).toBeInTheDocument()
       })
 
       it('renders annual option button as "selected"', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY })
-        render(<ProPlanController {...props} />, { wrapper: wrapper() })
+        setup({ planValue: Plans.USERS_TEAMY })
+        render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(optionBtn).toBeInTheDocument()
@@ -308,10 +333,10 @@ describe('ProPlanController', () => {
       })
 
       it('has the price for the year', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY })
-        render(<ProPlanController {...props} />, { wrapper: wrapper() })
+        setup({ planValue: Plans.USERS_TEAMY })
+        render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
-        const price = await screen.findByText(/\$130/)
+        const price = await screen.findByText(/\$60/)
         expect(price).toBeInTheDocument()
       })
     })

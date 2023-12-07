@@ -269,7 +269,7 @@ describe('UpgradeForm2', () => {
   describe('when rendered', () => {
     const props = {
       setSelectedPlan: jest.fn(),
-      selectedPlan: Plans.USERS_PR_INAPPY,
+      selectedPlan: { value: Plans.USERS_PR_INAPPY },
     }
     describe('when the user has a basic plan', () => {
       it('renders the organization and owner titles', async () => {
@@ -352,7 +352,7 @@ describe('UpgradeForm2', () => {
         expect(proceedToCheckoutButton).toBeInTheDocument()
       })
 
-      describe.skip('when the user has team plans available', () => {
+      describe('when the user has team plans available', () => {
         describe('when the feature flag is off', () => {
           it('does not renders the Pro and team buttons', () => {
             setup({
@@ -415,7 +415,7 @@ describe('UpgradeForm2', () => {
               expect(auxiliaryText).toBeInTheDocument()
             })
 
-            it('displays per month price when annual', async () => {
+            it('calls setSelectedPlan with yearly team plan when selecting team button', async () => {
               const { user } = setup({
                 planValue: Plans.USERS_BASIC,
                 hasTeamPlans: true,
@@ -427,28 +427,7 @@ describe('UpgradeForm2', () => {
                 name: 'Team',
               })
               await user.click(teamOption)
-
-              const perMonthPrice = screen.getByText(/\$8.00/)
-              expect(perMonthPrice).toBeInTheDocument()
-            })
-
-            it('displays billed annually at price', async () => {
-              const { user } = setup({
-                planValue: Plans.USERS_BASIC,
-                hasTeamPlans: true,
-                multipleTiers: true,
-              })
-              render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
-
-              const teamOption = await screen.findByRole('button', {
-                name: 'Team',
-              })
-              await user.click(teamOption)
-
-              const annualPrice = screen.getByText(
-                /\/per month billed annually at \$96.00/
-              )
-              expect(annualPrice).toBeInTheDocument()
+              expect(props.setSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
             })
           })
         })
@@ -731,7 +710,7 @@ describe('UpgradeForm2', () => {
         })
       })
 
-      describe.skip('when the user has team plans available', () => {
+      describe('when the user has team plans available', () => {
         describe('when the feature flag is off', () => {
           it('does not renders the Pro and team buttons', () => {
             setup({
@@ -794,9 +773,9 @@ describe('UpgradeForm2', () => {
               expect(auxiliaryText).toBeInTheDocument()
             })
 
-            it('displays per month price when annual with quantity 10', async () => {
+            it('calls setSelectedPlan with yearly team plan when selecting team button', async () => {
               const { user } = setup({
-                planValue: Plans.USERS_PR_INAPPM,
+                planValue: Plans.USERS_BASIC,
                 hasTeamPlans: true,
                 multipleTiers: true,
               })
@@ -806,28 +785,7 @@ describe('UpgradeForm2', () => {
                 name: 'Team',
               })
               await user.click(teamOption)
-
-              const perMonthPrice = screen.getByText(/\$40.00/)
-              expect(perMonthPrice).toBeInTheDocument()
-            })
-
-            it('displays billed annually at price', async () => {
-              const { user } = setup({
-                planValue: Plans.USERS_PR_INAPPM,
-                hasTeamPlans: true,
-                multipleTiers: true,
-              })
-              render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
-
-              const teamOption = await screen.findByRole('button', {
-                name: 'Team',
-              })
-              await user.click(teamOption)
-
-              const annualPrice = screen.getByText(
-                /\/per month billed annually at \$480.00/
-              )
-              expect(annualPrice).toBeInTheDocument()
+              expect(props.setSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
             })
           })
         })
@@ -1071,7 +1029,7 @@ describe('UpgradeForm2', () => {
         })
       })
 
-      describe.skip('when the user has team plans available', () => {
+      describe('when the user has team plans available', () => {
         describe('when the feature flag is off', () => {
           it('does not renders the Pro and team buttons', () => {
             setup({
@@ -1134,9 +1092,9 @@ describe('UpgradeForm2', () => {
               expect(auxiliaryText).toBeInTheDocument()
             })
 
-            it('displays per month price when annual with quantity 13', async () => {
+            it('calls setSelectedPlan with yearly team plan when selecting team button', async () => {
               const { user } = setup({
-                planValue: Plans.USERS_PR_INAPPY,
+                planValue: Plans.USERS_BASIC,
                 hasTeamPlans: true,
                 multipleTiers: true,
               })
@@ -1146,28 +1104,7 @@ describe('UpgradeForm2', () => {
                 name: 'Team',
               })
               await user.click(teamOption)
-
-              const perMonthPrice = screen.getByText(/\$52.00/)
-              expect(perMonthPrice).toBeInTheDocument()
-            })
-
-            it('displays billed annually at price', async () => {
-              const { user } = setup({
-                planValue: Plans.USERS_PR_INAPPY,
-                hasTeamPlans: true,
-                multipleTiers: true,
-              })
-              render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
-
-              const teamOption = await screen.findByRole('button', {
-                name: 'Team',
-              })
-              await user.click(teamOption)
-
-              const annualPrice = screen.getByText(
-                /\/per month billed annually at \$624.00/
-              )
-              expect(annualPrice).toBeInTheDocument()
+              expect(props.setSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
             })
           })
         })
