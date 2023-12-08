@@ -8,7 +8,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { Plans } from 'shared/utils/billing'
 
-import BillingControls from './BillingControls'
+import BillingOptions from './BillingOptions'
 
 const allPlans = [
   {
@@ -77,7 +77,7 @@ afterAll(() => {
   server.close()
 })
 
-describe('BillingControls', () => {
+describe('BillingOptions', () => {
   function setup() {
     server.use(
       graphql.query('GetAvailablePlans', (req, res, ctx) =>
@@ -92,21 +92,21 @@ describe('BillingControls', () => {
       )
     )
 
-    const mockSetValue = jest.fn()
+    const mockSetFormValue = jest.fn()
     const user = userEvent.setup()
 
-    return { user, mockSetValue }
+    return { user, mockSetFormValue }
   }
 
   describe('when rendered', () => {
     describe('planString is set to annual plan', () => {
       it('renders annual button as "selected"', async () => {
-        const { mockSetValue } = setup()
+        const { mockSetFormValue } = setup()
 
         render(
-          <BillingControls
-            planString={Plans.USERS_PR_INAPPY}
-            setValue={mockSetValue}
+          <BillingOptions
+            newPlan={Plans.USERS_PR_INAPPY}
+            setFormValue={mockSetFormValue}
           />,
           {
             wrapper,
@@ -125,12 +125,12 @@ describe('BillingControls', () => {
       })
 
       it('renders annual pricing scheme', async () => {
-        const { mockSetValue } = setup()
+        const { mockSetFormValue } = setup()
 
         render(
-          <BillingControls
-            planString={Plans.USERS_PR_INAPPY}
-            setValue={mockSetValue}
+          <BillingOptions
+            newPlan={Plans.USERS_PR_INAPPY}
+            setFormValue={mockSetFormValue}
           />,
           {
             wrapper,
@@ -146,12 +146,12 @@ describe('BillingControls', () => {
 
       describe('user clicks on monthly button', () => {
         it('calls setValue', async () => {
-          const { mockSetValue, user } = setup()
+          const { mockSetFormValue, user } = setup()
 
           render(
-            <BillingControls
-              planString={Plans.USERS_PR_INAPPY}
-              setValue={mockSetValue}
+            <BillingOptions
+              newPlan={Plans.USERS_PR_INAPPY}
+              setFormValue={mockSetFormValue}
             />,
             {
               wrapper,
@@ -165,7 +165,10 @@ describe('BillingControls', () => {
           await user.click(monthlyBtn)
 
           await waitFor(() =>
-            expect(mockSetValue).toBeCalledWith('newPlan', 'users-pr-inappm')
+            expect(mockSetFormValue).toBeCalledWith(
+              'newPlan',
+              'users-pr-inappm'
+            )
           )
         })
       })
@@ -173,12 +176,12 @@ describe('BillingControls', () => {
 
     describe('planString is set to a monthly plan', () => {
       it('renders monthly button as "selected"', async () => {
-        const { mockSetValue } = setup()
+        const { mockSetFormValue } = setup()
 
         render(
-          <BillingControls
-            planString={Plans.USERS_PR_INAPPM}
-            setValue={mockSetValue}
+          <BillingOptions
+            newPlan={Plans.USERS_PR_INAPPM}
+            setFormValue={mockSetFormValue}
           />,
           {
             wrapper,
@@ -197,12 +200,12 @@ describe('BillingControls', () => {
       })
 
       it('renders correct pricing scheme', async () => {
-        const { mockSetValue } = setup()
+        const { mockSetFormValue } = setup()
 
         render(
-          <BillingControls
-            planString={Plans.USERS_PR_INAPPM}
-            setValue={mockSetValue}
+          <BillingOptions
+            newPlan={Plans.USERS_PR_INAPPM}
+            setFormValue={mockSetFormValue}
           />,
           {
             wrapper,
@@ -218,12 +221,12 @@ describe('BillingControls', () => {
 
       describe('user clicks on annual button', () => {
         it('calls setValue', async () => {
-          const { mockSetValue, user } = setup()
+          const { mockSetFormValue, user } = setup()
 
           render(
-            <BillingControls
-              planString={Plans.USERS_PR_INAPPM}
-              setValue={mockSetValue}
+            <BillingOptions
+              newPlan={Plans.USERS_PR_INAPPM}
+              setFormValue={mockSetFormValue}
             />,
             {
               wrapper,
@@ -237,7 +240,10 @@ describe('BillingControls', () => {
           await user.click(annualBtn)
 
           await waitFor(() =>
-            expect(mockSetValue).toBeCalledWith('newPlan', 'users-pr-inappy')
+            expect(mockSetFormValue).toBeCalledWith(
+              'newPlan',
+              'users-pr-inappy'
+            )
           )
         })
       })

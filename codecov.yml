@@ -12,7 +12,7 @@ coverage:
     changes: no
 
 comment:
-  layout: 'reach, diff, flags, files, footer'
+  layout: 'reach, diff, flags, files, components, footer'
   behavior: default
   require_changes: no
   require_base: no
@@ -33,3 +33,36 @@ ignore:
   - ./src/pages/RepoPage/repo-jest-setup.js
   - ./src/ui/SunburstChart/*.jsx
   - ./src/ui/SunburstChart/*.js
+
+component_management:
+  default_rules:
+    statuses:
+      - type: patch
+        target: auto
+        branches:
+          - '!main'
+  individual_components:
+    - component_id: dir_assets
+      name: Assets
+      paths:
+        - src/assets/**
+    - component_id: dir_layouts
+      name: Layouts
+      paths:
+        - src/layouts/**
+    - component_id: dir_pages
+      name: Pages
+      paths:
+        - src/pages/**
+    - component_id: dir_services
+      name: Services
+      paths:
+        - src/services/**
+    - component_id: dir_shared
+      name: Shared
+      paths:
+        - src/shared/**
+    - component_id: dir_ui
+      name: UI
+      paths:
+        - src/ui/**

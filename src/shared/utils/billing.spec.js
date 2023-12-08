@@ -5,6 +5,7 @@ import { useFlags } from 'shared/featureFlags'
 import {
   canApplySentryUpgrade,
   EnterprisePlans,
+  findProPlans,
   findSentryPlans,
   findTeamPlans,
   formatNumberToUSD,
@@ -477,6 +478,48 @@ describe('findSentryPlans', () => {
     }
 
     expect(sentryPlanYear).toStrictEqual(expectedResult)
+  })
+})
+
+describe('findProPlans', () => {
+  it('contains monthly plan', () => {
+    const plans = getPlans()
+    const { proPlanMonth } = findProPlans({ plans })
+
+    const expectedResult = {
+      marketingName: 'Pro Team',
+      value: 'users-pr-inappm',
+      billingRate: 'monthly',
+      baseUnitPrice: 12,
+      benefits: [
+        'Configureable # of users',
+        'Unlimited public repositories',
+        'Unlimited private repositories',
+        'Priorty Support',
+      ],
+    }
+
+    expect(proPlanMonth).toStrictEqual(expectedResult)
+  })
+
+  it('contains annual plan', () => {
+    const plans = getPlans()
+    const { proPlanYear } = findProPlans({ plans })
+
+    const expectedResult = {
+      marketingName: 'Pro Team',
+      value: 'users-pr-inappy',
+      billingRate: 'annually',
+      baseUnitPrice: 10,
+      benefits: [
+        'Configureable # of users',
+        'Unlimited public repositories',
+        'Unlimited private repositories',
+        'Priorty Support',
+      ],
+    }
+
+    expect(proPlanYear).toStrictEqual(expectedResult)
   })
 })
 

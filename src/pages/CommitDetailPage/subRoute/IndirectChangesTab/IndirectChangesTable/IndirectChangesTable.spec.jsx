@@ -168,6 +168,7 @@ describe('IndirectChangesTable', () => {
               hasUnintendedChanges: true,
               flags: ['flag-1'],
             },
+            isTeamPlan: false,
             owner: 'codecov',
             provider: 'gh',
             repo: 'cool-repo',

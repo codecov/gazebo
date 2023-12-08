@@ -10,32 +10,34 @@ import {
 } from 'shared/utils/billing'
 import OptionButton from 'ui/OptionButton'
 
+import { NewPlanType } from '../../../PlanTypeOptions/PlanTypeOptions'
+
 interface BillingControlsProps {
-  planString: string
-  setValue: (x: string, y: string) => void
+  newPlan: NewPlanType
+  setFormValue: (x: string, y: string) => void
 }
 
 const BillingControls: React.FC<BillingControlsProps> = ({
-  planString,
-  setValue,
+  newPlan,
+  setFormValue,
 }) => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { proPlanMonth, proPlanYear } = useProPlans({ plans })
 
   const [option, setOption] = useState<'Annual' | 'Monthly'>(() =>
-    isMonthlyPlan(planString) ? 'Monthly' : 'Annual'
+    isMonthlyPlan(newPlan) ? 'Monthly' : 'Annual'
   )
 
   // used to update option selection if user selects
   // the switch to annual button in the total banner
   useEffect(() => {
-    if (isMonthlyPlan(planString) && option === 'Annual') {
+    if (isMonthlyPlan(newPlan) && option === 'Annual') {
       setOption('Monthly')
-    } else if (isAnnualPlan(planString) && option === 'Monthly') {
+    } else if (isAnnualPlan(newPlan) && option === 'Monthly') {
       setOption('Annual')
     }
-  }, [planString, option])
+  }, [newPlan, option])
 
   const baseUnitPrice =
     option === 'Monthly'
@@ -53,9 +55,9 @@ const BillingControls: React.FC<BillingControlsProps> = ({
           active={option}
           onChange={({ text }) => {
             if (text === 'Annual') {
-              setValue('newPlan', Plans.USERS_PR_INAPPY)
+              setFormValue('newPlan', Plans.USERS_PR_INAPPY)
             } else {
-              setValue('newPlan', Plans.USERS_PR_INAPPM)
+              setFormValue('newPlan', Plans.USERS_PR_INAPPM)
             }
 
             setOption(text)

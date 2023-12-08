@@ -4,7 +4,10 @@ import { Plans } from 'shared/utils/billing'
 import {
   calculateNonBundledCost,
   calculatePrice,
+  calculatePriceProPlan,
+  calculatePriceTeamPlan,
   extractSeats,
+  getDefaultValuesUpgradeForm,
   getInitialDataForm,
   getSchema,
   shouldRenderCancelLink,
@@ -68,6 +71,28 @@ describe('calculatePrice', () => {
         expect(result).toBe(60)
       })
     })
+  })
+})
+
+describe('calculatePriceProPlan', () => {
+  it('returns base price', () => {
+    const result = calculatePriceProPlan({
+      seats: 5,
+      baseUnitPrice: 10,
+    })
+
+    expect(result).toBe(50)
+  })
+})
+
+describe('calculatePriceTeamPlan', () => {
+  it('returns base price', () => {
+    const result = calculatePriceTeamPlan({
+      seats: 5,
+      baseUnitPrice: 10,
+    })
+
+    expect(result).toBe(50)
   })
 })
 
@@ -206,6 +231,100 @@ describe('getInitialDataForm', () => {
         newPlan: Plans.USERS_SENTRYY,
         seats: 5,
       })
+    })
+  })
+})
+
+describe('getDefaultValuesUpgradeForm', () => {
+  const proPlanYear = { value: Plans.USERS_PR_INAPPY }
+  const sentryPlanYear = { value: Plans.USERS_SENTRYY }
+
+  describe('when current plan is basic', () => {
+    it('returns pro year plan', () => {
+      const accountDetails = {
+        plan: { value: Plans.USERS_BASIC, quantity: 1 },
+      }
+
+      const data = getDefaultValuesUpgradeForm({
+        accountDetails,
+        proPlanYear,
+        plans: [proPlanYear],
+      })
+
+      expect(data).toStrictEqual({
+        newPlan: Plans.USERS_PR_INAPPY,
+        seats: 2,
+      })
+    })
+
+    it('returns sentry year plan if user is sentry upgrade', () => {
+      const accountDetails = {
+        plan: { value: Plans.USERS_BASIC, quantity: 1 },
+      }
+
+      const data = getDefaultValuesUpgradeForm({
+        accountDetails,
+        proPlanYear,
+        plans: [proPlanYear, sentryPlanYear],
+      })
+
+      expect(data).toStrictEqual({
+        newPlan: Plans.USERS_SENTRYY,
+        seats: 5,
+      })
+    })
+  })
+
+  describe('when current plan is team', () => {
+    it('returns pro year plan', () => {
+      const accountDetails = {
+        plan: { value: Plans.USERS_TEAMM, quantity: 1 },
+      }
+
+      const data = getDefaultValuesUpgradeForm({
+        accountDetails,
+        proPlanYear,
+        plans: [proPlanYear],
+      })
+
+      expect(data).toStrictEqual({
+        newPlan: Plans.USERS_PR_INAPPY,
+        seats: 2,
+      })
+    })
+
+    it('returns pro sentry plan if user is sentry upgrade', () => {
+      const accountDetails = {
+        plan: { value: Plans.USERS_TEAMM, quantity: 1 },
+      }
+
+      const data = getDefaultValuesUpgradeForm({
+        accountDetails,
+        proPlanYear,
+        plans: [proPlanYear, sentryPlanYear],
+      })
+
+      expect(data).toStrictEqual({
+        newPlan: Plans.USERS_SENTRYY,
+        seats: 5,
+      })
+    })
+  })
+
+  it('returns current plan if the user is on a paid plan', () => {
+    const accountDetails = {
+      plan: { value: Plans.USERS_PR_INAPPM, quantity: 2 },
+    }
+
+    const data = getDefaultValuesUpgradeForm({
+      accountDetails,
+      proPlanYear,
+      plans: [proPlanYear],
+    })
+
+    expect(data).toStrictEqual({
+      newPlan: Plans.USERS_PR_INAPPM,
+      seats: 2,
     })
   })
 })

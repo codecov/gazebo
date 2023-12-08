@@ -2,8 +2,11 @@ import { Suspense } from 'react'
 
 import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
 import Footer from 'layouts/Footer'
+import SessionExpiredBanner from 'pages/LoginPage/SessionExpiredBanner'
 import A from 'ui/A'
 import LoadingLogo from 'ui/LoadingLogo'
+
+const LOCAL_STORAGE_SESSION_EXPIRED_KEY = 'expired-session'
 
 const LogoButton = () => {
   return (
@@ -28,8 +31,12 @@ const FullPageLoader = () => (
 )
 
 const LoginLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
+  const showExpiryBanner = localStorage.getItem(
+    LOCAL_STORAGE_SESSION_EXPIRED_KEY
+  )
   return (
     <>
+      {showExpiryBanner && <SessionExpiredBanner />}
       <header className="bg-ds-primary-base text-white">
         <nav className="container mx-auto flex flex-wrap items-center justify-between gap-2 px-3 py-4 sm:px-0">
           <LogoButton />

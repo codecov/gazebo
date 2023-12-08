@@ -11,6 +11,7 @@ import FilesChangedTab from './FilesChangedTab'
 
 jest.mock('./FilesChanged', () => () => 'FilesChanged')
 jest.mock('./FilesChanged/TableTeam', () => () => 'TeamFilesChanged')
+jest.mock('../ComponentsSelector', () => () => 'ComponentsSelector')
 
 jest.mock('shared/featureFlags')
 const mockedUseFlags = useFlags as jest.Mock<{ multipleTiers: boolean }>
@@ -155,4 +156,18 @@ describe('FilesChangedTab', () => {
       })
     }
   )
+
+  describe('when impacted files is rendered', () => {
+    it('renders ComponentsSelector', async () => {
+      setup({
+        multipleTiers: true,
+        planValue: TierNames.BASIC,
+        privateRepo: true,
+      })
+      render(<FilesChangedTab />, { wrapper })
+
+      const selector = await screen.findByText('ComponentsSelector')
+      expect(selector).toBeInTheDocument()
+    })
+  })
 })
