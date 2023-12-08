@@ -13,6 +13,7 @@ function BranchDirEntry({ branch, urlPath, name, filters }) {
 
   const queryParams = {
     flags: filters?.flags,
+    components: filters?.components,
   }
 
   return (
@@ -37,6 +38,7 @@ BranchDirEntry.propTypes = {
     }),
     searchValue: PropTypes.any,
     flags: PropTypes.arrayOf(PropTypes.string),
+    components: PropTypes.arrayOf(PropTypes.string),
   }),
 }
 
