@@ -78,15 +78,6 @@ const teamPlanYear = {
   quantity: 5,
 }
 
-const trialPlan = {
-  marketingName: 'Pro Trial Team',
-  value: 'users-trial',
-  billingRate: null,
-  baseUnitPrice: 12,
-  benefits: ['Configurable # of users', 'Unlimited repos'],
-  monthlyUploadLimit: null,
-}
-
 const mockAccountDetailsBasic = {
   plan: basicPlan,
   activatedUserCount: 1,
@@ -116,12 +107,6 @@ const mockAccountDetailsTeamMonthly = {
 const mockAccountDetailsTeamYearly = {
   plan: teamPlanYear,
   activatedUserCount: 11,
-  inactiveUserCount: 0,
-}
-
-const mockAccountDetailsTrial = {
-  plan: trialPlan,
-  activatedUserCount: 28,
   inactiveUserCount: 0,
 }
 
@@ -181,14 +166,12 @@ const wrapper: WrapperClosure =
 interface SetupArgs {
   planValue: string
   errorDetails?: string
-  trialStatus?: string
 }
 
 describe('TeamPlanController', () => {
   function setup(
-    { planValue = Plans.USERS_BASIC, trialStatus = undefined }: SetupArgs = {
+    { planValue = Plans.USERS_BASIC }: SetupArgs = {
       planValue: Plans.USERS_BASIC,
-      trialStatus: undefined,
     }
   ) {
     const addNotification = jest.fn()
@@ -205,8 +188,6 @@ describe('TeamPlanController', () => {
           return res(ctx.status(200), ctx.json(mockAccountDetailsTeamMonthly))
         } else if (planValue === Plans.USERS_TEAMY) {
           return res(ctx.status(200), ctx.json(mockAccountDetailsTeamYearly))
-        } else if (planValue === Plans.USERS_TRIAL) {
-          return res(ctx.status(200), ctx.json(mockAccountDetailsTrial))
         }
       }),
       rest.patch(
@@ -220,12 +201,7 @@ describe('TeamPlanController', () => {
           ctx.status(200),
           ctx.data({
             owner: {
-              availablePlans: [
-                basicPlan,
-                teamPlanMonth,
-                teamPlanYear,
-                trialPlan,
-              ],
+              availablePlans: [basicPlan, teamPlanMonth, teamPlanYear],
             },
           })
         )
@@ -235,7 +211,7 @@ describe('TeamPlanController', () => {
           ctx.status(200),
           ctx.data({
             owner: {
-              plan: { ...mockPlanDataResponse, trialStatus },
+              plan: { ...mockPlanDataResponse },
             },
           })
         )
@@ -279,12 +255,28 @@ describe('TeamPlanController', () => {
         expect(optionBtn).toHaveClass('bg-ds-primary-base')
       })
 
+      it('has the monthly price for', async () => {
+        setup({ planValue: Plans.USERS_TEAMM })
+        render(<TeamPlanController {...props} />, { wrapper: wrapper() })
+
+        const price = await screen.findByText(/\$50/)
+        expect(price).toBeInTheDocument()
+      })
+
       it('has the price for the year', async () => {
         setup({ planValue: Plans.USERS_TEAMM })
         render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
         const price = await screen.findByText(/\$120/)
         expect(price).toBeInTheDocument()
+      })
+
+      it('has the switch to annual button', async () => {
+        setup({ planValue: Plans.USERS_TEAMM })
+        render(<TeamPlanController {...props} />, { wrapper: wrapper() })
+
+        const switchToAnnualLink = await screen.findByText('switch to annual')
+        expect(switchToAnnualLink).toBeInTheDocument()
       })
 
       it('shows the next billing date if available', async () => {

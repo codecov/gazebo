@@ -1,5 +1,4 @@
 import isNumber from 'lodash/isNumber'
-import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
 import { useAccountDetails } from 'services/account'
@@ -26,10 +25,6 @@ const StudentText: React.FC<StudentTextProps> = ({ activatedStudents }) => {
   )
 }
 
-StudentText.propTypes = {
-  activatedStudents: PropTypes.number,
-}
-
 interface UserTextProps {
   activatedUserCount: number
   inactiveUserCount: number
@@ -44,11 +39,6 @@ const UserText: React.FC<UserTextProps> = ({
       Your organization has {activatedUserCount + inactiveUserCount} members.
     </p>
   )
-}
-
-UserText.propTypes = {
-  activatedUserCount: PropTypes.number.isRequired,
-  inactiveUserCount: PropTypes.number.isRequired,
 }
 
 const UserCount: React.FC = () => {
