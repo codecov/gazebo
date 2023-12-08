@@ -21,12 +21,15 @@ comment:
 
 ignore:
   - ./src/**/*.stories.js
+  - ./src/**/*.stories.jsx
+  - ./src/**/*.stories.ts
+  - ./src/**/*.stories.tsx
   - ./src/setupTests.js
   - ./src/setupProxy.js
   - ./src/reportWebVitals.js
   - ./scripts/*
   - ./src/index.js
-  - ./src/sentry.js
+  - ./src/sentry.ts
   - ./src/mocks/*.js
   - ./src/**/flags/**/*.js
   - ./src/**/mocks.js
