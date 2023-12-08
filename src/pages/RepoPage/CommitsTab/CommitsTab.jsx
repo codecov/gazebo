@@ -1,6 +1,14 @@
-import { lazy, Suspense, useLayoutEffect, useState } from 'react'
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
 import { useParams } from 'react-router-dom'
 
+import { useBranchHasCommits } from 'services/branches'
 import { useLocationParams } from 'services/navigation'
 import { useRepoOverview, useRepoSettingsTeam } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
@@ -25,6 +33,8 @@ const Loader = () => (
 )
 
 const useControlParams = ({ defaultBranch }) => {
+  const initialRenderDone = useRef(false)
+  const { provider, owner, repo } = useParams()
   const defaultParams = {
     branch: defaultBranch,
     states: [],
@@ -32,11 +42,33 @@ const useControlParams = ({ defaultBranch }) => {
   }
 
   const { params, updateParams } = useLocationParams(defaultParams)
-  const { branch: selectedBranch, states, search } = params
+  let { branch: selectedBranch, states, search } = params
 
   const paramStatesNames = states.map((filter) => statusNames[filter])
 
   const [selectedStates, setSelectedStates] = useState(paramStatesNames)
+
+  const { data: branchHasCommits } = useBranchHasCommits({
+    provider,
+    owner,
+    repo,
+    branch: selectedBranch,
+    opts: {
+      suspense: true,
+      enabled: !initialRenderDone.current,
+    },
+  })
+
+  useEffect(() => {
+    if (
+      branchHasCommits === false &&
+      selectedBranch !== 'All branches' &&
+      !initialRenderDone.current
+    ) {
+      initialRenderDone.current = true
+      updateParams({ branch: 'All branches' })
+    }
+  }, [branchHasCommits, selectedBranch, updateParams])
 
   let branch = selectedBranch
   if (branch === 'All branches') {
