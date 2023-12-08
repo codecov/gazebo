@@ -1,6 +1,9 @@
 codecov:
   require_ci_to_pass: yes
 
+ai_pr_review:
+  enabled: true
+
 coverage:
   precision: 2
   round: down
