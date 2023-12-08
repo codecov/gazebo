@@ -45,10 +45,10 @@ const query = `
     $commitId: String!
     $filters: ComponentsFilters
   ) {
-    owner(username: $org) {
+    owner(username: $owner) {
       repository(name: $repo) {
         ... on Repository {
-          commit(id: $commidId) {
+          commit(id: $commitId) {
             components (filters: $filters) {
               name
             }
