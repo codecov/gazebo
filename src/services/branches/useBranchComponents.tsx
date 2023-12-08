@@ -54,7 +54,7 @@ interface UseBranchComponentsArgs {
 }
 
 const query = `
-query GetBranchComponents($owner: String!, $repo: String!, $branch: String!, $filter: ComponentsFilters) {
+query GetBranchComponents($owner: String!, $repo: String!, $branch: String!, $filters: ComponentsFilters) {
   owner(username: $owner) {
     repository(name: $repo) {
       __typename
