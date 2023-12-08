@@ -78,7 +78,7 @@ interface SetupArgs {
   isNotFoundError?: boolean
 }
 
-describe('usePullComponents', () => {
+describe('useCommitComponents', () => {
   function setup({
     isUnsuccessfulParseError = false,
     isNullOwner = false,
