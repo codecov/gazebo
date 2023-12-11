@@ -14,6 +14,9 @@ coverage:
     patch: yes
     changes: no
 
+github_checks:
+  annotations: false
+
 comment:
   layout: 'reach, diff, flags, files, components, footer'
   behavior: default
