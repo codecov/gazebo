@@ -17,6 +17,7 @@ export function extractCoverageFromResponse(res) {
     coverage: fileCoverage,
     totals: isNaN(coverageTotal) ? 0 : coverageTotal,
     flagNames: coverageSource?.flagNames ?? [],
+    componentNames: coverageSource?.componentNames ?? [],
     isCriticalFile: !!coverageFile?.isCriticalFile,
     ...(hashedPath && { hashedPath }),
   }

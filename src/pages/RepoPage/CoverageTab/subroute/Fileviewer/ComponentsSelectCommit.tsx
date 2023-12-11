@@ -8,7 +8,6 @@ import { useFlags } from 'shared/featureFlags'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'
 
-
 import { useSummary } from '../../summaryHooks'
 
 const defaultQueryParams = {
@@ -35,11 +34,12 @@ export function ComponentsSelectCommit() {
   const { componentsSelect: componentsSelectFlag } = useFlags({
     componentsSelect: true,
   })
+
   const { data, isLoading } = useBranchComponents({
     provider,
     owner,
     repo,
-    branch: currentBranchSelected?.name!,
+    branch: currentBranchSelected?.name,
     filters: {
       components: componentSearch ? [componentSearch] : undefined,
     },
@@ -52,7 +52,6 @@ export function ComponentsSelectCommit() {
     (!components?.length && !isLoading && !componentSearch) ||
     !componentsSelectFlag
   ) {
-    console.log('NO COMPONENTS')
     return null
   }
 

@@ -11,6 +11,7 @@ export function useCoverageWithFilters({
   ref,
   path,
   flags,
+  components,
   opts,
 }) {
   const query = `
@@ -63,6 +64,7 @@ export function useCoverageWithFilters({
       ref,
       path,
       flags,
+      components,
       query,
       extractCoverageFromResponse,
     ],
@@ -78,6 +80,7 @@ export function useCoverageWithFilters({
           ref,
           path,
           flags,
+          components,
         },
       }).then(extractCoverageFromResponse)
     },

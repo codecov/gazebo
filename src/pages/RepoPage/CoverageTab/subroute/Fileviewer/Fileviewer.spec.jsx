@@ -44,17 +44,11 @@ const mockComponents = {
   owner: {
     repository: {
       __typename: 'Repository',
-      pull: {
-        compareWithBase: {
-          __typename: 'Comparison',
-          componentComparisons: [
-            {
-              name: 'component1',
-            },
-            {
-              name: 'component2',
-            },
-          ],
+      branch: {
+        name: 'branch-1',
+        head: {
+          commitid: 'commit-123',
+          components: [{ name: 'c1', id: 'c1' }],
         },
       },
     },
@@ -155,6 +149,7 @@ const wrapper =
     )
 
 beforeAll(() => {
+  jest.spyOn(console, 'error').mockImplementation(() => {})
   server.listen()
 })
 afterEach(() => {
@@ -162,6 +157,7 @@ afterEach(() => {
   server.resetHandlers()
 })
 afterAll(() => {
+  jest.resetAllMocks()
   server.close()
 })
 
@@ -207,8 +203,17 @@ describe('FileView', () => {
       graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
       }),
-      graphql.query('PullComponentsSelector', (req, res, ctx) => {
+      graphql.query('GetBranchComponents', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockComponents))
+      }),
+      graphql.query('GetBranches', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({}))
+      }),
+      graphql.query('GetRepoCoverage', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({}))
+      }),
+      graphql.query('GetBranch', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({}))
       })
     )
   }

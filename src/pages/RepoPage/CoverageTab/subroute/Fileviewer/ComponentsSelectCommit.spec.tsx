@@ -11,17 +11,23 @@ import { useFlags } from 'shared/featureFlags'
 
 import { ComponentsSelectCommit } from './ComponentsSelectCommit'
 
-jest.mock('shared/featureFlags')
-const mockedUseFlags = useFlags as jest.Mock<{ componentsSelect: boolean }>
+import { useSummary } from '../../summaryHooks'
 
-const mockPullComponentsResponse = (components: Array<{ name: string }>) => ({
+jest.mock('shared/featureFlags')
+jest.mock('../../summaryHooks')
+
+const mockedUseFlags = useFlags as jest.Mock<{ componentsSelect: boolean }>
+const mockedUseSummary = useSummary as jest.Mock<any>
+
+const mockComponentsResponse = (components: Array<{ name: string }>) => ({
   owner: {
     repository: {
       __typename: 'Repository',
-      pull: {
-        compareWithBase: {
-          __typename: 'Comparison',
-          componentComparisons: components,
+      branch: {
+        name: 'branch-1',
+        head: {
+          commitid: 'commit-123',
+          components,
         },
       },
     },
@@ -61,13 +67,13 @@ afterAll(() => {
   server.close()
 })
 
-describe('ComponentsSelector', () => {
+describe('ComponentsSelectCommit', () => {
   function setup(
     { components } = {
       components: [
-        { name: 'component-1' },
-        { name: 'component-2' },
-        { name: 'component-3' },
+        { name: 'component-1', id: 'c1' },
+        { name: 'component-2', id: 'c2' },
+        { name: 'component-3', id: 'c3' },
       ],
     }
   ) {
@@ -77,14 +83,21 @@ describe('ComponentsSelector', () => {
     mockedUseFlags.mockReturnValue({
       componentsSelect: true,
     })
-
+    mockedUseSummary.mockReturnValue({
+      currentBranchSelected: {
+        name: 'branch-1',
+      },
+      head: {
+        commitid: 'commit-123',
+      },
+    })
     server.use(
-      graphql.query('PullComponentsSelector', (req, res, ctx) => {
+      graphql.query('GetBranchComponents', (req, res, ctx) => {
         mockApiVars(req.variables)
 
         return res(
           ctx.status(200),
-          ctx.data(mockPullComponentsResponse(components))
+          ctx.data(mockComponentsResponse(components))
         )
       })
     )
@@ -148,11 +161,10 @@ describe('ComponentsSelector', () => {
       await waitFor(() => !queryClient.isFetching)
 
       await waitFor(() =>
-        expect(mockApiVars).toHaveBeenCalledWith({
+        expect(mockApiVars).toHaveBeenLastCalledWith({
           owner: 'codecov',
-          pullId: 9,
           repo: 'cool-repo',
-          provider: 'gh',
+          branch: 'branch-1',
           filters: { components: ['component-2'] },
         })
       )

@@ -45,6 +45,7 @@ describe('useCoverageWithFilters', () => {
           commit: {
             commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
             flagNames: ['a', 'b'],
+            componentNames: ['c'],
             coverageFile: {
               content:
                 'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
@@ -99,6 +100,7 @@ describe('useCoverageWithFilters', () => {
           ...data.owner.repository.commit.coverageFile,
           totals: 0,
           flagNames: ['a', 'b'],
+          componentNames: ['c'],
           coverage: _.chain(data.owner.repository.commit.coverageFile.coverage)
             .keyBy('line')
             .mapValues('coverage')
