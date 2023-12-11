@@ -14,7 +14,7 @@ const mockBranchHasCommits = {
         edges: [
           {
             node: {
-              commitId: 'commit-123',
+              commitid: 'commit-123',
             },
           },
         ],
