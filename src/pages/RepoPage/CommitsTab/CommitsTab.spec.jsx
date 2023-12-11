@@ -3,6 +3,7 @@ import { within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import useIntersection from 'react-use/lib/useIntersection'
 
 import { TierNames } from 'services/tier'
@@ -14,21 +15,25 @@ import { repoPageRender, screen, waitFor } from '../repo-jest-setup'
 jest.mock('react-use/lib/useIntersection')
 
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
+  defaultOptions: { queries: { retry: false, suspense: true } },
 })
 const server = setupServer()
 
 const Wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  <QueryClientProvider client={queryClient}>
+    <Suspense fallback={<p>loading</p>}>{children}</Suspense>
+  </QueryClientProvider>
 )
 
 beforeAll(() => {
   server.listen()
 })
+
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
+
 afterAll(() => {
   server.close()
 })
@@ -142,11 +147,40 @@ const mockCommitTeamResponse = {
   },
 }
 
+const mockBranchHasCommits = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      commits: {
+        edges: [
+          {
+            node: {
+              commitId: 'commit-123',
+            },
+          },
+        ],
+      },
+    },
+  },
+}
+
+const mockBranchHasNoCommits = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      commits: {
+        edges: [],
+      },
+    },
+  },
+}
+
 describe('CommitsTab', () => {
   function setup({
     hasNextPage,
     hasBranches,
     returnBranch = '',
+    branchHasCommits = true,
     isPrivate = false,
     tierValue = TierNames.PRO,
   }) {
@@ -228,6 +262,13 @@ describe('CommitsTab', () => {
           commitSearch(req?.variables?.filters?.search)
         }
         return res(ctx.status(200), ctx.data(mockCommitTeamResponse))
+      }),
+      graphql.query('GetBranchCommits', (req, res, ctx) => {
+        if (branchHasCommits) {
+          return res(ctx.status(200), ctx.data(mockBranchHasCommits))
+        } else {
+          return res(ctx.status(200), ctx.data(mockBranchHasNoCommits))
+        }
       })
     )
 
@@ -239,21 +280,50 @@ describe('CommitsTab', () => {
   })
 
   describe('when rendered', () => {
-    it('renders branch context selector', async () => {
-      setup({ hasNextPage: true })
-      repoPageRender({
-        renderCommits: () => (
-          <Wrapper>
-            <CommitsTab />
-          </Wrapper>
-        ),
-        initialEntries: ['/gh/codecov/gazebo/commits'],
+    describe('rendering branch selector', () => {
+      describe('when branch has commits', () => {
+        it('uses default branch', async () => {
+          setup({ hasNextPage: true, returnBranch: 'main' })
+          repoPageRender({
+            renderCommits: () => (
+              <Wrapper>
+                <CommitsTab />
+              </Wrapper>
+            ),
+            initialEntries: ['/gh/codecov/gazebo/commits'],
+          })
+
+          const selector = await screen.findByRole('button', {
+            name: 'Select branch',
+          })
+          expect(selector).toBeInTheDocument()
+
+          const selectedBranch = within(selector).getByText(/main/)
+          expect(selectedBranch).toBeInTheDocument()
+        })
       })
 
-      const selector = await screen.findByRole('button', {
-        name: 'Select branch',
+      describe('when branch has no commits', () => {
+        it('uses all branches', async () => {
+          setup({ branchHasCommits: false, returnBranch: 'main' })
+          repoPageRender({
+            renderCommits: () => (
+              <Wrapper>
+                <CommitsTab />
+              </Wrapper>
+            ),
+            initialEntries: ['/gh/codecov/gazebo/commits'],
+          })
+
+          const selector = await screen.findByRole('button', {
+            name: 'Select branch',
+          })
+          expect(selector).toBeInTheDocument()
+
+          const selectedBranch = within(selector).getByText(/All branches/)
+          expect(selectedBranch).toBeInTheDocument()
+        })
       })
-      expect(selector).toBeInTheDocument()
     })
 
     it('renders ci status mutliselect', async () => {
@@ -275,7 +345,7 @@ describe('CommitsTab', () => {
   })
 
   describe('rendering CommitsTable', () => {
-    it('renders with table name heading', () => {
+    it('renders with table name heading', async () => {
       setup({ hasNextPage: true })
       repoPageRender({
         renderCommits: () => (
@@ -286,11 +356,11 @@ describe('CommitsTab', () => {
         initialEntries: ['/gh/codecov/gazebo/commits'],
       })
 
-      const head = screen.getByText(/Name/)
+      const head = await screen.findByText(/Name/)
       expect(head).toBeInTheDocument()
     })
 
-    it('renders with table coverage heading', () => {
+    it('renders with table coverage heading', async () => {
       setup({ hasNextPage: true })
       repoPageRender({
         renderCommits: () => (
@@ -301,11 +371,11 @@ describe('CommitsTab', () => {
         initialEntries: ['/gh/codecov/gazebo/commits'],
       })
 
-      const head = screen.getByText(/Coverage/)
+      const head = await screen.findByText(/Coverage/)
       expect(head).toBeInTheDocument()
     })
 
-    it('renders with table change heading', () => {
+    it('renders with table change heading', async () => {
       setup({ hasNextPage: true })
       repoPageRender({
         renderCommits: () => (
@@ -316,7 +386,7 @@ describe('CommitsTab', () => {
         initialEntries: ['/gh/codecov/gazebo/commits'],
       })
 
-      const head = screen.getByText(/Change/)
+      const head = await screen.findByText(/Change/)
       expect(head).toBeInTheDocument()
     })
 
