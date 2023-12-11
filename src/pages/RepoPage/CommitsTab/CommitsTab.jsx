@@ -23,6 +23,7 @@ import { useCommitsTabBranchSelector } from './hooks'
 
 import { useSetCrumbs } from '../context'
 
+const ALL_BRANCHES = 'All branches'
 const CommitsTable = lazy(() => import('./CommitsTable'))
 const CommitsTableTeam = lazy(() => import('./CommitsTableTeam'))
 
@@ -62,16 +63,16 @@ const useControlParams = ({ defaultBranch }) => {
   useEffect(() => {
     if (
       branchHasCommits === false &&
-      selectedBranch !== 'All branches' &&
+      selectedBranch !== ALL_BRANCHES &&
       !initialRenderDone.current
     ) {
       initialRenderDone.current = true
-      updateParams({ branch: 'All branches' })
+      updateParams({ branch: ALL_BRANCHES })
     }
   }, [branchHasCommits, selectedBranch, updateParams])
 
   let branch = selectedBranch
-  if (branch === 'All branches') {
+  if (branch === ALL_BRANCHES) {
     branch = ''
   }
 
@@ -124,7 +125,7 @@ function CommitsTab() {
   } = useCommitsTabBranchSelector({
     passedBranch: branch,
     defaultBranch: overview?.defaultBranch,
-    isAllCommits: selectedBranch === 'All branches',
+    isAllCommits: selectedBranch === ALL_BRANCHES,
   })
 
   useLayoutEffect(() => {
@@ -142,7 +143,7 @@ function CommitsTab() {
     ])
   }, [currentBranchSelected, setCrumbs])
 
-  const newBranches = [...(isSearching ? [] : ['All branches']), ...branchList]
+  const newBranches = [...(isSearching ? [] : [ALL_BRANCHES]), ...branchList]
 
   const handleStatusChange = (selectStates) => {
     const commitStates = selectStates?.map(
