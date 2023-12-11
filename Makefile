@@ -20,10 +20,10 @@ build.self-hosted:
 	--label "org.label-schema.version"="${release_version}-${sha}"
 
 tag.self-hosted-rolling:
-	docker tag ${dockerhub_image}:${release_version}-${sha} ${dockerhub_image}:test
+	docker tag ${dockerhub_image}:${release_version}-${sha} ${dockerhub_image}:rolling
 
 push.self-hosted-rolling:
-	docker push ${dockerhub_image}:test
+	docker push ${dockerhub_image}:rolling
 
 save.self-hosted:
 	docker save -o self-hosted.tar ${dockerhub_image}:${release_version}-${sha}
