@@ -8,6 +8,10 @@ import { ImpactedFilesReturnType } from 'shared/utils/impactedFiles'
 
 import { useIndirectChangedFilesTable } from './useIndirectChangedFilesTable'
 
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+
 const mockData = {
   owner: {
     repository: {
@@ -102,10 +106,7 @@ const noHeadOrBaseCoverage = {
 
 const server = setupServer()
 const wrapper =
-  ({
-    initialEntries = '/gh/test-org/test-repo/pull/5?flags=a,b',
-    queryClient,
-  }) =>
+  ({ initialEntries = '/gh/test-org/test-repo/pull/5?flags=a,b' } = {}) =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
@@ -131,9 +132,6 @@ afterAll(() => {
 describe('useIndirectChangedFilesTable', () => {
   function setup(overrideData = mockData) {
     const variablesPassed = jest.fn()
-    const queryClient = new QueryClient({
-      defaultOptions: { queries: { retry: false } },
-    })
 
     server.use(
       graphql.query('Pull', (req, res, ctx) => {
@@ -142,14 +140,14 @@ describe('useIndirectChangedFilesTable', () => {
       })
     )
 
-    return { variablesPassed, queryClient }
+    return { variablesPassed }
   }
 
   describe('when handleSort is triggered', () => {
     it('calls useIndirectChangedFilesTable with correct filters value', async () => {
-      const { variablesPassed, queryClient } = setup()
+      const { variablesPassed } = setup()
       const { result } = renderHook(() => useIndirectChangedFilesTable({}), {
-        wrapper: wrapper({ queryClient }),
+        wrapper: wrapper(),
       })
 
       result.current.handleSort([{ desc: false, id: 'name' }])
@@ -188,72 +186,102 @@ describe('useIndirectChangedFilesTable', () => {
 
   describe('when called', () => {
     it('returns data', async () => {
-      const { queryClient } = setup()
-      const { result } = renderHook(() => useIndirectChangedFilesTable({}), {
-        wrapper: wrapper({ queryClient }),
+      setup()
+      const { result } = renderHook(() => useIndirectChangedFilesTable(), {
+        wrapper: wrapper(),
       })
 
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
 
-      expect(result.current.data).toEqual({
-        headState: 'PROCESSED',
-        compareWithBaseType: 'Comparison',
-        impactedFilesType: ImpactedFilesReturnType.IMPACTED_FILES,
-        impactedFiles: [
-          {
-            changeCoverage: 44.85,
-            fileName: 'mafs.js',
-            hasHeadOrPatchCoverage: true,
-            headCoverage: 90.23,
-            headName: 'flag1/mafs.js',
-            isCriticalFile: true,
-            missesCount: 0,
-            patchCoverage: 27.43,
-            pullId: 14,
-            compareWithBaseType: 'Comparison',
-            impactedFilesType: ImpactedFilesReturnType.IMPACTED_FILES,
-          },
-        ],
-        pullBaseCoverage: 27.35,
-        pullHeadCoverage: 74.2,
-        pullPatchCoverage: 92.12,
-      })
+      await waitFor(() =>
+        expect(result.current.data).toEqual({
+          headState: 'PROCESSED',
+          compareWithBaseType: 'Comparison',
+          impactedFilesType: ImpactedFilesReturnType.IMPACTED_FILES,
+          impactedFiles: [
+            {
+              changeCoverage: 44.85,
+              fileName: 'mafs.js',
+              hasHeadOrPatchCoverage: true,
+              headCoverage: 90.23,
+              headName: 'flag1/mafs.js',
+              isCriticalFile: true,
+              missesCount: 0,
+              patchCoverage: 27.43,
+              pullId: 14,
+              compareWithBaseType: 'Comparison',
+              impactedFilesType: ImpactedFilesReturnType.IMPACTED_FILES,
+            },
+          ],
+          pullBaseCoverage: 27.35,
+          pullHeadCoverage: 74.2,
+          pullPatchCoverage: 92.12,
+        })
+      )
     })
   })
 
-  describe.skip('when called with no head or base coverage on the impacted files', () => {
+  describe('when called with no head or base coverage on the impacted files', () => {
     it('returns data', async () => {
-      const { queryClient } = setup(noHeadOrBaseCoverage)
+      setup(noHeadOrBaseCoverage)
       const { result } = renderHook(() => useIndirectChangedFilesTable({}), {
-        wrapper: wrapper({ queryClient }),
+        wrapper: wrapper(),
       })
 
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
 
-      expect(result.current.data).toEqual({
-        headState: 'PROCESSED',
-        compareWithBaseType: 'Comparison',
-        impactedFilesType: ImpactedFilesReturnType.IMPACTED_FILES,
-        impactedFiles: [
-          {
-            compareWithBaseType: 'Comparison',
-            impactedFilesType: ImpactedFilesReturnType.IMPACTED_FILES,
-            changeCoverage: NaN,
-            fileName: 'mafs.js',
-            hasHeadOrPatchCoverage: true,
-            pullId: 14,
-            headCoverage: undefined,
-            headName: 'flag1/mafs.js',
-            isCriticalFile: true,
-            missesCount: 0,
-            patchCoverage: 27.43,
-          },
-        ],
-        pullBaseCoverage: 27.35,
-        pullHeadCoverage: 74.2,
-        pullPatchCoverage: 92.12,
+      await waitFor(() =>
+        expect(result.current.data).toEqual({
+          headState: 'PROCESSED',
+          compareWithBaseType: 'Comparison',
+          impactedFilesType: ImpactedFilesReturnType.IMPACTED_FILES,
+          impactedFiles: [
+            {
+              compareWithBaseType: 'Comparison',
+              impactedFilesType: ImpactedFilesReturnType.IMPACTED_FILES,
+              changeCoverage: 44.85,
+              fileName: 'mafs.js',
+              hasHeadOrPatchCoverage: true,
+              pullId: 14,
+              headCoverage: 90.23,
+              headName: 'flag1/mafs.js',
+              isCriticalFile: true,
+              missesCount: 0,
+              patchCoverage: 27.43,
+            },
+          ],
+          pullBaseCoverage: 27.35,
+          pullHeadCoverage: 74.2,
+          pullPatchCoverage: 92.12,
+        })
+      )
+    })
+  })
+
+  describe('when called with components', () => {
+    it('sends correct api variables', async () => {
+      const { variablesPassed } = setup()
+      const { result } = renderHook(() => useIndirectChangedFilesTable(), {
+        wrapper: wrapper({
+          initialEntries: '/gh/test-org/test-repo/pull/5?components=c,d',
+        }),
+      })
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      expect(variablesPassed).toHaveBeenCalledWith({
+        filters: {
+          ordering: { direction: 'DESC', parameter: 'MISSES_COUNT' },
+          hasUnintendedChanges: true,
+          components: 'c,d',
+        },
+        owner: 'test-org',
+        provider: 'gh',
+        pullId: 5,
+        repo: 'test-repo',
       })
     })
   })
