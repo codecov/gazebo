@@ -1,6 +1,9 @@
 codecov:
   require_ci_to_pass: yes
 
+ai_pr_review:
+  enabled: true
+
 coverage:
   precision: 2
   round: down
@@ -21,12 +24,15 @@ comment:
 
 ignore:
   - ./src/**/*.stories.js
+  - ./src/**/*.stories.jsx
+  - ./src/**/*.stories.ts
+  - ./src/**/*.stories.tsx
   - ./src/setupTests.js
   - ./src/setupProxy.js
   - ./src/reportWebVitals.js
   - ./scripts/*
   - ./src/index.js
-  - ./src/sentry.js
+  - ./src/sentry.ts
   - ./src/mocks/*.js
   - ./src/**/flags/**/*.js
   - ./src/**/mocks.js
