@@ -1,14 +1,6 @@
-import {
-  lazy,
-  Suspense,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react'
+import { lazy, Suspense, useLayoutEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useBranchHasCommits } from 'services/branches'
 import { useLocationParams } from 'services/navigation'
 import { useRepoOverview, useRepoSettingsTeam } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
@@ -23,7 +15,6 @@ import { useCommitsTabBranchSelector } from './hooks'
 
 import { useSetCrumbs } from '../context'
 
-const ALL_BRANCHES = 'All branches'
 const CommitsTable = lazy(() => import('./CommitsTable'))
 const CommitsTableTeam = lazy(() => import('./CommitsTableTeam'))
 
@@ -34,8 +25,6 @@ const Loader = () => (
 )
 
 const useControlParams = ({ defaultBranch }) => {
-  const initialRenderDone = useRef(false)
-  const { provider, owner, repo } = useParams()
   const defaultParams = {
     branch: defaultBranch,
     states: [],
@@ -43,36 +32,14 @@ const useControlParams = ({ defaultBranch }) => {
   }
 
   const { params, updateParams } = useLocationParams(defaultParams)
-  let { branch: selectedBranch, states, search } = params
+  const { branch: selectedBranch, states, search } = params
 
   const paramStatesNames = states.map((filter) => statusNames[filter])
 
   const [selectedStates, setSelectedStates] = useState(paramStatesNames)
 
-  const { data: branchHasCommits } = useBranchHasCommits({
-    provider,
-    owner,
-    repo,
-    branch: selectedBranch,
-    opts: {
-      suspense: true,
-      enabled: !initialRenderDone.current,
-    },
-  })
-
-  useEffect(() => {
-    if (
-      branchHasCommits === false &&
-      selectedBranch !== ALL_BRANCHES &&
-      !initialRenderDone.current
-    ) {
-      initialRenderDone.current = true
-      updateParams({ branch: ALL_BRANCHES })
-    }
-  }, [branchHasCommits, selectedBranch, updateParams])
-
   let branch = selectedBranch
-  if (branch === ALL_BRANCHES) {
+  if (branch === 'All branches') {
     branch = ''
   }
 
@@ -125,7 +92,7 @@ function CommitsTab() {
   } = useCommitsTabBranchSelector({
     passedBranch: branch,
     defaultBranch: overview?.defaultBranch,
-    isAllCommits: selectedBranch === ALL_BRANCHES,
+    isAllCommits: selectedBranch === 'All branches',
   })
 
   useLayoutEffect(() => {
@@ -143,7 +110,7 @@ function CommitsTab() {
     ])
   }, [currentBranchSelected, setCrumbs])
 
-  const newBranches = [...(isSearching ? [] : [ALL_BRANCHES]), ...branchList]
+  const newBranches = [...(isSearching ? [] : ['All branches']), ...branchList]
 
   const handleStatusChange = (selectStates) => {
     const commitStates = selectStates?.map(
