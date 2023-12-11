@@ -53,16 +53,23 @@ const SelfHostedLicenseExpiration = () => {
   const { provider } = useParams()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const isSelfHosted = !!config.IS_SELF_HOSTED
+  const isDedicatedNamespace = !!config.IS_DEDICATED_NAMESPACE
   const { data } = useSelfHostedSeatsAndLicense({
     provider,
-    opts: { enabled: !!provider && isSelfHosted },
+    opts: { enabled: !!provider && isSelfHosted && isDedicatedNamespace },
   })
 
   const licenseExpirationDate = data?.selfHostedLicense?.expirationDate
   const seatsUsed = data?.seatsUsed
   const seatsLimit = data?.seatsLimit
 
-  if (!isSelfHosted || !licenseExpirationDate || !seatsUsed || !seatsLimit) {
+  if (
+    !isSelfHosted ||
+    !isDedicatedNamespace ||
+    !licenseExpirationDate ||
+    !seatsUsed ||
+    !seatsLimit
+  ) {
     return null
   }
 

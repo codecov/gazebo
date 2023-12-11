@@ -77,6 +77,7 @@ describe('SelfHostedLicenseExpiration', () => {
   describe('cloud mode', () => {
     beforeEach(() => {
       config.IS_SELF_HOSTED = false
+      config.IS_DEDICATED_NAMESPACE = false
       setup({ isUndefined: true })
     })
     afterEach(() => jest.resetAllMocks())
@@ -96,13 +97,26 @@ describe('SelfHostedLicenseExpiration', () => {
     })
   })
 
-  describe('self hosted with invalid data params', () => {
-    beforeEach(() => {
-      config.IS_SELF_HOSTED = true
-    })
+  describe('self hosted and ECDN with invalid data params', () => {
     afterEach(() => jest.resetAllMocks())
 
+    it('does not render the banner when it is self-hosted but not ECDN', async () => {
+      config.IS_SELF_HOSTED = true
+      config.IS_DEDICATED_NAMESPACE = false
+      setup({
+        seatsUsed: 5,
+        seatsLimit: 4,
+        expirationDate: '2020-05-09T00:00:00',
+      })
+      render(<SelfHostedLicenseExpiration />, { wrapper: wrapper(['']) })
+
+      const resolveIssueButton = screen.queryByText(/Resolve issue/)
+      expect(resolveIssueButton).not.toBeInTheDocument()
+    })
+
     it('does not render when there is no provider', () => {
+      config.IS_SELF_HOSTED = true
+      config.IS_DEDICATED_NAMESPACE = true
       setup({
         seatsUsed: 5,
         seatsLimit: 10,
@@ -115,6 +129,8 @@ describe('SelfHostedLicenseExpiration', () => {
     })
 
     it('does not render the banner when there is no license expiration date', async () => {
+      config.IS_SELF_HOSTED = true
+      config.IS_DEDICATED_NAMESPACE = true
       setup({
         seatsUsed: 5,
         seatsLimit: 10,
@@ -127,6 +143,8 @@ describe('SelfHostedLicenseExpiration', () => {
     })
 
     it('does not render the banner when there are no seats used', async () => {
+      config.IS_SELF_HOSTED = true
+      config.IS_DEDICATED_NAMESPACE = true
       setup({
         seatsUsed: null,
         seatsLimit: 10,
@@ -139,6 +157,8 @@ describe('SelfHostedLicenseExpiration', () => {
     })
 
     it('does not render the banner when there are no seat limit', async () => {
+      config.IS_SELF_HOSTED = true
+      config.IS_DEDICATED_NAMESPACE = true
       setup({
         seatsUsed: 5,
         seatsLimit: null,
@@ -151,12 +171,13 @@ describe('SelfHostedLicenseExpiration', () => {
     })
   })
 
-  describe('self hosted with correct params', () => {
+  describe('self hosted and ECDN with correct params', () => {
     beforeAll(() => {
       jest.useFakeTimers().setSystemTime(new Date('2023-08-01'))
     })
     beforeEach(() => {
       config.IS_SELF_HOSTED = true
+      config.IS_DEDICATED_NAMESPACE = true
     })
     afterEach(() => jest.resetAllMocks())
 
