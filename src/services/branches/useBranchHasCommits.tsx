@@ -10,7 +10,7 @@ import Api from 'shared/api'
 import A from 'ui/A'
 
 const CommitSchema = z.object({
-  commitId: z.string(),
+  commitid: z.string(),
 })
 
 const RepositorySchema = z.object({
