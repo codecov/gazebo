@@ -88,6 +88,7 @@ export function useCommitComponents({
   options,
 }: CommitComponentsProps = {}) {
   const { provider, owner, repo, commit: commitId } = useParams<URLParams>()
+
   return useQuery({
     queryKey: [
       'CommitComponents',
