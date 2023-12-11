@@ -141,9 +141,14 @@ export function useCommitComponents({
               detail: (
                 <p>
                   Activation is required to view this repo, please{' '}
-                  {/* @ts-expect-error */}
-                  <A to={{ pageName: 'membersTab' }}>click here </A> to activate
-                  your account.
+                  <A
+                    to={{ pageName: 'membersTab' }}
+                    hook="members-page-link"
+                    isExternal={false}
+                  >
+                    click here{' '}
+                  </A>{' '}
+                  to activate your account.
                 </p>
               ),
             },
