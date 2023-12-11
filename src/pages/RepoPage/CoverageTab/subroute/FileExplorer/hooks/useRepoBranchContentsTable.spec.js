@@ -202,6 +202,7 @@ describe('useRepoBranchContentsTable', () => {
         filters: {
           searchValue: 'file.js',
           flags: [],
+          components: [],
           ordering: {
             direction: 'ASC',
             parameter: 'NAME',
@@ -235,6 +236,7 @@ describe('useRepoBranchContentsTable', () => {
         filters: {
           displayType: 'LIST',
           flags: [],
+          components: [],
           ordering: {
             direction: 'DESC',
             parameter: 'MISSES',
@@ -267,6 +269,40 @@ describe('useRepoBranchContentsTable', () => {
         branch: 'main',
         filters: {
           flags: ['flag-1'],
+          components: [],
+          ordering: {
+            direction: 'ASC',
+            parameter: 'NAME',
+          },
+        },
+        name: 'test-org',
+        repo: 'test-repo',
+        path: '',
+      })
+    })
+  })
+
+  describe('when there is a components param', () => {
+    it('makes a gql request with the components param', async () => {
+      const { calledCommitContents } = setup()
+      renderHook(() => useRepoBranchContentsTable(), {
+        wrapper: wrapper(
+          `/gh/test-org/test-repo/tree/main${qs.stringify(
+            { components: ['component-1'] },
+            { addQueryPrefix: true }
+          )}`
+        ),
+      })
+
+      await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+      expect(calledCommitContents).toHaveBeenCalled()
+      expect(calledCommitContents).toHaveBeenCalledWith({
+        branch: 'main',
+        filters: {
+          components: ['component-1'],
+          flags: [],
           ordering: {
             direction: 'ASC',
             parameter: 'NAME',
@@ -301,6 +337,7 @@ describe('useRepoBranchContentsTable', () => {
         branch: 'main',
         filters: {
           flags: [],
+          components: [],
           ordering: {
             direction: 'DESC',
             parameter: 'NAME',

@@ -143,6 +143,7 @@ const defaultQueryParams = {
   search: '',
   displayType: '',
   flags: [],
+  components: [],
 }
 
 const sortingParameter = Object.freeze({
@@ -159,6 +160,7 @@ const getQueryFilters = ({ params, sortBy }) => {
     ...(params?.search && { searchValue: params.search }),
     // doing a ternary here because it's an array and arrays + && do not go well
     ...(params?.flags ? { flags: params.flags } : {}),
+    ...(params?.components ? { components: params.components } : {}),
     ...(params?.displayType && {
       displayType: displayTypeParameter[params?.displayType],
     }),
@@ -239,6 +241,9 @@ export function useRepoBranchContentsTable() {
     headers,
     handleSort,
     hasFlagsSelected: params?.flags ? params?.flags?.length > 0 : false,
+    hasComponentsSelected: params?.components
+      ? params?.components?.length > 0
+      : false,
     isLoading: isLoadingRepo || isLoading,
     isSearching: !!params?.search,
     isMissingHeadReport:
