@@ -1,2 +1,2 @@
 export * from './useCommitBasedCoverageForFileViewer'
-export * from './useCoverageWithFlags'
+export * from './useCoverageWithFilters'

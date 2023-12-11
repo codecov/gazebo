@@ -19,7 +19,7 @@ function FileView() {
   )
 
   const { componentsSelect } = useFlags({
-    componentsSelect: false,
+    componentsSelect: true,
   })
 
   return (

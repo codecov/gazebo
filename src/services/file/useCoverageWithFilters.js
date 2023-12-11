@@ -4,7 +4,7 @@ import Api from 'shared/api'
 
 import { extractCoverageFromResponse } from './utils'
 
-export function useCoverageWithFlags({
+export function useCoverageWithFilters({
   provider,
   owner,
   repo,
@@ -14,11 +14,11 @@ export function useCoverageWithFlags({
   opts,
 }) {
   const query = `
-  query CoverageForFileWithFlags($owner: String!, $repo: String!, $ref: String!, $path: String!, $flags: [String]) {
+  query CoverageForFileWithFilters($owner: String!, $repo: String!, $ref: String!, $path: String!, $flags: [String], $components: [String]) {
     owner(username: $owner) {
       repository: repositoryDeprecated(name: $repo){
         commit(id: $ref) {
-          coverageFile(path: $path, flags: $flags) {
+          coverageFile(path: $path, flags: $flags, components: $components) {
             isCriticalFile
             coverage {
               line

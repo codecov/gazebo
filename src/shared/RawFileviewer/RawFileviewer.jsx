@@ -125,6 +125,7 @@ function RawFileViewer({
     depth: 1,
   })
   const flags = params?.flags ?? []
+  const components = params?.components ?? []
 
   const isUnsupportedFileType = unsupportedExtensionsMapper({ path })
 
@@ -141,6 +142,7 @@ function RawFileViewer({
     commit,
     path,
     selectedFlags: flags,
+    selectedComponents: components,
     opts: {
       enabled: !isUnsupportedFileType,
     },

@@ -5,7 +5,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useCoverageWithFlags } from '.'
+import { useCoverageWithFilters } from '.'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -29,10 +29,10 @@ beforeEach(() => {
 })
 afterAll(() => server.close())
 
-describe('useCoverageWithFlags', () => {
+describe('useCoverageWithFilters', () => {
   function setup(dataReturned) {
     server.use(
-      graphql.query('CoverageForFileWithFlags', (req, res, ctx) => {
+      graphql.query('CoverageForFileWithFilters', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(dataReturned))
       })
     )
@@ -85,9 +85,12 @@ describe('useCoverageWithFlags', () => {
     })
 
     it('returns commit file coverage', async () => {
-      const { result } = renderHook(() => useCoverageWithFlags({ provider }), {
-        wrapper,
-      })
+      const { result } = renderHook(
+        () => useCoverageWithFilters({ provider }),
+        {
+          wrapper,
+        }
+      )
 
       await waitFor(() => result.current.isSuccess)
 

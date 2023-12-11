@@ -1,18 +1,31 @@
 import isUndefined from 'lodash/isUndefined'
 import { useState } from 'react'
+import { useParams } from 'react-router-dom'
 
+import { useBranchComponents } from 'services/branches'
 import { useLocationParams } from 'services/navigation'
-import { usePullComponents } from 'services/pull'
 import { useFlags } from 'shared/featureFlags'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'
+
+
+import { useSummary } from '../../summaryHooks'
 
 const defaultQueryParams = {
   search: '',
   components: [],
 }
 
+interface URLParams {
+  provider: string
+  owner: string
+  repo: string
+}
+
 export function ComponentsSelectCommit() {
+  const { currentBranchSelected } = useSummary()
+
+  const { provider, owner, repo } = useParams<URLParams>()
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const [componentSearch, setComponentSearch] = useState('')
   const [selectedComponents, setSelectedComponents] = useState(
@@ -22,27 +35,24 @@ export function ComponentsSelectCommit() {
   const { componentsSelect: componentsSelectFlag } = useFlags({
     componentsSelect: true,
   })
-
-  // change these
-  const { data, isLoading } = usePullComponents({
+  const { data, isLoading } = useBranchComponents({
+    provider,
+    owner,
+    repo,
+    branch: currentBranchSelected?.name!,
     filters: {
       components: componentSearch ? [componentSearch] : undefined,
     },
-    options: {
-      suspense: false,
-    },
   })
 
-  const components =
-    data?.pull?.compareWithBase.__typename === 'Comparison'
-      ? data?.pull?.compareWithBase?.componentComparisons
-      : []
-
-  // end change these
+  const components = data?.branch?.head?.components
+    ? data?.branch?.head?.components
+    : []
   if (
     (!components?.length && !isLoading && !componentSearch) ||
     !componentsSelectFlag
   ) {
+    console.log('NO COMPONENTS')
     return null
   }
 

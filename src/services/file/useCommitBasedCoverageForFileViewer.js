@@ -1,6 +1,6 @@
 import { useFileWithMainCoverage } from 'services/pathContents'
 
-import { useCoverageWithFlags } from './index'
+import { useCoverageWithFilters } from './index'
 
 export function useCommitBasedCoverageForFileViewer({
   owner,
@@ -9,6 +9,7 @@ export function useCommitBasedCoverageForFileViewer({
   commit,
   path,
   selectedFlags,
+  selectedComponents,
   opts,
 }) {
   const { data } = useFileWithMainCoverage({
@@ -21,23 +22,26 @@ export function useCommitBasedCoverageForFileViewer({
   })
 
   const coverageForAllFlags = selectedFlags.length === 0
+  const coverageForAllComponents = selectedComponents.length === 0
 
-  const queryPerFlag = useCoverageWithFlags({
+  const filteredQuery = useCoverageWithFilters({
     provider,
     owner,
     repo,
     ref: commit,
     path,
     flags: selectedFlags,
-    // only run the query if we are filtering per flag
+    components: selectedComponents,
+    // only run the query if we are filtering per flag and/or component
     opts: {
-      enabled: !coverageForAllFlags && opts?.enabled,
+      enabled:
+        !coverageForAllFlags && !coverageForAllComponents && opts?.enabled,
       suspense: false,
     },
   })
 
-  if (coverageForAllFlags) {
-    // no flag selected, we can return the default coverage
+  if (coverageForAllFlags && coverageForAllComponents) {
+    // no flags or components selected, we can return the default coverage
     return {
       coverage: data?.coverage,
       totals: data?.totals,
@@ -50,10 +54,11 @@ export function useCommitBasedCoverageForFileViewer({
   }
 
   return {
-    coverage: queryPerFlag.data?.coverage ?? {},
-    totals: queryPerFlag.data?.totals ?? 0,
-    isLoading: queryPerFlag.isLoading,
+    coverage: filteredQuery.data?.coverage ?? {},
+    totals: filteredQuery.data?.totals ?? 0,
+    isLoading: filteredQuery.isLoading,
     flagNames: data?.flagNames,
+    componentNames: data?.componentNames,
     content: data?.content,
     isCriticalFile: !!data?.isCriticalFile,
     hashedPath: data?.hashedPath,
