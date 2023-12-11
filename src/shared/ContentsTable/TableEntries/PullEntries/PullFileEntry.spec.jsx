@@ -211,6 +211,7 @@ describe('PullFileEntry', () => {
             2: 1,
           },
           flagNames: ['a', 'b'],
+          componentNames: [],
           isCriticalFile: true,
           totals: 0,
         })
