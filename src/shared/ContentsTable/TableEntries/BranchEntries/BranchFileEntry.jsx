@@ -24,6 +24,7 @@ function BranchFileEntry({
 
   const queryParams = {
     flags: filters?.flags,
+    components: filters?.components,
   }
 
   return (
@@ -49,6 +50,7 @@ BranchFileEntry.propTypes = {
   urlPath: PropTypes.string.isRequired,
   filters: PropTypes.shape({
     flags: PropTypes.arrayOf(PropTypes.string),
+    components: PropTypes.arrayOf(PropTypes.string),
   }),
 }
 
