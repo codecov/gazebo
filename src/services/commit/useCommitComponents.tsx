@@ -143,7 +143,7 @@ export function useCommitComponents({
                   Activation is required to view this repo, please{' '}
                   <A
                     to={{ pageName: 'membersTab' }}
-                    hook="members-page-link"
+                    hook="activate-user"
                     isExternal={false}
                   >
                     click here{' '}
