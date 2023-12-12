@@ -1,4 +1,6 @@
 import PropTypes from 'prop-types'
+import qs from 'qs'
+import { useLocation } from 'react-router-dom'
 
 import Table from 'old_ui/Table'
 import Spinner from 'ui/Spinner'
@@ -6,6 +8,8 @@ import TotalsNumber from 'ui/TotalsNumber'
 
 import ComponentsNotConfigured from './ComponentsNotConfigured'
 import { useComponentComparison } from './hooks'
+
+import ComponentsSelector from '../ComponentsSelector'
 
 const tableColumns = [
   {
@@ -86,8 +90,23 @@ function getTableData(data) {
   )
 }
 
+function getFilters({ components }) {
+  return {
+    ...(components ? { components } : {}),
+  }
+}
+
 function ComponentsTab() {
-  const { data, isLoading } = useComponentComparison()
+  const location = useLocation()
+  const queryParams = qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+    depth: 1,
+  })
+  const components = queryParams?.components
+  const filters = getFilters({ components })
+  const { data, isLoading } = useComponentComparison({
+    filters,
+  })
 
   const componentComparisons =
     data?.pull?.compareWithBase?.componentComparisons || []
@@ -103,7 +122,14 @@ function ComponentsTab() {
     return <ComponentsNotConfigured />
   }
 
-  return <Table data={tableData} columns={tableColumns} />
+  return (
+    <>
+      <div className="flex justify-end bg-ds-gray-primary p-2">
+        <ComponentsSelector />
+      </div>
+      <Table data={tableData} columns={tableColumns} />
+    </>
+  )
 }
 
 export default ComponentsTab
