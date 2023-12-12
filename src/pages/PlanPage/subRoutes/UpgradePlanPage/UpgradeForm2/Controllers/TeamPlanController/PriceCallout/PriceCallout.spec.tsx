@@ -37,19 +37,6 @@ const availablePlans = [
     monthlyUploadLimit: null,
   },
   {
-    marketingName: 'Pro',
-    value: 'users-pr-inappy',
-    billingRate: 'annually',
-    baseUnitPrice: 10,
-    benefits: [
-      'Configurable # of users',
-      'Unlimited public repositories',
-      'Unlimited private repositories',
-      'Priority Support',
-    ],
-    monthlyUploadLimit: null,
-  },
-  {
     marketingName: 'Team',
     value: 'users-teamm',
     billingRate: 'monthly',
@@ -102,7 +89,7 @@ describe('PriceCallout', () => {
 
   function setup() {
     const user = userEvent.setup()
-    const mockSetValue = jest.fn()
+    const mockSetFormValue = jest.fn()
 
     server.use(
       graphql.query('GetAvailablePlans', (req, res, ctx) =>
@@ -115,7 +102,7 @@ describe('PriceCallout', () => {
       )
     )
 
-    return { mockSetValue, user }
+    return { mockSetFormValue, user }
   }
 
   describe('when rendered', () => {
@@ -126,18 +113,22 @@ describe('PriceCallout', () => {
       }
 
       it('displays per month price', async () => {
-        const { mockSetValue } = setup()
+        const { mockSetFormValue } = setup()
 
-        render(<PriceCallout {...props} setValue={mockSetValue} />, { wrapper })
+        render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
+          wrapper,
+        })
 
         const perMonthPrice = await screen.findByText(/\$40.00/)
         expect(perMonthPrice).toBeInTheDocument()
       })
 
       it('displays billed annually at price', async () => {
-        const { mockSetValue } = setup()
+        const { mockSetFormValue } = setup()
 
-        render(<PriceCallout {...props} setValue={mockSetValue} />, { wrapper })
+        render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
+          wrapper,
+        })
 
         const annualPrice = await screen.findByText(
           /\/per month billed annually at \$480.00/
@@ -146,9 +137,11 @@ describe('PriceCallout', () => {
       })
 
       it('displays how much the user saves', async () => {
-        const { mockSetValue } = setup()
+        const { mockSetFormValue } = setup()
 
-        render(<PriceCallout {...props} setValue={mockSetValue} />, { wrapper })
+        render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
+          wrapper,
+        })
 
         const moneySaved = await screen.findByText(/\$120.00/)
         expect(moneySaved).toBeInTheDocument()
@@ -162,25 +155,29 @@ describe('PriceCallout', () => {
       }
 
       it('displays the monthly price', async () => {
-        const { mockSetValue } = setup()
-        render(<PriceCallout {...props} setValue={mockSetValue} />, { wrapper })
+        const { mockSetFormValue } = setup()
+        render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
+          wrapper,
+        })
 
         const monthlyPrice = await screen.findByText(/\$50.00/)
         expect(monthlyPrice).toBeInTheDocument()
       })
 
       it('displays what the user could save with annual plan', async () => {
-        const { mockSetValue } = setup()
-        render(<PriceCallout {...props} setValue={mockSetValue} />, { wrapper })
+        const { mockSetFormValue } = setup()
+        render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
+          wrapper,
+        })
 
-        const savings = await screen.findByText(/\$50.00/)
+        const savings = await screen.findByText(/\$120.00/)
         expect(savings).toBeInTheDocument()
       })
 
       describe('user switches to annual plan', () => {
-        it('calls mock set value with team annual plan', async () => {
-          const { mockSetValue, user } = setup()
-          render(<PriceCallout {...props} setValue={mockSetValue} />, {
+        it('calls mock set value with pro annual plan', async () => {
+          const { mockSetFormValue, user } = setup()
+          render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
             wrapper,
           })
 
@@ -191,7 +188,7 @@ describe('PriceCallout', () => {
 
           await user.click(switchToAnnual)
 
-          expect(mockSetValue).toBeCalledWith('newPlan', Plans.USERS_TEAMY)
+          expect(mockSetFormValue).toBeCalledWith('newPlan', Plans.USERS_TEAMY)
         })
       })
     })
