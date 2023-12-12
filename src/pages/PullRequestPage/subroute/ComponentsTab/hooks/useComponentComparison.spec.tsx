@@ -87,6 +87,8 @@ describe('useComponentComparison', () => {
     isOwnerNotActivatedError = false,
     isUnsuccessfulParseError = false,
   }: SetupArgs) {
+    const componentsMock = jest.fn()
+
     server.use(
       graphql.query('PullComponentComparison', (req, res, ctx) => {
         if (isNotFoundError) {
@@ -96,10 +98,16 @@ describe('useComponentComparison', () => {
         } else if (isUnsuccessfulParseError) {
           return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
         } else {
+          if (req.variables?.filters?.components) {
+            componentsMock(req.variables.filters.components)
+          }
+
           return res(ctx.status(200), ctx.data(mockResponse))
         }
       })
     )
+
+    return { componentsMock }
   }
 
   describe('when called', () => {
@@ -220,6 +228,35 @@ describe('useComponentComparison', () => {
           )
         )
       })
+    })
+  })
+
+  describe('when called with filters', () => {
+    it('sends filters to API', async () => {
+      const { componentsMock } = setup({})
+
+      const { result } = renderHook(
+        () =>
+          useComponentComparison({
+            filters: {
+              components: ['component1', 'component2'],
+            },
+          }),
+        {
+          wrapper,
+        }
+      )
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      await waitFor(() => expect(componentsMock).toBeCalledTimes(1))
+      await waitFor(() =>
+        expect(componentsMock).toHaveBeenCalledWith([
+          'component1',
+          'component2',
+        ])
+      )
     })
   })
 })
