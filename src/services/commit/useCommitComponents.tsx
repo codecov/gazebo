@@ -47,6 +47,7 @@ const query = `
   ) {
     owner(username: $owner) {
       repository(name: $repo) {
+        __typename
         ... on Repository {
           commit(id: $commitId) {
             components (filters: $filters) {
@@ -54,12 +55,12 @@ const query = `
             }
           }
         }
-      }
-      ... on NotFoundError {
-        message
-      }
-      ... on OwnerNotActivatedError {
-        message
+        ... on NotFoundError {
+          message
+        }
+        ... on OwnerNotActivatedError {
+          message
+        }
       }
     }
   }
