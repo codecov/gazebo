@@ -1,5 +1,5 @@
 export const query = `
-  query PullComponentComparison($owner: String!, $repo: String!, $pullId: Int!) {
+  query PullComponentComparison($owner: String!, $repo: String!, $pullId: Int!, $filters: ComponentsFilters) {
     owner(username: $owner) {
       repository(name: $repo) {
         __typename
@@ -8,7 +8,7 @@ export const query = `
             compareWithBase {
               __typename
               ... on Comparison {
-                componentComparisons {
+                componentComparisons(filters: $filters) {
                   name
                   patchTotals {
                     percentCovered
