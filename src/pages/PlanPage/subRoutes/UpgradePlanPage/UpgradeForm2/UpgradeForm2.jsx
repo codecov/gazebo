@@ -11,6 +11,7 @@ import {
 import { useFlags } from 'shared/featureFlags'
 import {
   canApplySentryUpgrade,
+  isSentryPlan,
   isTeamPlan,
   shouldDisplayTeamCard,
 } from 'shared/utils/billing'
@@ -22,6 +23,7 @@ import {
 } from 'shared/utils/upgradeForm'
 
 import ProPlanController from './Controllers/ProPlanController'
+import SentryPlanController from './Controllers/SentryPlanController'
 import TeamPlanController from './Controllers/TeamPlanController'
 import { useUpgradeControls } from './hooks'
 import PlanTypeOptions from './PlanTypeOptions'
@@ -82,14 +84,27 @@ function UpgradeForm2({ selectedPlan, setSelectedPlan }) {
         <h3 className="font-semibold">Organization</h3>
         <span>{owner}</span>
       </div>
-      {hasTeamPlans && multipleTiers && (
+      {hasTeamPlans && multipleTiers ? (
         <PlanTypeOptions
           setFormValue={setFormValue}
           setSelectedPlan={setSelectedPlan}
         />
-      )}
+      ) : isSentryUpgrade ? (
+        <div>
+          <h3 className="font-semibold">Plan</h3>
+          <p>$29 monthly includes 5 seats.</p>
+        </div>
+      ) : null}
       {isTeamPlan(selectedPlan?.value) ? (
         <TeamPlanController
+          newPlan={newPlan}
+          seats={seats}
+          setFormValue={setFormValue}
+          register={register}
+          errors={errors}
+        />
+      ) : isSentryPlan(selectedPlan?.value) ? (
+        <SentryPlanController
           newPlan={newPlan}
           seats={seats}
           setFormValue={setFormValue}
