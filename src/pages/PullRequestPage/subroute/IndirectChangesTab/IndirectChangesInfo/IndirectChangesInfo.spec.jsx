@@ -4,6 +4,8 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import IndirectChangesInfo from './IndirectChangesInfo'
 
+jest.mock('../../ComponentsSelector', () => () => 'ComponentsSelector')
+
 describe('Indiret changes Info', () => {
   it('renders the expected copy', () => {
     render(
@@ -43,5 +45,21 @@ describe('Indiret changes Info', () => {
         href: 'https://docs.codecov.com/docs/unexpected-coverage-changes',
       })
     ).toBeInTheDocument()
+  })
+
+  it('renders the expected components selector', () => {
+    render(
+      <MemoryRouter
+        initialEntries={[
+          '/provider/owner/repo/pull/pullId/indirectChangesInfo',
+        ]}
+      >
+        <Route path="/:provider/:owner/:repo/pull/:pullId/indirectChangesInfo">
+          <IndirectChangesInfo />
+        </Route>
+      </MemoryRouter>
+    )
+
+    expect(screen.getByText('ComponentsSelector')).toBeInTheDocument()
   })
 })
