@@ -22,6 +22,7 @@ import {
 } from 'shared/utils/upgradeForm'
 
 import ProPlanController from './Controllers/ProPlanController'
+import TeamPlanController from './Controllers/TeamPlanController'
 import { useUpgradeControls } from './hooks'
 import PlanTypeOptions from './PlanTypeOptions'
 import UpdateButton from './UpdateButton'
@@ -87,13 +88,23 @@ function UpgradeForm2({ selectedPlan, setSelectedPlan }) {
           setSelectedPlan={setSelectedPlan}
         />
       )}
-      <ProPlanController
-        newPlan={newPlan}
-        seats={seats}
-        setFormValue={setFormValue}
-        register={register}
-        errors={errors}
-      />
+      {isTeamPlan(selectedPlan?.value) ? (
+        <TeamPlanController
+          newPlan={newPlan}
+          seats={seats}
+          setFormValue={setFormValue}
+          register={register}
+          errors={errors}
+        />
+      ) : (
+        <ProPlanController
+          newPlan={newPlan}
+          seats={seats}
+          setFormValue={setFormValue}
+          register={register}
+          errors={errors}
+        />
+      )}
       <UpdateButton isValid={isValid} newPlan={newPlan} seats={seats} />
     </form>
   )
@@ -102,6 +113,8 @@ function UpgradeForm2({ selectedPlan, setSelectedPlan }) {
 export default UpgradeForm2
 
 UpgradeForm2.propTypes = {
-  selectedPlan: PropType.string.isRequired,
+  selectedPlan: PropType.shape({
+    value: PropType.string.isRequired,
+  }).isRequired,
   setSelectedPlan: PropType.func.isRequired,
 }
