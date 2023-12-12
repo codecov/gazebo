@@ -21,7 +21,7 @@ function UploadsCard() {
           <div className="flex justify-between text-base">
             <h2 className="font-semibold">Uploads</h2>
             <A onClick={() => setShowYAMLModal(true)} hook="open yaml modal">
-              <span className="text-xs">view yml file</span>
+              <span className="text-xs">view YAML file</span>
             </A>
           </div>
           <span className="text-ds-gray-quinary">{uploadsOverview}</span>

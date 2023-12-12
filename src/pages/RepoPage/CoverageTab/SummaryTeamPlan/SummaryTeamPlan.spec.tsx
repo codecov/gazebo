@@ -250,7 +250,7 @@ describe('Summary', () => {
       render(<SummaryTeamPlan />, { wrapper: wrapper() })
 
       const yamlConfigurationTitle = await screen.findByText(
-        /Yaml Configuration/
+        /YAML Configuration/
       )
       expect(yamlConfigurationTitle).toBeInTheDocument()
 
