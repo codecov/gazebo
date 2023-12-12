@@ -15,6 +15,8 @@ import TeamPlanController from './TeamPlanController'
 jest.mock('services/toastNotification')
 jest.mock('@stripe/react-stripe-js')
 
+const mockedToastNotification = useAddNotification as jest.Mock
+
 const basicPlan = {
   marketingName: 'Basic',
   value: 'users-basic',
@@ -27,36 +29,6 @@ const basicPlan = {
   ],
   monthlyUploadLimit: 250,
 }
-
-// const proPlanMonth = {
-//   marketingName: 'Pro',
-//   value: Plans.USERS_PR_INAPPM,
-//   billingRate: 'monthly',
-//   baseUnitPrice: 12,
-//   benefits: [
-//     'Configurable # of users',
-//     'Unlimited public repositories',
-//     'Unlimited private repositories',
-//     'Priority Support',
-//   ],
-//   quantity: 10,
-//   monthlyUploadLimit: null,
-// }
-
-// const proPlanYear = {
-//   marketingName: 'Pro',
-//   value: Plans.USERS_TEAMY,
-//   billingRate: 'annually',
-//   baseUnitPrice: 10,
-//   benefits: [
-//     'Configurable # of users',
-//     'Unlimited public repositories',
-//     'Unlimited private repositories',
-//     'Priority Support',
-//   ],
-//   monthlyUploadLimit: null,
-//   quantity: 13,
-// }
 
 const teamPlanMonth = {
   baseUnitPrice: 5,
@@ -176,9 +148,7 @@ describe('TeamPlanController', () => {
   ) {
     const addNotification = jest.fn()
     const user = userEvent.setup()
-
-    //@ts-ignore
-    useAddNotification.mockReturnValue(addNotification)
+    mockedToastNotification.mockReturnValue(addNotification)
 
     server.use(
       rest.get(`/internal/gh/codecov/account-details/`, (req, res, ctx) => {

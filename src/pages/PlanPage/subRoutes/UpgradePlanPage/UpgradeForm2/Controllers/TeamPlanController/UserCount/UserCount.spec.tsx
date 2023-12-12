@@ -1,5 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
@@ -72,9 +76,7 @@ describe('UserCount', () => {
       setup({ activatedUserCount: undefined })
       render(<UserCount />, { wrapper })
 
-      await waitFor(() =>
-        expect(screen.queryByText('Loading...')).not.toBeInTheDocument()
-      )
+      await waitForElementToBeRemoved(screen.queryByText('Loading...'))
 
       const message = screen.queryByText(/Your organization has/)
       expect(message).not.toBeInTheDocument()
@@ -84,9 +86,7 @@ describe('UserCount', () => {
       setup({ inactiveUserCount: undefined })
       render(<UserCount />, { wrapper })
 
-      await waitFor(() =>
-        expect(screen.queryByText('Loading...')).not.toBeInTheDocument()
-      )
+      await waitForElementToBeRemoved(screen.queryByText('Loading...'))
 
       const message = screen.queryByText(/Your organization has/)
       expect(message).not.toBeInTheDocument()
