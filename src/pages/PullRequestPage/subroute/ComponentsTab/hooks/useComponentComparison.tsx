@@ -77,16 +77,33 @@ interface URLParams {
   pullId: string
 }
 
-export function useComponentComparison() {
+interface ComponentComparisonParams {
+  filters?: {
+    components?: string[]
+  }
+}
+
+export function useComponentComparison({
+  filters,
+}: ComponentComparisonParams = {}) {
   const { provider, owner, repo, pullId } = useParams<URLParams>()
   return useQuery({
-    queryKey: ['PullComponentComparison', provider, owner, repo, pullId, query],
+    queryKey: [
+      'PullComponentComparison',
+      provider,
+      owner,
+      repo,
+      pullId,
+      query,
+      filters,
+    ],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
         query,
         signal,
         variables: {
+          filters,
           provider,
           owner,
           repo,
