@@ -13,7 +13,6 @@ const mockData = {
       commit: {
         commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
         flagNames: ['a', 'b'],
-        components: ['c'],
         coverageFile: {
           isCriticalFile: true,
           hashedPath: 'hashed-path',
@@ -198,7 +197,7 @@ describe('usePrefetchCommitFileEntry', () => {
           '8': 'H',
         },
         flagNames: ['a', 'b'],
-        componentNames: ['c'],
+        componentNames: [],
         hashedPath: 'hashed-path',
         isCriticalFile: true,
         totals: 0,
