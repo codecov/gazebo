@@ -123,12 +123,12 @@ function ComponentsTab() {
   }
 
   return (
-    <div>
+    <>
       <div className="flex justify-end bg-ds-gray-primary p-2">
         <ComponentsSelector />
       </div>
       <Table data={tableData} columns={tableColumns} />
-    </div>
+    </>
   )
 }
 
