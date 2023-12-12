@@ -70,7 +70,7 @@ describe('YamlTab', () => {
     })
 
     it('renders ValidateYaml compoenent', () => {
-      const title = screen.getByText(/Validate the yaml/)
+      const title = screen.getByText(/Validate the YAML/)
       expect(title).toBeInTheDocument()
     })
   })
