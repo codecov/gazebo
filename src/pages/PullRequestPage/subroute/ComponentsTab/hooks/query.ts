@@ -1,5 +1,5 @@
 export const query = `
-  query PullComponentComparison($owner: String!, $repo: String!, $pullId: Int!, $filters: ComponentsFilters!) {
+  query PullComponentComparison($owner: String!, $repo: String!, $pullId: Int!, $filters: ComponentsFilters) {
     owner(username: $owner) {
       repository(name: $repo) {
         __typename

@@ -234,12 +234,13 @@ describe('useComponentComparison', () => {
   describe('when called with filters', () => {
     it('sends filters to API', async () => {
       const { componentsMock } = setup({})
+      const componentsFilter = ['component1', 'component2']
 
       const { result } = renderHook(
         () =>
           useComponentComparison({
             filters: {
-              components: ['component1', 'component2'],
+              components: componentsFilter,
             },
           }),
         {
@@ -252,10 +253,7 @@ describe('useComponentComparison', () => {
 
       await waitFor(() => expect(componentsMock).toBeCalledTimes(1))
       await waitFor(() =>
-        expect(componentsMock).toHaveBeenCalledWith([
-          'component1',
-          'component2',
-        ])
+        expect(componentsMock).toHaveBeenCalledWith(componentsFilter)
       )
     })
   })
