@@ -16,7 +16,7 @@ const RegenerateProfilingTokenModal = ({
     body={
       <div className="flex  flex-col gap-4">
         <h2 className="font-semibold">Impact Analysis</h2>
-        <p>If you save the new token, make sure to update your CI yml</p>
+        <p>If you save the new token, make sure to update your CI yaml</p>
       </div>
     }
     footer={
