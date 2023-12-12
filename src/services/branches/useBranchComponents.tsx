@@ -46,7 +46,7 @@ interface UseBranchComponentsArgs {
   provider: string
   owner: string
   repo: string
-  branch: string | undefined
+  branch?: string
   filters?: {
     components?: string[]
   }
