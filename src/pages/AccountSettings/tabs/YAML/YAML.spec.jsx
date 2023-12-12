@@ -136,12 +136,12 @@ describe('YAMLTab', () => {
       const save = screen.getByRole('button', { name: /Save Changes/ })
       await user.click(save)
       expect(
-        await screen.findByText(/Yaml configuration updated/)
+        await screen.findByText(/YAML configuration updated/)
       ).toBeInTheDocument()
 
       await user.click(screen.getByRole('button', { text: /Done/ }))
       expect(
-        screen.queryByText(/Yaml configuration updated/)
+        screen.queryByText(/YAML configuration updated/)
       ).not.toBeInTheDocument()
     })
 

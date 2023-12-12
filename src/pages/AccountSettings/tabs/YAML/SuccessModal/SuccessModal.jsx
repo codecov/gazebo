@@ -4,7 +4,7 @@ import Button from 'ui/Button'
 import Modal from 'ui/Modal'
 
 function SuccessModal({ closeModal, owner, ...props }) {
-  const title = 'Yaml configuration updated'
+  const title = 'YAML configuration updated'
   const body = (
     <p>
       {owner} YAML configuration has been successfully saved. New coverage
