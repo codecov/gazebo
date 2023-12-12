@@ -242,15 +242,15 @@ describe('UploadsCard', () => {
       const user = userEvent.setup()
       render(<UploadsCard />, { wrapper })
 
-      let viewYamlButton = screen.getByText('view yml file')
+      let viewYamlButton = screen.getByText('view YAML file')
       await user.click(viewYamlButton)
 
       const includesDefaultYaml = await screen.findByText(
-        'Includes default yaml, global yaml, and repo'
+        'Includes default YAML, global YAML, and repo'
       )
       expect(includesDefaultYaml).toBeInTheDocument()
 
-      viewYamlButton = screen.getByText('view yml file')
+      viewYamlButton = screen.getByText('view YAML file')
       await user.click(viewYamlButton)
 
       let closeBtn = screen.getByLabelText('Close')

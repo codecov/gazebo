@@ -130,7 +130,7 @@ describe('RepoUploadToken', () => {
       const repositoryAPIToken = screen.getByText('Repository API token')
       expect(repositoryAPIToken).toBeInTheDocument()
       const ifYouSaveTheNewToken = screen.getByText(
-        'If you save the new token, make sure to update your CI yml'
+        'If you save the new token, make sure to update your CI YAML'
       )
       expect(ifYouSaveTheNewToken).toBeInTheDocument()
       const generateNewToken = screen.getByRole('button', {
