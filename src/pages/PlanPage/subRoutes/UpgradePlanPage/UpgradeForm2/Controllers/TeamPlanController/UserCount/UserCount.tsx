@@ -1,6 +1,7 @@
 import isNumber from 'lodash/isNumber'
+import { useParams } from 'react-router-dom'
 
-import { isTeamPlan } from 'shared/utils/billing'
+import { useAccountDetails } from 'services/account'
 
 interface StudentTextProps {
   activatedStudents?: number
@@ -11,19 +12,15 @@ const StudentText: React.FC<StudentTextProps> = ({ activatedStudents }) => {
     return null
   }
 
+  let studentText = 'students'
   if (activatedStudents === 1) {
-    return (
-      <p className="mb-4 text-xs text-ds-gray-quinary">
-        *You have {activatedStudents} active student that does not count towards
-        the number of active users.
-      </p>
-    )
+    studentText = 'student'
   }
 
   return (
     <p className="mb-4 text-xs text-ds-gray-quinary">
-      *You have {activatedStudents} active students that do not count towards
-      the number of active users.
+      *You have {activatedStudents} active {studentText} that do not count
+      towards the number of active users.
     </p>
   )
 }
@@ -31,20 +28,12 @@ const StudentText: React.FC<StudentTextProps> = ({ activatedStudents }) => {
 interface UserTextProps {
   activatedUserCount: number
   inactiveUserCount: number
-  isSentryUpgrade: boolean
-  planString: string
 }
 
 const UserText: React.FC<UserTextProps> = ({
   activatedUserCount,
   inactiveUserCount,
-  isSentryUpgrade,
-  planString,
 }) => {
-  if (isSentryUpgrade && !isTeamPlan(planString)) {
-    return <p>5 seats already included in this plan</p>
-  }
-
   return (
     <p>
       Your organization has {activatedUserCount + inactiveUserCount} members.
@@ -52,21 +41,14 @@ const UserText: React.FC<UserTextProps> = ({
   )
 }
 
-interface UserCountProps {
-  activatedUserCount?: number
-  inactiveUserCount?: number
-  activatedStudentCount?: number
-  isSentryUpgrade: boolean
-  planString: string
-}
+const UserCount: React.FC = () => {
+  const { provider, owner } = useParams<{ provider: string; owner: string }>()
+  const { data: accountDetails } = useAccountDetails({ provider, owner })
 
-const UserCount: React.FC<UserCountProps> = ({
-  activatedUserCount,
-  inactiveUserCount,
-  activatedStudentCount,
-  isSentryUpgrade,
-  planString,
-}) => {
+  const activatedStudentCount = accountDetails?.activatedStudentCount
+  const activatedUserCount = accountDetails?.activatedUserCount
+  const inactiveUserCount = accountDetails?.inactiveUserCount
+
   if (!isNumber(activatedUserCount) || !isNumber(inactiveUserCount)) {
     return null
   }
@@ -76,8 +58,6 @@ const UserCount: React.FC<UserCountProps> = ({
       <UserText
         activatedUserCount={activatedUserCount}
         inactiveUserCount={inactiveUserCount}
-        isSentryUpgrade={isSentryUpgrade}
-        planString={planString}
       />
       <StudentText activatedStudents={activatedStudentCount} />
     </div>

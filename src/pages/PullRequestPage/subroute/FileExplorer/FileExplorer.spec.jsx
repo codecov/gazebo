@@ -7,6 +7,8 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import FileExplorer from './FileExplorer'
 
+jest.mock('../ComponentsSelector', () => () => 'ComponentsSelector')
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -191,6 +193,16 @@ describe('FileExplorer', () => {
 
         const coverage = await screen.findByText('Coverage %')
         expect(coverage).toBeInTheDocument()
+      })
+    })
+
+    describe('when rendered', () => {
+      it('renders ComponentsSelector', async () => {
+        setup()
+        render(<FileExplorer />, { wrapper: wrapper() })
+
+        const selector = await screen.findByText('ComponentsSelector')
+        expect(selector).toBeInTheDocument()
       })
     })
 

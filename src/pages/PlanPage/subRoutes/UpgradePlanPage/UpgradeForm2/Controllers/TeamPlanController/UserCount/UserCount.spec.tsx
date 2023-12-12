@@ -41,8 +41,8 @@ afterAll(() => {
 
 type SetupArgs = {
   activatedUserCount?: number
-  activatedStudentCount?: number
-  inactiveUserCount?: number
+  activatedStudentCount?: number | null
+  inactiveUserCount?: number | null
 }
 
 describe('UserCount', () => {

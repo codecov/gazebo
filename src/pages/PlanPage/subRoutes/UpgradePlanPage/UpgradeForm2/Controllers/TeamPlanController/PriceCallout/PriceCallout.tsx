@@ -7,32 +7,35 @@ import {
   isAnnualPlan,
   Plans,
 } from 'shared/utils/billing'
-import { calculatePriceTeamPlan } from 'shared/utils/upgradeForm'
+import { calculatePriceProPlan } from 'shared/utils/upgradeForm'
 import Icon from 'ui/Icon'
 
+import { NewPlanType } from '../../../PlanTypeOptions/PlanTypeOptions'
+
 interface PriceCalloutProps {
-  newPlan: string
+  newPlan: NewPlanType
   seats: number
-  setValue: (x: string, y: string) => void
+  setFormValue: (x: string, y: string) => void
 }
 
 const PriceCallout: React.FC<PriceCalloutProps> = ({
   newPlan,
   seats,
-  setValue,
+  setFormValue,
 }) => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { teamPlanMonth, teamPlanYear } = findTeamPlans({ plans })
-  const perMonthPrice = calculatePriceTeamPlan({
+  const perMonthPrice = calculatePriceProPlan({
     seats,
     baseUnitPrice: teamPlanMonth?.baseUnitPrice,
   })
-  const perYearPrice = calculatePriceTeamPlan({
+  const perYearPrice = calculatePriceProPlan({
     seats,
     baseUnitPrice: teamPlanYear?.baseUnitPrice,
   })
   const isPerYear = isAnnualPlan(newPlan)
+
   if (isPerYear) {
     return (
       <div className="bg-ds-gray-primary p-4">
@@ -71,7 +74,7 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
           a year with the annual plan,{' '}
           <button
             className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
-            onClick={() => setValue('newPlan', Plans.USERS_TEAMY)}
+            onClick={() => setFormValue('newPlan', Plans.USERS_TEAMY)}
           >
             switch to annual
           </button>
