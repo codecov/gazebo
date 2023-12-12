@@ -39,7 +39,7 @@ export function ComponentsSelectCommit() {
     provider,
     owner,
     repo,
-    branch: currentBranchSelected?.name,
+    branch: currentBranchSelected?.name ?? '',
     filters: {
       components: componentSearch ? [componentSearch] : undefined,
     },
