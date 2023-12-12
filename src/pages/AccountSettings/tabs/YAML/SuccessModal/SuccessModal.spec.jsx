@@ -16,7 +16,7 @@ describe('SuccessModal', () => {
         <SuccessModal owner="doggo" isOpen={true} closeModal={closeModal} />
       )
 
-      const title = screen.getByText(/Yaml configuration updated/)
+      const title = screen.getByText(/YAML configuration updated/)
       expect(title).toBeInTheDocument()
     })
 
@@ -27,7 +27,7 @@ describe('SuccessModal', () => {
       )
 
       const label = screen.getByText(
-        /doggo yaml configuration has been successfully saved. New coverage reports will reflect these changes. Repositories with a codecov.yaml file extend and override this account level Codecov config/
+        /doggo YAML configuration has been successfully saved. New coverage reports will reflect these changes. Repositories with a codecov.yaml file extend and override this account level Codecov config/
       )
       expect(label).toBeInTheDocument()
     })

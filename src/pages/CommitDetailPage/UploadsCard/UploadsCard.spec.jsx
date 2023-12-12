@@ -246,7 +246,7 @@ describe('UploadsCard', () => {
       await user.click(viewYamlButton)
 
       const includesDefaultYaml = await screen.findByText(
-        'Includes default yaml, global yaml, and repo'
+        'Includes default YAML, global YAML, and repo'
       )
       expect(includesDefaultYaml).toBeInTheDocument()
 

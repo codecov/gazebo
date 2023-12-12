@@ -87,7 +87,7 @@ describe('YAMLTab', () => {
       render(<YAML owner="doggo" />, { wrapper })
 
       const tab = screen.getByText(
-        /Changes made to the Global yaml are applied to all repositories in the org if they do not have a repo level yaml./
+        /Changes made to the Global YAML are applied to all repositories in the org if they do not have a repo level YAML./
       )
       expect(tab).toBeInTheDocument()
     })
@@ -161,7 +161,7 @@ describe('YAMLTab', () => {
       await user.click(save)
 
       let yamlConfigurationUpdated = await screen.findByText(
-        /Yaml configuration updated/
+        /YAML configuration updated/
       )
       expect(yamlConfigurationUpdated).toBeInTheDocument()
 
@@ -169,7 +169,7 @@ describe('YAMLTab', () => {
       await user.click(xSvg)
 
       yamlConfigurationUpdated = screen.queryByText(
-        /Yaml configuration updated/
+        /YAML configuration updated/
       )
       expect(yamlConfigurationUpdated).not.toBeInTheDocument()
     })

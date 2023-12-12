@@ -7,7 +7,7 @@ function SuccessModal({ closeModal, owner, ...props }) {
   const title = 'Yaml configuration updated'
   const body = (
     <p>
-      {owner} yaml configuration has been successfully saved. New coverage
+      {owner} YAML configuration has been successfully saved. New coverage
       reports will reflect these changes. Repositories with a codecov.yaml file
       extend and override this account level Codecov config.
     </p>
