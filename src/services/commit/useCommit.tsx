@@ -283,6 +283,7 @@ interface UseCommitArgs {
   filters?: {
     hasUnintendedChanges?: boolean
     flags?: Array<string>
+    components?: Array<string>
     ordering?: {
       direction?: 'DESC' | 'ASC'
       parameter?:
