@@ -153,7 +153,7 @@ const sortingParameter = Object.freeze({
   lines: 'LINES',
 })
 
-const getQueryFilters = ({ params, sortBy, flags }) => {
+const getQueryFilters = ({ params, sortBy, flags, components }) => {
   return {
     ...(params?.search && { searchValue: params.search }),
     ...(params?.displayType && {
@@ -166,6 +166,7 @@ const getQueryFilters = ({ params, sortBy, flags }) => {
       },
     }),
     ...(flags ? { flags } : {}),
+    ...(components ? { components } : {}),
   }
 }
 
@@ -177,6 +178,8 @@ export function useRepoPullContentsTable() {
     depth: 1,
   })
   const flags = queryParams?.flags
+  const components = queryParams?.components
+
   const { params } = useLocationParams(defaultQueryParams)
   const { treePaths } = usePullTreePaths()
   const [sortBy, setSortBy] = useTableDefaultSort()
@@ -187,7 +190,7 @@ export function useRepoPullContentsTable() {
     repo,
     pullId,
     path: urlPath || '',
-    filters: getQueryFilters({ params, sortBy: sortBy[0], flags }),
+    filters: getQueryFilters({ params, sortBy: sortBy[0], flags, components }),
     opts: {
       suspense: false,
     },

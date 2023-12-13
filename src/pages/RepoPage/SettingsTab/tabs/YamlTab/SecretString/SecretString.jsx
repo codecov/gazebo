@@ -23,7 +23,7 @@ function SecretString() {
           <p>
             Secret strings are encrypted values used instead of plain text data
             that may be sensitive to eyes. The resulting string can be made
-            public and used in your codecov yaml.
+            public and used in your codecov YAML.
           </p>
           <div>
             <Button

@@ -258,6 +258,63 @@ describe('useRepoPullContentsTable', () => {
     })
   })
 
+  describe('when called with a selected components', () => {
+    it('makes a gql request with the list param', async () => {
+      const { variablesPassed } = setup()
+      const { result } = renderHook(() => useRepoPullContentsTable(), {
+        wrapper: wrapper([
+          '/gh/test-org/test-repo/pull/123/tree?components=a,b',
+        ]),
+      })
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      expect(variablesPassed).toHaveBeenCalledWith({
+        pullId: 123,
+        filters: {
+          components: 'a,b',
+          ordering: {
+            direction: 'ASC',
+            parameter: 'NAME',
+          },
+        },
+        owner: 'test-org',
+        repo: 'test-repo',
+        path: '',
+      })
+    })
+  })
+
+  describe('when called with a selected flags and components', () => {
+    it('makes a gql request with the list param', async () => {
+      const { variablesPassed } = setup()
+      const { result } = renderHook(() => useRepoPullContentsTable(), {
+        wrapper: wrapper([
+          '/gh/test-org/test-repo/pull/123/tree?flags=a&components=b',
+        ]),
+      })
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      expect(variablesPassed).toHaveBeenCalledWith({
+        pullId: 123,
+        filters: {
+          flags: 'a',
+          components: 'b',
+          ordering: {
+            direction: 'ASC',
+            parameter: 'NAME',
+          },
+        },
+        owner: 'test-org',
+        repo: 'test-repo',
+        path: '',
+      })
+    })
+  })
+
   describe('when handleSort is triggered', () => {
     it('makes a gql request with the updated params', async () => {
       const { variablesPassed } = setup()
