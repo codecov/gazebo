@@ -197,6 +197,7 @@ describe('usePrefetchCommitFileEntry', () => {
           '8': 'H',
         },
         flagNames: ['a', 'b'],
+        componentNames: [],
         hashedPath: 'hashed-path',
         isCriticalFile: true,
         totals: 0,

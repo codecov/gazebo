@@ -5,11 +5,13 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
+import { useFlags } from 'shared/featureFlags'
 import { useScrollToLine } from 'ui/CodeRenderer/hooks/useScrollToLine'
 
 import FileView from './Fileviewer'
 
 jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
+jest.mock('shared/featureFlags')
 
 const mockRepoSettings = (isPrivate) => ({
   owner: {
@@ -34,6 +36,21 @@ const mockOverview = {
   owner: {
     repository: {
       defaultBranch: 'main',
+    },
+  },
+}
+
+const mockComponents = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      branch: {
+        name: 'branch-1',
+        head: {
+          commitid: 'commit-123',
+          components: [{ name: 'c1', id: 'c1' }],
+        },
+      },
     },
   },
 }
@@ -132,6 +149,7 @@ const wrapper =
     )
 
 beforeAll(() => {
+  jest.spyOn(console, 'error').mockImplementation(() => {})
   server.listen()
 })
 afterEach(() => {
@@ -139,6 +157,7 @@ afterEach(() => {
   server.resetHandlers()
 })
 afterAll(() => {
+  jest.resetAllMocks()
   server.close()
 })
 
@@ -154,6 +173,10 @@ describe('FileView', () => {
       handleClick: jest.fn(),
       targeted: false,
     }))
+
+    useFlags.mockReturnValue({
+      componentsSelect: true,
+    })
 
     server.use(
       graphql.query('DetailOwner', (req, res, ctx) =>
@@ -179,6 +202,18 @@ describe('FileView', () => {
       }),
       graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
+      }),
+      graphql.query('GetBranchComponents', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockComponents))
+      }),
+      graphql.query('GetBranches', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({}))
+      }),
+      graphql.query('GetRepoCoverage', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({}))
+      }),
+      graphql.query('GetBranch', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({}))
       })
     )
   }
@@ -228,6 +263,16 @@ describe('FileView', () => {
         })
         expect(copyLink).toBeInTheDocument()
         expect(copyLink).toHaveAttribute('href', '#folder/file.js')
+      })
+    })
+
+    describe('displaying the components selector', () => {
+      it('renders the components multi select', async () => {
+        setup()
+        render(<FileView />, { wrapper: wrapper() })
+
+        const select = await screen.findByText('All components')
+        expect(select).toBeInTheDocument()
       })
     })
 

@@ -246,6 +246,7 @@ describe('CommitFileEntry', () => {
             2: 'H',
           },
           flagNames: ['a', 'b'],
+          componentNames: [],
           isCriticalFile: true,
           totals: 0,
           hashedPath: 'hashed-path',
