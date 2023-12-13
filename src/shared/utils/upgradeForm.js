@@ -14,7 +14,7 @@ import {
   Plans,
 } from 'shared/utils/billing'
 
-// TODO: delete when whole form control is done
+// TODO_UPGRADE_FORM: delete when whole form control is done
 export const MIN_NB_SEATS = 2
 
 export const MIN_NB_SEATS_PRO = 2
@@ -44,7 +44,7 @@ export function extractSeats({
   return isFreePlan(value) ? freePlanSeats : paidPlansSeats
 }
 
-// TODO: Get rid of this after the final refactor in favor of Controls specific utils
+// TODO_UPGRADE_FORM: Get rid of this after the final refactor in favor of Controls specific utils
 export const getInitialDataForm = ({
   accountDetails,
   proPlanYear,
@@ -147,9 +147,6 @@ export const calculatePrice = ({
   return price
 }
 
-export const calculateNonBundledCost = ({ baseUnitPrice }) =>
-  MIN_SENTRY_SEATS * baseUnitPrice * 12 - SENTRY_PRICE * 12
-
 export function shouldRenderCancelLink(cancelAtPeriodEnd, plan, trialStatus) {
   // cant cancel a free plan
   if (isFreePlan(plan?.value)) {
@@ -178,6 +175,21 @@ export const calculatePriceProPlan = ({ seats, baseUnitPrice }) => {
 export const calculatePriceTeamPlan = ({ seats, baseUnitPrice }) => {
   return Math.floor(seats) * baseUnitPrice
 }
+
+// Sentry Plan Utils
+export const calculatePriceSentryPlan = ({ seats, baseUnitPrice }) => {
+  let price = SENTRY_PRICE
+
+  if (seats > 5) {
+    price += Math.floor(seats - 5) * baseUnitPrice
+  }
+
+  return price
+}
+
+// TODO_UPGRADE_FORM: Rename this to add Sentry name
+export const calculateNonBundledCost = ({ baseUnitPrice }) =>
+  MIN_SENTRY_SEATS * baseUnitPrice * 12 - SENTRY_PRICE * 12
 
 export const getDefaultValuesUpgradeForm = ({
   accountDetails,

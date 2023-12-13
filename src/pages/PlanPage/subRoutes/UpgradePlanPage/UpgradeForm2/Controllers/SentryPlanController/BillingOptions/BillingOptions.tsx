@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 
 import { useAvailablePlans } from 'services/account'
 import {
-  findTeamPlans,
+  findSentryPlans,
   isAnnualPlan,
   isMonthlyPlan,
   Plans,
@@ -23,7 +23,7 @@ const BillingControls: React.FC<BillingControlsProps> = ({
 }) => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
-  const { teamPlanMonth, teamPlanYear } = findTeamPlans({ plans })
+  const { sentryPlanMonth, sentryPlanYear } = findSentryPlans({ plans })
 
   const [option, setOption] = useState<OptionPeriod>(() =>
     isMonthlyPlan(newPlan) ? TimePeriods.MONTHLY : TimePeriods.ANNUAL
@@ -41,12 +41,12 @@ const BillingControls: React.FC<BillingControlsProps> = ({
 
   const baseUnitPrice =
     option === TimePeriods.MONTHLY
-      ? teamPlanMonth?.baseUnitPrice
-      : teamPlanYear?.baseUnitPrice
+      ? sentryPlanMonth?.baseUnitPrice
+      : sentryPlanYear?.baseUnitPrice
   const billingRate =
     option === TimePeriods.MONTHLY
-      ? teamPlanMonth?.billingRate
-      : teamPlanYear?.billingRate
+      ? sentryPlanMonth?.billingRate
+      : sentryPlanYear?.billingRate
 
   return (
     <div className="flex w-fit flex-col gap-2">
@@ -57,9 +57,9 @@ const BillingControls: React.FC<BillingControlsProps> = ({
           active={option}
           onChange={({ text }) => {
             if (text === TimePeriods.ANNUAL) {
-              setFormValue('newPlan', Plans.USERS_TEAMY)
+              setFormValue('newPlan', Plans.USERS_SENTRYY)
             } else {
-              setFormValue('newPlan', Plans.USERS_TEAMM)
+              setFormValue('newPlan', Plans.USERS_SENTRYM)
             }
 
             setOption(text)
