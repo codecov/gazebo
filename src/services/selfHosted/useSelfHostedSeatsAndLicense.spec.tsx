@@ -4,10 +4,12 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import type { ReactNode } from 'react'
 
-import { useSelfHostedLicense } from './useSelfHostedLicense'
+import { useSelfHostedSeatsAndLicense } from './useSelfHostedSeatsAndLicense'
 
 const mockSelfHostedLicense = {
   config: {
+    seatsUsed: 5,
+    seatsLimit: 30,
     selfHostedLicense: {
       expirationDate: '2020-05-09T00:00:00',
     },
@@ -42,10 +44,10 @@ interface SetupArgs {
   isUnsuccessfulParseError?: boolean
 }
 
-describe('useSelfHostedLicense', () => {
+describe('useSelfHostedSeatsAndLicense', () => {
   function setup({ isUnsuccessfulParseError = false }: SetupArgs) {
     server.use(
-      graphql.query('SelfHostedLicense', (req, res, ctx) => {
+      graphql.query('SelfHostedSeatsAndLicense', (req, res, ctx) => {
         if (isUnsuccessfulParseError) {
           return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
         } else {
@@ -55,14 +57,14 @@ describe('useSelfHostedLicense', () => {
     )
   }
 
-  describe('when useSelfHostedLicense is called', () => {
+  describe('when useSelfHostedSeatsAndLicense is called', () => {
     describe('api returns valid response', () => {
       describe('license information is resolved', () => {
         it('returns the license details', async () => {
           setup({})
           const { result } = renderHook(
             () =>
-              useSelfHostedLicense({
+              useSelfHostedSeatsAndLicense({
                 provider: 'gh',
               }),
             { wrapper }
@@ -71,7 +73,11 @@ describe('useSelfHostedLicense', () => {
           await waitFor(() => result.current.isSuccess)
           await waitFor(() =>
             expect(result.current.data).toEqual({
-              expirationDate: '2020-05-09T00:00:00',
+              seatsUsed: 5,
+              seatsLimit: 30,
+              selfHostedLicense: {
+                expirationDate: '2020-05-09T00:00:00',
+              },
             })
           )
         })
@@ -91,7 +97,7 @@ describe('useSelfHostedLicense', () => {
         setup({ isUnsuccessfulParseError: true })
         const { result } = renderHook(
           () =>
-            useSelfHostedLicense({
+            useSelfHostedSeatsAndLicense({
               provider: 'gh',
             }),
           {
