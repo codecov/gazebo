@@ -11,20 +11,16 @@ import { useFlags } from 'shared/featureFlags'
 
 import { ComponentsSelectCommit } from './ComponentsSelectCommit'
 
-import { useSummary } from '../../summaryHooks'
-
 jest.mock('shared/featureFlags')
-jest.mock('../../summaryHooks')
 
 const mockedUseFlags = useFlags as jest.Mock<{ componentsSelect: boolean }>
-const mockedUseSummary = useSummary as jest.Mock<any>
 
 const mockComponentsResponse = (components: Array<{ name: string }>) => ({
   owner: {
     repository: {
       __typename: 'Repository',
       branch: {
-        name: 'branch-1',
+        name: 'main',
         head: {
           commitid: 'commit-123',
           components,
@@ -33,6 +29,74 @@ const mockComponentsResponse = (components: Array<{ name: string }>) => ({
     },
   },
 })
+
+const mockRepoOverview = {
+  private: false,
+  defaultBranch: 'main',
+}
+
+const mockBranch = {
+  branch: {
+    name: 'main',
+    head: {
+      commitid: '321fdsa',
+    },
+  },
+}
+
+const branchesMock = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      branches: {
+        edges: [
+          {
+            node: {
+              name: 'main',
+              head: {
+                commitid: '1',
+              },
+            },
+          },
+          {
+            node: {
+              name: 'dummy',
+              head: {
+                commitid: '2',
+              },
+            },
+          },
+          {
+            node: {
+              name: 'dummy2',
+              head: {
+                commitid: '3',
+              },
+            },
+          },
+        ],
+        pageInfo: {
+          hasNextPage: false,
+          endCursor: 'someEndCursor',
+        },
+      },
+    },
+  },
+}
+
+const mockRepoCoverage = {
+  branch: {
+    name: 'main',
+    head: {
+      yamlState: 'DEFAULT',
+      totals: {
+        percentCovered: 95.0,
+        lineCount: 100,
+        hitsCount: 100,
+      },
+    },
+  },
+}
 
 const queryClient = new QueryClient()
 const server = setupServer()
@@ -83,14 +147,6 @@ describe('ComponentsSelectCommit', () => {
     mockedUseFlags.mockReturnValue({
       componentsSelect: true,
     })
-    mockedUseSummary.mockReturnValue({
-      currentBranchSelected: {
-        name: 'branch-1',
-      },
-      head: {
-        commitid: 'commit-123',
-      },
-    })
     server.use(
       graphql.query('GetBranchComponents', (req, res, ctx) => {
         mockApiVars(req.variables)
@@ -99,7 +155,30 @@ describe('ComponentsSelectCommit', () => {
           ctx.status(200),
           ctx.data(mockComponentsResponse(components))
         )
-      })
+      }),
+      graphql.query('GetRepoOverview', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({ owner: { repository: mockRepoOverview } })
+        )
+      ),
+      graphql.query('GetBranch', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({
+            owner: { repository: { __typename: 'Repository', ...mockBranch } },
+          })
+        )
+      ),
+      graphql.query('GetBranches', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(branchesMock))
+      }),
+      graphql.query('GetRepoCoverage', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({ owner: { repository: mockRepoCoverage } })
+        )
+      )
     )
 
     return { user, mockApiVars }
@@ -164,7 +243,7 @@ describe('ComponentsSelectCommit', () => {
         expect(mockApiVars).toHaveBeenLastCalledWith({
           owner: 'codecov',
           repo: 'cool-repo',
-          branch: 'branch-1',
+          branch: 'main',
           filters: { components: ['component-2'] },
         })
       )

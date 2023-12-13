@@ -68,6 +68,34 @@ describe('config', () => {
       })
     })
 
+    describe('sets IS_DEDICATED_NAMESPACE to boolean', () => {
+      it('sets to true', () => {
+        const obj = {
+          IS_DEDICATED_NAMESPACE: 'true',
+        }
+
+        expect(removeReactAppPrefix(obj)).toEqual({
+          IS_DEDICATED_NAMESPACE: true,
+        })
+      })
+
+      it('sets to false', () => {
+        const obj = {
+          IS_DEDICATED_NAMESPACE: 'false',
+        }
+
+        expect(removeReactAppPrefix(obj)).toEqual({
+          IS_DEDICATED_NAMESPACE: false,
+        })
+      })
+
+      it('sets skips if undefined', () => {
+        const obj = {}
+
+        expect(removeReactAppPrefix(obj)).toEqual({})
+      })
+    })
+
     describe('sets SENTRY_TRACING_SAMPLE_RATE to float', () => {
       it('sets to float', () => {
         const obj = {

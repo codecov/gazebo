@@ -261,6 +261,16 @@ describe('ProPlanController', () => {
         const price = await screen.findByText(/\$120/)
         expect(price).toBeInTheDocument()
       })
+
+      it('shows the next billing date if available', async () => {
+        setup({ planValue: Plans.USERS_PR_INAPPM })
+        render(<ProPlanController {...props} />, { wrapper: wrapper() })
+
+        const nextBillingDateTitle = await screen.findByText(
+          /Next Billing Date/
+        )
+        expect(nextBillingDateTitle).toBeInTheDocument()
+      })
     })
 
     describe('when the user has a pro plan yearly', () => {

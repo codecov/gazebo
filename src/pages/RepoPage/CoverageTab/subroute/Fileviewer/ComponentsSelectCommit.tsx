@@ -32,14 +32,14 @@ export function ComponentsSelectCommit() {
     params?.components
   )
   const { componentsSelect: componentsSelectFlag } = useFlags({
-    componentsSelect: true,
+    componentsSelect: false,
   })
 
   const { data, isLoading } = useBranchComponents({
     provider,
     owner,
     repo,
-    branch: currentBranchSelected?.name,
+    branch: currentBranchSelected?.name ?? '',
     filters: {
       components: componentSearch ? [componentSearch] : undefined,
     },

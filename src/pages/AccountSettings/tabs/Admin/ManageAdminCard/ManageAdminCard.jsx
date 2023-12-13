@@ -25,7 +25,7 @@ function ManageAdminCard() {
         <h2 className="text-lg font-semibold">Account administrators</h2>
         <p>
           Admins are able to: Add other admins, activate deactivate other users,
-          view billing and modify the team yaml.
+          view billing and modify the team YAML.
         </p>
       </div>
       <hr />

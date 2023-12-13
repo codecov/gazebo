@@ -1,5 +1,4 @@
 import isNumber from 'lodash/isNumber'
-import PropTypes from 'prop-types'
 
 import { isTeamPlan } from 'shared/utils/billing'
 
@@ -29,10 +28,6 @@ const StudentText: React.FC<StudentTextProps> = ({ activatedStudents }) => {
   )
 }
 
-StudentText.propTypes = {
-  activatedStudents: PropTypes.number,
-}
-
 interface UserTextProps {
   activatedUserCount: number
   inactiveUserCount: number
@@ -55,12 +50,6 @@ const UserText: React.FC<UserTextProps> = ({
       Your organization has {activatedUserCount + inactiveUserCount} members.
     </p>
   )
-}
-
-UserText.propTypes = {
-  activatedUserCount: PropTypes.number.isRequired,
-  inactiveUserCount: PropTypes.number.isRequired,
-  isSentryUpgrade: PropTypes.bool.isRequired,
 }
 
 interface UserCountProps {
@@ -93,13 +82,6 @@ const UserCount: React.FC<UserCountProps> = ({
       <StudentText activatedStudents={activatedStudentCount} />
     </div>
   )
-}
-
-UserCount.propTypes = {
-  activatedUserCount: PropTypes.number,
-  inactiveUserCount: PropTypes.number,
-  activatedStudentCount: PropTypes.number,
-  isSentryUpgrade: PropTypes.bool.isRequired,
 }
 
 export default UserCount

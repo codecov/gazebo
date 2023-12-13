@@ -46,13 +46,13 @@ describe('YamlTab', () => {
     })
 
     it('renders Repository Yaml compoenent', () => {
-      const title = screen.getByText(/Repository yaml/)
+      const title = screen.getByText(/Repository YAML/)
       expect(title).toBeInTheDocument()
     })
 
     it('renders body', () => {
       const p = screen.getByText(
-        'This is the default yaml for the current repository, after validation. This yaml takes precedence over the global yaml, but will be overwritten if a yaml change is included in a commit.'
+        'This is the default YAML for the current repository, after validation. This YAML takes precedence over the global YAML, but will be overwritten if a YAML change is included in a commit.'
       )
       expect(p).toBeInTheDocument()
     })
@@ -70,7 +70,7 @@ describe('YamlTab', () => {
     })
 
     it('renders ValidateYaml compoenent', () => {
-      const title = screen.getByText(/Validate the yaml/)
+      const title = screen.getByText(/Validate the YAML/)
       expect(title).toBeInTheDocument()
     })
   })
