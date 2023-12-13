@@ -4,10 +4,13 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useFlags } from 'shared/featureFlags'
+
 import ComponentsTab from './ComponentsTab'
 
 jest.mock('./ComponentsNotConfigured', () => () => 'ComponentsNotConfigured')
 jest.mock('../ComponentsSelector', () => () => 'ComponentsSelector')
+jest.mock('shared/featureFlags')
 
 const queryClient = new QueryClient()
 const server = setupServer()
@@ -66,6 +69,9 @@ const mockPull = {
 describe('ComponentsTab', () => {
   function setup(overrideData) {
     const componentsMock = jest.fn()
+    useFlags.mockReturnValue({
+      componentsSelect: true,
+    })
 
     server.use(
       graphql.query('PullComponentComparison', (req, res, ctx) => {

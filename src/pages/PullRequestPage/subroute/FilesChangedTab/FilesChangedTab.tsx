@@ -25,8 +25,9 @@ interface URLParams {
 function FilesChangedTab() {
   const { provider, owner } = useParams<URLParams>()
 
-  const { multipleTiers } = useFlags({
+  const { multipleTiers, componentsSelect } = useFlags({
     multipleTiers: false,
+    componentsSelect: false,
   })
   const { data: repoSettingsTeam } = useRepoSettingsTeam()
   const { data: tierData, isLoading } = useTier({ provider, owner })
@@ -49,9 +50,11 @@ function FilesChangedTab() {
 
   return (
     <Suspense fallback={<Loader />}>
-      <div className="flex justify-end bg-ds-gray-primary p-2">
-        <ComponentsSelector />
-      </div>
+      {componentsSelect && (
+        <div className="flex justify-end bg-ds-gray-primary p-2">
+          <ComponentsSelector />
+        </div>
+      )}
       <FilesChangedTable />
     </Suspense>
   )

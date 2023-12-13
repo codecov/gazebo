@@ -3,6 +3,7 @@ import qs from 'qs'
 import { useLocation } from 'react-router-dom'
 
 import Table from 'old_ui/Table'
+import { useFlags } from 'shared/featureFlags'
 import Spinner from 'ui/Spinner'
 import TotalsNumber from 'ui/TotalsNumber'
 
@@ -114,6 +115,10 @@ function ComponentsTab() {
   const tableData = getTableData(componentComparisons)
   const isTableDataEmpty = tableData && tableData?.length <= 0
 
+  const { componentsSelect } = useFlags({
+    componentsSelect: false,
+  })
+
   if (isLoading) {
     return <Loader isLoading={isLoading} />
   }
@@ -124,9 +129,11 @@ function ComponentsTab() {
 
   return (
     <>
-      <div className="flex justify-end bg-ds-gray-primary p-2">
-        <ComponentsSelector />
-      </div>
+      {componentsSelect && (
+        <div className="flex justify-end bg-ds-gray-primary p-2">
+          <ComponentsSelector />
+        </div>
+      )}
       <Table data={tableData} columns={tableColumns} />
     </>
   )
