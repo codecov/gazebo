@@ -60,6 +60,38 @@ const proPlanYear = {
   quantity: 13,
 }
 
+const sentryPlanMonth = {
+  marketingName: 'Sentry Pro Team',
+  value: 'users-sentrym',
+  billingRate: 'monthly',
+  baseUnitPrice: 12,
+  benefits: [
+    'Includes 5 seats',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+    'Priority Support',
+  ],
+  monthlyUploadLimit: null,
+  trialDays: 14,
+  quantity: 10,
+}
+
+const sentryPlanYear = {
+  marketingName: 'Sentry Pro Team',
+  value: 'users-sentryy',
+  billingRate: 'annually',
+  baseUnitPrice: 10,
+  benefits: [
+    'Includes 5 seats',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+    'Priority Support',
+  ],
+  monthlyUploadLimit: null,
+  trialDays: 14,
+  quantity: 21,
+}
+
 const teamPlanMonth = {
   baseUnitPrice: 5,
   benefits: ['Up to 10 users'],
@@ -131,6 +163,12 @@ const mockAccountDetailsTeamYearly = {
   inactiveUserCount: 0,
 }
 
+const mockAccountDetailsSentryYearly = {
+  plan: sentryPlanYear,
+  activatedUserCount: 7,
+  inactiveUserCount: 0,
+}
+
 const mockPlanDataResponse = {
   baseUnitPrice: 10,
   benefits: [],
@@ -197,6 +235,7 @@ describe('UpgradeForm2', () => {
       trialStatus = undefined,
       multipleTiers = false,
       hasTeamPlans = false,
+      hasSentryPlans = false,
     } = {
       planValue: Plans.USERS_BASIC,
       successfulPatchRequest: true,
@@ -204,6 +243,7 @@ describe('UpgradeForm2', () => {
       trialStatus: undefined,
       hasTeamPlans: false,
       multipleTiers: false,
+      hasSentryPlans: false,
     }
   ) {
     const addNotification = jest.fn()
@@ -225,6 +265,8 @@ describe('UpgradeForm2', () => {
           return res(ctx.status(200), ctx.json(mockAccountDetailsTrial))
         } else if (planValue === Plans.USERS_TEAMY) {
           return res(ctx.status(200), ctx.json(mockAccountDetailsTeamYearly))
+        } else if (planValue === Plans.USERS_SENTRYY) {
+          return res(ctx.status(200), ctx.json(mockAccountDetailsSentryYearly))
         }
       }),
       rest.patch(
@@ -254,6 +296,7 @@ describe('UpgradeForm2', () => {
                 proPlanYear,
                 trialPlan,
                 ...(hasTeamPlans ? [teamPlanMonth, teamPlanYear] : []),
+                ...(hasSentryPlans ? [sentryPlanMonth, sentryPlanYear] : []),
               ],
             },
           })
@@ -1252,6 +1295,323 @@ describe('UpgradeForm2', () => {
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
           await user.type(input, '20')
+
+          const update = await screen.findByRole('button', {
+            name: /Update/,
+          })
+          await user.click(update)
+
+          await waitFor(() => queryClient.isMutating())
+          await waitFor(() => queryClient.isFetching())
+          await waitFor(() => !queryClient.isMutating())
+          await waitFor(() => !queryClient.isFetching())
+
+          await waitFor(() =>
+            expect(addNotification).toHaveBeenCalledWith({
+              type: 'error',
+              text: 'Something went wrong',
+            })
+          )
+        })
+      })
+    })
+
+    describe('when the user has a sentry plan yearly', () => {
+      const props = {
+        setSelectedPlan: jest.fn(),
+        selectedPlan: { value: Plans.USERS_SENTRYY },
+      }
+      it('renders the organization and owner titles', async () => {
+        setup({
+          planValue: Plans.USERS_SENTRYY,
+          hasSentryPlans: true,
+        })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
+
+        const organizationTitle = await screen.findByText(/Organization/)
+        expect(organizationTitle).toBeInTheDocument()
+        const ownerTitle = await screen.findByText(/codecov/)
+        expect(ownerTitle).toBeInTheDocument()
+      })
+
+      it('renders the price for the included 5 seats', async () => {
+        setup({
+          planValue: Plans.USERS_SENTRYY,
+          hasTeamPlans: false,
+          hasSentryPlans: true,
+        })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
+
+        const planTitle = await screen.findByText(/Plan/)
+        expect(planTitle).toBeInTheDocument()
+        const planDescription = await screen.findByText(
+          /\$29 monthly includes 5 seats./
+        )
+        expect(planDescription).toBeInTheDocument()
+      })
+
+      it('renders monthly option button', async () => {
+        setup({
+          planValue: Plans.USERS_SENTRYY,
+          hasSentryPlans: true,
+        })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
+
+        const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
+        expect(optionBtn).toBeInTheDocument()
+      })
+
+      it('renders annual option button', async () => {
+        setup({
+          planValue: Plans.USERS_SENTRYY,
+          hasSentryPlans: true,
+        })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
+
+        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        expect(optionBtn).toBeInTheDocument()
+      })
+
+      it('renders annual option button as "selected"', async () => {
+        setup({
+          planValue: Plans.USERS_SENTRYY,
+          hasSentryPlans: true,
+        })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
+
+        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        expect(optionBtn).toBeInTheDocument()
+        expect(optionBtn).toHaveClass('bg-ds-primary-base')
+      })
+
+      it('renders the seat input with 21 seats (existing subscription)', async () => {
+        setup({
+          planValue: Plans.USERS_SENTRYY,
+          hasSentryPlans: true,
+        })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
+
+        const seatCount = await screen.findByRole('spinbutton')
+        expect(seatCount).toHaveValue(21)
+      })
+
+      it('has the price for the year', async () => {
+        setup({
+          planValue: Plans.USERS_SENTRYY,
+          hasSentryPlans: true,
+        })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
+
+        const price = await screen.findByText(/\$189/)
+        expect(price).toBeInTheDocument()
+      })
+
+      it('renders validation error when the user selects less than 5 seats', async () => {
+        const { user } = setup({
+          planValue: Plans.USERS_SENTRYY,
+          hasSentryPlans: true,
+        })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
+
+        const input = await screen.findByRole('spinbutton')
+        await user.type(input, '{backspace}{backspace}{backspace}')
+        await user.type(input, '3')
+
+        const update = await screen.findByRole('button', {
+          name: /Update/,
+        })
+        expect(update).toBeDisabled()
+
+        const error = screen.getByText(
+          /You cannot purchase a per user plan for less than 5 users/
+        )
+        expect(error).toBeInTheDocument()
+      })
+
+      it('renders validation error when the user selects less than number of active users', async () => {
+        const { user } = setup({
+          planValue: Plans.USERS_SENTRYY,
+          hasSentryPlans: true,
+        })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
+
+        const input = await screen.findByRole('spinbutton')
+        await user.type(input, '{backspace}{backspace}{backspace}')
+        await user.type(input, '6')
+
+        const update = await screen.findByRole('button', {
+          name: /Update/,
+        })
+        expect(update).toBeDisabled()
+
+        const error = screen.getByText(
+          /deactivate more users before downgrading plans/i
+        )
+        expect(error).toBeInTheDocument()
+      })
+
+      it('renders the update button', async () => {
+        setup({
+          planValue: Plans.USERS_SENTRYY,
+          hasSentryPlans: true,
+        })
+        render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
+
+        const update = await screen.findByRole('button', {
+          name: /Update/,
+        })
+        expect(update).toBeInTheDocument()
+      })
+
+      describe('when updating to a monthly plan', () => {
+        it('has the price for the month', async () => {
+          const { user } = setup({
+            planValue: Plans.USERS_SENTRYY,
+            hasSentryPlans: true,
+          })
+          render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
+
+          const monthlyOption = await screen.findByRole('button', {
+            name: 'Monthly',
+          })
+          await user.click(monthlyOption)
+
+          const price = screen.getByText(/\$221/)
+          expect(price).toBeInTheDocument()
+        })
+      })
+
+      describe('when the mutation is successful', () => {
+        it('renders success notification when upgrading seats with an annual plan', async () => {
+          const { patchRequest, user } = setup({
+            successfulPatchRequest: true,
+            hasSentryPlans: true,
+            planValue: Plans.USERS_SENTRYY,
+          })
+          render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '8')
+
+          const update = await screen.findByRole('button', {
+            name: /Update/,
+          })
+          await user.click(update)
+
+          await waitFor(() =>
+            expect(patchRequest).toHaveBeenCalledWith({
+              plan: {
+                quantity: 8,
+                value: Plans.USERS_SENTRYY,
+              },
+            })
+          )
+        })
+
+        it('renders success notification when upgrading seats with a monthly plan', async () => {
+          const { patchRequest, user } = setup({
+            successfulPatchRequest: true,
+            hasSentryPlans: true,
+            planValue: Plans.USERS_SENTRYY,
+          })
+          render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '7')
+
+          const optionBtn = await screen.findByRole('button', {
+            name: 'Monthly',
+          })
+          await user.click(optionBtn)
+
+          const update = await screen.findByRole('button', {
+            name: /Update/,
+          })
+          await user.click(update)
+
+          await waitFor(() =>
+            expect(patchRequest).toHaveBeenCalledWith({
+              plan: {
+                quantity: 7,
+                value: Plans.USERS_SENTRYM,
+              },
+            })
+          )
+        })
+
+        it('redirects the user to the plan page', async () => {
+          const { user } = setup({
+            successfulPatchRequest: true,
+            hasSentryPlans: true,
+            planValue: Plans.USERS_SENTRYY,
+          })
+          render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '7')
+
+          const update = await screen.findByRole('button', {
+            name: /Update/,
+          })
+          await user.click(update)
+
+          await waitFor(() => queryClient.isMutating())
+          await waitFor(() => !queryClient.isMutating())
+          await waitFor(() => queryClient.isFetching())
+          await waitFor(() => !queryClient.isFetching())
+
+          expect(testLocation.pathname).toEqual('/plan/gh/codecov')
+        })
+      })
+
+      describe('when the mutation is unsuccessful', () => {
+        it('adds an error notification with detail message', async () => {
+          const { addNotification, user } = setup({
+            successfulPatchRequest: false,
+            hasSentryPlans: true,
+            errorDetails: 'Insufficient funds.',
+            planValue: Plans.USERS_SENTRYY,
+          })
+
+          render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '7')
+
+          const update = await screen.findByRole('button', {
+            name: /Update/,
+          })
+          await user.click(update)
+
+          await waitFor(() => queryClient.isMutating())
+          await waitFor(() => queryClient.isFetching())
+          await waitFor(() => !queryClient.isMutating())
+          await waitFor(() => !queryClient.isFetching())
+
+          await waitFor(() =>
+            expect(addNotification).toHaveBeenCalledWith({
+              type: 'error',
+              text: 'Insufficient funds.',
+            })
+          )
+        })
+
+        it('adds an error notification with a default message', async () => {
+          const { addNotification, user } = setup({
+            successfulPatchRequest: false,
+            hasSentryPlans: true,
+            planValue: Plans.USERS_SENTRYY,
+          })
+
+          render(<UpgradeForm2 {...props} />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '7')
 
           const update = await screen.findByRole('button', {
             name: /Update/,

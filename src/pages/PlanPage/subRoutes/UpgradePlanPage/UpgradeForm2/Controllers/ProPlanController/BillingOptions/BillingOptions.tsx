@@ -10,7 +10,7 @@ import {
 } from 'shared/utils/billing'
 import OptionButton from 'ui/OptionButton'
 
-import { NewPlanType } from '../../../PlanTypeOptions/PlanTypeOptions'
+import { NewPlanType, OptionPeriod, TimePeriods } from '../../../constants'
 
 interface BillingControlsProps {
   newPlan: NewPlanType
@@ -25,26 +25,28 @@ const BillingControls: React.FC<BillingControlsProps> = ({
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { proPlanMonth, proPlanYear } = useProPlans({ plans })
 
-  const [option, setOption] = useState<'Annual' | 'Monthly'>(() =>
-    isMonthlyPlan(newPlan) ? 'Monthly' : 'Annual'
+  const [option, setOption] = useState<OptionPeriod>(() =>
+    isMonthlyPlan(newPlan) ? TimePeriods.MONTHLY : TimePeriods.ANNUAL
   )
 
   // used to update option selection if user selects
   // the switch to annual button in the total banner
   useEffect(() => {
-    if (isMonthlyPlan(newPlan) && option === 'Annual') {
-      setOption('Monthly')
-    } else if (isAnnualPlan(newPlan) && option === 'Monthly') {
-      setOption('Annual')
+    if (isMonthlyPlan(newPlan) && option === TimePeriods.ANNUAL) {
+      setOption(TimePeriods.MONTHLY)
+    } else if (isAnnualPlan(newPlan) && option === TimePeriods.MONTHLY) {
+      setOption(TimePeriods.ANNUAL)
     }
   }, [newPlan, option])
 
   const baseUnitPrice =
-    option === 'Monthly'
+    option === TimePeriods.MONTHLY
       ? proPlanMonth?.baseUnitPrice
       : proPlanYear?.baseUnitPrice
   const billingRate =
-    option === 'Monthly' ? proPlanMonth?.billingRate : proPlanYear?.billingRate
+    option === TimePeriods.MONTHLY
+      ? proPlanMonth?.billingRate
+      : proPlanYear?.billingRate
 
   return (
     <div className="flex w-fit flex-col gap-2">
@@ -54,7 +56,7 @@ const BillingControls: React.FC<BillingControlsProps> = ({
           type="button"
           active={option}
           onChange={({ text }) => {
-            if (text === 'Annual') {
+            if (text === TimePeriods.ANNUAL) {
               setFormValue('newPlan', Plans.USERS_PR_INAPPY)
             } else {
               setFormValue('newPlan', Plans.USERS_PR_INAPPM)
@@ -64,10 +66,10 @@ const BillingControls: React.FC<BillingControlsProps> = ({
           }}
           options={[
             {
-              text: 'Annual',
+              text: TimePeriods.ANNUAL,
             },
             {
-              text: 'Monthly',
+              text: TimePeriods.MONTHLY,
             },
           ]}
         />
