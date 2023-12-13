@@ -42,7 +42,7 @@ export function useCoverageWithFilters({
 
   fragment CoverageForFile on Commit {
     commitid
-    coverageFile(path: $path, flags: $flags) {
+    coverageFile(path: $path, flags: $flags, components: $components) {
       isCriticalFile
       coverage {
         line

@@ -35,7 +35,7 @@ export function useCommitBasedCoverageForFileViewer({
     // only run the query if we are filtering per flag and/or component
     opts: {
       enabled:
-        !coverageForAllFlags && !coverageForAllComponents && opts?.enabled,
+        (!coverageForAllFlags || !coverageForAllComponents) && opts?.enabled,
       suspense: false,
     },
   })
