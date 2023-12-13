@@ -14,7 +14,10 @@ jest.mock('./FilesChanged/TableTeam', () => () => 'TeamFilesChanged')
 jest.mock('../ComponentsSelector', () => () => 'ComponentsSelector')
 
 jest.mock('shared/featureFlags')
-const mockedUseFlags = useFlags as jest.Mock<{ multipleTiers: boolean }>
+const mockedUseFlags = useFlags as jest.Mock<{
+  multipleTiers: boolean
+  componentsSelect: boolean
+}>
 
 const mockTeamTier = {
   owner: {
@@ -95,6 +98,7 @@ describe('FilesChangedTab', () => {
   function setup({ planValue, multipleTiers, privateRepo }: SetupArgs) {
     mockedUseFlags.mockReturnValue({
       multipleTiers: multipleTiers,
+      componentsSelect: true,
     })
 
     server.use(
