@@ -101,7 +101,7 @@ const SummaryTeamPlan = () => {
         {data?.head?.yamlState === YAML_STATE.DEFAULT && (
           <SummaryField>
             <h3 className="text-sm font-semibold text-ds-gray-octonary">
-              Yaml Configuration
+              YAML Configuration
             </h3>
             <p className="text-sm">
               <A
