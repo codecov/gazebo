@@ -19,6 +19,11 @@ export function removeReactAppPrefix(obj) {
     keys['IS_SELF_HOSTED'] = keys['ENV'].toLowerCase() === 'enterprise'
   }
 
+  if ('IS_DEDICATED_NAMESPACE' in keys) {
+    keys['IS_DEDICATED_NAMESPACE'] =
+      keys['IS_DEDICATED_NAMESPACE'].toLowerCase() === 'true'
+  }
+
   if ('HIDE_ACCESS_TAB' in keys) {
     keys['HIDE_ACCESS_TAB'] = keys['HIDE_ACCESS_TAB'].toLowerCase() === 'true'
   }
