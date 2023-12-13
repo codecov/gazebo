@@ -42,7 +42,7 @@ function SentryPlanDetails() {
       <p className="text-ds-gray-quaternary">
         ${sentryPlanMonth?.baseUnitPrice} per user / month if paid monthly
       </p>
-      {/* TODO: Note that there never was schedules shown here like it is in the pro plan details page. This
+      {/* TODO_UPGRADE_FORM: Note that there never was schedules shown here like it is in the pro plan details page. This
       is a bug imo and needs to be here in a future ticket */}
       {shouldRenderCancelLink(cancelAtPeriodEnd, plan, trialStatus) && (
         <A

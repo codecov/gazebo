@@ -2,12 +2,15 @@ import { useParams } from 'react-router-dom'
 
 import { useAvailablePlans } from 'services/account'
 import {
-  findTeamPlans,
+  findSentryPlans,
   formatNumberToUSD,
   isAnnualPlan,
   Plans,
 } from 'shared/utils/billing'
-import { calculatePriceTeamPlan } from 'shared/utils/upgradeForm'
+import {
+  calculateNonBundledCost,
+  calculatePriceSentryPlan,
+} from 'shared/utils/upgradeForm'
 import Icon from 'ui/Icon'
 
 import { NewPlanType } from '../../../constants'
@@ -25,18 +28,22 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
 }) => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
-  const { teamPlanMonth, teamPlanYear } = findTeamPlans({ plans })
-  const perMonthPrice = calculatePriceTeamPlan({
+  const { sentryPlanMonth, sentryPlanYear } = findSentryPlans({ plans })
+  const perMonthPrice = calculatePriceSentryPlan({
     seats,
-    baseUnitPrice: teamPlanMonth?.baseUnitPrice,
+    baseUnitPrice: sentryPlanMonth?.baseUnitPrice,
   })
-  const perYearPrice = calculatePriceTeamPlan({
+  const perYearPrice = calculatePriceSentryPlan({
     seats,
-    baseUnitPrice: teamPlanYear?.baseUnitPrice,
+    baseUnitPrice: sentryPlanYear?.baseUnitPrice,
   })
   const isPerYear = isAnnualPlan(newPlan)
 
   if (isPerYear) {
+    const nonBundledCost = calculateNonBundledCost({
+      baseUnitPrice: sentryPlanYear.baseUnitPrice,
+    })
+
     return (
       <div className="bg-ds-gray-primary p-4">
         <p className="pb-3">
@@ -48,14 +55,20 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
         <p>
           &#127881; You{' '}
           <span className="font-semibold">
-            save {formatNumberToUSD((perMonthPrice - perYearPrice) * 12)}
+            save{' '}
+            {formatNumberToUSD(
+              nonBundledCost + (perMonthPrice - perYearPrice) * 12
+            )}
           </span>{' '}
-          with the annual plan
+          with the Sentry bundle plan
         </p>
       </div>
     )
   }
 
+  const nonBundledCost = calculateNonBundledCost({
+    baseUnitPrice: sentryPlanMonth.baseUnitPrice,
+  })
   return (
     <div className="bg-ds-gray-primary p-4">
       <p className="pb-3">
@@ -67,17 +80,27 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
       <div className="flex flex-row gap-1">
         <Icon size="sm" name="lightBulb" variant="solid" />
         <p>
-          You could save{' '}
+          You save{' '}
           <span className="font-semibold">
-            {formatNumberToUSD((perMonthPrice - perYearPrice) * 12)}
+            {formatNumberToUSD(nonBundledCost)}
           </span>{' '}
-          a year with the annual plan,{' '}
-          <button
-            className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
-            onClick={() => setFormValue('newPlan', Plans.USERS_TEAMY)}
-          >
-            switch to annual
-          </button>
+          with the Sentry bundle
+          {seats > 5 && (
+            <>
+              , save an{' '}
+              <span className="font-semibold">
+                additional{' '}
+                {formatNumberToUSD((perMonthPrice - perYearPrice) * 12)}
+              </span>{' '}
+              a year with an annual plan{' '}
+              <button
+                className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
+                onClick={() => setFormValue('newPlan', Plans.USERS_SENTRYY)}
+              >
+                switch to annual
+              </button>
+            </>
+          )}
         </p>
       </div>
     </div>

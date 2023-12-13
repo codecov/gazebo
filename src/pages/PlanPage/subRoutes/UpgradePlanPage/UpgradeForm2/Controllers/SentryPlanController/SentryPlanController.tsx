@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 
 import { useAccountDetails } from 'services/account'
 import { getNextBillingDate } from 'shared/utils/billing'
-import { MIN_NB_SEATS_PRO } from 'shared/utils/upgradeForm'
+import { MIN_SENTRY_SEATS } from 'shared/utils/upgradeForm'
 import TextInput from 'ui/TextInput'
 
 import BillingOptions from './BillingOptions'
@@ -12,7 +12,7 @@ import UserCount from './UserCount'
 
 import { NewPlanType } from '../../constants'
 
-interface PlanControllerProps {
+interface SentryPlanControllerProps {
   seats: number
   newPlan: NewPlanType
   register: UseFormRegister<FieldValues>
@@ -24,7 +24,7 @@ interface PlanControllerProps {
   }
 }
 
-const PlanController: React.FC<PlanControllerProps> = ({
+const SentryPlanController: React.FC<SentryPlanControllerProps> = ({
   newPlan,
   seats,
   setFormValue,
@@ -50,7 +50,7 @@ const PlanController: React.FC<PlanControllerProps> = ({
             size={20}
             type="number"
             label="Seat count"
-            min={MIN_NB_SEATS_PRO}
+            min={MIN_SENTRY_SEATS}
           />
         </div>
         <UserCount />
@@ -75,4 +75,4 @@ const PlanController: React.FC<PlanControllerProps> = ({
   )
 }
 
-export default PlanController
+export default SentryPlanController
