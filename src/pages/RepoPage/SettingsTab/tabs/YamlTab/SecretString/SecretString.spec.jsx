@@ -54,7 +54,7 @@ describe('SecretString', () => {
       render(<SecretString />, { wrapper })
 
       const p = screen.getByText(
-        /Secret strings are encrypted values used instead of plain text data that may be sensitive to eyes. The resulting string can be made public and used in your codecov yaml./
+        /Secret strings are encrypted values used instead of plain text data that may be sensitive to eyes. The resulting string can be made public and used in your codecov YAML./
       )
       expect(p).toBeInTheDocument()
     })

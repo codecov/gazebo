@@ -12,12 +12,12 @@ describe('ValidateYaml', () => {
       setup()
     })
     it('renders title', () => {
-      const title = screen.getByText(/Validate the yaml/)
+      const title = screen.getByText(/Validate the YAML/)
       expect(title).toBeInTheDocument()
     })
     it('renders body', () => {
       const p = screen.getByText(
-        /Use this shell script to post your yaml to Codecov to be checked for syntax and layout issues./
+        /Use this shell script to post your YAML to Codecov to be checked for syntax and layout issues./
       )
       expect(p).toBeInTheDocument()
     })
