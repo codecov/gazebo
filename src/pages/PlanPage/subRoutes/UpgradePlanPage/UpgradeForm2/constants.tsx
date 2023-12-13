@@ -22,4 +22,4 @@ export type NewPlanType =
   | typeof Plans.USERS_SENTRYM
   | typeof Plans.USERS_SENTRYY
   | typeof Plans.USERS_TEAMM
-  | typeof Plans.USERS_TEAMM
+  | typeof Plans.USERS_TEAMY
