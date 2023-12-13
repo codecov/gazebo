@@ -33,9 +33,9 @@ let testLocation: Location
 const wrapper = ({ children }: { children: ReactNode }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/cool-repo/commit/123']}>
-      <Route path="/:provider/:owner/:repo/commit/:commitId">{children}</Route>
+      <Route path="/:provider/:owner/:repo/commit/:commit">{children}</Route>
       <Route
-        path="/:provider/:owner/:repo/commit/:commitId"
+        path="/:provider/:owner/:repo/commit/:commit"
         render={({ location }) => {
           testLocation = location
           return null
@@ -78,11 +78,10 @@ describe('ComponentsSelector', () => {
     server.use(
       graphql.query('CommitComponents', (req, res, ctx) => {
         mockApiVars(req.variables)
-
-        const jank = mockCommitComponentsResponse(components)
-        console.log('POW: ' + JSON.stringify(jank))
-
-        return res(ctx.status(200), ctx.data(jank))
+        return res(
+          ctx.status(200),
+          ctx.data(mockCommitComponentsResponse(components))
+        )
       })
     )
 
@@ -147,7 +146,7 @@ describe('ComponentsSelector', () => {
       await waitFor(() =>
         expect(mockApiVars).toHaveBeenCalledWith({
           owner: 'codecov',
-          commitId: 123,
+          commitId: '123',
           repo: 'cool-repo',
           provider: 'gh',
           filters: { components: ['component-2'] },

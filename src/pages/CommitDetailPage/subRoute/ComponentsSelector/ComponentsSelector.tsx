@@ -51,13 +51,6 @@ function ComponentsSelector() {
     )
   }
 
-  console.log(
-    'going in ta: ' +
-      JSON.stringify(params) +
-      ' update ' +
-      JSON.stringify(updateParams)
-  )
-
   return (
     <MultiSelect
       // @ts-expect-error
