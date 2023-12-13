@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom'
 
 import { useRepoSettingsTeam } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
+import { useFlags } from 'shared/featureFlags'
 import RawFileviewer from 'shared/RawFileviewer'
 import { useTreePaths } from 'shared/treePaths'
 import Breadcrumb from 'ui/Breadcrumb'
@@ -17,6 +18,10 @@ function FileView() {
     tierName === TierNames.TEAM && repoData?.repository?.private
   )
 
+  const { componentsSelect } = useFlags({
+    componentsSelect: false,
+  })
+
   return (
     <RawFileviewer
       title={
@@ -28,6 +33,7 @@ function FileView() {
       sticky
       stickyPadding={215}
       showFlagsSelect={showFlagSelector}
+      showComponentsSelect={componentsSelect}
     />
   )
 }

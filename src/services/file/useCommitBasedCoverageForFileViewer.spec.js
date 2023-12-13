@@ -34,7 +34,7 @@ const mockFileMainCoverage = (coverage, flagNames) => ({
   },
 })
 
-const mockFileFlagCoverage = (coverage) => ({
+const mockFileFilterCoverage = (coverage) => ({
   owner: {
     repository: {
       commit: {
@@ -75,7 +75,12 @@ afterAll(() => {
 })
 
 describe('useCommitBasedCoverageForFileViewer', () => {
-  function setup({ mainCoverageData, coverageWithFlags, selectedFlags }) {
+  function setup({
+    mainCoverageData,
+    coverageWithFlags,
+    selectedFlags,
+    selectedComponents,
+  }) {
     server.use(
       graphql.query('CoverageForFile', (req, res, ctx) =>
         res(
@@ -83,17 +88,24 @@ describe('useCommitBasedCoverageForFileViewer', () => {
           ctx.data(mockFileMainCoverage(mainCoverageData, selectedFlags))
         )
       ),
-      graphql.query('CoverageForFileWithFlags', (req, res, ctx) =>
+      graphql.query('CoverageForFileWithFilters', (req, res, ctx) =>
         res(
           ctx.status(200),
-          ctx.data(mockFileFlagCoverage(coverageWithFlags, selectedFlags))
+          ctx.data(
+            mockFileFilterCoverage(
+              coverageWithFlags,
+              selectedFlags,
+              selectedComponents
+            )
+          )
         )
       )
     )
   }
 
-  describe('when flags are not selected', () => {
+  describe('when no filters selected', () => {
     const selectedFlags = []
+    const selectedComponents = []
 
     beforeEach(() => {
       const mainCoverageData = {
@@ -132,6 +144,7 @@ describe('useCommitBasedCoverageForFileViewer', () => {
             provider,
             owner,
             selectedFlags,
+            selectedComponents,
           }),
         {
           wrapper,
@@ -169,8 +182,9 @@ describe('useCommitBasedCoverageForFileViewer', () => {
     })
   })
 
-  describe('when flags are selected', () => {
+  describe('when flags and components are selected', () => {
     const selectedFlags = ['one', 'two']
+    const selectedComponents = ['c-1']
 
     beforeEach(() => {
       const mainCoverageData = {
@@ -214,6 +228,7 @@ describe('useCommitBasedCoverageForFileViewer', () => {
             provider,
             owner,
             selectedFlags,
+            selectedComponents,
           }),
         {
           wrapper,

@@ -5,7 +5,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useCoverageWithFlags } from '.'
+import { useCoverageWithFilters } from '.'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -29,10 +29,10 @@ beforeEach(() => {
 })
 afterAll(() => server.close())
 
-describe('useCoverageWithFlags', () => {
+describe('useCoverageWithFilters', () => {
   function setup(dataReturned) {
     server.use(
-      graphql.query('CoverageForFileWithFlags', (req, res, ctx) => {
+      graphql.query('CoverageForFileWithFilters', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(dataReturned))
       })
     )
@@ -45,6 +45,7 @@ describe('useCoverageWithFlags', () => {
           commit: {
             commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
             flagNames: ['a', 'b'],
+            componentNames: ['c'],
             coverageFile: {
               content:
                 'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
@@ -85,9 +86,12 @@ describe('useCoverageWithFlags', () => {
     })
 
     it('returns commit file coverage', async () => {
-      const { result } = renderHook(() => useCoverageWithFlags({ provider }), {
-        wrapper,
-      })
+      const { result } = renderHook(
+        () => useCoverageWithFilters({ provider }),
+        {
+          wrapper,
+        }
+      )
 
       await waitFor(() => result.current.isSuccess)
 
@@ -96,6 +100,7 @@ describe('useCoverageWithFlags', () => {
           ...data.owner.repository.commit.coverageFile,
           totals: 0,
           flagNames: ['a', 'b'],
+          componentNames: ['c'],
           coverage: _.chain(data.owner.repository.commit.coverageFile.coverage)
             .keyBy('line')
             .mapValues('coverage')
