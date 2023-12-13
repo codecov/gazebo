@@ -220,6 +220,20 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    dedicatedEnterpriseCloudGuide: {
+      text: 'Dedicated Enterprise Cloud Guide',
+      path: () =>
+        'https://docs.codecov.com/docs/codecov-dedicated-enterprise-cloud-install-steps',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    generateSelfHostedLicense: {
+      text: 'Self Hosted License Generation',
+      path: () =>
+        'https://github.com/codecov/self-hosted/tree/main#license-generation',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     prCommentLayout: {
       text: 'Pull request comment layout',
       path: () => 'https://docs.codecov.com/docs/pull-request-comments#layout',
