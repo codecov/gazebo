@@ -5,7 +5,7 @@ import { useAccountDetails } from 'services/account'
 import { isFreePlan } from 'shared/utils/billing'
 import Button from 'ui/Button'
 
-import { NewPlanType } from '../PlanTypeOptions/PlanTypeOptions'
+import { NewPlanType } from '../constants'
 
 interface BillingControlsProps {
   seats: number

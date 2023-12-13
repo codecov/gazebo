@@ -10,7 +10,7 @@ import BillingOptions from './BillingOptions'
 import PriceCallout from './PriceCallout'
 import UserCount from './UserCount'
 
-import { NewPlanType } from '../../PlanTypeOptions/PlanTypeOptions'
+import { NewPlanType } from '../../constants'
 
 interface PlanControllerProps {
   seats: number

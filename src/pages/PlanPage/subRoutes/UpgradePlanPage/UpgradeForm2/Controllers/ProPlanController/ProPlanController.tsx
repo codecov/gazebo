@@ -10,11 +10,12 @@ import BillingOptions from './BillingOptions'
 import PriceCallout from './PriceCallout'
 import UserCount from './UserCount'
 
-import { NewPlanType } from '../../PlanTypeOptions/PlanTypeOptions'
+import { NewPlanType } from '../../constants'
 
 interface ProPlanControllerProps {
   seats: number
   newPlan: NewPlanType
+
   register: UseFormRegister<FieldValues>
   setFormValue: (x: string, y: string) => void
   errors?: {

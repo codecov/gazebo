@@ -17,13 +17,7 @@ import {
 import { TEAM_PLAN_MAX_ACTIVE_USERS } from 'shared/utils/upgradeForm'
 import OptionButton from 'ui/OptionButton'
 
-export type NewPlanType =
-  | 'users-pr-inappm'
-  | 'users-pr-inappy'
-  | 'users-sentrym'
-  | 'users-sentryy'
-  | 'users-teamm'
-  | 'users-teamy'
+import { PlanTiers, TierName } from '../constants'
 
 interface PlanTypeOptionsProps {
   multipleTiers: boolean
@@ -50,7 +44,7 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   const isSentryUpgrade = canApplySentryUpgrade({ plan, plans })
   const yearlyProPlan = isSentryUpgrade ? sentryPlanYear : proPlanYear
 
-  const [option, setOption] = useState<'Pro' | 'Team'>('Pro')
+  const [option, setOption] = useState<PlanTiers>(TierName.PRO)
 
   if (hasTeamPlans && multipleTiers) {
     return (
@@ -61,7 +55,7 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
             type="button"
             active={option}
             onChange={({ text }) => {
-              if (text === 'Pro') {
+              if (text === TierName.PRO) {
                 setSelectedPlan(yearlyProPlan)
                 setFormValue('newPlan', yearlyProPlan?.value)
               } else {
@@ -72,14 +66,16 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
             }}
             options={[
               {
-                text: 'Pro',
+                text: TierName.PRO,
               },
               {
-                text: 'Team',
+                text: TierName.TEAM,
               },
             ]}
           />
-          {option === 'Team' && <p>Up to {TEAM_PLAN_MAX_ACTIVE_USERS} users</p>}
+          {option === TierName.TEAM && (
+            <p>Up to {TEAM_PLAN_MAX_ACTIVE_USERS} users</p>
+          )}
         </div>
       </div>
     )

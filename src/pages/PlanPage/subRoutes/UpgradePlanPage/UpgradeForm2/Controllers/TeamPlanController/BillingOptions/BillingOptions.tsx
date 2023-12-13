@@ -10,8 +10,7 @@ import {
 } from 'shared/utils/billing'
 import OptionButton from 'ui/OptionButton'
 
-import { NewPlanType } from '../../../PlanTypeOptions/PlanTypeOptions'
-import { OptionPeriod, TimePeriods } from '../../constants'
+import { NewPlanType, OptionPeriod, TimePeriods } from '../../../constants'
 
 interface BillingControlsProps {
   newPlan: NewPlanType

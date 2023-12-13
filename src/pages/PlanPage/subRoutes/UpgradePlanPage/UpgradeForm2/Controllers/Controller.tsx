@@ -6,7 +6,7 @@ import ProPlanController from './ProPlanController'
 import SentryPlanController from './SentryPlanController'
 import TeamPlanController from './TeamPlanController'
 
-import { NewPlanType } from '../PlanTypeOptions/PlanTypeOptions'
+import { NewPlanType } from '../constants'
 
 interface BillingControlsProps {
   seats: number

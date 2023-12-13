@@ -10,7 +10,7 @@ import {
 import { calculatePriceTeamPlan } from 'shared/utils/upgradeForm'
 import Icon from 'ui/Icon'
 
-import { NewPlanType } from '../../../PlanTypeOptions/PlanTypeOptions'
+import { NewPlanType } from '../../../constants'
 
 interface PriceCalloutProps {
   newPlan: NewPlanType
