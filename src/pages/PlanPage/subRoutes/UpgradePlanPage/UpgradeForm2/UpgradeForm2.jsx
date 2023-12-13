@@ -9,12 +9,7 @@ import {
   usePlanData,
 } from 'services/account'
 import { useFlags } from 'shared/featureFlags'
-import {
-  canApplySentryUpgrade,
-  isSentryPlan,
-  isTeamPlan,
-  shouldDisplayTeamCard,
-} from 'shared/utils/billing'
+import { canApplySentryUpgrade, isTeamPlan } from 'shared/utils/billing'
 import {
   getDefaultValuesUpgradeForm,
   getSchema,
@@ -22,9 +17,7 @@ import {
   MIN_SENTRY_SEATS,
 } from 'shared/utils/upgradeForm'
 
-import ProPlanController from './Controllers/ProPlanController'
-import SentryPlanController from './Controllers/SentryPlanController'
-import TeamPlanController from './Controllers/TeamPlanController'
+import Controller from './Controllers/Controller'
 import { useUpgradeControls } from './hooks'
 import PlanTypeOptions from './PlanTypeOptions'
 import UpdateButton from './UpdateButton'
@@ -70,7 +63,6 @@ function UpgradeForm2({ selectedPlan, setSelectedPlan }) {
     ),
     mode: 'onChange',
   })
-  const hasTeamPlans = shouldDisplayTeamCard({ plans })
 
   const newPlan = watch('newPlan')
   const seats = watch('seats')
@@ -84,42 +76,19 @@ function UpgradeForm2({ selectedPlan, setSelectedPlan }) {
         <h3 className="font-semibold">Organization</h3>
         <span>{owner}</span>
       </div>
-      {hasTeamPlans && multipleTiers ? (
-        <PlanTypeOptions
-          setFormValue={setFormValue}
-          setSelectedPlan={setSelectedPlan}
-        />
-      ) : isSentryUpgrade ? (
-        <div>
-          <h3 className="font-semibold">Plan</h3>
-          <p>$29 monthly includes 5 seats.</p>
-        </div>
-      ) : null}
-      {isTeamPlan(selectedPlan?.value) ? (
-        <TeamPlanController
-          newPlan={newPlan}
-          seats={seats}
-          setFormValue={setFormValue}
-          register={register}
-          errors={errors}
-        />
-      ) : isSentryPlan(selectedPlan?.value) ? (
-        <SentryPlanController
-          newPlan={newPlan}
-          seats={seats}
-          setFormValue={setFormValue}
-          register={register}
-          errors={errors}
-        />
-      ) : (
-        <ProPlanController
-          newPlan={newPlan}
-          seats={seats}
-          setFormValue={setFormValue}
-          register={register}
-          errors={errors}
-        />
-      )}
+      <PlanTypeOptions
+        setFormValue={setFormValue}
+        multipleTiers={multipleTiers}
+        setSelectedPlan={setSelectedPlan}
+      />
+      <Controller
+        selectedPlan={selectedPlan?.value}
+        newPlan={newPlan}
+        seats={seats}
+        setFormValue={setFormValue}
+        register={register}
+        errors={errors}
+      />
       <UpdateButton isValid={isValid} newPlan={newPlan} seats={seats} />
     </form>
   )

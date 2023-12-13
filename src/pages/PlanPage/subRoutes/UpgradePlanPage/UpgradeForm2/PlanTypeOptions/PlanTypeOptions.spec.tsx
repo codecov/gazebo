@@ -165,12 +165,18 @@ const mockAccountDetailsTrial = {
 type SetupArgs = {
   planValue: string
   hasSentryPlans: boolean
+  hasTeamPlans: boolean
 }
 
 describe('PlanTypeOptions', () => {
   function setup(
-    { planValue = Plans.USERS_BASIC, hasSentryPlans = false }: SetupArgs = {
+    {
+      planValue = Plans.USERS_BASIC,
+      hasSentryPlans = false,
+      hasTeamPlans = true,
+    }: SetupArgs = {
       planValue: Plans.USERS_BASIC,
+      hasTeamPlans: true,
       hasSentryPlans: false,
     }
   ) {
@@ -196,8 +202,7 @@ describe('PlanTypeOptions', () => {
               availablePlans: [
                 proPlanMonth,
                 proPlanYear,
-                teamPlanMonth,
-                teamPlanYear,
+                ...(hasTeamPlans ? [teamPlanMonth, teamPlanYear] : []),
                 ...(hasSentryPlans ? [sentryPlanMonth, sentryPlanYear] : []),
               ],
             },
@@ -219,10 +224,12 @@ describe('PlanTypeOptions', () => {
         const { mockSetFormValue, mockSetSelectedPlan } = setup({
           planValue: Plans.USERS_BASIC,
           hasSentryPlans: false,
+          hasTeamPlans: true,
         })
 
         render(
           <PlanTypeOptions
+            multipleTiers={true}
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
           />,
@@ -249,10 +256,12 @@ describe('PlanTypeOptions', () => {
           const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
             planValue: Plans.USERS_BASIC,
             hasSentryPlans: true,
+            hasTeamPlans: true,
           })
 
           render(
             <PlanTypeOptions
+              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -284,10 +293,12 @@ describe('PlanTypeOptions', () => {
           const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
             planValue: Plans.USERS_BASIC,
             hasSentryPlans: true,
+            hasTeamPlans: true,
           })
 
           render(
             <PlanTypeOptions
+              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -320,10 +331,12 @@ describe('PlanTypeOptions', () => {
         const { mockSetFormValue, mockSetSelectedPlan } = setup({
           planValue: Plans.USERS_SENTRYY,
           hasSentryPlans: true,
+          hasTeamPlans: true,
         })
 
         render(
           <PlanTypeOptions
+            multipleTiers={true}
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
           />,
@@ -350,10 +363,12 @@ describe('PlanTypeOptions', () => {
           const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
             planValue: Plans.USERS_SENTRYY,
             hasSentryPlans: true,
+            hasTeamPlans: true,
           })
 
           render(
             <PlanTypeOptions
+              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -385,10 +400,12 @@ describe('PlanTypeOptions', () => {
           const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
             planValue: Plans.USERS_SENTRYY,
             hasSentryPlans: true,
+            hasTeamPlans: true,
           })
 
           render(
             <PlanTypeOptions
+              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -421,10 +438,12 @@ describe('PlanTypeOptions', () => {
         const { mockSetFormValue, mockSetSelectedPlan } = setup({
           planValue: Plans.USERS_TEAMY,
           hasSentryPlans: true,
+          hasTeamPlans: true,
         })
 
         render(
           <PlanTypeOptions
+            multipleTiers={true}
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
           />,
@@ -451,10 +470,12 @@ describe('PlanTypeOptions', () => {
           const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
             planValue: Plans.USERS_TEAMY,
             hasSentryPlans: true,
+            hasTeamPlans: true,
           })
 
           render(
             <PlanTypeOptions
+              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -486,10 +507,12 @@ describe('PlanTypeOptions', () => {
           const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
             planValue: Plans.USERS_TEAMY,
             hasSentryPlans: true,
+            hasTeamPlans: true,
           })
 
           render(
             <PlanTypeOptions
+              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -517,15 +540,51 @@ describe('PlanTypeOptions', () => {
       })
     })
 
+    describe('when org does not have team plans available', () => {
+      it('renders custom sentry text for included seats', async () => {
+        const { mockSetFormValue, mockSetSelectedPlan } = setup({
+          planValue: Plans.USERS_SENTRYY,
+          hasSentryPlans: true,
+          hasTeamPlans: false,
+        })
+
+        render(
+          <PlanTypeOptions
+            multipleTiers={false}
+            setFormValue={mockSetFormValue}
+            setSelectedPlan={mockSetSelectedPlan}
+          />,
+          {
+            wrapper,
+          }
+        )
+
+        const planTitle = await screen.findByText(/Plan/)
+        expect(planTitle).toBeInTheDocument()
+
+        const planDescription = await screen.findByText(
+          /\$29 monthly includes 5 seats./
+        )
+        expect(planDescription).toBeInTheDocument()
+
+        const teamBtn = screen.queryByRole('button', {
+          name: 'Team',
+        })
+        expect(teamBtn).not.toBeInTheDocument()
+      })
+    })
+
     describe('when plan is trialing', () => {
       it('renders Pro button as "selected"', async () => {
         const { mockSetFormValue, mockSetSelectedPlan } = setup({
           planValue: Plans.USERS_TRIAL,
           hasSentryPlans: true,
+          hasTeamPlans: true,
         })
 
         render(
           <PlanTypeOptions
+            multipleTiers={true}
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
           />,
@@ -552,10 +611,12 @@ describe('PlanTypeOptions', () => {
           const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
             planValue: Plans.USERS_TRIAL,
             hasSentryPlans: true,
+            hasTeamPlans: true,
           })
 
           render(
             <PlanTypeOptions
+              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -587,10 +648,12 @@ describe('PlanTypeOptions', () => {
           const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
             planValue: Plans.USERS_TRIAL,
             hasSentryPlans: true,
+            hasTeamPlans: true,
           })
 
           render(
             <PlanTypeOptions
+              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -625,10 +688,12 @@ describe('PlanTypeOptions', () => {
         const { mockSetFormValue, mockSetSelectedPlan } = setup({
           planValue: Plans.USERS_BASIC,
           hasSentryPlans: false,
+          hasTeamPlans: true,
         })
 
         render(
           <PlanTypeOptions
+            multipleTiers={true}
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
           />,
@@ -655,10 +720,12 @@ describe('PlanTypeOptions', () => {
           const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
             planValue: Plans.USERS_BASIC,
             hasSentryPlans: false,
+            hasTeamPlans: true,
           })
 
           render(
             <PlanTypeOptions
+              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -690,10 +757,12 @@ describe('PlanTypeOptions', () => {
           const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
             planValue: Plans.USERS_BASIC,
             hasSentryPlans: false,
+            hasTeamPlans: true,
           })
 
           render(
             <PlanTypeOptions
+              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -726,10 +795,12 @@ describe('PlanTypeOptions', () => {
         const { mockSetFormValue, mockSetSelectedPlan } = setup({
           planValue: Plans.USERS_PR_INAPPY,
           hasSentryPlans: false,
+          hasTeamPlans: true,
         })
 
         render(
           <PlanTypeOptions
+            multipleTiers={true}
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
           />,
@@ -756,10 +827,12 @@ describe('PlanTypeOptions', () => {
           const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
             planValue: Plans.USERS_SENTRYY,
             hasSentryPlans: false,
+            hasTeamPlans: true,
           })
 
           render(
             <PlanTypeOptions
+              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -791,10 +864,12 @@ describe('PlanTypeOptions', () => {
           const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
             planValue: Plans.USERS_SENTRYY,
             hasSentryPlans: false,
+            hasTeamPlans: true,
           })
 
           render(
             <PlanTypeOptions
+              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -827,10 +902,12 @@ describe('PlanTypeOptions', () => {
         const { mockSetFormValue, mockSetSelectedPlan } = setup({
           planValue: Plans.USERS_TEAMY,
           hasSentryPlans: false,
+          hasTeamPlans: true,
         })
 
         render(
           <PlanTypeOptions
+            multipleTiers={true}
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
           />,
@@ -857,10 +934,12 @@ describe('PlanTypeOptions', () => {
           const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
             planValue: Plans.USERS_TEAMY,
             hasSentryPlans: false,
+            hasTeamPlans: true,
           })
 
           render(
             <PlanTypeOptions
+              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -892,10 +971,12 @@ describe('PlanTypeOptions', () => {
           const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
             planValue: Plans.USERS_TEAMY,
             hasSentryPlans: false,
+            hasTeamPlans: true,
           })
 
           render(
             <PlanTypeOptions
+              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -928,10 +1009,12 @@ describe('PlanTypeOptions', () => {
         const { mockSetFormValue, mockSetSelectedPlan } = setup({
           planValue: Plans.USERS_TRIAL,
           hasSentryPlans: false,
+          hasTeamPlans: true,
         })
 
         render(
           <PlanTypeOptions
+            multipleTiers={true}
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
           />,
@@ -958,10 +1041,12 @@ describe('PlanTypeOptions', () => {
           const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
             planValue: Plans.USERS_TRIAL,
             hasSentryPlans: false,
+            hasTeamPlans: true,
           })
 
           render(
             <PlanTypeOptions
+              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
@@ -993,10 +1078,12 @@ describe('PlanTypeOptions', () => {
           const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
             planValue: Plans.USERS_TRIAL,
             hasSentryPlans: false,
+            hasTeamPlans: true,
           })
 
           render(
             <PlanTypeOptions
+              multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
             />,
