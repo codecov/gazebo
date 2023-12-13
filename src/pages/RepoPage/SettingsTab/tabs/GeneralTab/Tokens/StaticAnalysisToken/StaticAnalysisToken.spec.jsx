@@ -141,7 +141,7 @@ describe('StaticAnalysisToken', () => {
         await user.click(button)
 
         const p = await screen.findByText(
-          'If you save the new token, make sure to update your CI yml'
+          'If you save the new token, make sure to update your CI YAML'
         )
         expect(p).toBeInTheDocument()
       })

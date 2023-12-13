@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -7,6 +7,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import ComponentsTab from './ComponentsTab'
 
 jest.mock('./ComponentsNotConfigured', () => () => 'ComponentsNotConfigured')
+jest.mock('../ComponentsSelector', () => () => 'ComponentsSelector')
 
 const queryClient = new QueryClient()
 const server = setupServer()
@@ -64,8 +65,14 @@ const mockPull = {
 
 describe('ComponentsTab', () => {
   function setup(overrideData) {
+    const componentsMock = jest.fn()
+
     server.use(
       graphql.query('PullComponentComparison', (req, res, ctx) => {
+        if (req.variables?.filters?.components) {
+          componentsMock(req.variables.filters.components)
+        }
+
         if (overrideData) {
           return res(ctx.status(200), ctx.data(overrideData))
         }
@@ -73,6 +80,8 @@ describe('ComponentsTab', () => {
         return res(ctx.status(200), ctx.data(mockPull))
       })
     )
+
+    return { componentsMock }
   }
 
   describe('when there are no components in the new tab', () => {
@@ -123,6 +132,29 @@ describe('ComponentsTab', () => {
 
       const comparisonChangeCoverage = await screen.findByText('2.71%')
       expect(comparisonChangeCoverage).toBeInTheDocument()
+    })
+
+    it('renders ComponentsSelector', async () => {
+      render(<ComponentsTab />, { wrapper: wrapper() })
+
+      const selector = await screen.findByText('ComponentsSelector')
+      expect(selector).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with components filter', () => {
+    it('sends default params to the API', async () => {
+      const { componentsMock } = setup()
+      render(<ComponentsTab />, {
+        wrapper: wrapper(
+          '/gh/codecov/gazebo/pull/123/components?components=component1,component2'
+        ),
+      })
+
+      await waitFor(() => expect(componentsMock).toBeCalledTimes(1))
+      await waitFor(() =>
+        expect(componentsMock).toHaveBeenCalledWith('component1,component2')
+      )
     })
   })
 })

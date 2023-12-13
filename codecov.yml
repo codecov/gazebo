@@ -2,7 +2,7 @@ codecov:
   require_ci_to_pass: yes
 
 ai_pr_review:
-  enabled: true
+  enabled: false
 
 coverage:
   precision: 2
@@ -13,6 +13,9 @@ coverage:
     project: yes
     patch: yes
     changes: no
+
+github_checks:
+  annotations: false
 
 comment:
   layout: 'reach, diff, flags, files, components, footer'
