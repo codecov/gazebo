@@ -157,6 +157,8 @@ function FilesChangedTable() {
   })
 
   const flags = queryParams?.flags?.length > 0 ? queryParams?.flags : undefined
+  const components =
+    queryParams?.components?.length > 0 ? queryParams?.components : undefined
 
   const { data: commitData, isLoading } = useCommit({
     provider,
@@ -166,6 +168,7 @@ function FilesChangedTable() {
     filters: {
       hasUnintendedChanges: false,
       flags: flags,
+      components: components,
     },
   })
 
