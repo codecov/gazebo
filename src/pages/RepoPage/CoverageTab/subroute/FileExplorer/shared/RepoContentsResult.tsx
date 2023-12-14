@@ -1,5 +1,5 @@
 interface RepoContentsProps {
-  isSearching: string
+  isSearching: boolean
   isMissingHeadReport: boolean
   hasFlagsSelected: boolean
 }
