@@ -9,6 +9,7 @@ import { useScrollToLine } from 'ui/CodeRenderer/hooks/useScrollToLine'
 import FileViewer from './FileViewer'
 
 jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
+jest.mock('../ComponentsSelector', () => () => 'ComponentsSelector')
 
 const mockOwner = {
   username: 'cool-user',
@@ -157,6 +158,13 @@ describe('FileViewer', () => {
 
         const fileName = await screen.findByText('file.js')
         expect(fileName).toBeInTheDocument()
+      })
+
+      it('renders ComponentsSelector', async () => {
+        render(<FileViewer />, { wrapper: wrapper() })
+
+        const selector = await screen.findByText('ComponentsSelector')
+        expect(selector).toBeInTheDocument()
       })
     })
 
