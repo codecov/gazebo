@@ -9,6 +9,7 @@ import { useScrollToLine } from 'ui/CodeRenderer/hooks/useScrollToLine'
 import CommitDetailFileViewer from './CommitDetailFileViewer'
 
 jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
+jest.mock('../ComponentsSelector', () => () => 'ComponentsSelector')
 
 const mockOwner = {
   username: 'cool-user',
@@ -147,6 +148,13 @@ describe('CommitDetailFileViewer', () => {
         expect(copyLink).toBeInTheDocument()
         expect(copyLink).toHaveAttribute('href', '#directory/file.js')
       })
+    })
+
+    it('renders ComponentsSelector', async () => {
+      render(<CommitDetailFileViewer />, { wrapper: wrapper() })
+
+      const selector = await screen.findByText('ComponentsSelector')
+      expect(selector).toBeInTheDocument()
     })
   })
 })
