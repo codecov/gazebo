@@ -5,8 +5,7 @@ import { TierNames, useTier } from 'services/tier'
 import RawFileviewer from 'shared/RawFileviewer'
 import { useTreePaths } from 'shared/treePaths'
 import Breadcrumb from 'ui/Breadcrumb'
-
-import { ComponentsSelectCommit } from './ComponentsSelectCommit'
+import ComponentsSelectCommit from 'ui/ComponentsSelect'
 
 function FileView() {
   const { treePaths } = useTreePaths()

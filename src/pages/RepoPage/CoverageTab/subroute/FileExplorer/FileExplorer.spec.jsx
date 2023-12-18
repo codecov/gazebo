@@ -5,6 +5,8 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useFlags } from 'shared/featureFlags'
+
 import FileExplorer from './FileExplorer'
 
 jest.mock('./FileListTable', () => () => 'File list table')
@@ -15,6 +17,11 @@ jest.mock(
 )
 jest.mock('shared/ContentsTable/FileBreadcrumb', () => () => 'File breadcrumb')
 jest.mock('./FlagMultiSelect', () => () => 'FlagMultiSelect')
+jest.mock(
+  'ui/ComponentsSelect/ComponentsSelectCommit',
+  () => () => 'Components Selector'
+)
+jest.mock('shared/featureFlags')
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -126,6 +133,10 @@ describe('FileExplorer', () => {
   function setup() {
     const user = userEvent.setup()
 
+    useFlags.mockReturnValue({
+      componentsSelect: true,
+    })
+
     server.use(
       graphql.query('BranchContents', (req, res, ctx) => {
         if (
@@ -184,6 +195,14 @@ describe('FileExplorer', () => {
 
       const table = await screen.findByText('Code tree table')
       expect(table).toBeInTheDocument()
+    })
+
+    it('renders components selector', async () => {
+      setup()
+      render(<FileExplorer />, { wrapper: wrapper() })
+
+      const searchField = await screen.findByText(/Components Selector/)
+      expect(searchField).toBeInTheDocument()
     })
 
     describe('user searches for a file', () => {
