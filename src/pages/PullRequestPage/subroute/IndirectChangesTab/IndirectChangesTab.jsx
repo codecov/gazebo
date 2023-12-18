@@ -1,5 +1,6 @@
 import isNil from 'lodash/isNil'
 
+import ComponentsSelector from 'pages/CommitDetailPage/subRoute/ComponentsSelector'
 import { CommitStateEnum } from 'shared/utils/commit'
 import { ComparisonReturnType } from 'shared/utils/comparison'
 import { ImpactedFilesReturnType } from 'shared/utils/impactedFiles'
@@ -74,6 +75,9 @@ function IndirectChangesTab() {
     return (
       <>
         <IndirectChangesInfo />
+        <div className="flex justify-end bg-ds-gray-primary p-2">
+          <ComponentsSelector />
+        </div>
         <ImpactedFiles />
       </>
     )
