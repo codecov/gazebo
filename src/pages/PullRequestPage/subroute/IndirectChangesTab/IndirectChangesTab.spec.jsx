@@ -5,7 +5,6 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
 import { CommitStateEnum } from 'shared/utils/commit'
 import { ComparisonReturnType } from 'shared/utils/comparison'
 import { ImpactedFilesReturnType } from 'shared/utils/impactedFiles'
@@ -16,11 +15,6 @@ jest.mock(
   './IndirectChangedFiles/IndirectChangedFiles',
   () => () => 'IndirectChangedFiles Component'
 )
-jest.mock(
-  'ui/ComponentsSelect/ComponentsSelectCommit',
-  () => () => 'Components Selector'
-)
-jest.mock('shared/featureFlags')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -112,9 +106,6 @@ afterAll(() => server.close())
 
 describe('IndirectChangesTab', () => {
   function setup({ overrideData } = {}) {
-    useFlags.mockReturnValue({
-      componentsSelect: true,
-    })
     server.use(
       graphql.query('Pull', (_, res, ctx) => {
         if (overrideData) {
@@ -180,14 +171,6 @@ describe('IndirectChangesTab', () => {
         /These are files that didn't have author revisions, but contain unexpected coverage changes/
       )
       expect(indirectChangesInfo).toBeInTheDocument()
-    })
-
-    it('renders components selector', async () => {
-      setup()
-      render(<IndirectChangesTab />, { wrapper: wrapper() })
-
-      const searchField = await screen.findByText(/Components Selector/)
-      expect(searchField).toBeInTheDocument()
     })
 
     it('renders no change text', async () => {

@@ -146,6 +146,8 @@ function IndirectChangesTable() {
   })
 
   const flags = queryParams?.flags?.length > 0 ? queryParams?.flags : undefined
+  const components =
+    queryParams?.components?.length > 0 ? queryParams?.components : undefined
 
   const { data: commitData, isLoading } = useCommit({
     provider,
@@ -155,6 +157,7 @@ function IndirectChangesTable() {
     filters: {
       hasUnintendedChanges: true,
       flags: flags,
+      components: components,
     },
   })
 
@@ -175,13 +178,15 @@ function IndirectChangesTable() {
   if (
     isEmpty(indirectChangedFiles) &&
     (isArray(flags) ||
+      isArray(components) ||
       (commit?.compareWithParent?.__typename === 'Comparison' &&
         commit?.compareWithParent?.impactedFiles?.__typename ===
           'UnknownFlags'))
   ) {
     return (
       <p className="m-4">
-        No files covered by tests and selected flags were changed
+        No files covered by tests and selected flags and/or components were
+        changed
       </p>
     )
   }
