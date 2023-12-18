@@ -262,7 +262,7 @@ const MultiSelect = forwardRef(
     }
 
     return (
-      <div className="relative z-20">
+      <div className="relative">
         <div>
           <button
             data-marketing={dataMarketing}
