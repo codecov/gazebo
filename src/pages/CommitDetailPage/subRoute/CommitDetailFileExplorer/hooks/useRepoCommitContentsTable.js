@@ -153,13 +153,19 @@ const sortingParameter = Object.freeze({
 
 const getQueryFilters = ({ params, sortBy }) => {
   let flags = {}
+  let components = {}
   if (params?.flags) {
     flags = { flags: params?.flags }
+  }
+
+  if (params?.components) {
+    components = { components: params?.components }
   }
 
   return {
     ...(params?.search && { searchValue: params.search }),
     ...flags,
+    ...components,
     ...(params?.displayType && {
       displayType: displayTypeParameter[params?.displayType],
     }),

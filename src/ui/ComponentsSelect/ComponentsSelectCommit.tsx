@@ -8,7 +8,7 @@ import { useFlags } from 'shared/featureFlags'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'
 
-import { useSummary } from '../../summaryHooks'
+import { useSummary } from '../../pages/RepoPage/CoverageTab/summaryHooks'
 
 const defaultQueryParams = {
   search: '',
@@ -21,7 +21,7 @@ interface URLParams {
   repo: string
 }
 
-export function ComponentsSelectCommit() {
+export default function ComponentsSelectCommit() {
   const { currentBranchSelected } = useSummary()
 
   const { provider, owner, repo } = useParams<URLParams>()

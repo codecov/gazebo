@@ -7,6 +7,8 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import CommitDetailFileExplorer from './CommitDetailFileExplorer'
 
+jest.mock('../ComponentsSelector', () => () => 'Components Selector')
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -180,6 +182,13 @@ describe('CommitDetailFileExplorer', () => {
 
         const coverage = await screen.findByText('Coverage %')
         expect(coverage).toBeInTheDocument()
+      })
+
+      it('renders components selector', async () => {
+        render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
+
+        const table = await screen.findByText('Components Selector')
+        expect(table).toBeInTheDocument()
       })
     })
 
