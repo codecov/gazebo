@@ -12,7 +12,6 @@ import { useRepoCommitContentsTable } from './hooks'
 
 import ComponentsSelector from '../ComponentsSelector'
 
-
 const Loader = () => (
   <div className="flex flex-1 justify-center">
     <Spinner size={60} />
