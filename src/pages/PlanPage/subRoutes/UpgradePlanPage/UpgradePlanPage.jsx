@@ -11,7 +11,7 @@ import {
 } from 'shared/utils/billing'
 
 import UpgradeDetails from './UpgradeDetails'
-import UpgradeForm from './UpgradeForm'
+import UpgradeForm2 from './UpgradeForm2'
 
 import { useSetCrumbs } from '../../context'
 
@@ -20,8 +20,8 @@ function UpgradePlanPage() {
   const setCrumbs = useSetCrumbs()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: plans } = useAvailablePlans({ provider, owner })
-  const { proPlanMonth, proPlanYear } = useProPlans({ plans })
-  const { sentryPlanMonth, sentryPlanYear } = findSentryPlans({ plans })
+  const { proPlanYear } = useProPlans({ plans })
+  const { sentryPlanYear } = findSentryPlans({ plans })
 
   const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
 
@@ -46,12 +46,7 @@ function UpgradePlanPage() {
   return (
     <div className="flex flex-col gap-8 md:w-11/12 md:flex-row lg:w-10/12">
       <UpgradeDetails selectedPlan={selectedPlan} />
-      <UpgradeForm
-        accountDetails={accountDetails}
-        proPlanYear={proPlanYear}
-        proPlanMonth={proPlanMonth}
-        sentryPlanYear={sentryPlanYear}
-        sentryPlanMonth={sentryPlanMonth}
+      <UpgradeForm2
         selectedPlan={selectedPlan}
         setSelectedPlan={setSelectedPlan}
       />
