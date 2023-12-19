@@ -150,11 +150,11 @@ describe('IndirectChangesTable', () => {
       expect(noData).toBeInTheDocument()
     })
 
-    describe('flag is present in query params', () => {
-      it('fetches with flags filter', async () => {
+    describe('flag and component is present in query params', () => {
+      it('fetches with flags and components filter', async () => {
         const { queryClient, mockVars } = setup(mockData)
         const path = `/gh/codecov/cool-repo/commit/123/indirect-changes${qs.stringify(
-          { flags: ['flag-1'] },
+          { flags: ['flag-1'], components: ['component-1'] },
           { addQueryPrefix: true }
         )}`
         render(<IndirectChangesTable />, {
@@ -162,11 +162,12 @@ describe('IndirectChangesTable', () => {
         })
 
         await waitFor(() =>
-          expect(mockVars).toBeCalledWith({
+          expect(mockVars).toHaveBeenCalledWith({
             commitid: '123',
             filters: {
               hasUnintendedChanges: true,
               flags: ['flag-1'],
+              components: ['component-1'],
             },
             isTeamPlan: false,
             owner: 'codecov',
@@ -256,42 +257,6 @@ describe('IndirectChangesTable', () => {
         )
         expect(coverage).toBeInTheDocument()
       })
-
-      describe('flags param in url is set', () => {
-        it('renders flags no files error message', async () => {
-          const { queryClient } = setup({
-            __typename: 'ImpactedFiles',
-            results: [],
-          })
-          const path = `/gh/codecov/cool-repo/commit/123/indirect-changes${qs.stringify(
-            { flags: ['flag-1'] },
-            { addQueryPrefix: true }
-          )}`
-          render(<IndirectChangesTable />, {
-            wrapper: wrapper(queryClient, path),
-          })
-
-          const coverage = await screen.findByText(
-            'No files covered by tests and selected flags were changed'
-          )
-          expect(coverage).toBeInTheDocument()
-        })
-      })
-    })
-
-    describe('returns __typename of unknown flags', () => {
-      it('renders flags no files error message', async () => {
-        const { queryClient } = setup({
-          __typename: 'UnknownFlags',
-          message: 'no flags found',
-        })
-        render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
-
-        const coverage = await screen.findByText(
-          'No files covered by tests and selected flags were changed'
-        )
-        expect(coverage).toBeInTheDocument()
-      })
     })
   })
 
@@ -339,6 +304,42 @@ describe('IndirectChangesTable', () => {
 
       const commitFileDiff = await screen.findByText('CommitFileDiff')
       expect(commitFileDiff).toBeInTheDocument()
+    })
+  })
+
+  describe('flags and components param in url is set', () => {
+    it('renders flags and/or components no files error message', async () => {
+      const { queryClient } = setup({
+        __typename: 'ImpactedFiles',
+        results: [],
+      })
+      const path = `/gh/codecov/cool-repo/commit/123/indirect-changes${qs.stringify(
+        { flags: ['flag-1'], components: ['component-1'] },
+        { addQueryPrefix: true }
+      )}`
+      render(<IndirectChangesTable />, {
+        wrapper: wrapper(queryClient, path),
+      })
+
+      const coverage = await screen.findByText(
+        'No files covered by tests and selected flags and/or components were changed'
+      )
+      expect(coverage).toBeInTheDocument()
+    })
+  })
+
+  describe('returns __typename of unknown flags', () => {
+    it('renders flags and/or components no files error message', async () => {
+      const { queryClient } = setup({
+        __typename: 'UnknownFlags',
+        message: 'no flags found',
+      })
+      render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
+
+      const coverage = await screen.findByText(
+        'No files covered by tests and selected flags and/or components were changed'
+      )
+      expect(coverage).toBeInTheDocument()
     })
   })
 })
