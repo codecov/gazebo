@@ -17,6 +17,7 @@ interface UsePrefetchCommitFileEntryArgs {
   commitSha: string
   path: string
   flags?: Array<string>
+  components?: Array<string>
   options?: QueryOptions
 }
 
@@ -24,6 +25,7 @@ export function usePrefetchCommitFileEntry({
   commitSha,
   path,
   flags = [],
+  components = [],
   options = {},
 }: UsePrefetchCommitFileEntryArgs) {
   const { provider, owner, repo } = useParams<URLParams>()
@@ -31,7 +33,16 @@ export function usePrefetchCommitFileEntry({
 
   const runPrefetch = async () => {
     await queryClient.prefetchQuery({
-      queryKey: ['commit', provider, owner, repo, commitSha, path, flags],
+      queryKey: [
+        'commit',
+        provider,
+        owner,
+        repo,
+        commitSha,
+        path,
+        flags,
+        components,
+      ],
       queryFn: ({ signal }) => {
         return Api.graphql({
           provider,
@@ -44,6 +55,7 @@ export function usePrefetchCommitFileEntry({
             ref: commitSha,
             path,
             flags,
+            components,
           },
         }).then((res) => {
           const parsedRes = RequestSchema.safeParse(res?.data)

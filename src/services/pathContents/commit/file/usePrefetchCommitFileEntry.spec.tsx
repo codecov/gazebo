@@ -260,6 +260,34 @@ describe('usePrefetchCommitFileEntry', () => {
     })
   })
 
+  describe('flags and components arg is passed', () => {
+    it('fetches with passed variables', async () => {
+      const { mockVars } = setup({})
+      const { result } = renderHook(
+        () =>
+          usePrefetchCommitFileEntry({
+            commitSha: 'f00162848a3cebc0728d915763c2fd9e92132408',
+            path: 'src/file.js',
+            flags: ['flag-1', 'flag-2'],
+            components: ['c-1', 'c-2'],
+          }),
+        { wrapper }
+      )
+
+      await result.current.runPrefetch()
+
+      await waitFor(() => expect(mockVars).toBeCalled())
+      await waitFor(() =>
+        expect(mockVars).toHaveBeenCalledWith(
+          expect.objectContaining({
+            flags: ['flag-1', 'flag-2'],
+            components: ['c-1', 'c-2'],
+          })
+        )
+      )
+    })
+  })
+
   describe('returns NotFoundError __typename', () => {
     beforeEach(() => {
       jest.spyOn(console, 'error')
