@@ -150,11 +150,11 @@ describe('IndirectChangesTable', () => {
       expect(noData).toBeInTheDocument()
     })
 
-    describe('flag is present in query params', () => {
-      it('fetches with flags filter', async () => {
+    describe('flag and component is present in query params', () => {
+      it('fetches with flags and components filter', async () => {
         const { queryClient, mockVars } = setup(mockData)
         const path = `/gh/codecov/cool-repo/commit/123/indirect-changes${qs.stringify(
-          { flags: ['flag-1'] },
+          { flags: ['flag-1'], components: ['component-1'] },
           { addQueryPrefix: true }
         )}`
         render(<IndirectChangesTable />, {
@@ -162,11 +162,12 @@ describe('IndirectChangesTable', () => {
         })
 
         await waitFor(() =>
-          expect(mockVars).toBeCalledWith({
+          expect(mockVars).toHaveBeenCalledWith({
             commitid: '123',
             filters: {
               hasUnintendedChanges: true,
               flags: ['flag-1'],
+              components: ['component-1'],
             },
             isTeamPlan: false,
             owner: 'codecov',
@@ -313,7 +314,7 @@ describe('IndirectChangesTable', () => {
         results: [],
       })
       const path = `/gh/codecov/cool-repo/commit/123/indirect-changes${qs.stringify(
-        { flags: ['flag-1'] },
+        { flags: ['flag-1'], components: ['component-1'] },
         { addQueryPrefix: true }
       )}`
       render(<IndirectChangesTable />, {
