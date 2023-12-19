@@ -14,9 +14,6 @@ import {
   Plans,
 } from 'shared/utils/billing'
 
-// TODO_UPGRADE_FORM: delete when whole form control is done
-export const MIN_NB_SEATS = 2
-
 export const MIN_NB_SEATS_PRO = 2
 export const MIN_SENTRY_SEATS = 5
 export const SENTRY_PRICE = 29
@@ -31,7 +28,7 @@ export function extractSeats({
   trialStatus,
 }) {
   const totalMembers = (inactiveUserCount ?? 0) + (activatedUserCount ?? 0)
-  const minPlansSeats = isSentryUpgrade ? MIN_SENTRY_SEATS : MIN_NB_SEATS
+  const minPlansSeats = isSentryUpgrade ? MIN_SENTRY_SEATS : MIN_NB_SEATS_PRO
   const freePlanSeats = Math.max(minPlansSeats, totalMembers)
   const paidPlansSeats = Math.max(minPlansSeats, quantity)
 
@@ -42,41 +39,6 @@ export function extractSeats({
   }
 
   return isFreePlan(value) ? freePlanSeats : paidPlansSeats
-}
-
-// TODO_UPGRADE_FORM: Get rid of this after the final refactor in favor of Controls specific utils
-export const getInitialDataForm = ({
-  accountDetails,
-  proPlanYear,
-  sentryPlanYear,
-  isSentryUpgrade,
-  trialStatus,
-}) => {
-  const currentPlan = accountDetails?.plan
-  const plan = currentPlan?.value
-
-  // if the current plan is a pro plan, we return it, otherwise select by default the first pro plan
-  let newPlan = proPlanYear?.value
-
-  if (isSentryUpgrade && !isSentryPlan(plan)) {
-    newPlan = sentryPlanYear?.value
-  } else if (isTeamPlan(plan)) {
-    newPlan = proPlanYear?.value
-  } else if (isPaidPlan(plan)) {
-    newPlan = plan
-  }
-
-  return {
-    newPlan,
-    seats: extractSeats({
-      quantity: currentPlan?.quantity ?? 0,
-      value: plan,
-      activatedUserCount: accountDetails?.activatedUserCount,
-      inactiveUserCount: accountDetails?.inactiveUserCount,
-      isSentryUpgrade,
-      trialStatus,
-    }),
-  }
 }
 
 export const getSchema = ({
@@ -187,8 +149,7 @@ export const calculatePriceSentryPlan = ({ seats, baseUnitPrice }) => {
   return price
 }
 
-// TODO_UPGRADE_FORM: Rename this to add Sentry name
-export const calculateNonBundledCost = ({ baseUnitPrice }) =>
+export const calculateSentryNonBundledCost = ({ baseUnitPrice }) =>
   MIN_SENTRY_SEATS * baseUnitPrice * 12 - SENTRY_PRICE * 12
 
 export const getDefaultValuesUpgradeForm = ({

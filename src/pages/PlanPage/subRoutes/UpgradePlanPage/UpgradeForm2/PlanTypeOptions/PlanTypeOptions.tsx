@@ -9,10 +9,10 @@ import {
 } from 'services/account'
 import {
   canApplySentryUpgrade,
+  findProPlans,
   findSentryPlans,
   findTeamPlans,
   shouldDisplayTeamCard,
-  useProPlans,
 } from 'shared/utils/billing'
 import { TEAM_PLAN_MAX_ACTIVE_USERS } from 'shared/utils/upgradeForm'
 import OptionButton from 'ui/OptionButton'
@@ -33,7 +33,7 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { data: accountDetails } = useAccountDetails({ provider, owner })
-  const { proPlanYear } = useProPlans({ plans })
+  const { proPlanYear } = findProPlans({ plans })
 
   const { sentryPlanYear } = findSentryPlans({ plans })
   const { teamPlanYear } = findTeamPlans({

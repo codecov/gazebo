@@ -2,10 +2,10 @@ import { useParams } from 'react-router-dom'
 
 import { useAvailablePlans } from 'services/account'
 import {
+  findProPlans,
   formatNumberToUSD,
   isAnnualPlan,
   Plans,
-  useProPlans,
 } from 'shared/utils/billing'
 import { calculatePriceProPlan } from 'shared/utils/upgradeForm'
 import Icon from 'ui/Icon'
@@ -25,7 +25,7 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
 }) => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
-  const { proPlanMonth, proPlanYear } = useProPlans({ plans })
+  const { proPlanMonth, proPlanYear } = findProPlans({ plans })
   const perMonthPrice = calculatePriceProPlan({
     seats,
     baseUnitPrice: proPlanMonth?.baseUnitPrice,

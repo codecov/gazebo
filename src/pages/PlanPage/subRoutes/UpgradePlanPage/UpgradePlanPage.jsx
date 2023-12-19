@@ -4,10 +4,10 @@ import { Redirect, useParams } from 'react-router-dom'
 import { useAccountDetails, useAvailablePlans } from 'services/account'
 import {
   canApplySentryUpgrade,
+  findProPlans,
   findSentryPlans,
   isEnterprisePlan,
   isFreePlan,
-  useProPlans,
 } from 'shared/utils/billing'
 
 import UpgradeDetails from './UpgradeDetails'
@@ -20,7 +20,7 @@ function UpgradePlanPage() {
   const setCrumbs = useSetCrumbs()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: plans } = useAvailablePlans({ provider, owner })
-  const { proPlanYear } = useProPlans({ plans })
+  const { proPlanYear } = findProPlans({ plans })
   const { sentryPlanYear } = findSentryPlans({ plans })
 
   const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
