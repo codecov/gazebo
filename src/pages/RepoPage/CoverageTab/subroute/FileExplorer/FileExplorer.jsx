@@ -1,6 +1,7 @@
 import { useLocationParams } from 'services/navigation'
 import DisplayTypeButton from 'shared/ContentsTable/DisplayTypeButton'
 import FileBreadcrumb from 'shared/ContentsTable/FileBreadcrumb'
+import ComponentsSelectCommit from 'ui/ComponentsSelect'
 import SearchField from 'ui/SearchField'
 
 import CodeTreeTable from './CodeTreeTable'
@@ -30,6 +31,7 @@ function FileExplorer() {
           <FileBreadcrumb />
         </div>
         <FlagMultiSelect />
+        <ComponentsSelectCommit />
         <SearchField
           dataMarketing="files-search"
           placeholder="Search for files"

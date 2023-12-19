@@ -9,7 +9,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useFlags } from 'shared/featureFlags'
 
-import { ComponentsSelectCommit } from './ComponentsSelectCommit'
+import ComponentsSelectCommit from './ComponentsSelectCommit'
 
 jest.mock('shared/featureFlags')
 
