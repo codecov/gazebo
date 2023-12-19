@@ -19,7 +19,7 @@ describe('IndirectChangesTab', () => {
   it('renders components selector', async () => {
     render(<IndirectChangesTab />)
 
-    const table = await screen.findByText('Components Selector')
-    expect(table).toBeInTheDocument()
+    const selector = await screen.findByText('Components Selector')
+    expect(selector).toBeInTheDocument()
   })
 })
