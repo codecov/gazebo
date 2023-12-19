@@ -15,7 +15,7 @@ import { Plans } from 'shared/utils/billing'
 
 import UpgradePlanPage from './UpgradePlanPage'
 
-jest.mock('./UpgradeForm', () => () => 'UpgradeForm')
+jest.mock('./UpgradeForm2', () => () => 'UpgradeForm2')
 
 const plans = [
   {
