@@ -15,11 +15,13 @@ function CommitFileEntry({
   filters,
 }) {
   const flags = filters?.flags?.length > 0 ? filters?.flags : []
+  const components = filters?.components?.length > 0 ? filters?.components : []
 
   const { runPrefetch } = usePrefetchCommitFileEntry({
     path,
     commitSha,
     flags,
+    components,
   })
 
   return (
@@ -32,7 +34,7 @@ function CommitFileEntry({
       path={path}
       runPrefetch={runPrefetch}
       pageName="commitFileDiff"
-      queryParams={{ flags }}
+      queryParams={{ flags, components }}
     />
   )
 }
@@ -46,6 +48,7 @@ CommitFileEntry.propTypes = {
   path: PropTypes.string,
   filters: PropTypes.shape({
     flags: PropTypes.arrayOf(PropTypes.string),
+    components: PropTypes.arrayOf(PropTypes.string),
   }),
 }
 

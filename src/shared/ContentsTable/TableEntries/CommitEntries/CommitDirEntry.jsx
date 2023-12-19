@@ -6,6 +6,7 @@ import DirEntry from '../BaseEntries/DirEntry'
 
 function CommitDirEntry({ commitSha, urlPath, name, filters }) {
   const flags = filters?.flags?.length > 0 ? filters?.flags : []
+  const components = filters?.components?.length > 0 ? filters?.components : []
 
   const { runPrefetch } = usePrefetchCommitDirEntry({
     commit: commitSha,
@@ -20,7 +21,7 @@ function CommitDirEntry({ commitSha, urlPath, name, filters }) {
       runPrefetch={runPrefetch}
       pageName="commitTreeView"
       commitSha={commitSha}
-      queryParams={{ flags }}
+      queryParams={{ flags, components }}
     />
   )
 }
@@ -36,6 +37,7 @@ CommitDirEntry.propTypes = {
     }),
     searchValue: PropTypes.any,
     flags: PropTypes.arrayOf(PropTypes.string),
+    components: PropTypes.arrayOf(PropTypes.string),
   }),
 }
 
