@@ -10,6 +10,8 @@ import Spinner from 'ui/Spinner'
 
 import { useRepoCommitContentsTable } from './hooks'
 
+import ComponentsSelector from '../ComponentsSelector'
+
 const Loader = () => (
   <div className="flex flex-1 justify-center">
     <Spinner size={60} />
@@ -36,12 +38,15 @@ function CommitDetailFileExplorer() {
           <DisplayTypeButton />
           <Breadcrumb paths={treePaths} />
         </div>
-        <SearchField
-          dataMarketing="commit-files-search"
-          placeholder="Search for files"
-          searchValue={params?.search}
-          setSearchValue={(search) => updateParams({ search })}
-        />
+        <div className="flex gap-2">
+          <ComponentsSelector />
+          <SearchField
+            dataMarketing="commit-files-search"
+            placeholder="Search for files"
+            searchValue={params?.search}
+            setSearchValue={(search) => updateParams({ search })}
+          />
+        </div>
       </ContentsTableHeader>
       <Table
         data={data}
