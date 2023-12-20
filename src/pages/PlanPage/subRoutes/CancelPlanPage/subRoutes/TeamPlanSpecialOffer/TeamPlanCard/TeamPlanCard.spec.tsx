@@ -177,7 +177,13 @@ describe('TeamPlanCard', () => {
       wrapper,
     })
 
-    const buttonText = await screen.findByText(/Change to Team plan/)
-    expect(buttonText).toBeInTheDocument()
+    const actionButton = await screen.findByRole('link', {
+      name: /Change to Team plan/,
+    })
+    expect(actionButton).toBeInTheDocument()
+    expect(actionButton).toHaveAttribute(
+      'href',
+      '/plan/bb/critical-role/upgrade?plan=team'
+    )
   })
 })
