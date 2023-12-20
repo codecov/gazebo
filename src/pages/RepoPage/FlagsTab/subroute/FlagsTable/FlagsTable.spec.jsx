@@ -258,7 +258,7 @@ describe('RepoContentsTable', () => {
     })
   })
 
-  describe.only('flag name is clicked', () => {
+  describe('flag name is clicked', () => {
     it('goes to coverage page', async () => {
       const { user } = setup()
 
