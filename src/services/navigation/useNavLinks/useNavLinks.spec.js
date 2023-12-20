@@ -538,6 +538,44 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('coverage link', () => {
+    it('returns the correct link with nothing passed', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/doggo/squirrel-locator/'),
+      })
+
+      const path = result.current.coverage.path()
+      expect(path).toBe('/gl/doggo/squirrel-locator')
+    })
+
+    it('can override the params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/doggo/squirrel-locator'),
+      })
+
+      const path = result.current.coverage.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo')
+    })
+
+    it('passes flags into the url', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/doggo/squirrel-locator'),
+      })
+
+      const path = result.current.coverage.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+        queryParams: { flags: ['myFlag'] },
+      })
+      expect(path).toBe('/bb/test-owner/test-repo?flags%5B0%5D=myFlag')
+    })
+  })
+
   describe('commits link', () => {
     it('returns the correct link with nothing passed', () => {
       const { result } = renderHook(() => useNavLinks(), {
