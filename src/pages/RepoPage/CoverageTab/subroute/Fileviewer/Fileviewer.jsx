@@ -6,7 +6,7 @@ import RawFileviewer from 'shared/RawFileviewer'
 import { useTreePaths } from 'shared/treePaths'
 import Breadcrumb from 'ui/Breadcrumb'
 
-import ComponentsSelectCoverage from '../ComponentsSelectCoverage'
+import ComponentsSelectCoverage from '../ComponentsMultiSelect'
 
 function FileView() {
   const { treePaths } = useTreePaths()

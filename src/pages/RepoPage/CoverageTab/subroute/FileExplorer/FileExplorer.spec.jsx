@@ -17,7 +17,7 @@ jest.mock(
 )
 jest.mock('shared/ContentsTable/FileBreadcrumb', () => () => 'File breadcrumb')
 jest.mock('./FlagMultiSelect', () => () => 'FlagMultiSelect')
-jest.mock('../ComponentsSelectCoverage', () => () => 'Components Selector')
+jest.mock('../ComponentsMultiSelect', () => () => 'Components Selector')
 jest.mock('shared/featureFlags')
 
 const queryClient = new QueryClient({

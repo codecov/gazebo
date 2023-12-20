@@ -21,7 +21,7 @@ interface URLParams {
   repo: string
 }
 
-export default function ComponentsSelectCoverage() {
+export default function ComponentsMultiSelect() {
   const { currentBranchSelected } = useSummary()
 
   const { provider, owner, repo } = useParams<URLParams>()
