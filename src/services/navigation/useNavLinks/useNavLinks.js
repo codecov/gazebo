@@ -95,8 +95,19 @@ export function useNavLinks() {
     },
     upgradeOrgPlan: {
       text: 'Upgrade Plan',
-      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
-        `/plan/${provider}/${owner}/upgrade`,
+      path: (
+        { provider = p, owner = o, params = null } = { provider: p, owner: o }
+      ) => {
+        if (params !== null) {
+          const queryString = qs.stringify(params, {
+            addQueryPrefix: true,
+          })
+
+          return `/plan/${provider}/${owner}/upgrade${queryString}`
+        }
+
+        return `/plan/${provider}/${owner}/upgrade`
+      },
       isExternalLink: false,
     },
     cancelOrgPlan: {

@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom'
 
 import { useAvailablePlans, usePlanData } from 'services/account'
+import { TierNames } from 'services/tier'
 import BenefitList from 'shared/plan/BenefitList'
 import { findTeamPlans, isFreePlan, isTrialPlan } from 'shared/utils/billing'
 import A from 'ui/A'
@@ -22,6 +23,11 @@ function PlanUpgradeTeam() {
   const monthlyMarketingName = teamPlanMonth?.marketingName
   const monthlyUnitPrice = teamPlanMonth?.baseUnitPrice
   const yearlyUnitPrice = teamPlanYear?.baseUnitPrice
+
+  let buttonText = 'Manage plan'
+  if (isFreePlan(currentPlan?.value) || isTrialPlan(currentPlan?.value)) {
+    buttonText = 'Upgrade to Team'
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -52,11 +58,16 @@ function PlanUpgradeTeam() {
               </p>
             </div>
             <div className="flex self-start">
-              <Button to={{ pageName: 'upgradeOrgPlan' }} variant="primary">
-                {isFreePlan(currentPlan?.value) ||
-                isTrialPlan(currentPlan?.value)
-                  ? 'Upgrade to Team'
-                  : 'Manage plan'}
+              <Button
+                to={{
+                  pageName: 'upgradeOrgPlan',
+                  options: {
+                    params: { plan: TierNames.TEAM },
+                  },
+                }}
+                variant="primary"
+              >
+                {buttonText}
               </Button>
             </div>
           </div>

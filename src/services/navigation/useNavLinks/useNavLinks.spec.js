@@ -262,6 +262,19 @@ describe('useNavLinks', () => {
       })
       expect(path).toBe('/plan/bb/test-owner/upgrade')
     })
+
+    describe('user passes params object', () => {
+      it('gets appended to the url as search params', () => {
+        const { result } = renderHook(() => useNavLinks(), {
+          wrapper: wrapper('/gl/doggo/squirrel-locator'),
+        })
+
+        const path = result.current.upgradeOrgPlan.path({
+          params: { search: 'params' },
+        })
+        expect(path).toBe('/plan/gl/doggo/upgrade?search=params')
+      })
+    })
   })
 
   describe('Cancel Plan', () => {
