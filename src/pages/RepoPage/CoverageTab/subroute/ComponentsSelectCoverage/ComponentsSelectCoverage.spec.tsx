@@ -9,7 +9,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useFlags } from 'shared/featureFlags'
 
-import ComponentsSelectCommit from './ComponentsSelectCommit'
+import ComponentsSelectCoverage from './ComponentsSelectCoverage'
 
 jest.mock('shared/featureFlags')
 
@@ -131,7 +131,7 @@ afterAll(() => {
   server.close()
 })
 
-describe('ComponentsSelectCommit', () => {
+describe('ComponentsSelectCoverage', () => {
   function setup(
     { components } = {
       components: [
@@ -188,7 +188,7 @@ describe('ComponentsSelectCommit', () => {
     it('updates the location params', async () => {
       const { user } = setup()
 
-      render(<ComponentsSelectCommit />, { wrapper })
+      render(<ComponentsSelectCoverage />, { wrapper })
 
       const select = await screen.findByText('All components')
       expect(select).toBeInTheDocument()
@@ -209,7 +209,7 @@ describe('ComponentsSelectCommit', () => {
     it('updates the text box', async () => {
       const { user } = setup()
 
-      render(<ComponentsSelectCommit />, { wrapper })
+      render(<ComponentsSelectCoverage />, { wrapper })
 
       const select = await screen.findByText('All components')
       expect(select).toBeInTheDocument()
@@ -227,7 +227,7 @@ describe('ComponentsSelectCommit', () => {
     it('calls the api with search term', async () => {
       const { user, mockApiVars } = setup()
 
-      render(<ComponentsSelectCommit />, { wrapper })
+      render(<ComponentsSelectCoverage />, { wrapper })
 
       const select = await screen.findByText('All components')
       expect(select).toBeInTheDocument()
@@ -254,7 +254,7 @@ describe('ComponentsSelectCommit', () => {
     it('does not show multi select', async () => {
       setup({ components: [] })
 
-      const { container } = render(<ComponentsSelectCommit />, { wrapper })
+      const { container } = render(<ComponentsSelectCoverage />, { wrapper })
 
       await waitFor(() => queryClient.isFetching)
       await waitFor(() => !queryClient.isFetching)

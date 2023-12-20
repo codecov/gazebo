@@ -5,7 +5,8 @@ import { TierNames, useTier } from 'services/tier'
 import RawFileviewer from 'shared/RawFileviewer'
 import { useTreePaths } from 'shared/treePaths'
 import Breadcrumb from 'ui/Breadcrumb'
-import ComponentsSelectCommit from 'ui/ComponentsSelect'
+
+import ComponentsSelectCoverage from '../ComponentsSelectCoverage'
 
 function FileView() {
   const { treePaths } = useTreePaths()
@@ -21,7 +22,7 @@ function FileView() {
   return (
     <>
       <div className="flex justify-end bg-ds-gray-primary p-2">
-        <ComponentsSelectCommit />
+        <ComponentsSelectCoverage />
       </div>
       <RawFileviewer
         title={

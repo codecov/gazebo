@@ -1,13 +1,14 @@
 import { useLocationParams } from 'services/navigation'
 import DisplayTypeButton from 'shared/ContentsTable/DisplayTypeButton'
 import FileBreadcrumb from 'shared/ContentsTable/FileBreadcrumb'
-import ComponentsSelectCommit from 'ui/ComponentsSelect'
 import SearchField from 'ui/SearchField'
 
 import CodeTreeTable from './CodeTreeTable'
 import FileListTable from './FileListTable'
 import FlagMultiSelect from './FlagMultiSelect'
 import { useRepoBranchContentsTable } from './hooks'
+
+import ComponentsSelectCoverage from '../ComponentsSelectCoverage'
 
 const defaultQueryParams = {
   search: '',
@@ -31,7 +32,7 @@ function FileExplorer() {
           <FileBreadcrumb />
         </div>
         <FlagMultiSelect />
-        <ComponentsSelectCommit />
+        <ComponentsSelectCoverage />
         <SearchField
           dataMarketing="files-search"
           placeholder="Search for files"
