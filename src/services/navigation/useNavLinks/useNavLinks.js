@@ -98,7 +98,7 @@ export function useNavLinks() {
       path: (
         { provider = p, owner = o, params = null } = { provider: p, owner: o }
       ) => {
-        if (qs !== null) {
+        if (params !== null) {
           const queryString = qs.stringify(params, {
             addQueryPrefix: true,
           })
