@@ -68,7 +68,7 @@ export function useStaticNavLinks() {
     },
     codecovAppInstallation: {
       text: 'Install Codecov app for an org',
-      path: () => 'https://github.com/apps/codecov/installations/new',
+      path: () => `https://github.com/apps/${config.GH_APP}/installations/new`,
       isExternalLink: true,
       openNewTab: true,
     },
