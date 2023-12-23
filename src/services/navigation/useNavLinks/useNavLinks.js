@@ -352,6 +352,25 @@ export function useNavLinks() {
       ) => `/${provider}/${owner}/${repo}`,
       text: 'Overview',
     },
+    coverage: {
+      path: (
+        { provider = p, owner = o, repo = r, queryParams = {} } = {
+          provider: p,
+          owner: o,
+          repo: r,
+          queryParams: {},
+        }
+      ) => {
+        let query = ''
+        if (queryParams && Object.keys(queryParams).length > 0) {
+          query = qs.stringify(queryParams, { addQueryPrefix: true })
+        }
+
+        return `/${provider}/${owner}/${repo}${query}`
+      },
+      text: 'Overview',
+      isExternalLink: false,
+    },
     flagsTab: {
       path: (
         { provider = p, owner = o, repo = r } = {
