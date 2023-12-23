@@ -12,6 +12,7 @@ export const TrialStatuses = {
 
 const PlanDataSchema = z
   .object({
+    hasPrivateRepos: z.boolean().nullish(),
     plan: z
       .object({
         baseUnitPrice: z.number(),
@@ -46,6 +47,7 @@ type TPlanData = z.infer<typeof PlanDataSchema>
 export const query = `
   query GetPlanData($owner: String!) {
     owner(username: $owner) {
+      hasPrivateRepos
       plan {
         baseUnitPrice
         benefits

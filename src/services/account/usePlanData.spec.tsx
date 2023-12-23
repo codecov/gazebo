@@ -6,6 +6,7 @@ import { setupServer } from 'msw/node'
 import { usePlanData } from './usePlanData'
 
 const mockTrialData = {
+  hasPrivateRepos: true,
   plan: {
     baseUnitPrice: 10,
     benefits: [],
@@ -77,6 +78,7 @@ describe('usePlanData', () => {
 
         await waitFor(() =>
           expect(result.current.data).toStrictEqual({
+            hasPrivateRepos: true,
             plan: {
               baseUnitPrice: 10,
               benefits: [],
