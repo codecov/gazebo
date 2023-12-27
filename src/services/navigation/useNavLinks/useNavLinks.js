@@ -95,8 +95,19 @@ export function useNavLinks() {
     },
     upgradeOrgPlan: {
       text: 'Upgrade Plan',
-      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
-        `/plan/${provider}/${owner}/upgrade`,
+      path: (
+        { provider = p, owner = o, params = null } = { provider: p, owner: o }
+      ) => {
+        if (params !== null) {
+          const queryString = qs.stringify(params, {
+            addQueryPrefix: true,
+          })
+
+          return `/plan/${provider}/${owner}/upgrade${queryString}`
+        }
+
+        return `/plan/${provider}/${owner}/upgrade`
+      },
       isExternalLink: false,
     },
     cancelOrgPlan: {
@@ -340,6 +351,25 @@ export function useNavLinks() {
         }
       ) => `/${provider}/${owner}/${repo}`,
       text: 'Overview',
+    },
+    coverage: {
+      path: (
+        { provider = p, owner = o, repo = r, queryParams = {} } = {
+          provider: p,
+          owner: o,
+          repo: r,
+          queryParams: {},
+        }
+      ) => {
+        let query = ''
+        if (queryParams && Object.keys(queryParams).length > 0) {
+          query = qs.stringify(queryParams, { addQueryPrefix: true })
+        }
+
+        return `/${provider}/${owner}/${repo}${query}`
+      },
+      text: 'Overview',
+      isExternalLink: false,
     },
     flagsTab: {
       path: (

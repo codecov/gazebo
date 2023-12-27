@@ -7,6 +7,7 @@ import {
   useAccountDetails,
   useAvailablePlans,
 } from 'services/account'
+import { TierNames } from 'services/tier'
 import {
   canApplySentryUpgrade,
   findProPlans,
@@ -18,6 +19,7 @@ import { TEAM_PLAN_MAX_ACTIVE_USERS } from 'shared/utils/upgradeForm'
 import OptionButton from 'ui/OptionButton'
 
 import { PlanTiers, TierName } from '../constants'
+import { usePlanParams } from '../hooks/usePlanParams'
 
 interface PlanTypeOptionsProps {
   multipleTiers: boolean
@@ -34,17 +36,26 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { proPlanYear } = findProPlans({ plans })
+  const planParam = usePlanParams()
 
   const { sentryPlanYear } = findSentryPlans({ plans })
   const { teamPlanYear } = findTeamPlans({
     plans,
   })
+
   const hasTeamPlans = shouldDisplayTeamCard({ plans })
   const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
   const isSentryUpgrade = canApplySentryUpgrade({ plan, plans })
   const yearlyProPlan = isSentryUpgrade ? sentryPlanYear : proPlanYear
 
-  const [option, setOption] = useState<PlanTiers>(TierName.PRO)
+  let planOption = null
+  if (hasTeamPlans && planParam === TierNames.TEAM) {
+    planOption = TierName.TEAM
+  } else {
+    planOption = TierName.PRO
+  }
+
+  const [option, setOption] = useState<PlanTiers>(planOption)
 
   if (hasTeamPlans && multipleTiers) {
     return (

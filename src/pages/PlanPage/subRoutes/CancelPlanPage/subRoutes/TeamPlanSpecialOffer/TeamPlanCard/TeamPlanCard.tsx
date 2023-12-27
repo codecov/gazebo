@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom'
 
 import { useAvailablePlans } from 'services/account'
+import { TierNames } from 'services/tier'
 import BenefitList from 'shared/plan/BenefitList'
 import { findTeamPlans } from 'shared/utils/billing'
 import Button from 'ui/Button'
@@ -43,7 +44,10 @@ const TeamPlanCard: React.FC = () => {
           </div>
           <div className="flex self-start">
             <Button
-              to={{ pageName: 'upgradeOrgPlan' }}
+              to={{
+                pageName: 'upgradeOrgPlan',
+                options: { params: { plan: TierNames.TEAM } },
+              }}
               variant="primary"
               disabled={undefined}
               hook="upgrade plan"

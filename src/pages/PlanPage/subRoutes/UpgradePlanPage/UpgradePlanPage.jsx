@@ -2,16 +2,20 @@ import { useLayoutEffect, useState } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
 
 import { useAccountDetails, useAvailablePlans } from 'services/account'
+import { TierNames } from 'services/tier'
 import {
   canApplySentryUpgrade,
   findProPlans,
   findSentryPlans,
+  findTeamPlans,
   isEnterprisePlan,
   isFreePlan,
+  shouldDisplayTeamCard,
 } from 'shared/utils/billing'
 
 import UpgradeDetails from './UpgradeDetails'
 import UpgradeForm2 from './UpgradeForm2'
+import { usePlanParams } from './UpgradeForm2/hooks/usePlanParams'
 
 import { useSetCrumbs } from '../../context'
 
@@ -20,13 +24,26 @@ function UpgradePlanPage() {
   const setCrumbs = useSetCrumbs()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: plans } = useAvailablePlans({ provider, owner })
+  const planParam = usePlanParams()
+
   const { proPlanYear } = findProPlans({ plans })
   const { sentryPlanYear } = findSentryPlans({ plans })
+  const { teamPlanYear } = findTeamPlans({ plans })
+  const hasTeamPlans = shouldDisplayTeamCard({ plans })
 
   const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
 
   const isSentryUpgrade = canApplySentryUpgrade({ plan, plans })
-  const defaultPaidYearlyPlan = isSentryUpgrade ? sentryPlanYear : proPlanYear
+
+  let defaultPaidYearlyPlan = null
+  if (hasTeamPlans && planParam === TierNames.TEAM) {
+    defaultPaidYearlyPlan = teamPlanYear
+  } else if (isSentryUpgrade) {
+    defaultPaidYearlyPlan = sentryPlanYear
+  } else {
+    defaultPaidYearlyPlan = proPlanYear
+  }
+
   const [selectedPlan, setSelectedPlan] = useState(defaultPaidYearlyPlan)
 
   useLayoutEffect(() => {

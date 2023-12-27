@@ -262,6 +262,19 @@ describe('useNavLinks', () => {
       })
       expect(path).toBe('/plan/bb/test-owner/upgrade')
     })
+
+    describe('user passes params object', () => {
+      it('gets appended to the url as search params', () => {
+        const { result } = renderHook(() => useNavLinks(), {
+          wrapper: wrapper('/gl/doggo/squirrel-locator'),
+        })
+
+        const path = result.current.upgradeOrgPlan.path({
+          params: { search: 'params' },
+        })
+        expect(path).toBe('/plan/gl/doggo/upgrade?search=params')
+      })
+    })
   })
 
   describe('Cancel Plan', () => {
@@ -535,6 +548,44 @@ describe('useNavLinks', () => {
       expect(path).toBe(
         '/bb/test-owner/test-repo/commit/1ab3?flags%5B0%5D=myFlag'
       )
+    })
+  })
+
+  describe('coverage link', () => {
+    it('returns the correct link with nothing passed', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/doggo/squirrel-locator/'),
+      })
+
+      const path = result.current.coverage.path()
+      expect(path).toBe('/gl/doggo/squirrel-locator')
+    })
+
+    it('can override the params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/doggo/squirrel-locator'),
+      })
+
+      const path = result.current.coverage.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo')
+    })
+
+    it('passes flags into the url', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/doggo/squirrel-locator'),
+      })
+
+      const path = result.current.coverage.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+        queryParams: { flags: ['myFlag'] },
+      })
+      expect(path).toBe('/bb/test-owner/test-repo?flags%5B0%5D=myFlag')
     })
   })
 

@@ -261,8 +261,14 @@ describe('PlanUpgradeTeam', () => {
         wrapper,
       })
 
-      const buttonText = await screen.findByText(/Upgrade to Team/)
-      expect(buttonText).toBeInTheDocument()
+      const upgradeButton = await screen.findByRole('link', {
+        name: /Upgrade to Team/,
+      })
+      expect(upgradeButton).toBeInTheDocument()
+      expect(upgradeButton).toHaveAttribute(
+        'href',
+        '/plan/bb/critical-role/upgrade?plan=team'
+      )
     })
 
     it('shows upgrade to team when plan is trial', async () => {
@@ -271,8 +277,14 @@ describe('PlanUpgradeTeam', () => {
         wrapper,
       })
 
-      const buttonText = await screen.findByText(/Upgrade to Team/)
-      expect(buttonText).toBeInTheDocument()
+      const upgradeButton = await screen.findByRole('link', {
+        name: /Upgrade to Team/,
+      })
+      expect(upgradeButton).toBeInTheDocument()
+      expect(upgradeButton).toHaveAttribute(
+        'href',
+        '/plan/bb/critical-role/upgrade?plan=team'
+      )
     })
   })
 
