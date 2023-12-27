@@ -20,7 +20,7 @@ interface URLParams {
 function GitHubActions() {
   const { provider, owner, repo } = useParams<URLParams>()
   const { data } = useRepo({ provider, owner, repo })
-  const orgUploadToken = data?.orgUploadToken ?? 'Not found'
+  const orgUploadToken = data?.orgUploadToken
 
   return (
     <div className="flex flex-col gap-6">
