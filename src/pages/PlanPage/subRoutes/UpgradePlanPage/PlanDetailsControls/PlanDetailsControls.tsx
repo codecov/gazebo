@@ -4,9 +4,9 @@ import { z } from 'zod'
 
 import { IndividualPlanSchema, useAvailablePlans } from 'services/account'
 import {
+  findProPlans,
   findSentryPlans,
   findTeamPlans,
-  useProPlans,
 } from 'shared/utils/billing'
 import { TEAM_PLAN_MAX_ACTIVE_USERS } from 'shared/utils/upgradeForm'
 import OptionButton from 'ui/OptionButton'
@@ -24,7 +24,7 @@ const PlanDetailsControls: React.FC<PlanDetailsControlsProps> = ({
 }) => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
-  const { proPlanYear } = useProPlans({ plans })
+  const { proPlanYear } = findProPlans({ plans })
   const { sentryPlanYear } = findSentryPlans({ plans })
   const { teamPlanYear } = findTeamPlans({
     plans,

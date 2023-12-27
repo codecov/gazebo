@@ -8,8 +8,8 @@ import {
   Plans,
 } from 'shared/utils/billing'
 import {
-  calculateNonBundledCost,
   calculatePriceSentryPlan,
+  calculateSentryNonBundledCost,
 } from 'shared/utils/upgradeForm'
 import Icon from 'ui/Icon'
 
@@ -40,7 +40,7 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
   const isPerYear = isAnnualPlan(newPlan)
 
   if (isPerYear) {
-    const nonBundledCost = calculateNonBundledCost({
+    const nonBundledCost = calculateSentryNonBundledCost({
       baseUnitPrice: sentryPlanYear.baseUnitPrice,
     })
 
@@ -66,7 +66,7 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
     )
   }
 
-  const nonBundledCost = calculateNonBundledCost({
+  const nonBundledCost = calculateSentryNonBundledCost({
     baseUnitPrice: sentryPlanMonth.baseUnitPrice,
   })
   return (

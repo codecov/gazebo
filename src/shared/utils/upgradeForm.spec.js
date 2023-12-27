@@ -2,13 +2,12 @@ import { TrialStatuses } from 'services/account'
 import { Plans } from 'shared/utils/billing'
 
 import {
-  calculateNonBundledCost,
   calculatePrice,
   calculatePriceProPlan,
   calculatePriceTeamPlan,
+  calculateSentryNonBundledCost,
   extractSeats,
   getDefaultValuesUpgradeForm,
-  getInitialDataForm,
   getSchema,
   shouldRenderCancelLink,
 } from './upgradeForm'
@@ -93,145 +92,6 @@ describe('calculatePriceTeamPlan', () => {
     })
 
     expect(result).toBe(50)
-  })
-})
-
-describe('getInitialDataForm', () => {
-  const proPlanYear = { value: Plans.USERS_PR_INAPPY }
-  const sentryPlanYear = { value: Plans.USERS_SENTRYY }
-
-  describe('user cannot upgrade to sentry plan', () => {
-    const isSentryUpgrade = false
-
-    it('returns pro year plan if user is on a free plan', () => {
-      const accountDetails = {
-        plan: { value: Plans.USERS_BASIC, quantity: 1 },
-      }
-
-      const data = getInitialDataForm({
-        accountDetails,
-        proPlanYear,
-        sentryPlanYear,
-        isSentryUpgrade,
-      })
-
-      expect(data).toStrictEqual({
-        newPlan: Plans.USERS_PR_INAPPY,
-        seats: 2,
-      })
-    })
-
-    it('returns pro year plan if user is on a team plan', () => {
-      const accountDetails = {
-        plan: { value: Plans.USERS_TEAMM, quantity: 1 },
-      }
-
-      const data = getInitialDataForm({
-        accountDetails,
-        proPlanYear,
-        sentryPlanYear,
-        isSentryUpgrade,
-      })
-
-      expect(data).toStrictEqual({
-        newPlan: Plans.USERS_PR_INAPPY,
-        seats: 2,
-      })
-    })
-
-    it('returns current plan if the user is on a paid plan', () => {
-      const accountDetails = {
-        plan: { value: Plans.USERS_PR_INAPPM, quantity: 2 },
-      }
-
-      const data = getInitialDataForm({
-        accountDetails,
-        proPlanYear,
-        sentryPlanYear,
-        isSentryUpgrade,
-      })
-
-      expect(data).toStrictEqual({
-        newPlan: Plans.USERS_PR_INAPPM,
-        seats: 2,
-      })
-    })
-  })
-
-  describe('user can upgrade to sentry plan', () => {
-    const isSentryUpgrade = true
-
-    it('returns sentry year plan if user is on a free plan', () => {
-      const accountDetails = {
-        plan: { value: Plans.USERS_BASIC, quantity: 1 },
-      }
-
-      const data = getInitialDataForm({
-        accountDetails,
-        proPlanYear,
-        sentryPlanYear,
-        isSentryUpgrade,
-      })
-
-      expect(data).toStrictEqual({
-        newPlan: Plans.USERS_SENTRYY,
-        seats: 5,
-      })
-    })
-
-    it('returns current sentry plan if user is on monthly', () => {
-      const accountDetails = {
-        plan: { value: Plans.USERS_SENTRYM, quantity: 1 },
-      }
-
-      const data = getInitialDataForm({
-        accountDetails,
-        proPlanYear,
-        sentryPlanYear,
-        isSentryUpgrade,
-      })
-
-      expect(data).toStrictEqual({
-        newPlan: Plans.USERS_SENTRYM,
-        seats: 5,
-      })
-    })
-
-    it('returns sentry year plan if user is on a team plan', () => {
-      const accountDetails = {
-        plan: { value: Plans.USERS_TEAMM, quantity: 1 },
-      }
-
-      const data = getInitialDataForm({
-        accountDetails,
-        proPlanYear,
-        sentryPlanYear,
-        isSentryUpgrade,
-      })
-
-      expect(data).toStrictEqual({
-        newPlan: Plans.USERS_SENTRYY,
-        seats: 5,
-      })
-    })
-
-    it('returns current plan if the user is on a paid plan', () => {
-      const accountDetails = {
-        plan: { value: Plans.USERS_PR_INAPPM, quantity: 1 },
-      }
-
-      const data = getInitialDataForm({
-        accountDetails,
-        proPlanYear,
-        sentryPlanYear,
-        isSentryUpgrade,
-      })
-
-      expect(data).toStrictEqual({
-        newPlan: Plans.USERS_SENTRYY,
-        seats: 5,
-      })
-    })
   })
 })
 
@@ -507,9 +367,9 @@ describe('getSchema', () => {
   })
 })
 
-describe('calculateNonBundledCost', () => {
+describe('calculateSentryNonBundledCost', () => {
   it('returns calculated cost', () => {
-    const total = calculateNonBundledCost({ baseUnitPrice: 10 })
+    const total = calculateSentryNonBundledCost({ baseUnitPrice: 10 })
     expect(total).toEqual(252)
   })
 })
