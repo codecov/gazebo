@@ -18,6 +18,7 @@ const mockCurrentUser = {
 const mockGetRepo = {
   owner: {
     isCurrentUserPartOfOrg: true,
+    orgUploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629290',
     repository: {
       private: false,
       uploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629295',
@@ -39,7 +40,7 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/cool-repo/new']}>
       <Route
@@ -111,7 +112,7 @@ describe('GitHubActions', () => {
       expect(codecovToken).toBeInTheDocument()
 
       const tokenValue = await screen.findByText(
-        /9e6a6189-20f1-482d-ab62-ecfaa2629295/
+        /9e6a6189-20f1-482d-ab62-ecfaa2629290/
       )
       expect(tokenValue).toBeInTheDocument()
     })
