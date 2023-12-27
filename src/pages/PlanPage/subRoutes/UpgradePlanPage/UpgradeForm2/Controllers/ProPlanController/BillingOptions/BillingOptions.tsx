@@ -3,10 +3,10 @@ import { useParams } from 'react-router-dom'
 
 import { useAvailablePlans } from 'services/account'
 import {
+  findProPlans,
   isAnnualPlan,
   isMonthlyPlan,
   Plans,
-  useProPlans,
 } from 'shared/utils/billing'
 import OptionButton from 'ui/OptionButton'
 
@@ -23,7 +23,7 @@ const BillingControls: React.FC<BillingControlsProps> = ({
 }) => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
-  const { proPlanMonth, proPlanYear } = useProPlans({ plans })
+  const { proPlanMonth, proPlanYear } = findProPlans({ plans })
 
   const [option, setOption] = useState<OptionPeriod>(() =>
     isMonthlyPlan(newPlan) ? TimePeriods.MONTHLY : TimePeriods.ANNUAL
