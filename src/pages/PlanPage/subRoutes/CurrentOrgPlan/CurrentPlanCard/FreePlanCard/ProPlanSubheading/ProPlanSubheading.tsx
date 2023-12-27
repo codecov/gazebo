@@ -20,7 +20,7 @@ function ProPlanSubheading() {
   // user can start a trial
   // - user on a free plan
   // - trial status is not started
-  // - org has no private repos
+  // - org has private repos
   if (
     isFreePlan(planData?.plan?.value) &&
     planData?.plan?.trialStatus === TrialStatuses.NOT_STARTED &&
