@@ -7,6 +7,7 @@ const defaultConfig = {
   SENTRY_TRACING_SAMPLE_RATE: 0.2,
   SENTRY_SESSION_SAMPLE_RATE: 0.1,
   SENTRY_ERROR_SAMPLE_RATE: 0.9,
+  GH_APP: 'codecov',
 }
 
 export function removeReactAppPrefix(obj) {
