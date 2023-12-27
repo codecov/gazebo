@@ -5,12 +5,12 @@ import { useAccountDetails, useAvailablePlans } from 'services/account'
 import { TierNames } from 'services/tier'
 import {
   canApplySentryUpgrade,
+  findProPlans,
   findSentryPlans,
   findTeamPlans,
   isEnterprisePlan,
   isFreePlan,
   shouldDisplayTeamCard,
-  useProPlans,
 } from 'shared/utils/billing'
 
 import UpgradeDetails from './UpgradeDetails'
@@ -26,7 +26,7 @@ function UpgradePlanPage() {
   const { data: plans } = useAvailablePlans({ provider, owner })
   const planParam = usePlanParams()
 
-  const { proPlanYear } = useProPlans({ plans })
+  const { proPlanYear } = findProPlans({ plans })
   const { sentryPlanYear } = findSentryPlans({ plans })
   const { teamPlanYear } = findTeamPlans({ plans })
   const hasTeamPlans = shouldDisplayTeamCard({ plans })

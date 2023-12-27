@@ -146,7 +146,7 @@ export function useProPlans({ plans }) {
     proPlanYear,
   }
 }
-// TODO_UPGRADE_FORM: use this function instead of useProPlans when possible
+
 export const findProPlans = ({ plans }) => {
   const proPlanMonth = plans?.find(
     (plan) => plan.value === Plans.USERS_PR_INAPPM

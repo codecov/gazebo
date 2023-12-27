@@ -7,7 +7,7 @@ import {
 } from 'services/account'
 import BenefitList from 'shared/plan/BenefitList'
 import ScheduledPlanDetails from 'shared/plan/ScheduledPlanDetails'
-import { useProPlans } from 'shared/utils/billing'
+import { findProPlans } from 'shared/utils/billing'
 import { shouldRenderCancelLink } from 'shared/utils/upgradeForm'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
@@ -17,7 +17,7 @@ function ProPlanDetails() {
   const { data: planData } = usePlanData({ provider, owner })
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: plans } = useAvailablePlans({ provider, owner })
-  const { proPlanMonth, proPlanYear } = useProPlans({ plans })
+  const { proPlanMonth, proPlanYear } = findProPlans({ plans })
 
   const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
   const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
