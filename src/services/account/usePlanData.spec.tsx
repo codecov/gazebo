@@ -119,7 +119,12 @@ describe('usePlanData', () => {
           { wrapper }
         )
 
-        await waitFor(() => expect(result.current.data).toStrictEqual({}))
+        await waitFor(() => expect(result.current.isError).toBeTruthy())
+        await waitFor(() =>
+          expect(result.current.error).toEqual(
+            expect.objectContaining({ status: 404 })
+          )
+        )
       })
     })
   })
