@@ -1,4 +1,4 @@
-import { useQuery, UseQueryOptions } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
@@ -12,7 +12,7 @@ export const TrialStatuses = {
 
 const PlanDataSchema = z
   .object({
-    hasPrivateRepos: z.boolean().nullish(),
+    hasPrivateRepos: z.boolean(),
     plan: z
       .object({
         baseUnitPrice: z.number(),
@@ -41,8 +41,6 @@ const PlanDataSchema = z
       .nullish(),
   })
   .nullish()
-
-type TPlanData = z.infer<typeof PlanDataSchema>
 
 export const query = `
   query GetPlanData($owner: String!) {
@@ -77,7 +75,9 @@ export const query = `
 export interface UseTrialArgs {
   provider: string
   owner: string
-  opts?: UseQueryOptions<TPlanData>
+  opts?: {
+    enabled: boolean
+  }
 }
 
 export const usePlanData = ({ provider, owner, opts }: UseTrialArgs) => {

@@ -58,6 +58,7 @@ describe('ReachingUploadLimitAlert', () => {
           ctx.status(200),
           ctx.data({
             owner: {
+              hasPrivateRepos: true,
               plan: {
                 ...mockPlanDataResponse,
               },
