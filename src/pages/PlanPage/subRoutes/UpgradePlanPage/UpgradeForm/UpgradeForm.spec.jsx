@@ -232,7 +232,7 @@ describe('UpgradeForm', () => {
       planValue = Plans.USERS_BASIC,
       successfulPatchRequest = true,
       errorDetails = undefined,
-      trialStatus = undefined,
+      trialStatus = TrialStatuses.NOT_STARTED,
       multipleTiers = false,
       hasTeamPlans = false,
       hasSentryPlans = false,
@@ -240,7 +240,7 @@ describe('UpgradeForm', () => {
       planValue: Plans.USERS_BASIC,
       successfulPatchRequest: true,
       errorDetails: undefined,
-      trialStatus: undefined,
+      trialStatus: TrialStatuses.NOT_STARTED,
       hasTeamPlans: false,
       multipleTiers: false,
       hasSentryPlans: false,
@@ -307,6 +307,7 @@ describe('UpgradeForm', () => {
           ctx.status(200),
           ctx.data({
             owner: {
+              hasPrivateRepos: true,
               plan: { ...mockPlanDataResponse, trialStatus },
             },
           })

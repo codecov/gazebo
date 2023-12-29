@@ -185,6 +185,7 @@ describe('PlanUpgradeTeam', () => {
           ctx.status(200),
           ctx.data({
             owner: {
+              hasPrivateRepos: true,
               pretrialPlan: mockPreTrialPlanInfo,
               plan,
             },

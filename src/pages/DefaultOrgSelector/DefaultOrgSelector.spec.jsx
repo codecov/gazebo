@@ -101,6 +101,7 @@ describe('DefaultOrgSelector', () => {
           ctx.status(200),
           ctx.data({
             owner: {
+              hasPrivateRepos: true,
               plan: {
                 ...mockTrialData,
                 trialStatus,

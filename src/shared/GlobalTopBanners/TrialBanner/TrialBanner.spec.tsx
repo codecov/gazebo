@@ -135,6 +135,7 @@ describe('TrialBanner', () => {
           ctx.status(200),
           ctx.data({
             owner: {
+              hasPrivateRepos: true,
               plan: {
                 baseUnitPrice: plan.baseUnitPrice,
                 benefits: plan.benefits,
