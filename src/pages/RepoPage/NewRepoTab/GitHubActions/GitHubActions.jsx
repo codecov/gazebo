@@ -6,33 +6,22 @@ import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
 
 const codecovActionString = `- name: Upload coverage reports to Codecov
-  uses: codecov/codecov-action@v4
+  uses: codecov/codecov-action@v3
   env:
     CODECOV_TOKEN: \${{ secrets.CODECOV_TOKEN }}
 `
 
-interface URLParams {
-  provider: string
-  owner: string
-  repo: string
-}
-
 function GitHubActions() {
-  const { provider, owner, repo } = useParams<URLParams>()
+  const { provider, owner, repo } = useParams()
   const { data } = useRepo({ provider, owner, repo })
-  const orgUploadToken = data?.orgUploadToken
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4">
         <div>
           <h2 className="text-base font-semibold">
-            Step 1: add global token as{' '}
-            <A
-              to={{ pageName: 'githubRepoSecrets' }}
-              isExternal
-              hook="GitHub-repo-secrects-link"
-            >
+            Step 1: add repository token as{' '}
+            <A to={{ pageName: 'githubRepoSecrets' }} isExternal>
               repository secret
             </A>
           </h2>
@@ -42,8 +31,8 @@ function GitHubActions() {
           </p>
         </div>
         <pre className="flex items-center gap-2 overflow-auto rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          CODECOV_TOKEN={orgUploadToken}
-          <CopyClipboard string={orgUploadToken} />
+          CODECOV_TOKEN={data?.repository?.uploadToken}
+          <CopyClipboard string={data?.repository?.uploadToken} />
         </pre>
       </div>
       <div className="flex flex-col gap-4">
@@ -56,10 +45,7 @@ function GitHubActions() {
               }}
               options={{ branch: data?.repository?.defaultBranch }}
               isExternal
-              hook="GitHub-repo-actions-link"
-            >
-              GitHub Actions workflow yaml file
-            </A>
+            />
           </h2>
           <p>
             After tests run, this will upload your coverage report to Codecov:
@@ -78,7 +64,7 @@ function GitHubActions() {
         </p>
         <img
           alt="codecov patch and project"
-          src={patchAndProject.toString()}
+          src={patchAndProject}
           className="my-3 md:px-5"
           loading="lazy"
         />
@@ -90,11 +76,7 @@ function GitHubActions() {
         <p className="mt-6 border-l-2 border-ds-gray-secondary pl-4">
           <span className="font-semibold">How was your setup experience?</span>{' '}
           Let us know in{' '}
-          <A
-            to={{ pageName: 'repoConfigFeedback' }}
-            isExternal
-            hook="repo-config-feedback"
-          >
+          <A to={{ pageName: 'repoConfigFeedback' }} isExternal>
             this issue
           </A>
         </p>
