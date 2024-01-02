@@ -10,18 +10,20 @@ const styles = {
 
 function TabNavigation({ tabs, component }) {
   return (
-    <div className="mx-0 flex flex-col-reverse justify-between gap-2 border-b border-ds-gray-tertiary md:flex-col xl:flex-row ">
-      <nav className="flex overflow-auto">
-        {tabs.map((tab) => (
-          <AppLink
-            {...tab}
-            className={styles.link}
-            activeClassName={styles.activeLink}
-            key={tab.pageName}
-          />
-        ))}
-      </nav>
-      {component || null}
+    <div className="@container/tabNav">
+      <div className="mx-0 flex flex-col-reverse justify-between gap-2 border-b border-ds-gray-tertiary  @md/tabNav:flex-col @4xl/tabNav:flex-row">
+        <nav className="flex overflow-auto">
+          {tabs.map((tab) => (
+            <AppLink
+              {...tab}
+              className={styles.link}
+              activeClassName={styles.activeLink}
+              key={tab.pageName}
+            />
+          ))}
+        </nav>
+        {component || null}
+      </div>
     </div>
   )
 }
