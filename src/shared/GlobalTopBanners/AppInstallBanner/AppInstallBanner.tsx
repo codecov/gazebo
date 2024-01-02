@@ -1,0 +1,95 @@
+import { useState } from 'react'
+
+import Button from 'ui/Button'
+import CopyClipboard from 'ui/CopyClipboard'
+import Icon from 'ui/Icon'
+import Modal from 'ui/Modal'
+import TopBanner, { saveToLocalStorage } from 'ui/TopBanner'
+
+const APP_INSTALL_BANNER_KEY = 'global-top-app-install-banner'
+const COPY_APP_INSTALL_STRING =
+  "Hello, could you help approve the installation of the Codecov app on GitHub for our organization? Here's the link: [Codecov GitHub App Installation](https://github.com/apps/codecov/installations/select_target)"
+
+const AppInstallBanner = () => {
+  const [showAppInstallModal, setShowAppInstallModal] = useState(false)
+  const [isModalDoneClicked, setIsModalDoneClicked] = useState(false)
+
+  const closeModalAndSaveToLocalStorage = () => {
+    saveToLocalStorage(APP_INSTALL_BANNER_KEY)
+    setShowAppInstallModal(false)
+    setIsModalDoneClicked(true)
+  }
+
+  // Close the modal before refresh if the user clicks "Done"
+  if (isModalDoneClicked) {
+    return null
+  }
+
+  return (
+    <>
+      <TopBanner localStorageKey={APP_INSTALL_BANNER_KEY}>
+        <TopBanner.Start>
+          <p className="items-center gap-1 md:flex">
+            <span className="flex items-center gap-1 font-semibold">
+              <Icon name="informationCircle" />
+              Installation request sent.
+            </span>
+            Since you&apos;re a member of the requested organization, you need
+            the owner to approve and install the app.
+          </p>
+        </TopBanner.Start>
+        <TopBanner.End>
+          <Button
+            to={undefined}
+            hook=""
+            disabled={false}
+            variant="primary"
+            onClick={() => {
+              // this has the side effect of hiding the banner
+              setShowAppInstallModal(true)
+            }}
+          >
+            Share Request
+          </Button>
+          <TopBanner.DismissButton>
+            <Icon size="sm" variant="solid" name="x" />
+          </TopBanner.DismissButton>
+        </TopBanner.End>
+      </TopBanner>
+      <Modal
+        isOpen={showAppInstallModal}
+        onClose={() => setShowAppInstallModal(false)}
+        title="Share GitHub app installation"
+        body={
+          <div className="flex flex-col">
+            <span className="mb-4 text-sm">
+              Copy the link below and share it with your organization&apos;s
+              admin or owner to assist.
+            </span>
+            <div className="flex items-start gap-4 rounded-md border-2 border-gray-200 bg-gray-100 p-4">
+              <div className="grow overflow-auto whitespace-pre-wrap break-words">
+                {COPY_APP_INSTALL_STRING}
+              </div>
+              <CopyClipboard string={COPY_APP_INSTALL_STRING} showLabel />
+            </div>
+          </div>
+        }
+        footer={
+          <div>
+            <Button
+              to={undefined}
+              hook="close-modal"
+              disabled={false}
+              variant="primary"
+              onClick={closeModalAndSaveToLocalStorage}
+            >
+              Done
+            </Button>
+          </div>
+        }
+      />
+    </>
+  )
+}
+
+export default AppInstallBanner
