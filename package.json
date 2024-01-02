@@ -89,7 +89,7 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@craco/craco": "^7.1.0",
     "@sentry/webpack-plugin": "^1.20.1",
-    "@spotlightjs/spotlight": "^1.0.0",
+    "@spotlightjs/spotlight": "^1.2.6",
     "@storybook/addon-a11y": "^7.4.0",
     "@storybook/addon-actions": "^7.4.0",
     "@storybook/addon-essentials": "^7.4.0",
