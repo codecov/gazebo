@@ -19,7 +19,7 @@ const mockNotFoundError = {
   owner: {
     repository: {
       __typename: 'NotFoundError',
-      message: 'commit not found',
+      message: 'repo not found',
     },
   },
 }

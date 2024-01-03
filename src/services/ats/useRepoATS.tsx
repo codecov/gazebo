@@ -14,7 +14,7 @@ const RepositorySchema = z.object({
   primaryLanguage: z.string().nullish(),
 })
 
-const GetRepoDataSchema = z.object({
+const GetRepoATSDataSchema = z.object({
   owner: z
     .object({
       repository: z
@@ -28,7 +28,7 @@ const GetRepoDataSchema = z.object({
     .nullable(),
 })
 
-export type RepoATSInfo = z.infer<typeof GetRepoDataSchema>
+export type RepoATSInfo = z.infer<typeof GetRepoATSDataSchema>
 
 const query = `
   query RepoATSInfo($owner: String!, $repo: String!) {
@@ -70,7 +70,7 @@ export const useRepoATS = ({ provider, owner, repo }: RepoATSInfoArgs) =>
           repo,
         },
       }).then((res) => {
-        const parsedData = GetRepoDataSchema.safeParse(res?.data)
+        const parsedData = GetRepoATSDataSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return Promise.reject({
