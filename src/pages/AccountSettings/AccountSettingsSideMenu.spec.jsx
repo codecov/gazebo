@@ -157,21 +157,38 @@ describe('AccountSettingsSideMenu', () => {
       expect(link).toHaveAttribute('href', '/account/gh/codecov/yaml')
     })
 
-    it('renders org upload token link', async () => {
-      setup({ isSelfHosted: true })
+    describe('user is not an admin', () => {
+      it('does not render org upload token link', async () => {
+        setup({ isSelfHosted: true })
 
-      render(<AccountSettingsSideMenu />, { wrapper: wrapper() })
+        render(<AccountSettingsSideMenu />, { wrapper: wrapper() })
 
-      const suspense = await screen.findByText('Loading')
-      expect(suspense).toBeInTheDocument()
-      await waitFor(() =>
-        expect(screen.queryByText('Loading')).not.toBeInTheDocument()
-      )
+        const suspense = await screen.findByText('Loading')
+        expect(suspense).toBeInTheDocument()
+        await waitFor(() =>
+          expect(screen.queryByText('Loading')).not.toBeInTheDocument()
+        )
 
-      const link = await screen.findByRole('link', {
-        name: 'Global Upload Token',
+        const link = screen.queryByRole('link', { name: 'Global Upload Token' })
+        expect(link).not.toBeInTheDocument()
       })
-      expect(link).toBeInTheDocument()
+    })
+
+    describe('user is an admin', () => {
+      it('renders org upload token link', async () => {
+        setup({ isSelfHosted: true, isAdmin: true })
+
+        render(<AccountSettingsSideMenu />, { wrapper: wrapper() })
+
+        const link = await screen.findByRole('link', {
+          name: 'Global Upload Token',
+        })
+        expect(link).toBeInTheDocument()
+        expect(link).toHaveAttribute(
+          'href',
+          '/account/gh/codecov/org-upload-token'
+        )
+      })
     })
   })
 
