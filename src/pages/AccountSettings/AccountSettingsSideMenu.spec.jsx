@@ -157,7 +157,7 @@ describe('AccountSettingsSideMenu', () => {
       expect(link).toHaveAttribute('href', '/account/gh/codecov/yaml')
     })
 
-    it('does not render org upload token link', async () => {
+    it('renders org upload token link', async () => {
       setup({ isSelfHosted: true })
 
       render(<AccountSettingsSideMenu />, { wrapper: wrapper() })
@@ -168,8 +168,10 @@ describe('AccountSettingsSideMenu', () => {
         expect(screen.queryByText('Loading')).not.toBeInTheDocument()
       )
 
-      const link = screen.queryByRole('link', { name: 'Global Upload Token' })
-      expect(link).not.toBeInTheDocument()
+      const link = await screen.findByRole('link', {
+        name: 'Global Upload Token',
+      })
+      expect(link).toBeInTheDocument()
     })
   })
 
