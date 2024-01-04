@@ -20,6 +20,7 @@ function selfHostedOverrideLinks({ isPersonalSettings }) {
     { pageName: isPersonalSettings ? 'profile' : '', exact: true },
     ...(internalAccessTab ? [{ pageName: internalAccessTab }] : []),
     { pageName: 'yamlTab' },
+    { pageName: 'orgUploadToken' },
   ]
 }
 
