@@ -2,7 +2,7 @@ import Button from 'ui/Button'
 
 function ATSNotConfigured() {
   return (
-    <div className="flex flex-col justify-evenly gap-3 space-y-7 bg-ds-gray-primary px-4 py-6">
+    <div className="flex flex-col justify-evenly gap-1 space-y-7 bg-ds-gray-primary px-4 py-6">
       <h1 className="text-xl font-semibold">
         Automated Test Selection Not Yet Configured
       </h1>
@@ -21,7 +21,7 @@ function ATSNotConfigured() {
           * Currently available for Python, with more languages coming soon.
         </p>
       </div>
-      <div className="max-w-[30%]">
+      <div className="w-1/4">
         <Button
           to={{ pageName: 'staticAnalysisDoc' }}
           variant="primary"
