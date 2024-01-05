@@ -2,7 +2,7 @@ import Button from 'ui/Button'
 
 function ATSNotConfigured() {
   return (
-    <div className="flex flex-col justify-evenly gap-4 space-y-7 bg-ds-gray-primary px-4 py-6">
+    <div className="flex flex-col justify-evenly gap-3 space-y-7 bg-ds-gray-primary px-4 py-6">
       <h1 className="text-xl font-semibold">
         Automated Test Selection Not Yet Configured
       </h1>

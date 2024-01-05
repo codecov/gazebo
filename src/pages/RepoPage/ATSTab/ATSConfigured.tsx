@@ -4,7 +4,7 @@ import Icon from 'ui/Icon'
 
 const ATSConfigured: React.FC = () => {
   return (
-    <div className="flex flex-col justify-evenly gap-4 space-y-7 bg-ds-gray-primary p-6">
+    <div className="flex flex-col justify-evenly gap-3 space-y-7 bg-ds-gray-primary p-6">
       <span className="flex flex-row space-x-2">
         <div className="text-green-500">
           <Icon name="checkCircle" />
