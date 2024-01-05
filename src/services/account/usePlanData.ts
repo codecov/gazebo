@@ -28,7 +28,7 @@ export const PlanDataSchema = z
             trialStatus: z.nativeEnum(TrialStatuses),
             trialStartDate: z.string().nullable(),
             trialTotalDays: z.number().nullable(),
-            planUserCount: z.number(),
+            planUserCount: z.number().nullable(),
           })
           .nullish(),
         pretrialPlan: z
