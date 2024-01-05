@@ -180,6 +180,7 @@ export default function PullsTableTeam() {
                         'w-full max-w-0 font-medium @md/table:w-auto @md/table:max-w-none':
                           cell.column.id === 'title',
                         'flex justify-end': cell.column.id === 'change',
+                        'text-right': cell.column.id === 'patch',
                       })}
                     >
                       {flexRender(

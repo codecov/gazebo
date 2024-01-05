@@ -12,15 +12,6 @@ export const createPullsTableData = ({ pulls }: { pulls?: Array<Pull> }) => {
     return []
   }
   return pulls.filter(Boolean).map((pull: Pull) => {
-    if (!pull) {
-      return {
-        title: <div>-</div>,
-        patch: <div>-</div>,
-        coverage: <div>-</div>,
-        change: <div>-</div>,
-      }
-    }
-
     let patch, change
     if (pull?.compareWithBase?.__typename === 'Comparison') {
       patch = pull?.compareWithBase?.patchTotals?.percentCovered ?? 0
@@ -45,18 +36,18 @@ export const createPullsTableData = ({ pulls }: { pulls?: Array<Pull> }) => {
         />
       ),
       patch: (
-        <div className="text-right">
-          <TotalsNumber
-            plain={true}
-            large={false}
-            light={false}
-            value={patch}
-            showChange={false}
-          />
-        </div>
+        <TotalsNumber
+          plain={true}
+          large={false}
+          light={false}
+          value={patch}
+          showChange={false}
+        />
       ),
-      coverage: (
-        <Coverage head={pull?.head} state={pull.state} pullId={pullId} />
+      coverage: pull?.state ? (
+        <Coverage head={pull?.head} state={pull?.state} pullId={pullId} />
+      ) : (
+        <>-</>
       ),
       change: (
         <TotalsNumber
