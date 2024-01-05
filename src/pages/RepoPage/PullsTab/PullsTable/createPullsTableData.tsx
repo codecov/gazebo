@@ -44,7 +44,7 @@ export const createPullsTableData = ({ pulls }: { pulls?: Array<Pull> }) => {
           showChange={false}
         />
       ),
-      coverage: pull?.state ? (
+      coverage: pull ? (
         <Coverage head={pull?.head} state={pull?.state} pullId={pullId} />
       ) : (
         <>-</>
