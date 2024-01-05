@@ -30,7 +30,7 @@ const ATSConfigured: React.FC = () => {
         </A>
         .
       </p>
-      <div className="w-1/6">
+      <div className="flex self-start">
         <Button
           to={{ pageName: 'staticAnalysisDoc' }}
           variant="primary"

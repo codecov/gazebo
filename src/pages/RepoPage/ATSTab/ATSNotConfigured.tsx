@@ -21,7 +21,7 @@ function ATSNotConfigured() {
           * Currently available for Python, with more languages coming soon.
         </p>
       </div>
-      <div className="w-1/4">
+      <div className="flex self-start">
         <Button
           to={{ pageName: 'staticAnalysisDoc' }}
           variant="primary"
