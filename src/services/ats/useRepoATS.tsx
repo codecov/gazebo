@@ -10,8 +10,8 @@ import A from 'ui/A'
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
-  isATSConfigured: z.boolean().nullish(),
-  primaryLanguage: z.string().nullish(),
+  isATSConfigured: z.boolean().nullable(),
+  primaryLanguage: z.string().nullable(),
 })
 
 const GetRepoATSDataSchema = z.object({
