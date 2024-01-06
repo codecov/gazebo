@@ -4,7 +4,7 @@ import { z } from 'zod'
 import Api from 'shared/api'
 
 const SaveTermsAgreementInputConfig = z.object({
-  businessEmail: z.string().optional(),
+  businessEmail: z.string().nullable(),
   termsAgreement: z.boolean(),
   marketingConsent: z.boolean().optional(),
 })

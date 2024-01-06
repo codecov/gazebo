@@ -125,6 +125,34 @@ describe('useSaveTermsAgreement', () => {
       })
     })
 
+    it('proceed with mutation on missing email', async () => {
+      setup()
+      const invalidateQueries = jest.spyOn(queryClient, 'invalidateQueries')
+      const successFn = jest.fn()
+      const { result } = renderHook(
+        () =>
+          useSaveTermsAgreement({
+            onSuccess: () => {
+              successFn('completed')
+            },
+          }),
+        {
+          wrapper: wrapper(),
+        }
+      )
+
+      result.current.mutate({
+        businessEmail: null,
+        termsAgreement: true,
+      })
+
+      await waitFor(() => expect(successFn).toBeCalledWith('completed'))
+
+      expect(invalidateQueries).toHaveBeenCalledWith({
+        queryKey: ['InternalUser'],
+      })
+    })
+
     describe('there is was an api error', () => {
       it('throws an error', async () => {
         setup({ apiError: true })
