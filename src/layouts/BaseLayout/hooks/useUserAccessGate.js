@@ -7,7 +7,6 @@ import config from 'config'
 import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
 import { useLocationParams } from 'services/navigation'
 import { useInternalUser, useUser } from 'services/user'
-import { useFlags } from 'shared/featureFlags'
 
 const SetUpActions = Object.freeze({
   INSTALL: 'install',
@@ -34,10 +33,6 @@ function useOnboardingRedirect({ username }) {
 const useUserAccessGate = () => {
   const { provider } = useParams()
   const currentRoute = useRouteMatch()
-
-  const { termsOfServicePage } = useFlags({
-    termsOfServicePage: false,
-  })
 
   const {
     data: userData,
@@ -71,7 +66,7 @@ const useUserAccessGate = () => {
 
   // the undefined provider check can be removed when the ToS has
   // been refactored to no longer use a provider
-  if (termsOfServicePage && foundInternalUser && !config.IS_SELF_HOSTED) {
+  if (foundInternalUser && !config.IS_SELF_HOSTED) {
     showAgreeToTerms = internalUser?.termsAgreement === false
   }
 
