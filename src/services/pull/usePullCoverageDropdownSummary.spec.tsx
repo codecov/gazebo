@@ -3,14 +3,14 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { useCommitDropdownSummary } from './useCommitDropdownSummary'
+import { usePullCoverageDropdownSummary } from './usePullCoverageDropdownSummary'
 
-const mockCommitSummaryData = {
+const mockPullSummaryData = {
   owner: {
     repository: {
       __typename: 'Repository',
-      commit: {
-        compareWithParent: {
+      pull: {
+        compareWithBase: {
           __typename: 'Comparison',
           patchTotals: {
             missesCount: 1,
@@ -32,7 +32,7 @@ const mockNotFoundError = {
   owner: {
     repository: {
       __typename: 'NotFoundError',
-      message: 'commit not found',
+      message: 'pull not found',
     },
   },
 }
@@ -87,7 +87,7 @@ describe('useCommitSummary', () => {
     isOwnerNotActivatedError = false,
   }: SetupArgs = {}) {
     server.use(
-      graphql.query('CommitDropdownSummary', (req, res, ctx) => {
+      graphql.query('PullDropdownSummary', (req, res, ctx) => {
         if (isNotFoundError) {
           return res(ctx.status(200), ctx.data(mockNotFoundError))
         } else if (isOwnerNotActivatedError) {
@@ -97,22 +97,22 @@ describe('useCommitSummary', () => {
         } else if (isNullOwner) {
           return res(ctx.status(200), ctx.data(mockNullOwner))
         } else {
-          return res(ctx.status(200), ctx.data(mockCommitSummaryData))
+          return res(ctx.status(200), ctx.data(mockPullSummaryData))
         }
       })
     )
   }
 
   describe('api returns valid response', () => {
-    it('returns commit summary data', async () => {
+    it('returns pull summary data', async () => {
       setup()
       const { result } = renderHook(
         () =>
-          useCommitDropdownSummary({
+          usePullCoverageDropdownSummary({
             provider: 'github',
             owner: 'codecov',
             repo: 'test-repo',
-            commitid: 'sha256',
+            pullId: 123,
           }),
         { wrapper }
       )
@@ -121,8 +121,8 @@ describe('useCommitSummary', () => {
         owner: {
           repository: {
             __typename: 'Repository',
-            commit: {
-              compareWithParent: {
+            pull: {
+              compareWithBase: {
                 __typename: 'Comparison',
                 patchTotals: {
                   missesCount: 1,
@@ -145,11 +145,11 @@ describe('useCommitSummary', () => {
       setup({ isNullOwner: true })
       const { result } = renderHook(
         () =>
-          useCommitDropdownSummary({
+          usePullCoverageDropdownSummary({
             provider: 'github',
             owner: 'codecov',
             repo: 'test-repo',
-            commitid: 'sha256',
+            pullId: 123,
           }),
         { wrapper }
       )
@@ -175,11 +175,11 @@ describe('useCommitSummary', () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
-          useCommitDropdownSummary({
+          usePullCoverageDropdownSummary({
             provider: 'github',
             owner: 'codecov',
             repo: 'test-repo',
-            commitid: 'sha256',
+            pullId: 123,
           }),
         { wrapper }
       )
@@ -211,11 +211,11 @@ describe('useCommitSummary', () => {
       setup({ isNotFoundError: true })
       const { result } = renderHook(
         () =>
-          useCommitDropdownSummary({
+          usePullCoverageDropdownSummary({
             provider: 'github',
             owner: 'codecov',
             repo: 'test-repo',
-            commitid: 'sha256',
+            pullId: 123,
           }),
         { wrapper }
       )
@@ -247,11 +247,11 @@ describe('useCommitSummary', () => {
       setup({ isOwnerNotActivatedError: true })
       const { result } = renderHook(
         () =>
-          useCommitDropdownSummary({
+          usePullCoverageDropdownSummary({
             provider: 'github',
             owner: 'codecov',
             repo: 'test-repo',
-            commitid: 'sha256',
+            pullId: 123,
           }),
         { wrapper }
       )

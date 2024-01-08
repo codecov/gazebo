@@ -26,7 +26,7 @@ const ComparisonSchema = z.object({
     .nullable(),
 })
 
-const CompareWithParentSchema = z
+const CompareWithBaseSchema = z
   .discriminatedUnion('__typename', [
     ComparisonSchema,
     FirstPullRequestSchema,
@@ -40,9 +40,9 @@ const CompareWithParentSchema = z
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
-  commit: z
+  pull: z
     .object({
-      compareWithParent: CompareWithParentSchema.nullable(),
+      compareWithBase: CompareWithBaseSchema.nullable(),
     })
     .nullable(),
 })
@@ -60,17 +60,13 @@ const RequestSchema = z.object({
 })
 
 const query = `
-query CommitDropdownSummary(
-  $owner: String!
-  $repo: String!
-  $commitid: String!
-) {
+query PullDropdownSummary($owner: String!, $repo: String!, $pullId: Int!) {
   owner(username: $owner) {
     repository(name: $repo) {
       __typename
       ... on Repository {
-        commit(id: $commitid) {
-          compareWithParent {
+        pull(id: $pullId) {
+          compareWithBase {
             __typename
             ... on Comparison {
               patchTotals {
@@ -109,31 +105,27 @@ query CommitDropdownSummary(
   }
 }`
 
-interface UseCommitDropdownSummaryArgs {
+interface usePullCoverageDropdownSummaryArgs {
   provider: string
   owner: string
   repo: string
-  commitid: string
+  pullId: number
 }
 
-export function useCommitDropdownSummary({
+export function usePullCoverageDropdownSummary({
   provider,
   owner,
   repo,
-  commitid,
-}: UseCommitDropdownSummaryArgs) {
+  pullId,
+}: usePullCoverageDropdownSummaryArgs) {
   return useQuery({
-    queryKey: ['CommitSummary', provider, owner, repo, commitid],
+    queryKey: ['PullDropdownSummary', provider, owner, repo, pullId],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
         query,
         signal,
-        variables: {
-          owner,
-          repo,
-          commitid,
-        },
+        variables: { owner, repo, pullId },
       }).then((res) => {
         const parsedRes = RequestSchema.safeParse(res?.data)
 

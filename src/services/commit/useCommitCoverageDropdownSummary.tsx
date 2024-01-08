@@ -26,7 +26,7 @@ const ComparisonSchema = z.object({
     .nullable(),
 })
 
-const CompareWithBaseSchema = z
+const CompareWithParentSchema = z
   .discriminatedUnion('__typename', [
     ComparisonSchema,
     FirstPullRequestSchema,
@@ -40,9 +40,9 @@ const CompareWithBaseSchema = z
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
-  pull: z
+  commit: z
     .object({
-      compareWithBase: CompareWithBaseSchema.nullable(),
+      compareWithParent: CompareWithParentSchema.nullable(),
     })
     .nullable(),
 })
@@ -60,13 +60,17 @@ const RequestSchema = z.object({
 })
 
 const query = `
-query PullDropdownSummary($owner: String!, $repo: String!, $pullId: Int!) {
+query CommitDropdownSummary(
+  $owner: String!
+  $repo: String!
+  $commitid: String!
+) {
   owner(username: $owner) {
     repository(name: $repo) {
       __typename
       ... on Repository {
-        pull(id: $pullId) {
-          compareWithBase {
+        commit(id: $commitid) {
+          compareWithParent {
             __typename
             ... on Comparison {
               patchTotals {
@@ -105,27 +109,31 @@ query PullDropdownSummary($owner: String!, $repo: String!, $pullId: Int!) {
   }
 }`
 
-interface UsePullDropdownSummaryArgs {
+interface useCommitCoverageDropdownSummaryArgs {
   provider: string
   owner: string
   repo: string
-  pullId: number
+  commitid: string
 }
 
-export function usePullDropdownSummary({
+export function useCommitCoverageDropdownSummary({
   provider,
   owner,
   repo,
-  pullId,
-}: UsePullDropdownSummaryArgs) {
+  commitid,
+}: useCommitCoverageDropdownSummaryArgs) {
   return useQuery({
-    queryKey: ['PullDropdownSummary', provider, owner, repo, pullId],
+    queryKey: ['CommitSummary', provider, owner, repo, commitid],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
         query,
         signal,
-        variables: { owner, repo, pullId },
+        variables: {
+          owner,
+          repo,
+          commitid,
+        },
       }).then((res) => {
         const parsedRes = RequestSchema.safeParse(res?.data)
 

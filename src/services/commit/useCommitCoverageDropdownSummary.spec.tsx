@@ -3,14 +3,14 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { usePullDropdownSummary } from './usePullDropdownSummary'
+import { useCommitCoverageDropdownSummary } from './useCommitCoverageDropdownSummary'
 
-const mockPullSummaryData = {
+const mockCommitSummaryData = {
   owner: {
     repository: {
       __typename: 'Repository',
-      pull: {
-        compareWithBase: {
+      commit: {
+        compareWithParent: {
           __typename: 'Comparison',
           patchTotals: {
             missesCount: 1,
@@ -87,7 +87,7 @@ describe('useCommitSummary', () => {
     isOwnerNotActivatedError = false,
   }: SetupArgs = {}) {
     server.use(
-      graphql.query('PullDropdownSummary', (req, res, ctx) => {
+      graphql.query('CommitDropdownSummary', (req, res, ctx) => {
         if (isNotFoundError) {
           return res(ctx.status(200), ctx.data(mockNotFoundError))
         } else if (isOwnerNotActivatedError) {
@@ -97,7 +97,7 @@ describe('useCommitSummary', () => {
         } else if (isNullOwner) {
           return res(ctx.status(200), ctx.data(mockNullOwner))
         } else {
-          return res(ctx.status(200), ctx.data(mockPullSummaryData))
+          return res(ctx.status(200), ctx.data(mockCommitSummaryData))
         }
       })
     )
@@ -108,11 +108,11 @@ describe('useCommitSummary', () => {
       setup()
       const { result } = renderHook(
         () =>
-          usePullDropdownSummary({
+          useCommitCoverageDropdownSummary({
             provider: 'github',
             owner: 'codecov',
             repo: 'test-repo',
-            pullId: 123,
+            commitid: 'sha256',
           }),
         { wrapper }
       )
@@ -121,8 +121,8 @@ describe('useCommitSummary', () => {
         owner: {
           repository: {
             __typename: 'Repository',
-            pull: {
-              compareWithBase: {
+            commit: {
+              compareWithParent: {
                 __typename: 'Comparison',
                 patchTotals: {
                   missesCount: 1,
@@ -145,11 +145,11 @@ describe('useCommitSummary', () => {
       setup({ isNullOwner: true })
       const { result } = renderHook(
         () =>
-          usePullDropdownSummary({
+          useCommitCoverageDropdownSummary({
             provider: 'github',
             owner: 'codecov',
             repo: 'test-repo',
-            pullId: 123,
+            commitid: 'sha256',
           }),
         { wrapper }
       )
@@ -175,11 +175,11 @@ describe('useCommitSummary', () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
-          usePullDropdownSummary({
+          useCommitCoverageDropdownSummary({
             provider: 'github',
             owner: 'codecov',
             repo: 'test-repo',
-            pullId: 123,
+            commitid: 'sha256',
           }),
         { wrapper }
       )
@@ -211,11 +211,11 @@ describe('useCommitSummary', () => {
       setup({ isNotFoundError: true })
       const { result } = renderHook(
         () =>
-          usePullDropdownSummary({
+          useCommitCoverageDropdownSummary({
             provider: 'github',
             owner: 'codecov',
             repo: 'test-repo',
-            pullId: 123,
+            commitid: 'sha256',
           }),
         { wrapper }
       )
@@ -247,11 +247,11 @@ describe('useCommitSummary', () => {
       setup({ isOwnerNotActivatedError: true })
       const { result } = renderHook(
         () =>
-          usePullDropdownSummary({
+          useCommitCoverageDropdownSummary({
             provider: 'github',
             owner: 'codecov',
             repo: 'test-repo',
-            pullId: 123,
+            commitid: 'sha256',
           }),
         { wrapper }
       )
