@@ -3,7 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { useCommitDropdownSummary } from './useCommitBASummary'
+import { useCommitBADropdownSummary } from './useCommitBADropdownSummary'
 
 const mockCommitBASummaryData = {
   owner: {
@@ -77,7 +77,7 @@ interface SetupArgs {
   isNotFoundError?: boolean
 }
 
-describe('useCommitSummary', () => {
+describe('useCommitBADropdownSummary', () => {
   function setup({
     isUnsuccessfulParseError = false,
     isNullOwner = false,
@@ -106,7 +106,7 @@ describe('useCommitSummary', () => {
       setup()
       const { result } = renderHook(
         () =>
-          useCommitDropdownSummary({
+          useCommitBADropdownSummary({
             provider: 'github',
             owner: 'codecov',
             repo: 'test-repo',
@@ -141,7 +141,7 @@ describe('useCommitSummary', () => {
       setup({ isNullOwner: true })
       const { result } = renderHook(
         () =>
-          useCommitDropdownSummary({
+          useCommitBADropdownSummary({
             provider: 'github',
             owner: 'codecov',
             repo: 'test-repo',
@@ -171,7 +171,7 @@ describe('useCommitSummary', () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
-          useCommitDropdownSummary({
+          useCommitBADropdownSummary({
             provider: 'github',
             owner: 'codecov',
             repo: 'test-repo',
@@ -207,7 +207,7 @@ describe('useCommitSummary', () => {
       setup({ isNotFoundError: true })
       const { result } = renderHook(
         () =>
-          useCommitDropdownSummary({
+          useCommitBADropdownSummary({
             provider: 'github',
             owner: 'codecov',
             repo: 'test-repo',
@@ -243,7 +243,7 @@ describe('useCommitSummary', () => {
       setup({ isOwnerNotActivatedError: true })
       const { result } = renderHook(
         () =>
-          useCommitDropdownSummary({
+          useCommitBADropdownSummary({
             provider: 'github',
             owner: 'codecov',
             repo: 'test-repo',

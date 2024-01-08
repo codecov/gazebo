@@ -111,7 +111,7 @@ interface UseCommitDropdownSummaryArgs {
   commitid: string
 }
 
-export function useCommitDropdownSummary({
+export function useCommitBADropdownSummary({
   provider,
   owner,
   repo,
