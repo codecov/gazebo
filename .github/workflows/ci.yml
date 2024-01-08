@@ -284,7 +284,6 @@ jobs:
             ${{ runner.os }}-${{ env.cache-name }}-
 
       - name: Build React App
-        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
         run: |
           npm run build
 
