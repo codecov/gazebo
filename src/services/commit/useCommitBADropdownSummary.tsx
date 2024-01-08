@@ -18,8 +18,8 @@ import A from 'ui/A'
 
 const BAComparisonSchema = z.object({
   __typename: z.literal('BundleAnalysisComparison'),
-  sizeDelta: z.number().nullable(),
-  loadTimeDelta: z.number().nullable(),
+  sizeDelta: z.number(),
+  loadTimeDelta: z.number(),
 })
 
 const BundleAnalysisCompareWithParentSchema = z
