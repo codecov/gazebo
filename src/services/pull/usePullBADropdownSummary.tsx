@@ -104,7 +104,7 @@ query PullBADropdownSummary(
   }
 }`
 
-interface UseCommitDropdownSummaryArgs {
+interface UsePullBADropdownSummaryArgs {
   provider: string
   owner: string
   repo: string
@@ -116,7 +116,7 @@ export function usePullBADropdownSummary({
   owner,
   repo,
   pullId,
-}: UseCommitDropdownSummaryArgs) {
+}: UsePullBADropdownSummaryArgs) {
   return useQuery({
     queryKey: ['PullBADropdownSummary', provider, owner, repo, pullId],
     queryFn: ({ signal }) =>
