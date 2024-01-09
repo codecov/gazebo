@@ -118,7 +118,7 @@ export function usePullBADropdownSummary({
   pullId,
 }: UseCommitDropdownSummaryArgs) {
   return useQuery({
-    queryKey: ['CommitSummary', provider, owner, repo, pullId],
+    queryKey: ['PullBADropdownSummary', provider, owner, repo, pullId],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
