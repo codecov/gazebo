@@ -6,8 +6,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { useFlags } from 'shared/featureFlags'
-
 import App from './App'
 
 jest.mock('./pages/AccountSettings', () => () => 'AccountSettings')
@@ -34,7 +32,6 @@ jest.mock('@tanstack/react-query-devtools', () => ({
 }))
 
 jest.mock('config')
-jest.mock('shared/featureFlags')
 
 const internalUser = {
   email: 'internal@user.com',
@@ -103,13 +100,7 @@ afterAll(() => {
 })
 
 describe('App', () => {
-  function setup(
-    { termsOfServicePage = false } = { termsOfServicePage: false }
-  ) {
-    useFlags.mockReturnValue({
-      termsOfServicePage,
-    })
-
+  function setup() {
     server.use(
       rest.get('/internal/user', (_, res, ctx) => {
         return res(ctx.status(200), ctx.json(internalUser))
