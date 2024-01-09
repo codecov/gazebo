@@ -1,18 +1,40 @@
 import { useState } from 'react'
+import { useParams, useRouteMatch } from 'react-router-dom'
 
+import config from 'config'
+
+import { useLocationParams } from 'services/navigation'
+import { providerToName } from 'shared/utils'
 import Button from 'ui/Button'
 import CopyClipboard from 'ui/CopyClipboard'
 import Icon from 'ui/Icon'
 import Modal from 'ui/Modal'
 import TopBanner, { saveToLocalStorage } from 'ui/TopBanner'
 
-const APP_INSTALL_BANNER_KEY = 'global-top-app-install-banner'
+const APP_INSTALL_BANNER_KEY = 'request-install-banner'
 const COPY_APP_INSTALL_STRING =
   "Hello, could you help approve the installation of the Codecov app on GitHub for our organization? Here's the link: [Codecov GitHub App Installation](https://github.com/apps/codecov/installations/select_target)"
 
-const AppInstallBanner = () => {
+interface URLParams {
+  provider: string
+}
+
+const defaultQueryParams = {
+  setupAction: '',
+}
+
+const RequestInstallBanner = () => {
   const [showAppInstallModal, setShowAppInstallModal] = useState(false)
   const [isModalDoneClicked, setIsModalDoneClicked] = useState(false)
+
+  const { provider } = useParams<URLParams>()
+  const { params } = useLocationParams(defaultQueryParams)
+  const ownerMatch = useRouteMatch('/:provider/:owner')
+
+  // @ts-expect-errors useLocationParams needs to be updated to support generic types
+  const setupAction = params?.setup_action
+
+  const isGitHubProvider = provider && providerToName(provider) === 'Github'
 
   const closeModalAndSaveToLocalStorage = () => {
     saveToLocalStorage(APP_INSTALL_BANNER_KEY)
@@ -22,6 +44,15 @@ const AppInstallBanner = () => {
 
   // Close the modal before refresh if the user clicks "Done"
   if (isModalDoneClicked) {
+    return null
+  }
+
+  if (
+    !isGitHubProvider ||
+    !ownerMatch?.isExact ||
+    setupAction !== 'request' ||
+    config.IS_SELF_HOSTED
+  ) {
     return null
   }
 
@@ -92,4 +123,4 @@ const AppInstallBanner = () => {
   )
 }
 
-export default AppInstallBanner
+export default RequestInstallBanner

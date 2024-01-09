@@ -35,7 +35,11 @@ const HomePageRedirect = () => {
   const defaultOrg =
     currentUser?.owner?.defaultOrgUsername ?? currentUser?.user?.username
 
-  return <Redirect to={`/${provider}/${defaultOrg}`} />
+  return (
+    <>
+      <Redirect to={`/${provider}/${defaultOrg}`} />
+    </>
+  )
 }
 
 const MainAppRoutes = () => (
