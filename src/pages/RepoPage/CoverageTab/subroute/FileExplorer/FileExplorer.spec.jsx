@@ -5,8 +5,6 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
-
 import FileExplorer from './FileExplorer'
 
 jest.mock('./FileListTable', () => () => 'File list table')
@@ -18,7 +16,6 @@ jest.mock(
 jest.mock('shared/ContentsTable/FileBreadcrumb', () => () => 'File breadcrumb')
 jest.mock('./FlagMultiSelect', () => () => 'FlagMultiSelect')
 jest.mock('../ComponentsMultiSelect', () => () => 'Components Selector')
-jest.mock('shared/featureFlags')
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -129,10 +126,6 @@ afterAll(() => {
 describe('FileExplorer', () => {
   function setup() {
     const user = userEvent.setup()
-
-    useFlags.mockReturnValue({
-      componentsSelect: true,
-    })
 
     server.use(
       graphql.query('BranchContents', (req, res, ctx) => {

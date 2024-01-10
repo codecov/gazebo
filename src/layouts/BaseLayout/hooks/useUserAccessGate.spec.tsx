@@ -6,11 +6,8 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { useFlags } from 'shared/featureFlags'
-
 import { useUserAccessGate } from './useUserAccessGate'
 
-jest.mock('shared/featureFlags')
 jest.spyOn(console, 'error')
 
 const queryClient = new QueryClient({
@@ -165,7 +162,7 @@ const internalUserHasSyncedProviders = {
   email: userSignedInIdentity.email,
   name: userSignedInIdentity.name,
   externalId: '123',
-  termsAgreement: false,
+  termsAgreement: true,
   owners: [
     {
       ownerid: 1,
@@ -241,7 +238,6 @@ afterAll(() => {
 type SetupArgs = {
   user: UserPartial
   internalUser: InternalUser
-  termsOfServicePage: boolean
 }
 
 describe('useUserAccessGate', () => {
@@ -249,19 +245,12 @@ describe('useUserAccessGate', () => {
     {
       user = loggedInUser,
       internalUser = internalUserHasSyncedProviders,
-      termsOfServicePage = false,
     }: SetupArgs = {
       user: loggedInUser,
       internalUser: internalUserHasSyncedProviders,
-      termsOfServicePage: false,
     }
   ) {
-    const mockedUseFlags = jest.mocked(useFlags)
     const mockMutationVariables = jest.fn()
-
-    mockedUseFlags.mockReturnValue({
-      termsOfServicePage,
-    })
 
     server.use(
       rest.get('/internal/user', (req, res, ctx) => {
@@ -297,12 +286,11 @@ describe('useUserAccessGate', () => {
   describe.each([
     [
       'cloud',
-      'TOS feature flag: ON',
+      'TOS',
       'signed TOS',
       {
         user: userHasDefaultOrg,
         internalUser: internalUserWithSignedTOS,
-        termsOfServicePage: true,
         isSelfHosted: false,
         expected: {
           beforeSettled: {
@@ -324,12 +312,37 @@ describe('useUserAccessGate', () => {
     ],
     [
       'cloud',
-      'TOS feature flag: ON',
+      'TOS',
+      'legacy',
+      {
+        user: loggedInLegacyUser,
+        internalUser: internalUserHasSyncedProviders,
+        isSelfHosted: true,
+        expected: {
+          beforeSettled: {
+            isFullExperience: true,
+            isLoading: true,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
+          },
+          afterSettled: {
+            isFullExperience: true,
+            isLoading: false,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
+          },
+        },
+      },
+    ],
+    [
+      'cloud',
+      'TOS',
       'guest',
       {
         user: guestUser,
         internalUser: null,
-        termsOfServicePage: true,
         isSelfHosted: false,
         expected: {
           beforeSettled: {
@@ -351,66 +364,11 @@ describe('useUserAccessGate', () => {
     ],
     [
       'cloud',
-      'TOS feature flag: OFF',
-      'signed TOS',
-      {
-        user: userHasDefaultOrg,
-        internalUser: internalUserHasSyncedProviders,
-        termsOfServicePage: false,
-        isSelfHosted: false,
-        expected: {
-          beforeSettled: {
-            isFullExperience: true,
-            isLoading: true,
-            showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
-            redirectToSyncPage: false,
-          },
-          afterSettled: {
-            isFullExperience: true,
-            isLoading: false,
-            showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
-            redirectToSyncPage: false,
-          },
-        },
-      },
-    ],
-    [
-      'cloud',
-      'TOS feature flag: OFF',
-      'guest',
-      {
-        user: guestUser,
-        internalUser: internalUserHasSyncedProviders,
-        termsOfServicePage: false,
-        isSelfHosted: false,
-        expected: {
-          beforeSettled: {
-            isFullExperience: true,
-            isLoading: true,
-            showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
-            redirectToSyncPage: false,
-          },
-          afterSettled: {
-            isFullExperience: true,
-            isLoading: false,
-            showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
-            redirectToSyncPage: false,
-          },
-        },
-      },
-    ],
-    [
-      'cloud',
-      'TOS feature flag: ON',
+      'TOS',
       'unsigned TOS',
       {
         user: loggedInUnsignedUser,
         internalUser: internalUserWithUnsignedTOS,
-        termsOfServicePage: true,
         isSelfHosted: false,
         expected: {
           beforeSettled: {
@@ -432,66 +390,11 @@ describe('useUserAccessGate', () => {
     ],
     [
       'cloud',
-      'TOS feature flag: OFF',
-      'legacy',
-      {
-        user: loggedInLegacyUser,
-        internalUser: internalUserHasSyncedProviders,
-        termsOfServicePage: false,
-        isSelfHosted: false,
-        expected: {
-          beforeSettled: {
-            isFullExperience: true,
-            isLoading: true,
-            showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
-            redirectToSyncPage: false,
-          },
-          afterSettled: {
-            isFullExperience: true,
-            isLoading: false,
-            showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
-            redirectToSyncPage: false,
-          },
-        },
-      },
-    ],
-    [
-      'cloud',
-      'TOS feature flag: OFF',
-      'unsigned TOS',
-      {
-        user: loggedInUnsignedUser,
-        internalUser: internalUserHasSyncedProviders,
-        termsOfServicePage: false,
-        isSelfHosted: false,
-        expected: {
-          beforeSettled: {
-            isFullExperience: true,
-            isLoading: true,
-            showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
-            redirectToSyncPage: false,
-          },
-          afterSettled: {
-            isFullExperience: true,
-            isLoading: false,
-            showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
-            redirectToSyncPage: false,
-          },
-        },
-      },
-    ],
-    [
-      'cloud',
-      'TOS flag: ON',
+      'default org',
       'does not have a default org',
       {
         user: loggedInUser,
-        internalUser: internalUserHasSyncedProviders,
-        termsOfServicePage: false,
+        internalUser: internalUserWithSignedTOS,
         isSelfHosted: false,
         expected: {
           beforeSettled: {
@@ -512,13 +415,38 @@ describe('useUserAccessGate', () => {
       },
     ],
     [
+      'cloud',
+      'default org',
+      'has a default org',
+      {
+        user: userHasDefaultOrg,
+        internalUser: internalUserWithSignedTOS,
+        isSelfHosted: false,
+        expected: {
+          beforeSettled: {
+            isFullExperience: true,
+            isLoading: true,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
+          },
+          afterSettled: {
+            isFullExperience: true,
+            isLoading: false,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
+          },
+        },
+      },
+    ],
+    [
       'self hosted',
-      'TOS feature flag: ON',
+      'TOS',
       'signed TOS',
       {
         user: loggedInUser,
         internalUser: internalUserHasSyncedProviders,
-        termsOfServicePage: true,
         isSelfHosted: true,
         expected: {
           beforeSettled: {
@@ -540,12 +468,11 @@ describe('useUserAccessGate', () => {
     ],
     [
       'self hosted',
-      'TOS feature flag: ON',
+      'TOS',
       'guest',
       {
         user: guestUser,
         internalUser: internalUserHasSyncedProviders,
-        termsOfServicePage: true,
         isSelfHosted: true,
         expected: {
           beforeSettled: {
@@ -567,12 +494,11 @@ describe('useUserAccessGate', () => {
     ],
     [
       'self hosted',
-      'TOS feature flag: ON',
+      'TOS',
       'legacy',
       {
         user: loggedInLegacyUser,
         internalUser: internalUserHasSyncedProviders,
-        termsOfServicePage: true,
         isSelfHosted: true,
         expected: {
           beforeSettled: {
@@ -594,120 +520,11 @@ describe('useUserAccessGate', () => {
     ],
     [
       'self hosted',
-      'TOS feature flag: ON',
+      'TOS',
       'unsigned TOS',
       {
         user: loggedInUnsignedUser,
         internalUser: internalUserHasSyncedProviders,
-        termsOfServicePage: true,
-        isSelfHosted: true,
-        expected: {
-          beforeSettled: {
-            isFullExperience: true,
-            isLoading: true,
-            showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
-            redirectToSyncPage: false,
-          },
-          afterSettled: {
-            isFullExperience: true,
-            isLoading: false,
-            showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
-            redirectToSyncPage: false,
-          },
-        },
-      },
-    ],
-    [
-      'self hosted',
-      'TOS feature flag: OFF',
-      'signed TOS',
-      {
-        user: loggedInUser,
-        internalUser: internalUserHasSyncedProviders,
-        termsOfServicePage: false,
-        isSelfHosted: true,
-        expected: {
-          beforeSettled: {
-            isFullExperience: true,
-            isLoading: true,
-            showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
-            redirectToSyncPage: false,
-          },
-          afterSettled: {
-            isFullExperience: true,
-            isLoading: false,
-            showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
-            redirectToSyncPage: false,
-          },
-        },
-      },
-    ],
-    [
-      'self hosted',
-      'TOS feature flag: OFF',
-      'guest',
-      {
-        user: guestUser,
-        internalUser: internalUserHasSyncedProviders,
-        termsOfServicePage: false,
-        isSelfHosted: true,
-        expected: {
-          beforeSettled: {
-            isFullExperience: true,
-            isLoading: true,
-            showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
-            redirectToSyncPage: false,
-          },
-          afterSettled: {
-            isFullExperience: true,
-            isLoading: false,
-            showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
-            redirectToSyncPage: false,
-          },
-        },
-      },
-    ],
-    [
-      'self hosted',
-      'TOS feature flag: OFF',
-      'legacy',
-      {
-        user: loggedInLegacyUser,
-        internalUser: internalUserHasSyncedProviders,
-        termsOfServicePage: false,
-        isSelfHosted: true,
-        expected: {
-          beforeSettled: {
-            isFullExperience: true,
-            isLoading: true,
-            showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
-            redirectToSyncPage: false,
-          },
-          afterSettled: {
-            isFullExperience: true,
-            isLoading: false,
-            showAgreeToTerms: false,
-            showDefaultOrgSelector: false,
-            redirectToSyncPage: false,
-          },
-        },
-      },
-    ],
-    [
-      'self hosted',
-      'TOS feature flag: OFF',
-      'unsigned TOS',
-      {
-        user: loggedInUnsignedUser,
-        internalUser: internalUserHasSyncedProviders,
-        termsOfServicePage: false,
         isSelfHosted: true,
         expected: {
           beforeSettled: {
@@ -734,7 +551,6 @@ describe('useUserAccessGate', () => {
       {
         user: userHasDefaultOrg,
         internalUser: internalUserHasSyncedProviders,
-        termsOfServicePage: false,
         isSelfHosted: false,
         expected: {
           beforeSettled: {
@@ -761,7 +577,6 @@ describe('useUserAccessGate', () => {
       {
         user: userHasDefaultOrg,
         internalUser: internalUserNoSyncedProviders,
-        termsOfServicePage: false,
         isSelfHosted: false,
         expected: {
           beforeSettled: {
@@ -788,7 +603,58 @@ describe('useUserAccessGate', () => {
       {
         user: loggedInUser,
         internalUser: internalUserHasSyncedProviders,
-        termsOfServicePage: false,
+        isSelfHosted: true,
+        expected: {
+          beforeSettled: {
+            isFullExperience: true,
+            isLoading: true,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
+          },
+          afterSettled: {
+            isFullExperience: true,
+            isLoading: false,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
+          },
+        },
+      },
+    ],
+    [
+      'self hosted',
+      'default org',
+      'does not have a default org',
+      {
+        user: loggedInUser,
+        internalUser: internalUserWithSignedTOS,
+        isSelfHosted: true,
+        expected: {
+          beforeSettled: {
+            isFullExperience: true,
+            isLoading: true,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
+          },
+          afterSettled: {
+            isFullExperience: true,
+            isLoading: false,
+            showAgreeToTerms: false,
+            showDefaultOrgSelector: false,
+            redirectToSyncPage: false,
+          },
+        },
+      },
+    ],
+    [
+      'self hosted',
+      'default org',
+      'has a default org',
+      {
+        user: userHasDefaultOrg,
+        internalUser: internalUserWithSignedTOS,
         isSelfHosted: true,
         expected: {
           beforeSettled: {
@@ -815,7 +681,6 @@ describe('useUserAccessGate', () => {
       {
         user: loggedInUser,
         internalUser: internalUserNoSyncedProviders,
-        termsOfServicePage: false,
         isSelfHosted: true,
         expected: {
           beforeSettled: {
@@ -841,7 +706,7 @@ describe('useUserAccessGate', () => {
       _,
       termsFlagStatus,
       userType,
-      { user, internalUser, termsOfServicePage, isSelfHosted, expected }
+      { user, internalUser, isSelfHosted, expected }
     ) => {
       describe(`${termsFlagStatus}`, () => {
         describe(`when called with ${userType} user`, () => {
@@ -850,7 +715,6 @@ describe('useUserAccessGate', () => {
             setup({
               user,
               internalUser,
-              termsOfServicePage,
             })
           })
 
@@ -884,7 +748,6 @@ describe('useUserAccessGate', () => {
       setup({
         user: loggedInUser,
         internalUser: internalUserHasSyncedProviders,
-        termsOfServicePage: true,
       })
 
       const { result } = renderHook(() => useUserAccessGate(), {
@@ -905,7 +768,6 @@ describe('useUserAccessGate', () => {
       const { mockMutationVariables } = setup({
         user: loggedInUser,
         internalUser: internalUserHasSyncedProviders,
-        termsOfServicePage: true,
       })
 
       const { result } = renderHook(() => useUserAccessGate(), {

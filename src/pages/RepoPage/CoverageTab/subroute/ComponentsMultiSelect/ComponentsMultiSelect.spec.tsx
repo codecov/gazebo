@@ -7,13 +7,7 @@ import { setupServer } from 'msw/node'
 import type { ReactNode } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
-
 import ComponentsMultiSelect from './ComponentsMultiSelect'
-
-jest.mock('shared/featureFlags')
-
-const mockedUseFlags = useFlags as jest.Mock<{ componentsSelect: boolean }>
 
 const mockComponentsResponse = (components: Array<{ name: string }>) => ({
   owner: {
@@ -144,9 +138,6 @@ describe('ComponentsMultiSelect', () => {
     const user = userEvent.setup()
     const mockApiVars = jest.fn()
 
-    mockedUseFlags.mockReturnValue({
-      componentsSelect: true,
-    })
     server.use(
       graphql.query('GetBranchComponents', (req, res, ctx) => {
         mockApiVars(req.variables)
