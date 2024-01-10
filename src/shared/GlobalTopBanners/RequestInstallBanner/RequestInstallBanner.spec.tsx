@@ -88,6 +88,30 @@ describe('RequestInstallBanner', () => {
         })
       })
 
+      describe('user closes modal without clicking Done', () => {
+        it('closes the modal', async () => {
+          const { user, mockGetItem } = setup({})
+          render(<RequestInstallBanner />, { wrapper: wrapper('/gh/codecov') })
+
+          mockGetItem.mockReturnValue(null)
+
+          const shareBtn = screen.getByRole('button', { name: /Share Request/ })
+          expect(shareBtn).toBeInTheDocument()
+          await user.click(shareBtn)
+
+          const modalText = screen.getByText(
+            "Copy the link below and share it with your organization's" +
+              ' admin or owner to assist.'
+          )
+          expect(modalText).toBeInTheDocument()
+
+          const modalCloseBtn = await screen.findByTestId('modal-close-icon')
+          expect(modalCloseBtn).toBeInTheDocument()
+          await user.click(modalCloseBtn)
+          expect(modalText).not.toBeInTheDocument()
+        })
+      })
+
       describe('user clicks done on the modal', () => {
         it('calls local storage', async () => {
           const { user, mockGetItem, mockSetItem } = setup({})
