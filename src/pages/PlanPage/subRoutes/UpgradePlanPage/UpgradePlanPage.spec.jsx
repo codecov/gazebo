@@ -15,7 +15,7 @@ import { Plans } from 'shared/utils/billing'
 
 import UpgradePlanPage from './UpgradePlanPage'
 
-jest.mock('./UpgradeForm2', () => () => 'UpgradeForm2')
+jest.mock('./UpgradeForm', () => () => 'UpgradeForm')
 
 const plans = [
   {
@@ -207,6 +207,7 @@ describe('UpgradePlanPage', () => {
           ctx.status(200),
           ctx.data({
             owner: {
+              hasPrivateRepos: true,
               plan: {
                 ...mockPlanData,
               },

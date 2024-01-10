@@ -14,8 +14,8 @@ import {
 } from 'shared/utils/billing'
 
 import UpgradeDetails from './UpgradeDetails'
-import UpgradeForm2 from './UpgradeForm2'
-import { usePlanParams } from './UpgradeForm2/hooks/usePlanParams'
+import UpgradeForm from './UpgradeForm'
+import { usePlanParams } from './UpgradeForm/hooks/usePlanParams'
 
 import { useSetCrumbs } from '../../context'
 
@@ -63,7 +63,7 @@ function UpgradePlanPage() {
   return (
     <div className="flex flex-col gap-8 md:w-11/12 md:flex-row lg:w-10/12">
       <UpgradeDetails selectedPlan={selectedPlan} />
-      <UpgradeForm2
+      <UpgradeForm
         selectedPlan={selectedPlan}
         setSelectedPlan={setSelectedPlan}
       />

@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom'
 
 import { useBranchComponents } from 'services/branches'
 import { useLocationParams } from 'services/navigation'
-import { useFlags } from 'shared/featureFlags'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'
 
@@ -31,9 +30,6 @@ export default function ComponentsMultiSelect() {
     // @ts-expect-errors, useLocation params needs to be updated to have full types
     params?.components
   )
-  const { componentsSelect: componentsSelectFlag } = useFlags({
-    componentsSelect: false,
-  })
 
   const { data, isLoading } = useBranchComponents({
     provider,
@@ -48,10 +44,7 @@ export default function ComponentsMultiSelect() {
   const components = data?.branch?.head?.components
     ? data?.branch?.head?.components
     : []
-  if (
-    (!components?.length && !isLoading && !componentSearch) ||
-    !componentsSelectFlag
-  ) {
+  if (!components?.length && !isLoading && !componentSearch) {
     return null
   }
 

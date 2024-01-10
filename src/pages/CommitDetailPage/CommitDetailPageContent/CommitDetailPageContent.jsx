@@ -58,7 +58,7 @@ function CommitDetailPageContent() {
     commitData?.commit?.compareWithParent?.directChangedFilesCount ?? 0
 
   return (
-    <>
+    <div className="@container/commit-detail-page">
       <CommitPageTabs
         commitSha={commitSha}
         indirectChangedFilesCount={indirectChangedFilesCount}
@@ -94,7 +94,7 @@ function CommitDetailPageContent() {
           />
         </Switch>
       </Suspense>
-    </>
+    </div>
   )
 }
 
