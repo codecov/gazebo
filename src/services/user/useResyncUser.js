@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
@@ -62,17 +63,22 @@ export function useResyncUser() {
   const isSyncing = mutationData.isLoading || isSyncingInCache
 
   // useQuery will automatically feed the so we don't need to care about return
-  useQuery({
+  const { isSuccess, isFetching } = useQuery({
     queryKey: ['isSyncing', provider],
     queryFn: ({ signal }) => fetchIsSyncing({ provider, signal }),
     suspense: false,
     useErrorBoundary: false,
     refetchInterval: isSyncing ? 2000 : null,
-    onSuccess: () =>
+  })
+
+  useEffect(() => {
+    // need to have both here, cause this query needs to be called twice(?)
+    if (isSuccess && !isFetching) {
       queryClient.refetchQueries({
         queryKey: ['repos'],
-      }),
-  })
+      })
+    }
+  }, [isFetching, isSuccess, queryClient])
 
   return {
     isSyncing,
