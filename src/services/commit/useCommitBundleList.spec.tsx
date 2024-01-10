@@ -132,32 +132,27 @@ describe('useCommitBundleList', () => {
       )
 
       const expectedResult = {
-        owner: {
-          repository: {
-            __typename: 'Repository',
-            commit: {
-              bundleAnalysisCompareWithParent: {
-                __typename: 'BundleAnalysisComparison',
-                bundles: [
-                  {
-                    name: 'bundle.js',
-                    changeType: 'added',
-                    sizeDelta: 1,
-                    sizeTotal: 2,
-                    loadTimeDelta: 3,
-                    loadTimeTotal: 4,
-                  },
-                  {
-                    name: 'bundle.css',
-                    changeType: 'removed',
-                    sizeDelta: 5,
-                    sizeTotal: 6,
-                    loadTimeDelta: 7,
-                    loadTimeTotal: 8,
-                  },
-                ],
+        commit: {
+          bundleAnalysisCompareWithParent: {
+            __typename: 'BundleAnalysisComparison',
+            bundles: [
+              {
+                name: 'bundle.js',
+                changeType: 'added',
+                sizeDelta: 1,
+                sizeTotal: 2,
+                loadTimeDelta: 3,
+                loadTimeTotal: 4,
               },
-            },
+              {
+                name: 'bundle.css',
+                changeType: 'removed',
+                sizeDelta: 5,
+                sizeTotal: 6,
+                loadTimeDelta: 7,
+                loadTimeTotal: 8,
+              },
+            ],
           },
         },
       }
@@ -183,7 +178,7 @@ describe('useCommitBundleList', () => {
       )
 
       await waitFor(() =>
-        expect(result.current.data).toStrictEqual({ owner: null })
+        expect(result.current.data).toStrictEqual({ commit: null })
       )
     })
   })
