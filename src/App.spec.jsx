@@ -100,7 +100,7 @@ afterAll(() => {
 })
 
 describe('App', () => {
-  function setup() {
+  function setup(hasLoggedInUser = true) {
     server.use(
       rest.get('/internal/user', (_, res, ctx) => {
         return res(ctx.status(200), ctx.json(internalUser))
@@ -108,9 +108,12 @@ describe('App', () => {
       graphql.query('DetailOwner', (_, res, ctx) =>
         res(ctx.status(200), ctx.data({ owner: 'codecov' }))
       ),
-      graphql.query('CurrentUser', (_, res, ctx) =>
-        res(ctx.status(200), ctx.data(user))
-      )
+      graphql.query('CurrentUser', (req, res, ctx) => {
+        if (hasLoggedInUser) {
+          return res(ctx.status(200), ctx.data(user))
+        }
+        return res(ctx.status(200), ctx.data({}))
+      })
     )
   }
 
@@ -508,4 +511,12 @@ describe('App', () => {
       })
     }
   )
+
+  describe('user not logged in', () => {
+    it('redirects to login', async () => {
+      setup(false)
+      render(<App />, { wrapper: wrapper(['*']) })
+      await waitFor(() => expect(testLocation.pathname).toBe('/login'))
+    })
+  })
 })
