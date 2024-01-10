@@ -219,6 +219,7 @@ describe('Actions Billing', () => {
           accountDetails: mockedFreeAccountDetails,
           plans: allPlans,
           trialPlanData: {
+            hasPrivateRepos: true,
             plan: {
               ...mockTrialData.plan,
               trialStatus: TrialStatuses.NOT_STARTED,
@@ -239,6 +240,7 @@ describe('Actions Billing', () => {
           accountDetails: mockedFreeAccountDetails,
           plans: allPlans,
           trialPlanData: {
+            hasPrivateRepos: true,
             plan: {
               ...mockTrialData.plan,
               trialStatus: TrialStatuses.NOT_STARTED,
@@ -264,6 +266,7 @@ describe('Actions Billing', () => {
             accountDetails: mockedFreeAccountDetails,
             plans: allPlans,
             trialPlanData: {
+              hasPrivateRepos: true,
               plan: {
                 ...mockTrialData.plan,
                 trialStatus: TrialStatuses.NOT_STARTED,
@@ -290,12 +293,61 @@ describe('Actions Billing', () => {
       })
     })
 
+    describe('user does not have private repos', () => {
+      it('does not renders start trial button', async () => {
+        setup({
+          accountDetails: mockedFreeAccountDetails,
+          plans: allPlans,
+          trialPlanData: {
+            hasPrivateRepos: false,
+            plan: {
+              ...mockTrialData.plan,
+              trialStatus: TrialStatuses.NOT_STARTED,
+            },
+          },
+        })
+
+        render(<ActionsBilling />, { wrapper })
+
+        const startTrialButton = screen.queryByRole('button', {
+          name: 'Start trial',
+        })
+        expect(startTrialButton).not.toBeInTheDocument()
+      })
+
+      it('renders upgrade to pro link', async () => {
+        setup({
+          accountDetails: mockedFreeAccountDetails,
+          plans: allPlans,
+          trialPlanData: {
+            hasPrivateRepos: false,
+            plan: {
+              ...mockTrialData.plan,
+              trialStatus: TrialStatuses.NOT_STARTED,
+            },
+          },
+        })
+
+        render(<ActionsBilling />, { wrapper })
+
+        const upgradeToProLink = await screen.findByRole('link', {
+          name: 'Upgrade to Pro',
+        })
+        expect(upgradeToProLink).toBeInTheDocument()
+        expect(upgradeToProLink).toHaveAttribute(
+          'href',
+          '/plan/gh/critical-role/upgrade'
+        )
+      })
+    })
+
     describe('user has a trial plan', () => {
       it('renders upgrade link', async () => {
         setup({
           accountDetails: mockTrialAccountDetails,
           plans: allPlans,
           trialPlanData: {
+            hasPrivateRepos: true,
             plan: {
               ...mockTrialData.plan,
               trialStatus: TrialStatuses.ONGOING,
@@ -404,6 +456,7 @@ describe('Actions Billing', () => {
             accountDetails: mockedFreeAccountDetails,
             plans: sentryPlans,
             trialPlanData: {
+              hasPrivateRepos: true,
               plan: {
                 ...mockTrialData.plan,
                 trialStatus: TrialStatuses.NOT_STARTED,
@@ -424,6 +477,7 @@ describe('Actions Billing', () => {
             accountDetails: mockedFreeAccountDetails,
             plans: sentryPlans,
             trialPlanData: {
+              hasPrivateRepos: true,
               plan: {
                 ...mockTrialData.plan,
                 trialStatus: TrialStatuses.NOT_STARTED,
@@ -449,6 +503,7 @@ describe('Actions Billing', () => {
               accountDetails: mockedFreeAccountDetails,
               plans: sentryPlans,
               trialPlanData: {
+                hasPrivateRepos: true,
                 plan: {
                   ...mockTrialData.plan,
                   trialStatus: TrialStatuses.NOT_STARTED,
@@ -481,6 +536,7 @@ describe('Actions Billing', () => {
             accountDetails: mockTrialAccountDetails,
             plans: sentryPlans,
             trialPlanData: {
+              hasPrivateRepos: true,
               plan: {
                 ...mockTrialData.plan,
                 trialStatus: TrialStatuses.ONGOING,

@@ -7,12 +7,7 @@ import { setupServer } from 'msw/node'
 import type { ReactNode } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
-
 import ComponentsSelector from './ComponentsSelector'
-
-jest.mock('shared/featureFlags')
-const mockedUseFlags = useFlags as jest.Mock<{ componentsSelect: boolean }>
 
 const mockPullComponentsResponse = (components: Array<{ name: string }>) => ({
   owner: {
@@ -73,10 +68,6 @@ describe('ComponentsSelector', () => {
   ) {
     const user = userEvent.setup()
     const mockApiVars = jest.fn()
-
-    mockedUseFlags.mockReturnValue({
-      componentsSelect: true,
-    })
 
     server.use(
       graphql.query('PullComponentsSelector', (req, res, ctx) => {

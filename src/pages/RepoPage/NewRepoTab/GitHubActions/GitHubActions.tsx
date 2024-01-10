@@ -6,7 +6,7 @@ import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
 
 const codecovActionString = `- name: Upload coverage reports to Codecov
-  uses: codecov/codecov-action@v4
+  uses: codecov/codecov-action@v3
   env:
     CODECOV_TOKEN: \${{ secrets.CODECOV_TOKEN }}
 `
@@ -20,14 +20,14 @@ interface URLParams {
 function GitHubActions() {
   const { provider, owner, repo } = useParams<URLParams>()
   const { data } = useRepo({ provider, owner, repo })
-  const orgUploadToken = data?.orgUploadToken
+  const repoUploadToken = data?.repository?.uploadToken
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4">
         <div>
           <h2 className="text-base font-semibold">
-            Step 1: add global token as{' '}
+            Step 1: add repository token as{' '}
             <A
               to={{ pageName: 'githubRepoSecrets' }}
               isExternal
@@ -42,8 +42,8 @@ function GitHubActions() {
           </p>
         </div>
         <pre className="flex items-center gap-2 overflow-auto rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          CODECOV_TOKEN={orgUploadToken}
-          <CopyClipboard string={orgUploadToken} />
+          CODECOV_TOKEN={repoUploadToken}
+          <CopyClipboard string={repoUploadToken} />
         </pre>
       </div>
       <div className="flex flex-col gap-4">

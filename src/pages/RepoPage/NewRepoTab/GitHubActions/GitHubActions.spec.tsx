@@ -112,7 +112,7 @@ describe('GitHubActions', () => {
       expect(codecovToken).toBeInTheDocument()
 
       const tokenValue = await screen.findByText(
-        /9e6a6189-20f1-482d-ab62-ecfaa2629290/
+        /9e6a6189-20f1-482d-ab62-ecfaa2629295/
       )
       expect(tokenValue).toBeInTheDocument()
     })

@@ -22,8 +22,8 @@ interface CoverageProps {
   head?: {
     totals?: {
       percentCovered: number | null
-    }
-  }
+    } | null
+  } | null
   pullId: number
   state: IconEnumState
   plain?: boolean

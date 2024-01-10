@@ -22,7 +22,7 @@ import { useUpgradeControls } from './hooks'
 import PlanTypeOptions from './PlanTypeOptions'
 import UpdateButton from './UpdateButton'
 
-function UpgradeForm2({ selectedPlan, setSelectedPlan }) {
+function UpgradeForm({ selectedPlan, setSelectedPlan }) {
   const { provider, owner } = useParams()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: plans } = useAvailablePlans({ provider, owner })
@@ -94,9 +94,9 @@ function UpgradeForm2({ selectedPlan, setSelectedPlan }) {
   )
 }
 
-export default UpgradeForm2
+export default UpgradeForm
 
-UpgradeForm2.propTypes = {
+UpgradeForm.propTypes = {
   selectedPlan: PropType.shape({
     value: PropType.string.isRequired,
   }).isRequired,

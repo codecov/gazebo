@@ -29,9 +29,6 @@ function FilesChanged() {
   const { multipleTiers } = useFlags({
     multipleTiers: false,
   })
-  const { componentsSelect } = useFlags({
-    componentsSelect: false,
-  })
 
   const { data: tierData } = useTier({ provider, owner })
 
@@ -49,11 +46,9 @@ function FilesChanged() {
 
   return (
     <Suspense fallback={<Loader />}>
-      {componentsSelect && (
-        <div className="flex justify-end bg-ds-gray-primary p-2">
-          <ComponentsSelector />
-        </div>
-      )}
+      <div className="flex justify-end bg-ds-gray-primary p-2">
+        <ComponentsSelector />
+      </div>
       <FilesChangedTable />
     </Suspense>
   )
