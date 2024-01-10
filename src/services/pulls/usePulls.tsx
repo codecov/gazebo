@@ -71,7 +71,7 @@ const PullSchema = z
   })
   .nullable()
 
-type Pull = z.infer<typeof PullSchema>
+export type Pull = z.infer<typeof PullSchema>
 
 const PageInfoSchema = z.object({
   hasNextPage: z.boolean(),
