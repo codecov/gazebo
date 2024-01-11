@@ -178,7 +178,9 @@ export function usePullBundleList({
           })
         }
 
-        return data
+        return {
+          pull: data?.owner?.repository?.pull ?? null,
+        }
       }),
   })
 }
