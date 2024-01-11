@@ -890,8 +890,8 @@ describe('RepoPage', () => {
         })
         render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
 
-        const newRepoTab = await screen.findByText('NewRepoTab')
-        expect(newRepoTab).toBeInTheDocument()
+        const coverageOnboarding = await screen.findByText('CoverageOnboarding')
+        expect(coverageOnboarding).toBeInTheDocument()
       })
     })
 
