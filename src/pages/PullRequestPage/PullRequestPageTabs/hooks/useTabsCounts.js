@@ -39,6 +39,6 @@ export const useTabsCounts = () => {
     componentsCount: compareWithBase?.componentComparisonsCount,
     indirectChangesCount: compareWithBase?.indirectChangedFilesCount,
     directChangedFilesCount: compareWithBase?.directChangedFilesCount,
-    commitsCount: commitsData?.pages[0]?.commitsCount,
+    commitsCount: commitsData?.pages?.[0]?.commitsCount,
   }
 }

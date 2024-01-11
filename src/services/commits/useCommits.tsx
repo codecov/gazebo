@@ -138,11 +138,11 @@ query GetCommits(
                 avatarUrl
               }
               totals {
-                coverage
+                coverage: percentCovered
               }
               parent {
                 totals {
-                  coverage
+                  coverage: percentCovered
                 }
               }
               compareWithParent {
