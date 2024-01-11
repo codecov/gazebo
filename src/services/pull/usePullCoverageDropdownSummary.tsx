@@ -16,15 +16,19 @@ import {
 import Api from 'shared/api'
 import A from 'ui/A'
 
-const BAComparisonSchema = z.object({
-  __typename: z.literal('BundleAnalysisComparison'),
-  sizeDelta: z.number(),
-  loadTimeDelta: z.number(),
+const ComparisonSchema = z.object({
+  __typename: z.literal('Comparison'),
+  patchTotals: z
+    .object({
+      missesCount: z.number().nullable(),
+      partialsCount: z.number().nullable(),
+    })
+    .nullable(),
 })
 
-const BundleAnalysisCompareWithParentSchema = z
+const CompareWithBaseSchema = z
   .discriminatedUnion('__typename', [
-    BAComparisonSchema,
+    ComparisonSchema,
     FirstPullRequestSchema,
     MissingBaseCommitSchema,
     MissingBaseReportSchema,
@@ -36,10 +40,9 @@ const BundleAnalysisCompareWithParentSchema = z
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
-  commit: z
+  pull: z
     .object({
-      bundleAnalysisCompareWithParent:
-        BundleAnalysisCompareWithParentSchema.nullable(),
+      compareWithBase: CompareWithBaseSchema.nullable(),
     })
     .nullable(),
 })
@@ -57,21 +60,19 @@ const RequestSchema = z.object({
 })
 
 const query = `
-query CommitBADropdownSummary(
-  $owner: String!
-  $repo: String!
-  $commitid: String!
-) {
+query PullDropdownSummary($owner: String!, $repo: String!, $pullId: Int!) {
   owner(username: $owner) {
     repository(name: $repo) {
       __typename
       ... on Repository {
-        commit(id: $commitid) {
-          bundleAnalysisCompareWithParent {
+        pull(id: $pullId) {
+          compareWithBase {
             __typename
-            ... on BundleAnalysisComparison {
-              sizeDelta
-              loadTimeDelta
+            ... on Comparison {
+              patchTotals {
+                missesCount
+                partialsCount
+              }
             }
             ... on FirstPullRequest {
               message
@@ -104,31 +105,27 @@ query CommitBADropdownSummary(
   }
 }`
 
-interface UseCommitBADropdownSummaryArgs {
+interface usePullCoverageDropdownSummaryArgs {
   provider: string
   owner: string
   repo: string
-  commitid: string
+  pullId: number
 }
 
-export function useCommitBADropdownSummary({
+export function usePullCoverageDropdownSummary({
   provider,
   owner,
   repo,
-  commitid,
-}: UseCommitBADropdownSummaryArgs) {
+  pullId,
+}: usePullCoverageDropdownSummaryArgs) {
   return useQuery({
-    queryKey: ['CommitBADropdownSummary', provider, owner, repo, commitid],
+    queryKey: ['PullDropdownSummary', provider, owner, repo, pullId],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
         query,
         signal,
-        variables: {
-          owner,
-          repo,
-          commitid,
-        },
+        variables: { owner, repo, pullId },
       }).then((res) => {
         const parsedRes = RequestSchema.safeParse(res?.data)
 

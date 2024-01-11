@@ -3,7 +3,6 @@ import { useState } from 'react'
 
 import { useCommitComponents } from 'services/commit'
 import { useLocationParams } from 'services/navigation'
-import { useFlags } from 'shared/featureFlags'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'
 
@@ -19,9 +18,6 @@ function ComponentsSelector() {
     // @ts-expect-errors, useLocation params needs to be updated to have full types
     params?.components
   )
-  const { componentsSelect: componentsSelectFlag } = useFlags({
-    componentsSelect: false,
-  })
   const { data, isLoading } = useCommitComponents({
     filters: {
       components: componentSearch ? [componentSearch] : undefined,
@@ -33,10 +29,7 @@ function ComponentsSelector() {
 
   const components = data?.components
 
-  if (
-    (!components?.length && !isLoading && !componentSearch) ||
-    !componentsSelectFlag
-  ) {
+  if (!components?.length && !isLoading && !componentSearch) {
     return null
   }
 
