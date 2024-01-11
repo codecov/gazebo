@@ -10,6 +10,7 @@ import CommitsTable from './CommitsTable'
 const genMockWrapper = ({ commits = [], hasNextPage = false }) => ({
   owner: {
     repository: {
+      __typename: 'Repository',
       commits: {
         edges: commits,
         pageInfo: {
@@ -43,8 +44,9 @@ const mockCommits = ({ hasNextPage } = { hasNextPage: false }) =>
             },
           },
           compareWithParent: {
+            __typename: 'Comparison',
             patchTotals: {
-              coverage: 100,
+              percentCovered: 100,
             },
           },
         },
@@ -68,8 +70,9 @@ const mockCommits = ({ hasNextPage } = { hasNextPage: false }) =>
             },
           },
           compareWithParent: {
+            __typename: 'Comparison',
             patchTotals: {
-              coverage: 100,
+              percentCovered: 100,
             },
           },
         },
@@ -101,8 +104,9 @@ const mockInvalidPatchCommit = genMockWrapper({
           },
         },
         compareWithParent: {
+          __typename: 'Comparison',
           patchTotals: {
-            coverage: null,
+            percentCovered: null,
           },
         },
       },
