@@ -14,7 +14,7 @@ import RepoPage from './RepoPage'
 
 jest.mock('./CommitsTab', () => () => 'CommitsTab')
 jest.mock('./CoverageTab', () => () => 'CoverageTab')
-jest.mock('./NewRepoTab', () => () => 'NewRepoTab')
+jest.mock('./CoverageOnboarding', () => () => 'CoverageOnboarding')
 jest.mock('./PullsTab', () => () => 'PullsTab')
 jest.mock('./FlagsTab', () => () => 'FlagsTab')
 jest.mock('./SettingsTab', () => () => 'SettingsTab')
