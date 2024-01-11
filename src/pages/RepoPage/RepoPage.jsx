@@ -13,7 +13,11 @@ import TabNavigation from 'ui/TabNavigation'
 
 import { RepoBreadcrumbProvider } from './context'
 import DeactivatedRepo from './DeactivatedRepo'
-import { useMatchBlobsPath, useMatchTreePath } from './hooks'
+import {
+  useMatchBlobsPath,
+  useMatchCoverageOnboardingPath,
+  useMatchTreePath,
+} from './hooks'
 import RepoBreadcrumb from './RepoBreadcrumb'
 
 const CommitsTab = lazy(() => import('./CommitsTab'))
@@ -25,17 +29,20 @@ const SettingsTab = lazy(() => import('./SettingsTab'))
 
 const path = '/:provider/:owner/:repo'
 
-const getRepoTabs = ({
-  matchTree,
-  matchBlobs,
+const useRepoTabs = ({
   isCurrentUserPartOfOrg,
   provider,
   owner,
   repo,
   tierData,
   isRepoPrivate,
+  isRepoActive,
 }) => {
   let location = undefined
+  const matchTree = useMatchTreePath()
+  const matchBlobs = useMatchBlobsPath()
+  const matchCoverageOnboarding = useMatchCoverageOnboardingPath()
+
   if (matchTree) {
     location = { pathname: `/${provider}/${owner}/${repo}/tree` }
   } else if (matchBlobs) {
@@ -43,18 +50,26 @@ const getRepoTabs = ({
   }
   const hideFlagsTab = isRepoPrivate && tierData === TierNames.TEAM
 
-  return [
+  let tabs = [
     {
       pageName: 'overview',
       children: 'Coverage',
-      exact: !matchTree && !matchBlobs,
+      exact: !matchTree && !matchBlobs && !matchCoverageOnboarding,
       location,
     },
-    ...(hideFlagsTab ? [] : [{ pageName: 'flagsTab' }]),
-    { pageName: 'commits' },
-    { pageName: 'pulls' },
-    ...(isCurrentUserPartOfOrg ? [{ pageName: 'settings' }] : []),
   ]
+
+  if (isRepoActive) {
+    tabs = [
+      ...tabs,
+      ...(hideFlagsTab ? [] : [{ pageName: 'flagsTab' }]),
+      { pageName: 'commits' },
+      { pageName: 'pulls' },
+      ...(isCurrentUserPartOfOrg ? [{ pageName: 'settings' }] : []),
+    ]
+  }
+
+  return tabs
 }
 
 const Loader = () => (
@@ -67,7 +82,6 @@ function RepoPage() {
   const { provider, owner, repo } = useParams()
   const [refetchEnabled, setRefetchEnabled] = useState(false)
   const { data: tierData } = useTier({ owner, provider })
-
   const { data: repoData } = useRepo({
     provider,
     owner,
@@ -77,13 +91,21 @@ function RepoPage() {
     },
   })
 
-  const matchTree = useMatchTreePath()
-  const matchBlobs = useMatchBlobsPath()
   const isCurrentUserPartOfOrg = repoData?.isCurrentUserPartOfOrg
   const isCurrentUserActivated = repoData?.isCurrentUserActivated
   const isRepoActive = repoData?.repository?.active
   const isRepoActivated = repoData?.repository?.activated
   const isRepoPrivate = !!repoData?.repository?.private
+
+  const repoTabs = useRepoTabs({
+    isCurrentUserPartOfOrg,
+    provider,
+    owner,
+    repo,
+    tierData,
+    isRepoPrivate,
+    isRepoActive,
+  })
 
   if (!refetchEnabled && !isRepoActivated) {
     setRefetchEnabled(true)
@@ -91,7 +113,7 @@ function RepoPage() {
 
   if (!repoData?.repository) return <NotFound />
 
-  if (!isCurrentUserActivated && isRepoPrivate)
+  if (!isCurrentUserActivated && isRepoPrivate) {
     throw new CustomError({
       status: 403,
       detail: (
@@ -102,27 +124,15 @@ function RepoPage() {
         </p>
       ),
     })
+  }
 
   return (
     <RepoBreadcrumbProvider>
       <div>
         <RepoBreadcrumb />
-        {isRepoActive && isRepoActivated && (
-          <div className="sticky top-8 z-10 mb-2 bg-white">
-            <TabNavigation
-              tabs={getRepoTabs({
-                matchTree,
-                matchBlobs,
-                isCurrentUserPartOfOrg,
-                provider,
-                owner,
-                repo,
-                tierData,
-                isRepoPrivate,
-              })}
-            />
-          </div>
-        )}
+        <div className="sticky top-8 z-10 bg-white pb-2">
+          <TabNavigation tabs={repoTabs} />
+        </div>
         <Suspense fallback={<Loader />}>
           {isRepoActivated ? (
             <Switch>
@@ -178,6 +188,7 @@ function RepoPage() {
                   >
                     <NewRepoTab />
                   </SentryRoute>
+
                   <Redirect from={path} to={`${path}/new`} />
                   <Redirect from={`${path}/*`} to={`${path}/new`} />
                 </Switch>
