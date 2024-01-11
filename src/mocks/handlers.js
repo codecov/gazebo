@@ -125,7 +125,7 @@ graphql.query('PullPageData', (req, res, ctx) => {
   )
 })
 
-graphql.PullHeadData('PullHeadData', (req, res, ctx) => {
+graphql.query('PullHeadData', (req, res, ctx) => {
   return res(
     ctx.status(200),
     ctx.data({
