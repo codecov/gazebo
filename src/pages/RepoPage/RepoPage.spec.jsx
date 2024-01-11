@@ -313,16 +313,23 @@ describe('RepoPage', () => {
           expect(tab).not.toBeInTheDocument()
         })
 
-        it('does not have a settings tab', () => {
-          const { queryClient } = setup({
+        it('has a settings tab', async () => {
+          const { user, queryClient } = setup({
             isRepoActivated: false,
             isRepoActive: false,
             hasRepoData: true,
           })
           render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
 
-          const tab = screen.queryByRole('link', { name: 'Settings' })
-          expect(tab).not.toBeInTheDocument()
+          const tab = await screen.findByRole('link', { name: 'Settings' })
+          expect(tab).toBeInTheDocument()
+          expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/settings')
+
+          await user.click(tab)
+
+          await waitFor(() =>
+            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/settings')
+          )
         })
       })
 
@@ -588,8 +595,8 @@ describe('RepoPage', () => {
           expect(tab).not.toBeInTheDocument()
         })
 
-        it('does not have a settings tab', () => {
-          const { queryClient } = setup({
+        it('has a settings tab', async () => {
+          const { user, queryClient } = setup({
             isRepoActivated: false,
             isRepoActive: false,
             hasRepoData: true,
@@ -597,8 +604,15 @@ describe('RepoPage', () => {
           })
           render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
 
-          const tab = screen.queryByRole('link', { name: 'Settings' })
-          expect(tab).not.toBeInTheDocument()
+          const tab = await screen.findByRole('link', { name: 'Settings' })
+          expect(tab).toBeInTheDocument()
+          expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/settings')
+
+          await user.click(tab)
+
+          await waitFor(() =>
+            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/settings')
+          )
         })
       })
 

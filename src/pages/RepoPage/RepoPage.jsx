@@ -65,9 +65,13 @@ const useRepoTabs = ({
       ...(hideFlagsTab ? [] : [{ pageName: 'flagsTab' }]),
       { pageName: 'commits' },
       { pageName: 'pulls' },
-      ...(isCurrentUserPartOfOrg ? [{ pageName: 'settings' }] : []),
     ]
   }
+
+  tabs = [
+    ...tabs,
+    ...(isCurrentUserPartOfOrg ? [{ pageName: 'settings' }] : []),
+  ]
 
   return tabs
 }
@@ -188,7 +192,9 @@ function RepoPage() {
                   >
                     <NewRepoTab />
                   </SentryRoute>
-
+                  <SentryRoute path={`${path}/settings`}>
+                    <SettingsTab />
+                  </SentryRoute>
                   <Redirect from={path} to={`${path}/new`} />
                   <Redirect from={`${path}/*`} to={`${path}/new`} />
                 </Switch>
