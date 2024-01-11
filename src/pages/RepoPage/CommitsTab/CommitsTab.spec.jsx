@@ -65,8 +65,36 @@ const mockBranches = (hasNextPage = false) => ({
 const mockCommits = {
   owner: {
     repository: {
+      __typename: 'Repository',
       commits: {
-        edges: [null],
+        edges: [
+          {
+            node: {
+              ciPassed: false,
+              message: 'commit message 3',
+              commitid: '7822fd88f36efcd9af276792813a83da17bd3c67',
+              createdAt: '2023-10-13T00:00.000000',
+              author: {
+                username: 'codecov-user',
+                avatarUrl: 'http://127.0.0.1/cool-user-avatar',
+              },
+              totals: {
+                coverage: 100,
+              },
+              parent: {
+                totals: {
+                  coverage: 0,
+                },
+              },
+              compareWithParent: {
+                __typename: 'Comparison',
+                patchTotals: {
+                  percentCovered: 100,
+                },
+              },
+            },
+          },
+        ],
         pageInfo: {
           hasNextPage: false,
           endCursor: 'some cursor',
@@ -304,7 +332,7 @@ describe('CommitsTab', () => {
       })
 
       describe('when branch has no commits', () => {
-        it('uses all branches', async () => {
+        it('uses returned branch', async () => {
           setup({ branchHasCommits: false, returnBranch: 'main' })
           repoPageRender({
             renderCommits: () => (
@@ -320,7 +348,7 @@ describe('CommitsTab', () => {
           })
           expect(selector).toBeInTheDocument()
 
-          const selectedBranch = within(selector).getByText(/All branches/)
+          const selectedBranch = within(selector).getByText(/main/)
           expect(selectedBranch).toBeInTheDocument()
         })
       })
