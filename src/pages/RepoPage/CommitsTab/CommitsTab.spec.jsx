@@ -348,7 +348,9 @@ describe('CommitsTab', () => {
           })
           expect(selector).toBeInTheDocument()
 
-          const selectedBranch = within(selector).getByText(/main/)
+          const selectedBranch = await within(selector).findByText(
+            /All branches/
+          )
           expect(selectedBranch).toBeInTheDocument()
         })
       })
