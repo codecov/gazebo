@@ -79,7 +79,7 @@ interface SetupArgs {
   isNotFoundError?: boolean
 }
 
-describe('useCommitSummary', () => {
+describe('useCommitCoverageDropdownSummary', () => {
   function setup({
     isUnsuccessfulParseError = false,
     isNullOwner = false,

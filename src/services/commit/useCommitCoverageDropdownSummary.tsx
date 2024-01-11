@@ -123,7 +123,7 @@ export function useCommitCoverageDropdownSummary({
   commitid,
 }: useCommitCoverageDropdownSummaryArgs) {
   return useQuery({
-    queryKey: ['CommitSummary', provider, owner, repo, commitid],
+    queryKey: ['CommitDropdownSummary', provider, owner, repo, commitid],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
