@@ -1,1 +1,1 @@
-export { default } from './CommitsTable'
+export { default } from './CommitsTable.tsx'
