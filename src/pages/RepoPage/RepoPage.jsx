@@ -22,7 +22,7 @@ import RepoBreadcrumb from './RepoBreadcrumb'
 
 const CommitsTab = lazy(() => import('./CommitsTab'))
 const CoverageTab = lazy(() => import('./CoverageTab'))
-const NewRepoTab = lazy(() => import('./NewRepoTab'))
+const NewRepoTab = lazy(() => import('./CoverageOnboarding'))
 const PullsTab = lazy(() => import('./PullsTab'))
 const FlagsTab = lazy(() => import('./FlagsTab'))
 const SettingsTab = lazy(() => import('./SettingsTab'))
