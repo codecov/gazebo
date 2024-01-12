@@ -81,8 +81,8 @@ function transformPullToTable(commits) {
         ciPassed,
       } = commit
       const change = totals?.coverage - parent?.totals?.coverage
-      const patchValue = compareWithParent?.patchTotals?.coverage
-        ? compareWithParent?.patchTotals?.coverage
+      const patchValue = compareWithParent?.patchTotals?.percentCovered
+        ? compareWithParent?.patchTotals?.percentCovered
         : Number.NaN
 
       return {
@@ -136,8 +136,7 @@ function CommitsTable({ branch, states, search }) {
       opts: { suspense: false },
     })
 
-  const commits = data?.commits
-
+  const commits = data?.pages?.map((page) => page?.commits).flat()
   const dataTable = transformPullToTable(commits)
 
   return (
