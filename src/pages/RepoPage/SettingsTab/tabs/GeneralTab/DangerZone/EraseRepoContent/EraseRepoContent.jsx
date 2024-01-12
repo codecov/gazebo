@@ -39,7 +39,11 @@ function EraseRepoContent() {
     <div className="flex flex-col sm:flex-row">
       <div className="flex flex-1 flex-col gap-1">
         <h2 className="font-semibold">Erase repo coverage content</h2>
-        <p>This will remove all coverage reporting from the repo.</p>
+        <p className="max-w-md">
+          This will remove all coverage reporting from the repo. For larger
+          repositories, this process may not be able to complete automatically.
+          In that case, please reach out to support for help.
+        </p>
       </div>
       <div>
         <EraseRepoButton isLoading={isLoading} setShowModal={setShowModal} />
