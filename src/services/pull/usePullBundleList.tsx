@@ -16,13 +16,21 @@ import {
 import Api from 'shared/api'
 import A from 'ui/A'
 
-const BAComparisonSchema = z.object({
-  __typename: z.literal('BundleAnalysisComparison'),
+const BundleComparisonSchema = z.object({
+  name: z.string(),
+  changeType: z.string(),
   sizeDelta: z.number(),
+  sizeTotal: z.number(),
   loadTimeDelta: z.number(),
+  loadTimeTotal: z.number(),
 })
 
-const BundleAnalysisCompareWithParentSchema = z
+const BAComparisonSchema = z.object({
+  __typename: z.literal('BundleAnalysisComparison'),
+  bundles: z.array(BundleComparisonSchema),
+})
+
+const BundleAnalysisCompareWithBaseSchema = z
   .discriminatedUnion('__typename', [
     BAComparisonSchema,
     FirstPullRequestSchema,
@@ -36,10 +44,10 @@ const BundleAnalysisCompareWithParentSchema = z
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
-  commit: z
+  pull: z
     .object({
-      bundleAnalysisCompareWithParent:
-        BundleAnalysisCompareWithParentSchema.nullable(),
+      bundleAnalysisCompareWithBase:
+        BundleAnalysisCompareWithBaseSchema.nullable(),
     })
     .nullable(),
 })
@@ -57,21 +65,27 @@ const RequestSchema = z.object({
 })
 
 const query = `
-query CommitBADropdownSummary(
+query PullBundleList(
   $owner: String!
   $repo: String!
-  $commitid: String!
+  $pullId: Int!
 ) {
   owner(username: $owner) {
     repository(name: $repo) {
       __typename
       ... on Repository {
-        commit(id: $commitid) {
-          bundleAnalysisCompareWithParent {
+        pull(id: $pullId) {
+          bundleAnalysisCompareWithBase {
             __typename
             ... on BundleAnalysisComparison {
-              sizeDelta
-              loadTimeDelta
+              bundles {
+                name
+                changeType
+                sizeDelta
+                sizeTotal
+                loadTimeDelta
+                loadTimeTotal
+              }
             }
             ... on FirstPullRequest {
               message
@@ -104,21 +118,21 @@ query CommitBADropdownSummary(
   }
 }`
 
-interface UseCommitBADropdownSummaryArgs {
+interface UsePullBundleListArgs {
   provider: string
   owner: string
   repo: string
-  commitid: string
+  pullId: number
 }
 
-export function useCommitBADropdownSummary({
+export function usePullBundleList({
   provider,
   owner,
   repo,
-  commitid,
-}: UseCommitBADropdownSummaryArgs) {
+  pullId,
+}: UsePullBundleListArgs) {
   return useQuery({
-    queryKey: ['CommitBADropdownSummary', provider, owner, repo, commitid],
+    queryKey: ['PullBundleList', provider, owner, repo, pullId],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
@@ -127,7 +141,7 @@ export function useCommitBADropdownSummary({
         variables: {
           owner,
           repo,
-          commitid,
+          pullId,
         },
       }).then((res) => {
         const parsedRes = RequestSchema.safeParse(res?.data)
@@ -164,7 +178,9 @@ export function useCommitBADropdownSummary({
           })
         }
 
-        return data
+        return {
+          pull: data?.owner?.repository?.pull ?? null,
+        }
       }),
   })
 }

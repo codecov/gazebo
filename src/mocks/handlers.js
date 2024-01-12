@@ -125,7 +125,7 @@ graphql.query('PullPageData', (req, res, ctx) => {
   )
 })
 
-graphql.PullHeadData('PullHeadData', (req, res, ctx) => {
+graphql.query('PullHeadData', (req, res, ctx) => {
   return res(
     ctx.status(200),
     ctx.data({
@@ -258,4 +258,160 @@ graphql.query('GetCommits', (req, res, ctx) => {
 
 graphql.query('CurrentUser', (req, res, ctx) => {
   return res(ctx.status(200), ctx.data())
+})
+
+graphql.query('CommitDropdownSummary', (req, res, ctx) => {
+  return res(
+    ctx.status(200),
+    ctx.data({
+      owner: {
+        repository: {
+          __typename: 'Repository',
+          commit: {
+            compareWithParent: {
+              __typename: 'Comparison',
+              patchTotals: {
+                missesCount: 1,
+                partialsCount: 2,
+              },
+            },
+          },
+        },
+      },
+    })
+  )
+})
+
+graphql.query('PullDropdownSummary', (req, res, ctx) => {
+  return res(
+    ctx.status(200),
+    ctx.data({
+      owner: {
+        repository: {
+          __typename: 'Repository',
+          pull: {
+            compareWithBase: {
+              __typename: 'Comparison',
+              patchTotals: {
+                missesCount: 1,
+                partialsCount: 2,
+              },
+            },
+          },
+        },
+      },
+    })
+  )
+})
+
+graphql.query('CommitBADropdownSummary', (req, res, ctx) => {
+  return res(
+    ctx.status(200),
+    ctx.data({
+      owner: {
+        repository: {
+          __typename: 'Repository',
+          commit: {
+            bundleAnalysisCompareWithParent: {
+              __typename: 'BundleAnalysisComparison',
+              sizeDelta: 1,
+              loadTimeDelta: 2,
+            },
+          },
+        },
+      },
+    })
+  )
+})
+
+graphql.query('PullBADropdownSummary', (req, res, ctx) => {
+  return res(
+    ctx.status(200),
+    ctx.data({
+      owner: {
+        repository: {
+          __typename: 'Repository',
+          pull: {
+            bundleAnalysisCompareWithBase: {
+              __typename: 'BundleAnalysisComparison',
+              sizeDelta: 1,
+              loadTimeDelta: 2,
+            },
+          },
+        },
+      },
+    })
+  )
+})
+
+graphql.query('CommitBundleList', (req, res, ctx) => {
+  return res(
+    ctx.status(200),
+    ctx.data({
+      owner: {
+        repository: {
+          __typename: 'Repository',
+          commit: {
+            bundleAnalysisCompareWithParent: {
+              __typename: 'BundleAnalysisComparison',
+              bundles: [
+                {
+                  name: 'bundle.js',
+                  changeType: 'added',
+                  sizeDelta: 1,
+                  sizeTotal: 2,
+                  loadTimeDelta: 3,
+                  loadTimeTotal: 4,
+                },
+                {
+                  name: 'bundle.css',
+                  changeType: 'removed',
+                  sizeDelta: 5,
+                  sizeTotal: 6,
+                  loadTimeDelta: 7,
+                  loadTimeTotal: 8,
+                },
+              ],
+            },
+          },
+        },
+      },
+    })
+  )
+})
+
+graphql.query('PullBundleList', (req, res, ctx) => {
+  return res(
+    ctx.status(200),
+    ctx.data({
+      owner: {
+        repository: {
+          __typename: 'Repository',
+          commit: {
+            bundleAnalysisCompareWithParent: {
+              __typename: 'BundleAnalysisComparison',
+              bundles: [
+                {
+                  name: 'bundle.js',
+                  changeType: 'added',
+                  sizeDelta: 1,
+                  sizeTotal: 2,
+                  loadTimeDelta: 3,
+                  loadTimeTotal: 4,
+                },
+                {
+                  name: 'bundle.css',
+                  changeType: 'removed',
+                  sizeDelta: 5,
+                  sizeTotal: 6,
+                  loadTimeDelta: 7,
+                  loadTimeTotal: 8,
+                },
+              ],
+            },
+          },
+        },
+      },
+    })
+  )
 })
