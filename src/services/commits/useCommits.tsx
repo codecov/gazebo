@@ -1,7 +1,8 @@
 import {
   useInfiniteQuery,
-  type UseInfiniteQueryOptions,
+  UseInfiniteQueryOptions,
 } from '@tanstack/react-query'
+import isNumber from 'lodash/isNumber'
 import { z } from 'zod'
 
 import {
@@ -20,58 +21,63 @@ import Api from 'shared/api'
 import { mapEdges } from 'shared/utils/graphql'
 import A from 'ui/A'
 
-const PullStatesSchema = z.union([
-  z.literal('OPEN'),
-  z.literal('CLOSED'),
-  z.literal('MERGED'),
-])
+const CommitStates = {
+  COMPLETE: 'COMPLETE',
+  PENDING: 'PENDING',
+  ERROR: 'ERROR',
+  SKIPPED: 'SKIPPED',
+} as const
 
-type PullStates = z.infer<typeof PullStatesSchema>
+const CommitStatesEnumSchema = z.nativeEnum(CommitStates)
 
-const PullSchema = z
-  .object({
-    pullId: z.number(),
-    title: z.string().nullable(),
-    state: PullStatesSchema,
-    updatestamp: z.string().nullable(),
-    author: z
-      .object({
-        username: z.string().nullable(),
-        avatarUrl: z.string(),
-      })
-      .nullable(),
-    head: z
-      .object({
-        totals: z
+export type CommitStatsEnum = z.infer<typeof CommitStatesEnumSchema>
+
+const AuthorSchema = z.object({
+  username: z.string().nullable(),
+  avatarUrl: z.string(),
+})
+
+const CommitSchema = z.object({
+  ciPassed: z.boolean().nullable(),
+  message: z.string().nullable(),
+  commitid: z.string(),
+  createdAt: z.string(),
+  author: AuthorSchema.nullable(),
+  totals: z
+    .object({
+      coverage: z.number().nullable(),
+    })
+    .nullable(),
+  parent: z
+    .object({
+      totals: z
+        .object({
+          coverage: z.number().nullable(),
+        })
+        .nullable(),
+    })
+    .nullable(),
+  compareWithParent: z
+    .discriminatedUnion('__typename', [
+      z.object({
+        __typename: z.literal('Comparison'),
+        patchTotals: z
           .object({
             percentCovered: z.number().nullable(),
           })
           .nullable(),
-      })
-      .nullable(),
-    compareWithBase: z
-      .discriminatedUnion('__typename', [
-        z.object({
-          __typename: z.literal('Comparison'),
-          patchTotals: z
-            .object({
-              percentCovered: z.number().nullable(),
-            })
-            .nullable(),
-          changeCoverage: z.number().nullable(),
-        }),
-        FirstPullRequestSchema,
-        MissingBaseCommitSchema,
-        MissingBaseReportSchema,
-        MissingComparisonSchema,
-        MissingHeadCommitSchema,
-        MissingHeadReportSchema,
-      ])
-      .nullable(),
-  })
-  .nullable()
+      }),
+      FirstPullRequestSchema,
+      MissingBaseCommitSchema,
+      MissingBaseReportSchema,
+      MissingComparisonSchema,
+      MissingHeadCommitSchema,
+      MissingHeadReportSchema,
+    ])
+    .nullable(),
+})
 
-export type Pull = z.infer<typeof PullSchema>
+export type Commit = z.infer<typeof CommitSchema>
 
 const PageInfoSchema = z.object({
   hasNextPage: z.boolean(),
@@ -80,18 +86,19 @@ const PageInfoSchema = z.object({
 
 type PageInfo = z.infer<typeof PageInfoSchema>
 
-const GetPullsSchema = z.object({
+const GetCommitsSchema = z.object({
   owner: z
     .object({
       repository: z.discriminatedUnion('__typename', [
         z.object({
           __typename: z.literal('Repository'),
-          pulls: z
+          commits: z
             .object({
+              totalCount: z.number().nullish(),
               edges: z.array(
                 z
                   .object({
-                    node: PullSchema,
+                    node: CommitSchema,
                   })
                   .nullable()
               ),
@@ -107,46 +114,43 @@ const GetPullsSchema = z.object({
 })
 
 const query = `
-query GetPulls(
+query GetCommits(
   $owner: String!
   $repo: String!
-  $orderingDirection: OrderingDirection
-  $filters: PullsSetFilters
+  $filters: CommitsSetFilters
   $after: String
+  $includeTotalCount: Boolean!
 ) {
   owner(username: $owner) {
     repository(name: $repo) {
       __typename
       ... on Repository {
-        pulls(
-          orderingDirection: $orderingDirection
-          filters: $filters
-          first: 20
-          after: $after
-        ) {
+        commits(filters: $filters, first: 20, after: $after) {
+          totalCount @include(if: $includeTotalCount)
           edges {
             node {
-              pullId
-              title
-              state
-              updatestamp
+              ciPassed
+              message
+              commitid
+              createdAt
               author {
                 username
                 avatarUrl
               }
-              head {
+              totals {
+                coverage: percentCovered
+              }
+              parent {
                 totals {
-                  percentCovered
+                  coverage: percentCovered
                 }
               }
-
-              compareWithBase {
+              compareWithParent {
                 __typename
                 ... on Comparison {
                   patchTotals {
                     percentCovered
                   }
-                  changeCoverage
                 }
                 ... on FirstPullRequest {
                   message
@@ -185,29 +189,40 @@ query GetPulls(
   }
 }`
 
-type GetPullsReturn = { pulls: Array<Pull>; pageInfo: PageInfo | null }
+type GetCommitsReturn = {
+  commits: Array<Commit | null>
+  commitsCount: number | null | undefined
+  pageInfo: PageInfo | null
+}
 
-interface UsePullArgs {
+interface UseCommitsArgs {
   provider: string
   owner: string
   repo: string
-  filters: {
-    state: PullStates
+  filters?: {
+    hideFailedCI?: boolean
+    branchName?: string
+    pullId?: number
+    search?: string
+    states?: Array<CommitStatsEnum>
   }
-  orderingDirection: 'ASC' | 'DESC'
-  opts?: UseInfiniteQueryOptions<GetPullsReturn>
+  opts?: UseInfiniteQueryOptions<GetCommitsReturn>
 }
 
-export function usePulls({
+export function useCommits({
   provider,
   owner,
   repo,
   filters,
-  orderingDirection,
   opts = {},
-}: UsePullArgs) {
-  const { data, ...rest } = useInfiniteQuery({
-    queryKey: ['pulls', provider, owner, repo, filters, orderingDirection],
+}: UseCommitsArgs) {
+  const variables = {
+    filters,
+    includeTotalCount: isNumber(filters?.pullId),
+  }
+
+  return useInfiniteQuery({
+    queryKey: ['GetCommits', provider, owner, repo, variables],
     queryFn: ({ pageParam, signal }) => {
       return Api.graphql({
         provider,
@@ -216,12 +231,11 @@ export function usePulls({
         variables: {
           owner,
           repo,
-          filters,
-          orderingDirection,
+          ...variables,
           after: pageParam,
         },
       }).then((res) => {
-        const parsedData = GetPullsSchema.safeParse(res?.data)
+        const parsedData = GetCommitsSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return Promise.reject({
@@ -255,21 +269,20 @@ export function usePulls({
           })
         }
 
-        const pulls = mapEdges(data?.owner?.repository?.pulls)
+        const commits = mapEdges(data?.owner?.repository?.commits)
+        const commitsCount =
+          data?.owner?.repository?.commits?.totalCount ?? null
+        const pageInfo = data?.owner?.repository?.commits?.pageInfo ?? null
 
-        return {
-          pulls,
-          pageInfo: data?.owner?.repository?.pulls?.pageInfo ?? null,
-        }
+        return { commits, commitsCount, pageInfo }
       })
     },
-    getNextPageParam: (data) =>
-      data?.pageInfo?.hasNextPage ? data.pageInfo.endCursor : undefined,
+    getNextPageParam: (data) => {
+      if (data?.pageInfo?.hasNextPage) {
+        return data?.pageInfo.endCursor
+      }
+      return undefined
+    },
     ...opts,
   })
-
-  return {
-    data: { pulls: data?.pages.map((page) => page?.pulls).flat() },
-    ...rest,
-  }
 }

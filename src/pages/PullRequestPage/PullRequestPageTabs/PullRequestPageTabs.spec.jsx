@@ -14,8 +14,41 @@ jest.mock('shared/featureFlags')
 const mockCommits = {
   owner: {
     repository: {
+      __typename: 'Repository',
       commits: {
         totalCount: 11,
+        edges: [
+          {
+            node: {
+              ciPassed: true,
+              message: 'commit message 1',
+              commitid: 'id1',
+              createdAt: '2021-08-30T19:33:49.819672',
+              author: {
+                username: 'user-1',
+                avatarUrl: 'http://127.0.0.1/avatar-url',
+              },
+              totals: {
+                coverage: 100,
+              },
+              parent: {
+                totals: {
+                  coverage: 100,
+                },
+              },
+              compareWithParent: {
+                __typename: 'Comparison',
+                patchTotals: {
+                  percentCovered: 100,
+                },
+              },
+            },
+          },
+        ],
+        pageInfo: {
+          hasNextPage: false,
+          endCursor: null,
+        },
       },
     },
   },

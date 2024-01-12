@@ -12,14 +12,17 @@ function defaultLinks({ internalAccessTab }) {
   ]
 }
 
-function selfHostedOverrideLinks({ isPersonalSettings }) {
-  let internalAccessTab =
-    !config.HIDE_ACCESS_TAB && isPersonalSettings ? 'internalAccessTab' : null
+function selfHostedOverrideLinks({ isPersonalSettings, isAdmin }) {
+  let internalAccessTab = null
+  if (!config.HIDE_ACCESS_TAB && isPersonalSettings) {
+    internalAccessTab = 'internalAccessTab'
+  }
 
   return [
     { pageName: isPersonalSettings ? 'profile' : '', exact: true },
     ...(internalAccessTab ? [{ pageName: internalAccessTab }] : []),
     { pageName: 'yamlTab' },
+    ...(isAdmin ? [{ pageName: 'orgUploadToken' }] : []),
   ]
 }
 
@@ -39,7 +42,7 @@ const generateLinks = ({ isAdmin, isPersonalSettings }) => {
   const internalAccessTab = isPersonalSettings ? 'internalAccessTab' : ''
 
   if (config.IS_SELF_HOSTED) {
-    return selfHostedOverrideLinks({ isPersonalSettings })
+    return selfHostedOverrideLinks({ isPersonalSettings, isAdmin })
   }
 
   if (isAdmin) {
