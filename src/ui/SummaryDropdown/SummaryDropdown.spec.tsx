@@ -15,15 +15,11 @@ describe('SummaryDropdown', () => {
       render(
         <SummaryDropdown type="multiple">
           <SummaryDropdown.Item value="first">
-            <SummaryDropdown.Trigger>
-              <SummaryDropdown.Title>First</SummaryDropdown.Title>
-            </SummaryDropdown.Trigger>
+            <SummaryDropdown.Trigger>First</SummaryDropdown.Trigger>
             <SummaryDropdown.Content>First Content</SummaryDropdown.Content>
           </SummaryDropdown.Item>
           <SummaryDropdown.Item value="second">
-            <SummaryDropdown.Trigger>
-              <SummaryDropdown.Title>Second</SummaryDropdown.Title>
-            </SummaryDropdown.Trigger>
+            <SummaryDropdown.Trigger>Second</SummaryDropdown.Trigger>
             <SummaryDropdown.Content>Second Content</SummaryDropdown.Content>
           </SummaryDropdown.Item>
         </SummaryDropdown>
@@ -40,15 +36,11 @@ describe('SummaryDropdown', () => {
       render(
         <SummaryDropdown type="multiple">
           <SummaryDropdown.Item value="first">
-            <SummaryDropdown.Trigger>
-              <SummaryDropdown.Title>First</SummaryDropdown.Title>
-            </SummaryDropdown.Trigger>
+            <SummaryDropdown.Trigger>First</SummaryDropdown.Trigger>
             <SummaryDropdown.Content>First Content</SummaryDropdown.Content>
           </SummaryDropdown.Item>
           <SummaryDropdown.Item value="second">
-            <SummaryDropdown.Trigger>
-              <SummaryDropdown.Title>Second</SummaryDropdown.Title>
-            </SummaryDropdown.Trigger>
+            <SummaryDropdown.Trigger>Second</SummaryDropdown.Trigger>
             <SummaryDropdown.Content>Second Content</SummaryDropdown.Content>
           </SummaryDropdown.Item>
         </SummaryDropdown>
@@ -67,17 +59,11 @@ describe('SummaryDropdown', () => {
         render(
           <SummaryDropdown type="multiple">
             <SummaryDropdown.Item value="first">
-              <SummaryDropdown.Trigger>
-                <SummaryDropdown.Title>First</SummaryDropdown.Title>
-              </SummaryDropdown.Trigger>
+              <SummaryDropdown.Trigger>First</SummaryDropdown.Trigger>
               <SummaryDropdown.Content>First Content</SummaryDropdown.Content>
             </SummaryDropdown.Item>
             <SummaryDropdown.Item value="second">
-              <SummaryDropdown.Trigger>
-                <SummaryDropdown.Title>
-                  <SummaryDropdown.Title>Second</SummaryDropdown.Title>
-                </SummaryDropdown.Title>
-              </SummaryDropdown.Trigger>
+              <SummaryDropdown.Trigger>Second</SummaryDropdown.Trigger>
               <SummaryDropdown.Content>Second Content</SummaryDropdown.Content>
             </SummaryDropdown.Item>
           </SummaryDropdown>
@@ -98,15 +84,11 @@ describe('SummaryDropdown', () => {
         render(
           <SummaryDropdown type="multiple" defaultValue={['first']}>
             <SummaryDropdown.Item value="first">
-              <SummaryDropdown.Trigger>
-                <SummaryDropdown.Title>First</SummaryDropdown.Title>
-              </SummaryDropdown.Trigger>
+              <SummaryDropdown.Trigger>First</SummaryDropdown.Trigger>
               <SummaryDropdown.Content>First Content</SummaryDropdown.Content>
             </SummaryDropdown.Item>
             <SummaryDropdown.Item value="second">
-              <SummaryDropdown.Trigger>
-                <SummaryDropdown.Title>Second</SummaryDropdown.Title>
-              </SummaryDropdown.Trigger>
+              <SummaryDropdown.Trigger>Second</SummaryDropdown.Trigger>
               <SummaryDropdown.Content>Second Content</SummaryDropdown.Content>
             </SummaryDropdown.Item>
           </SummaryDropdown>

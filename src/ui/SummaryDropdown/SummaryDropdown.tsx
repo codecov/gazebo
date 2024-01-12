@@ -77,13 +77,8 @@ const SummaryContent = forwardRef<
 
 SummaryContent.displayName = 'SummaryContent'
 
-const SummaryTitle: React.FC<React.PropsWithChildren> = ({ children }) => {
-  return <span className="font-semibold">{children}</span>
-}
-
 export const SummaryDropdown = Object.assign(SummaryDropdownRoot, {
   Item: SummaryItem,
   Trigger: SummaryTrigger,
   Content: SummaryContent,
-  Title: SummaryTitle,
 })
