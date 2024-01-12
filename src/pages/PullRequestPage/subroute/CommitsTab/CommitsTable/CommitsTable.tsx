@@ -6,7 +6,7 @@ import {
 } from '@tanstack/react-table'
 import cs from 'classnames'
 import isEmpty from 'lodash/isEmpty'
-import { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
 
@@ -38,11 +38,11 @@ function LoadMoreTrigger({
   )
 }
 interface CommitsTableHelper {
-  name: JSX.Element
-  coverage: JSX.Element
-  ciStatus: JSX.Element
-  patch: JSX.Element
-  change: JSX.Element
+  name: React.ReactNode
+  coverage: React.ReactNode
+  ciStatus: React.ReactNode
+  patch: React.ReactNode
+  change: React.ReactNode
 }
 
 const columnHelper = createColumnHelper<CommitsTableHelper>()
