@@ -38,11 +38,11 @@ function LoadMoreTrigger({
   )
 }
 interface CommitsTableHelper {
-  name: React.ReactNode
-  coverage: React.ReactNode
-  ciStatus: React.ReactNode
-  patch: React.ReactNode
-  change: React.ReactNode
+  name: React.ReactElement
+  coverage: React.ReactElement
+  ciStatus: React.ReactElement
+  patch: React.ReactElement
+  change: React.ReactElement
 }
 
 const columnHelper = createColumnHelper<CommitsTableHelper>()
