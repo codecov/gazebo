@@ -29,7 +29,7 @@ const mockCommitBundleListData = {
             {
               name: 'bundle.css',
               changeType: 'added',
-              sizeDelta: 1000,
+              sizeDelta: -1000,
               sizeTotal: 3000,
               loadTimeDelta: 33,
               loadTimeTotal: 45,
@@ -257,9 +257,9 @@ describe('useTableData', () => {
           },
           {
             name: 'bundle.css',
-            prevSize: 2000,
+            prevSize: 4000,
             newSize: 3000,
-            change: 1000,
+            change: -1000,
           },
         ])
       )
