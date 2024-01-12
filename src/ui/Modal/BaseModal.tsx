@@ -29,7 +29,7 @@ const BaseModal: React.FC<BaseModalProps> = ({
             onClick={onClose}
             aria-label="Close"
           >
-            <Icon name="x" />
+            <Icon name="x" label="modal-close-icon" />
           </span>
         )}
       </header>
