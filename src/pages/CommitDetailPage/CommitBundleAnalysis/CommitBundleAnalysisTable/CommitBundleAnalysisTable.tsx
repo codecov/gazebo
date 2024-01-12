@@ -6,6 +6,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
+import gt from 'lodash/gt'
 import isEmpty from 'lodash/isEmpty'
 import { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
@@ -47,7 +48,14 @@ const columns = [
   }),
   columnHelper.accessor('change', {
     header: 'Change',
-    cell: (info) => formatSizeToString(info.getValue()),
+    cell: (info) => {
+      const value = info.getValue()
+      if (gt(value, 0)) {
+        return `+${formatSizeToString(value)}`
+      }
+      // negative numbers include the `-` sign
+      return formatSizeToString(value)
+    },
   }),
 ]
 

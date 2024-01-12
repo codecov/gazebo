@@ -195,7 +195,7 @@ describe('CommitBundleAnalysisTable', () => {
         setup()
         render(<CommitBundleAnalysisTable />, { wrapper })
 
-        const change = await screen.findByText('1B')
+        const change = await screen.findByText('+1B')
         expect(change).toBeInTheDocument()
       })
     })
