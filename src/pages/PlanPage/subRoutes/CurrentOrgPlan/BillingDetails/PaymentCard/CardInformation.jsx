@@ -1,4 +1,3 @@
-import { format, fromUnixTime } from 'date-fns'
 import PropTypes from 'prop-types'
 
 import amexLogo from 'assets/billing/amex.png'
@@ -6,8 +5,10 @@ import discoverLogo from 'assets/billing/discover.jpg'
 import mastercardLogo from 'assets/billing/mastercard.png'
 import visaLogo from 'assets/billing/visa.png'
 import { subscriptionDetailType } from 'services/account'
-import A from 'ui/A'
-import Icon from 'ui/Icon'
+import {
+  formatTimestampToCalendarDate,
+  lastTwoDigits,
+} from 'shared/utils/billing'
 
 const cardBrand = {
   amex: {
@@ -32,47 +33,37 @@ const cardBrand = {
   },
 }
 
-function getNextBilling(subscriptionDetail) {
-  const isCancelled = subscriptionDetail.cancelAtPeriodEnd
-
-  if (isCancelled) return null
-
-  const periodEnd = fromUnixTime(subscriptionDetail.currentPeriodEnd)
-  return format(periodEnd, 'do MMMM, yyyy')
-}
-
-function CardInformation({ subscriptionDetail, openForm, card }) {
+function CardInformation({ subscriptionDetail, card }) {
   const typeCard = cardBrand[card?.brand] ?? cardBrand?.fallback
-  const nextBilling = getNextBilling(subscriptionDetail)
+  let nextBilling = null
+
+  if (!subscriptionDetail?.cancelAtPeriodEnd) {
+    nextBilling = formatTimestampToCalendarDate(
+      subscriptionDetail.currentPeriodEnd
+    )
+  }
 
   return (
-    <div className="flex flex-col gap-5">
-      <div className="flex gap-4">
+    <div className="flex flex-col gap-2">
+      <div className="flex gap-2">
         <img
           className="h-auto w-16 self-center"
           alt="credit card logo"
           src={typeCard?.logo}
         />
         <div className="flex flex-col self-center">
-          <b className="tracking-widest">
-            ****&nbsp;&nbsp;****&nbsp;&nbsp;****&nbsp;&nbsp;{card?.last4}
-          </b>
-          <p className="text-ds-gray-quinary">
-            {typeCard?.name} - Expires {card?.expMonth}/{card?.expYear}
-          </p>
+          <b className="tracking-widest">••••&nbsp;{card?.last4}</b>
         </div>
       </div>
+      <p className="text-ds-gray-quinary">
+        Expires {card?.expMonth}/{lastTwoDigits(card?.expYear)}
+      </p>
       {nextBilling && (
         <p className="text-sm text-ds-gray-quinary">
-          Next billing on{' '}
+          Your next billing date is{' '}
           <span className="text-ds-gray-octonary">{nextBilling}</span>.
         </p>
       )}
-      <div className="flex self-start">
-        <A variant="semibold" onClick={openForm} hook="edit-card">
-          Edit card <Icon name="chevronRight" size="sm" variant="solid" />
-        </A>
-      </div>
     </div>
   )
 }

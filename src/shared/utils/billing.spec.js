@@ -9,6 +9,7 @@ import {
   findSentryPlans,
   findTeamPlans,
   formatNumberToUSD,
+  formatTimestampToCalendarDate,
   getNextBillingDate,
   isAnnualPlan,
   isBasicPlan,
@@ -21,6 +22,7 @@ import {
   isSentryPlan,
   isTeamPlan,
   isTrialPlan,
+  lastTwoDigits,
   Plans,
   shouldDisplayTeamCard,
   useProPlans,
@@ -307,6 +309,34 @@ describe('formatNumberToUSD', () => {
     const value = formatNumberToUSD(10_000)
 
     expect(value).toBe('$10,000.00')
+  })
+})
+
+describe('formatTimestampToCalendarDate', () => {
+  it('formats into calendar date', () => {
+    const value = formatTimestampToCalendarDate('1660000000')
+
+    expect(value).toBe('August 08, 2022')
+  })
+
+  it('return null when null', () => {
+    const value = formatTimestampToCalendarDate(null)
+
+    expect(value).toBe(null)
+  })
+})
+
+describe('lastTwoDigits', () => {
+  it('gets the last two digits if not null', () => {
+    const value = lastTwoDigits(2341)
+
+    expect(value).toBe('41')
+  })
+
+  it('return null when null', () => {
+    const value = lastTwoDigits(null)
+
+    expect(value).toBe(null)
   })
 })
 
