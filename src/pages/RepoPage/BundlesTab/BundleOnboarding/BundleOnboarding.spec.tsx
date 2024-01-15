@@ -4,6 +4,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import BundleOnboarding from './BundleOnboarding'
 
 jest.mock('./ViteOnboarding', () => () => <div>ViteOnboarding</div>)
+jest.mock('./RollupOnboarding', () => () => <div>RollupOnboarding</div>)
 
 const wrapper =
   (
@@ -96,13 +97,13 @@ describe('BundleOnboarding', () => {
     })
 
     describe('rendering body', () => {
-      it('renders rollup onboarding', () => {
+      it('renders rollup onboarding', async () => {
         render(<BundleOnboarding />, {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/rollup'),
         })
 
         const rollupOnboarding = screen.queryByText('RollupOnboarding')
-        expect(rollupOnboarding).not.toBeInTheDocument()
+        expect(rollupOnboarding).toBeInTheDocument()
       })
     })
   })
