@@ -39,7 +39,7 @@ const ViteOnboarding: React.FC = () => {
           <span className="bg-ds-gray-primary px-1 font-mono">
             @codecov/vite-plugin
           </span>{' '}
-          to your project, use the following commands.
+          to your project, use one of the following commands.
         </p>
         <div className="flex flex-col gap-4">
           <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
@@ -68,7 +68,16 @@ const ViteOnboarding: React.FC = () => {
         </p>
         <p className="pb-2 pt-1 text-sm">
           <span className="font-semibold">Note:</span> You can find your global
-          upload inside your org settings on Codecov
+          upload token inside your{' '}
+          <A
+            to={{ pageName: 'orgUploadToken' }}
+            target="_blank"
+            hook="vite-onboarding-to-org-token"
+            isExternal={false}
+          >
+            org settings
+          </A>{' '}
+          on Codecov.
         </p>
         <pre className="flex items-start justify-between overflow-auto whitespace-pre rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
           {pluginConfig}

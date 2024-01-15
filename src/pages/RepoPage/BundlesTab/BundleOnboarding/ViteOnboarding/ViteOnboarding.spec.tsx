@@ -82,6 +82,16 @@ describe('ViteOnboarding', () => {
 
       const viteConfig = screen.getByText('vite.config.js')
       expect(viteConfig).toBeInTheDocument()
+
+      const note = screen.getByText('Note:')
+      expect(note).toBeInTheDocument()
+
+      const orgSettingsLink = screen.getByRole('link', { name: 'org settings' })
+      expect(orgSettingsLink).toBeInTheDocument()
+      expect(orgSettingsLink).toHaveAttribute(
+        'href',
+        '/account/gh/codecov/org-upload-token'
+      )
     })
 
     it('renders plugin config', () => {
