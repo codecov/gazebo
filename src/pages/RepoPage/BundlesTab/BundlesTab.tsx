@@ -16,7 +16,6 @@ const path = '/:provider/:owner/:repo/bundles'
 const BundlesTab: React.FC = () => {
   return (
     <>
-      <div>Tabs placeholder</div>
       <Switch>
         <Route
           path={[`${path}/new`, `${path}/new/rollup`, `${path}/new/webpack`]}
