@@ -219,8 +219,63 @@ describe('usePull', () => {
         )
       })
     })
+
+    describe('when it is of OwnerNotActivatedError type', () => {
+      it('returns the error', async () => {
+        setup({
+          owner: {
+            isCurrentUserPartOfOrg: false,
+            repository: {
+              __typename: 'OwnerNotActivatedError',
+              message: 'owner not activated',
+            },
+          },
+        })
+
+        const { result } = renderHook(
+          () => usePull({ provider, owner, repo }),
+          {
+            wrapper,
+          }
+        )
+
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+
+        await waitFor(() => expect(result.current.error.status).toEqual(403))
+      })
+    })
+
+    describe('when there is no pull returned', () => {
+      it('returns pull null', async () => {
+        setup({
+          owner: {
+            isCurrentUserPartOfOrg: true,
+            repository: {
+              __typename: 'Repository',
+              defaultBranch: 'main',
+              private: false,
+              pull: null,
+            },
+          },
+        })
+
+        const { result } = renderHook(
+          () => usePull({ provider, owner, repo }),
+          {
+            wrapper,
+          }
+        )
+
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+
+        await waitFor(() => expect(result.current.data.pull).toEqual(null))
+      })
+    })
   })
 })
+
 const mockSingularImpactedFilesData = {
   headName: 'file A',
   isNewFile: true,
