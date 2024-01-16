@@ -49,11 +49,7 @@ const RepositorySchema = z
     author: z.object({
       username: z.string().nullable(),
     }),
-    repositoryConfig: z
-      .object({
-        node: RepoConfig,
-      })
-      .nullable(),
+    repositoryConfig: RepoConfig,
     updatedAt: z.string().nullable(),
   })
   .nullable()
@@ -195,7 +191,6 @@ function fetchReposForOwner({
     },
   }).then((res) => {
     const parsedRes = RequestSchema.safeParse(res?.data)
-
     if (!parsedRes.success) {
       return Promise.reject({
         status: 404,

@@ -10,7 +10,7 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 const wrapper =
-  (initialEntries = '/gh') =>
+  (initialEntries = '/gh'): React.FC<React.PropsWithChildren> =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
@@ -23,6 +23,7 @@ const wrapper =
 const repo1 = {
   name: 'codecov-bash',
   active: true,
+  activated: true,
   lines: 99,
   private: false,
   coverage: null,
@@ -36,11 +37,13 @@ const repo1 = {
       lowerRange: 60,
     },
   },
+  latestCommitAt: null,
 }
 
 const repo2 = {
   name: 'codecov-circleci-orb',
-  active: null,
+  active: false,
+  activated: true,
   lines: 99,
   private: false,
   coverage: null,
@@ -54,11 +57,13 @@ const repo2 = {
       lowerRange: 60,
     },
   },
+  latestCommitAt: null,
 }
 
 const repo3 = {
   name: 'react',
-  active: null,
+  activated: true,
+  active: false,
   private: false,
   coverage: null,
   updatedAt: '2021-04-22T14:09:39.826948+00:00',
@@ -71,11 +76,14 @@ const repo3 = {
       lowerRange: 60,
     },
   },
+  latestCommitAt: null,
+  lines: 20,
 }
 
 const repo4 = {
   name: 'python',
-  active: null,
+  active: false,
+  activated: true,
   private: false,
   coverage: null,
   updatedAt: '2021-04-22T14:09:39.826948+00:00',
@@ -88,6 +96,8 @@ const repo4 = {
       lowerRange: 60,
     },
   },
+  latestCommitAt: null,
+  lines: 29,
 }
 
 const server = setupServer()
@@ -169,25 +179,32 @@ describe('useRepos', () => {
 
     it('returns repositories', async () => {
       const { result } = renderHook(
-        () => useRepos({ filters: { active: true } }),
+        () =>
+          useRepos({
+            owner: '',
+          }),
         {
           wrapper: wrapper(),
         }
       )
 
-      await waitFor(() =>
-        expect(result.current.data).toEqual({
-          repos: [repo1, repo2, repo3],
-        })
-      )
+      await waitFor(() => {
+        expect(result.current.data?.pages).toEqual([
+          {
+            repos: [repo1, repo2, repo3],
+            pageInfo: {
+              hasNextPage: true,
+              endCursor: 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
+            },
+          },
+        ])
+      })
     })
   })
 
   describe('when called for an owner', () => {
     beforeEach(() => {
-      setup({
-        owner: 'codecov',
-      })
+      setup()
     })
 
     it('returns repositories of the owner', async () => {
@@ -195,11 +212,17 @@ describe('useRepos', () => {
         wrapper: wrapper(),
       })
 
-      await waitFor(() =>
-        expect(result.current.data).toEqual({
-          repos: [repo1, repo2],
-        })
-      )
+      await waitFor(() => {
+        expect(result.current.data?.pages).toEqual([
+          {
+            repos: [repo1, repo2],
+            pageInfo: {
+              hasNextPage: false,
+              endCursor: 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
+            },
+          },
+        ])
+      })
     })
   })
 
@@ -209,7 +232,7 @@ describe('useRepos', () => {
     })
 
     it('returns repositories of the user', async () => {
-      const { result } = renderHook(() => useRepos({}), {
+      const { result } = renderHook(() => useRepos({ owner: '' }), {
         wrapper: wrapper(),
       })
 
@@ -221,11 +244,22 @@ describe('useRepos', () => {
       await waitFor(() => result.current.isFetching)
       await waitFor(() => !result.current.isFetching)
 
-      await waitFor(() =>
-        expect(result.current.data).toEqual({
-          repos: [repo1, repo2, repo3, repo4],
-        })
-      )
+      expect(result.current.data?.pages).toEqual([
+        {
+          repos: [repo1, repo2, repo3],
+          pageInfo: {
+            hasNextPage: true,
+            endCursor: 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
+          },
+        },
+        {
+          pageInfo: {
+            endCursor: 'aa',
+            hasNextPage: false,
+          },
+          repos: [repo4],
+        },
+      ])
     })
   })
 })
