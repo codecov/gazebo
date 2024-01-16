@@ -10,7 +10,7 @@ import CompareSummary from './CompareSummary'
 const queryClient = new QueryClient()
 const server = setupServer()
 
-const createPullData = ({ overrideCommits } = {}) => {
+const createPullData = ({ overrideCommits, overrideComparison } = {}) => {
   const result = {
     owner: {
       isCurrentUserPartOfOrg: true,
@@ -37,73 +37,75 @@ const createPullData = ({ overrideCommits } = {}) => {
                   },
                 ],
           },
-          compareWithBase: {
-            state: 'complete',
-            __typename: 'Comparison',
-            flagComparisons: [],
-            patchTotals: {
-              percentCovered: 92.12,
-            },
-            baseTotals: {
-              percentCovered: 98.25,
-            },
-            headTotals: {
-              percentCovered: 78.33,
-            },
-            impactedFiles: {
-              __typename: 'ImpactedFiles',
-              results: [
-                {
-                  fileName: 'usePullBundleList.tsx',
-                  headName: 'src/services/pull/usePullBundleList.tsx',
-                  isCriticalFile: false,
-                  missesCount: 0,
-                  baseCoverage: {
-                    percentCovered: 100.0,
-                  },
-                  headCoverage: {
-                    percentCovered: 78.33,
-                  },
-                  patchCoverage: {
-                    percentCovered: 100.0,
-                  },
-                  changeCoverage: 0.0,
+          compareWithBase: overrideComparison
+            ? overrideComparison
+            : {
+                state: 'complete',
+                __typename: 'Comparison',
+                flagComparisons: [],
+                patchTotals: {
+                  percentCovered: 92.12,
                 },
-                {
-                  fileName: 'PullBundleAnalysis.tsx',
-                  headName:
-                    'src/pages/PullRequestPage/PullBundleAnalysis/PullBundleAnalysis.tsx',
-                  isCriticalFile: false,
-                  missesCount: 0,
-                  baseCoverage: null,
-                  headCoverage: {
-                    percentCovered: 78.33,
-                  },
-                  patchCoverage: {
-                    percentCovered: 100.0,
-                  },
-                  changeCoverage: null,
+                baseTotals: {
+                  percentCovered: 98.25,
                 },
-                {
-                  fileName: 'PullBundleAnalysisTable.tsx',
-                  headName:
-                    'src/pages/PullRequestPage/PullBundleAnalysis/PullBundleAnalysisTable/PullBundleAnalysisTable.tsx',
-                  isCriticalFile: false,
-                  missesCount: 0,
-                  baseCoverage: null,
-                  headCoverage: {
-                    percentCovered: 100.0,
-                  },
-                  patchCoverage: {
-                    percentCovered: 100.0,
-                  },
-                  changeCoverage: null,
+                headTotals: {
+                  percentCovered: 78.33,
                 },
-              ],
-            },
-            changeCoverage: 38.94,
-            hasDifferentNumberOfHeadAndBaseReports: true,
-          },
+                impactedFiles: {
+                  __typename: 'ImpactedFiles',
+                  results: [
+                    {
+                      fileName: 'usePullBundleList.tsx',
+                      headName: 'src/services/pull/usePullBundleList.tsx',
+                      isCriticalFile: false,
+                      missesCount: 0,
+                      baseCoverage: {
+                        percentCovered: 100.0,
+                      },
+                      headCoverage: {
+                        percentCovered: 78.33,
+                      },
+                      patchCoverage: {
+                        percentCovered: 100.0,
+                      },
+                      changeCoverage: 0.0,
+                    },
+                    {
+                      fileName: 'PullBundleAnalysis.tsx',
+                      headName:
+                        'src/pages/PullRequestPage/PullBundleAnalysis/PullBundleAnalysis.tsx',
+                      isCriticalFile: false,
+                      missesCount: 0,
+                      baseCoverage: null,
+                      headCoverage: {
+                        percentCovered: 78.33,
+                      },
+                      patchCoverage: {
+                        percentCovered: 100.0,
+                      },
+                      changeCoverage: null,
+                    },
+                    {
+                      fileName: 'PullBundleAnalysisTable.tsx',
+                      headName:
+                        'src/pages/PullRequestPage/PullBundleAnalysis/PullBundleAnalysisTable/PullBundleAnalysisTable.tsx',
+                      isCriticalFile: false,
+                      missesCount: 0,
+                      baseCoverage: null,
+                      headCoverage: {
+                        percentCovered: 100.0,
+                      },
+                      patchCoverage: {
+                        percentCovered: 100.0,
+                      },
+                      changeCoverage: null,
+                    },
+                  ],
+                },
+                changeCoverage: 38.94,
+                hasDifferentNumberOfHeadAndBaseReports: true,
+              },
           pullId: 2510,
           title: 'feat: Create bundle analysis table for a given pull',
           state: 'OPEN',
@@ -399,6 +401,51 @@ describe('CompareSummary', () => {
       expect(behindByCommitLink).toHaveAttribute(
         'href',
         'https://github.com/test-org/test-repo/commit/1798hvs8ofhn'
+      )
+    })
+  })
+
+  describe('When base and head have same number of reports', () => {
+    beforeEach(() => {
+      setup({
+        pullData: createPullData({
+          overrideComparison: {
+            ...createPullData().owner.repository.pull.compareWithBase,
+            hasDifferentNumberOfHeadAndBaseReports: false,
+          },
+        }),
+      })
+    })
+
+    it('renders card CardWithSameNumberOfUploads', async () => {
+      render(<CompareSummary />, { wrapper: wrapper() })
+      const sourceCardTitle = await screen.findByText('Source')
+      expect(sourceCardTitle).toBeInTheDocument()
+
+      const coverageBasedOnText = await screen.findByText(
+        /Coverage data is based on/i
+      )
+      expect(coverageBasedOnText).toBeInTheDocument()
+
+      const headCommitIds = await screen.findAllByText('fc43199')
+      expect(headCommitIds).toHaveLength(2)
+
+      const headCommitLink = screen.getByRole('link', {
+        name: /fc43199/i,
+      })
+      expect(headCommitLink).toBeInTheDocument()
+      expect(headCommitLink).toHaveAttribute(
+        'href',
+        '/gh/test-org/test-repo/commit/fc43199b07c52cf3d6c19b7cdb368f74387c38ab'
+      )
+
+      const baseCommitLink = screen.getByRole('link', {
+        name: /2d6c42f/i,
+      })
+      expect(baseCommitLink).toBeInTheDocument()
+      expect(baseCommitLink).toHaveAttribute(
+        'href',
+        '/gh/test-org/test-repo/commit/2d6c42fe217c61b007b2c17544a9d85840381857'
       )
     })
   })
