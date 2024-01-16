@@ -48,7 +48,7 @@ export const getReposColumnsHelper = ({
               owner={repo?.author?.username ?? ''}
               repoName={repo?.name}
               isCurrentUserPartOfOrg={isCurrentUserPartOfOrg}
-              isActive={!!repo?.active}
+              isActive={false}
             />
           )
         },

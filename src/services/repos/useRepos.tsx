@@ -43,15 +43,17 @@ const RepositorySchema = z
     active: z.boolean(),
     activated: z.boolean().nullable(),
     private: z.boolean(),
-    coverage: z.number().nullable(),
+    coverage: z.number().nullish(),
     latestCommitAt: z.string().nullable(),
     lines: z.number().nullable(),
     author: z.object({
       username: z.string().nullable(),
     }),
-    repositoryConfig: z.object({
-      node: RepoConfig,
-    }),
+    repositoryConfig: z
+      .object({
+        node: RepoConfig,
+      })
+      .nullable(),
     updatedAt: z.string().nullable(),
   })
   .nullable()

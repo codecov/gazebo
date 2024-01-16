@@ -19,11 +19,9 @@ import Icon from 'ui/Icon'
 
 import { getReposColumnsHelper } from './getReposColumnsHelper'
 
-
 import 'ui/Table/Table.css'
 import { repoDisplayOptions } from '../ListRepo'
 import NoReposBlock from '../NoReposBlock'
-
 
 interface URLParams {
   provider: string
@@ -36,7 +34,7 @@ interface ReposTableProps {
     ordering?: string
     direction: string
   }
-  filterValues: string[]
+  filterValues?: string[]
 }
 
 const ReposTable = ({
