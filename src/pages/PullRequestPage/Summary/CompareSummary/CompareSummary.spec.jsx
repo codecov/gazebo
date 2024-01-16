@@ -10,6 +10,136 @@ import CompareSummary from './CompareSummary'
 const queryClient = new QueryClient()
 const server = setupServer()
 
+const createPullData = ({ overrideCommits } = {}) => {
+  const result = {
+    owner: {
+      isCurrentUserPartOfOrg: true,
+      repository: {
+        __typename: 'Repository',
+        defaultBranch: 'main',
+        private: false,
+        pull: {
+          commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
+          commits: {
+            edges: overrideCommits
+              ? overrideCommits
+              : [
+                  {
+                    node: {
+                      state: 'complete',
+                      commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
+                      message:
+                        'create component to hold bundle list table for a given pull',
+                      author: {
+                        username: 'nicholas-codecov',
+                      },
+                    },
+                  },
+                ],
+          },
+          compareWithBase: {
+            state: 'complete',
+            __typename: 'Comparison',
+            flagComparisons: [],
+            patchTotals: {
+              percentCovered: 92.12,
+            },
+            baseTotals: {
+              percentCovered: 98.25,
+            },
+            headTotals: {
+              percentCovered: 78.33,
+            },
+            impactedFiles: {
+              __typename: 'ImpactedFiles',
+              results: [
+                {
+                  fileName: 'usePullBundleList.tsx',
+                  headName: 'src/services/pull/usePullBundleList.tsx',
+                  isCriticalFile: false,
+                  missesCount: 0,
+                  baseCoverage: {
+                    percentCovered: 100.0,
+                  },
+                  headCoverage: {
+                    percentCovered: 78.33,
+                  },
+                  patchCoverage: {
+                    percentCovered: 100.0,
+                  },
+                  changeCoverage: 0.0,
+                },
+                {
+                  fileName: 'PullBundleAnalysis.tsx',
+                  headName:
+                    'src/pages/PullRequestPage/PullBundleAnalysis/PullBundleAnalysis.tsx',
+                  isCriticalFile: false,
+                  missesCount: 0,
+                  baseCoverage: null,
+                  headCoverage: {
+                    percentCovered: 78.33,
+                  },
+                  patchCoverage: {
+                    percentCovered: 100.0,
+                  },
+                  changeCoverage: null,
+                },
+                {
+                  fileName: 'PullBundleAnalysisTable.tsx',
+                  headName:
+                    'src/pages/PullRequestPage/PullBundleAnalysis/PullBundleAnalysisTable/PullBundleAnalysisTable.tsx',
+                  isCriticalFile: false,
+                  missesCount: 0,
+                  baseCoverage: null,
+                  headCoverage: {
+                    percentCovered: 100.0,
+                  },
+                  patchCoverage: {
+                    percentCovered: 100.0,
+                  },
+                  changeCoverage: null,
+                },
+              ],
+            },
+            changeCoverage: 38.94,
+            hasDifferentNumberOfHeadAndBaseReports: true,
+          },
+          pullId: 2510,
+          title: 'feat: Create bundle analysis table for a given pull',
+          state: 'OPEN',
+          author: {
+            username: 'nicholas-codecov',
+          },
+          head: {
+            ciPassed: true,
+            branchName:
+              'gh-eng-994-create-bundle-analysis-table-for-a-given-pull',
+            state: 'complete',
+            commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
+            totals: {
+              percentCovered: 78.33,
+            },
+            uploads: {
+              totalCount: 4,
+            },
+          },
+          updatestamp: '2024-01-12T12:56:18.912860',
+          behindBy: 82367894,
+          behindByCommit: '1798hvs8ofhn',
+          comparedTo: {
+            commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
+            uploads: {
+              totalCount: 1,
+            },
+          },
+        },
+      },
+    },
+  }
+
+  return result
+}
+
 const wrapper =
   (initialEntries = ['/gh/test-org/test-repo/pull/5']) =>
   ({ children }) =>
@@ -33,7 +163,7 @@ afterAll(() => {
 })
 
 describe('CompareSummary', () => {
-  function setup(pullData) {
+  function setup({ pullData }) {
     server.use(
       graphql.query('Pull', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(pullData))
@@ -44,27 +174,16 @@ describe('CompareSummary', () => {
   describe('Pending or no commits', () => {
     beforeEach(() => {
       setup({
-        owner: {
-          repository: {
-            pull: {
-              head: {
-                totals: {
-                  coverage: undefined,
-                },
-              },
-              comparedTo: {
-                totals: {
-                  coverage: undefined,
-                },
-              },
-              compareWithBase: {
-                patchTotals: {
-                  percentCovered: undefined,
-                },
+        pullData: createPullData({
+          overrideCommits: [
+            {
+              node: {
+                state: 'pending',
+                commitid: 'abc',
               },
             },
-          },
-        },
+          ],
+        }),
       })
     })
 
@@ -78,14 +197,16 @@ describe('CompareSummary', () => {
   describe('When there isnt a head and base commit', () => {
     beforeEach(() => {
       setup({
-        owner: {
-          repository: {
-            pull: {
-              head: undefined,
-              comparedTo: undefined,
-              compareWithBase: {
-                patchTotals: {
-                  percentCovered: undefined,
+        pullData: {
+          owner: {
+            repository: {
+              pull: {
+                head: undefined,
+                comparedTo: undefined,
+                compareWithBase: {
+                  patchTotals: {
+                    percentCovered: undefined,
+                  },
                 },
               },
             },
@@ -104,38 +225,20 @@ describe('CompareSummary', () => {
   describe('Error render', () => {
     beforeEach(() => {
       setup({
-        owner: {
-          repository: {
-            pull: {
-              commits: { edges: [{ node: { state: 'error' } }] },
-              behindBy: 82367894,
-              behindByCommit: '1798hvs8ofhn',
-              head: {
-                commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
-                totals: {
-                  percentCovered: 78.33,
+        pullData: createPullData({
+          overrideCommits: [
+            {
+              node: {
+                state: 'error',
+                commitid: 'c42fe217c61b007b2c17544a9d85840381857',
+                message: 'There is an error processing the coverage reports',
+                author: {
+                  username: 'nicholas-codecov',
                 },
-                uploads: {
-                  totalCount: 4,
-                },
-              },
-              comparedTo: {
-                commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
-                uploads: {
-                  totalCount: 1,
-                },
-              },
-              compareWithBase: {
-                hasDifferentNumberOfHeadAndBaseReports: false,
-                patchTotals: {
-                  percentCovered: 92.12,
-                },
-                changeCoverage: 38.94,
               },
             },
-            defaultBranch: 'main',
-          },
-        },
+          ],
+        }),
       })
     })
 
@@ -179,42 +282,7 @@ describe('CompareSummary', () => {
 
   describe('Successful render', () => {
     beforeEach(() => {
-      setup({
-        owner: {
-          repository: {
-            defaultBranch: 'main',
-            pull: {
-              behindBy: 82367894,
-              behindByCommit: '1798hvs8ofhn',
-              commits: {
-                edges: [{ node: { state: 'complete', commitid: 'abc' } }],
-              },
-              head: {
-                commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
-                totals: {
-                  percentCovered: 78.33,
-                },
-                uploads: {
-                  totalCount: 4,
-                },
-              },
-              comparedTo: {
-                commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
-                uploads: {
-                  totalCount: 1,
-                },
-              },
-              compareWithBase: {
-                hasDifferentNumberOfHeadAndBaseReports: false,
-                patchTotals: {
-                  percentCovered: 92.12,
-                },
-                changeCoverage: 38.94,
-              },
-            },
-          },
-        },
-      })
+      setup({ pullData: createPullData() })
     })
 
     it('renders a card for every valid field', async () => {
@@ -338,37 +406,7 @@ describe('CompareSummary', () => {
   describe('When base and head have different number of reports', () => {
     beforeEach(() => {
       setup({
-        owner: {
-          repository: {
-            pull: {
-              commits: {
-                edges: [{ node: { state: 'complete', commitid: 'abc' } }],
-              },
-              head: {
-                commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
-                totals: {
-                  percentCovered: 78.33,
-                },
-                uploads: {
-                  totalCount: 4,
-                },
-              },
-              comparedTo: {
-                commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
-                uploads: {
-                  totalCount: 1,
-                },
-              },
-              compareWithBase: {
-                hasDifferentNumberOfHeadAndBaseReports: true,
-                patchTotals: {
-                  percentCovered: 92.12,
-                },
-                changeCoverage: 38.94,
-              },
-            },
-          },
-        },
+        pullData: createPullData(),
       })
     })
 
@@ -456,40 +494,7 @@ describe('CompareSummary', () => {
   describe('When PR is behind by the target branch', () => {
     beforeEach(() => {
       setup({
-        owner: {
-          repository: {
-            defaultBranch: 'main',
-            pull: {
-              behindBy: 82367894,
-              behindByCommit: '1798hvs8ofhn',
-              commits: {
-                edges: [{ node: { state: 'complete', commitid: 'abc' } }],
-              },
-              head: {
-                commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
-                totals: {
-                  percentCovered: 78.33,
-                },
-                uploads: {
-                  totalCount: 4,
-                },
-              },
-              comparedTo: {
-                commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
-                uploads: {
-                  totalCount: 1,
-                },
-              },
-              compareWithBase: {
-                hasDifferentNumberOfHeadAndBaseReports: true,
-                patchTotals: {
-                  percentCovered: 92.12,
-                },
-                changeCoverage: 38.94,
-              },
-            },
-          },
-        },
+        pullData: createPullData(),
       })
     })
 
@@ -518,40 +523,7 @@ describe('CompareSummary', () => {
   describe('When PR is not behind by the target branch', () => {
     it('does not render a card with the behind by information', async () => {
       setup({
-        owner: {
-          repository: {
-            defaultBranch: 'main',
-            pull: {
-              behindBy: 0,
-              behindByCommit: undefined,
-              commits: {
-                edges: [{ node: { state: 'complete', commitid: 'abc' } }],
-              },
-              head: {
-                commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
-                totals: {
-                  percentCovered: 78.33,
-                },
-                uploads: {
-                  totalCount: 4,
-                },
-              },
-              comparedTo: {
-                commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
-                uploads: {
-                  totalCount: 1,
-                },
-              },
-              compareWithBase: {
-                hasDifferentNumberOfHeadAndBaseReports: true,
-                patchTotals: {
-                  percentCovered: 92.12,
-                },
-                changeCoverage: 38.94,
-              },
-            },
-          },
-        },
+        pullData: createPullData(),
       })
 
       render(<CompareSummary />, { wrapper: wrapper() })

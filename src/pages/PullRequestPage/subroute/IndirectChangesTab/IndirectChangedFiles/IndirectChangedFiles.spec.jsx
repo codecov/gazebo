@@ -16,6 +16,7 @@ jest.mock('../FileDiff', () => () => 'FileDiff Component')
 const mockImpactedFiles = [
   {
     isCriticalFile: true,
+    missesCount: 3,
     fileName: 'mafs.js',
     headName: 'flag1/mafs.js',
     baseCoverage: {
@@ -27,110 +28,88 @@ const mockImpactedFiles = [
     patchCoverage: {
       percentCovered: 27.43,
     },
+    changeCoverage: 41,
   },
 ]
 
-const mockPull = {
+const mockPull = ({ overrideComparison } = {}) => ({
   owner: {
+    isCurrentUserPartOfOrg: true,
     repository: {
+      __typename: 'Repository',
+      defaultBranch: 'main',
+      private: false,
       pull: {
-        pullId: 14,
-        head: {
-          state: 'PROCESSED',
-        },
-        compareWithBase: {
-          patchTotals: {
-            percentCovered: 92.12,
-          },
-          headTotals: {
-            percentCovered: 74.2,
-          },
-          baseTotals: {
-            percentCovered: 27.35,
-          },
-          changeCoverage: 38.94,
-          impactedFiles: {
-            __typename: ImpactedFilesReturnType.IMPACTED_FILES,
-            results: mockImpactedFiles,
-          },
-        },
-      },
-    },
-  },
-}
-
-const mockNoImpactedFiles = {
-  owner: {
-    repository: {
-      pull: {
-        pullId: 14,
-        head: {
-          state: 'PROCESSED',
-        },
-        compareWithBase: {
-          patchTotals: {
-            percentCovered: 92.12,
-          },
-          headTotals: {
-            percentCovered: 74.2,
-          },
-          baseTotals: {
-            percentCovered: 27.35,
-          },
-          changeCoverage: 38.94,
-          impactedFiles: {
-            __typename: ImpactedFilesReturnType.IMPACTED_FILES,
-            results: [],
-          },
-        },
-      },
-    },
-  },
-}
-
-const mockNoChange = {
-  owner: {
-    repository: {
-      pull: {
-        pullId: 14,
-        head: {
-          state: 'PROCESSED',
-        },
-        compareWithBase: {
-          patchTotals: {
-            percentCovered: 92.12,
-          },
-          headTotals: {
-            percentCovered: 74.2,
-          },
-          baseTotals: {
-            percentCovered: 27.35,
-          },
-          changeCoverage: 38.94,
-          impactedFiles: {
-            __typename: ImpactedFilesReturnType.IMPACTED_FILES,
-            results: [
-              {
-                isCriticalFile: true,
-                fileName: 'mafs.js',
-                headName: 'flag1/mafs.js',
-                baseCoverage: {
-                  percentCovered: null,
-                },
-                headCoverage: {
-                  percentCovered: null,
-                },
-                patchCoverage: {
-                  percentCovered: null,
+        commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
+        commits: {
+          edges: [
+            {
+              node: {
+                state: 'complete',
+                commitid: 'fc43199ccde1f21a940aa3d596c711c1c420651f',
+                message:
+                  'create component to hold bundle list table for a given pull 2',
+                author: {
+                  username: 'nicholas-codecov',
                 },
               },
-            ],
+            },
+          ],
+        },
+        compareWithBase: overrideComparison
+          ? overrideComparison
+          : {
+              state: 'complete',
+              __typename: 'Comparison',
+              flagComparisons: [],
+              patchTotals: {
+                percentCovered: 92.12,
+              },
+              baseTotals: {
+                percentCovered: 98.25,
+              },
+              headTotals: {
+                percentCovered: 78.33,
+              },
+              impactedFiles: {
+                __typename: 'ImpactedFiles',
+                results: mockImpactedFiles,
+              },
+              changeCoverage: 38.94,
+              hasDifferentNumberOfHeadAndBaseReports: true,
+            },
+        pullId: 2510,
+        title: 'feat: Create bundle analysis table for a given pull',
+        state: 'OPEN',
+        author: {
+          username: 'nicholas-codecov',
+        },
+        head: {
+          ciPassed: true,
+          branchName:
+            'gh-eng-994-create-bundle-analysis-table-for-a-given-pull',
+          state: 'complete',
+          commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
+          totals: {
+            percentCovered: 78.33,
+          },
+          uploads: {
+            totalCount: 4,
+          },
+        },
+        updatestamp: '2024-01-12T12:56:18.912860',
+        behindBy: 82367894,
+        behindByCommit: '1798hvs8ofhn',
+        comparedTo: {
+          commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
+          uploads: {
+            totalCount: 1,
           },
         },
       },
     },
   },
-}
+})
 
 const mockSingularImpactedFilesData = {
   owner: {
@@ -202,14 +181,10 @@ const wrapper =
     )
 
 describe('IndirectChangedFiles', () => {
-  function setup(overrideData) {
+  function setup({ overrideComparison } = {}) {
     server.use(
       graphql.query('Pull', (req, res, ctx) => {
-        if (overrideData) {
-          return res(ctx.status(200), ctx.data(overrideData))
-        }
-
-        return res(ctx.status(200), ctx.data(mockPull))
+        return res(ctx.status(200), ctx.data(mockPull({ overrideComparison })))
       }),
 
       graphql.query('ImpactedFileComparison', (req, res, ctx) =>
@@ -348,7 +323,45 @@ describe('IndirectChangedFiles', () => {
 
   describe('when rendered without change', () => {
     beforeEach(() => {
-      setup(mockNoChange)
+      setup({
+        overrideComparison: {
+          state: 'complete',
+          __typename: 'Comparison',
+          flagComparisons: [],
+          patchTotals: {
+            percentCovered: 33,
+          },
+          baseTotals: {
+            percentCovered: 77,
+          },
+          headTotals: {
+            percentCovered: 100,
+          },
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [
+              {
+                isCriticalFile: true,
+                missesCount: 3,
+                fileName: 'mafs.js',
+                headName: 'flag1/mafs.js',
+                baseCoverage: {
+                  percentCovered: null,
+                },
+                headCoverage: {
+                  percentCovered: null,
+                },
+                patchCoverage: {
+                  percentCovered: null,
+                },
+                changeCoverage: null,
+              },
+            ],
+          },
+          changeCoverage: null,
+          hasDifferentNumberOfHeadAndBaseReports: true,
+        },
+      })
     })
 
     it('renders no data for the change', async () => {
@@ -365,7 +378,15 @@ describe('IndirectChangedFiles', () => {
 
   describe('when rendered with an empty list of impacted files', () => {
     beforeEach(() => {
-      setup(mockNoImpactedFiles)
+      setup({
+        compareWithBase: {
+          ...mockPull().owner.repository.pull.compareWithBase,
+          impactedFiles: {
+            __typename: ImpactedFilesReturnType.IMPACTED_FILES,
+            results: [],
+          },
+        },
+      })
     })
 
     it('renders name column', async () => {

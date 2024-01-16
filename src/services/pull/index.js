@@ -1,4 +1,4 @@
 export * from './usePrefetchSingleFileComp'
-export * from './usePull'
+export * from './usePull.tsx'
 export * from './useSingularImpactedFileComparison'
 export * from './usePullComponents'

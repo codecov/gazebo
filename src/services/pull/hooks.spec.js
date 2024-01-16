@@ -23,28 +23,99 @@ beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
+const mockImpactedFiles = [
+  {
+    isCriticalFile: true,
+    missesCount: 3,
+    fileName: 'mafs.js',
+    headName: 'flag1/mafs.js',
+    baseCoverage: {
+      percentCovered: 45.38,
+    },
+    headCoverage: {
+      percentCovered: 90.23,
+    },
+    patchCoverage: {
+      percentCovered: 27.43,
+    },
+    changeCoverage: 41,
+  },
+]
+
 const pull = {
-  pullId: 5,
-  title: 'fix code',
-  state: 'OPEN',
-  updatestamp: '2021-03-03T17:54:07.727453',
-  author: {
-    username: 'landonorris',
-  },
-  head: {
-    commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
-    totals: {
-      coverage: 78.33,
+  owner: {
+    isCurrentUserPartOfOrg: true,
+    repository: {
+      __typename: 'Repository',
+      defaultBranch: 'main',
+      private: false,
+      pull: {
+        commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
+        commits: {
+          edges: [
+            {
+              node: {
+                state: 'complete',
+                commitid: 'fc43199ccde1f21a940aa3d596c711c1c420651f',
+                message:
+                  'create component to hold bundle list table for a given pull 2',
+                author: {
+                  username: 'nicholas-codecov',
+                },
+              },
+            },
+          ],
+        },
+        compareWithBase: {
+          state: 'complete',
+          __typename: 'Comparison',
+          flagComparisons: [],
+          patchTotals: {
+            percentCovered: 92.12,
+          },
+          baseTotals: {
+            percentCovered: 98.25,
+          },
+          headTotals: {
+            percentCovered: 78.33,
+          },
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: mockImpactedFiles,
+          },
+          changeCoverage: 38.94,
+          hasDifferentNumberOfHeadAndBaseReports: true,
+        },
+        pullId: 2510,
+        title: 'feat: Create bundle analysis table for a given pull',
+        state: 'OPEN',
+        author: {
+          username: 'nicholas-codecov',
+        },
+        head: {
+          ciPassed: true,
+          branchName:
+            'gh-eng-994-create-bundle-analysis-table-for-a-given-pull',
+          state: 'complete',
+          commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
+          totals: {
+            percentCovered: 78.33,
+          },
+          uploads: {
+            totalCount: 4,
+          },
+        },
+        updatestamp: '2024-01-12T12:56:18.912860',
+        behindBy: 82367894,
+        behindByCommit: '1798hvs8ofhn',
+        comparedTo: {
+          commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
+          uploads: {
+            totalCount: 1,
+          },
+        },
+      },
     },
-  },
-  comparedTo: {
-    commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
-  },
-  compareWithBase: {
-    patchTotals: {
-      coverage: 92.12,
-    },
-    changeCoverage: 38.94,
   },
 }
 
@@ -65,16 +136,7 @@ describe('usePull', () => {
 
   describe('when called', () => {
     beforeEach(() => {
-      setup({
-        owner: {
-          isCurrentUserPartOfOrg: true,
-          repository: {
-            defaultBranch: 'umbrasyl',
-            private: true,
-            pull,
-          },
-        },
-      })
+      setup(pull)
     })
 
     describe('when data is loaded', () => {
@@ -91,51 +153,74 @@ describe('usePull', () => {
 
         await waitFor(() =>
           expect(result.current.data).toEqual({
-            defaultBranch: 'umbrasyl',
+            defaultBranch: 'main',
             hasAccess: true,
-            pull,
-          })
-        )
-      })
-    })
-  })
-
-  describe(`when user shouldn't have access`, () => {
-    beforeEach(() => {
-      setup({
-        owner: {
-          isCurrentUserPartOfOrg: false,
-          repository: {
-            private: true,
-            pull,
-          },
-        },
-      })
-    })
-
-    describe('when data is loaded', () => {
-      it('returns the data', async () => {
-        const { result } = renderHook(
-          () => usePull({ provider, owner, repo }),
-          {
-            wrapper,
-          }
-        )
-
-        await waitFor(() => result.current.isLoading)
-        await waitFor(() => !result.current.isLoading)
-
-        await waitFor(() =>
-          expect(result.current.data).toEqual({
-            hasAccess: false,
-            pull,
+            pull: {
+              behindBy: 82367894,
+              behindByCommit: '1798hvs8ofhn',
+              pullId: 2510,
+              title: 'feat: Create bundle analysis table for a given pull',
+              state: 'OPEN',
+              updatestamp: '2024-01-12T12:56:18.912860',
+              author: { username: 'nicholas-codecov' },
+              comparedTo: {
+                commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
+                uploads: { totalCount: 1 },
+              },
+              head: {
+                state: 'complete',
+                ciPassed: true,
+                branchName:
+                  'gh-eng-994-create-bundle-analysis-table-for-a-given-pull',
+                commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
+                totals: { percentCovered: 78.33 },
+                uploads: { totalCount: 4 },
+              },
+              commits: {
+                edges: [
+                  {
+                    node: {
+                      state: 'complete',
+                      commitid: 'fc43199ccde1f21a940aa3d596c711c1c420651f',
+                      message:
+                        'create component to hold bundle list table for a given pull 2',
+                      author: { username: 'nicholas-codecov' },
+                    },
+                  },
+                ],
+              },
+              compareWithBase: {
+                __typename: 'Comparison',
+                state: 'complete',
+                patchTotals: { percentCovered: 92.12 },
+                baseTotals: { percentCovered: 98.25 },
+                headTotals: { percentCovered: 78.33 },
+                impactedFiles: {
+                  __typename: 'ImpactedFiles',
+                  results: [
+                    {
+                      isCriticalFile: true,
+                      missesCount: 3,
+                      fileName: 'mafs.js',
+                      headName: 'flag1/mafs.js',
+                      baseCoverage: { percentCovered: 45.38 },
+                      headCoverage: { percentCovered: 90.23 },
+                      patchCoverage: { percentCovered: 27.43 },
+                      changeCoverage: 41,
+                    },
+                  ],
+                },
+                flagComparisons: [],
+                changeCoverage: 38.94,
+                hasDifferentNumberOfHeadAndBaseReports: true,
+              },
+            },
           })
         )
       })
     })
   })
 })
-
 const mockSingularImpactedFilesData = {
   headName: 'file A',
   isNewFile: true,
