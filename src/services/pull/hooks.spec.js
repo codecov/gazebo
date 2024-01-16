@@ -246,6 +246,32 @@ describe('usePull', () => {
       })
     })
 
+    describe('when it is of NotFoundError type', () => {
+      it('returns the error', async () => {
+        setup({
+          owner: {
+            isCurrentUserPartOfOrg: false,
+            repository: {
+              __typename: 'NotFoundError',
+              message: 'not found',
+            },
+          },
+        })
+
+        const { result } = renderHook(
+          () => usePull({ provider, owner, repo }),
+          {
+            wrapper,
+          }
+        )
+
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+
+        await waitFor(() => expect(result.current.error.status).toEqual(404))
+      })
+    })
+
     describe('when there is no pull returned', () => {
       it('returns pull null', async () => {
         setup({
