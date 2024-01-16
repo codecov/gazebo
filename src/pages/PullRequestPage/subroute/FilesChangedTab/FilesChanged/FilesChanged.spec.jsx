@@ -151,14 +151,12 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('FilesChanged', () => {
-  function setup({ overrideComparison, headState, comparisonTypename } = {}) {
+  function setup({ overrideComparison, headState } = {}) {
     server.use(
       graphql.query('Pull', (_, res, ctx) => {
         return res(
           ctx.status(200),
-          ctx.data(
-            mockPull({ overrideComparison, headState, comparisonTypename })
-          )
+          ctx.data(mockPull({ overrideComparison, headState }))
         )
       })
     )

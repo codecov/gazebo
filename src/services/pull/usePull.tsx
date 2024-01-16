@@ -17,6 +17,8 @@ import Api from 'shared/api'
 import { userHasAccess } from 'shared/utils/user'
 import A from 'ui/A'
 
+import { PullCompareWithBaseFragment } from './fragments'
+
 export const OrderingDirection = {
   desc: 'DESC',
   asc: 'ASC',
@@ -232,78 +234,7 @@ const query = `query Pull(
               }
             }
           }
-          compareWithBase {
-            __typename
-            ... on Comparison {
-              __typename
-              flagComparisons {
-                name
-                patchTotals {
-                  percentCovered
-                }
-                headTotals {
-                  percentCovered
-                }
-                baseTotals {
-                  percentCovered
-                }
-              }
-              state
-              patchTotals {
-                percentCovered
-              }
-              baseTotals {
-                percentCovered
-              }
-              headTotals {
-                percentCovered
-              }
-              changeCoverage
-              hasDifferentNumberOfHeadAndBaseReports
-              impactedFiles(filters: $filters) {
-                __typename
-                ... on ImpactedFiles {
-                  results {
-                    fileName
-                    isCriticalFile
-                    headName
-                    missesCount
-                    patchCoverage {
-                      percentCovered
-                    }
-                    baseCoverage {
-                      percentCovered
-                    }
-                    headCoverage {
-                      percentCovered
-                    }
-                    changeCoverage
-                  }
-                }
-                ... on UnknownFlags {
-                  message
-                }
-              }
-            }
-            ... on FirstPullRequest {
-              message
-            }
-            ... on MissingBaseCommit {
-              message
-            }
-            ... on MissingHeadCommit {
-              message
-            }
-            ... on MissingComparison {
-              message
-            }
-            ... on MissingBaseReport {
-              message
-            }
-            ... on MissingHeadReport {
-              message
-            }
-          }
+          ...PullCompareWithBaseFragment
         }
       }
       ... on NotFoundError {
@@ -315,6 +246,7 @@ const query = `query Pull(
     }
   }
 }
+${PullCompareWithBaseFragment}
 `
 
 interface UsePullArgs {
