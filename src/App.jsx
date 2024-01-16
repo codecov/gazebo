@@ -9,6 +9,7 @@ import { SentryRoute } from 'sentry'
 
 import BaseLayout from 'layouts/BaseLayout'
 import LoginLayout from 'layouts/LoginLayout'
+import { useLocationParams } from 'services/navigation'
 import { ToastNotificationProvider } from 'services/toastNotification'
 import { useUTM } from 'services/tracking/utm'
 import { useUser } from 'services/user'
@@ -29,13 +30,21 @@ const SyncProviderPage = lazy(() => import('./pages/SyncProviderPage'))
 const HomePageRedirect = () => {
   const { provider } = useParams()
   const { data: currentUser } = useUser()
+  const { params } = useLocationParams()
 
-  if (!provider || !currentUser) return <Redirect to="/login" />
+  if (!provider || !currentUser) {
+    return <Redirect to="/login" />
+  }
 
   const defaultOrg =
-    currentUser?.owner?.defaultOrgUsername ?? currentUser?.user?.username
+    currentUser.owner?.defaultOrgUsername ?? currentUser.user?.username
+  let redirectURL = `/${provider}/${defaultOrg}`
+  const { setup_action: setupAction } = params
+  if (setupAction) {
+    redirectURL += `?setup_action=${setupAction}`
+  }
 
-  return <Redirect to={`/${provider}/${defaultOrg}`} />
+  return <Redirect to={redirectURL} />
 }
 
 const MainAppRoutes = () => (
