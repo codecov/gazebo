@@ -2,14 +2,10 @@ import PropTypes from 'prop-types'
 import { useState } from 'react'
 import useDebounce from 'react-use/lib/useDebounce'
 
-import { nonActiveOrderingOptions, orderingOptions } from 'services/repos'
 import OptionButton from 'ui/OptionButton'
-import Select from 'ui/Select'
 import TextInput from 'ui/TextInput'
 
 import RepoOrgNotFound from './RepoOrgNotFound'
-
-import { repoDisplayOptions } from '../ListRepo'
 
 const optionButtonOptions = [
   { text: 'All' },
@@ -56,20 +52,6 @@ function OrgControlTable({
         data-testid="org-control-search"
       />
       {canRefetch && <RepoOrgNotFound />}
-      {!showTeamRepos && ( // remove select once table is refactored
-        <Select
-          dataMarketing="repo-list-order-selector"
-          ariaName="Sort Order"
-          value={sortItem}
-          items={
-            repoDisplay === repoDisplayOptions.INACTIVE.text
-              ? nonActiveOrderingOptions
-              : orderingOptions
-          }
-          onChange={setSortItem}
-          renderItem={(option) => option.text}
-        />
-      )}
     </div>
   )
 }
