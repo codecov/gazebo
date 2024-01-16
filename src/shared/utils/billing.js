@@ -216,9 +216,22 @@ export function getNextBillingDate(accountDetails) {
 
 // TODO: This is now the preferred format for dates, please use this over any other formatting
 export function formatTimestampToCalendarDate(timestamp) {
-  return timestamp ? format(fromUnixTime(timestamp), 'MMMM dd, yyyy') : null
+  if (!timestamp) {
+    return null
+  }
+
+  const date = new Date(timestamp * 1000)
+  const options = {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  }
+  return new Intl.DateTimeFormat('en-US', options).format(date)
 }
 
 export function lastTwoDigits(value) {
-  return value ? value.toString().slice(-2) : null
+  if (typeof value === 'number' || typeof value === 'string') {
+    return value.toString().slice(-2)
+  }
+  return null
 }

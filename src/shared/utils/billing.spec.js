@@ -316,7 +316,7 @@ describe('formatTimestampToCalendarDate', () => {
   it('formats into calendar date', () => {
     const value = formatTimestampToCalendarDate('1660000000')
 
-    expect(value).toBe('August 08, 2022')
+    expect(value).toBe('August 8, 2022')
   })
 
   it('return null when null', () => {

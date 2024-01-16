@@ -4,11 +4,13 @@ import { useAccountDetails } from 'services/account'
 
 import PaymentCard from './PaymentCard'
 
+interface URLParams {
+  provider: string
+  owner: string
+}
+
 function BillingDetails() {
-  const { provider, owner } = useParams<{
-    provider: string
-    owner: string
-  }>()
+  const { provider, owner } = useParams<URLParams>()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const subscriptionDetail = accountDetails?.subscriptionDetail
 

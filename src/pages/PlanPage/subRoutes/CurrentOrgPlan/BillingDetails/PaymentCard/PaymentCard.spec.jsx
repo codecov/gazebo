@@ -171,7 +171,7 @@ describe('PaymentCard', () => {
         />
       )
 
-      expect(screen.getByText(/December 01, 2020/)).toBeInTheDocument()
+      expect(screen.getByText(/December 1, 2020/)).toBeInTheDocument()
     })
   })
 
