@@ -75,7 +75,7 @@ const mockPull = ({ overrideComparison, headState } = {}) => ({
           ? overrideComparison
           : {
               state: 'complete',
-              __typename: 'Comparison',
+              __typename: ComparisonReturnType.SUCCESSFUL_COMPARISON,
               flagComparisons: [],
               patchTotals: {
                 percentCovered: 92.12,
@@ -179,7 +179,7 @@ describe('FilesChanged', () => {
       setup({
         overrideComparison: {
           state: 'complete',
-          __typename: 'Comparison',
+          __typename: ComparisonReturnType.SUCCESSFUL_COMPARISON,
           flagComparisons: [],
           patchTotals: {
             percentCovered: 92.12,
@@ -221,7 +221,12 @@ describe('FilesChanged', () => {
 
   describe('when rendered without changed files or changes', () => {
     beforeEach(() => {
-      setup({ overrideComparison: {} })
+      setup({
+        overrideComparison: {
+          __typename: ComparisonReturnType.MISSING_COMPARISON,
+          message: 'No head commit found',
+        },
+      })
     })
 
     it('renders no changed files text', async () => {
@@ -274,7 +279,7 @@ describe('FilesChanged', () => {
     it('Displays server message + suggests carryforward flags', async () => {
       const overrideComparison = {
         state: 'complete',
-        __typename: 'Comparison',
+        __typename: ComparisonReturnType.SUCCESSFUL_COMPARISON,
         flagComparisons: [],
         patchTotals: {
           percentCovered: 92.12,

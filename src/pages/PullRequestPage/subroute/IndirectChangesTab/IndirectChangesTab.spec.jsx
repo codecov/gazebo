@@ -205,10 +205,9 @@ describe('IndirectChangesTab', () => {
     beforeEach(() => {
       setup({
         overrideComparison: {
-          ...mockPull().owner.repository.pull.compareWithBase,
-          impactedFiles: {
-            __typename: ImpactedFilesReturnType.NO_IMPACTED_FILES,
-          },
+          state: 'complete',
+          __typename: 'MissingHeadCommit',
+          message: 'No head commit found',
         },
       })
     })

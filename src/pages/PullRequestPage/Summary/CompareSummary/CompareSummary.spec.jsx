@@ -181,6 +181,10 @@ describe('CompareSummary', () => {
               node: {
                 state: 'pending',
                 commitid: 'abc',
+                message: 'Pending commit',
+                author: {
+                  username: 'nicholas-codecov',
+                },
               },
             },
           ],
@@ -200,14 +204,27 @@ describe('CompareSummary', () => {
       setup({
         pullData: {
           owner: {
+            isCurrentUserPartOfOrg: false,
             repository: {
+              __typename: 'Repository',
+              defaultBranch: 'main',
+              private: false,
               pull: {
-                head: undefined,
-                comparedTo: undefined,
+                pullId: 2510,
+                title: 'feat: Create bundle analysis table for a given pull',
+                state: 'OPEN',
+                updatestamp: '2024-01-12T12:56:18.912860',
+                author: {
+                  username: 'nicholas-codecov',
+                },
+                behindBy: null,
+                behindByCommit: null,
+                commits: null,
+                head: null,
+                comparedTo: null,
                 compareWithBase: {
-                  patchTotals: {
-                    percentCovered: undefined,
-                  },
+                  __typename: 'MissingComparison',
+                  message: 'There is no base commit to compare against',
                 },
               },
             },
