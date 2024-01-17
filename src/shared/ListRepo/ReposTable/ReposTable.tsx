@@ -7,7 +7,7 @@ import {
 } from '@tanstack/react-table'
 import cs from 'classnames'
 import isEmpty from 'lodash/isEmpty'
-import React, { useContext, useMemo, useState } from 'react'
+import { useContext, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useRepos } from 'services/repos'
@@ -118,7 +118,9 @@ const ReposTable = ({
                   colSpan={header.colSpan}
                   scope="col"
                   data-sortable={header.column.getCanSort()}
-                  onClick={header.column.getToggleSortingHandler()}
+                  {...(header.column.id !== 'inactiveRepo'
+                    ? { onClick: header.column.getToggleSortingHandler() }
+                    : {})}
                   {...(header.column.id === 'lines'
                     ? { 'data-type': 'numeric' }
                     : {})}
@@ -151,7 +153,9 @@ const ReposTable = ({
                 <td
                   key={cell.id}
                   className={cs({
-                    'flex justify-end': cell.column.id === 'coverage',
+                    'flex justify-end':
+                      cell.column.id === 'coverage' ||
+                      cell.column.id === 'inactiveRepo',
                   })}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}

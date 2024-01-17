@@ -38,9 +38,9 @@ export const getReposColumnsHelper = ({
   if (inactive) {
     return [
       nameColumn,
-      columnHelper.accessor('lines', {
+      columnHelper.accessor('active', {
         header: '',
-        id: 'lines',
+        id: 'inactiveRepo',
         cell: (info) => {
           const repo = info.row.original
           return (
