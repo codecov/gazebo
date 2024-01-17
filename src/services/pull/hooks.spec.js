@@ -298,6 +298,47 @@ describe('usePull', () => {
         await waitFor(() => expect(result.current.data.pull).toEqual(null))
       })
     })
+
+    describe('when schema is not valid', () => {
+      it('throws an error', async () => {
+        setup({
+          owner: {
+            isCurrentUserPartOfOrg: true,
+            repository: {
+              __typename: 'Repository',
+              defaultBranch: 'main',
+              private: false,
+              pull: {
+                commits: {
+                  edges: [
+                    {
+                      node: {
+                        state: 'complete',
+                        commitid: 'fc43199ccde1f21a940aa3d596c711c1c420651f',
+                        message:
+                          'create component to hold bundle list table for a given pull 2',
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        })
+
+        const { result } = renderHook(
+          () => usePull({ provider, owner, repo }),
+          {
+            wrapper,
+          }
+        )
+
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+
+        await waitFor(() => expect(result.current.error.status).toEqual(404))
+      })
+    })
   })
 })
 
