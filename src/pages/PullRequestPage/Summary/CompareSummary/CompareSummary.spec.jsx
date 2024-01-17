@@ -19,7 +19,6 @@ const createPullData = ({ overrideCommits, overrideComparison } = {}) => {
         defaultBranch: 'main',
         private: false,
         pull: {
-          commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
           commits: {
             edges: overrideCommits
               ? overrideCommits

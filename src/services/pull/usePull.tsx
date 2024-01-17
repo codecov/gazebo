@@ -267,10 +267,8 @@ export function usePull({
   pullId,
   filters = {},
 }: UsePullArgs) {
-  const pullKey = ['Pull', provider, owner, repo, pullId, query, filters]
-
   const pullQuery = useQuery({
-    queryKey: pullKey,
+    queryKey: ['Pull', provider, owner, repo, pullId, query, filters],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
