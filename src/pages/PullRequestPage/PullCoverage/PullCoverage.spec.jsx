@@ -8,15 +8,22 @@ import { TierNames } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 import { ComparisonReturnType } from 'shared/utils/comparison'
 
-import PullRequestPageContent from './PullRequestPageContent'
+import PullRequestPageContent from './PullCoverage'
 
-jest.mock('../subroute/FilesChangedTab', () => () => 'FilesChangedTab')
-jest.mock('../subroute/IndirectChangesTab', () => () => 'IndirectChangesTab')
-jest.mock('../subroute/CommitsTab', () => () => 'CommitsTab')
-jest.mock('../subroute/FlagsTab', () => () => 'FlagsTab')
-jest.mock('../subroute/ComponentsTab', () => () => 'ComponentsTab')
-jest.mock('../subroute/FileExplorer', () => () => 'FileExplorer')
-jest.mock('../subroute/FileViewer', () => () => 'FileViewer')
+jest.mock('./Summary', () => () => <div>CompareSummary</div>)
+jest.mock('../FirstPullBanner', () => () => <div>FirstPullBanner</div>)
+jest.mock('./PullCoverageTabs', () => () => 'PullCoverageTabs')
+
+jest.mock('./routes/FilesChangedTab', () => () => <div>FilesChangedTab</div>)
+jest.mock('./routes/IndirectChangesTab', () => () => (
+  <div>IndirectChangesTab</div>
+))
+jest.mock('./routes/CommitsTab', () => () => <div>CommitsTab</div>)
+jest.mock('./routes/FlagsTab', () => () => <div>FlagsTab</div>)
+jest.mock('./routes/FileExplorer', () => () => <div>FileExplorer</div>)
+jest.mock('./routes/FileViewer', () => () => <div>FileViewer</div>)
+jest.mock('./routes/ComponentsTab', () => () => <div>ComponentsTab</div>)
+
 jest.mock('shared/featureFlags')
 
 const mockPullData = (resultType) => {
@@ -157,6 +164,17 @@ describe('PullRequestPageContent', () => {
       })
     )
   }
+
+  it('renders the compare summary', async () => {
+    setup(ComparisonReturnType.SUCCESSFUL_COMPARISON)
+
+    render(<PullRequestPageContent />, {
+      wrapper: wrapper(),
+    })
+
+    const compareSummary = await screen.findByText('CompareSummary')
+    expect(compareSummary).toBeInTheDocument()
+  })
 
   describe('result type was not successful', () => {
     beforeEach(() => setup(ComparisonReturnType.MISSING_BASE_COMMIT))

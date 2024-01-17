@@ -11,16 +11,21 @@ import { ComparisonReturnType } from 'shared/utils/comparison'
 import Spinner from 'ui/Spinner'
 
 import ErrorBanner from './ErrorBanner'
+import PullCoverageTabs from './PullCoverageTabs'
+import CompareSummarySkeleton from './Summary/CompareSummary/CompareSummarySkeleton'
 
 import { usePullPageData } from '../hooks'
 
-const FilesChangedTab = lazy(() => import('../subroute/FilesChangedTab'))
-const IndirectChangesTab = lazy(() => import('../subroute/IndirectChangesTab'))
-const CommitsTab = lazy(() => import('../subroute/CommitsTab'))
-const FlagsTab = lazy(() => import('../subroute/FlagsTab'))
-const FileExplorer = lazy(() => import('../subroute/FileExplorer'))
-const FileViewer = lazy(() => import('../subroute/FileViewer'))
-const Components = lazy(() => import('../subroute/ComponentsTab'))
+const CompareSummary = lazy(() => import('./Summary'))
+const FirstPullBanner = lazy(() => import('../FirstPullBanner'))
+
+const CommitsTab = lazy(() => import('./routes/CommitsTab'))
+const ComponentsTab = lazy(() => import('./routes/ComponentsTab'))
+const FlagsTab = lazy(() => import('./routes/FlagsTab'))
+const FilesChangedTab = lazy(() => import('./routes/FilesChangedTab'))
+const FileExplorer = lazy(() => import('./routes/FileExplorer'))
+const FileViewer = lazy(() => import('./routes/FileViewer'))
+const IndirectChangesTab = lazy(() => import('./routes/IndirectChangesTab'))
 
 const Loader = () => (
   <div className="flex items-center justify-center py-16">
@@ -28,7 +33,7 @@ const Loader = () => (
   </div>
 )
 
-function PullRequestPageContent() {
+function PullCoverageContent() {
   const { owner, repo, pullId, provider } = useParams()
   const { data: settings } = useRepoSettings()
   const { multipleTiers } = useFlags({
@@ -97,7 +102,7 @@ function PullRequestPageContent() {
       <SentryRoute path="/:provider/:owner/:repo/pull/:pullId/components" exact>
         <SilentNetworkErrorWrapper>
           <Suspense fallback={<Loader />}>
-            <Components />
+            <ComponentsTab />
           </Suspense>
         </SilentNetworkErrorWrapper>
       </SentryRoute>
@@ -114,4 +119,23 @@ function PullRequestPageContent() {
   )
 }
 
-export default PullRequestPageContent
+function PullCoverage() {
+  return (
+    <div className="mx-4 flex flex-col gap-4 md:mx-0">
+      <Suspense fallback={<CompareSummarySkeleton />}>
+        <CompareSummary />
+        <FirstPullBanner />
+      </Suspense>
+      <div className="grid grid-cols-1 gap-4 space-y-2 lg:grid-cols-2">
+        <article className="col-span-2 flex flex-col gap-3 md:gap-0">
+          <PullCoverageTabs />
+          <Suspense fallback={<Loader />}>
+            <PullCoverageContent />
+          </Suspense>
+        </article>
+      </div>
+    </div>
+  )
+}
+
+export default PullCoverage
