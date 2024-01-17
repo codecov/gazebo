@@ -247,25 +247,24 @@ describe('useRepos', () => {
 
       result.current.fetchNextPage()
 
-      await waitFor(() => result.current.isFetching)
-      await waitFor(() => !result.current.isFetching)
-
-      expect(result.current.data?.pages).toEqual([
-        {
-          repos: [repo1, repo2, repo3],
-          pageInfo: {
-            hasNextPage: true,
-            endCursor: 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
+      await waitFor(() => {
+        expect(result.current.data?.pages).toEqual([
+          {
+            repos: [repo1, repo2, repo3],
+            pageInfo: {
+              hasNextPage: true,
+              endCursor: 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
+            },
           },
-        },
-        {
-          pageInfo: {
-            endCursor: 'aa',
-            hasNextPage: false,
+          {
+            pageInfo: {
+              endCursor: 'aa',
+              hasNextPage: false,
+            },
+            repos: [repo4],
           },
-          repos: [repo4],
-        },
-      ])
+        ])
+      })
     })
   })
 
