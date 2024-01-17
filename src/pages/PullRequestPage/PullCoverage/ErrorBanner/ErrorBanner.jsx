@@ -114,6 +114,8 @@ function BannerContent({ errorType }) {
       </>
     )
   }
+
+  return null
 }
 
 BannerContent.propTypes = {

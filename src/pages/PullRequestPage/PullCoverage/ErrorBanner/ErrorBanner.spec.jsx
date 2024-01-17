@@ -236,4 +236,19 @@ describe('ErrorBanner Card', () => {
       )
     })
   })
+
+  describe('when rendered with unknown error', () => {
+    it('does not render text content', () => {
+      render(
+        <MemoryRouter initialEntries={[`/gh/codecov`]}>
+          <Route path="/:provider/:owner">
+            <ErrorBanner errorType="unknown error" />
+          </Route>
+        </MemoryRouter>
+      )
+
+      const header = screen.queryByText(/Missing/)
+      expect(header).not.toBeInTheDocument()
+    })
+  })
 })
