@@ -24,8 +24,7 @@ export function useUpdateBillingEmail({ provider, owner }: UsePlanDataArgs) {
       return Api.patch({ path, provider, body })
     },
     onSuccess: (data) => {
-      // update the local cache of account details from what the server returns
-      queryClient.setQueryData(['accountDetails', provider, owner], data)
+      queryClient.invalidateQueries(['accountDetails'])
     },
   })
 }
