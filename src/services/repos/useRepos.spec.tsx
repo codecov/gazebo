@@ -102,15 +102,21 @@ const repo4 = {
 
 const server = setupServer()
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+  jest.spyOn(global.console, 'error')
+})
 beforeEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+afterAll(() => {
+  server.close()
+  jest.resetAllMocks()
+})
 
 describe('useRepos', () => {
-  function setup() {
+  function setup({ invalidResponse = false } = {}) {
     server.use(
       graphql.query('MyRepos', (req, res, ctx) => {
         const data = {
@@ -145,7 +151,7 @@ describe('useRepos', () => {
             },
           },
         }
-        return res(ctx.status(200), ctx.data(data))
+        return res(ctx.status(200), ctx.data(invalidResponse ? {} : data))
       }),
       graphql.query('ReposForOwner', (req, res, ctx) => {
         const data = {
@@ -167,7 +173,7 @@ describe('useRepos', () => {
             },
           },
         }
-        return res(ctx.status(200), ctx.data(data))
+        return res(ctx.status(200), ctx.data(invalidResponse ? {} : data))
       })
     )
   }
@@ -260,6 +266,36 @@ describe('useRepos', () => {
           repos: [repo4],
         },
       ])
+    })
+  })
+
+  describe('error parsing request', () => {
+    it('throws an error', async () => {
+      setup({ invalidResponse: true })
+      const { result } = renderHook(() => useRepos({ owner: '' }), {
+        wrapper: wrapper(),
+      })
+
+      await waitFor(() => expect(result.current.isError).toBeTruthy())
+
+      expect(result.current.error).toEqual(
+        expect.objectContaining({ status: 404 })
+      )
+    })
+  })
+
+  describe('error parsing request for owner', () => {
+    it('throws an error', async () => {
+      setup({ invalidResponse: true })
+      const { result } = renderHook(() => useRepos({ owner: 'owner1' }), {
+        wrapper: wrapper(),
+      })
+
+      await waitFor(() => expect(result.current.isError).toBeTruthy())
+
+      expect(result.current.error).toEqual(
+        expect.objectContaining({ status: 404 })
+      )
     })
   })
 })
