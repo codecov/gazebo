@@ -7,30 +7,102 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import FlagsTab from './FlagsTab'
 
-const mockPull = {
+const mockImpactedFiles = [
+  {
+    isCriticalFile: true,
+    missesCount: 3,
+    fileName: 'mafs.js',
+    headName: 'flag1/mafs.js',
+    baseCoverage: {
+      percentCovered: 45.38,
+    },
+    headCoverage: {
+      percentCovered: 90.23,
+    },
+    patchCoverage: {
+      percentCovered: 27.43,
+    },
+    changeCoverage: 41,
+  },
+]
+
+const mockPull = ({ overrideComparison } = {}) => ({
   owner: {
+    isCurrentUserPartOfOrg: true,
     repository: {
+      __typename: 'Repository',
+      defaultBranch: 'main',
+      private: false,
       pull: {
-        compareWithBase: {
-          flagComparisons: [
+        commits: {
+          edges: [
             {
-              name: 'secondTest',
-              headTotals: {
-                percentCovered: 82.71,
-              },
-              baseTotals: {
-                percentCovered: 80.0,
-              },
-              patchTotals: {
-                percentCovered: 59.0,
+              node: {
+                state: 'PROCESSED',
+                commitid: 'fc43199ccde1f21a940aa3d596c711c1c420651f',
+                message:
+                  'create component to hold bundle list table for a given pull 2',
+                author: {
+                  username: 'nicholas-codecov',
+                },
               },
             },
           ],
         },
+        compareWithBase: overrideComparison
+          ? overrideComparison
+          : {
+              state: 'PROCESSED',
+              __typename: 'Comparison',
+              flagComparisons: [],
+              patchTotals: {
+                percentCovered: 92.12,
+              },
+              baseTotals: {
+                percentCovered: 27.35,
+              },
+              headTotals: {
+                percentCovered: 74.2,
+              },
+              impactedFiles: {
+                __typename: 'ImpactedFiles',
+                results: mockImpactedFiles,
+              },
+              changeCoverage: 38.94,
+              hasDifferentNumberOfHeadAndBaseReports: true,
+            },
+        pullId: 14,
+        title: 'feat: Create bundle analysis table for a given pull',
+        state: 'OPEN',
+        author: {
+          username: 'nicholas-codecov',
+        },
+        head: {
+          ciPassed: true,
+          branchName:
+            'gh-eng-994-create-bundle-analysis-table-for-a-given-pull',
+          state: 'PROCESSED',
+          commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
+          totals: {
+            percentCovered: 78.33,
+          },
+          uploads: {
+            totalCount: 4,
+          },
+        },
+        updatestamp: '2024-01-12T12:56:18.912860',
+        behindBy: 82367894,
+        behindByCommit: '1798hvs8ofhn',
+        comparedTo: {
+          commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
+          uploads: {
+            totalCount: 1,
+          },
+        },
       },
     },
   },
-}
+})
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -59,16 +131,12 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('FlagsTab', () => {
-  function setup(overrideData) {
+  function setup({ overrideComparison } = {}) {
     const variablesPassed = jest.fn()
     server.use(
       graphql.query('Pull', (req, res, ctx) => {
         variablesPassed(req.variables)
-        if (overrideData) {
-          return res(ctx.status(200), ctx.data(overrideData))
-        }
-
-        return res(ctx.status(200), ctx.data(mockPull))
+        return res(ctx.status(200), ctx.data(mockPull({ overrideComparison })))
       })
     )
 
@@ -163,7 +231,41 @@ describe('FlagsTab', () => {
 
   describe('when rendered with populated data in the new tab', () => {
     beforeEach(() => {
-      setup()
+      setup({
+        overrideComparison: {
+          state: 'PROCESSED',
+          __typename: 'Comparison',
+          flagComparisons: [
+            {
+              name: 'secondTest',
+              headTotals: {
+                percentCovered: 82.71,
+              },
+              baseTotals: {
+                percentCovered: 80.0,
+              },
+              patchTotals: {
+                percentCovered: 59.0,
+              },
+            },
+          ],
+          patchTotals: {
+            percentCovered: 92.12,
+          },
+          baseTotals: {
+            percentCovered: 27.35,
+          },
+          headTotals: {
+            percentCovered: 74.2,
+          },
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: mockImpactedFiles,
+          },
+          changeCoverage: 38.94,
+          hasDifferentNumberOfHeadAndBaseReports: true,
+        },
+      })
     })
 
     it('renders columns with expected data', async () => {
@@ -200,7 +302,7 @@ describe('FlagsTab', () => {
 
   describe('passed flags to API when flags are present in the url', () => {
     it('will pass flags to API', async () => {
-      const { variablesPassed } = setup({})
+      const { variablesPassed } = setup()
       render(<FlagsTab />, {
         wrapper: wrapper(
           '/gh/test-org/test-repo/pull/5?flags=firstTest,secondTest'
@@ -209,7 +311,6 @@ describe('FlagsTab', () => {
 
       await waitFor(() =>
         expect(variablesPassed).toHaveBeenCalledWith({
-          provider: 'gh',
           owner: 'test-org',
           repo: 'test-repo',
           pullId: 5,
