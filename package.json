@@ -41,6 +41,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^2.8.5",
+    "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-popover": "^1.0.6",
     "@sentry/react": "^7.85.0",
     "@sentry/replay": "^7.85.0",
