@@ -16,7 +16,7 @@ import {
 import Api from 'shared/api'
 import A from 'ui/A'
 
-const BundleComparisonSchema = z.object({
+const BundleSchema = z.object({
   name: z.string(),
   changeType: z.string(),
   sizeDelta: z.number(),
@@ -27,7 +27,7 @@ const BundleComparisonSchema = z.object({
 
 const BAComparisonSchema = z.object({
   __typename: z.literal('BundleAnalysisComparison'),
-  bundles: z.array(BundleComparisonSchema),
+  bundles: z.array(BundleSchema),
 })
 
 const BundleAnalysisCompareWithParentSchema = z
@@ -178,7 +178,9 @@ export function useCommitBundleList({
           })
         }
 
-        return data
+        return {
+          commit: data?.owner?.repository?.commit ?? null,
+        }
       }),
   })
 }
