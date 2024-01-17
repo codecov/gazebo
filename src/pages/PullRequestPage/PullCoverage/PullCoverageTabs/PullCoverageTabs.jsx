@@ -13,7 +13,7 @@ import TabNavigation from 'ui/TabNavigation'
 
 import { useTabsCounts } from './hooks'
 
-function PullRequestPageTabs() {
+function PullCoverageTabs() {
   const {
     flagsCount,
     componentsCount,
@@ -172,4 +172,4 @@ function PullRequestPageTabs() {
   )
 }
 
-export default PullRequestPageTabs
+export default PullCoverageTabs

@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom'
 
 import { useCommits } from 'services/commits'
 
-import { usePullPageData } from '../../hooks/usePullPageData'
+import { usePullPageData } from '../../../hooks/usePullPageData'
 
 export const useTabsCounts = () => {
   const { owner, repo, pullId, provider } = useParams()
