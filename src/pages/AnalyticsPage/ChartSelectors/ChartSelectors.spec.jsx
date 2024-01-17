@@ -1,10 +1,15 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { subDays } from 'date-fns'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 import useIntersection from 'react-use/lib/useIntersection'
 
 import { useRepos } from 'services/repos'
+import { TierNames } from 'services/tier'
 
 import ChartSelectors from './ChartSelectors'
 ;(() => {
@@ -23,55 +28,80 @@ import ChartSelectors from './ChartSelectors'
 jest.mock('services/repos')
 jest.mock('react-use/lib/useIntersection')
 
-beforeAll(() => {
-  jest.useFakeTimers().setSystemTime(new Date('2022-04-20'))
-})
-afterAll(() => {
-  jest.useRealTimers()
-})
+const repositories = [
+  {
+    private: false,
+    author: {
+      username: 'owner1',
+    },
+    name: 'Repo name 1',
+    latestCommitAt: subDays(new Date(), 3),
+    coverage: 43,
+    activated: true,
+  },
+  {
+    private: false,
+    author: {
+      username: 'owner2',
+    },
+    name: 'Repo name 3',
+    latestCommitAt: subDays(new Date(), 4),
+    coverage: 35,
+    activated: false,
+  },
+]
+
+const server = setupServer()
+const queryClient = new QueryClient()
 
 const wrapper = ({ children }) => (
-  <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
-    <Route path="/analytics/:provider/:owner">{children}</Route>
-  </MemoryRouter>
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
+      <Route path="/analytics/:provider/:owner">
+        <Suspense fallback={<p>Suspense</p>}>{children}</Suspense>
+      </Route>
+    </MemoryRouter>
+  </QueryClientProvider>
 )
+
+beforeAll(() => {
+  server.listen()
+  jest.useFakeTimers().setSystemTime(new Date('2022-04-20'))
+})
+
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  jest.useRealTimers()
+  server.close()
+})
 
 describe('ChartSelectors', () => {
   afterEach(() => jest.resetAllMocks())
 
-  function setup(useReposMock) {
+  function setup(useReposMock, tierValue = TierNames.PRO) {
     // https://github.com/testing-library/user-event/issues/1034
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
 
     const fetchNextPage = jest.fn()
-    const repositories = [
-      {
-        private: false,
-        author: {
-          username: 'owner1',
-        },
-        name: 'Repo name 1',
-        latestCommitAt: subDays(new Date(), 3),
-        coverage: 43,
-        active: true,
-      },
-      {
-        private: false,
-        author: {
-          username: 'owner2',
-        },
-        name: 'Repo name 3',
-        latestCommitAt: subDays(new Date(), 4),
-        coverage: 35,
-        active: false,
-      },
-    ]
 
     useRepos.mockReturnValue({
       data: { repos: repositories },
       fetchNextPage,
       hasNextPage: useReposMock?.hasNextPage || true,
     })
+
+    server.use(
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({ owner: { plan: { tierName: tierValue } } })
+        )
+      })
+    )
 
     return { fetchNextPage, user }
   }
@@ -337,8 +367,8 @@ describe('ChartSelectors', () => {
         expect(searchBoxUpdated).toHaveAttribute('value', 'codecov')
 
         await waitFor(() => {
-          expect(useRepos).toBeCalledWith({
-            active: true,
+          expect(useRepos).toHaveBeenCalledWith({
+            activated: true,
             first: Infinity,
             owner: 'codecov',
             sortItem: {
@@ -347,6 +377,7 @@ describe('ChartSelectors', () => {
             },
             suspense: false,
             term: 'codecov',
+            isPublic: null,
           })
         })
       })
@@ -435,6 +466,45 @@ describe('ChartSelectors', () => {
           startDate: null,
         })
       )
+    })
+  })
+
+  describe('owner is on a team plan', () => {
+    it('renders upgrade cta', async () => {
+      setup({ hasNextPage: false }, TierNames.TEAM)
+      render(
+        <ChartSelectors
+          active={true}
+          sortItem={{
+            ordering: 'NAME',
+            direction: 'ASC',
+          }}
+          params={{ search: 'Repo name 1', repositories: [] }}
+          updateParams={jest.fn()}
+        />,
+        { wrapper }
+      )
+
+      const ctaMsg = await screen.findByText(/Public repos only/)
+      expect(ctaMsg).toBeInTheDocument()
+
+      const upgradeLink = await screen.findByRole('link', { name: 'Upgrade' })
+      expect(upgradeLink).toBeInTheDocument()
+      expect(upgradeLink).toHaveAttribute('href', '/plan/gh/codecov/upgrade')
+      await waitFor(() => {
+        expect(useRepos).toHaveBeenCalledWith({
+          activated: true,
+          first: Infinity,
+          owner: 'codecov',
+          sortItem: {
+            direction: 'ASC',
+            ordering: 'NAME',
+          },
+          suspense: false,
+          term: '',
+          isPublic: true,
+        })
+      })
     })
   })
 })

@@ -1,22 +1,44 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
 import Tabs from './Tabs'
 
-jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 jest.mock('./TrialReminder', () => () => 'TrialReminder')
 jest.mock('config')
 
+const queryClient = new QueryClient()
+const server = setupServer()
+
 const wrapper = ({ children }) => (
-  <MemoryRouter initialEntries={['/gh/codecov']}>
-    <Route path="/:provider/:owner">{children}</Route>
-  </MemoryRouter>
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh/codecov']}>
+      <Route path="/:provider/:owner">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
 )
 
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: 'warn' })
+  console.error = () => {}
+})
+beforeEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => {
+  server.close()
+})
+
 describe('Tabs', () => {
-  function setup({ isSelfHosted = false }) {
+  function setup(
+    { isSelfHosted = false } = {
+      isSelfHosted: false,
+    }
+  ) {
     config.IS_SELF_HOSTED = isSelfHosted
   }
 

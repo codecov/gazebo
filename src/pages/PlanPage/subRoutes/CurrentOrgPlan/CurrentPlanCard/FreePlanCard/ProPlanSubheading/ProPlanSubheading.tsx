@@ -20,9 +20,11 @@ function ProPlanSubheading() {
   // user can start a trial
   // - user on a free plan
   // - trial status is not started
+  // - org has private repos
   if (
-    isFreePlan(planData?.plan?.planName) &&
-    planData?.plan?.trialStatus === TrialStatuses.NOT_STARTED
+    isFreePlan(planData?.plan?.value) &&
+    planData?.plan?.trialStatus === TrialStatuses.NOT_STARTED &&
+    planData?.hasPrivateRepos
   ) {
     return (
       <p className="text-ds-gray-quinary">
@@ -36,7 +38,7 @@ function ProPlanSubheading() {
   // - user is on a trial plan
   // - trial status is currently ongoing
   if (
-    isTrialPlan(planData?.plan?.planName) &&
+    isTrialPlan(planData?.plan?.value) &&
     planData?.plan?.trialStatus === TrialStatuses.ONGOING
   ) {
     return (
@@ -51,7 +53,7 @@ function ProPlanSubheading() {
   // - user is currently on a free plan
   // - trial status is expired
   if (
-    isFreePlan(planData?.plan?.planName) &&
+    isFreePlan(planData?.plan?.value) &&
     planData?.plan?.trialStatus === TrialStatuses.EXPIRED
   ) {
     return <p className="text-ds-gray-quinary">Your org trialed this plan</p>

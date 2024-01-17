@@ -7,16 +7,18 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
+import { TierNames } from 'services/tier'
 
 import { RepoBreadcrumbProvider } from './context'
 import RepoPage from './RepoPage'
 
 jest.mock('./CommitsTab', () => () => 'CommitsTab')
 jest.mock('./CoverageTab', () => () => 'CoverageTab')
-jest.mock('./NewRepoTab', () => () => 'NewRepoTab')
+jest.mock('./CoverageOnboarding', () => () => 'CoverageOnboarding')
 jest.mock('./PullsTab', () => () => 'PullsTab')
 jest.mock('./FlagsTab', () => () => 'FlagsTab')
 jest.mock('./SettingsTab', () => () => 'SettingsTab')
+jest.mock('shared/featureFlags')
 
 const mockGetRepo = (
   noUploadToken,
@@ -41,19 +43,11 @@ const mockGetRepo = (
   },
 })
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      suspense: true,
-      retry: false,
-    },
-  },
-})
 const server = setupServer()
 let testLocation
 
 const wrapper =
-  (initialEntries = '/gh/codecov/cool-repo') =>
+  ({ queryClient, initialEntries = '/gh/codecov/cool-repo' }) =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
@@ -94,7 +88,6 @@ beforeAll(() => {
   server.listen()
 })
 afterEach(() => {
-  queryClient.clear()
   server.resetHandlers()
 })
 afterAll(() => server.close())
@@ -108,6 +101,7 @@ describe('RepoPage', () => {
       isRepoPrivate,
       isRepoActivated,
       isRepoActive,
+      tierValue,
     } = {
       noUploadToken: false,
       isCurrentUserPartOfOrg: true,
@@ -115,9 +109,18 @@ describe('RepoPage', () => {
       isRepoPrivate: false,
       isRepoActivated: true,
       isRepoActive: true,
+      tierValue: TierNames.PRO,
     }
   ) {
     const user = userEvent.setup()
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          suspense: true,
+          retry: false,
+        },
+      },
+    })
 
     server.use(
       graphql.query('GetRepo', (req, res, ctx) => {
@@ -137,16 +140,28 @@ describe('RepoPage', () => {
         }
 
         return res(ctx.status(200), ctx.data({ owner: {} }))
+      }),
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        if (tierValue === TierNames.TEAM) {
+          return res(
+            ctx.status(200),
+            ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
+          )
+        }
+        return res(
+          ctx.status(200),
+          ctx.data({ owner: { plan: { tierName: TierNames.PRO } } })
+        )
       })
     )
 
-    return { user }
+    return { queryClient, user }
   }
 
   describe('there is no repo data', () => {
-    beforeEach(() => setup({ hasRepoData: false }))
     it('renders not found', async () => {
-      render(<RepoPage />, { wrapper: wrapper() })
+      const { queryClient } = setup({ hasRepoData: false })
+      render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
 
       const notFound = await screen.findByText(/not found/i)
       expect(notFound).toBeInTheDocument()
@@ -155,96 +170,565 @@ describe('RepoPage', () => {
 
   describe('testing tabs', () => {
     describe('user is part of org', () => {
-      it('has a coverage tab', async () => {
-        const { user } = setup()
-        render(<RepoPage />, {
-          wrapper: wrapper('/gh/codecov/cool-repo/flags'),
+      describe('repo is active and activated', () => {
+        it('has a coverage tab', async () => {
+          const { user, queryClient } = setup()
+          render(<RepoPage />, {
+            wrapper: wrapper({
+              queryClient,
+              initialEntries: '/gh/codecov/cool-repo/flags',
+            }),
+          })
+
+          const tab = await screen.findByRole('link', { name: 'Coverage' })
+          expect(tab).toBeInTheDocument()
+          expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo')
+
+          await user.click(tab)
+
+          await waitFor(() =>
+            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo')
+          )
         })
 
-        const tab = await screen.findByRole('link', { name: 'Coverage' })
-        expect(tab).toBeInTheDocument()
-        expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo')
+        it('has a flags tab', async () => {
+          const { user, queryClient } = setup()
+          render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
 
-        await user.click(tab)
+          const tab = await screen.findByRole('link', { name: 'Flags' })
+          expect(tab).toBeInTheDocument()
+          expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/flags')
 
-        await waitFor(() =>
-          expect(testLocation.pathname).toBe('/gh/codecov/cool-repo')
-        )
+          await user.click(tab)
+
+          await waitFor(() =>
+            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/flags')
+          )
+        })
+
+        it('has a commits tab', async () => {
+          const { user, queryClient } = setup()
+          render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+
+          const tab = await screen.findByRole('link', { name: 'Commits' })
+          expect(tab).toBeInTheDocument()
+          expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/commits')
+
+          await user.click(tab)
+
+          await waitFor(() =>
+            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/commits')
+          )
+        })
+
+        it('has a pulls tab', async () => {
+          const { user, queryClient } = setup()
+          render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+
+          const tab = await screen.findByRole('link', { name: 'Pulls' })
+          expect(tab).toBeInTheDocument()
+          expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/pulls')
+
+          await user.click(tab)
+
+          await waitFor(() =>
+            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/pulls')
+          )
+        })
+
+        it('has a settings tab', async () => {
+          const { user, queryClient } = setup()
+          render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+
+          const tab = await screen.findByRole('link', { name: 'Settings' })
+          expect(tab).toBeInTheDocument()
+          expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/settings')
+
+          await user.click(tab)
+
+          await waitFor(() =>
+            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/settings')
+          )
+        })
       })
 
-      it('has a flags tab', async () => {
-        const { user } = setup()
-        render(<RepoPage />, { wrapper: wrapper() })
+      describe('repo is not active and not activated', () => {
+        it('has a coverage tab, and redirects back to /new', async () => {
+          const { user, queryClient } = setup({
+            isRepoActivated: false,
+            isRepoActive: false,
+            hasRepoData: true,
+          })
+          render(<RepoPage />, {
+            wrapper: wrapper({
+              queryClient,
+              initialEntries: '/gh/codecov/cool-repo/flags',
+            }),
+          })
 
-        const tab = await screen.findByRole('link', { name: 'Flags' })
-        expect(tab).toBeInTheDocument()
-        expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/flags')
+          const tab = await screen.findByRole('link', { name: 'Coverage' })
+          expect(tab).toBeInTheDocument()
+          expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo')
 
-        await user.click(tab)
+          await user.click(tab)
 
-        await waitFor(() =>
-          expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/flags')
-        )
+          await waitFor(() =>
+            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/new')
+          )
+        })
+
+        it('does not have a flags tab', () => {
+          const { queryClient } = setup({
+            isRepoActivated: false,
+            isRepoActive: false,
+            hasRepoData: true,
+          })
+          render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+
+          const tab = screen.queryByRole('link', { name: 'Flags' })
+          expect(tab).not.toBeInTheDocument()
+        })
+
+        it('does not have a commits tab', () => {
+          const { queryClient } = setup({
+            isRepoActivated: false,
+            isRepoActive: false,
+            hasRepoData: true,
+          })
+          render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+
+          const tab = screen.queryByRole('link', { name: 'Commits' })
+          expect(tab).not.toBeInTheDocument()
+        })
+
+        it('does not have a pulls tab', () => {
+          const { queryClient } = setup({
+            isRepoActivated: false,
+            isRepoActive: false,
+            hasRepoData: true,
+          })
+          render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+
+          const tab = screen.queryByRole('link', { name: 'Pulls' })
+          expect(tab).not.toBeInTheDocument()
+        })
+
+        it('has a settings tab', async () => {
+          const { user, queryClient } = setup({
+            isRepoActivated: false,
+            isRepoActive: false,
+            hasRepoData: true,
+          })
+          render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+
+          const tab = await screen.findByRole('link', { name: 'Settings' })
+          expect(tab).toBeInTheDocument()
+          expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/settings')
+
+          await user.click(tab)
+
+          await waitFor(() =>
+            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/settings')
+          )
+        })
       })
 
-      it('has a commits tab', async () => {
-        const { user } = setup()
-        render(<RepoPage />, { wrapper: wrapper() })
+      describe('repo is active and not activated', () => {
+        it('has a coverage tab, and redirects back to /new', async () => {
+          const { user, queryClient } = setup({
+            isRepoActivated: false,
+            isRepoActive: true,
+            hasRepoData: true,
+          })
+          render(<RepoPage />, {
+            wrapper: wrapper({
+              queryClient,
+              initialEntries: '/gh/codecov/cool-repo/flags',
+            }),
+          })
 
-        const tab = await screen.findByRole('link', { name: 'Commits' })
-        expect(tab).toBeInTheDocument()
-        expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/commits')
+          const tab = await screen.findByRole('link', { name: 'Coverage' })
+          expect(tab).toBeInTheDocument()
+          expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo')
 
-        await user.click(tab)
+          await user.click(tab)
 
-        await waitFor(() =>
-          expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/commits')
-        )
+          await waitFor(() =>
+            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo')
+          )
+        })
+
+        it('has a flags tab, and redirects back to /new', async () => {
+          const { user, queryClient } = setup({
+            isRepoActivated: false,
+            isRepoActive: true,
+            hasRepoData: true,
+          })
+          render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+
+          const tab = await screen.findByRole('link', { name: 'Flags' })
+          expect(tab).toBeInTheDocument()
+          expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/flags')
+
+          await user.click(tab)
+
+          await waitFor(() =>
+            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/flags')
+          )
+        })
+
+        it('has a commits tab, and redirects back to /new', async () => {
+          const { user, queryClient } = setup({
+            isRepoActivated: false,
+            isRepoActive: true,
+            hasRepoData: true,
+          })
+          render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+
+          const tab = await screen.findByRole('link', { name: 'Commits' })
+          expect(tab).toBeInTheDocument()
+          expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/commits')
+
+          await user.click(tab)
+
+          await waitFor(() =>
+            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/commits')
+          )
+        })
+
+        it('has a pulls tab, and redirects back to /new', async () => {
+          const { user, queryClient } = setup({
+            isRepoActivated: false,
+            isRepoActive: true,
+            hasRepoData: true,
+          })
+          render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+
+          const tab = await screen.findByRole('link', { name: 'Pulls' })
+          expect(tab).toBeInTheDocument()
+          expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/pulls')
+
+          await user.click(tab)
+
+          await waitFor(() =>
+            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/pulls')
+          )
+        })
+
+        it('has a settings tab, and redirects back to /new', async () => {
+          const { user, queryClient } = setup({
+            isRepoActivated: false,
+            isRepoActive: true,
+            hasRepoData: true,
+          })
+          render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+
+          const tabs = await screen.findAllByRole('link', {
+            name: 'Settings',
+          })
+          const tab = tabs[0]
+          expect(tab).toBeInTheDocument()
+          expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/settings')
+
+          await user.click(tab)
+
+          await waitFor(() =>
+            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/settings')
+          )
+        })
+      })
+    })
+
+    describe('user is part of org and has team tier', () => {
+      describe('repo is active and activated', () => {
+        it('has a coverage tab', async () => {
+          const { user, queryClient } = setup({
+            tierValue: TierNames.TEAM,
+            hasRepoData: true,
+          })
+          render(<RepoPage />, {
+            wrapper: wrapper({
+              queryClient,
+              initialEntries: '/gh/codecov/cool-repo/flags',
+            }),
+          })
+
+          const tab = await screen.findByRole('link', { name: 'Coverage' })
+          expect(tab).toBeInTheDocument()
+          expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo')
+
+          await user.click(tab)
+
+          await waitFor(() =>
+            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo')
+          )
+        })
+
+        it('does not have a flags tab', () => {
+          const { queryClient } = setup({
+            tierValue: TierNames.TEAM,
+            hasRepoData: true,
+          })
+          render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+
+          const tab = screen.queryByRole('link', { name: 'Flags' })
+          expect(tab).not.toBeInTheDocument()
+        })
+
+        it('has a commits tab', async () => {
+          const { user, queryClient } = setup({
+            tierValue: TierNames.TEAM,
+            hasRepoData: true,
+          })
+          render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+
+          const tab = await screen.findByRole('link', { name: 'Commits' })
+          expect(tab).toBeInTheDocument()
+          expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/commits')
+
+          await user.click(tab)
+
+          await waitFor(() =>
+            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/commits')
+          )
+        })
+
+        it('has a pulls tab', async () => {
+          const { user, queryClient } = setup({
+            tierValue: TierNames.TEAM,
+            hasRepoData: true,
+          })
+          render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+
+          const tab = await screen.findByRole('link', { name: 'Pulls' })
+          expect(tab).toBeInTheDocument()
+          expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/pulls')
+
+          await user.click(tab)
+
+          await waitFor(() =>
+            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/pulls')
+          )
+        })
+
+        it('has a settings tab', async () => {
+          const { user, queryClient } = setup({
+            tierValue: TierNames.TEAM,
+            hasRepoData: true,
+          })
+          render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+
+          const tab = await screen.findByRole('link', { name: 'Settings' })
+          expect(tab).toBeInTheDocument()
+          expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/settings')
+
+          await user.click(tab)
+
+          await waitFor(() =>
+            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/settings')
+          )
+        })
       })
 
-      it('has a pulls tab', async () => {
-        const { user } = setup()
-        render(<RepoPage />, { wrapper: wrapper() })
+      describe('repo is not active and not activated', () => {
+        it('has a coverage tab, and redirects back to /new', async () => {
+          const { user, queryClient } = setup({
+            isRepoActivated: false,
+            isRepoActive: false,
+            hasRepoData: true,
+            tierValue: TierNames.TEAM,
+          })
+          render(<RepoPage />, {
+            wrapper: wrapper({
+              queryClient,
+              initialEntries: '/gh/codecov/cool-repo/flags',
+            }),
+          })
 
-        const tab = await screen.findByRole('link', { name: 'Pulls' })
-        expect(tab).toBeInTheDocument()
-        expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/pulls')
+          const tab = await screen.findByRole('link', { name: 'Coverage' })
+          expect(tab).toBeInTheDocument()
+          expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo')
 
-        await user.click(tab)
+          await user.click(tab)
 
-        await waitFor(() =>
-          expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/pulls')
-        )
+          await waitFor(() =>
+            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/new')
+          )
+        })
+
+        it('does not have a flags tab', () => {
+          const { queryClient } = setup({
+            isRepoActivated: false,
+            isRepoActive: false,
+            hasRepoData: true,
+            tierValue: TierNames.TEAM,
+          })
+          render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+
+          const tab = screen.queryByRole('link', { name: 'Flags' })
+          expect(tab).not.toBeInTheDocument()
+        })
+
+        it('does not have a commits tab', () => {
+          const { queryClient } = setup({
+            isRepoActivated: false,
+            isRepoActive: false,
+            hasRepoData: true,
+            tierValue: TierNames.TEAM,
+          })
+          render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+
+          const tab = screen.queryByRole('link', { name: 'Commits' })
+          expect(tab).not.toBeInTheDocument()
+        })
+
+        it('does not have a pulls tab', () => {
+          const { queryClient } = setup({
+            isRepoActivated: false,
+            isRepoActive: false,
+            hasRepoData: true,
+            tierValue: TierNames.TEAM,
+          })
+          render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+
+          const tab = screen.queryByRole('link', { name: 'Pulls' })
+          expect(tab).not.toBeInTheDocument()
+        })
+
+        it('has a settings tab', async () => {
+          const { user, queryClient } = setup({
+            isRepoActivated: false,
+            isRepoActive: false,
+            hasRepoData: true,
+            tierValue: TierNames.TEAM,
+          })
+          render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+
+          const tab = await screen.findByRole('link', { name: 'Settings' })
+          expect(tab).toBeInTheDocument()
+          expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/settings')
+
+          await user.click(tab)
+
+          await waitFor(() =>
+            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/settings')
+          )
+        })
       })
 
-      it('has a settings tab', async () => {
-        const { user } = setup()
-        render(<RepoPage />, { wrapper: wrapper() })
+      describe('repo is active and not activated', () => {
+        it('has a coverage tab, and redirects back to /new', async () => {
+          const { user, queryClient } = setup({
+            isRepoActivated: false,
+            isRepoActive: true,
+            hasRepoData: true,
+            tierValue: TierNames.TEAM,
+          })
+          render(<RepoPage />, {
+            wrapper: wrapper({
+              queryClient,
+              initialEntries: '/gh/codecov/cool-repo/flags',
+            }),
+          })
 
-        const tab = await screen.findByRole('link', { name: 'Settings' })
-        expect(tab).toBeInTheDocument()
-        expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/settings')
+          const tab = await screen.findByRole('link', { name: 'Coverage' })
+          expect(tab).toBeInTheDocument()
+          expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo')
 
-        await user.click(tab)
+          await user.click(tab)
 
-        await waitFor(() =>
-          expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/settings')
-        )
+          await waitFor(() =>
+            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo')
+          )
+        })
+
+        it('does not have a flags tab', async () => {
+          const { queryClient } = setup({
+            isRepoActivated: false,
+            isRepoActive: true,
+            hasRepoData: true,
+            tierValue: TierNames.TEAM,
+          })
+          render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+
+          const tab = screen.queryByRole('link', { name: 'Flags' })
+          expect(tab).not.toBeInTheDocument()
+        })
+
+        it('has a commits tab, and redirects back to /new', async () => {
+          const { user, queryClient } = setup({
+            isRepoActivated: false,
+            isRepoActive: true,
+            hasRepoData: true,
+            tierValue: TierNames.TEAM,
+          })
+          render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+
+          const tab = await screen.findByRole('link', { name: 'Commits' })
+          expect(tab).toBeInTheDocument()
+          expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/commits')
+
+          await user.click(tab)
+
+          await waitFor(() =>
+            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/commits')
+          )
+        })
+
+        it('has a pulls tab, and redirects back to /new', async () => {
+          const { user, queryClient } = setup({
+            isRepoActivated: false,
+            isRepoActive: true,
+            hasRepoData: true,
+            tierValue: TierNames.TEAM,
+          })
+          render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+
+          const tab = await screen.findByRole('link', { name: 'Pulls' })
+          expect(tab).toBeInTheDocument()
+          expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/pulls')
+
+          await user.click(tab)
+
+          await waitFor(() =>
+            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/pulls')
+          )
+        })
+
+        it('has a settings tab, and redirects back to /new', async () => {
+          const { user, queryClient } = setup({
+            isRepoActivated: false,
+            isRepoActive: true,
+            hasRepoData: true,
+            tierValue: TierNames.TEAM,
+          })
+          render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+
+          const tabs = await screen.findAllByRole('link', {
+            name: 'Settings',
+          })
+          const tab = tabs[0]
+          expect(tab).toBeInTheDocument()
+          expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/settings')
+
+          await user.click(tab)
+
+          await waitFor(() =>
+            expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/settings')
+          )
+        })
       })
     })
 
     describe('user not part of an org', () => {
-      beforeEach(() =>
-        setup({
+      it('does not have a settings tab', async () => {
+        const { queryClient } = setup({
           hasRepoData: true,
           isCurrentUserPartOfOrg: false,
           isRepoPrivate: false,
           isRepoActive: true,
         })
-      )
-
-      it('does not have a settings tab', async () => {
-        render(<RepoPage />, { wrapper: wrapper() })
+        render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
 
         const coverageTab = await screen.findByText('CoverageTab')
         expect(coverageTab).toBeInTheDocument()
@@ -257,11 +741,10 @@ describe('RepoPage', () => {
 
   describe('testing routes', () => {
     describe('repo has commits', () => {
-      beforeEach(() => setup())
-
       describe('testing base path', () => {
         it('renders coverage tab', async () => {
-          render(<RepoPage />, { wrapper: wrapper() })
+          const { queryClient } = setup()
+          render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
 
           const coverage = await screen.findByText('CoverageTab')
           expect(coverage).toBeInTheDocument()
@@ -270,8 +753,12 @@ describe('RepoPage', () => {
 
       describe('testing tree branch path', () => {
         it('renders coverage tab', async () => {
+          const { queryClient } = setup()
           render(<RepoPage />, {
-            wrapper: wrapper('/gh/codecov/cool-repo/tree/main'),
+            wrapper: wrapper({
+              queryClient,
+              initialEntries: '/gh/codecov/cool-repo/tree/main',
+            }),
           })
 
           const coverage = await screen.findByText('CoverageTab')
@@ -281,8 +768,12 @@ describe('RepoPage', () => {
 
       describe('testing tree branch with path path', () => {
         it('renders coverage tab', async () => {
+          const { queryClient } = setup()
           render(<RepoPage />, {
-            wrapper: wrapper('/gh/codecov/cool-repo/tree/main/src'),
+            wrapper: wrapper({
+              queryClient,
+              initialEntries: '/gh/codecov/cool-repo/tree/main/src',
+            }),
           })
 
           const coverage = await screen.findByText('CoverageTab')
@@ -292,8 +783,12 @@ describe('RepoPage', () => {
 
       describe('testing blob branch path', () => {
         it('renders coverage tab', async () => {
+          const { queryClient } = setup()
           render(<RepoPage />, {
-            wrapper: wrapper('/gh/codecov/cool-repo/blob/main/file.js'),
+            wrapper: wrapper({
+              queryClient,
+              initialEntries: '/gh/codecov/cool-repo/blob/main/file.js',
+            }),
           })
 
           const coverage = await screen.findByText('CoverageTab')
@@ -303,8 +798,12 @@ describe('RepoPage', () => {
 
       describe('testing flags path', () => {
         it('renders flags tab', async () => {
+          const { queryClient } = setup()
           render(<RepoPage />, {
-            wrapper: wrapper('/gh/codecov/cool-repo/flags'),
+            wrapper: wrapper({
+              queryClient,
+              initialEntries: '/gh/codecov/cool-repo/flags',
+            }),
           })
 
           const flags = await screen.findByText('FlagsTab')
@@ -314,8 +813,12 @@ describe('RepoPage', () => {
 
       describe('testing commits path', () => {
         it('renders commits tab', async () => {
+          const { queryClient } = setup()
           render(<RepoPage />, {
-            wrapper: wrapper('/gh/codecov/cool-repo/commits'),
+            wrapper: wrapper({
+              queryClient,
+              initialEntries: '/gh/codecov/cool-repo/commits',
+            }),
           })
 
           const commits = await screen.findByText('CommitsTab')
@@ -325,8 +828,12 @@ describe('RepoPage', () => {
 
       describe('testing pulls path', () => {
         it('renders pulls tab', async () => {
+          const { queryClient } = setup()
           render(<RepoPage />, {
-            wrapper: wrapper('/gh/codecov/cool-repo/pulls'),
+            wrapper: wrapper({
+              queryClient,
+              initialEntries: '/gh/codecov/cool-repo/pulls',
+            }),
           })
 
           const pulls = await screen.findByText('PullsTab')
@@ -336,8 +843,12 @@ describe('RepoPage', () => {
 
       describe('testing compare path', () => {
         it('redirects pulls tab', async () => {
+          const { queryClient } = setup()
           render(<RepoPage />, {
-            wrapper: wrapper('/gh/codecov/cool-repo/compare'),
+            wrapper: wrapper({
+              queryClient,
+              initialEntries: '/gh/codecov/cool-repo/compare',
+            }),
           })
 
           const pulls = await screen.findByText('PullsTab')
@@ -351,8 +862,12 @@ describe('RepoPage', () => {
 
       describe('testing settings path', () => {
         it('renders settings tab', async () => {
+          const { queryClient } = setup()
           render(<RepoPage />, {
-            wrapper: wrapper('/gh/codecov/cool-repo/settings'),
+            wrapper: wrapper({
+              queryClient,
+              initialEntries: '/gh/codecov/cool-repo/settings',
+            }),
           })
 
           const settings = await screen.findByText('SettingsTab')
@@ -362,8 +877,12 @@ describe('RepoPage', () => {
 
       describe('testing random path', () => {
         it('redirects user to base path', async () => {
+          const { queryClient } = setup()
           render(<RepoPage />, {
-            wrapper: wrapper('/gh/codecov/cool-repo/blah'),
+            wrapper: wrapper({
+              queryClient,
+              initialEntries: '/gh/codecov/cool-repo/blah',
+            }),
           })
 
           const coverage = await screen.findByText('CoverageTab')
@@ -377,29 +896,27 @@ describe('RepoPage', () => {
     })
 
     describe('repo has no commits', () => {
-      beforeEach(() =>
-        setup({
+      it('renders new repo tab', async () => {
+        const { queryClient } = setup({
           isRepoActive: false,
           hasRepoData: true,
           isRepoActivated: false,
         })
-      )
+        render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
 
-      it('renders new repo tab', async () => {
-        render(<RepoPage />, { wrapper: wrapper() })
-
-        const newRepoTab = await screen.findByText('NewRepoTab')
-        expect(newRepoTab).toBeInTheDocument()
+        const coverageOnboarding = await screen.findByText('CoverageOnboarding')
+        expect(coverageOnboarding).toBeInTheDocument()
       })
     })
 
     describe('repo is deactivated', () => {
-      beforeEach(() =>
-        setup({ hasRepoData: true, isRepoActivated: false, isRepoActive: true })
-      )
-
       it('renders deactivated repo page', async () => {
-        render(<RepoPage />, { wrapper: wrapper() })
+        const { queryClient } = setup({
+          hasRepoData: true,
+          isRepoActivated: false,
+          isRepoActive: true,
+        })
+        render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
 
         const msg = await screen.findByText('This repo has been deactivated')
         expect(msg).toBeInTheDocument()
@@ -408,10 +925,9 @@ describe('RepoPage', () => {
   })
 
   describe('testing breadcrumb', () => {
-    beforeEach(() => setup({ hasRepoData: true, isRepoActive: true }))
-
     it('renders org breadcrumb', async () => {
-      render(<RepoPage />, { wrapper: wrapper() })
+      const { queryClient } = setup({ hasRepoData: true, isRepoActive: true })
+      render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
 
       const orgCrumb = await screen.findByRole('link', { name: 'codecov' })
       expect(orgCrumb).toBeInTheDocument()
@@ -419,7 +935,8 @@ describe('RepoPage', () => {
     })
 
     it('renders repo breadcrumb', async () => {
-      render(<RepoPage />, { wrapper: wrapper() })
+      const { queryClient } = setup({ hasRepoData: true, isRepoActive: true })
+      render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
 
       const repoCrumb = await screen.findByText('cool-repo')
       expect(repoCrumb).toBeInTheDocument()
@@ -427,16 +944,13 @@ describe('RepoPage', () => {
   })
 
   describe('user is not activated and repo is private', () => {
-    beforeEach(() =>
-      setup({
+    it('renders unauthorized access error', async () => {
+      const { queryClient } = setup({
         hasRepoData: true,
         isCurrentUserActivated: false,
         isRepoPrivate: true,
       })
-    )
-
-    it('renders unauthorized access error', async () => {
-      render(<RepoPage />, { wrapper: wrapper() })
+      render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
 
       const error = await screen.findByText('Unauthorized')
       expect(error).toBeInTheDocument()

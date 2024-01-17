@@ -242,7 +242,7 @@ describe('FileListTable', () => {
         render(<FileListTable />, { wrapper: wrapper() })
 
         const message = await screen.findByText(
-          'There was a problem getting repo contents from your provider'
+          'There is no coverage on the default branch for this repository. Use the Branch Context selector above to choose a different branch.'
         )
         expect(message).toBeInTheDocument()
       })

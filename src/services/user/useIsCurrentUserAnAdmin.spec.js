@@ -42,7 +42,7 @@ describe('useIsCurrentUserAnAdmin', () => {
               orgUploadToken: 'token',
               ownerid: 123,
               username: 'cool-user',
-              avatarUrl: 'url',
+              avatarUrl: 'http://127.0.0.1/avatar-url',
               isCurrentUserPartOfOrg: true,
               isAdmin: true,
             },

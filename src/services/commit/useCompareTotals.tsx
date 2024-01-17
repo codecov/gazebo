@@ -86,7 +86,7 @@ query CompareTotals(
               patchTotals {
                 coverage: percentCovered
               }
-              impactedFiles(filters: $filters) {
+              impactedFiles: impactedFilesDeprecated(filters: $filters) {
                 headName
                 patchCoverage {
                   coverage: percentCovered

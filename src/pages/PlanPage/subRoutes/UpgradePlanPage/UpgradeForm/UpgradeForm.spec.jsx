@@ -8,14 +8,16 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
+import { useFlags } from 'shared/featureFlags'
 import { Plans } from 'shared/utils/billing'
 
 import UpgradeForm from './UpgradeForm'
 
 jest.mock('services/toastNotification')
 jest.mock('@stripe/react-stripe-js')
+jest.mock('shared/featureFlags')
 
-const freePlan = {
+const basicPlan = {
   marketingName: 'Basic',
   value: 'users-basic',
   billingRate: null,
@@ -25,12 +27,12 @@ const freePlan = {
     'Unlimited public repositories',
     'Unlimited private repositories',
   ],
-  quantity: 1,
+  monthlyUploadLimit: 250,
 }
 
 const proPlanMonth = {
-  marketingName: 'Pro Team',
-  value: 'users-pr-inappm',
+  marketingName: 'Pro',
+  value: Plans.USERS_PR_INAPPM,
   billingRate: 'monthly',
   baseUnitPrice: 12,
   benefits: [
@@ -40,6 +42,22 @@ const proPlanMonth = {
     'Priority Support',
   ],
   quantity: 10,
+  monthlyUploadLimit: null,
+}
+
+const proPlanYear = {
+  marketingName: 'Pro',
+  value: Plans.USERS_PR_INAPPY,
+  billingRate: 'annually',
+  baseUnitPrice: 10,
+  benefits: [
+    'Configurable # of users',
+    'Unlimited public repositories',
+    'Unlimited private repositories',
+    'Priority Support',
+  ],
+  monthlyUploadLimit: null,
+  quantity: 13,
 }
 
 const sentryPlanMonth = {
@@ -53,6 +71,7 @@ const sentryPlanMonth = {
     'Unlimited private repositories',
     'Priority Support',
   ],
+  monthlyUploadLimit: null,
   trialDays: 14,
   quantity: 10,
 }
@@ -68,36 +87,101 @@ const sentryPlanYear = {
     'Unlimited private repositories',
     'Priority Support',
   ],
+  monthlyUploadLimit: null,
   trialDays: 14,
-  quantity: 10,
+  quantity: 21,
 }
 
-const proPlanYear = {
-  marketingName: 'Pro Team',
-  value: 'users-pr-inappy',
+const teamPlanMonth = {
+  baseUnitPrice: 5,
+  benefits: ['Up to 10 users'],
+  billingRate: 'monthly',
+  marketingName: 'Users Team',
+  monthlyUploadLimit: 2500,
+  value: 'users-teamm',
+}
+
+const teamPlanYear = {
+  baseUnitPrice: 4,
+  benefits: ['Up to 10 users'],
   billingRate: 'annually',
-  baseUnitPrice: 10,
-  benefits: [
-    'Configurable # of users',
-    'Unlimited public repositories',
-    'Unlimited private repositories',
-    'Priority Support',
-  ],
-  quantity: 10,
+  marketingName: 'Users Team',
+  monthlyUploadLimit: 2500,
+  value: 'users-teamy',
 }
 
-const mockPlanData = {
+const trialPlan = {
+  marketingName: 'Pro Trial Team',
+  value: 'users-trial',
+  billingRate: null,
+  baseUnitPrice: 12,
+  benefits: ['Configurable # of users', 'Unlimited repos'],
+  monthlyUploadLimit: null,
+}
+
+const mockAccountDetailsBasic = {
+  plan: basicPlan,
+  activatedUserCount: 1,
+  inactiveUserCount: 0,
+}
+
+const mockAccountDetailsProMonthly = {
+  plan: proPlanMonth,
+  activatedUserCount: 7,
+  inactiveUserCount: 0,
+  subscriptionDetail: {
+    latestInvoice: {
+      periodStart: 1595270468,
+      periodEnd: 1597948868,
+      dueDate: '1600544863',
+      amountPaid: 9600.0,
+      amountDue: 9600.0,
+      amountRemaining: 0.0,
+      total: 9600.0,
+      subtotal: 9600.0,
+      invoicePdf:
+        'https://pay.stripe.com/invoice/acct_14SJTOGlVGuVgOrk/invst_Hs2qfFwArnp6AMjWPlwtyqqszoBzO3q/pdf',
+    },
+  },
+}
+
+const mockAccountDetailsProYearly = {
+  plan: proPlanYear,
+  activatedUserCount: 11,
+  inactiveUserCount: 0,
+}
+
+const mockAccountDetailsTrial = {
+  plan: trialPlan,
+  activatedUserCount: 28,
+  inactiveUserCount: 0,
+}
+
+const mockAccountDetailsTeamYearly = {
+  plan: teamPlanYear,
+  activatedUserCount: 5,
+  inactiveUserCount: 0,
+}
+
+const mockAccountDetailsSentryYearly = {
+  plan: sentryPlanYear,
+  activatedUserCount: 7,
+  inactiveUserCount: 0,
+}
+
+const mockPlanDataResponse = {
   baseUnitPrice: 10,
   benefits: [],
   billingRate: 'monthly',
-  marketingName: 'Users Basic',
+  marketingName: 'Pro Team',
   monthlyUploadLimit: 250,
-  planName: 'users-basic',
+  value: 'test-plan',
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
   trialTotalDays: 0,
   pretrialUsersCount: 0,
+  planUserCount: 1,
 }
 
 const queryClient = new QueryClient({
@@ -120,6 +204,8 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 
+let testLocation
+
 const wrapper =
   (initialEntries = ['/gh/codecov']) =>
   ({ children }) =>
@@ -129,6 +215,13 @@ const wrapper =
           <Route path="/:provider/:owner">
             <Suspense fallback={null}>{children}</Suspense>
           </Route>
+          <Route
+            path="*"
+            render={({ location }) => {
+              testLocation = location
+              return null
+            }}
+          />
         </MemoryRouter>
       </QueryClientProvider>
     )
@@ -136,15 +229,21 @@ const wrapper =
 describe('UpgradeForm', () => {
   function setup(
     {
-      successfulRequest = true,
+      planValue = Plans.USERS_BASIC,
+      successfulPatchRequest = true,
       errorDetails = undefined,
-      includeSentryPlans = false,
-      trialStatus = undefined,
+      trialStatus = TrialStatuses.NOT_STARTED,
+      multipleTiers = false,
+      hasTeamPlans = false,
+      hasSentryPlans = false,
     } = {
-      successfulRequest: true,
+      planValue: Plans.USERS_BASIC,
+      successfulPatchRequest: true,
       errorDetails: undefined,
-      includeSentryPlans: false,
-      trialStatus: undefined,
+      trialStatus: TrialStatuses.NOT_STARTED,
+      hasTeamPlans: false,
+      multipleTiers: false,
+      hasSentryPlans: false,
     }
   ) {
     const addNotification = jest.fn()
@@ -152,20 +251,28 @@ describe('UpgradeForm', () => {
     const patchRequest = jest.fn()
 
     useAddNotification.mockReturnValue(addNotification)
+    useFlags.mockReturnValue({ multipleTiers })
 
     server.use(
-      graphql.query('GetPlanData', (_, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
-            owner: { plan: { ...mockPlanData, trialStatus: trialStatus } },
-          })
-        )
-      ),
+      rest.get(`/internal/gh/codecov/account-details/`, (req, res, ctx) => {
+        if (planValue === Plans.USERS_BASIC) {
+          return res(ctx.status(200), ctx.json(mockAccountDetailsBasic))
+        } else if (planValue === Plans.USERS_PR_INAPPM) {
+          return res(ctx.status(200), ctx.json(mockAccountDetailsProMonthly))
+        } else if (planValue === Plans.USERS_PR_INAPPY) {
+          return res(ctx.status(200), ctx.json(mockAccountDetailsProYearly))
+        } else if (planValue === Plans.USERS_TRIAL) {
+          return res(ctx.status(200), ctx.json(mockAccountDetailsTrial))
+        } else if (planValue === Plans.USERS_TEAMY) {
+          return res(ctx.status(200), ctx.json(mockAccountDetailsTeamYearly))
+        } else if (planValue === Plans.USERS_SENTRYY) {
+          return res(ctx.status(200), ctx.json(mockAccountDetailsSentryYearly))
+        }
+      }),
       rest.patch(
         '/internal/gh/codecov/account-details/',
         async (req, res, ctx) => {
-          if (!successfulRequest) {
+          if (!successfulPatchRequest) {
             if (errorDetails) {
               return res(ctx.status(500), ctx.json({ detail: errorDetails }))
             }
@@ -175,18 +282,35 @@ describe('UpgradeForm', () => {
 
           patchRequest(body)
 
-          return res(ctx.status(200), ctx.json({ success: true }))
+          return res(ctx.status(200), ctx.json({ success: false }))
         }
       ),
-      rest.get('internal/plans', (req, res, ctx) => {
+      graphql.query('GetAvailablePlans', (req, res, ctx) => {
         return res(
           ctx.status(200),
-          ctx.json([
-            freePlan,
-            proPlanMonth,
-            proPlanYear,
-            ...(includeSentryPlans ? [sentryPlanMonth, sentryPlanYear] : []),
-          ])
+          ctx.data({
+            owner: {
+              availablePlans: [
+                basicPlan,
+                proPlanMonth,
+                proPlanYear,
+                trialPlan,
+                ...(hasTeamPlans ? [teamPlanMonth, teamPlanYear] : []),
+                ...(hasSentryPlans ? [sentryPlanMonth, sentryPlanYear] : []),
+              ],
+            },
+          })
+        )
+      }),
+      graphql.query('GetPlanData', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              hasPrivateRepos: true,
+              plan: { ...mockPlanDataResponse, trialStatus },
+            },
+          })
         )
       })
     )
@@ -194,21 +318,24 @@ describe('UpgradeForm', () => {
     return { addNotification, user, patchRequest }
   }
 
-  describe('user does not have access to sentry upgrade', () => {
-    describe('when the user does not have any plan', () => {
+  describe('when rendered', () => {
+    describe('when the user has a basic plan', () => {
       const props = {
-        proPlanMonth,
-        proPlanYear,
-        accountDetails: {
-          activatedUserCount: 9,
-          inactiveUserCount: 0,
-          plan: null,
-          latestInvoice: null,
-        },
+        setSelectedPlan: jest.fn(),
+        selectedPlan: { value: Plans.USERS_PR_INAPPY },
       }
+      it('renders the organization and owner titles', async () => {
+        setup({ planValue: Plans.USERS_BASIC })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const organizationTitle = await screen.findByText(/Organization/)
+        expect(organizationTitle).toBeInTheDocument()
+        const ownerTitle = await screen.findByText(/codecov/)
+        expect(ownerTitle).toBeInTheDocument()
+      })
 
       it('renders monthly option button', async () => {
-        setup()
+        setup({ planValue: Plans.USERS_BASIC })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
@@ -216,398 +343,151 @@ describe('UpgradeForm', () => {
       })
 
       it('renders annual option button', async () => {
-        setup()
+        setup({ planValue: Plans.USERS_BASIC })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(optionBtn).toBeInTheDocument()
       })
-
-      it('renders the seat input with 2 seats', async () => {
-        setup()
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-        const numberInput = await screen.findByRole('spinbutton')
-        expect(numberInput).toBeInTheDocument()
-        expect(numberInput).toHaveValue(2)
-      })
-    })
-
-    describe('when the user have a free plan', () => {
-      const props = {
-        proPlanMonth,
-        proPlanYear,
-        accountDetails: {
-          activatedUserCount: 9,
-          inactiveUserCount: 0,
-          plan: freePlan,
-          latestInvoice: null,
-        },
-      }
 
       it('renders annual option button as "selected"', async () => {
-        setup()
+        setup({ planValue: Plans.USERS_BASIC })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
         expect(optionBtn).toBeInTheDocument()
         expect(optionBtn).toHaveClass('bg-ds-primary-base')
-      })
-
-      it('renders the seat input with 9 seats', async () => {
-        setup()
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-        const numberInput = await screen.findByRole('spinbutton')
-        expect(numberInput).toHaveValue(9)
-      })
-    })
-
-    describe('when the user have a pro year plan', () => {
-      const props = {
-        proPlanMonth,
-        proPlanYear,
-        accountDetails: {
-          activatedUserCount: 9,
-          inactiveUserCount: 0,
-          plan: proPlanYear,
-          latestInvoice: null,
-        },
-      }
-
-      it('renders annual option button to be "selection"', async () => {
-        setup()
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
-        expect(optionBtn).toBeInTheDocument()
-        expect(optionBtn).toHaveClass('bg-ds-primary-base')
-      })
-
-      it('renders the seat input with 10 seats (existing subscription)', async () => {
-        setup()
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-        const seatCount = await screen.findByRole('spinbutton')
-        expect(seatCount).toHaveValue(10)
       })
 
       it('has the price for the year', async () => {
-        setup()
+        setup({ planValue: Plans.USERS_BASIC })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const price = await screen.findByText(/\$1,200/)
+        const price = await screen.findByText(/\$240/)
         expect(price).toBeInTheDocument()
       })
 
-      it('has the update button disabled', async () => {
-        setup()
+      it('renders minimum seat number of 2', async () => {
+        setup({ planValue: Plans.USERS_BASIC })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const update = await screen.findByText(/Update/)
-        expect(update).toBeDisabled()
+        const minimumSeat = await screen.findByRole('spinbutton')
+        expect(minimumSeat).toHaveValue(2)
       })
 
-      describe('when updating to a month plan', () => {
-        it('has the price for the month', async () => {
-          const { user } = setup()
-          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-          const monthOption = await screen.findByRole('button', {
-            name: 'Monthly',
-          })
-          await user.click(monthOption)
-
-          const price = screen.getByText(/\$120/)
-          expect(price).toBeInTheDocument()
-        })
-      })
-    })
-
-    describe('when the user have a pro year monthly', () => {
-      describe('user clicks select annual', () => {
-        it('renders annual option button to be "selected', async () => {
-          const { user } = setup()
-          render(
-            <UpgradeForm
-              proPlanMonth={proPlanMonth}
-              proPlanYear={proPlanYear}
-              accountDetails={{
-                activatedUserCount: 9,
-                inactiveUserCount: 0,
-                plan: proPlanMonth,
-                latestInvoice: null,
-              }}
-            />,
-            { wrapper: wrapper() }
-          )
-
-          const switchAnnual = await screen.findByText('switch to annual')
-          await user.click(switchAnnual)
-
-          const annualOption = await screen.findByRole('button', {
-            name: 'Annual',
-          })
-          expect(annualOption).toBeInTheDocument()
-          expect(annualOption).toHaveClass('bg-ds-primary-base')
-        })
-      })
-    })
-
-    describe('if there is an invoice', () => {
-      it('renders the next billing period', async () => {
-        setup()
-        render(
-          <UpgradeForm
-            proPlanMonth={proPlanMonth}
-            proPlanYear={proPlanYear}
-            accountDetails={{
-              activatedUserCount: 9,
-              inactiveUserCount: 0,
-              plan: null,
-              latestInvoice: {
-                periodStart: 1595270468,
-                periodEnd: 1597948868,
-                dueDate: '1600544863',
-                amountPaid: 9600.0,
-                amountDue: 9600.0,
-                amountRemaining: 0.0,
-                total: 9600.0,
-                subtotal: 9600.0,
-                invoicePdf:
-                  'https://pay.stripe.com/invoice/acct_14SJTOGlVGuVgOrk/invst_Hs2qfFwArnp6AMjWPlwtyqqszoBzO3q/pdf',
-              },
-            }}
-          />,
-          { wrapper: wrapper() }
-        )
-
-        const nextBillingData = await screen.findByText(/Next Billing Date/)
-        expect(nextBillingData).toBeInTheDocument()
-
-        const billingDate = await screen.findByText(/August 20th, 2020/)
-        expect(billingDate).toBeInTheDocument()
-      })
-    })
-
-    describe('when the user chooses less than 2 seats', () => {
-      it('displays an error', async () => {
-        const { user } = setup()
-        render(
-          <UpgradeForm
-            proPlanMonth={proPlanMonth}
-            proPlanYear={proPlanYear}
-            accountDetails={{
-              activatedUserCount: 9,
-              inactiveUserCount: 0,
-              plan: null,
-              latestInvoice: null,
-            }}
-          />,
-          { wrapper: wrapper() }
-        )
+      it('renders validation error when the user selects less than 2 seats', async () => {
+        const { user } = setup({ planValue: Plans.USERS_BASIC })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const input = await screen.findByRole('spinbutton')
         await user.type(input, '{backspace}{backspace}{backspace}')
         await user.type(input, '1')
 
-        const updateButton = await screen.findByRole('button', {
-          name: 'Update',
+        const proceedToCheckoutButton = await screen.findByRole('button', {
+          name: /Proceed to Checkout/,
         })
-        await user.click(updateButton)
+        expect(proceedToCheckoutButton).toBeDisabled()
 
         const error = screen.getByText(
           /You cannot purchase a per user plan for less than 2 users/
         )
         expect(error).toBeInTheDocument()
       })
-    })
 
-    describe('when the user chooses less than the number of active users', () => {
-      it('displays an error', async () => {
-        const { user } = setup()
-        render(
-          <UpgradeForm
-            proPlanMonth={proPlanMonth}
-            proPlanYear={proPlanYear}
-            accountDetails={{
-              activatedUserCount: 9,
-              inactiveUserCount: 0,
-              plan: null,
-              latestInvoice: null,
-            }}
-          />,
-          { wrapper: wrapper() }
-        )
+      it('renders the proceed to checkout for the update button', async () => {
+        setup({ planValue: Plans.USERS_BASIC })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const input = await screen.findByRole('spinbutton')
-        await user.type(input, '{backspace}{backspace}{backspace}')
-        await user.type(input, '8')
-
-        const updateButton = await screen.findByRole('button', {
-          name: 'Update',
+        const proceedToCheckoutButton = await screen.findByRole('button', {
+          name: /Proceed to Checkout/,
         })
-        await user.click(updateButton)
-
-        const error = await screen.findByText(
-          /deactivate more users before downgrading plans/i
-        )
-        expect(error).toBeInTheDocument()
+        expect(proceedToCheckoutButton).toBeInTheDocument()
       })
-    })
-  })
 
-  describe('user has access to sentry upgrade', () => {
-    describe('when the user does not have any plan', () => {
-      const props = {
-        proPlanMonth,
-        proPlanYear,
-        sentryPlanMonth,
-        sentryPlanYear,
-        accountDetails: {
-          activatedUserCount: 9,
-          inactiveUserCount: 0,
-          plan: null,
-          latestInvoice: null,
-        },
-      }
+      describe('when the user has team plans available', () => {
+        describe('when the feature flag is off', () => {
+          it('does not renders the Pro and team buttons', () => {
+            setup({
+              planValue: Plans.USERS_BASIC,
+              hasTeamPlans: true,
+              multipleTiers: false,
+            })
+            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-      it('renders plan', async () => {
-        setup({ includeSentryPlans: true, trialStatus: 'NOT_STARTED' })
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-        const planDetails = await screen.findByRole('heading', {
-          name: 'Plan',
+            const proBtn = screen.queryByRole('button', { name: 'Pro' })
+            expect(proBtn).not.toBeInTheDocument()
+            const teamBtn = screen.queryByRole('button', { name: 'Team' })
+            expect(teamBtn).not.toBeInTheDocument()
+          })
         })
-        expect(planDetails).toBeInTheDocument()
 
-        const standardSeats = await screen.findByText(
-          '$29 monthly includes 5 seats.'
-        )
-        expect(standardSeats).toBeInTheDocument()
-      })
+        describe('when the feature flag is on', () => {
+          it('renders the Pro button as "selected"', async () => {
+            setup({
+              planValue: Plans.USERS_BASIC,
+              hasTeamPlans: true,
+              multipleTiers: true,
+            })
+            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-      it('renders billing', async () => {
-        setup({ includeSentryPlans: true })
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+            const optionBtn = await screen.findByRole('button', { name: 'Pro' })
+            expect(optionBtn).toBeInTheDocument()
+            expect(optionBtn).toHaveClass('bg-ds-primary-base')
+          })
 
-        const billing = await screen.findByText('Billing')
-        expect(billing).toBeInTheDocument()
-      })
+          it('renders team option button', async () => {
+            setup({
+              planValue: Plans.USERS_BASIC,
+              hasTeamPlans: true,
+              multipleTiers: true,
+            })
+            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-      it('renders monthly option button', async () => {
-        setup({ includeSentryPlans: true })
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+            const optionBtn = await screen.findByRole('button', {
+              name: 'Team',
+            })
+            expect(optionBtn).toBeInTheDocument()
+          })
 
-        const monthlyOption = await screen.findByRole('button', {
-          name: 'Monthly',
+          describe('when updating to a team plan', () => {
+            it('renders up to 10 seats text', async () => {
+              const { user } = setup({
+                planValue: Plans.USERS_BASIC,
+                hasTeamPlans: true,
+                multipleTiers: true,
+              })
+              render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+              const teamOption = await screen.findByRole('button', {
+                name: 'Team',
+              })
+              await user.click(teamOption)
+
+              const auxiliaryText = await screen.findByText(/Up to 10 users/)
+              expect(auxiliaryText).toBeInTheDocument()
+            })
+
+            it('calls setSelectedPlan with yearly team plan when selecting team button', async () => {
+              const { user } = setup({
+                planValue: Plans.USERS_BASIC,
+                hasTeamPlans: true,
+                multipleTiers: true,
+              })
+              render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+              const teamOption = await screen.findByRole('button', {
+                name: 'Team',
+              })
+              await user.click(teamOption)
+              expect(props.setSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
+            })
+          })
         })
-        expect(monthlyOption).toBeInTheDocument()
-      })
-
-      it('renders annual option button', async () => {
-        setup({ includeSentryPlans: true })
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-        const annualOption = await screen.findByRole('button', {
-          name: 'Annual',
-        })
-        expect(annualOption).toBeInTheDocument()
-      })
-
-      it('renders the seat input with 5 seats', async () => {
-        setup({ includeSentryPlans: true })
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-        const numberInput = await screen.findByRole('spinbutton')
-        expect(numberInput).toBeInTheDocument()
-        expect(numberInput).toHaveValue(5)
-      })
-    })
-
-    describe('when the user have a free plan', () => {
-      const props = {
-        proPlanMonth,
-        proPlanYear,
-        sentryPlanMonth,
-        sentryPlanYear,
-        accountDetails: {
-          activatedUserCount: 9,
-          inactiveUserCount: 0,
-          plan: freePlan,
-          latestInvoice: null,
-        },
-      }
-
-      it('renders annual option as "selected"', async () => {
-        setup({ includeSentryPlans: true })
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-        const annualOption = await screen.findByRole('button', {
-          name: 'Annual',
-        })
-        expect(annualOption).toBeInTheDocument()
-        expect(annualOption).toHaveClass('bg-ds-primary-base')
-      })
-
-      it('renders the seat input with 9 seats', async () => {
-        setup({ includeSentryPlans: true })
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-        const numberInput = await screen.findByRole('spinbutton')
-        expect(numberInput).toHaveValue(9)
-      })
-    })
-
-    describe('when the user have a sentry pro year plan', () => {
-      const props = {
-        proPlanMonth,
-        proPlanYear,
-        sentryPlanMonth,
-        sentryPlanYear,
-        accountDetails: {
-          activatedUserCount: 9,
-          inactiveUserCount: 0,
-          plan: sentryPlanYear,
-          latestInvoice: null,
-        },
-      }
-
-      it('renders annual option to be "selected"', async () => {
-        setup({ includeSentryPlans: true })
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
-        expect(optionBtn).toHaveClass('bg-ds-primary-base')
-      })
-
-      it('renders the seat input with 10 seats (existing subscription)', async () => {
-        setup({ includeSentryPlans: true })
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-        const seatCount = await screen.findByRole('spinbutton')
-        expect(seatCount).toHaveValue(10)
-      })
-
-      it('has the price for the year', async () => {
-        setup({ includeSentryPlans: true })
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-        const price = await screen.findByText(/\$948.00/)
-        expect(price).toBeInTheDocument()
-      })
-
-      it('has the update button disabled', async () => {
-        setup({ includeSentryPlans: true, trialStatus: TrialStatuses.ONGOING })
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-        const update = await screen.findByText(/Update/)
-        expect(update).toBeDisabled()
       })
 
       describe('when updating to a month plan', () => {
         it('has the price for the month', async () => {
-          const { user } = setup({ includeSentryPlans: true })
+          const { user } = setup({ planValue: Plans.USERS_BASIC })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
           const monthOption = await screen.findByRole('button', {
@@ -615,143 +495,1516 @@ describe('UpgradeForm', () => {
           })
           await user.click(monthOption)
 
-          const price = screen.getByText(/\$120/)
+          const price = screen.getByText(/\$48/)
           expect(price).toBeInTheDocument()
         })
       })
-    })
 
-    describe('when the user have a sentry pro monthly', () => {
-      describe('user clicks select annual', () => {
-        it('renders annual option to be "selected"', async () => {
-          const { user } = setup({ includeSentryPlans: true })
-
-          render(
-            <UpgradeForm
-              proPlanMonth={proPlanMonth}
-              proPlanYear={proPlanYear}
-              sentryPlanMonth={sentryPlanMonth}
-              sentryPlanYear={sentryPlanYear}
-              accountDetails={{
-                activatedUserCount: 9,
-                inactiveUserCount: 0,
-                plan: sentryPlanMonth,
-                latestInvoice: null,
-              }}
-            />,
-            { wrapper: wrapper() }
-          )
-
-          const switchAnnual = await screen.findByText('switch to annual')
-          await user.click(switchAnnual)
-
-          const annualOption = await screen.findByRole('button', {
-            name: 'Annual',
+      describe('when the mutation is successful', () => {
+        it('renders success notification when upgrading seats with yearly plan', async () => {
+          const { patchRequest, user } = setup({
+            successfulPatchRequest: true,
+            planValue: Plans.USERS_BASIC,
           })
-          expect(annualOption).toHaveClass('bg-ds-primary-base')
-        })
-      })
-    })
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-    describe('if there is an invoice', () => {
-      it('renders the next billing period', async () => {
-        setup({ includeSentryPlans: true })
-        render(
-          <UpgradeForm
-            proPlanMonth={proPlanMonth}
-            proPlanYear={proPlanYear}
-            sentryPlanMonth={sentryPlanMonth}
-            sentryPlanYear={sentryPlanYear}
-            accountDetails={{
-              activatedUserCount: 9,
-              inactiveUserCount: 0,
-              plan: null,
-              latestInvoice: {
-                periodStart: 1595270468,
-                periodEnd: 1597948868,
-                dueDate: '1600544863',
-                amountPaid: 9600.0,
-                amountDue: 9600.0,
-                amountRemaining: 0.0,
-                total: 9600.0,
-                subtotal: 9600.0,
-                invoicePdf:
-                  'https://pay.stripe.com/invoice/acct_14SJTOGlVGuVgOrk/invst_Hs2qfFwArnp6AMjWPlwtyqqszoBzO3q/pdf',
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '20')
+
+          const proceedToCheckoutButton = await screen.findByRole('button', {
+            name: /Proceed to Checkout/,
+          })
+          await user.click(proceedToCheckoutButton)
+
+          await waitFor(() =>
+            expect(patchRequest).toHaveBeenCalledWith({
+              plan: {
+                quantity: 20,
+                value: Plans.USERS_PR_INAPPY,
               },
-            }}
-          />,
-          { wrapper: wrapper() }
-        )
+            })
+          )
+        })
 
-        const nextBillingData = await screen.findByText(/Next Billing Date/)
-        expect(nextBillingData).toBeInTheDocument()
+        it('renders success notification when upgrading seats with monthly plan', async () => {
+          const { patchRequest, user } = setup({
+            successfulPatchRequest: true,
+            planValue: Plans.USERS_BASIC,
+          })
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const billingDate = await screen.findByText(/August 20th, 2020/)
-        expect(billingDate).toBeInTheDocument()
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '20')
+
+          const optionBtn = await screen.findByRole('button', {
+            name: 'Monthly',
+          })
+          await user.click(optionBtn)
+
+          const proceedToCheckoutButton = await screen.findByRole('button', {
+            name: /Proceed to Checkout/,
+          })
+          await user.click(proceedToCheckoutButton)
+
+          await waitFor(() =>
+            expect(patchRequest).toHaveBeenCalledWith({
+              plan: {
+                quantity: 20,
+                value: Plans.USERS_PR_INAPPM,
+              },
+            })
+          )
+        })
+
+        it('redirects the user to the plan page', async () => {
+          const { user } = setup({
+            successfulPatchRequest: true,
+            planValue: Plans.USERS_BASIC,
+          })
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '20')
+
+          const proceedToCheckoutButton = await screen.findByRole('button', {
+            name: /Proceed to Checkout/,
+          })
+          await user.click(proceedToCheckoutButton)
+
+          await waitFor(() => queryClient.isMutating())
+          await waitFor(() => !queryClient.isMutating())
+          await waitFor(() => queryClient.isFetching())
+          await waitFor(() => !queryClient.isFetching())
+
+          expect(testLocation.pathname).toEqual('/plan/gh/codecov')
+        })
+      })
+
+      describe('when the mutation is unsuccessful', () => {
+        it('adds an error notification with detail message', async () => {
+          const { addNotification, user } = setup({
+            successfulPatchRequest: false,
+            errorDetails: 'Insufficient funds.',
+            planValue: Plans.USERS_BASIC,
+          })
+
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '20')
+
+          const proceedToCheckoutButton = await screen.findByRole('button', {
+            name: /Proceed to Checkout/,
+          })
+          await user.click(proceedToCheckoutButton)
+
+          await waitFor(() => queryClient.isMutating())
+          await waitFor(() => queryClient.isFetching())
+          await waitFor(() => !queryClient.isMutating())
+          await waitFor(() => !queryClient.isFetching())
+
+          await waitFor(() =>
+            expect(addNotification).toHaveBeenCalledWith({
+              type: 'error',
+              text: 'Insufficient funds.',
+            })
+          )
+        })
+
+        it('adds an error notification with a default message', async () => {
+          const { addNotification, user } = setup({
+            successfulPatchRequest: false,
+            planValue: Plans.USERS_BASIC,
+          })
+
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '20')
+
+          const proceedToCheckoutButton = await screen.findByRole('button', {
+            name: /Proceed to Checkout/,
+          })
+          await user.click(proceedToCheckoutButton)
+
+          await waitFor(() => queryClient.isMutating())
+          await waitFor(() => queryClient.isFetching())
+          await waitFor(() => !queryClient.isMutating())
+          await waitFor(() => !queryClient.isFetching())
+
+          await waitFor(() =>
+            expect(addNotification).toHaveBeenCalledWith({
+              type: 'error',
+              text: 'Something went wrong',
+            })
+          )
+        })
       })
     })
 
-    describe('when the user chooses less than 5 seats', () => {
-      it('displays an error', async () => {
-        const { user } = setup({
-          includeSentryPlans: true,
-          trialStatus: TrialStatuses.ONGOING,
-        })
-        render(
-          <UpgradeForm
-            proPlanMonth={proPlanMonth}
-            proPlanYear={proPlanYear}
-            sentryPlanMonth={sentryPlanMonth}
-            sentryPlanYear={sentryPlanYear}
-            accountDetails={{
-              activatedUserCount: 9,
-              inactiveUserCount: 0,
-              plan: null,
-              latestInvoice: null,
-            }}
-          />,
-          { wrapper: wrapper() }
-        )
+    describe('when the user has a pro plan monthly', () => {
+      const props = {
+        setSelectedPlan: jest.fn(),
+        selectedPlan: { value: Plans.USERS_PR_INAPPY },
+      }
+      it('renders the organization and owner titles', async () => {
+        setup({ planValue: Plans.USERS_PR_INAPPM })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const organizationTitle = await screen.findByText(/Organization/)
+        expect(organizationTitle).toBeInTheDocument()
+        const ownerTitle = await screen.findByText(/codecov/)
+        expect(ownerTitle).toBeInTheDocument()
+      })
+
+      it('renders monthly option button', async () => {
+        setup({ planValue: Plans.USERS_PR_INAPPM })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
+        expect(optionBtn).toBeInTheDocument()
+      })
+
+      it('renders annual option button', async () => {
+        setup({ planValue: Plans.USERS_PR_INAPPM })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        expect(optionBtn).toBeInTheDocument()
+      })
+
+      it('renders monthly option button as "selected"', async () => {
+        setup({ planValue: Plans.USERS_PR_INAPPM })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
+        expect(optionBtn).toBeInTheDocument()
+        expect(optionBtn).toHaveClass('bg-ds-primary-base')
+      })
+
+      it('renders the seat input with 10 seats (existing subscription)', async () => {
+        setup({ planValue: Plans.USERS_PR_INAPPM })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const seatCount = await screen.findByRole('spinbutton')
+        expect(seatCount).toHaveValue(10)
+      })
+
+      it('has the price for the year', async () => {
+        setup({ planValue: Plans.USERS_PR_INAPPM })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const price = await screen.findByText(/\$120/)
+        expect(price).toBeInTheDocument()
+      })
+
+      it('renders validation error when the user selects less than 2 seats', async () => {
+        const { user } = setup({ planValue: Plans.USERS_PR_INAPPM })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const input = await screen.findByRole('spinbutton')
         await user.type(input, '{backspace}{backspace}{backspace}')
         await user.type(input, '1')
 
-        const updateButton = await screen.findByRole('button', {
-          name: 'Update',
+        const update = await screen.findByRole('button', {
+          name: /Update/,
         })
-        await user.click(updateButton)
+        expect(update).toBeDisabled()
+
+        const error = screen.getByText(
+          /You cannot purchase a per user plan for less than 2 users/
+        )
+        expect(error).toBeInTheDocument()
+      })
+
+      it('renders validation error when the user selects less than number of active users', async () => {
+        const { user } = setup({ planValue: Plans.USERS_PR_INAPPM })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const input = await screen.findByRole('spinbutton')
+        await user.type(input, '{backspace}{backspace}{backspace}')
+        await user.type(input, '6')
+
+        const update = await screen.findByRole('button', {
+          name: /Update/,
+        })
+        expect(update).toBeDisabled()
+
+        const error = screen.getByText(
+          /deactivate more users before downgrading plans/i
+        )
+        expect(error).toBeInTheDocument()
+      })
+
+      it('renders the update button', async () => {
+        setup({ planValue: Plans.USERS_PR_INAPPM })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const update = await screen.findByRole('button', {
+          name: /Update/,
+        })
+        expect(update).toBeInTheDocument()
+      })
+
+      describe('when updating to a yearly plan', () => {
+        it('has the price for the year', async () => {
+          const { user } = setup({ planValue: Plans.USERS_PR_INAPPM })
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const annualOption = await screen.findByRole('button', {
+            name: 'Annual',
+          })
+          await user.click(annualOption)
+
+          const price = screen.getByText(/\$100/)
+          expect(price).toBeInTheDocument()
+        })
+      })
+
+      describe('when the user has team plans available', () => {
+        describe('when the feature flag is off', () => {
+          it('does not renders the Pro and team buttons', () => {
+            setup({
+              planValue: Plans.USERS_PR_INAPPM,
+              hasTeamPlans: true,
+              multipleTiers: false,
+            })
+            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+            const proBtn = screen.queryByRole('button', { name: 'Pro' })
+            expect(proBtn).not.toBeInTheDocument()
+            const teamBtn = screen.queryByRole('button', { name: 'Team' })
+            expect(teamBtn).not.toBeInTheDocument()
+          })
+        })
+
+        describe('when the feature flag is on', () => {
+          it('renders the Pro button as "selected"', async () => {
+            setup({
+              planValue: Plans.USERS_PR_INAPPM,
+              hasTeamPlans: true,
+              multipleTiers: true,
+            })
+            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+            const optionBtn = await screen.findByRole('button', { name: 'Pro' })
+            expect(optionBtn).toBeInTheDocument()
+            expect(optionBtn).toHaveClass('bg-ds-primary-base')
+          })
+
+          it('renders team option button', async () => {
+            setup({
+              planValue: Plans.USERS_PR_INAPPM,
+              hasTeamPlans: true,
+              multipleTiers: true,
+            })
+            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+            const optionBtn = await screen.findByRole('button', {
+              name: 'Team',
+            })
+            expect(optionBtn).toBeInTheDocument()
+          })
+
+          describe('when updating to a team plan', () => {
+            it('renders up to 10 seats text', async () => {
+              const { user } = setup({
+                planValue: Plans.USERS_PR_INAPPM,
+                hasTeamPlans: true,
+                multipleTiers: true,
+              })
+              render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+              const teamOption = await screen.findByRole('button', {
+                name: 'Team',
+              })
+              await user.click(teamOption)
+
+              const auxiliaryText = await screen.findByText(/Up to 10 users/)
+              expect(auxiliaryText).toBeInTheDocument()
+            })
+
+            it('calls setSelectedPlan with yearly team plan when selecting team button', async () => {
+              const { user } = setup({
+                planValue: Plans.USERS_BASIC,
+                hasTeamPlans: true,
+                multipleTiers: true,
+              })
+              render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+              const teamOption = await screen.findByRole('button', {
+                name: 'Team',
+              })
+              await user.click(teamOption)
+              expect(props.setSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
+            })
+          })
+        })
+      })
+
+      describe('when the mutation is successful', () => {
+        it('renders success notification when upgrading seats with monthly plan', async () => {
+          const { patchRequest, user } = setup({
+            successfulPatchRequest: true,
+            planValue: Plans.USERS_PR_INAPPM,
+          })
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '20')
+
+          const update = await screen.findByRole('button', {
+            name: /Update/,
+          })
+          await user.click(update)
+
+          await waitFor(() =>
+            expect(patchRequest).toHaveBeenCalledWith({
+              plan: {
+                quantity: 20,
+                value: Plans.USERS_PR_INAPPM,
+              },
+            })
+          )
+        })
+
+        it('renders success notification when upgrading seats with yearly plan', async () => {
+          const { patchRequest, user } = setup({
+            successfulPatchRequest: true,
+            planValue: Plans.USERS_PR_INAPPM,
+          })
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '20')
+
+          const optionBtn = await screen.findByRole('button', {
+            name: 'Annual',
+          })
+          await user.click(optionBtn)
+
+          const update = await screen.findByRole('button', {
+            name: /Update/,
+          })
+          await user.click(update)
+
+          await waitFor(() =>
+            expect(patchRequest).toHaveBeenCalledWith({
+              plan: {
+                quantity: 20,
+                value: Plans.USERS_PR_INAPPY,
+              },
+            })
+          )
+        })
+      })
+
+      describe('when the mutation is unsuccessful', () => {
+        it('adds an error notification with detail message', async () => {
+          const { addNotification, user } = setup({
+            successfulPatchRequest: false,
+            errorDetails: 'Insufficient funds.',
+            planValue: Plans.USERS_PR_INAPPM,
+          })
+
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '20')
+
+          const update = await screen.findByRole('button', {
+            name: /Update/,
+          })
+          await user.click(update)
+
+          await waitFor(() => queryClient.isMutating())
+          await waitFor(() => queryClient.isFetching())
+          await waitFor(() => !queryClient.isMutating())
+          await waitFor(() => !queryClient.isFetching())
+
+          await waitFor(() =>
+            expect(addNotification).toHaveBeenCalledWith({
+              type: 'error',
+              text: 'Insufficient funds.',
+            })
+          )
+        })
+
+        it('adds an error notification with a default message', async () => {
+          const { addNotification, user } = setup({
+            successfulPatchRequest: false,
+            planValue: Plans.USERS_PR_INAPPM,
+          })
+
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '20')
+
+          const update = await screen.findByRole('button', {
+            name: /Update/,
+          })
+          await user.click(update)
+
+          await waitFor(() => queryClient.isMutating())
+          await waitFor(() => queryClient.isFetching())
+          await waitFor(() => !queryClient.isMutating())
+          await waitFor(() => !queryClient.isFetching())
+
+          await waitFor(() =>
+            expect(addNotification).toHaveBeenCalledWith({
+              type: 'error',
+              text: 'Something went wrong',
+            })
+          )
+        })
+      })
+    })
+
+    describe('when the user has a pro plan yearly', () => {
+      const props = {
+        setSelectedPlan: jest.fn(),
+        selectedPlan: { value: Plans.USERS_PR_INAPPY },
+      }
+      it('renders the organization and owner titles', async () => {
+        setup({ planValue: Plans.USERS_PR_INAPPY })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const organizationTitle = await screen.findByText(/Organization/)
+        expect(organizationTitle).toBeInTheDocument()
+        const ownerTitle = await screen.findByText(/codecov/)
+        expect(ownerTitle).toBeInTheDocument()
+      })
+
+      it('renders monthly option button', async () => {
+        setup({ planValue: Plans.USERS_PR_INAPPY })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
+        expect(optionBtn).toBeInTheDocument()
+      })
+
+      it('renders annual option button', async () => {
+        setup({ planValue: Plans.USERS_PR_INAPPY })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        expect(optionBtn).toBeInTheDocument()
+      })
+
+      it('renders annual option button as "selected"', async () => {
+        setup({ planValue: Plans.USERS_PR_INAPPY })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        expect(optionBtn).toBeInTheDocument()
+        expect(optionBtn).toHaveClass('bg-ds-primary-base')
+      })
+
+      it('renders the seat input with 13 seats (existing subscription)', async () => {
+        setup({ planValue: Plans.USERS_PR_INAPPY })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const seatCount = await screen.findByRole('spinbutton')
+        expect(seatCount).toHaveValue(13)
+      })
+
+      it('has the price for the year', async () => {
+        setup({ planValue: Plans.USERS_PR_INAPPY })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const price = await screen.findByText(/\$130/)
+        expect(price).toBeInTheDocument()
+      })
+
+      it('renders validation error when the user selects less than 2 seats', async () => {
+        const { user } = setup({ planValue: Plans.USERS_PR_INAPPY })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const input = await screen.findByRole('spinbutton')
+        await user.type(input, '{backspace}{backspace}{backspace}')
+        await user.type(input, '1')
+
+        const update = await screen.findByRole('button', {
+          name: /Update/,
+        })
+        expect(update).toBeDisabled()
+
+        const error = screen.getByText(
+          /You cannot purchase a per user plan for less than 2 users/
+        )
+        expect(error).toBeInTheDocument()
+      })
+
+      it('renders validation error when the user selects less than number of active users', async () => {
+        const { user } = setup({ planValue: Plans.USERS_PR_INAPPY })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const input = await screen.findByRole('spinbutton')
+        await user.type(input, '{backspace}{backspace}{backspace}')
+        await user.type(input, '9')
+
+        const update = await screen.findByRole('button', {
+          name: /Update/,
+        })
+        expect(update).toBeDisabled()
+
+        const error = screen.getByText(
+          /deactivate more users before downgrading plans/i
+        )
+        expect(error).toBeInTheDocument()
+      })
+
+      it('renders the update button', async () => {
+        setup({ planValue: Plans.USERS_PR_INAPPY })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const update = await screen.findByRole('button', {
+          name: /Update/,
+        })
+        expect(update).toBeInTheDocument()
+      })
+
+      describe('when updating to a monthly plan', () => {
+        it('has the price for the month', async () => {
+          const { user } = setup({ planValue: Plans.USERS_PR_INAPPY })
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const monthlyOption = await screen.findByRole('button', {
+            name: 'Monthly',
+          })
+          await user.click(monthlyOption)
+
+          const price = screen.getByText(/\$156/)
+          expect(price).toBeInTheDocument()
+        })
+      })
+
+      describe('when the user has team plans available', () => {
+        describe('when the feature flag is off', () => {
+          it('does not renders the Pro and team buttons', () => {
+            setup({
+              planValue: Plans.USERS_PR_INAPPY,
+              hasTeamPlans: true,
+              multipleTiers: false,
+            })
+            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+            const proBtn = screen.queryByRole('button', { name: 'Pro' })
+            expect(proBtn).not.toBeInTheDocument()
+            const teamBtn = screen.queryByRole('button', { name: 'Team' })
+            expect(teamBtn).not.toBeInTheDocument()
+          })
+        })
+
+        describe('when the feature flag is on', () => {
+          it('renders the Pro button as "selected"', async () => {
+            setup({
+              planValue: Plans.USERS_PR_INAPPY,
+              hasTeamPlans: true,
+              multipleTiers: true,
+            })
+            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+            const optionBtn = await screen.findByRole('button', { name: 'Pro' })
+            expect(optionBtn).toBeInTheDocument()
+            expect(optionBtn).toHaveClass('bg-ds-primary-base')
+          })
+
+          it('renders team option button', async () => {
+            setup({
+              planValue: Plans.USERS_PR_INAPPY,
+              hasTeamPlans: true,
+              multipleTiers: true,
+            })
+            render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+            const optionBtn = await screen.findByRole('button', {
+              name: 'Team',
+            })
+            expect(optionBtn).toBeInTheDocument()
+          })
+
+          describe('when updating to a team plan', () => {
+            it('renders up to 10 seats text', async () => {
+              const { user } = setup({
+                planValue: Plans.USERS_PR_INAPPY,
+                hasTeamPlans: true,
+                multipleTiers: true,
+              })
+              render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+              const teamOption = await screen.findByRole('button', {
+                name: 'Team',
+              })
+              await user.click(teamOption)
+
+              const auxiliaryText = await screen.findByText(/Up to 10 users/)
+              expect(auxiliaryText).toBeInTheDocument()
+            })
+
+            it('calls setSelectedPlan with yearly team plan when selecting team button', async () => {
+              const { user } = setup({
+                planValue: Plans.USERS_BASIC,
+                hasTeamPlans: true,
+                multipleTiers: true,
+              })
+              render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+              const teamOption = await screen.findByRole('button', {
+                name: 'Team',
+              })
+              await user.click(teamOption)
+              expect(props.setSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
+            })
+          })
+        })
+      })
+
+      describe('when the mutation is successful', () => {
+        it('renders success notification when upgrading seats with an annual plan', async () => {
+          const { patchRequest, user } = setup({
+            successfulPatchRequest: true,
+            planValue: Plans.USERS_PR_INAPPY,
+          })
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '20')
+
+          const update = await screen.findByRole('button', {
+            name: /Update/,
+          })
+          await user.click(update)
+
+          await waitFor(() =>
+            expect(patchRequest).toHaveBeenCalledWith({
+              plan: {
+                quantity: 20,
+                value: Plans.USERS_PR_INAPPY,
+              },
+            })
+          )
+        })
+
+        it('renders success notification when upgrading seats with a monthly plan', async () => {
+          const { patchRequest, user } = setup({
+            successfulPatchRequest: true,
+            planValue: Plans.USERS_PR_INAPPY,
+          })
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '20')
+
+          const optionBtn = await screen.findByRole('button', {
+            name: 'Monthly',
+          })
+          await user.click(optionBtn)
+
+          const update = await screen.findByRole('button', {
+            name: /Update/,
+          })
+          await user.click(update)
+
+          await waitFor(() =>
+            expect(patchRequest).toHaveBeenCalledWith({
+              plan: {
+                quantity: 20,
+                value: Plans.USERS_PR_INAPPM,
+              },
+            })
+          )
+        })
+
+        it('redirects the user to the plan page', async () => {
+          const { user } = setup({
+            successfulPatchRequest: true,
+            planValue: Plans.USERS_PR_INAPPY,
+          })
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '20')
+
+          const update = await screen.findByRole('button', {
+            name: /Update/,
+          })
+          await user.click(update)
+
+          await waitFor(() => queryClient.isMutating())
+          await waitFor(() => !queryClient.isMutating())
+          await waitFor(() => queryClient.isFetching())
+          await waitFor(() => !queryClient.isFetching())
+
+          expect(testLocation.pathname).toEqual('/plan/gh/codecov')
+        })
+      })
+
+      describe('when the mutation is unsuccessful', () => {
+        it('adds an error notification with detail message', async () => {
+          const { addNotification, user } = setup({
+            successfulPatchRequest: false,
+            errorDetails: 'Insufficient funds.',
+            planValue: Plans.USERS_PR_INAPPY,
+          })
+
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '20')
+
+          const update = await screen.findByRole('button', {
+            name: /Update/,
+          })
+          await user.click(update)
+
+          await waitFor(() => queryClient.isMutating())
+          await waitFor(() => queryClient.isFetching())
+          await waitFor(() => !queryClient.isMutating())
+          await waitFor(() => !queryClient.isFetching())
+
+          await waitFor(() =>
+            expect(addNotification).toHaveBeenCalledWith({
+              type: 'error',
+              text: 'Insufficient funds.',
+            })
+          )
+        })
+
+        it('adds an error notification with a default message', async () => {
+          const { addNotification, user } = setup({
+            successfulPatchRequest: false,
+            planValue: Plans.USERS_PR_INAPPY,
+          })
+
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '20')
+
+          const update = await screen.findByRole('button', {
+            name: /Update/,
+          })
+          await user.click(update)
+
+          await waitFor(() => queryClient.isMutating())
+          await waitFor(() => queryClient.isFetching())
+          await waitFor(() => !queryClient.isMutating())
+          await waitFor(() => !queryClient.isFetching())
+
+          await waitFor(() =>
+            expect(addNotification).toHaveBeenCalledWith({
+              type: 'error',
+              text: 'Something went wrong',
+            })
+          )
+        })
+      })
+    })
+
+    describe('when the user has a sentry plan yearly', () => {
+      const props = {
+        setSelectedPlan: jest.fn(),
+        selectedPlan: { value: Plans.USERS_SENTRYY },
+      }
+      it('renders the organization and owner titles', async () => {
+        setup({
+          planValue: Plans.USERS_SENTRYY,
+          hasSentryPlans: true,
+        })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const organizationTitle = await screen.findByText(/Organization/)
+        expect(organizationTitle).toBeInTheDocument()
+        const ownerTitle = await screen.findByText(/codecov/)
+        expect(ownerTitle).toBeInTheDocument()
+      })
+
+      it('renders the price for the included 5 seats', async () => {
+        setup({
+          planValue: Plans.USERS_SENTRYY,
+          hasTeamPlans: false,
+          hasSentryPlans: true,
+        })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const planTitle = await screen.findByText(/Plan/)
+        expect(planTitle).toBeInTheDocument()
+        const planDescription = await screen.findByText(
+          /\$29 monthly includes 5 seats./
+        )
+        expect(planDescription).toBeInTheDocument()
+      })
+
+      it('renders monthly option button', async () => {
+        setup({
+          planValue: Plans.USERS_SENTRYY,
+          hasSentryPlans: true,
+        })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
+        expect(optionBtn).toBeInTheDocument()
+      })
+
+      it('renders annual option button', async () => {
+        setup({
+          planValue: Plans.USERS_SENTRYY,
+          hasSentryPlans: true,
+        })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        expect(optionBtn).toBeInTheDocument()
+      })
+
+      it('renders annual option button as "selected"', async () => {
+        setup({
+          planValue: Plans.USERS_SENTRYY,
+          hasSentryPlans: true,
+        })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        expect(optionBtn).toBeInTheDocument()
+        expect(optionBtn).toHaveClass('bg-ds-primary-base')
+      })
+
+      it('renders the seat input with 21 seats (existing subscription)', async () => {
+        setup({
+          planValue: Plans.USERS_SENTRYY,
+          hasSentryPlans: true,
+        })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const seatCount = await screen.findByRole('spinbutton')
+        expect(seatCount).toHaveValue(21)
+      })
+
+      it('has the price for the year', async () => {
+        setup({
+          planValue: Plans.USERS_SENTRYY,
+          hasSentryPlans: true,
+        })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const price = await screen.findByText(/\$189/)
+        expect(price).toBeInTheDocument()
+      })
+
+      it('renders validation error when the user selects less than 5 seats', async () => {
+        const { user } = setup({
+          planValue: Plans.USERS_SENTRYY,
+          hasSentryPlans: true,
+        })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const input = await screen.findByRole('spinbutton')
+        await user.type(input, '{backspace}{backspace}{backspace}')
+        await user.type(input, '3')
+
+        const update = await screen.findByRole('button', {
+          name: /Update/,
+        })
+        expect(update).toBeDisabled()
 
         const error = screen.getByText(
           /You cannot purchase a per user plan for less than 5 users/
         )
         expect(error).toBeInTheDocument()
       })
+
+      it('renders validation error when the user selects less than number of active users', async () => {
+        const { user } = setup({
+          planValue: Plans.USERS_SENTRYY,
+          hasSentryPlans: true,
+        })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const input = await screen.findByRole('spinbutton')
+        await user.type(input, '{backspace}{backspace}{backspace}')
+        await user.type(input, '6')
+
+        const update = await screen.findByRole('button', {
+          name: /Update/,
+        })
+        expect(update).toBeDisabled()
+
+        const error = screen.getByText(
+          /deactivate more users before downgrading plans/i
+        )
+        expect(error).toBeInTheDocument()
+      })
+
+      it('renders the update button', async () => {
+        setup({
+          planValue: Plans.USERS_SENTRYY,
+          hasSentryPlans: true,
+        })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const update = await screen.findByRole('button', {
+          name: /Update/,
+        })
+        expect(update).toBeInTheDocument()
+      })
+
+      describe('when updating to a monthly plan', () => {
+        it('has the price for the month', async () => {
+          const { user } = setup({
+            planValue: Plans.USERS_SENTRYY,
+            hasSentryPlans: true,
+          })
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const monthlyOption = await screen.findByRole('button', {
+            name: 'Monthly',
+          })
+          await user.click(monthlyOption)
+
+          const price = screen.getByText(/\$221/)
+          expect(price).toBeInTheDocument()
+        })
+      })
+
+      describe('when the mutation is successful', () => {
+        it('renders success notification when upgrading seats with an annual plan', async () => {
+          const { patchRequest, user } = setup({
+            successfulPatchRequest: true,
+            hasSentryPlans: true,
+            planValue: Plans.USERS_SENTRYY,
+          })
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '8')
+
+          const update = await screen.findByRole('button', {
+            name: /Update/,
+          })
+          await user.click(update)
+
+          await waitFor(() =>
+            expect(patchRequest).toHaveBeenCalledWith({
+              plan: {
+                quantity: 8,
+                value: Plans.USERS_SENTRYY,
+              },
+            })
+          )
+        })
+
+        it('renders success notification when upgrading seats with a monthly plan', async () => {
+          const { patchRequest, user } = setup({
+            successfulPatchRequest: true,
+            hasSentryPlans: true,
+            planValue: Plans.USERS_SENTRYY,
+          })
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '7')
+
+          const optionBtn = await screen.findByRole('button', {
+            name: 'Monthly',
+          })
+          await user.click(optionBtn)
+
+          const update = await screen.findByRole('button', {
+            name: /Update/,
+          })
+          await user.click(update)
+
+          await waitFor(() =>
+            expect(patchRequest).toHaveBeenCalledWith({
+              plan: {
+                quantity: 7,
+                value: Plans.USERS_SENTRYM,
+              },
+            })
+          )
+        })
+
+        it('redirects the user to the plan page', async () => {
+          const { user } = setup({
+            successfulPatchRequest: true,
+            hasSentryPlans: true,
+            planValue: Plans.USERS_SENTRYY,
+          })
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '7')
+
+          const update = await screen.findByRole('button', {
+            name: /Update/,
+          })
+          await user.click(update)
+
+          await waitFor(() => queryClient.isMutating())
+          await waitFor(() => !queryClient.isMutating())
+          await waitFor(() => queryClient.isFetching())
+          await waitFor(() => !queryClient.isFetching())
+
+          expect(testLocation.pathname).toEqual('/plan/gh/codecov')
+        })
+      })
+
+      describe('when the mutation is unsuccessful', () => {
+        it('adds an error notification with detail message', async () => {
+          const { addNotification, user } = setup({
+            successfulPatchRequest: false,
+            hasSentryPlans: true,
+            errorDetails: 'Insufficient funds.',
+            planValue: Plans.USERS_SENTRYY,
+          })
+
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '7')
+
+          const update = await screen.findByRole('button', {
+            name: /Update/,
+          })
+          await user.click(update)
+
+          await waitFor(() => queryClient.isMutating())
+          await waitFor(() => queryClient.isFetching())
+          await waitFor(() => !queryClient.isMutating())
+          await waitFor(() => !queryClient.isFetching())
+
+          await waitFor(() =>
+            expect(addNotification).toHaveBeenCalledWith({
+              type: 'error',
+              text: 'Insufficient funds.',
+            })
+          )
+        })
+
+        it('adds an error notification with a default message', async () => {
+          const { addNotification, user } = setup({
+            successfulPatchRequest: false,
+            hasSentryPlans: true,
+            planValue: Plans.USERS_SENTRYY,
+          })
+
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '7')
+
+          const update = await screen.findByRole('button', {
+            name: /Update/,
+          })
+          await user.click(update)
+
+          await waitFor(() => queryClient.isMutating())
+          await waitFor(() => queryClient.isFetching())
+          await waitFor(() => !queryClient.isMutating())
+          await waitFor(() => !queryClient.isFetching())
+
+          await waitFor(() =>
+            expect(addNotification).toHaveBeenCalledWith({
+              type: 'error',
+              text: 'Something went wrong',
+            })
+          )
+        })
+      })
+    })
+
+    describe('when the user has a team plan yearly', () => {
+      const props = {
+        setSelectedPlan: jest.fn(),
+        selectedPlan: { value: Plans.USERS_TEAMY },
+      }
+      it('renders the organization and owner titles', async () => {
+        setup({
+          planValue: Plans.USERS_TEAMY,
+          hasTeamPlans: true,
+          multipleTiers: true,
+        })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const organizationTitle = await screen.findByText(/Organization/)
+        expect(organizationTitle).toBeInTheDocument()
+        const ownerTitle = await screen.findByText(/codecov/)
+        expect(ownerTitle).toBeInTheDocument()
+      })
+
+      it('renders up to 10 seats text', async () => {
+        const { user } = setup({
+          planValue: Plans.USERS_TEAMY,
+          hasTeamPlans: true,
+          multipleTiers: true,
+        })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const teamOption = await screen.findByRole('button', {
+          name: 'Team',
+        })
+        await user.click(teamOption)
+
+        const auxiliaryText = await screen.findByText(/Up to 10 users/)
+        expect(auxiliaryText).toBeInTheDocument()
+      })
+
+      it('renders monthly option button', async () => {
+        setup({
+          planValue: Plans.USERS_TEAMY,
+          hasTeamPlans: true,
+          multipleTiers: true,
+        })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
+        expect(optionBtn).toBeInTheDocument()
+      })
+
+      it('renders annual option button', async () => {
+        setup({
+          planValue: Plans.USERS_TEAMY,
+          hasTeamPlans: true,
+          multipleTiers: true,
+        })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        expect(optionBtn).toBeInTheDocument()
+      })
+
+      it('renders annual option button as "selected"', async () => {
+        setup({
+          planValue: Plans.USERS_TEAMY,
+          hasTeamPlans: true,
+          multipleTiers: true,
+        })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const optionBtn = await screen.findByRole('button', { name: 'Annual' })
+        expect(optionBtn).toBeInTheDocument()
+        expect(optionBtn).toHaveClass('bg-ds-primary-base')
+      })
+
+      it('renders the seat input with 5 seats (existing subscription)', async () => {
+        setup({
+          planValue: Plans.USERS_TEAMY,
+          hasTeamPlans: true,
+          multipleTiers: true,
+        })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const seatCount = await screen.findByRole('spinbutton')
+        expect(seatCount).toHaveValue(2)
+      })
+
+      it('has the price for the year', async () => {
+        setup({
+          planValue: Plans.USERS_TEAMY,
+          hasTeamPlans: true,
+          multipleTiers: true,
+        })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const price = await screen.findByText(/\$8/)
+        expect(price).toBeInTheDocument()
+      })
+
+      it('renders validation error when the user selects less than 2 seats', async () => {
+        const { user } = setup({
+          planValue: Plans.USERS_TEAMY,
+          hasTeamPlans: true,
+          multipleTiers: true,
+        })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const input = await screen.findByRole('spinbutton')
+        await user.type(input, '{backspace}{backspace}{backspace}')
+        await user.type(input, '1')
+
+        const update = await screen.findByRole('button', {
+          name: /Update/,
+        })
+        expect(update).toBeDisabled()
+
+        const error = screen.getByText(
+          /You cannot purchase a per user plan for less than 2 users/
+        )
+        expect(error).toBeInTheDocument()
+      })
+
+      it('renders validation error when the user selects more than 10 seats', async () => {
+        const { user } = setup({
+          planValue: Plans.USERS_TEAMY,
+          hasTeamPlans: true,
+          multipleTiers: true,
+        })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const input = await screen.findByRole('spinbutton')
+        await user.type(input, '{backspace}{backspace}{backspace}')
+        await user.type(input, '14')
+
+        const update = await screen.findByRole('button', {
+          name: /Update/,
+        })
+        expect(update).toBeDisabled()
+
+        const error = screen.getByText(
+          /Team plan is only available for 10 or less users/
+        )
+        expect(error).toBeInTheDocument()
+      })
+
+      it('renders validation error when the user selects less than number of active users', async () => {
+        const { user } = setup({
+          planValue: Plans.USERS_TEAMY,
+          hasTeamPlans: true,
+          multipleTiers: true,
+        })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const input = await screen.findByRole('spinbutton')
+        await user.type(input, '{backspace}{backspace}{backspace}')
+        await user.type(input, '3')
+
+        const update = await screen.findByRole('button', {
+          name: /Update/,
+        })
+        expect(update).toBeDisabled()
+
+        const error = screen.getByText(
+          /deactivate more users before downgrading plans/i
+        )
+        expect(error).toBeInTheDocument()
+      })
+
+      it('renders the update button', async () => {
+        setup({
+          planValue: Plans.USERS_TEAMY,
+          hasTeamPlans: true,
+          multipleTiers: true,
+        })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const update = await screen.findByRole('button', {
+          name: /Update/,
+        })
+        expect(update).toBeInTheDocument()
+      })
+
+      describe('when updating to a monthly plan', () => {
+        it('has the price for the month', async () => {
+          const { user } = setup({
+            planValue: Plans.USERS_TEAMY,
+            hasTeamPlans: true,
+            multipleTiers: true,
+          })
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const monthlyOption = await screen.findByRole('button', {
+            name: 'Monthly',
+          })
+          await user.click(monthlyOption)
+
+          const price = screen.getByText(/\$10/)
+          expect(price).toBeInTheDocument()
+        })
+      })
+
+      describe('when the mutation is successful', () => {
+        it('renders success notification when upgrading seats with an annual plan', async () => {
+          const { patchRequest, user } = setup({
+            successfulPatchRequest: true,
+            hasTeamPlans: true,
+            multipleTiers: true,
+            planValue: Plans.USERS_TEAMY,
+          })
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '8')
+
+          const teamOption = await screen.findByRole('button', {
+            name: 'Team',
+          })
+          await user.click(teamOption)
+
+          const update = await screen.findByRole('button', {
+            name: /Update/,
+          })
+          await user.click(update)
+
+          await waitFor(() =>
+            expect(patchRequest).toHaveBeenCalledWith({
+              plan: {
+                quantity: 8,
+                value: Plans.USERS_TEAMY,
+              },
+            })
+          )
+        })
+
+        it('renders success notification when upgrading seats with a monthly plan', async () => {
+          const { patchRequest, user } = setup({
+            successfulPatchRequest: true,
+            planValue: Plans.USERS_TEAMY,
+          })
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '7')
+
+          const optionBtn = await screen.findByRole('button', {
+            name: 'Monthly',
+          })
+          await user.click(optionBtn)
+
+          const update = await screen.findByRole('button', {
+            name: /Update/,
+          })
+          await user.click(update)
+
+          await waitFor(() =>
+            expect(patchRequest).toHaveBeenCalledWith({
+              plan: {
+                quantity: 7,
+                value: Plans.USERS_TEAMM,
+              },
+            })
+          )
+        })
+
+        it('redirects the user to the plan page', async () => {
+          const { user } = setup({
+            successfulPatchRequest: true,
+            hasTeamPlans: true,
+            multipleTiers: true,
+            planValue: Plans.USERS_TEAMY,
+          })
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '7')
+
+          const update = await screen.findByRole('button', {
+            name: /Update/,
+          })
+          await user.click(update)
+
+          await waitFor(() => queryClient.isMutating())
+          await waitFor(() => !queryClient.isMutating())
+          await waitFor(() => queryClient.isFetching())
+          await waitFor(() => !queryClient.isFetching())
+
+          expect(testLocation.pathname).toEqual('/plan/gh/codecov')
+        })
+      })
+
+      describe('when the mutation is unsuccessful', () => {
+        it('adds an error notification with detail message', async () => {
+          const { addNotification, user } = setup({
+            successfulPatchRequest: false,
+            hasTeamPlans: true,
+            multipleTiers: true,
+            errorDetails: 'Insufficient funds.',
+            planValue: Plans.USERS_TEAMY,
+          })
+
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '7')
+
+          const update = await screen.findByRole('button', {
+            name: /Update/,
+          })
+          await user.click(update)
+
+          await waitFor(() => queryClient.isMutating())
+          await waitFor(() => queryClient.isFetching())
+          await waitFor(() => !queryClient.isMutating())
+          await waitFor(() => !queryClient.isFetching())
+
+          await waitFor(() =>
+            expect(addNotification).toHaveBeenCalledWith({
+              type: 'error',
+              text: 'Insufficient funds.',
+            })
+          )
+        })
+
+        it('adds an error notification with a default message', async () => {
+          const { addNotification, user } = setup({
+            successfulPatchRequest: false,
+            hasTeamPlans: true,
+            multipleTiers: true,
+            planValue: Plans.USERS_TEAMY,
+          })
+
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+          const input = await screen.findByRole('spinbutton')
+          await user.type(input, '{backspace}{backspace}{backspace}')
+          await user.type(input, '7')
+
+          const update = await screen.findByRole('button', {
+            name: /Update/,
+          })
+          await user.click(update)
+
+          await waitFor(() => queryClient.isMutating())
+          await waitFor(() => queryClient.isFetching())
+          await waitFor(() => !queryClient.isMutating())
+          await waitFor(() => !queryClient.isFetching())
+
+          await waitFor(() =>
+            expect(addNotification).toHaveBeenCalledWith({
+              type: 'error',
+              text: 'Something went wrong',
+            })
+          )
+        })
+      })
     })
 
     describe('user is currently on a trial', () => {
+      const props = {
+        setSelectedPlan: jest.fn(),
+        selectedPlan: { value: Plans.USERS_PR_INAPPY },
+      }
       describe('user chooses less than the number of active users', () => {
         it('does not display an error', async () => {
           const { user } = setup({
-            includeSentryPlans: true,
+            planValue: Plans.USERS_TRIAL,
             trialStatus: TrialStatuses.ONGOING,
           })
-
-          render(
-            <UpgradeForm
-              proPlanMonth={proPlanMonth}
-              proPlanYear={proPlanYear}
-              sentryPlanMonth={sentryPlanMonth}
-              sentryPlanYear={sentryPlanYear}
-              accountDetails={{
-                activatedUserCount: 9,
-                inactiveUserCount: 0,
-                plan: { value: Plans.USERS_TRIAL },
-                latestInvoice: null,
-              }}
-            />,
-            { wrapper: wrapper() }
-          )
+          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
           const input = await screen.findByRole('spinbutton')
           await user.type(input, '{backspace}{backspace}{backspace}')
@@ -772,244 +2025,23 @@ describe('UpgradeForm', () => {
         })
       })
     })
-  })
 
-  describe('display student info', () => {
-    describe('when there are no students', () => {
-      it('renders text for 1 student not taking active seats', async () => {
-        setup()
-        render(
-          <UpgradeForm
-            proPlanMonth={proPlanMonth}
-            proPlanYear={proPlanYear}
-            accountDetails={{
-              activatedUserCount: 9,
-              inactiveUserCount: 0,
-              plan: freePlan,
-              latestInvoice: null,
-              activatedStudentCount: 0,
-            }}
-          />,
-          { wrapper: wrapper() }
-        )
-
-        const singleStudentText = screen.queryByText(
-          /\*You have 1 active student that does not count towards the number of active users./
-        )
-        expect(singleStudentText).not.toBeInTheDocument()
-
-        const multiStudentText = screen.queryByText(
-          /\*You have 3 active students that do not count towards the number of active users./
-        )
-        expect(multiStudentText).not.toBeInTheDocument()
-      })
-    })
-
-    describe('when there is a single student', () => {
-      it('renders text for 1 student not taking active seats', async () => {
-        setup()
-        render(
-          <UpgradeForm
-            proPlanMonth={proPlanMonth}
-            proPlanYear={proPlanYear}
-            accountDetails={{
-              activatedUserCount: 9,
-              inactiveUserCount: 0,
-              plan: freePlan,
-              latestInvoice: null,
-              activatedStudentCount: 1,
-            }}
-          />,
-          { wrapper: wrapper() }
-        )
-
-        const studentText = await screen.findByText(
-          /\*You have 1 active student that does not count towards the number of active users./
-        )
-        expect(studentText).toBeInTheDocument()
-      })
-    })
-
-    describe('when there are two or more students', () => {
-      it('renders text for two or more student not taking active seats', async () => {
-        setup()
-        render(
-          <UpgradeForm
-            proPlanMonth={proPlanMonth}
-            proPlanYear={proPlanYear}
-            accountDetails={{
-              activatedUserCount: 9,
-              inactiveUserCount: 0,
-              plan: freePlan,
-              latestInvoice: null,
-              activatedStudentCount: 3,
-            }}
-          />,
-          { wrapper: wrapper() }
-        )
-
-        const studentText = await screen.findByText(
-          /\*You have 3 active students that do not count towards the number of active users./
-        )
-        expect(studentText).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('when clicking on the button to upgrade', () => {
-    const props = {
-      proPlanMonth,
-      proPlanYear,
-      accountDetails: {
-        activatedUserCount: 9,
-        inactiveUserCount: 0,
-        plan: null,
-        latestInvoice: null,
-      },
-    }
-
-    describe('when mutation is successful', () => {
-      it('makes a patch request with the correct values', async () => {
-        const { patchRequest, user } = setup()
+    describe('if there is an invoice', () => {
+      const props = {
+        setSelectedPlan: jest.fn(),
+        selectedPlan: { value: Plans.USERS_PR_INAPPY },
+      }
+      it('renders the next billing period', async () => {
+        setup({
+          planValue: Plans.USERS_PR_INAPPM,
+        })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
-        const input = await screen.findByRole('spinbutton')
-        await user.type(input, '{backspace}{backspace}{backspace}')
-        await user.type(input, '20')
+        const nextBillingData = await screen.findByText(/Next Billing Date/)
+        expect(nextBillingData).toBeInTheDocument()
 
-        const updateButton = await screen.findByRole('button', {
-          name: 'Update',
-        })
-        await user.click(updateButton)
-
-        await waitFor(() =>
-          expect(patchRequest).toHaveBeenCalledWith({
-            plan: {
-              quantity: 20,
-              value: 'users-pr-inappy',
-            },
-          })
-        )
-      })
-
-      it('adds a success notification', async () => {
-        const { addNotification, user } = setup()
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-        const input = await screen.findByRole('spinbutton')
-        await user.type(input, '{backspace}{backspace}{backspace}')
-        await user.type(input, '20')
-
-        const updateButton = await screen.findByRole('button', {
-          name: 'Update',
-        })
-        await user.click(updateButton)
-
-        await waitFor(() =>
-          expect(addNotification).toHaveBeenCalledWith({
-            type: 'success',
-            text: 'Plan successfully upgraded',
-          })
-        )
-      })
-
-      it('redirects the user to the plan page', async () => {
-        const { user } = setup()
-        let testLocation
-        render(
-          <>
-            <UpgradeForm {...props} />
-            <Route
-              path="*"
-              render={({ location }) => {
-                testLocation = location
-                return null
-              }}
-            />
-          </>,
-          { wrapper: wrapper(['/plan/gh/codecov']) }
-        )
-
-        const input = await screen.findByRole('spinbutton')
-        await user.type(input, '{backspace}{backspace}{backspace}')
-        await user.type(input, '20')
-
-        const updateButton = await screen.findByRole('button', {
-          name: 'Update',
-        })
-        await user.click(updateButton)
-
-        await waitFor(() => queryClient.isMutating())
-        await waitFor(() => !queryClient.isMutating())
-        await waitFor(() => queryClient.isFetching())
-        await waitFor(() => !queryClient.isFetching())
-
-        expect(testLocation.pathname).toEqual('/plan/gh/codecov')
-      })
-    })
-
-    describe('when mutation is not successful', () => {
-      describe('an error message is provided', () => {
-        it('adds an error notification with detail message', async () => {
-          const { addNotification, user } = setup({
-            successfulRequest: false,
-            errorDetails: 'Insufficient funds.',
-          })
-
-          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-          const input = await screen.findByRole('spinbutton')
-          await user.type(input, '{backspace}{backspace}{backspace}')
-          await user.type(input, '20')
-
-          const updateButton = await screen.findByRole('button', {
-            name: 'Update',
-          })
-          await user.click(updateButton)
-
-          await waitFor(() => queryClient.isMutating())
-          await waitFor(() => queryClient.isFetching())
-          await waitFor(() => !queryClient.isMutating())
-          await waitFor(() => !queryClient.isFetching())
-
-          await waitFor(() =>
-            expect(addNotification).toHaveBeenCalledWith({
-              type: 'error',
-              text: 'Insufficient funds.',
-            })
-          )
-        })
-      })
-
-      describe('no error message is provided', () => {
-        it('adds an error notification with a default message', async () => {
-          const { addNotification, user } = setup({
-            successfulRequest: false,
-          })
-
-          render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-          const input = await screen.findByRole('spinbutton')
-          await user.type(input, '{backspace}{backspace}{backspace}')
-          await user.type(input, '20')
-
-          const updateButton = await screen.findByRole('button', {
-            name: 'Update',
-          })
-          await user.click(updateButton)
-
-          await waitFor(() => queryClient.isMutating())
-          await waitFor(() => queryClient.isFetching())
-          await waitFor(() => !queryClient.isMutating())
-          await waitFor(() => !queryClient.isFetching())
-
-          await waitFor(() =>
-            expect(addNotification).toHaveBeenCalledWith({
-              type: 'error',
-              text: 'Something went wrong',
-            })
-          )
-        })
+        const billingDate = await screen.findByText(/August 20th, 2020/)
+        expect(billingDate).toBeInTheDocument()
       })
     })
   })

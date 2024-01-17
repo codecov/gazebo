@@ -98,7 +98,7 @@ afterAll(() => {
 describe('useRepoCommitContentsTable', () => {
   const calledCommitContents = jest.fn()
 
-  function setup({ noData } = { noData: false }) {
+  function setup({ noData = false } = { noData: false }) {
     server.use(
       graphql.query('CommitPathContents', (req, res, ctx) => {
         calledCommitContents(req?.variables)
@@ -243,6 +243,76 @@ describe('useRepoCommitContentsTable', () => {
           ordering: {
             direction: 'DESC',
             parameter: 'MISSES',
+          },
+        },
+        name: 'test-org',
+        repo: 'test-repo',
+        path: '',
+      })
+    })
+  })
+
+  describe('when there is a flags param', () => {
+    beforeEach(() => {
+      useLocationParams.mockReturnValue({
+        params: { flags: ['flag-1'] },
+      })
+    })
+
+    it('makes a gql request with the flags value', async () => {
+      setup({})
+
+      const { result } = renderHook(() => useRepoCommitContentsTable(), {
+        wrapper: wrapper(),
+      })
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      expect(calledCommitContents).toHaveBeenCalled()
+      expect(calledCommitContents).toHaveBeenCalledWith({
+        commit: 'sha256',
+        filters: {
+          flags: ['flag-1'],
+          ordering: {
+            direction: 'ASC',
+            parameter: 'NAME',
+          },
+        },
+        name: 'test-org',
+        repo: 'test-repo',
+        path: '',
+      })
+    })
+  })
+
+  describe('when there is a flags and components param', () => {
+    beforeEach(() => {
+      useLocationParams.mockReturnValue({
+        params: { flags: ['flag-1'], components: ['component-1'] },
+      })
+    })
+
+    it('makes a gql request with the flags and components value', async () => {
+      setup({})
+
+      const { result } = renderHook(() => useRepoCommitContentsTable(), {
+        wrapper: wrapper(),
+      })
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      expect(calledCommitContents).toHaveBeenCalled()
+      expect(calledCommitContents).toHaveBeenCalledWith({
+        commit: 'sha256',
+        filters: {
+          flags: ['flag-1'],
+          components: ['component-1'],
+
+          ordering: {
+            direction: 'ASC',
+            parameter: 'NAME',
           },
         },
         name: 'test-org',

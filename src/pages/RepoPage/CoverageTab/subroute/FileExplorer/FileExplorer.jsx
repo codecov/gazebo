@@ -8,6 +8,8 @@ import FileListTable from './FileListTable'
 import FlagMultiSelect from './FlagMultiSelect'
 import { useRepoBranchContentsTable } from './hooks'
 
+import ComponentsSelectCoverage from '../ComponentsMultiSelect'
+
 const defaultQueryParams = {
   search: '',
 }
@@ -30,6 +32,7 @@ function FileExplorer() {
           <FileBreadcrumb />
         </div>
         <FlagMultiSelect />
+        <ComponentsSelectCoverage />
         <SearchField
           dataMarketing="files-search"
           placeholder="Search for files"

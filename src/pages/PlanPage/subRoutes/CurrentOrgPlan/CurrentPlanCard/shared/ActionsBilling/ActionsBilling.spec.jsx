@@ -20,6 +20,7 @@ const allPlans = [
       'Unlimited public repositories',
       'Unlimited private repositories',
     ],
+    monthlyUploadLimit: 250,
   },
   {
     marketingName: 'Pro Team',
@@ -32,6 +33,7 @@ const allPlans = [
       'Unlimited private repositories',
       'Priorty Support',
     ],
+    monthlyUploadLimit: null,
   },
   {
     marketingName: 'Pro Team',
@@ -44,6 +46,7 @@ const allPlans = [
       'Unlimited private repositories',
       'Priorty Support',
     ],
+    monthlyUploadLimit: null,
   },
   {
     marketingName: 'Pro Team',
@@ -56,6 +59,7 @@ const allPlans = [
       'Unlimited private repositories',
       'Priorty Support',
     ],
+    monthlyUploadLimit: null,
   },
   {
     marketingName: 'Pro Team',
@@ -68,6 +72,7 @@ const allPlans = [
       'Unlimited private repositories',
       'Priorty Support',
     ],
+    monthlyUploadLimit: null,
   },
 ]
 
@@ -76,6 +81,7 @@ const sentryPlans = [
     marketingName: 'Pro Team for Sentry',
     baseUnitPrice: 12,
     benefits: ['Configurable # of users', 'Unlimited repos'],
+    monthlyUploadLimit: null,
     value: 'users-sentrym',
     billingRate: 'monthly',
   },
@@ -136,12 +142,13 @@ const mockTrialData = {
     billingRate: 'monthly',
     marketingName: 'Users Basic',
     monthlyUploadLimit: 250,
-    planName: 'users-basic',
+    value: 'users-basic',
     trialStatus: 'ONGOING',
     trialStartDate: '2023-01-01T08:55:25',
     trialEndDate: '2023-01-10T08:55:25',
     trialTotalDays: 0,
     pretrialUsersCount: 0,
+    planUserCount: 1,
   },
 }
 
@@ -190,8 +197,8 @@ describe('Actions Billing', () => {
       rest.get('/internal/gh/critical-role/account-details/', (req, res, ctx) =>
         res(ctx.status(200), ctx.json(accountDetails))
       ),
-      rest.get('/internal/plans', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json(plans))
+      graphql.query('GetAvailablePlans', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({ owner: { availablePlans: plans } }))
       ),
       graphql.query('GetPlanData', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data({ owner: trialPlanData }))
@@ -212,6 +219,7 @@ describe('Actions Billing', () => {
           accountDetails: mockedFreeAccountDetails,
           plans: allPlans,
           trialPlanData: {
+            hasPrivateRepos: true,
             plan: {
               ...mockTrialData.plan,
               trialStatus: TrialStatuses.NOT_STARTED,
@@ -232,6 +240,7 @@ describe('Actions Billing', () => {
           accountDetails: mockedFreeAccountDetails,
           plans: allPlans,
           trialPlanData: {
+            hasPrivateRepos: true,
             plan: {
               ...mockTrialData.plan,
               trialStatus: TrialStatuses.NOT_STARTED,
@@ -257,6 +266,7 @@ describe('Actions Billing', () => {
             accountDetails: mockedFreeAccountDetails,
             plans: allPlans,
             trialPlanData: {
+              hasPrivateRepos: true,
               plan: {
                 ...mockTrialData.plan,
                 trialStatus: TrialStatuses.NOT_STARTED,
@@ -283,12 +293,61 @@ describe('Actions Billing', () => {
       })
     })
 
+    describe('user does not have private repos', () => {
+      it('does not renders start trial button', async () => {
+        setup({
+          accountDetails: mockedFreeAccountDetails,
+          plans: allPlans,
+          trialPlanData: {
+            hasPrivateRepos: false,
+            plan: {
+              ...mockTrialData.plan,
+              trialStatus: TrialStatuses.NOT_STARTED,
+            },
+          },
+        })
+
+        render(<ActionsBilling />, { wrapper })
+
+        const startTrialButton = screen.queryByRole('button', {
+          name: 'Start trial',
+        })
+        expect(startTrialButton).not.toBeInTheDocument()
+      })
+
+      it('renders upgrade to pro link', async () => {
+        setup({
+          accountDetails: mockedFreeAccountDetails,
+          plans: allPlans,
+          trialPlanData: {
+            hasPrivateRepos: false,
+            plan: {
+              ...mockTrialData.plan,
+              trialStatus: TrialStatuses.NOT_STARTED,
+            },
+          },
+        })
+
+        render(<ActionsBilling />, { wrapper })
+
+        const upgradeToProLink = await screen.findByRole('link', {
+          name: 'Upgrade to Pro',
+        })
+        expect(upgradeToProLink).toBeInTheDocument()
+        expect(upgradeToProLink).toHaveAttribute(
+          'href',
+          '/plan/gh/critical-role/upgrade'
+        )
+      })
+    })
+
     describe('user has a trial plan', () => {
       it('renders upgrade link', async () => {
         setup({
           accountDetails: mockTrialAccountDetails,
           plans: allPlans,
           trialPlanData: {
+            hasPrivateRepos: true,
             plan: {
               ...mockTrialData.plan,
               trialStatus: TrialStatuses.ONGOING,
@@ -299,7 +358,7 @@ describe('Actions Billing', () => {
         render(<ActionsBilling />, { wrapper })
 
         const upgradeLink = await screen.findByRole('link', {
-          name: /Upgrade to Pro Team plan/,
+          name: /Upgrade to Pro/,
         })
         expect(upgradeLink).toBeInTheDocument()
         expect(upgradeLink).toHaveAttribute(
@@ -397,6 +456,7 @@ describe('Actions Billing', () => {
             accountDetails: mockedFreeAccountDetails,
             plans: sentryPlans,
             trialPlanData: {
+              hasPrivateRepos: true,
               plan: {
                 ...mockTrialData.plan,
                 trialStatus: TrialStatuses.NOT_STARTED,
@@ -417,6 +477,7 @@ describe('Actions Billing', () => {
             accountDetails: mockedFreeAccountDetails,
             plans: sentryPlans,
             trialPlanData: {
+              hasPrivateRepos: true,
               plan: {
                 ...mockTrialData.plan,
                 trialStatus: TrialStatuses.NOT_STARTED,
@@ -442,6 +503,7 @@ describe('Actions Billing', () => {
               accountDetails: mockedFreeAccountDetails,
               plans: sentryPlans,
               trialPlanData: {
+                hasPrivateRepos: true,
                 plan: {
                   ...mockTrialData.plan,
                   trialStatus: TrialStatuses.NOT_STARTED,
@@ -474,6 +536,7 @@ describe('Actions Billing', () => {
             accountDetails: mockTrialAccountDetails,
             plans: sentryPlans,
             trialPlanData: {
+              hasPrivateRepos: true,
               plan: {
                 ...mockTrialData.plan,
                 trialStatus: TrialStatuses.ONGOING,
@@ -484,7 +547,7 @@ describe('Actions Billing', () => {
           render(<ActionsBilling />, { wrapper })
 
           const upgradeLink = await screen.findByRole('link', {
-            name: /Upgrade to Sentry Pro Team plan/,
+            name: /Upgrade to Sentry Pro/,
           })
           expect(upgradeLink).toBeInTheDocument()
           expect(upgradeLink).toHaveAttribute(

@@ -1,32 +1,51 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
 import Header from './Header'
 
-jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 jest.mock('config')
 
-describe('Header', () => {
-  function setup(isSelfHosted = false) {
-    config.IS_SELF_HOSTED = isSelfHosted
+const queryClient = new QueryClient()
+const server = setupServer()
 
-    render(
-      <MemoryRouter initialEntries={['/account/gh/codecov']}>
-        <Route path="/account/:provider/:owner">
-          <Header />
-        </Route>
-      </MemoryRouter>
-    )
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/account/gh/codecov']}>
+      <Route path="/account/:provider/:owner">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
+
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: 'warn' })
+  console.error = () => {}
+})
+beforeEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => {
+  server.close()
+})
+
+describe('Header', () => {
+  function setup(
+    { isSelfHosted = false } = {
+      isSelfHosted: false,
+    }
+  ) {
+    config.IS_SELF_HOSTED = isSelfHosted
   }
 
   describe('when users is part of the org', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('renders links to the home page', () => {
+      setup()
+      render(<Header />, { wrapper })
+
       expect(
         screen.getByRole('link', {
           name: /repos/i,
@@ -35,6 +54,9 @@ describe('Header', () => {
     })
 
     it('renders links to the analytics page', () => {
+      setup()
+      render(<Header />, { wrapper })
+
       expect(
         screen.getByRole('link', {
           name: /analytics/i,
@@ -43,6 +65,9 @@ describe('Header', () => {
     })
 
     it('renders links to the settings page', () => {
+      setup()
+      render(<Header />, { wrapper })
+
       expect(
         screen.getByRole('link', {
           name: /settings/i,
@@ -51,6 +76,9 @@ describe('Header', () => {
     })
 
     it('renders link to plan page', () => {
+      setup()
+      render(<Header />, { wrapper })
+
       expect(
         screen.getByRole('link', {
           name: /plan/i,
@@ -59,6 +87,9 @@ describe('Header', () => {
     })
 
     it('renders link to members page', () => {
+      setup()
+      render(<Header />, { wrapper })
+
       expect(
         screen.getByRole('link', {
           name: /members/i,
@@ -68,11 +99,10 @@ describe('Header', () => {
   })
 
   describe('when rendered with enterprise account', () => {
-    beforeEach(() => {
-      setup(true)
-    })
-
     it('does not render link to members page', () => {
+      setup({ isSelfHosted: true })
+      render(<Header />, { wrapper })
+
       expect(
         screen.queryByRole('link', {
           name: /members/i,
@@ -81,6 +111,9 @@ describe('Header', () => {
     })
 
     it('does not render link to plan page', () => {
+      setup({ isSelfHosted: true })
+      render(<Header />, { wrapper })
+
       expect(
         screen.queryByRole('link', {
           name: /plan/i,

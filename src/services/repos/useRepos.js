@@ -109,11 +109,12 @@ export function useRepos({
   sortItem = orderingOptions[0],
   first = 20,
   repoNames,
+  isPublic = null, // by default, get both public and private repos
   ...options
 }) {
   const { provider } = useParams()
   const variables = {
-    filters: { activated, term, repoNames },
+    filters: { activated, term, repoNames, isPublic },
     ordering: sortItem.ordering,
     direction: sortItem.direction,
     first,

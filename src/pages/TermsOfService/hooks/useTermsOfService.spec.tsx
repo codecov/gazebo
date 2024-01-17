@@ -89,7 +89,9 @@ describe('useSaveTermsAgreement', () => {
 
         await waitFor(() => expect(successFn).toBeCalledWith('completed'))
 
-        expect(invalidateQueries).toHaveBeenCalledWith(['currentUser', 'gh'])
+        expect(invalidateQueries).toHaveBeenCalledWith({
+          queryKey: ['InternalUser'],
+        })
       })
     })
 
@@ -113,12 +115,41 @@ describe('useSaveTermsAgreement', () => {
         result.current.mutate({
           businessEmail: 'test@test.com',
           termsAgreement: true,
-          defaultOrg: 'codecov',
         })
 
         await waitFor(() => expect(successFn).toBeCalledWith('completed'))
 
-        expect(invalidateQueries).toHaveBeenCalledWith(['currentUser', 'gh'])
+        expect(invalidateQueries).toHaveBeenCalledWith({
+          queryKey: ['InternalUser'],
+        })
+      })
+    })
+
+    it('proceed with mutation on missing email', async () => {
+      setup()
+      const invalidateQueries = jest.spyOn(queryClient, 'invalidateQueries')
+      const successFn = jest.fn()
+      const { result } = renderHook(
+        () =>
+          useSaveTermsAgreement({
+            onSuccess: () => {
+              successFn('completed')
+            },
+          }),
+        {
+          wrapper: wrapper(),
+        }
+      )
+
+      result.current.mutate({
+        businessEmail: null,
+        termsAgreement: true,
+      })
+
+      await waitFor(() => expect(successFn).toBeCalledWith('completed'))
+
+      expect(invalidateQueries).toHaveBeenCalledWith({
+        queryKey: ['InternalUser'],
       })
     })
 
@@ -147,9 +178,7 @@ describe('useSaveTermsAgreement', () => {
         })
 
         await waitFor(() =>
-          expect(spyErrorMock).toBeCalledWith(
-            'POST /graphql/gh net::ERR_FAILED'
-          )
+          expect(spyErrorMock).toBeCalledWith('POST /graphql/ net::ERR_FAILED')
         )
 
         expect(errorFn).toBeCalledWith('error')

@@ -68,7 +68,7 @@ export function useStaticNavLinks() {
     },
     codecovAppInstallation: {
       text: 'Install Codecov app for an org',
-      path: () => 'https://github.com/apps/codecov/installations/new',
+      path: () => `https://github.com/apps/${config.GH_APP}/installations/new`,
       isExternalLink: true,
       openNewTab: true,
     },
@@ -211,6 +211,26 @@ export function useStaticNavLinks() {
     exampleRepos: {
       text: 'Codecov uploader and supported languages',
       path: () => 'https://docs.codecov.com/docs/supported-languages',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    teamPlanAbout: {
+      text: 'Team plan',
+      path: () => 'https://about.codecov.io/team-plan-compare',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    dedicatedEnterpriseCloudGuide: {
+      text: 'Dedicated Enterprise Cloud Guide',
+      path: () =>
+        'https://docs.codecov.com/docs/codecov-dedicated-enterprise-cloud-install-steps',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    generateSelfHostedLicense: {
+      text: 'Self Hosted License Generation',
+      path: () =>
+        'https://github.com/codecov/self-hosted/tree/main#license-generation',
       isExternalLink: true,
       openNewTab: true,
     },

@@ -70,7 +70,7 @@ describe('MyContextSwitcher', () => {
           me: {
             owner: {
               username: 'cool-user',
-              avatarUrl: '',
+              avatarUrl: 'http://127.0.0.1/avatar-url',
             },
             myOrganizations: {
               edges: [{ node: orgList }],
@@ -92,7 +92,7 @@ describe('MyContextSwitcher', () => {
         const queryData = {
           owner: {
             username: 'codecov',
-            avatarUrl: 'some-url',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
           },
         }
 

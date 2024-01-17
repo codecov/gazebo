@@ -128,6 +128,31 @@ describe('CommitFileEntry', () => {
         )
       })
     })
+
+    describe('filters with flags and components are passed', () => {
+      it('sets the correct query params', () => {
+        setup()
+        render(
+          <CommitFileEntry
+            commitSha="1234"
+            path="dir/file.js"
+            name="file.js"
+            urlPath="dir"
+            isCriticalFile={false}
+            displayType={displayTypeParameter.list}
+            filters={{ flags: ['flag-1'], components: ['component-test'] }}
+          />,
+          { wrapper }
+        )
+
+        const path = screen.getByRole('link', { name: 'dir/file.js' })
+        expect(path).toBeInTheDocument()
+        expect(path).toHaveAttribute(
+          'href',
+          '/gh/codecov/test-repo/commit/1234/blob/dir/file.js?flags%5B0%5D=flag-1&components%5B0%5D=component-test'
+        )
+      })
+    })
   })
 
   describe('checking properties on tree display', () => {
@@ -246,6 +271,7 @@ describe('CommitFileEntry', () => {
             2: 'H',
           },
           flagNames: ['a', 'b'],
+          componentNames: [],
           isCriticalFile: true,
           totals: 0,
           hashedPath: 'hashed-path',

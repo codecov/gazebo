@@ -6,8 +6,12 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
+import { useFlags } from 'shared/featureFlags'
 
 import FreePlanCard from './FreePlanCard'
+
+jest.mock('./PlanUpgradeTeam', () => () => 'PlanUpgradeTeam')
+jest.mock('shared/featureFlags')
 
 const allPlans = [
   {
@@ -20,6 +24,7 @@ const allPlans = [
       'Unlimited public repositories',
       'Unlimited private repositories',
     ],
+    monthlyUploadLimit: 250,
   },
   {
     marketingName: 'Pro Team',
@@ -32,6 +37,7 @@ const allPlans = [
       'Unlimited private repositories',
       'Priority Support',
     ],
+    monthlyUploadLimit: null,
   },
   {
     marketingName: 'Pro Team',
@@ -44,6 +50,7 @@ const allPlans = [
       'Unlimited private repositories',
       'Priority Support',
     ],
+    monthlyUploadLimit: null,
   },
   {
     marketingName: 'Pro Team',
@@ -56,6 +63,7 @@ const allPlans = [
       'Unlimited private repositories',
       'Priority Support',
     ],
+    monthlyUploadLimit: null,
   },
   {
     marketingName: 'Pro Team',
@@ -68,6 +76,23 @@ const allPlans = [
       'Unlimited private repositories',
       'Priority Support',
     ],
+    monthlyUploadLimit: null,
+  },
+  {
+    baseUnitPrice: 6,
+    benefits: ['Up to 10 users'],
+    billingRate: 'monthly',
+    marketingName: 'Users Team',
+    monthlyUploadLimit: 2500,
+    value: 'users-teamm',
+  },
+  {
+    baseUnitPrice: 5,
+    benefits: ['Up to 10 users'],
+    billingRate: 'yearly',
+    marketingName: 'Users Team',
+    monthlyUploadLimit: 2500,
+    value: 'users-teamy',
   },
 ]
 
@@ -78,6 +103,7 @@ const sentryPlans = [
     billingRate: null,
     baseUnitPrice: 0,
     benefits: ['Includes 5 seats', 'Unlimited public repositories'],
+    monthlyUploadLimit: null,
   },
   {
     marketingName: 'Sentry',
@@ -85,6 +111,7 @@ const sentryPlans = [
     billingRate: null,
     baseUnitPrice: 10,
     benefits: ['Includes 5 seats', 'Unlimited private repositories'],
+    monthlyUploadLimit: null,
   },
 ]
 
@@ -94,6 +121,7 @@ const freePlan = {
   billingRate: null,
   baseUnitPrice: 0,
   benefits: ['Up to 1 user', '250 free uploads'],
+  monthlyUploadLimit: null,
 }
 
 const scheduledPhase = {
@@ -108,12 +136,13 @@ const mockPlanData = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  planName: 'users-basic',
+  value: 'users-basic',
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
   trialTotalDays: 0,
   pretrialUsersCount: 0,
+  planUserCount: 1,
 }
 
 const mockPreTrialPlanInfo = {
@@ -122,7 +151,7 @@ const mockPreTrialPlanInfo = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  planName: 'users-basic',
+  value: 'users-basic',
 }
 
 const server = setupServer()
@@ -161,6 +190,8 @@ describe('FreePlanCard', () => {
       plans,
       trialStatus = TrialStatuses.CANNOT_TRIAL,
       planValue = 'users-basic',
+      flagValue = false,
+      planUserCount = 1,
     } = {
       owner: {
         username: 'codecov',
@@ -170,8 +201,13 @@ describe('FreePlanCard', () => {
       trialStatus: TrialStatuses.CANNOT_TRIAL,
       planValue: 'users-basic',
       plans: allPlans,
+      planUserCount: 1,
     }
   ) {
+    useFlags.mockReturnValue({
+      multipleTiers: flagValue,
+    })
+
     server.use(
       graphql.query('PlanPageData', (req, res, ctx) =>
         res(ctx.status(200), ctx.data({ owner }))
@@ -181,18 +217,20 @@ describe('FreePlanCard', () => {
           ctx.status(200),
           ctx.data({
             owner: {
+              hasPrivateRepos: true,
               plan: {
                 ...mockPlanData,
                 trialStatus,
-                planName: planValue,
+                value: planValue,
+                planUserCount,
               },
               pretrialPlan: mockPreTrialPlanInfo,
             },
           })
         )
       ),
-      rest.get('/internal/plans', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json(plans))
+      graphql.query('GetAvailablePlans', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({ owner: { availablePlans: plans } }))
       ),
       rest.get('/internal/bb/critical-role/account-details/', (req, res, ctx) =>
         res(ctx.status(200), ctx.json({ numberOfUploads: 250 }))
@@ -273,6 +311,17 @@ describe('FreePlanCard', () => {
       expect(uploadCount).toBeInTheDocument()
     })
 
+    it('does not render team plan card if not trialing', () => {
+      setup()
+
+      render(<FreePlanCard plan={freePlan} />, {
+        wrapper,
+      })
+
+      const teamPlanCard = screen.queryByText(/PlanUpgradeTeam/)
+      expect(teamPlanCard).not.toBeInTheDocument()
+    })
+
     it('renders the expected price details for pro team billing', async () => {
       setup()
 
@@ -327,6 +376,37 @@ describe('FreePlanCard', () => {
         const benefitTwo = await screen.findByText(/Pre Trial benefits/)
         expect(benefitTwo).toBeInTheDocument()
       })
+
+      it('renders the team plan component if less than 10 users', async () => {
+        setup({
+          planValue: 'users-trial',
+          trialStatus: TrialStatuses.ONGOING,
+          plans: allPlans,
+          flagValue: true,
+        })
+
+        render(<FreePlanCard plan={freePlan} />, {
+          wrapper,
+        })
+
+        const teamPlanCard = await screen.findByText(/PlanUpgradeTeam/)
+        expect(teamPlanCard).toBeInTheDocument()
+      })
+
+      it('does not render the team plan component if more than 10 users', () => {
+        setup({
+          planValue: 'users-trial',
+          trialStatus: TrialStatuses.ONGOING,
+          plans: allPlans,
+        })
+
+        render(<FreePlanCard plan={freePlan} />, {
+          wrapper,
+        })
+
+        const teamPlanCard = screen.queryByText(/PlanUpgradeTeam/)
+        expect(teamPlanCard).not.toBeInTheDocument()
+      })
     })
   })
 
@@ -364,7 +444,7 @@ describe('FreePlanCard', () => {
       })
 
       const upgradeLink = await screen.findByRole('link', {
-        name: /Upgrade to Sentry Pro Team plan/,
+        name: /Upgrade to Sentry Pro/,
       })
       expect(upgradeLink).toBeInTheDocument()
       expect(upgradeLink).toHaveAttribute(

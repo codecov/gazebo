@@ -15,6 +15,7 @@ jest.mock(
 )
 jest.mock('shared/ContentsTable/FileBreadcrumb', () => () => 'File breadcrumb')
 jest.mock('./FlagMultiSelect', () => () => 'FlagMultiSelect')
+jest.mock('../ComponentsMultiSelect', () => () => 'Components Selector')
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -184,6 +185,14 @@ describe('FileExplorer', () => {
 
       const table = await screen.findByText('Code tree table')
       expect(table).toBeInTheDocument()
+    })
+
+    it('renders components selector', async () => {
+      setup()
+      render(<FileExplorer />, { wrapper: wrapper() })
+
+      const searchField = await screen.findByText(/Components Selector/)
+      expect(searchField).toBeInTheDocument()
     })
 
     describe('user searches for a file', () => {

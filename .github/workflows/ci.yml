@@ -11,9 +11,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
-env:
-  total-runners: 6
-
 jobs:
   install:
     name: Install deps
@@ -39,14 +36,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}-
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
-        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
+#      - name: Setup Bun
+#        uses: oven-sh/setup-bun@v1
+#        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
 
       - name: Install packages
         if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
         run: |
-          bun install
+          npm install
   lint:
     name: Run Lint
     runs-on: ubuntu-latest
@@ -108,23 +105,33 @@ jobs:
   codecovstartup:
     name: Codecov Startup
     needs: install
-    uses: codecov/gha-workflows/.github/workflows/codecov-startup.yml@v1.2.0
+    uses: codecov/gha-workflows/.github/workflows/codecov-startup.yml@v1.2.14
     secrets: inherit
 
   runner-indexes:
     runs-on: ubuntu-latest
     name: Generate runner indexes
     needs: install
+    env:
+      TEST_SPLIT_NUMBER: 80
     outputs:
       json: ${{ steps.generate-index-list.outputs.json }}
+      test_list_array: ${{ steps.generate-index-list.outputs.test_list_array }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Generate test index list
         id: generate-index-list
         run: |
-          MAX_INDEX=$((${{ env.total-runners }}-1))
+          shopt -s globstar
+          TEST_LIST=$(ls src/**/*.spec.js src/**/*.test.js src/**/*.spec.jsx src/**/*.spec.ts src/**/*.spec.tsx | jq -R -s -c 'split("\n")[:-1]')
+          TEST_LENGTH=$(echo $TEST_LIST | jq length)
+          MAX_INDEX=$((($TEST_LENGTH/${{ env.TEST_SPLIT_NUMBER }})))
+          MAX_INDEX=$(($MAX_INDEX < 0 ? 0 : $TEST_LENGTH % ${{ env.TEST_SPLIT_NUMBER }} == 0 ? $MAX_INDEX - 1 : $MAX_INDEX))
           INDEX_LIST=$(seq 0 ${MAX_INDEX})
           INDEX_JSON=$(jq --null-input --compact-output '. |= [inputs]' <<< ${INDEX_LIST})
-          echo "::set-output name=json::${INDEX_JSON}"
+          echo json=${INDEX_JSON} >> $GITHUB_OUTPUT
+          echo test_list_array=$(echo ${TEST_LIST} | jq -c '[_nwise(${{ env.TEST_SPLIT_NUMBER }})]') >> $GITHUB_OUTPUT
 
   test:
     name: 'Test Runner #${{ matrix.runner-index }}'
@@ -156,19 +163,21 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}-
 
-      - name: Split tests
-        uses: chaosaffe/split-tests@v1-alpha.1
-        id: split-tests
-        with:
-          glob: '"src/**/*.spec.js" "src/**/*.test.js" "src/**/*.spec.jsx" "src/**/*.test.jsx" "src/**/*.spec.ts" "src/**/*.test.ts" "src/**/*.spec.tsx" "src/**/*.test.tsx"'
-          split-total: ${{ env.total-runners }}
-          split-index: ${{ matrix.runner-index }}
-
-      - name: Bring test env up
+      - name: Run tests
         run: |
-          CI=true npm run test:ci -- --maxWorkers=2 ${{ steps.split-tests.outputs.test-suite }}
+          TESTS=$(echo $TEST_LIST | jq -cr 'join(" ")')
+          npm run test:ci -- --maxWorkers=2 $TESTS
         env:
           JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
+          TEST_LIST: ${{ tojson(fromjson(needs.runner-indexes.outputs.test_list_array)[matrix.runner-index]) }}
+
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: JEST Tests
+          path: reports/junit/*.xml
+          reporter: jest-junit
 
       - name: Install CLI
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
@@ -179,7 +188,7 @@ jobs:
       - name: Upload to Production
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
         run: |
-          codecovcli do-upload -t ${{ secrets.CODECOV_ORG_TOKEN }} --fail-on-error
+          codecovcli -u ${{ secrets.CODECOV_URL }} do-upload -t ${{ secrets.CODECOV_ORG_TOKEN }} --fail-on-error
 
       - name: Upload to Staging
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
@@ -275,7 +284,6 @@ jobs:
             ${{ runner.os }}-${{ env.cache-name }}-
 
       - name: Build React App
-        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
         run: |
           npm run build
 
@@ -283,7 +291,7 @@ jobs:
     name: Build Self Hosted Image
     secrets: inherit
     if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
-    uses: codecov/gha-workflows/.github/workflows/self-hosted.yml@v1.2.0
+    uses: codecov/gha-workflows/.github/workflows/self-hosted.yml@v1.2.14
     with:
       repo: ${{ vars.CODECOV_IMAGE_V2 || 'codecov/self-hosted-frontend' }}
       cache_requirements: false
@@ -293,7 +301,7 @@ jobs:
     needs: [ build-self-hosted, test ]
     secrets: inherit
     if: ${{ github.event_name == 'push' && github.event.ref == 'refs/heads/main' && github.repository_owner == 'codecov' }}
-    uses: codecov/gha-workflows/.github/workflows/self-hosted.yml@v1.2.0
+    uses: codecov/gha-workflows/.github/workflows/self-hosted.yml@v1.2.14
     with:
       push_rolling: true
       repo: ${{ vars.CODECOV_IMAGE_V2 || 'codecov/self-hosted-frontend' }}

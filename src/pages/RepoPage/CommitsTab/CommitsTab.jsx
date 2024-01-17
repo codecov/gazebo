@@ -1,20 +1,41 @@
-import { useLayoutEffect, useState } from 'react'
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
 import { useParams } from 'react-router-dom'
 
+import { useBranchHasCommits } from 'services/branches'
 import { useLocationParams } from 'services/navigation'
-import { useRepoOverview } from 'services/repo'
+import { useRepoOverview, useRepoSettingsTeam } from 'services/repo'
+import { TierNames, useTier } from 'services/tier'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'
 import SearchField from 'ui/SearchField'
 import Select from 'ui/Select'
+import Spinner from 'ui/Spinner'
 
-import CommitsTable from './CommitsTable'
 import { filterItems, statusEnum, statusNames } from './enums'
 import { useCommitsTabBranchSelector } from './hooks'
 
 import { useSetCrumbs } from '../context'
 
+const ALL_BRANCHES = 'All branches'
+const CommitsTable = lazy(() => import('./CommitsTable'))
+const CommitsTableTeam = lazy(() => import('./CommitsTableTeam'))
+
+const Loader = () => (
+  <div className="flex flex-1 justify-center">
+    <Spinner />
+  </div>
+)
+
 const useControlParams = ({ defaultBranch }) => {
+  const initialRenderDone = useRef(false)
+  const { provider, owner, repo } = useParams()
   const defaultParams = {
     branch: defaultBranch,
     states: [],
@@ -22,14 +43,36 @@ const useControlParams = ({ defaultBranch }) => {
   }
 
   const { params, updateParams } = useLocationParams(defaultParams)
-  const { branch: selectedBranch, states, search } = params
+  let { branch: selectedBranch, states, search } = params
 
   const paramStatesNames = states.map((filter) => statusNames[filter])
 
   const [selectedStates, setSelectedStates] = useState(paramStatesNames)
 
+  const { data: branchHasCommits } = useBranchHasCommits({
+    provider,
+    owner,
+    repo,
+    branch: selectedBranch,
+    opts: {
+      suspense: true,
+      enabled: !initialRenderDone.current,
+    },
+  })
+
+  useEffect(() => {
+    if (
+      branchHasCommits === false &&
+      selectedBranch !== ALL_BRANCHES &&
+      !initialRenderDone.current
+    ) {
+      initialRenderDone.current = true
+      updateParams({ branch: ALL_BRANCHES })
+    }
+  }, [branchHasCommits, selectedBranch, updateParams])
+
   let branch = selectedBranch
-  if (branch === 'All branches') {
+  if (branch === ALL_BRANCHES) {
     branch = ''
   }
 
@@ -46,7 +89,14 @@ const useControlParams = ({ defaultBranch }) => {
 
 function CommitsTab() {
   const setCrumbs = useSetCrumbs()
-  const { repo, owner, provider } = useParams()
+  const { provider, owner, repo } = useParams()
+
+  const { data: repoSettings } = useRepoSettingsTeam()
+  const { data: tierData } = useTier({ provider, owner })
+
+  const showTeamTable =
+    repoSettings?.repository?.private && tierData === TierNames.TEAM
+
   const { data: overview } = useRepoOverview({
     provider,
     repo,
@@ -75,7 +125,7 @@ function CommitsTab() {
   } = useCommitsTabBranchSelector({
     passedBranch: branch,
     defaultBranch: overview?.defaultBranch,
-    isAllCommits: selectedBranch === 'All branches',
+    isAllCommits: selectedBranch === ALL_BRANCHES,
   })
 
   useLayoutEffect(() => {
@@ -93,7 +143,7 @@ function CommitsTab() {
     ])
   }, [currentBranchSelected, setCrumbs])
 
-  const newBranches = [...(isSearching ? [] : ['All branches']), ...branchList]
+  const newBranches = [...(isSearching ? [] : [ALL_BRANCHES]), ...branchList]
 
   const handleStatusChange = (selectStates) => {
     const commitStates = selectStates?.map(
@@ -160,11 +210,21 @@ function CommitsTab() {
           />
         </div>
       </div>
-      <CommitsTable
-        branch={branch}
-        states={selectedStates?.map((state) => state?.toUpperCase())}
-        search={search}
-      />
+      <Suspense fallback={<Loader />}>
+        {showTeamTable ? (
+          <CommitsTableTeam
+            branch={branch}
+            states={selectedStates?.map((state) => state?.toUpperCase())}
+            search={search}
+          />
+        ) : (
+          <CommitsTable
+            branch={branch}
+            states={selectedStates?.map((state) => state?.toUpperCase())}
+            search={search}
+          />
+        )}
+      </Suspense>
     </div>
   )
 }

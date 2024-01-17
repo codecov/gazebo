@@ -4,13 +4,51 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TierNames } from 'services/tier'
+import { useFlags } from 'shared/featureFlags'
+
 import PullRequestPageTabs from './PullRequestPageTabs'
+
+jest.mock('shared/featureFlags')
 
 const mockCommits = {
   owner: {
     repository: {
+      __typename: 'Repository',
       commits: {
         totalCount: 11,
+        edges: [
+          {
+            node: {
+              ciPassed: true,
+              message: 'commit message 1',
+              commitid: 'id1',
+              createdAt: '2021-08-30T19:33:49.819672',
+              author: {
+                username: 'user-1',
+                avatarUrl: 'http://127.0.0.1/avatar-url',
+              },
+              totals: {
+                coverage: 100,
+              },
+              parent: {
+                totals: {
+                  coverage: 100,
+                },
+              },
+              compareWithParent: {
+                __typename: 'Comparison',
+                patchTotals: {
+                  percentCovered: 100,
+                },
+              },
+            },
+          },
+        ],
+        pageInfo: {
+          hasNextPage: false,
+          endCursor: null,
+        },
       },
     },
   },
@@ -18,10 +56,8 @@ const mockCommits = {
 
 const mockPullData = {
   owner: {
-    isCurrentUserPartOfOrg: true,
     repository: {
       __typename: 'Repository',
-      private: true,
       pull: {
         pullId: 1,
         head: {
@@ -36,6 +72,39 @@ const mockPullData = {
           componentComparisonsCount: 0,
         },
       },
+    },
+  },
+}
+
+const mockFlagsResponse = {
+  owner: {
+    repository: {
+      flags: {
+        edges: [
+          {
+            node: {
+              name: 'flag-1',
+            },
+          },
+        ],
+        pageInfo: {
+          hasNextPage: true,
+          endCursor: '1-flag-1',
+        },
+      },
+    },
+  },
+}
+
+const mockBackfillResponse = {
+  config: {
+    isTimescaleEnabled: true,
+  },
+  owner: {
+    repository: {
+      flagsMeasurementsActive: true,
+      flagsMeasurementsBackfilled: true,
+      flagsCount: 4,
     },
   },
 }
@@ -77,14 +146,49 @@ afterAll(() => {
 })
 
 describe('PullRequestPageTabs', () => {
-  function setup() {
+  function setup(
+    {
+      multipleTiers = false,
+      tierValue = TierNames.BASIC,
+      privateRepo = false,
+    } = {
+      multipleTiers: false,
+      tierValue: TierNames.BASIC,
+      privateRepo: false,
+    }
+  ) {
+    useFlags.mockReturnValue({
+      multipleTiers,
+    })
     server.use(
-      graphql.query('PullPageData', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockPullData))
-      ),
+      graphql.query('PullPageData', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockPullData))
+      }),
       graphql.query('GetCommits', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockCommits))
-      )
+      ),
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: { plan: { tierName: tierValue.toLowerCase() } },
+          })
+        )
+      }),
+      graphql.query('GetRepoSettings', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: { repository: { private: privateRepo } },
+          })
+        )
+      }),
+      graphql.query('FlagsSelect', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockFlagsResponse))
+      }),
+      graphql.query('BackfillFlagMemberships', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockBackfillResponse))
+      })
     )
   }
 
@@ -283,6 +387,323 @@ describe('PullRequestPageTabs', () => {
 
       const legend = await screen.findByText('upload #')
       expect(legend).toBeInTheDocument()
+    })
+  })
+
+  describe('Team plan', () => {
+    describe('with multiple tiers flag', () => {
+      describe('is a team plan on a public repo', () => {
+        beforeEach(() =>
+          setup({
+            tierValue: TierNames.TEAM,
+            multipleTiers: true,
+            privateRepo: false,
+          })
+        )
+
+        it('renders correct tabs', async () => {
+          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+          const components = await screen.findByText('Files changed')
+          expect(components).toBeInTheDocument()
+
+          const commits = await screen.findByText('Commits')
+          expect(commits).toBeInTheDocument()
+
+          const explorer = await screen.findByText('File explorer')
+          expect(explorer).toBeInTheDocument()
+
+          const indirect = await screen.findByText('Indirect changes')
+          expect(indirect).toBeInTheDocument()
+
+          const flags = await screen.findByText('Flags')
+          expect(flags).toBeInTheDocument()
+
+          const componentsTab = await screen.findByText('Components')
+          expect(componentsTab).toBeInTheDocument()
+        })
+
+        it('does render the flag select', async () => {
+          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+          const flagSelect = await screen.findByText('Search for Flags')
+          expect(flagSelect).toBeInTheDocument()
+        })
+      })
+
+      describe('is a team plan on a private repo', () => {
+        beforeEach(() =>
+          setup({
+            tierValue: TierNames.TEAM,
+            multipleTiers: true,
+            privateRepo: true,
+          })
+        )
+
+        it('renders correct tabs', async () => {
+          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+          const components = await screen.findByText('Files changed')
+          expect(components).toBeInTheDocument()
+
+          const commits = await screen.findByText('Commits')
+          expect(commits).toBeInTheDocument()
+
+          const explorer = await screen.findByText('File explorer')
+          expect(explorer).toBeInTheDocument()
+
+          const indirect = screen.queryByText('Indirect changes')
+          expect(indirect).not.toBeInTheDocument()
+
+          const flags = screen.queryByText('Flags')
+          expect(flags).not.toBeInTheDocument()
+
+          const componentsTab = screen.queryByText('Components')
+          expect(componentsTab).not.toBeInTheDocument()
+        })
+
+        it('does not render the flag select', async () => {
+          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+          const flagSelect = screen.queryByText('Search for Flags')
+          expect(flagSelect).not.toBeInTheDocument()
+        })
+      })
+
+      describe('is a pro plan on a public repo', () => {
+        beforeEach(() =>
+          setup({
+            tierValue: TierNames.PRO,
+            multipleTiers: true,
+            privateRepo: false,
+          })
+        )
+
+        it('renders correct tabs', async () => {
+          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+          const components = await screen.findByText('Files changed')
+          expect(components).toBeInTheDocument()
+
+          const commits = await screen.findByText('Commits')
+          expect(commits).toBeInTheDocument()
+
+          const explorer = await screen.findByText('File explorer')
+          expect(explorer).toBeInTheDocument()
+
+          const indirect = await screen.findByText('Indirect changes')
+          expect(indirect).toBeInTheDocument()
+
+          const flags = await screen.findByText('Flags')
+          expect(flags).toBeInTheDocument()
+
+          const componentsTab = await screen.findByText('Components')
+          expect(componentsTab).toBeInTheDocument()
+        })
+
+        it('does render the flag select', async () => {
+          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+          const flagSelect = await screen.findByText('Search for Flags')
+          expect(flagSelect).toBeInTheDocument()
+        })
+      })
+
+      describe('is a pro plan on a private repo', () => {
+        beforeEach(() =>
+          setup({
+            tierValue: TierNames.PRO,
+            multipleTiers: true,
+            privateRepo: true,
+          })
+        )
+
+        it('renders correct tabs', async () => {
+          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+          const components = await screen.findByText('Files changed')
+          expect(components).toBeInTheDocument()
+
+          const commits = await screen.findByText('Commits')
+          expect(commits).toBeInTheDocument()
+
+          const explorer = await screen.findByText('File explorer')
+          expect(explorer).toBeInTheDocument()
+
+          const indirect = await screen.findByText('Indirect changes')
+          expect(indirect).toBeInTheDocument()
+
+          const flags = await screen.findByText('Flags')
+          expect(flags).toBeInTheDocument()
+
+          const componentsTab = await screen.findByText('Components')
+          expect(componentsTab).toBeInTheDocument()
+        })
+
+        it('does not render the flag select', async () => {
+          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+          const flagSelect = screen.queryByText('Search for Flags')
+          expect(flagSelect).not.toBeInTheDocument()
+        })
+      })
+    })
+    describe('with out multiple tiers flag', () => {
+      describe('is a team plan on a public repo', () => {
+        beforeEach(() =>
+          setup({
+            tierValue: TierNames.TEAM,
+            multipleTiers: false,
+            privateRepo: false,
+          })
+        )
+
+        it('renders correct tabs', async () => {
+          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+          const components = await screen.findByText('Files changed')
+          expect(components).toBeInTheDocument()
+
+          const commits = await screen.findByText('Commits')
+          expect(commits).toBeInTheDocument()
+
+          const explorer = await screen.findByText('File explorer')
+          expect(explorer).toBeInTheDocument()
+
+          const indirect = await screen.findByText('Indirect changes')
+          expect(indirect).toBeInTheDocument()
+
+          const flags = await screen.findByText('Flags')
+          expect(flags).toBeInTheDocument()
+
+          const componentsTab = await screen.findByText('Components')
+          expect(componentsTab).toBeInTheDocument()
+        })
+
+        it('does render the flag select', async () => {
+          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+          const flagSelect = await screen.findByText('Search for Flags')
+          expect(flagSelect).toBeInTheDocument()
+        })
+      })
+
+      describe('is a team plan on a private repo', () => {
+        beforeEach(() =>
+          setup({
+            tierValue: TierNames.TEAM,
+            multipleTiers: false,
+            privateRepo: true,
+          })
+        )
+
+        it('renders correct tabs', async () => {
+          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+          const components = await screen.findByText('Files changed')
+          expect(components).toBeInTheDocument()
+
+          const commits = await screen.findByText('Commits')
+          expect(commits).toBeInTheDocument()
+
+          const explorer = await screen.findByText('File explorer')
+          expect(explorer).toBeInTheDocument()
+
+          const indirect = await screen.findByText('Indirect changes')
+          expect(indirect).toBeInTheDocument()
+
+          const flags = await screen.findByText('Flags')
+          expect(flags).toBeInTheDocument()
+
+          const componentsTab = await screen.findByText('Components')
+          expect(componentsTab).toBeInTheDocument()
+        })
+
+        it('does not render the flag select', async () => {
+          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+          const flagSelect = screen.queryByText('Search for Flags')
+          expect(flagSelect).not.toBeInTheDocument()
+        })
+      })
+
+      describe('is a pro plan on a public repo', () => {
+        beforeEach(() =>
+          setup({
+            tierValue: TierNames.PRO,
+            multipleTiers: false,
+            privateRepo: false,
+          })
+        )
+
+        it('renders correct tabs', async () => {
+          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+          const components = await screen.findByText('Files changed')
+          expect(components).toBeInTheDocument()
+
+          const commits = await screen.findByText('Commits')
+          expect(commits).toBeInTheDocument()
+
+          const explorer = await screen.findByText('File explorer')
+          expect(explorer).toBeInTheDocument()
+
+          const indirect = await screen.findByText('Indirect changes')
+          expect(indirect).toBeInTheDocument()
+
+          const flags = await screen.findByText('Flags')
+          expect(flags).toBeInTheDocument()
+
+          const componentsTab = await screen.findByText('Components')
+          expect(componentsTab).toBeInTheDocument()
+        })
+
+        it('does render the flag select', async () => {
+          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+          const flagSelect = await screen.findByText('Search for Flags')
+          expect(flagSelect).toBeInTheDocument()
+        })
+      })
+
+      describe('is a pro plan on a private repo', () => {
+        beforeEach(() =>
+          setup({
+            tierValue: TierNames.PRO,
+            multipleTiers: false,
+            privateRepo: true,
+          })
+        )
+
+        it('renders correct tabs', async () => {
+          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+          const components = await screen.findByText('Files changed')
+          expect(components).toBeInTheDocument()
+
+          const commits = await screen.findByText('Commits')
+          expect(commits).toBeInTheDocument()
+
+          const explorer = await screen.findByText('File explorer')
+          expect(explorer).toBeInTheDocument()
+
+          const indirect = await screen.findByText('Indirect changes')
+          expect(indirect).toBeInTheDocument()
+
+          const flags = await screen.findByText('Flags')
+          expect(flags).toBeInTheDocument()
+
+          const componentsTab = await screen.findByText('Components')
+          expect(componentsTab).toBeInTheDocument()
+        })
+
+        it('does not render the flag select', async () => {
+          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+
+          const flagSelect = screen.queryByText('Search for Flags')
+          expect(flagSelect).not.toBeInTheDocument()
+        })
+      })
     })
   })
 })

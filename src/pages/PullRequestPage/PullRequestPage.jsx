@@ -2,12 +2,15 @@ import { lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
+import { useRepoSettings } from 'services/repo'
+import { TierNames, useTier } from 'services/tier'
+import { useFlags } from 'shared/featureFlags'
 import Breadcrumb from 'ui/Breadcrumb'
 import Spinner from 'ui/Spinner'
 
 import Header from './Header'
 import { usePullPageData } from './hooks'
-import CompareSummarySkeleton from './Summary/CompareSummarySkeleton'
+import CompareSummarySkeleton from './Summary/CompareSummary/CompareSummarySkeleton'
 
 const CompareSummary = lazy(() => import('./Summary'))
 const PullRequestPageTabs = lazy(() => import('./PullRequestPageTabs'))
@@ -22,7 +25,25 @@ const Loader = () => (
 
 function PullRequestPage() {
   const { owner, repo, pullId, provider } = useParams()
-  const { data, isLoading } = usePullPageData({ provider, owner, repo, pullId })
+
+  const { data: settings } = useRepoSettings()
+  const { multipleTiers } = useFlags({
+    multipleTiers: false,
+  })
+
+  const { data: tierData } = useTier({ provider, owner })
+  const isTeamPlan =
+    multipleTiers &&
+    tierData === TierNames.TEAM &&
+    settings?.repository?.private
+
+  const { data, isLoading } = usePullPageData({
+    provider,
+    owner,
+    repo,
+    pullId,
+    isTeamPlan,
+  })
 
   if (!isLoading && !data?.pull) {
     return <NotFound />

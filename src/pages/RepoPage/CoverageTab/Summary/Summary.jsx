@@ -11,7 +11,8 @@ import Select from 'ui/Select'
 import { SummaryField, SummaryRoot } from 'ui/Summary'
 
 import CoverageTrend from './CoverageTrend'
-import { useCoverageRedirect, useSummary } from './hooks'
+
+import { useCoverageRedirect, useSummary } from '../summaryHooks'
 
 const YAML_STATE = Object.freeze({
   DEFAULT: 'DEFAULT',
@@ -125,7 +126,7 @@ const Summary = () => {
         {data?.head?.yamlState === YAML_STATE.DEFAULT && (
           <SummaryField>
             <h3 className="min-w-[8rem] text-sm font-semibold text-ds-gray-octonary">
-              Yaml Configuration
+              YAML Configuration
             </h3>
             <p className="pb-[2.0rem] text-sm">
               <A to={{ pageName: 'codecovYaml' }}>Learn more</A> about PR

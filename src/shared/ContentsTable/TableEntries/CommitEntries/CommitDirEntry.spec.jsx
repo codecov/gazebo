@@ -115,7 +115,7 @@ describe('CommitDirEntry', () => {
             commitSha="1234"
             name="dir"
             urlPath="path/to/directory"
-            filters={{ flags: ['flag-1'] }}
+            filters={{ flags: ['flag-1'], components: ['component-1'] }}
           />,
           { wrapper }
         )
@@ -124,7 +124,7 @@ describe('CommitDirEntry', () => {
         expect(a).toHaveAttribute(
           'href',
           `/gh/codecov/test-repo/commit/1234/tree/path/to/directory/dir${qs.stringify(
-            { flags: ['flag-1'] },
+            { flags: ['flag-1'], components: ['component-1'] },
             { addQueryPrefix: true }
           )}`
         )

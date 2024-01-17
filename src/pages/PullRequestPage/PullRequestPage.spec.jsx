@@ -5,14 +5,19 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TierNames } from 'services/tier'
+import { useFlags } from 'shared/featureFlags'
+
 import PullRequestPage from './PullRequestPage'
 
 jest.mock('shared/featureFlags')
 
+jest.mock('./Header', () => () => 'Header')
 jest.mock('./Summary', () => () => 'CompareSummary')
 jest.mock('./PullRequestPageContent', () => () => 'PullRequestPageContent')
 jest.mock('./PullRequestPageTabs', () => () => 'PullRequestPageTabs')
 jest.mock('./FirstPullBanner', () => () => 'FirstPullBanner')
+jest.mock('shared/featureFlags')
 
 const mockPullHeadData = {
   owner: {
@@ -50,6 +55,18 @@ const mockPullPageData = {
   },
 }
 
+const mockPullPageDataTeam = {
+  pullId: 877,
+  head: {
+    commitid: '123',
+  },
+  compareWithBase: {
+    __typename: 'Comparison',
+    impactedFilesCount: 4,
+    directChangedFilesCount: 0,
+  },
+}
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
@@ -78,13 +95,33 @@ afterAll(() => {
 })
 
 describe('PullRequestPage', () => {
-  function setup({ pullData = mockPullPageData }) {
+  function setup(
+    pullData = mockPullPageData,
+    tierValue = TierNames.BASIC,
+    privateRepo = false
+  ) {
+    useFlags.mockReturnValue({
+      multipleTiers: true,
+    })
     server.use(
       graphql.query('PullHeadData', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockPullHeadData))
       ),
-      graphql.query('PullPageData', (req, res, ctx) =>
-        res(
+      graphql.query('PullPageData', (req, res, ctx) => {
+        if (req.variables.isTeamPlan) {
+          return res(
+            ctx.status(200),
+            ctx.data({
+              owner: {
+                repository: {
+                  __typename: 'Repository',
+                  pull: mockPullPageDataTeam,
+                },
+              },
+            })
+          )
+        }
+        return res(
           ctx.status(200),
           ctx.data({
             owner: {
@@ -95,12 +132,28 @@ describe('PullRequestPage', () => {
             },
           })
         )
-      )
+      }),
+      graphql.query('GetRepoSettings', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: { repository: { private: privateRepo } },
+          })
+        )
+      }),
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: { plan: { tierName: tierValue } },
+          })
+        )
+      })
     )
   }
 
   describe('when pull data is available', () => {
-    beforeEach(() => setup({}))
+    beforeEach(() => setup())
 
     it('renders breadcrumb', async () => {
       render(<PullRequestPage />, { wrapper: wrapper() })
@@ -124,10 +177,8 @@ describe('PullRequestPage', () => {
     it('renders header', async () => {
       render(<PullRequestPage />, { wrapper: wrapper() })
 
-      const title = await screen.findByRole('heading', {
-        name: /Cool New Pull Request/,
-      })
-      expect(title).toBeInTheDocument()
+      const header = await screen.findByText(/Header/)
+      expect(header).toBeInTheDocument()
     })
 
     it('renders compare summary', async () => {
@@ -162,13 +213,37 @@ describe('PullRequestPage', () => {
   })
 
   describe('when there is no pull data', () => {
-    beforeEach(() => setup({ pullData: null }))
+    beforeEach(() => setup(null))
 
     it('renders not found', async () => {
       render(<PullRequestPage />, { wrapper: wrapper() })
 
       const notFound = await screen.findByText(/Not found/)
       expect(notFound).toBeInTheDocument()
+    })
+  })
+
+  describe('when user is on team plan', () => {
+    beforeEach(() => setup(mockPullPageDataTeam, TierNames.TEAM, true))
+
+    it('returns a valid response', async () => {
+      render(<PullRequestPage />, { wrapper: wrapper() })
+      const header = await screen.findByText(/Header/)
+      expect(header).toBeInTheDocument()
+      const org = await screen.findByRole('link', { name: 'test-org' })
+      expect(org).toBeInTheDocument()
+      expect(org).toHaveAttribute('href', '/gh/test-org')
+
+      const repo = await screen.findByRole('link', { name: 'test-repo' })
+      expect(repo).toBeInTheDocument()
+      expect(repo).toHaveAttribute('href', '/gh/test-org/test-repo')
+
+      const pulls = await screen.findByRole('link', { name: 'Pulls' })
+      expect(pulls).toBeInTheDocument()
+      expect(pulls).toHaveAttribute('href', '/gh/test-org/test-repo/pulls')
+
+      const pullId = await screen.findByText('12')
+      expect(pullId).toBeInTheDocument()
     })
   })
 })

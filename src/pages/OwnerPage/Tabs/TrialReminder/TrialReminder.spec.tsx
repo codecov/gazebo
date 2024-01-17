@@ -32,12 +32,13 @@ const mockResponse = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  planName: 'users-basic',
+  value: 'users-basic',
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
   trialTotalDays: 0,
   pretrialUsersCount: 0,
+  planUserCount: 1,
 }
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => {
@@ -73,6 +74,7 @@ interface SetupArgs {
   trialEndDate?: string | null
   userPartOfOrg?: boolean
   isSelfHosted?: boolean
+  hasPrivateRepos?: boolean
 }
 
 describe('TrialReminder', () => {
@@ -83,6 +85,7 @@ describe('TrialReminder', () => {
     trialEndDate = '2023-01-01T08:55:25',
     userPartOfOrg = true,
     isSelfHosted = false,
+    hasPrivateRepos = true,
   }: SetupArgs) {
     mockedConfig.IS_SELF_HOSTED = isSelfHosted
 
@@ -92,12 +95,13 @@ describe('TrialReminder', () => {
           ctx.status(200),
           ctx.data({
             owner: {
+              hasPrivateRepos,
               plan: {
                 ...mockResponse,
                 trialStatus,
                 trialStartDate,
                 trialEndDate,
-                planName: planValue,
+                value: planValue,
               },
             },
           })
@@ -352,6 +356,25 @@ describe('TrialReminder', () => {
         trialStatus: TrialStatuses.CANNOT_TRIAL,
         trialStartDate: '2023-01-01T08:55:25',
         trialEndDate: '2023-01-01T08:55:25',
+      })
+
+      const { container } = render(<TrialReminder />, { wrapper })
+
+      await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
+      expect(container).toBeEmptyDOMElement()
+    })
+  })
+
+  describe('user does not have private repos', () => {
+    it('does not display upgrade link', async () => {
+      setup({
+        planValue: Plans.USERS_PR_INAPPY,
+        trialStatus: TrialStatuses.NOT_STARTED,
+        trialStartDate: null,
+        trialEndDate: null,
+        hasPrivateRepos: false,
       })
 
       const { container } = render(<TrialReminder />, { wrapper })

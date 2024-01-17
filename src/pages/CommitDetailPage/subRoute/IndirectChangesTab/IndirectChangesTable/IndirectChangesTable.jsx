@@ -1,9 +1,11 @@
 import cs from 'classnames'
+import isArray from 'lodash/isArray'
 import isEmpty from 'lodash/isEmpty'
 import isNumber from 'lodash/isNumber'
 import PropTypes from 'prop-types'
-import { lazy, Suspense, useMemo } from 'react'
-import { useParams } from 'react-router-dom'
+import qs from 'qs'
+import { lazy, Suspense } from 'react'
+import { useLocation, useParams } from 'react-router-dom'
 
 import Table from 'old_ui/Table'
 import { useCommit } from 'services/commit'
@@ -80,10 +82,6 @@ const table = [
 ]
 
 function createTable({ tableData }) {
-  if (tableData?.length <= 0) {
-    return [{ name: null, coverage: null, patch: null, change: null }]
-  }
-
   return tableData?.map((row) => {
     const { headName, headCoverage, hasData, change, commit } = row
 
@@ -139,31 +137,68 @@ RenderSubComponent.propTypes = {
 }
 
 function IndirectChangesTable() {
-  const { provider, owner, repo, commit: commitSHA } = useParams()
+  const { provider, owner, repo, commit: commitSha } = useParams()
+  const location = useLocation()
+
+  const queryParams = qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+    depth: 1,
+  })
+
+  const flags = queryParams?.flags?.length > 0 ? queryParams?.flags : undefined
+  const components =
+    queryParams?.components?.length > 0 ? queryParams?.components : undefined
 
   const { data: commitData, isLoading } = useCommit({
     provider,
     owner,
     repo,
-    commitid: commitSHA,
+    commitid: commitSha,
     filters: {
       hasUnintendedChanges: true,
+      flags: flags,
+      components: components,
     },
   })
 
   const commit = commitData?.commit
-  const indirectChangedFiles = commit?.compareWithParent?.impactedFiles
 
-  const formattedData = useMemo(
-    () => indirectChangedFiles?.map((row) => getFileData(row, commit)),
-    [indirectChangedFiles, commit]
+  if (isLoading || commit?.state === 'pending') {
+    return <Loader />
+  }
+
+  let indirectChangedFiles = []
+  if (
+    commit?.compareWithParent?.__typename === 'Comparison' &&
+    commit?.compareWithParent?.impactedFiles?.__typename === 'ImpactedFiles'
+  ) {
+    indirectChangedFiles = commit?.compareWithParent?.impactedFiles?.results
+  }
+
+  if (
+    isEmpty(indirectChangedFiles) &&
+    (isArray(flags) ||
+      isArray(components) ||
+      (commit?.compareWithParent?.__typename === 'Comparison' &&
+        commit?.compareWithParent?.impactedFiles?.__typename ===
+          'UnknownFlags'))
+  ) {
+    return (
+      <p className="m-4">
+        No files covered by tests and selected flags and/or components were
+        changed
+      </p>
+    )
+  }
+
+  if (isEmpty(indirectChangedFiles)) {
+    return <p className="m-4">No files covered by tests were changed</p>
+  }
+
+  const formattedData = indirectChangedFiles?.map((row) =>
+    getFileData(row, commit)
   )
   const tableContent = createTable({ tableData: formattedData })
-
-  if (isLoading || commit?.state === 'pending') return <Loader />
-
-  if (isEmpty(indirectChangedFiles))
-    return <p className="m-4">No files covered by tests were changed</p>
 
   return (
     <Table

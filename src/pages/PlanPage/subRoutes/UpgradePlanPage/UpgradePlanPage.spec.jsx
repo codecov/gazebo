@@ -28,6 +28,7 @@ const plans = [
       'Unlimited public repositories',
       'Unlimited private repositories',
     ],
+    monthlyUploadLimit: 250,
   },
   {
     marketingName: 'Pro Team',
@@ -40,6 +41,7 @@ const plans = [
       'Unlimited private repositories',
       'Priority Support',
     ],
+    monthlyUploadLimit: null,
   },
   {
     marketingName: 'Pro Team',
@@ -52,6 +54,7 @@ const plans = [
       'Unlimited private repositories',
       'Priority Support',
     ],
+    monthlyUploadLimit: null,
   },
   {
     marketingName: 'Pro Team',
@@ -64,6 +67,7 @@ const plans = [
       'Unlimited private repositories',
       'Priority Support',
     ],
+    monthlyUploadLimit: null,
   },
   {
     marketingName: 'Pro Team',
@@ -76,6 +80,7 @@ const plans = [
       'Unlimited private repositories',
       'Priority Support',
     ],
+    monthlyUploadLimit: null,
   },
 ]
 
@@ -90,6 +95,7 @@ const sentryPlanMonth = {
     'Unlimited private repositories',
     'Priority Support',
   ],
+  monthlyUploadLimit: null,
   trialDays: 14,
 }
 
@@ -104,7 +110,26 @@ const sentryPlanYear = {
     'Unlimited private repositories',
     'Priority Support',
   ],
+  monthlyUploadLimit: null,
   trialDays: 14,
+}
+
+const teamPlanMonth = {
+  baseUnitPrice: 6,
+  benefits: ['Up to 10 users'],
+  billingRate: 'monthly',
+  marketingName: 'Users Team',
+  monthlyUploadLimit: 2500,
+  value: 'users-teamm',
+}
+
+const teamPlanYear = {
+  baseUnitPrice: 5,
+  benefits: ['Up to 10 users'],
+  billingRate: 'annually',
+  marketingName: 'Users Team',
+  monthlyUploadLimit: 2500,
+  value: 'users-teamy',
 }
 
 const mockPlanData = {
@@ -113,12 +138,13 @@ const mockPlanData = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  planName: 'users-basic',
+  value: 'users-basic',
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
   trialTotalDays: 0,
   pretrialUsersCount: 0,
+  planUserCount: 1,
 }
 
 const queryClient = new QueryClient({
@@ -167,10 +193,12 @@ describe('UpgradePlanPage', () => {
       planValue = Plans.USERS_INAPPY,
       periodEnd = undefined,
       includeSentryPlans = false,
+      includeTeamPlans = false,
     } = {
       planValue: Plans.USERS_INAPPY,
       periodEnd: undefined,
       includeSentryPlans: false,
+      includeTeamPlans: false,
     }
   ) {
     server.use(
@@ -179,6 +207,7 @@ describe('UpgradePlanPage', () => {
           ctx.status(200),
           ctx.data({
             owner: {
+              hasPrivateRepos: true,
               plan: {
                 ...mockPlanData,
               },
@@ -186,15 +215,28 @@ describe('UpgradePlanPage', () => {
           })
         )
       ),
-      rest.get('/internal/plans', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.json([
-            ...plans,
-            ...(!!includeSentryPlans ? [sentryPlanMonth, sentryPlanYear] : []),
-          ])
-        )
-      ),
+      graphql.query('GetAvailablePlans', (req, res, ctx) => {
+        if (includeSentryPlans) {
+          return res(
+            ctx.status(200),
+            ctx.data({
+              owner: { availablePlans: [sentryPlanMonth, sentryPlanYear] },
+            })
+          )
+        } else if (includeTeamPlans) {
+          return res(
+            ctx.status(200),
+            ctx.data({
+              owner: { availablePlans: [teamPlanMonth, teamPlanYear] },
+            })
+          )
+        } else {
+          return res(
+            ctx.status(200),
+            ctx.data({ owner: { availablePlans: plans } })
+          )
+        }
+      }),
       rest.get('/internal/gh/codecov/account-details', (req, res, ctx) => {
         if (planValue === Plans.USERS_SENTRYY) {
           return res(
@@ -292,6 +334,43 @@ describe('UpgradePlanPage', () => {
 
       const banner = screen.queryByText(/You are choosing to upgrade/)
       expect(banner).not.toBeInTheDocument()
+    })
+
+    describe('when rendered with a team plan search param', () => {
+      it('renders the team plan title', async () => {
+        setup({ planValue: Plans.USERS_BASIC, includeTeamPlans: true })
+        render(<UpgradePlanPage />, {
+          wrapper: wrapper('/plan/gh/codecov/upgrade?plan=team'),
+        })
+
+        const teamTitle = await screen.findByText(/Team plan/)
+        expect(teamTitle).toBeInTheDocument()
+      })
+
+      it('renders the team plan price', async () => {
+        setup({ planValue: Plans.USERS_BASIC, includeTeamPlans: true })
+        render(<UpgradePlanPage />, {
+          wrapper: wrapper('/plan/gh/codecov/upgrade?plan=team'),
+        })
+
+        const teamPlanPrice = await screen.findByText(/\$5/)
+        expect(teamPlanPrice).toBeInTheDocument()
+
+        const teamPlanPricingScheme = await screen.findByText(
+          /\/per user, per month/
+        )
+        expect(teamPlanPricingScheme).toBeInTheDocument()
+      })
+
+      it('renders the team plan benefits', async () => {
+        setup({ planValue: Plans.USERS_BASIC, includeTeamPlans: true })
+        render(<UpgradePlanPage />, {
+          wrapper: wrapper('/plan/gh/codecov/upgrade?plan=team'),
+        })
+
+        const userCount = await screen.findByText(/Up to 10 users/)
+        expect(userCount).toBeInTheDocument()
+      })
     })
   })
 

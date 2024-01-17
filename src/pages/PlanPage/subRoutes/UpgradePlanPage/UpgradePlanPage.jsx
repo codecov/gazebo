@@ -1,16 +1,21 @@
-import { useLayoutEffect } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
 
-import { useAccountDetails, usePlans } from 'services/account'
+import { useAccountDetails, useAvailablePlans } from 'services/account'
+import { TierNames } from 'services/tier'
 import {
+  canApplySentryUpgrade,
+  findProPlans,
   findSentryPlans,
+  findTeamPlans,
   isEnterprisePlan,
   isFreePlan,
-  useProPlans,
+  shouldDisplayTeamCard,
 } from 'shared/utils/billing'
 
 import UpgradeDetails from './UpgradeDetails'
 import UpgradeForm from './UpgradeForm'
+import { usePlanParams } from './UpgradeForm/hooks/usePlanParams'
 
 import { useSetCrumbs } from '../../context'
 
@@ -18,12 +23,28 @@ function UpgradePlanPage() {
   const { provider, owner } = useParams()
   const setCrumbs = useSetCrumbs()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
-  const { data: plans } = usePlans(provider)
-  const { proPlanMonth, proPlanYear } = useProPlans({ plans })
-  const { sentryPlanMonth, sentryPlanYear } = findSentryPlans({ plans })
+  const { data: plans } = useAvailablePlans({ provider, owner })
+  const planParam = usePlanParams()
+
+  const { proPlanYear } = findProPlans({ plans })
+  const { sentryPlanYear } = findSentryPlans({ plans })
+  const { teamPlanYear } = findTeamPlans({ plans })
+  const hasTeamPlans = shouldDisplayTeamCard({ plans })
 
   const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
-  const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
+
+  const isSentryUpgrade = canApplySentryUpgrade({ plan, plans })
+
+  let defaultPaidYearlyPlan = null
+  if (hasTeamPlans && planParam === TierNames.TEAM) {
+    defaultPaidYearlyPlan = teamPlanYear
+  } else if (isSentryUpgrade) {
+    defaultPaidYearlyPlan = sentryPlanYear
+  } else {
+    defaultPaidYearlyPlan = proPlanYear
+  }
+
+  const [selectedPlan, setSelectedPlan] = useState(defaultPaidYearlyPlan)
 
   useLayoutEffect(() => {
     setCrumbs([
@@ -41,22 +62,10 @@ function UpgradePlanPage() {
 
   return (
     <div className="flex flex-col gap-8 md:w-11/12 md:flex-row lg:w-10/12">
-      <UpgradeDetails
-        accountDetails={accountDetails}
-        plan={plan}
-        plans={plans}
-        proPlanMonth={proPlanMonth}
-        proPlanYear={proPlanYear}
-        sentryPlanMonth={sentryPlanMonth}
-        sentryPlanYear={sentryPlanYear}
-        scheduledPhase={scheduledPhase}
-      />
+      <UpgradeDetails selectedPlan={selectedPlan} />
       <UpgradeForm
-        accountDetails={accountDetails}
-        proPlanYear={proPlanYear}
-        proPlanMonth={proPlanMonth}
-        sentryPlanYear={sentryPlanYear}
-        sentryPlanMonth={sentryPlanMonth}
+        selectedPlan={selectedPlan}
+        setSelectedPlan={setSelectedPlan}
       />
     </div>
   )

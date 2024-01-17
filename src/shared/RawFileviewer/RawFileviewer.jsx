@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
-import { useParams } from 'react-router-dom'
+import qs from 'qs'
+import { useLocation, useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
 import { useCommitBasedCoverageForFileViewer } from 'services/file'
-import { useLocationParams } from 'services/navigation'
 import { useOwner } from 'services/user'
 import { CODE_RENDERER_TYPE } from 'shared/utils/fileviewer'
 import { unsupportedExtensionsMapper } from 'shared/utils/unsupportedExtensionsMapper'
@@ -101,10 +101,6 @@ CodeRendererContent.propTypes = {
   stickyPadding: PropTypes.number,
 }
 
-const defaultQueryParams = {
-  flags: [],
-}
-
 // Note: This component is both used in the standalone file viewer page and in the overview page. Changing this
 // component will affect both places
 function RawFileViewer({
@@ -116,9 +112,16 @@ function RawFileViewer({
   showFlagsSelect,
 }) {
   const { owner, repo, provider, path: urlPath } = useParams()
-  const { params } = useLocationParams(defaultQueryParams)
+  const location = useLocation()
   const path = decodeURIComponent(urlPath)
   const { data: ownerData } = useOwner({ username: owner })
+
+  const params = qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+    depth: 1,
+  })
+  const flags = params?.flags ?? []
+  const components = params?.components ?? []
 
   const isUnsupportedFileType = unsupportedExtensionsMapper({ path })
 
@@ -134,7 +137,8 @@ function RawFileViewer({
     provider,
     commit,
     path,
-    selectedFlags: params?.flags,
+    selectedFlags: flags,
+    selectedComponents: components,
     opts: {
       enabled: !isUnsupportedFileType,
     },

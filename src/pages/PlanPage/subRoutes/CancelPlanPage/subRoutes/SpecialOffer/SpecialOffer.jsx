@@ -50,7 +50,7 @@ function SpecialOffer() {
 
   return (
     <div className="flex w-5/12 flex-col gap-8">
-      <div className="">
+      <div>
         <h2 className="text-lg font-semibold">
           We&apos;d love to keep you under our umbrella.
         </h2>

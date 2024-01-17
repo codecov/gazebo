@@ -7,6 +7,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { CommitStateEnum } from 'shared/utils/commit'
 import { ComparisonReturnType } from 'shared/utils/comparison'
+import { ImpactedFilesReturnType } from 'shared/utils/impactedFiles'
 
 import IndirectChangesTab from './IndirectChangesTab'
 
@@ -31,6 +32,7 @@ const wrapper = ({ children }) => (
 const mockImpactedFiles = [
   {
     isCriticalFile: true,
+    missesCount: 3,
     fileName: 'mafs.js',
     headName: 'flag1/mafs.js',
     baseCoverage: {
@@ -38,57 +40,91 @@ const mockImpactedFiles = [
     },
     headCoverage: {
       percentCovered: 90.23,
-      missesCount: 3,
     },
     patchCoverage: {
       percentCovered: 27.43,
     },
-    missesInComparison: 3,
-  },
-  {
-    isCriticalFile: true,
-    fileName: 'quarg.js',
-    headName: 'flag2/quarg.js',
-    baseCoverage: {
-      percentCovered: 39,
-    },
-    headCoverage: {
-      percentCovered: 80,
-      missesCount: 7,
-    },
-    patchCoverage: {
-      percentCovered: 48.23,
-    },
-    missesInComparison: 7,
+    changeCoverage: 41,
   },
 ]
 
-const mockPull = {
+const mockPull = ({ overrideComparison, headState } = {}) => ({
   owner: {
+    isCurrentUserPartOfOrg: true,
     repository: {
+      __typename: 'Repository',
+      defaultBranch: 'main',
+      private: false,
       pull: {
-        pullId: 14,
-        head: {
-          state: CommitStateEnum.COMPLETE,
+        commits: {
+          edges: [
+            {
+              node: {
+                state: 'complete',
+                commitid: 'fc43199ccde1f21a940aa3d596c711c1c420651f',
+                message:
+                  'create component to hold bundle list table for a given pull 2',
+                author: {
+                  username: 'nicholas-codecov',
+                },
+              },
+            },
+          ],
         },
-        compareWithBase: {
-          __typename: ComparisonReturnType.SUCCESSFUL_COMPARISON,
-          patchTotals: {
-            percentCovered: 92.12,
+        compareWithBase: overrideComparison
+          ? overrideComparison
+          : {
+              state: 'complete',
+              __typename: 'Comparison',
+              flagComparisons: [],
+              patchTotals: {
+                percentCovered: 92.12,
+              },
+              baseTotals: {
+                percentCovered: 98.25,
+              },
+              headTotals: {
+                percentCovered: 78.33,
+              },
+              impactedFiles: {
+                __typename: 'ImpactedFiles',
+                results: mockImpactedFiles,
+              },
+              changeCoverage: 38.94,
+              hasDifferentNumberOfHeadAndBaseReports: true,
+            },
+        pullId: 2510,
+        title: 'feat: Create bundle analysis table for a given pull',
+        state: 'OPEN',
+        author: {
+          username: 'nicholas-codecov',
+        },
+        head: {
+          ciPassed: true,
+          branchName:
+            'gh-eng-994-create-bundle-analysis-table-for-a-given-pull',
+          state: headState ? headState : 'complete',
+          commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
+          totals: {
+            percentCovered: 78.33,
           },
-          headTotals: {
-            percentCovered: 74.2,
+          uploads: {
+            totalCount: 4,
           },
-          baseTotals: {
-            percentCovered: 27.35,
+        },
+        updatestamp: '2024-01-12T12:56:18.912860',
+        behindBy: 82367894,
+        behindByCommit: '1798hvs8ofhn',
+        comparedTo: {
+          commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
+          uploads: {
+            totalCount: 1,
           },
-          changeCoverage: 38.94,
-          impactedFiles: mockImpactedFiles,
         },
       },
     },
   },
-}
+})
 
 beforeAll(() => {
   server.listen()
@@ -101,14 +137,13 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('IndirectChangesTab', () => {
-  function setup({ overrideData } = {}) {
+  function setup({ overrideComparison, headState } = {}) {
     server.use(
       graphql.query('Pull', (_, res, ctx) => {
-        if (overrideData) {
-          return res(ctx.status(200), ctx.data(overrideData))
-        }
-
-        return res(ctx.status(200), ctx.data(mockPull))
+        return res(
+          ctx.status(200),
+          ctx.data(mockPull({ overrideComparison, headState }))
+        )
       })
     )
   }
@@ -128,30 +163,11 @@ describe('IndirectChangesTab', () => {
   describe('when rendered without changes', () => {
     beforeEach(() => {
       setup({
-        overrideData: {
-          owner: {
-            repository: {
-              pull: {
-                pullId: 14,
-                head: {
-                  state: CommitStateEnum.COMPLETE,
-                },
-                compareWithBase: {
-                  __typename: ComparisonReturnType.SUCCESSFUL_COMPARISON,
-                  patchTotals: {
-                    percentCovered: 92.12,
-                  },
-                  headTotals: {
-                    percentCovered: 74.2,
-                  },
-                  baseTotals: {
-                    percentCovered: 27.35,
-                  },
-                  changeCoverage: 38.94,
-                  impactedFiles: [],
-                },
-              },
-            },
+        overrideComparison: {
+          ...mockPull().owner.repository.pull.compareWithBase,
+          impactedFiles: {
+            __typename: ImpactedFilesReturnType.IMPACTED_FILES,
+            results: [],
           },
         },
       })
@@ -188,21 +204,10 @@ describe('IndirectChangesTab', () => {
   describe('when rendered without impacted files or changes', () => {
     beforeEach(() => {
       setup({
-        overrideData: {
-          owner: {
-            repository: {
-              pull: {
-                pullId: 14,
-                head: {
-                  state: CommitStateEnum.COMPLETE,
-                },
-                compareWithBase: {
-                  __typename: ComparisonReturnType.SUCCESSFUL_COMPARISON,
-                  impactedFiles: [],
-                },
-              },
-            },
-          },
+        overrideComparison: {
+          state: 'complete',
+          __typename: 'MissingHeadCommit',
+          message: 'No head commit found',
         },
       })
     })
@@ -229,19 +234,7 @@ describe('IndirectChangesTab', () => {
   describe('when rendered with head commit errored out', () => {
     beforeEach(() => {
       setup({
-        overrideData: {
-          owner: {
-            repository: {
-              pull: {
-                pullId: 14,
-                head: {
-                  state: CommitStateEnum.ERROR,
-                },
-                compareWithBase: null,
-              },
-            },
-          },
-        },
+        headState: CommitStateEnum.ERROR,
       })
     })
 
@@ -268,20 +261,9 @@ describe('IndirectChangesTab', () => {
   describe('when comparison is of pull request type', () => {
     it('renders first PR copy', async () => {
       setup({
-        overrideData: {
-          owner: {
-            repository: {
-              pull: {
-                pullId: 14,
-                head: {
-                  state: CommitStateEnum.COMPLETE,
-                },
-                compareWithBase: {
-                  __typename: ComparisonReturnType.FIRST_PULL_REQUEST,
-                },
-              },
-            },
-          },
+        overrideComparison: {
+          __typename: ComparisonReturnType.FIRST_PULL_REQUEST,
+          message: 'First pull request',
         },
       })
       render(<IndirectChangesTab />, { wrapper })
@@ -290,6 +272,42 @@ describe('IndirectChangesTab', () => {
         /No comparison made since it's your first commit with Codecov/
       )
       expect(firstPullCopy).toBeInTheDocument()
+    })
+  })
+
+  describe('unknown flag status', () => {
+    it('Displays server message + suggests carryforward flags', async () => {
+      const overrideComparison = {
+        state: 'complete',
+        __typename: 'Comparison',
+        flagComparisons: [],
+        patchTotals: {
+          percentCovered: 92.12,
+        },
+        baseTotals: {
+          percentCovered: 98.25,
+        },
+        headTotals: {
+          percentCovered: 78.33,
+        },
+        impactedFiles: {
+          __typename: ImpactedFilesReturnType.UNKNOWN_FLAGS,
+          message: 'Unkown flags detected',
+        },
+        changeCoverage: 38.94,
+        hasDifferentNumberOfHeadAndBaseReports: true,
+      }
+
+      setup({
+        overrideComparison,
+      })
+
+      render(<IndirectChangesTab />, { wrapper })
+
+      const serverMessage = await screen.findByText(
+        /No coverage report uploaded for the selected flags in this pull request's head commit./
+      )
+      expect(serverMessage).toBeInTheDocument()
     })
   })
 })

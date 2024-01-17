@@ -24,16 +24,21 @@ describe('useTrackFeatureFlags', () => {
       renderHook(() =>
         useTrackFeatureFlags({
           email: 'test@test.com',
-          user: { avatarUrl: 'doggo.picz', name: 'doggo', username: 'doggo' },
+          user: {
+            avatarUrl: 'http://127.0.0.1/avatar-url',
+            name: 'doggo',
+            username: 'doggo',
+          },
           trackingMetadata: { ownerid: 'hello' },
         })
       )
 
       expect(mockIdentifyUser).lastCalledWith({
+        kind: 'user',
         name: 'doggo',
         email: 'test@test.com',
         key: 'hello',
-        avatar: 'doggo.picz',
+        avatar: 'http://127.0.0.1/avatar-url',
         custom: {
           guest: false,
           student: false,
@@ -69,16 +74,21 @@ describe('useTrackFeatureFlags', () => {
       renderHook(() =>
         useTrackFeatureFlags({
           email: 'test@test.com',
-          user: { avatarUrl: 'doggo.picz', name: 'doggo', username: 'doggo' },
+          user: {
+            avatarUrl: 'http://127.0.0.1/avatar-url',
+            name: 'doggo',
+            username: 'doggo',
+          },
           trackingMetadata: { ownerid: 'hello', staff: true },
         })
       )
 
       expect(mockIdentifyUser).lastCalledWith({
+        kind: 'user',
         name: 'doggo',
         email: 'test@test.com',
         key: 'impersonated',
-        avatar: 'doggo.picz',
+        avatar: 'http://127.0.0.1/avatar-url',
         custom: {
           guest: false,
           student: false,
@@ -115,16 +125,21 @@ describe('useTrackFeatureFlags', () => {
       renderHook(() =>
         useTrackFeatureFlags({
           email: 'test@test.com',
-          user: { avatarUrl: 'doggo.picz', name: 'doggo', username: 'doggo' },
+          user: {
+            avatarUrl: 'http://127.0.0.1/avatar-url',
+            name: 'doggo',
+            username: 'doggo',
+          },
           trackingMetadata: { ownerid: 'hello', staff: true },
         })
       )
 
       expect(mockIdentifyUser).lastCalledWith({
+        kind: 'user',
         name: 'doggo',
         email: 'test@test.com',
         key: 'impersonated',
-        avatar: 'doggo.picz',
+        avatar: 'http://127.0.0.1/avatar-url',
         custom: {
           guest: false,
           student: false,
@@ -160,16 +175,21 @@ describe('useTrackFeatureFlags', () => {
       renderHook(() =>
         useTrackFeatureFlags({
           email: 'test@test.com',
-          user: { avatarUrl: 'doggo.picz', name: 'doggo', username: 'doggo' },
+          user: {
+            avatarUrl: 'http://127.0.0.1/avatar-url',
+            name: 'doggo',
+            username: 'doggo',
+          },
           trackingMetadata: { ownerid: 'hello', staff: true },
         })
       )
 
       expect(mockIdentifyUser).lastCalledWith({
+        kind: 'user',
         name: 'doggo',
         email: 'test@test.com',
         key: 'impersonated',
-        avatar: 'doggo.picz',
+        avatar: 'http://127.0.0.1/avatar-url',
         custom: {
           guest: false,
           student: false,

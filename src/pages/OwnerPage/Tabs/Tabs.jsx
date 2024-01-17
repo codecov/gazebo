@@ -7,7 +7,7 @@ import TabNavigation from 'ui/TabNavigation'
 
 const TrialReminder = lazy(() => import('./TrialReminder'))
 
-function Tabs({ provider, owner }) {
+function Tabs() {
   return (
     <TabNavigation
       tabs={[

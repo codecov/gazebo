@@ -29,12 +29,13 @@ const mockPlanData = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  planName: 'users-basic',
+  value: 'users-basic',
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
   trialTotalDays: 0,
   pretrialUsersCount: 0,
+  planUserCount: 1,
 }
 
 const queryClient = new QueryClient({
@@ -82,10 +83,11 @@ describe('Activation', () => {
           ctx.status(200),
           ctx.data({
             owner: {
+              hasPrivateRepos: true,
               plan: {
                 ...mockPlanData,
                 trialStatus,
-                planName: planValue,
+                value: planValue,
               },
             },
           })
@@ -111,8 +113,8 @@ describe('Activation', () => {
 
       render(<Activation />, { wrapper: wrapper() })
 
-      const activeMembers = await screen.findByText(/active members of/)
-      expect(activeMembers).toBeInTheDocument()
+      const activatedMembers = await screen.findByText(/activated members of/)
+      expect(activatedMembers).toBeInTheDocument()
 
       const memberCount = await screen.findByText('5')
       expect(memberCount).toBeInTheDocument()
@@ -151,13 +153,13 @@ describe('Activation', () => {
         expect(title).toBeInTheDocument()
       })
 
-      it('displays number of active users', async () => {
+      it('displays number of activated users', async () => {
         setup(mockedAccountDetails, TrialStatuses.ONGOING, 'users-trial')
 
         render(<Activation />, { wrapper: wrapper() })
 
-        const activeMembers = await screen.findByText(/active members/)
-        expect(activeMembers).toBeInTheDocument()
+        const activatedMembers = await screen.findByText(/activated members/)
+        expect(activatedMembers).toBeInTheDocument()
 
         const memberCount = await screen.findByText('5')
         expect(memberCount).toBeInTheDocument()
@@ -207,8 +209,8 @@ describe('Activation', () => {
 
         render(<Activation />, { wrapper: wrapper() })
 
-        const activeMembers = await screen.findByText(/active members of/)
-        expect(activeMembers).toBeInTheDocument()
+        const activatedMembers = await screen.findByText(/activated members of/)
+        expect(activatedMembers).toBeInTheDocument()
 
         const memberCount = await screen.findByText('5')
         expect(memberCount).toBeInTheDocument()

@@ -10,6 +10,8 @@ import Avatar from 'ui/Avatar'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 
+const LOCAL_STORAGE_SESSION_TRACKING_KEY = 'tracking-session-expiry'
+
 function Dropdown({ currentUser }) {
   const { provider } = useParams()
   const isGh = providerToName(provider) === 'Github'
@@ -26,6 +28,10 @@ function Dropdown({ currentUser }) {
         ]
       : []
 
+  const handleSignOut = () => {
+    localStorage.removeItem(LOCAL_STORAGE_SESSION_TRACKING_KEY)
+  }
+
   items.push(
     {
       props: {
@@ -39,6 +45,7 @@ function Dropdown({ currentUser }) {
     {
       props: {
         to: { pageName: 'signOut', options: { to } },
+        onClick: handleSignOut,
       },
       children: 'Sign Out',
     }

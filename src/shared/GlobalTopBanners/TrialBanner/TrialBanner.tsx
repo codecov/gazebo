@@ -1,6 +1,6 @@
 import { differenceInCalendarDays } from 'date-fns'
 import isUndefined from 'lodash/isUndefined'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 
 import config from 'config'
 
@@ -24,6 +24,10 @@ const determineDateDiff = ({
   return dateDiff
 }
 
+const startsWithPlan = (pathName: string): boolean => {
+  return pathName.startsWith('/plan')
+}
+
 interface UrlParams {
   provider?: string
   owner?: string
@@ -31,6 +35,8 @@ interface UrlParams {
 
 const TrialBanner: React.FC = () => {
   const { provider, owner } = useParams<UrlParams>()
+  const currentPathName = useLocation().pathname
+  const pathStartsWithPlan = startsWithPlan(currentPathName)
 
   const enableQuery = !!owner
 
@@ -50,7 +56,7 @@ const TrialBanner: React.FC = () => {
     opts: { enabled: enableQuery },
   })
 
-  const planName = planData?.plan?.planName
+  const planValue = planData?.plan?.value
   const trialStatus = planData?.plan?.trialStatus
   const dateDiff = determineDateDiff({
     trialEndDate: planData?.plan?.trialEndDate,
@@ -61,7 +67,8 @@ const TrialBanner: React.FC = () => {
     isUndefined(provider) ||
     isUndefined(owner) ||
     !ownerData?.isCurrentUserPartOfOrg ||
-    config.IS_SELF_HOSTED
+    config.IS_SELF_HOSTED ||
+    pathStartsWithPlan
   ) {
     return null
   }
@@ -69,7 +76,7 @@ const TrialBanner: React.FC = () => {
   // user is not on a free plan, trial is currently on going
   // there are 3 or less days left, so display ongoing banner
   if (
-    isTrialPlan(planName) &&
+    isTrialPlan(planValue) &&
     trialStatus === TrialStatuses.ONGOING &&
     dateDiff < 4 &&
     dateDiff >= 0
@@ -78,7 +85,7 @@ const TrialBanner: React.FC = () => {
   }
 
   // user has a free plan again, and the trial status is expired
-  if (isFreePlan(planName) && trialStatus === TrialStatuses.EXPIRED) {
+  if (isFreePlan(planValue) && trialStatus === TrialStatuses.EXPIRED) {
     return <ExpiredBanner />
   }
 

@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom'
 import Table from 'old_ui/Table'
 import { useRepoConfig } from 'services/repo/useRepoConfig'
 import { determineProgressColor } from 'shared/utils/determineProgressColor'
+import A from 'ui/A'
 import Button from 'ui/Button'
 import CoverageProgress from 'ui/CoverageProgress'
 import Icon from 'ui/Icon'
@@ -59,16 +60,31 @@ function createTableData({
   return tableData?.length > 0
     ? tableData.map(
         ({ name, percentCovered, percentChange, measurements }) => ({
-          name: <span>{name}</span>,
+          name: (
+            <A
+              to={{
+                pageName: 'coverage',
+                options: { queryParams: { flags: [name] } },
+              }}
+              variant="black"
+            >
+              {name}
+            </A>
+          ),
           coverage: (
-            <CoverageProgress
-              amount={percentCovered}
-              color={determineProgressColor({
-                coverage: percentCovered,
-                ...indicationRange,
-              })}
-              label
-            />
+            <>
+              <CoverageProgress
+                amount={percentCovered}
+                color={determineProgressColor({
+                  coverage: percentCovered,
+                  ...indicationRange,
+                })}
+                label
+              />
+              {typeof percentCovered != 'number' && (
+                <span className="grow text-right font-semibold">-</span>
+              )}
+            </>
           ),
           trend: (
             <TableSparkline

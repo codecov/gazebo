@@ -1,4 +1,4 @@
-import { useQuery, UseQueryOptions } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
@@ -10,53 +10,67 @@ export const TrialStatuses = {
   CANNOT_TRIAL: 'CANNOT_TRIAL',
 } as const
 
-const PlanDataSchema = z
+export const PlanDataSchema = z
   .object({
-    plan: z
+    owner: z
       .object({
-        baseUnitPrice: z.number(),
-        benefits: z.array(z.string()),
-        billingRate: z.string().nullable(),
-        marketingName: z.string(),
-        monthlyUploadLimit: z.number().nullable(),
-        planName: z.string(),
-        pretrialUsersCount: z.number().nullable(),
-        trialEndDate: z.string().nullable(),
-        trialStatus: z.nativeEnum(TrialStatuses),
-        trialStartDate: z.string().nullable(),
-        trialTotalDays: z.number().nullable(),
-      })
-      .nullish(),
-    pretrialPlan: z
-      .object({
-        baseUnitPrice: z.number(),
-        benefits: z.array(z.string()),
-        billingRate: z.string().nullable(),
-        marketingName: z.string(),
-        monthlyUploadLimit: z.number().nullable(),
-        planName: z.string(),
+        hasPrivateRepos: z.boolean(),
+        plan: z
+          .object({
+            baseUnitPrice: z.number(),
+            benefits: z.array(z.string()),
+            billingRate: z.string().nullable(),
+            marketingName: z.string(),
+            monthlyUploadLimit: z.number().nullable(),
+            value: z.string(),
+            pretrialUsersCount: z.number().nullable(),
+            trialEndDate: z.string().nullable(),
+            trialStatus: z.nativeEnum(TrialStatuses),
+            trialStartDate: z.string().nullable(),
+            trialTotalDays: z.number().nullable(),
+            planUserCount: z.number().nullable(),
+          })
+          .nullish(),
+        pretrialPlan: z
+          .object({
+            baseUnitPrice: z.number(),
+            benefits: z.array(z.string()),
+            billingRate: z.string().nullable(),
+            marketingName: z.string(),
+            monthlyUploadLimit: z.number().nullable(),
+            value: z.string(),
+          })
+          .nullish(),
       })
       .nullish(),
   })
   .nullish()
 
-type TPlanData = z.infer<typeof PlanDataSchema>
+export interface UsePlanDataArgs {
+  provider: string
+  owner: string
+  opts?: {
+    enabled?: boolean
+  }
+}
 
 export const query = `
   query GetPlanData($owner: String!) {
     owner(username: $owner) {
+      hasPrivateRepos
       plan {
         baseUnitPrice
         benefits
         billingRate
         marketingName
         monthlyUploadLimit
-        planName
+        value
         pretrialUsersCount
         trialEndDate
         trialStatus
         trialStartDate
         trialTotalDays
+        planUserCount
       }
       pretrialPlan {
         baseUnitPrice
@@ -64,20 +78,14 @@ export const query = `
         billingRate
         marketingName
         monthlyUploadLimit
-        planName
+        value
       }
     }
   }
 `
 
-export interface UseTrialArgs {
-  provider: string
-  owner: string
-  opts?: UseQueryOptions<TPlanData>
-}
-
-export const usePlanData = ({ provider, owner, opts }: UseTrialArgs) => {
-  return useQuery({
+export const usePlanData = ({ provider, owner, opts }: UsePlanDataArgs) =>
+  useQuery({
     queryKey: ['GetPlanData', provider, owner, query],
     queryFn: ({ signal }) =>
       Api.graphql({
@@ -88,14 +96,16 @@ export const usePlanData = ({ provider, owner, opts }: UseTrialArgs) => {
           owner,
         },
       }).then((res) => {
-        const parsedRes = PlanDataSchema?.safeParse(res?.data?.owner)
+        const parsedRes = PlanDataSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          return {}
+          return Promise.reject({
+            status: 404,
+            data: null,
+          })
         }
 
-        return parsedRes.data
+        return parsedRes.data?.owner ?? null
       }),
     ...(!!opts && opts),
   })
-}

@@ -20,10 +20,10 @@ const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   pull: z
     .object({
-      pullId: z.number().nullable(),
+      pullId: z.number(),
       head: z
         .object({
-          commitid: z.string().nullable(),
+          commitid: z.string(),
         })
         .nullable(),
       compareWithBase: z
@@ -31,10 +31,10 @@ const RepositorySchema = z.object({
           z.object({
             __typename: z.literal('Comparison'),
             impactedFilesCount: z.number(),
-            indirectChangedFilesCount: z.number(),
+            indirectChangedFilesCount: z.number().optional(),
             directChangedFilesCount: z.number(),
-            flagComparisonsCount: z.number(),
-            componentComparisonsCount: z.number(),
+            flagComparisonsCount: z.number().optional(),
+            componentComparisonsCount: z.number().optional(),
           }),
           FirstPullRequestSchema,
           MissingBaseCommitSchema,
@@ -63,7 +63,7 @@ const PullPageDataSchema = z.object({
 })
 
 const query = `
-query PullPageData($owner: String!, $repo: String!, $pullId: Int!) {
+query PullPageData($owner: String!, $repo: String!, $pullId: Int!, $isTeamPlan: Boolean!) {
   owner(username: $owner) {
     repository(name: $repo) {
       __typename
@@ -77,10 +77,10 @@ query PullPageData($owner: String!, $repo: String!, $pullId: Int!) {
             __typename
             ... on Comparison {
               impactedFilesCount
-              indirectChangedFilesCount
+              indirectChangedFilesCount @skip(if: $isTeamPlan)
               directChangedFilesCount
-              flagComparisonsCount
-              componentComparisonsCount
+              flagComparisonsCount @skip(if: $isTeamPlan)
+              componentComparisonsCount @skip(if: $isTeamPlan)
             }
             ... on FirstPullRequest {
               message
@@ -118,6 +118,7 @@ interface UsePullPageDataArgs {
   owner: string
   repo: string
   pullId: string
+  isTeamPlan?: boolean
 }
 
 export const usePullPageData = ({
@@ -125,9 +126,18 @@ export const usePullPageData = ({
   owner,
   repo,
   pullId,
+  isTeamPlan = false,
 }: UsePullPageDataArgs) =>
   useQuery({
-    queryKey: ['PullPageData', provider, owner, repo, pullId, query],
+    queryKey: [
+      'PullPageData',
+      provider,
+      owner,
+      repo,
+      pullId,
+      isTeamPlan,
+      query,
+    ],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
@@ -138,6 +148,7 @@ export const usePullPageData = ({
           owner,
           repo,
           pullId: parseInt(pullId, 10),
+          isTeamPlan,
         },
       }).then((res) => {
         const parsedData = PullPageDataSchema.safeParse(res?.data)

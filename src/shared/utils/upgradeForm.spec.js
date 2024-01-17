@@ -2,16 +2,18 @@ import { TrialStatuses } from 'services/account'
 import { Plans } from 'shared/utils/billing'
 
 import {
-  calculateNonBundledCost,
   calculatePrice,
+  calculatePriceProPlan,
+  calculatePriceTeamPlan,
+  calculateSentryNonBundledCost,
   extractSeats,
-  getInitialDataForm,
+  getDefaultValuesUpgradeForm,
   getSchema,
   shouldRenderCancelLink,
 } from './upgradeForm'
 
 describe('calculatePrice', () => {
-  describe('isSentryUpgrade is true', () => {
+  describe('isSentryUpgrade is true and isSelectedPlanTeam is false', () => {
     describe('seat count is at five', () => {
       it('returns base price', () => {
         const result = calculatePrice({
@@ -19,6 +21,7 @@ describe('calculatePrice', () => {
           baseUnitPrice: 10,
           isSentryUpgrade: true,
           sentryPrice: 29,
+          isSelectedPlanTeam: false,
         })
 
         expect(result).toBe(29)
@@ -32,6 +35,7 @@ describe('calculatePrice', () => {
           baseUnitPrice: 10,
           isSentryUpgrade: true,
           sentryPrice: 29,
+          isSelectedPlanTeam: false,
         })
 
         expect(result).toBe(39)
@@ -40,36 +44,71 @@ describe('calculatePrice', () => {
   })
 
   describe('isSentryUpgrade is false', () => {
-    it('returns base price times amount of seats', () => {
-      const result = calculatePrice({
-        seats: 5,
-        baseUnitPrice: 12,
-        isSentryUpgrade: false,
-        sentryPrice: 29,
-      })
+    describe('when isSelectedPlanTeam is false', () => {
+      it('returns base price times amount of seats', () => {
+        const result = calculatePrice({
+          seats: 5,
+          baseUnitPrice: 12,
+          isSentryUpgrade: false,
+          sentryPrice: 29,
+          isSelectedPlanTeam: false,
+        })
 
-      expect(result).toBe(60)
+        expect(result).toBe(60)
+      })
+    })
+    describe('when isSelectedPlanTeam is true', () => {
+      it('returns base price times amount of seats', () => {
+        const result = calculatePrice({
+          seats: 5,
+          baseUnitPrice: 12,
+          isSentryUpgrade: false,
+          sentryPrice: 29,
+          isSelectedPlanTeam: true,
+        })
+
+        expect(result).toBe(60)
+      })
     })
   })
 })
 
-describe('getInitialDataForm', () => {
+describe('calculatePriceProPlan', () => {
+  it('returns base price', () => {
+    const result = calculatePriceProPlan({
+      seats: 5,
+      baseUnitPrice: 10,
+    })
+
+    expect(result).toBe(50)
+  })
+})
+
+describe('calculatePriceTeamPlan', () => {
+  it('returns base price', () => {
+    const result = calculatePriceTeamPlan({
+      seats: 5,
+      baseUnitPrice: 10,
+    })
+
+    expect(result).toBe(50)
+  })
+})
+
+describe('getDefaultValuesUpgradeForm', () => {
   const proPlanYear = { value: Plans.USERS_PR_INAPPY }
   const sentryPlanYear = { value: Plans.USERS_SENTRYY }
 
-  describe('user cannot upgrade to sentry plan', () => {
-    const isSentryUpgrade = false
-
-    it('returns pro year plan if user is on a free plan', () => {
+  describe('when current plan is basic', () => {
+    it('returns pro year plan', () => {
       const accountDetails = {
         plan: { value: Plans.USERS_BASIC, quantity: 1 },
       }
 
-      const data = getInitialDataForm({
+      const data = getDefaultValuesUpgradeForm({
         accountDetails,
         proPlanYear,
-        sentryPlanYear,
-        isSentryUpgrade,
+        plans: [proPlanYear],
       })
 
       expect(data).toStrictEqual({
@@ -78,38 +117,15 @@ describe('getInitialDataForm', () => {
       })
     })
 
-    it('returns current plan if the user is on a paid plan', () => {
-      const accountDetails = {
-        plan: { value: Plans.USERS_PR_INAPPM, quantity: 2 },
-      }
-
-      const data = getInitialDataForm({
-        accountDetails,
-        proPlanYear,
-        sentryPlanYear,
-        isSentryUpgrade,
-      })
-
-      expect(data).toStrictEqual({
-        newPlan: Plans.USERS_PR_INAPPM,
-        seats: 2,
-      })
-    })
-  })
-
-  describe('user can upgrade to sentry plan', () => {
-    const isSentryUpgrade = true
-
-    it('returns sentry year plan if user is on a free plan', () => {
+    it('returns sentry year plan if user is sentry upgrade', () => {
       const accountDetails = {
         plan: { value: Plans.USERS_BASIC, quantity: 1 },
       }
 
-      const data = getInitialDataForm({
+      const data = getDefaultValuesUpgradeForm({
         accountDetails,
         proPlanYear,
-        sentryPlanYear,
-        isSentryUpgrade,
+        plans: [proPlanYear, sentryPlanYear],
       })
 
       expect(data).toStrictEqual({
@@ -117,41 +133,58 @@ describe('getInitialDataForm', () => {
         seats: 5,
       })
     })
+  })
 
-    it('returns current sentry plan if user is on monthly', () => {
+  describe('when current plan is team', () => {
+    it('returns pro year plan', () => {
       const accountDetails = {
-        plan: { value: Plans.USERS_SENTRYM, quantity: 1 },
+        plan: { value: Plans.USERS_TEAMM, quantity: 1 },
       }
 
-      const data = getInitialDataForm({
+      const data = getDefaultValuesUpgradeForm({
         accountDetails,
         proPlanYear,
-        sentryPlanYear,
-        isSentryUpgrade,
+        plans: [proPlanYear],
       })
 
       expect(data).toStrictEqual({
-        newPlan: Plans.USERS_SENTRYM,
-        seats: 5,
+        newPlan: Plans.USERS_PR_INAPPY,
+        seats: 2,
       })
     })
 
-    it('returns current plan if the user is on a paid plan', () => {
+    it('returns pro sentry plan if user is sentry upgrade', () => {
       const accountDetails = {
-        plan: { value: Plans.USERS_PR_INAPPM, quantity: 1 },
+        plan: { value: Plans.USERS_TEAMM, quantity: 1 },
       }
 
-      const data = getInitialDataForm({
+      const data = getDefaultValuesUpgradeForm({
         accountDetails,
         proPlanYear,
-        sentryPlanYear,
-        isSentryUpgrade,
+        plans: [proPlanYear, sentryPlanYear],
       })
 
       expect(data).toStrictEqual({
         newPlan: Plans.USERS_SENTRYY,
         seats: 5,
       })
+    })
+  })
+
+  it('returns current plan if the user is on a paid plan', () => {
+    const accountDetails = {
+      plan: { value: Plans.USERS_PR_INAPPM, quantity: 2 },
+    }
+
+    const data = getDefaultValuesUpgradeForm({
+      accountDetails,
+      proPlanYear,
+      plans: [proPlanYear],
+    })
+
+    expect(data).toStrictEqual({
+      newPlan: Plans.USERS_PR_INAPPM,
+      seats: 2,
     })
   })
 })
@@ -259,11 +292,84 @@ describe('getSchema', () => {
     expect(response.success).toEqual(true)
     expect(response.error).toBeUndefined()
   })
+
+  describe('when the user upgrades to team plan', () => {
+    it('fails to parse when seats are above max seats', () => {
+      const accountDetails = {
+        plan: {
+          value: Plans.USERS_INAPPY,
+        },
+      }
+      const schema = getSchema({
+        accountDetails,
+        selectedPlan: {
+          value: Plans.USERS_TEAMY,
+        },
+      })
+
+      const response = schema.safeParse({
+        seats: 12,
+        newPlan: Plans.USERS_TEAMY,
+      })
+      expect(response.success).toBe(false)
+
+      const [issue] = response.error.issues
+      expect(issue).toEqual(
+        expect.objectContaining({
+          message: 'Team plan is only available for 10 or less users',
+        })
+      )
+    })
+
+    it('passes when seats are below max seats for team yearly plan', () => {
+      const accountDetails = {
+        plan: {
+          value: Plans.USERS_INAPPY,
+        },
+      }
+      const schema = getSchema({
+        accountDetails,
+        selectedPlan: {
+          value: Plans.USERS_TEAMY,
+        },
+      })
+
+      const response = schema.safeParse({
+        seats: 9,
+        newPlan: Plans.USERS_TEAMY,
+      })
+
+      expect(response.success).toEqual(true)
+      expect(response.error).toBeUndefined()
+    })
+  })
+
+  it('passes when seats are below max seats for team monthly plan', () => {
+    const accountDetails = {
+      plan: {
+        value: Plans.USERS_INAPPY,
+      },
+    }
+    const schema = getSchema({
+      accountDetails,
+      selectedPlan: {
+        value: Plans.USERS_TEAMM,
+      },
+    })
+
+    const response = schema.safeParse({
+      seats: 9,
+      newPlan: Plans.USERS_TEAMM,
+    })
+
+    expect(response.success).toEqual(true)
+    expect(response.error).toBeUndefined()
+  })
 })
 
-describe('calculateNonBundledCost', () => {
+describe('calculateSentryNonBundledCost', () => {
   it('returns calculated cost', () => {
-    const total = calculateNonBundledCost({ baseUnitPrice: 10 })
+    const total = calculateSentryNonBundledCost({ baseUnitPrice: 10 })
     expect(total).toEqual(252)
   })
 })
@@ -402,7 +508,7 @@ describe('shouldRenderCancelLink', () => {
   it('returns true', () => {
     // eslint-disable-next-line testing-library/render-result-naming-convention
     const value = shouldRenderCancelLink(
-      {},
+      false,
       { value: Plans.USERS_PR_INAPPY },
       ''
     )
@@ -413,7 +519,11 @@ describe('shouldRenderCancelLink', () => {
   describe('user is on a free plan', () => {
     it('returns false', () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
-      const value = shouldRenderCancelLink({}, { value: Plans.USERS_BASIC }, '')
+      const value = shouldRenderCancelLink(
+        false,
+        { value: Plans.USERS_BASIC },
+        ''
+      )
 
       expect(value).toBeFalsy()
     })
@@ -423,7 +533,7 @@ describe('shouldRenderCancelLink', () => {
     it('returns false', () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
       const value = shouldRenderCancelLink(
-        {},
+        false,
         { value: Plans.USERS_TRIAL },
         TrialStatuses.ONGOING
       )
@@ -436,7 +546,7 @@ describe('shouldRenderCancelLink', () => {
     it('returns false', () => {
       // eslint-disable-next-line testing-library/render-result-naming-convention
       const value = shouldRenderCancelLink(
-        { subscriptionDetail: { cancelAtPeriodEnd: true } },
+        true,
         { value: Plans.USERS_PR_INAPPY },
         ''
       )

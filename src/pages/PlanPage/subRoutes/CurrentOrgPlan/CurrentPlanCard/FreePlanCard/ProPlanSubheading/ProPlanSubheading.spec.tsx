@@ -14,12 +14,13 @@ const mockResponse = {
   billingRate: 'monthly',
   marketingName: 'Users Basic',
   monthlyUploadLimit: 250,
-  planName: 'users-basic',
+  value: 'users-basic',
   trialStatus: TrialStatuses.NOT_STARTED,
   trialStartDate: '',
   trialEndDate: '',
   trialTotalDays: 0,
   pretrialUsersCount: 0,
+  planUserCount: 1,
 }
 
 const server = setupServer()
@@ -51,12 +52,14 @@ afterAll(() => {
 interface SetupArgs {
   trialStatus?: string | null
   planValue?: string
+  hasPrivateRepos?: boolean
 }
 
 describe('ProPlanSubheading', () => {
   function setup({
     trialStatus = TrialStatuses.NOT_STARTED,
     planValue = 'users-basic',
+    hasPrivateRepos = true,
   }: SetupArgs) {
     server.use(
       graphql.query('GetPlanData', (req, res, ctx) =>
@@ -64,10 +67,11 @@ describe('ProPlanSubheading', () => {
           ctx.status(200),
           ctx.data({
             owner: {
+              hasPrivateRepos,
               plan: {
                 ...mockResponse,
                 trialStatus,
-                planName: planValue,
+                value: planValue,
               },
             },
           })
@@ -90,26 +94,48 @@ describe('ProPlanSubheading', () => {
   })
 
   describe('user is on a free plan', () => {
-    it('renders correct text', async () => {
-      setup({ trialStatus: TrialStatuses.NOT_STARTED })
+    describe('user has private repos', () => {
+      it('renders correct text', async () => {
+        setup({ trialStatus: TrialStatuses.NOT_STARTED, hasPrivateRepos: true })
 
-      render(<ProPlanSubheading />, { wrapper })
+        render(<ProPlanSubheading />, { wrapper })
 
-      const text = await screen.findByText(/Includes 14-day free trial/)
-      expect(text).toBeInTheDocument()
+        const text = await screen.findByText(/Includes 14-day free trial/)
+        expect(text).toBeInTheDocument()
+      })
+
+      it('renders faq link', async () => {
+        setup({ trialStatus: TrialStatuses.NOT_STARTED })
+
+        render(<ProPlanSubheading />, { wrapper })
+
+        const faqLink = await screen.findByRole('link', { name: /FAQ/ })
+        expect(faqLink).toBeInTheDocument()
+        expect(faqLink).toHaveAttribute(
+          'href',
+          'https://docs.codecov.com/docs/free-trial-faqs'
+        )
+      })
     })
 
-    it('renders faq link', async () => {
-      setup({ trialStatus: TrialStatuses.NOT_STARTED })
+    describe('user does not have private repos', () => {
+      it('renders correct text', async () => {
+        setup({ trialStatus: TrialStatuses.NOT_STARTED, hasPrivateRepos: true })
 
-      render(<ProPlanSubheading />, { wrapper })
+        render(<ProPlanSubheading />, { wrapper })
 
-      const faqLink = await screen.findByRole('link', { name: /FAQ/ })
-      expect(faqLink).toBeInTheDocument()
-      expect(faqLink).toHaveAttribute(
-        'href',
-        'https://docs.codecov.com/docs/free-trial-faqs'
-      )
+        const text = screen.queryByText(/Includes 14-day free trial/)
+        expect(text).not.toBeInTheDocument()
+      })
+
+      it('renders faq link', async () => {
+        setup({ trialStatus: TrialStatuses.NOT_STARTED })
+
+        render(<ProPlanSubheading />, { wrapper })
+
+        const faqLink = screen.queryByRole('link', { name: /FAQ/ })
+        expect(faqLink).not.toBeInTheDocument()
+      })
     })
   })
 

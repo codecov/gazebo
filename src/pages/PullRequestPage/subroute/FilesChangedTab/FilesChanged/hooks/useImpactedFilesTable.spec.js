@@ -5,6 +5,8 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { act } from 'react-test-renderer'
 
+import { ImpactedFilesReturnType } from 'shared/utils/impactedFiles'
+
 import {
   orderingParameter,
   useImpactedFilesTable,
@@ -13,6 +15,7 @@ import {
 const mockImpactedFiles = [
   {
     isCriticalFile: true,
+    missesCount: 3,
     fileName: 'mafs.js',
     headName: 'flag1/mafs.js',
     baseCoverage: {
@@ -20,12 +23,11 @@ const mockImpactedFiles = [
     },
     headCoverage: {
       percentCovered: 90.23,
-      missesCount: 3,
     },
     patchCoverage: {
       percentCovered: 27.43,
     },
-    missesCount: 3,
+    changeCoverage: 41,
   },
   {
     isCriticalFile: true,
@@ -36,40 +38,92 @@ const mockImpactedFiles = [
     },
     headCoverage: {
       percentCovered: 80,
-      missesCount: 7,
     },
     patchCoverage: {
       percentCovered: 48.23,
     },
     missesCount: 7,
+    changeCoverage: 41,
   },
 ]
 
-let mockPull = {
+const mockPull = ({ overrideComparison } = {}) => ({
   owner: {
+    isCurrentUserPartOfOrg: true,
     repository: {
+      __typename: 'Repository',
+      defaultBranch: 'main',
+      private: false,
       pull: {
-        pullId: 14,
-        head: {
-          state: 'PROCESSED',
+        commits: {
+          edges: [
+            {
+              node: {
+                state: 'PROCESSED',
+                commitid: 'fc43199ccde1f21a940aa3d596c711c1c420651f',
+                message:
+                  'create component to hold bundle list table for a given pull 2',
+                author: {
+                  username: 'nicholas-codecov',
+                },
+              },
+            },
+          ],
         },
-        compareWithBase: {
-          patchTotals: {
-            percentCovered: 92.12,
+        compareWithBase: overrideComparison
+          ? overrideComparison
+          : {
+              state: 'PROCESSED',
+              __typename: 'Comparison',
+              flagComparisons: [],
+              patchTotals: {
+                percentCovered: 92.12,
+              },
+              baseTotals: {
+                percentCovered: 27.35,
+              },
+              headTotals: {
+                percentCovered: 74.2,
+              },
+              impactedFiles: {
+                __typename: 'ImpactedFiles',
+                results: mockImpactedFiles,
+              },
+              changeCoverage: 38.94,
+              hasDifferentNumberOfHeadAndBaseReports: true,
+            },
+        pullId: 14,
+        title: 'feat: Create bundle analysis table for a given pull',
+        state: 'OPEN',
+        author: {
+          username: 'nicholas-codecov',
+        },
+        head: {
+          ciPassed: true,
+          branchName:
+            'gh-eng-994-create-bundle-analysis-table-for-a-given-pull',
+          state: 'PROCESSED',
+          commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
+          totals: {
+            percentCovered: 78.33,
           },
-          headTotals: {
-            percentCovered: 74.2,
+          uploads: {
+            totalCount: 4,
           },
-          baseTotals: {
-            percentCovered: 27.35,
+        },
+        updatestamp: '2024-01-12T12:56:18.912860',
+        behindBy: 82367894,
+        behindByCommit: '1798hvs8ofhn',
+        comparedTo: {
+          commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
+          uploads: {
+            totalCount: 1,
           },
-          changeCoverage: 38.94,
-          impactedFiles: mockImpactedFiles,
         },
       },
     },
   },
-}
+})
 
 const queryClient = new QueryClient({
   logger: {
@@ -92,24 +146,36 @@ afterAll(() => {
   server.close()
 })
 
-const wrapper = ({ children }) => (
-  <MemoryRouter initialEntries={['/gh/frumpkin/another-test/pull/14']}>
-    <Route path="/:provider/:owner/:repo/pull/:pullid">
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </Route>
-  </MemoryRouter>
-)
+const wrapper =
+  (initialEntries = ['/gh/frumpkin/another-test/pull/14']) =>
+  ({ children }) =>
+    (
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route path="/:provider/:owner/:repo/pull/:pullid">
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        </Route>
+      </MemoryRouter>
+    )
 
 describe('useImpactedFilesTable', () => {
-  const callsHandleSort = jest.fn()
-  function setup(dataReturned = mockPull) {
+  function setup({ overrideComparison } = {}) {
+    const callsHandleSort = jest.fn()
+    const flagsMock = jest.fn()
+    const componentsMock = jest.fn()
+
     server.use(
       graphql.query('Pull', (req, res, ctx) => {
         const { direction, parameter } = req.variables.filters.ordering
         callsHandleSort({ direction, parameter })
-        return res(ctx.status(200), ctx.data(dataReturned))
+        flagsMock(req.variables.filters.flags)
+        componentsMock(req.variables.filters.components)
+
+        return res(ctx.status(200), ctx.data(mockPull({ overrideComparison })))
       })
     )
+    return { callsHandleSort, flagsMock, componentsMock }
   }
 
   describe('when called', () => {
@@ -118,19 +184,22 @@ describe('useImpactedFilesTable', () => {
     })
 
     it('renders isLoading true', () => {
-      const { result } = renderHook(() => useImpactedFilesTable(), { wrapper })
+      const { result } = renderHook(() => useImpactedFilesTable(), {
+        wrapper: wrapper(),
+      })
       expect(result.current.isLoading).toBeTruthy()
     })
 
     describe('when data is loaded', () => {
       it('returns data', async () => {
         const { result } = renderHook(() => useImpactedFilesTable(), {
-          wrapper,
+          wrapper: wrapper(),
         })
         await waitFor(() => !result.current.isLoading)
 
         await waitFor(() =>
           expect(result.current.data).toEqual({
+            compareWithBaseType: 'Comparison',
             headState: 'PROCESSED',
             impactedFiles: [
               {
@@ -156,6 +225,7 @@ describe('useImpactedFilesTable', () => {
                 pullId: 14,
               },
             ],
+            impactedFilesType: ImpactedFilesReturnType.IMPACTED_FILES,
             pullBaseCoverage: 27.35,
             pullHeadCoverage: 74.2,
             pullPatchCoverage: 92.12,
@@ -167,35 +237,55 @@ describe('useImpactedFilesTable', () => {
 
   describe('when when called with no head or base coverage on the changed files', () => {
     beforeEach(() => {
-      const mockImpactedFilesWithoutCoverage = [
-        {
-          isCriticalFile: true,
-          fileName: 'mafs.js',
-          headName: 'flag1/mafs.js',
-          baseCoverage: {
-            percentCovered: undefined,
+      setup({
+        overrideComparison: {
+          state: 'PROCESSED',
+          __typename: 'Comparison',
+          flagComparisons: [],
+          patchTotals: {
+            percentCovered: 92.12,
           },
-          headCoverage: {
-            percentCovered: undefined,
+          baseTotals: {
+            percentCovered: 27.35,
           },
-          patchCoverage: {
-            percentCovered: 27.43,
+          headTotals: {
+            percentCovered: 74.2,
           },
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [
+              {
+                isCriticalFile: true,
+                missesCount: 0,
+                fileName: 'mafs.js',
+                headName: 'flag1/mafs.js',
+                baseCoverage: {
+                  percentCovered: null,
+                },
+                patchCoverage: {
+                  percentCovered: 27.43,
+                },
+                headCoverage: null,
+                changeCoverage: 41,
+              },
+            ],
+          },
+          changeCoverage: 38.94,
+          hasDifferentNumberOfHeadAndBaseReports: true,
         },
-      ]
-      mockPull.owner.repository.pull.compareWithBase.impactedFiles =
-        mockImpactedFilesWithoutCoverage
-      setup(mockPull)
+      })
     })
 
     it('returns data', async () => {
       const { result } = renderHook(() => useImpactedFilesTable(), {
-        wrapper,
+        wrapper: wrapper(),
       })
       await waitFor(() => !result.current.isLoading)
 
       await waitFor(() =>
         expect(result.current.data).toEqual({
+          impactedFilesType: ImpactedFilesReturnType.IMPACTED_FILES,
+          compareWithBaseType: 'Comparison',
           headState: 'PROCESSED',
           impactedFiles: [
             {
@@ -219,13 +309,10 @@ describe('useImpactedFilesTable', () => {
   })
 
   describe('when handleSort is triggered', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('returns data', async () => {
+      const { callsHandleSort } = setup()
       const { result } = renderHook(() => useImpactedFilesTable(), {
-        wrapper,
+        wrapper: wrapper(),
       })
 
       await waitFor(() => result.current.isLoading)
@@ -253,6 +340,64 @@ describe('useImpactedFilesTable', () => {
           parameter: 'CHANGE_COVERAGE',
         })
       )
+    })
+  })
+
+  describe('sends flags to the API', () => {
+    it('correct variables are sent to the api', async () => {
+      const { flagsMock } = setup()
+      const { result } = renderHook(() => useImpactedFilesTable(), {
+        wrapper: wrapper([
+          '/gh/frumpkin/another-test/pull/14?flags=flag1,flag2',
+        ]),
+      })
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      await waitFor(() => expect(flagsMock).toBeCalledTimes(1))
+      await waitFor(() => expect(flagsMock).toHaveBeenCalledWith('flag1,flag2'))
+    })
+  })
+
+  describe('sends components to the API', () => {
+    it('correct variables are sent to the api', async () => {
+      const { componentsMock } = setup()
+      const { result } = renderHook(() => useImpactedFilesTable(), {
+        wrapper: wrapper([
+          '/gh/frumpkin/another-test/pull/14?components=component1,component2',
+        ]),
+      })
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      await waitFor(() => expect(componentsMock).toBeCalledTimes(1))
+      await waitFor(() =>
+        expect(componentsMock).toHaveBeenCalledWith('component1,component2')
+      )
+    })
+  })
+
+  describe('sends components and filters to the API', () => {
+    it('correct variables are sent to the api', async () => {
+      const { componentsMock, flagsMock } = setup()
+      const { result } = renderHook(() => useImpactedFilesTable(), {
+        wrapper: wrapper([
+          '/gh/frumpkin/another-test/pull/14?components=component1,component2&flags=flag1,flag2',
+        ]),
+      })
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      await waitFor(() => expect(componentsMock).toBeCalledTimes(1))
+      await waitFor(() =>
+        expect(componentsMock).toHaveBeenCalledWith('component1,component2')
+      )
+
+      await waitFor(() => expect(flagsMock).toBeCalledTimes(1))
+      await waitFor(() => expect(flagsMock).toHaveBeenCalledWith('flag1,flag2'))
     })
   })
 })

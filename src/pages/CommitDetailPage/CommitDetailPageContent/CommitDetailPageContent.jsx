@@ -5,6 +5,8 @@ import { Redirect, Switch, useParams } from 'react-router-dom'
 import { SentryRoute } from 'sentry'
 
 import { useCommit } from 'services/commit'
+import { useRepoSettingsTeam } from 'services/repo'
+import { TierNames, useTier } from 'services/tier'
 import { extractUploads } from 'shared/utils/extractUploads'
 import Spinner from 'ui/Spinner'
 
@@ -27,13 +29,15 @@ const Loader = () => (
 )
 
 function CommitDetailPageContent() {
-  const { provider, owner, repo, commit: commitSHA } = useParams()
+  const { provider, owner, repo, commit: commitSha } = useParams()
+  const { data: tierName } = useTier({ owner, provider })
+  const { data: repoData } = useRepoSettingsTeam()
 
   const { data: commitData } = useCommit({
     provider,
     owner,
     repo,
-    commitid: commitSHA,
+    commitid: commitSha,
   })
 
   const { erroredUploads } = extractUploads({
@@ -44,15 +48,19 @@ function CommitDetailPageContent() {
     return <ErroredUploads erroredUploads={erroredUploads} />
   }
 
+  let showIndirectChanges = !(
+    repoData?.repository?.private && tierName === TierNames.TEAM
+  )
+
   const indirectChangedFilesCount =
     commitData?.commit?.compareWithParent?.indirectChangedFilesCount ?? 0
   const directChangedFilesCount =
     commitData?.commit?.compareWithParent?.directChangedFilesCount ?? 0
 
   return (
-    <>
+    <div className="@container/commit-detail-page">
       <CommitPageTabs
-        commitSHA={commitSHA}
+        commitSha={commitSha}
         indirectChangedFilesCount={indirectChangedFilesCount}
         directChangedFilesCount={directChangedFilesCount}
       />
@@ -72,19 +80,21 @@ function CommitDetailPageContent() {
           <SentryRoute path="/:provider/:owner/:repo/commit/:commit" exact>
             <FilesChangedTab />
           </SentryRoute>
-          <SentryRoute
-            path="/:provider/:owner/:repo/commit/:commit/indirect-changes"
-            exact
-          >
-            <IndirectChangesTab />
-          </SentryRoute>
+          {showIndirectChanges && (
+            <SentryRoute
+              path="/:provider/:owner/:repo/commit/:commit/indirect-changes"
+              exact
+            >
+              <IndirectChangesTab />
+            </SentryRoute>
+          )}
           <Redirect
             from="/:provider/:owner/:repo/commit/:commit/*"
             to="/:provider/:owner/:repo/commit/:commit"
           />
         </Switch>
       </Suspense>
-    </>
+    </div>
   )
 }
 

@@ -15,7 +15,7 @@ const data = {
     totals: { coverage: 90.91 },
     state: 'complete',
     commitid: 'ca3fe8ad0632288b67909ba9793b00e5d109547b',
-    pullId: null,
+    pullId: 123,
     branchName: 'main',
     createdAt: '2022-03-10T19:14:13',
     author: { username: 'Rabee-AbuBaker' },
@@ -90,14 +90,17 @@ const data = {
       patchTotals: { coverage: 75 },
       indirectChangedFilesCount: 1,
       directChangedFilesCount: 1,
-      impactedFiles: [
-        {
-          patchCoverage: { coverage: 75 },
-          headName: 'flag1/mafs.js',
-          baseCoverage: { coverage: 100 },
-          headCoverage: { coverage: 90.9090909090909 },
-        },
-      ],
+      impactedFiles: {
+        __typename: 'ImpactedFiles',
+        results: [
+          {
+            patchCoverage: { coverage: 75 },
+            headName: 'flag1/mafs.js',
+            baseCoverage: { coverage: 100 },
+            headCoverage: { coverage: 90.9090909090909 },
+          },
+        ],
+      },
     },
   },
 }

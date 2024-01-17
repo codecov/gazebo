@@ -1,19 +1,28 @@
-import { useRepoSettings } from 'services/repo'
+import { useParams } from 'react-router-dom'
+
+import { TierNames, useTier } from 'services/tier'
 
 import DangerZone from './DangerZone'
 import DefaultBranch from './DefaultBranch'
-import Tokens from './Tokens'
+import { useRepoForTokensTeam } from './hooks'
+import { Tokens, TokensTeam } from './Tokens'
 
 function GeneralTab() {
-  const { data } = useRepoSettings()
-  const repository = data?.repository
+  const { provider, owner, repo } = useParams()
+  const { data: repoData } = useRepoForTokensTeam({
+    provider,
+    owner,
+    repo,
+  })
+  const { data: tierData } = useTier({ provider, owner })
+  const defaultBranch = repoData?.defaultBranch
+  const isPrivate = repoData?.private
+  const showTokensTeam = isPrivate && tierData === TierNames.TEAM
 
   return (
     <div className="flex flex-col gap-6">
-      {repository?.defaultBranch && (
-        <DefaultBranch defaultBranch={repository?.defaultBranch} />
-      )}
-      <Tokens />
+      {defaultBranch && <DefaultBranch defaultBranch={defaultBranch} />}
+      {showTokensTeam ? <TokensTeam /> : <Tokens />}
       <DangerZone />
     </div>
   )

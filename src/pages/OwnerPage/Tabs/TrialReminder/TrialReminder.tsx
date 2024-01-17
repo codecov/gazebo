@@ -50,7 +50,7 @@ const TrialReminder: React.FC = () => {
     },
   })
 
-  const planValue = planData?.plan?.planName
+  const planValue = planData?.plan?.value
 
   const { trialNotStarted, trialOngoing, trialExpired, cannotTrial } =
     determineTrialStates({
@@ -69,7 +69,7 @@ const TrialReminder: React.FC = () => {
     return null
   }
 
-  if (trialNotStarted) {
+  if (trialNotStarted && planData?.hasPrivateRepos) {
     return (
       <div className="flex items-center font-semibold">
         {/* this is required because the A component has this random `[x: string]: any` record type on it */}

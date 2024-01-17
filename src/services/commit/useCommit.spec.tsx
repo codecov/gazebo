@@ -36,7 +36,10 @@ const compareDoneData = {
           indirectChangedFilesCount: 1,
           directChangedFilesCount: 1,
           patchTotals: null,
-          impactedFiles: [],
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [],
+          },
         },
         parent: {
           commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
@@ -116,7 +119,74 @@ const dataReturned = {
           indirectChangedFilesCount: 1,
           directChangedFilesCount: 1,
           patchTotals: null,
-          impactedFiles: [],
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [],
+          },
+        },
+        parent: {
+          commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
+          totals: {
+            coverage: 38.30846,
+          },
+        },
+      },
+    },
+  },
+}
+
+const dataReturnedTeam = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      commit: {
+        branchName: null,
+        totals: {
+          coverage: 38.30846,
+          diff: {
+            coverage: null,
+          },
+        },
+        commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
+        pullId: 10,
+        createdAt: '2020-08-25T16:35:32',
+        author: {
+          username: 'febg',
+        },
+        state: 'complete',
+        uploads: {
+          edges: [
+            {
+              node: {
+                id: 0,
+                state: 'PROCESSED',
+                provider: 'travis',
+                createdAt: '2020-08-25T16:36:19.55947400:00',
+                updatedAt: '2020-08-25T16:36:19.67986800:00',
+                downloadUrl:
+                  '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/30582d33-de37-4272-ad50-c4dc805802fb.txt',
+                ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065746',
+                uploadType: 'UPLOADED',
+                errors: null,
+                name: 'upload name',
+                jobCode: null,
+                buildCode: null,
+              },
+            },
+          ],
+        },
+        message: 'paths test',
+        ciPassed: true,
+        compareWithParent: {
+          __typename: 'Comparison',
+          state: 'pending',
+          indirectChangedFilesCount: 1,
+          directChangedFilesCount: 1,
+          patchTotals: null,
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [],
+          },
         },
         parent: {
           commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
@@ -211,7 +281,10 @@ describe('useCommit', () => {
         } else if (isNullOwner) {
           return res(ctx.status(200), ctx.data(mockNullOwner))
         } else {
-          return res(ctx.status(200), ctx.data(dataReturned))
+          const dataToReturn = req.variables.isTeamPlan
+            ? dataReturnedTeam
+            : dataReturned
+          return res(ctx.status(200), ctx.data(dataToReturn))
         }
       }),
       graphql.query(`CompareTotals`, (req, res, ctx) => {
@@ -253,9 +326,14 @@ describe('useCommit', () => {
             commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
             compareWithParent: {
               __typename: 'Comparison',
-              impactedFiles: [],
+              impactedFiles: {
+                __typename: 'ImpactedFiles',
+                results: [],
+              },
               patchTotals: null,
-              state: 'PROCESSED',
+              state: 'pending',
+              indirectChangedFilesCount: 1,
+              directChangedFilesCount: 1,
             },
             createdAt: '2020-08-25T16:35:32',
             message: 'paths test',
@@ -301,6 +379,82 @@ describe('useCommit', () => {
                 provider: 'travis',
                 state: 'PROCESSED',
                 updatedAt: '2020-08-25T16:36:25.85988900:00',
+                uploadType: 'UPLOADED',
+              },
+            ],
+          },
+        }
+
+        await waitFor(() => expect(result.current.data).toEqual(expectedResult))
+      })
+    })
+
+    describe('user is on team plan', () => {
+      it('returns appropriate data', async () => {
+        setup({})
+        const { result } = renderHook(
+          () =>
+            useCommit({
+              provider: 'gh',
+              owner: 'febg',
+              repo: 'repo-test',
+              commitid: 'a23sda3',
+              isTeamPlan: true,
+            }),
+          {
+            wrapper,
+          }
+        )
+
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+
+        const expectedResult = {
+          commit: {
+            author: {
+              username: 'febg',
+            },
+            branchName: null,
+            ciPassed: true,
+            commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
+            compareWithParent: {
+              __typename: 'Comparison',
+              impactedFiles: {
+                __typename: 'ImpactedFiles',
+                results: [],
+              },
+              patchTotals: null,
+              state: 'pending',
+              indirectChangedFilesCount: 1,
+              directChangedFilesCount: 1,
+            },
+            createdAt: '2020-08-25T16:35:32',
+            message: 'paths test',
+            parent: {
+              commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
+              totals: {
+                coverage: 38.30846,
+              },
+            },
+            pullId: 10,
+            state: 'complete',
+            totals: {
+              coverage: 38.30846,
+            },
+            uploads: [
+              {
+                buildCode: null,
+                ciUrl: 'https://travis-ci.com/febg/repo-test/jobs/721065746',
+                createdAt: '2020-08-25T16:36:19.55947400:00',
+                downloadUrl:
+                  '/api/gh/febg/repo-test/download/build?path=v4/raw/2020-08-25/F84D6D9A7F883055E40E3B380280BC44/f00162848a3cebc0728d915763c2fd9e92132408/30582d33-de37-4272-ad50-c4dc805802fb.txt',
+                errors: [],
+                id: 0,
+                jobCode: null,
+                name: 'upload name',
+                provider: 'travis',
+                state: 'PROCESSED',
+                updatedAt: '2020-08-25T16:36:19.67986800:00',
                 uploadType: 'UPLOADED',
               },
             ],
@@ -513,8 +667,13 @@ describe('useCommit polling', () => {
             ciPassed: true,
             compareWithParent: {
               __typename: 'Comparison',
-              state: 'PROCESSED',
-              impactedFiles: [],
+              state: 'pending',
+              directChangedFilesCount: 1,
+              indirectChangedFilesCount: 1,
+              impactedFiles: {
+                __typename: 'ImpactedFiles',
+                results: [],
+              },
               patchTotals: null,
             },
             parent: {

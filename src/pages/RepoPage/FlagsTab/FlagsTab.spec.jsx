@@ -1,16 +1,18 @@
-import { render, screen } from 'custom-testing-library'
+import { render, screen, waitFor } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { MemoryRouter, Route, useParams } from 'react-router-dom'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useRepoBackfilled, useRepoFlagsSelect } from 'services/repo'
+import { TierNames } from 'services/tier'
 
 import FlagsTab from './FlagsTab'
 
-import { useLocationParams } from '../../../services/navigation'
-
 jest.mock('services/repo/useRepoBackfilled')
 jest.mock('services/repo/useRepoFlagsSelect')
+jest.mock('shared/featureFlags')
 
 jest.mock(
   './BackfillBanners/TriggerSyncBanner/TriggerSyncBanner.jsx',
@@ -25,15 +27,6 @@ jest.mock('./Header', () => ({ children }) => (
   <p>Flags Header Component {children}</p>
 ))
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
-  useParams: jest.fn(() => {}),
-}))
-jest.mock('services/navigation', () => ({
-  ...jest.requireActual('services/navigation'),
-  useLocationParams: jest.fn(),
-}))
-
 const flagsData = [
   {
     name: 'flag1',
@@ -43,42 +36,117 @@ const flagsData = [
   },
 ]
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
+const mockRepoSettings = (isPrivate = false) => ({
+  owner: {
+    repository: {
+      defaultBranch: 'master',
+      private: isPrivate,
+      uploadToken: 'token',
+      graphToken: 'token',
+      yaml: 'yaml',
+      bot: {
+        username: 'test',
+      },
     },
   },
 })
 
+const server = setupServer()
+const queryClient = new QueryClient()
+let testLocation = {
+  pathname: '',
+}
+
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh/codecov/gazebo/flags']}>
+      <Route path="/:provider/:owner/:repo/flags">{children}</Route>
+      <Route
+        path="*"
+        render={({ location }) => {
+          testLocation.pathname = location.pathname
+          return null
+        }}
+      />
+    </MemoryRouter>
+  </QueryClientProvider>
+)
+
+beforeAll(() => {
+  console.error = () => {}
+  server.listen()
+})
+
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
+
 describe('Flags Tab', () => {
-  const updateParams = jest.fn()
-
-  function setup({ data, flags = flagsData }) {
-    useParams.mockReturnValue({
-      owner: 'codecov',
-      provider: 'gh',
-      repo: 'gazebo',
-    })
-
+  function setup({
+    data = {},
+    flags = flagsData,
+    tierValue = TierNames.PRO,
+    isPrivate = false,
+  }) {
     useRepoFlagsSelect.mockReturnValue({ data: flags })
-
-    useLocationParams.mockReturnValue({
-      params: { search: '' },
-      updateParams: updateParams,
-    })
-
     useRepoBackfilled.mockReturnValue(data)
-    render(
-      <MemoryRouter initialEntries={['/gh/codecov/gazebo/flags']}>
-        <Route path="/:provider/:owner/:repo/flags" exact={true}>
-          <QueryClientProvider client={queryClient}>
-            <FlagsTab />
-          </QueryClientProvider>
-        </Route>
-      </MemoryRouter>
+
+    server.use(
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        if (tierValue === TierNames.TEAM) {
+          return res(
+            ctx.status(200),
+            ctx.data({ owner: { plan: { tierName: TierNames.TEAM } } })
+          )
+        }
+        return res(
+          ctx.status(200),
+          ctx.data({ owner: { plan: { tierName: TierNames.PRO } } })
+        )
+      }),
+      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
+      })
     )
   }
+
+  describe('when user has a team tier', () => {
+    describe('the repo is public', () => {
+      it('renders the flags tab', async () => {
+        setup({
+          tierValue: TierNames.TEAM,
+          isPrivate: false,
+          data: {
+            data: {
+              flagsMeasurementsActive: true,
+              flagsMeasurementsBackfilled: true,
+              isTimescaleEnabled: true,
+            },
+          },
+        })
+        render(<FlagsTab />, { wrapper })
+
+        const header = await screen.findByText(/Flags Header Component/)
+        expect(header).toBeInTheDocument()
+      })
+    })
+
+    describe('the repo is private', () => {
+      it('redirects to the coverage tab', async () => {
+        setup({ tierValue: TierNames.TEAM, isPrivate: true })
+        render(<FlagsTab />, { wrapper })
+
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe('/gh/codecov/gazebo')
+        )
+      })
+    })
+  })
 
   describe('when rendered without active or backfilled repo', () => {
     beforeEach(() => {
@@ -93,14 +161,30 @@ describe('Flags Tab', () => {
       })
     })
 
-    it('renders header and table components', () => {
-      expect(screen.getByText(/Flags Header Component/)).toBeInTheDocument()
-      expect(screen.getByText(/Trigger Sync Banner/)).toBeInTheDocument()
-      expect(screen.queryByText(/Syncing Banner/)).not.toBeInTheDocument()
+    it('renders header', async () => {
+      render(<FlagsTab />, { wrapper })
+
+      const header = await screen.findByText(/Flags Header Component/)
+      expect(header).toBeInTheDocument()
     })
 
-    it('renders a blurred image of the table', () => {
-      const blurredFlagsTableImage = screen.getByRole('img', {
+    it('renders trigger sync banner', async () => {
+      render(<FlagsTab />, { wrapper })
+
+      const triggerSyncBanner = await screen.findByText(/Trigger Sync Banner/)
+      expect(triggerSyncBanner).toBeInTheDocument()
+    })
+
+    it('does not render trigger sync banner', () => {
+      render(<FlagsTab />, { wrapper })
+
+      const syncingBanner = screen.queryByText(/Syncing Banner/)
+      expect(syncingBanner).not.toBeInTheDocument()
+    })
+
+    it('renders a blurred image of the table', async () => {
+      render(<FlagsTab />, { wrapper })
+      const blurredFlagsTableImage = await screen.findByRole('img', {
         name: /Blurred flags table/,
       })
       expect(blurredFlagsTableImage).toBeInTheDocument()
@@ -120,14 +204,30 @@ describe('Flags Tab', () => {
       })
     })
 
-    it('renders header and table components', () => {
-      expect(screen.getByText(/Flags Header Component/)).toBeInTheDocument()
-      expect(screen.getByText(/Syncing Banner/)).toBeInTheDocument()
-      expect(screen.queryByText(/Trigger Sync Banner/)).not.toBeInTheDocument()
+    it('renders header', async () => {
+      render(<FlagsTab />, { wrapper })
+
+      const header = await screen.findByText(/Flags Header Component/)
+      expect(header).toBeInTheDocument()
     })
 
-    it('renders a blurred image of the table', () => {
-      const blurredFlagsTableImage = screen.getByRole('img', {
+    it('renders trigger sync banner', () => {
+      render(<FlagsTab />, { wrapper })
+
+      const triggerSyncBanner = screen.queryByText(/Trigger Sync Banner/)
+      expect(triggerSyncBanner).not.toBeInTheDocument()
+    })
+
+    it('does not render trigger sync banner', async () => {
+      render(<FlagsTab />, { wrapper })
+
+      const syncingBanner = await screen.findByText(/Syncing Banner/)
+      expect(syncingBanner).toBeInTheDocument()
+    })
+
+    it('renders a blurred image of the table', async () => {
+      render(<FlagsTab />, { wrapper })
+      const blurredFlagsTableImage = await screen.findByRole('img', {
         name: /Blurred flags table/,
       })
       expect(blurredFlagsTableImage).toBeInTheDocument()
@@ -147,10 +247,25 @@ describe('Flags Tab', () => {
       })
     })
 
-    it('renders header and table components', () => {
-      expect(screen.getByText(/Flags Header Component/)).toBeInTheDocument()
-      expect(screen.queryByText(/Syncing Banner/)).not.toBeInTheDocument()
-      expect(screen.queryByText(/Trigger Sync Banner/)).not.toBeInTheDocument()
+    it('renders header', async () => {
+      render(<FlagsTab />, { wrapper })
+
+      const header = await screen.findByText(/Flags Header Component/)
+      expect(header).toBeInTheDocument()
+    })
+
+    it('renders trigger sync banner', () => {
+      render(<FlagsTab />, { wrapper })
+
+      const triggerSyncBanner = screen.queryByText(/Trigger Sync Banner/)
+      expect(triggerSyncBanner).not.toBeInTheDocument()
+    })
+
+    it('does not render trigger sync banner', () => {
+      render(<FlagsTab />, { wrapper })
+
+      const syncingBanner = screen.queryByText(/Syncing Banner/)
+      expect(syncingBanner).not.toBeInTheDocument()
     })
   })
 
@@ -168,10 +283,12 @@ describe('Flags Tab', () => {
       })
     })
 
-    it('renders empty state message', () => {
-      expect(
-        screen.getByText(/The Flags feature is not yet configured/)
-      ).toBeInTheDocument()
+    it('renders empty state message', async () => {
+      render(<FlagsTab />, { wrapper })
+      const flagsText = await screen.findByText(
+        /The Flags feature is not yet configured/
+      )
+      expect(flagsText).toBeInTheDocument()
     })
   })
 
@@ -189,13 +306,17 @@ describe('Flags Tab', () => {
       })
     })
 
-    it('renders empty state message', () => {
-      expect(
-        screen.getByText(/The Flags feature is not yet enabled/)
-      ).toBeInTheDocument()
-      expect(
-        screen.getByText(/enable flags in your infrastructure today/)
-      ).toBeInTheDocument()
+    it('renders empty state message', async () => {
+      render(<FlagsTab />, { wrapper })
+      const flagsText = await screen.findByText(
+        /The Flags feature is not yet enabled/
+      )
+      expect(flagsText).toBeInTheDocument()
+
+      const enableText = await screen.findByText(
+        /enable flags in your infrastructure today/
+      )
+      expect(enableText).toBeInTheDocument()
     })
   })
 })

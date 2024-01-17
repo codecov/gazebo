@@ -213,6 +213,7 @@ describe('BranchFileEntry', () => {
           displayType={displayTypeParameter.tree}
           filters={{
             flags: ['flag-1'],
+            components: [],
           }}
         />,
         { wrapper }
@@ -222,6 +223,33 @@ describe('BranchFileEntry', () => {
       expect(a).toHaveAttribute(
         'href',
         '/gh/codecov/test-repo/blob/main/dir%2Ffile.js?flags%5B0%5D=flag-1'
+      )
+    })
+  })
+
+  describe('flags and components filter is passed', () => {
+    it('sets the correct href', async () => {
+      setup()
+      render(
+        <BranchFileEntry
+          branch="main"
+          path="dir/file.js"
+          name="file.js"
+          urlPath="dir"
+          isCriticalFile={false}
+          displayType={displayTypeParameter.tree}
+          filters={{
+            flags: ['flag-1'],
+            components: ['component-3.1415924'],
+          }}
+        />,
+        { wrapper }
+      )
+
+      const a = await screen.findByRole('link')
+      expect(a).toHaveAttribute(
+        'href',
+        '/gh/codecov/test-repo/blob/main/dir%2Ffile.js?flags%5B0%5D=flag-1&components%5B0%5D=component-3.1415924'
       )
     })
   })

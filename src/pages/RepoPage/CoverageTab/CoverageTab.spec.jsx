@@ -4,7 +4,14 @@ import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TierNames } from 'services/tier'
+import { useFlags } from 'shared/featureFlags'
+
 import CoverageTab from './CoverageTab'
+
+jest.mock('shared/featureFlags')
+jest.mock('./Summary', () => () => 'Summary')
+jest.mock('./SummaryTeamPlan', () => () => 'SummaryTeamPlan')
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -15,6 +22,21 @@ const queryClient = new QueryClient({
 })
 
 const server = setupServer()
+
+const mockRepoSettings = (isPrivate = false) => ({
+  owner: {
+    repository: {
+      defaultBranch: 'master',
+      private: isPrivate,
+      uploadToken: 'token',
+      graphToken: 'token',
+      yaml: 'yaml',
+      bot: {
+        username: 'test',
+      },
+    },
+  },
+})
 
 const wrapper =
   (initialEntries = ['/gh/codecov/cool-repo/tree/main']) =>
@@ -173,7 +195,17 @@ afterAll(() => {
 })
 
 describe('Coverage Tab', () => {
-  function setup({ repoData = mockRepo } = { repoData: mockRepo }) {
+  function setup(
+    { repoData = mockRepo, isPrivate = false, tierValue = TierNames.PRO } = {
+      repoData: mockRepo,
+      isPrivate: false,
+      tierValue: TierNames.PRO,
+    }
+  ) {
+    useFlags.mockReturnValue({
+      multipleTiers: true,
+    })
+
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(repoData))
@@ -207,6 +239,12 @@ describe('Coverage Tab', () => {
       graphql.query('BackfillFlagMemberships', (req, res, ctx) =>
         res(ctx.status(200), ctx.data({}))
       ),
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({ owner: { plan: { tierName: tierValue } } })
+        )
+      }),
       rest.get(
         '/internal/:provider/:owner/:repo/coverage/tree',
         (req, res, ctx) => {
@@ -218,7 +256,10 @@ describe('Coverage Tab', () => {
         (req, res, ctx) => {
           return res(ctx.status(200), ctx.json({ data: {} }))
         }
-      )
+      ),
+      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
+      })
     )
   }
 
@@ -246,4 +287,33 @@ describe('Coverage Tab', () => {
     const coverageAreaChart = screen.getByTestId('coverage-area-chart')
     expect(coverageAreaChart).toBeInTheDocument()
   }, 60000)
+
+  it('renders default summary', async () => {
+    setup()
+
+    render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/repoName']) })
+
+    const summary = screen.getByText(/Summary/)
+    expect(summary).toBeInTheDocument()
+  })
+
+  describe('when the repo is private and org is on team plan', () => {
+    it('renders team summary', async () => {
+      setup({ isPrivate: true, tierValue: TierNames.TEAM })
+
+      render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/repoName']) })
+
+      const summary = await screen.findByText(/SummaryTeamPlan/)
+      expect(summary).toBeInTheDocument()
+    })
+
+    it('does not render coverage chart', async () => {
+      setup({ isPrivate: true, tierValue: TierNames.TEAM })
+
+      render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/repoName']) })
+
+      const coverageChart = screen.queryByTestId('coverage-area-chart')
+      expect(coverageChart).not.toBeInTheDocument()
+    })
+  })
 })

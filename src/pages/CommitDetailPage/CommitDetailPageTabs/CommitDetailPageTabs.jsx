@@ -7,16 +7,29 @@ import {
   commitFileviewString,
   commitTreeviewString,
 } from 'pages/RepoPage/utils'
+import { useRepoSettingsTeam } from 'services/repo'
+import { TierNames, useTier } from 'services/tier'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import TabNavigation from 'ui/TabNavigation'
 
 function CommitDetailPageTabs({
-  commitSHA,
+  commitSha,
   indirectChangedFilesCount,
   directChangedFilesCount,
 }) {
   const { provider, owner, repo } = useParams()
   const location = useLocation()
+  const { data: tierName } = useTier({ owner, provider })
+  const { data: repoData } = useRepoSettingsTeam()
+
+  const showIndirectChanges = !(
+    repoData?.repository?.private && tierName === TierNames.TEAM
+  )
+
+  const showFlagMultiSelect = !(
+    tierName === TierNames.TEAM && repoData?.repository?.private
+  )
+
   const params = qs.parse(location.search, {
     ignoreQueryPrefix: true,
     depth: 1,
@@ -28,17 +41,17 @@ function CommitDetailPageTabs({
   }
 
   const blobPath = location.pathname.includes(
-    `/${provider}/${commitFileviewString({ owner, repo, commitSHA })}`
+    `/${provider}/${commitFileviewString({ owner, repo, commitSha })}`
   )
 
   const filePath = location.pathname.includes(
-    `/${provider}/${commitTreeviewString({ owner, repo, commitSHA })}`
+    `/${provider}/${commitTreeviewString({ owner, repo, commitSha })}`
   )
 
   let customLocation = undefined
   if (blobPath || filePath) {
     customLocation = {
-      pathname: `/${provider}/${owner}/${repo}/commit/${commitSHA}/tree`,
+      pathname: `/${provider}/${owner}/${repo}/commit/${commitSha}/tree`,
     }
   }
 
@@ -53,33 +66,43 @@ function CommitDetailPageTabs({
               <sup className="text-xs">{directChangedFilesCount}</sup>
             </>
           ),
-          options: { commit: commitSHA, queryParams },
+          options: { commit: commitSha, queryParams },
           exact: true,
         },
-        {
-          pageName: 'commitIndirectChanges',
-          options: { commit: commitSHA, queryParams },
-          children: (
-            <>
-              Indirect changes
-              <sup className="text-xs">{indirectChangedFilesCount}</sup>
-            </>
-          ),
-        },
+        ...(showIndirectChanges
+          ? [
+              {
+                pageName: 'commitIndirectChanges',
+                options: { commit: commitSha, queryParams },
+                children: (
+                  <>
+                    Indirect changes
+                    <sup className="text-xs">{indirectChangedFilesCount}</sup>
+                  </>
+                ),
+              },
+            ]
+          : []),
         {
           pageName: 'commitTreeView',
           children: 'File explorer',
-          options: { commit: commitSHA, queryParams },
+          options: { commit: commitSha, queryParams },
           location: customLocation,
         },
       ]}
-      component={<ToggleHeader coverageIsLoading={false} showHitCount={true} />}
+      component={
+        <ToggleHeader
+          coverageIsLoading={false}
+          showHitCount={true}
+          showFlagsSelect={showFlagMultiSelect}
+        />
+      }
     />
   )
 }
 
 CommitDetailPageTabs.propTypes = {
-  commitSHA: PropTypes.string,
+  commitSha: PropTypes.string,
   indirectChangedFilesCount: PropTypes.number,
   directChangedFilesCount: PropTypes.number,
 }

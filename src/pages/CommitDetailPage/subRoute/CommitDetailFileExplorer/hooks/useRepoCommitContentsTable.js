@@ -152,8 +152,20 @@ const sortingParameter = Object.freeze({
 })
 
 const getQueryFilters = ({ params, sortBy }) => {
+  let flags = {}
+  let components = {}
+  if (params?.flags) {
+    flags = { flags: params?.flags }
+  }
+
+  if (params?.components) {
+    components = { components: params?.components }
+  }
+
   return {
     ...(params?.search && { searchValue: params.search }),
+    ...flags,
+    ...components,
     ...(params?.displayType && {
       displayType: displayTypeParameter[params?.displayType],
     }),
@@ -179,7 +191,10 @@ export function useRepoCommitContentsTable() {
       repo,
       commit,
       path: urlPath || '',
-      filters: getQueryFilters({ params, sortBy: sortBy[0] }),
+      filters: getQueryFilters({
+        params,
+        sortBy: sortBy[0],
+      }),
       opts: {
         suspense: false,
       },

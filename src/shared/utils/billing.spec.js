@@ -5,18 +5,26 @@ import { useFlags } from 'shared/featureFlags'
 import {
   canApplySentryUpgrade,
   EnterprisePlans,
+  findProPlans,
   findSentryPlans,
+  findTeamPlans,
   formatNumberToUSD,
+  formatTimestampToCalendarDate,
   getNextBillingDate,
   isAnnualPlan,
   isBasicPlan,
+  isCodecovProPlan,
   isEnterprisePlan,
   isFreePlan,
   isMonthlyPlan,
   isPaidPlan,
+  isProPlan,
   isSentryPlan,
+  isTeamPlan,
   isTrialPlan,
+  lastTwoDigits,
   Plans,
+  shouldDisplayTeamCard,
   useProPlans,
 } from './billing'
 
@@ -109,6 +117,32 @@ function getPlans() {
       ],
       trialDays: 14,
     },
+    {
+      marketingName: 'Team',
+      value: 'users-teamm',
+      billingRate: 'monthly',
+      baseUnitPrice: 6,
+      benefits: [
+        'Up to 10 users',
+        'Unlimited repositories',
+        '2500 repositories',
+        'Patch coverage analysis',
+      ],
+      trialDays: null,
+    },
+    {
+      marketingName: 'Team',
+      value: 'users-teamy',
+      billingRate: 'yearly',
+      baseUnitPrice: 5,
+      benefits: [
+        'Up to 10 users',
+        'Unlimited repositories',
+        '2500 repositories',
+        'Patch coverage analysis',
+      ],
+      trialDays: null,
+    },
   ]
 }
 
@@ -129,6 +163,43 @@ describe('isFreePlan', () => {
     expect(isFreePlan(undefined)).toBe(false)
     expect(isFreePlan(12345)).toBe(false)
     expect(isFreePlan({})).toBe(false)
+  })
+})
+
+describe('shouldDisplayTeamCard', () => {
+  it('returns true if the availablePlans list includes team plans', () => {
+    const plans = getPlans()
+    expect(shouldDisplayTeamCard({ plans })).toBe(true)
+  })
+
+  it('returns false if the availablePlans list does not include team plans', () => {
+    const plans = [
+      {
+        marketingName: 'Pro Team',
+        value: 'users-pr-inappm',
+        billingRate: 'monthly',
+        baseUnitPrice: 12,
+        benefits: [
+          'Configureable # of users',
+          'Unlimited public repositories',
+          'Unlimited private repositories',
+          'Priorty Support',
+        ],
+      },
+      {
+        marketingName: 'Pro Team',
+        value: 'users-pr-inappy',
+        billingRate: 'annually',
+        baseUnitPrice: 10,
+        benefits: [
+          'Configureable # of users',
+          'Unlimited public repositories',
+          'Unlimited private repositories',
+          'Priorty Support',
+        ],
+      },
+    ]
+    expect(shouldDisplayTeamCard({ plans })).toBe(false)
   })
 })
 
@@ -241,6 +312,34 @@ describe('formatNumberToUSD', () => {
   })
 })
 
+describe('formatTimestampToCalendarDate', () => {
+  it('formats into calendar date', () => {
+    const value = formatTimestampToCalendarDate('1660000000')
+
+    expect(value).toBe('August 8, 2022')
+  })
+
+  it('return null when null', () => {
+    const value = formatTimestampToCalendarDate(null)
+
+    expect(value).toBe(null)
+  })
+})
+
+describe('lastTwoDigits', () => {
+  it('gets the last two digits if not null', () => {
+    const value = lastTwoDigits(2341)
+
+    expect(value).toBe('41')
+  })
+
+  it('return null when null', () => {
+    const value = lastTwoDigits(null)
+
+    expect(value).toBe(null)
+  })
+})
+
 describe('getNextBillingDate', () => {
   describe('there is a valid timestamp', () => {
     it('returns formatted timestamp', () => {
@@ -253,8 +352,10 @@ describe('getNextBillingDate', () => {
   describe('there is no timestamp', () => {
     it('returns null', () => {
       const value = getNextBillingDate({
-        latestInvoice: {
-          periodEnd: 1660000000,
+        subscriptionDetail: {
+          latestInvoice: {
+            periodEnd: 1660000000,
+          },
         },
       })
 
@@ -276,6 +377,11 @@ describe('isAnnualPlan', () => {
 
   it('supports annual pr plan', () => {
     expect(isAnnualPlan('users-pr-inappy')).toBe(true)
+    expect(isAnnualPlan(Plans.USERS_PR_INAPPY)).toBe(true)
+  })
+
+  it('supports annual team plan', () => {
+    expect(isAnnualPlan('users-teamy')).toBe(true)
     expect(isAnnualPlan(Plans.USERS_PR_INAPPY)).toBe(true)
   })
 
@@ -405,6 +511,92 @@ describe('findSentryPlans', () => {
   })
 })
 
+describe('findProPlans', () => {
+  it('contains monthly plan', () => {
+    const plans = getPlans()
+    const { proPlanMonth } = findProPlans({ plans })
+
+    const expectedResult = {
+      marketingName: 'Pro Team',
+      value: 'users-pr-inappm',
+      billingRate: 'monthly',
+      baseUnitPrice: 12,
+      benefits: [
+        'Configureable # of users',
+        'Unlimited public repositories',
+        'Unlimited private repositories',
+        'Priorty Support',
+      ],
+    }
+
+    expect(proPlanMonth).toStrictEqual(expectedResult)
+  })
+
+  it('contains annual plan', () => {
+    const plans = getPlans()
+    const { proPlanYear } = findProPlans({ plans })
+
+    const expectedResult = {
+      marketingName: 'Pro Team',
+      value: 'users-pr-inappy',
+      billingRate: 'annually',
+      baseUnitPrice: 10,
+      benefits: [
+        'Configureable # of users',
+        'Unlimited public repositories',
+        'Unlimited private repositories',
+        'Priorty Support',
+      ],
+    }
+
+    expect(proPlanYear).toStrictEqual(expectedResult)
+  })
+})
+
+describe('findTeamPlans', () => {
+  it('contains monthly plan', () => {
+    const plans = getPlans()
+    const { teamPlanMonth } = findTeamPlans({ plans })
+
+    const expectedResult = {
+      marketingName: 'Team',
+      value: 'users-teamm',
+      billingRate: 'monthly',
+      baseUnitPrice: 6,
+      benefits: [
+        'Up to 10 users',
+        'Unlimited repositories',
+        '2500 repositories',
+        'Patch coverage analysis',
+      ],
+      trialDays: null,
+    }
+
+    expect(teamPlanMonth).toStrictEqual(expectedResult)
+  })
+
+  it('contains annual plan', () => {
+    const plans = getPlans()
+    const { teamPlanYear } = findTeamPlans({ plans })
+
+    const expectedResult = {
+      marketingName: 'Team',
+      value: 'users-teamy',
+      billingRate: 'yearly',
+      baseUnitPrice: 5,
+      benefits: [
+        'Up to 10 users',
+        'Unlimited repositories',
+        '2500 repositories',
+        'Patch coverage analysis',
+      ],
+      trialDays: null,
+    }
+
+    expect(teamPlanYear).toStrictEqual(expectedResult)
+  })
+})
+
 describe('canApplySentryUpgrade', () => {
   it('returns true when list contains monthly plan', () => {
     const result = canApplySentryUpgrade({
@@ -462,6 +654,27 @@ describe('isBasicPlan', () => {
   })
 })
 
+describe('isTeamPlan', () => {
+  it('returns true when plan is team monthly or yearly', () => {
+    expect(isTeamPlan(Plans.USERS_TEAMM)).toBeTruthy()
+    expect(isTeamPlan(Plans.USERS_TEAMY)).toBeTruthy()
+  })
+
+  it('returns false when plan is not team monthly or yearly', () => {
+    expect(isTeamPlan(Plans.USERS_FREE)).toBeFalsy()
+    expect(isTeamPlan(Plans.USERS_BASIC)).toBeFalsy()
+    expect(isTeamPlan(Plans.USERS_INAPP)).toBeFalsy()
+    expect(isTeamPlan(Plans.USERS_ENTERPRISEM)).toBeFalsy()
+    expect(isTeamPlan(Plans.USERS_SENTRYM)).toBeFalsy()
+  })
+
+  it('returns false when plan is not a string', () => {
+    expect(isTeamPlan(123)).toBeFalsy()
+    expect(isTeamPlan({})).toBeFalsy()
+    expect(isTeamPlan([])).toBeFalsy()
+  })
+})
+
 describe('isTrialPlan', () => {
   it('returns true when plan is trial', () => {
     expect(isTrialPlan(Plans.USERS_TRIAL)).toBeTruthy()
@@ -479,5 +692,46 @@ describe('isTrialPlan', () => {
     expect(isTrialPlan(123)).toBeFalsy()
     expect(isTrialPlan({})).toBeFalsy()
     expect(isTrialPlan([])).toBeFalsy()
+  })
+})
+
+describe('isProPlan', () => {
+  it('returns true when plan is pro', () => {
+    expect(isProPlan(Plans.USERS_PR_INAPPM)).toBeTruthy()
+  })
+
+  it('returns true when plan is sentry pro', () => {
+    expect(isProPlan(Plans.USERS_SENTRYM)).toBeTruthy()
+  })
+
+  it('returns false when plan is not pro', () => {
+    expect(isProPlan(Plans.USERS_FREE)).toBeFalsy()
+    expect(isProPlan(Plans.USERS_ENTERPRISEM)).toBeFalsy()
+    expect(isProPlan(Plans.USERS_BASIC)).toBeFalsy()
+  })
+
+  it('returns false when plan is not a string', () => {
+    expect(isProPlan(123)).toBeFalsy()
+    expect(isProPlan({})).toBeFalsy()
+    expect(isProPlan([])).toBeFalsy()
+  })
+})
+
+describe('isCodecovProPlan', () => {
+  it('returns true when plan is codecov pro', () => {
+    expect(isCodecovProPlan(Plans.USERS_PR_INAPPM)).toBeTruthy()
+  })
+
+  it('returns false when plan is not codecov pro', () => {
+    expect(isCodecovProPlan(Plans.USERS_FREE)).toBeFalsy()
+    expect(isCodecovProPlan(Plans.USERS_ENTERPRISEM)).toBeFalsy()
+    expect(isCodecovProPlan(Plans.USERS_SENTRYM)).toBeFalsy()
+    expect(isCodecovProPlan(Plans.USERS_BASIC)).toBeFalsy()
+  })
+
+  it('returns false when plan is not a string', () => {
+    expect(isCodecovProPlan(123)).toBeFalsy()
+    expect(isCodecovProPlan({})).toBeFalsy()
+    expect(isCodecovProPlan([])).toBeFalsy()
   })
 })

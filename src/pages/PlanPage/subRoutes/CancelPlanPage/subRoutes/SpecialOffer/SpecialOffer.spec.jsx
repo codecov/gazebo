@@ -52,7 +52,12 @@ afterAll(() => {
 })
 
 describe('SpecialOffer', () => {
-  function setup({ unsuccessfulReq = false } = { unsuccessfulReq: false }) {
+  function setup(
+    { unsuccessfulReq = false, multipleTiers } = {
+      unsuccessfulReq: false,
+      multipleTiers: false,
+    }
+  ) {
     const user = userEvent.setup()
 
     server.use(

@@ -144,20 +144,28 @@ fragment ImpactedFilesOnPull on Pull {
         percentCovered
       }
       impactedFiles(filters: $filters) {
-        fileName
-        headName
-        isCriticalFile
-        missesCount
-        baseCoverage {
-          percentCovered
+        __typename
+        ... on ImpactedFiles {
+          results {
+            fileName
+            headName
+            isCriticalFile
+            missesCount
+            baseCoverage {
+              percentCovered
+            }
+            headCoverage {
+              percentCovered
+            }
+            patchCoverage {
+              percentCovered
+            }
+            changeCoverage
+          }
         }
-        headCoverage {
-          percentCovered
+        ... on UnknownFlags {
+          message
         }
-        patchCoverage {
-          percentCovered
-        }
-        changeCoverage
       }
     }
     ... on FirstPullRequest {
@@ -244,3 +252,80 @@ fragment FileComparisonWithBase on Pull {
     }
   }
 }`
+
+export const PullCompareWithBaseFragment = `
+fragment PullCompareWithBaseFragment on Pull {
+  compareWithBase {
+    __typename
+    ... on Comparison {
+      __typename
+      flagComparisons {
+        name
+        patchTotals {
+          percentCovered
+        }
+        headTotals {
+          percentCovered
+        }
+        baseTotals {
+          percentCovered
+        }
+      }
+      state
+      patchTotals {
+        percentCovered
+      }
+      baseTotals {
+        percentCovered
+      }
+      headTotals {
+        percentCovered
+      }
+      changeCoverage
+      hasDifferentNumberOfHeadAndBaseReports
+      impactedFiles(filters: $filters) {
+        __typename
+        ... on ImpactedFiles {
+          results {
+            fileName
+            isCriticalFile
+            headName
+            missesCount
+            patchCoverage {
+              percentCovered
+            }
+            baseCoverage {
+              percentCovered
+            }
+            headCoverage {
+              percentCovered
+            }
+            changeCoverage
+          }
+        }
+        ... on UnknownFlags {
+          message
+        }
+      }
+    }
+    ... on FirstPullRequest {
+      message
+    }
+    ... on MissingBaseCommit {
+      message
+    }
+    ... on MissingHeadCommit {
+      message
+    }
+    ... on MissingComparison {
+      message
+    }
+    ... on MissingBaseReport {
+      message
+    }
+    ... on MissingHeadReport {
+      message
+    }
+  }
+}
+`

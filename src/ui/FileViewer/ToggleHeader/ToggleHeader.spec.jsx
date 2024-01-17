@@ -4,11 +4,8 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
-
 import ToggleHeader from './ToggleHeader'
 
-jest.mock('shared/featureFlags')
 jest.mock('react-use/lib/useIntersection')
 
 const mockFlagResponse = {
@@ -70,10 +67,6 @@ afterAll(() => {
 
 describe('ToggleHeader', () => {
   function setup() {
-    useFlags.mockReturnValue({
-      coverageTabFlagMutliSelect: true,
-    })
-
     server.use(
       graphql.query('BackfillFlagMemberships', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockBackfillResponse))

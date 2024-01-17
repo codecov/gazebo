@@ -1,3 +1,6 @@
+import qs from 'qs'
+import { useLocation } from 'react-router-dom'
+
 import Table from 'old_ui/Table'
 import { useLocationParams } from 'services/navigation'
 import ContentsTableHeader from 'shared/ContentsTable/ContentsTableHeader'
@@ -9,6 +12,8 @@ import SearchField from 'ui/SearchField'
 import Spinner from 'ui/Spinner'
 
 import { useRepoPullContentsTable } from './hooks'
+
+import ComponentsSelector from '../ComponentsSelector'
 
 const Loader = () => (
   <div className="flex flex-1 justify-center">
@@ -23,6 +28,12 @@ const defaultQueryParams = {
 function FileExplorer() {
   const { data, headers, handleSort, isSearching, isLoading } =
     useRepoPullContentsTable()
+  const location = useLocation()
+  const queryParams = qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+    depth: 1,
+  })
+  const flags = queryParams?.flags
 
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const { treePaths } = usePullTreePaths()
@@ -34,12 +45,15 @@ function FileExplorer() {
           <DisplayTypeButton />
           <Breadcrumb paths={treePaths} />
         </div>
-        <SearchField
-          dataMarketing="pull-files-search"
-          placeholder="Search for files"
-          searchValue={params?.search}
-          setSearchValue={(search) => updateParams({ search })}
-        />
+        <div className="flex gap-2">
+          <ComponentsSelector />
+          <SearchField
+            dataMarketing="pull-files-search"
+            placeholder="Search for files"
+            searchValue={params?.search}
+            setSearchValue={(search) => updateParams({ search })}
+          />
+        </div>
       </ContentsTableHeader>
       <Table
         data={data}
@@ -49,7 +63,10 @@ function FileExplorer() {
       />
       {isLoading && <Loader />}
       {data?.length === 0 && !isLoading && (
-        <MissingFileData isSearching={isSearching} />
+        <MissingFileData
+          isSearching={isSearching}
+          hasFlagsSelected={flags?.length > 0}
+        />
       )}
     </div>
   )

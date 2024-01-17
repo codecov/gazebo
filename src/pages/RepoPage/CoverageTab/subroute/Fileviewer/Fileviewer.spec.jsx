@@ -1,14 +1,30 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TierNames } from 'services/tier'
 import { useScrollToLine } from 'ui/CodeRenderer/hooks/useScrollToLine'
 
 import FileView from './Fileviewer'
 
 jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
+
+const mockRepoSettings = (isPrivate) => ({
+  owner: {
+    repository: {
+      defaultBranch: 'main',
+      private: isPrivate,
+      uploadToken: 'token',
+      graphToken: 'token',
+      yaml: 'yaml',
+      bot: {
+        username: 'test',
+      },
+    },
+  },
+})
 
 const mockOwner = {
   username: 'cool-user',
@@ -18,6 +34,21 @@ const mockOverview = {
   owner: {
     repository: {
       defaultBranch: 'main',
+    },
+  },
+}
+
+const mockComponents = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      branch: {
+        name: 'branch-1',
+        head: {
+          commitid: 'commit-123',
+          components: [{ name: 'c1', id: 'c1' }],
+        },
+      },
     },
   },
 }
@@ -93,10 +124,10 @@ const mockBackfillResponse = {
   },
 }
 
+const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const server = setupServer()
 
 const wrapper =
   (
@@ -116,6 +147,7 @@ const wrapper =
     )
 
 beforeAll(() => {
+  jest.spyOn(console, 'error').mockImplementation(() => {})
   server.listen()
 })
 afterEach(() => {
@@ -123,11 +155,17 @@ afterEach(() => {
   server.resetHandlers()
 })
 afterAll(() => {
+  jest.resetAllMocks()
   server.close()
 })
 
 describe('FileView', () => {
-  function setup() {
+  function setup(
+    { tierName = TierNames.PRO, isPrivate = false } = {
+      tierName: TierNames.PRO,
+      isPrivate: false,
+    }
+  ) {
     useScrollToLine.mockImplementation(() => ({
       lineRef: () => {},
       handleClick: jest.fn(),
@@ -149,15 +187,35 @@ describe('FileView', () => {
       }),
       graphql.query('FlagsSelect', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockFlagResponse))
+      }),
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({ owner: { plan: { tierName: tierName } } })
+        )
+      }),
+      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
+      }),
+      graphql.query('GetBranchComponents', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockComponents))
+      }),
+      graphql.query('GetBranches', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({}))
+      }),
+      graphql.query('GetRepoCoverage', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({}))
+      }),
+      graphql.query('GetBranch', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({}))
       })
     )
   }
 
   describe('rendering component', () => {
-    beforeEach(() => setup())
-
     describe('displaying the tree path', () => {
       it('displays repo link', async () => {
+        setup()
         render(<FileView />, { wrapper: wrapper() })
 
         const repoName = await screen.findByRole('link', { name: 'mightynein' })
@@ -169,6 +227,7 @@ describe('FileView', () => {
       })
 
       it('displays directory link', async () => {
+        setup()
         render(<FileView />, { wrapper: wrapper() })
 
         const repoName = await screen.findByRole('link', { name: 'folder' })
@@ -180,6 +239,7 @@ describe('FileView', () => {
       })
 
       it('displays file name', async () => {
+        setup()
         render(<FileView />, { wrapper: wrapper() })
 
         const fileName = await screen.findByText('file.js')
@@ -189,6 +249,7 @@ describe('FileView', () => {
 
     describe('displaying the file viewer', () => {
       it('sets the correct url link', async () => {
+        setup()
         render(<FileView />, { wrapper: wrapper() })
 
         const copyLink = await screen.findByRole('link', {
@@ -196,6 +257,55 @@ describe('FileView', () => {
         })
         expect(copyLink).toBeInTheDocument()
         expect(copyLink).toHaveAttribute('href', '#folder/file.js')
+      })
+    })
+
+    describe('displaying the components selector', () => {
+      it('renders the components multi select', async () => {
+        setup()
+        render(<FileView />, { wrapper: wrapper() })
+
+        const select = await screen.findByText('All components')
+        expect(select).toBeInTheDocument()
+      })
+    })
+
+    describe('displaying the flag selector', () => {
+      describe('user is not on a team plan', () => {
+        it('renders the flag multi select', async () => {
+          setup()
+          render(<FileView />, { wrapper: wrapper() })
+
+          const select = await screen.findByText('All flags')
+          expect(select).toBeInTheDocument()
+        })
+      })
+
+      describe('on a team plan', () => {
+        describe('repo is public', () => {
+          it('renders the flag multi select', async () => {
+            setup({ tierName: TierNames.TEAM, isPrivate: false })
+
+            render(<FileView />, { wrapper: wrapper() })
+
+            const select = await screen.findByText('All flags')
+            expect(select).toBeInTheDocument()
+          })
+        })
+
+        describe('repo is private', () => {
+          it('does not render the flag multi select', async () => {
+            setup({ tierName: TierNames.TEAM, isPrivate: true })
+            render(<FileView />, { wrapper: wrapper() })
+
+            await waitFor(() => queryClient.isFetching)
+            await waitFor(() => !queryClient.isFetching)
+
+            await waitFor(() =>
+              expect(screen.queryByText('All flags')).not.toBeInTheDocument()
+            )
+          })
+        })
       })
     })
   })

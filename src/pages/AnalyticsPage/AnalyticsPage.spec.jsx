@@ -1,4 +1,6 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
@@ -15,6 +17,29 @@ jest.mock('./ChartSelectors', () => () => 'Chart Selectors')
 jest.mock('./Chart', () => () => 'Line Chart')
 jest.mock('../../shared/ListRepo/ReposTable', () => () => 'ReposTable')
 
+const queryClient = new QueryClient()
+const server = setupServer()
+
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
+      <Route path="/analytics/:provider/:owner">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
+
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: 'warn' })
+  console.error = () => {}
+})
+beforeEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => {
+  server.close()
+})
+
 describe('AnalyticsPage', () => {
   function setup({ owner, params }) {
     useOwner.mockReturnValue({
@@ -26,13 +51,6 @@ describe('AnalyticsPage', () => {
         direction: params?.direction,
       },
     })
-    render(
-      <MemoryRouter initialEntries={['/analytics/gh/codecov']}>
-        <Route path="/analytics/:provider/:owner">
-          <AnalyticsPage />
-        </Route>
-      </MemoryRouter>
-    )
   }
 
   describe('when the owner exists', () => {
@@ -50,22 +68,27 @@ describe('AnalyticsPage', () => {
     })
 
     it('renders the header', () => {
+      render(<AnalyticsPage />, { wrapper })
       expect(screen.getByText(/Header/)).toBeInTheDocument()
     })
 
     it('renders tabs associated with the page', () => {
+      render(<AnalyticsPage />, { wrapper })
       expect(screen.getByText(/Tabs/)).toBeInTheDocument()
     })
 
     it('renders a table displaying repository list', () => {
+      render(<AnalyticsPage />, { wrapper })
       expect(screen.getByText(/Repos/)).toBeInTheDocument()
     })
 
     it('renders a selectors displaying chart options list', () => {
+      render(<AnalyticsPage />, { wrapper })
       expect(screen.getByText(/Chart Selectors/)).toBeInTheDocument()
     })
 
     it('renders the line chart', () => {
+      render(<AnalyticsPage />, { wrapper })
       expect(screen.getByText(/Line Chart/)).toBeInTheDocument()
     })
   })
@@ -79,10 +102,12 @@ describe('AnalyticsPage', () => {
     })
 
     it('does not render the header', () => {
+      render(<AnalyticsPage />, { wrapper })
       expect(screen.queryByText(/Header/)).not.toBeInTheDocument()
     })
 
     it('renders a not found error page', () => {
+      render(<AnalyticsPage />, { wrapper })
       expect(
         screen.getByRole('heading', {
           name: /not found/i,
@@ -91,14 +116,17 @@ describe('AnalyticsPage', () => {
     })
 
     it('does not renders a repository table', () => {
+      render(<AnalyticsPage />, { wrapper })
       expect(screen.queryByText(/Repos/)).not.toBeInTheDocument()
     })
 
     it('does not render a selectors displaying chart options list', () => {
+      render(<AnalyticsPage />, { wrapper })
       expect(screen.queryByText(/Chart Selectors/)).not.toBeInTheDocument()
     })
 
     it('does not render the line chart', () => {
+      render(<AnalyticsPage />, { wrapper })
       expect(screen.queryByText(/Line Chart/)).not.toBeInTheDocument()
     })
   })
@@ -120,6 +148,7 @@ describe('AnalyticsPage', () => {
     })
 
     it('does not render Tabs', () => {
+      render(<AnalyticsPage />, { wrapper })
       expect(screen.queryByText(/Tabs/)).not.toBeInTheDocument()
     })
   })

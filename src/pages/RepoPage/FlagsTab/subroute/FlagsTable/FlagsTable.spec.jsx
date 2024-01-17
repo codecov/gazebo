@@ -64,6 +64,26 @@ const mockFlagMeasurements = {
   },
 }
 
+const mockNoReportsUploadedMeasurements = {
+  owner: {
+    repository: {
+      flags: {
+        edges: [
+          {
+            node: {
+              name: 'flag1',
+            },
+          },
+        ],
+        pageInfo: {
+          hasNextPage: true,
+          endCursor: 'end-cursor',
+        },
+      },
+    },
+  },
+}
+
 const mockEmptyFlagMeasurements = {
   owner: {
     repository: {
@@ -87,7 +107,7 @@ const queryClient = new QueryClient({
   },
 })
 const server = setupServer()
-
+let testLocation
 const wrapper =
   (initialEntries = '/gh/codecov/gazebo/flags') =>
   ({ children }) =>
@@ -97,6 +117,13 @@ const wrapper =
           <Route path="/:provider/:owner/:repo/flags">
             <Suspense fallback={null}>{children}</Suspense>
           </Route>
+          <Route
+            path="*"
+            render={({ location }) => {
+              testLocation = location
+              return null
+            }}
+          />
         </MemoryRouter>
       </QueryClientProvider>
     )
@@ -109,7 +136,9 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('RepoContentsTable', () => {
-  function setup({ noData } = { noData: false }) {
+  function setup(
+    { noData, noReportsUploaded } = { noData: false, noReportsUploaded: false }
+  ) {
     const user = userEvent.setup()
     const fetchNextPage = jest.fn()
     const handleSort = jest.fn()
@@ -124,6 +153,13 @@ describe('RepoContentsTable', () => {
 
         if (noData) {
           return res(ctx.status(200), ctx.data(mockEmptyFlagMeasurements))
+        }
+
+        if (noReportsUploaded) {
+          return res(
+            ctx.status(200),
+            ctx.data(mockNoReportsUploadedMeasurements)
+          )
         }
 
         return res(ctx.status(200), ctx.data(mockFlagMeasurements))
@@ -170,11 +206,19 @@ describe('RepoContentsTable', () => {
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
       )
 
-      const flag1 = screen.getByText('flag1')
+      const flag1 = await screen.findByRole('link', { name: 'flag1' })
       expect(flag1).toBeInTheDocument()
+      expect(flag1).toHaveAttribute(
+        'href',
+        '/gh/codecov/gazebo?flags%5B0%5D=flag1'
+      )
 
-      const flag2 = screen.getByText('flag2')
+      const flag2 = await screen.findByRole('link', { name: 'flag2' })
       expect(flag2).toBeInTheDocument()
+      expect(flag2).toHaveAttribute(
+        'href',
+        '/gh/codecov/gazebo?flags%5B0%5D=flag2'
+      )
     })
 
     it('renders flags coverage', async () => {
@@ -211,6 +255,29 @@ describe('RepoContentsTable', () => {
 
       const noData = screen.getByText('No Data')
       expect(noData).toBeInTheDocument()
+    })
+  })
+
+  describe('flag name is clicked', () => {
+    it('goes to coverage page', async () => {
+      const { user } = setup()
+
+      render(<FlagsTable />, { wrapper: wrapper() })
+
+      await expect(screen.findByTestId('spinner')).resolves.toBeInTheDocument()
+      await waitFor(() =>
+        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      )
+
+      const flag1 = screen.getByRole('link', { name: 'flag1' })
+      expect(flag1).toBeInTheDocument()
+      expect(flag1).toHaveAttribute(
+        'href',
+        '/gh/codecov/gazebo?flags%5B0%5D=flag1'
+      )
+
+      user.click(flag1)
+      expect(testLocation.pathname).toBe('/gh/codecov/gazebo/flags')
     })
   })
 
@@ -339,6 +406,20 @@ describe('RepoContentsTable', () => {
 
       await user.click(flags)
       await waitFor(() => expect(handleSort).toHaveBeenLastCalledWith('ASC'))
+    })
+  })
+
+  describe('when no coverage report uploaded', () => {
+    it('renders no report data state', async () => {
+      setup({ noReportsUploaded: true })
+      render(<FlagsTable />, { wrapper: wrapper() })
+
+      await expect(screen.findByTestId('spinner')).resolves.toBeInTheDocument()
+      await waitFor(() =>
+        expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+      )
+      const dash = await screen.findByText('-')
+      expect(dash).toBeInTheDocument()
     })
   })
 })

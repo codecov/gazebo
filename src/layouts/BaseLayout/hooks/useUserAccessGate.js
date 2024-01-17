@@ -7,7 +7,6 @@ import config from 'config'
 import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
 import { useLocationParams } from 'services/navigation'
 import { useInternalUser, useUser } from 'services/user'
-import { useFlags } from 'shared/featureFlags'
 
 const SetUpActions = Object.freeze({
   INSTALL: 'install',
@@ -35,11 +34,6 @@ const useUserAccessGate = () => {
   const { provider } = useParams()
   const currentRoute = useRouteMatch()
 
-  const { termsOfServicePage, defaultOrgSelectorPage } = useFlags({
-    termsOfServicePage: false,
-    defaultOrgSelectorPage: false,
-  })
-
   const {
     data: userData,
     isLoading: userIsLoading,
@@ -63,9 +57,8 @@ const useUserAccessGate = () => {
 
   useOnboardingRedirect({ username: userData?.user?.username })
 
-  const missingUser = !userData && userIsSuccess
-  const missingInternalUser = !internalUser && internalUserIsSuccess
-  const isGuest = missingUser || missingInternalUser
+  const foundUser = userData && userIsSuccess
+  const foundInternalUser = internalUser && internalUserIsSuccess
 
   let showAgreeToTerms = false
   let showDefaultOrgSelector = false
@@ -73,28 +66,18 @@ const useUserAccessGate = () => {
 
   // the undefined provider check can be removed when the ToS has
   // been refactored to no longer use a provider
-  if (
-    termsOfServicePage &&
-    !isUndefined(provider) &&
-    !isGuest &&
-    !config.IS_SELF_HOSTED
-  ) {
-    showAgreeToTerms = userData?.termsAgreement === false
+  if (foundInternalUser && !config.IS_SELF_HOSTED) {
+    showAgreeToTerms = internalUser?.termsAgreement === false
   }
 
   const onSyncPage = currentRoute.path === '/sync'
-  if (!isGuest && !onSyncPage) {
+  if (foundInternalUser && !onSyncPage) {
     // owners array contains a list of the synced providers
     // if it is zero then they haven't synced any other providers
     redirectToSyncPage = isEqual(internalUser?.owners?.length, 0)
   }
 
-  if (
-    defaultOrgSelectorPage &&
-    !isUndefined(provider) &&
-    !isGuest &&
-    !config.IS_SELF_HOSTED
-  ) {
+  if (!isUndefined(provider) && foundUser && !config.IS_SELF_HOSTED) {
     showDefaultOrgSelector = !userData?.owner?.defaultOrgUsername
   }
 

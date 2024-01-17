@@ -7,7 +7,7 @@ import { useAccountDetails } from 'services/account'
 import CurrentOrgPlan from './CurrentOrgPlan'
 
 jest.mock('services/account')
-jest.mock('./PaymentCard', () => () => 'PaymentCard')
+jest.mock('./BillingDetails', () => () => 'BillingDetails')
 jest.mock('./CurrentPlanCard', () => () => 'CurrentPlanCard')
 jest.mock('./LatestInvoiceCard', () => () => 'LatestInvoiceCard')
 
@@ -56,8 +56,8 @@ describe('CurrentOrgPlan', () => {
       expect(screen.queryByText(/LatestInvoiceCard/i)).not.toBeInTheDocument()
     })
 
-    it('does not render PaymentCard', () => {
-      expect(screen.queryByText(/PaymentCard/i)).not.toBeInTheDocument()
+    it('does not render BillingDetails', () => {
+      expect(screen.queryByText(/BillingDetails/i)).not.toBeInTheDocument()
     })
   })
 
@@ -82,8 +82,8 @@ describe('CurrentOrgPlan', () => {
       expect(screen.getByText(/LatestInvoiceCard/i)).toBeInTheDocument()
     })
 
-    it('renders PaymentCard', () => {
-      expect(screen.getByText(/PaymentCard/i)).toBeInTheDocument()
+    it('renders BillingDetails', () => {
+      expect(screen.getByText(/BillingDetails/i)).toBeInTheDocument()
     })
   })
 
@@ -100,8 +100,8 @@ describe('CurrentOrgPlan', () => {
       expect(screen.queryByText(/LatestInvoiceCard/i)).not.toBeInTheDocument()
     })
 
-    it('does not render PaymentCard', () => {
-      expect(screen.queryByText(/PaymentCard/i)).not.toBeInTheDocument()
+    it('does not render BillingDetails', () => {
+      expect(screen.queryByText(/BillingDetails/i)).not.toBeInTheDocument()
     })
   })
 })

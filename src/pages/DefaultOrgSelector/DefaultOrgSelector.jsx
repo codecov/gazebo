@@ -7,7 +7,6 @@ import { z } from 'zod'
 import { TrialStatuses, usePlanData } from 'services/account'
 import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
 import { useStaticNavLinks } from 'services/navigation'
-import { trackSegmentEvent } from 'services/tracking/segment'
 import { useStartTrial } from 'services/trial'
 import { useUser } from 'services/user'
 import { isBasicPlan } from 'shared/utils/billing'
@@ -20,8 +19,7 @@ import Icon from 'ui/Icon/Icon'
 import Select from 'ui/Select'
 
 import GitHubHelpBanner from './GitHubHelpBanner'
-
-import { useMyOrganizations } from '../TermsOfService/hooks/useMyOrganizations'
+import { useMyOrganizations } from './hooks/useMyOrganizations'
 
 const FormSchema = z.object({
   select: z.string().nullish(),
@@ -101,20 +99,10 @@ function DefaultOrgSelector() {
   })
 
   const onSubmit = () => {
-    const segmentEvent = {
-      event: 'Onboarding default org selector',
-      data: {
-        ownerid: currentUser?.trackingMetadata?.ownerid,
-        username: currentUser?.user?.username,
-        org: selectedOrg,
-      },
-    }
-
-    trackSegmentEvent(segmentEvent)
     updateDefaultOrg({ username: selectedOrg })
 
     if (
-      isBasicPlan(planData?.plan?.planName) &&
+      isBasicPlan(planData?.plan?.value) &&
       selectedOrg !== currentUser?.user?.username &&
       isNewTrial
     ) {

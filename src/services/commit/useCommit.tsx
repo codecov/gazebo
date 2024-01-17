@@ -9,6 +9,7 @@ import {
   MissingHeadCommitSchema,
   MissingHeadReportSchema,
 } from 'services/comparison/schemas'
+import { UnknownFlagsSchema } from 'services/impactedFiles/schemas'
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
@@ -54,11 +55,11 @@ const UploadSchema = z.object({
   provider: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
-  flags: z.array(z.string()).nullable(),
+  flags: z.array(z.string()).nullish(),
   jobCode: z.string().nullable(),
-  downloadUrl: z.string().nullable(),
+  downloadUrl: z.string(),
   ciUrl: z.string().nullable(),
-  uploadType: UploadTypeEnumSchema.nullable(),
+  uploadType: UploadTypeEnumSchema,
   buildCode: z.string().nullable(),
   name: z.string().nullable(),
   errors: ErrorsSchema.nullable(),
@@ -74,22 +75,28 @@ const UploadsSchema = z.object({
   ),
 })
 
+const ImpactedFileSchema = z.object({
+  headName: z.string().nullable(),
+  patchCoverage: CoverageObjSchema.nullable(),
+  baseCoverage: CoverageObjSchema.nullable(),
+  headCoverage: CoverageObjSchema.nullable(),
+})
+
+const ImpactedFileResultsSchema = z.object({
+  __typename: z.literal('ImpactedFiles'),
+  results: z.array(ImpactedFileSchema.nullable()),
+})
+
 const ComparisonSchema = z.object({
   __typename: z.literal('Comparison'),
   indirectChangedFilesCount: z.number(),
   directChangedFilesCount: z.number(),
   state: z.string(),
   patchTotals: CoverageObjSchema.nullable(),
-  impactedFiles: z.array(
-    z
-      .object({
-        headName: z.string().nullable(),
-        patchCoverage: CoverageObjSchema.nullable(),
-        baseCoverage: CoverageObjSchema.nullable(),
-        headCoverage: CoverageObjSchema.nullable(),
-      })
-      .nullable()
-  ),
+  impactedFiles: z.discriminatedUnion('__typename', [
+    ImpactedFileResultsSchema,
+    UnknownFlagsSchema,
+  ]),
 })
 
 const CompareWithParentSchema = z.discriminatedUnion('__typename', [
@@ -105,10 +112,10 @@ const CompareWithParentSchema = z.discriminatedUnion('__typename', [
 const CommitSchema = z.object({
   totals: CoverageObjSchema.nullable(),
   state: z.string().nullable(),
-  commitid: z.string().nullable(),
+  commitid: z.string(),
   pullId: z.number().nullable(),
   branchName: z.string().nullable(),
-  createdAt: z.string().nullable(),
+  createdAt: z.string(),
   author: z
     .object({
       username: z.string().nullable(),
@@ -119,7 +126,7 @@ const CommitSchema = z.object({
   ciPassed: z.boolean().nullable(),
   parent: z
     .object({
-      commitid: z.string().nullable(),
+      commitid: z.string(),
       totals: CoverageObjSchema.nullable(),
     })
     .nullable(),
@@ -149,6 +156,7 @@ query Commit(
   $repo: String!
   $commitid: String!
   $filters: ImpactedFilesFilters
+  $isTeamPlan: Boolean!
 ) {
   owner(username: $owner) {
     repository(name: $repo) {
@@ -174,7 +182,7 @@ query Commit(
                 provider
                 createdAt
                 updatedAt
-                flags
+                flags @skip(if: $isTeamPlan)
                 jobCode
                 downloadUrl
                 ciUrl
@@ -209,15 +217,23 @@ query Commit(
                 coverage: percentCovered
               }
               impactedFiles(filters: $filters) {
-                patchCoverage {
-                  coverage: percentCovered
+                __typename
+                ... on ImpactedFiles {
+                  results {
+                    patchCoverage {
+                      coverage: percentCovered
+                    }
+                    headName
+                    baseCoverage {
+                      coverage: percentCovered
+                    }
+                    headCoverage {
+                      coverage: percentCovered
+                    }
+                  }
                 }
-                headName
-                baseCoverage {
-                  coverage: percentCovered
-                }
-                headCoverage {
-                  coverage: percentCovered
+                ... on UnknownFlags {
+                  message
                 }
               }
             }
@@ -264,8 +280,22 @@ interface UseCommitArgs {
   owner: string
   repo: string
   commitid: string
-  filters?: {}
+  filters?: {
+    hasUnintendedChanges?: boolean
+    flags?: Array<string>
+    components?: Array<string>
+    ordering?: {
+      direction?: 'DESC' | 'ASC'
+      parameter?:
+        | 'FILE_NAME'
+        | 'CHANGE_COVERAGE'
+        | 'HEAD_COVERAGE'
+        | 'MISSES_COUNT'
+        | 'PATCH_COVERAGE'
+    }
+  }
   refetchInterval?: number
+  isTeamPlan?: boolean
 }
 
 export function useCommit({
@@ -275,10 +305,19 @@ export function useCommit({
   commitid,
   filters = {},
   refetchInterval = 2000,
+  isTeamPlan = false,
 }: UseCommitArgs) {
   const queryClient = useQueryClient()
-  const tempKey = ['commit', provider, owner, repo, commitid, query, filters]
-
+  const tempKey = [
+    'commit',
+    provider,
+    owner,
+    repo,
+    commitid,
+    query,
+    filters,
+    isTeamPlan,
+  ]
   const commitQuery = useQuery({
     queryKey: tempKey,
     queryFn: ({ signal }) =>
@@ -292,6 +331,7 @@ export function useCommit({
           repo,
           commitid,
           filters,
+          isTeamPlan,
         },
       }).then((res) => {
         const parsedRes = RequestSchema.safeParse(res?.data)

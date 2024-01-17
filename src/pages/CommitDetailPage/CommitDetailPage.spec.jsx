@@ -5,6 +5,7 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TierNames } from 'services/tier'
 import { useTruncation } from 'ui/TruncatedMessage/hooks'
 
 import CommitPage from './CommitDetailPage'
@@ -12,6 +13,21 @@ import CommitPage from './CommitDetailPage'
 jest.mock('./CommitDetailPageContent', () => () => 'CommitDetailPageContent')
 jest.mock('./UploadsCard', () => () => 'UploadsCard')
 jest.mock('ui/TruncatedMessage/hooks')
+
+const mockRepoSettings = (isPrivate = false) => ({
+  owner: {
+    repository: {
+      defaultBranch: 'master',
+      private: isPrivate,
+      uploadToken: 'token',
+      graphToken: 'token',
+      yaml: 'yaml',
+      bot: {
+        username: 'test',
+      },
+    },
+  },
+})
 
 const mockCommit = {
   owner: {
@@ -82,26 +98,18 @@ const mockOwner = {
   },
 }
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      suspense: true,
-      retry: false,
-    },
-  },
-})
 const server = setupServer()
 
 const wrapper =
-  (
-    initialEntries = [
-      '/gh/codecov/cool-repo/commit/e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed',
-    ]
-  ) =>
+  (queryClient) =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
+        <MemoryRouter
+          initialEntries={[
+            '/gh/codecov/cool-repo/commit/e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed',
+          ]}
+        >
           <Route
             path={[
               '/:provider/:owner/:repo/commit/:commit/blob/:path+',
@@ -122,7 +130,6 @@ beforeAll(() => {
 })
 
 afterEach(() => {
-  queryClient.clear()
   server.resetHandlers()
 })
 
@@ -132,8 +139,29 @@ afterAll(() => {
 
 describe('CommitPage', () => {
   function setup(
-    { hasYamlErrors, noCommit } = { hasYamlErrors: false, noCommit: false }
+    {
+      hasYamlErrors,
+      noCommit,
+      suspense = false,
+      tierValue = TierNames.PRO,
+      isPrivate = false,
+    } = {
+      hasYamlErrors: false,
+      noCommit: false,
+      suspense: false,
+      tierValue: TierNames.PRO,
+      isPrivate: false,
+    }
   ) {
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+          suspense,
+        },
+      },
+    })
+
     useTruncation.mockImplementation(() => ({
       ref: () => {},
       canTruncate: false,
@@ -178,19 +206,27 @@ describe('CommitPage', () => {
       }),
       rest.get('/internal/gh/codecov/account-details/', (req, res, ctx) => {
         return res(ctx.status(200), ctx.json({}))
+      }),
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({ owner: { plan: { tierName: tierValue } } })
+        )
+      }),
+      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
       })
     )
+
+    return { queryClient }
   }
 
   describe('rendering component', () => {
     describe('testing not found', () => {
-      beforeEach(() => {
-        setup({ noCommit: true })
-      })
-
       it('renders not found page', async () => {
+        const { queryClient } = setup({ noCommit: true, suspense: true })
         render(<CommitPage />, {
-          wrapper: wrapper(),
+          wrapper: wrapper(queryClient),
         })
 
         const notFound = await screen.findByText('Error 404')
@@ -199,13 +235,10 @@ describe('CommitPage', () => {
     })
 
     describe('testing breadcrumb', () => {
-      beforeEach(() => {
-        setup()
-      })
-
       it('renders owner link', async () => {
+        const { queryClient } = setup()
         render(<CommitPage />, {
-          wrapper: wrapper(),
+          wrapper: wrapper(queryClient),
         })
 
         const ownerLink = await screen.findByRole('link', { name: 'codecov' })
@@ -214,8 +247,9 @@ describe('CommitPage', () => {
       })
 
       it('renders repo link', async () => {
+        const { queryClient } = setup()
         render(<CommitPage />, {
-          wrapper: wrapper(),
+          wrapper: wrapper(queryClient),
         })
 
         const ownerLink = await screen.findByRole('link', { name: 'cool-repo' })
@@ -224,8 +258,9 @@ describe('CommitPage', () => {
       })
 
       it('renders commits page link', async () => {
+        const { queryClient } = setup()
         render(<CommitPage />, {
-          wrapper: wrapper(),
+          wrapper: wrapper(queryClient),
         })
 
         const ownerLink = await screen.findByRole('link', { name: 'commits' })
@@ -237,8 +272,9 @@ describe('CommitPage', () => {
       })
 
       it('renders read only current short sha', async () => {
+        const { queryClient } = setup()
         render(<CommitPage />, {
-          wrapper: wrapper(),
+          wrapper: wrapper(queryClient),
         })
 
         const ownerLink = await screen.findAllByText('e736f78')
@@ -247,13 +283,10 @@ describe('CommitPage', () => {
     })
 
     describe('testing commit error banners', () => {
-      beforeEach(() => {
-        setup({ hasYamlErrors: true })
-      })
-
       it('displays bot error banner', async () => {
+        const { queryClient } = setup({ hasYamlErrors: true })
         render(<CommitPage />, {
-          wrapper: wrapper(),
+          wrapper: wrapper(queryClient),
         })
 
         const teamBot = await screen.findByText(/Team bot/)
@@ -261,8 +294,9 @@ describe('CommitPage', () => {
       })
 
       it('displays yaml error banner', async () => {
+        const { queryClient } = setup({ hasYamlErrors: true })
         render(<CommitPage />, {
-          wrapper: wrapper(),
+          wrapper: wrapper(queryClient),
         })
 
         const yamlError = await screen.findByText('Commit YAML is invalid')
@@ -271,13 +305,10 @@ describe('CommitPage', () => {
     })
 
     describe('testing setting of query cache', () => {
-      beforeEach(() => {
-        setup({ hasYamlErrors: true })
-      })
-
       it('sets ignore upload ids to empty array', async () => {
+        const { queryClient } = setup({ hasYamlErrors: true })
         render(<CommitPage />, {
-          wrapper: wrapper(),
+          wrapper: wrapper(queryClient),
         })
 
         await waitFor(() =>
@@ -285,6 +316,63 @@ describe('CommitPage', () => {
             []
           )
         )
+      })
+    })
+
+    describe('testing hiding of summary component', () => {
+      describe('user is on team tier', () => {
+        describe('repo is public', () => {
+          it('renders the commit summary', async () => {
+            const { queryClient } = setup({
+              tierValue: TierNames.TEAM,
+              isPrivate: false,
+              suspense: true,
+            })
+            render(<CommitPage />, {
+              wrapper: wrapper(queryClient),
+            })
+
+            const head = await screen.findByText(/HEAD/)
+            expect(head).toBeInTheDocument()
+
+            const patch = await screen.findByText(/Patch/)
+            expect(patch).toBeInTheDocument()
+
+            const change = await screen.findByText(/Change/)
+            expect(change).toBeInTheDocument()
+
+            const source = await screen.findByText(/Source/)
+            expect(source).toBeInTheDocument()
+          })
+        })
+
+        describe('repo is private', () => {
+          it('does not render the commit summary', async () => {
+            const { queryClient } = setup({
+              tierValue: TierNames.TEAM,
+              isPrivate: true,
+              suspense: true,
+            })
+            render(<CommitPage />, {
+              wrapper: wrapper(queryClient),
+            })
+
+            const commitMessage = await screen.findByText('Cool Commit Message')
+            expect(commitMessage).toBeInTheDocument()
+
+            const head = screen.queryByText(/HEAD/)
+            expect(head).not.toBeInTheDocument()
+
+            const patch = screen.queryByText(/Patch/)
+            expect(patch).not.toBeInTheDocument()
+
+            const change = screen.queryByText(/Change/)
+            expect(change).not.toBeInTheDocument()
+
+            const source = screen.queryByText(/Source/)
+            expect(source).not.toBeInTheDocument()
+          })
+        })
       })
     })
   })

@@ -7,13 +7,11 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useAddNotification } from 'services/toastNotification'
-import { trackSegmentEvent } from 'services/tracking/segment'
 
 import StaticAnalysisToken from './StaticAnalysisToken'
 
 jest.mock('copy-to-clipboard', () => () => true)
 jest.mock('services/toastNotification')
-jest.mock('services/tracking/segment')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -46,9 +44,7 @@ describe('StaticAnalysisToken', () => {
     const user = userEvent.setup()
     const addNotification = jest.fn()
     const mutate = jest.fn()
-    const trackSegmentMock = jest.fn()
 
-    trackSegmentEvent.mockImplementation(trackSegmentMock)
     useAddNotification.mockReturnValue(addNotification)
 
     server.use(
@@ -82,7 +78,7 @@ describe('StaticAnalysisToken', () => {
         )
       })
     )
-    return { addNotification, mutate, user, trackSegmentMock }
+    return { addNotification, mutate, user }
   }
 
   describe('renders StaticAnalysisToken component', () => {
@@ -145,7 +141,7 @@ describe('StaticAnalysisToken', () => {
         await user.click(button)
 
         const p = await screen.findByText(
-          'If you save the new token, make sure to update your CI yml'
+          'If you save the new token, make sure to update your CI YAML'
         )
         expect(p).toBeInTheDocument()
       })
@@ -211,29 +207,6 @@ describe('StaticAnalysisToken', () => {
 
         const afterCancel = screen.queryByText('New static analysis token')
         expect(afterCancel).not.toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('when the user clicks on the copy button', () => {
-    it('calls the trackSegmentEvent', async () => {
-      const { user, trackSegmentMock } = setup()
-      render(<StaticAnalysisToken staticAnalysisToken="old token" />, {
-        wrapper,
-      })
-
-      const button = await screen.findByRole('button', { name: /copy/i })
-      await user.click(button)
-
-      expect(trackSegmentMock).toHaveBeenCalledTimes(1)
-      expect(trackSegmentMock).toHaveBeenCalledWith({
-        event: 'Static Analysis Token Copied',
-        data: {
-          owner_slug: 'codecov',
-          repo_slug: 'codecov-client',
-          user_ownerid: 1,
-          id: 1,
-        },
       })
     })
   })

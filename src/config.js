@@ -7,6 +7,7 @@ const defaultConfig = {
   SENTRY_TRACING_SAMPLE_RATE: 0.2,
   SENTRY_SESSION_SAMPLE_RATE: 0.1,
   SENTRY_ERROR_SAMPLE_RATE: 0.9,
+  GH_APP: 'codecov',
 }
 
 export function removeReactAppPrefix(obj) {
@@ -17,6 +18,11 @@ export function removeReactAppPrefix(obj) {
 
   if ('ENV' in keys) {
     keys['IS_SELF_HOSTED'] = keys['ENV'].toLowerCase() === 'enterprise'
+  }
+
+  if ('IS_DEDICATED_NAMESPACE' in keys) {
+    keys['IS_DEDICATED_NAMESPACE'] =
+      keys['IS_DEDICATED_NAMESPACE'].toLowerCase() === 'true'
   }
 
   if ('HIDE_ACCESS_TAB' in keys) {

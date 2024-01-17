@@ -1,4 +1,5 @@
 import { format, fromUnixTime } from 'date-fns'
+import { isUndefined } from 'lodash'
 import isArray from 'lodash/isArray'
 import isString from 'lodash/isString'
 
@@ -14,6 +15,8 @@ export const Plans = Object.freeze({
   USERS_PR_INAPPY: 'users-pr-inappy',
   USERS_SENTRYM: 'users-sentrym',
   USERS_SENTRYY: 'users-sentryy',
+  USERS_TEAMM: 'users-teamm',
+  USERS_TEAMY: 'users-teamy',
   USERS_ENTERPRISEM: 'users-enterprisem',
   USERS_ENTERPRISEY: 'users-enterprisey',
 })
@@ -37,6 +40,12 @@ export function isFreePlan(plan) {
   return false
 }
 
+export function isTeamPlan(plan) {
+  if (isString(plan)) {
+    if (plan === Plans.USERS_TEAMM || plan === Plans.USERS_TEAMY) return true
+  }
+  return false
+}
 export function isBasicPlan(plan) {
   if (isString(plan)) {
     return plan === Plans.USERS_BASIC
@@ -57,6 +66,7 @@ export function isMonthlyPlan(plan) {
       plan === Plans.USERS_INAPP ||
       plan === Plans.USERS_PR_INAPPM ||
       plan === Plans.USERS_SENTRYM ||
+      plan === Plans.USERS_TEAMM ||
       plan === Plans.USERS_ENTERPRISEM
     )
   }
@@ -68,6 +78,7 @@ export function isAnnualPlan(plan) {
     return (
       plan === Plans.USERS_INAPPY ||
       plan === Plans.USERS_PR_INAPPY ||
+      plan === Plans.USERS_TEAMY ||
       plan === Plans.USERS_SENTRYY ||
       plan === Plans.USERS_ENTERPRISEY
     )
@@ -78,6 +89,20 @@ export function isAnnualPlan(plan) {
 export function isSentryPlan(plan) {
   if (isString(plan)) {
     return plan === Plans.USERS_SENTRYM || plan === Plans.USERS_SENTRYY
+  }
+  return false
+}
+
+export function isCodecovProPlan(plan) {
+  if (isString(plan)) {
+    return plan === Plans.USERS_PR_INAPPM || plan === Plans.USERS_PR_INAPPY
+  }
+  return false
+}
+
+export function isProPlan(plan) {
+  if (isString(plan)) {
+    return isSentryPlan(plan) || isCodecovProPlan(plan)
   }
   return false
 }
@@ -122,6 +147,20 @@ export function useProPlans({ plans }) {
   }
 }
 
+export const findProPlans = ({ plans }) => {
+  const proPlanMonth = plans?.find(
+    (plan) => plan.value === Plans.USERS_PR_INAPPM
+  )
+  const proPlanYear = plans?.find(
+    (plan) => plan.value === Plans.USERS_PR_INAPPY
+  )
+
+  return {
+    proPlanMonth,
+    proPlanYear,
+  }
+}
+
 export const findSentryPlans = ({ plans }) => {
   const sentryPlanMonth = plans?.find(
     (plan) => plan.value === Plans.USERS_SENTRYM
@@ -136,6 +175,16 @@ export const findSentryPlans = ({ plans }) => {
   }
 }
 
+export const findTeamPlans = ({ plans }) => {
+  const teamPlanMonth = plans?.find((plan) => plan.value === Plans.USERS_TEAMM)
+  const teamPlanYear = plans?.find((plan) => plan.value === Plans.USERS_TEAMY)
+
+  return {
+    teamPlanMonth,
+    teamPlanYear,
+  }
+}
+
 export const canApplySentryUpgrade = ({ plan, plans }) => {
   if (isEnterprisePlan(plan) || !isArray(plans)) {
     return false
@@ -147,6 +196,12 @@ export const canApplySentryUpgrade = ({ plan, plans }) => {
   )
 }
 
+export const shouldDisplayTeamCard = ({ plans }) => {
+  const { teamPlanMonth, teamPlanYear } = findTeamPlans({ plans })
+
+  return !isUndefined(teamPlanMonth) && !isUndefined(teamPlanYear)
+}
+
 export const formatNumberToUSD = (value) =>
   Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -155,6 +210,28 @@ export const formatNumberToUSD = (value) =>
   }).format(value)
 
 export function getNextBillingDate(accountDetails) {
-  const timestamp = accountDetails?.latestInvoice?.periodEnd
+  const timestamp = accountDetails?.subscriptionDetail?.latestInvoice?.periodEnd
   return timestamp ? format(fromUnixTime(timestamp), 'MMMM do, yyyy') : null
+}
+
+// TODO: This is now the preferred format for dates, please use this over any other formatting
+export function formatTimestampToCalendarDate(timestamp) {
+  if (!timestamp) {
+    return null
+  }
+
+  const date = new Date(timestamp * 1000)
+  const options = {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  }
+  return new Intl.DateTimeFormat('en-US', options).format(date)
+}
+
+export function lastTwoDigits(value) {
+  if (typeof value === 'number' || typeof value === 'string') {
+    return value.toString().slice(-2)
+  }
+  return null
 }

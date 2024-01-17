@@ -8,13 +8,11 @@ import config from 'config'
 
 import { useImage } from 'services/image'
 import { useImpersonate } from 'services/impersonate'
-import { useFlags } from 'shared/featureFlags'
 
 import BaseLayout from './BaseLayout'
 
 jest.mock('services/image')
 jest.mock('services/impersonate')
-jest.mock('shared/featureFlags')
 jest.mock('shared/GlobalTopBanners', () => () => 'GlobalTopBanners')
 jest.mock('./InstallationHelpBanner', () => () => 'InstallationHelpBanner')
 jest.mock('pages/TermsOfService', () => () => 'TermsOfService')
@@ -66,6 +64,7 @@ const internalUserNoSyncedProviders = {
   email: userSignedInIdentity.email,
   name: userSignedInIdentity.name,
   externalId: '123',
+  termsAgreement: true,
   owners: [],
 }
 
@@ -75,9 +74,16 @@ const internalUserHasSyncedProviders = {
   externalId: '123',
   owners: [
     {
+      avatarUrl: 'http://127.0.0.1/cool-user',
+      integrationId: null,
+      name: null,
+      ownerid: 123,
+      stats: null,
+      username: 'cool-username',
       service: 'github',
     },
   ],
+  termsAgreement: true,
 }
 
 const queryClient = new QueryClient({
@@ -128,22 +134,14 @@ describe('BaseLayout', () => {
       currentUser = loggedInUser,
       internalUser = internalUserHasSyncedProviders,
       isImpersonating = false,
-      termsOfServicePage = false,
-      defaultOrgSelectorPage = false,
     } = {
-      termsOfServicePage: false,
       currentUser: loggedInUser,
-      defaultOrgSelectorPage: false,
     }
   ) {
     useImage.mockReturnValue({
       src: 'http://photo.com/codecov.png',
       isLoading: false,
       error: null,
-    })
-    useFlags.mockReturnValue({
-      termsOfServicePage,
-      defaultOrgSelectorPage,
     })
     useImpersonate.mockReturnValue({ isImpersonating })
 
@@ -192,7 +190,7 @@ describe('BaseLayout', () => {
   }
 
   describe.each([
-    ['cloud', false, 'terms of services', /TermsOfService/],
+    ['cloud', false, 'terms of services', /DefaultOrgSelector/],
     ['self hosted', true, 'children', /hello/],
   ])('%s', (_, isSelfHosted, expectedPage, expectedMatcher) => {
     beforeEach(() => {
@@ -204,7 +202,7 @@ describe('BaseLayout', () => {
     describe('user is guest', () => {
       beforeEach(() => {
         jest.spyOn(console, 'error').mockImplementation(() => {})
-        setup({ currentUser: guestUser })
+        setup({ currentUser: guestUser, internalUser: guestUser })
       })
 
       it('renders the children', async () => {
@@ -228,6 +226,7 @@ describe('BaseLayout', () => {
       it('renders the children', async () => {
         setup({
           isImpersonating: true,
+          internalUser: userSignedInIdentity,
         })
         render(<BaseLayout>hello</BaseLayout>, {
           wrapper: wrapper(),
@@ -245,8 +244,8 @@ describe('BaseLayout', () => {
       })
     })
 
-    describe('TOS feature flag is off, org selector flag is off', () => {
-      it('does not render children', async () => {
+    describe('TOS is signed', () => {
+      it('does not render terms of service component', async () => {
         setup({
           currentUser: loggedInUser,
         })
@@ -255,34 +254,27 @@ describe('BaseLayout', () => {
           wrapper: wrapper(),
         })
 
-        expect(await screen.findByText('hello')).toBeTruthy()
-        const hello = screen.getByText('hello')
-        expect(hello).toBeInTheDocument()
-
-        const defaultOrg = screen.queryByText(/DefaultOrgSelector/)
-        expect(defaultOrg).not.toBeInTheDocument()
-
         const termsOfService = screen.queryByText(/TermsOfService/)
         expect(termsOfService).not.toBeInTheDocument()
       })
     })
 
     it(`renders the ${expectedPage}`, async () => {
-      setup({ termsOfServicePage: true, currentUser: loggedInUser })
+      setup({ currentUser: loggedInUser })
 
       render(<BaseLayout>hello</BaseLayout>, {
         wrapper: wrapper(),
       })
 
       expect(await screen.findByText(expectedMatcher)).toBeTruthy()
-      const tos = screen.getByText(expectedMatcher)
-      expect(tos).toBeInTheDocument()
+      const component = screen.getByText(expectedMatcher)
+      expect(component).toBeInTheDocument()
     })
   })
 
-  describe('selector flag is on and set up action param is install', () => {
+  describe('set up action param is install', () => {
     it('renders the select org page with banner', async () => {
-      setup({ defaultOrgSelectorPage: true, currentUser: loggedInUser })
+      setup({ currentUser: loggedInUser, internalUser: userSignedInIdentity })
 
       render(<BaseLayout>hello</BaseLayout>, {
         wrapper: wrapper(['/bb/batman/batcave?setup_action=install']),
@@ -295,7 +287,6 @@ describe('BaseLayout', () => {
 
     it('does not render the select org page for users that have default org', async () => {
       setup({
-        defaultOrgSelectorPage: true,
         currentUser: userHasDefaultOrg,
       })
 
@@ -323,7 +314,7 @@ describe('BaseLayout', () => {
   })
 
   describe('user has synced providers', () => {
-    it('renders the page', async () => {
+    it('renders the default org page', async () => {
       setup({
         internalUser: internalUserHasSyncedProviders,
       })
@@ -332,14 +323,14 @@ describe('BaseLayout', () => {
         wrapper: wrapper(),
       })
 
-      const text = await screen.findByText('hello')
-      expect(text).toBeInTheDocument()
+      const defaultOrg = await screen.findByText(/DefaultOrgSelector/)
+      expect(defaultOrg).toBeInTheDocument()
     })
   })
 
   describe('user is not on full access experience', () => {
     it('renders the select org page with banner', async () => {
-      setup({ defaultOrgSelectorPage: true, currentUser: loggedInUser })
+      setup({ currentUser: loggedInUser })
 
       render(<BaseLayout>hello</BaseLayout>, {
         wrapper: wrapper(['/bb/batman/batcave?setup_action=install']),
