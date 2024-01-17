@@ -18,14 +18,11 @@ const optionButtonOptions = [
 ]
 
 function OrgControlTable({
-  sortItem,
-  setSortItem,
   repoDisplay,
   setRepoDisplay,
   setSearchValue,
   searchValue,
   canRefetch,
-  showTeamRepos,
 }) {
   const [search, setSearch] = useState(searchValue)
 
@@ -57,14 +54,11 @@ function OrgControlTable({
 }
 
 OrgControlTable.propTypes = {
-  sortItem: PropTypes.object.isRequired,
-  setSortItem: PropTypes.func.isRequired,
   repoDisplay: PropTypes.string.isRequired,
   setRepoDisplay: PropTypes.func.isRequired,
   setSearchValue: PropTypes.func.isRequired,
   searchValue: PropTypes.string.isRequired,
   canRefetch: PropTypes.bool.isRequired,
-  showTeamRepos: PropTypes.bool.isRequired,
 }
 
 export default OrgControlTable

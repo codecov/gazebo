@@ -60,14 +60,7 @@ function ListRepo({ canRefetch }) {
   return (
     <>
       <OrgControlTable
-        sortItem={sortItem}
         searchValue={params.search}
-        setSortItem={(sort) => {
-          updateParams({
-            ordering: sort.ordering,
-            direction: sort.direction,
-          })
-        }}
         repoDisplay={repoDisplay}
         setRepoDisplay={(repoDisplay) =>
           updateParams({
@@ -78,7 +71,6 @@ function ListRepo({ canRefetch }) {
           updateParams({ search })
         }}
         canRefetch={canRefetch}
-        showTeamRepos={showTeamRepos}
       />
       <Suspense fallback={loadingState}>
         {showTeamRepos ? (
