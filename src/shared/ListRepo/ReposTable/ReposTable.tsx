@@ -82,6 +82,17 @@ const ReposTable = ({
     isPublic: shouldDisplayPublicReposOnly,
   })
 
+  console.log(
+    useRepos({
+      activated,
+      sortItem,
+      term: searchValue,
+      repoNames: filterValues,
+      owner,
+      isPublic: shouldDisplayPublicReposOnly,
+    })
+  )
+
   const tableData = useMemo(() => {
     const data = reposData?.pages?.map((page) => page?.repos).flat()
     return data ?? []
