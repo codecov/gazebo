@@ -12,7 +12,7 @@ import UploadsCard from './UploadsCard'
 import { useUploads } from './useUploads'
 
 jest.mock(
-  '../../YamlModal/YamlModalErrorBanner',
+  '../YamlModal/YamlModalErrorBanner',
   () => () => 'YamlModalErrorBanner'
 )
 jest.mock('./useUploads')
