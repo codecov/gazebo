@@ -213,3 +213,25 @@ export function getNextBillingDate(accountDetails) {
   const timestamp = accountDetails?.subscriptionDetail?.latestInvoice?.periodEnd
   return timestamp ? format(fromUnixTime(timestamp), 'MMMM do, yyyy') : null
 }
+
+// TODO: This is now the preferred format for dates, please use this over any other formatting
+export function formatTimestampToCalendarDate(timestamp) {
+  if (!timestamp) {
+    return null
+  }
+
+  const date = new Date(timestamp * 1000)
+  const options = {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  }
+  return new Intl.DateTimeFormat('en-US', options).format(date)
+}
+
+export function lastTwoDigits(value) {
+  if (typeof value === 'number' || typeof value === 'string') {
+    return value.toString().slice(-2)
+  }
+  return null
+}

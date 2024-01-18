@@ -1781,4 +1781,76 @@ describe('useNavLinks', () => {
       expect(path).toBe('/account/bb/test-owner')
     })
   })
+
+  describe('bundle onboarding', () => {
+    it('returns the correct link with nothing passed', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov/cool-repo'),
+      })
+
+      const path = result.current.bundleOnboarding.path()
+      expect(path).toBe('/gh/codecov/cool-repo/bundles/new')
+    })
+
+    it('can override the params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov/cool-repo'),
+      })
+
+      const path = result.current.bundleOnboarding.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo/bundles/new')
+    })
+  })
+
+  describe('rollup onboarding', () => {
+    it('returns the correct link with nothing passed', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov/cool-repo'),
+      })
+
+      const path = result.current.bundleRollupOnboarding.path()
+      expect(path).toBe('/gh/codecov/cool-repo/bundles/new/rollup')
+    })
+
+    it('can override the params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov/cool-repo'),
+      })
+
+      const path = result.current.bundleRollupOnboarding.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo/bundles/new/rollup')
+    })
+  })
+
+  describe('webpack onboarding', () => {
+    it('returns the correct link with nothing passed', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov/cool-repo'),
+      })
+
+      const path = result.current.bundleWebpackOnboarding.path()
+      expect(path).toBe('/gh/codecov/cool-repo/bundles/new/webpack')
+    })
+
+    it('can override the params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov/cool-repo'),
+      })
+
+      const path = result.current.bundleWebpackOnboarding.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo/bundles/new/webpack')
+    })
+  })
 })
