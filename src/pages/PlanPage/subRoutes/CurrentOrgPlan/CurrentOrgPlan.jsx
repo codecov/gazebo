@@ -2,11 +2,11 @@ import { useParams } from 'react-router-dom'
 
 import { useAccountDetails } from 'services/account'
 
+import BillingDetails from './BillingDetails'
 import CurrentPlanCard from './CurrentPlanCard'
 import InfoMessageCancellation from './InfoMessageCancellation'
 import InfoMessageStripeCallback from './InfoMessageStripeCallback'
 import LatestInvoiceCard from './LatestInvoiceCard'
-import PaymentCard from './PaymentCard'
 
 function CurrentOrgPlan() {
   const { provider, owner } = useParams()
@@ -27,11 +27,7 @@ function CurrentOrgPlan() {
           <CurrentPlanCard />
           {shouldRenderBillingDetails && (
             <>
-              <PaymentCard
-                subscriptionDetail={accountDetails?.subscriptionDetail}
-                provider={provider}
-                owner={owner}
-              />
+              <BillingDetails />
               <LatestInvoiceCard />
             </>
           )}

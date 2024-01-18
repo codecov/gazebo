@@ -33,7 +33,7 @@ function CreditCardForm({ closeForm, provider, owner }) {
   const resetError = error && reset
 
   return (
-    <form onSubmit={submit} className="mt-4" aria-label="form">
+    <form onSubmit={submit} aria-label="form">
       <div className={cs('flex flex-col gap-5')}>
         <div className="flex flex-col gap-2">
           <CardNumberElement onChange={resetError} className={inputClass} />

@@ -15,6 +15,7 @@ import {
 const mockImpactedFiles = [
   {
     isCriticalFile: true,
+    missesCount: 3,
     fileName: 'mafs.js',
     headName: 'flag1/mafs.js',
     baseCoverage: {
@@ -22,12 +23,11 @@ const mockImpactedFiles = [
     },
     headCoverage: {
       percentCovered: 90.23,
-      missesCount: 3,
     },
     patchCoverage: {
       percentCovered: 27.43,
     },
-    missesCount: 3,
+    changeCoverage: 41,
   },
   {
     isCriticalFile: true,
@@ -38,44 +38,92 @@ const mockImpactedFiles = [
     },
     headCoverage: {
       percentCovered: 80,
-      missesCount: 7,
     },
     patchCoverage: {
       percentCovered: 48.23,
     },
     missesCount: 7,
+    changeCoverage: 41,
   },
 ]
 
-let mockPull = {
+const mockPull = ({ overrideComparison } = {}) => ({
   owner: {
+    isCurrentUserPartOfOrg: true,
     repository: {
+      __typename: 'Repository',
+      defaultBranch: 'main',
+      private: false,
       pull: {
-        pullId: 14,
-        head: {
-          state: 'PROCESSED',
+        commits: {
+          edges: [
+            {
+              node: {
+                state: 'PROCESSED',
+                commitid: 'fc43199ccde1f21a940aa3d596c711c1c420651f',
+                message:
+                  'create component to hold bundle list table for a given pull 2',
+                author: {
+                  username: 'nicholas-codecov',
+                },
+              },
+            },
+          ],
         },
-        compareWithBase: {
-          __typename: 'Comparison',
-          patchTotals: {
-            percentCovered: 92.12,
+        compareWithBase: overrideComparison
+          ? overrideComparison
+          : {
+              state: 'PROCESSED',
+              __typename: 'Comparison',
+              flagComparisons: [],
+              patchTotals: {
+                percentCovered: 92.12,
+              },
+              baseTotals: {
+                percentCovered: 27.35,
+              },
+              headTotals: {
+                percentCovered: 74.2,
+              },
+              impactedFiles: {
+                __typename: 'ImpactedFiles',
+                results: mockImpactedFiles,
+              },
+              changeCoverage: 38.94,
+              hasDifferentNumberOfHeadAndBaseReports: true,
+            },
+        pullId: 14,
+        title: 'feat: Create bundle analysis table for a given pull',
+        state: 'OPEN',
+        author: {
+          username: 'nicholas-codecov',
+        },
+        head: {
+          ciPassed: true,
+          branchName:
+            'gh-eng-994-create-bundle-analysis-table-for-a-given-pull',
+          state: 'PROCESSED',
+          commitid: 'fc43199b07c52cf3d6c19b7cdb368f74387c38ab',
+          totals: {
+            percentCovered: 78.33,
           },
-          headTotals: {
-            percentCovered: 74.2,
+          uploads: {
+            totalCount: 4,
           },
-          baseTotals: {
-            percentCovered: 27.35,
-          },
-          changeCoverage: 38.94,
-          impactedFiles: {
-            __typename: ImpactedFilesReturnType.IMPACTED_FILES,
-            results: mockImpactedFiles,
+        },
+        updatestamp: '2024-01-12T12:56:18.912860',
+        behindBy: 82367894,
+        behindByCommit: '1798hvs8ofhn',
+        comparedTo: {
+          commitid: '2d6c42fe217c61b007b2c17544a9d85840381857',
+          uploads: {
+            totalCount: 1,
           },
         },
       },
     },
   },
-}
+})
 
 const queryClient = new QueryClient({
   logger: {
@@ -112,7 +160,7 @@ const wrapper =
     )
 
 describe('useImpactedFilesTable', () => {
-  function setup(dataReturned = mockPull) {
+  function setup({ overrideComparison } = {}) {
     const callsHandleSort = jest.fn()
     const flagsMock = jest.fn()
     const componentsMock = jest.fn()
@@ -124,7 +172,7 @@ describe('useImpactedFilesTable', () => {
         flagsMock(req.variables.filters.flags)
         componentsMock(req.variables.filters.components)
 
-        return res(ctx.status(200), ctx.data(dataReturned))
+        return res(ctx.status(200), ctx.data(mockPull({ overrideComparison })))
       })
     )
     return { callsHandleSort, flagsMock, componentsMock }
@@ -189,30 +237,43 @@ describe('useImpactedFilesTable', () => {
 
   describe('when when called with no head or base coverage on the changed files', () => {
     beforeEach(() => {
-      const pull = mockPull
-      const mockImpactedFilesWithoutCoverage = {
-        __typename: ImpactedFilesReturnType.IMPACTED_FILES,
-        results: [
-          {
-            missesCount: 0,
-            isCriticalFile: true,
-            fileName: 'mafs.js',
-            headName: 'flag1/mafs.js',
-            baseCoverage: {
-              percentCovered: undefined,
-            },
-            headCoverage: {
-              percentCovered: undefined,
-            },
-            patchCoverage: {
-              percentCovered: 27.43,
-            },
+      setup({
+        overrideComparison: {
+          state: 'PROCESSED',
+          __typename: 'Comparison',
+          flagComparisons: [],
+          patchTotals: {
+            percentCovered: 92.12,
           },
-        ],
-      }
-      pull.owner.repository.pull.compareWithBase.impactedFiles =
-        mockImpactedFilesWithoutCoverage
-      setup(mockPull)
+          baseTotals: {
+            percentCovered: 27.35,
+          },
+          headTotals: {
+            percentCovered: 74.2,
+          },
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [
+              {
+                isCriticalFile: true,
+                missesCount: 0,
+                fileName: 'mafs.js',
+                headName: 'flag1/mafs.js',
+                baseCoverage: {
+                  percentCovered: null,
+                },
+                patchCoverage: {
+                  percentCovered: 27.43,
+                },
+                headCoverage: null,
+                changeCoverage: 41,
+              },
+            ],
+          },
+          changeCoverage: 38.94,
+          hasDifferentNumberOfHeadAndBaseReports: true,
+        },
+      })
     })
 
     it('returns data', async () => {
