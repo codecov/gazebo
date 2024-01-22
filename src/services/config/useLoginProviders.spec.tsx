@@ -6,8 +6,8 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import {
   EnterpriseLoginProviders,
-  useServiceProviders,
-} from './useServiceProviders'
+  useLoginProviders,
+} from './useLoginProviders'
 
 const server = setupServer()
 const queryClient = new QueryClient({
@@ -40,10 +40,10 @@ interface SetupArgs {
   hasParsingError?: boolean
 }
 
-describe('useServiceProviders', () => {
+describe('useLoginProviders', () => {
   function setup({ loginProviders, hasParsingError }: SetupArgs) {
     server.use(
-      graphql.query('GetServiceProviders', (req, res, ctx) => {
+      graphql.query('GetLoginProviders', (req, res, ctx) => {
         if (hasParsingError) {
           return res(ctx.status(200), ctx.data({ idk: true }))
         }
@@ -61,7 +61,7 @@ describe('useServiceProviders', () => {
       setup({
         loginProviders: ['GITHUB', 'GITLAB', 'BITBUCKET', 'OKTA'],
       })
-      const { result } = renderHook(() => useServiceProviders(), { wrapper })
+      const { result } = renderHook(() => useLoginProviders(), { wrapper })
 
       await waitFor(() => result.current.isSuccess)
 
@@ -86,7 +86,7 @@ describe('useServiceProviders', () => {
           'BITBUCKET_SERVER',
         ],
       })
-      const { result } = renderHook(() => useServiceProviders(), { wrapper })
+      const { result } = renderHook(() => useLoginProviders(), { wrapper })
 
       await waitFor(() => result.current.isSuccess)
 
@@ -120,7 +120,7 @@ describe('useServiceProviders', () => {
         hasParsingError: true,
       })
 
-      const { result } = renderHook(() => useServiceProviders(), { wrapper })
+      const { result } = renderHook(() => useLoginProviders(), { wrapper })
 
       await waitFor(() => expect(result.current.isError).toBeTruthy())
 
