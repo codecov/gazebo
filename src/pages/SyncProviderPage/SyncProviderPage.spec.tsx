@@ -1,7 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { rest } from 'msw'
+import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import {
@@ -12,16 +13,18 @@ import {
 import SyncProviderPage from './SyncProviderPage'
 
 const createMockedInternalUser = (
-  owner: InternalUserOwnerData
+  owner?: InternalUserOwnerData
 ): InternalUserData => ({
   email: null,
   name: null,
   externalId: null,
   termsAgreement: false,
-  owners: [owner],
+  owners: owner !== undefined ? [owner] : [],
 })
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { suspense: true } },
+})
 const server = setupServer()
 
 let testLocation: { pathname: string } = {
@@ -31,7 +34,9 @@ let testLocation: { pathname: string } = {
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/sync']}>
-      <Route path="/sync">{children}</Route>
+      <Route path="/sync">
+        <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+      </Route>
       <Route
         path="*"
         render={({ location }) => {
@@ -57,52 +62,46 @@ afterAll(() => {
 })
 
 interface SetupArgs {
-  user?: InternalUserData
+  user?: Partial<InternalUserData>
 }
 
 describe('SyncProviderPage', () => {
-  function setup({ user = createMockedInternalUser(null) }: SetupArgs) {
+  function setup(
+    { user = createMockedInternalUser() }: SetupArgs = {
+      user: createMockedInternalUser(),
+    }
+  ) {
     server.use(
-      rest.get('/internal/user', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json(user))
-      )
+      rest.get('/internal/user', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.json(user))
+      }),
+      graphql.query('GetSyncProviders', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            config: { syncProviders: ['GITHUB', 'GITLAB_ENTERPRISE'] },
+          })
+        )
+      })
     )
   }
 
   describe('user has not synced a provider', () => {
     it('renders page header', async () => {
       setup({
-        user: createMockedInternalUser({
-          name: 'test-provider',
-          username: 'codecov-user',
-          avatarUrl: 'http://127.0.0.1/cool-user-avatar',
-          integrationId: null,
-          ownerid: 123,
-          service: 'github',
-          stats: null,
-        }),
+        user: createMockedInternalUser(),
       })
 
       render(<SyncProviderPage />, { wrapper })
 
-      const header = screen.getByRole('heading', {
+      const header = await screen.findByRole('heading', {
         name: /What repo provider would you like to sync?/,
       })
       expect(header).toBeInTheDocument()
     })
 
     it('renders paragraph text', async () => {
-      setup({
-        user: createMockedInternalUser({
-          name: 'test-provider',
-          username: 'codecov-user',
-          avatarUrl: 'http://127.0.0.1/cool-user-avatar',
-          integrationId: null,
-          ownerid: 123,
-          service: 'github',
-          stats: null,
-        }),
-      })
+      setup()
 
       render(<SyncProviderPage />, { wrapper })
 
@@ -113,17 +112,7 @@ describe('SyncProviderPage', () => {
     })
 
     it('renders github sync button', async () => {
-      setup({
-        user: createMockedInternalUser({
-          name: 'test-provider',
-          username: 'codecov-user',
-          avatarUrl: 'http://127.0.0.1/cool-user-avatar',
-          integrationId: null,
-          ownerid: 123,
-          service: 'github',
-          stats: null,
-        }),
-      })
+      setup()
 
       render(<SyncProviderPage />, { wrapper })
 
@@ -131,42 +120,15 @@ describe('SyncProviderPage', () => {
       expect(githubSyncButton).toBeInTheDocument()
     })
 
-    it('renders gitlab sync button', async () => {
-      setup({
-        user: createMockedInternalUser({
-          name: 'test-provider',
-          username: 'codecov-user',
-          avatarUrl: 'http://127.0.0.1/cool-user-avatar',
-          integrationId: null,
-          ownerid: 123,
-          service: 'github',
-          stats: null,
-        }),
-      })
+    it('renders github enterprise sync button', async () => {
+      setup()
 
       render(<SyncProviderPage />, { wrapper })
 
-      const gitlabSyncButton = await screen.findByText(/Sync with Gitlab/)
-      expect(gitlabSyncButton).toBeInTheDocument()
-    })
-
-    it('renders bitbucket sync button', async () => {
-      setup({
-        user: createMockedInternalUser({
-          name: 'test-provider',
-          username: 'codecov-user',
-          avatarUrl: 'http://127.0.0.1/cool-user-avatar',
-          integrationId: null,
-          ownerid: 123,
-          service: 'github',
-          stats: null,
-        }),
-      })
-
-      render(<SyncProviderPage />, { wrapper })
-
-      const bitbucketSyncButton = await screen.findByText(/Sync with BitBucket/)
-      expect(bitbucketSyncButton).toBeInTheDocument()
+      const gheSyncButton = await screen.findByText(
+        /Sync with Gitlab Enterprise/
+      )
+      expect(gheSyncButton).toBeInTheDocument()
     })
   })
 
@@ -190,11 +152,10 @@ describe('SyncProviderPage', () => {
         await waitFor(() => expect(testLocation.pathname).toBe('/gh'))
       })
     })
+
     describe('user does not have a service', () => {
       it('redirects user to /', async () => {
-        setup({
-          user: createMockedInternalUser(undefined),
-        })
+        setup({ user: createMockedInternalUser(null) })
 
         render(<SyncProviderPage />, { wrapper })
 

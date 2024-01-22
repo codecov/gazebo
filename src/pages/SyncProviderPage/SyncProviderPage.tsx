@@ -1,6 +1,7 @@
 import gt from 'lodash/gt'
 import { Redirect } from 'react-router-dom'
 
+import { useSyncProviders } from 'services/config'
 import { useInternalUser } from 'services/user/useInternalUser'
 import { loginProviderToShortName } from 'shared/utils/loginProviders'
 
@@ -12,6 +13,8 @@ function SyncProviderPage() {
   // will be false if 0 | undefined | null
   // will be true if greater than 1
   const hasSynced = gt(internalUser?.owners?.length, 0)
+
+  const { data: syncProviders } = useSyncProviders({ enabled: !hasSynced })
 
   // block all requests if flag is false
   // --
@@ -44,9 +47,9 @@ function SyncProviderPage() {
         </p>
       </div>
       <div className="mx-auto mt-2 w-96 space-y-4 border-t border-ds-gray-secondary pt-4">
-        <SyncButton provider="gh" />
-        <SyncButton provider="gl" />
-        <SyncButton provider="bb" />
+        {syncProviders?.map((provider) => (
+          <SyncButton key={provider} provider={provider} />
+        ))}
       </div>
     </div>
   )
