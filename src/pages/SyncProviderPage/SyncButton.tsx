@@ -2,7 +2,7 @@ import { useNavLinks } from 'services/navigation'
 import { providerImage, providerToName } from 'shared/utils/provider'
 
 interface SyncButtonProps {
-  provider: 'gh' | 'gl' | 'bb'
+  provider: 'gh' | 'gl' | 'bb' | 'ghe' | 'gle' | 'bbs'
 }
 
 const SyncButton: React.FC<SyncButtonProps> = ({ provider }) => {
