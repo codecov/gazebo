@@ -37,8 +37,8 @@ function LoginPage() {
           <hr />
         </div>
         <p>
-          If you are using GitHub Enterprise, GitLab EE/CE, or Bitbucket Server
-          please view our <A to={{ pageName: 'enterprise' }}>self hosted</A>{' '}
+          If you are using GitHub Enterprise Server, GitLab EE/CE, or Bitbucket Server
+          please view our <A href="https://docs.codecov.com/docs/codecov-dedicated-enterprise-cloud-install-steps">Dedicated Enterprise Cloud</A>{' '}
           option.
         </p>
       </div>
