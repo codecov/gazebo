@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -11,6 +12,16 @@ import RequestInstallBanner from './RequestInstallBanner'
 jest.mock('services/navigation')
 jest.mock('config')
 jest.mock('shared/featureFlags')
+jest.mock('@sentry/react', () => {
+  const originalModule = jest.requireActual('@sentry/react')
+  return {
+    ...originalModule,
+    metrics: {
+      ...originalModule.metrics,
+      increment: jest.fn(),
+    },
+  }
+})
 
 console.error = () => {}
 
@@ -29,6 +40,8 @@ type SetupArgs = {
 }
 
 describe('RequestInstallBanner', () => {
+  afterAll(() => jest.restoreAllMocks())
+
   function setup({ setUpAction = 'request', isSelfHosted = false }: SetupArgs) {
     const user = userEvent.setup()
     const mockSetItem = jest.spyOn(window.localStorage.__proto__, 'setItem')
@@ -85,6 +98,21 @@ describe('RequestInstallBanner', () => {
               ' admin or owner to assist.'
           )
           expect(modalText).toBeInTheDocument()
+        })
+
+        it('should call capture the share request metrics', async () => {
+          const { user, mockGetItem } = setup({})
+          render(<RequestInstallBanner />, { wrapper: wrapper('/gh/codecov') })
+
+          mockGetItem.mockReturnValue(null)
+
+          const btn = screen.getByRole('button', { name: /Share Request/ })
+          expect(btn).toBeInTheDocument()
+          await user.click(btn)
+
+          expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+            'user_shared_request'
+          )
         })
       })
 
