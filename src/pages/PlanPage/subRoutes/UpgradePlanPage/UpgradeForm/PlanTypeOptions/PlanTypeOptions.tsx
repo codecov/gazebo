@@ -13,6 +13,7 @@ import {
   findProPlans,
   findSentryPlans,
   findTeamPlans,
+  isMonthlyPlan,
   shouldDisplayTeamCard,
 } from 'shared/utils/billing'
 import { TEAM_PLAN_MAX_ACTIVE_USERS } from 'shared/utils/upgradeForm'
@@ -25,28 +26,32 @@ interface PlanTypeOptionsProps {
   multipleTiers: boolean
   setFormValue: (x: string, y: string) => void
   setSelectedPlan: (x: z.infer<typeof IndividualPlanSchema>) => void
+  getFormValues?: () => { newPlan: string; seats: number }
 }
 
 const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   multipleTiers,
   setFormValue,
   setSelectedPlan,
+  getFormValues = () => ({ newPlan: '', seats: 0 }),
 }) => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { data: accountDetails } = useAccountDetails({ provider, owner })
-  const { proPlanYear } = findProPlans({ plans })
+  const { proPlanYear, proPlanMonth } = findProPlans({ plans })
   const planParam = usePlanParams()
 
-  const { sentryPlanYear } = findSentryPlans({ plans })
-  const { teamPlanYear } = findTeamPlans({
+  const { sentryPlanYear, sentryPlanMonth } = findSentryPlans({ plans })
+  const { teamPlanYear, teamPlanMonth } = findTeamPlans({
     plans,
   })
 
   const hasTeamPlans = shouldDisplayTeamCard({ plans })
   const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
   const isSentryUpgrade = canApplySentryUpgrade({ plan, plans })
+
   const yearlyProPlan = isSentryUpgrade ? sentryPlanYear : proPlanYear
+  const monthlyProPlan = isSentryUpgrade ? sentryPlanMonth : proPlanMonth
 
   let planOption = null
   if (hasTeamPlans && planParam === TierNames.TEAM) {
@@ -56,6 +61,8 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   }
 
   const [option, setOption] = useState<PlanTiers>(planOption)
+  const currentFormValue = getFormValues().newPlan
+  const monthlyPlan = isMonthlyPlan(currentFormValue)
 
   if (hasTeamPlans && multipleTiers) {
     return (
@@ -67,11 +74,21 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
             active={option}
             onChange={({ text }) => {
               if (text === TierName.PRO) {
-                setSelectedPlan(yearlyProPlan)
-                setFormValue('newPlan', yearlyProPlan?.value)
+                if (monthlyPlan) {
+                  setSelectedPlan(proPlanMonth)
+                  setFormValue('newPlan', monthlyProPlan?.value)
+                } else {
+                  setSelectedPlan(yearlyProPlan)
+                  setFormValue('newPlan', yearlyProPlan?.value)
+                }
               } else {
-                setSelectedPlan(teamPlanYear)
-                setFormValue('newPlan', teamPlanYear?.value)
+                if (monthlyPlan) {
+                  setSelectedPlan(teamPlanMonth)
+                  setFormValue('newPlan', teamPlanMonth?.value)
+                } else {
+                  setSelectedPlan(teamPlanYear)
+                  setFormValue('newPlan', teamPlanYear?.value)
+                }
               }
               setOption(text)
             }}
