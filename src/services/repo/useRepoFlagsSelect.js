@@ -49,9 +49,66 @@ function fetchRepoFlags({
     },
   }).then((res) => {
     const flags = res?.data?.owner?.repository?.flags
-
     return {
       flags: mapEdges(flags),
+      pageInfo: flags?.pageInfo,
+    }
+  })
+}
+
+function fetchRepoFlagsForPull({
+  provider,
+  owner,
+  repo,
+  filters,
+  after,
+  pullId,
+  signal,
+}) {
+  const query = `
+  query PullFlagsSelect($owner: String!, $repo: String!, $pullId: Int!, $filters: FlagComparisonFilters) {
+    owner(username: $owner) {
+      repository(name: $repo) {
+        __typename
+        ... on Repository {
+          pull(id: $pullId) {
+            compareWithBase {
+              __typename
+              ... on Comparison {
+                flagComparisons(filters: $filters) {
+                  name
+                }
+              }
+            }
+          }
+        }
+        ... on NotFoundError {
+          message
+        }
+        ... on OwnerNotActivatedError {
+          message
+        }
+      }
+    }
+  }
+`
+  return Api.graphql({
+    provider,
+    query,
+    signal,
+    variables: {
+      provider,
+      owner,
+      after,
+      filters,
+      repo,
+      pullId: parseInt(pullId, 10),
+    },
+  }).then((res) => {
+    const flags =
+      res?.data?.owner?.repository?.pull?.compareWithBase?.flagComparisons || []
+    return {
+      flags,
       pageInfo: flags?.pageInfo,
     }
   })
@@ -60,19 +117,31 @@ function fetchRepoFlags({
 export function useRepoFlagsSelect(
   { filters, options } = { filters: {}, options: {} }
 ) {
-  const { provider, owner, repo } = useParams()
+  const { provider, owner, repo, pullId } = useParams()
 
   const { data, ...rest } = useInfiniteQuery({
-    queryKey: ['RepoFlagsSelect', provider, owner, repo, filters],
-    queryFn: ({ pageParam: after, signal }) =>
-      fetchRepoFlags({
-        provider,
-        owner,
-        repo,
-        filters,
-        after,
-        signal,
-      }),
+    queryKey: ['flags', provider, owner, repo, pullId, filters],
+    queryFn: ({ pageParam: after, signal }) => {
+      const data = pullId
+        ? fetchRepoFlagsForPull({
+            provider,
+            owner,
+            repo,
+            pullId,
+            signal,
+            filters,
+            after,
+          })
+        : fetchRepoFlags({
+            provider,
+            owner,
+            repo,
+            filters,
+            after,
+            signal,
+          })
+      return data
+    },
     getNextPageParam: (data) =>
       data?.pageInfo?.hasNextPage ? data.pageInfo.endCursor : undefined,
     ...options,
