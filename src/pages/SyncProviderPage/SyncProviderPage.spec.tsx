@@ -63,12 +63,17 @@ afterAll(() => {
 
 interface SetupArgs {
   user?: Partial<InternalUserData>
+  noSyncProviders?: boolean
 }
 
 describe('SyncProviderPage', () => {
   function setup(
-    { user = createMockedInternalUser() }: SetupArgs = {
+    {
+      user = createMockedInternalUser(),
+      noSyncProviders = false,
+    }: SetupArgs = {
       user: createMockedInternalUser(),
+      noSyncProviders: false,
     }
   ) {
     server.use(
@@ -76,6 +81,15 @@ describe('SyncProviderPage', () => {
         return res(ctx.status(200), ctx.json(user))
       }),
       graphql.query('GetSyncProviders', (req, res, ctx) => {
+        if (noSyncProviders) {
+          return res(
+            ctx.status(200),
+            ctx.data({
+              config: { syncProviders: [] },
+            })
+          )
+        }
+
         return res(
           ctx.status(200),
           ctx.data({
@@ -91,7 +105,6 @@ describe('SyncProviderPage', () => {
       setup({
         user: createMockedInternalUser(),
       })
-
       render(<SyncProviderPage />, { wrapper })
 
       const header = await screen.findByRole('heading', {
@@ -102,7 +115,6 @@ describe('SyncProviderPage', () => {
 
     it('renders paragraph text', async () => {
       setup()
-
       render(<SyncProviderPage />, { wrapper })
 
       const paragraph = await screen.findByText(
@@ -111,24 +123,51 @@ describe('SyncProviderPage', () => {
       expect(paragraph).toBeInTheDocument()
     })
 
-    it('renders github sync button', async () => {
-      setup()
+    describe('there are configured sync providers', () => {
+      it('renders github sync button', async () => {
+        setup()
+        render(<SyncProviderPage />, { wrapper })
 
-      render(<SyncProviderPage />, { wrapper })
+        const githubSyncButton = await screen.findByText(/Sync with Github/)
+        expect(githubSyncButton).toBeInTheDocument()
+      })
 
-      const githubSyncButton = await screen.findByText(/Sync with Github/)
-      expect(githubSyncButton).toBeInTheDocument()
+      it('renders github enterprise sync button', async () => {
+        setup()
+
+        render(<SyncProviderPage />, { wrapper })
+
+        const gheSyncButton = await screen.findByText(
+          /Sync with Gitlab Enterprise/
+        )
+        expect(gheSyncButton).toBeInTheDocument()
+      })
     })
 
-    it('renders github enterprise sync button', async () => {
-      setup()
+    describe('there are no configured sync providers', () => {
+      it('renders error message', async () => {
+        setup({ noSyncProviders: true })
+        render(<SyncProviderPage />, { wrapper })
 
-      render(<SyncProviderPage />, { wrapper })
+        const errorMsg = await screen.findByText(
+          /Unable to retrieve list of Git providers/
+        )
+        expect(errorMsg).toBeInTheDocument()
+      })
 
-      const gheSyncButton = await screen.findByText(
-        /Sync with Gitlab Enterprise/
-      )
-      expect(gheSyncButton).toBeInTheDocument()
+      it('renders link to self hosted install guide', async () => {
+        setup({ noSyncProviders: true })
+        render(<SyncProviderPage />, { wrapper })
+
+        const docLink = await screen.findByRole('link', {
+          name: /Codecov Self-Hosted Install Guide/,
+        })
+        expect(docLink).toBeInTheDocument()
+        expect(docLink).toHaveAttribute(
+          'href',
+          'https://docs.codecov.com/docs/installing-codecov-self-hosted'
+        )
+      })
     })
   })
 
