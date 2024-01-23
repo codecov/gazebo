@@ -100,7 +100,7 @@ describe('RequestInstallBanner', () => {
           expect(modalText).toBeInTheDocument()
         })
 
-        it('should call capture the share request metrics', async () => {
+        it('should capture the user shared request metric', async () => {
           const { user, mockGetItem } = setup({})
           render(<RequestInstallBanner />, { wrapper: wrapper('/gh/codecov') })
 
