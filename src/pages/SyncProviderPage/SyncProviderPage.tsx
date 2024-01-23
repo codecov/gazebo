@@ -1,11 +1,42 @@
 import gt from 'lodash/gt'
+import isEmpty from 'lodash/isEmpty'
 import { Redirect } from 'react-router-dom'
 
 import { useSyncProviders } from 'services/config'
 import { useInternalUser } from 'services/user/useInternalUser'
 import { loginProviderToShortName } from 'shared/utils/loginProviders'
+import A from 'ui/A'
 
 import SyncButton from './SyncButton'
+
+interface SyncButtonProps {
+  hasSynced: boolean
+}
+
+function SyncButtons({ hasSynced }: SyncButtonProps) {
+  const { data: syncProviders } = useSyncProviders({ enabled: !hasSynced })
+
+  if (isEmpty(syncProviders)) {
+    return (
+      <p>
+        Unable to retrieve list of Git providers, please configure one in your
+        Codecov config YAML. See{' '}
+        <A
+          isExternal
+          hook="open-self-hosted-install-guide"
+          to={{ pageName: 'installSelfHosted' }}
+        >
+          Codecov Self-Hosted Install Guide
+        </A>
+        .
+      </p>
+    )
+  }
+
+  return syncProviders?.map((provider) => (
+    <SyncButton key={provider} provider={provider} />
+  ))
+}
 
 function SyncProviderPage() {
   const { data: internalUser } = useInternalUser({})
@@ -13,8 +44,6 @@ function SyncProviderPage() {
   // will be false if 0 | undefined | null
   // will be true if greater than 1
   const hasSynced = gt(internalUser?.owners?.length, 0)
-
-  const { data: syncProviders } = useSyncProviders({ enabled: !hasSynced })
 
   // block all requests if flag is false
   // --
@@ -47,9 +76,7 @@ function SyncProviderPage() {
         </p>
       </div>
       <div className="mx-auto mt-2 w-96 space-y-4 border-t border-ds-gray-secondary pt-4">
-        {syncProviders?.map((provider) => (
-          <SyncButton key={provider} provider={provider} />
-        ))}
+        <SyncButtons hasSynced={hasSynced} />
       </div>
     </div>
   )
