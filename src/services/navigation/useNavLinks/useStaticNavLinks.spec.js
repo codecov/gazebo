@@ -75,7 +75,7 @@ describe('useStaticNavLinks', () => {
       ${links.bundleConfigFeedback}          | ${'https://github.com/codecov/feedback/issues/270'}
       ${links.termsOfService}                | ${`${config.MARKETING_BASE_URL}/terms-of-service`}
       ${links.quickStart}                    | ${'https://docs.codecov.com/docs/quick-start'}
-      
+      ${links.installSelfHosted}             | ${'https://docs.codecov.com/docs/installing-codecov-self-hosted'}
     `('static links return path', ({ link, outcome }) => {
       it(`${link.text}: Returns the correct link`, () => {
         expect(link.path()).toBe(outcome)
