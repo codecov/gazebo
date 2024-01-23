@@ -13,7 +13,7 @@ interface SyncButtonProps {
   hasSynced: boolean
 }
 
-function SyncButtons({ hasSynced }: SyncButtonProps) {
+const SyncButtons: React.FC<SyncButtonProps> = ({ hasSynced }) => {
   const { data: syncProviders } = useSyncProviders({ enabled: !hasSynced })
 
   if (isEmpty(syncProviders)) {
@@ -33,12 +33,16 @@ function SyncButtons({ hasSynced }: SyncButtonProps) {
     )
   }
 
-  return syncProviders?.map((provider) => (
-    <SyncButton key={provider} provider={provider} />
-  ))
+  return (
+    <>
+      {syncProviders?.map((provider) => (
+        <SyncButton key={provider} provider={provider} />
+      ))}
+    </>
+  )
 }
 
-function SyncProviderPage() {
+const SyncProviderPage: React.FC = () => {
   const { data: internalUser } = useInternalUser({})
 
   // will be false if 0 | undefined | null
