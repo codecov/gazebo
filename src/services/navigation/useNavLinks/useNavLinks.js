@@ -701,5 +701,35 @@ export function useNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    bundleOnboarding: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/bundles/new`,
+      text: 'Vite',
+    },
+    bundleRollupOnboarding: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/bundles/new/rollup`,
+      text: 'Rollup',
+    },
+    bundleWebpackOnboarding: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/bundles/new/webpack`,
+      text: 'Webpack',
+    },
   }
 }

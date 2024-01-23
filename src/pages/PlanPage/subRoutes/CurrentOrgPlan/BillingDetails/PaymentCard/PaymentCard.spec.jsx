@@ -158,11 +158,8 @@ describe('PaymentCard', () => {
         />
       )
 
-      expect(screen.getByText(/Visa/)).toBeInTheDocument()
-      expect(
-        screen.getByText(/\*\*\*\* \*\*\*\* \*\*\*\* 1234/)
-      ).toBeInTheDocument()
-      expect(screen.getByText(/Expires 12\/2021/)).toBeInTheDocument()
+      expect(screen.getByText(/•••• 1234/)).toBeInTheDocument()
+      expect(screen.getByText(/Expires 12\/21/)).toBeInTheDocument()
     })
 
     it('renders the next billing', () => {
@@ -174,7 +171,7 @@ describe('PaymentCard', () => {
         />
       )
 
-      expect(screen.getByText(/1st December, 2020/)).toBeInTheDocument()
+      expect(screen.getByText(/December 1, 2020/)).toBeInTheDocument()
     })
   })
 
