@@ -37,8 +37,8 @@ function GitHubActionsRepoToken() {
             </A>
           </h2>
           <p className="text-base">
-            Admin required to access repo settings {'>'} secrets and variable
-            {' >'} actions
+            Admin required to access repo settings &gt; secrets and variable
+            &gt; actions
           </p>
         </div>
         <pre className="flex items-center gap-2 overflow-auto rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
