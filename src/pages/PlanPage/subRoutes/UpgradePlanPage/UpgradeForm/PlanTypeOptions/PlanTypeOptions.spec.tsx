@@ -155,6 +155,12 @@ const mockAccountDetailsTeamYearly = {
   inactiveUserCount: 0,
 }
 
+const mockAccountDetailsTeamMonthly = {
+  plan: teamPlanYear,
+  activatedUserCount: 11,
+  inactiveUserCount: 0,
+}
+
 const mockAccountDetailsSentryYearly = {
   plan: sentryPlanYear,
   activatedUserCount: 11,
@@ -195,6 +201,8 @@ describe('PlanTypeOptions', () => {
           return res(ctx.status(200), ctx.json(mockAccountDetailsTrial))
         } else if (planValue === Plans.USERS_TEAMY) {
           return res(ctx.status(200), ctx.json(mockAccountDetailsTeamYearly))
+        } else if (planValue === Plans.USERS_TEAMM) {
+          return res(ctx.status(200), ctx.json(mockAccountDetailsTeamMonthly))
         } else if (planValue === Plans.USERS_SENTRYY) {
           return res(ctx.status(200), ctx.json(mockAccountDetailsSentryYearly))
         }
@@ -1378,6 +1386,42 @@ describe('PlanTypeOptions', () => {
           )
         })
       })
+    })
+  })
+  describe('when plan is team plan monthly', () => {
+    it('keeps monthly selection when updating to pro plan', async () => {
+      const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
+        planValue: Plans.USERS_TEAMM,
+        hasSentryPlans: false,
+        hasTeamPlans: true,
+      })
+
+      render(
+        <PlanTypeOptions
+          multipleTiers={true}
+          setFormValue={mockSetFormValue}
+          setSelectedPlan={mockSetSelectedPlan}
+        />,
+        {
+          wrapper: wrapper(),
+        }
+      )
+
+      const proBtn = await screen.findByRole('button', {
+        name: 'Pro',
+      })
+      expect(proBtn).toBeInTheDocument()
+      await user.click(proBtn)
+
+      await waitFor(() =>
+        expect(mockSetFormValue).toBeCalledWith(
+          'newPlan',
+          Plans.USERS_PR_INAPPM
+        )
+      )
+      await waitFor(() =>
+        expect(mockSetSelectedPlan).toBeCalledWith(proPlanMonth)
+      )
     })
   })
 })

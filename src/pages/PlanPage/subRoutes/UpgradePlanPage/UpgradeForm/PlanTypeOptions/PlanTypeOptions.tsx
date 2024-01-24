@@ -63,7 +63,6 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   const [option, setOption] = useState<PlanTiers>(planOption)
   const currentFormValue = getFormValues().newPlan
   const monthlyPlan = isMonthlyPlan(currentFormValue)
-
   if (hasTeamPlans && multipleTiers) {
     return (
       <div className="flex w-fit flex-col gap-2">

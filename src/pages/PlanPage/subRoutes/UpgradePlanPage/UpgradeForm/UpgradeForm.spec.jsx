@@ -163,6 +163,12 @@ const mockAccountDetailsTeamYearly = {
   inactiveUserCount: 0,
 }
 
+const mockAccountDetailsTeamMonthly = {
+  plan: teamPlanMonth,
+  activatedUserCount: 5,
+  inactiveUserCount: 0,
+}
+
 const mockAccountDetailsSentryYearly = {
   plan: sentryPlanYear,
   activatedUserCount: 7,
@@ -282,6 +288,8 @@ describe('UpgradeForm', () => {
           return res(ctx.status(200), ctx.json(mockAccountDetailsTrial))
         } else if (planValue === Plans.USERS_TEAMY) {
           return res(ctx.status(200), ctx.json(mockAccountDetailsTeamYearly))
+        } else if (planValue === Plans.USERS_TEAMM) {
+          return res(ctx.status(200), ctx.json(mockAccountDetailsTeamMonthly))
         } else if (planValue === Plans.USERS_SENTRYY) {
           return res(ctx.status(200), ctx.json(mockAccountDetailsSentryYearly))
         }
@@ -2012,6 +2020,29 @@ describe('UpgradeForm', () => {
             })
           )
         })
+      })
+    })
+
+    describe('when the user has a team plan monthly', () => {
+      const props = {
+        setSelectedPlan: jest.fn(),
+        selectedPlan: { value: Plans.USERS_TEAMM },
+      }
+      it('keeps monthly selection when updating to pro plan', async () => {
+        const { user } = setup({
+          planValue: Plans.USERS_TEAMM,
+          hasTeamPlans: true,
+          multipleTiers: true,
+        })
+        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
+
+        const proButton = await screen.findByRole('button', {
+          name: /Pro/,
+        })
+        expect(proButton).toBeInTheDocument()
+        await user.click(proButton)
+        const content = await screen.findByText(/\/per seat, billed monthly/)
+        expect(content).toBeInTheDocument()
       })
     })
 
