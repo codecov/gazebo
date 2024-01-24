@@ -3,22 +3,13 @@ import { lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
-import { useCommitErrors } from 'services/commitErrors'
-import { useRepoSettingsTeam } from 'services/repo'
-import { TierNames, useTier } from 'services/tier'
-import { useOwner } from 'services/user'
 import Breadcrumb from 'ui/Breadcrumb'
 import Spinner from 'ui/Spinner'
 
-import BotErrorBanner from './BotErrorBanner'
-import CommitDetailSummarySkeleton from './CommitDetailSummary/CommitDetailSummarySkeleton'
 import Header from './Header'
 import { useCommitPageData } from './hooks'
-import YamlErrorBanner from './YamlErrorBanner'
 
-const CommitDetailPageContent = lazy(() => import('./CommitDetailPageContent'))
-const CommitDetailSummary = lazy(() => import('./CommitDetailSummary'))
-const UploadsCard = lazy(() => import('./UploadsCard'))
+const CommitCoverage = lazy(() => import('./CommitCoverage'))
 
 const Loader = () => (
   <div className="flex flex-1 justify-center">
@@ -26,30 +17,9 @@ const Loader = () => (
   </div>
 )
 
-function CommitErrorBanners() {
-  const { owner } = useParams()
-  const { data: ownerData } = useOwner({ username: owner })
-  const { data: commitErrorData } = useCommitErrors()
-
-  const invalidYaml = commitErrorData?.yamlErrors?.find(
-    (err) => err?.errorCode === 'invalid_yaml'
-  )
-
-  return (
-    <>
-      {ownerData?.isCurrentUserPartOfOrg && (
-        <BotErrorBanner botErrorsCount={commitErrorData?.botErrors?.length} />
-      )}
-      {invalidYaml && <YamlErrorBanner />}
-    </>
-  )
-}
-
 function CommitDetailPage() {
   const { provider, owner, repo, commit: commitSha } = useParams()
   const shortSHA = commitSha?.slice(0, 7)
-  const { data: tierName } = useTier({ provider, owner })
-  const { data: repoSettings } = useRepoSettingsTeam()
 
   // reset cache when user navigates to the commit detail page
   const queryClient = useQueryClient()
@@ -70,9 +40,6 @@ function CommitDetailPage() {
     return <NotFound />
   }
 
-  const hideCommitSummary =
-    repoSettings?.repository?.private && tierName === TierNames.TEAM
-
   return (
     <div className="flex flex-col gap-4 px-3 sm:px-0">
       <Breadcrumb
@@ -89,25 +56,9 @@ function CommitDetailPage() {
         ]}
       />
       <Header />
-      {hideCommitSummary ? null : (
-        <Suspense fallback={<CommitDetailSummarySkeleton />}>
-          <CommitDetailSummary />
-        </Suspense>
-      )}
-      {/**we are currently capturing a single error*/}
-      <CommitErrorBanners />
-      <div className="flex flex-col gap-8 md:flex-row-reverse">
-        <aside className="flex flex-1 flex-col gap-6 self-start md:sticky md:top-1.5 md:max-w-sm">
-          <Suspense fallback={<Loader />}>
-            <UploadsCard />
-          </Suspense>
-        </aside>
-        <article className="flex flex-1 flex-col">
-          <Suspense fallback={<Loader />}>
-            <CommitDetailPageContent />
-          </Suspense>
-        </article>
-      </div>
+      <Suspense fallback={<Loader />}>
+        <CommitCoverage />
+      </Suspense>
     </div>
   )
 }

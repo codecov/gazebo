@@ -112,7 +112,7 @@ const getTotalsSummaryCards = ({
   },
 ]
 
-function CommitDetailSummary() {
+function CommitCoverageSummary() {
   const location = useLocation()
   const queryParams = qs.parse(location.search, {
     ignoreQueryPrefix: true,
@@ -152,4 +152,4 @@ function CommitDetailSummary() {
   )
 }
 
-export default CommitDetailSummary
+export default CommitCoverageSummary

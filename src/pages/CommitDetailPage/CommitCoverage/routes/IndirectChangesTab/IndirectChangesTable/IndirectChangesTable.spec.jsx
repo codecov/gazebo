@@ -7,7 +7,7 @@ import qs from 'qs'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import IndirectChangesTable from '../IndirectChangesTable'
+import IndirectChangesTable from '.'
 
 jest.mock('./CommitFileDiff', () => () => 'CommitFileDiff')
 

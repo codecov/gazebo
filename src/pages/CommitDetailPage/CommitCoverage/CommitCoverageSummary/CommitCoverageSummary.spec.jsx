@@ -5,7 +5,7 @@ import { setupServer } from 'msw/node'
 import qs from 'qs'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import CommitDetailSummary from './CommitDetailSummary'
+import CommitCoverageSummary from './CommitCoverageSummary'
 
 const commit = (state = 'complete') => ({
   totals: { coverage: 90 },
@@ -110,7 +110,7 @@ afterAll(() => {
   server.close()
 })
 
-describe('CommitDetailSummary', () => {
+describe('CommitCoverageSummary', () => {
   function setup(hasErrored = false) {
     server.use(
       graphql.query('Commit', (req, res, ctx) => {
@@ -147,7 +147,7 @@ describe('CommitDetailSummary', () => {
 
     describe('renders a card for every valid field', () => {
       it('has a head card', async () => {
-        render(<CommitDetailSummary />, { wrapper: wrapper() })
+        render(<CommitCoverageSummary />, { wrapper: wrapper() })
 
         const headCardTitle = await screen.findByText('HEAD')
         expect(headCardTitle).toBeInTheDocument()
@@ -157,7 +157,7 @@ describe('CommitDetailSummary', () => {
       })
 
       it('has a patch card', async () => {
-        render(<CommitDetailSummary />, { wrapper: wrapper() })
+        render(<CommitCoverageSummary />, { wrapper: wrapper() })
 
         const patchCardTitle = await screen.findByText('Patch')
         expect(patchCardTitle).toBeInTheDocument()
@@ -167,7 +167,7 @@ describe('CommitDetailSummary', () => {
       })
 
       it('has a change card', async () => {
-        render(<CommitDetailSummary />, { wrapper: wrapper() })
+        render(<CommitCoverageSummary />, { wrapper: wrapper() })
 
         const changeCardTitle = await screen.findByText('Change')
         expect(changeCardTitle).toBeInTheDocument()
@@ -177,7 +177,7 @@ describe('CommitDetailSummary', () => {
       })
 
       it('has a source card', async () => {
-        render(<CommitDetailSummary />, { wrapper: wrapper() })
+        render(<CommitCoverageSummary />, { wrapper: wrapper() })
 
         const sourceCardTitle = await screen.findByText('Source')
         expect(sourceCardTitle).toBeInTheDocument()
@@ -204,7 +204,7 @@ describe('CommitDetailSummary', () => {
     })
 
     it('renders error message', async () => {
-      render(<CommitDetailSummary />, { wrapper: wrapper() })
+      render(<CommitCoverageSummary />, { wrapper: wrapper() })
 
       const errorMsg = await screen.findByText(
         /There is an error processing the coverage reports/
@@ -213,7 +213,7 @@ describe('CommitDetailSummary', () => {
     })
 
     it('suggests support links', async () => {
-      render(<CommitDetailSummary />, { wrapper: wrapper() })
+      render(<CommitCoverageSummary />, { wrapper: wrapper() })
 
       const pathFix = await screen.findByRole('link', {
         name: 'files paths external-link.svg',
@@ -237,7 +237,7 @@ describe('CommitDetailSummary', () => {
     it('appends flag query param to commit id link', async () => {
       setup()
 
-      render(<CommitDetailSummary />, {
+      render(<CommitCoverageSummary />, {
         wrapper: wrapper(
           `/gh/codecov/cool-repo/commit/sha256${qs.stringify(
             { flags: ['flag-1'] },

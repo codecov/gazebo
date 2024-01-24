@@ -12,7 +12,7 @@ import { TierNames, useTier } from 'services/tier'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import TabNavigation from 'ui/TabNavigation'
 
-function CommitDetailPageTabs({
+function CommitCoverageTabs({
   commitSha,
   indirectChangedFilesCount,
   directChangedFilesCount,
@@ -101,10 +101,10 @@ function CommitDetailPageTabs({
   )
 }
 
-CommitDetailPageTabs.propTypes = {
+CommitCoverageTabs.propTypes = {
   commitSha: PropTypes.string,
   indirectChangedFilesCount: PropTypes.number,
   directChangedFilesCount: PropTypes.number,
 }
 
-export default CommitDetailPageTabs
+export default CommitCoverageTabs
