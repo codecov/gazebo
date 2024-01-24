@@ -54,7 +54,7 @@ function CommitErrorBanners() {
   )
 }
 
-function CommitDetailPageContent() {
+function CommitCoverageRoutes() {
   const { provider, owner, repo, commit: commitSha } = useParams()
   const { data: tierName } = useTier({ owner, provider })
   const { data: repoData } = useRepoSettingsTeam()
@@ -78,13 +78,59 @@ function CommitDetailPageContent() {
     repoData?.repository?.private && tierName === TierNames.TEAM
   )
 
-  const hideCommitSummary =
-    repoData?.repository?.private && tierName === TierNames.TEAM
-
   const indirectChangedFilesCount =
     commitData?.commit?.compareWithParent?.indirectChangedFilesCount ?? 0
   const directChangedFilesCount =
     commitData?.commit?.compareWithParent?.directChangedFilesCount ?? 0
+
+  return (
+    <div className="@container/commit-detail-page">
+      <CommitCoverageTabs
+        commitSha={commitSha}
+        indirectChangedFilesCount={indirectChangedFilesCount}
+        directChangedFilesCount={directChangedFilesCount}
+      />
+      <Suspense fallback={<Loader />}>
+        <Switch>
+          <SentryRoute
+            path={[
+              '/:provider/:owner/:repo/commit/:commit/tree/:path+',
+              '/:provider/:owner/:repo/commit/:commit/tree/',
+            ]}
+          >
+            <CommitDetailFileExplorer />
+          </SentryRoute>
+          <SentryRoute path="/:provider/:owner/:repo/commit/:commit/blob/:path+">
+            <CommitDetailFileViewer />
+          </SentryRoute>
+          <SentryRoute path="/:provider/:owner/:repo/commit/:commit" exact>
+            <FilesChangedTab />
+          </SentryRoute>
+          {showIndirectChanges && (
+            <SentryRoute
+              path="/:provider/:owner/:repo/commit/:commit/indirect-changes"
+              exact
+            >
+              <IndirectChangesTab />
+            </SentryRoute>
+          )}
+          <Redirect
+            from="/:provider/:owner/:repo/commit/:commit/*"
+            to="/:provider/:owner/:repo/commit/:commit"
+          />
+        </Switch>
+      </Suspense>
+    </div>
+  )
+}
+
+function CommitCoverage() {
+  const { provider, owner } = useParams()
+  const { data: tierName } = useTier({ owner, provider })
+  const { data: repoData } = useRepoSettingsTeam()
+
+  const hideCommitSummary =
+    repoData?.repository?.private && tierName === TierNames.TEAM
 
   return (
     <div className="flex flex-col gap-4 px-3 sm:px-0">
@@ -102,50 +148,11 @@ function CommitDetailPageContent() {
           </Suspense>
         </aside>
         <article className="flex flex-1 flex-col">
-          <div className="@container/commit-detail-page">
-            <CommitCoverageTabs
-              commitSha={commitSha}
-              indirectChangedFilesCount={indirectChangedFilesCount}
-              directChangedFilesCount={directChangedFilesCount}
-            />
-            <Suspense fallback={<Loader />}>
-              <Switch>
-                <SentryRoute
-                  path={[
-                    '/:provider/:owner/:repo/commit/:commit/tree/:path+',
-                    '/:provider/:owner/:repo/commit/:commit/tree/',
-                  ]}
-                >
-                  <CommitDetailFileExplorer />
-                </SentryRoute>
-                <SentryRoute path="/:provider/:owner/:repo/commit/:commit/blob/:path+">
-                  <CommitDetailFileViewer />
-                </SentryRoute>
-                <SentryRoute
-                  path="/:provider/:owner/:repo/commit/:commit"
-                  exact
-                >
-                  <FilesChangedTab />
-                </SentryRoute>
-                {showIndirectChanges && (
-                  <SentryRoute
-                    path="/:provider/:owner/:repo/commit/:commit/indirect-changes"
-                    exact
-                  >
-                    <IndirectChangesTab />
-                  </SentryRoute>
-                )}
-                <Redirect
-                  from="/:provider/:owner/:repo/commit/:commit/*"
-                  to="/:provider/:owner/:repo/commit/:commit"
-                />
-              </Switch>
-            </Suspense>
-          </div>
+          <CommitCoverageRoutes />
         </article>
       </div>
     </div>
   )
 }
 
-export default CommitDetailPageContent
+export default CommitCoverage
