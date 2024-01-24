@@ -8,7 +8,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
 
-import CommitDetailPageTabs from './CommitDetailPageTabs'
+import CommitCoverageTabs from './CommitCoverageTabs'
 
 const mockRepoSettings = (isPrivate) => ({
   owner: {
@@ -102,7 +102,7 @@ afterAll(() => {
   server.close()
 })
 
-describe('CommitDetailPageTabs', () => {
+describe('CommitCoverageTabs', () => {
   function setup(
     { flagValue = false, tierValue = TierNames.PRO, isPrivate = false } = {
       flagValue: false,
@@ -133,7 +133,7 @@ describe('CommitDetailPageTabs', () => {
     describe('repo is public', () => {
       it('does not render the indirect changes tab', async () => {
         setup({ tierValue: TierNames.TEAM, isPrivate: false })
-        render(<CommitDetailPageTabs commitSha="sha256" />, {
+        render(<CommitCoverageTabs commitSha="sha256" />, {
           wrapper: wrapper(),
         })
 
@@ -150,7 +150,7 @@ describe('CommitDetailPageTabs', () => {
     describe('repo is private', () => {
       it('does not render the indirect changes tab', async () => {
         setup({ tierValue: TierNames.TEAM, isPrivate: true })
-        render(<CommitDetailPageTabs commitSha="sha256" />, {
+        render(<CommitCoverageTabs commitSha="sha256" />, {
           wrapper: wrapper(),
         })
 
@@ -169,7 +169,7 @@ describe('CommitDetailPageTabs', () => {
   describe('on base route', () => {
     it('highlights files changed tab', async () => {
       setup()
-      render(<CommitDetailPageTabs commitSha="sha256" />, {
+      render(<CommitCoverageTabs commitSha="sha256" />, {
         wrapper: wrapper(),
       })
 
@@ -180,7 +180,7 @@ describe('CommitDetailPageTabs', () => {
 
     it('does not highlight files tab', async () => {
       setup()
-      render(<CommitDetailPageTabs commitSha="sha256" />, {
+      render(<CommitCoverageTabs commitSha="sha256" />, {
         wrapper: wrapper(),
       })
 
@@ -193,7 +193,7 @@ describe('CommitDetailPageTabs', () => {
   describe('on indirect changes route', () => {
     it('highlights indirect changes tab', async () => {
       setup()
-      render(<CommitDetailPageTabs commitSha="sha256" />, {
+      render(<CommitCoverageTabs commitSha="sha256" />, {
         wrapper: wrapper([
           '/gh/codecov/cool-repo/commit/sha256/indirect-changes',
         ]),
@@ -206,7 +206,7 @@ describe('CommitDetailPageTabs', () => {
 
     it('does not highlight files changed tab', async () => {
       setup()
-      render(<CommitDetailPageTabs commitSha="sha256" />, {
+      render(<CommitCoverageTabs commitSha="sha256" />, {
         wrapper: wrapper([
           '/gh/codecov/cool-repo/commit/sha256/indirect-changes',
         ]),
@@ -222,7 +222,7 @@ describe('CommitDetailPageTabs', () => {
     describe('on tree route', () => {
       it('highlights files tab', async () => {
         setup()
-        render(<CommitDetailPageTabs commitSha="sha256" />, {
+        render(<CommitCoverageTabs commitSha="sha256" />, {
           wrapper: wrapper(['/gh/codecov/cool-repo/commit/sha256/tree']),
         })
 
@@ -233,7 +233,7 @@ describe('CommitDetailPageTabs', () => {
 
       it('does not highlight files changed tab', async () => {
         setup()
-        render(<CommitDetailPageTabs commitSha="sha256" />, {
+        render(<CommitCoverageTabs commitSha="sha256" />, {
           wrapper: wrapper(['/gh/codecov/cool-repo/commit/sha256/tree']),
         })
 
@@ -246,7 +246,7 @@ describe('CommitDetailPageTabs', () => {
     describe('on a blob route', () => {
       it('highlights files tab', async () => {
         setup()
-        render(<CommitDetailPageTabs commitSha="sha256" />, {
+        render(<CommitCoverageTabs commitSha="sha256" />, {
           wrapper: wrapper([
             '/gh/codecov/cool-repo/commit/sha256/blob/index.js',
           ]),
@@ -259,7 +259,7 @@ describe('CommitDetailPageTabs', () => {
 
       it('does not highlight files changed tab', async () => {
         setup()
-        render(<CommitDetailPageTabs commitSha="sha256" />, {
+        render(<CommitCoverageTabs commitSha="sha256" />, {
           wrapper: wrapper(['/gh/codecov/cool-repo/commit/sha256/tree']),
         })
 
@@ -273,7 +273,7 @@ describe('CommitDetailPageTabs', () => {
   describe('rendering toggle header', () => {
     it('renders uncovered legend', async () => {
       setup()
-      render(<CommitDetailPageTabs commitSha="sha256" />, {
+      render(<CommitCoverageTabs commitSha="sha256" />, {
         wrapper: wrapper(),
       })
 
@@ -283,7 +283,7 @@ describe('CommitDetailPageTabs', () => {
 
     it('renders partial legend', async () => {
       setup()
-      render(<CommitDetailPageTabs commitSha="sha256" />, {
+      render(<CommitCoverageTabs commitSha="sha256" />, {
         wrapper: wrapper(),
       })
 
@@ -293,7 +293,7 @@ describe('CommitDetailPageTabs', () => {
 
     it('renders covered legend', async () => {
       setup()
-      render(<CommitDetailPageTabs commitSha="sha256" />, {
+      render(<CommitCoverageTabs commitSha="sha256" />, {
         wrapper: wrapper(),
       })
 
@@ -303,7 +303,7 @@ describe('CommitDetailPageTabs', () => {
 
     it('renders hit count legend', async () => {
       setup()
-      render(<CommitDetailPageTabs commitSha="sha256" />, {
+      render(<CommitCoverageTabs commitSha="sha256" />, {
         wrapper: wrapper(),
       })
 
@@ -322,7 +322,7 @@ describe('CommitDetailPageTabs', () => {
         { addQueryPrefix: true }
       )
       setup()
-      render(<CommitDetailPageTabs commitSha="sha256" />, {
+      render(<CommitCoverageTabs commitSha="sha256" />, {
         wrapper: wrapper([`/gh/codecov/cool-repo/commit/sha256${queryString}`]),
       })
 
@@ -342,7 +342,7 @@ describe('CommitDetailPageTabs', () => {
         { addQueryPrefix: true }
       )
       setup()
-      render(<CommitDetailPageTabs commitSha="sha256" />, {
+      render(<CommitCoverageTabs commitSha="sha256" />, {
         wrapper: wrapper([`/gh/codecov/cool-repo/commit/sha256${queryString}`]),
       })
 
@@ -362,7 +362,7 @@ describe('CommitDetailPageTabs', () => {
         { addQueryPrefix: true }
       )
       setup()
-      render(<CommitDetailPageTabs commitSha="sha256" />, {
+      render(<CommitCoverageTabs commitSha="sha256" />, {
         wrapper: wrapper([`/gh/codecov/cool-repo/commit/sha256${queryString}`]),
       })
 
@@ -381,7 +381,7 @@ describe('CommitDetailPageTabs', () => {
     describe('user is not on a team plan', () => {
       it('renders flag multi-select', async () => {
         setup({})
-        render(<CommitDetailPageTabs commitSha="sha256" />, {
+        render(<CommitCoverageTabs commitSha="sha256" />, {
           wrapper: wrapper(),
         })
 
@@ -397,7 +397,7 @@ describe('CommitDetailPageTabs', () => {
             tierValue: TierNames.TEAM,
             isPrivate: false,
           })
-          render(<CommitDetailPageTabs commitSha="sha256" />, {
+          render(<CommitCoverageTabs commitSha="sha256" />, {
             wrapper: wrapper(),
           })
 
@@ -409,7 +409,7 @@ describe('CommitDetailPageTabs', () => {
       describe('repo is private', () => {
         it('does not render the multi select', async () => {
           setup({ tierValue: TierNames.TEAM, isPrivate: true })
-          render(<CommitDetailPageTabs commitSha="sha256" />, {
+          render(<CommitCoverageTabs commitSha="sha256" />, {
             wrapper: wrapper(),
           })
 

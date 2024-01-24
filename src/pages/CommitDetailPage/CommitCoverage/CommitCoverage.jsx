@@ -5,22 +5,29 @@ import { Redirect, Switch, useParams } from 'react-router-dom'
 import { SentryRoute } from 'sentry'
 
 import { useCommit } from 'services/commit'
+import { useCommitErrors } from 'services/commitErrors'
 import { useRepoSettingsTeam } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
+import { useOwner } from 'services/user'
 import { extractUploads } from 'shared/utils/extractUploads'
 import Spinner from 'ui/Spinner'
 
-import CommitPageTabs from '../CommitDetailPageTabs'
-import ErroredUploads from '../ErroredUploads'
+import BotErrorBanner from './BotErrorBanner'
+import CommitCoverageSummarySkeleton from './CommitCoverageSummary/CommitCoverageSummarySkeleton'
+import CommitCoverageTabs from './CommitCoverageTabs'
+import ErroredUploads from './ErroredUploads'
+import YamlErrorBanner from './YamlErrorBanner'
 
 const CommitDetailFileExplorer = lazy(() =>
-  import('../subRoute/CommitDetailFileExplorer')
+  import('./routes/CommitDetailFileExplorer')
 )
 const CommitDetailFileViewer = lazy(() =>
-  import('../subRoute/CommitDetailFileViewer')
+  import('./routes/CommitDetailFileViewer')
 )
-const FilesChangedTab = lazy(() => import('../subRoute/FilesChangedTab'))
-const IndirectChangesTab = lazy(() => import('../subRoute/IndirectChangesTab'))
+const FilesChangedTab = lazy(() => import('./routes/FilesChangedTab'))
+const IndirectChangesTab = lazy(() => import('./routes/IndirectChangesTab'))
+const UploadsCard = lazy(() => import('./UploadsCard'))
+const CommitCoverageSummary = lazy(() => import('./CommitCoverageSummary'))
 
 const Loader = () => (
   <div className="flex flex-1 justify-center">
@@ -28,7 +35,26 @@ const Loader = () => (
   </div>
 )
 
-function CommitDetailPageContent() {
+function CommitErrorBanners() {
+  const { owner } = useParams()
+  const { data: ownerData } = useOwner({ username: owner })
+  const { data: commitErrorData } = useCommitErrors()
+
+  const invalidYaml = commitErrorData?.yamlErrors?.find(
+    (err) => err?.errorCode === 'invalid_yaml'
+  )
+
+  return (
+    <>
+      {ownerData?.isCurrentUserPartOfOrg && (
+        <BotErrorBanner botErrorsCount={commitErrorData?.botErrors?.length} />
+      )}
+      {invalidYaml && <YamlErrorBanner />}
+    </>
+  )
+}
+
+function CommitCoverageRoutes() {
   const { provider, owner, repo, commit: commitSha } = useParams()
   const { data: tierName } = useTier({ owner, provider })
   const { data: repoData } = useRepoSettingsTeam()
@@ -48,7 +74,7 @@ function CommitDetailPageContent() {
     return <ErroredUploads erroredUploads={erroredUploads} />
   }
 
-  let showIndirectChanges = !(
+  const showIndirectChanges = !(
     repoData?.repository?.private && tierName === TierNames.TEAM
   )
 
@@ -59,7 +85,7 @@ function CommitDetailPageContent() {
 
   return (
     <div className="@container/commit-detail-page">
-      <CommitPageTabs
+      <CommitCoverageTabs
         commitSha={commitSha}
         indirectChangedFilesCount={indirectChangedFilesCount}
         directChangedFilesCount={directChangedFilesCount}
@@ -98,4 +124,35 @@ function CommitDetailPageContent() {
   )
 }
 
-export default CommitDetailPageContent
+function CommitCoverage() {
+  const { provider, owner } = useParams()
+  const { data: tierName } = useTier({ owner, provider })
+  const { data: repoData } = useRepoSettingsTeam()
+
+  const hideCommitSummary =
+    repoData?.repository?.private && tierName === TierNames.TEAM
+
+  return (
+    <div className="flex flex-col gap-4 px-3 sm:px-0">
+      {hideCommitSummary ? null : (
+        <Suspense fallback={<CommitCoverageSummarySkeleton />}>
+          <CommitCoverageSummary />
+        </Suspense>
+      )}
+      {/**we are currently capturing a single error*/}
+      <CommitErrorBanners />
+      <div className="flex flex-col gap-8 md:flex-row-reverse">
+        <aside className="flex flex-1 flex-col gap-6 self-start md:sticky md:top-1.5 md:max-w-sm">
+          <Suspense fallback={<Loader />}>
+            <UploadsCard />
+          </Suspense>
+        </aside>
+        <article className="flex flex-1 flex-col">
+          <CommitCoverageRoutes />
+        </article>
+      </div>
+    </div>
+  )
+}
+
+export default CommitCoverage

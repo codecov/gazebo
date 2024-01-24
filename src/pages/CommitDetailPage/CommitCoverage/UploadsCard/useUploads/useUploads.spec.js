@@ -14,9 +14,7 @@ import {
 import { TierNames } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 
-
 import { useUploads } from './useUploads'
-
 
 jest.mock('shared/featureFlags')
 
