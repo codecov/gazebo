@@ -39,7 +39,6 @@ describe('useIsCurrentUserAnAdmin', () => {
           ctx.status(200),
           ctx.data({
             owner: {
-              orgUploadToken: 'token',
               ownerid: 123,
               username: 'cool-user',
               avatarUrl: 'http://127.0.0.1/avatar-url',
