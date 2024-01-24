@@ -474,6 +474,24 @@ describe('CommitCoverage', () => {
   })
 
   describe('there are bot errors', () => {
+    it('renders commit summary', async () => {
+      const { queryClient } = setup({ hasErroredUploads: true })
+      render(<CommitCoverage />, { wrapper: wrapper({ queryClient }) })
+
+      const commitCoverageSummary = await screen.findByText(
+        'CommitCoverageSummary'
+      )
+      expect(commitCoverageSummary).toBeInTheDocument()
+    })
+
+    it('renders uploads card', async () => {
+      const { queryClient } = setup({ hasErroredUploads: true })
+      render(<CommitCoverage />, { wrapper: wrapper({ queryClient }) })
+
+      const uploadsCard = await screen.findByText('UploadsCard')
+      expect(uploadsCard).toBeInTheDocument()
+    })
+
     it('renders bot error banner', async () => {
       const { queryClient } = setup({ hasCommitErrors: true })
       render(<CommitCoverage />, { wrapper: wrapper({ queryClient }) })
@@ -484,6 +502,24 @@ describe('CommitCoverage', () => {
   })
 
   describe('there are yaml errors', () => {
+    it('renders commit summary', async () => {
+      const { queryClient } = setup({ hasErroredUploads: true })
+      render(<CommitCoverage />, { wrapper: wrapper({ queryClient }) })
+
+      const commitCoverageSummary = await screen.findByText(
+        'CommitCoverageSummary'
+      )
+      expect(commitCoverageSummary).toBeInTheDocument()
+    })
+
+    it('renders uploads card', async () => {
+      const { queryClient } = setup({ hasErroredUploads: true })
+      render(<CommitCoverage />, { wrapper: wrapper({ queryClient }) })
+
+      const uploadsCard = await screen.findByText('UploadsCard')
+      expect(uploadsCard).toBeInTheDocument()
+    })
+
     it('renders yaml error banner', async () => {
       const { queryClient } = setup({ hasCommitErrors: true })
       render(<CommitCoverage />, { wrapper: wrapper({ queryClient }) })
@@ -494,6 +530,24 @@ describe('CommitCoverage', () => {
   })
 
   describe('there are errored uploads', () => {
+    it('renders commit summary', async () => {
+      const { queryClient } = setup({ hasErroredUploads: true })
+      render(<CommitCoverage />, { wrapper: wrapper({ queryClient }) })
+
+      const commitCoverageSummary = await screen.findByText(
+        'CommitCoverageSummary'
+      )
+      expect(commitCoverageSummary).toBeInTheDocument()
+    })
+
+    it('renders uploads card', async () => {
+      const { queryClient } = setup({ hasErroredUploads: true })
+      render(<CommitCoverage />, { wrapper: wrapper({ queryClient }) })
+
+      const uploadsCard = await screen.findByText('UploadsCard')
+      expect(uploadsCard).toBeInTheDocument()
+    })
+
     it('renders error uploads component', async () => {
       const { queryClient } = setup({ hasErroredUploads: true })
       render(<CommitCoverage />, { wrapper: wrapper({ queryClient }) })
