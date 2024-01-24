@@ -1,1 +1,1 @@
-export { default } from './CircleCI'
+export { default } from './CircleCIRepoToken'
