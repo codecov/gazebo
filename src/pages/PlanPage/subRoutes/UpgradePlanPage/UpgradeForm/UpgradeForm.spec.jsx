@@ -169,10 +169,25 @@ const mockAccountDetailsSentryYearly = {
   inactiveUserCount: 0,
 }
 
-const mockPlanDataResponse = {
+const mockPlanDataResponseMonthly = {
   baseUnitPrice: 10,
   benefits: [],
   billingRate: 'monthly',
+  marketingName: 'Pro Team',
+  monthlyUploadLimit: 250,
+  value: 'test-plan',
+  trialStatus: TrialStatuses.NOT_STARTED,
+  trialStartDate: '',
+  trialEndDate: '',
+  trialTotalDays: 0,
+  pretrialUsersCount: 0,
+  planUserCount: 1,
+}
+
+const mockPlanDataResponseYearly = {
+  baseUnitPrice: 10,
+  benefits: [],
+  billingRate: 'yearly',
   marketingName: 'Pro Team',
   monthlyUploadLimit: 250,
   value: 'test-plan',
@@ -236,6 +251,7 @@ describe('UpgradeForm', () => {
       multipleTiers = false,
       hasTeamPlans = false,
       hasSentryPlans = false,
+      monthlyPlan = true,
     } = {
       planValue: Plans.USERS_BASIC,
       successfulPatchRequest: true,
@@ -244,6 +260,7 @@ describe('UpgradeForm', () => {
       hasTeamPlans: false,
       multipleTiers: false,
       hasSentryPlans: false,
+      monthlyPlan: true,
     }
   ) {
     const addNotification = jest.fn()
@@ -303,12 +320,15 @@ describe('UpgradeForm', () => {
         )
       }),
       graphql.query('GetPlanData', (req, res, ctx) => {
+        const planResponse = monthlyPlan
+          ? mockPlanDataResponseMonthly
+          : mockPlanDataResponseYearly
         return res(
           ctx.status(200),
           ctx.data({
             owner: {
               hasPrivateRepos: true,
-              plan: { ...mockPlanDataResponse, trialStatus },
+              plan: { ...planResponse, trialStatus },
             },
           })
         )
@@ -351,7 +371,7 @@ describe('UpgradeForm', () => {
       })
 
       it('renders annual option button as "selected"', async () => {
-        setup({ planValue: Plans.USERS_BASIC })
+        setup({ planValue: Plans.USERS_BASIC, monthlyPlan: false })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
@@ -1002,7 +1022,7 @@ describe('UpgradeForm', () => {
       })
 
       it('renders annual option button as "selected"', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY })
+        setup({ planValue: Plans.USERS_PR_INAPPY, monthlyPlan: false })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
@@ -1377,6 +1397,7 @@ describe('UpgradeForm', () => {
         setup({
           planValue: Plans.USERS_SENTRYY,
           hasSentryPlans: true,
+          monthlyPlan: false,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
@@ -1699,6 +1720,7 @@ describe('UpgradeForm', () => {
           planValue: Plans.USERS_TEAMY,
           hasTeamPlans: true,
           multipleTiers: true,
+          monthlyPlan: false,
         })
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
