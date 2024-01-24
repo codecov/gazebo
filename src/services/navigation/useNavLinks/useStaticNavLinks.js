@@ -304,5 +304,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    nextJSCustomConfig: {
+      text: 'Next.js Custom Config',
+      path: () =>
+        'https://nextjs.org/docs/app/api-reference/next-config-js/webpack',
+      isExternalLink: true,
+      openNewTab: true,
+    },
   }
 }
