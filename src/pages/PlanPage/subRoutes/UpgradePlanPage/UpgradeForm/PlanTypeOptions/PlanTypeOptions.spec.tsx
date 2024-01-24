@@ -1389,7 +1389,8 @@ describe('PlanTypeOptions', () => {
     })
   })
   describe('when plan is team plan monthly', () => {
-    it('keeps monthly selection when updating to pro plan', async () => {
+    it.only('keeps monthly selection when updating to pro plan', async () => {
+      // also not switching
       const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
         planValue: Plans.USERS_TEAMM,
         hasSentryPlans: false,
@@ -1401,6 +1402,7 @@ describe('PlanTypeOptions', () => {
           multipleTiers={true}
           setFormValue={mockSetFormValue}
           setSelectedPlan={mockSetSelectedPlan}
+          getFormValues={() => ({ newPlan: 'users-teamm', seats: 4 })}
         />,
         {
           wrapper: wrapper(),

@@ -2023,29 +2023,6 @@ describe('UpgradeForm', () => {
       })
     })
 
-    describe('when the user has a team plan monthly', () => {
-      const props = {
-        setSelectedPlan: jest.fn(),
-        selectedPlan: { value: Plans.USERS_TEAMM },
-      }
-      it('keeps monthly selection when updating to pro plan', async () => {
-        const { user } = setup({
-          planValue: Plans.USERS_TEAMM,
-          hasTeamPlans: true,
-          multipleTiers: true,
-        })
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-        const proButton = await screen.findByRole('button', {
-          name: /Pro/,
-        })
-        expect(proButton).toBeInTheDocument()
-        await user.click(proButton)
-        const content = await screen.findByText(/\/per seat, billed monthly/)
-        expect(content).toBeInTheDocument()
-      })
-    })
-
     describe('user is currently on a trial', () => {
       const props = {
         setSelectedPlan: jest.fn(),
