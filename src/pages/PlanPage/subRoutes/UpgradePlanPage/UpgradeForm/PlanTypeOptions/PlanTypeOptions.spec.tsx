@@ -226,15 +226,16 @@ describe('PlanTypeOptions', () => {
 
     const mockSetFormValue = jest.fn()
     const mockSetSelectedPlan = jest.fn()
+    const getFormValues = () => ({ newPlan: planValue, seats: 4 })
     const user = userEvent.setup()
 
-    return { user, mockSetFormValue, mockSetSelectedPlan }
+    return { user, mockSetFormValue, mockSetSelectedPlan, getFormValues }
   }
 
   describe('user is doing a sentry upgrade', () => {
     describe('when plan is basic', () => {
       it('renders Pro button as "selected"', async () => {
-        const { mockSetFormValue, mockSetSelectedPlan } = setup({
+        const { mockSetFormValue, mockSetSelectedPlan, getFormValues } = setup({
           planValue: Plans.USERS_BASIC,
           hasSentryPlans: false,
           hasTeamPlans: true,
@@ -245,6 +246,7 @@ describe('PlanTypeOptions', () => {
             multipleTiers={true}
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
+            getFormValues={getFormValues}
           />,
           {
             wrapper: wrapper(),
@@ -266,17 +268,19 @@ describe('PlanTypeOptions', () => {
 
       describe('plan param is set to team', () => {
         it('renders Team button as "selected"', async () => {
-          const { mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_BASIC,
-            hasSentryPlans: false,
-            hasTeamPlans: true,
-          })
+          const { mockSetFormValue, mockSetSelectedPlan, getFormValues } =
+            setup({
+              planValue: Plans.USERS_BASIC,
+              hasSentryPlans: false,
+              hasTeamPlans: true,
+            })
 
           render(
             <PlanTypeOptions
               multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
+              getFormValues={getFormValues}
             />,
             {
               wrapper: wrapper('/gh/codecov?plan=team'),
@@ -299,17 +303,19 @@ describe('PlanTypeOptions', () => {
 
       describe('user clicks Team button', () => {
         it('calls setValue and setSelectedPlan', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_BASIC,
-            hasSentryPlans: true,
-            hasTeamPlans: true,
-          })
+          const { user, mockSetFormValue, mockSetSelectedPlan, getFormValues } =
+            setup({
+              planValue: Plans.USERS_BASIC,
+              hasSentryPlans: true,
+              hasTeamPlans: true,
+            })
 
           render(
             <PlanTypeOptions
               multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
+              getFormValues={getFormValues}
             />,
             {
               wrapper: wrapper(),
@@ -336,17 +342,19 @@ describe('PlanTypeOptions', () => {
 
       describe('user clicks Pro button', () => {
         it('calls setValue and setSelectedPlan', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_BASIC,
-            hasSentryPlans: true,
-            hasTeamPlans: true,
-          })
+          const { user, mockSetFormValue, mockSetSelectedPlan, getFormValues } =
+            setup({
+              planValue: Plans.USERS_BASIC,
+              hasSentryPlans: true,
+              hasTeamPlans: true,
+            })
 
           render(
             <PlanTypeOptions
               multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
+              getFormValues={getFormValues}
             />,
             {
               wrapper: wrapper(),
@@ -374,7 +382,7 @@ describe('PlanTypeOptions', () => {
 
     describe('when plan is sentry yearly', () => {
       it('renders Pro button as "selected"', async () => {
-        const { mockSetFormValue, mockSetSelectedPlan } = setup({
+        const { mockSetFormValue, mockSetSelectedPlan, getFormValues } = setup({
           planValue: Plans.USERS_SENTRYY,
           hasSentryPlans: true,
           hasTeamPlans: true,
@@ -385,6 +393,7 @@ describe('PlanTypeOptions', () => {
             multipleTiers={true}
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
+            getFormValues={getFormValues}
           />,
           {
             wrapper: wrapper(),
@@ -406,17 +415,19 @@ describe('PlanTypeOptions', () => {
 
       describe('plan param is set to team', () => {
         it('renders Team button as "selected"', async () => {
-          const { mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_SENTRYY,
-            hasSentryPlans: true,
-            hasTeamPlans: true,
-          })
+          const { mockSetFormValue, mockSetSelectedPlan, getFormValues } =
+            setup({
+              planValue: Plans.USERS_SENTRYY,
+              hasSentryPlans: true,
+              hasTeamPlans: true,
+            })
 
           render(
             <PlanTypeOptions
               multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
+              getFormValues={getFormValues}
             />,
             {
               wrapper: wrapper('/gh/codecov?plan=team'),
@@ -439,17 +450,19 @@ describe('PlanTypeOptions', () => {
 
       describe('user clicks Team button', () => {
         it('calls setValue and setSelectedPlan', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_SENTRYY,
-            hasSentryPlans: true,
-            hasTeamPlans: true,
-          })
+          const { user, mockSetFormValue, mockSetSelectedPlan, getFormValues } =
+            setup({
+              planValue: Plans.USERS_SENTRYY,
+              hasSentryPlans: true,
+              hasTeamPlans: true,
+            })
 
           render(
             <PlanTypeOptions
               multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
+              getFormValues={getFormValues}
             />,
             {
               wrapper: wrapper(),
@@ -476,17 +489,19 @@ describe('PlanTypeOptions', () => {
 
       describe('user clicks Pro button', () => {
         it('calls setValue and setSelectedPlan', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_SENTRYY,
-            hasSentryPlans: true,
-            hasTeamPlans: true,
-          })
+          const { user, mockSetFormValue, mockSetSelectedPlan, getFormValues } =
+            setup({
+              planValue: Plans.USERS_SENTRYY,
+              hasSentryPlans: true,
+              hasTeamPlans: true,
+            })
 
           render(
             <PlanTypeOptions
               multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
+              getFormValues={getFormValues}
             />,
             {
               wrapper: wrapper(),
@@ -514,7 +529,7 @@ describe('PlanTypeOptions', () => {
 
     describe('when plan is team yearly', () => {
       it('renders Pro button as "selected"', async () => {
-        const { mockSetFormValue, mockSetSelectedPlan } = setup({
+        const { mockSetFormValue, mockSetSelectedPlan, getFormValues } = setup({
           planValue: Plans.USERS_TEAMY,
           hasSentryPlans: true,
           hasTeamPlans: true,
@@ -525,6 +540,7 @@ describe('PlanTypeOptions', () => {
             multipleTiers={true}
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
+            getFormValues={getFormValues}
           />,
           {
             wrapper: wrapper(),
@@ -546,17 +562,19 @@ describe('PlanTypeOptions', () => {
 
       describe('plan param is set to team', () => {
         it('renders Team button as "selected"', async () => {
-          const { mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_TEAMY,
-            hasSentryPlans: true,
-            hasTeamPlans: true,
-          })
+          const { mockSetFormValue, mockSetSelectedPlan, getFormValues } =
+            setup({
+              planValue: Plans.USERS_TEAMY,
+              hasSentryPlans: true,
+              hasTeamPlans: true,
+            })
 
           render(
             <PlanTypeOptions
               multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
+              getFormValues={getFormValues}
             />,
             {
               wrapper: wrapper('/gh/codecov?plan=team'),
@@ -579,17 +597,19 @@ describe('PlanTypeOptions', () => {
 
       describe('user clicks Team button', () => {
         it('calls setValue and setSelectedPlan', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_TEAMY,
-            hasSentryPlans: true,
-            hasTeamPlans: true,
-          })
+          const { user, mockSetFormValue, mockSetSelectedPlan, getFormValues } =
+            setup({
+              planValue: Plans.USERS_TEAMY,
+              hasSentryPlans: true,
+              hasTeamPlans: true,
+            })
 
           render(
             <PlanTypeOptions
               multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
+              getFormValues={getFormValues}
             />,
             {
               wrapper: wrapper(),
@@ -616,17 +636,19 @@ describe('PlanTypeOptions', () => {
 
       describe('user clicks Pro button', () => {
         it('calls setValue and setSelectedPlan', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_TEAMY,
-            hasSentryPlans: true,
-            hasTeamPlans: true,
-          })
+          const { user, mockSetFormValue, mockSetSelectedPlan, getFormValues } =
+            setup({
+              planValue: Plans.USERS_TEAMY,
+              hasSentryPlans: true,
+              hasTeamPlans: true,
+            })
 
           render(
             <PlanTypeOptions
               multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
+              getFormValues={getFormValues}
             />,
             {
               wrapper: wrapper(),
@@ -654,7 +676,7 @@ describe('PlanTypeOptions', () => {
 
     describe('when org does not have team plans available', () => {
       it('renders custom sentry text for included seats', async () => {
-        const { mockSetFormValue, mockSetSelectedPlan } = setup({
+        const { mockSetFormValue, mockSetSelectedPlan, getFormValues } = setup({
           planValue: Plans.USERS_SENTRYY,
           hasSentryPlans: true,
           hasTeamPlans: false,
@@ -665,6 +687,7 @@ describe('PlanTypeOptions', () => {
             multipleTiers={false}
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
+            getFormValues={getFormValues}
           />,
           {
             wrapper: wrapper(),
@@ -688,7 +711,7 @@ describe('PlanTypeOptions', () => {
 
     describe('when plan is trialing', () => {
       it('renders Pro button as "selected"', async () => {
-        const { mockSetFormValue, mockSetSelectedPlan } = setup({
+        const { mockSetFormValue, mockSetSelectedPlan, getFormValues } = setup({
           planValue: Plans.USERS_TRIAL,
           hasSentryPlans: true,
           hasTeamPlans: true,
@@ -699,6 +722,7 @@ describe('PlanTypeOptions', () => {
             multipleTiers={true}
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
+            getFormValues={getFormValues}
           />,
           {
             wrapper: wrapper(),
@@ -720,17 +744,19 @@ describe('PlanTypeOptions', () => {
 
       describe('plan param is set to team', () => {
         it('renders Team button as "selected"', async () => {
-          const { mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_TRIAL,
-            hasSentryPlans: true,
-            hasTeamPlans: true,
-          })
+          const { mockSetFormValue, mockSetSelectedPlan, getFormValues } =
+            setup({
+              planValue: Plans.USERS_TRIAL,
+              hasSentryPlans: true,
+              hasTeamPlans: true,
+            })
 
           render(
             <PlanTypeOptions
               multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
+              getFormValues={getFormValues}
             />,
             {
               wrapper: wrapper('/gh/codecov?plan=team'),
@@ -753,17 +779,19 @@ describe('PlanTypeOptions', () => {
 
       describe('user clicks Team button', () => {
         it('calls setValue and setSelectedPlan', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_TRIAL,
-            hasSentryPlans: true,
-            hasTeamPlans: true,
-          })
+          const { user, mockSetFormValue, mockSetSelectedPlan, getFormValues } =
+            setup({
+              planValue: Plans.USERS_TRIAL,
+              hasSentryPlans: true,
+              hasTeamPlans: true,
+            })
 
           render(
             <PlanTypeOptions
               multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
+              getFormValues={getFormValues}
             />,
             {
               wrapper: wrapper(),
@@ -790,17 +818,19 @@ describe('PlanTypeOptions', () => {
 
       describe('user clicks Pro button', () => {
         it('calls setValue and setSelectedPlan', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_TRIAL,
-            hasSentryPlans: true,
-            hasTeamPlans: true,
-          })
+          const { user, mockSetFormValue, mockSetSelectedPlan, getFormValues } =
+            setup({
+              planValue: Plans.USERS_TRIAL,
+              hasSentryPlans: true,
+              hasTeamPlans: true,
+            })
 
           render(
             <PlanTypeOptions
               multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
+              getFormValues={getFormValues}
             />,
             {
               wrapper: wrapper(),
@@ -830,7 +860,7 @@ describe('PlanTypeOptions', () => {
   describe('user is not doing a sentry upgrade', () => {
     describe('when plan is basic', () => {
       it('renders Pro button as "selected"', async () => {
-        const { mockSetFormValue, mockSetSelectedPlan } = setup({
+        const { mockSetFormValue, mockSetSelectedPlan, getFormValues } = setup({
           planValue: Plans.USERS_BASIC,
           hasSentryPlans: false,
           hasTeamPlans: true,
@@ -841,6 +871,7 @@ describe('PlanTypeOptions', () => {
             multipleTiers={true}
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
+            getFormValues={getFormValues}
           />,
           {
             wrapper: wrapper(),
@@ -862,17 +893,19 @@ describe('PlanTypeOptions', () => {
 
       describe('plan param is set to team', () => {
         it('renders Team button as "selected"', async () => {
-          const { mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_BASIC,
-            hasSentryPlans: false,
-            hasTeamPlans: true,
-          })
+          const { mockSetFormValue, mockSetSelectedPlan, getFormValues } =
+            setup({
+              planValue: Plans.USERS_BASIC,
+              hasSentryPlans: false,
+              hasTeamPlans: true,
+            })
 
           render(
             <PlanTypeOptions
               multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
+              getFormValues={getFormValues}
             />,
             {
               wrapper: wrapper('/gh/codecov?plan=team'),
@@ -895,17 +928,19 @@ describe('PlanTypeOptions', () => {
 
       describe('user clicks Team button', () => {
         it('calls setValue and setSelectedPlan', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_BASIC,
-            hasSentryPlans: false,
-            hasTeamPlans: true,
-          })
+          const { user, mockSetFormValue, mockSetSelectedPlan, getFormValues } =
+            setup({
+              planValue: Plans.USERS_BASIC,
+              hasSentryPlans: false,
+              hasTeamPlans: true,
+            })
 
           render(
             <PlanTypeOptions
               multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
+              getFormValues={getFormValues}
             />,
             {
               wrapper: wrapper(),
@@ -932,17 +967,19 @@ describe('PlanTypeOptions', () => {
 
       describe('user clicks Pro button', () => {
         it('calls setValue and setSelectedPlan', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_BASIC,
-            hasSentryPlans: false,
-            hasTeamPlans: true,
-          })
+          const { user, mockSetFormValue, mockSetSelectedPlan, getFormValues } =
+            setup({
+              planValue: Plans.USERS_BASIC,
+              hasSentryPlans: false,
+              hasTeamPlans: true,
+            })
 
           render(
             <PlanTypeOptions
               multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
+              getFormValues={getFormValues}
             />,
             {
               wrapper: wrapper(),
@@ -970,7 +1007,7 @@ describe('PlanTypeOptions', () => {
 
     describe('when plan is pro yearly', () => {
       it('renders Pro button as "selected"', async () => {
-        const { mockSetFormValue, mockSetSelectedPlan } = setup({
+        const { mockSetFormValue, mockSetSelectedPlan, getFormValues } = setup({
           planValue: Plans.USERS_PR_INAPPY,
           hasSentryPlans: false,
           hasTeamPlans: true,
@@ -981,6 +1018,7 @@ describe('PlanTypeOptions', () => {
             multipleTiers={true}
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
+            getFormValues={getFormValues}
           />,
           {
             wrapper: wrapper(),
@@ -1002,17 +1040,19 @@ describe('PlanTypeOptions', () => {
 
       describe('plan param is set to team', () => {
         it('renders Team button as "selected"', async () => {
-          const { mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_PR_INAPPY,
-            hasSentryPlans: false,
-            hasTeamPlans: true,
-          })
+          const { mockSetFormValue, mockSetSelectedPlan, getFormValues } =
+            setup({
+              planValue: Plans.USERS_PR_INAPPY,
+              hasSentryPlans: false,
+              hasTeamPlans: true,
+            })
 
           render(
             <PlanTypeOptions
               multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
+              getFormValues={getFormValues}
             />,
             {
               wrapper: wrapper('/gh/codecov?plan=team'),
@@ -1035,17 +1075,19 @@ describe('PlanTypeOptions', () => {
 
       describe('user clicks Team button', () => {
         it('calls setValue and setSelectedPlan', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_SENTRYY,
-            hasSentryPlans: false,
-            hasTeamPlans: true,
-          })
+          const { user, mockSetFormValue, mockSetSelectedPlan, getFormValues } =
+            setup({
+              planValue: Plans.USERS_SENTRYY,
+              hasSentryPlans: false,
+              hasTeamPlans: true,
+            })
 
           render(
             <PlanTypeOptions
               multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
+              getFormValues={getFormValues}
             />,
             {
               wrapper: wrapper(),
@@ -1072,17 +1114,19 @@ describe('PlanTypeOptions', () => {
 
       describe('user clicks Pro button', () => {
         it('calls setValue and setSelectedPlan', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_SENTRYY,
-            hasSentryPlans: false,
-            hasTeamPlans: true,
-          })
+          const { user, mockSetFormValue, mockSetSelectedPlan, getFormValues } =
+            setup({
+              planValue: Plans.USERS_SENTRYY,
+              hasSentryPlans: false,
+              hasTeamPlans: true,
+            })
 
           render(
             <PlanTypeOptions
               multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
+              getFormValues={getFormValues}
             />,
             {
               wrapper: wrapper(),
@@ -1110,7 +1154,7 @@ describe('PlanTypeOptions', () => {
 
     describe('when plan is team yearly', () => {
       it('renders Pro button as "selected"', async () => {
-        const { mockSetFormValue, mockSetSelectedPlan } = setup({
+        const { mockSetFormValue, mockSetSelectedPlan, getFormValues } = setup({
           planValue: Plans.USERS_TEAMY,
           hasSentryPlans: false,
           hasTeamPlans: true,
@@ -1121,6 +1165,7 @@ describe('PlanTypeOptions', () => {
             multipleTiers={true}
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
+            getFormValues={getFormValues}
           />,
           {
             wrapper: wrapper(),
@@ -1142,17 +1187,19 @@ describe('PlanTypeOptions', () => {
 
       describe('plan param is set to team', () => {
         it('renders Team button as "selected"', async () => {
-          const { mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_TEAMY,
-            hasSentryPlans: false,
-            hasTeamPlans: true,
-          })
+          const { mockSetFormValue, mockSetSelectedPlan, getFormValues } =
+            setup({
+              planValue: Plans.USERS_TEAMY,
+              hasSentryPlans: false,
+              hasTeamPlans: true,
+            })
 
           render(
             <PlanTypeOptions
               multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
+              getFormValues={getFormValues}
             />,
             {
               wrapper: wrapper('/gh/codecov?plan=team'),
@@ -1175,17 +1222,19 @@ describe('PlanTypeOptions', () => {
 
       describe('user clicks Team button', () => {
         it('calls setValue and setSelectedPlan', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_TEAMY,
-            hasSentryPlans: false,
-            hasTeamPlans: true,
-          })
+          const { user, mockSetFormValue, mockSetSelectedPlan, getFormValues } =
+            setup({
+              planValue: Plans.USERS_TEAMY,
+              hasSentryPlans: false,
+              hasTeamPlans: true,
+            })
 
           render(
             <PlanTypeOptions
               multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
+              getFormValues={getFormValues}
             />,
             {
               wrapper: wrapper(),
@@ -1212,17 +1261,19 @@ describe('PlanTypeOptions', () => {
 
       describe('user clicks Pro button', () => {
         it('calls setValue and setSelectedPlan', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_TEAMY,
-            hasSentryPlans: false,
-            hasTeamPlans: true,
-          })
+          const { user, mockSetFormValue, mockSetSelectedPlan, getFormValues } =
+            setup({
+              planValue: Plans.USERS_TEAMY,
+              hasSentryPlans: false,
+              hasTeamPlans: true,
+            })
 
           render(
             <PlanTypeOptions
               multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
+              getFormValues={getFormValues}
             />,
             {
               wrapper: wrapper(),
@@ -1250,7 +1301,7 @@ describe('PlanTypeOptions', () => {
 
     describe('when plan is trialing', () => {
       it('renders Pro button as "selected"', async () => {
-        const { mockSetFormValue, mockSetSelectedPlan } = setup({
+        const { mockSetFormValue, mockSetSelectedPlan, getFormValues } = setup({
           planValue: Plans.USERS_TRIAL,
           hasSentryPlans: false,
           hasTeamPlans: true,
@@ -1261,6 +1312,7 @@ describe('PlanTypeOptions', () => {
             multipleTiers={true}
             setFormValue={mockSetFormValue}
             setSelectedPlan={mockSetSelectedPlan}
+            getFormValues={getFormValues}
           />,
           {
             wrapper: wrapper(),
@@ -1282,17 +1334,19 @@ describe('PlanTypeOptions', () => {
 
       describe('plan param is set to team', () => {
         it('renders Team button as "selected"', async () => {
-          const { mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_TRIAL,
-            hasSentryPlans: false,
-            hasTeamPlans: true,
-          })
+          const { mockSetFormValue, mockSetSelectedPlan, getFormValues } =
+            setup({
+              planValue: Plans.USERS_TRIAL,
+              hasSentryPlans: false,
+              hasTeamPlans: true,
+            })
 
           render(
             <PlanTypeOptions
               multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
+              getFormValues={getFormValues}
             />,
             {
               wrapper: wrapper('/gh/codecov?plan=team'),
@@ -1315,17 +1369,19 @@ describe('PlanTypeOptions', () => {
 
       describe('user clicks Team button', () => {
         it('calls setValue and setSelectedPlan', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_TRIAL,
-            hasSentryPlans: false,
-            hasTeamPlans: true,
-          })
+          const { user, mockSetFormValue, mockSetSelectedPlan, getFormValues } =
+            setup({
+              planValue: Plans.USERS_TRIAL,
+              hasSentryPlans: false,
+              hasTeamPlans: true,
+            })
 
           render(
             <PlanTypeOptions
               multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
+              getFormValues={getFormValues}
             />,
             {
               wrapper: wrapper(),
@@ -1352,17 +1408,19 @@ describe('PlanTypeOptions', () => {
 
       describe('user clicks Pro button', () => {
         it('calls setValue and setSelectedPlan', async () => {
-          const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
-            planValue: Plans.USERS_TRIAL,
-            hasSentryPlans: false,
-            hasTeamPlans: true,
-          })
+          const { user, mockSetFormValue, mockSetSelectedPlan, getFormValues } =
+            setup({
+              planValue: Plans.USERS_TRIAL,
+              hasSentryPlans: false,
+              hasTeamPlans: true,
+            })
 
           render(
             <PlanTypeOptions
               multipleTiers={true}
               setFormValue={mockSetFormValue}
               setSelectedPlan={mockSetSelectedPlan}
+              getFormValues={getFormValues}
             />,
             {
               wrapper: wrapper(),
@@ -1389,8 +1447,7 @@ describe('PlanTypeOptions', () => {
     })
   })
   describe('when plan is team plan monthly', () => {
-    it.only('keeps monthly selection when updating to pro plan', async () => {
-      // also not switching
+    it('keeps monthly selection when updating to pro plan', async () => {
       const { user, mockSetFormValue, mockSetSelectedPlan } = setup({
         planValue: Plans.USERS_TEAMM,
         hasSentryPlans: false,
