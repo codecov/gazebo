@@ -13,10 +13,7 @@ import PullRequestPage from './PullRequestPage'
 jest.mock('shared/featureFlags')
 
 jest.mock('./Header', () => () => 'Header')
-jest.mock('./Summary', () => () => 'CompareSummary')
-jest.mock('./PullRequestPageContent', () => () => 'PullRequestPageContent')
-jest.mock('./PullRequestPageTabs', () => () => 'PullRequestPageTabs')
-jest.mock('./FirstPullBanner', () => () => 'FirstPullBanner')
+jest.mock('./PullCoverage', () => () => 'PullCoverage')
 jest.mock('shared/featureFlags')
 
 const mockPullHeadData = {
@@ -121,6 +118,7 @@ describe('PullRequestPage', () => {
             })
           )
         }
+
         return res(
           ctx.status(200),
           ctx.data({
@@ -181,34 +179,11 @@ describe('PullRequestPage', () => {
       expect(header).toBeInTheDocument()
     })
 
-    it('renders compare summary', async () => {
-      render(<PullRequestPage />, { wrapper: wrapper() })
-
-      const compareSummary = await screen.findByText(/CompareSummary/)
-      expect(compareSummary).toBeInTheDocument()
-    })
-
-    it('renders pull request page tabs', async () => {
-      render(<PullRequestPage />, { wrapper: wrapper() })
-
-      const pullRequestPageTabs = await screen.findByText(/PullRequestPageTabs/)
-      expect(pullRequestPageTabs).toBeInTheDocument()
-    })
-
     it('renders pull request page content', async () => {
       render(<PullRequestPage />, { wrapper: wrapper() })
 
-      const pullRequestPageContent = await screen.findByText(
-        /PullRequestPageContent/
-      )
-      expect(pullRequestPageContent).toBeInTheDocument()
-    })
-
-    it('renders the first pull request banner', async () => {
-      render(<PullRequestPage />, { wrapper: wrapper() })
-
-      const firstPullRequestBanner = await screen.findByText(/FirstPullBanner/)
-      expect(firstPullRequestBanner).toBeInTheDocument()
+      const pullCoverage = await screen.findByText(/PullCoverage/)
+      expect(pullCoverage).toBeInTheDocument()
     })
   })
 

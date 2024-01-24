@@ -4,7 +4,7 @@ import RawFileviewer from 'shared/RawFileviewer'
 import { usePullTreePaths } from 'shared/treePaths'
 import Breadcrumb from 'ui/Breadcrumb'
 
-import { usePullPageData } from '../../hooks'
+import { usePullPageData } from '../../../hooks'
 import ComponentsSelector from '../ComponentsSelector'
 
 function FileViewer() {
