@@ -7,7 +7,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { TierNames } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 
-import PullRequestPageTabs from './PullRequestPageTabs'
+import PullCoverageTabs from './PullCoverageTabs'
 
 jest.mock('shared/featureFlags')
 
@@ -145,7 +145,7 @@ afterAll(() => {
   server.close()
 })
 
-describe('PullRequestPageTabs', () => {
+describe('PullCoverageTabs', () => {
   function setup(
     {
       multipleTiers = false,
@@ -197,7 +197,7 @@ describe('PullRequestPageTabs', () => {
       beforeEach(() => setup())
 
       it('renders link to root pull route', async () => {
-        render(<PullRequestPageTabs />, { wrapper: wrapper() })
+        render(<PullCoverageTabs />, { wrapper: wrapper() })
 
         const link = await screen.findByRole('link', { name: /Files changed/ })
         expect(link).toBeInTheDocument()
@@ -205,7 +205,7 @@ describe('PullRequestPageTabs', () => {
       })
 
       it('renders the correct tab count', async () => {
-        render(<PullRequestPageTabs />, { wrapper: wrapper() })
+        render(<PullCoverageTabs />, { wrapper: wrapper() })
 
         const tabCount = await screen.findByText('4')
         expect(tabCount).toBeInTheDocument()
@@ -216,7 +216,7 @@ describe('PullRequestPageTabs', () => {
       beforeEach(() => setup())
 
       it('renders link to indirect changes pull route', async () => {
-        render(<PullRequestPageTabs />, { wrapper: wrapper() })
+        render(<PullCoverageTabs />, { wrapper: wrapper() })
 
         const link = await screen.findByRole('link', {
           name: /Indirect changes/,
@@ -229,7 +229,7 @@ describe('PullRequestPageTabs', () => {
       })
 
       it('renders the correct tab count', async () => {
-        render(<PullRequestPageTabs />, { wrapper: wrapper() })
+        render(<PullCoverageTabs />, { wrapper: wrapper() })
 
         const tabCount = await screen.findByText('5')
         expect(tabCount).toBeInTheDocument()
@@ -240,7 +240,7 @@ describe('PullRequestPageTabs', () => {
       beforeEach(() => setup())
 
       it('renders link to commits pull route', async () => {
-        render(<PullRequestPageTabs />, { wrapper: wrapper() })
+        render(<PullCoverageTabs />, { wrapper: wrapper() })
 
         const link = await screen.findByRole('link', { name: /Commits/ })
         expect(link).toBeInTheDocument()
@@ -251,7 +251,7 @@ describe('PullRequestPageTabs', () => {
       })
 
       it('renders the correct tab count', async () => {
-        render(<PullRequestPageTabs />, { wrapper: wrapper() })
+        render(<PullCoverageTabs />, { wrapper: wrapper() })
 
         const tabCount = await screen.findByText('11')
         expect(tabCount).toBeInTheDocument()
@@ -262,7 +262,7 @@ describe('PullRequestPageTabs', () => {
       beforeEach(() => setup())
 
       it('renders link to flags pull route', async () => {
-        render(<PullRequestPageTabs />, { wrapper: wrapper() })
+        render(<PullCoverageTabs />, { wrapper: wrapper() })
 
         const link = await screen.findByRole('link', { name: /Flags/ })
         expect(link).toBeInTheDocument()
@@ -273,7 +273,7 @@ describe('PullRequestPageTabs', () => {
       })
 
       it('renders the correct tab count', async () => {
-        render(<PullRequestPageTabs />, { wrapper: wrapper() })
+        render(<PullCoverageTabs />, { wrapper: wrapper() })
 
         const tabCount = await screen.findByText('3')
         expect(tabCount).toBeInTheDocument()
@@ -286,7 +286,7 @@ describe('PullRequestPageTabs', () => {
       beforeEach(() => setup())
 
       it('highlights file explorer tab', async () => {
-        render(<PullRequestPageTabs />, {
+        render(<PullCoverageTabs />, {
           wrapper: wrapper('/gh/codecov/test-repo/pull/1/tree'),
         })
 
@@ -296,7 +296,7 @@ describe('PullRequestPageTabs', () => {
       })
 
       it('does not highlight any other tab', async () => {
-        render(<PullRequestPageTabs />, {
+        render(<PullCoverageTabs />, {
           wrapper: wrapper('/gh/codecov/test-repo/pull/1/tree'),
         })
 
@@ -322,7 +322,7 @@ describe('PullRequestPageTabs', () => {
       beforeEach(() => setup())
 
       it('highlights files tab', async () => {
-        render(<PullRequestPageTabs />, {
+        render(<PullCoverageTabs />, {
           wrapper: wrapper('/gh/codecov/test-repo/pull/1/blob/index.js'),
         })
 
@@ -332,7 +332,7 @@ describe('PullRequestPageTabs', () => {
       })
 
       it('does not highlight any other tab', async () => {
-        render(<PullRequestPageTabs />, {
+        render(<PullCoverageTabs />, {
           wrapper: wrapper('/gh/codecov/test-repo/pull/1/blob/index.js'),
         })
 
@@ -359,28 +359,28 @@ describe('PullRequestPageTabs', () => {
     beforeEach(() => setup())
 
     it('renders uncovered legend', async () => {
-      render(<PullRequestPageTabs />, { wrapper: wrapper() })
+      render(<PullCoverageTabs />, { wrapper: wrapper() })
 
       const legend = await screen.findByText('uncovered')
       expect(legend).toBeInTheDocument()
     })
 
     it('renders partial legend', async () => {
-      render(<PullRequestPageTabs />, { wrapper: wrapper() })
+      render(<PullCoverageTabs />, { wrapper: wrapper() })
 
       const legend = await screen.findByText('partial')
       expect(legend).toBeInTheDocument()
     })
 
     it('renders covered legend', async () => {
-      render(<PullRequestPageTabs />, { wrapper: wrapper() })
+      render(<PullCoverageTabs />, { wrapper: wrapper() })
 
       const legend = await screen.findByText('covered')
       expect(legend).toBeInTheDocument()
     })
 
     it('renders hit count legend', async () => {
-      render(<PullRequestPageTabs />, { wrapper: wrapper() })
+      render(<PullCoverageTabs />, { wrapper: wrapper() })
 
       const hitIcon = await screen.findByText('n')
       expect(hitIcon).toBeInTheDocument()
@@ -402,7 +402,7 @@ describe('PullRequestPageTabs', () => {
         )
 
         it('renders correct tabs', async () => {
-          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+          render(<PullCoverageTabs />, { wrapper: wrapper() })
 
           const components = await screen.findByText('Files changed')
           expect(components).toBeInTheDocument()
@@ -424,7 +424,7 @@ describe('PullRequestPageTabs', () => {
         })
 
         it('does render the flag select', async () => {
-          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+          render(<PullCoverageTabs />, { wrapper: wrapper() })
 
           const flagSelect = await screen.findByText('Search for Flags')
           expect(flagSelect).toBeInTheDocument()
@@ -441,7 +441,7 @@ describe('PullRequestPageTabs', () => {
         )
 
         it('renders correct tabs', async () => {
-          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+          render(<PullCoverageTabs />, { wrapper: wrapper() })
 
           const components = await screen.findByText('Files changed')
           expect(components).toBeInTheDocument()
@@ -463,7 +463,7 @@ describe('PullRequestPageTabs', () => {
         })
 
         it('does not render the flag select', async () => {
-          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+          render(<PullCoverageTabs />, { wrapper: wrapper() })
 
           const flagSelect = screen.queryByText('Search for Flags')
           expect(flagSelect).not.toBeInTheDocument()
@@ -480,7 +480,7 @@ describe('PullRequestPageTabs', () => {
         )
 
         it('renders correct tabs', async () => {
-          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+          render(<PullCoverageTabs />, { wrapper: wrapper() })
 
           const components = await screen.findByText('Files changed')
           expect(components).toBeInTheDocument()
@@ -502,7 +502,7 @@ describe('PullRequestPageTabs', () => {
         })
 
         it('does render the flag select', async () => {
-          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+          render(<PullCoverageTabs />, { wrapper: wrapper() })
 
           const flagSelect = await screen.findByText('Search for Flags')
           expect(flagSelect).toBeInTheDocument()
@@ -519,7 +519,7 @@ describe('PullRequestPageTabs', () => {
         )
 
         it('renders correct tabs', async () => {
-          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+          render(<PullCoverageTabs />, { wrapper: wrapper() })
 
           const components = await screen.findByText('Files changed')
           expect(components).toBeInTheDocument()
@@ -541,7 +541,7 @@ describe('PullRequestPageTabs', () => {
         })
 
         it('does not render the flag select', async () => {
-          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+          render(<PullCoverageTabs />, { wrapper: wrapper() })
 
           const flagSelect = screen.queryByText('Search for Flags')
           expect(flagSelect).not.toBeInTheDocument()
@@ -559,7 +559,7 @@ describe('PullRequestPageTabs', () => {
         )
 
         it('renders correct tabs', async () => {
-          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+          render(<PullCoverageTabs />, { wrapper: wrapper() })
 
           const components = await screen.findByText('Files changed')
           expect(components).toBeInTheDocument()
@@ -581,7 +581,7 @@ describe('PullRequestPageTabs', () => {
         })
 
         it('does render the flag select', async () => {
-          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+          render(<PullCoverageTabs />, { wrapper: wrapper() })
 
           const flagSelect = await screen.findByText('Search for Flags')
           expect(flagSelect).toBeInTheDocument()
@@ -598,7 +598,7 @@ describe('PullRequestPageTabs', () => {
         )
 
         it('renders correct tabs', async () => {
-          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+          render(<PullCoverageTabs />, { wrapper: wrapper() })
 
           const components = await screen.findByText('Files changed')
           expect(components).toBeInTheDocument()
@@ -620,7 +620,7 @@ describe('PullRequestPageTabs', () => {
         })
 
         it('does not render the flag select', async () => {
-          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+          render(<PullCoverageTabs />, { wrapper: wrapper() })
 
           const flagSelect = screen.queryByText('Search for Flags')
           expect(flagSelect).not.toBeInTheDocument()
@@ -637,7 +637,7 @@ describe('PullRequestPageTabs', () => {
         )
 
         it('renders correct tabs', async () => {
-          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+          render(<PullCoverageTabs />, { wrapper: wrapper() })
 
           const components = await screen.findByText('Files changed')
           expect(components).toBeInTheDocument()
@@ -659,7 +659,7 @@ describe('PullRequestPageTabs', () => {
         })
 
         it('does render the flag select', async () => {
-          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+          render(<PullCoverageTabs />, { wrapper: wrapper() })
 
           const flagSelect = await screen.findByText('Search for Flags')
           expect(flagSelect).toBeInTheDocument()
@@ -676,7 +676,7 @@ describe('PullRequestPageTabs', () => {
         )
 
         it('renders correct tabs', async () => {
-          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+          render(<PullCoverageTabs />, { wrapper: wrapper() })
 
           const components = await screen.findByText('Files changed')
           expect(components).toBeInTheDocument()
@@ -698,7 +698,7 @@ describe('PullRequestPageTabs', () => {
         })
 
         it('does not render the flag select', async () => {
-          render(<PullRequestPageTabs />, { wrapper: wrapper() })
+          render(<PullCoverageTabs />, { wrapper: wrapper() })
 
           const flagSelect = screen.queryByText('Search for Flags')
           expect(flagSelect).not.toBeInTheDocument()
