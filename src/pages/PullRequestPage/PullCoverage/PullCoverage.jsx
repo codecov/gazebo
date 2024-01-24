@@ -63,59 +63,72 @@ function PullCoverageContent() {
   }
 
   return (
-    <Switch>
-      <SentryRoute
-        path={[
-          '/:provider/:owner/:repo/pull/:pullId/tree/:path+',
-          '/:provider/:owner/:repo/pull/:pullId/tree/',
-        ]}
-      >
-        <Suspense fallback={<Loader />}>
-          <FileExplorer />
-        </Suspense>
-      </SentryRoute>
-      <SentryRoute path={['/:provider/:owner/:repo/pull/:pullId/blob/:path+']}>
-        <Suspense fallback={<Loader />}>
-          <FileViewer />
-        </Suspense>
-      </SentryRoute>
-      <SentryRoute
-        path="/:provider/:owner/:repo/pull/:pullId/indirect-changes"
-        exact
-      >
-        <Suspense fallback={<Loader />}>
-          <IndirectChangesTab />
-        </Suspense>
-      </SentryRoute>
-      <SentryRoute path="/:provider/:owner/:repo/pull/:pullId/commits" exact>
-        <Suspense fallback={<Loader />}>
-          <CommitsTab />
-        </Suspense>
-      </SentryRoute>
-      <SentryRoute path="/:provider/:owner/:repo/pull/:pullId/flags" exact>
-        <SilentNetworkErrorWrapper>
-          <Suspense fallback={<Loader />}>
-            <FlagsTab />
-          </Suspense>
-        </SilentNetworkErrorWrapper>
-      </SentryRoute>
-      <SentryRoute path="/:provider/:owner/:repo/pull/:pullId/components" exact>
-        <SilentNetworkErrorWrapper>
-          <Suspense fallback={<Loader />}>
-            <ComponentsTab />
-          </Suspense>
-        </SilentNetworkErrorWrapper>
-      </SentryRoute>
-      <SentryRoute path="/:provider/:owner/:repo/pull/:pullId" exact>
-        <Suspense fallback={<Loader />}>
-          <FilesChangedTab />
-        </Suspense>
-      </SentryRoute>
-      <Redirect
-        from="/:provider/:owner/:repo/pull/:pullId/*"
-        to="/:provider/:owner/:repo/pull/:pullId"
-      />
-    </Switch>
+    <>
+      <PullCoverageTabs />
+      <Suspense fallback={<Loader />}>
+        <Switch>
+          <SentryRoute
+            path={[
+              '/:provider/:owner/:repo/pull/:pullId/tree/:path+',
+              '/:provider/:owner/:repo/pull/:pullId/tree/',
+            ]}
+          >
+            <Suspense fallback={<Loader />}>
+              <FileExplorer />
+            </Suspense>
+          </SentryRoute>
+          <SentryRoute
+            path={['/:provider/:owner/:repo/pull/:pullId/blob/:path+']}
+          >
+            <Suspense fallback={<Loader />}>
+              <FileViewer />
+            </Suspense>
+          </SentryRoute>
+          <SentryRoute
+            path="/:provider/:owner/:repo/pull/:pullId/indirect-changes"
+            exact
+          >
+            <Suspense fallback={<Loader />}>
+              <IndirectChangesTab />
+            </Suspense>
+          </SentryRoute>
+          <SentryRoute
+            path="/:provider/:owner/:repo/pull/:pullId/commits"
+            exact
+          >
+            <Suspense fallback={<Loader />}>
+              <CommitsTab />
+            </Suspense>
+          </SentryRoute>
+          <SentryRoute path="/:provider/:owner/:repo/pull/:pullId/flags" exact>
+            <SilentNetworkErrorWrapper>
+              <Suspense fallback={<Loader />}>
+                <FlagsTab />
+              </Suspense>
+            </SilentNetworkErrorWrapper>
+          </SentryRoute>
+          <SentryRoute
+            path="/:provider/:owner/:repo/pull/:pullId/components"
+            exact
+          >
+            <SilentNetworkErrorWrapper>
+              <Suspense fallback={<Loader />}>
+                <ComponentsTab />
+              </Suspense>
+            </SilentNetworkErrorWrapper>
+          </SentryRoute>
+          <SentryRoute path="/:provider/:owner/:repo/pull/:pullId" exact>
+            <Suspense fallback={<Loader />}>
+              <FilesChangedTab />
+            </Suspense>
+          </SentryRoute>
+          <Redirect
+            from="/:provider/:owner/:repo/pull/:pullId/*"
+            to="/:provider/:owner/:repo/pull/:pullId"
+          />
+        </Switch>
+      </Suspense>
+    </>
   )
 }
 
@@ -128,10 +141,7 @@ function PullCoverage() {
       </Suspense>
       <div className="grid grid-cols-1 gap-4 space-y-2 lg:grid-cols-2">
         <article className="col-span-2 flex flex-col gap-3 md:gap-0">
-          <PullCoverageTabs />
-          <Suspense fallback={<Loader />}>
-            <PullCoverageContent />
-          </Suspense>
+          <PullCoverageContent />
         </article>
       </div>
     </div>
