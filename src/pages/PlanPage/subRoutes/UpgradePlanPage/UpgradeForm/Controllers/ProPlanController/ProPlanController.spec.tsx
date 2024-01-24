@@ -211,7 +211,7 @@ describe('ProPlanController', () => {
           ctx.data({
             owner: {
               hasPrivateRepos: true,
-              plan: { ...mockPlanDataResponse, trialStatus },
+              plan: mockPlanDataResponse,
             },
           })
         )
