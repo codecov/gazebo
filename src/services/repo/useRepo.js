@@ -9,7 +9,6 @@ function fetchRepoDetails({ provider, owner, repo, signal }) {
         isAdmin
         isCurrentUserPartOfOrg
         isCurrentUserActivated
-        orgUploadToken
         repository: repositoryDeprecated(name:$repo){
           private
           uploadToken
@@ -37,7 +36,6 @@ function fetchRepoDetails({ provider, owner, repo, signal }) {
       repository: res?.data?.owner?.repository,
       isCurrentUserPartOfOrg: res?.data?.owner?.isCurrentUserPartOfOrg,
       isCurrentUserActivated: res?.data?.owner?.isCurrentUserActivated,
-      orgUploadToken: res?.data?.owner?.orgUploadToken,
     }
   })
 }

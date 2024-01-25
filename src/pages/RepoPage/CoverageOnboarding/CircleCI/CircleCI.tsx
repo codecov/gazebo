@@ -3,16 +3,15 @@ import { useParams } from 'react-router-dom'
 import { useOrgUploadToken } from 'services/orgUploadToken'
 import { useFlags } from 'shared/featureFlags'
 
-import GitHubActionsOrgToken from './GitHubActionsOrgToken'
-import GitHubActionsRepoToken from './GitHubActionsRepoToken'
+import CircleCIOrgToken from './CircleCIOrgToken'
+import CircleCIRepoToken from './CircleCIRepoToken'
 
 interface URLParams {
   provider: string
   owner: string
-  repo: string
 }
 
-function GitHubActions() {
+function CircleCI() {
   const { newRepoFlag } = useFlags({
     newRepoFlag: false,
   })
@@ -22,7 +21,7 @@ function GitHubActions() {
 
   const showOrgToken = newRepoFlag && orgUploadToken
 
-  return showOrgToken ? <GitHubActionsOrgToken /> : <GitHubActionsRepoToken />
+  return showOrgToken ? <CircleCIOrgToken /> : <CircleCIRepoToken />
 }
 
-export default GitHubActions
+export default CircleCI

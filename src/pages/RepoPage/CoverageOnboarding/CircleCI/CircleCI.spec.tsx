@@ -7,10 +7,10 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useFlags } from 'shared/featureFlags'
 
-import GitHubActions from './GitHubActions'
+import CircleCI from './CircleCI'
 
-jest.mock('./GitHubActionsRepoToken', () => () => 'GitHubActionsRepoToken')
-jest.mock('./GitHubActionsOrgToken', () => () => 'GitHubActionsOrgToken')
+jest.mock('./CircleCIRepoToken', () => () => 'CircleCIRepoToken')
+jest.mock('./CircleCIOrgToken', () => () => 'CircleCIOrgToken')
 jest.mock('shared/featureFlags')
 
 const mockedNewRepoFlag = useFlags as jest.Mock<{ newRepoFlag: boolean }>
@@ -58,7 +58,7 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 
-describe('GitHubActions', () => {
+describe('CircleCI', () => {
   function setup(hasOrgUploadToken: boolean | null) {
     mockedNewRepoFlag.mockReturnValue({ newRepoFlag: true })
 
@@ -77,13 +77,11 @@ describe('GitHubActions', () => {
       setup(true)
     })
 
-    it('renders GitHubActionsOrgToken', async () => {
-      render(<GitHubActions />, { wrapper })
+    it('renders CircleCIOrgToken', async () => {
+      render(<CircleCI />, { wrapper })
 
-      const githubActionsOrgToken = await screen.findByText(
-        'GitHubActionsOrgToken'
-      )
-      expect(githubActionsOrgToken).toBeInTheDocument()
+      const CircleCIOrgToken = await screen.findByText('CircleCIOrgToken')
+      expect(CircleCIOrgToken).toBeInTheDocument()
     })
   })
 
@@ -92,13 +90,11 @@ describe('GitHubActions', () => {
       setup(false)
     })
 
-    it('renders GitHubActionsRepoToken', async () => {
-      render(<GitHubActions />, { wrapper })
+    it('renders CircleCIRepoToken', async () => {
+      render(<CircleCI />, { wrapper })
 
-      const githubActionsRepoToken = await screen.findByText(
-        'GitHubActionsRepoToken'
-      )
-      expect(githubActionsRepoToken).toBeInTheDocument()
+      const CircleCIRepoToken = await screen.findByText('CircleCIRepoToken')
+      expect(CircleCIRepoToken).toBeInTheDocument()
     })
   })
 })
