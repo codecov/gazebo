@@ -1,26 +1,16 @@
-interface RepoContentsProps {
+interface MissingFileDataProps {
   isSearching: boolean
-  isMissingHeadReport: boolean
   hasFlagsSelected: boolean
   hasComponentsSelected: boolean
 }
 
-const RepoContentsResult: React.FC<RepoContentsProps> = ({
+function MissingFileData({
   isSearching,
-  isMissingHeadReport,
   hasFlagsSelected,
   hasComponentsSelected,
-}) => {
+}: MissingFileDataProps) {
   if (isSearching) {
     return <p className="flex flex-1 justify-center">No results found</p>
-  }
-
-  if (isMissingHeadReport) {
-    return (
-      <p className="flex flex-1 justify-center">
-        No coverage report uploaded for this branch head commit
-      </p>
-    )
   }
 
   if (hasComponentsSelected && hasFlagsSelected) {
@@ -52,10 +42,9 @@ const RepoContentsResult: React.FC<RepoContentsProps> = ({
 
   return (
     <p className="flex flex-1 justify-center">
-      There is no coverage on the default branch for this repository. Use the
-      Branch Context selector above to choose a different branch.
+      There was a problem getting repo contents from your provider
     </p>
   )
 }
 
-export default RepoContentsResult
+export default MissingFileData
