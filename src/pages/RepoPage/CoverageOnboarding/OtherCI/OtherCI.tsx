@@ -9,7 +9,6 @@ import OtherCIRepoToken from './OtherCIRepoToken'
 interface URLParams {
   provider: string
   owner: string
-  repo: string
 }
 
 function OtherCI() {
