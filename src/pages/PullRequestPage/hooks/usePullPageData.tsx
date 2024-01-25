@@ -18,6 +18,8 @@ import A from 'ui/A'
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
+  coverageEnabled: z.boolean().nullable(),
+  bundleAnalysisEnabled: z.boolean().nullable(),
   pull: z
     .object({
       pullId: z.number(),
@@ -63,11 +65,18 @@ const PullPageDataSchema = z.object({
 })
 
 const query = `
-query PullPageData($owner: String!, $repo: String!, $pullId: Int!, $isTeamPlan: Boolean!) {
+query PullPageData(
+  $owner: String!
+  $repo: String!
+  $pullId: Int!
+  $isTeamPlan: Boolean!
+) {
   owner(username: $owner) {
     repository(name: $repo) {
       __typename
       ... on Repository {
+        coverageEnabled
+        bundleAnalysisEnabled
         pull(id: $pullId) {
           pullId
           head {
@@ -185,8 +194,15 @@ export const usePullPageData = ({
           })
         }
 
+        const pull = data?.owner?.repository?.pull ?? null
+        const coverageEnabled = data?.owner?.repository?.coverageEnabled ?? null
+        const bundleAnalysisEnabled =
+          data?.owner?.repository?.bundleAnalysisEnabled ?? null
+
         return {
-          pull: data?.owner?.repository?.pull ?? null,
+          pull,
+          coverageEnabled,
+          bundleAnalysisEnabled,
         }
       }),
   })

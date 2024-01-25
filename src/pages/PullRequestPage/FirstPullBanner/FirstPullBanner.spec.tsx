@@ -41,6 +41,8 @@ const mockPullData = ({ resultType }: SetupArgs) => {
       owner: {
         repository: {
           __typename: 'Repository',
+          coverageEnabled: true,
+          bundleAnalysisEnabled: true,
           pull: {
             pullId: 1,
             head: {
@@ -60,6 +62,8 @@ const mockPullData = ({ resultType }: SetupArgs) => {
     owner: {
       repository: {
         __typename: 'Repository',
+        coverageEnabled: true,
+        bundleAnalysisEnabled: true,
         pull: {
           pullId: 1,
           head: {
