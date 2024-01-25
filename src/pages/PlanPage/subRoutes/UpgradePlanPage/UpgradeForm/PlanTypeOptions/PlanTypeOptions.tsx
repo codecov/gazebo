@@ -74,7 +74,7 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
             onChange={({ text }) => {
               if (text === TierName.PRO) {
                 if (monthlyPlan) {
-                  setSelectedPlan(proPlanMonth)
+                  setSelectedPlan(monthlyProPlan)
                   setFormValue('newPlan', monthlyProPlan?.value)
                 } else {
                   setSelectedPlan(yearlyProPlan)
