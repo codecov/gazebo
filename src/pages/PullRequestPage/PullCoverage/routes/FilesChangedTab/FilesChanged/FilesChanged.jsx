@@ -5,8 +5,8 @@ import { ComparisonReturnType } from 'shared/utils/comparison'
 import { ImpactedFilesReturnType } from 'shared/utils/impactedFiles'
 import Spinner from 'ui/Spinner'
 
+import FilesChangedTable from './FilesChangedTable'
 import { useImpactedFilesTable } from './hooks'
-import Table from './Table'
 
 const Loader = () => (
   <div className="flex items-center justify-center py-16">
@@ -71,7 +71,7 @@ function FilesChangedTab() {
   ) {
     return (
       <div className="flex flex-col gap-2">
-        <Table />
+        <FilesChangedTable />
       </div>
     )
   }
