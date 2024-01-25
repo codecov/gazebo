@@ -547,21 +547,21 @@ describe('PlanTypeOptions', () => {
           }
         )
 
-        const proBtn = await screen.findByRole('button', {
-          name: 'Pro',
-        })
-        expect(proBtn).toBeInTheDocument()
-        expect(proBtn).toHaveClass('bg-ds-primary-base')
-
         const teamBtn = await screen.findByRole('button', {
           name: 'Team',
         })
         expect(teamBtn).toBeInTheDocument()
-        expect(teamBtn).not.toHaveClass('bg-ds-primary-base')
+        expect(teamBtn).toHaveClass('bg-ds-primary-base')
+
+        const proBtn = await screen.findByRole('button', {
+          name: 'Pro',
+        })
+        expect(proBtn).toBeInTheDocument()
+        expect(proBtn).not.toHaveClass('bg-ds-primary-base')
       })
 
-      describe('plan param is set to team', () => {
-        it('renders Team button as "selected"', async () => {
+      describe('plan param is set to pro', () => {
+        it('renders Pro button as "selected"', async () => {
           const { mockSetFormValue, mockSetSelectedPlan, getFormValues } =
             setup({
               planValue: Plans.USERS_TEAMY,
@@ -577,7 +577,7 @@ describe('PlanTypeOptions', () => {
               getFormValues={getFormValues}
             />,
             {
-              wrapper: wrapper('/gh/codecov?plan=team'),
+              wrapper: wrapper('/gh/codecov?plan=pro'),
             }
           )
 
@@ -1153,7 +1153,7 @@ describe('PlanTypeOptions', () => {
     })
 
     describe('when plan is team yearly', () => {
-      it('renders Pro button as "selected"', async () => {
+      it('renders Team button as "selected"', async () => {
         const { mockSetFormValue, mockSetSelectedPlan, getFormValues } = setup({
           planValue: Plans.USERS_TEAMY,
           hasSentryPlans: false,
@@ -1176,13 +1176,13 @@ describe('PlanTypeOptions', () => {
           name: 'Pro',
         })
         expect(proBtn).toBeInTheDocument()
-        expect(proBtn).toHaveClass('bg-ds-primary-base')
+        expect(proBtn).not.toHaveClass('bg-ds-primary-base')
 
         const teamBtn = await screen.findByRole('button', {
           name: 'Team',
         })
         expect(teamBtn).toBeInTheDocument()
-        expect(teamBtn).not.toHaveClass('bg-ds-primary-base')
+        expect(teamBtn).toHaveClass('bg-ds-primary-base')
       })
 
       describe('plan param is set to team', () => {
