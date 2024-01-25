@@ -5,7 +5,6 @@ import {
   FirstPullRequestSchema,
   MissingBaseCommitSchema,
   MissingBaseReportSchema,
-  MissingComparisonSchema,
   MissingHeadCommitSchema,
   MissingHeadReportSchema,
 } from 'services/comparison/schemas'
@@ -28,7 +27,6 @@ const BundleAnalysisCompareWithParentSchema = z
     FirstPullRequestSchema,
     MissingBaseCommitSchema,
     MissingBaseReportSchema,
-    MissingComparisonSchema,
     MissingHeadCommitSchema,
     MissingHeadReportSchema,
   ])
@@ -80,9 +78,6 @@ query CommitBADropdownSummary(
               message
             }
             ... on MissingHeadCommit {
-              message
-            }
-            ... on MissingComparison {
               message
             }
             ... on MissingBaseReport {
