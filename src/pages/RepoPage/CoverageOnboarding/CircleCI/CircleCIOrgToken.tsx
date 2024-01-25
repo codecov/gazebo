@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom'
 
 import patchAndProject from 'assets/repoConfig/patch-and-project.svg'
+import { useOrgUploadToken } from 'services/orgUploadToken'
 import { useRepo } from 'services/repo'
 import { providerToInternalProvider } from 'shared/utils/provider'
 import A from 'ui/A'
@@ -25,8 +26,7 @@ function CircleCIOrgToken() {
   const { provider, owner, repo } = useParams<URLParams>()
   const providerName = providerToInternalProvider(provider)
   const { data } = useRepo({ provider, owner, repo })
-
-  const orgUploadToken = data?.orgUploadToken
+  const { data: orgUploadToken } = useOrgUploadToken({ provider, owner })
 
   return (
     <div className="flex flex-col gap-6">
@@ -52,7 +52,7 @@ function CircleCIOrgToken() {
         </div>
         <pre className="flex items-center gap-2 overflow-auto rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
           CODECOV_TOKEN={orgUploadToken}
-          <CopyClipboard string={orgUploadToken} />
+          <CopyClipboard string={orgUploadToken ?? ''} />
         </pre>
       </div>
       <div className="flex flex-col gap-3">

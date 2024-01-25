@@ -15,20 +15,11 @@ jest.mock('shared/featureFlags')
 
 const mockedNewRepoFlag = useFlags as jest.Mock<{ newRepoFlag: boolean }>
 
-const mockGetRepo = (hasOrgUploadToken: boolean | null) => ({
+const mockGetOrgUploadToken = (hasOrgUploadToken: boolean | null) => ({
   owner: {
-    isCurrentUserPartOfOrg: true,
     orgUploadToken: hasOrgUploadToken
       ? '9e6a6189-20f1-482d-ab62-ecfaa2629290'
       : null,
-    repository: {
-      private: false,
-      uploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629295',
-      defaultBranch: 'main',
-      yaml: '',
-      activated: false,
-      oldestCommitAt: '',
-    },
   },
 })
 
@@ -72,9 +63,12 @@ describe('CircleCI', () => {
     mockedNewRepoFlag.mockReturnValue({ newRepoFlag: true })
 
     server.use(
-      graphql.query('GetRepo', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockGetRepo(hasOrgUploadToken)))
-      )
+      graphql.query('GetOrgUploadToken', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data(mockGetOrgUploadToken(hasOrgUploadToken))
+        )
+      })
     )
   }
 

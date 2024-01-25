@@ -61,7 +61,15 @@ describe('CircleCIOrgToken', () => {
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockGetRepo))
-      )
+      ),
+      graphql.query('GetOrgUploadToken', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: { orgUploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629290' },
+          })
+        )
+      })
     )
   }
 
@@ -103,11 +111,10 @@ describe('CircleCIOrgToken', () => {
     it('renders token box', async () => {
       render(<CircleCIOrgToken />, { wrapper })
 
-      const codecovToken = await screen.findByText(/CODECOV_TOKEN=/)
-      expect(codecovToken).toBeInTheDocument()
-
-      const tokenValue = await screen.findByText(/9e6a6189-20f1-482d-ab62-test/)
-      expect(tokenValue).toBeInTheDocument()
+      const token = await screen.findByText(
+        /CODECOV_TOKEN=9e6a6189-20f1-482d-ab62-ecfaa2629290/
+      )
+      expect(token).toBeInTheDocument()
     })
   })
 

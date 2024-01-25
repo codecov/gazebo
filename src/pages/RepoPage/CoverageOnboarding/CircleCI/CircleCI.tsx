@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 
-import { useRepo } from 'services/repo'
+import { useOrgUploadToken } from 'services/orgUploadToken'
 import { useFlags } from 'shared/featureFlags'
 
 import CircleCIOrgToken from './CircleCIOrgToken'
@@ -9,7 +9,6 @@ import CircleCIRepoToken from './CircleCIRepoToken'
 interface URLParams {
   provider: string
   owner: string
-  repo: string
 }
 
 function CircleCI() {
@@ -17,9 +16,10 @@ function CircleCI() {
     newRepoFlag: false,
   })
 
-  const { provider, owner, repo } = useParams<URLParams>()
-  const { data } = useRepo({ provider, owner, repo })
-  const showOrgToken = newRepoFlag && data?.orgUploadToken
+  const { provider, owner } = useParams<URLParams>()
+  const { data: orgUploadToken } = useOrgUploadToken({ provider, owner })
+
+  const showOrgToken = newRepoFlag && orgUploadToken
 
   return showOrgToken ? <CircleCIOrgToken /> : <CircleCIRepoToken />
 }
