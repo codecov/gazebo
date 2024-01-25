@@ -11,7 +11,6 @@ export function useOwner({
   const query = `
       query DetailOwner($username: String!) {
         owner(username: $username) {
-          orgUploadToken
           ownerid
           username
           avatarUrl

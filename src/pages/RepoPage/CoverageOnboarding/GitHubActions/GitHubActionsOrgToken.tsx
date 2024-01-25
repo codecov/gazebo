@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom'
 
 import patchAndProject from 'assets/repoConfig/patch-and-project.svg'
+import { useOrgUploadToken } from 'services/orgUploadToken'
 import { useRepo } from 'services/repo'
 import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
@@ -14,8 +15,7 @@ interface URLParams {
 function GitHubActionsOrgToken() {
   const { provider, owner, repo } = useParams<URLParams>()
   const { data } = useRepo({ provider, owner, repo })
-
-  const orgUploadToken = data?.orgUploadToken
+  const { data: orgUploadToken } = useOrgUploadToken({ provider, owner })
 
   const orgTokenActionString = `- name: Upload coverage reports to Codecov
   uses: codecov/codecov-action@v4
@@ -45,7 +45,7 @@ function GitHubActionsOrgToken() {
         </div>
         <pre className="flex items-center gap-2 overflow-auto rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
           CODECOV_TOKEN={orgUploadToken}
-          <CopyClipboard string={orgUploadToken} />
+          <CopyClipboard string={orgUploadToken ?? ''} />
         </pre>
       </div>
       <div className="flex flex-col gap-4">
