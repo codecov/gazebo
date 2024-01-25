@@ -1,10 +1,14 @@
 import { useParams } from 'react-router-dom'
 
 import patchAndProject from 'assets/repoConfig/patch-and-project.svg'
-import { useOrgUploadToken } from 'services/orgUploadToken'
 import { useRepo } from 'services/repo'
+import { providerToInternalProvider } from 'shared/utils/provider'
 import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
+
+const orbsString = `orbs:
+  codecov/codecov@3.2.4
+`
 
 interface URLParams {
   provider: string
@@ -12,65 +16,72 @@ interface URLParams {
   repo: string
 }
 
-function GitHubActionsOrgToken() {
+function CircleCIRepoToken() {
   const { provider, owner, repo } = useParams<URLParams>()
+  const providerName = providerToInternalProvider(provider)
   const { data } = useRepo({ provider, owner, repo })
-  const { data: orgUploadToken } = useOrgUploadToken({ provider, owner })
-
-  const orgTokenActionString = `- name: Upload coverage reports to Codecov
-  uses: codecov/codecov-action@v4
-  env:
-    token: \${{ secrets.CODECOV_TOKEN }}
-    slug: ${owner}/${repo}
-`
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3">
         <div>
           <h2 className="text-base font-semibold">
-            Step 1: add global token as{' '}
+            Step 1: add repository token to{' '}
             <A
-              to={{ pageName: 'githubRepoSecrets' }}
+              hook="circleCIEnvVarsLink"
               isExternal
-              hook="GitHub-repo-secrects-link"
+              to={{
+                pageName: 'circleCIEnvVars',
+                options: { provider: providerName },
+              }}
             >
-              repository secret
+              environment variables
             </A>
           </h2>
           <p className="text-base">
-            Admin required to access repo settings &gt; secrets and variable
-            &gt; actions
+            Environment variables in CircleCI can be found in project&apos;s
+            settings.
           </p>
         </div>
         <pre className="flex items-center gap-2 overflow-auto rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          CODECOV_TOKEN={orgUploadToken}
-          <CopyClipboard string={orgUploadToken ?? ''} />
+          CODECOV_TOKEN={data?.repository?.uploadToken}
+          <CopyClipboard string={data?.repository?.uploadToken} />
         </pre>
       </div>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3">
         <div className="text-base">
           <h2 className="font-semibold">
-            Step 2: add Codecov to your{' '}
+            Step 2: add Codecov orb to CircleCI{' '}
             <A
-              to={{
-                pageName: 'githubRepoActions',
-              }}
-              options={{ branch: data?.repository?.defaultBranch }}
+              hook="circleCIyamlLink"
               isExternal
-              hook="GitHub-repo-actions-link"
+              to={{
+                pageName: 'circleCIyaml',
+                options: { branch: data?.repository?.defaultBranch },
+              }}
             >
-              GitHub Actions workflow yaml file
+              config.yml
             </A>
           </h2>
           <p>
-            After tests run, this will upload your coverage report to Codecov:
+            Add the following to your .circleci/config.yaml and push changes to
+            repository.
           </p>
         </div>
-        <div className="flex items-start justify-between overflow-auto rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          <pre className="whitespace-pre">{orgTokenActionString}</pre>
-          <CopyClipboard string={orgTokenActionString} />
+        <div className="flex items-start justify-between overflow-auto whitespace-pre-line rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
+          <pre className="whitespace-pre">{orbsString}</pre>
+          <CopyClipboard string={orbsString} />
         </div>
+        <small>
+          For more, see Codecov specific{' '}
+          <A
+            to={{ pageName: 'circleCIOrbs' }}
+            isExternal
+            hook="circleCIOrbsLink"
+          >
+            CircleCI Documentation
+          </A>
+        </small>
       </div>
       <div>
         <p>
@@ -95,7 +106,7 @@ function GitHubActionsOrgToken() {
           <A
             to={{ pageName: 'repoConfigFeedback' }}
             isExternal
-            hook="repo-config-feedback"
+            hook="repoConfigFeedbackLink"
           >
             this issue
           </A>
@@ -105,4 +116,4 @@ function GitHubActionsOrgToken() {
   )
 }
 
-export default GitHubActionsOrgToken
+export default CircleCIRepoToken

@@ -5,6 +5,7 @@ import BundleOnboarding from './BundleOnboarding'
 
 jest.mock('./ViteOnboarding', () => () => <div>ViteOnboarding</div>)
 jest.mock('./RollupOnboarding', () => () => <div>RollupOnboarding</div>)
+jest.mock('./WebpackOnboarding', () => () => <div>WebpackOnboarding</div>)
 
 const wrapper =
   (
@@ -65,7 +66,7 @@ describe('BundleOnboarding', () => {
 
   describe('on /new/rollup route', () => {
     describe('rendering tabs', () => {
-      it('renders selected vite tab', async () => {
+      it('renders vite tab', async () => {
         render(<BundleOnboarding />, {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/rollup'),
         })
@@ -75,7 +76,7 @@ describe('BundleOnboarding', () => {
         expect(viteTab).not.toHaveAttribute('aria-current', 'page')
       })
 
-      it('renders rollup tab', async () => {
+      it('renders selected rollup tab', async () => {
         render(<BundleOnboarding />, {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/rollup'),
         })
@@ -110,7 +111,7 @@ describe('BundleOnboarding', () => {
 
   describe('on /new/webpack route', () => {
     describe('rendering tabs', () => {
-      it('renders selected vite tab', async () => {
+      it('renders vite tab', async () => {
         render(<BundleOnboarding />, {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/webpack'),
         })
@@ -130,7 +131,7 @@ describe('BundleOnboarding', () => {
         expect(rollupTab).not.toHaveAttribute('aria-current', 'page')
       })
 
-      it('renders webpack tab', async () => {
+      it('renders selected webpack tab', async () => {
         render(<BundleOnboarding />, {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/webpack'),
         })
@@ -142,13 +143,13 @@ describe('BundleOnboarding', () => {
     })
 
     describe('rendering body', () => {
-      it('renders webpack onboarding', () => {
+      it('renders webpack onboarding', async () => {
         render(<BundleOnboarding />, {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/webpack'),
         })
 
-        const webpackOnboarding = screen.queryByText('WebpackOnboarding')
-        expect(webpackOnboarding).not.toBeInTheDocument()
+        const webpackOnboarding = await screen.findByText('WebpackOnboarding')
+        expect(webpackOnboarding).toBeInTheDocument()
       })
     })
   })

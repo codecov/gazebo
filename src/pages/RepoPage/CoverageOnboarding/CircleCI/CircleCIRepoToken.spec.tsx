@@ -5,7 +5,7 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import GitHubActionsOrgToken from './GitHubActionsOrgToken'
+import CircleCIRepoToken from './CircleCIRepoToken'
 
 const mockGetRepo = {
   owner: {
@@ -37,7 +37,7 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
       <Route
         path={[
           '/:provider/:owner/:repo/new',
-          '/:provider/:owner/:repo/new/other-ci',
+          '/:provider/:owner/:repo/new/circle-ci',
         ]}
       >
         <Suspense fallback={null}>{children}</Suspense>
@@ -45,7 +45,6 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
     </MemoryRouter>
   </QueryClientProvider>
 )
-
 beforeAll(() => {
   console.error = () => {}
   server.listen()
@@ -56,20 +55,12 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 
-describe('GitHubActionsOrgToken', () => {
+describe('CircleCIRepoToken', () => {
   function setup() {
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockGetRepo))
-      ),
-      graphql.query('GetOrgUploadToken', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
-            owner: { orgUploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629290' },
-          })
-        )
-      })
+      )
     )
   }
 
@@ -77,38 +68,45 @@ describe('GitHubActionsOrgToken', () => {
     beforeEach(() => setup())
 
     it('renders header', async () => {
-      render(<GitHubActionsOrgToken />, { wrapper })
+      render(<CircleCIRepoToken />, { wrapper })
 
       const header = await screen.findByRole('heading', { name: /Step 1/ })
       expect(header).toBeInTheDocument()
 
-      const repositorySecretLink = await screen.findByRole('link', {
-        name: /repository secret/,
+      const environmentVariableLink = await screen.findByRole('link', {
+        name: /environment variables/,
       })
-      expect(repositorySecretLink).toBeInTheDocument()
-      expect(repositorySecretLink).toHaveAttribute(
+      expect(environmentVariableLink).toBeInTheDocument()
+      expect(environmentVariableLink).toHaveAttribute(
         'href',
-        'https://github.com/codecov/cool-repo/settings/secrets/actions'
+        'https://app.circleci.com/settings/project/github/codecov/cool-repo/environment-variables'
       )
     })
 
+    it('renders global token copy', async () => {
+      render(<CircleCIRepoToken />, { wrapper })
+
+      const repoToken = await screen.findByText(/repository token/)
+      expect(repoToken).toBeInTheDocument()
+    })
+
     it('renders body', async () => {
-      render(<GitHubActionsOrgToken />, { wrapper })
+      render(<CircleCIRepoToken />, { wrapper })
 
       const body = await screen.findByText(
-        /Admin required to access repo settings > secrets and variable > actions/
+        "Environment variables in CircleCI can be found in project's settings."
       )
       expect(body).toBeInTheDocument()
     })
 
     it('renders token box', async () => {
-      render(<GitHubActionsOrgToken />, { wrapper })
+      render(<CircleCIRepoToken />, { wrapper })
 
       const codecovToken = await screen.findByText(/CODECOV_TOKEN=/)
       expect(codecovToken).toBeInTheDocument()
 
       const tokenValue = await screen.findByText(
-        /9e6a6189-20f1-482d-ab62-ecfaa2629290/
+        /9e6a6189-20f1-482d-ab62-ecfaa2629295/
       )
       expect(tokenValue).toBeInTheDocument()
     })
@@ -118,52 +116,56 @@ describe('GitHubActionsOrgToken', () => {
     beforeEach(() => setup())
 
     it('renders header', async () => {
-      render(<GitHubActionsOrgToken />, { wrapper })
+      render(<CircleCIRepoToken />, { wrapper })
 
       const header = await screen.findByRole('heading', { name: /Step 2/ })
       expect(header).toBeInTheDocument()
 
-      const GitHubActionsOrgTokenWorkflowLink = await screen.findByRole(
-        'link',
-        {
-          name: /GitHub Actions workflow/,
-        }
-      )
-      expect(GitHubActionsOrgTokenWorkflowLink).toBeInTheDocument()
-      expect(GitHubActionsOrgTokenWorkflowLink).toHaveAttribute(
+      const CircleCIRepoTokenWorkflowLink = await screen.findByRole('link', {
+        name: /config.yml/,
+      })
+      expect(CircleCIRepoTokenWorkflowLink).toBeInTheDocument()
+      expect(CircleCIRepoTokenWorkflowLink).toHaveAttribute(
         'href',
-        'https://github.com/codecov/cool-repo/tree/main/.github/workflows'
+        'https://github.com/codecov/cool-repo/tree/main/.circleci/config'
       )
     })
 
     it('renders yaml section', async () => {
-      render(<GitHubActionsOrgToken />, { wrapper })
+      render(<CircleCIRepoToken />, { wrapper })
 
       const yamlBox = await screen.findByText(
-        /Upload coverage reports to Codecov/
+        /Add the following to your .circleci\/config.yaml and push changes to repository./
       )
       expect(yamlBox).toBeInTheDocument()
+    })
+
+    it('renders yaml code', async () => {
+      render(<CircleCIRepoToken />, { wrapper })
+
+      const yamlCode = await screen.findByText(/codecov\/codecov@3.2.4/)
+      expect(yamlCode).toBeInTheDocument()
     })
   })
 
   describe('step three', () => {
     beforeEach(() => setup())
     it('renders first body', async () => {
-      render(<GitHubActionsOrgToken />, { wrapper })
+      render(<CircleCIRepoToken />, { wrapper })
 
       const body = await screen.findByText(/After you committed your changes/)
       expect(body).toBeInTheDocument()
     })
 
     it('renders second body', async () => {
-      render(<GitHubActionsOrgToken />, { wrapper })
+      render(<CircleCIRepoToken />, { wrapper })
 
       const body = await screen.findByText(/Once merged to the/)
       expect(body).toBeInTheDocument()
     })
 
     it('renders status check image', async () => {
-      render(<GitHubActionsOrgToken />, { wrapper })
+      render(<CircleCIRepoToken />, { wrapper })
 
       const img = await screen.findByRole('img', {
         name: 'codecov patch and project',
@@ -175,7 +177,7 @@ describe('GitHubActionsOrgToken', () => {
   describe('ending', () => {
     beforeEach(() => setup())
     it('renders body', async () => {
-      render(<GitHubActionsOrgToken />, { wrapper })
+      render(<CircleCIRepoToken />, { wrapper })
 
       const body = await screen.findByText(/How was your setup experience/)
       expect(body).toBeInTheDocument()

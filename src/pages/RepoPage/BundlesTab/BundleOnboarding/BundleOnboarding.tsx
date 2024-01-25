@@ -8,6 +8,7 @@ import TabNavigation from 'ui/TabNavigation'
 
 const ViteOnboarding = lazy(() => import('./ViteOnboarding'))
 const RollupOnboarding = lazy(() => import('./RollupOnboarding'))
+const WebpackOnboarding = lazy(() => import('./WebpackOnboarding'))
 
 const Loader = () => (
   <div className="mt-16 flex flex-1 items-center justify-center">
@@ -34,6 +35,11 @@ const Content: React.FC = () => {
         <SentryRoute path="/:provider/:owner/:repo/bundles/new/rollup">
           <Suspense fallback={<Loader />}>
             <RollupOnboarding />
+          </Suspense>
+        </SentryRoute>
+        <SentryRoute path="/:provider/:owner/:repo/bundles/new/webpack">
+          <Suspense fallback={<Loader />}>
+            <WebpackOnboarding />
           </Suspense>
         </SentryRoute>
       </Switch>
