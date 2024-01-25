@@ -1,37 +1,21 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
 
 import config from 'config'
 
-import InstructionBox from '.'
+import { InstructionBoxRepoToken } from './InstructionBoxRepoToken'
 
-jest.mock('services/user')
 jest.mock('copy-to-clipboard', () => () => true)
 jest.mock('config')
 
-describe('InstructionBox', () => {
+describe('InstructionBoxRepoToken', () => {
   function setup({ isSelfHosted = false } = {}) {
     const user = userEvent.setup()
-    const mockTerminalUploaderCommandClicked = jest.fn()
 
     config.BASE_URL = 'https://app.codecov.io'
     config.IS_SELF_HOSTED = isSelfHosted
 
-    graphql.query('CurrentUser', (_, res, ctx) =>
-      res(
-        ctx.status(200),
-        ctx.data({
-          me: {
-            user: { username: "Patia Por'co" },
-            trackingMetadata: { ownerid: 12345 },
-          },
-        })
-      )
-    )
-
     return {
-      terminalUploaderCommandClicked: mockTerminalUploaderCommandClicked,
       user,
     }
   }
@@ -40,59 +24,54 @@ describe('InstructionBox', () => {
     beforeEach(() => setup())
 
     it('renders Linux button', () => {
-      render(<InstructionBox />)
+      render(<InstructionBoxRepoToken />)
 
-      const btn = screen.getByRole('button', { name: 'Linux' })
-      expect(btn).toBeInTheDocument()
+      const button = screen.getByRole('button', { name: 'Linux' })
+      expect(button).toBeInTheDocument()
     })
 
     it('renders MacOS button', () => {
-      render(<InstructionBox />)
+      render(<InstructionBoxRepoToken />)
 
-      const btn = screen.getByRole('button', { name: 'macOS' })
-      expect(btn).toBeInTheDocument()
+      const button = screen.getByRole('button', { name: 'macOS' })
+      expect(button).toBeInTheDocument()
     })
 
     it('renders Alpine Linux button', () => {
-      render(<InstructionBox />)
+      render(<InstructionBoxRepoToken />)
 
-      const btn = screen.getByRole('button', { name: 'Alpine Linux' })
-      expect(btn).toBeInTheDocument()
+      const button = screen.getByRole('button', { name: 'Alpine Linux' })
+      expect(button).toBeInTheDocument()
     })
 
     it('renders Windows button', () => {
-      render(<InstructionBox />)
+      render(<InstructionBoxRepoToken />)
 
-      const btn = screen.getByRole('button', { name: 'Windows' })
-      expect(btn).toBeInTheDocument()
+      const button = screen.getByRole('button', { name: 'Windows' })
+      expect(button).toBeInTheDocument()
     })
   })
 
   describe('when rendered any tab but not windows', () => {
     beforeEach(() => setup())
 
-    it('does not render the windows instruction', () => {
-      render(<InstructionBox />)
+    it('does not render windows instruction', () => {
+      render(<InstructionBoxRepoToken />)
 
       const instruction = screen.queryByText(/$ProgressPreference /)
       expect(instruction).not.toBeInTheDocument()
-    })
-
-    it('renders the other instructions', () => {
-      render(<InstructionBox />)
-
-      const instruction = screen.queryByText(/curl/)
-      expect(instruction).toBeInTheDocument()
     })
   })
 
   describe('when click on windows', () => {
     it('renders the windows instruction', async () => {
       const { user } = setup()
-      render(<InstructionBox />)
+      render(<InstructionBoxRepoToken />)
 
-      await user.click(screen.getByRole('button', { name: 'Windows' }))
-      const instruction = screen.queryByText(/\$ProgressPreference/)
+      const WindowsButton = screen.getByRole('button', { name: 'Windows' })
+      await user.click(WindowsButton)
+
+      const instruction = screen.getByText(/\$ProgressPreference/)
       expect(instruction).toBeInTheDocument()
     })
   })
@@ -100,9 +79,10 @@ describe('InstructionBox', () => {
   describe('when click on windows an user is a self hosted user', () => {
     it('renders windows specific instruction', async () => {
       const { user } = setup({ isSelfHosted: true })
-      render(<InstructionBox />)
+      render(<InstructionBoxRepoToken />)
 
-      await user.click(screen.getByRole('button', { name: 'Windows' }))
+      const WindowsButton = screen.getByRole('button', { name: 'Windows' })
+      await user.click(WindowsButton)
 
       const windowsInstruction = screen.getByText(/windows\/codecov/)
       expect(windowsInstruction).toBeInTheDocument()
@@ -110,9 +90,10 @@ describe('InstructionBox', () => {
 
     it('renders with expected base uploader url', async () => {
       const { user } = setup({ isSelfHosted: true })
-      render(<InstructionBox />)
+      render(<InstructionBoxRepoToken />)
 
-      await user.click(screen.getByRole('button', { name: 'Windows' }))
+      const WindowsButton = screen.getByRole('button', { name: 'Windows' })
+      await user.click(WindowsButton)
 
       const baseUrl = screen.getByText(/https:\/\/app\.codecov\.io\/uploader/)
       expect(baseUrl).toBeInTheDocument()
@@ -120,9 +101,10 @@ describe('InstructionBox', () => {
 
     it('renders self hosted specific instruction', async () => {
       const { user } = setup({ isSelfHosted: true })
-      render(<InstructionBox />)
+      render(<InstructionBoxRepoToken />)
 
-      await user.click(screen.getByRole('button', { name: 'Windows' }))
+      const WindowsButton = screen.getByRole('button', { name: 'Windows' })
+      await user.click(WindowsButton)
 
       const selfHostedInstruction = screen.getByText(
         /\/codecov -u https:\/\/app\.codecov\.io/
@@ -134,9 +116,11 @@ describe('InstructionBox', () => {
   describe('when click on linux', () => {
     it('renders the linux instruction', async () => {
       const { user } = setup()
-      render(<InstructionBox />)
+      render(<InstructionBoxRepoToken />)
 
-      await user.click(screen.getByRole('button', { name: 'Linux' }))
+      const LinuxButton = screen.getByRole('button', { name: 'Linux' })
+      await user.click(LinuxButton)
+
       const instruction = screen.queryByText(
         /curl -Os https:\/\/uploader\.codecov\.io\/latest\/linux\/codecov/
       )
@@ -147,9 +131,11 @@ describe('InstructionBox', () => {
   describe('when click on Alpine', () => {
     it('renders the Alpine instruction', async () => {
       const { user } = setup()
-      render(<InstructionBox />)
+      render(<InstructionBoxRepoToken />)
 
-      await user.click(screen.getByRole('button', { name: 'Alpine Linux' }))
+      const alpineButton = screen.getByRole('button', { name: 'Alpine Linux' })
+      await user.click(alpineButton)
+
       const instruction = screen.queryByText(
         /curl -Os https:\/\/uploader\.codecov\.io\/latest\/alpine\/codecov/
       )
@@ -160,9 +146,11 @@ describe('InstructionBox', () => {
   describe('when click on Mac', () => {
     it('renders the Mac instruction', async () => {
       const { user } = setup()
-      render(<InstructionBox />)
+      render(<InstructionBoxRepoToken />)
 
-      await user.click(screen.getByRole('button', { name: 'macOS' }))
+      const macButton = screen.getByRole('button', { name: 'macOS' })
+      await user.click(macButton)
+
       const instruction = screen.queryByText(
         /curl -Os https:\/\/uploader.codecov.io\/latest\/macos\/codecov/
       )

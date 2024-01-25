@@ -1,1 +1,1 @@
-export { default } from './OtherCI'
+export { default } from './OtherCIOrgToken'

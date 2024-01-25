@@ -1,5 +1,5 @@
 import cs from 'classnames'
-import { useState } from 'react'
+import { MouseEvent, useState } from 'react'
 
 import config from 'config'
 
@@ -59,12 +59,12 @@ const WindowsSystemInstructions = () => {
   )
 }
 
-export default function InstructionBox() {
-  const [curSystem, setCurSystem] = useState(systemsEnum.LINUX)
+export function InstructionBoxRepoToken() {
+  const [curSystem, setCurSystem] = useState<string>(systemsEnum.LINUX)
 
-  const handleInstructionClick = (e) => {
+  const handleInstructionClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    const { name } = e.target
+    const name = e.currentTarget.name
     setCurSystem(name)
   }
 
@@ -98,7 +98,7 @@ export default function InstructionBox() {
         ) : (
           <span>
             curl -Os {baseUploaderUrl}
-            {systemsMapper[curSystem]}
+            {systemsMapper[curSystem as keyof typeof systemsMapper]}
             /codecov
             <br />
             <br />
@@ -112,7 +112,9 @@ export default function InstructionBox() {
             string={
               curSystem === 'Windows'
                 ? "$ProgressPreference = 'SilentlyContinue' Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe .\\codecov.exe"
-                : `curl -Os https://uploader.codecov.io/latest/${systemsMapper[curSystem]}/codecov chmod +x codecov ./codecov`
+                : `curl -Os https://uploader.codecov.io/latest/${
+                    systemsMapper[curSystem as keyof typeof systemsMapper]
+                  }/codecov chmod +x codecov ./codecov`
             }
           />
         </span>
