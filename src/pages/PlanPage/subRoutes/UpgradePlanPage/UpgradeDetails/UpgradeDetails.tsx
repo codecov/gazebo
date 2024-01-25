@@ -12,9 +12,15 @@ function UpgradeDetails({
 }: {
   selectedPlan: z.infer<typeof IndividualPlanSchema>
 }) {
-  if (selectedPlan?.value === Plans.USERS_SENTRYY) {
+  if (
+    selectedPlan?.value === Plans.USERS_SENTRYY ||
+    selectedPlan?.value === Plans.USERS_SENTRYM
+  ) {
     return <SentryPlanDetails />
-  } else if (selectedPlan?.value === Plans.USERS_TEAMY) {
+  } else if (
+    selectedPlan?.value === Plans.USERS_TEAMY ||
+    selectedPlan?.value === Plans.USERS_TEAMM
+  ) {
     return <TeamPlanDetails />
   } else {
     return <ProPlanDetails />
