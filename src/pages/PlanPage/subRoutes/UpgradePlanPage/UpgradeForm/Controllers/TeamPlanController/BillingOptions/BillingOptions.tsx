@@ -30,7 +30,6 @@ const BillingControls: React.FC<BillingControlsProps> = ({
   })
 
   const currentPlanBillingRate = planData?.plan?.billingRate
-
   const [option, setOption] = useState<OptionPeriod>(() =>
     currentPlanBillingRate === 'monthly'
       ? TimePeriods.MONTHLY
