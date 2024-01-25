@@ -10,7 +10,6 @@ import GitHubActionsOrgToken from './GitHubActionsOrgToken'
 const mockGetRepo = {
   owner: {
     isCurrentUserPartOfOrg: true,
-    orgUploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629290',
     repository: {
       private: false,
       uploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629295',
@@ -62,7 +61,15 @@ describe('GitHubActionsOrgToken', () => {
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockGetRepo))
-      )
+      ),
+      graphql.query('GetOrgUploadToken', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: { orgUploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629290' },
+          })
+        )
+      })
     )
   }
 
