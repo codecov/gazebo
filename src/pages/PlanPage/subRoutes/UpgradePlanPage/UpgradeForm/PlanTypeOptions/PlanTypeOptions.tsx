@@ -27,14 +27,14 @@ interface PlanTypeOptionsProps {
   multipleTiers: boolean
   setFormValue: (x: string, y: string) => void
   setSelectedPlan: (x: z.infer<typeof IndividualPlanSchema>) => void
-  getFormValues: () => { newPlan: string; seats: number }
+  newPlan: string
 }
 
 const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   multipleTiers,
   setFormValue,
   setSelectedPlan,
-  getFormValues,
+  newPlan,
 }) => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
@@ -65,7 +65,7 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   }
 
   const [option, setOption] = useState<PlanTiers>(planOption)
-  const currentFormValue = getFormValues().newPlan
+  const currentFormValue = newPlan
   const monthlyPlan = isMonthlyPlan(currentFormValue)
   if (hasTeamPlans && multipleTiers) {
     return (

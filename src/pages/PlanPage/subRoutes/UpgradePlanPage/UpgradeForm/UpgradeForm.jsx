@@ -82,6 +82,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }) {
         getFormValues={getFormValues}
         multipleTiers={multipleTiers}
         setSelectedPlan={setSelectedPlan}
+        newPlan={newPlan}
       />
       <Controller
         selectedPlan={selectedPlan?.value}
