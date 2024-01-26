@@ -52,15 +52,6 @@ const mockSummaryData = (sizeDelta: number) => ({
 
 const mockNoData = { owner: null }
 
-const mockNoRepo = {
-  owner: {
-    repository: {
-      __typename: 'NotFoundError',
-      message: 'Not found',
-    },
-  },
-}
-
 const mockNoComparison = {
   owner: {
     repository: {
@@ -117,7 +108,6 @@ interface SetupArgs {
   coverageEnabled?: boolean
   sizeDelta?: number
   noData?: boolean
-  noRepository?: boolean
   noBundleAnalysisComparison?: boolean
 }
 
@@ -128,14 +118,12 @@ describe('CommitBundleAnalysis', () => {
       bundleAnalysisEnabled = true,
       sizeDelta = 0,
       noData = false,
-      noRepository = false,
       noBundleAnalysisComparison = false,
     }: SetupArgs = {
       coverageEnabled: true,
       bundleAnalysisEnabled: true,
       sizeDelta: 0,
       noData: false,
-      noRepository: false,
       noBundleAnalysisComparison: false,
     }
   ) {
@@ -154,8 +142,6 @@ describe('CommitBundleAnalysis', () => {
       graphql.query('CommitBADropdownSummary', (req, res, ctx) => {
         if (noData) {
           return res(ctx.status(200), ctx.data(mockNoData))
-        } else if (noRepository) {
-          return res(ctx.status(200), ctx.data(mockNoRepo))
         } else if (noBundleAnalysisComparison) {
           return res(ctx.status(200), ctx.data(mockNoComparison))
         }
