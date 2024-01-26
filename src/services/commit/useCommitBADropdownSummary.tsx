@@ -159,7 +159,11 @@ export function useCommitBADropdownSummary({
           })
         }
 
-        return data
+        const commit = data?.owner?.repository?.commit ?? null
+
+        return {
+          commit,
+        }
       }),
   })
 }
