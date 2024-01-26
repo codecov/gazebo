@@ -46,8 +46,8 @@ function OtherCIOrgToken() {
           Step 3: upload coverage to Codecov via CLI after your tests have run
         </h3>
         <pre className="mt-2 flex items-center gap-2 overflow-auto rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          #upload to Codecov <br />
-          #after your tests run <br />
+          # upload to Codecov <br />
+          # after your tests run <br />
           codecovcli upload-process -t {orgUploadToken} -r {repo}
         </pre>
       </div>

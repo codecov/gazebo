@@ -1,5 +1,5 @@
 import cs from 'classnames'
-import { MouseEvent, useState } from 'react'
+import { type MouseEvent, useState } from 'react'
 
 import config from 'config'
 
