@@ -43,20 +43,14 @@ const CommitCoverageDropdown: React.FC<React.PropsWithChildren> = ({
     commitid: commitSha,
   })
 
-  if (
-    !data ||
-    data?.owner?.repository.__typename !== 'Repository' ||
-    data.owner.repository.commit?.compareWithParent?.__typename !== 'Comparison'
-  ) {
+  if (!data || data.commit?.compareWithParent?.__typename !== 'Comparison') {
     return null
   }
 
   const missesCount =
-    data.owner.repository.commit?.compareWithParent?.patchTotals?.missesCount ??
-    0
+    data.commit?.compareWithParent?.patchTotals?.missesCount ?? 0
   const partialsCount =
-    data.owner.repository.commit?.compareWithParent?.patchTotals
-      ?.partialsCount ?? 0
+    data.commit?.compareWithParent?.patchTotals?.partialsCount ?? 0
 
   return (
     <SummaryDropdown.Item value="coverage">

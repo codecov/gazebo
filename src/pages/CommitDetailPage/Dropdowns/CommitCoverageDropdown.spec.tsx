@@ -33,15 +33,6 @@ const mockSummaryData = (patchTotals: {
 
 const mockNoData = { owner: null }
 
-const mockNoRepo = {
-  owner: {
-    repository: {
-      __typename: 'NotFoundError',
-      message: 'Not found',
-    },
-  },
-}
-
 const mockNoComparison = {
   owner: {
     repository: {
@@ -97,7 +88,6 @@ afterAll(() => {
 
 interface SetupArgs {
   noData?: boolean
-  noRepository?: boolean
   noComparison?: boolean
   patchTotals?: {
     missesCount: number | null
@@ -108,7 +98,6 @@ interface SetupArgs {
 describe('CommitCoverageDropdown', () => {
   function setup({
     noData = false,
-    noRepository = false,
     noComparison = false,
     patchTotals = {
       missesCount: 0,
@@ -121,8 +110,6 @@ describe('CommitCoverageDropdown', () => {
       graphql.query('CommitDropdownSummary', (req, res, ctx) => {
         if (noData) {
           return res(ctx.status(200), ctx.data(mockNoData))
-        } else if (noRepository) {
-          return res(ctx.status(200), ctx.data(mockNoRepo))
         } else if (noComparison) {
           return res(ctx.status(200), ctx.data(mockNoComparison))
         }
