@@ -30,6 +30,7 @@ function CommitDetailFileExplorer() {
   const { treePaths } = useCommitTreePaths()
 
   const hasFlagsSelected = params?.flags?.length > 0
+  const hasComponentsSelected = params?.components?.length > 0
 
   return (
     <div className="mt-2 flex flex-col gap-2">
@@ -59,6 +60,7 @@ function CommitDetailFileExplorer() {
         <MissingFileData
           isSearching={isSearching}
           hasFlagsSelected={hasFlagsSelected}
+          hasComponentsSelected={hasComponentsSelected}
         />
       )}
     </div>
