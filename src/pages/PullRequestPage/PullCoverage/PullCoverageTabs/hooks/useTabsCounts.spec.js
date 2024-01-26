@@ -69,6 +69,8 @@ const mockPullData = {
     isCurrentUserPartOfOrg: true,
     repository: {
       __typename: 'Repository',
+      coverageEnabled: true,
+      bundleAnalysisEnabled: true,
       pull: {
         pullId: 1,
         head: {

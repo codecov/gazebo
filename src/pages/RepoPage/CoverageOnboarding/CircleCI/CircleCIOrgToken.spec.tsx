@@ -5,19 +5,12 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import CircleCI from './CircleCI'
-
-const mockCurrentUser = {
-  me: {
-    trackingMetadata: {
-      ownerid: 'user-owner-id',
-    },
-  },
-}
+import CircleCIOrgToken from './CircleCIOrgToken'
 
 const mockGetRepo = {
   owner: {
     isCurrentUserPartOfOrg: true,
+    orgUploadToken: '9e6a6189-20f1-482d-ab62-test',
     repository: {
       private: false,
       uploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629295',
@@ -39,7 +32,7 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/cool-repo/new']}>
       <Route
@@ -53,7 +46,6 @@ const wrapper = ({ children }) => (
     </MemoryRouter>
   </QueryClientProvider>
 )
-
 beforeAll(() => {
   console.error = () => {}
   server.listen()
@@ -64,15 +56,20 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 
-describe('CircleCI', () => {
+describe('CircleCIOrgToken', () => {
   function setup() {
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockGetRepo))
       ),
-      graphql.query('CurrentUser', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockCurrentUser))
-      )
+      graphql.query('GetOrgUploadToken', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: { orgUploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629290' },
+          })
+        )
+      })
     )
   }
 
@@ -80,7 +77,7 @@ describe('CircleCI', () => {
     beforeEach(() => setup())
 
     it('renders header', async () => {
-      render(<CircleCI />, { wrapper })
+      render(<CircleCIOrgToken />, { wrapper })
 
       const header = await screen.findByRole('heading', { name: /Step 1/ })
       expect(header).toBeInTheDocument()
@@ -95,8 +92,15 @@ describe('CircleCI', () => {
       )
     })
 
+    it('renders global token copy', async () => {
+      render(<CircleCIOrgToken />, { wrapper })
+
+      const globalToken = await screen.findByText(/global token/)
+      expect(globalToken).toBeInTheDocument()
+    })
+
     it('renders body', async () => {
-      render(<CircleCI />, { wrapper })
+      render(<CircleCIOrgToken />, { wrapper })
 
       const body = await screen.findByText(
         "Environment variables in CircleCI can be found in project's settings."
@@ -105,15 +109,12 @@ describe('CircleCI', () => {
     })
 
     it('renders token box', async () => {
-      render(<CircleCI />, { wrapper })
+      render(<CircleCIOrgToken />, { wrapper })
 
-      const codecovToken = await screen.findByText(/CODECOV_TOKEN=/)
-      expect(codecovToken).toBeInTheDocument()
-
-      const tokenValue = await screen.findByText(
-        /9e6a6189-20f1-482d-ab62-ecfaa2629295/
+      const token = await screen.findByText(
+        /CODECOV_TOKEN=9e6a6189-20f1-482d-ab62-ecfaa2629290/
       )
-      expect(tokenValue).toBeInTheDocument()
+      expect(token).toBeInTheDocument()
     })
   })
 
@@ -121,23 +122,23 @@ describe('CircleCI', () => {
     beforeEach(() => setup())
 
     it('renders header', async () => {
-      render(<CircleCI />, { wrapper })
+      render(<CircleCIOrgToken />, { wrapper })
 
       const header = await screen.findByRole('heading', { name: /Step 2/ })
       expect(header).toBeInTheDocument()
 
-      const CircleCIWorkflowLink = await screen.findByRole('link', {
+      const CircleCIOrgTokenWorkflowLink = await screen.findByRole('link', {
         name: /config.yml/,
       })
-      expect(CircleCIWorkflowLink).toBeInTheDocument()
-      expect(CircleCIWorkflowLink).toHaveAttribute(
+      expect(CircleCIOrgTokenWorkflowLink).toBeInTheDocument()
+      expect(CircleCIOrgTokenWorkflowLink).toHaveAttribute(
         'href',
         'https://github.com/codecov/cool-repo/tree/main/.circleci/config'
       )
     })
 
     it('renders yaml section', async () => {
-      render(<CircleCI />, { wrapper })
+      render(<CircleCIOrgToken />, { wrapper })
 
       const yamlBox = await screen.findByText(
         /Add the following to your .circleci\/config.yaml and push changes to repository./
@@ -146,9 +147,9 @@ describe('CircleCI', () => {
     })
 
     it('renders yaml code', async () => {
-      render(<CircleCI />, { wrapper })
+      render(<CircleCIOrgToken />, { wrapper })
 
-      const yamlCode = await screen.findByText(/codecov\/codecov@3.2.4/)
+      const yamlCode = await screen.findByText(/codecov\/codecov@4.0.0/)
       expect(yamlCode).toBeInTheDocument()
     })
   })
@@ -156,21 +157,21 @@ describe('CircleCI', () => {
   describe('step three', () => {
     beforeEach(() => setup())
     it('renders first body', async () => {
-      render(<CircleCI />, { wrapper })
+      render(<CircleCIOrgToken />, { wrapper })
 
       const body = await screen.findByText(/After you committed your changes/)
       expect(body).toBeInTheDocument()
     })
 
     it('renders second body', async () => {
-      render(<CircleCI />, { wrapper })
+      render(<CircleCIOrgToken />, { wrapper })
 
       const body = await screen.findByText(/Once merged to the/)
       expect(body).toBeInTheDocument()
     })
 
     it('renders status check image', async () => {
-      render(<CircleCI />, { wrapper })
+      render(<CircleCIOrgToken />, { wrapper })
 
       const img = await screen.findByRole('img', {
         name: 'codecov patch and project',
@@ -182,7 +183,7 @@ describe('CircleCI', () => {
   describe('ending', () => {
     beforeEach(() => setup())
     it('renders body', async () => {
-      render(<CircleCI />, { wrapper })
+      render(<CircleCIOrgToken />, { wrapper })
 
       const body = await screen.findByText(/How was your setup experience/)
       expect(body).toBeInTheDocument()
