@@ -16,6 +16,8 @@ const mockNotFoundCommit = {
     isCurrentUserPartOfOrg: false,
     repository: {
       __typename: 'Repository',
+      bundleAnalysisEnabled: null,
+      coverageEnabled: null,
       commit: null,
     },
   },
@@ -26,6 +28,8 @@ const mockCommitPageData = {
     isCurrentUserPartOfOrg: true,
     repository: {
       __typename: 'Repository',
+      bundleAnalysisEnabled: true,
+      coverageEnabled: true,
       commit: {
         commitid: 'e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed',
       },
