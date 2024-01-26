@@ -291,9 +291,7 @@ export default function FilesChangedTable() {
                 <div
                   key={header.id}
                   data-sortable="true"
-                  {...{
-                    onClick: header.column.getToggleSortingHandler(),
-                  }}
+                  onClick={header.column.getToggleSortingHandler()}
                   className={cs({
                     'w-8/12': header.id === 'name',
                     'w-1/12 flex justify-end': header.id !== 'name',
