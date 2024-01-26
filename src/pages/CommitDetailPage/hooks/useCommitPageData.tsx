@@ -10,6 +10,8 @@ import A from 'ui/A'
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
+  bundleAnalysisEnabled: z.boolean().nullable(),
+  coverageEnabled: z.boolean().nullable(),
   commit: z
     .object({
       commitid: z.string(),
@@ -41,6 +43,8 @@ const query = `
       repository(name: $repo) {
         __typename
         ... on Repository {
+          bundleAnalysisEnabled
+          coverageEnabled
           commit(id: $commitId) {
             commitid
           }
@@ -53,8 +57,7 @@ const query = `
         }
       }
     }
-  }
-`
+  }`
 
 interface UseCommitPageDataArgs {
   provider: string
@@ -117,9 +120,18 @@ export const useCommitPageData = ({
           })
         }
 
+        const isCurrentUserPartOfOrg =
+          data?.owner?.isCurrentUserPartOfOrg ?? null
+        const bundleAnalysisEnabled =
+          data?.owner?.repository?.bundleAnalysisEnabled ?? null
+        const coverageEnabled = data?.owner?.repository?.coverageEnabled ?? null
+        const commit = data?.owner?.repository?.commit ?? null
+
         return {
-          isCurrentUserPartOfOrg: data?.owner?.isCurrentUserPartOfOrg ?? null,
-          commit: data?.owner?.repository?.commit ?? null,
+          isCurrentUserPartOfOrg,
+          bundleAnalysisEnabled,
+          coverageEnabled,
+          commit,
         }
       }),
   })

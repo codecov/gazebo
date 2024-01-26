@@ -9,6 +9,8 @@ const mockPullData = {
   owner: {
     repository: {
       __typename: 'Repository',
+      coverageEnabled: true,
+      bundleAnalysisEnabled: true,
       pull: {
         pullId: 1,
         head: {
@@ -31,6 +33,8 @@ const mockPullDataTeam = {
   owner: {
     repository: {
       __typename: 'Repository',
+      coverageEnabled: true,
+      bundleAnalysisEnabled: true,
       pull: {
         pullId: 1,
         head: {
@@ -149,6 +153,8 @@ describe('usePullPageData', () => {
 
           await waitFor(() =>
             expect(result.current.data).toStrictEqual({
+              coverageEnabled: true,
+              bundleAnalysisEnabled: true,
               pull: {
                 pullId: 1,
                 head: {
@@ -190,6 +196,8 @@ describe('usePullPageData', () => {
 
           await waitFor(() =>
             expect(result.current.data).toStrictEqual({
+              coverageEnabled: null,
+              bundleAnalysisEnabled: null,
               pull: null,
             })
           )
@@ -331,6 +339,8 @@ describe('usePullPageData', () => {
 
         await waitFor(() =>
           expect(result.current.data).toStrictEqual({
+            coverageEnabled: true,
+            bundleAnalysisEnabled: true,
             pull: {
               pullId: 1,
               head: {
