@@ -70,6 +70,8 @@ export const setupSentry = ({
     tracePropagationTargets: ['api.codecov.io', 'stage-api.codecov.dev'],
   })
 
+  const metrics = Sentry.metrics.metricsAggregatorIntegration()
+
   const replay = new Replay()
 
   Sentry.init({
@@ -77,7 +79,7 @@ export const setupSentry = ({
     debug: config.NODE_ENV !== 'production',
     release: config.SENTRY_RELEASE,
     environment: config.SENTRY_ENVIRONMENT,
-    integrations: [browserTracing, replay],
+    integrations: [browserTracing, metrics, replay],
     tracesSampleRate: config?.SENTRY_TRACING_SAMPLE_RATE,
     // Capture 10% of all sessions
     replaysSessionSampleRate: config?.SENTRY_SESSION_SAMPLE_RATE,

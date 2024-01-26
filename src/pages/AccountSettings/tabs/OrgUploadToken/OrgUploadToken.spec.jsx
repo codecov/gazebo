@@ -51,8 +51,8 @@ afterAll(() => {
 
 describe('OrgUploadToken', () => {
   function setup(
-    { orgUploadToken = undefined, error = null, isAdmin = true } = {
-      orgUploadToken: undefined,
+    { orgUploadToken = null, error = null, isAdmin = true } = {
+      orgUploadToken: null,
       error: null,
       isAdmin: true,
     }
@@ -70,8 +70,17 @@ describe('OrgUploadToken', () => {
           ctx.data({
             owner: {
               ...mockOwner.owner,
-              orgUploadToken: orgUploadToken,
               isAdmin: isAdmin,
+            },
+          })
+        )
+      }),
+      graphql.query('GetOrgUploadToken', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              orgUploadToken: orgUploadToken,
             },
           })
         )
