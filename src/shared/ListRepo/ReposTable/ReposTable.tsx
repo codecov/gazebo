@@ -10,7 +10,7 @@ import isEmpty from 'lodash/isEmpty'
 import { useContext, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useRepos } from 'services/repos'
+import { OrderingDirection, useRepos } from 'services/repos'
 import { TierNames, useTier } from 'services/tier'
 import { useOwner, useUser } from 'services/user'
 import { ActiveContext } from 'shared/context'
@@ -35,6 +35,33 @@ interface ReposTableProps {
     direction: string
   }
   filterValues?: string[]
+}
+
+function getOrderingDirection(sorting: Array<{ id: string; desc: boolean }>) {
+  const state = sorting.at(0)
+
+  if (state) {
+    const direction = state?.desc
+      ? OrderingDirection.DESC
+      : OrderingDirection.ASC
+
+    let ordering = undefined
+    if (state.id === 'name') {
+      ordering = 'NAME'
+    }
+
+    if (state.id === 'coverage') {
+      ordering = 'COVERAGE'
+    }
+
+    if (state.id === 'latestCommitAt') {
+      ordering = 'COMMIT_DATE'
+    }
+
+    return { direction, ordering }
+  }
+
+  return undefined
 }
 
 const ReposTable = ({
@@ -75,7 +102,7 @@ const ReposTable = ({
     isFetchingNextPage,
   } = useRepos({
     activated,
-    sortItem,
+    sortItem: getOrderingDirection(sorting),
     term: searchValue,
     repoNames: filterValues,
     owner,
@@ -117,12 +144,12 @@ const ReposTable = ({
                   key={header.id}
                   colSpan={header.colSpan}
                   scope="col"
-                  data-sortable={header.column.getCanSort()}
-                  {...(header.column.id !== 'inactiveRepo'
+                  data-sortable={
+                    header.column.getCanSort() && header.column.id !== 'lines'
+                  }
+                  {...(header.column.id !== 'inactiveRepo' &&
+                  header.column.id !== 'lines'
                     ? { onClick: header.column.getToggleSortingHandler() }
-                    : {})}
-                  {...(header.column.id === 'lines'
-                    ? { 'data-type': 'numeric' }
                     : {})}
                 >
                   <div
