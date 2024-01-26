@@ -51,15 +51,13 @@ const CommitBundleDropdown: React.FC<React.PropsWithChildren> = ({
 
   if (
     !data ||
-    data?.owner?.repository.__typename !== 'Repository' ||
-    data.owner.repository?.commit?.bundleAnalysisCompareWithParent
-      ?.__typename !== 'BundleAnalysisComparison'
+    data?.commit?.bundleAnalysisCompareWithParent?.__typename !==
+      'BundleAnalysisComparison'
   ) {
     return null
   }
 
-  const sizeDelta =
-    data?.owner?.repository?.commit?.bundleAnalysisCompareWithParent?.sizeDelta
+  const sizeDelta = data?.commit?.bundleAnalysisCompareWithParent?.sizeDelta
 
   return (
     <SummaryDropdown.Item value="bundle-analysis">
