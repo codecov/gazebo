@@ -112,6 +112,8 @@ describe('PullRequestPage', () => {
               owner: {
                 repository: {
                   __typename: 'Repository',
+                  coverageEnabled: true,
+                  bundleAnalysisEnabled: true,
                   pull: mockPullPageDataTeam,
                 },
               },
@@ -125,6 +127,8 @@ describe('PullRequestPage', () => {
             owner: {
               repository: {
                 __typename: 'Repository',
+                coverageEnabled: true,
+                bundleAnalysisEnabled: true,
                 pull: pullData,
               },
             },

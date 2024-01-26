@@ -30,10 +30,10 @@ const mockPullData = (resultType) => {
   if (resultType === ComparisonReturnType.MISSING_BASE_COMMIT) {
     return {
       owner: {
-        isCurrentUserPartOfOrg: true,
         repository: {
           __typename: 'Repository',
-          private: false,
+          coverageEnabled: true,
+          bundleAnalysisEnabled: true,
           pull: {
             pullId: 1,
             head: {
@@ -51,10 +51,10 @@ const mockPullData = (resultType) => {
 
   return {
     owner: {
-      isCurrentUserPartOfOrg: true,
       repository: {
         __typename: 'Repository',
-        private: false,
+        coverageEnabled: true,
+        bundleAnalysisEnabled: true,
         pull: {
           pullId: 1,
           head: {
@@ -79,7 +79,8 @@ const mockPullDataTeam = {
     isCurrentUserPartOfOrg: true,
     repository: {
       __typename: 'Repository',
-      private: false,
+      coverageEnabled: true,
+      bundleAnalysisEnabled: true,
       pull: {
         pullId: 1,
         head: {

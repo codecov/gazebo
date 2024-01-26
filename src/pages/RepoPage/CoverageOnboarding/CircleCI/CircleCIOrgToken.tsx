@@ -1,30 +1,49 @@
 import { useParams } from 'react-router-dom'
 
 import patchAndProject from 'assets/repoConfig/patch-and-project.svg'
+import { useOrgUploadToken } from 'services/orgUploadToken'
 import { useRepo } from 'services/repo'
 import { providerToInternalProvider } from 'shared/utils/provider'
 import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
 
-const orbsString = 'orbs:\n codecov/codecov@3.2.4'
+const orbsString = `orbs:
+  codecov: codecov/codecov@4.0.0
+workflows:
+  upload-to-codecov:
+    jobs:
+      - checkout 
+      - codecov/upload
+`
 
-function CircleCI() {
-  const { provider, owner, repo } = useParams()
+interface URLParams {
+  provider: string
+  owner: string
+  repo: string
+}
+
+function CircleCIOrgToken() {
+  const { provider, owner, repo } = useParams<URLParams>()
   const providerName = providerToInternalProvider(provider)
   const { data } = useRepo({ provider, owner, repo })
+  const { data: orgUploadToken } = useOrgUploadToken({ provider, owner })
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-3">
         <div>
           <h2 className="text-base font-semibold">
-            Step 1: add repository token to{' '}
+            Step 1: add global token to{' '}
             <A
+              hook="circleCIEnvVarsLink"
+              isExternal
               to={{
                 pageName: 'circleCIEnvVars',
                 options: { provider: providerName },
               }}
-            />
+            >
+              environment variables
+            </A>
           </h2>
           <p className="text-base">
             Environment variables in CircleCI can be found in project&apos;s
@@ -32,8 +51,8 @@ function CircleCI() {
           </p>
         </div>
         <pre className="flex items-center gap-2 overflow-auto rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          CODECOV_TOKEN={data?.repository?.uploadToken}
-          <CopyClipboard string={data?.repository?.uploadToken} />
+          CODECOV_TOKEN={orgUploadToken}
+          <CopyClipboard string={orgUploadToken ?? ''} />
         </pre>
       </div>
       <div className="flex flex-col gap-3">
@@ -41,11 +60,15 @@ function CircleCI() {
           <h2 className="font-semibold">
             Step 2: add Codecov orb to CircleCI{' '}
             <A
+              hook="circleCIyamlLink"
+              isExternal
               to={{
                 pageName: 'circleCIyaml',
                 options: { branch: data?.repository?.defaultBranch },
               }}
-            />
+            >
+              config.yml
+            </A>
           </h2>
           <p>
             Add the following to your .circleci/config.yaml and push changes to
@@ -53,16 +76,18 @@ function CircleCI() {
           </p>
         </div>
         <div className="flex items-start justify-between overflow-auto whitespace-pre-line rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          <pre>
-            orbs:
-            <br />
-            &nbsp;&nbsp;codecov/codecov@3.2.4
-          </pre>
+          <pre className="whitespace-pre">{orbsString}</pre>
           <CopyClipboard string={orbsString} />
         </div>
         <small>
           For more, see Codecov specific{' '}
-          <A to={{ pageName: 'circleCIOrbs' }} isExternal />
+          <A
+            to={{ pageName: 'circleCIOrbs' }}
+            isExternal
+            hook="circleCIOrbsLink"
+          >
+            CircleCI Documentation
+          </A>
         </small>
       </div>
       <div>
@@ -73,7 +98,7 @@ function CircleCI() {
         </p>
         <img
           alt="codecov patch and project"
-          src={patchAndProject}
+          src={patchAndProject.toString()}
           className="my-3 md:px-5"
           loading="lazy"
         />
@@ -85,7 +110,11 @@ function CircleCI() {
         <p className="mt-6 border-l-2 border-ds-gray-secondary pl-4">
           <span className="font-semibold">How was your setup experience?</span>{' '}
           Let us know in{' '}
-          <A to={{ pageName: 'repoConfigFeedback' }} isExternal>
+          <A
+            to={{ pageName: 'repoConfigFeedback' }}
+            isExternal
+            hook="repoConfigFeedbackLink"
+          >
             this issue
           </A>
         </p>
@@ -94,4 +123,4 @@ function CircleCI() {
   )
 }
 
-export default CircleCI
+export default CircleCIOrgToken
