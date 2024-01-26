@@ -67,7 +67,9 @@ const CommitBundleDropdown: React.FC<React.PropsWithChildren> = ({
           <BundleMessage sizeDelta={sizeDelta} />
         </p>
       </SummaryDropdown.Trigger>
-      <SummaryDropdown.Content>{children}</SummaryDropdown.Content>
+      <SummaryDropdown.Content className="py-2">
+        {children}
+      </SummaryDropdown.Content>
     </SummaryDropdown.Item>
   )
 }

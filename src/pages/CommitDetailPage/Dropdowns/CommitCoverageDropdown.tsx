@@ -63,7 +63,7 @@ const CommitCoverageDropdown: React.FC<React.PropsWithChildren> = ({
           />
         </p>
       </SummaryDropdown.Trigger>
-      <SummaryDropdown.Content className="pt-2">
+      <SummaryDropdown.Content className="py-2">
         {children}
       </SummaryDropdown.Content>
     </SummaryDropdown.Item>
