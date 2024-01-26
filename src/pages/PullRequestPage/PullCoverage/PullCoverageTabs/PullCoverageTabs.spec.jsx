@@ -58,6 +58,8 @@ const mockPullData = {
   owner: {
     repository: {
       __typename: 'Repository',
+      coverageEnabled: true,
+      bundleAnalysisEnabled: true,
       pull: {
         pullId: 1,
         head: {
