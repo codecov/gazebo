@@ -41,10 +41,10 @@ const SummaryTrigger = forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
 >(({ children, className, ...props }, forwardedRef) => (
-  <AccordionPrimitive.Header className="sticky top-0">
+  <AccordionPrimitive.Header className="sticky top-0 z-30">
     <AccordionPrimitive.Trigger
       className={cs(
-        'bg-ds-gray-primary py-4 px-2 flex gap-2 items-center [&[data-state=open]>span:first-child]:rotate-90 w-full',
+        'flex w-full items-center gap-2 bg-ds-gray-primary px-2 py-4 [&[data-state=open]>span:first-child]:rotate-90',
         className
       )}
       {...props}
@@ -71,7 +71,7 @@ const SummaryContent = forwardRef<
     {...props}
     ref={forwardedRef}
   >
-    <div className="px-5 py-[15px]">{children}</div>
+    <div className="px-5">{children}</div>
   </AccordionPrimitive.Content>
 ))
 
