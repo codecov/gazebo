@@ -11,7 +11,7 @@ import { ImpactedFilesReturnType } from 'shared/utils/impactedFiles'
 
 import FilesChanged from './FilesChanged'
 
-jest.mock('./Table', () => () => 'Files Changed Table')
+jest.mock('./FilesChangedTable', () => () => 'Files Changed Table')
 
 const mockImpactedFiles = [
   {
