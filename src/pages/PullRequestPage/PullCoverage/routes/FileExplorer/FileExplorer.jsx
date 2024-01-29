@@ -66,6 +66,7 @@ function FileExplorer() {
         <MissingFileData
           isSearching={isSearching}
           hasFlagsSelected={flags?.length > 0}
+          hasComponentsSelected={params?.components?.length > 0}
         />
       )}
     </div>
