@@ -5,15 +5,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import OtherCI from './OtherCI'
-
-const mockCurrentUser = {
-  me: {
-    trackingMetadata: {
-      ownerid: 'user-owner-id',
-    },
-  },
-}
+import OtherCIRepoToken from './OtherCIRepoToken'
 
 const mockGetRepo = {
   owner: {
@@ -34,7 +26,7 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/cool-repo/new/other-ci']}>
       <Route
@@ -65,9 +57,6 @@ describe('OtherCI', () => {
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockGetRepo))
-      ),
-      graphql.query('CurrentUser', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockCurrentUser))
       )
     )
 
@@ -78,14 +67,14 @@ describe('OtherCI', () => {
     beforeEach(() => setup())
 
     it('renders header', async () => {
-      render(<OtherCI />, { wrapper })
+      render(<OtherCIRepoToken />, { wrapper })
 
       const header = await screen.findByText(/Step 1/)
       expect(header).toBeInTheDocument()
     })
 
     it('renders token box', async () => {
-      render(<OtherCI />, { wrapper })
+      render(<OtherCIRepoToken />, { wrapper })
 
       const codecovToken = await screen.findByText(/CODECOV_TOKEN/)
       expect(codecovToken).toBeInTheDocument()
@@ -100,7 +89,7 @@ describe('OtherCI', () => {
   describe('step two', () => {
     it('renders header', async () => {
       setup()
-      render(<OtherCI />, { wrapper })
+      render(<OtherCIRepoToken />, { wrapper })
 
       const header = await screen.findByText(/Step 2/)
       expect(header).toBeInTheDocument()
@@ -116,14 +105,14 @@ describe('OtherCI', () => {
     })
 
     it('renders instruction box', async () => {
-      render(<OtherCI />, { wrapper })
+      render(<OtherCIRepoToken />, { wrapper })
 
       const box = await screen.findByTestId('instruction-box')
       expect(box).toBeInTheDocument()
     })
 
     it('renders integrity check msg', async () => {
-      render(<OtherCI />, { wrapper })
+      render(<OtherCIRepoToken />, { wrapper })
 
       const integrityCheck = await screen.findByText(/It is highly recommended/)
       expect(integrityCheck).toBeInTheDocument()
@@ -142,14 +131,14 @@ describe('OtherCI', () => {
   describe('step three', () => {
     beforeEach(() => setup())
     it('renders first body', async () => {
-      render(<OtherCI />, { wrapper })
+      render(<OtherCIRepoToken />, { wrapper })
 
       const body = await screen.findByText(/After you committed your changes/)
       expect(body).toBeInTheDocument()
     })
 
     it('renders status check image', async () => {
-      render(<OtherCI />, { wrapper })
+      render(<OtherCIRepoToken />, { wrapper })
 
       const img = await screen.findByRole('img', {
         name: 'codecov patch and project',
@@ -158,7 +147,7 @@ describe('OtherCI', () => {
     })
 
     it('renders second body', async () => {
-      render(<OtherCI />, { wrapper })
+      render(<OtherCIRepoToken />, { wrapper })
 
       const title = await screen.findByText(/Once merged to the default branch/)
       expect(title).toBeInTheDocument()
@@ -168,7 +157,7 @@ describe('OtherCI', () => {
   describe('ending', () => {
     beforeEach(() => setup())
     it('renders body', async () => {
-      render(<OtherCI />, { wrapper })
+      render(<OtherCIRepoToken />, { wrapper })
 
       const body = await screen.findByText(/How was your setup experience/)
       expect(body).toBeInTheDocument()
