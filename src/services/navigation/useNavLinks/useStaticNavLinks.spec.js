@@ -71,6 +71,7 @@ describe('useStaticNavLinks', () => {
       ${links.circleCIOrbs}                  | ${'https://circleci.com/developer/orbs/orb/codecov/codecov'}
       ${links.freeTrialFaqs}                 | ${'https://docs.codecov.com/docs/free-trial-faqs'}
       ${links.feedback}                      | ${'https://github.com/codecov/feedback/discussions'}
+      ${links.nextJSCustomConfig}            | ${'https://nextjs.org/docs/app/api-reference/next-config-js/webpack'}
     `('static links return path', ({ link, outcome }) => {
       it(`${link.text}: Returns the correct link`, () => {
         expect(link.path()).toBe(outcome)
