@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 
-import { useOwner } from 'services/user'
+import { useOrgUploadToken } from 'services/orgUploadToken'
 import A from 'ui/A'
 import Banner from 'ui/Banner'
 
@@ -8,9 +8,8 @@ import GenerateOrgUploadToken from './GenerateOrgUploadToken'
 import RegenerateOrgUploadToken from './RegenerateOrgUploadToken'
 
 function OrgUploadToken() {
-  const { owner } = useParams()
-  const { data: ownerData } = useOwner({ username: owner })
-  const orgUploadToken = ownerData?.orgUploadToken
+  const { provider, owner } = useParams()
+  const { data: orgUploadToken } = useOrgUploadToken({ provider, owner })
 
   return (
     <div className="flex flex-col gap-4">

@@ -9,14 +9,16 @@ const formatSettings = {
 } as const
 
 export const formatSizeToString = (bytes: number) => {
-  if (bytes < KILOBYTE) {
+  const positiveBytes = Math.abs(bytes)
+
+  if (positiveBytes < KILOBYTE) {
     return Intl.NumberFormat('en-US', {
       ...formatSettings,
       unit: 'byte',
     }).format(bytes)
   }
 
-  if (bytes >= KILOBYTE && bytes < MEGABYTE) {
+  if (positiveBytes >= KILOBYTE && positiveBytes < MEGABYTE) {
     let kilobytes = bytes / KILOBYTE
 
     return Intl.NumberFormat('en-US', {
@@ -25,7 +27,7 @@ export const formatSizeToString = (bytes: number) => {
     }).format(kilobytes)
   }
 
-  if (bytes >= MEGABYTE && bytes < GIGABYTE) {
+  if (positiveBytes >= MEGABYTE && positiveBytes < GIGABYTE) {
     let megabytes = bytes / MEGABYTE
 
     return Intl.NumberFormat('en-US', {
