@@ -38,6 +38,20 @@ const mockComparisonError = {
   },
 }
 
+const mockFirstPullRequest = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      commit: {
+        bundleAnalysisCompareWithParent: {
+          __typename: 'FirstPullRequest',
+          message: 'First pull request',
+        },
+      },
+    },
+  },
+}
+
 const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -84,16 +98,24 @@ interface SetupArgs {
 
 describe('BundleMessage', () => {
   function setup(
-    { sizeDelta = 0, noData = false, comparisonError = false }: SetupArgs = {
+    {
+      sizeDelta = 0,
+      noData = false,
+      comparisonError = false,
+      firstPullRequest = false,
+    }: SetupArgs = {
       sizeDelta: 0,
       noData: false,
       comparisonError: false,
+      firstPullRequest: false,
     }
   ) {
     server.use(
       graphql.query('CommitBADropdownSummary', (req, res, ctx) => {
         if (noData) {
           return res(ctx.status(200), ctx.data(mockNoData))
+        } else if (firstPullRequest) {
+          return res(ctx.status(200), ctx.data(mockFirstPullRequest))
         } else if (comparisonError) {
           return res(ctx.status(200), ctx.data(mockComparisonError))
         }
@@ -145,6 +167,21 @@ describe('BundleMessage', () => {
         const message = await screen.findByText(/bundle size has no change/)
         expect(message).toBeInTheDocument()
       })
+    })
+  })
+
+  describe('there is a first pull request', () => {
+    it('renders the first pull request message', async () => {
+      setup({ firstPullRequest: true })
+      render(<BundleMessage />, { wrapper })
+
+      const title = await screen.findByText('Bundle Report:')
+      expect(title).toBeInTheDocument()
+
+      const message = await screen.findByText(
+        /once merged to default, your following pull request and commits will include report details/
+      )
+      expect(message).toBeInTheDocument()
     })
   })
 

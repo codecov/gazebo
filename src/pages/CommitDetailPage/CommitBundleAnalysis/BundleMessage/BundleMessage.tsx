@@ -20,8 +20,21 @@ const BundleMessage: React.FC = () => {
     commitid: commitSha,
   })
 
-  let errorMsg: string | undefined = undefined
-  let errorType: string | undefined = undefined
+  if (
+    data?.commit?.bundleAnalysisCompareWithParent?.__typename ===
+    'FirstPullRequest'
+  ) {
+    return (
+      <>
+        <span className="font-semibold">Bundle Report: </span>
+        once merged to default, your following pull request and commits will
+        include report details &#x2139;
+      </>
+    )
+  }
+
+  let errorMsg: string | undefined
+  let errorType: string | undefined
   if (
     data?.commit?.bundleAnalysisCompareWithParent?.__typename !==
     'BundleAnalysisComparison'
