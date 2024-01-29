@@ -34,6 +34,9 @@ export const query = `
                 }
                 __typename
               }
+              ... on UnknownPath {
+                message
+              }
             }
           }
         }

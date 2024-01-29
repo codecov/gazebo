@@ -229,6 +229,12 @@ fragment FileComparisonWithBase on Pull {
               }
             }
           }
+          ... on UnknownPath {
+            message
+          }
+          ... on MissingCoverage {
+            message
+          }
         }
       }
     }

@@ -33,6 +33,12 @@ export const query = `
               }
               __typename
             }
+            ... on UnknownPath {
+              message
+            }
+            ... on MissingCoverage {
+              message
+            }
           }
         }
       }
