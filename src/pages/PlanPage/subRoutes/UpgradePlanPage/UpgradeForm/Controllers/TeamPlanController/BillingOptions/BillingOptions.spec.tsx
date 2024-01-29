@@ -6,6 +6,7 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TrialStatuses } from 'services/account'
 import { Plans } from 'shared/utils/billing'
 
 import BillingOptions from './BillingOptions'
@@ -40,6 +41,21 @@ const availablePlans = [
     value: 'users-teamy',
   },
 ]
+
+const mockPlanDataResponse = {
+  baseUnitPrice: 10,
+  benefits: [],
+  billingRate: 'monthly',
+  marketingName: 'Team',
+  monthlyUploadLimit: 250,
+  value: 'test-plan',
+  trialStatus: TrialStatuses.NOT_STARTED,
+  trialStartDate: '',
+  trialEndDate: '',
+  trialTotalDays: 0,
+  pretrialUsersCount: 0,
+  planUserCount: 1,
+}
 
 const server = setupServer()
 const queryClient = new QueryClient({
@@ -79,7 +95,18 @@ describe('BillingOptions', () => {
             },
           })
         )
-      )
+      ),
+      graphql.query('GetPlanData', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              hasPrivateRepos: true,
+              plan: mockPlanDataResponse,
+            },
+          })
+        )
+      })
     )
 
     const mockSetFormValue = jest.fn()

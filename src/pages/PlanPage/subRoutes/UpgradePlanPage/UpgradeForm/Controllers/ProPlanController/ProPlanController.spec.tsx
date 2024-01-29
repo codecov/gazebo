@@ -105,10 +105,25 @@ const mockAccountDetailsTrial = {
   inactiveUserCount: 0,
 }
 
-const mockPlanDataResponse = {
+const mockPlanDataResponseMonthly = {
   baseUnitPrice: 10,
   benefits: [],
   billingRate: 'monthly',
+  marketingName: 'Pro Team',
+  monthlyUploadLimit: 250,
+  value: 'test-plan',
+  trialStatus: TrialStatuses.NOT_STARTED,
+  trialStartDate: '',
+  trialEndDate: '',
+  trialTotalDays: 0,
+  pretrialUsersCount: 0,
+  planUserCount: 1,
+}
+
+const mockPlanDataResponseYearly = {
+  baseUnitPrice: 10,
+  benefits: [],
+  billingRate: 'yearly',
   marketingName: 'Pro Team',
   monthlyUploadLimit: 250,
   value: 'test-plan',
@@ -161,14 +176,14 @@ const wrapper: WrapperClosure =
 interface SetupArgs {
   planValue: string
   errorDetails?: string
-  trialStatus?: string
+  monthlyPlan?: boolean
 }
 
 describe('ProPlanController', () => {
   function setup(
-    { planValue = Plans.USERS_BASIC, trialStatus = undefined }: SetupArgs = {
+    { planValue = Plans.USERS_BASIC, monthlyPlan = true }: SetupArgs = {
       planValue: Plans.USERS_BASIC,
-      trialStatus: undefined,
+      monthlyPlan: true,
     }
   ) {
     const addNotification = jest.fn()
@@ -206,12 +221,15 @@ describe('ProPlanController', () => {
         )
       }),
       graphql.query('GetPlanData', (req, res, ctx) => {
+        const planResponse = monthlyPlan
+          ? mockPlanDataResponseMonthly
+          : mockPlanDataResponseYearly
         return res(
           ctx.status(200),
           ctx.data({
             owner: {
               hasPrivateRepos: true,
-              plan: { ...mockPlanDataResponse, trialStatus },
+              plan: planResponse,
             },
           })
         )
@@ -284,7 +302,7 @@ describe('ProPlanController', () => {
       }
 
       it('renders monthly option button', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY })
+        setup({ planValue: Plans.USERS_PR_INAPPY, monthlyPlan: false })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Monthly' })
@@ -292,7 +310,7 @@ describe('ProPlanController', () => {
       })
 
       it('renders annual option button', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY })
+        setup({ planValue: Plans.USERS_PR_INAPPY, monthlyPlan: false })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
@@ -300,7 +318,7 @@ describe('ProPlanController', () => {
       })
 
       it('renders annual option button as "selected"', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY })
+        setup({ planValue: Plans.USERS_PR_INAPPY, monthlyPlan: false })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
@@ -309,7 +327,7 @@ describe('ProPlanController', () => {
       })
 
       it('has the price for the year', async () => {
-        setup({ planValue: Plans.USERS_PR_INAPPY })
+        setup({ planValue: Plans.USERS_PR_INAPPY, monthlyPlan: false })
         render(<ProPlanController {...props} />, { wrapper: wrapper() })
 
         const price = await screen.findByText(/\$130/)
