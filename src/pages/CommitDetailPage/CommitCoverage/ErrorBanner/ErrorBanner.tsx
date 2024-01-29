@@ -123,6 +123,26 @@ const BannerContent: React.FC<Props> = ({ errorType }) => {
 }
 
 const ErrorBanner: React.FC<Props> = ({ errorType }) => {
+  if (errorType === ComparisonReturnType.FIRST_PULL_REQUEST) {
+    return (
+      <Banner variant="default">
+        <div className="flex flex-col gap-6 text-sm">
+          {' '}
+          <h1 className="font-semibold">
+            Welcome to coverage reports &#x1F389;
+          </h1>
+          <div className="flex gap-1">
+            <span>
+              Once merged to your default branch, Codecov will compare your
+              coverage reports and display the results on pull requests and
+              commits.
+            </span>
+          </div>
+        </div>
+      </Banner>
+    )
+  }
+
   return (
     <Banner variant="warning">
       <div className="flex flex-col gap-6 text-sm">
