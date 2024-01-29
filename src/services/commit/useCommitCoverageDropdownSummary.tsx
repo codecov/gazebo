@@ -14,6 +14,8 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo/schemas'
 import Api from 'shared/api'
+import { UploadStateEnum } from 'shared/utils/commit'
+import { mapEdges } from 'shared/utils/graphql'
 import A from 'ui/A'
 
 const ComparisonSchema = z.object({
@@ -43,6 +45,17 @@ const RepositorySchema = z.object({
   commit: z
     .object({
       compareWithParent: CompareWithParentSchema.nullable(),
+      uploads: z
+        .object({
+          edges: z.array(
+            z
+              .object({
+                node: z.object({ state: z.nativeEnum(UploadStateEnum) }),
+              })
+              .nullable()
+          ),
+        })
+        .nullish(),
     })
     .nullable(),
 })
@@ -70,6 +83,13 @@ query CommitDropdownSummary(
       __typename
       ... on Repository {
         commit(id: $commitid) {
+          uploads {
+            edges {
+              node {
+                state
+              }
+            }
+          }
           compareWithParent {
             __typename
             ... on Comparison {
@@ -169,9 +189,23 @@ export function useCommitCoverageDropdownSummary({
           })
         }
 
+        const uploadErrorCount = mapEdges(
+          data?.owner?.repository?.commit?.uploads
+        ).reduce((acc, upload) => {
+          if (upload?.state === UploadStateEnum.error) {
+            return acc + 1
+          }
+          return acc
+        }, 0)
+
         const commit = data?.owner?.repository?.commit ?? null
 
+        if (commit !== null && commit.uploads) {
+          delete commit.uploads
+        }
+
         return {
+          uploadErrorCount,
           commit,
         }
       }),
