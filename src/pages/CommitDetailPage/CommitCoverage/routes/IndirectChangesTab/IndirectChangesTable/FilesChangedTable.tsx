@@ -4,9 +4,7 @@ import {
   flexRender,
   getCoreRowModel,
   getExpandedRowModel,
-  getSortedRowModel,
   Row,
-  SortingState,
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
@@ -53,7 +51,7 @@ function getColumns({ commitid }: { commitid: string }) {
         )
       },
     }),
-    columnHelper.accessor('headCoverage', {
+    columnHelper.accessor('headCoverage.coverage', {
       id: 'head',
       header: 'Head %',
       cell: ({ getValue }) => {
@@ -72,7 +70,7 @@ function getColumns({ commitid }: { commitid: string }) {
         )
       },
     }),
-    columnHelper.accessor('baseCoverage', {
+    columnHelper.accessor('baseCoverage.coverage', {
       id: 'change',
       header: 'Change %',
       cell: ({ row }) => {
@@ -124,9 +122,6 @@ interface URLParams {
 
 export default function FilesChangedTable() {
   const [expanded, setExpanded] = useState<ExpandedState>({})
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: 'missedLines', desc: true },
-  ])
   const { provider, owner, repo, commit: commitSha } = useParams<URLParams>()
   const location = useLocation()
 
@@ -135,10 +130,10 @@ export default function FilesChangedTable() {
     depth: 1,
   })
 
-  const flags = queryParams?.flags?.length ? queryParams?.flags : undefined
+  const flags = queryParams?.flags?.length ? queryParams?.flags : null
   const components = queryParams?.components?.length
     ? queryParams?.components
-    : undefined
+    : null
 
   const { data: commitData, isLoading } = useCommit({
     provider,
@@ -146,15 +141,14 @@ export default function FilesChangedTable() {
     repo,
     commitid: commitSha,
     filters: {
-      flags,
-      components,
+      ...[flags, components],
       hasUnintendedChanges: true,
     },
   })
 
-  let mostRecentCompare = undefined
+  let currentCommit = undefined
   if (commitData?.commit?.compareWithParent?.__typename === 'Comparison') {
-    mostRecentCompare = commitData?.commit?.compareWithParent
+    currentCommit = commitData?.commit?.compareWithParent
   }
 
   const data = useMemo(() => {
@@ -173,17 +167,14 @@ export default function FilesChangedTable() {
     data,
     state: {
       expanded,
-      sorting,
     },
-    onSortingChange: setSorting,
     onExpandedChange: setExpanded,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
     getRowCanExpand: () => true,
   })
 
-  if (mostRecentCompare?.state === 'pending') {
+  if (currentCommit?.state === 'pending') {
     return <Loader />
   }
 
@@ -197,13 +188,9 @@ export default function FilesChangedTable() {
         {table.getHeaderGroups().map((headerGroup) => (
           <div key={headerGroup.id} className="filelistui-thead">
             {headerGroup.headers.map((header) => {
-              const isSorted = header.column.getIsSorted()
-
               return (
                 <div
                   key={header.id}
-                  data-sortable="true"
-                  onClick={header.column.getToggleSortingHandler()}
                   className={cs({
                     'w-8/12': header.id === 'name',
                     'w-1/12 flex justify-end': header.id !== 'name',
@@ -219,10 +206,7 @@ export default function FilesChangedTable() {
                       'flex-row-reverse justify-end': header.id === 'name',
                     })}
                   >
-                    <span
-                      className="text-ds-blue-darker"
-                      data-sort-direction={isSorted}
-                    >
+                    <span className="text-ds-blue-darker">
                       <Icon name="arrowUp" size="sm" />
                     </span>
                     {flexRender(
