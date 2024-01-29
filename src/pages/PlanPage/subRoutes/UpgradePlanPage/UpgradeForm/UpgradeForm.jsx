@@ -47,7 +47,6 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }) {
     watch,
     formState: { isValid, errors },
     setValue: setFormValue,
-    getValues: getFormValues,
   } = useForm({
     defaultValues: getDefaultValuesUpgradeForm({
       accountDetails,
@@ -79,7 +78,6 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }) {
       </div>
       <PlanTypeOptions
         setFormValue={setFormValue}
-        getFormValues={getFormValues}
         multipleTiers={multipleTiers}
         setSelectedPlan={setSelectedPlan}
         newPlan={newPlan}
