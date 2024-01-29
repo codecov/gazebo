@@ -218,7 +218,9 @@ describe('CommitBundleAnalysis', () => {
         })
         render(<CommitBundleAnalysis />, { wrapper })
 
-        const message = await screen.findByText(/first pull request/)
+        const message = await screen.findByText(
+          /once merged to default, your following pull request and commits will include report details/
+        )
         expect(message).toBeInTheDocument()
       })
 
@@ -378,7 +380,9 @@ describe('CommitBundleAnalysis', () => {
           const bundleReport = await screen.findByText(/Bundle Report:/)
           expect(bundleReport).toBeInTheDocument()
 
-          const message = await screen.findByText(/first pull request/)
+          const message = await screen.findByText(
+            /once merged to default, your following pull request and commits will include report details/
+          )
           expect(message).toBeInTheDocument()
         })
 

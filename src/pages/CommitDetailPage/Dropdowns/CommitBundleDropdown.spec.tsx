@@ -229,7 +229,9 @@ describe('CommitBundleDropdown', () => {
         { wrapper }
       )
 
-      const header = await screen.findByText(/first pull request/)
+      const header = await screen.findByText(
+        /once merged to default, your following pull request and commits will include report details/
+      )
       expect(header).toBeInTheDocument()
     })
   })
