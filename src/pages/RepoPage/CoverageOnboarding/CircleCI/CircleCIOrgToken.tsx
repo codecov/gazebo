@@ -29,7 +29,7 @@ function CircleCIOrgToken() {
   const { data: orgUploadToken } = useOrgUploadToken({ provider, owner })
 
   const uploadToken = orgUploadToken ?? data?.repository?.uploadToken
-  const tokenCopy = orgUploadToken ? 'organization' : 'repository'
+  const tokenCopy = orgUploadToken ? 'global' : 'repository'
 
   return (
     <div className="flex flex-col gap-6">
