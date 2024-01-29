@@ -203,6 +203,30 @@ describe('ErrorBanner Card', () => {
     })
   })
 
+  describe('when rendered with first pull request', () => {
+    it('renders header', () => {
+      render(
+        <ErrorBanner errorType={ComparisonReturnType.FIRST_PULL_REQUEST} />,
+        { wrapper }
+      )
+
+      const header = screen.getByText(/Welcome to coverage reports/)
+      expect(header).toBeInTheDocument()
+    })
+
+    it('renders error message', () => {
+      render(
+        <ErrorBanner errorType={ComparisonReturnType.FIRST_PULL_REQUEST} />,
+        { wrapper }
+      )
+
+      const errorMsg = screen.getByText(
+        'Once merged to your default branch, Codecov will compare your coverage reports and display the results on pull requests and commits.'
+      )
+      expect(errorMsg).toBeInTheDocument()
+    })
+  })
+
   describe('when rendered with unknown error', () => {
     it('does not render text content', () => {
       // @ts-expect-error testing to ensure that the component can handle unknown error types
