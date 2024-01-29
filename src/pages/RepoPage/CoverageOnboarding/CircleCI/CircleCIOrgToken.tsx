@@ -28,12 +28,15 @@ function CircleCIOrgToken() {
   const { data } = useRepo({ provider, owner, repo })
   const { data: orgUploadToken } = useOrgUploadToken({ provider, owner })
 
+  const uploadToken = orgUploadToken ?? data?.repository?.uploadToken
+  const tokenCopy = orgUploadToken ? 'global' : 'repository'
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-3">
         <div>
           <h2 className="text-base font-semibold">
-            Step 1: add global token to{' '}
+            Step 1: add {tokenCopy} token to{' '}
             <A
               hook="circleCIEnvVarsLink"
               isExternal
@@ -51,8 +54,8 @@ function CircleCIOrgToken() {
           </p>
         </div>
         <pre className="flex items-center gap-2 overflow-auto rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          CODECOV_TOKEN={orgUploadToken}
-          <CopyClipboard string={orgUploadToken ?? ''} />
+          CODECOV_TOKEN={uploadToken}
+          <CopyClipboard string={uploadToken ?? ''} />
         </pre>
       </div>
       <div className="flex flex-col gap-3">
