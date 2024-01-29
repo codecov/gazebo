@@ -17,6 +17,7 @@ import CommitCoverageSummarySkeleton from './CommitCoverageSummary/CommitCoverag
 import CommitCoverageTabs from './CommitCoverageTabs'
 import ErrorBanner from './ErrorBanner'
 import ErroredUploads from './ErroredUploads'
+import FirstPullBanner from './FirstPullBanner'
 import YamlErrorBanner from './YamlErrorBanner'
 
 import { useCommitPageData } from '../hooks'
@@ -31,7 +32,6 @@ const FilesChangedTab = lazy(() => import('./routes/FilesChangedTab'))
 const IndirectChangesTab = lazy(() => import('./routes/IndirectChangesTab'))
 const UploadsCard = lazy(() => import('./UploadsCard'))
 const CommitCoverageSummary = lazy(() => import('./CommitCoverageSummary'))
-const FirstPullBanner = lazy(() => import('./FirstPullBanner'))
 
 const Loader = () => (
   <div className="flex flex-1 justify-center">
@@ -151,23 +151,30 @@ function CommitCoverageRoutes() {
 }
 
 function CommitCoverage() {
-  const { provider, owner } = useParams()
+  const { provider, owner, repo, commit: commitSha } = useParams()
   const { data: tierName } = useTier({ owner, provider })
   const { data: repoData } = useRepoSettingsTeam()
+  const { data: commitPageData } = useCommitPageData({
+    provider,
+    owner,
+    repo,
+    commitId: commitSha,
+  })
 
-  const hideCommitSummary =
+  const showCommitSummary = !(
     repoData?.repository?.private && tierName === TierNames.TEAM
+  )
+  const showFirstPullBanner =
+    commitPageData?.commit?.compareWithParent?.__typename === 'FirstPullRequest'
 
   return (
     <div className="flex flex-col gap-4 px-3 sm:px-0">
-      {hideCommitSummary ? null : (
+      {showCommitSummary ? (
         <Suspense fallback={<CommitCoverageSummarySkeleton />}>
           <CommitCoverageSummary />
         </Suspense>
-      )}
-      <Suspense fallback={null}>
-        <FirstPullBanner />
-      </Suspense>
+      ) : null}
+      {showFirstPullBanner ? <FirstPullBanner /> : null}
       {/**we are currently capturing a single error*/}
       <CommitErrorBanners />
       <div className="flex flex-col gap-8 md:flex-row-reverse">
