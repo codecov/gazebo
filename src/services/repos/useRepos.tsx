@@ -249,9 +249,9 @@ export function useRepos({
             signal,
           })
         : fetchMyRepos({ provider, variables, after: pageParam, signal })
-
       return data
     },
+    suspense: false,
     getNextPageParam: (data) =>
       data?.pageInfo?.hasNextPage ? data.pageInfo.endCursor : undefined,
     ...options,

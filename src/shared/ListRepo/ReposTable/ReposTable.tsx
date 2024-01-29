@@ -7,15 +7,16 @@ import {
 } from '@tanstack/react-table'
 import cs from 'classnames'
 import isEmpty from 'lodash/isEmpty'
-import { useContext, useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
+import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
 
 import { OrderingDirection, useRepos } from 'services/repos'
 import { TierNames, useTier } from 'services/tier'
 import { useOwner, useUser } from 'services/user'
 import { ActiveContext } from 'shared/context'
-import Button from 'ui/Button'
 import Icon from 'ui/Icon'
+import Spinner from 'ui/Spinner'
 
 import { getReposColumnsHelper } from './getReposColumnsHelper'
 
@@ -30,10 +31,6 @@ interface URLParams {
 interface ReposTableProps {
   searchValue: string
   owner: string
-  sortItem?: {
-    ordering?: string
-    direction: string
-  }
   filterValues?: string[]
 }
 
@@ -64,10 +61,30 @@ function getOrderingDirection(sorting: Array<{ id: string; desc: boolean }>) {
   return undefined
 }
 
+const Loader = () => (
+  <div className="mb-4 flex justify-center pt-4">
+    <Spinner />
+  </div>
+)
+
+function LoadMoreTrigger({
+  intersectionRef,
+}: {
+  intersectionRef: React.Ref<HTMLSpanElement>
+}) {
+  return (
+    <span
+      ref={intersectionRef}
+      className="invisible relative top-[-65px] block leading-[0]"
+    >
+      Loading
+    </span>
+  )
+}
+
 const ReposTable = ({
   searchValue,
   owner,
-  sortItem,
   filterValues = [],
 }: ReposTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([
@@ -76,6 +93,8 @@ const ReposTable = ({
       desc: true,
     },
   ])
+
+  const { ref, inView } = useInView()
 
   const { provider } = useParams<URLParams>()
 
@@ -114,6 +133,12 @@ const ReposTable = ({
     return data ?? []
   }, [reposData?.pages])
 
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage()
+    }
+  }, [fetchNextPage, inView, hasNextPage])
+
   const table = useReactTable({
     columns: getReposColumnsHelper({
       inactive: repoDisplay === repoDisplayOptions.INACTIVE.text,
@@ -134,78 +159,80 @@ const ReposTable = ({
   }
 
   return (
-    <div className="tableui">
-      <table>
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th
-                  key={header.id}
-                  colSpan={header.colSpan}
-                  scope="col"
-                  data-sortable={
-                    header.column.getCanSort() && header.column.id !== 'lines'
-                  }
-                  {...(header.column.id !== 'inactiveRepo' &&
-                  header.column.id !== 'lines'
-                    ? { onClick: header.column.getToggleSortingHandler() }
-                    : {})}
-                >
-                  <div
-                    className={`flex gap-1 ${
-                      header.id === 'coverage' ? 'flex-row-reverse' : ''
-                    } ${header.id === 'lines' ? 'justify-end' : ''}`}
+    <>
+      <div className="tableui">
+        <table>
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th
+                    key={header.id}
+                    colSpan={header.colSpan}
+                    scope="col"
+                    data-sortable={
+                      header.column.getCanSort() && header.column.id !== 'lines'
+                    }
+                    {...(header.column.id !== 'inactiveRepo' &&
+                    header.column.id !== 'lines'
+                      ? { onClick: header.column.getToggleSortingHandler() }
+                      : {})}
                   >
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                    <span
-                      className="text-ds-blue-darker group-hover/columnheader:opacity-100"
-                      data-sort-direction={header.column.getIsSorted()}
+                    <div
+                      className={`flex gap-1 ${
+                        header.id === 'coverage' ? 'flex-row-reverse' : ''
+                      } ${header.id === 'lines' ? 'justify-end' : ''}`}
                     >
-                      <Icon name="arrowUp" size="sm" />
-                    </span>
-                  </div>
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <td
-                  key={cell.id}
-                  className={cs({
-                    'flex justify-end':
-                      cell.column.id === 'coverage' ||
-                      cell.column.id === 'inactiveRepo',
-                  })}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                      <span
+                        className="text-ds-blue-darker group-hover/columnheader:opacity-100"
+                        data-sort-direction={header.column.getIsSorted()}
+                      >
+                        <Icon name="arrowUp" size="sm" />
+                      </span>
+                    </div>
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {isFetching ? (
+              <tr>
+                <td>
+                  <Loader />
                 </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {hasNextPage && (
-        <div className="flex w-full justify-center">
-          <Button
-            hook="load-more"
-            isLoading={isFetchingNextPage}
-            onClick={fetchNextPage}
-            to={undefined}
-            disabled={false}
-          >
-            Load More
-          </Button>
-        </div>
-      )}
-    </div>
+              </tr>
+            ) : (
+              table.getRowModel().rows.map((row) => (
+                <tr key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <td
+                      key={cell.id}
+                      className={cs({
+                        'flex justify-end':
+                          cell.column.id === 'coverage' ||
+                          cell.column.id === 'inactiveRepo',
+                      })}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+      {isFetchingNextPage ? <Loader /> : null}
+      {hasNextPage ? <LoadMoreTrigger intersectionRef={ref} /> : null}
+    </>
   )
 }
 
