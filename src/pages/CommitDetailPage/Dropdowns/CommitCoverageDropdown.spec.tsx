@@ -1,9 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import {
-  render,
-  screen,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
@@ -14,22 +10,40 @@ import SummaryDropdown from 'ui/SummaryDropdown'
 
 import CommitCoverageDropdown from './CommitCoverageDropdown'
 
-const mockSummaryData = (patchTotals: {
-  missesCount: number | null
-  partialsCount: number | null
-}) => ({
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      commit: {
-        compareWithParent: {
-          __typename: 'Comparison',
-          patchTotals,
+const mockSummaryData = (
+  patchTotals: {
+    missesCount: number | null
+    partialsCount: number | null
+  },
+  uploadState: 'COMPLETE' | 'ERROR',
+  multipleUploads: boolean
+) => {
+  const uploads = [{ node: { state: uploadState } }]
+  if (multipleUploads) {
+    uploads.push({
+      node: {
+        state: uploadState,
+      },
+    })
+  }
+
+  return {
+    owner: {
+      repository: {
+        __typename: 'Repository',
+        commit: {
+          compareWithParent: {
+            __typename: 'Comparison',
+            patchTotals,
+          },
+          uploads: {
+            edges: uploads,
+          },
         },
       },
     },
-  },
-})
+  }
+}
 
 const mockNoData = { owner: null }
 
@@ -93,6 +107,8 @@ interface SetupArgs {
     missesCount: number | null
     partialsCount: number | null
   }
+  uploadState?: 'COMPLETE' | 'ERROR'
+  multipleUploads?: boolean
 }
 
 describe('CommitCoverageDropdown', () => {
@@ -103,6 +119,8 @@ describe('CommitCoverageDropdown', () => {
       missesCount: 0,
       partialsCount: 0,
     },
+    uploadState = 'COMPLETE',
+    multipleUploads = false,
   }: SetupArgs = {}) {
     const user = userEvent.setup()
 
@@ -114,7 +132,10 @@ describe('CommitCoverageDropdown', () => {
           return res(ctx.status(200), ctx.data(mockNoComparison))
         }
 
-        return res(ctx.status(200), ctx.data(mockSummaryData(patchTotals)))
+        return res(
+          ctx.status(200),
+          ctx.data(mockSummaryData(patchTotals, uploadState, multipleUploads))
+        )
       })
     )
 
@@ -122,6 +143,61 @@ describe('CommitCoverageDropdown', () => {
   }
 
   describe('renders summary message', () => {
+    describe('there are errored uploads', () => {
+      describe('there is one errored upload', () => {
+        it('renders errored upload message', async () => {
+          setup({
+            patchTotals: {
+              missesCount: 0,
+              partialsCount: 0,
+            },
+            uploadState: 'ERROR',
+          })
+          render(
+            <CommitCoverageDropdown>
+              <p>Passed child</p>
+            </CommitCoverageDropdown>,
+            { wrapper }
+          )
+
+          const bundleReport = await screen.findByText(/Coverage Report:/)
+          expect(bundleReport).toBeInTheDocument()
+
+          const singleUploadError = await screen.findByText(
+            /1 upload has failed to process/
+          )
+          expect(singleUploadError).toBeInTheDocument()
+        })
+      })
+
+      describe('there are multiple errored uploads', () => {
+        it('renders errored upload message', async () => {
+          setup({
+            patchTotals: {
+              missesCount: 0,
+              partialsCount: 0,
+            },
+            uploadState: 'ERROR',
+            multipleUploads: true,
+          })
+          render(
+            <CommitCoverageDropdown>
+              <p>Passed child</p>
+            </CommitCoverageDropdown>,
+            { wrapper }
+          )
+
+          const bundleReport = await screen.findByText(/Coverage Report:/)
+          expect(bundleReport).toBeInTheDocument()
+
+          const singleUploadError = await screen.findByText(
+            /2 uploads have failed to process/
+          )
+          expect(singleUploadError).toBeInTheDocument()
+        })
+      })
+    })
+
     describe('there are missing lines', () => {
       it('renders missing lines message', async () => {
         setup({
@@ -224,36 +300,34 @@ describe('CommitCoverageDropdown', () => {
   })
 
   describe('there is no data', () => {
-    it('does not render', async () => {
+    it('renders unknown error message', async () => {
       setup({ noData: true })
-      const { container } = render(
+      render(
         <CommitCoverageDropdown>
           <p>Passed child</p>
         </CommitCoverageDropdown>,
         { wrapper }
       )
 
-      const loading = await screen.findByText('Loading...')
-      await waitForElementToBeRemoved(loading)
-
-      expect(container).toHaveTextContent('')
+      const errorMessage = await screen.findByText(
+        /an unknown error has occurred/
+      )
+      expect(errorMessage).toBeInTheDocument()
     })
   })
 
   describe('there is no comparison', () => {
-    it('does not render', async () => {
+    it('renders the passed error message', async () => {
       setup({ noComparison: true })
-      const { container } = render(
+      render(
         <CommitCoverageDropdown>
           <p>Passed child</p>
         </CommitCoverageDropdown>,
         { wrapper }
       )
 
-      const loading = await screen.findByText('Loading...')
-      await waitForElementToBeRemoved(loading)
-
-      expect(container).toHaveTextContent('')
+      const errorMsg = await screen.findByText(/first pull request/)
+      expect(errorMsg).toBeInTheDocument()
     })
   })
 

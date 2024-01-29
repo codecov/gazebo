@@ -1,3 +1,4 @@
+import isNumber from 'lodash/isNumber'
 import { useParams } from 'react-router-dom'
 
 import { useCommitCoverageDropdownSummary } from 'services/commit/useCommitCoverageDropdownSummary'
@@ -11,25 +12,48 @@ interface URLParams {
 }
 
 interface CoverageMessageProps {
-  missesCount: number
-  partialsCount: number
+  missesCount?: number
+  partialsCount?: number
+  errorType?: string
+  errorMsg?: string
+  uploadErrorCount?: number
 }
 
 const CoverageMessage: React.FC<CoverageMessageProps> = ({
   missesCount,
   partialsCount,
+  errorType,
+  errorMsg,
+  uploadErrorCount,
 }) => {
-  const totalCount = missesCount + partialsCount
-
-  if (totalCount === 0) {
-    return <>all modified lines are covered by tests &#x2705;</>
+  if (uploadErrorCount && uploadErrorCount > 0) {
+    if (uploadErrorCount === 1) {
+      return <>{uploadErrorCount} upload has failed to process &#x26A0;</>
+    }
+    return <>{uploadErrorCount} uploads have failed to process &#x26A0;</>
   }
 
-  if (totalCount === 1) {
-    return <>{totalCount} line in your changes are missing coverage &#x26A0;</>
+  if (errorType && errorMsg) {
+    return <>{errorMsg.toLowerCase()} &#x26A0;</>
   }
 
-  return <>{totalCount} lines in your changes are missing coverage</>
+  if (isNumber(missesCount) && isNumber(partialsCount)) {
+    const totalCount = missesCount + partialsCount
+
+    if (totalCount === 0) {
+      return <>all modified lines are covered by tests &#x2705;</>
+    }
+
+    if (totalCount === 1) {
+      return (
+        <>{totalCount} line in your changes are missing coverage &#x26A0;</>
+      )
+    }
+
+    return <>{totalCount} lines in your changes are missing coverage</>
+  }
+
+  return <>an unknown error has occurred</>
 }
 
 const CommitCoverageDropdown: React.FC<React.PropsWithChildren> = ({
@@ -43,14 +67,22 @@ const CommitCoverageDropdown: React.FC<React.PropsWithChildren> = ({
     commitid: commitSha,
   })
 
-  if (!data || data.commit?.compareWithParent?.__typename !== 'Comparison') {
-    return null
+  let missesCount: number | undefined
+  let partialsCount: number | undefined
+  if (data?.commit?.compareWithParent?.__typename === 'Comparison') {
+    missesCount = data.commit?.compareWithParent?.patchTotals?.missesCount ?? 0
+    partialsCount =
+      data.commit?.compareWithParent?.patchTotals?.partialsCount ?? 0
   }
 
-  const missesCount =
-    data.commit?.compareWithParent?.patchTotals?.missesCount ?? 0
-  const partialsCount =
-    data.commit?.compareWithParent?.patchTotals?.partialsCount ?? 0
+  let errorMsg: string | undefined = undefined
+  let errorType: string | undefined = undefined
+  if (data?.commit?.compareWithParent?.__typename !== 'Comparison') {
+    errorType = data?.commit?.compareWithParent?.__typename
+    errorMsg = data?.commit?.compareWithParent?.message
+  }
+
+  const uploadErrorCount = data?.uploadErrorCount
 
   return (
     <SummaryDropdown.Item value="coverage">
@@ -60,6 +92,9 @@ const CommitCoverageDropdown: React.FC<React.PropsWithChildren> = ({
           <CoverageMessage
             missesCount={missesCount}
             partialsCount={partialsCount}
+            errorType={errorType}
+            errorMsg={errorMsg}
+            uploadErrorCount={uploadErrorCount}
           />
         </p>
       </SummaryDropdown.Trigger>
