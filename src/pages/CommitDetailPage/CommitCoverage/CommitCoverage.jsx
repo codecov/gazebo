@@ -15,8 +15,11 @@ import Spinner from 'ui/Spinner'
 import BotErrorBanner from './BotErrorBanner'
 import CommitCoverageSummarySkeleton from './CommitCoverageSummary/CommitCoverageSummarySkeleton'
 import CommitCoverageTabs from './CommitCoverageTabs'
+import ErrorBanner from './ErrorBanner'
 import ErroredUploads from './ErroredUploads'
 import YamlErrorBanner from './YamlErrorBanner'
+
+import { useCommitPageData } from '../hooks'
 
 const CommitDetailFileExplorer = lazy(() =>
   import('./routes/CommitDetailFileExplorer')
@@ -28,12 +31,70 @@ const FilesChangedTab = lazy(() => import('./routes/FilesChangedTab'))
 const IndirectChangesTab = lazy(() => import('./routes/IndirectChangesTab'))
 const UploadsCard = lazy(() => import('./UploadsCard'))
 const CommitCoverageSummary = lazy(() => import('./CommitCoverageSummary'))
+const FirstPullBanner = lazy(() => import('./FirstPullBanner'))
 
 const Loader = () => (
   <div className="flex flex-1 justify-center">
     <Spinner size={60} />
   </div>
 )
+
+function CommitRoutes() {
+  const { provider, owner, repo, commit: commitSha } = useParams()
+  const { data: tierName } = useTier({ owner, provider })
+  const { data: repoData } = useRepoSettingsTeam()
+  const { data: commitPageData } = useCommitPageData({
+    provider,
+    owner,
+    repo,
+    commitId: commitSha,
+  })
+
+  const compareTypeName = commitPageData?.commit?.compareWithParent?.__typename
+  if (
+    compareTypeName !== 'Comparison' &&
+    compareTypeName !== 'FirstPullRequest'
+  ) {
+    return <ErrorBanner errorType={compareTypeName} />
+  }
+
+  const showIndirectChanges = !(
+    repoData?.repository?.private && tierName === TierNames.TEAM
+  )
+
+  return (
+    <Suspense fallback={<Loader />}>
+      <Switch>
+        <SentryRoute
+          path={[
+            '/:provider/:owner/:repo/commit/:commit/tree/:path+',
+            '/:provider/:owner/:repo/commit/:commit/tree/',
+          ]}
+        >
+          <CommitDetailFileExplorer />
+        </SentryRoute>
+        <SentryRoute path="/:provider/:owner/:repo/commit/:commit/blob/:path+">
+          <CommitDetailFileViewer />
+        </SentryRoute>
+        <SentryRoute path="/:provider/:owner/:repo/commit/:commit" exact>
+          <FilesChangedTab />
+        </SentryRoute>
+        {showIndirectChanges && (
+          <SentryRoute
+            path="/:provider/:owner/:repo/commit/:commit/indirect-changes"
+            exact
+          >
+            <IndirectChangesTab />
+          </SentryRoute>
+        )}
+        <Redirect
+          from="/:provider/:owner/:repo/commit/:commit/*"
+          to="/:provider/:owner/:repo/commit/:commit"
+        />
+      </Switch>
+    </Suspense>
+  )
+}
 
 function CommitErrorBanners() {
   const { owner } = useParams()
@@ -56,8 +117,6 @@ function CommitErrorBanners() {
 
 function CommitCoverageRoutes() {
   const { provider, owner, repo, commit: commitSha } = useParams()
-  const { data: tierName } = useTier({ owner, provider })
-  const { data: repoData } = useRepoSettingsTeam()
 
   const { data: commitData } = useCommit({
     provider,
@@ -74,10 +133,6 @@ function CommitCoverageRoutes() {
     return <ErroredUploads erroredUploads={erroredUploads} />
   }
 
-  const showIndirectChanges = !(
-    repoData?.repository?.private && tierName === TierNames.TEAM
-  )
-
   const indirectChangedFilesCount =
     commitData?.commit?.compareWithParent?.indirectChangedFilesCount ?? 0
   const directChangedFilesCount =
@@ -90,36 +145,7 @@ function CommitCoverageRoutes() {
         indirectChangedFilesCount={indirectChangedFilesCount}
         directChangedFilesCount={directChangedFilesCount}
       />
-      <Suspense fallback={<Loader />}>
-        <Switch>
-          <SentryRoute
-            path={[
-              '/:provider/:owner/:repo/commit/:commit/tree/:path+',
-              '/:provider/:owner/:repo/commit/:commit/tree/',
-            ]}
-          >
-            <CommitDetailFileExplorer />
-          </SentryRoute>
-          <SentryRoute path="/:provider/:owner/:repo/commit/:commit/blob/:path+">
-            <CommitDetailFileViewer />
-          </SentryRoute>
-          <SentryRoute path="/:provider/:owner/:repo/commit/:commit" exact>
-            <FilesChangedTab />
-          </SentryRoute>
-          {showIndirectChanges && (
-            <SentryRoute
-              path="/:provider/:owner/:repo/commit/:commit/indirect-changes"
-              exact
-            >
-              <IndirectChangesTab />
-            </SentryRoute>
-          )}
-          <Redirect
-            from="/:provider/:owner/:repo/commit/:commit/*"
-            to="/:provider/:owner/:repo/commit/:commit"
-          />
-        </Switch>
-      </Suspense>
+      <CommitRoutes />
     </div>
   )
 }
@@ -139,6 +165,9 @@ function CommitCoverage() {
           <CommitCoverageSummary />
         </Suspense>
       )}
+      <Suspense fallback={null}>
+        <FirstPullBanner />
+      </Suspense>
       {/**we are currently capturing a single error*/}
       <CommitErrorBanners />
       <div className="flex flex-col gap-8 md:flex-row-reverse">
