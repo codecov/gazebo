@@ -59,10 +59,10 @@ const CoverageMessage: React.FC<CoverageMessageProps> = ({
       )
     }
 
-    return <>{totalCount} lines in your changes are missing coverage</>
+    return <>{totalCount} lines in your changes are missing coverage &#x26A0;</>
   }
 
-  return <>an unknown error has occurred</>
+  return <>an unknown error has occurred &#x26A0;</>
 }
 
 const CommitCoverageDropdown: React.FC<React.PropsWithChildren> = ({
