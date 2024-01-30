@@ -1,4 +1,3 @@
-import isNumber from 'lodash/isNumber'
 import { useParams } from 'react-router-dom'
 
 import { useCommitCoverageDropdownSummary } from 'services/commit/useCommitCoverageDropdownSummary'
