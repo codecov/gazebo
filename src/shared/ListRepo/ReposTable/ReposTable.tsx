@@ -117,7 +117,7 @@ const ReposTable = ({
     data: reposData,
     fetchNextPage,
     hasNextPage,
-    isFetching,
+    isLoading,
     isFetchingNextPage,
   } = useRepos({
     activated,
@@ -154,7 +154,7 @@ const ReposTable = ({
     getSortedRowModel: getSortedRowModel(),
   })
 
-  if (!isFetching && isEmpty(tableData)) {
+  if (!isLoading && isEmpty(tableData)) {
     return <NoReposBlock searchValue={searchValue} />
   }
 
@@ -200,7 +200,7 @@ const ReposTable = ({
             ))}
           </thead>
           <tbody>
-            {isFetching ? (
+            {isLoading ? (
               <tr>
                 <td>
                   <Loader />

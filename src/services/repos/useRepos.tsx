@@ -105,7 +105,7 @@ function fetchMyRepos({
   const query = `
     query MyRepos($filters: RepositorySetFilters!, $ordering: RepositoryOrdering!, $direction: OrderingDirection!, $after: String) {
         me {
-          viewableRepositories(filters: $filters, ordering: $ordering, orderingDirection: $direction, first: 20, after: $after) {
+          viewableRepositories(filters: $filters, ordering: $ordering, orderingDirection: $direction, first: $first, after: $after) {
             edges {
               node {
                 ...RepoForList
