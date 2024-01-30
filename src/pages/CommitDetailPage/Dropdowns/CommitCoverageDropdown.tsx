@@ -1,4 +1,3 @@
-import isNumber from 'lodash/isNumber'
 import { useParams } from 'react-router-dom'
 
 import { useCommitCoverageDropdownSummary } from 'services/commit/useCommitCoverageDropdownSummary'
@@ -11,21 +10,17 @@ interface URLParams {
   commit: string
 }
 
-interface CoverageMessageProps {
-  missesCount?: number
-  partialsCount?: number
-  errorType?: string
-  errorMsg?: string
-  uploadErrorCount?: number
-}
+const CoverageMessage: React.FC = () => {
+  const { provider, owner, repo, commit: commitSha } = useParams<URLParams>()
+  const { data } = useCommitCoverageDropdownSummary({
+    provider,
+    owner,
+    repo,
+    commitid: commitSha,
+  })
+  const comparison = data?.commit?.compareWithParent
+  const uploadErrorCount = data?.uploadErrorCount
 
-const CoverageMessage: React.FC<CoverageMessageProps> = ({
-  missesCount,
-  partialsCount,
-  errorType,
-  errorMsg,
-  uploadErrorCount,
-}) => {
   if (uploadErrorCount && uploadErrorCount > 0) {
     if (uploadErrorCount === 1) {
       return <>{uploadErrorCount} upload has failed to process &#x26A0;</>
@@ -33,7 +28,7 @@ const CoverageMessage: React.FC<CoverageMessageProps> = ({
     return <>{uploadErrorCount} uploads have failed to process &#x26A0;</>
   }
 
-  if (errorType === 'FirstPullRequest') {
+  if (comparison?.__typename === 'FirstPullRequest') {
     return (
       <>
         once merged to default, your following pull request and commits will
@@ -42,11 +37,13 @@ const CoverageMessage: React.FC<CoverageMessageProps> = ({
     )
   }
 
-  if (errorType && errorMsg) {
-    return <>{errorMsg.toLowerCase()} &#x26A0;</>
+  if (comparison?.__typename !== 'Comparison' && comparison?.message) {
+    return <>{comparison?.message?.toLowerCase()} &#x26A0;</>
   }
 
-  if (isNumber(missesCount) && isNumber(partialsCount)) {
+  if (comparison?.__typename === 'Comparison') {
+    const missesCount = comparison?.patchTotals?.missesCount ?? 0
+    const partialsCount = comparison?.patchTotals?.partialsCount ?? 0
     const totalCount = missesCount + partialsCount
 
     if (totalCount === 0) {
@@ -68,43 +65,12 @@ const CoverageMessage: React.FC<CoverageMessageProps> = ({
 const CommitCoverageDropdown: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
-  const { provider, owner, repo, commit: commitSha } = useParams<URLParams>()
-  const { data } = useCommitCoverageDropdownSummary({
-    provider,
-    owner,
-    repo,
-    commitid: commitSha,
-  })
-
-  let missesCount: number | undefined
-  let partialsCount: number | undefined
-  if (data?.commit?.compareWithParent?.__typename === 'Comparison') {
-    missesCount = data.commit?.compareWithParent?.patchTotals?.missesCount ?? 0
-    partialsCount =
-      data.commit?.compareWithParent?.patchTotals?.partialsCount ?? 0
-  }
-
-  let errorMsg: string | undefined = undefined
-  let errorType: string | undefined = undefined
-  if (data?.commit?.compareWithParent?.__typename !== 'Comparison') {
-    errorType = data?.commit?.compareWithParent?.__typename
-    errorMsg = data?.commit?.compareWithParent?.message
-  }
-
-  const uploadErrorCount = data?.uploadErrorCount
-
   return (
     <SummaryDropdown.Item value="coverage">
       <SummaryDropdown.Trigger>
         <p className="flex w-full flex-col sm:flex-row sm:gap-1">
           <span className="font-semibold">Coverage Report: </span>
-          <CoverageMessage
-            missesCount={missesCount}
-            partialsCount={partialsCount}
-            errorType={errorType}
-            errorMsg={errorMsg}
-            uploadErrorCount={uploadErrorCount}
-          />
+          <CoverageMessage />
         </p>
       </SummaryDropdown.Trigger>
       <SummaryDropdown.Content className="py-2">
