@@ -118,17 +118,12 @@ describe('usePullCoverageDropdownSummary', () => {
       )
 
       const expectedResult = {
-        owner: {
-          repository: {
-            __typename: 'Repository',
-            pull: {
-              compareWithBase: {
-                __typename: 'Comparison',
-                patchTotals: {
-                  missesCount: 1,
-                  partialsCount: 2,
-                },
-              },
+        pull: {
+          compareWithBase: {
+            __typename: 'Comparison',
+            patchTotals: {
+              missesCount: 1,
+              partialsCount: 2,
             },
           },
         },
@@ -155,7 +150,7 @@ describe('usePullCoverageDropdownSummary', () => {
       )
 
       await waitFor(() =>
-        expect(result.current.data).toStrictEqual({ owner: null })
+        expect(result.current.data).toStrictEqual({ pull: null })
       )
     })
   })
