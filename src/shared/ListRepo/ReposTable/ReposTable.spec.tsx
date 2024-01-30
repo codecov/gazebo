@@ -1,9 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { subDays } from 'date-fns'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import { mockAllIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
@@ -57,6 +57,7 @@ describe('ReposTable', () => {
     privateAccess = true,
     tierValue = TierNames.PRO,
   }: SetupArgs) {
+    mockAllIsIntersecting(true)
     server.use(
       graphql.query('CurrentUser', (req, res, ctx) => {
         return res(
@@ -606,57 +607,6 @@ describe('ReposTable', () => {
 
       const noResultsFound = await screen.findByText(/No results found/)
       expect(noResultsFound).toBeInTheDocument()
-    })
-  })
-
-  describe('render next page button', () => {
-    beforeEach(() => {
-      setup({
-        edges: [
-          {
-            node: {
-              private: false,
-              activated: true,
-              author: {
-                username: 'owner1',
-              },
-              name: 'Repo name 1',
-              latestCommitAt: subDays(new Date(), 3).toISOString(),
-              coverage: 43,
-              active: false,
-              updatedAt: '2020-08-25T16:36:19.67986800:00',
-              repositoryConfig: null,
-              lines: 20,
-            },
-          },
-        ],
-      })
-    })
-
-    it('renders button', async () => {
-      render(<ReposTable searchValue="" owner="" />, {
-        wrapper: wrapper(repoDisplayOptions.ALL.text),
-      })
-
-      const button = await screen.findByText(/Load More/)
-      expect(button).toBeInTheDocument()
-    })
-
-    it('loads next page of data', async () => {
-      const user = userEvent.setup()
-      render(<ReposTable searchValue="" owner="" />, {
-        wrapper: wrapper(repoDisplayOptions.ALL.text),
-      })
-
-      const loadMore = await screen.findByText(/Load More/)
-      await user.click(loadMore)
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
-      await waitFor(() => queryClient.getQueriesData(['repos']))
-
-      const newlyLoadedRepo = await screen.findByText('Repo name extra')
-      expect(newlyLoadedRepo).toBeInTheDocument()
     })
   })
 

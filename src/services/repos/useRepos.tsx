@@ -30,9 +30,21 @@ const repositoryFragment = `
   }
 `
 
+type RepoQueryVariables = {
+  filters: {
+    activated?: boolean
+    term?: string
+    repoNames?: string[]
+    isPublic?: boolean | null
+  }
+  ordering?: string
+  direction?: string
+  first: number
+}
+
 interface FetchMyReposArgs {
   provider: string
-  variables: any
+  variables: RepoQueryVariables
   after: string
   signal?: AbortSignal
 }
@@ -147,7 +159,7 @@ function fetchMyRepos({
 
 interface FetchReposForOwnerArgs {
   provider: string
-  variables: any
+  variables: RepoQueryVariables
   owner: string
   after: string
   signal?: AbortSignal
