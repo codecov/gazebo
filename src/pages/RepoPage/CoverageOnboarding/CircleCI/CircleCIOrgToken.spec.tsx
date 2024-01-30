@@ -22,6 +22,14 @@ const mockGetRepo = {
   },
 }
 
+const mockGetOrgUploadToken = (hasOrgUploadToken: boolean | null) => ({
+  owner: {
+    orgUploadToken: hasOrgUploadToken
+      ? '9e6a6189-20f1-482d-ab62-ecfaa2629290'
+      : null,
+  },
+})
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -57,7 +65,7 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('CircleCIOrgToken', () => {
-  function setup() {
+  function setup(hasOrgUploadToken: boolean | null) {
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockGetRepo))
@@ -65,61 +73,106 @@ describe('CircleCIOrgToken', () => {
       graphql.query('GetOrgUploadToken', (req, res, ctx) => {
         return res(
           ctx.status(200),
-          ctx.data({
-            owner: { orgUploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629290' },
-          })
+          ctx.data(mockGetOrgUploadToken(hasOrgUploadToken))
         )
       })
     )
   }
 
   describe('step one', () => {
-    beforeEach(() => setup())
+    describe('when org upload token exists', () => {
+      beforeEach(() => setup(true))
 
-    it('renders header', async () => {
-      render(<CircleCIOrgToken />, { wrapper })
+      it('renders header', async () => {
+        render(<CircleCIOrgToken />, { wrapper })
 
-      const header = await screen.findByRole('heading', { name: /Step 1/ })
-      expect(header).toBeInTheDocument()
+        const header = await screen.findByRole('heading', { name: /Step 1/ })
+        expect(header).toBeInTheDocument()
 
-      const environmentVariableLink = await screen.findByRole('link', {
-        name: /environment variables/,
+        const environmentVariableLink = await screen.findByRole('link', {
+          name: /environment variables/,
+        })
+        expect(environmentVariableLink).toBeInTheDocument()
+        expect(environmentVariableLink).toHaveAttribute(
+          'href',
+          'https://app.circleci.com/settings/project/github/codecov/cool-repo/environment-variables'
+        )
       })
-      expect(environmentVariableLink).toBeInTheDocument()
-      expect(environmentVariableLink).toHaveAttribute(
-        'href',
-        'https://app.circleci.com/settings/project/github/codecov/cool-repo/environment-variables'
-      )
+
+      it('renders global token copy', async () => {
+        render(<CircleCIOrgToken />, { wrapper })
+
+        const globalToken = await screen.findByText(/global token/)
+        expect(globalToken).toBeInTheDocument()
+      })
+
+      it('renders body', async () => {
+        render(<CircleCIOrgToken />, { wrapper })
+
+        const body = await screen.findByText(
+          "Environment variables in CircleCI can be found in project's settings."
+        )
+        expect(body).toBeInTheDocument()
+      })
+
+      it('renders token box', async () => {
+        render(<CircleCIOrgToken />, { wrapper })
+
+        const token = await screen.findByText(
+          /CODECOV_TOKEN=9e6a6189-20f1-482d-ab62-ecfaa2629290/
+        )
+        expect(token).toBeInTheDocument()
+      })
     })
 
-    it('renders global token copy', async () => {
-      render(<CircleCIOrgToken />, { wrapper })
+    describe('when org upload token does not exist', () => {
+      beforeEach(() => setup(false))
 
-      const globalToken = await screen.findByText(/global token/)
-      expect(globalToken).toBeInTheDocument()
-    })
+      it('renders header', async () => {
+        render(<CircleCIOrgToken />, { wrapper })
 
-    it('renders body', async () => {
-      render(<CircleCIOrgToken />, { wrapper })
+        const header = await screen.findByRole('heading', { name: /Step 1/ })
+        expect(header).toBeInTheDocument()
 
-      const body = await screen.findByText(
-        "Environment variables in CircleCI can be found in project's settings."
-      )
-      expect(body).toBeInTheDocument()
-    })
+        const environmentVariableLink = await screen.findByRole('link', {
+          name: /environment variables/,
+        })
+        expect(environmentVariableLink).toBeInTheDocument()
+        expect(environmentVariableLink).toHaveAttribute(
+          'href',
+          'https://app.circleci.com/settings/project/github/codecov/cool-repo/environment-variables'
+        )
+      })
 
-    it('renders token box', async () => {
-      render(<CircleCIOrgToken />, { wrapper })
+      it('renders repository token copy', async () => {
+        render(<CircleCIOrgToken />, { wrapper })
 
-      const token = await screen.findByText(
-        /CODECOV_TOKEN=9e6a6189-20f1-482d-ab62-ecfaa2629290/
-      )
-      expect(token).toBeInTheDocument()
+        const repoToken = await screen.findByText(/repository token/)
+        expect(repoToken).toBeInTheDocument()
+      })
+
+      it('renders body', async () => {
+        render(<CircleCIOrgToken />, { wrapper })
+
+        const body = await screen.findByText(
+          "Environment variables in CircleCI can be found in project's settings."
+        )
+        expect(body).toBeInTheDocument()
+      })
+
+      it('renders token box', async () => {
+        render(<CircleCIOrgToken />, { wrapper })
+
+        const token = await screen.findByText(
+          /CODECOV_TOKEN=9e6a6189-20f1-482d-ab62-ecfaa2629295/
+        )
+        expect(token).toBeInTheDocument()
+      })
     })
   })
 
   describe('step two', () => {
-    beforeEach(() => setup())
+    beforeEach(() => setup(true))
 
     it('renders header', async () => {
       render(<CircleCIOrgToken />, { wrapper })
@@ -155,7 +208,7 @@ describe('CircleCIOrgToken', () => {
   })
 
   describe('step three', () => {
-    beforeEach(() => setup())
+    beforeEach(() => setup(true))
     it('renders first body', async () => {
       render(<CircleCIOrgToken />, { wrapper })
 
@@ -181,7 +234,7 @@ describe('CircleCIOrgToken', () => {
   })
 
   describe('ending', () => {
-    beforeEach(() => setup())
+    beforeEach(() => setup(true))
     it('renders body', async () => {
       render(<CircleCIOrgToken />, { wrapper })
 
