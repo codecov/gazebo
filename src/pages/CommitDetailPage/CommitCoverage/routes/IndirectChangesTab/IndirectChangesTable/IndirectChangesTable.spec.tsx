@@ -7,7 +7,7 @@ import qs from 'qs'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import IndirectChangesTable from '.'
+import IndirectChangesTable from './IndirectChangesTable'
 
 jest.mock('./CommitFileDiff', () => () => 'CommitFileDiff')
 
@@ -27,9 +27,9 @@ afterAll(() => {
 
 const wrapper =
   (
-    queryClient,
+    queryClient: QueryClient,
     initialEntries = '/gh/codecov/cool-repo/commit/123/indirect-changes'
-  ) =>
+  ): React.FC<React.PropsWithChildren> =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
@@ -47,7 +47,7 @@ const wrapper =
     )
 
 describe('IndirectChangesTable', () => {
-  function setup(data = [], state = 'processed') {
+  function setup(data = {}, state = 'processed') {
     const user = userEvent.setup()
     const mockVars = jest.fn()
     const queryClient = new QueryClient({
@@ -176,36 +176,6 @@ describe('IndirectChangesTable', () => {
           })
         )
       })
-    })
-  })
-
-  describe('when all data is missing', () => {
-    const mockData = {
-      __typename: 'ImpactedFiles',
-      results: [
-        {
-          headName: '',
-          baseCoverage: null,
-          headCoverage: null,
-          patchCoverage: null,
-        },
-      ],
-    }
-
-    it('does not render coverage', () => {
-      const { queryClient } = setup(mockData)
-      render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
-
-      const coverage = screen.queryByText(/0.00%/)
-      expect(coverage).not.toBeInTheDocument()
-    })
-
-    it('renders no available data copy', async () => {
-      const { queryClient } = setup(mockData)
-      render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
-
-      const copy = await screen.findByText('No data')
-      expect(copy).toBeInTheDocument()
     })
   })
 

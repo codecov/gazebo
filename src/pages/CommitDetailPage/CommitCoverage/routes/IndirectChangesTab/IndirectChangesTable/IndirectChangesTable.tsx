@@ -165,11 +165,6 @@ export default function FilesChangedTable() {
     },
   })
 
-  let currentCommit = undefined
-  if (commitData?.commit?.compareWithParent?.__typename === 'Comparison') {
-    currentCommit = commitData?.commit?.compareWithParent
-  }
-
   const data = useMemo(() => {
     if (
       commitData?.commit?.compareWithParent?.__typename === 'Comparison' &&
@@ -193,7 +188,7 @@ export default function FilesChangedTable() {
     getRowCanExpand: () => true,
   })
 
-  if (currentCommit?.state === 'pending') {
+  if (commitData?.commit?.state === 'pending') {
     return <Loader />
   }
 
