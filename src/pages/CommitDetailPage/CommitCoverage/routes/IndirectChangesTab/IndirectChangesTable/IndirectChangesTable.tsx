@@ -8,7 +8,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
-import { isNumber } from 'lodash'
+import { isArray, isNumber } from 'lodash'
 import isEmpty from 'lodash/isEmpty'
 import qs from 'qs'
 import { Fragment, lazy, Suspense, useMemo, useState } from 'react'
@@ -32,28 +32,46 @@ function getColumns({ commitid }: { commitid: string }) {
     columnHelper.accessor('headName', {
       id: 'name',
       header: 'Name',
-      cell: ({ getValue }) => {
+      cell: ({ getValue, row }) => {
         const headName = getValue()
 
         return (
-          <div className="flex flex-col break-all">
-            <A
-              hook="commitFileDiffLink"
-              isExternal={false}
-              to={{
-                pageName: 'commitFileDiff',
-                options: { commit: commitid, tree: headName },
-              }}
+          <div
+            className="flex cursor-pointer items-center gap-2"
+            data-testid="name-expand"
+            onClick={() => row.toggleExpanded()}
+          >
+            <span
+              className={cs({
+                'text-ds-blue-darker': row.getIsExpanded(),
+                'text-current': !row.getIsExpanded(),
+              })}
             >
-              {headName}
-            </A>
+              <Icon
+                size="md"
+                name={row.getIsExpanded() ? 'chevronDown' : 'chevronRight'}
+                variant="solid"
+              />
+            </span>
+            <div className="flex flex-col break-all">
+              <A
+                hook="commit-file-diff"
+                isExternal={false}
+                to={{
+                  pageName: 'commitFileDiff',
+                  options: { commit: commitid, tree: headName },
+                }}
+              >
+                {headName}
+              </A>
+            </div>
           </div>
         )
       },
     }),
     columnHelper.accessor('headCoverage.coverage', {
       id: 'head',
-      header: 'Head %',
+      header: 'HEAD',
       cell: ({ getValue }) => {
         const value = getValue()
 
@@ -72,10 +90,10 @@ function getColumns({ commitid }: { commitid: string }) {
     }),
     columnHelper.accessor('baseCoverage.coverage', {
       id: 'change',
-      header: 'Change %',
+      header: 'Change',
       cell: ({ row }) => {
-        const headCoverage = row.original?.headCoverage
-        const baseCoverage = row.original?.baseCoverage
+        const headCoverage = row.original?.headCoverage?.coverage
+        const baseCoverage = row.original?.baseCoverage?.coverage
         const changeCoverage =
           isNumber(headCoverage) && isNumber(baseCoverage)
             ? headCoverage - baseCoverage
@@ -130,8 +148,8 @@ export default function FilesChangedTable() {
     depth: 1,
   })
 
-  const flags = queryParams?.flags?.length ? queryParams?.flags : null
-  const components = queryParams?.components?.length
+  const flags = isArray(queryParams?.flags) ? queryParams?.flags : null
+  const components = isArray(queryParams?.components)
     ? queryParams?.components
     : null
 
@@ -141,7 +159,8 @@ export default function FilesChangedTable() {
     repo,
     commitid: commitSha,
     filters: {
-      ...[flags, components],
+      ...(flags ? { flags } : {}),
+      ...(components ? { components } : {}),
       hasUnintendedChanges: true,
     },
   })
@@ -178,6 +197,22 @@ export default function FilesChangedTable() {
     return <Loader />
   }
 
+  if (
+    isEmpty(data) &&
+    (flags ||
+      components ||
+      (commitData?.commit?.compareWithParent?.__typename === 'Comparison' &&
+        commitData?.commit?.compareWithParent?.impactedFiles?.__typename ===
+          'UnknownFlags'))
+  ) {
+    return (
+      <p className="m-4">
+        No files covered by tests and selected flags and/or components were
+        changed
+      </p>
+    )
+  }
+
   if (isEmpty(data) && !isLoading) {
     return <p className="m-4">No files covered by tests were changed</p>
   }
@@ -191,29 +226,16 @@ export default function FilesChangedTable() {
               return (
                 <div
                   key={header.id}
-                  className={cs({
-                    'w-8/12': header.id === 'name',
-                    'w-1/12 flex justify-end': header.id !== 'name',
+                  className={cs('flex gap-1 items-center', {
+                    'flex-row-reverse justify-end w-8/12': header.id === 'name',
+                    'justify-end': header.id !== 'name',
+                    'w-3/12': header.id === 'change',
                   })}
-                  {...(isNumericValue(header.id)
-                    ? {
-                        'data-type': 'numeric',
-                      }
-                    : {})}
                 >
-                  <div
-                    className={cs('flex gap-1 items-center', {
-                      'flex-row-reverse justify-end': header.id === 'name',
-                    })}
-                  >
-                    <span className="text-ds-blue-darker">
-                      <Icon name="arrowUp" size="sm" />
-                    </span>
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                  </div>
+                  {flexRender(
+                    header.column.columnDef.header,
+                    header.getContext()
+                  )}
                 </div>
               )
             })}
@@ -236,7 +258,8 @@ export default function FilesChangedTable() {
                         : {})}
                       className={cs({
                         'w-8/12': cell.column.id === 'name',
-                        'w-1/12 justify-end	flex': cell.column.id !== 'name',
+                        'flex justify-end': cell.column.id !== 'name',
+                        'w-3/12': cell.column.id === 'change',
                       })}
                     >
                       {flexRender(

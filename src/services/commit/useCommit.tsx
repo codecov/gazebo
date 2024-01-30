@@ -1,4 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { ParsedQs } from 'qs'
 import { z } from 'zod'
 
 import {
@@ -75,12 +76,14 @@ const UploadsSchema = z.object({
   ),
 })
 
-const ImpactedFileSchema = z.object({
-  headName: z.string().nullable(),
-  patchCoverage: CoverageObjSchema.nullable(),
-  baseCoverage: CoverageObjSchema.nullable(),
-  headCoverage: CoverageObjSchema.nullable(),
-})
+const ImpactedFileSchema = z
+  .object({
+    headName: z.string().nullable(),
+    patchCoverage: CoverageObjSchema.nullable(),
+    baseCoverage: CoverageObjSchema.nullable(),
+    headCoverage: CoverageObjSchema.nullable(),
+  })
+  .nullable()
 
 export type ImpactedFile = z.infer<typeof ImpactedFileSchema>
 
@@ -284,8 +287,8 @@ interface UseCommitArgs {
   commitid: string
   filters?: {
     hasUnintendedChanges?: boolean
-    flags?: Array<string>
-    components?: Array<string>
+    flags?: Array<string> | Array<ParsedQs>
+    components?: Array<string> | Array<ParsedQs>
     ordering?: {
       direction?: 'DESC' | 'ASC'
       parameter?:
