@@ -93,7 +93,7 @@ const BundleMessage: React.FC = () => {
   return (
     <>
       <span className="font-semibold">Bundle Report: </span>an unknown error
-      occurred
+      occurred &#x26A0;
     </>
   )
 }

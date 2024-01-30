@@ -214,7 +214,7 @@ describe('CommitBundleDropdown', () => {
         { wrapper }
       )
 
-      const message = await screen.findByText('an unknown error occurred')
+      const message = await screen.findByText(/an unknown error occurred/)
       expect(message).toBeInTheDocument()
     })
   })
