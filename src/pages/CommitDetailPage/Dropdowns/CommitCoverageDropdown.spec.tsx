@@ -47,7 +47,7 @@ const mockSummaryData = (
 
 const mockNoData = { owner: null }
 
-const mockNoComparison = {
+const mockFirstPullRequest = {
   owner: {
     repository: {
       __typename: 'Repository',
@@ -55,6 +55,20 @@ const mockNoComparison = {
         compareWithParent: {
           __typename: 'FirstPullRequest',
           message: 'First pull request',
+        },
+      },
+    },
+  },
+}
+
+const mockComparisonError = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      commit: {
+        compareWithParent: {
+          __typename: 'MissingHeadCommit',
+          message: 'Missing head commit',
         },
       },
     },
@@ -102,25 +116,27 @@ afterAll(() => {
 
 interface SetupArgs {
   noData?: boolean
-  noComparison?: boolean
+  comparisonError?: boolean
   patchTotals?: {
     missesCount: number | null
     partialsCount: number | null
   }
   uploadState?: 'COMPLETE' | 'ERROR'
   multipleUploads?: boolean
+  firstPullRequest?: boolean
 }
 
 describe('CommitCoverageDropdown', () => {
   function setup({
     noData = false,
-    noComparison = false,
+    comparisonError = false,
     patchTotals = {
       missesCount: 0,
       partialsCount: 0,
     },
     uploadState = 'COMPLETE',
     multipleUploads = false,
+    firstPullRequest = false,
   }: SetupArgs = {}) {
     const user = userEvent.setup()
 
@@ -128,8 +144,10 @@ describe('CommitCoverageDropdown', () => {
       graphql.query('CommitDropdownSummary', (req, res, ctx) => {
         if (noData) {
           return res(ctx.status(200), ctx.data(mockNoData))
-        } else if (noComparison) {
-          return res(ctx.status(200), ctx.data(mockNoComparison))
+        } else if (comparisonError) {
+          return res(ctx.status(200), ctx.data(mockComparisonError))
+        } else if (firstPullRequest) {
+          return res(ctx.status(200), ctx.data(mockFirstPullRequest))
         }
 
         return res(
@@ -316,9 +334,9 @@ describe('CommitCoverageDropdown', () => {
     })
   })
 
-  describe('there is no comparison', () => {
-    it('renders the passed error message', async () => {
-      setup({ noComparison: true })
+  describe('there is a first pull request', () => {
+    it('renders the first pull message', async () => {
+      setup({ firstPullRequest: true })
       render(
         <CommitCoverageDropdown>
           <p>Passed child</p>
@@ -326,7 +344,24 @@ describe('CommitCoverageDropdown', () => {
         { wrapper }
       )
 
-      const errorMsg = await screen.findByText(/first pull request/)
+      const errorMsg = await screen.findByText(
+        /once merged to default, your following pull request and commits will include report details/
+      )
+      expect(errorMsg).toBeInTheDocument()
+    })
+  })
+
+  describe('there is a comparison error', () => {
+    it('renders the passed error message', async () => {
+      setup({ comparisonError: true })
+      render(
+        <CommitCoverageDropdown>
+          <p>Passed child</p>
+        </CommitCoverageDropdown>,
+        { wrapper }
+      )
+
+      const errorMsg = await screen.findByText(/missing head commit/)
       expect(errorMsg).toBeInTheDocument()
     })
   })

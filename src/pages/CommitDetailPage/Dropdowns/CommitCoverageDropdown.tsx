@@ -33,6 +33,15 @@ const CoverageMessage: React.FC<CoverageMessageProps> = ({
     return <>{uploadErrorCount} uploads have failed to process &#x26A0;</>
   }
 
+  if (errorType === 'FirstPullRequest') {
+    return (
+      <>
+        once merged to default, your following pull request and commits will
+        include report details &#x2139;
+      </>
+    )
+  }
+
   if (errorType && errorMsg) {
     return <>{errorMsg.toLowerCase()} &#x26A0;</>
   }
