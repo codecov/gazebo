@@ -17,6 +17,9 @@ function GitHubActionsOrgToken() {
   const { data } = useRepo({ provider, owner, repo })
   const { data: orgUploadToken } = useOrgUploadToken({ provider, owner })
 
+  const uploadToken = orgUploadToken ?? data?.repository?.uploadToken
+  const tokenCopy = orgUploadToken ? 'global' : 'repository'
+
   const orgTokenActionString = `- name: Upload coverage reports to Codecov
   uses: codecov/codecov-action@v4
   env:
@@ -29,7 +32,7 @@ function GitHubActionsOrgToken() {
       <div className="flex flex-col gap-4">
         <div>
           <h2 className="text-base font-semibold">
-            Step 1: add global token as{' '}
+            Step 1: add {tokenCopy} token as{' '}
             <A
               to={{ pageName: 'githubRepoSecrets' }}
               isExternal
@@ -44,8 +47,8 @@ function GitHubActionsOrgToken() {
           </p>
         </div>
         <pre className="flex items-center gap-2 overflow-auto rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          CODECOV_TOKEN={orgUploadToken}
-          <CopyClipboard string={orgUploadToken ?? ''} />
+          CODECOV_TOKEN={uploadToken}
+          <CopyClipboard string={uploadToken ?? ''} />
         </pre>
       </div>
       <div className="flex flex-col gap-4">
