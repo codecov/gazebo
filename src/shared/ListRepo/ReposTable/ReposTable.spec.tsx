@@ -1,10 +1,15 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import {
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { subDays } from 'date-fns'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { mockAllIsIntersecting } from 'react-intersection-observer/test-utils'
+import { mockIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
@@ -58,7 +63,6 @@ describe('ReposTable', () => {
     privateAccess = true,
     tierValue = TierNames.PRO,
   }: SetupArgs) {
-    mockAllIsIntersecting(true)
     server.use(
       graphql.query('CurrentUser', (req, res, ctx) => {
         return res(
@@ -671,6 +675,43 @@ describe('ReposTable', () => {
 
       const noResultsFound = await screen.findByText(/No results found/)
       expect(noResultsFound).toBeInTheDocument()
+    })
+  })
+
+  describe('when rendered with multiple pages', () => {
+    beforeEach(() => {
+      setup({
+        edges: [
+          {
+            node: {
+              private: false,
+              activated: true,
+              author: {
+                username: 'owner1',
+              },
+              name: 'Repo name first page',
+              latestCommitAt: subDays(new Date(), 3).toISOString(),
+              coverage: 43,
+              active: true,
+              lines: 99,
+              updatedAt: '2020-08-25T16:36:19.67986800:00',
+              repositoryConfig: null,
+            },
+          },
+        ],
+      })
+    })
+    it('fetches additional pages', async () => {
+      render(<ReposTable searchValue="" owner="" />, {
+        wrapper: wrapper(repoDisplayOptions.ALL.text),
+      })
+
+      const loading = await screen.findByText('Loading')
+      mockIsIntersecting(loading, true)
+      await waitForElementToBeRemoved(loading)
+
+      const buttons = await screen.findAllByText(/Repo name/)
+      expect(buttons.length).toBe(2)
     })
   })
 
