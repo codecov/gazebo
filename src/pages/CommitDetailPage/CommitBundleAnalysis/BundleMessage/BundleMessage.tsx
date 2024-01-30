@@ -20,10 +20,8 @@ const BundleMessage: React.FC = () => {
     commitid: commitSha,
   })
 
-  if (
-    data?.commit?.bundleAnalysisCompareWithParent?.__typename ===
-    'FirstPullRequest'
-  ) {
+  const comparison = data?.commit?.bundleAnalysisCompareWithParent
+  if (comparison?.__typename === 'FirstPullRequest') {
     return (
       <>
         <span className="font-semibold">Bundle Report: </span>
@@ -33,34 +31,23 @@ const BundleMessage: React.FC = () => {
     )
   }
 
-  let errorMsg: string | undefined
-  let errorType: string | undefined
   if (
-    data?.commit?.bundleAnalysisCompareWithParent?.__typename !==
-    'BundleAnalysisComparison'
+    comparison?.__typename !== 'BundleAnalysisComparison' &&
+    comparison?.message
   ) {
-    errorType = data?.commit?.bundleAnalysisCompareWithParent?.__typename
-    errorMsg = data?.commit?.bundleAnalysisCompareWithParent?.message
-  }
-
-  if (errorType && errorMsg) {
     return (
       <>
         <span className="font-semibold">Bundle Report: </span>
-        {errorMsg.toLowerCase()} &#x26A0;
+        {comparison?.message.toLowerCase()} &#x26A0;
       </>
     )
   }
 
-  let sizeDelta: number | undefined
   if (
-    data?.commit?.bundleAnalysisCompareWithParent?.__typename ===
-    'BundleAnalysisComparison'
+    comparison?.__typename === 'BundleAnalysisComparison' &&
+    isNumber(comparison?.sizeDelta)
   ) {
-    sizeDelta = data?.commit?.bundleAnalysisCompareWithParent?.sizeDelta
-  }
-
-  if (isNumber(sizeDelta)) {
+    const sizeDelta = comparison?.sizeDelta
     const positiveSize = Math.abs(sizeDelta)
     if (sizeDelta < 0) {
       return (
