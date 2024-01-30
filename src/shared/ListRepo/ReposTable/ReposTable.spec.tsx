@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { subDays } from 'date-fns'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
@@ -244,6 +245,69 @@ describe('ReposTable', () => {
 
         const header = await screen.findByText(/Tracked lines/)
         expect(header).toBeInTheDocument()
+      })
+    })
+
+    describe('sorting table headers', () => {
+      const user = userEvent.setup()
+      it('sorts by name', async () => {
+        render(<ReposTable searchValue="" owner="owner1" />, {
+          wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
+        })
+
+        const header = await screen.findByText(/Name/)
+        expect(header).toBeInTheDocument()
+        await user.click(header)
+        let tableElements = await screen.findAllByText(/Repo name/)
+        expect(tableElements[0]).toHaveTextContent('Repo name 1')
+        expect(tableElements[1]).toHaveTextContent('Repo name 2')
+        expect(tableElements[2]).toHaveTextContent('Repo name 3')
+
+        await user.click(header)
+        tableElements = await screen.findAllByText(/Repo name/)
+        expect(tableElements[0]).toHaveTextContent('Repo name 3')
+        expect(tableElements[1]).toHaveTextContent('Repo name 2')
+        expect(tableElements[2]).toHaveTextContent('Repo name 1')
+      })
+
+      it('sorts by coverage', async () => {
+        render(<ReposTable searchValue="" owner="owner1" />, {
+          wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
+        })
+
+        const header = await screen.findByText(/Test coverage/)
+        expect(header).toBeInTheDocument()
+        await user.click(header)
+        let tableElements = await screen.findAllByText(/Repo name/)
+        expect(tableElements[0]).toHaveTextContent('Repo name 3')
+        expect(tableElements[1]).toHaveTextContent('Repo name 2')
+        expect(tableElements[2]).toHaveTextContent('Repo name 1')
+
+        await user.click(header)
+        tableElements = await screen.findAllByText(/Repo name/)
+        expect(tableElements[0]).toHaveTextContent('Repo name 1')
+        expect(tableElements[1]).toHaveTextContent('Repo name 2')
+        expect(tableElements[2]).toHaveTextContent('Repo name 3')
+      })
+
+      it('sorts by last commit', async () => {
+        render(<ReposTable searchValue="" owner="owner1" />, {
+          wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
+        })
+
+        const header = await screen.findByText(/Last updated/)
+        expect(header).toBeInTheDocument()
+        await user.click(header)
+        let tableElements = await screen.findAllByText(/Repo name/)
+        expect(tableElements[0]).toHaveTextContent('Repo name 1')
+        expect(tableElements[1]).toHaveTextContent('Repo name 2')
+        expect(tableElements[2]).toHaveTextContent('Repo name 3')
+
+        await user.click(header)
+        tableElements = await screen.findAllByText(/Repo name/)
+        expect(tableElements[0]).toHaveTextContent('Repo name 3')
+        expect(tableElements[1]).toHaveTextContent('Repo name 1')
+        expect(tableElements[2]).toHaveTextContent('Repo name 2')
       })
     })
 
