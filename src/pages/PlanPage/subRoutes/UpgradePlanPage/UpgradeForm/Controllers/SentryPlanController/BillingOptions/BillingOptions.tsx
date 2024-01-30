@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useAvailablePlans } from 'services/account'
+import { useAvailablePlans, usePlanData } from 'services/account'
 import {
   findSentryPlans,
   isAnnualPlan,
@@ -24,9 +24,17 @@ const BillingControls: React.FC<BillingControlsProps> = ({
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { sentryPlanMonth, sentryPlanYear } = findSentryPlans({ plans })
+  const { data: planData } = usePlanData({
+    provider,
+    owner,
+  })
+
+  const currentPlanBillingRate = planData?.plan?.billingRate
 
   const [option, setOption] = useState<OptionPeriod>(() =>
-    isMonthlyPlan(newPlan) ? TimePeriods.MONTHLY : TimePeriods.ANNUAL
+    currentPlanBillingRate === 'monthly'
+      ? TimePeriods.MONTHLY
+      : TimePeriods.ANNUAL
   )
 
   // used to update option selection if user selects
