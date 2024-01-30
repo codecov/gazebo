@@ -275,6 +275,19 @@ describe('IndirectChangesTable', () => {
       const commitFileDiff = await screen.findByText('CommitFileDiff')
       expect(commitFileDiff).toBeInTheDocument()
     })
+
+    it('renders commit file diff', async () => {
+      const { queryClient, user } = setup(mockData)
+      render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
+
+      expect(await screen.findByTestId('file-diff-expand')).toBeTruthy()
+      const expander = screen.getByTestId('file-diff-expand')
+      expect(expander).toBeInTheDocument()
+      await user.click(expander)
+
+      const commitFileDiff = await screen.findByText('CommitFileDiff')
+      expect(commitFileDiff).toBeInTheDocument()
+    })
   })
 
   describe('flags and components param in url is set', () => {
