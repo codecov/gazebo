@@ -15,23 +15,23 @@ const mockRepoMeasurements = {
     measurements: [
       {
         timestamp: '2023-01-01T00:00:00+00:00',
-        max: 85,
+        avg: 85,
       },
       {
         timestamp: '2023-01-02T00:00:00+00:00',
-        max: 80,
+        avg: 80,
       },
       {
         timestamp: '2023-01-02T00:00:00+00:00',
-        max: null,
+        avg: null,
       },
       {
         timestamp: '2023-01-03T00:00:00+00:00',
-        max: 80,
+        avg: 80,
       },
       {
         timestamp: '2023-01-04T00:00:00+00:00',
-        max: 95,
+        avg: 95,
       },
     ],
   },
@@ -42,11 +42,11 @@ const mockNullFirstValRepoMeasurements = {
     measurements: [
       {
         timestamp: '2023-01-01T00:00:00+00:00',
-        max: null,
+        avg: null,
       },
       {
         timestamp: '2023-01-02T00:00:00+00:00',
-        max: 80,
+        avg: 80,
       },
     ],
   },
@@ -57,7 +57,7 @@ const mockPublicRepoMeasurements = {
     measurements: [
       {
         timestamp: '2023-01-02T00:00:00+00:00',
-        max: 80,
+        avg: 80,
       },
     ],
   },
