@@ -4,6 +4,8 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TierNames } from 'services/tier'
+
 import Chart from './Chart'
 
 const queryClient = new QueryClient({
@@ -32,7 +34,7 @@ describe('Analytics coverage chart', () => {
       measurements: [
         {
           timestamp: '2020-01-01T00:00:00Z',
-          max: 91.11,
+          avg: 91.11,
         },
       ],
     },
@@ -43,11 +45,11 @@ describe('Analytics coverage chart', () => {
       measurements: [
         {
           timestamp: '2020-01-01T00:00:00Z',
-          max: 90.0,
+          avg: 90.0,
         },
         {
           timestamp: '2021-01-01T00:00:00Z',
-          max: 91.11,
+          avg: 91.11,
         },
       ],
     },
@@ -65,6 +67,12 @@ describe('Analytics coverage chart', () => {
         }
 
         return res(ctx.status(200), ctx.data(mockDataPoints))
+      }),
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({ owner: { tier: TierNames.PRO } })
+        )
       })
     )
   }
