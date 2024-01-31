@@ -17,12 +17,19 @@ const emailSchema = z.object({
     .email({ message: 'Invalid email address' }),
 })
 
+interface URLParams {
+  provider: string
+  owner: string
+}
+
+type FormData = z.infer<typeof emailSchema>
+
 function EmailAddress() {
-  const { provider, owner } = useParams()
+  const { provider, owner } = useParams<URLParams>()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const [isFormOpen, setIsFormOpen] = useState(false)
   const currentCustomerEmail =
-    accountDetails?.subscriptionDetail?.customer?.email || null
+    accountDetails?.subscriptionDetail?.customer?.email || 'No email provided'
 
   const {
     register,
@@ -38,7 +45,7 @@ function EmailAddress() {
 
   const { mutate, isLoading } = useUpdateBillingEmail({ provider, owner })
 
-  const submit = (data) => {
+  const submit = (data: FormData) => {
     return mutate(
       { newEmail: data?.newCustomerEmail },
       {
@@ -76,10 +83,12 @@ function EmailAddress() {
           />
           {errors?.newCustomerEmail && (
             <p className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
+              {/* @ts-expect-error */}
               {errors?.newCustomerEmail?.message}
             </p>
           )}
           <div className="flex gap-1">
+            {/* @ts-expect-error */}
             <Button
               hook="update-email"
               type="submit"
@@ -88,6 +97,7 @@ function EmailAddress() {
             >
               Update
             </Button>
+            {/* @ts-expect-error */}
             <Button
               type="button"
               hook="cancel-email"

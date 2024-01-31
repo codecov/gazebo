@@ -14,7 +14,7 @@ const queryClient = new QueryClient({
 const server = setupServer()
 
 const wrapper =
-  (initialEntries = '/plan/gh/codecov') =>
+  (initialEntries = '/plan/gh/codecov'): React.FC<React.PropsWithChildren> =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
@@ -136,7 +136,7 @@ describe('EmailAddress', () => {
         await user.click(editButton)
 
         const input = await screen.findByPlaceholderText('Your email')
-        // eslint-disable-next-line no-unused-vars
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         for (let _ of testEmail) {
           await user.type(input, '{backspace}')
         }
@@ -147,6 +147,22 @@ describe('EmailAddress', () => {
         await user.click(updateButton)
 
         await waitFor(() => expect(mutate).toHaveBeenCalled())
+      })
+    })
+
+    describe('when pressing the cancel button', () => {
+      it('successfully does it', async () => {
+        const { user } = setup()
+        render(<EmailAddress />, { wrapper: wrapper() })
+
+        const editButton = await screen.findByTestId('edit-email')
+        await user.click(editButton)
+
+        const cancelButton = screen.getByRole('button', { name: /Cancel/i })
+        await user.click(cancelButton)
+
+        const updateButton = screen.queryByRole('button', { name: /Update/i })
+        expect(updateButton).not.toBeInTheDocument()
       })
     })
   })
@@ -160,7 +176,7 @@ describe('EmailAddress', () => {
       await user.click(editButton)
 
       const input = await screen.findByPlaceholderText('Your email')
-      // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       for (let _ of testEmail) {
         await user.type(input, '{backspace}')
       }
@@ -182,7 +198,7 @@ describe('EmailAddress', () => {
       await user.click(editButton)
 
       const input = await screen.findByPlaceholderText('Your email')
-      // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       for (let _ of testEmail) {
         await user.type(input, '{backspace}')
       }
