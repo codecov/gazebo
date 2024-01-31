@@ -3,7 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { useBranchBundleSummary } from './useBranchBundleSummary'
+import { useBranchBundleSummary } from './useBranchBundles'
 
 const mockRepoOverview = {
   owner: {
@@ -25,6 +25,7 @@ const mockBranchBundleSummary = {
             __typename: 'BundleAnalysisReport',
             sizeTotal: 100,
             loadTimeTotal: 200,
+            bundles: [{ name: 'bundle1', sizeTotal: 50, loadTimeTotal: 100 }],
           },
         },
       },
@@ -183,6 +184,9 @@ describe('useBranchBundleSummary', () => {
                 __typename: 'BundleAnalysisReport',
                 sizeTotal: 100,
                 loadTimeTotal: 200,
+                bundles: [
+                  { name: 'bundle1', sizeTotal: 50, loadTimeTotal: 100 },
+                ],
               },
             },
           },

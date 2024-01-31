@@ -10,10 +10,17 @@ import {
 import Api from 'shared/api'
 import A from 'ui/A'
 
+const BundleSchema = z.object({
+  name: z.string(),
+  sizeTotal: z.number(),
+  loadTimeTotal: z.number(),
+})
+
 const BundleAnalysisReportSchema = z.object({
   __typename: z.literal('BundleAnalysisReport'),
   sizeTotal: z.number(),
   loadTimeTotal: z.number(),
+  bundles: z.array(BundleSchema),
 })
 
 const BundleReportSchema = z.discriminatedUnion('__typename', [
@@ -64,6 +71,11 @@ const query = `query BranchBundleSummaryData(
               ... on BundleAnalysisReport {
                 sizeTotal
                 loadTimeTotal
+                bundles {
+                  name
+                  sizeTotal
+                  loadTimeTotal
+                }
               }
               ... on MissingHeadReport {
                 message
