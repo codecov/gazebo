@@ -1,4 +1,5 @@
 export * from './useBranch'
+export * from './useBranchBundleSummary'
 export * from './useBranches'
 export * from './useBranchComponents'
 export * from './useBranchHasCommits'
