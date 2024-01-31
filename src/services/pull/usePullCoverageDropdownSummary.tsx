@@ -161,7 +161,11 @@ export function usePullCoverageDropdownSummary({
           })
         }
 
-        return data
+        const pull = data?.owner?.repository?.pull ?? null
+
+        return {
+          pull,
+        }
       }),
   })
 }

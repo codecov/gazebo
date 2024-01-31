@@ -5,10 +5,16 @@ import { useRepo } from 'services/repo'
 import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
 
-import TerminalInstructions from './TerminalInstructions'
+import { InstructionBoxRepoToken } from './TerminalInstructions'
 
-function OtherCI() {
-  const { provider, owner, repo } = useParams()
+interface URLParams {
+  provider: string
+  owner: string
+  repo: string
+}
+
+function OtherCIRepoToken() {
+  const { provider, owner, repo } = useParams<URLParams>()
   const { data } = useRepo({ provider, owner, repo })
 
   return (
@@ -25,15 +31,24 @@ function OtherCI() {
       <div className="flex flex-col gap-3">
         <h2 className="text-base font-semibold">
           Step 2: add Codecov{' '}
-          <A to={{ pageName: 'uploader' }} data-testid="uploader" isExternal>
+          <A
+            to={{ pageName: 'uploader' }}
+            data-testid="uploader"
+            isExternal
+            hook="uploaderLink"
+          >
             uploader to your CI workflow
           </A>
         </h2>
-        <TerminalInstructions />
+        <InstructionBoxRepoToken />
         <div className="border-l-2 border-ds-gray-secondary">
           <p className="pl-2">
             It is highly recommended to{' '}
-            <A to={{ pageName: 'integrityCheck' }} isExternal>
+            <A
+              to={{ pageName: 'integrityCheck' }}
+              isExternal
+              hook="integrityCheckLink"
+            >
               integrity check the uploader
             </A>
           </p>
@@ -50,7 +65,7 @@ function OtherCI() {
         </p>
         <img
           alt="codecov patch and project"
-          src={patchAndProject}
+          src={patchAndProject.toString()}
           className="my-3 md:px-5"
           loading="lazy"
         />
@@ -62,7 +77,11 @@ function OtherCI() {
         <p className="mt-6 border-l-2 border-ds-gray-secondary pl-4">
           <span className="font-semibold">How was your setup experience?</span>{' '}
           Let us know in{' '}
-          <A to={{ pageName: 'repoConfigFeedback' }} isExternal>
+          <A
+            to={{ pageName: 'repoConfigFeedback' }}
+            isExternal
+            hook="repoConfigFeedbackLink"
+          >
             this issue
           </A>
         </p>
@@ -71,4 +90,4 @@ function OtherCI() {
   )
 }
 
-export default OtherCI
+export default OtherCIRepoToken
