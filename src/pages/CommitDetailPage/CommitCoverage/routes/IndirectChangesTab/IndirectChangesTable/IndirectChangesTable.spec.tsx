@@ -280,10 +280,20 @@ describe('IndirectChangesTable', () => {
       const { queryClient, user } = setup(mockData)
       render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
 
-      expect(await screen.findByTestId('file-diff-expand')).toBeTruthy()
-      const expander = screen.getByTestId('file-diff-expand')
+      const expander = await screen.findByTestId('file-diff-expand')
       expect(expander).toBeInTheDocument()
       await user.click(expander)
+
+      const commitFileDiff = await screen.findByText('CommitFileDiff')
+      expect(commitFileDiff).toBeInTheDocument()
+    })
+
+    it('when click on file name', async () => {
+      const { queryClient, user } = setup(mockData)
+      render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
+
+      const fileName = await screen.findByText('src/index2.py')
+      await user.click(fileName)
 
       const commitFileDiff = await screen.findByText('CommitFileDiff')
       expect(commitFileDiff).toBeInTheDocument()
