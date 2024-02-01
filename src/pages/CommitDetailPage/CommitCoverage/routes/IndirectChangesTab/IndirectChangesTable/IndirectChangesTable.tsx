@@ -185,7 +185,6 @@ export default function FilesChangedTable() {
     onExpandedChange: setExpanded,
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
-    getRowCanExpand: () => true,
   })
 
   if (commitData?.commit?.state === 'pending') {

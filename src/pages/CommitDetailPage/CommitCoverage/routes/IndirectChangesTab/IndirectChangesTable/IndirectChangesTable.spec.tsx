@@ -239,6 +239,9 @@ describe('IndirectChangesTable', () => {
       )
       render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
 
+      await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
       const spinner = await screen.findByTestId('spinner')
       expect(spinner).toBeInTheDocument()
     })
