@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import isString from 'lodash/isString'
 import { z } from 'zod'
 
 import { MissingHeadReportSchema } from 'services/comparison'
@@ -107,7 +108,7 @@ export const useBranchBundleSummary = ({
   repo,
   branch: branchArg,
 }: UseBranchBundleSummaryArgs) => {
-  const { data: repoOverview, isLoading } = useRepoOverview({
+  const { data: repoOverview, isSuccess } = useRepoOverview({
     provider,
     repo,
     owner,
@@ -167,6 +168,6 @@ export const useBranchBundleSummary = ({
 
         return { branch }
       }),
-    enabled: !isLoading,
+    enabled: isSuccess && isString(branch),
   })
 }
