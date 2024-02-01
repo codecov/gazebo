@@ -4,7 +4,6 @@ import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import qs from 'qs'
-import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import IndirectChangesTable from './IndirectChangesTable'
@@ -40,7 +39,7 @@ const wrapper =
               '/:provider/:owner/:repo/commit/:commit/blob/:path+',
             ]}
           >
-            <Suspense fallback="Loading...">{children}</Suspense>
+            {children}
           </Route>
         </MemoryRouter>
       </QueryClientProvider>
@@ -53,7 +52,6 @@ describe('IndirectChangesTable', () => {
     const queryClient = new QueryClient({
       defaultOptions: {
         queries: {
-          suspense: true,
           retry: false,
         },
       },
@@ -333,6 +331,19 @@ describe('IndirectChangesTable', () => {
         'No files covered by tests and selected flags and/or components were changed'
       )
       expect(coverage).toBeInTheDocument()
+    })
+  })
+
+  describe('when is loading', () => {
+    it('renders loader', () => {
+      const { queryClient } = setup({
+        __typename: 'ImpactedFiles',
+        results: [],
+      })
+      render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
+
+      const loader = screen.getByTestId('spinner')
+      expect(loader).toBeInTheDocument()
     })
   })
 })
