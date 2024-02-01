@@ -21,6 +21,7 @@ const mockBranchBundleSummary = {
       __typename: 'Repository',
       branch: {
         head: {
+          commitid: '543a5268dce725d85be7747c0f9b61e9a68dea57',
           bundleAnalysisReport: {
             __typename: 'BundleAnalysisReport',
             sizeTotal: 100,
@@ -180,6 +181,7 @@ describe('useBranchBundleSummary', () => {
         const expectedResponse = {
           branch: {
             head: {
+              commitid: '543a5268dce725d85be7747c0f9b61e9a68dea57',
               bundleAnalysisReport: {
                 __typename: 'BundleAnalysisReport',
                 sizeTotal: 100,
