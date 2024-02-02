@@ -14,7 +14,7 @@ import qs from 'qs'
 import { Fragment, lazy, Suspense, useMemo, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
-import { ImpactedFile, useCommit } from 'services/commit/useCommit'
+import { ImpactedFileType, useCommit } from 'services/commit/useCommit'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
@@ -23,7 +23,7 @@ import TotalsNumber from 'ui/TotalsNumber'
 
 const CommitFileDiff = lazy(() => import('./CommitFileDiff'))
 
-const columnHelper = createColumnHelper<ImpactedFile>()
+const columnHelper = createColumnHelper<ImpactedFileType>()
 
 const isNumericValue = (value: string) => value === 'head' || value === 'change'
 
@@ -115,7 +115,7 @@ function getColumns({ commitid }: { commitid: string }) {
   ]
 }
 
-function RenderSubComponent({ row }: { row: Row<ImpactedFile> }) {
+function RenderSubComponent({ row }: { row: Row<ImpactedFileType> }) {
   const path = row.original?.headName
 
   return (

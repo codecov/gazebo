@@ -85,7 +85,7 @@ const ImpactedFileSchema = z
   })
   .nullable()
 
-export type ImpactedFile = z.infer<typeof ImpactedFileSchema>
+export type ImpactedFileType = z.infer<typeof ImpactedFileSchema>
 
 const ImpactedFileResultsSchema = z.object({
   __typename: z.literal('ImpactedFiles'),
