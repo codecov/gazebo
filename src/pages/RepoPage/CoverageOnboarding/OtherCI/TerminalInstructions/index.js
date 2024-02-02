@@ -1,1 +1,2 @@
-export { default } from './InstructionBox'
+export { InstructionBoxRepoToken } from './InstructionBoxRepoToken'
+export { InstructionBoxOrgToken } from './InstructionBoxOrgToken'

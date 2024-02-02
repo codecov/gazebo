@@ -163,20 +163,21 @@ export const getDefaultValuesUpgradeForm = ({
   const activatedUserCount = accountDetails?.activatedUserCount
   const inactiveUserCount = accountDetails?.inactiveUserCount
 
-  const { proPlanYear } = findProPlans({ plans })
-  const { sentryPlanYear } = findSentryPlans({ plans })
+  const { proPlanYear, proPlanMonth } = findProPlans({ plans })
+  const { sentryPlanYear, sentryPlanMonth } = findSentryPlans({ plans })
   const isSentryUpgrade = canApplySentryUpgrade({
     plan: currentPlanValue,
     plans,
   })
 
+  const isMonthlyPlan = accountDetails?.plan?.billingRate === 'monthly'
+
   // if the current plan is a pro plan, we return it, otherwise select by default the first pro plan
   let newPlan = proPlanYear?.value
-
   if (isSentryUpgrade && !isSentryPlan(currentPlanValue)) {
-    newPlan = sentryPlanYear?.value
+    newPlan = isMonthlyPlan ? sentryPlanMonth?.value : sentryPlanYear?.value
   } else if (isTeamPlan(currentPlanValue)) {
-    newPlan = proPlanYear?.value
+    newPlan = isMonthlyPlan ? proPlanMonth?.value : proPlanYear?.value
   } else if (isPaidPlan(currentPlanValue)) {
     newPlan = currentPlanValue
   }

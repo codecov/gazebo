@@ -82,10 +82,25 @@ const mockAccountDetailsTeamYearly = {
   inactiveUserCount: 0,
 }
 
-const mockPlanDataResponse = {
+const mockPlanDataResponseMonthly = {
   baseUnitPrice: 10,
   benefits: [],
   billingRate: 'monthly',
+  marketingName: 'Pro Team',
+  monthlyUploadLimit: 2500,
+  value: 'test-plan',
+  trialStatus: TrialStatuses.NOT_STARTED,
+  trialStartDate: '',
+  trialEndDate: '',
+  trialTotalDays: 0,
+  pretrialUsersCount: 0,
+  planUserCount: 1,
+}
+
+const mockPlanDataResponseYearly = {
+  baseUnitPrice: 10,
+  benefits: [],
+  billingRate: 'yearly',
   marketingName: 'Pro Team',
   monthlyUploadLimit: 2500,
   value: 'test-plan',
@@ -138,12 +153,14 @@ const wrapper: WrapperClosure =
 interface SetupArgs {
   planValue: string
   errorDetails?: string
+  monthlyPlan?: boolean
 }
 
 describe('TeamPlanController', () => {
   function setup(
-    { planValue = Plans.USERS_BASIC }: SetupArgs = {
+    { planValue = Plans.USERS_BASIC, monthlyPlan = true }: SetupArgs = {
       planValue: Plans.USERS_BASIC,
+      monthlyPlan: true,
     }
   ) {
     const addNotification = jest.fn()
@@ -177,12 +194,15 @@ describe('TeamPlanController', () => {
         )
       }),
       graphql.query('GetPlanData', (req, res, ctx) => {
+        const planResponse = monthlyPlan
+          ? mockPlanDataResponseMonthly
+          : mockPlanDataResponseYearly
         return res(
           ctx.status(200),
           ctx.data({
             owner: {
               hasPrivateRepos: true,
-              plan: { ...mockPlanDataResponse },
+              plan: planResponse,
             },
           })
         )
@@ -279,7 +299,7 @@ describe('TeamPlanController', () => {
       })
 
       it('renders annual option button', async () => {
-        setup({ planValue: Plans.USERS_TEAMY })
+        setup({ planValue: Plans.USERS_TEAMY, monthlyPlan: false })
         render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
@@ -287,7 +307,7 @@ describe('TeamPlanController', () => {
       })
 
       it('renders annual option button as "selected"', async () => {
-        setup({ planValue: Plans.USERS_TEAMY })
+        setup({ planValue: Plans.USERS_TEAMY, monthlyPlan: false })
         render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
         const optionBtn = await screen.findByRole('button', { name: 'Annual' })
@@ -296,7 +316,7 @@ describe('TeamPlanController', () => {
       })
 
       it('has the price for the year', async () => {
-        setup({ planValue: Plans.USERS_TEAMY })
+        setup({ planValue: Plans.USERS_TEAMY, monthlyPlan: false })
         render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
         const price = await screen.findByText(/\$60/)
