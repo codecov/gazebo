@@ -208,7 +208,6 @@ describe('BundleTable', () => {
     })
   })
 
-  // TODO - this test will be changed in an upcoming PR when errors are handled
   describe('an error type is returned', () => {
     it('renders no bundles message', async () => {
       setup({ isEmptyList: true })
