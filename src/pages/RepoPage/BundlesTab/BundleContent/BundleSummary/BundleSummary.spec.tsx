@@ -144,6 +144,12 @@ describe('BundleSummary', () => {
       setup({})
       render(<BundleSummary />, { wrapper })
 
+      const source = await screen.findByText(/Source:/)
+      expect(source).toBeInTheDocument()
+
+      const latestCommit = await screen.findByText(/latest commit/)
+      expect(latestCommit).toBeInTheDocument()
+
       const commitLink = await screen.findByRole('link', {
         name: '543a526',
       })
@@ -170,6 +176,12 @@ describe('BundleSummary', () => {
     it('renders the link to the commit page', async () => {
       setup({ hasBranchBundleError: true })
       render(<BundleSummary />, { wrapper })
+
+      const source = await screen.findByText(/Source:/)
+      expect(source).toBeInTheDocument()
+
+      const latestCommit = await screen.findByText(/latest commit/)
+      expect(latestCommit).toBeInTheDocument()
 
       const commitLink = await screen.findByRole('link', {
         name: '543a526',

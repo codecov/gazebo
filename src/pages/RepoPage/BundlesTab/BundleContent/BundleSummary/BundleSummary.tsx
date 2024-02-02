@@ -32,7 +32,7 @@ const BundleSummary: React.FC = () => {
           size {formatSizeToString(sizeTotal)} &#x2139;
         </p>
         <p className="pt-2 text-sm">
-          <span className="font-semibold">Source</span> commit:{' '}
+          <span className="font-semibold">Source:</span> latest commit{' '}
           <A
             hook="bundles-tab-to-commit"
             isExternal={false}
@@ -61,7 +61,7 @@ const BundleSummary: React.FC = () => {
       </p>
       {isString(branchHead?.commitid) ? (
         <p className="pt-2 text-sm">
-          <span className="font-semibold">Source</span> commit:{' '}
+          <span className="font-semibold">Source:</span> latest commit{' '}
           <A
             hook="bundles-tab-to-commit"
             isExternal={false}
