@@ -48,9 +48,9 @@ const BundleSummary: React.FC = () => {
     )
   }
 
-  let message = 'an unknown error has occurred'
-  if (isString(branchHead?.bundleAnalysisReport?.message)) {
-    message = branchHead?.bundleAnalysisReport?.message.toLowerCase()
+  let message = branchHead?.bundleAnalysisReport?.message.toLowerCase()
+  if (!isString(message)) {
+    message = 'an unknown error has occurred'
   }
 
   return (
