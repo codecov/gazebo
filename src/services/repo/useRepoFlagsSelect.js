@@ -122,25 +122,25 @@ export function useRepoFlagsSelect(
   const { data, ...rest } = useInfiniteQuery({
     queryKey: ['flags', provider, owner, repo, pullId, filters],
     queryFn: ({ pageParam: after, signal }) => {
-      const data = pullId
-        ? fetchRepoFlagsForPull({
-            provider,
-            owner,
-            repo,
-            pullId,
-            signal,
-            filters,
-            after,
-          })
-        : fetchRepoFlags({
-            provider,
-            owner,
-            repo,
-            filters,
-            after,
-            signal,
-          })
-      return data
+      if (pullId) {
+        return fetchRepoFlagsForPull({
+          provider,
+          owner,
+          repo,
+          pullId,
+          signal,
+          filters,
+          after,
+        })
+      }
+      return fetchRepoFlags({
+        provider,
+        owner,
+        repo,
+        filters,
+        after,
+        signal,
+      })
     },
     getNextPageParam: (data) =>
       data?.pageInfo?.hasNextPage ? data.pageInfo.endCursor : undefined,
