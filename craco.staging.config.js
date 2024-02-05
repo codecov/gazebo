@@ -51,7 +51,7 @@ module.exports = {
               enableBundleAnalysis: true,
               bundleName: 'gazebo-staging',
               apiUrl: process.env.CODECOV_STAGING_API_URL,
-              token: process.env.CODECOV_ORG_TOKEN_STAGING,
+              uploadToken: process.env.CODECOV_ORG_TOKEN_STAGING,
             }),
           ]
         : []),
