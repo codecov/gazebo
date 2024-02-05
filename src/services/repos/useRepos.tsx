@@ -115,9 +115,21 @@ function fetchMyRepos({
   signal,
 }: FetchMyReposArgs) {
   const query = `
-    query MyRepos($filters: RepositorySetFilters!, $ordering: RepositoryOrdering!, $direction: OrderingDirection!, $after: String) {
+    query MyRepos(
+      $filters: RepositorySetFilters!,
+      $ordering: RepositoryOrdering!,
+      $direction: OrderingDirection!,
+      first: $Int,
+      $after: String
+    ) {
         me {
-          viewableRepositories(filters: $filters, ordering: $ordering, orderingDirection: $direction, first: $first, after: $after) {
+          viewableRepositories(
+            filters: $filters,
+            ordering: $ordering,
+            orderingDirection: $direction,
+            first: $first,
+            after: $after
+          ) {
             edges {
               node {
                 ...RepoForList
@@ -130,7 +142,6 @@ function fetchMyRepos({
           }
         }
       }
-
       ${repositoryFragment}
   `
 
@@ -173,9 +184,22 @@ function fetchReposForOwner({
   signal,
 }: FetchReposForOwnerArgs) {
   const query = `
-    query ReposForOwner($filters: RepositorySetFilters!, $owner: String!, $ordering: RepositoryOrdering!, $direction: OrderingDirection!, $after: String, $first: Int) {
+    query ReposForOwner(
+      $filters: RepositorySetFilters!,
+      $owner: String!,
+      $ordering: RepositoryOrdering!,
+      $direction: OrderingDirection!,
+      $after: String,
+      $first: Int
+    ) {
         owner(username: $owner) {
-          repositories(filters: $filters, ordering: $ordering, orderingDirection: $direction, first: $first, after: $after) {
+          repositories(
+            filters: $filters,
+            ordering: $ordering
+            orderingDirection: $direction,
+            first: $first,
+            after: $after
+          ) {
             edges {
               node {
                 ...RepoForList
