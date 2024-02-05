@@ -12,6 +12,8 @@ import CoverageLineIndicator from 'ui/CodeRenderer/CoverageLineIndicator'
 
 import { useScrollToLine } from '../hooks'
 
+const targetedLineClass = 'bg-ds-blue-medium bg-opacity-25'
+
 function SingleLine({
   line,
   number,
@@ -38,7 +40,8 @@ function SingleLine({
         aria-label={lineStateToLabel[lineState]}
         className={cs(
           'line-number text-ds-gray-quaternary font-mono text-right border-solid px-2 select-none',
-          classNamePerLineState[lineState]
+          classNamePerLineState[lineState],
+          targeted && targetedLineClass
         )}
       >
         <button
@@ -49,7 +52,13 @@ function SingleLine({
           {number}
         </button>
       </td>
-      <td className={cs('pl-2 break-all', classNamePerLineContent[lineState])}>
+      <td
+        className={cs(
+          'pl-2 break-all',
+          classNamePerLineContent[lineState],
+          targeted && targetedLineClass
+        )}
+      >
         <div className="flex items-center justify-between">
           <div>
             {line.map((token, key) => (
