@@ -1,4 +1,5 @@
 import { TBundleAnalysisComparisonResult } from 'pages/CommitDetailPage/hooks'
+import { ComparisonReturnType } from 'shared/utils/comparison'
 import A from 'ui/A'
 import Banner from 'ui/Banner'
 
@@ -81,6 +82,28 @@ const BannerContent: React.FC<Props> = ({ errorType }) => {
           <span>
             There was an error computing the comparison for the head and base
             commits.
+          </span>
+          <A
+            hook="compare errors"
+            to={{ pageName: 'missingComparisonReport' }}
+            isExternal={true}
+          >
+            Learn more here
+          </A>
+        </div>
+      </>
+    )
+  }
+
+  if (errorType === ComparisonReturnType.MISSING_BASE_REPORT) {
+    return (
+      <>
+        {' '}
+        <h1 className="font-semibold">Missing Base Report</h1>
+        <div className="flex gap-1">
+          <span>
+            Unable to compare commit because the commit did not upload a
+            coverage report.
           </span>
           <A
             hook="compare errors"

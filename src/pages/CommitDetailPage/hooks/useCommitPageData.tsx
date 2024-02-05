@@ -23,6 +23,7 @@ const BundleAnalysisComparisonResult = z.union([
   MissingComparisonSchema.shape.__typename,
   MissingHeadCommitSchema.shape.__typename,
   MissingHeadReportSchema.shape.__typename,
+  MissingBaseReportSchema.shape.__typename,
 ])
 
 export type TBundleAnalysisComparisonResult = z.infer<
