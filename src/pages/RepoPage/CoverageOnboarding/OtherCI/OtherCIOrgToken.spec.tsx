@@ -7,6 +7,29 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import OtherCIOrgToken from './OtherCIOrgToken'
 
+const mockGetRepo = {
+  owner: {
+    isCurrentUserPartOfOrg: true,
+    orgUploadToken: '9e6a6189-20f1-482d-ab62-test',
+    repository: {
+      private: false,
+      uploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629295',
+      defaultBranch: 'main',
+      yaml: '',
+      activated: false,
+      oldestCommitAt: '',
+    },
+  },
+}
+
+const mockGetOrgUploadToken = (hasOrgUploadToken: boolean | null) => ({
+  owner: {
+    orgUploadToken: hasOrgUploadToken
+      ? '9e6a6189-20f1-482d-ab62-ecfaa2629290'
+      : null,
+  },
+})
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
@@ -38,16 +61,17 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('OtherCIOrgToken', () => {
-  function setup() {
+  function setup(hasOrgUploadToken: boolean | null = true) {
     const user = userEvent.setup()
 
     server.use(
+      graphql.query('GetRepo', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(mockGetRepo))
+      ),
       graphql.query('GetOrgUploadToken', (req, res, ctx) => {
         return res(
           ctx.status(200),
-          ctx.data({
-            owner: { orgUploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629290' },
-          })
+          ctx.data(mockGetOrgUploadToken(hasOrgUploadToken))
         )
       })
     )
@@ -56,75 +80,155 @@ describe('OtherCIOrgToken', () => {
   }
 
   describe('step one', () => {
-    beforeEach(() => setup())
+    describe('when org has upload token', () => {
+      beforeEach(() => setup())
 
-    it('renders header', async () => {
-      render(<OtherCIOrgToken />, { wrapper })
+      it('renders header', async () => {
+        render(<OtherCIOrgToken />, { wrapper })
 
-      const header = await screen.findByText(/Step 1/)
-      expect(header).toBeInTheDocument()
-    })
-
-    it('renders token box', async () => {
-      render(<OtherCIOrgToken />, { wrapper })
-
-      const codecovToken = await screen.findByText(/CODECOV_TOKEN/)
-      expect(codecovToken).toBeInTheDocument()
-
-      const tokenValue = await screen.findAllByText(
-        /9e6a6189-20f1-482d-ab62-ecfaa2629290/
-      )
-      expect(tokenValue).toHaveLength(2)
-    })
-  })
-
-  describe('step two', () => {
-    it('renders header', async () => {
-      setup()
-      render(<OtherCIOrgToken />, { wrapper })
-
-      const header = await screen.findByText(/Step 2/)
-      expect(header).toBeInTheDocument()
-
-      const headerLink = await screen.findByRole('link', {
-        name: /uploader to your/,
+        const header = await screen.findByText(/Step 1/)
+        expect(header).toBeInTheDocument()
       })
-      expect(headerLink).toBeInTheDocument()
-      expect(headerLink).toHaveAttribute(
-        'href',
-        'https://docs.codecov.com/docs/codecov-uploader'
-      )
+
+      it('renders token box', async () => {
+        render(<OtherCIOrgToken />, { wrapper })
+
+        const codecovToken = await screen.findByText(/CODECOV_TOKEN/)
+        expect(codecovToken).toBeInTheDocument()
+
+        const tokenValue = await screen.findAllByText(
+          /9e6a6189-20f1-482d-ab62-ecfaa2629290/
+        )
+        expect(tokenValue).toHaveLength(2)
+      })
+
+      it('renders global token copy', async () => {
+        render(<OtherCIOrgToken />, { wrapper })
+
+        const repoToken = await screen.findByText(/global token/)
+        expect(repoToken).toBeInTheDocument()
+      })
+
+      describe('when org does not have global upload token', () => {
+        beforeEach(() => setup(false))
+
+        it('renders header', async () => {
+          render(<OtherCIOrgToken />, { wrapper })
+
+          const header = await screen.findByText(/Step 1/)
+          expect(header).toBeInTheDocument()
+        })
+
+        it('renders token box', async () => {
+          render(<OtherCIOrgToken />, { wrapper })
+
+          const codecovToken = await screen.findByText(/CODECOV_TOKEN/)
+          expect(codecovToken).toBeInTheDocument()
+
+          const tokenValue = await screen.findAllByText(
+            /9e6a6189-20f1-482d-ab62-ecfaa2629295/
+          )
+          expect(tokenValue).toHaveLength(2)
+        })
+
+        it('renders repository token copy', async () => {
+          render(<OtherCIOrgToken />, { wrapper })
+
+          const repoToken = await screen.findByText(/repository token/)
+          expect(repoToken).toBeInTheDocument()
+        })
+      })
     })
 
-    it('renders instruction box', async () => {
-      render(<OtherCIOrgToken />, { wrapper })
+    describe('step two', () => {
+      it('renders header', async () => {
+        setup()
+        render(<OtherCIOrgToken />, { wrapper })
 
-      const box = await screen.findByTestId('instruction-box')
-      expect(box).toBeInTheDocument()
+        const header = await screen.findByText(/Step 2/)
+        expect(header).toBeInTheDocument()
+
+        const headerLink = await screen.findByRole('link', {
+          name: /uploader to your/,
+        })
+        expect(headerLink).toBeInTheDocument()
+        expect(headerLink).toHaveAttribute(
+          'href',
+          'https://docs.codecov.com/docs/codecov-uploader'
+        )
+      })
+
+      it('renders instruction box', async () => {
+        render(<OtherCIOrgToken />, { wrapper })
+
+        const box = await screen.findByTestId('instruction-box')
+        expect(box).toBeInTheDocument()
+      })
     })
   })
 
   describe('step three', () => {
-    beforeEach(() => setup())
-    it('renders header', async () => {
-      render(<OtherCIOrgToken />, { wrapper })
+    describe('when org has upload token', () => {
+      beforeEach(() => setup())
+      it('renders header', async () => {
+        render(<OtherCIOrgToken />, { wrapper })
 
-      const header = await screen.findByText(/Step 3/)
-      expect(header).toBeInTheDocument()
+        const header = await screen.findByText(/Step 3/)
+        expect(header).toBeInTheDocument()
+      })
+
+      it('renders body', async () => {
+        render(<OtherCIOrgToken />, { wrapper })
+
+        const body = await screen.findByText(/upload coverage to Codecov via /)
+        expect(body).toBeInTheDocument()
+      })
+
+      it('renders command box', async () => {
+        render(<OtherCIOrgToken />, { wrapper })
+
+        const box = await screen.findByText(/codecovcli upload-process/)
+        expect(box).toBeInTheDocument()
+      })
+
+      it('renders -r flag when org upload token exists', async () => {
+        render(<OtherCIOrgToken />, { wrapper })
+
+        const box = await screen.findByText(/-r cool-repo/)
+        expect(box).toBeInTheDocument()
+      })
     })
 
-    it('renders body', async () => {
-      render(<OtherCIOrgToken />, { wrapper })
+    describe('when org does not have org upload token', () => {
+      beforeEach(() => setup(false))
 
-      const body = await screen.findByText(/upload coverage to Codecov via /)
-      expect(body).toBeInTheDocument()
-    })
+      it('renders header', async () => {
+        render(<OtherCIOrgToken />, { wrapper })
 
-    it('renders command box', async () => {
-      render(<OtherCIOrgToken />, { wrapper })
+        const header = await screen.findByText(/Step 3/)
+        expect(header).toBeInTheDocument()
+      })
 
-      const box = await screen.findByText(/codecovcli upload-process/)
-      expect(box).toBeInTheDocument()
+      it('renders body', async () => {
+        render(<OtherCIOrgToken />, { wrapper })
+
+        const body = await screen.findByText(/upload coverage to Codecov via /)
+        expect(body).toBeInTheDocument()
+      })
+
+      it('renders command box', async () => {
+        render(<OtherCIOrgToken />, { wrapper })
+
+        const box = await screen.findByText(/codecovcli upload-process/)
+        expect(box).toBeInTheDocument()
+      })
+
+      it('does not render -r flag when org upload token does not exist', async () => {
+        render(<OtherCIOrgToken />, { wrapper })
+
+        const box = screen.queryByText(/-r cool-repo/)
+        expect(box).not.toBeInTheDocument()
+      })
     })
   })
 
