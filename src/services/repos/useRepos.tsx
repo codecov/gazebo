@@ -119,7 +119,7 @@ function fetchMyRepos({
       $filters: RepositorySetFilters!,
       $ordering: RepositoryOrdering!,
       $direction: OrderingDirection!,
-      first: $Int,
+      $first: Int,
       $after: String
     ) {
         me {
@@ -142,6 +142,7 @@ function fetchMyRepos({
           }
         }
       }
+
       ${repositoryFragment}
   `
 
@@ -195,7 +196,7 @@ function fetchReposForOwner({
         owner(username: $owner) {
           repositories(
             filters: $filters,
-            ordering: $ordering
+            ordering: $ordering,
             orderingDirection: $direction,
             first: $first,
             after: $after

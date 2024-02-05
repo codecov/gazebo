@@ -23,6 +23,55 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 const server = setupServer()
+const mockRepositories = [
+  {
+    node: {
+      private: false,
+      activated: true,
+      author: {
+        username: 'owner1',
+      },
+      name: 'Repo name 1',
+      latestCommitAt: subDays(new Date(), 3).toISOString(),
+      coverage: 43,
+      active: true,
+      lines: 99,
+      updatedAt: '2020-08-25T16:36:19.67986800:00',
+      repositoryConfig: null,
+    },
+  },
+  {
+    node: {
+      private: true,
+      activated: true,
+      author: {
+        username: 'owner1',
+      },
+      name: 'Repo name 2',
+      latestCommitAt: subDays(new Date(), 2).toISOString(),
+      coverage: 100,
+      active: true,
+      lines: 101,
+      updatedAt: '2020-08-25T16:36:19.67986800:00',
+      repositoryConfig: null,
+    },
+  },
+  {
+    node: {
+      private: true,
+      activated: true,
+      author: {
+        username: 'owner1',
+      },
+      name: 'Repo name 3',
+      latestCommitAt: null,
+      active: true,
+      lines: 207,
+      updatedAt: '2020-08-25T16:36:19.67986800:00',
+      repositoryConfig: null,
+    },
+  },
+]
 
 beforeAll(() => {
   server.listen()
@@ -63,6 +112,8 @@ describe('ReposTable', () => {
     privateAccess = true,
     tierValue = TierNames.PRO,
   }: SetupArgs) {
+    const reposForOwnerMock = jest.fn()
+    const myReposMock = jest.fn()
     server.use(
       graphql.query('CurrentUser', (req, res, ctx) => {
         return res(
@@ -79,6 +130,7 @@ describe('ReposTable', () => {
         )
       }),
       graphql.query('ReposForOwner', async (req, res, ctx) => {
+        reposForOwnerMock(req.variables)
         const body = await req.json()
         const isPublic = body.variables.filters.isPublic
         let filteredEdges = edges
@@ -107,6 +159,7 @@ describe('ReposTable', () => {
         )
       }),
       graphql.query('MyRepos', (req, res, ctx) => {
+        myReposMock(req.variables)
         if (req?.variables?.after === '2') {
           return res(
             ctx.status(200),
@@ -157,60 +210,13 @@ describe('ReposTable', () => {
         )
       })
     )
+    return { myReposMock, reposForOwnerMock }
   }
 
   describe('when rendered with active true', () => {
     beforeEach(() => {
       setup({
-        edges: [
-          {
-            node: {
-              private: false,
-              activated: true,
-              author: {
-                username: 'owner1',
-              },
-              name: 'Repo name 1',
-              latestCommitAt: subDays(new Date(), 3).toISOString(),
-              coverage: 43,
-              active: true,
-              lines: 99,
-              updatedAt: '2020-08-25T16:36:19.67986800:00',
-              repositoryConfig: null,
-            },
-          },
-          {
-            node: {
-              private: true,
-              activated: true,
-              author: {
-                username: 'owner1',
-              },
-              name: 'Repo name 2',
-              latestCommitAt: subDays(new Date(), 2).toISOString(),
-              coverage: 100,
-              active: true,
-              lines: 101,
-              updatedAt: '2020-08-25T16:36:19.67986800:00',
-              repositoryConfig: null,
-            },
-          },
-          {
-            node: {
-              private: true,
-              activated: true,
-              author: {
-                username: 'owner1',
-              },
-              name: 'Repo name 3',
-              latestCommitAt: null,
-              active: true,
-              lines: 207,
-              updatedAt: '2020-08-25T16:36:19.67986800:00',
-              repositoryConfig: null,
-            },
-          },
-        ],
+        edges: mockRepositories,
       })
     })
 
@@ -249,69 +255,6 @@ describe('ReposTable', () => {
 
         const header = await screen.findByText(/Tracked lines/)
         expect(header).toBeInTheDocument()
-      })
-    })
-
-    describe('sorting table headers', () => {
-      const user = userEvent.setup()
-      it('sorts by name', async () => {
-        render(<ReposTable searchValue="" owner="owner1" />, {
-          wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
-        })
-
-        const header = await screen.findByText(/Name/)
-        expect(header).toBeInTheDocument()
-        await user.click(header)
-        let tableElements = await screen.findAllByText(/Repo name/)
-        expect(tableElements[0]).toHaveTextContent('Repo name 1')
-        expect(tableElements[1]).toHaveTextContent('Repo name 2')
-        expect(tableElements[2]).toHaveTextContent('Repo name 3')
-
-        await user.click(header)
-        tableElements = await screen.findAllByText(/Repo name/)
-        expect(tableElements[0]).toHaveTextContent('Repo name 3')
-        expect(tableElements[1]).toHaveTextContent('Repo name 2')
-        expect(tableElements[2]).toHaveTextContent('Repo name 1')
-      })
-
-      it('sorts by coverage', async () => {
-        render(<ReposTable searchValue="" owner="owner1" />, {
-          wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
-        })
-
-        const header = await screen.findByText(/Test coverage/)
-        expect(header).toBeInTheDocument()
-        await user.click(header)
-        let tableElements = await screen.findAllByText(/Repo name/)
-        expect(tableElements[0]).toHaveTextContent('Repo name 3')
-        expect(tableElements[1]).toHaveTextContent('Repo name 2')
-        expect(tableElements[2]).toHaveTextContent('Repo name 1')
-
-        await user.click(header)
-        tableElements = await screen.findAllByText(/Repo name/)
-        expect(tableElements[0]).toHaveTextContent('Repo name 1')
-        expect(tableElements[1]).toHaveTextContent('Repo name 2')
-        expect(tableElements[2]).toHaveTextContent('Repo name 3')
-      })
-
-      it('sorts by last commit', async () => {
-        render(<ReposTable searchValue="" owner="owner1" />, {
-          wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
-        })
-
-        const header = await screen.findByText(/Last updated/)
-        expect(header).toBeInTheDocument()
-        await user.click(header)
-        let tableElements = await screen.findAllByText(/Repo name/)
-        expect(tableElements[0]).toHaveTextContent('Repo name 1')
-        expect(tableElements[1]).toHaveTextContent('Repo name 2')
-        expect(tableElements[2]).toHaveTextContent('Repo name 3')
-
-        await user.click(header)
-        tableElements = await screen.findAllByText(/Repo name/)
-        expect(tableElements[0]).toHaveTextContent('Repo name 3')
-        expect(tableElements[1]).toHaveTextContent('Repo name 1')
-        expect(tableElements[2]).toHaveTextContent('Repo name 2')
       })
     })
 
@@ -491,56 +434,7 @@ describe('ReposTable', () => {
       beforeEach(() => {
         setup({
           isCurrentUserPartOfOrg: false,
-          edges: [
-            {
-              node: {
-                private: false,
-                activated: true,
-                author: {
-                  username: 'owner1',
-                },
-                name: 'Repo name 1',
-                latestCommitAt: subDays(new Date(), 3).toISOString(),
-                coverage: 43,
-                lines: 20,
-                active: false,
-                repositoryConfig: null,
-                updatedAt: '2020-08-25T16:36:19.67986800:00',
-              },
-            },
-            {
-              node: {
-                private: true,
-                activated: true,
-                author: {
-                  username: 'owner1',
-                },
-                name: 'Repo name 2',
-                latestCommitAt: subDays(new Date(), 2).toISOString(),
-                lines: 20,
-                coverage: 100,
-                active: false,
-                repositoryConfig: null,
-                updatedAt: '2020-08-25T16:36:19.67986800:00',
-              },
-            },
-            {
-              node: {
-                private: true,
-                activated: true,
-                author: {
-                  username: 'owner1',
-                },
-                name: 'Repo name 3',
-                lines: 20,
-                latestCommitAt: subDays(new Date(), 5).toISOString(),
-                coverage: 0,
-                active: false,
-                repositoryConfig: null,
-                updatedAt: '2020-08-25T16:36:19.67986800:00',
-              },
-            },
-          ],
+          edges: mockRepositories,
         })
       })
 
@@ -577,55 +471,7 @@ describe('ReposTable', () => {
     beforeEach(() => {
       setup({
         tierValue: TierNames.TEAM,
-        edges: [
-          {
-            node: {
-              private: false,
-              activated: true,
-              author: {
-                username: 'owner1',
-              },
-              name: 'Repo name 1',
-              latestCommitAt: subDays(new Date(), 3).toISOString(),
-              coverage: 43,
-              active: true,
-              lines: 99,
-              updatedAt: '2020-08-25T16:36:19.67986800:00',
-              repositoryConfig: null,
-            },
-          },
-          {
-            node: {
-              private: true,
-              activated: true,
-              author: {
-                username: 'owner1',
-              },
-              name: 'Repo name 2',
-              latestCommitAt: subDays(new Date(), 2).toISOString(),
-              coverage: 100,
-              active: true,
-              lines: 101,
-              updatedAt: '2020-08-25T16:36:19.67986800:00',
-              repositoryConfig: null,
-            },
-          },
-          {
-            node: {
-              private: true,
-              activated: true,
-              author: {
-                username: 'owner1',
-              },
-              name: 'Repo name 3',
-              latestCommitAt: null,
-              active: true,
-              lines: 207,
-              updatedAt: '2020-08-25T16:36:19.67986800:00',
-              repositoryConfig: null,
-            },
-          },
-        ],
+        edges: mockRepositories,
       })
     })
 
@@ -635,6 +481,100 @@ describe('ReposTable', () => {
       })
       const buttons = await screen.findAllByText(/Repo name/)
       expect(buttons.length).toBe(1)
+    })
+  })
+
+  describe('sorting table headers', () => {
+    const user = userEvent.setup()
+    it('sorts by name', async () => {
+      const { reposForOwnerMock } = setup({
+        edges: mockRepositories,
+      })
+      render(<ReposTable searchValue="" owner="owner1" />, {
+        wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
+      })
+
+      const header = await screen.findByText(/Name/)
+      expect(header).toBeInTheDocument()
+      await user.click(header)
+      await waitFor(() => {
+        expect(reposForOwnerMock).toHaveBeenCalledWith(
+          expect.objectContaining({
+            direction: 'ASC',
+            ordering: 'NAME',
+          })
+        )
+      })
+      await user.click(header)
+      await waitFor(() => {
+        expect(reposForOwnerMock).toHaveBeenCalledWith(
+          expect.objectContaining({
+            direction: 'DESC',
+            ordering: 'NAME',
+          })
+        )
+      })
+    })
+
+    it('sorts by coverage', async () => {
+      const { reposForOwnerMock } = setup({
+        edges: mockRepositories,
+      })
+
+      render(<ReposTable searchValue="" owner="owner1" />, {
+        wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
+      })
+
+      const header = await screen.findByText(/Test coverage/)
+      await user.click(header)
+      await waitFor(() => {
+        expect(reposForOwnerMock).toHaveBeenCalledWith(
+          expect.objectContaining({
+            direction: 'DESC',
+            ordering: 'COVERAGE',
+          })
+        )
+      })
+      await user.click(header)
+      await waitFor(() => {
+        expect(reposForOwnerMock).toHaveBeenCalledWith(
+          expect.objectContaining({
+            direction: 'ASC',
+            ordering: 'COVERAGE',
+          })
+        )
+      })
+    })
+
+    it('sorts by last commit', async () => {
+      const { reposForOwnerMock } = setup({
+        edges: mockRepositories,
+      })
+
+      render(<ReposTable searchValue="" owner="owner1" />, {
+        wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
+      })
+
+      const header = await screen.findByText(/Last updated/)
+      expect(header).toBeInTheDocument()
+      await user.click(header)
+      await waitFor(() => {
+        expect(reposForOwnerMock).toHaveBeenCalledWith(
+          expect.objectContaining({
+            direction: 'DESC',
+            ordering: 'COMMIT_DATE',
+          })
+        )
+      })
+      await user.click(header)
+      await waitFor(() => {
+        expect(reposForOwnerMock).toHaveBeenCalledWith(
+          expect.objectContaining({
+            direction: 'DESC',
+            ordering: 'COMMIT_DATE',
+          })
+        )
+      })
     })
   })
 
@@ -668,6 +608,7 @@ describe('ReposTable', () => {
         edges: [],
       })
     })
+
     it('renders no results found', async () => {
       render(<ReposTable searchValue="something" owner="" />, {
         wrapper: wrapper(repoDisplayOptions.ALL.text),
