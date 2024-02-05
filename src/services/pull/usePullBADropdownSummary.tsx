@@ -5,7 +5,6 @@ import {
   FirstPullRequestSchema,
   MissingBaseCommitSchema,
   MissingBaseReportSchema,
-  MissingComparisonSchema,
   MissingHeadCommitSchema,
   MissingHeadReportSchema,
 } from 'services/comparison/schemas'
@@ -28,7 +27,6 @@ const BundleAnalysisCompareWithParentSchema = z
     FirstPullRequestSchema,
     MissingBaseCommitSchema,
     MissingBaseReportSchema,
-    MissingComparisonSchema,
     MissingHeadCommitSchema,
     MissingHeadReportSchema,
   ])
@@ -57,17 +55,13 @@ const RequestSchema = z.object({
 })
 
 const query = `
-query PullBADropdownSummary(
-  $owner: String!
-  $repo: String!
-  $pullId: Int!
-) {
+query PullBADropdownSummary($owner: String!, $repo: String!, $pullId: Int!) {
   owner(username: $owner) {
     repository(name: $repo) {
       __typename
       ... on Repository {
         pull(id: $pullId) {
-          bundleAnalysisCompareWithParent {
+          bundleAnalysisCompareWithBase {
             __typename
             ... on BundleAnalysisComparison {
               sizeDelta
@@ -80,9 +74,6 @@ query PullBADropdownSummary(
               message
             }
             ... on MissingHeadCommit {
-              message
-            }
-            ... on MissingComparison {
               message
             }
             ... on MissingBaseReport {
@@ -164,7 +155,9 @@ export function usePullBADropdownSummary({
           })
         }
 
-        return data
+        const pull = data?.owner?.repository?.pull ?? null
+
+        return { pull }
       }),
   })
 }
