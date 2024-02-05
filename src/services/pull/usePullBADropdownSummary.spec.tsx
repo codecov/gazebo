@@ -116,16 +116,11 @@ describe('usePullBADropdownSummary', () => {
       )
 
       const expectedResult = {
-        owner: {
-          repository: {
-            __typename: 'Repository',
-            pull: {
-              bundleAnalysisCompareWithBase: {
-                __typename: 'BundleAnalysisComparison',
-                sizeDelta: 1,
-                loadTimeDelta: 2,
-              },
-            },
+        pull: {
+          bundleAnalysisCompareWithBase: {
+            __typename: 'BundleAnalysisComparison',
+            sizeDelta: 1,
+            loadTimeDelta: 2,
           },
         },
       }
@@ -151,7 +146,7 @@ describe('usePullBADropdownSummary', () => {
       )
 
       await waitFor(() =>
-        expect(result.current.data).toStrictEqual({ owner: null })
+        expect(result.current.data).toStrictEqual({ pull: null })
       )
     })
   })
