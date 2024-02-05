@@ -48,7 +48,7 @@ const BundleSummary: React.FC = () => {
     )
   }
 
-  let message = branchHead?.bundleAnalysisReport?.message.toLowerCase()
+  let message = branchHead?.bundleAnalysisReport?.message
   if (!isString(message)) {
     message = 'an unknown error has occurred'
   }
@@ -57,7 +57,7 @@ const BundleSummary: React.FC = () => {
     <div className="bg-ds-gray-primary p-4">
       <p className="w-full text-base">
         <span className="font-semibold">Report: </span>
-        {message} &#x26A0;
+        {message.toLowerCase()} &#x26A0;
       </p>
       {isString(branchHead?.commitid) ? (
         <p className="pt-2 text-sm">
