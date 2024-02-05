@@ -40,8 +40,10 @@ function SingleLine({
         aria-label={lineStateToLabel[lineState]}
         className={cs(
           'line-number text-ds-gray-quaternary font-mono text-right border-solid px-2 select-none',
-          classNamePerLineState[lineState],
-          targeted && targetedLineClass
+          {
+            [classNamePerLineState[lineState]]: !targeted,
+            [targetedLineClass]: targeted,
+          }
         )}
       >
         <button
@@ -53,11 +55,10 @@ function SingleLine({
         </button>
       </td>
       <td
-        className={cs(
-          'pl-2 break-all',
-          classNamePerLineContent[lineState],
-          targeted && targetedLineClass
-        )}
+        className={cs('pl-2 break-all', {
+          [classNamePerLineContent[lineState]]: !targeted,
+          [targetedLineClass]: targeted,
+        })}
       >
         <div className="flex items-center justify-between">
           <div>
