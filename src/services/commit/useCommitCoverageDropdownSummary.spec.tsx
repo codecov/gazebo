@@ -118,17 +118,12 @@ describe('useCommitCoverageDropdownSummary', () => {
       )
 
       const expectedResult = {
-        owner: {
-          repository: {
-            __typename: 'Repository',
-            commit: {
-              compareWithParent: {
-                __typename: 'Comparison',
-                patchTotals: {
-                  missesCount: 1,
-                  partialsCount: 2,
-                },
-              },
+        commit: {
+          compareWithParent: {
+            __typename: 'Comparison',
+            patchTotals: {
+              missesCount: 1,
+              partialsCount: 2,
             },
           },
         },
@@ -155,7 +150,7 @@ describe('useCommitCoverageDropdownSummary', () => {
       )
 
       await waitFor(() =>
-        expect(result.current.data).toStrictEqual({ owner: null })
+        expect(result.current.data).toStrictEqual({ commit: null })
       )
     })
   })

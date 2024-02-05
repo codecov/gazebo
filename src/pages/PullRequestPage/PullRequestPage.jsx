@@ -10,12 +10,8 @@ import Spinner from 'ui/Spinner'
 
 import Header from './Header'
 import { usePullPageData } from './hooks'
-import CompareSummarySkeleton from './Summary/CompareSummary/CompareSummarySkeleton'
 
-const CompareSummary = lazy(() => import('./Summary'))
-const PullRequestPageTabs = lazy(() => import('./PullRequestPageTabs'))
-const PullRequestPageContent = lazy(() => import('./PullRequestPageContent'))
-const FirstPullBanner = lazy(() => import('./FirstPullBanner'))
+const PullCoverage = lazy(() => import('./PullCoverage'))
 
 const Loader = () => (
   <div className="flex items-center justify-center py-16">
@@ -25,11 +21,11 @@ const Loader = () => (
 
 function PullRequestPage() {
   const { owner, repo, pullId, provider } = useParams()
-
-  const { data: settings } = useRepoSettings()
   const { multipleTiers } = useFlags({
     multipleTiers: false,
   })
+
+  const { data: settings } = useRepoSettings()
 
   const { data: tierData } = useTier({ provider, owner })
   const isTeamPlan =
@@ -65,19 +61,8 @@ function PullRequestPage() {
         ]}
       />
       <Header />
-      <Suspense fallback={<CompareSummarySkeleton />}>
-        <CompareSummary />
-        <FirstPullBanner />
-      </Suspense>
       <Suspense fallback={<Loader />}>
-        <div className="grid grid-cols-1 gap-4 space-y-2 lg:grid-cols-2">
-          <article className="col-span-2 flex flex-col gap-3 md:gap-0">
-            <PullRequestPageTabs />
-            <Suspense fallback={<Loader />}>
-              <PullRequestPageContent />
-            </Suspense>
-          </article>
-        </div>
+        <PullCoverage />
       </Suspense>
     </div>
   )

@@ -169,7 +169,11 @@ export function useCommitCoverageDropdownSummary({
           })
         }
 
-        return data
+        const commit = data?.owner?.repository?.commit ?? null
+
+        return {
+          commit,
+        }
       }),
   })
 }

@@ -116,16 +116,11 @@ describe('useCommitBADropdownSummary', () => {
       )
 
       const expectedResult = {
-        owner: {
-          repository: {
-            __typename: 'Repository',
-            commit: {
-              bundleAnalysisCompareWithParent: {
-                __typename: 'BundleAnalysisComparison',
-                sizeDelta: 1,
-                loadTimeDelta: 2,
-              },
-            },
+        commit: {
+          bundleAnalysisCompareWithParent: {
+            __typename: 'BundleAnalysisComparison',
+            sizeDelta: 1,
+            loadTimeDelta: 2,
           },
         },
       }
@@ -151,7 +146,7 @@ describe('useCommitBADropdownSummary', () => {
       )
 
       await waitFor(() =>
-        expect(result.current.data).toStrictEqual({ owner: null })
+        expect(result.current.data).toStrictEqual({ commit: null })
       )
     })
   })
