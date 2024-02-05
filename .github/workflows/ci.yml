@@ -233,7 +233,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}-
 
-      - name: Run tests
+      - name: Build and upload stats
         run: |
           npm run build:stats:staging
         env:
