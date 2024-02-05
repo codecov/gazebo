@@ -40,6 +40,23 @@ const mockBranchBundles = {
   },
 }
 
+const mockBranchBundlesError = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      branch: {
+        head: {
+          commitid: '543a5268dce725d85be7747c0f9b61e9a68dea57',
+          bundleAnalysisReport: {
+            __typename: 'MissingHeadReport',
+            message: 'Missing head report',
+          },
+        },
+      },
+    },
+  },
+}
+
 const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false, suspense: true } },
@@ -68,10 +85,18 @@ afterAll(() => {
   server.close()
 })
 
+interface SetupArgs {
+  isBundleError?: boolean
+}
+
 describe('BundleContent', () => {
-  function setup() {
+  function setup({ isBundleError = false }: SetupArgs) {
     server.use(
       graphql.query('BranchBundleSummaryData', (req, res, ctx) => {
+        if (isBundleError) {
+          return res(ctx.status(200), ctx.data(mockBranchBundlesError))
+        }
+
         return res(ctx.status(200), ctx.data(mockBranchBundles))
       }),
       graphql.query('GetRepoOverview', (req, res, ctx) => {
@@ -81,24 +106,49 @@ describe('BundleContent', () => {
   }
 
   it('renders the bundle summary', async () => {
-    setup()
+    setup({})
     render(<BundleContent />, { wrapper })
 
     const report = await screen.findByText(/Report:/)
     expect(report).toBeInTheDocument()
   })
 
-  it('renders the bundle table', async () => {
-    setup()
-    render(<BundleContent />, { wrapper })
+  describe('when the bundle type is BundleAnalysisReport', () => {
+    it('renders the bundle table', async () => {
+      setup({})
+      render(<BundleContent />, { wrapper })
 
-    const bundleName = await screen.findByText(/bundle1/)
-    expect(bundleName).toBeInTheDocument()
+      const bundleName = await screen.findByText(/bundle1/)
+      expect(bundleName).toBeInTheDocument()
 
-    const bundleSize = await screen.findByText(/50B/)
-    expect(bundleSize).toBeInTheDocument()
+      const bundleSize = await screen.findByText(/50B/)
+      expect(bundleSize).toBeInTheDocument()
 
-    const bundleLoadTime = await screen.findByText(/100s/)
-    expect(bundleLoadTime).toBeInTheDocument()
+      const bundleLoadTime = await screen.findByText(/100s/)
+      expect(bundleLoadTime).toBeInTheDocument()
+    })
+  })
+
+  describe('when the bundle type is not BundleAnalysisReport', () => {
+    it('renders the error banner', async () => {
+      setup({ isBundleError: true })
+      render(<BundleContent />, { wrapper })
+
+      const bannerHeader = await screen.findByText(/Missing Head Report/)
+      expect(bannerHeader).toBeInTheDocument()
+
+      const bannerMessage = await screen.findByText(
+        'Unable to compare commits because the head of the pull request did not upload a bundle stats file.'
+      )
+      expect(bannerMessage).toBeInTheDocument()
+    })
+
+    it('renders the empty table', async () => {
+      setup({ isBundleError: true })
+      render(<BundleContent />, { wrapper })
+
+      const dashes = await screen.findAllByText('-')
+      expect(dashes).toHaveLength(3)
+    })
   })
 })
