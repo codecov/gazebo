@@ -1,18 +1,18 @@
 import cs from 'classnames'
 
 // enum type from GraphQL
-export const LINE_TYPE = Object.freeze({
+export const LINE_TYPE = {
   HIT: 'H',
   MISS: 'M',
   PARTIAL: 'P',
-})
+} as const
 
-export const LINE_STATE = Object.freeze({
+export const LINE_STATE = {
   COVERED: 'COVERED',
   UNCOVERED: 'UNCOVERED',
   BLANK: 'BLANK',
   PARTIAL: 'PARTIAL',
-})
+} as const
 
 const baseBorder = 'relative border-ds-gray-tertiary border-r'
 const afterBorder = 'after:absolute after:inset-y-0 after:right-0'
@@ -77,15 +77,15 @@ export const lineStateToLabel = {
   [LINE_STATE.PARTIAL]: 'partial line of code',
 }
 
-export const CODE_RENDERER_TYPE = Object.freeze({
+export const CODE_RENDERER_TYPE = {
   DIFF: 'DIFF',
   SINGLE_LINE: 'SINGLE-LINE',
-})
+} as const
 
-export const CODE_RENDERER_INFO = Object.freeze({
+export const CODE_RENDERER_INFO = {
   UNEXPECTED_CHANGES: 'UNEXPECTED_CHANGES',
   EMPTY: '',
-})
+} as const
 
 // Enum from https://github.com/codecov/shared/blob/master/shared/utils/merge.py#L275-L279
 export function getLineState({ coverage }: { coverage: string }) {

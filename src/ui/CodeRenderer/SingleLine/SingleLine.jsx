@@ -38,7 +38,7 @@ function SingleLine({
         aria-label={lineStateToLabel[lineState]}
         className={cs(
           'line-number text-ds-gray-quaternary font-mono text-right border-solid px-2 select-none',
-          [classNamePerLineState(targeted)[lineState]]
+          classNamePerLineState(targeted)[lineState]
         )}
       >
         <button
