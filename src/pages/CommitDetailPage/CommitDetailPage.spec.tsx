@@ -5,11 +5,19 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useFlags } from 'shared/featureFlags'
+
 import CommitPage from './CommitDetailPage'
 
 jest.mock('ui/TruncatedMessage/hooks')
 jest.mock('./Header', () => () => 'Header')
 jest.mock('./CommitCoverage', () => () => 'CommitCoverage')
+jest.mock('./CommitBundleAnalysis', () => () => 'CommitBundleAnalysis')
+
+jest.mock('shared/featureFlags')
+const mockedUseFlags = useFlags as jest.Mock<{
+  bundleAnalysisPrAndCommitPages: boolean
+}>
 
 const mockNotFoundCommit = {
   owner: {
@@ -23,15 +31,53 @@ const mockNotFoundCommit = {
   },
 }
 
-const mockCommitPageData = {
+const mockCommitPageData = ({
+  coverageEnabled = true,
+  bundleAnalysisEnabled = false,
+}: {
+  coverageEnabled?: boolean
+  bundleAnalysisEnabled?: boolean
+}) => ({
   owner: {
     isCurrentUserPartOfOrg: true,
     repository: {
       __typename: 'Repository',
-      bundleAnalysisEnabled: true,
-      coverageEnabled: true,
+      bundleAnalysisEnabled,
+      coverageEnabled,
       commit: {
         commitid: 'e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed',
+      },
+    },
+  },
+})
+
+const mockCoverageDropdownSummary = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      commit: {
+        compareWithParent: {
+          __typename: 'Comparison',
+          patchTotals: {
+            missesCount: 0,
+            partialsCount: 0,
+          },
+        },
+      },
+    },
+  },
+}
+
+const mockBundleDropdownSummary = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      commit: {
+        bundleAnalysisCompareWithParent: {
+          __typename: 'BundleAnalysisComparison',
+          sizeDelta: 10000,
+          loadTimeDelta: 0,
+        },
       },
     },
   },
@@ -42,7 +88,7 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { suspense: true } },
 })
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter
       initialEntries={[
@@ -69,15 +115,49 @@ afterAll(() => {
   server.close()
 })
 
+interface SetupArgs {
+  notFoundCommit?: boolean
+  coverageEnabled?: boolean
+  bundleAnalysisEnabled?: boolean
+}
+
 describe('CommitDetailPage', () => {
-  function setup({ notFoundCommit = false } = { notFoundCommit: false }) {
+  function setup(
+    {
+      notFoundCommit = false,
+      coverageEnabled = true,
+      bundleAnalysisEnabled = false,
+    }: SetupArgs = {
+      notFoundCommit: false,
+      coverageEnabled: true,
+      bundleAnalysisEnabled: false,
+    }
+  ) {
+    mockedUseFlags.mockReturnValue({
+      bundleAnalysisPrAndCommitPages: true,
+    })
+
     server.use(
       graphql.query('CommitPageData', (req, res, ctx) => {
         if (notFoundCommit) {
           return res(ctx.status(200), ctx.data(mockNotFoundCommit))
         }
 
-        return res(ctx.status(200), ctx.data(mockCommitPageData))
+        return res(
+          ctx.status(200),
+          ctx.data(
+            mockCommitPageData({
+              coverageEnabled,
+              bundleAnalysisEnabled,
+            })
+          )
+        )
+      }),
+      graphql.query('CommitBADropdownSummary', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockBundleDropdownSummary))
+      }),
+      graphql.query('CommitDropdownSummary', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockCoverageDropdownSummary))
       })
     )
   }
@@ -134,12 +214,39 @@ describe('CommitDetailPage', () => {
       expect(header).toBeInTheDocument()
     })
 
-    it('renders the CommitCoverage component', async () => {
-      setup()
-      render(<CommitPage />, { wrapper })
+    describe('coverage is enabled', () => {
+      it('renders the CommitCoverage component', async () => {
+        setup()
+        render(<CommitPage />, { wrapper })
 
-      const CommitCoverage = await screen.findByText(/CommitCoverage/)
-      expect(CommitCoverage).toBeInTheDocument()
+        const CommitCoverage = await screen.findByText(/CommitCoverage/)
+        expect(CommitCoverage).toBeInTheDocument()
+      })
+    })
+
+    describe('bundle analysis is enabled', () => {
+      it('renders the CommitBundleAnalysis component', async () => {
+        setup({ bundleAnalysisEnabled: true, coverageEnabled: false })
+        render(<CommitPage />, { wrapper })
+
+        const CommitBundleAnalysis = await screen.findByText(
+          /CommitBundleAnalysis/
+        )
+        expect(CommitBundleAnalysis).toBeInTheDocument()
+      })
+    })
+
+    describe('bundle analysis and coverage are enabled', () => {
+      it('renders the CommitBundleAnalysis and CommitCoverage components', async () => {
+        setup({ bundleAnalysisEnabled: true, coverageEnabled: true })
+        render(<CommitPage />, { wrapper })
+
+        const coverageReport = await screen.findByText(/Coverage Report:/)
+        expect(coverageReport).toBeInTheDocument()
+
+        const bundleReport = await screen.findByText(/Bundle Report:/)
+        expect(bundleReport).toBeInTheDocument()
+      })
     })
   })
 
