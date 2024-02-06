@@ -45,7 +45,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }) {
     register,
     handleSubmit,
     watch,
-    formState: { isValid, errors },
+    formState: { errors },
     setValue: setFormValue,
   } = useForm({
     defaultValues: getDefaultValuesUpgradeForm({
@@ -89,7 +89,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }) {
         register={register}
         errors={errors}
       />
-      <UpdateButton isValid={isValid} newPlan={newPlan} seats={seats} />
+      <UpdateButton newPlan={newPlan} seats={seats} />
     </form>
   )
 }

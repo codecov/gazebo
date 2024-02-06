@@ -1896,8 +1896,7 @@ describe('UpgradeForm', () => {
           )
         })
 
-        // fix this
-        it.only('renders success notification when upgrading seats with a monthly plan', async () => {
+        it('renders success notification when upgrading seats with a monthly plan', async () => {
           const { patchRequest, user } = setup({
             successfulPatchRequest: true,
             planValue: Plans.USERS_TEAMY,

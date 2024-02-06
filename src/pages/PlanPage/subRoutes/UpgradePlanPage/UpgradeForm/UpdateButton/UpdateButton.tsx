@@ -9,15 +9,10 @@ import { NewPlanType } from '../constants'
 
 interface BillingControlsProps {
   seats: number
-  isValid: boolean
   newPlan: NewPlanType
 }
 
-const UpdateButton: React.FC<BillingControlsProps> = ({
-  isValid,
-  newPlan,
-  seats,
-}) => {
+const UpdateButton: React.FC<BillingControlsProps> = ({ newPlan, seats }) => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const currentPlanValue = accountDetails?.plan?.value

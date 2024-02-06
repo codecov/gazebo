@@ -68,6 +68,7 @@ const BillingControls: React.FC<BillingControlsProps> = ({
             } else {
               setFormValue('newPlan', Plans.USERS_TEAMM)
             }
+
             setOption(text)
           }}
           options={[
