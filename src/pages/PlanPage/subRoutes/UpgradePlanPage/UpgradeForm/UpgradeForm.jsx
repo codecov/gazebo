@@ -63,8 +63,6 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }) {
     ),
     mode: 'onChange',
   })
-  console.log(isValid)
-
   const newPlan = watch('newPlan')
   const seats = watch('seats')
 

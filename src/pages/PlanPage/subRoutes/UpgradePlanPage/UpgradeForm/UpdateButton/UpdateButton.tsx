@@ -20,13 +20,12 @@ const UpdateButton: React.FC<BillingControlsProps> = ({
 }) => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
-
   const currentPlanValue = accountDetails?.plan?.value
   const currentPlanQuantity = accountDetails?.plan?.quantity
 
   const isSamePlan = newPlan === currentPlanValue
   const noChangeInSeats = seats === currentPlanQuantity
-  const disabled = !isValid || (isSamePlan && noChangeInSeats)
+  const disabled = isSamePlan && noChangeInSeats
 
   return (
     <div className="inline-flex">

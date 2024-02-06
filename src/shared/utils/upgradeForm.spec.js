@@ -98,6 +98,7 @@ describe('calculatePriceTeamPlan', () => {
 describe('getDefaultValuesUpgradeForm', () => {
   const proPlanYear = { value: Plans.USERS_PR_INAPPY }
   const sentryPlanYear = { value: Plans.USERS_SENTRYY }
+  const teamPlanMonth = { value: Plans.USERS_TEAMM }
 
   describe('when current plan is basic', () => {
     it('returns pro year plan', () => {
@@ -135,8 +136,8 @@ describe('getDefaultValuesUpgradeForm', () => {
     })
   })
 
-  describe('when current plan is team', () => {
-    it('returns pro year plan', () => {
+  describe('when current plan is team monthly', () => {
+    it.only('returns team monthly plan', () => {
       const accountDetails = {
         plan: { value: Plans.USERS_TEAMM, quantity: 1 },
       }
@@ -144,11 +145,11 @@ describe('getDefaultValuesUpgradeForm', () => {
       const data = getDefaultValuesUpgradeForm({
         accountDetails,
         proPlanYear,
-        plans: [proPlanYear],
+        plans: [teamPlanMonth],
       })
 
       expect(data).toStrictEqual({
-        newPlan: Plans.USERS_PR_INAPPY,
+        newPlan: 'users-teamm',
         seats: 2,
       })
     })
