@@ -3,69 +3,51 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { useBranchBundleSummary } from './useBranchBundles'
+import { useRepoOverview } from './useRepoOverview'
 
-const mockRepoOverview = {
+const mockOverview = {
   owner: {
     repository: {
       __typename: 'Repository',
       private: false,
       defaultBranch: 'main',
       oldestCommitAt: '2022-10-10T11:59:59',
-      coverageEnabled: false,
-      bundleAnalysisEnabled: false,
-      languages: ['javascript'],
+      coverageEnabled: true,
+      bundleAnalysisEnabled: true,
+      languages: [],
     },
   },
 }
 
-const mockBranchBundleSummary = {
+const mockNotFoundError = {
   owner: {
+    isCurrentUserPartOfOrg: true,
     repository: {
-      __typename: 'Repository',
-      branch: {
-        head: {
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-            sizeTotal: 100,
-            loadTimeTotal: 200,
-            bundles: [{ name: 'bundle1', sizeTotal: 50, loadTimeTotal: 100 }],
-          },
-        },
-      },
+      __typename: 'NotFoundError',
+      message: 'commit not found',
     },
   },
+}
+
+const mockOwnerNotActivatedError = {
+  owner: {
+    isCurrentUserPartOfOrg: true,
+    repository: {
+      __typename: 'OwnerNotActivatedError',
+      message: 'owner not activated',
+    },
+  },
+}
+
+const mockNullOwner = {
+  owner: null,
 }
 
 const mockUnsuccessfulParseError = {}
 
-const mockNullOwner = { owner: null }
-
-const mockRepoNotFound = {
-  owner: {
-    repository: {
-      __typename: 'NotFoundError',
-      message: 'Repository not found',
-    },
-  },
-}
-
-const mockOwnerNotActivated = {
-  owner: {
-    repository: {
-      __typename: 'OwnerNotActivatedError',
-      message: 'Owner not activated',
-    },
-  },
-}
-
 const server = setupServer()
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
+  defaultOptions: { queries: { retry: false } },
 })
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
@@ -77,7 +59,6 @@ beforeAll(() => {
 })
 
 afterEach(() => {
-  jest.resetAllMocks()
   queryClient.clear()
   server.resetHandlers()
 })
@@ -93,135 +74,71 @@ interface SetupArgs {
   isNullOwner?: boolean
 }
 
-describe('useBranchBundleSummary', () => {
+describe('useRepoOverview', () => {
   function setup({
     isNotFoundError = false,
     isOwnerNotActivatedError = false,
     isUnsuccessfulParseError = false,
     isNullOwner = false,
   }: SetupArgs) {
-    const passedBranch = jest.fn()
-
     server.use(
-      graphql.query('BranchBundleSummaryData', (req, res, ctx) => {
-        if (req.variables?.branch) {
-          passedBranch(req.variables?.branch)
-        }
-
+      graphql.query('GetRepoOverview', (req, res, ctx) => {
         if (isNotFoundError) {
-          return res(ctx.status(200), ctx.data(mockRepoNotFound))
+          return res(ctx.status(200), ctx.data(mockNotFoundError))
         } else if (isOwnerNotActivatedError) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivated))
+          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
         } else if (isUnsuccessfulParseError) {
           return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
         } else if (isNullOwner) {
           return res(ctx.status(200), ctx.data(mockNullOwner))
         }
-
-        return res(ctx.status(200), ctx.data(mockBranchBundleSummary))
-      }),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockRepoOverview))
+        return res(ctx.status(200), ctx.data(mockOverview))
       })
     )
-
-    return { passedBranch }
   }
 
-  describe('passing branch name', () => {
-    it('uses the branch name passed in', async () => {
-      const { passedBranch } = setup({})
-      renderHook(
-        () =>
-          useBranchBundleSummary({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-          }),
-        { wrapper }
-      )
-
-      await waitFor(() => expect(passedBranch).toHaveBeenCalled())
-      await waitFor(() => expect(passedBranch).toHaveBeenCalledWith('main'))
-    })
-  })
-
-  describe('no branch name passed', () => {
-    it('uses the default branch', async () => {
-      const { passedBranch } = setup({})
-      renderHook(
-        () =>
-          useBranchBundleSummary({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-            branch: 'cool-branch',
-          }),
-        { wrapper }
-      )
-
-      await waitFor(() => expect(passedBranch).toHaveBeenCalled())
-      await waitFor(() =>
-        expect(passedBranch).toHaveBeenCalledWith('cool-branch')
-      )
-    })
-  })
-
-  describe('returns repository typename of repository', () => {
+  describe('returns repository typename of Repository', () => {
     describe('there is valid data', () => {
-      it('returns the bundle summary', async () => {
+      it('fetches the repo overview', async () => {
         setup({})
         const { result } = renderHook(
           () =>
-            useBranchBundleSummary({
+            useRepoOverview({
               provider: 'gh',
               owner: 'codecov',
-              repo: 'codecov',
+              repo: 'cool-repo',
             }),
           { wrapper }
         )
 
-        const expectedResponse = {
-          branch: {
-            head: {
-              bundleAnalysisReport: {
-                __typename: 'BundleAnalysisReport',
-                sizeTotal: 100,
-                loadTimeTotal: 200,
-                bundles: [
-                  { name: 'bundle1', sizeTotal: 50, loadTimeTotal: 100 },
-                ],
-              },
-            },
-          },
-        }
-
         await waitFor(() =>
-          expect(result.current.data).toStrictEqual(expectedResponse)
+          expect(result.current.data).toStrictEqual({
+            __typename: 'Repository',
+            private: false,
+            defaultBranch: 'main',
+            oldestCommitAt: '2022-10-10T11:59:59',
+            coverageEnabled: true,
+            bundleAnalysisEnabled: true,
+            languages: [],
+          })
         )
       })
     })
 
-    describe('there is invalid data', () => {
+    describe('there is a null owner', () => {
       it('returns a null value', async () => {
         setup({ isNullOwner: true })
         const { result } = renderHook(
           () =>
-            useBranchBundleSummary({
+            useRepoOverview({
               provider: 'gh',
               owner: 'codecov',
-              repo: 'codecov',
+              repo: 'cool-repo',
             }),
           { wrapper }
         )
 
-        const expectedResponse = {
-          branch: null,
-        }
-
-        await waitFor(() =>
-          expect(result.current.data).toStrictEqual(expectedResponse)
-        )
+        await waitFor(() => expect(result.current.data).toBeNull())
       })
     })
   })
@@ -241,10 +158,10 @@ describe('useBranchBundleSummary', () => {
       setup({ isNotFoundError: true })
       const { result } = renderHook(
         () =>
-          useBranchBundleSummary({
+          useRepoOverview({
             provider: 'gh',
             owner: 'codecov',
-            repo: 'codecov',
+            repo: 'cool-repo',
           }),
         { wrapper }
       )
@@ -275,10 +192,10 @@ describe('useBranchBundleSummary', () => {
       setup({ isOwnerNotActivatedError: true })
       const { result } = renderHook(
         () =>
-          useBranchBundleSummary({
+          useRepoOverview({
             provider: 'gh',
             owner: 'codecov',
-            repo: 'codecov',
+            repo: 'cool-repo',
           }),
         { wrapper }
       )
@@ -309,10 +226,10 @@ describe('useBranchBundleSummary', () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
-          useBranchBundleSummary({
+          useRepoOverview({
             provider: 'gh',
             owner: 'codecov',
-            repo: 'codecov',
+            repo: 'cool-repo',
           }),
         { wrapper }
       )
