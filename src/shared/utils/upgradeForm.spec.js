@@ -139,7 +139,7 @@ describe('getDefaultValuesUpgradeForm', () => {
   describe('when current plan is team monthly', () => {
     it.only('returns team monthly plan', () => {
       const accountDetails = {
-        plan: { value: Plans.USERS_TEAMM, quantity: 1 },
+        plan: { value: Plans.USERS_TEAMM, quantity: 1, billingRate: 'monthly' },
       }
 
       const data = getDefaultValuesUpgradeForm({

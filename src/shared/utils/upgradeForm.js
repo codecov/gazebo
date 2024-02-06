@@ -175,7 +175,6 @@ export const getDefaultValuesUpgradeForm = ({
 
   const isMonthlyPlan = accountDetails?.plan?.billingRate === 'monthly'
 
-  // if the current plan is a pro plan, we return it, otherwise select by default the first pro plan
   let newPlan = proPlanYear?.value
   if (isSentryUpgrade && !isSentryPlan(currentPlanValue)) {
     newPlan = isMonthlyPlan ? sentryPlanMonth?.value : sentryPlanYear?.value
