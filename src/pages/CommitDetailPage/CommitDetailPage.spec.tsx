@@ -87,38 +87,6 @@ const mockBundleDropdownSummary = {
       },
     },
   },
-})
-
-const mockCoverageDropdownSummary = {
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      commit: {
-        compareWithParent: {
-          __typename: 'Comparison',
-          patchTotals: {
-            missesCount: 0,
-            partialsCount: 0,
-          },
-        },
-      },
-    },
-  },
-}
-
-const mockBundleDropdownSummary = {
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      commit: {
-        bundleAnalysisCompareWithParent: {
-          __typename: 'BundleAnalysisComparison',
-          sizeDelta: 10000,
-          loadTimeDelta: 0,
-        },
-      },
-    },
-  },
 }
 
 const server = setupServer()

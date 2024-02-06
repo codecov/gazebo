@@ -102,8 +102,8 @@ const BannerContent: React.FC<Props> = ({ errorType }) => {
         <h1 className="font-semibold">Missing Base Report</h1>
         <div className="flex gap-1">
           <span>
-            Unable to compare commit because the commit did not upload a
-            coverage report.
+            Unable to compare commit because the commit did not upload a bundle
+            analysis report.
           </span>
           <A
             hook="compare errors"

@@ -81,4 +81,22 @@ describe('ErrorBanner', () => {
       expect(description).toBeInTheDocument()
     })
   })
+
+  describe('there is a missing base report error', () => {
+    it('renders Missing base report header', () => {
+      render(<ErrorBanner errorType="MissingBaseReport" />, { wrapper })
+
+      const header = screen.getByText('Missing Base Report')
+      expect(header).toBeInTheDocument()
+    })
+
+    it('renders Missing base report description', () => {
+      render(<ErrorBanner errorType="MissingBaseReport" />, { wrapper })
+
+      const description = screen.getByText(
+        /Unable to compare commit because the commit did not upload a bundle analysis report./
+      )
+      expect(description).toBeInTheDocument()
+    })
+  })
 })
