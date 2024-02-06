@@ -51,7 +51,7 @@ function DiffLine({
         aria-label={lineStateToLabel[baseLineState]}
         className={cs(
           'line-number text-ds-gray-quaternary font-mono text-right border-solid px-2 select-none',
-          classNamePerLineState[baseLineState]
+          classNamePerLineState()[baseLineState]
         )}
         ref={baseLineRef}
       >
@@ -69,7 +69,7 @@ function DiffLine({
         aria-label={lineStateToLabel[headLineState]}
         className={cs(
           'line-number text-ds-gray-quaternary font-mono text-right border-solid select-none',
-          classNamePerLineState[headLineState]
+          classNamePerLineState(headTargeted)[headLineState]
         )}
         ref={headLineRef}
       >
@@ -85,7 +85,10 @@ function DiffLine({
       </td>
       <td
         data-testid="affected-lines"
-        className={cs('pl-2 break-all', classNamePerLineContent[headLineState])}
+        className={cs(
+          'pl-2 break-all',
+          classNamePerLineContent(headTargeted)[headLineState]
+        )}
       >
         <div className="flex items-center justify-between">
           <div>
