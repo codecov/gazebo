@@ -55,7 +55,17 @@ afterAll(() => {
 })
 
 const overviewMock = {
-  owner: { repository: { private: false, defaultBranch: 'main' } },
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      private: false,
+      defaultBranch: 'main',
+      oldestCommitAt: '2022-10-10T11:59:59',
+      coverageEnabled: true,
+      bundleAnalysisEnabled: true,
+      languages: [],
+    },
+  },
 }
 
 describe('useTreePaths', () => {
@@ -204,7 +214,17 @@ describe('useTreePaths', () => {
       it('returns a list of objects', async () => {
         setup({
           repoOverviewData: {
-            owner: { repository: { private: false, defaultBranch: 'banana' } },
+            owner: {
+              repository: {
+                __typename: 'Repository',
+                private: false,
+                defaultBranch: 'banana',
+                oldestCommitAt: '2022-10-10T11:59:59',
+                coverageEnabled: true,
+                bundleAnalysisEnabled: true,
+                languages: [],
+              },
+            },
           },
         })
 
