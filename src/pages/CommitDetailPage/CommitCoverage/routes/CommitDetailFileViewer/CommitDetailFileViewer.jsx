@@ -23,6 +23,7 @@ function CommitDetailFileViewer() {
         }
         commit={commit}
         withKey={false}
+        stickyPadding={450}
       />
     </>
   )

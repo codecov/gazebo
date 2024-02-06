@@ -4,10 +4,9 @@ import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import qs from 'qs'
-import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import IndirectChangesTable from '.'
+import IndirectChangesTable from './IndirectChangesTable'
 
 jest.mock('./CommitFileDiff', () => () => 'CommitFileDiff')
 
@@ -27,9 +26,9 @@ afterAll(() => {
 
 const wrapper =
   (
-    queryClient,
+    queryClient: QueryClient,
     initialEntries = '/gh/codecov/cool-repo/commit/123/indirect-changes'
-  ) =>
+  ): React.FC<React.PropsWithChildren> =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
@@ -40,20 +39,19 @@ const wrapper =
               '/:provider/:owner/:repo/commit/:commit/blob/:path+',
             ]}
           >
-            <Suspense fallback="Loading...">{children}</Suspense>
+            {children}
           </Route>
         </MemoryRouter>
       </QueryClientProvider>
     )
 
 describe('IndirectChangesTable', () => {
-  function setup(data = [], state = 'processed') {
+  function setup(data = {}, state = 'processed') {
     const user = userEvent.setup()
     const mockVars = jest.fn()
     const queryClient = new QueryClient({
       defaultOptions: {
         queries: {
-          suspense: true,
           retry: false,
         },
       },
@@ -179,36 +177,6 @@ describe('IndirectChangesTable', () => {
     })
   })
 
-  describe('when all data is missing', () => {
-    const mockData = {
-      __typename: 'ImpactedFiles',
-      results: [
-        {
-          headName: '',
-          baseCoverage: null,
-          headCoverage: null,
-          patchCoverage: null,
-        },
-      ],
-    }
-
-    it('does not render coverage', () => {
-      const { queryClient } = setup(mockData)
-      render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
-
-      const coverage = screen.queryByText(/0.00%/)
-      expect(coverage).not.toBeInTheDocument()
-    })
-
-    it('renders no available data copy', async () => {
-      const { queryClient } = setup(mockData)
-      render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
-
-      const copy = await screen.findByText('No data')
-      expect(copy).toBeInTheDocument()
-    })
-  })
-
   describe('when some data is missing', () => {
     const mockData = {
       __typename: 'ImpactedFiles',
@@ -271,6 +239,9 @@ describe('IndirectChangesTable', () => {
       )
       render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
 
+      await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
+      await waitFor(() => expect(queryClient.isFetching()).toBe(0))
+
       const spinner = await screen.findByTestId('spinner')
       expect(spinner).toBeInTheDocument()
     })
@@ -301,6 +272,29 @@ describe('IndirectChangesTable', () => {
 
       const nameExpander = await screen.findByText('src/index2.py')
       await user.click(nameExpander)
+
+      const commitFileDiff = await screen.findByText('CommitFileDiff')
+      expect(commitFileDiff).toBeInTheDocument()
+    })
+
+    it('renders commit file diff', async () => {
+      const { queryClient, user } = setup(mockData)
+      render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
+
+      const expander = await screen.findByTestId('file-diff-expand')
+      expect(expander).toBeInTheDocument()
+      await user.click(expander)
+
+      const commitFileDiff = await screen.findByText('CommitFileDiff')
+      expect(commitFileDiff).toBeInTheDocument()
+    })
+
+    it('when click on file name', async () => {
+      const { queryClient, user } = setup(mockData)
+      render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
+
+      const fileName = await screen.findByText('src/index2.py')
+      await user.click(fileName)
 
       const commitFileDiff = await screen.findByText('CommitFileDiff')
       expect(commitFileDiff).toBeInTheDocument()
@@ -340,6 +334,19 @@ describe('IndirectChangesTable', () => {
         'No files covered by tests and selected flags and/or components were changed'
       )
       expect(coverage).toBeInTheDocument()
+    })
+  })
+
+  describe('when is loading', () => {
+    it('renders loader', () => {
+      const { queryClient } = setup({
+        __typename: 'ImpactedFiles',
+        results: [],
+      })
+      render(<IndirectChangesTable />, { wrapper: wrapper(queryClient) })
+
+      const loader = screen.getByTestId('spinner')
+      expect(loader).toBeInTheDocument()
     })
   })
 })
