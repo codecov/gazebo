@@ -76,6 +76,8 @@ const flagsComparisonsSchema = z
   })
   .nullable()
 
+export type FlagsComparison = z.infer<typeof flagsComparisonsSchema>
+
 const ComparisonSchema = z.object({
   __typename: z.literal('Comparison'),
   state: z.string(),
