@@ -117,6 +117,26 @@ describe('UpdateButton', () => {
       })
     })
 
+    describe('when the button is invalid', () => {
+      it('renders a disabled valid Update button', async () => {
+        setup({ planValue: Plans.USERS_PR_INAPPY })
+
+        const props = {
+          isValid: false,
+          newPlan: Plans.USERS_PR_INAPPY,
+          seats: 6,
+        }
+
+        render(<UpdateButton {...props} />, {
+          wrapper,
+        })
+
+        const button = await screen.findByText('Update')
+        expect(button).toBeInTheDocument()
+        expect(button).toBeDisabled()
+      })
+    })
+
     describe('when there are no changes in plan or seats', () => {
       it('renders a disabled valid Update button', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
