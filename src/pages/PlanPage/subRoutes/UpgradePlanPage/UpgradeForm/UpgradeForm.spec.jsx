@@ -1899,6 +1899,8 @@ describe('UpgradeForm', () => {
         it('renders success notification when upgrading seats with a monthly plan', async () => {
           const { patchRequest, user } = setup({
             successfulPatchRequest: true,
+            hasTeamPlans: true,
+            multipleTiers: true,
             planValue: Plans.USERS_TEAMY,
           })
           render(<UpgradeForm {...props} />, { wrapper: wrapper() })
