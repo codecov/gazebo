@@ -87,4 +87,18 @@ describe('BundleContent', () => {
     const report = await screen.findByText(/Report:/)
     expect(report).toBeInTheDocument()
   })
+
+  it('renders the bundle table', async () => {
+    setup()
+    render(<BundleContent />, { wrapper })
+
+    const bundleName = await screen.findByText(/bundle1/)
+    expect(bundleName).toBeInTheDocument()
+
+    const bundleSize = await screen.findByText(/50B/)
+    expect(bundleSize).toBeInTheDocument()
+
+    const bundleLoadTime = await screen.findByText(/100s/)
+    expect(bundleLoadTime).toBeInTheDocument()
+  })
 })
