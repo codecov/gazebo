@@ -63,8 +63,10 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }) {
     ),
     mode: 'onChange',
   })
+
   const newPlan = watch('newPlan')
   const seats = watch('seats')
+
   return (
     <form
       className="flex flex-col gap-4 border p-4 text-ds-gray-nonary md:w-2/3"

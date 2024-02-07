@@ -304,6 +304,7 @@ describe('UpgradeForm', () => {
             return res(ctx.status(500), ctx.json({ success: false }))
           }
           const body = await req.json()
+
           patchRequest(body)
 
           return res(ctx.status(200), ctx.json({ success: false }))
