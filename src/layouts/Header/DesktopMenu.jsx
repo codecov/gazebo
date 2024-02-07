@@ -95,13 +95,6 @@ function DesktopMenu() {
         <A to={{ pageName: 'blog' }} variant="header" showExternalIcon={false}>
           Blog
         </A>
-        <A
-          to={{ pageName: 'feedback' }}
-          variant="header"
-          showExternalIcon={false}
-        >
-          Feedback
-        </A>
       </div>
       {!!currentUser ? (
         <div className="mx-2 flex items-center gap-4 md:mx-4">
