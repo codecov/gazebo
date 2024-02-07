@@ -260,7 +260,7 @@ describe('CommitCoverageDropdown', () => {
         expect(bundleReport).toBeInTheDocument()
 
         const increaseMessage = await screen.findByText(
-          /1 line in your changes are missing coverage/
+          /1 line in your changes is missing coverage/
         )
         expect(increaseMessage).toBeInTheDocument()
       })

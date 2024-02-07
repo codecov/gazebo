@@ -51,9 +51,7 @@ const CoverageMessage: React.FC = () => {
     }
 
     if (totalCount === 1) {
-      return (
-        <>{totalCount} line in your changes are missing coverage &#x26A0;</>
-      )
+      return <>{totalCount} line in your changes is missing coverage &#x26A0;</>
     }
 
     return <>{totalCount} lines in your changes are missing coverage &#x26A0;</>

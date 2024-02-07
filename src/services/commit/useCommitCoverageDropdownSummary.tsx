@@ -40,6 +40,10 @@ const CompareWithParentSchema = z
   ])
   .nullable()
 
+const NodeSchema = z.object({
+  node: z.object({ state: z.nativeEnum(UploadStateEnum) }),
+})
+
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   commit: z
@@ -47,13 +51,7 @@ const RepositorySchema = z.object({
       compareWithParent: CompareWithParentSchema.nullable(),
       uploads: z
         .object({
-          edges: z.array(
-            z
-              .object({
-                node: z.object({ state: z.nativeEnum(UploadStateEnum) }),
-              })
-              .nullable()
-          ),
+          edges: z.array(NodeSchema.nullable()),
         })
         .nullish(),
     })
