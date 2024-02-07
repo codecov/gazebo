@@ -7,11 +7,13 @@ import qs from 'qs'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { ImpactedFileType } from 'services/commit'
+
 import FilesChangedTable from './FilesChangedTable'
 
 jest.mock('../shared/CommitFileDiff', () => () => 'CommitFileDiff')
 
-const mockCommitData = ({ data, state }) => ({
+const mockCommitData = (data: ImpactedFileType, state: string) => ({
   owner: {
     repository: {
       __typename: 'Repository',
@@ -57,7 +59,10 @@ afterAll(() => {
 })
 
 const wrapper =
-  (queryClient, initialEntries = '/gh/vax/keyleth/commit/123') =>
+  (
+    queryClient: QueryClient,
+    initialEntries: string = '/gh/vax/keyleth/commit/123'
+  ): React.FC<React.PropsWithChildren> =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
@@ -75,7 +80,7 @@ const wrapper =
     )
 
 describe('FilesChangedTable', () => {
-  function setup(data = [], state = 'processed') {
+  function setup(data: any = null, state = 'processed') {
     const mockVars = jest.fn()
     const user = userEvent.setup()
     const queryClient = new QueryClient({
@@ -90,7 +95,7 @@ describe('FilesChangedTable', () => {
     server.use(
       graphql.query('Commit', (req, res, ctx) => {
         mockVars(req.variables)
-        return res(ctx.status(200), ctx.data(mockCommitData({ data, state })))
+        return res(ctx.status(200), ctx.data(mockCommitData(data, state)))
       })
     )
 
