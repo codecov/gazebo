@@ -384,6 +384,50 @@ describe('FilesChangedTable', () => {
     })
   })
 
+  describe('components query param is set', () => {
+    const mockData = {
+      __typename: 'ImpactedFiles',
+      results: [
+        {
+          headName: 'src/index2.py',
+          baseCoverage: {
+            coverage: 62.5,
+          },
+          headCoverage: {
+            coverage: 50.0,
+          },
+          patchCoverage: {
+            coverage: 37.5,
+          },
+        },
+      ],
+    }
+
+    it('passes components as query arg', async () => {
+      const { queryClient, mockVars } = setup(mockData)
+
+      const path = `/gh/codecov/cool-repo/commit/123${qs.stringify(
+        { components: ['component-1'] },
+        { addQueryPrefix: true }
+      )}`
+      render(<FilesChangedTable />, { wrapper: wrapper(queryClient, path) })
+
+      await waitFor(() =>
+        expect(mockVars).toBeCalledWith({
+          commitid: '123',
+          filters: expect.objectContaining({
+            components: ['component-1'],
+            hasUnintendedChanges: false,
+          }),
+          owner: 'codecov',
+          provider: 'gh',
+          repo: 'cool-repo',
+          isTeamPlan: false,
+        })
+      )
+    })
+  })
+
   describe('sorting the table', () => {
     const user = userEvent.setup()
     const mockData = {
