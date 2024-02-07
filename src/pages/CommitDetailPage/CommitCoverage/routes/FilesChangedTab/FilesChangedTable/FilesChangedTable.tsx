@@ -120,10 +120,17 @@ function getColumns({ commitId }: { commitId: string }) {
       cell: ({ getValue }) => {
         const value = getValue()
 
-        if ((value && !isNaN(value)) || value === 0) {
-          return <span>{value?.toFixed(2)}%</span>
-        }
-        return <>-</>
+        return (
+          <div className="flex w-full justify-end">
+            <TotalsNumber
+              value={value}
+              plain={true}
+              light={false}
+              showChange={false}
+              large={false}
+            />
+          </div>
+        )
       },
     }),
     columnHelper.accessor('patchCoverage.coverage', {
@@ -132,10 +139,17 @@ function getColumns({ commitId }: { commitId: string }) {
       cell: ({ getValue }) => {
         const value = getValue()
 
-        if ((value && !isNaN(value)) || value === 0) {
-          return <span>{value?.toFixed(2)}%</span>
-        }
-        return <>-</>
+        return (
+          <div className="flex w-full justify-end">
+            <TotalsNumber
+              value={value}
+              plain={false}
+              light={false}
+              showChange={false}
+              large={false}
+            />
+          </div>
+        )
       },
     }),
     columnHelper.accessor(
@@ -175,7 +189,6 @@ function getColumns({ commitId }: { commitId: string }) {
 
 function RenderSubComponent({ row }: { row: Row<ImpactedFileType> }) {
   const nameColumn = row.original?.headName
-
   return (
     <Suspense fallback={<Loader />}>
       <CommitFileDiff path={nameColumn} />
@@ -293,8 +306,8 @@ export default function FilesChangedTable() {
                   data-sortable="true"
                   onClick={header.column.getToggleSortingHandler()}
                   className={cs({
-                    'w-8/12': header.id === 'name',
-                    'w-1/12 flex justify-end': header.id !== 'name',
+                    'w-6/12': header.id === 'name',
+                    'w-2/12 flex justify-end': header.id !== 'name',
                   })}
                   {...(isNumericValue(header.id)
                     ? {
@@ -339,8 +352,8 @@ export default function FilesChangedTable() {
                           }
                         : {})}
                       className={cs({
-                        'w-8/12': cell.column.id === 'name',
-                        'w-1/12 justify-end	flex': cell.column.id !== 'name',
+                        'w-6/12': cell.column.id === 'name',
+                        'w-2/12 justify-end	flex': cell.column.id !== 'name',
                       })}
                     >
                       {flexRender(

@@ -156,7 +156,7 @@ describe('FilesChangedTable', () => {
   })
 
   describe('when all data is missing', () => {
-    const mockData = {
+    const mockEmptyData = {
       __typename: 'ImpactedFiles',
       results: [
         {
@@ -169,7 +169,7 @@ describe('FilesChangedTable', () => {
     }
 
     it('does not render coverage', () => {
-      const { queryClient } = setup(mockData)
+      const { queryClient } = setup(mockEmptyData)
       render(<FilesChangedTable />, { wrapper: wrapper(queryClient) })
 
       const coverage = screen.queryByText(/0.00%/)
@@ -177,7 +177,7 @@ describe('FilesChangedTable', () => {
     })
 
     it('renders no available data copy', async () => {
-      const { queryClient } = setup(mockData)
+      const { queryClient } = setup(mockEmptyData)
       render(<FilesChangedTable />, { wrapper: wrapper(queryClient) })
 
       const copy = await screen.findByText('No data')
@@ -218,11 +218,11 @@ describe('FilesChangedTable', () => {
       expect(coverage).toBeInTheDocument()
     })
 
-    it('renders dash for change', async () => {
+    it('renders no data for change', async () => {
       const { queryClient } = setup(mockData)
       render(<FilesChangedTable />, { wrapper: wrapper(queryClient) })
 
-      const dash = await screen.findByText('-')
+      const dash = await screen.findByText('No data')
       expect(dash).toBeInTheDocument()
     })
   })
@@ -302,8 +302,10 @@ describe('FilesChangedTable', () => {
       const { queryClient, user } = setup(mockData)
       render(<FilesChangedTable />, { wrapper: wrapper(queryClient) })
 
-      const nameExpander = await screen.findByText('src/index2.py')
-      await user.click(nameExpander)
+      expect(await screen.findByTestId('file-diff-expand')).toBeTruthy()
+      const expander = screen.getByTestId('file-diff-expand')
+      expect(expander).toBeInTheDocument()
+      await user.click(expander)
 
       const commitFileDiff = await screen.findByText('CommitFileDiff')
       expect(commitFileDiff).toBeInTheDocument()
