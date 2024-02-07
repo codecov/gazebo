@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useRepos } from 'services/repos'
@@ -55,7 +55,12 @@ function RepoSelector({
   const { data: tierName } = useTier({ provider, owner })
   const shouldDisplayPublicReposOnly = tierName === TierNames.TEAM ? true : null
 
-  const { data, isLoading, fetchNextPage, hasNextPage } = useRepos({
+  const {
+    data: reposData,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+  } = useRepos({
     activated: active,
     sortItem,
     term: search,
@@ -65,6 +70,11 @@ function RepoSelector({
     isPublic: shouldDisplayPublicReposOnly,
   })
 
+  const reposSelectData = useMemo(() => {
+    const data = reposData?.pages?.map((page) => page?.repos).flat()
+    return data ?? []
+  }, [reposData?.pages])
+
   return (
     <div className="flex w-52 flex-col gap-2">
       <span className="font-semibold">Repositories</span>
@@ -72,7 +82,7 @@ function RepoSelector({
         hook="repo-chart-selector"
         ariaName="Select repos to choose"
         dataMarketing="repo-chart-selector"
-        items={formatDataForMultiselect(data?.repos)}
+        items={formatDataForMultiselect(reposSelectData)}
         onChange={onSelectChangeHandler}
         resourceName="Repo"
         value={selectedRepos}
