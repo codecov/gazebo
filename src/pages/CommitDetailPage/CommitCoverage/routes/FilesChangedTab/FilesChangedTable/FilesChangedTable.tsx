@@ -291,27 +291,21 @@ export default function FilesChangedTable() {
                 <div
                   key={header.id}
                   data-sortable="true"
-                  {...{
-                    onClick: header.column.getToggleSortingHandler(),
-                  }}
+                  onClick={header.column.getToggleSortingHandler()}
                   className={cs({
                     'w-8/12': header.id === 'name',
-                    'w-2/12':
-                      header.id === 'missedLines' ||
-                      header.id === 'patchPercentage',
+                    'w-1/12 flex justify-end': header.id !== 'name',
                   })}
+                  {...(isNumericValue(header.id)
+                    ? {
+                        'data-type': 'numeric',
+                      }
+                    : {})}
                 >
                   <div
                     className={cs('flex gap-1 items-center', {
                       'flex-row-reverse justify-end': header.id === 'name',
-                      'justify-end': header.id === 'patchPercentage',
                     })}
-                    {...(header.id === 'patchPercentage' ||
-                    header.id === 'missedLines'
-                      ? {
-                          'data-type': 'numeric',
-                        }
-                      : {})}
                   >
                     <span
                       className="text-ds-blue-darker"
@@ -346,9 +340,7 @@ export default function FilesChangedTable() {
                         : {})}
                       className={cs({
                         'w-8/12': cell.column.id === 'name',
-                        'w-2/12':
-                          cell.column.id === 'missedLines' ||
-                          cell.column.id === 'patchPercentage',
+                        'w-1/12 justify-end	flex': cell.column.id !== 'name',
                       })}
                     >
                       {flexRender(
