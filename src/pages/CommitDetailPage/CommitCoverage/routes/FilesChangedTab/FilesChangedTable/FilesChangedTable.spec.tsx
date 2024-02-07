@@ -51,6 +51,7 @@ beforeAll(() => {
 })
 
 beforeEach(() => {
+  jest.resetAllMocks()
   server.resetHandlers()
 })
 
@@ -370,13 +371,187 @@ describe('FilesChangedTable', () => {
       await waitFor(() =>
         expect(mockVars).toBeCalledWith({
           commitid: '123',
-          filters: { flags: ['flag-1'], hasUnintendedChanges: false },
+          filters: expect.objectContaining({
+            flags: ['flag-1'],
+            hasUnintendedChanges: false,
+          }),
           owner: 'codecov',
           provider: 'gh',
           repo: 'cool-repo',
           isTeamPlan: false,
         })
       )
+    })
+  })
+
+  describe('sorting the table', () => {
+    const user = userEvent.setup()
+    const mockData = {
+      __typename: 'ImpactedFiles',
+      results: [
+        {
+          headName: 'src/index2.py',
+          baseCoverage: {
+            coverage: 62.5,
+          },
+          headCoverage: {
+            coverage: 50.0,
+          },
+          patchCoverage: {
+            coverage: 37.5,
+          },
+        },
+        {
+          headName: 'src/index3.py',
+          baseCoverage: {
+            coverage: 64.5,
+          },
+          headCoverage: {
+            coverage: 52.0,
+          },
+          patchCoverage: {
+            coverage: 31.5,
+          },
+        },
+      ],
+    }
+
+    it('sorts by name', async () => {
+      const { queryClient, mockVars } = setup(mockData)
+
+      render(<FilesChangedTable />, { wrapper: wrapper(queryClient) })
+
+      const header = await screen.findByText(/Name/)
+      expect(header).toBeInTheDocument()
+      await user.click(header)
+      await waitFor(() => {
+        expect(mockVars).toHaveBeenCalledWith(
+          expect.objectContaining({
+            filters: expect.objectContaining({
+              ordering: {
+                direction: 'ASC',
+                parameter: 'FILE_NAME',
+              },
+            }),
+          })
+        )
+      })
+      await user.click(header)
+      await waitFor(() => {
+        expect(mockVars).toHaveBeenCalledWith(
+          expect.objectContaining({
+            filters: expect.objectContaining({
+              ordering: {
+                direction: 'DESC',
+                parameter: 'FILE_NAME',
+              },
+            }),
+          })
+        )
+      })
+    })
+
+    it('sorts by head coverage', async () => {
+      const { queryClient, mockVars } = setup(mockData)
+      render(<FilesChangedTable />, { wrapper: wrapper(queryClient) })
+      const header = await screen.findByText(/HEAD/)
+      expect(header).toBeInTheDocument()
+      await user.click(header)
+      await waitFor(() => {
+        expect(mockVars).toHaveBeenCalledWith(
+          expect.objectContaining({
+            filters: expect.objectContaining({
+              ordering: {
+                direction: 'ASC',
+                parameter: 'HEAD_COVERAGE',
+              },
+            }),
+          })
+        )
+      })
+      await user.click(header)
+      await waitFor(() => {
+        expect(mockVars).toHaveBeenCalledWith(
+          expect.objectContaining({
+            filters: expect.objectContaining({
+              ordering: {
+                direction: 'DESC',
+                parameter: 'HEAD_COVERAGE',
+              },
+            }),
+          })
+        )
+      })
+    })
+
+    it('sorts by change', async () => {
+      const { queryClient, mockVars } = setup(mockData)
+
+      render(<FilesChangedTable />, { wrapper: wrapper(queryClient) })
+
+      const header = await screen.findByText(/Change/)
+      expect(header).toBeInTheDocument()
+      await user.click(header)
+      await waitFor(() => {
+        expect(mockVars).toHaveBeenCalledWith(
+          expect.objectContaining({
+            filters: expect.objectContaining({
+              ordering: {
+                direction: 'DESC',
+                parameter: 'CHANGE_COVERAGE',
+              },
+            }),
+          })
+        )
+      })
+      await user.click(header)
+      await waitFor(() => {
+        expect(mockVars).toHaveBeenCalledWith(
+          expect.objectContaining({
+            filters: expect.objectContaining({
+              ordering: {
+                direction: 'ASC',
+                parameter: 'CHANGE_COVERAGE',
+              },
+            }),
+          })
+        )
+      })
+    })
+
+    it.only('sorts by patch coverage', async () => {
+      const { queryClient, mockVars } = setup(mockData)
+
+      render(<FilesChangedTable />, { wrapper: wrapper(queryClient) })
+
+      const header = await screen.findByText(/Patch %/)
+      expect(header).toBeInTheDocument()
+      await user.click(header)
+      await waitFor(() => {
+        expect(mockVars).toHaveBeenCalledWith(
+          expect.objectContaining({
+            filters: expect.objectContaining({
+              ordering: {
+                direction: 'DESC',
+                parameter: 'PATCH_COVERAGE',
+              },
+            }),
+          })
+        )
+      })
+      await user.click(header)
+      await waitFor(() => {
+        expect(mockVars).toHaveBeenCalledWith(
+          expect.objectContaining({
+            filters: expect.objectContaining({
+              ordering: {
+                direction: 'ASC',
+                parameter: 'PATCH_COVERAGE',
+              },
+            }),
+          })
+        )
+      })
     })
   })
 })

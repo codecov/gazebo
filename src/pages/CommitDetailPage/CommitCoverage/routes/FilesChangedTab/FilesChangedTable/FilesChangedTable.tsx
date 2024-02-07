@@ -30,7 +30,7 @@ const columnHelper = createColumnHelper<ImpactedFileType>()
 const isNumericValue = (value: string) =>
   value === 'patchPercentage' || value === 'head' || value === 'change'
 
-export function getFilter(sorting: Array<{ id: string; desc: boolean }>) {
+function getFilter(sorting: Array<{ id: string; desc: boolean }>) {
   const state = sorting.at(0)
 
   if (state) {
@@ -48,7 +48,7 @@ export function getFilter(sorting: Array<{ id: string; desc: boolean }>) {
     if (state.id === 'coverage') {
       return {
         direction,
-        parameter: OrderingParameter.MISSES_COUNT,
+        parameter: OrderingParameter.HEAD_COVERAGE,
       }
     }
 
@@ -62,7 +62,7 @@ export function getFilter(sorting: Array<{ id: string; desc: boolean }>) {
     if (state.id === 'change') {
       return {
         direction,
-        parameter: OrderingParameter.HEAD_COVERAGE,
+        parameter: OrderingParameter.CHANGE_COVERAGE,
       }
     }
   }
@@ -241,6 +241,7 @@ export default function FilesChangedTable() {
       hasUnintendedChanges: false,
       flags: flags,
       components: components,
+      ordering: getFilter(sorting),
     },
   })
 
