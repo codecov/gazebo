@@ -41,3 +41,10 @@ export const formatSizeToString = (bytes: number) => {
     unit: 'gigabyte',
   }).format(bytes / GIGABYTE)
 }
+
+export const formatTimeToString = (seconds: number) => {
+  return Intl.NumberFormat('en-US', {
+    ...formatSettings,
+    unit: 'second',
+  }).format(seconds)
+}

@@ -25,6 +25,7 @@ function FileViewer() {
         }
         commit={data?.pull?.head?.commitid}
         withKey={false}
+        stickyPadding={410}
       />
     </>
   )

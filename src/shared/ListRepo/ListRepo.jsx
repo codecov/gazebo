@@ -4,7 +4,7 @@ import { Suspense, useContext } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
-import { nonActiveOrderingOptions, orderingOptions } from 'services/repos'
+import { orderingOptions } from 'services/repos'
 import { TierNames, useTier } from 'services/tier'
 import { ActiveContext } from 'shared/context'
 import { useFlags } from 'shared/featureFlags'
@@ -39,17 +39,11 @@ function ListRepo({ canRefetch }) {
 
   const repoDisplay = useContext(ActiveContext)
 
-  const orderOptions =
-    repoDisplay === repoDisplayOptions.INACTIVE.text
-      ? nonActiveOrderingOptions
-      : orderingOptions
-
-  const sortItem =
-    orderOptions.find(
-      (option) =>
-        option.ordering === params.ordering &&
-        option.direction === params.direction
-    ) || orderOptions[0]
+  const sortItem = orderingOptions.find(
+    (option) =>
+      option.ordering === params.ordering &&
+      option.direction === params.direction
+  )
 
   const loadingState = (
     <div className="flex justify-center py-8">
@@ -60,14 +54,7 @@ function ListRepo({ canRefetch }) {
   return (
     <>
       <OrgControlTable
-        sortItem={sortItem}
         searchValue={params.search}
-        setSortItem={(sort) => {
-          updateParams({
-            ordering: sort.ordering,
-            direction: sort.direction,
-          })
-        }}
         repoDisplay={repoDisplay}
         setRepoDisplay={(repoDisplay) =>
           updateParams({
@@ -78,7 +65,6 @@ function ListRepo({ canRefetch }) {
           updateParams({ search })
         }}
         canRefetch={canRefetch}
-        showTeamRepos={showTeamRepos}
       />
       <Suspense fallback={loadingState}>
         {showTeamRepos ? (

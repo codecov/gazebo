@@ -71,7 +71,17 @@ const mockNoHeadReport = {
 }
 
 const mockOverview = {
-  owner: { repository: { private: false, defaultBranch: 'main' } },
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      private: false,
+      defaultBranch: 'main',
+      oldestCommitAt: '2022-10-10T11:59:59',
+      coverageEnabled: true,
+      bundleAnalysisEnabled: true,
+      languages: [],
+    },
+  },
 }
 
 const wrapper =

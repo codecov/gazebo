@@ -82,16 +82,26 @@ afterAll(() => {
 describe('ChartSelectors', () => {
   afterEach(() => jest.resetAllMocks())
 
-  function setup(useReposMock, tierValue = TierNames.PRO) {
+  function setup({ hasNextPage = false, tierValue = TierNames.PRO }) {
     // https://github.com/testing-library/user-event/issues/1034
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
 
     const fetchNextPage = jest.fn()
 
     useRepos.mockReturnValue({
-      data: { repos: repositories },
+      data: {
+        pages: [
+          {
+            repos: repositories,
+            pageInfo: {
+              hasNextPage: true,
+              endCursor: 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
+            },
+          },
+        ],
+      },
       fetchNextPage,
-      hasNextPage: useReposMock?.hasNextPage || true,
+      hasNextPage,
     })
 
     server.use(
@@ -107,7 +117,7 @@ describe('ChartSelectors', () => {
   }
 
   describe('renders component', () => {
-    beforeEach(() => setup())
+    beforeEach(() => setup({}))
 
     it('renders date picker', async () => {
       render(
@@ -166,7 +176,7 @@ describe('ChartSelectors', () => {
 
   describe('interacting with the date picker', () => {
     it('updates the location params', async () => {
-      const { user } = setup()
+      const { user } = setup({})
       const updateParams = jest.fn()
       render(
         <ChartSelectors
@@ -202,7 +212,7 @@ describe('ChartSelectors', () => {
 
     describe('start date and end date set and user clicks on the date', () => {
       it('clears the params', async () => {
-        const { user } = setup()
+        const { user } = setup({})
         const updateParams = jest.fn()
         const testDate = new Date('2022-03-31T00:00:00.000Z')
 
@@ -241,7 +251,7 @@ describe('ChartSelectors', () => {
 
   describe('interacting with the multi select', () => {
     it('displays list of repos when opened', async () => {
-      const { user } = setup()
+      const { user } = setup({})
       render(
         <ChartSelectors
           active={true}
@@ -267,7 +277,7 @@ describe('ChartSelectors', () => {
 
     describe('when item clicked', () => {
       it('updates button value', async () => {
-        const { user } = setup()
+        const { user } = setup({})
         render(
           <ChartSelectors
             active={true}
@@ -292,7 +302,7 @@ describe('ChartSelectors', () => {
       })
 
       it('updates url params', async () => {
-        const { user } = setup()
+        const { user } = setup({})
         const updateParams = jest.fn()
         render(
           <ChartSelectors
@@ -321,7 +331,7 @@ describe('ChartSelectors', () => {
 
     describe('when searching for a repo', () => {
       it('displays the searchbox', async () => {
-        const { user } = setup()
+        const { user } = setup({})
         render(
           <ChartSelectors
             active={true}
@@ -343,7 +353,7 @@ describe('ChartSelectors', () => {
       })
 
       it('updates the textbox value when typing', async () => {
-        const { user } = setup()
+        const { user } = setup({})
         render(
           <ChartSelectors
             active={true}
@@ -386,7 +396,7 @@ describe('ChartSelectors', () => {
     describe('when onLoadMore is triggered', () => {
       describe('when there is a next page', () => {
         it('calls fetchNextPage', async () => {
-          const { user, fetchNextPage } = setup()
+          const { user, fetchNextPage } = setup({ hasNextPage: true })
           useIntersection.mockReturnValue({
             isIntersecting: true,
           })
@@ -439,7 +449,7 @@ describe('ChartSelectors', () => {
 
   describe('interacting with clear filters', () => {
     it('updates params', async () => {
-      const { user } = setup()
+      const { user } = setup({})
       const updateParams = jest.fn()
       render(
         <ChartSelectors
@@ -471,7 +481,7 @@ describe('ChartSelectors', () => {
 
   describe('owner is on a team plan', () => {
     it('renders upgrade cta', async () => {
-      setup({ hasNextPage: false }, TierNames.TEAM)
+      setup({ hasNextPage: false, tierValue: TierNames.TEAM })
       render(
         <ChartSelectors
           active={true}

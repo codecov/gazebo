@@ -26,11 +26,11 @@ function NoRepoCoverage({
 }
 
 NoRepoCoverage.propTypes = {
-  owner: PropTypes.string.isRequired,
-  repoName: PropTypes.string.isRequired,
-  isCurrentUserPartOfOrg: PropTypes.bool.isRequired,
-  activated: PropTypes.bool.isRequired,
-  active: PropTypes.bool.isRequired,
+  owner: PropTypes.string,
+  repoName: PropTypes.string,
+  isCurrentUserPartOfOrg: PropTypes.bool,
+  activated: PropTypes.bool,
+  active: PropTypes.bool,
 }
 
 export default NoRepoCoverage

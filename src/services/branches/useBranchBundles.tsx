@@ -35,6 +35,7 @@ const RepositorySchema = z.object({
     .object({
       head: z
         .object({
+          commitid: z.string(),
           bundleAnalysisReport: BundleReportSchema.nullable(),
         })
         .nullable(),
@@ -67,6 +68,7 @@ const query = `query BranchBundleSummaryData(
       ... on Repository {
         branch(name: $branch) {
           head {
+            commitid
             bundleAnalysisReport {
               __typename
               ... on BundleAnalysisReport {
@@ -132,7 +134,6 @@ export const useBranchBundleSummary = ({
         const parsedData = BranchBundleSummaryDataSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          console.debug(parsedData.error)
           return Promise.reject({
             status: 404,
             data: {},

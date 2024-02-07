@@ -22,6 +22,17 @@ const wrapper = ({ children }) => (
   </MemoryRouter>
 )
 
+const pullWrapper =
+  (initialEntries = '/gh/codecov/gazebo/pull/123') =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
+
 const server = setupServer()
 
 beforeAll(() => server.listen())
@@ -90,6 +101,27 @@ describe('FlagsSelect', () => {
           },
         }
         return res(ctx.status(200), ctx.data(dataReturned))
+      }),
+      graphql.query('PullFlagsSelect', (req, res, ctx) => {
+        const dataReturned = {
+          owner: {
+            repository: {
+              pull: {
+                compareWithBase: {
+                  flagComparisons: [
+                    {
+                      name: 'unit',
+                    },
+                    {
+                      name: 'unit-latest-uploader',
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        }
+        return res(ctx.status(200), ctx.data(dataReturned))
       })
     )
   }
@@ -143,6 +175,32 @@ describe('FlagsSelect', () => {
         expect(result.current.data).toEqual([
           ...expectedInitialData,
           ...expectedNextPageData,
+        ])
+      )
+    })
+  })
+
+  describe('when pull in params', () => {
+    beforeEach(() => {
+      setup()
+    })
+
+    it('calls the pull flag select query', async () => {
+      const { result } = renderHook(() => useRepoFlagsSelect(), {
+        wrapper: pullWrapper(),
+      })
+
+      await waitFor(() => result.current.isFetching)
+      await waitFor(() => !result.current.isFetching)
+
+      await waitFor(() =>
+        expect(result.current.data).toEqual([
+          {
+            name: 'unit',
+          },
+          {
+            name: 'unit-latest-uploader',
+          },
         ])
       )
     })

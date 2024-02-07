@@ -8,7 +8,7 @@ import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
 
 const orbsString = `orbs:
-  codecov: codecov/codecov@4.0.0
+  codecov: codecov/codecov@4.0.1
 workflows:
   upload-to-codecov:
     jobs:

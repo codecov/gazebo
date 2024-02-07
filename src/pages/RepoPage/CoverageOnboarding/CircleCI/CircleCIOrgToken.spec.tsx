@@ -202,7 +202,7 @@ describe('CircleCIOrgToken', () => {
     it('renders yaml code', async () => {
       render(<CircleCIOrgToken />, { wrapper })
 
-      const yamlCode = await screen.findByText(/codecov\/codecov@4.0.0/)
+      const yamlCode = await screen.findByText(/codecov\/codecov@4.0.1/)
       expect(yamlCode).toBeInTheDocument()
     })
   })

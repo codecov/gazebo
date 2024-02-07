@@ -21,7 +21,7 @@ function GitHubActionsOrgToken() {
   const tokenCopy = orgUploadToken ? 'global' : 'repository'
 
   const orgTokenActionString = `- name: Upload coverage reports to Codecov
-  uses: codecov/codecov-action@v4
+  uses: codecov/codecov-action@v4.0.1
   env:
     token: \${{ secrets.CODECOV_TOKEN }}
     slug: ${owner}/${repo}
