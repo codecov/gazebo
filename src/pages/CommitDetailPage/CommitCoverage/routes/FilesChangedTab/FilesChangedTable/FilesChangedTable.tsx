@@ -10,9 +10,9 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
-import { isArray, isNumber } from 'lodash'
+import { isArray, isEmpty } from 'lodash'
 import qs from 'qs'
-import { Fragment, Suspense, useMemo, useState } from 'react'
+import { Fragment, lazy, Suspense, useMemo, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import { ImpactedFileType, useCommit } from 'services/commit'
@@ -23,41 +23,12 @@ import Spinner from 'ui/Spinner'
 import 'ui/FileList/FileList.css'
 import TotalsNumber from 'ui/TotalsNumber'
 
-import CommitFileDiff from '../shared/CommitFileDiff'
+const CommitFileDiff = lazy(() => import('../shared/CommitFileDiff'))
 
 const columnHelper = createColumnHelper<ImpactedFileType>()
 
 const isNumericValue = (value: string) =>
-  value === 'missedLines' ||
-  value === 'patchPercentage' ||
-  value === 'head' ||
-  value === 'change'
-
-const getFileData = (row: any, commit: any) => {
-  const headCov = row?.headCoverage?.coverage
-  const patchCov = row?.patchCoverage?.coverage
-  const baseCov = row?.baseCoverage?.coverage
-
-  let change = Number.NaN
-  if (isNumber(headCov) && isNumber(baseCov)) {
-    change = headCov - baseCov
-  }
-
-  let hasData = false
-  if (isNumber(headCov) || isNumber(patchCov)) {
-    hasData = true
-  }
-
-  return {
-    headCoverage: headCov,
-    patchCoverage: patchCov,
-    baseCoverage: baseCov,
-    hasData,
-    change,
-    headName: row?.headName,
-    commit,
-  }
-}
+  value === 'patchPercentage' || value === 'head' || value === 'change'
 
 export function getFilter(sorting: Array<{ id: string; desc: boolean }>) {
   const state = sorting.at(0)
@@ -81,7 +52,7 @@ export function getFilter(sorting: Array<{ id: string; desc: boolean }>) {
       }
     }
 
-    if (state.id === 'patch') {
+    if (state.id === 'patchPercentage') {
       return {
         direction,
         parameter: OrderingParameter.PATCH_COVERAGE,
@@ -228,7 +199,7 @@ interface URLParams {
 export default function FilesChangedTable() {
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const [sorting, setSorting] = useState<SortingState>([
-    { id: 'missedLines', desc: true },
+    { id: 'coverage', desc: false },
   ])
   const { provider, owner, repo, commit: commitSha } = useParams<URLParams>()
   const location = useLocation()
@@ -273,13 +244,9 @@ export default function FilesChangedTable() {
     return []
   }, [commit?.compareWithParent])
 
-  const formattedData = filesChanged?.map((row: any) =>
-    getFileData(row, commit)
-  )
-
   const table = useReactTable({
     columns: getColumns({ commitId: commitSha }),
-    data: formattedData,
+    data: filesChanged,
     state: {
       expanded,
       sorting,
@@ -296,21 +263,21 @@ export default function FilesChangedTable() {
     return <Loader />
   }
 
-  // if (isEmpty(filesChanged) && !isLoading) {
-  //   if (
-  //     isArray(flags) ||
-  //     (commit?.compareWithParent?.__typename === 'Comparison' &&
-  //       commit?.compareWithParent?.impactedFiles?.__typename === 'UnknownFlags')
-  //   ) {
-  //     return (
-  //       <p className="m-4">
-  //         No files covered by tests and selected flags were changed
-  //       </p>
-  //     )
-  //   }
+  if (isEmpty(filesChanged) && !isLoading) {
+    if (
+      isArray(flags) ||
+      (commit?.compareWithParent?.__typename === 'Comparison' &&
+        commit?.compareWithParent?.impactedFiles?.__typename === 'UnknownFlags')
+    ) {
+      return (
+        <p className="m-4">
+          No files covered by tests and selected flags were changed
+        </p>
+      )
+    }
 
-  //   return <p className="m-4">No files covered by tests were changed</p>
-  // }
+    return <p className="m-4">No files covered by tests were changed</p>
+  }
 
   return (
     <div className="filelistui" data-highlight-row="onHover">

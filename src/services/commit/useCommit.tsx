@@ -138,6 +138,8 @@ const CommitSchema = z.object({
   compareWithParent: CompareWithParentSchema.nullable(),
 })
 
+export type CommitType = z.infer<typeof CommitSchema>
+
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   commit: CommitSchema.nullable(),
