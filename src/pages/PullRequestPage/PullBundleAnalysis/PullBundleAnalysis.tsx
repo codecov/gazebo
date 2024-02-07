@@ -1,14 +1,10 @@
 import { lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useRepoSettings } from 'services/repo'
-import { TierNames, useTier } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
+import { useRepoOverview } from 'services/repo'
 import Spinner from 'ui/Spinner'
 
 import BundleMessage from './BundleMessage'
-
-import { usePullPageData } from '../hooks'
 
 const PullBundleAnalysisTable = lazy(() => import('./PullBundleAnalysisTable'))
 
@@ -16,7 +12,6 @@ interface URLParams {
   provider: string
   owner: string
   repo: string
-  pullId: string
 }
 
 const Loader = () => (
@@ -26,26 +21,8 @@ const Loader = () => (
 )
 
 const PullBundleAnalysis: React.FC = () => {
-  const { provider, owner, repo, pullId } = useParams<URLParams>()
-  const { data: settings } = useRepoSettings()
-  const { data: tierData } = useTier({ provider, owner })
-
-  const { multipleTiers } = useFlags({
-    multipleTiers: false,
-  })
-
-  const isTeamPlan =
-    multipleTiers &&
-    tierData === TierNames.TEAM &&
-    settings?.repository?.private
-
-  const { data } = usePullPageData({
-    provider,
-    owner,
-    repo,
-    pullId,
-    isTeamPlan,
-  })
+  const { provider, owner, repo } = useParams<URLParams>()
+  const { data } = useRepoOverview({ provider, owner, repo })
 
   if (data?.coverageEnabled && data?.bundleAnalysisEnabled) {
     return (

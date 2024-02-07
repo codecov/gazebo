@@ -9,34 +9,31 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
-
 import PullBundleAnalysis from './PullBundleAnalysis'
 
 jest.mock('./PullBundleAnalysisTable', () => () => (
   <div>PullBundleAnalysisTable</div>
 ))
 
-jest.mock('shared/featureFlags')
-const mockedUseFlags = useFlags as jest.Mock<{
-  multipleTiers: boolean
-}>
-
-const mockPullPageData = {
-  pullId: 1,
-  head: {
-    commitid: '123',
+const mockOverview = ({
+  coverageEnabled,
+  bundleAnalysisEnabled,
+}: {
+  coverageEnabled: boolean
+  bundleAnalysisEnabled: boolean
+}) => ({
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      private: false,
+      defaultBranch: 'main',
+      oldestCommitAt: '2022-10-10T11:59:59',
+      coverageEnabled,
+      bundleAnalysisEnabled,
+      languages: [],
+    },
   },
-  compareWithBase: {
-    __typename: 'Comparison',
-    impactedFilesCount: 4,
-    indirectChangedFilesCount: 0,
-    flagComparisonsCount: 1,
-    componentComparisonsCount: 6,
-    directChangedFilesCount: 0,
-  },
-}
+})
 
 const mockSummaryData = {
   owner: {
@@ -85,41 +82,15 @@ interface SetupArgs {
 }
 
 describe('PullBundleAnalysis', () => {
-  function setup({ coverageEnabled, bundleAnalysisEnabled }: SetupArgs) {
-    mockedUseFlags.mockReturnValue({
-      multipleTiers: true,
-    })
-
+  function setup({
+    coverageEnabled = false,
+    bundleAnalysisEnabled = false,
+  }: SetupArgs) {
     server.use(
-      graphql.query('PullPageData', (req, res, ctx) => {
+      graphql.query('GetRepoOverview', (req, res, ctx) => {
         return res(
           ctx.status(200),
-          ctx.data({
-            owner: {
-              repository: {
-                __typename: 'Repository',
-                coverageEnabled: coverageEnabled,
-                bundleAnalysisEnabled: bundleAnalysisEnabled,
-                pull: mockPullPageData,
-              },
-            },
-          })
-        )
-      }),
-      graphql.query('GetRepoSettings', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
-            owner: { repository: { private: false } },
-          })
-        )
-      }),
-      graphql.query('OwnerTier', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
-            owner: { plan: { tierName: TierNames.PRO } },
-          })
+          ctx.data(mockOverview({ coverageEnabled, bundleAnalysisEnabled }))
         )
       }),
       graphql.query('PullBADropdownSummary', (req, res, ctx) => {
