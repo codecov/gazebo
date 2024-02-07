@@ -1,4 +1,4 @@
-import { formatSizeToString } from './bundleAnalysis'
+import { formatSizeToString, formatTimeToString } from './bundleAnalysis'
 
 describe('formatSizeToString', () => {
   describe('size is less then one kilobyte', () => {
@@ -79,5 +79,12 @@ describe('formatSizeToString', () => {
         expect(result).toBe('-12.35MB')
       })
     })
+  })
+})
+
+describe('formatTimeToString', () => {
+  it('returns time in seconds', () => {
+    const time = formatTimeToString(123)
+    expect(time).toBe('123s')
   })
 })

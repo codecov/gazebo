@@ -207,6 +207,13 @@ describe('GitHubActionsOrgToken', () => {
       )
       expect(yamlBox).toBeInTheDocument()
     })
+
+    it('renders the correct ci version', async () => {
+      render(<GitHubActionsOrgToken />, { wrapper })
+
+      const version = await screen.findByText(/v4.0.1/)
+      expect(version).toBeInTheDocument()
+    })
   })
 
   describe('step three', () => {
