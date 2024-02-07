@@ -519,7 +519,7 @@ describe('FilesChangedTable', () => {
       })
     })
 
-    it.only('sorts by patch coverage', async () => {
+    it('sorts by patch coverage', async () => {
       const { queryClient, mockVars } = setup(mockData)
 
       render(<FilesChangedTable />, { wrapper: wrapper(queryClient) })
