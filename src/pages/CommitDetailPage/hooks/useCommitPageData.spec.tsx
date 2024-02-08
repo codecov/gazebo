@@ -14,6 +14,12 @@ const mockCommitData = {
       coverageEnabled: true,
       commit: {
         commitid: 'id-1',
+        compareWithParent: {
+          __typename: 'Comparison',
+        },
+        bundleAnalysisCompareWithParent: {
+          __typename: 'BundleAnalysisComparison',
+        },
       },
     },
   },
@@ -124,6 +130,12 @@ describe('useCommitPageData', () => {
             coverageEnabled: true,
             commit: {
               commitid: 'id-1',
+              compareWithParent: {
+                __typename: 'Comparison',
+              },
+              bundleAnalysisCompareWithParent: {
+                __typename: 'BundleAnalysisComparison',
+              },
             },
           }
 
