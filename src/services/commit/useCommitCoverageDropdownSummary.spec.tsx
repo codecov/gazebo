@@ -17,6 +17,15 @@ const mockCommitSummaryData = {
             partialsCount: 2,
           },
         },
+        uploads: {
+          edges: [
+            {
+              node: {
+                state: 'COMPLETE',
+              },
+            },
+          ],
+        },
       },
     },
   },
@@ -118,6 +127,7 @@ describe('useCommitCoverageDropdownSummary', () => {
       )
 
       const expectedResult = {
+        uploadErrorCount: 0,
         commit: {
           compareWithParent: {
             __typename: 'Comparison',
@@ -150,7 +160,10 @@ describe('useCommitCoverageDropdownSummary', () => {
       )
 
       await waitFor(() =>
-        expect(result.current.data).toStrictEqual({ commit: null })
+        expect(result.current.data).toStrictEqual({
+          uploadErrorCount: 0,
+          commit: null,
+        })
       )
     })
   })

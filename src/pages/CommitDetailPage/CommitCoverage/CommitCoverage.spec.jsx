@@ -260,6 +260,33 @@ const mockCommitComponentData = {
   },
 }
 
+const mockCommitPageData = (
+  hasCommitPageDataError = false,
+  hasFirstPR = false
+) => ({
+  owner: {
+    isCurrentUserPartOfOrg: true,
+    repository: {
+      __typename: 'Repository',
+      bundleAnalysisEnabled: true,
+      coverageEnabled: true,
+      commit: {
+        commitid: 'id-1',
+        compareWithParent: {
+          __typename: hasCommitPageDataError
+            ? 'MissingBaseCommit'
+            : hasFirstPR
+            ? 'FirstPullRequest'
+            : 'Comparison',
+        },
+        bundleAnalysisCompareWithParent: {
+          __typename: 'BundleAnalysisComparison',
+        },
+      },
+    },
+  },
+})
+
 const server = setupServer()
 
 const wrapper =
@@ -298,11 +325,15 @@ describe('CommitCoverage', () => {
       tierName = TierNames.PRO,
       hasCommitErrors = false,
       hasErroredUploads = false,
+      hasCommitPageDataError = false,
+      hasFirstPR = false,
     } = {
       isPrivate: false,
       tierName: TierNames.PRO,
       hasCommitErrors: false,
       hasErroredUploads: false,
+      hasCommitPageDataError: false,
+      hasFirstPR: false,
     }
   ) {
     const queryClient = new QueryClient({
@@ -345,6 +376,12 @@ describe('CommitCoverage', () => {
       }),
       graphql.query('CommitComponents', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockCommitComponentData))
+      }),
+      graphql.query('CommitPageData', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data(mockCommitPageData(hasCommitPageDataError, hasFirstPR))
+        )
       })
     )
 
@@ -556,6 +593,26 @@ describe('CommitCoverage', () => {
         /The following uploads failed to process:/
       )
       expect(erroredUploads).toBeInTheDocument()
+    })
+  })
+
+  describe('comparison returns first pull request', () => {
+    it('renders first pull banner', async () => {
+      const { queryClient } = setup({ hasFirstPR: true })
+      render(<CommitCoverage />, { wrapper: wrapper({ queryClient }) })
+
+      const firstPullRequest = await screen.findByText(/Welcome to Codecov/)
+      expect(firstPullRequest).toBeInTheDocument()
+    })
+  })
+
+  describe('commit has errors', () => {
+    it('renders error banner', async () => {
+      const { queryClient } = setup({ hasCommitPageDataError: true })
+      render(<CommitCoverage />, { wrapper: wrapper({ queryClient }) })
+
+      const missingBaseCommit = await screen.findByText(/Missing Base Commit/)
+      expect(missingBaseCommit).toBeInTheDocument()
     })
   })
 })

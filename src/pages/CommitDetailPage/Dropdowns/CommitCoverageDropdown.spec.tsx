@@ -1,9 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import {
-  render,
-  screen,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
@@ -14,26 +10,44 @@ import SummaryDropdown from 'ui/SummaryDropdown'
 
 import CommitCoverageDropdown from './CommitCoverageDropdown'
 
-const mockSummaryData = (patchTotals: {
-  missesCount: number | null
-  partialsCount: number | null
-}) => ({
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      commit: {
-        compareWithParent: {
-          __typename: 'Comparison',
-          patchTotals,
+const mockSummaryData = (
+  patchTotals: {
+    missesCount: number | null
+    partialsCount: number | null
+  },
+  uploadState: 'COMPLETE' | 'ERROR',
+  multipleUploads: boolean
+) => {
+  const uploads = [{ node: { state: uploadState } }]
+  if (multipleUploads) {
+    uploads.push({
+      node: {
+        state: uploadState,
+      },
+    })
+  }
+
+  return {
+    owner: {
+      repository: {
+        __typename: 'Repository',
+        commit: {
+          compareWithParent: {
+            __typename: 'Comparison',
+            patchTotals,
+          },
+          uploads: {
+            edges: uploads,
+          },
         },
       },
     },
-  },
-})
+  }
+}
 
 const mockNoData = { owner: null }
 
-const mockNoComparison = {
+const mockFirstPullRequest = {
   owner: {
     repository: {
       __typename: 'Repository',
@@ -41,6 +55,20 @@ const mockNoComparison = {
         compareWithParent: {
           __typename: 'FirstPullRequest',
           message: 'First pull request',
+        },
+      },
+    },
+  },
+}
+
+const mockComparisonError = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      commit: {
+        compareWithParent: {
+          __typename: 'MissingHeadCommit',
+          message: 'Missing head commit',
         },
       },
     },
@@ -88,21 +116,27 @@ afterAll(() => {
 
 interface SetupArgs {
   noData?: boolean
-  noComparison?: boolean
+  comparisonError?: boolean
   patchTotals?: {
     missesCount: number | null
     partialsCount: number | null
   }
+  uploadState?: 'COMPLETE' | 'ERROR'
+  multipleUploads?: boolean
+  firstPullRequest?: boolean
 }
 
 describe('CommitCoverageDropdown', () => {
   function setup({
     noData = false,
-    noComparison = false,
+    comparisonError = false,
     patchTotals = {
       missesCount: 0,
       partialsCount: 0,
     },
+    uploadState = 'COMPLETE',
+    multipleUploads = false,
+    firstPullRequest = false,
   }: SetupArgs = {}) {
     const user = userEvent.setup()
 
@@ -110,11 +144,16 @@ describe('CommitCoverageDropdown', () => {
       graphql.query('CommitDropdownSummary', (req, res, ctx) => {
         if (noData) {
           return res(ctx.status(200), ctx.data(mockNoData))
-        } else if (noComparison) {
-          return res(ctx.status(200), ctx.data(mockNoComparison))
+        } else if (comparisonError) {
+          return res(ctx.status(200), ctx.data(mockComparisonError))
+        } else if (firstPullRequest) {
+          return res(ctx.status(200), ctx.data(mockFirstPullRequest))
         }
 
-        return res(ctx.status(200), ctx.data(mockSummaryData(patchTotals)))
+        return res(
+          ctx.status(200),
+          ctx.data(mockSummaryData(patchTotals, uploadState, multipleUploads))
+        )
       })
     )
 
@@ -122,6 +161,61 @@ describe('CommitCoverageDropdown', () => {
   }
 
   describe('renders summary message', () => {
+    describe('there are errored uploads', () => {
+      describe('there is one errored upload', () => {
+        it('renders errored upload message', async () => {
+          setup({
+            patchTotals: {
+              missesCount: 0,
+              partialsCount: 0,
+            },
+            uploadState: 'ERROR',
+          })
+          render(
+            <CommitCoverageDropdown>
+              <p>Passed child</p>
+            </CommitCoverageDropdown>,
+            { wrapper }
+          )
+
+          const bundleReport = await screen.findByText(/Coverage Report:/)
+          expect(bundleReport).toBeInTheDocument()
+
+          const singleUploadError = await screen.findByText(
+            /1 upload has failed to process/
+          )
+          expect(singleUploadError).toBeInTheDocument()
+        })
+      })
+
+      describe('there are multiple errored uploads', () => {
+        it('renders errored upload message', async () => {
+          setup({
+            patchTotals: {
+              missesCount: 0,
+              partialsCount: 0,
+            },
+            uploadState: 'ERROR',
+            multipleUploads: true,
+          })
+          render(
+            <CommitCoverageDropdown>
+              <p>Passed child</p>
+            </CommitCoverageDropdown>,
+            { wrapper }
+          )
+
+          const bundleReport = await screen.findByText(/Coverage Report:/)
+          expect(bundleReport).toBeInTheDocument()
+
+          const singleUploadError = await screen.findByText(
+            /2 uploads have failed to process/
+          )
+          expect(singleUploadError).toBeInTheDocument()
+        })
+      })
+    })
+
     describe('there are missing lines', () => {
       it('renders missing lines message', async () => {
         setup({
@@ -166,7 +260,7 @@ describe('CommitCoverageDropdown', () => {
         expect(bundleReport).toBeInTheDocument()
 
         const increaseMessage = await screen.findByText(
-          /1 line in your changes are missing coverage/
+          /1 line in your changes is missing coverage/
         )
         expect(increaseMessage).toBeInTheDocument()
       })
@@ -224,36 +318,51 @@ describe('CommitCoverageDropdown', () => {
   })
 
   describe('there is no data', () => {
-    it('does not render', async () => {
+    it('renders unknown error message', async () => {
       setup({ noData: true })
-      const { container } = render(
+      render(
         <CommitCoverageDropdown>
           <p>Passed child</p>
         </CommitCoverageDropdown>,
         { wrapper }
       )
 
-      const loading = await screen.findByText('Loading...')
-      await waitForElementToBeRemoved(loading)
-
-      expect(container).toHaveTextContent('')
+      const errorMessage = await screen.findByText(
+        /an unknown error has occurred/
+      )
+      expect(errorMessage).toBeInTheDocument()
     })
   })
 
-  describe('there is no comparison', () => {
-    it('does not render', async () => {
-      setup({ noComparison: true })
-      const { container } = render(
+  describe('there is a first pull request', () => {
+    it('renders the first pull message', async () => {
+      setup({ firstPullRequest: true })
+      render(
         <CommitCoverageDropdown>
           <p>Passed child</p>
         </CommitCoverageDropdown>,
         { wrapper }
       )
 
-      const loading = await screen.findByText('Loading...')
-      await waitForElementToBeRemoved(loading)
+      const errorMsg = await screen.findByText(
+        /once merged to default, your following pull request and commits will include report details/
+      )
+      expect(errorMsg).toBeInTheDocument()
+    })
+  })
 
-      expect(container).toHaveTextContent('')
+  describe('there is a comparison error', () => {
+    it('renders the passed error message', async () => {
+      setup({ comparisonError: true })
+      render(
+        <CommitCoverageDropdown>
+          <p>Passed child</p>
+        </CommitCoverageDropdown>,
+        { wrapper }
+      )
+
+      const errorMsg = await screen.findByText(/missing head commit/)
+      expect(errorMsg).toBeInTheDocument()
     })
   })
 
