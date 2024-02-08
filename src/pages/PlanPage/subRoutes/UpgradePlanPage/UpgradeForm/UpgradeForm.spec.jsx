@@ -549,7 +549,7 @@ describe('UpgradeForm', () => {
             expect(patchRequest).toHaveBeenCalledWith({
               plan: {
                 quantity: 20,
-                value: Plans.USERS_PR_INAPPY,
+                value: 'users-pr-inapp-y',
               },
             })
           )
@@ -580,7 +580,7 @@ describe('UpgradeForm', () => {
             expect(patchRequest).toHaveBeenCalledWith({
               plan: {
                 quantity: 20,
-                value: Plans.USERS_PR_INAPPM,
+                value: 'users-pr-inapp-m',
               },
             })
           )
@@ -896,7 +896,7 @@ describe('UpgradeForm', () => {
             expect(patchRequest).toHaveBeenCalledWith({
               plan: {
                 quantity: 20,
-                value: Plans.USERS_PR_INAPPM,
+                value: 'users-pr-inapp-m',
               },
             })
           )
@@ -927,7 +927,7 @@ describe('UpgradeForm', () => {
             expect(patchRequest).toHaveBeenCalledWith({
               plan: {
                 quantity: 20,
-                value: Plans.USERS_PR_INAPPY,
+                value: 'users-pr-inapp-y',
               },
             })
           )
@@ -1219,7 +1219,7 @@ describe('UpgradeForm', () => {
             expect(patchRequest).toHaveBeenCalledWith({
               plan: {
                 quantity: 20,
-                value: Plans.USERS_PR_INAPPY,
+                value: 'users-pr-inapp-y',
               },
             })
           )
@@ -1250,7 +1250,7 @@ describe('UpgradeForm', () => {
             expect(patchRequest).toHaveBeenCalledWith({
               plan: {
                 quantity: 20,
-                value: Plans.USERS_PR_INAPPM,
+                value: 'users-pr-inapp-m',
               },
             })
           )
@@ -1533,7 +1533,7 @@ describe('UpgradeForm', () => {
             expect(patchRequest).toHaveBeenCalledWith({
               plan: {
                 quantity: 8,
-                value: Plans.USERS_SENTRYY,
+                value: 'users-sentry-y',
               },
             })
           )
@@ -1565,7 +1565,7 @@ describe('UpgradeForm', () => {
             expect(patchRequest).toHaveBeenCalledWith({
               plan: {
                 quantity: 7,
-                value: Plans.USERS_SENTRYM,
+                value: 'users-sentry-m',
               },
             })
           )
@@ -1891,7 +1891,7 @@ describe('UpgradeForm', () => {
             expect(patchRequest).toHaveBeenCalledWith({
               plan: {
                 quantity: 8,
-                value: Plans.USERS_TEAMY,
+                value: 'users-team-y',
               },
             })
           )
@@ -1924,7 +1924,7 @@ describe('UpgradeForm', () => {
             expect(patchRequest).toHaveBeenCalledWith({
               plan: {
                 quantity: 7,
-                value: Plans.USERS_TEAMM,
+                value: 'users-team-m',
               },
             })
           )
