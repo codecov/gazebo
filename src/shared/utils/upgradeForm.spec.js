@@ -555,4 +555,27 @@ describe('shouldRenderCancelLink', () => {
       expect(value).toBeFalsy()
     })
   })
+
+  describe('user intended plan is Team', () => {
+    it('sets new plan to team', () => {
+      const accountDetails = {
+        plan: { value: Plans.USERS_BASIC, quantity: 1 },
+      }
+      const plans = [
+        { value: Plans.USERS_TEAMY },
+        { value: Plans.USERS_PR_INAPPY },
+      ]
+
+      const data = getDefaultValuesUpgradeForm({
+        accountDetails,
+        plans,
+        selectedPlan: { value: Plans.USERS_TEAMY },
+      })
+
+      expect(data).toStrictEqual({
+        newPlan: Plans.USERS_TEAMY,
+        seats: 2,
+      })
+    })
+  })
 })
