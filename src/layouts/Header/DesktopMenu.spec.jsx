@@ -215,13 +215,6 @@ describe('DesktopMenu', () => {
     })
     expect(blogLink).toBeInTheDocument()
     expect(blogLink).toHaveAttribute('href', 'https://about.codecov.io/blog')
-
-    const feedback = await screen.findByText('Feedback')
-    expect(feedback).toBeInTheDocument()
-    expect(feedback).toHaveAttribute(
-      'href',
-      'https://github.com/codecov/feedback/discussions'
-    )
   })
 
   it('renders the dropdown when user is logged in', async () => {
