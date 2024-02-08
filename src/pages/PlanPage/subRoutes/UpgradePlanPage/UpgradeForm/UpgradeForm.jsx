@@ -52,6 +52,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }) {
       accountDetails,
       plans,
       trialStatus,
+      selectedPlan,
     }),
     resolver: zodResolver(
       getSchema({
