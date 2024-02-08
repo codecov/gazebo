@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:1.3
-FROM node:18.8.0-alpine3.15 as npm
+FROM node:20-alpine3.17 as npm
 RUN apk -U add git
 RUN mkdir /home/workspace
 COPY package.json /home/workspace
@@ -42,7 +42,7 @@ RUN             gpg --verify linux/codecov.SHA256SUM.sig linux/codecov.SHA256SUM
 
 COPY            docker/index.html /tmp/uploader
 
-FROM node:18.8.0-alpine3.15 as build
+FROM node:20-alpine3.17 as build
 ARG REACT_APP_ENV_ARG
 ARG REACT_APP_CODECOV_VERSION
 ENV REACT_APP_ENV=$REACT_APP_ENV_ARG
