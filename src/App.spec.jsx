@@ -39,9 +39,16 @@ const internalUser = {
   externalId: '123',
   owners: [
     {
+      avatarUrl: 'super-cool-url',
+      integrationId: null,
+      name: null,
+      ownerid: 123,
       service: 'github',
+      stats: null,
+      username: 'codecov',
     },
   ],
+  termsAgreement: true,
 }
 
 const user = {
