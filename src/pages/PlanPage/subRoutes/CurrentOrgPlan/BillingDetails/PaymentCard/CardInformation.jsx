@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 
-import amexLogo from 'assets/billing/amex.png'
-import discoverLogo from 'assets/billing/discover.jpg'
-import mastercardLogo from 'assets/billing/mastercard.png'
-import visaLogo from 'assets/billing/visa.png'
+import amexLogo from 'assets/billing/amex.svg'
+import discoverLogo from 'assets/billing/discover.svg'
+import mastercardLogo from 'assets/billing/mastercard.svg'
+import visaLogo from 'assets/billing/visa.svg'
 import { subscriptionDetailType } from 'services/account'
 import {
   formatTimestampToCalendarDate,
