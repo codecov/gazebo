@@ -10,7 +10,7 @@ import {
   useMatchBlobsPath,
   useMatchCoverageOnboardingPath,
   useMatchTreePath,
-} from '../hooks'
+} from './hooks'
 
 interface URLParams {
   provider: string
