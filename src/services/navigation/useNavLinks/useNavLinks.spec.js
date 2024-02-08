@@ -35,6 +35,7 @@ const wrapper =
         <Route path="/admin/:provider/:owner/users">{children}</Route>
         <Route path="/account/:provider/:owner">{children}</Route>
         <Route path="/account/:provider/:owner/billing">{children}</Route>
+        <Route path="/:provider/:owner/:repo/bundles">{children}</Route>
       </MemoryRouter>
     )
 
@@ -1779,6 +1780,30 @@ describe('useNavLinks', () => {
         owner: 'test-owner',
       })
       expect(path).toBe('/account/bb/test-owner')
+    })
+  })
+
+  describe('bundles tab', () => {
+    it('returns the correct link with nothing passed', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov/cool-repo'),
+      })
+
+      const path = result.current.bundles.path()
+      expect(path).toBe('/gh/codecov/cool-repo/bundles')
+    })
+
+    it('can override the params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov/cool-repo'),
+      })
+
+      const path = result.current.bundles.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo/bundles')
     })
   })
 
