@@ -92,16 +92,22 @@ const ImpactedFileResultsSchema = z.object({
   results: z.array(ImpactedFileSchema.nullable()),
 })
 
+const ImpactedFileResultsUnionSchema = z.discriminatedUnion('__typename', [
+  ImpactedFileResultsSchema,
+  UnknownFlagsSchema,
+])
+
+export type ImpactedFileResultsUnionType = z.infer<
+  typeof ImpactedFileResultsUnionSchema
+>
+
 const ComparisonSchema = z.object({
   __typename: z.literal('Comparison'),
   indirectChangedFilesCount: z.number(),
   directChangedFilesCount: z.number(),
   state: z.string(),
   patchTotals: CoverageObjSchema.nullable(),
-  impactedFiles: z.discriminatedUnion('__typename', [
-    ImpactedFileResultsSchema,
-    UnknownFlagsSchema,
-  ]),
+  impactedFiles: ImpactedFileResultsUnionSchema,
 })
 
 const CompareWithParentSchema = z.discriminatedUnion('__typename', [

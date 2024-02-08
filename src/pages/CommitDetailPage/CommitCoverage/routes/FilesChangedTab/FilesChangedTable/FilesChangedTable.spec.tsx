@@ -13,7 +13,7 @@ import FilesChangedTable from './FilesChangedTable'
 
 jest.mock('../shared/CommitFileDiff', () => () => 'CommitFileDiff')
 
-const mockCommitData = (data: ImpactedFileType, state: string) => ({
+const mockCommitData = (data: SetupArgs, state: string) => ({
   owner: {
     repository: {
       __typename: 'Repository',
@@ -80,8 +80,13 @@ const wrapper =
       </QueryClientProvider>
     )
 
+type SetupArgs = {
+  __typename: string
+  results: ImpactedFileType[]
+}
+
 describe('FilesChangedTable', () => {
-  function setup(data: any = null, state = 'processed') {
+  function setup(data: SetupArgs, state = 'processed') {
     const mockVars = jest.fn()
     const user = userEvent.setup()
     const queryClient = new QueryClient({
