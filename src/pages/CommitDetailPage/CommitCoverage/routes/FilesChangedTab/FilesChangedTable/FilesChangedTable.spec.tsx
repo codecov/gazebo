@@ -224,11 +224,11 @@ describe('FilesChangedTable', () => {
       expect(coverage).toBeInTheDocument()
     })
 
-    it('renders no data for change', async () => {
+    it('renders dash for change', async () => {
       const { queryClient } = setup(mockData)
       render(<FilesChangedTable />, { wrapper: wrapper(queryClient) })
 
-      const dash = await screen.findByText('No data')
+      const dash = await screen.findByText('-')
       expect(dash).toBeInTheDocument()
     })
   })

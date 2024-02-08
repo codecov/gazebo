@@ -10,7 +10,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
-import { isArray, isEmpty } from 'lodash'
+import { isArray, isEmpty, isNumber } from 'lodash'
 import qs from 'qs'
 import { Fragment, lazy, Suspense, useMemo, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
@@ -156,16 +156,26 @@ function getColumns({ commitId }: { commitId: string }) {
       (row) => {
         const headCov = row?.headCoverage?.coverage
         const baseCov = row?.baseCoverage?.coverage
+        const patchCov = row?.patchCoverage?.coverage
 
-        const isValid = headCov && !isNaN(headCov) && baseCov && !isNaN(baseCov)
-        return isValid ? headCov - baseCov : NaN
+        let change = Number.NaN
+        if (isNumber(headCov) && isNumber(baseCov)) {
+          change = headCov - baseCov
+        }
+
+        let coverageHasData = false
+        if (isNumber(headCov) || isNumber(patchCov)) {
+          coverageHasData = true
+        }
+
+        return { coverageHasData, change }
       },
       {
         id: 'change',
         header: 'Change',
         cell: ({ getValue }) => {
-          const change = getValue()
-          if (!isNaN(change)) {
+          const { coverageHasData, change } = getValue()
+          if (coverageHasData) {
             return (
               <TotalsNumber
                 value={change}
