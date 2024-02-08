@@ -337,40 +337,33 @@ export default function FilesChangedTable() {
             })}
           </div>
         ))}
-        {isLoading ? (
-          <Loader />
-        ) : (
-          table.getRowModel().rows.map((row, i) => (
-            <Fragment key={i}>
-              <div className="filelistui-row">
-                {row.getVisibleCells().map((cell) => {
-                  return (
-                    <div
-                      key={cell.id}
-                      {...(isNumericValue(cell.column.id)
-                        ? {
-                            'data-type': 'numeric',
-                          }
-                        : {})}
-                      className={cs({
-                        'w-6/12': cell.column.id === 'name',
-                        'w-2/12 justify-end	flex': cell.column.id !== 'name',
-                      })}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-              <div data-expanded={row.getIsExpanded()}>
-                {row.getIsExpanded() ? <RenderSubComponent row={row} /> : null}
-              </div>
-            </Fragment>
-          ))
-        )}
+        {table.getRowModel().rows.map((row, i) => (
+          <Fragment key={i}>
+            <div className="filelistui-row">
+              {row.getVisibleCells().map((cell) => {
+                return (
+                  <div
+                    key={cell.id}
+                    {...(isNumericValue(cell.column.id)
+                      ? {
+                          'data-type': 'numeric',
+                        }
+                      : {})}
+                    className={cs({
+                      'w-6/12': cell.column.id === 'name',
+                      'w-2/12 justify-end	flex': cell.column.id !== 'name',
+                    })}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </div>
+                )
+              })}
+            </div>
+            <div data-expanded={row.getIsExpanded()}>
+              {row.getIsExpanded() ? <RenderSubComponent row={row} /> : null}
+            </div>
+          </Fragment>
+        ))}
       </div>
     </div>
   )
