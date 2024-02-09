@@ -86,8 +86,7 @@ function Routes({
             <NewRepoTab />
           </SentryRoute>
         )}
-        {(bundleAnalysisEnabled || jsOrTsPresent) &&
-        bundleAnalysisPrAndCommitPages ? (
+        {bundleAnalysisEnabled && bundleAnalysisPrAndCommitPages ? (
           <SentryRoute path={`${path}/bundles`} exact>
             <BundlesTab />
           </SentryRoute>
@@ -124,17 +123,16 @@ function Routes({
         <SentryRoute path={`${path}/settings`}>
           <SettingsTab />
         </SentryRoute>
+        {/* need to do these individual returns as the redirects won't work with a react fragment */}
         {!bundleAnalysisEnabled && jsOrTsPresent ? (
-          <>
-            <Redirect from={`${path}/bundles`} to={`${path}/bundles/new`} />
-            <Redirect from={`${path}/bundles/*`} to={`${path}/bundles/new`} />
-          </>
+          <Redirect from={`${path}/bundles`} to={`${path}/bundles/new`} />
         ) : null}
+        {!bundleAnalysisEnabled && jsOrTsPresent ? (
+          <Redirect from={`${path}/bundles/*`} to={`${path}/bundles/new`} />
+        ) : null}
+        {!coverageEnabled ? <Redirect from={path} to={`${path}/new`} /> : null}
         {!coverageEnabled ? (
-          <>
-            <Redirect from={path} to={`${path}/new`} />
-            <Redirect from={`${path}/*`} to={`${path}/new`} />
-          </>
+          <Redirect from={`${path}/*`} to={`${path}/new`} />
         ) : null}
         <Redirect
           from="/:provider/:owner/:repo/*"
