@@ -1,4 +1,3 @@
-import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useRepo, useRepoOverview } from 'services/repo'
@@ -46,22 +45,6 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
     bundleAnalysisPrAndCommitPages: false,
   })
 
-  const jsOrTsPresent = useMemo(() => {
-    if (repoOverview?.bundleAnalysisEnabled) {
-      return true
-    }
-
-    if (repoOverview?.languages) {
-      return repoOverview.languages.some(
-        (lang) =>
-          lang.toLowerCase() === 'javascript' ||
-          lang.toLowerCase() === 'typescript'
-      )
-    }
-
-    return false
-  }, [repoOverview?.bundleAnalysisEnabled, repoOverview?.languages])
-
   const matchTree = useMatchTreePath()
   const matchBlobs = useMatchBlobsPath()
   const matchCoverageOnboarding = useMatchCoverageOnboardingPath()
@@ -81,6 +64,7 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
     },
   ]
 
+  const jsOrTsPresent = repoOverview?.jsOrTsPresent
   if (
     (jsOrTsPresent || repoOverview?.bundleAnalysisEnabled) &&
     bundleAnalysisPrAndCommitPages
