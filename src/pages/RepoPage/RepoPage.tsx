@@ -59,6 +59,7 @@ function Routes({
   // repo is currently active and activated
   if (isRepoActive && isRepoActivated) {
     const productEnabled = coverageEnabled || bundleAnalysisEnabled
+
     return (
       <Switch>
         {coverageEnabled ? (
@@ -85,11 +86,12 @@ function Routes({
             <NewRepoTab />
           </SentryRoute>
         )}
-        {bundleAnalysisEnabled && bundleAnalysisPrAndCommitPages ? (
+        {(bundleAnalysisEnabled || jsOrTsPresent) &&
+        bundleAnalysisPrAndCommitPages ? (
           <SentryRoute path={`${path}/bundles`} exact>
             <BundlesTab />
           </SentryRoute>
-        ) : bundleAnalysisPrAndCommitPages ? (
+        ) : jsOrTsPresent && bundleAnalysisPrAndCommitPages ? (
           <SentryRoute
             path={[
               `${path}/bundles/new`,
@@ -122,6 +124,18 @@ function Routes({
         <SentryRoute path={`${path}/settings`}>
           <SettingsTab />
         </SentryRoute>
+        {!bundleAnalysisEnabled && jsOrTsPresent ? (
+          <>
+            <Redirect from={`${path}/bundles`} to={`${path}/bundles/new`} />
+            <Redirect from={`${path}/bundles/*`} to={`${path}/bundles/new`} />
+          </>
+        ) : null}
+        {!coverageEnabled ? (
+          <>
+            <Redirect from={path} to={`${path}/new`} />
+            <Redirect from={`${path}/*`} to={`${path}/new`} />
+          </>
+        ) : null}
         <Redirect
           from="/:provider/:owner/:repo/*"
           to="/:provider/:owner/:repo"
@@ -168,8 +182,8 @@ function Routes({
         <SettingsTab />
       </SentryRoute>
       <Redirect from={`${path}/bundles`} to={`${path}/bundles/new`} />
-      <Redirect from={path} to={`${path}/new`} />
       <Redirect from={`${path}/bundles/*`} to={`${path}/bundles/new`} />
+      <Redirect from={path} to={`${path}/new`} />
       <Redirect from={`${path}/*`} to={`${path}/new`} />
     </Switch>
   )
