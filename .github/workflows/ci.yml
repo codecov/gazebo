@@ -22,7 +22,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '18.8.0'
+          node-version: 20
 
       - name: Cache node_modules
         id: cache-node-modules
@@ -55,7 +55,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '18.8.0'
+          node-version: 20
 
       - name: Cache node_modules
         id: cache-node-modules
@@ -84,7 +84,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '18.8.0'
+          node-version: 20
 
       - name: Cache node_modules
         id: cache-node-modules
@@ -149,7 +149,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '18.8.0'
+          node-version: 20
 
       - name: Cache node_modules
         id: cache-node-modules
@@ -219,7 +219,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '18.18.0'
+          node-version: 20
 
       - name: Cache node_modules
         id: cache-node-modules
@@ -254,7 +254,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '18.8.0'
+          node-version: 20
 
       - name: Cache node_modules
         id: cache-node-modules
@@ -286,7 +286,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '18.8.0'
+          node-version: 20
 
       - name: Run Fossa
         uses: fossas/fossa-action@v1.3.1
@@ -304,7 +304,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '18.8.0'
+          node-version: 20
 
       - name: Cache node_modules
         id: cache-node-modules

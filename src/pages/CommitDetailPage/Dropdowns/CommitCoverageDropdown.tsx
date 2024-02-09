@@ -10,31 +10,7 @@ interface URLParams {
   commit: string
 }
 
-interface CoverageMessageProps {
-  missesCount: number
-  partialsCount: number
-}
-
-const CoverageMessage: React.FC<CoverageMessageProps> = ({
-  missesCount,
-  partialsCount,
-}) => {
-  const totalCount = missesCount + partialsCount
-
-  if (totalCount === 0) {
-    return <>all modified lines are covered by tests &#x2705;</>
-  }
-
-  if (totalCount === 1) {
-    return <>{totalCount} line in your changes are missing coverage &#x26A0;</>
-  }
-
-  return <>{totalCount} lines in your changes are missing coverage</>
-}
-
-const CommitCoverageDropdown: React.FC<React.PropsWithChildren> = ({
-  children,
-}) => {
+const CoverageMessage: React.FC = () => {
   const { provider, owner, repo, commit: commitSha } = useParams<URLParams>()
   const { data } = useCommitCoverageDropdownSummary({
     provider,
@@ -42,25 +18,57 @@ const CommitCoverageDropdown: React.FC<React.PropsWithChildren> = ({
     repo,
     commitid: commitSha,
   })
+  const comparison = data?.commit?.compareWithParent
+  const uploadErrorCount = data?.uploadErrorCount
 
-  if (!data || data.commit?.compareWithParent?.__typename !== 'Comparison') {
-    return null
+  if (uploadErrorCount && uploadErrorCount > 0) {
+    if (uploadErrorCount === 1) {
+      return <>{uploadErrorCount} upload has failed to process &#x26A0;</>
+    }
+    return <>{uploadErrorCount} uploads have failed to process &#x26A0;</>
   }
 
-  const missesCount =
-    data.commit?.compareWithParent?.patchTotals?.missesCount ?? 0
-  const partialsCount =
-    data.commit?.compareWithParent?.patchTotals?.partialsCount ?? 0
+  if (comparison?.__typename === 'FirstPullRequest') {
+    return (
+      <>
+        once merged to default, your following pull request and commits will
+        include report details &#x2139;
+      </>
+    )
+  }
 
+  if (comparison?.__typename !== 'Comparison' && comparison?.message) {
+    return <>{comparison?.message?.toLowerCase()} &#x26A0;</>
+  }
+
+  if (comparison?.__typename === 'Comparison') {
+    const missesCount = comparison?.patchTotals?.missesCount ?? 0
+    const partialsCount = comparison?.patchTotals?.partialsCount ?? 0
+    const totalCount = missesCount + partialsCount
+
+    if (totalCount === 0) {
+      return <>all modified lines are covered by tests &#x2705;</>
+    }
+
+    if (totalCount === 1) {
+      return <>{totalCount} line in your changes is missing coverage &#x26A0;</>
+    }
+
+    return <>{totalCount} lines in your changes are missing coverage &#x26A0;</>
+  }
+
+  return <>an unknown error has occurred &#x26A0;</>
+}
+
+const CommitCoverageDropdown: React.FC<React.PropsWithChildren> = ({
+  children,
+}) => {
   return (
     <SummaryDropdown.Item value="coverage">
       <SummaryDropdown.Trigger>
         <p className="flex w-full flex-col sm:flex-row sm:gap-1">
           <span className="font-semibold">Coverage Report: </span>
-          <CoverageMessage
-            missesCount={missesCount}
-            partialsCount={partialsCount}
-          />
+          <CoverageMessage />
         </p>
       </SummaryDropdown.Trigger>
       <SummaryDropdown.Content className="py-2">
