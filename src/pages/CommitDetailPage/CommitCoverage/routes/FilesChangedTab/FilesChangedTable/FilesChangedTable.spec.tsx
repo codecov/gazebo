@@ -82,7 +82,8 @@ const wrapper =
 
 type SetupArgs = {
   __typename: string
-  results: ImpactedFileType[]
+  results?: ImpactedFileType[]
+  message?: string
 }
 
 describe('FilesChangedTable', () => {
