@@ -157,6 +157,7 @@ export const getDefaultValuesUpgradeForm = ({
   accountDetails,
   plans,
   trialStatus,
+  selectedPlan,
 }) => {
   const currentPlan = accountDetails?.plan
   const currentPlanValue = currentPlan?.value
@@ -178,7 +179,7 @@ export const getDefaultValuesUpgradeForm = ({
   let newPlan = proPlanYear?.value
   if (isSentryUpgrade && !isSentryPlan(currentPlanValue)) {
     newPlan = isMonthlyPlan ? sentryPlanMonth?.value : sentryPlanYear?.value
-  } else if (isTeamPlan(currentPlanValue)) {
+  } else if (isTeamPlan(currentPlanValue) || isTeamPlan(selectedPlan?.value)) {
     newPlan = isMonthlyPlan ? teamPlanMonth?.value : teamPlanYear?.value
   } else if (isPaidPlan(currentPlanValue)) {
     newPlan = currentPlanValue

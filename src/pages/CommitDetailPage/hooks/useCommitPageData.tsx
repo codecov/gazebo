@@ -2,6 +2,14 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import {
+  FirstPullRequestSchema,
+  MissingBaseCommitSchema,
+  MissingBaseReportSchema,
+  MissingComparisonSchema,
+  MissingHeadCommitSchema,
+  MissingHeadReportSchema,
+} from 'services/comparison'
+import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
@@ -15,6 +23,29 @@ const RepositorySchema = z.object({
   commit: z
     .object({
       commitid: z.string(),
+      compareWithParent: z
+        .object({
+          __typename: z.union([
+            z.literal('Comparison'),
+            FirstPullRequestSchema.shape.__typename,
+            MissingBaseCommitSchema.shape.__typename,
+            MissingBaseReportSchema.shape.__typename,
+            MissingComparisonSchema.shape.__typename,
+            MissingHeadCommitSchema.shape.__typename,
+            MissingHeadReportSchema.shape.__typename,
+          ]),
+        })
+        .nullable(),
+      bundleAnalysisCompareWithParent: z.object({
+        __typename: z.union([
+          z.literal('BundleAnalysisComparison'),
+          FirstPullRequestSchema.shape.__typename,
+          MissingBaseCommitSchema.shape.__typename,
+          MissingComparisonSchema.shape.__typename,
+          MissingHeadCommitSchema.shape.__typename,
+          MissingHeadReportSchema.shape.__typename,
+        ]),
+      }),
     })
     .nullable(),
 })
@@ -37,27 +68,33 @@ const CommitPageDataSchema = z.object({
 export type CommitPageData = z.infer<typeof CommitPageDataSchema>
 
 const query = `
-  query CommitPageData($owner: String!, $repo: String!, $commitId: String!) {
-    owner(username: $owner) {
-      isCurrentUserPartOfOrg
-      repository(name: $repo) {
-        __typename
-        ... on Repository {
-          bundleAnalysisEnabled
-          coverageEnabled
-          commit(id: $commitId) {
-            commitid
+query CommitPageData($owner: String!, $repo: String!, $commitId: String!) {
+  owner(username: $owner) {
+    isCurrentUserPartOfOrg
+    repository(name: $repo) {
+      __typename
+      ... on Repository {
+        bundleAnalysisEnabled
+        coverageEnabled
+        commit(id: $commitId) {
+          commitid
+          compareWithParent {
+            __typename
+          }
+          bundleAnalysisCompareWithParent {
+            __typename
           }
         }
-        ... on NotFoundError {
-          message
-        }
-        ... on OwnerNotActivatedError {
-          message
-        }
+      }
+      ... on NotFoundError {
+        message
+      }
+      ... on OwnerNotActivatedError {
+        message
       }
     }
-  }`
+  }
+}`
 
 interface UseCommitPageDataArgs {
   provider: string

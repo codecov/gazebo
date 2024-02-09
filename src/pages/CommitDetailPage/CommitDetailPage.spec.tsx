@@ -46,6 +46,12 @@ const mockCommitPageData = ({
       coverageEnabled,
       commit: {
         commitid: 'e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed',
+        compareWithParent: {
+          __typename: 'Comparison',
+        },
+        bundleAnalysisCompareWithParent: {
+          __typename: 'BundleAnalysisComparison',
+        },
       },
     },
   },
