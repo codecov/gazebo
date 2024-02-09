@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
@@ -278,6 +278,25 @@ describe('TeamPlanController', () => {
           /Next Billing Date/
         )
         expect(nextBillingDateTitle).toBeInTheDocument()
+      })
+    })
+
+    describe('when seats are greater than 10', () => {
+      const props = {
+        setFormValue: jest.fn(),
+        register: jest.fn(),
+        newPlan: Plans.USERS_TEAMM,
+        seats: 12,
+        errors: { seats: { message: '' } },
+      }
+
+      it('limits the seats to 10', async () => {
+        setup({ planValue: Plans.USERS_TEAMM })
+        render(<TeamPlanController {...props} />, { wrapper: wrapper() })
+
+        await waitFor(() =>
+          expect(props.setFormValue).toHaveBeenCalledWith('seats', '10')
+        )
       })
     })
 
