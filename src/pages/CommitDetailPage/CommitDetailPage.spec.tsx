@@ -247,10 +247,10 @@ describe('CommitDetailPage', () => {
         setup({ bundleAnalysisEnabled: true, coverageEnabled: true })
         render(<CommitPage />, { wrapper })
 
-        const coverageReport = await screen.findByText(/Coverage Report:/)
+        const coverageReport = await screen.findByText(/Coverage report:/)
         expect(coverageReport).toBeInTheDocument()
 
-        const bundleReport = await screen.findByText(/Bundle Report:/)
+        const bundleReport = await screen.findByText(/Bundle report:/)
         expect(bundleReport).toBeInTheDocument()
       })
     })
