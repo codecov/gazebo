@@ -99,4 +99,13 @@ describe('ErrorBanner', () => {
       expect(description).toBeInTheDocument()
     })
   })
+
+  describe('there is an unknown error', () => {
+    it('returns null', () => {
+      render(<ErrorBanner errorType="FirstPullRequest" />, { wrapper })
+
+      const header = screen.queryByText(/Missing/)
+      expect(header).not.toBeInTheDocument()
+    })
+  })
 })

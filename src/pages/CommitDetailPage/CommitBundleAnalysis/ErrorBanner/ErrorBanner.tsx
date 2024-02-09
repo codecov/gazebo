@@ -8,7 +8,7 @@ interface Props {
 }
 
 const BannerContent: React.FC<Props> = ({ errorType }) => {
-  if (errorType === 'MissingBaseCommit') {
+  if (errorType === ComparisonReturnType.MISSING_BASE_COMMIT) {
     return (
       <>
         {' '}
@@ -29,7 +29,7 @@ const BannerContent: React.FC<Props> = ({ errorType }) => {
     )
   }
 
-  if (errorType === 'MissingHeadCommit') {
+  if (errorType === ComparisonReturnType.MISSING_HEAD_COMMIT) {
     return (
       <>
         {' '}
@@ -51,7 +51,7 @@ const BannerContent: React.FC<Props> = ({ errorType }) => {
     )
   }
 
-  if (errorType === 'MissingHeadReport') {
+  if (errorType === ComparisonReturnType.MISSING_HEAD_REPORT) {
     return (
       <>
         {' '}
