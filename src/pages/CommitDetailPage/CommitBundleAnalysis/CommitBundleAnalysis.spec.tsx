@@ -245,7 +245,7 @@ describe('CommitBundleAnalysis', () => {
         render(<CommitBundleAnalysis />, { wrapper })
 
         const header = await screen.findByText(
-          'Once merged to your default branch, Codecov will compare your bundle reports and display the results on pull request and commits.'
+          'Once merged to your default branch, Codecov will compare your bundle reports and display the results on pull requests and commits.'
         )
         expect(header).toBeInTheDocument()
       })
@@ -407,7 +407,7 @@ describe('CommitBundleAnalysis', () => {
           render(<CommitBundleAnalysis />, { wrapper })
 
           const header = await screen.findByText(
-            'Once merged to your default branch, Codecov will compare your bundle reports and display the results on pull request and commits.'
+            'Once merged to your default branch, Codecov will compare your bundle reports and display the results on pull requests and commits.'
           )
           expect(header).toBeInTheDocument()
         })
