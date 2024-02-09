@@ -194,7 +194,7 @@ describe('ViteOnboarding', () => {
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute(
         'href',
-        'https://github.com/codecov/Codecov-user-feedback/issues/18'
+        'https://github.com/codecov/feedback/issues/270'
       )
     })
   })
