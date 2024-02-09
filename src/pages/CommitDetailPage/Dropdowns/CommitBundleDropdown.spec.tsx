@@ -1,9 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import {
-  render,
-  screen,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
@@ -31,7 +27,7 @@ const mockSummaryData = (sizeDelta: number) => ({
 
 const mockNoData = { owner: null }
 
-const mockNoComparison = {
+const mockFirstPullRequest = {
   owner: {
     repository: {
       __typename: 'Repository',
@@ -39,6 +35,20 @@ const mockNoComparison = {
         bundleAnalysisCompareWithParent: {
           __typename: 'FirstPullRequest',
           message: 'First pull request',
+        },
+      },
+    },
+  },
+}
+
+const mockErrorData = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      commit: {
+        bundleAnalysisCompareWithParent: {
+          __typename: 'MissingHeadCommit',
+          message: 'missing head commit',
         },
       },
     },
@@ -86,17 +96,17 @@ afterAll(() => {
 
 interface SetupArgs {
   noData?: boolean
-  noRepository?: boolean
-  noBundleAnalysisComparison?: boolean
+  firstPullRequest?: boolean
   sizeDelta?: number
+  comparisonError?: boolean
 }
 
 describe('CommitBundleDropdown', () => {
   function setup({
     noData = false,
-    noRepository = false,
-    noBundleAnalysisComparison = false,
+    firstPullRequest = false,
     sizeDelta = 0,
+    comparisonError = false,
   }: SetupArgs = {}) {
     const user = userEvent.setup()
 
@@ -104,8 +114,10 @@ describe('CommitBundleDropdown', () => {
       graphql.query('CommitBADropdownSummary', (req, res, ctx) => {
         if (noData) {
           return res(ctx.status(200), ctx.data(mockNoData))
-        } else if (noBundleAnalysisComparison) {
-          return res(ctx.status(200), ctx.data(mockNoComparison))
+        } else if (firstPullRequest) {
+          return res(ctx.status(200), ctx.data(mockFirstPullRequest))
+        } else if (comparisonError) {
+          return res(ctx.status(200), ctx.data(mockErrorData))
         }
 
         return res(ctx.status(200), ctx.data(mockSummaryData(sizeDelta)))
@@ -177,37 +189,50 @@ describe('CommitBundleDropdown', () => {
     })
   })
 
-  describe('there is no data', () => {
-    it('does not render', async () => {
-      setup({ noData: true })
-      const { container } = render(
+  describe('there is a comparison error', () => {
+    it('renders the error message', async () => {
+      setup({ comparisonError: true })
+      render(
         <CommitBundleDropdown>
           <p>Passed child</p>
         </CommitBundleDropdown>,
         { wrapper }
       )
 
-      const loading = await screen.findByText('Loading...')
-      await waitForElementToBeRemoved(loading)
-
-      expect(container).toHaveTextContent('')
+      const message = await screen.findByText(/missing head commit/)
+      expect(message).toBeInTheDocument()
     })
   })
 
-  describe('there is no bundle analysis comparison', () => {
-    it('does not render', async () => {
-      setup({ noBundleAnalysisComparison: true })
-      const { container } = render(
+  describe('there is no data', () => {
+    it('unknown error message', async () => {
+      setup({ noData: true })
+      render(
         <CommitBundleDropdown>
           <p>Passed child</p>
         </CommitBundleDropdown>,
         { wrapper }
       )
 
-      const loading = await screen.findByText('Loading...')
-      await waitForElementToBeRemoved(loading)
+      const message = await screen.findByText(/an unknown error occurred/)
+      expect(message).toBeInTheDocument()
+    })
+  })
 
-      expect(container).toHaveTextContent('')
+  describe('bundle analysis comparison is a first pull request', () => {
+    it('first pull summary', async () => {
+      setup({ firstPullRequest: true })
+      render(
+        <CommitBundleDropdown>
+          <p>Passed child</p>
+        </CommitBundleDropdown>,
+        { wrapper }
+      )
+
+      const header = await screen.findByText(
+        /once merged to default, your following pull request and commits will include report details/
+      )
+      expect(header).toBeInTheDocument()
     })
   })
 

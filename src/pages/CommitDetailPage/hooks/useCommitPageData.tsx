@@ -16,6 +16,20 @@ import {
 import Api from 'shared/api'
 import A from 'ui/A'
 
+const BundleAnalysisComparisonResult = z.union([
+  z.literal('BundleAnalysisComparison'),
+  FirstPullRequestSchema.shape.__typename,
+  MissingBaseCommitSchema.shape.__typename,
+  MissingComparisonSchema.shape.__typename,
+  MissingHeadCommitSchema.shape.__typename,
+  MissingHeadReportSchema.shape.__typename,
+  MissingBaseReportSchema.shape.__typename,
+])
+
+export type TBundleAnalysisComparisonResult = z.infer<
+  typeof BundleAnalysisComparisonResult
+>
+
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   bundleAnalysisEnabled: z.boolean().nullable(),
@@ -37,14 +51,7 @@ const RepositorySchema = z.object({
         })
         .nullable(),
       bundleAnalysisCompareWithParent: z.object({
-        __typename: z.union([
-          z.literal('BundleAnalysisComparison'),
-          FirstPullRequestSchema.shape.__typename,
-          MissingBaseCommitSchema.shape.__typename,
-          MissingComparisonSchema.shape.__typename,
-          MissingHeadCommitSchema.shape.__typename,
-          MissingHeadReportSchema.shape.__typename,
-        ]),
+        __typename: BundleAnalysisComparisonResult,
       }),
     })
     .nullable(),
