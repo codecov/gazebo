@@ -110,7 +110,29 @@ export function useRepoOverview({
           })
         }
 
-        return data?.owner?.repository ?? null
+        if (!data?.owner?.repository) {
+          return null
+        }
+
+        let jsOrTsPresent = false
+        if (data.owner.repository.languages) {
+          jsOrTsPresent = data.owner.repository.languages.some(
+            (lang) =>
+              lang.toLowerCase() === 'javascript' ||
+              lang.toLowerCase() === 'typescript'
+          )
+        }
+
+        const coverageEnabled = data.owner.repository.coverageEnabled ?? false
+        const bundleAnalysisEnabled =
+          data.owner.repository.bundleAnalysisEnabled ?? false
+
+        return {
+          ...data.owner.repository,
+          coverageEnabled,
+          bundleAnalysisEnabled,
+          jsOrTsPresent,
+        }
       })
     },
   })

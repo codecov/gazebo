@@ -5,18 +5,25 @@ import { setupServer } from 'msw/node'
 
 import { useRepoOverview } from './useRepoOverview'
 
-const mockOverview = {
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      private: false,
-      defaultBranch: 'main',
-      oldestCommitAt: '2022-10-10T11:59:59',
-      coverageEnabled: true,
-      bundleAnalysisEnabled: true,
-      languages: [],
+const mockOverview = (language?: string) => {
+  let languages: string[] = []
+  if (language) {
+    languages = [language]
+  }
+
+  return {
+    owner: {
+      repository: {
+        __typename: 'Repository',
+        private: false,
+        defaultBranch: 'main',
+        oldestCommitAt: '2022-10-10T11:59:59',
+        coverageEnabled: true,
+        bundleAnalysisEnabled: true,
+        languages,
+      },
     },
-  },
+  }
 }
 
 const mockNotFoundError = {
@@ -72,6 +79,7 @@ interface SetupArgs {
   isOwnerNotActivatedError?: boolean
   isUnsuccessfulParseError?: boolean
   isNullOwner?: boolean
+  language?: string
 }
 
 describe('useRepoOverview', () => {
@@ -80,6 +88,7 @@ describe('useRepoOverview', () => {
     isOwnerNotActivatedError = false,
     isUnsuccessfulParseError = false,
     isNullOwner = false,
+    language,
   }: SetupArgs) {
     server.use(
       graphql.query('GetRepoOverview', (req, res, ctx) => {
@@ -92,7 +101,7 @@ describe('useRepoOverview', () => {
         } else if (isNullOwner) {
           return res(ctx.status(200), ctx.data(mockNullOwner))
         }
-        return res(ctx.status(200), ctx.data(mockOverview))
+        return res(ctx.status(200), ctx.data(mockOverview(language)))
       })
     )
   }
@@ -120,8 +129,65 @@ describe('useRepoOverview', () => {
             coverageEnabled: true,
             bundleAnalysisEnabled: true,
             languages: [],
+            jsOrTsPresent: false,
           })
         )
+      })
+
+      describe('javascript is in the languages array', () => {
+        it('returns jsOrTsPresent as true', async () => {
+          setup({ language: 'javascript' })
+          const { result } = renderHook(
+            () =>
+              useRepoOverview({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'cool-repo',
+              }),
+            { wrapper }
+          )
+
+          await waitFor(() =>
+            expect(result.current.data).toStrictEqual({
+              __typename: 'Repository',
+              private: false,
+              defaultBranch: 'main',
+              oldestCommitAt: '2022-10-10T11:59:59',
+              coverageEnabled: true,
+              bundleAnalysisEnabled: true,
+              languages: ['javascript'],
+              jsOrTsPresent: true,
+            })
+          )
+        })
+      })
+
+      describe('typescript is in the languages array', () => {
+        it('returns jsOrTsPresent as true', async () => {
+          setup({ language: 'typescript' })
+          const { result } = renderHook(
+            () =>
+              useRepoOverview({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'cool-repo',
+              }),
+            { wrapper }
+          )
+
+          await waitFor(() =>
+            expect(result.current.data).toStrictEqual({
+              __typename: 'Repository',
+              private: false,
+              defaultBranch: 'main',
+              oldestCommitAt: '2022-10-10T11:59:59',
+              coverageEnabled: true,
+              bundleAnalysisEnabled: true,
+              languages: ['typescript'],
+              jsOrTsPresent: true,
+            })
+          )
+        })
       })
     })
 

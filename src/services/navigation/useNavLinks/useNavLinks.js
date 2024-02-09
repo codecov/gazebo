@@ -701,6 +701,16 @@ export function useNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    bundles: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/bundles`,
+      text: 'Bundles',
+    },
     bundleOnboarding: {
       path: (
         { provider = p, owner = o, repo = r } = {

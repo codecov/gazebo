@@ -10,6 +10,8 @@ export const TierNames = {
   ENTERPRISE: 'enterprise',
 } as const
 
+export type TTierNames = (typeof TierNames)[keyof typeof TierNames]
+
 export const TierSchema = z
   .object({
     owner: z
