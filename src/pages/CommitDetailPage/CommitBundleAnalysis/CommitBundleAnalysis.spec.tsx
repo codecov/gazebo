@@ -1,9 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import {
-  render,
-  screen,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
@@ -15,12 +11,18 @@ jest.mock('./CommitBundleAnalysisTable', () => () => (
   <div>CommitBundleAnalysisTable</div>
 ))
 
+jest.mock('./EmptyTable', () => () => <div>EmptyTable</div>)
+
 const mockCommitPageData = ({
   bundleAnalysisEnabled = true,
   coverageEnabled = true,
+  firstPullRequest = false,
+  comparisonError = false,
 }: {
   bundleAnalysisEnabled?: boolean
   coverageEnabled?: boolean
+  firstPullRequest?: boolean
+  comparisonError?: boolean
 }) => ({
   owner: {
     isCurrentUserPartOfOrg: true,
@@ -34,7 +36,11 @@ const mockCommitPageData = ({
           __typename: 'Comparison',
         },
         bundleAnalysisCompareWithParent: {
-          __typename: 'BundleAnalysisComparison',
+          __typename: firstPullRequest
+            ? 'FirstPullRequest'
+            : comparisonError
+            ? 'MissingHeadCommit'
+            : 'BundleAnalysisComparison',
         },
       },
     },
@@ -58,7 +64,7 @@ const mockSummaryData = (sizeDelta: number) => ({
 
 const mockNoData = { owner: null }
 
-const mockNoComparison = {
+const mockFirstPullRequest = {
   owner: {
     repository: {
       __typename: 'Repository',
@@ -66,6 +72,20 @@ const mockNoComparison = {
         bundleAnalysisCompareWithParent: {
           __typename: 'FirstPullRequest',
           message: 'First pull request',
+        },
+      },
+    },
+  },
+}
+
+const mockComparisonError = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      commit: {
+        bundleAnalysisCompareWithParent: {
+          __typename: 'MissingHeadCommit',
+          message: 'Missing head commit',
         },
       },
     },
@@ -114,7 +134,8 @@ interface SetupArgs {
   coverageEnabled?: boolean
   sizeDelta?: number
   noData?: boolean
-  noBundleAnalysisComparison?: boolean
+  firstPullRequest?: boolean
+  comparisonError?: boolean
 }
 
 describe('CommitBundleAnalysis', () => {
@@ -124,13 +145,15 @@ describe('CommitBundleAnalysis', () => {
       bundleAnalysisEnabled = true,
       sizeDelta = 0,
       noData = false,
-      noBundleAnalysisComparison = false,
+      firstPullRequest = false,
+      comparisonError = false,
     }: SetupArgs = {
       coverageEnabled: true,
       bundleAnalysisEnabled: true,
       sizeDelta: 0,
       noData: false,
-      noBundleAnalysisComparison: false,
+      firstPullRequest: false,
+      comparisonError: false,
     }
   ) {
     server.use(
@@ -141,6 +164,8 @@ describe('CommitBundleAnalysis', () => {
             mockCommitPageData({
               coverageEnabled,
               bundleAnalysisEnabled,
+              firstPullRequest,
+              comparisonError,
             })
           )
         )
@@ -148,8 +173,10 @@ describe('CommitBundleAnalysis', () => {
       graphql.query('CommitBADropdownSummary', (req, res, ctx) => {
         if (noData) {
           return res(ctx.status(200), ctx.data(mockNoData))
-        } else if (noBundleAnalysisComparison) {
-          return res(ctx.status(200), ctx.data(mockNoComparison))
+        } else if (firstPullRequest) {
+          return res(ctx.status(200), ctx.data(mockFirstPullRequest))
+        } else if (comparisonError) {
+          return res(ctx.status(200), ctx.data(mockComparisonError))
         }
 
         return res(ctx.status(200), ctx.data(mockSummaryData(sizeDelta)))
@@ -158,7 +185,7 @@ describe('CommitBundleAnalysis', () => {
   }
 
   describe('both coverage and bundle analysis is enabled', () => {
-    it('renders only CommitBundleAnalysisTable', async () => {
+    it('renders CommitBundleAnalysisTable', async () => {
       setup({ coverageEnabled: true, bundleAnalysisEnabled: true })
       render(<CommitBundleAnalysis />, { wrapper })
 
@@ -166,6 +193,102 @@ describe('CommitBundleAnalysis', () => {
         'CommitBundleAnalysisTable'
       )
       expect(commitBundleAnalysisTable).toBeInTheDocument()
+    })
+
+    describe('there is no data', () => {
+      it('renders unknown error message', async () => {
+        setup({
+          noData: true,
+          coverageEnabled: false,
+          bundleAnalysisEnabled: true,
+        })
+        render(<CommitBundleAnalysis />, { wrapper })
+
+        const message = await screen.findByText(/an unknown error occurred/)
+        expect(message).toBeInTheDocument()
+      })
+    })
+
+    describe('first pull request __typename', () => {
+      it('renders first PR summary message', async () => {
+        setup({
+          firstPullRequest: true,
+          coverageEnabled: false,
+          bundleAnalysisEnabled: true,
+        })
+        render(<CommitBundleAnalysis />, { wrapper })
+
+        const message = await screen.findByText(
+          /once merged to default, your following pull request and commits will include report details/
+        )
+        expect(message).toBeInTheDocument()
+      })
+
+      it('renders welcome banner', async () => {
+        setup({
+          firstPullRequest: true,
+          coverageEnabled: false,
+          bundleAnalysisEnabled: true,
+        })
+        render(<CommitBundleAnalysis />, { wrapper })
+
+        const header = await screen.findByText(/Welcome to bundle analysis/)
+        expect(header).toBeInTheDocument()
+      })
+
+      it('renders welcome message', async () => {
+        setup({
+          firstPullRequest: true,
+          coverageEnabled: true,
+          bundleAnalysisEnabled: true,
+        })
+        render(<CommitBundleAnalysis />, { wrapper })
+
+        const header = await screen.findByText(
+          'Once merged to your default branch, Codecov will compare your bundle reports and display the results on pull requests and commits.'
+        )
+        expect(header).toBeInTheDocument()
+      })
+    })
+
+    describe('error __typename', () => {
+      it('renders error banner header', async () => {
+        setup({
+          comparisonError: true,
+          coverageEnabled: true,
+          bundleAnalysisEnabled: true,
+        })
+        render(<CommitBundleAnalysis />, { wrapper })
+
+        const header = await screen.findByText(/Missing Head Commit/)
+        expect(header).toBeInTheDocument()
+      })
+
+      it('renders error banner message', async () => {
+        setup({
+          comparisonError: true,
+          coverageEnabled: true,
+          bundleAnalysisEnabled: true,
+        })
+        render(<CommitBundleAnalysis />, { wrapper })
+
+        const message = await screen.findByText(
+          'Unable to compare commits because the head commit of the commit is not found.'
+        )
+        expect(message).toBeInTheDocument()
+      })
+
+      it('renders empty table', async () => {
+        setup({
+          comparisonError: true,
+          coverageEnabled: true,
+          bundleAnalysisEnabled: true,
+        })
+        render(<CommitBundleAnalysis />, { wrapper })
+
+        const emptyTable = await screen.findByText(/EmptyTable/)
+        expect(emptyTable).toBeInTheDocument()
+      })
     })
   })
 
@@ -229,40 +352,119 @@ describe('CommitBundleAnalysis', () => {
       })
 
       describe('there is no data', () => {
-        it('does not render', async () => {
+        it('renders unknown error message', async () => {
           setup({
             noData: true,
             coverageEnabled: false,
             bundleAnalysisEnabled: true,
           })
-          const { container } = render(<CommitBundleAnalysis />, { wrapper })
+          render(<CommitBundleAnalysis />, { wrapper })
 
-          const loading = await screen.findByText('Loading...')
-          await waitForElementToBeRemoved(loading)
+          const bundleReport = await screen.findByText(/Bundle Report:/)
+          expect(bundleReport).toBeInTheDocument()
 
-          // disabling this rule because we need to check if the paragraph is empty and findByRole does not work
-          // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-          const paragraph = container.querySelector('p')
-          expect(paragraph).toHaveTextContent('')
+          const message = await screen.findByText(/an unknown error occurred/)
+          expect(message).toBeInTheDocument()
         })
       })
 
-      describe('there is no bundle analysis comparison', () => {
-        it('does not render', async () => {
+      describe('first pull request __typename', () => {
+        it('renders first PR summary message', async () => {
           setup({
-            noBundleAnalysisComparison: true,
+            firstPullRequest: true,
             coverageEnabled: false,
             bundleAnalysisEnabled: true,
           })
-          const { container } = render(<CommitBundleAnalysis />, { wrapper })
+          render(<CommitBundleAnalysis />, { wrapper })
 
-          const loading = await screen.findByText('Loading...')
-          await waitForElementToBeRemoved(loading)
+          const bundleReport = await screen.findByText(/Bundle Report:/)
+          expect(bundleReport).toBeInTheDocument()
 
-          // disabling this rule because we need to check if the paragraph is empty and findByRole does not work
-          // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-          const paragraph = container.querySelector('p')
-          expect(paragraph).toHaveTextContent('')
+          const message = await screen.findByText(
+            /once merged to default, your following pull request and commits will include report details/
+          )
+          expect(message).toBeInTheDocument()
+        })
+
+        it('renders welcome banner', async () => {
+          setup({
+            firstPullRequest: true,
+            coverageEnabled: false,
+            bundleAnalysisEnabled: true,
+          })
+          render(<CommitBundleAnalysis />, { wrapper })
+
+          const header = await screen.findByText(/Welcome to bundle analysis/)
+          expect(header).toBeInTheDocument()
+        })
+
+        it('renders welcome message', async () => {
+          setup({
+            firstPullRequest: true,
+            coverageEnabled: false,
+            bundleAnalysisEnabled: true,
+          })
+          render(<CommitBundleAnalysis />, { wrapper })
+
+          const header = await screen.findByText(
+            'Once merged to your default branch, Codecov will compare your bundle reports and display the results on pull requests and commits.'
+          )
+          expect(header).toBeInTheDocument()
+        })
+      })
+
+      describe('error __typename', () => {
+        it('renders error summary message', async () => {
+          setup({
+            comparisonError: true,
+            coverageEnabled: false,
+            bundleAnalysisEnabled: true,
+          })
+          render(<CommitBundleAnalysis />, { wrapper })
+
+          const bundleReport = await screen.findByText(/Bundle Report:/)
+          expect(bundleReport).toBeInTheDocument()
+
+          const message = await screen.findByText(/missing head commit/)
+          expect(message).toBeInTheDocument()
+        })
+
+        it('renders error banner header', async () => {
+          setup({
+            comparisonError: true,
+            coverageEnabled: false,
+            bundleAnalysisEnabled: true,
+          })
+          render(<CommitBundleAnalysis />, { wrapper })
+
+          const header = await screen.findByText(/Missing Head Commit/)
+          expect(header).toBeInTheDocument()
+        })
+
+        it('renders error banner message', async () => {
+          setup({
+            comparisonError: true,
+            coverageEnabled: false,
+            bundleAnalysisEnabled: true,
+          })
+          render(<CommitBundleAnalysis />, { wrapper })
+
+          const message = await screen.findByText(
+            'Unable to compare commits because the head commit of the commit is not found.'
+          )
+          expect(message).toBeInTheDocument()
+        })
+
+        it('renders empty table', async () => {
+          setup({
+            comparisonError: true,
+            coverageEnabled: false,
+            bundleAnalysisEnabled: true,
+          })
+          render(<CommitBundleAnalysis />, { wrapper })
+
+          const emptyTable = await screen.findByText(/EmptyTable/)
+          expect(emptyTable).toBeInTheDocument()
         })
       })
     })

@@ -1,11 +1,14 @@
 import { lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useCommitBADropdownSummary } from 'services/commit/useCommitBADropdownSummary'
-import { formatSizeToString } from 'shared/utils/bundleAnalysis'
 import Spinner from 'ui/Spinner'
 
-import { useCommitPageData } from '../hooks'
+import BundleMessage from './BundleMessage'
+import EmptyTable from './EmptyTable'
+import ErrorBanner from './ErrorBanner'
+import FirstPullBanner from './FirstPullBanner'
+
+import { TBundleAnalysisComparisonResult, useCommitPageData } from '../hooks'
 
 const CommitBundleAnalysisTable = lazy(
   () => import('./CommitBundleAnalysisTable')
@@ -24,51 +27,33 @@ const Loader = () => (
   </div>
 )
 
-const BundleMessage: React.FC = () => {
-  const { provider, owner, repo, commit: commitSha } = useParams<URLParams>()
-  const { data } = useCommitBADropdownSummary({
-    provider,
-    owner,
-    repo,
-    commitid: commitSha,
-  })
+interface BundleContentProps {
+  bundleCompareType?: TBundleAnalysisComparisonResult
+}
 
-  if (
-    !data ||
-    data?.commit?.bundleAnalysisCompareWithParent?.__typename !==
-      'BundleAnalysisComparison'
-  ) {
-    return null
-  }
-
-  const sizeDelta = data?.commit?.bundleAnalysisCompareWithParent?.sizeDelta
-
-  const positiveSize = Math.abs(sizeDelta)
-  if (sizeDelta < 0) {
+const BundleContent: React.FC<BundleContentProps> = ({ bundleCompareType }) => {
+  if (bundleCompareType === 'FirstPullRequest') {
     return (
       <>
-        <span className="font-semibold">Bundle Report: </span>
-        changes will decrease total bundle size by{' '}
-        {formatSizeToString(positiveSize)} &#x2139;
+        <FirstPullBanner />
+        <EmptyTable />
       </>
     )
   }
 
-  if (sizeDelta > 0) {
+  if (bundleCompareType !== 'BundleAnalysisComparison') {
     return (
       <>
-        <span className="font-semibold">Bundle Report: </span>
-        changes will increase total bundle size by{' '}
-        {formatSizeToString(positiveSize)} &#x2139;
+        <ErrorBanner errorType={bundleCompareType} />
+        <EmptyTable />
       </>
     )
   }
 
   return (
-    <>
-      <span className="font-semibold">Bundle Report: </span>bundle size has no
-      change &#x2705;
-    </>
+    <Suspense fallback={<Loader />}>
+      <CommitBundleAnalysisTable />
+    </Suspense>
   )
 }
 
@@ -81,15 +66,14 @@ const CommitBundleAnalysis: React.FC = () => {
     commitId: commitSha,
   })
 
+  const bundleCompareType =
+    commitPageData?.commit?.bundleAnalysisCompareWithParent?.__typename
+
   if (
     commitPageData?.coverageEnabled &&
     commitPageData?.bundleAnalysisEnabled
   ) {
-    return (
-      <Suspense fallback={<Loader />}>
-        <CommitBundleAnalysisTable />
-      </Suspense>
-    )
+    return <BundleContent bundleCompareType={bundleCompareType} />
   }
 
   return (
@@ -97,9 +81,7 @@ const CommitBundleAnalysis: React.FC = () => {
       <p className="flex w-full items-center gap-2 bg-ds-gray-primary px-2 py-4">
         <BundleMessage />
       </p>
-      <Suspense fallback={<Loader />}>
-        <CommitBundleAnalysisTable />
-      </Suspense>
+      <BundleContent bundleCompareType={bundleCompareType} />
     </>
   )
 }
