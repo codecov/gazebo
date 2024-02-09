@@ -303,7 +303,7 @@ describe('CommitBundleAnalysis', () => {
           })
           render(<CommitBundleAnalysis />, { wrapper })
 
-          const bundleReport = await screen.findByText(/Bundle Report:/)
+          const bundleReport = await screen.findByText(/Bundle report:/)
           expect(bundleReport).toBeInTheDocument()
 
           const increaseMessage = await screen.findByText(
@@ -322,7 +322,7 @@ describe('CommitBundleAnalysis', () => {
           })
           render(<CommitBundleAnalysis />, { wrapper })
 
-          const bundleReport = await screen.findByText(/Bundle Report:/)
+          const bundleReport = await screen.findByText(/Bundle report:/)
           expect(bundleReport).toBeInTheDocument()
 
           const decreaseMessage = await screen.findByText(
@@ -341,7 +341,7 @@ describe('CommitBundleAnalysis', () => {
           })
           render(<CommitBundleAnalysis />, { wrapper })
 
-          const bundleReport = await screen.findByText(/Bundle Report:/)
+          const bundleReport = await screen.findByText(/Bundle report:/)
           expect(bundleReport).toBeInTheDocument()
 
           const noChangeMessage = await screen.findByText(
@@ -360,7 +360,7 @@ describe('CommitBundleAnalysis', () => {
           })
           render(<CommitBundleAnalysis />, { wrapper })
 
-          const bundleReport = await screen.findByText(/Bundle Report:/)
+          const bundleReport = await screen.findByText(/Bundle report:/)
           expect(bundleReport).toBeInTheDocument()
 
           const message = await screen.findByText(/an unknown error occurred/)
@@ -377,7 +377,7 @@ describe('CommitBundleAnalysis', () => {
           })
           render(<CommitBundleAnalysis />, { wrapper })
 
-          const bundleReport = await screen.findByText(/Bundle Report:/)
+          const bundleReport = await screen.findByText(/Bundle report:/)
           expect(bundleReport).toBeInTheDocument()
 
           const message = await screen.findByText(
@@ -422,7 +422,7 @@ describe('CommitBundleAnalysis', () => {
           })
           render(<CommitBundleAnalysis />, { wrapper })
 
-          const bundleReport = await screen.findByText(/Bundle Report:/)
+          const bundleReport = await screen.findByText(/Bundle report:/)
           expect(bundleReport).toBeInTheDocument()
 
           const message = await screen.findByText(/missing head commit/)
