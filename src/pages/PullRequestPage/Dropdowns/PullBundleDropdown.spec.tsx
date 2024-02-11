@@ -139,7 +139,7 @@ describe('BundleMessage', () => {
             wrapper,
           })
 
-          const title = await screen.findByText('Bundle Report:')
+          const title = await screen.findByText('Bundle report:')
           expect(title).toBeInTheDocument()
 
           const message = await screen.findByText(
@@ -156,7 +156,7 @@ describe('BundleMessage', () => {
             wrapper,
           })
 
-          const title = await screen.findByText('Bundle Report:')
+          const title = await screen.findByText('Bundle report:')
           expect(title).toBeInTheDocument()
 
           const message = await screen.findByText(
@@ -173,7 +173,7 @@ describe('BundleMessage', () => {
             wrapper,
           })
 
-          const title = await screen.findByText('Bundle Report:')
+          const title = await screen.findByText('Bundle report:')
           expect(title).toBeInTheDocument()
 
           const message = await screen.findByText(/bundle size has no change/)
@@ -189,7 +189,7 @@ describe('BundleMessage', () => {
           wrapper,
         })
 
-        const title = await screen.findByText('Bundle Report:')
+        const title = await screen.findByText('Bundle report:')
         expect(title).toBeInTheDocument()
 
         const message = await screen.findByText(
@@ -206,7 +206,7 @@ describe('BundleMessage', () => {
           wrapper,
         })
 
-        const title = await screen.findByText('Bundle Report:')
+        const title = await screen.findByText('Bundle report:')
         expect(title).toBeInTheDocument()
 
         const message = await screen.findByText(/missing head commit/)
@@ -221,7 +221,7 @@ describe('BundleMessage', () => {
           wrapper,
         })
 
-        const title = await screen.findByText('Bundle Report:')
+        const title = await screen.findByText('Bundle report:')
         expect(title).toBeInTheDocument()
 
         const message = await screen.findByText(/an unknown error occurred/)
@@ -237,7 +237,7 @@ describe('BundleMessage', () => {
         wrapper,
       })
 
-      const bundleReport = await screen.findByText(/Bundle Report:/)
+      const bundleReport = await screen.findByText(/Bundle report:/)
       expect(bundleReport).toBeInTheDocument()
       await user.click(bundleReport)
 
