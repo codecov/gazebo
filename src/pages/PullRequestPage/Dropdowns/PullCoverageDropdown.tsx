@@ -85,7 +85,7 @@ const PullCoverageDropdown: React.FC<React.PropsWithChildren> = ({
     <SummaryDropdown.Item value="coverage">
       <SummaryDropdown.Trigger>
         <p className="flex w-full flex-col sm:flex-row sm:gap-1">
-          <span className="font-semibold">Coverage Report: </span>
+          <span className="font-semibold">Coverage report: </span>
           <CoverageMessage
             missesCount={missesCount}
             partialsCount={partialsCount}
@@ -94,7 +94,7 @@ const PullCoverageDropdown: React.FC<React.PropsWithChildren> = ({
           />
         </p>
       </SummaryDropdown.Trigger>
-      <SummaryDropdown.Content className="py-2">
+      <SummaryDropdown.Content className="pb-12 pt-2">
         {children}
       </SummaryDropdown.Content>
     </SummaryDropdown.Item>

@@ -87,7 +87,7 @@ describe('usePullCoverageDropdownSummary', () => {
     isOwnerNotActivatedError = false,
   }: SetupArgs = {}) {
     server.use(
-      graphql.query('PullDropdownSummary', (req, res, ctx) => {
+      graphql.query('PullCoverageDropdownSummary', (req, res, ctx) => {
         if (isNotFoundError) {
           return res(ctx.status(200), ctx.data(mockNotFoundError))
         } else if (isOwnerNotActivatedError) {
