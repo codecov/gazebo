@@ -94,7 +94,7 @@ const PullCoverageDropdown: React.FC<React.PropsWithChildren> = ({
           />
         </p>
       </SummaryDropdown.Trigger>
-      <SummaryDropdown.Content className="py-2">
+      <SummaryDropdown.Content className="pb-12 pt-2">
         {children}
       </SummaryDropdown.Content>
     </SummaryDropdown.Item>
