@@ -34,7 +34,7 @@ const PullBundleAnalysis: React.FC = () => {
 
   return (
     <>
-      <p className="flex w-full items-center gap-2 bg-ds-gray-primary px-2 py-4">
+      <p className="flex w-full items-center gap-2 bg-ds-gray-primary px-2 py-4 text-base">
         <BundleMessage />
       </p>
       <Suspense fallback={<Loader />}>
