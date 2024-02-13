@@ -4,7 +4,8 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import umbrellaSvg from 'assets/svg/umbrella.svg'
-import { useInternalUser } from 'services/user'
+import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
+import { useInternalUser, useUser } from 'services/user'
 import A from 'ui/A'
 import Button from 'ui/Button'
 import RadioInput from 'ui/RadioInput/RadioInput'
@@ -87,6 +88,8 @@ export default function TermsOfService() {
     onError: (error) => setError('apiError', error),
   })
   const { data: currentUser, isLoading: userIsLoading } = useInternalUser({})
+  const { data: user } = useUser()
+  const { mutate: updateDefaultOrg } = useUpdateDefaultOrganization()
 
   interface FormValues {
     marketingEmail?: string
@@ -95,6 +98,13 @@ export default function TermsOfService() {
   }
 
   const onSubmit: SubmitHandler<FormValues> = (data: FormValues) => {
+    if (data?.customerIntent === CustomerIntent.PERSONAL && currentUser?.name) {
+      // @ts-expect-error -> TODO: refactor updateDefaultOrg to TS
+      updateDefaultOrg({
+        username: user?.user?.username,
+      })
+    }
+
     mutate({
       businessEmail: data?.marketingEmail || currentUser?.email,
       termsAgreement: true,
