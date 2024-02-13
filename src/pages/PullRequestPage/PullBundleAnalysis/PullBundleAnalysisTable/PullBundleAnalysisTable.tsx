@@ -105,8 +105,8 @@ const BundleTable: React.FC = () => {
   }
 
   return (
-    <div className="tableui pt-12">
-      <table>
+    <div className="tableui">
+      <table className="!border-t-0">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>

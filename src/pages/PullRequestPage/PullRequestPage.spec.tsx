@@ -5,15 +5,20 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames } from 'services/tier'
+import { TierNames, TTierNames } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 
 import PullRequestPage from './PullRequestPage'
 
 jest.mock('shared/featureFlags')
+const mockedUseFlags = useFlags as jest.Mock<{
+  multipleTiers: boolean
+  bundleAnalysisPrAndCommitPages: boolean
+}>
 
 jest.mock('./Header', () => () => 'Header')
 jest.mock('./PullCoverage', () => () => 'PullCoverage')
+jest.mock('./PullBundleAnalysis', () => () => 'PullBundleAnalysis')
 jest.mock('shared/featureFlags')
 
 const mockPullHeadData = {
@@ -64,13 +69,47 @@ const mockPullPageDataTeam = {
   },
 }
 
+const mockPullCoverageDropdownSummary = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      pull: {
+        compareWithBase: {
+          __typename: 'Comparison',
+          patchTotals: {
+            missesCount: 1,
+            partialsCount: 2,
+          },
+        },
+      },
+    },
+  },
+}
+
+const mockPullBADropdownSummary = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      pull: {
+        bundleAnalysisCompareWithBase: {
+          __typename: 'BundleAnalysisComparison',
+          sizeDelta: 1,
+          loadTimeDelta: 2,
+        },
+      },
+    },
+  },
+}
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 const server = setupServer()
 
 const wrapper =
-  (initialEntries = '/gh/test-org/test-repo/pull/12') =>
+  (
+    initialEntries = '/gh/test-org/test-repo/pull/12'
+  ): React.FC<React.PropsWithChildren> =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
@@ -91,15 +130,27 @@ afterAll(() => {
   server.close()
 })
 
+interface SetupArgs {
+  pullData?: typeof mockPullPageData | null
+  tierValue?: TTierNames
+  privateRepo?: boolean
+  coverageEnabled?: boolean
+  bundleAnalysisEnabled?: boolean
+}
+
 describe('PullRequestPage', () => {
-  function setup(
+  function setup({
     pullData = mockPullPageData,
     tierValue = TierNames.BASIC,
-    privateRepo = false
-  ) {
-    useFlags.mockReturnValue({
+    privateRepo = false,
+    coverageEnabled = true,
+    bundleAnalysisEnabled = false,
+  }: SetupArgs) {
+    mockedUseFlags.mockReturnValue({
       multipleTiers: true,
+      bundleAnalysisPrAndCommitPages: true,
     })
+
     server.use(
       graphql.query('PullHeadData', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockPullHeadData))
@@ -112,8 +163,8 @@ describe('PullRequestPage', () => {
               owner: {
                 repository: {
                   __typename: 'Repository',
-                  coverageEnabled: true,
-                  bundleAnalysisEnabled: true,
+                  coverageEnabled,
+                  bundleAnalysisEnabled,
                   pull: mockPullPageDataTeam,
                 },
               },
@@ -127,8 +178,8 @@ describe('PullRequestPage', () => {
             owner: {
               repository: {
                 __typename: 'Repository',
-                coverageEnabled: true,
-                bundleAnalysisEnabled: true,
+                coverageEnabled,
+                bundleAnalysisEnabled,
                 pull: pullData,
               },
             },
@@ -150,14 +201,19 @@ describe('PullRequestPage', () => {
             owner: { plan: { tierName: tierValue } },
           })
         )
+      }),
+      graphql.query('PullCoverageDropdownSummary', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockPullCoverageDropdownSummary))
+      }),
+      graphql.query('PullBADropdownSummary', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockPullBADropdownSummary))
       })
     )
   }
 
   describe('when pull data is available', () => {
-    beforeEach(() => setup())
-
     it('renders breadcrumb', async () => {
+      setup({})
       render(<PullRequestPage />, { wrapper: wrapper() })
 
       const org = await screen.findByRole('link', { name: 'test-org' })
@@ -177,38 +233,63 @@ describe('PullRequestPage', () => {
     })
 
     it('renders header', async () => {
+      setup({})
       render(<PullRequestPage />, { wrapper: wrapper() })
 
       const header = await screen.findByText(/Header/)
       expect(header).toBeInTheDocument()
     })
 
-    it('renders pull request page content', async () => {
-      render(<PullRequestPage />, { wrapper: wrapper() })
+    describe('repo has coverage enabled', () => {
+      it('renders pull coverage', async () => {
+        setup({ coverageEnabled: false })
+        render(<PullRequestPage />, { wrapper: wrapper() })
 
-      const pullCoverage = await screen.findByText(/PullCoverage/)
-      expect(pullCoverage).toBeInTheDocument()
+        const pullCoverage = await screen.findByText(/PullCoverage/)
+        expect(pullCoverage).toBeInTheDocument()
+      })
     })
-  })
 
-  describe('when there is no pull data', () => {
-    beforeEach(() => setup(null))
+    describe('repo has bundle analysis enabled', () => {
+      it('renders pull bundle analysis', async () => {
+        setup({ bundleAnalysisEnabled: true, coverageEnabled: false })
+        render(<PullRequestPage />, { wrapper: wrapper() })
 
-    it('renders not found', async () => {
-      render(<PullRequestPage />, { wrapper: wrapper() })
+        const pullBundleAnalysis = await screen.findByText(/PullBundleAnalysis/)
+        expect(pullBundleAnalysis).toBeInTheDocument()
+      })
+    })
 
-      const notFound = await screen.findByText(/Not found/)
-      expect(notFound).toBeInTheDocument()
+    describe('repo has coverage and bundle analysis enabled', () => {
+      it('renders pull coverage dropdown', async () => {
+        setup({ coverageEnabled: true, bundleAnalysisEnabled: true })
+        render(<PullRequestPage />, { wrapper: wrapper() })
+
+        const pullCoverage = await screen.findByText(/Coverage report/)
+        expect(pullCoverage).toBeInTheDocument()
+      })
+
+      it('renders pull bundle analysis', async () => {
+        setup({ coverageEnabled: true, bundleAnalysisEnabled: true })
+        render(<PullRequestPage />, { wrapper: wrapper() })
+
+        const pullBundleAnalysis = await screen.findByText(/Bundle report/)
+        expect(pullBundleAnalysis).toBeInTheDocument()
+      })
     })
   })
 
   describe('when user is on team plan', () => {
-    beforeEach(() => setup(mockPullPageDataTeam, TierNames.TEAM, true))
-
-    it('returns a valid response', async () => {
+    it('renders the page for team tier', async () => {
+      setup({
+        tierValue: TierNames.TEAM,
+        privateRepo: true,
+      })
       render(<PullRequestPage />, { wrapper: wrapper() })
+
       const header = await screen.findByText(/Header/)
       expect(header).toBeInTheDocument()
+
       const org = await screen.findByRole('link', { name: 'test-org' })
       expect(org).toBeInTheDocument()
       expect(org).toHaveAttribute('href', '/gh/test-org')
@@ -223,6 +304,16 @@ describe('PullRequestPage', () => {
 
       const pullId = await screen.findByText('12')
       expect(pullId).toBeInTheDocument()
+    })
+  })
+
+  describe('when there is no pull data', () => {
+    it('renders not found', async () => {
+      setup({ pullData: null })
+      render(<PullRequestPage />, { wrapper: wrapper() })
+
+      const notFound = await screen.findByText(/Not found/)
+      expect(notFound).toBeInTheDocument()
     })
   })
 })
