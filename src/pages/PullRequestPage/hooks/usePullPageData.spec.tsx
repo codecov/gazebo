@@ -24,6 +24,9 @@ const mockPullData = {
           componentComparisonsCount: 6,
           directChangedFilesCount: 0,
         },
+        bundleAnalysisCompareWithBase: {
+          __typename: 'BundleAnalysisComparison',
+        },
       },
     },
   },
@@ -44,6 +47,9 @@ const mockPullDataTeam = {
           __typename: 'Comparison',
           impactedFilesCount: 4,
           directChangedFilesCount: 0,
+        },
+        bundleAnalysisCompareWithBase: {
+          __typename: 'BundleAnalysisComparison',
         },
       },
     },
@@ -167,6 +173,9 @@ describe('usePullPageData', () => {
                   flagComparisonsCount: 1,
                   componentComparisonsCount: 6,
                   directChangedFilesCount: 0,
+                },
+                bundleAnalysisCompareWithBase: {
+                  __typename: 'BundleAnalysisComparison',
                 },
               },
             })
@@ -350,6 +359,9 @@ describe('usePullPageData', () => {
                 __typename: 'Comparison',
                 impactedFilesCount: 4,
                 directChangedFilesCount: 0,
+              },
+              bundleAnalysisCompareWithBase: {
+                __typename: 'BundleAnalysisComparison',
               },
             },
           })
