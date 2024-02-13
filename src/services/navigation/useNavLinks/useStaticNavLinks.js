@@ -246,6 +246,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    bundleConfigFeedback: {
+      text: 'New bundle analysis set up feedback',
+      path: () => 'https://github.com/codecov/feedback/issues/270',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     missingComparisonCommit: {
       text: 'comparison commit troubleshooting',
       path: () =>
