@@ -11,7 +11,7 @@ import { ComparisonReturnType } from 'shared/utils/comparison'
 import PullRequestPageContent from './PullCoverage'
 
 jest.mock('./Summary', () => () => <div>CompareSummary</div>)
-jest.mock('../FirstPullBanner', () => () => <div>FirstPullBanner</div>)
+jest.mock('./FirstPullBanner', () => () => <div>FirstPullBanner</div>)
 jest.mock('./PullCoverageTabs', () => () => 'PullCoverageTabs')
 
 jest.mock('./routes/FilesChangedTab', () => () => <div>FilesChangedTab</div>)
@@ -43,6 +43,9 @@ const mockPullData = (resultType) => {
               __typename: resultType,
               message: resultType,
             },
+            bundleAnalysisCompareWithBase: {
+              __typename: 'BundleAnalysisComparison',
+            },
           },
         },
       },
@@ -68,6 +71,9 @@ const mockPullData = (resultType) => {
             flagComparisonsCount: 5,
             componentComparisonsCount: 6,
           },
+          bundleAnalysisCompareWithBase: {
+            __typename: 'BundleAnalysisComparison',
+          },
         },
       },
     },
@@ -90,6 +96,9 @@ const mockPullDataTeam = {
           __typename: ComparisonReturnType.SUCCESSFUL_COMPARISON,
           impactedFilesCount: 2,
           directChangedFilesCount: 4,
+        },
+        bundleAnalysisCompareWithBase: {
+          __typename: 'BundleAnalysisComparison',
         },
       },
     },
