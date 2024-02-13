@@ -122,7 +122,7 @@ const ViteOnboarding: React.FC = () => {
           <span className="font-semibold">How was your setup experience?</span>{' '}
           Let us know in{' '}
           <A
-            to={{ pageName: 'repoConfigFeedback' }}
+            to={{ pageName: 'bundleConfigFeedback' }}
             isExternal
             hook="repo-config-feedback"
           >
