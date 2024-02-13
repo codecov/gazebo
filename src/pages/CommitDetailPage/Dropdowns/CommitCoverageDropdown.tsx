@@ -66,12 +66,12 @@ const CommitCoverageDropdown: React.FC<React.PropsWithChildren> = ({
   return (
     <SummaryDropdown.Item value="coverage">
       <SummaryDropdown.Trigger>
-        <p className="flex w-full flex-col sm:flex-row sm:gap-1">
-          <span className="font-semibold">Coverage Report: </span>
+        <p className="flex w-full flex-col text-base sm:flex-row sm:gap-1">
+          <span className="font-semibold">Coverage report: </span>
           <CoverageMessage />
         </p>
       </SummaryDropdown.Trigger>
-      <SummaryDropdown.Content className="py-2">
+      <SummaryDropdown.Content className="pb-12 pt-2">
         {children}
       </SummaryDropdown.Content>
     </SummaryDropdown.Item>

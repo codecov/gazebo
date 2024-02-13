@@ -8,7 +8,7 @@ const CommitBundleDropdown: React.FC<React.PropsWithChildren> = ({
   return (
     <SummaryDropdown.Item value="bundle-analysis">
       <SummaryDropdown.Trigger>
-        <p className="flex w-full flex-col sm:flex-row sm:gap-1">
+        <p className="flex w-full flex-col text-base sm:flex-row sm:gap-1">
           <BundleMessage />
         </p>
       </SummaryDropdown.Trigger>
