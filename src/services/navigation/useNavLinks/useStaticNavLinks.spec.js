@@ -73,6 +73,7 @@ describe('useStaticNavLinks', () => {
       ${links.feedback}                      | ${'https://github.com/codecov/feedback/discussions'}
       ${links.nextJSCustomConfig}            | ${'https://nextjs.org/docs/app/api-reference/next-config-js/webpack'}
       ${links.bundleConfigFeedback}          | ${'https://github.com/codecov/feedback/issues/270'}
+      ${links.termsOfService}                | ${`${config.MARKETING_BASE_URL}/terms-of-service`}
     `('static links return path', ({ link, outcome }) => {
       it(`${link.text}: Returns the correct link`, () => {
         expect(link.path()).toBe(outcome)
