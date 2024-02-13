@@ -131,7 +131,7 @@ describe('BundleMessage', () => {
         setup({ sizeDelta: -1000 })
         render(<BundleMessage />, { wrapper })
 
-        const title = await screen.findByText('Bundle Report:')
+        const title = await screen.findByText('Bundle report:')
         expect(title).toBeInTheDocument()
 
         const message = await screen.findByText(
@@ -146,7 +146,7 @@ describe('BundleMessage', () => {
         setup({ sizeDelta: 1000 })
         render(<BundleMessage />, { wrapper })
 
-        const title = await screen.findByText('Bundle Report:')
+        const title = await screen.findByText('Bundle report:')
         expect(title).toBeInTheDocument()
 
         const message = await screen.findByText(
@@ -161,7 +161,7 @@ describe('BundleMessage', () => {
         setup({ sizeDelta: 0 })
         render(<BundleMessage />, { wrapper })
 
-        const title = await screen.findByText('Bundle Report:')
+        const title = await screen.findByText('Bundle report:')
         expect(title).toBeInTheDocument()
 
         const message = await screen.findByText(/bundle size has no change/)
@@ -175,7 +175,7 @@ describe('BundleMessage', () => {
       setup({ firstPullRequest: true })
       render(<BundleMessage />, { wrapper })
 
-      const title = await screen.findByText('Bundle Report:')
+      const title = await screen.findByText('Bundle report:')
       expect(title).toBeInTheDocument()
 
       const message = await screen.findByText(
@@ -190,7 +190,7 @@ describe('BundleMessage', () => {
       setup({ comparisonError: true })
       render(<BundleMessage />, { wrapper })
 
-      const title = await screen.findByText('Bundle Report:')
+      const title = await screen.findByText('Bundle report:')
       expect(title).toBeInTheDocument()
 
       const message = await screen.findByText(/missing head commit/)
@@ -203,7 +203,7 @@ describe('BundleMessage', () => {
       setup({ noData: true })
       render(<BundleMessage />, { wrapper })
 
-      const title = await screen.findByText('Bundle Report:')
+      const title = await screen.findByText('Bundle report:')
       expect(title).toBeInTheDocument()
 
       const message = await screen.findByText(/an unknown error occurred/)

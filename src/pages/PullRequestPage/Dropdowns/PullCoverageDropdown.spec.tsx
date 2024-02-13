@@ -114,7 +114,7 @@ describe('PullCoverageDropdown', () => {
     const user = userEvent.setup()
 
     server.use(
-      graphql.query('PullDropdownSummary', (req, res, ctx) => {
+      graphql.query('PullCoverageDropdownSummary', (req, res, ctx) => {
         if (noData) {
           return res(ctx.status(200), ctx.data(mockNoData))
         } else if (comparisonError) {
@@ -141,7 +141,7 @@ describe('PullCoverageDropdown', () => {
           { wrapper }
         )
 
-        const coverageReport = await screen.findByText(/Coverage Report:/)
+        const coverageReport = await screen.findByText(/Coverage report:/)
         expect(coverageReport).toBeInTheDocument()
 
         const message = await screen.findByText(
@@ -161,7 +161,7 @@ describe('PullCoverageDropdown', () => {
           { wrapper }
         )
 
-        const coverageReport = await screen.findByText(/Coverage Report:/)
+        const coverageReport = await screen.findByText(/Coverage report:/)
         expect(coverageReport).toBeInTheDocument()
 
         const message = await screen.findByText(
@@ -181,7 +181,7 @@ describe('PullCoverageDropdown', () => {
           { wrapper }
         )
 
-        const coverageReport = await screen.findByText(/Coverage Report:/)
+        const coverageReport = await screen.findByText(/Coverage report:/)
         expect(coverageReport).toBeInTheDocument()
 
         const message = await screen.findByText(
@@ -201,7 +201,7 @@ describe('PullCoverageDropdown', () => {
           { wrapper }
         )
 
-        const coverageReport = await screen.findByText(/Coverage Report:/)
+        const coverageReport = await screen.findByText(/Coverage report:/)
         expect(coverageReport).toBeInTheDocument()
 
         const message = await screen.findByText(
@@ -221,7 +221,7 @@ describe('PullCoverageDropdown', () => {
           { wrapper }
         )
 
-        const coverageReport = await screen.findByText(/Coverage Report:/)
+        const coverageReport = await screen.findByText(/Coverage report:/)
         expect(coverageReport).toBeInTheDocument()
 
         const message = await screen.findByText(/an unknown error has occurred/)
@@ -239,7 +239,7 @@ describe('PullCoverageDropdown', () => {
           { wrapper }
         )
 
-        const coverageReport = await screen.findByText(/Coverage Report:/)
+        const coverageReport = await screen.findByText(/Coverage report:/)
         expect(coverageReport).toBeInTheDocument()
 
         const message = await screen.findByText(/missing head commit/)
@@ -257,7 +257,7 @@ describe('PullCoverageDropdown', () => {
           { wrapper }
         )
 
-        const coverageReport = await screen.findByText(/Coverage Report:/)
+        const coverageReport = await screen.findByText(/Coverage report:/)
         expect(coverageReport).toBeInTheDocument()
 
         const message = await screen.findByText(
@@ -280,7 +280,7 @@ describe('PullCoverageDropdown', () => {
         { wrapper }
       )
 
-      const coverageReport = await screen.findByText(/Coverage Report:/)
+      const coverageReport = await screen.findByText(/Coverage report:/)
       expect(coverageReport).toBeInTheDocument()
       await user.click(coverageReport)
 
