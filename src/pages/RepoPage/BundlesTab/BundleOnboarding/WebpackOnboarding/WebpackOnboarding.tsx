@@ -97,7 +97,7 @@ const WebpackOnboarding: React.FC = () => {
         </p>
         <pre className="flex items-start justify-between overflow-auto whitespace-pre rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
           {pluginConfig}
-          <CopyClipboard string={pnpmInstall} />
+          <CopyClipboard string={pluginConfig} />
         </pre>
       </div>
       <div>
