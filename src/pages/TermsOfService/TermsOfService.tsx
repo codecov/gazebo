@@ -208,10 +208,9 @@ export default function TermsOfService() {
                   </A>{' '}
                   and the{' '}
                   <A
-                    href="https://about.codecov.io/privacy"
                     hook="privacy policy"
                     isExternal
-                    to={undefined}
+                    to={{ pageName: 'privacy' }}
                   >
                     privacy policy
                   </A>
