@@ -100,12 +100,6 @@ describe('PullBundleAnalysis', () => {
     bundleAnalysisEnabled = false,
   }: SetupArgs) {
     server.use(
-      // graphql.query('GetRepoOverview', (req, res, ctx) => {
-      //   return res(
-      //     ctx.status(200),
-      //     ctx.data(mockOverview({ coverageEnabled, bundleAnalysisEnabled }))
-      //   )
-      // }),
       graphql.query('PullPageData', (req, res, ctx) => {
         return res(
           ctx.status(200),
