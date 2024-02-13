@@ -25,7 +25,7 @@ afterAll(() => {
 })
 
 const wrapper =
-  ({ provider = 'gh' } = {}) =>
+  ({ provider = 'gh' } = {}): React.FC<React.PropsWithChildren> =>
   ({ children }) => {
     return (
       <QueryClientProvider client={queryClient}>
@@ -84,9 +84,7 @@ describe('GitHubHelpBanner', () => {
         wrapper: wrapper({ provider: 'gh' }),
       })
 
-      const body = screen.getByText(
-        /Please note, GitHub organization members will need to request/
-      )
+      const body = screen.getByText(/need the organization admin/)
       expect(body).toBeInTheDocument()
     })
 
@@ -96,7 +94,7 @@ describe('GitHubHelpBanner', () => {
       })
 
       const link = screen.getByRole('link', {
-        name: /Install the Codecov GitHub App/,
+        name: /GitHub App is required/,
       })
       expect(link).toHaveAttribute('href', 'https://github.com/apps/codecov')
     })
@@ -115,9 +113,7 @@ describe('GitHubHelpBanner', () => {
         wrapper: wrapper({ provider: 'gl' }),
       })
 
-      const body = screen.queryByText(
-        /Please note, GitHub organization members will need to request/
-      )
+      const body = screen.queryByText(/need the organization admin/)
       expect(body).not.toBeInTheDocument()
     })
   })
@@ -130,14 +126,14 @@ describe('GitHubHelpBanner', () => {
         wrapper: wrapper(),
       })
 
-      const reSync = screen.getByText(/Re-sync now./)
+      const reSync = screen.getByText(/Re-sync/)
       expect(reSync).toBeInTheDocument()
 
       await user.click(reSync)
 
       await waitFor(() => expect(mutation).toHaveBeenCalledTimes(1))
 
-      const syncing = await screen.findByText(/syncing.../)
+      const syncing = await screen.findByText(/Syncing your organizations.../)
       expect(syncing).toBeInTheDocument()
     })
   })
