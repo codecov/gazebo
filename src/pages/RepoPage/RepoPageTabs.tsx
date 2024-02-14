@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useRepo, useRepoOverview } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
+import Badge from 'ui/Badge'
 import TabNavigation from 'ui/TabNavigation'
 
 import {
@@ -23,7 +24,7 @@ interface UseRepoTabsArgs {
 
 interface TabArgs {
   pageName: string
-  children?: string
+  children?: React.ReactNode
   exact?: boolean
   location?: { pathname: string }
 }
@@ -69,7 +70,14 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
     (jsOrTsPresent || repoOverview?.bundleAnalysisEnabled) &&
     bundleAnalysisPrAndCommitPages
   ) {
-    tabs.push({ pageName: 'bundles' })
+    tabs.push({
+      pageName: 'bundles',
+      children: (
+        <>
+          Bundles <Badge>beta</Badge>
+        </>
+      ),
+    })
   }
 
   const hideFlagsTab = !!repoOverview?.private && tierData === TierNames.TEAM
