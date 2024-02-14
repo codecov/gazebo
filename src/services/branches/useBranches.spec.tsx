@@ -246,6 +246,7 @@ describe('GetBranches', () => {
         expect(result.current.error).toEqual(
           expect.objectContaining({
             status: 404,
+            dev: 'useBranches - 404 NotFoundError',
           })
         )
       )
@@ -277,6 +278,7 @@ describe('GetBranches', () => {
         expect(result.current.error).toEqual(
           expect.objectContaining({
             status: 403,
+            dev: 'useBranches - 403 OwnerNotActivatedError',
           })
         )
       )
@@ -308,6 +310,7 @@ describe('GetBranches', () => {
         expect(result.current.error).toEqual(
           expect.objectContaining({
             status: 404,
+            dev: 'useBranches - 404 schema parsing failed',
           })
         )
       )
