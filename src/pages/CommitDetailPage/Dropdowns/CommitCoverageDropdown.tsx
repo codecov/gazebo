@@ -23,9 +23,13 @@ const CoverageMessage: React.FC = () => {
 
   if (uploadErrorCount && uploadErrorCount > 0) {
     if (uploadErrorCount === 1) {
-      return <>{uploadErrorCount} upload has failed to process &#x26A0;</>
+      return (
+        <>{uploadErrorCount} upload has failed to process &#x26A0;&#xFE0F;</>
+      )
     }
-    return <>{uploadErrorCount} uploads have failed to process &#x26A0;</>
+    return (
+      <>{uploadErrorCount} uploads have failed to process &#x26A0;&#xFE0F;</>
+    )
   }
 
   if (comparison?.__typename === 'FirstPullRequest') {
@@ -38,7 +42,7 @@ const CoverageMessage: React.FC = () => {
   }
 
   if (comparison?.__typename !== 'Comparison' && comparison?.message) {
-    return <>{comparison?.message?.toLowerCase()} &#x26A0;</>
+    return <>{comparison?.message?.toLowerCase()} &#x26A0;&#xFE0F;</>
   }
 
   if (comparison?.__typename === 'Comparison') {
@@ -51,13 +55,21 @@ const CoverageMessage: React.FC = () => {
     }
 
     if (totalCount === 1) {
-      return <>{totalCount} line in your changes is missing coverage &#x26A0;</>
+      return (
+        <>
+          {totalCount} line in your changes is missing coverage &#x26A0;&#xFE0F;
+        </>
+      )
     }
 
-    return <>{totalCount} lines in your changes are missing coverage &#x26A0;</>
+    return (
+      <>
+        {totalCount} lines in your changes are missing coverage &#x26A0;&#xFE0F;
+      </>
+    )
   }
 
-  return <>an unknown error has occurred &#x26A0;</>
+  return <>an unknown error has occurred &#x26A0;&#xFE0F;</>
 }
 
 const CommitCoverageDropdown: React.FC<React.PropsWithChildren> = ({
