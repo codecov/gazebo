@@ -10,7 +10,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
-import { NetworkErrorObject } from 'shared/api/helpers'
+import { type NetworkErrorObject } from 'shared/api/helpers'
 import A from 'ui/A'
 
 const BranchSchema = z.object({
