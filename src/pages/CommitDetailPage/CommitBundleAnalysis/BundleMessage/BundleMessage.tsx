@@ -24,7 +24,7 @@ const BundleMessage: React.FC = () => {
   if (comparison?.__typename === 'FirstPullRequest') {
     return (
       <>
-        <span className="font-semibold">Bundle Report: </span>
+        <span className="font-semibold">Bundle report: </span>
         once merged to default, your following pull request and commits will
         include report details &#x2139;
       </>
@@ -37,8 +37,8 @@ const BundleMessage: React.FC = () => {
   ) {
     return (
       <>
-        <span className="font-semibold">Bundle Report: </span>
-        {comparison?.message.toLowerCase()} &#x26A0;
+        <span className="font-semibold">Bundle report: </span>
+        {comparison?.message.toLowerCase()} &#x26A0;&#xFE0F;
       </>
     )
   }
@@ -52,7 +52,7 @@ const BundleMessage: React.FC = () => {
     if (sizeDelta < 0) {
       return (
         <>
-          <span className="font-semibold">Bundle Report: </span>
+          <span className="font-semibold">Bundle report: </span>
           changes will decrease total bundle size by{' '}
           {formatSizeToString(positiveSize)} &#x2139;
         </>
@@ -62,7 +62,7 @@ const BundleMessage: React.FC = () => {
     if (sizeDelta > 0) {
       return (
         <>
-          <span className="font-semibold">Bundle Report: </span>changes will
+          <span className="font-semibold">Bundle report: </span>changes will
           increase total bundle size by {formatSizeToString(positiveSize)}{' '}
           &#x2139;
         </>
@@ -71,7 +71,7 @@ const BundleMessage: React.FC = () => {
 
     return (
       <>
-        <span className="font-semibold">Bundle Report: </span>bundle size has no
+        <span className="font-semibold">Bundle report: </span>bundle size has no
         change &#x2705;
       </>
     )
@@ -79,8 +79,8 @@ const BundleMessage: React.FC = () => {
 
   return (
     <>
-      <span className="font-semibold">Bundle Report: </span>an unknown error
-      occurred &#x26A0;
+      <span className="font-semibold">Bundle report: </span>an unknown error
+      occurred &#x26A0;&#xFE0F;
     </>
   )
 }

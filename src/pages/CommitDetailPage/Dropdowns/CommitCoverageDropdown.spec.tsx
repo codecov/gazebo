@@ -178,7 +178,7 @@ describe('CommitCoverageDropdown', () => {
             { wrapper }
           )
 
-          const bundleReport = await screen.findByText(/Coverage Report:/)
+          const bundleReport = await screen.findByText(/Coverage report:/)
           expect(bundleReport).toBeInTheDocument()
 
           const singleUploadError = await screen.findByText(
@@ -205,7 +205,7 @@ describe('CommitCoverageDropdown', () => {
             { wrapper }
           )
 
-          const bundleReport = await screen.findByText(/Coverage Report:/)
+          const bundleReport = await screen.findByText(/Coverage report:/)
           expect(bundleReport).toBeInTheDocument()
 
           const singleUploadError = await screen.findByText(
@@ -231,7 +231,7 @@ describe('CommitCoverageDropdown', () => {
           { wrapper }
         )
 
-        const bundleReport = await screen.findByText(/Coverage Report:/)
+        const bundleReport = await screen.findByText(/Coverage report:/)
         expect(bundleReport).toBeInTheDocument()
 
         const increaseMessage = await screen.findByText(
@@ -256,7 +256,7 @@ describe('CommitCoverageDropdown', () => {
           { wrapper }
         )
 
-        const bundleReport = await screen.findByText(/Coverage Report:/)
+        const bundleReport = await screen.findByText(/Coverage report:/)
         expect(bundleReport).toBeInTheDocument()
 
         const increaseMessage = await screen.findByText(
@@ -281,7 +281,7 @@ describe('CommitCoverageDropdown', () => {
           { wrapper }
         )
 
-        const bundleReport = await screen.findByText(/Coverage Report:/)
+        const bundleReport = await screen.findByText(/Coverage report:/)
         expect(bundleReport).toBeInTheDocument()
 
         const noChangeMessage = await screen.findByText(
@@ -306,7 +306,7 @@ describe('CommitCoverageDropdown', () => {
           { wrapper }
         )
 
-        const bundleReport = await screen.findByText(/Coverage Report:/)
+        const bundleReport = await screen.findByText(/Coverage report:/)
         expect(bundleReport).toBeInTheDocument()
 
         const noChangeMessage = await screen.findByText(
@@ -381,7 +381,7 @@ describe('CommitCoverageDropdown', () => {
         { wrapper }
       )
 
-      const bundleReport = await screen.findByText(/Coverage Report:/)
+      const bundleReport = await screen.findByText(/Coverage report:/)
       expect(bundleReport).toBeInTheDocument()
       await user.click(bundleReport)
 
