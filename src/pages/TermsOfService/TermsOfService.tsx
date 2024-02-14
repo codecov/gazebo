@@ -4,7 +4,7 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import umbrellaSvg from 'assets/svg/umbrella.svg'
-import { useInternalUser } from 'services/user'
+import { CustomerIntent, useInternalUser } from 'services/user'
 import A from 'ui/A'
 import Button from 'ui/Button'
 import RadioInput from 'ui/RadioInput/RadioInput'
@@ -18,11 +18,6 @@ const FormSchema = z.object({
   tos: z.literal(true),
   customerIntent: z.string(),
 })
-
-const CustomerIntent = {
-  PERSONAL: 'PERSONAL',
-  BUSINESS: 'BUSINESS',
-}
 
 interface IsDisabled {
   isValid: boolean
