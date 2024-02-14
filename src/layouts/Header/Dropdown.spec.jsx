@@ -95,10 +95,7 @@ describe('Dropdown', () => {
 
         const link = screen.getByText('Sign Out')
         expect(link).toBeVisible()
-        expect(link).toHaveAttribute(
-          'href',
-          '/logout/gh?to=http%3A%2F%2Flocalhost%2Flogin'
-        )
+        expect(link).toHaveAttribute('href', '/logout/gh')
       })
 
       it('removes session expiry tracking key on sign out', async () => {
