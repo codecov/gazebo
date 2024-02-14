@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Redirect, useHistory, useParams } from 'react-router-dom'
 import { z } from 'zod'
@@ -8,7 +8,7 @@ import { TrialStatuses, usePlanData } from 'services/account'
 import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
 import { useStaticNavLinks } from 'services/navigation'
 import { useStartTrial } from 'services/trial'
-import { useUser } from 'services/user'
+import { CustomerIntent, useUser } from 'services/user'
 import { isBasicPlan } from 'shared/utils/billing'
 import { mapEdges } from 'shared/utils/graphql'
 import { providerToName } from 'shared/utils/provider'
@@ -97,6 +97,20 @@ function DefaultOrgSelector() {
       ]
     },
   })
+
+  useEffect(() => {
+    if (
+      currentUser?.user?.customerIntent === CustomerIntent.PERSONAL &&
+      !userIsLoading
+    ) {
+      updateDefaultOrg({ username: currentUser?.user?.username })
+    }
+  }, [
+    userIsLoading,
+    currentUser?.user?.customerIntent,
+    currentUser?.user?.username,
+    updateDefaultOrg,
+  ])
 
   const onSubmit = () => {
     updateDefaultOrg({ username: selectedOrg })
