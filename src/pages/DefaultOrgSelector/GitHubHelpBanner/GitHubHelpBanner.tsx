@@ -18,24 +18,27 @@ function ResyncButton() {
         <span className="text-ds-blue">
           <Spinner />
         </span>
-        syncing...
+        Syncing your organizations...
       </span>
     )
   }
 
   return (
-    <button
-      className="text-ds-blue hover:underline"
-      onClick={triggerResync}
-      type="button"
-    >
-      Re-sync now.
-    </button>
+    <span className="flex gap-1">
+      <button
+        className="text-ds-blue hover:underline"
+        onClick={() => triggerResync()}
+        type="button"
+      >
+        Re-sync
+      </button>
+      to refresh your organizations.
+    </span>
   )
 }
 
 function GitHubHelpBanner() {
-  const { provider } = useParams()
+  const { provider } = useParams<{ provider: string }>()
   if (providerToName(provider) !== 'Github') return null
 
   return (
@@ -44,25 +47,20 @@ function GitHubHelpBanner() {
         <div className="flex gap-1 text-sm">
           <Icon size="sm" name="lightBulb" variant="solid" />
           <h2 className="font-semibold">Don&apos;t see your organization? </h2>
-          <A hook="help finding an org" to={{ pageName: 'codecovGithubApp' }}>
-            Install the Codecov GitHub App.
+          <A
+            hook="help finding an org"
+            to={{ pageName: 'codecovGithubApp' }}
+            isExternal={true}
+          >
+            GitHub App is required
             <Icon name="chevronRight" size="sm" variant="solid" />
           </A>
         </div>
       </BannerHeading>
       <BannerContent>
-        <div className="ml-4 mt-3 flex flex-col gap-4 text-xs font-light">
-          <p>
-            <span className="font-semibold">
-              Please note, GitHub organization members will need to request
-              admin approval to install the Codecov app.
-            </span>
-          </p>
-          <p>
-            If you installed the app recently and are not seeing your
-            organizations, you may need to re-sync your repositories.{' '}
-            <ResyncButton />
-          </p>
+        <div className="ml-4 flex flex-col gap-6 text-xs font-light">
+          <p>You&apos;ll need the organization admin to install the app.</p>
+          <ResyncButton />
         </div>
       </BannerContent>
     </Banner>
