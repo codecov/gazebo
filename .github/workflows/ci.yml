@@ -239,6 +239,7 @@ jobs:
         env:
           CODECOV_API_URL: ${{ secrets.CODECOV_API_URL }}
           CODECOV_ORG_TOKEN: ${{ secrets.CODECOV_ORG_TOKEN }}
+          CODECOV_BUNDLE_NAME: "gazebo-production"
 
   upload-bundle-stats-to-staging:
     name: Upload Bundle Stats - Staging
@@ -274,6 +275,7 @@ jobs:
         env:
           CODECOV_API_URL: ${{ secrets.CODECOV_STAGING_API_URL }}
           CODECOV_ORG_TOKEN: ${{ secrets.CODECOV_ORG_TOKEN_STAGING }}
+          CODECOV_BUNDLE_NAME: "gazebo-staging"
 
   storybook:
     name: Run storybook
