@@ -50,8 +50,8 @@ module.exports = {
             codecovWebpackPlugin({
               enableBundleAnalysis: true,
               bundleName: 'gazebo-staging',
-              apiUrl: process.env.CODECOV_STAGING_API_URL,
-              uploadToken: process.env.CODECOV_ORG_TOKEN_STAGING,
+              apiUrl: process.env.CODECOV_API_URL,
+              uploadToken: process.env.CODECOV_ORG_TOKEN,
             }),
           ]
         : []),
