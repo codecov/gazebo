@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql } from 'msw'
+import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -88,9 +88,17 @@ afterAll(() => {
 describe('PriceCallout', () => {
   afterEach(() => jest.resetAllMocks())
 
-  function setup() {
+  function setup(periodEnd: number | null = 1609298708) {
     const user = userEvent.setup()
     const mockSetFormValue = jest.fn()
+
+    const mockAccountDetails = {
+      subscriptionDetail: {
+        latestInvoice: {
+          periodEnd: periodEnd,
+        },
+      },
+    }
 
     server.use(
       graphql.query('GetAvailablePlans', (req, res, ctx) =>
@@ -100,6 +108,9 @@ describe('PriceCallout', () => {
             owner: { availablePlans },
           })
         )
+      ),
+      rest.get('internal/gh/codecov/account-details/', (req, res, ctx) =>
+        res(ctx.status(200), ctx.json(mockAccountDetails))
       )
     )
 
@@ -152,6 +163,17 @@ describe('PriceCallout', () => {
         )
         expect(sentryText).toBeInTheDocument()
       })
+
+      it('displays the next billing date', async () => {
+        const { mockSetFormValue } = setup()
+
+        render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
+          wrapper,
+        })
+
+        const nextBillingDate = await screen.findByText(/next billing date/)
+        expect(nextBillingDate).toBeInTheDocument()
+      })
     })
 
     describe('isPerYear is set to false', () => {
@@ -190,6 +212,17 @@ describe('PriceCallout', () => {
         expect(additionalSavings).toBeInTheDocument()
       })
 
+      it('displays the next billing date', async () => {
+        const { mockSetFormValue } = setup()
+
+        render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
+          wrapper,
+        })
+
+        const nextBillingDate = await screen.findByText(/next billing date/)
+        expect(nextBillingDate).toBeInTheDocument()
+      })
+
       describe('user switches to annual plan', () => {
         it('calls mock set value with pro annual plan', async () => {
           const { mockSetFormValue, user } = setup()
@@ -208,6 +241,24 @@ describe('PriceCallout', () => {
             'newPlan',
             Plans.USERS_SENTRYY
           )
+        })
+      })
+
+      describe('when no current end period date on subscription', () => {
+        it('does not render next billing date info', async () => {
+          const props = {
+            newPlan: Plans.USERS_PR_INAPPM,
+            seats: 10,
+          }
+
+          const { mockSetFormValue } = setup()
+
+          render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
+            wrapper,
+          })
+
+          const nextBillingDate = screen.queryByText(/next billing date/)
+          expect(nextBillingDate).not.toBeInTheDocument()
         })
       })
     })

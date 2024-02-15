@@ -47,6 +47,7 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
           <span className="font-semibold">
             {formatNumberToUSD(perYearPrice)}
           </span>
+          /per month billed annually at {formatNumberToUSD(perYearPrice * 12)}
           {nextBillingDate && (
             <span>
               ,<span className="font-semibold"> next billing date</span> is{' '}
@@ -71,7 +72,7 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
         <span className="font-semibold">
           {formatNumberToUSD(perMonthPrice)}
         </span>
-        /per month,
+        /per month
         {nextBillingDate && (
           <span>
             ,<span className="font-semibold"> next billing date</span> is{' '}
