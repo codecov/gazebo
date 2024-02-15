@@ -54,12 +54,6 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
             {formatNumberToUSD(perYearPrice)}
           </span>
           /per month billed annually at {formatNumberToUSD(perYearPrice * 12)}
-          {nextBillingDate && (
-            <span>
-              ,<span className="font-semibold"> next billing date</span> is{' '}
-              {nextBillingDate}
-            </span>
-          )}
         </p>
         <p>
           &#127881; You{' '}
@@ -70,6 +64,12 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
             )}
           </span>{' '}
           with the Sentry bundle plan
+          {nextBillingDate && (
+            <span>
+              ,<span className="font-semibold"> next billing date</span> is{' '}
+              {nextBillingDate}
+            </span>
+          )}
         </p>
       </div>
     )
@@ -85,12 +85,6 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
           {formatNumberToUSD(perMonthPrice)}
         </span>
         /per month
-        {nextBillingDate && (
-          <span>
-            ,<span className="font-semibold"> next billing date</span> is{' '}
-            {nextBillingDate}
-          </span>
-        )}
       </p>
       <div className="flex flex-row gap-1">
         <Icon size="sm" name="lightBulb" variant="solid" />
@@ -107,7 +101,13 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
                 additional{' '}
                 {formatNumberToUSD((perMonthPrice - perYearPrice) * 12)}
               </span>{' '}
-              a year with an annual plan{' '}
+              a year with an annual plan
+              {nextBillingDate && (
+                <span>
+                  ,<span className="font-semibold"> next billing date</span> is{' '}
+                  {nextBillingDate}
+                </span>
+              )}{' '}
               <button
                 className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
                 onClick={() => setFormValue('newPlan', Plans.USERS_SENTRYY)}
