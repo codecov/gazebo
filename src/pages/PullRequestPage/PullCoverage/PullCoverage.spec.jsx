@@ -27,7 +27,7 @@ jest.mock('./routes/ComponentsTab', () => () => <div>ComponentsTab</div>)
 jest.mock('shared/featureFlags')
 
 const mockPullData = (resultType) => {
-  if (resultType === ComparisonReturnType.MISSING_BASE_COMMIT) {
+  if (resultType !== ComparisonReturnType.SUCCESSFUL_COMPARISON) {
     return {
       owner: {
         repository: {
@@ -202,13 +202,11 @@ describe('PullRequestPageContent', () => {
   describe('result type is first pull request', () => {
     beforeEach(() => setup(ComparisonReturnType.FIRST_PULL_REQUEST))
 
-    it('does not render the error banner', () => {
+    it('renders the first pull banner', async () => {
       render(<PullRequestPageContent />, { wrapper: wrapper() })
 
-      const errorBanner = screen.queryByRole('heading', {
-        name: 'Missing Base Commit',
-      })
-      expect(errorBanner).not.toBeInTheDocument()
+      const firstPull = await screen.findByText('FirstPullBanner')
+      expect(firstPull).toBeInTheDocument()
     })
   })
 
