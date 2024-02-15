@@ -247,7 +247,7 @@ describe('PriceCallout', () => {
       describe('when no current end period date on subscription', () => {
         it('does not render next billing date info', async () => {
           const props = {
-            newPlan: Plans.USERS_PR_INAPPM,
+            newPlan: Plans.USERS_SENTRYM,
             seats: 10,
           }
 
