@@ -5,7 +5,7 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build",
-    "build:stats:staging": "craco build --config craco.staging.config.js",
+    "build:stats": "craco build --config craco.stats.config.js",
     "test": "craco test",
     "test:mutation": "npx stryker run",
     "test:ci": "craco test --collectCoverage --reporters=default --reporters=jest-junit",

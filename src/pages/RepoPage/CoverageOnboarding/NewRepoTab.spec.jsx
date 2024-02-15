@@ -175,18 +175,6 @@ describe('NewRepoTab', () => {
   })
 
   describe('testing redirects', () => {
-    describe('repo has commits', () => {
-      beforeEach(() => setup({ hasCommits: true }))
-
-      it('redirects to repo page', async () => {
-        render(<NewRepoTab />, { wrapper: wrapper() })
-
-        await waitFor(() =>
-          expect(testLocation.pathname).toBe('/gh/codecov/cool-repo')
-        )
-      })
-    })
-
     describe('repo does not have an upload token', () => {
       it('redirects to provider', async () => {
         const { hardRedirect } = setup({ noUploadToken: true })

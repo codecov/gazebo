@@ -34,7 +34,7 @@ const CoverageMessage: React.FC<CoverageMessageProps> = ({
   }
 
   if (errorType && errorMsg) {
-    return <>{errorMsg.toLowerCase()} &#x26A0;</>
+    return <>{errorMsg.toLowerCase()} &#x26A0;&#xFE0F;</>
   }
 
   if (isNumber(missesCount) && isNumber(partialsCount)) {
@@ -46,11 +46,18 @@ const CoverageMessage: React.FC<CoverageMessageProps> = ({
 
     if (totalCount === 1) {
       return (
-        <>{totalCount} line in your changes are missing coverage &#x26A0;</>
+        <>
+          {totalCount} line in your changes are missing coverage
+          &#x26A0;&#xFE0F;
+        </>
       )
     }
 
-    return <>{totalCount} lines in your changes are missing coverage &#x26A0;</>
+    return (
+      <>
+        {totalCount} lines in your changes are missing coverage &#x26A0;&#xFE0F;
+      </>
+    )
   }
 
   return <>an unknown error has occurred</>
@@ -84,7 +91,7 @@ const PullCoverageDropdown: React.FC<React.PropsWithChildren> = ({
   return (
     <SummaryDropdown.Item value="coverage">
       <SummaryDropdown.Trigger>
-        <p className="flex w-full flex-col sm:flex-row sm:gap-1">
+        <p className="flex w-full flex-col text-base sm:flex-row sm:gap-1">
           <span className="font-semibold">Coverage report: </span>
           <CoverageMessage
             missesCount={missesCount}
