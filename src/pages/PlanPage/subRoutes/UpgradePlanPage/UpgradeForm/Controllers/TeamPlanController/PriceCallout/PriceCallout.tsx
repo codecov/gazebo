@@ -1,9 +1,10 @@
 import { useParams } from 'react-router-dom'
 
-import { useAvailablePlans } from 'services/account'
+import { useAccountDetails, useAvailablePlans } from 'services/account'
 import {
   findTeamPlans,
   formatNumberToUSD,
+  getNextBillingDate,
   isAnnualPlan,
   Plans,
 } from 'shared/utils/billing'
@@ -35,6 +36,8 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
     baseUnitPrice: teamPlanYear?.baseUnitPrice,
   })
   const isPerYear = isAnnualPlan(newPlan)
+  const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const nextBillingDate = getNextBillingDate(accountDetails)
 
   if (isPerYear) {
     return (
@@ -44,6 +47,12 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
             {formatNumberToUSD(perYearPrice)}
           </span>
           /per month billed annually at {formatNumberToUSD(perYearPrice * 12)}
+          {nextBillingDate && (
+            <span>
+              ,<span className="font-semibold"> next billing date</span> is{' '}
+              {nextBillingDate}
+            </span>
+          )}
         </p>
         <p>
           &#127881; You{' '}
@@ -63,6 +72,12 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
           {formatNumberToUSD(perMonthPrice)}
         </span>
         /per month
+        {nextBillingDate && (
+          <span>
+            ,<span className="font-semibold"> next billing date</span> is{' '}
+            {nextBillingDate}
+          </span>
+        )}
       </p>
       <div className="flex flex-row gap-1">
         <Icon size="sm" name="lightBulb" variant="solid" />
