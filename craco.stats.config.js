@@ -44,8 +44,7 @@ module.exports = {
             }),
           ]
         : []),
-      ...(process.env.CODECOV_ORG_TOKEN_STAGING &&
-      process.env.CODECOV_STAGING_API_URL
+      ...(process.env.CODECOV_ORG_TOKEN && process.env.CODECOV_API_URL
         ? [
             codecovWebpackPlugin({
               enableBundleAnalysis: true,
