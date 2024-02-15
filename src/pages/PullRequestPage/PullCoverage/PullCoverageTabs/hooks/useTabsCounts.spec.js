@@ -84,6 +84,9 @@ const mockPullData = {
           indirectChangedFilesCount: 0,
           impactedFilesCount: 0,
         },
+        bundleAnalysisCompareWithBase: {
+          __typename: 'BundleAnalysisComparison',
+        },
       },
     },
   },

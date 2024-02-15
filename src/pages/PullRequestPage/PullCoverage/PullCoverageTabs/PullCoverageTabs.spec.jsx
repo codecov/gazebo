@@ -73,6 +73,9 @@ const mockPullData = {
           impactedFilesCount: 0,
           componentComparisonsCount: 0,
         },
+        bundleAnalysisCompareWithBase: {
+          __typename: 'BundleAnalysisComparison',
+        },
       },
     },
   },
@@ -190,6 +193,27 @@ describe('PullCoverageTabs', () => {
       }),
       graphql.query('BackfillFlagMemberships', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockBackfillResponse))
+      }),
+      graphql.query('PullFlagsSelect', (req, res, ctx) => {
+        const dataReturned = {
+          owner: {
+            repository: {
+              pull: {
+                compareWithBase: {
+                  flagComparisons: [
+                    {
+                      name: 'unit',
+                    },
+                    {
+                      name: 'unit-latest-uploader',
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        }
+        return res(ctx.status(200), ctx.data(dataReturned))
       })
     )
   }
