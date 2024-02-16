@@ -80,7 +80,7 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
           <span className="font-semibold">
             {formatNumberToUSD((perMonthPrice - perYearPrice) * 12)}
           </span>{' '}
-          a year with the annual plan
+          a year with annual billing
           {nextBillingDate && (
             <span>
               ,<span className="font-semibold"> next billing date</span> is{' '}
