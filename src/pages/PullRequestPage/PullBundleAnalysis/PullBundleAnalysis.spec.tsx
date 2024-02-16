@@ -11,26 +11,37 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import PullBundleAnalysis from './PullBundleAnalysis'
 
+import { TBundleAnalysisComparisonResult } from '../hooks'
+
+jest.mock('./EmptyTable', () => () => <div>EmptyTable</div>)
 jest.mock('./PullBundleAnalysisTable', () => () => (
   <div>PullBundleAnalysisTable</div>
 ))
 
-const mockOverview = ({
-  coverageEnabled,
-  bundleAnalysisEnabled,
-}: {
-  coverageEnabled: boolean
-  bundleAnalysisEnabled: boolean
-}) => ({
+const mockPullPageData = (
+  compareType: TBundleAnalysisComparisonResult = 'BundleAnalysisComparison',
+  coverageEnabled: boolean = true,
+  bundleAnalysisEnabled: boolean = true
+) => ({
   owner: {
     repository: {
       __typename: 'Repository',
-      private: false,
-      defaultBranch: 'main',
-      oldestCommitAt: '2022-10-10T11:59:59',
       coverageEnabled,
       bundleAnalysisEnabled,
-      languages: [],
+      pull: {
+        pullId: 1,
+        head: {
+          commitid: '123',
+        },
+        compareWithBase: {
+          __typename: 'Comparison',
+          impactedFilesCount: 4,
+          directChangedFilesCount: 0,
+        },
+        bundleAnalysisCompareWithBase: {
+          __typename: compareType,
+        },
+      },
     },
   },
 })
@@ -77,20 +88,28 @@ afterAll(() => {
 })
 
 interface SetupArgs {
+  compareType?: TBundleAnalysisComparisonResult
   coverageEnabled?: boolean
   bundleAnalysisEnabled?: boolean
 }
 
 describe('PullBundleAnalysis', () => {
   function setup({
+    compareType = 'BundleAnalysisComparison',
     coverageEnabled = false,
     bundleAnalysisEnabled = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
+      graphql.query('PullPageData', (req, res, ctx) => {
         return res(
           ctx.status(200),
-          ctx.data(mockOverview({ coverageEnabled, bundleAnalysisEnabled }))
+          ctx.data(
+            mockPullPageData(
+              compareType,
+              coverageEnabled,
+              bundleAnalysisEnabled
+            )
+          )
         )
       }),
       graphql.query('PullBADropdownSummary', (req, res, ctx) => {
@@ -100,41 +119,207 @@ describe('PullBundleAnalysis', () => {
   }
 
   describe('coverage is enabled and bundles are enabled', () => {
-    it('does not render bundle summary', async () => {
-      setup({ coverageEnabled: true, bundleAnalysisEnabled: true })
-      render(<PullBundleAnalysis />, { wrapper })
+    describe('returns bundle comparison type', () => {
+      it('does not render bundle summary', async () => {
+        setup({ coverageEnabled: true, bundleAnalysisEnabled: true })
+        render(<PullBundleAnalysis />, { wrapper })
 
-      const loader = await screen.findByText('Loading')
-      await waitForElementToBeRemoved(loader)
+        const loader = await screen.findByText('Loading')
+        await waitForElementToBeRemoved(loader)
 
-      const message = screen.queryByText(/Bundle report:/)
-      expect(message).not.toBeInTheDocument()
+        const message = screen.queryByText(/Bundle report:/)
+        expect(message).not.toBeInTheDocument()
+      })
+
+      it('displays the PullBundleAnalysisTable', async () => {
+        setup({ coverageEnabled: true, bundleAnalysisEnabled: true })
+        render(<PullBundleAnalysis />, { wrapper })
+
+        const table = await screen.findByText('PullBundleAnalysisTable')
+        expect(table).toBeInTheDocument()
+      })
     })
 
-    it('displays the PullBundleAnalysisTable', async () => {
-      setup({ coverageEnabled: true, bundleAnalysisEnabled: true })
-      render(<PullBundleAnalysis />, { wrapper })
+    describe('return first pull request typename', () => {
+      it('does not render summary', async () => {
+        setup({
+          compareType: 'FirstPullRequest',
+          coverageEnabled: true,
+          bundleAnalysisEnabled: true,
+        })
+        render(<PullBundleAnalysis />, { wrapper })
 
-      const table = await screen.findByText('PullBundleAnalysisTable')
-      expect(table).toBeInTheDocument()
+        const loader = await screen.findByText('Loading')
+        await waitForElementToBeRemoved(loader)
+
+        const message = screen.queryByText(/Bundle report:/)
+        expect(message).not.toBeInTheDocument()
+      })
+
+      it('renders first pull banner', async () => {
+        setup({
+          compareType: 'FirstPullRequest',
+          coverageEnabled: true,
+          bundleAnalysisEnabled: true,
+        })
+        render(<PullBundleAnalysis />, { wrapper })
+
+        const firstPullBanner = await screen.findByText(
+          /Welcome to bundle analysis/
+        )
+        expect(firstPullBanner).toBeInTheDocument()
+      })
+
+      it('renders empty table', async () => {
+        setup({
+          compareType: 'FirstPullRequest',
+          coverageEnabled: true,
+          bundleAnalysisEnabled: true,
+        })
+        render(<PullBundleAnalysis />, { wrapper })
+
+        const emptyTable = await screen.findByText('EmptyTable')
+        expect(emptyTable).toBeInTheDocument()
+      })
+    })
+
+    describe('returns error comparison type', () => {
+      it('does not render summary', async () => {
+        setup({
+          compareType: 'FirstPullRequest',
+          coverageEnabled: true,
+          bundleAnalysisEnabled: true,
+        })
+        render(<PullBundleAnalysis />, { wrapper })
+
+        const loader = await screen.findByText('Loading')
+        await waitForElementToBeRemoved(loader)
+
+        const message = screen.queryByText(/Bundle report:/)
+        expect(message).not.toBeInTheDocument()
+      })
+
+      it('renders error banner', async () => {
+        setup({
+          compareType: 'MissingBaseCommit',
+          coverageEnabled: true,
+          bundleAnalysisEnabled: true,
+        })
+        render(<PullBundleAnalysis />, { wrapper })
+
+        const banner = await screen.findByText(/Missing Base Commit/)
+        expect(banner).toBeInTheDocument()
+      })
+
+      it('renders empty table', async () => {
+        setup({
+          compareType: 'MissingBaseCommit',
+          coverageEnabled: true,
+          bundleAnalysisEnabled: true,
+        })
+        render(<PullBundleAnalysis />, { wrapper })
+
+        const emptyTable = await screen.findByText('EmptyTable')
+        expect(emptyTable).toBeInTheDocument()
+      })
     })
   })
 
   describe('coverage is disabled and bundles are enabled', () => {
-    it('renders bundle summary', async () => {
-      setup({ coverageEnabled: false, bundleAnalysisEnabled: true })
-      render(<PullBundleAnalysis />, { wrapper })
+    describe('returns bundle comparison type', () => {
+      it('renders bundle summary', async () => {
+        setup({ coverageEnabled: false, bundleAnalysisEnabled: true })
+        render(<PullBundleAnalysis />, { wrapper })
 
-      const message = await screen.findByText(/Bundle report:/)
-      expect(message).toBeInTheDocument()
+        const message = await screen.findByText(/Bundle report:/)
+        expect(message).toBeInTheDocument()
+      })
+
+      it('displays the PullBundleAnalysisTable', async () => {
+        setup({ coverageEnabled: false, bundleAnalysisEnabled: true })
+        render(<PullBundleAnalysis />, { wrapper })
+
+        const table = await screen.findByText('PullBundleAnalysisTable')
+        expect(table).toBeInTheDocument()
+      })
     })
 
-    it('displays the PullBundleAnalysisTable', async () => {
-      setup({ coverageEnabled: false, bundleAnalysisEnabled: true })
-      render(<PullBundleAnalysis />, { wrapper })
+    describe('return first pull request typename', () => {
+      it('renders summary', async () => {
+        setup({
+          compareType: 'FirstPullRequest',
+          coverageEnabled: false,
+          bundleAnalysisEnabled: true,
+        })
+        render(<PullBundleAnalysis />, { wrapper })
 
-      const table = await screen.findByText('PullBundleAnalysisTable')
-      expect(table).toBeInTheDocument()
+        const message = await screen.findByText(/Bundle report:/)
+        expect(message).toBeInTheDocument()
+      })
+
+      it('renders first pull banner', async () => {
+        setup({
+          compareType: 'FirstPullRequest',
+          coverageEnabled: false,
+          bundleAnalysisEnabled: true,
+        })
+        render(<PullBundleAnalysis />, { wrapper })
+
+        const firstPullBanner = await screen.findByText(
+          /Welcome to bundle analysis/
+        )
+        expect(firstPullBanner).toBeInTheDocument()
+      })
+
+      it('renders empty table', async () => {
+        setup({
+          compareType: 'FirstPullRequest',
+          coverageEnabled: false,
+          bundleAnalysisEnabled: true,
+        })
+        render(<PullBundleAnalysis />, { wrapper })
+
+        const emptyTable = await screen.findByText('EmptyTable')
+        expect(emptyTable).toBeInTheDocument()
+      })
+    })
+
+    describe('returns error comparison type', () => {
+      it('renders summary', async () => {
+        setup({
+          compareType: 'FirstPullRequest',
+          coverageEnabled: false,
+          bundleAnalysisEnabled: true,
+        })
+        render(<PullBundleAnalysis />, { wrapper })
+
+        const message = await screen.findByText(/Bundle report:/)
+        expect(message).toBeInTheDocument()
+      })
+
+      it('renders error banner', async () => {
+        setup({
+          compareType: 'MissingBaseCommit',
+          coverageEnabled: false,
+          bundleAnalysisEnabled: true,
+        })
+        render(<PullBundleAnalysis />, { wrapper })
+
+        const banner = await screen.findByText(/Missing Base Commit/)
+        expect(banner).toBeInTheDocument()
+      })
+
+      it('renders empty table', async () => {
+        setup({
+          compareType: 'MissingBaseCommit',
+          coverageEnabled: false,
+          bundleAnalysisEnabled: true,
+        })
+        render(<PullBundleAnalysis />, { wrapper })
+
+        const emptyTable = await screen.findByText('EmptyTable')
+        expect(emptyTable).toBeInTheDocument()
+      })
     })
   })
 })
