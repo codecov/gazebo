@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 
 import AppLink from 'shared/AppLink'
-import Icon from 'ui/Icon'
 
 function InactiveRepo({ owner, repoName, isCurrentUserPartOfOrg, isActive }) {
   if (isActive) return <>Deactivated</>
@@ -9,15 +8,14 @@ function InactiveRepo({ owner, repoName, isCurrentUserPartOfOrg, isActive }) {
 
   return (
     <AppLink
-      className="flex items-center font-semibold text-ds-blue"
+      className="flex items-center rounded bg-ds-blue px-4 py-1 font-semibold text-gray-100"
       pageName="new"
       options={{
         owner,
         repo: repoName,
       }}
     >
-      Setup repo
-      <Icon name="chevronRight" variant="solid" size="sm" />
+      Configure
     </AppLink>
   )
 }
