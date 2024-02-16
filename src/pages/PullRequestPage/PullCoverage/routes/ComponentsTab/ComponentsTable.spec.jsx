@@ -159,4 +159,13 @@ describe('ComponentsTable', () => {
       })
     })
   })
+
+  describe('when loading', () => {
+    it('renders spinner', () => {
+      render(<ComponentsTable />, { wrapper: wrapper() })
+
+      const spinner = screen.getByTestId('spinner')
+      expect(spinner).toBeInTheDocument()
+    })
+  })
 })
