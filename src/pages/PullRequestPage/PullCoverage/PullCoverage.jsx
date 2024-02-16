@@ -17,7 +17,7 @@ import CompareSummarySkeleton from './Summary/CompareSummary/CompareSummarySkele
 import { usePullPageData } from '../hooks'
 
 const CompareSummary = lazy(() => import('./Summary'))
-const FirstPullBanner = lazy(() => import('../FirstPullBanner'))
+const FirstPullBanner = lazy(() => import('./FirstPullBanner'))
 
 const CommitsTab = lazy(() => import('./routes/CommitsTab'))
 const ComponentsTab = lazy(() => import('./routes/ComponentsTab'))
@@ -127,11 +127,32 @@ function PullCoverageContent() {
 }
 
 function PullCoverage() {
+  const { owner, repo, pullId, provider } = useParams()
+  const { data: settings } = useRepoSettings()
+  const { multipleTiers } = useFlags({
+    multipleTiers: false,
+  })
+  const { data: tierData } = useTier({ provider, owner })
+  const isTeamPlan =
+    multipleTiers &&
+    tierData === TierNames.TEAM &&
+    settings?.repository?.private
+
+  const { data } = usePullPageData({
+    provider,
+    owner,
+    repo,
+    pullId,
+    isTeamPlan,
+  })
+
   return (
     <div className="mx-4 flex flex-col gap-4 md:mx-0">
       <Suspense fallback={<CompareSummarySkeleton />}>
         <CompareSummary />
-        <FirstPullBanner />
+        {data?.pull?.compareWithBase?.__typename === 'FirstPullRequest' ? (
+          <FirstPullBanner />
+        ) : null}
       </Suspense>
       <div className="grid grid-cols-1 gap-4 space-y-2 lg:grid-cols-2">
         <article className="col-span-2 flex flex-col gap-3 md:gap-0">
