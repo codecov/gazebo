@@ -71,6 +71,7 @@ function NewRepoTab() {
   const { hardRedirect } = useRedirect({ href: `/${provider}` })
 
   // if no upload token redirect
+  // also have a component render incase redirect isn't fast enough
   if (!data?.repository?.uploadToken) {
     hardRedirect()
     return <NotFound />
