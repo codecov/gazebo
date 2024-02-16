@@ -10,7 +10,10 @@ import FirstPullBanner from './FirstPullBanner'
 
 import { TBundleAnalysisComparisonResult, usePullPageData } from '../hooks'
 
-const PullBundleAnalysisTable = lazy(() => import('./PullBundleAnalysisTable'))
+const PullBundleComparisonTable = lazy(
+  () => import('./PullBundleComparisonTable')
+)
+const PullBundleHeadTable = lazy(() => import('./PullBundleHeadTable'))
 
 interface URLParams {
   provider: string
@@ -27,14 +30,27 @@ const Loader = () => (
 
 interface BundleContentProps {
   bundleCompareType?: TBundleAnalysisComparisonResult
+  headHasBundle?: boolean
 }
 
-const BundleContent: React.FC<BundleContentProps> = ({ bundleCompareType }) => {
+const BundleContent: React.FC<BundleContentProps> = ({
+  bundleCompareType,
+  headHasBundle,
+}) => {
   if (bundleCompareType === 'FirstPullRequest') {
     return (
       <>
         <FirstPullBanner />
         <EmptyTable />
+      </>
+    )
+  }
+
+  if (headHasBundle && bundleCompareType !== 'BundleAnalysisComparison') {
+    return (
+      <>
+        <ErrorBanner errorType={bundleCompareType} />
+        <PullBundleHeadTable />
       </>
     )
   }
@@ -50,7 +66,7 @@ const BundleContent: React.FC<BundleContentProps> = ({ bundleCompareType }) => {
 
   return (
     <Suspense fallback={<Loader />}>
-      <PullBundleAnalysisTable />
+      <PullBundleComparisonTable />
     </Suspense>
   )
 }
@@ -69,9 +85,17 @@ const PullBundleAnalysis: React.FC = () => {
 
   const bundleCompareType =
     data?.pull?.bundleAnalysisCompareWithBase?.__typename
+  const headHasBundle =
+    data?.pull?.head?.bundleAnalysisReport?.__typename ===
+    'BundleAnalysisReport'
 
   if (data?.coverageEnabled && data?.bundleAnalysisEnabled) {
-    return <BundleContent bundleCompareType={bundleCompareType} />
+    return (
+      <BundleContent
+        bundleCompareType={bundleCompareType}
+        headHasBundle={headHasBundle}
+      />
+    )
   }
 
   return (
@@ -79,7 +103,10 @@ const PullBundleAnalysis: React.FC = () => {
       <p className="flex w-full items-center gap-2 bg-ds-gray-primary px-2 py-4 text-base">
         <BundleMessage />
       </p>
-      <BundleContent bundleCompareType={bundleCompareType} />
+      <BundleContent
+        bundleCompareType={bundleCompareType}
+        headHasBundle={headHasBundle}
+      />
     </>
   )
 }
