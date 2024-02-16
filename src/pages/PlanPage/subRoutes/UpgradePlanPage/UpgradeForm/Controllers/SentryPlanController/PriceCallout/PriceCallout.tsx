@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useAccountDetails, useAvailablePlans } from 'services/account'
@@ -65,10 +66,10 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
           </span>{' '}
           with the Sentry bundle plan
           {nextBillingDate && (
-            <span>
+            <Fragment>
               ,<span className="font-semibold"> next billing date</span> is{' '}
               {nextBillingDate}
-            </span>
+            </Fragment>
           )}
         </p>
       </div>
@@ -101,12 +102,12 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
                 additional{' '}
                 {formatNumberToUSD((perMonthPrice - perYearPrice) * 12)}
               </span>{' '}
-              a year with an annual plan
+              a year with annual billing
               {nextBillingDate && (
-                <span>
+                <Fragment>
                   ,<span className="font-semibold"> next billing date</span> is{' '}
                   {nextBillingDate}
-                </span>
+                </Fragment>
               )}{' '}
               <button
                 className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"

@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useAccountDetails, useAvailablePlans } from 'services/account'
@@ -56,10 +57,10 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
           </span>{' '}
           with annual billing
           {nextBillingDate && (
-            <span>
+            <Fragment>
               ,<span className="font-semibold"> next billing date</span> is{' '}
               {nextBillingDate}
-            </span>
+            </Fragment>
           )}
         </p>
       </div>
@@ -83,10 +84,10 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
           </span>{' '}
           a year with annual billing
           {nextBillingDate && (
-            <span>
+            <Fragment>
               ,<span className="font-semibold"> next billing date</span> is{' '}
               {nextBillingDate}
-            </span>
+            </Fragment>
           )}
           <button
             className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
