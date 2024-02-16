@@ -63,7 +63,7 @@ const RequestSchema = z.object({
 })
 
 const query = `
-query PullBundleList(
+query PullBundleComparisonList(
   $owner: String!
   $repo: String!
   $pullId: Int!
@@ -113,21 +113,21 @@ query PullBundleList(
   }
 }`
 
-interface UsePullBundleListArgs {
+interface UsePullBundleComparisonListArgs {
   provider: string
   owner: string
   repo: string
   pullId: number
 }
 
-export function usePullBundleList({
+export function usePullBundleComparisonList({
   provider,
   owner,
   repo,
   pullId,
-}: UsePullBundleListArgs) {
+}: UsePullBundleComparisonListArgs) {
   return useQuery({
-    queryKey: ['PullBundleList', provider, owner, repo, pullId],
+    queryKey: ['PullBundleComparisonList', provider, owner, repo, pullId],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
