@@ -7,7 +7,7 @@ import CopyClipboard from 'ui/CopyClipboard'
 
 const codecovActionString = `- name: Upload coverage reports to Codecov
   uses: codecov/codecov-action@v3
-  env:
+  with:
     CODECOV_TOKEN: \${{ secrets.CODECOV_TOKEN }}
 `
 
