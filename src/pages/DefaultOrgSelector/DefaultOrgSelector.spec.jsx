@@ -1188,4 +1188,48 @@ describe('DefaultOrgSelector', () => {
       await waitFor(() => expect(fetchNextPage).toHaveBeenCalledWith('MTI='))
     })
   })
+
+  describe('when user customer intent is personal', () => {
+    it('fires update default org mutation', async () => {
+      const username = 'chetney'
+      const { mockMutationVariables } = setup({
+        useUserData: {
+          me: {
+            email: 'random@email.com',
+            trackingMetadata: {
+              ownerid: '1234',
+            },
+            user: {
+              username,
+              customerIntent: 'PERSONAL',
+            },
+          },
+        },
+        myOrganizationsData: {
+          me: {
+            myOrganizations: {
+              edges: [
+                {
+                  node: {
+                    username: 'chetney',
+                    ownerid: 1,
+                  },
+                },
+              ],
+              pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
+            },
+          },
+        },
+      })
+
+      render(<DefaultOrgSelector />, { wrapper: wrapper() })
+      await waitFor(() =>
+        expect(mockMutationVariables).toHaveBeenLastCalledWith({
+          input: {
+            username,
+          },
+        })
+      )
+    })
+  })
 })
