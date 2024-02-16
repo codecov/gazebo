@@ -126,11 +126,7 @@ export default function ComponentsTable() {
     getCoreRowModel: getCoreRowModel(),
   })
 
-  if (isLoading) {
-    return <Loader />
-  }
-
-  if (isTableDataEmpty) {
+  if (isTableDataEmpty && !isLoading) {
     return <ComponentsNotConfigured />
   }
 
