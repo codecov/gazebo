@@ -11,7 +11,7 @@ import isEmpty from 'lodash/isEmpty'
 import { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { usePullBundleList } from 'services/pull/usePullBundleList'
+import { usePullBundleComparisonList } from 'services/pull/usePullBundleComparisonList'
 import { formatSizeToString } from 'shared/utils/bundleAnalysis'
 import Icon from 'ui/Icon'
 import 'ui/Table/Table.css'
@@ -59,7 +59,7 @@ const columns = [
 
 export const useTableData = () => {
   const { provider, owner, repo, pullId } = useParams<URLParams>()
-  const { data } = usePullBundleList({
+  const { data } = usePullBundleComparisonList({
     provider,
     owner,
     repo,
@@ -162,9 +162,9 @@ const BundleTable: React.FC = () => {
   )
 }
 
-const PullBundleAnalysisTable: React.FC = () => {
+const PullBundleComparisonTable: React.FC = () => {
   const { provider, owner, repo, pullId } = useParams<URLParams>()
-  const { data } = usePullBundleList({
+  const { data } = usePullBundleComparisonList({
     provider,
     owner,
     repo,
@@ -181,4 +181,4 @@ const PullBundleAnalysisTable: React.FC = () => {
   return <BundleTable />
 }
 
-export default PullBundleAnalysisTable
+export default PullBundleComparisonTable
