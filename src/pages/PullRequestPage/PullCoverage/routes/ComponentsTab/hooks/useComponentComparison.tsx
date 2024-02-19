@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { type ParsedQs } from 'qs'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
@@ -19,6 +20,21 @@ import A from 'ui/A'
 
 import { query } from './query'
 
+const ComponentsComparisonSchema = z
+  .object({
+    name: z.string(),
+    patchTotals: z
+      .object({
+        percentCovered: z.number().nullable(),
+      })
+      .nullable(),
+    headTotals: z.object({ percentCovered: z.number().nullable() }).nullable(),
+    baseTotals: z.object({ percentCovered: z.number().nullable() }).nullable(),
+  })
+  .nullable()
+
+export type ComponentsComparison = z.infer<typeof ComponentsComparisonSchema>
+
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   pull: z
@@ -26,24 +42,7 @@ const RepositorySchema = z.object({
       compareWithBase: z.discriminatedUnion('__typename', [
         z.object({
           __typename: z.literal('Comparison'),
-          componentComparisons: z
-            .array(
-              z.object({
-                name: z.string(),
-                patchTotals: z
-                  .object({
-                    percentCovered: z.number().nullable(),
-                  })
-                  .nullable(),
-                headTotals: z
-                  .object({ percentCovered: z.number().nullable() })
-                  .nullable(),
-                baseTotals: z
-                  .object({ percentCovered: z.number().nullable() })
-                  .nullable(),
-              })
-            )
-            .nullable(),
+          componentComparisons: z.array(ComponentsComparisonSchema).nullable(),
         }),
         FirstPullRequestSchema,
         MissingBaseCommitSchema,
@@ -79,7 +78,7 @@ interface URLParams {
 
 interface ComponentComparisonParams {
   filters?: {
-    components?: string[]
+    components?: string[] | ParsedQs[]
   }
 }
 

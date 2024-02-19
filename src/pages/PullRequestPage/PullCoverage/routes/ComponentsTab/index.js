@@ -1,1 +1,1 @@
-export { default } from './ComponentsTab'
+export { default } from './ComponentsTable'
