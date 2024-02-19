@@ -180,6 +180,7 @@ export default function ComponentsTable() {
                         'flex justify-end':
                           cell.column.id === 'change' ||
                           cell.column.id === 'coverage',
+                        'text-right': cell.column.id === 'patch',
                       })}
                     >
                       {flexRender(
