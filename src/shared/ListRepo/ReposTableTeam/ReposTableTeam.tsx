@@ -172,7 +172,7 @@ const ReposTableTeam = ({ searchValue }: ReposTableTeamProps) => {
   }, [reposData?.pages])
   const table = useReactTable({
     columns: getColumns({
-      inactive: repoDisplay === repoDisplayOptions.INACTIVE.text,
+      inactive: repoDisplay === repoDisplayOptions.NOT_CONFIGURED.text,
       isCurrentUserPartOfOrg: isCurrentUserPartOfOrg,
     }),
     getCoreRowModel: getCoreRowModel(),
