@@ -317,5 +317,11 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    quickStart: {
+      text: 'Quick Start',
+      path: () => 'https://docs.codecov.com/docs/quick-start',
+      isExternalLink: true,
+      openNewTab: true,
+    },
   }
 }
