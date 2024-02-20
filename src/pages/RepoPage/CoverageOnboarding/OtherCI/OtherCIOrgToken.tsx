@@ -63,6 +63,13 @@ function OtherCIOrgToken() {
           checks and report comment. Additionally, you&apos;ll find your repo
           coverage dashboard here.
         </p>
+        <p className="mt-6">
+          Visit our guide to{' '}
+          <A to={{ pageName: 'quickStart' }} isExternal hook="quick-start-link">
+            learn more
+          </A>{' '}
+          about integrating Codecov into your CI/CD workflow.
+        </p>
         <p className="mt-6 border-l-2 border-ds-gray-secondary pl-4">
           <span className="font-semibold">How was your setup experience?</span>{' '}
           Let us know in{' '}
