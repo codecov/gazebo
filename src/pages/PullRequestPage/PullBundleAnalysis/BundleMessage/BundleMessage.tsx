@@ -38,7 +38,7 @@ const BundleMessage: React.FC = () => {
     return (
       <>
         <span className="font-semibold">Bundle report: </span>
-        {comparison?.message?.toLowerCase()} &#x26A0;
+        {comparison?.message?.toLowerCase()} &#x26A0;&#xFE0F;
       </>
     )
   }
@@ -77,7 +77,7 @@ const BundleMessage: React.FC = () => {
   return (
     <>
       <span className="font-semibold">Bundle report: </span>an unknown error
-      occurred &#x26A0;
+      occurred &#x26A0;&#xFE0F;
     </>
   )
 }

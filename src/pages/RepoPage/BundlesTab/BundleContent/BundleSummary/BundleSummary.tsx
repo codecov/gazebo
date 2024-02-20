@@ -57,7 +57,7 @@ const BundleSummary: React.FC = () => {
     <div className="bg-ds-gray-primary p-4">
       <p className="w-full text-base">
         <span className="font-semibold">Report: </span>
-        {message.toLowerCase()} &#x26A0;
+        {message.toLowerCase()} &#x26A0;&#xFE0F;
       </p>
       {isString(branchHead?.commitid) ? (
         <p className="pt-2 text-sm">

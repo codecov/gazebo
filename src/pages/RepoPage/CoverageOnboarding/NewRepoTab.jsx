@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import { lazy, Suspense } from 'react'
-import { Redirect, Switch, useParams } from 'react-router-dom'
+import { Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
@@ -70,12 +70,9 @@ function NewRepoTab() {
   const { data } = useRepo({ provider, owner, repo })
   const { hardRedirect } = useRedirect({ href: `/${provider}` })
 
-  // if the repo has commits redirect to coverage tab
-  if (data?.repository?.active) {
-    return <Redirect to={`/${provider}/${owner}/${repo}`} />
-  }
   // if no upload token redirect
-  else if (!data?.repository?.uploadToken) {
+  // also have a component render incase redirect isn't fast enough
+  if (!data?.repository?.uploadToken) {
     hardRedirect()
     return <NotFound />
   }

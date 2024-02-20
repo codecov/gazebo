@@ -44,14 +44,13 @@ module.exports = {
             }),
           ]
         : []),
-      ...(process.env.CODECOV_ORG_TOKEN_STAGING &&
-      process.env.CODECOV_STAGING_API_URL
+      ...(process.env.CODECOV_ORG_TOKEN && process.env.CODECOV_API_URL
         ? [
             codecovWebpackPlugin({
               enableBundleAnalysis: true,
-              bundleName: 'gazebo-staging',
-              apiUrl: process.env.CODECOV_STAGING_API_URL,
-              uploadToken: process.env.CODECOV_ORG_TOKEN_STAGING,
+              bundleName: process.env.CODECOV_BUNDLE_NAME,
+              apiUrl: process.env.CODECOV_API_URL,
+              uploadToken: process.env.CODECOV_ORG_TOKEN,
             }),
           ]
         : []),
