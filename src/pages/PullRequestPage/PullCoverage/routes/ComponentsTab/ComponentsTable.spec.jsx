@@ -4,7 +4,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import ComponentsTab from './ComponentsTab'
+import ComponentsTable from './ComponentsTable'
 
 jest.mock('./ComponentsNotConfigured', () => () => 'ComponentsNotConfigured')
 jest.mock('../ComponentsSelector', () => () => 'ComponentsSelector')
@@ -63,7 +63,7 @@ const mockPull = {
   },
 }
 
-describe('ComponentsTab', () => {
+describe('ComponentsTable', () => {
   function setup(overrideData) {
     const componentsMock = jest.fn()
 
@@ -92,7 +92,7 @@ describe('ComponentsTab', () => {
     })
 
     it('will render card with no dismiss button', async () => {
-      render(<ComponentsTab />, { wrapper: wrapper() })
+      render(<ComponentsTable />, { wrapper: wrapper() })
 
       const componentNotConfigured = await screen.findByText(
         /ComponentsNotConfigured/
@@ -107,7 +107,7 @@ describe('ComponentsTab', () => {
     })
 
     it('shows title and body', async () => {
-      render(<ComponentsTab />, { wrapper: wrapper() })
+      render(<ComponentsTable />, { wrapper: wrapper() })
 
       const nameTableField = await screen.findByText(`Name`)
       expect(nameTableField).toBeInTheDocument()
@@ -118,7 +118,7 @@ describe('ComponentsTab', () => {
       const patchTableField = await screen.findByText(`Patch %`)
       expect(patchTableField).toBeInTheDocument()
 
-      const changeTableField = await screen.findByText(`Change`)
+      const changeTableField = await screen.findByText(`Change %`)
       expect(changeTableField).toBeInTheDocument()
 
       const comparisonName = await screen.findByText('secondTest')
@@ -135,7 +135,7 @@ describe('ComponentsTab', () => {
     })
 
     it('renders ComponentsSelector', async () => {
-      render(<ComponentsTab />, { wrapper: wrapper() })
+      render(<ComponentsTable />, { wrapper: wrapper() })
 
       const selector = await screen.findByText('ComponentsSelector')
       expect(selector).toBeInTheDocument()
@@ -145,16 +145,27 @@ describe('ComponentsTab', () => {
   describe('when rendered with components filter', () => {
     it('sends default params to the API', async () => {
       const { componentsMock } = setup()
-      render(<ComponentsTab />, {
+      render(<ComponentsTable />, {
         wrapper: wrapper(
-          '/gh/codecov/gazebo/pull/123/components?components=component1,component2'
+          '/gh/codecov/gazebo/pull/123/components?components%5B0%5D=component1&components%5B1%5D=component2'
         ),
       })
 
-      await waitFor(() => expect(componentsMock).toBeCalledTimes(1))
-      await waitFor(() =>
-        expect(componentsMock).toHaveBeenCalledWith('component1,component2')
-      )
+      await waitFor(() => {
+        expect(componentsMock).toHaveBeenCalledWith([
+          'component1',
+          'component2',
+        ])
+      })
+    })
+  })
+
+  describe('when loading', () => {
+    it('renders spinner', () => {
+      render(<ComponentsTable />, { wrapper: wrapper() })
+
+      const spinner = screen.getByTestId('spinner')
+      expect(spinner).toBeInTheDocument()
     })
   })
 })
