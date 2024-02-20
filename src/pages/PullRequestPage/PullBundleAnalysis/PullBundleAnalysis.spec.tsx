@@ -243,8 +243,8 @@ describe('PullBundleAnalysis', () => {
           })
           render(<PullBundleAnalysis />, { wrapper })
 
-          const emptyTable = await screen.findByText('PullBundleHeadTable')
-          expect(emptyTable).toBeInTheDocument()
+          const pullHeadTable = await screen.findByText('PullBundleHeadTable')
+          expect(pullHeadTable).toBeInTheDocument()
         })
       })
     })
@@ -358,8 +358,10 @@ describe('PullBundleAnalysis', () => {
           })
           render(<PullBundleAnalysis />, { wrapper })
 
-          const emptyTable = await screen.findByText('PullBundleHeadTable')
-          expect(emptyTable).toBeInTheDocument()
+          const pullBundleHeadTable = await screen.findByText(
+            'PullBundleHeadTable'
+          )
+          expect(pullBundleHeadTable).toBeInTheDocument()
         })
       })
     })
