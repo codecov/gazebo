@@ -282,7 +282,7 @@ describe('ReposTableTeam', () => {
         })
 
         const setupRepo = await screen.findAllByRole('link', {
-          name: /Setup repo chevron-right.svg/,
+          name: /Configure/,
         })
         expect(setupRepo.length).toBe(3)
 
@@ -339,7 +339,7 @@ describe('ReposTableTeam', () => {
         })
       })
 
-      it('does not link to setup repo from repo name', async () => {
+      it('does not link to configure repo from repo name', async () => {
         render(<ReposTableTeam searchValue="" />, {
           wrapper: wrapper(repoDisplayOptions.INACTIVE.text),
         })
@@ -354,7 +354,7 @@ describe('ReposTableTeam', () => {
         expect(repo3).not.toHaveAttribute('href')
       })
 
-      it('does not show setup repo link', async () => {
+      it('does not show configure repo link', async () => {
         render(<ReposTableTeam searchValue="" />, {
           wrapper: wrapper(repoDisplayOptions.INACTIVE.text),
         })
@@ -362,7 +362,7 @@ describe('ReposTableTeam', () => {
         const inactiveCopy = await screen.findAllByText('Inactive')
         expect(inactiveCopy.length).toBe(3)
 
-        const repo1 = screen.queryByText('setup repo')
+        const repo1 = screen.queryByText('Configure')
         expect(repo1).not.toBeInTheDocument()
       })
     })
