@@ -11,9 +11,10 @@ interface URLParams {
 }
 
 const getDecodedBranch = (branch?: string) =>
-  !!branch ? decodeURIComponent(branch) : branch
+  !!branch ? decodeURIComponent(branch) : undefined
 
-const getDecodedRef = (ref?: string) => (!!ref ? decodeURIComponent(ref) : ref)
+const getDecodedRef = (ref?: string) =>
+  !!ref ? decodeURIComponent(ref) : undefined
 
 interface UseBundleBranchSelectorProps {
   branches: Branch[] | null
@@ -28,7 +29,7 @@ export function useBundleBranchSelector({
   // Decoding the value when it is undefined returns "undefined" as a string, which breaks the selector
   const decodedBranch = getDecodedBranch(branch)
   const decodedRef = getDecodedRef(ref)
-  const selectedBranch = decodedBranch || decodedRef || defaultBranch
+  const selectedBranch = decodedBranch ?? decodedRef ?? defaultBranch
 
   const { data: searchBranchValue } = useBranch({
     provider,
