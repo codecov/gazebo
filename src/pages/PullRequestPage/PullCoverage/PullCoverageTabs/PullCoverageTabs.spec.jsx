@@ -64,6 +64,9 @@ const mockPullData = {
         pullId: 1,
         head: {
           commitid: '123',
+          bundleAnalysisReport: {
+            __typename: 'BundleAnalysisReport',
+          },
         },
         compareWithBase: {
           __typename: 'Comparison',
