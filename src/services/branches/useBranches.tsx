@@ -21,7 +21,7 @@ const BranchSchema = z.object({
     .nullable(),
 })
 
-type Branch = z.infer<typeof BranchSchema>
+export type Branch = z.infer<typeof BranchSchema>
 
 const PageInfoSchema = z.object({
   hasNextPage: z.boolean(),
