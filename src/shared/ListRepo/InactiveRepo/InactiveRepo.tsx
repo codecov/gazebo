@@ -1,4 +1,4 @@
-import AppLink from 'shared/AppLink'
+import A from 'ui/A'
 
 function InactiveRepo({
   owner,
@@ -15,17 +15,20 @@ function InactiveRepo({
   if (!isCurrentUserPartOfOrg) return <>Inactive</>
 
   return (
-    // @ts-ignore
-    <AppLink
-      className="flex items-center rounded bg-ds-blue px-4 py-1 font-semibold text-gray-100"
-      pageName="new"
-      options={{
-        owner,
-        repo: repoName,
+    <A
+      variant="configure"
+      isExternal={false}
+      hook="configure-link"
+      to={{
+        pageName: 'new',
+        options: {
+          owner,
+          repo: repoName,
+        },
       }}
     >
       Configure
-    </AppLink>
+    </A>
   )
 }
 
