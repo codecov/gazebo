@@ -380,7 +380,7 @@ graphql.query('CommitBundleList', (req, res, ctx) => {
   )
 })
 
-graphql.query('PullBundleList', (req, res, ctx) => {
+graphql.query('PullBundleComparisonList', (req, res, ctx) => {
   return res(
     ctx.status(200),
     ctx.data({
