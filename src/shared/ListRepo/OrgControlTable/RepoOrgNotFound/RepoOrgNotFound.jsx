@@ -17,7 +17,7 @@ function ResyncButton() {
 
   return (
     <button className="text-ds-blue hover:underline" onClick={triggerResync}>
-      re-syncing
+      Resync
     </button>
   )
 }
@@ -28,7 +28,7 @@ function RepoOrgNotFound() {
       <span className="font-semibold text-ds-gray-quinary">
         Can&apos;t find your repo?
       </span>{' '}
-      Try <ResyncButton />
+      <ResyncButton />
     </p>
   )
 }
