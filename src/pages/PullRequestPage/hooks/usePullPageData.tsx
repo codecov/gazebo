@@ -40,6 +40,12 @@ const RepositorySchema = z.object({
       head: z
         .object({
           commitid: z.string(),
+          bundleAnalysisReport: z
+            .discriminatedUnion('__typename', [
+              z.object({ __typename: z.literal('BundleAnalysisReport') }),
+              z.object({ __typename: z.literal('MissingHeadReport') }),
+            ])
+            .nullable(),
         })
         .nullable(),
       compareWithBase: z
@@ -100,6 +106,9 @@ query PullPageData(
           pullId
           head {
             commitid
+            bundleAnalysisReport {
+              __typename
+            }
           }
           compareWithBase {
             __typename
