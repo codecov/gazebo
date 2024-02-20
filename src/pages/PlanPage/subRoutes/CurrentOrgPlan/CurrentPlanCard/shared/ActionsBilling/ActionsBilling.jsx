@@ -9,6 +9,7 @@ import {
   usePlanData,
 } from 'services/account'
 import { useStartTrial } from 'services/trial'
+import { useRedirect } from 'shared/useRedirect'
 import {
   canApplySentryUpgrade,
   isFreePlan,
@@ -28,6 +29,7 @@ function PlansActionsBilling({ plan }) {
   })
 
   const { mutate, isLoading } = useStartTrial()
+  const { hardRedirect } = useRedirect({ href: `/${provider}/${owner}` })
 
   const canStartTrial =
     planData?.plan?.trialStatus === TrialStatuses.NOT_STARTED &&
@@ -40,6 +42,7 @@ function PlansActionsBilling({ plan }) {
         <Button
           onClick={() => {
             mutate({ owner })
+            hardRedirect()
           }}
           hook="start-trial"
           variant="primary"
