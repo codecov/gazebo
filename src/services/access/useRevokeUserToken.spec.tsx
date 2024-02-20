@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
+import { ReactNode } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useRevokeUserToken } from './index'
@@ -9,7 +10,7 @@ import { useRevokeUserToken } from './index'
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const wrapper = ({ children }) => (
+const wrapper = ({ children }: { children: ReactNode }) => (
   <MemoryRouter initialEntries={['/gh']}>
     <Route path="/:provider">
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -27,8 +28,12 @@ beforeEach(() => {
 })
 afterAll(() => server.close())
 
+interface SetupArgs {
+  me: null
+}
+
 describe('useRevokeUserToken', () => {
-  function setup(dataReturned) {
+  function setup(dataReturned: SetupArgs) {
     server.use(
       rest.post(`/graphql/gh`, (req, res, ctx) => {
         return res(ctx.status(200), ctx.json({ data: dataReturned }))
@@ -45,7 +50,7 @@ describe('useRevokeUserToken', () => {
 
     describe('when calling the mutation', () => {
       const data = {
-        tokenid: 1,
+        tokenid: '1',
       }
 
       it('returns success', async () => {

@@ -2,10 +2,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import Api from 'shared/api'
 
-export function useRevokeUserToken({ provider }) {
+export function useRevokeUserToken({ provider }: { provider: string }) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ tokenid }) => {
+    mutationFn: ({ tokenid }: { tokenid: string }) => {
       const query = `
       mutation RevokeUserToken($input: RevokeUserTokenInput!) {
         revokeUserToken(input: $input) {
@@ -15,15 +15,15 @@ export function useRevokeUserToken({ provider }) {
         }
       }
     `
-      const variables = { input: { tokenid } }
-
       return Api.graphqlMutation({
         provider,
         query,
-        variables,
+        variables: {
+          input: { tokenid },
+        },
         mutationPath: 'revokeUserToken',
       }).then((res) => {
-        queryClient.invalidateQueries('sessions')
+        queryClient.invalidateQueries(['sessions'])
       })
     },
     useErrorBoundary: true,
