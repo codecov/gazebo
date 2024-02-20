@@ -415,13 +415,13 @@ describe('ReposTable', () => {
         expect(repo3).toHaveAttribute('href', '/gl/owner1/Repo name 3/new')
       })
 
-      it('renders set up repo copy', async () => {
+      it('renders configure repo copy', async () => {
         render(<ReposTable searchValue="" owner="owner1" />, {
           wrapper: wrapper(repoDisplayOptions.INACTIVE.text),
         })
 
         const setupRepo = await screen.findAllByRole('link', {
-          name: /Setup repo chevron-right.svg/,
+          name: /Configure/,
         })
         expect(setupRepo.length).toBe(3)
 
@@ -438,7 +438,7 @@ describe('ReposTable', () => {
         })
       })
 
-      it('does not link to setup repo from repo name', async () => {
+      it('does not link to configure repo from repo name', async () => {
         render(<ReposTable searchValue="" owner="" />, {
           wrapper: wrapper(repoDisplayOptions.INACTIVE.text),
         })
@@ -453,7 +453,7 @@ describe('ReposTable', () => {
         expect(repo3).not.toHaveAttribute('href')
       })
 
-      it('does not show setup repo link', async () => {
+      it('does not show configure repo link', async () => {
         render(<ReposTable searchValue="" owner="" />, {
           wrapper: wrapper(repoDisplayOptions.INACTIVE.text),
         })
@@ -461,7 +461,7 @@ describe('ReposTable', () => {
         const inactiveCopy = await screen.findAllByText('Inactive')
         expect(inactiveCopy.length).toBe(3)
 
-        const repo1 = screen.queryByText('setup repo')
+        const repo1 = screen.queryByText('Configure')
         expect(repo1).not.toBeInTheDocument()
       })
     })
