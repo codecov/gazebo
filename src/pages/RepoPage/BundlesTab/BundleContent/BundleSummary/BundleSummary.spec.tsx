@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
-import { MemoryRouter, Route } from 'react-router-dom'
+import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 import useIntersection from 'react-use/lib/useIntersection'
 
 import BundleSummary from './BundleSummary'
@@ -44,14 +44,14 @@ const mockMainBranchSearch = {
   },
 }
 
-const mockBranch = {
+const mockBranch = (name: string) => ({
   branch: {
-    name: 'main',
+    name: name,
     head: {
       commitid: '321fdsa',
     },
   },
-}
+})
 
 const mockBranches = (hasNextPage = false) => ({
   __typename: 'Repository',
@@ -82,7 +82,7 @@ const mockBranches = (hasNextPage = false) => ({
 })
 
 const server = setupServer()
-
+let testLocation: ReturnType<typeof useLocation>
 const wrapper =
   (
     queryClient: QueryClient,
@@ -92,10 +92,21 @@ const wrapper =
     (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/:provider/:owner/:repo/bundles">
+          <Route
+            path={[
+              '/:provider/:owner/:repo/bundles/:branch',
+              '/:provider/:owner/:repo/bundles',
+            ]}
+          >
             <Suspense fallback={<p>loading</p>}>{children}</Suspense>
           </Route>
-          <Route path="*" render={({ location }) => location.pathname} />
+          <Route
+            path="*"
+            render={({ location }) => {
+              testLocation = location
+              return null
+            }}
+          />
         </MemoryRouter>
       </QueryClientProvider>
     )
@@ -137,14 +148,21 @@ describe('BundleBundleSummary', () => {
           ctx.data({ owner: { repository: mockRepoOverview } })
         )
       ),
-      graphql.query('GetBranch', (req, res, ctx) =>
-        res(
+      graphql.query('GetBranch', (req, res, ctx) => {
+        let branch = 'main'
+        if (req.variables?.branch) {
+          branch = req.variables?.branch
+        }
+
+        return res(
           ctx.status(200),
           ctx.data({
-            owner: { repository: { __typename: 'Repository', ...mockBranch } },
+            owner: {
+              repository: { __typename: 'Repository', ...mockBranch(branch) },
+            },
           })
         )
-      ),
+      }),
       graphql.query('GetBranches', (req, res, ctx) => {
         if (req.variables?.after) {
           fetchNextPage(req.variables?.after)
@@ -194,6 +212,53 @@ describe('BundleBundleSummary', () => {
 
       const shortSha = await screen.findByText(/321fdsa/)
       expect(shortSha).toBeInTheDocument()
+    })
+  })
+
+  describe('navigating branches', () => {
+    describe('user selects a branch', () => {
+      it('navigates to the selected branch', async () => {
+        const { user, queryClient } = setup()
+        render(<BundleSummary />, { wrapper: wrapper(queryClient) })
+
+        const select = await screen.findByRole('button', {
+          name: 'bundle branch selector',
+        })
+        await user.click(select)
+
+        const branch = await screen.findByText('branch-1')
+        await user.click(branch)
+
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe(
+            '/gh/codecov/test-repo/bundles/branch-1'
+          )
+        )
+      })
+    })
+
+    describe('user selects the default branch', () => {
+      it('clears the branch from the url', async () => {
+        const { user, queryClient } = setup()
+        render(<BundleSummary />, {
+          wrapper: wrapper(
+            queryClient,
+            '/gh/codecov/test-repo/bundles/branch-1'
+          ),
+        })
+
+        const select = await screen.findByRole('button', {
+          name: 'bundle branch selector',
+        })
+        await user.click(select)
+
+        const branch = await screen.findByText('main')
+        await user.click(branch)
+
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe('/gh/codecov/test-repo/bundles')
+        )
+      })
     })
   })
 
