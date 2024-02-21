@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { rest } from 'msw'
+import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { ReactNode } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -81,56 +81,89 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 interface SetupArgs {
-  me: {
-    sessions: {
-      edges: {
-        node: Session
-      }[]
-    }
-    tokens: {
-      edges: {
-        node: UserToken
-      }[]
-    }
-  } | null
+  isUnsuccessfulParseError?: boolean
+  dataReturned?: {
+    me: {
+      sessions: {
+        edges: {
+          node: Session
+        }[]
+      }
+      tokens: {
+        edges: {
+          node: UserToken
+        }[]
+      }
+    } | null
+  }
 }
 
 describe('useSessions', () => {
-  function setup(dataReturned: SetupArgs) {
+  function setup({
+    isUnsuccessfulParseError = false,
+    dataReturned = { me: null },
+  }: SetupArgs) {
     server.use(
-      rest.post(`/graphql/gh`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({ data: dataReturned }))
+      graphql.query('MySessions', (req, res, ctx) => {
+        if (isUnsuccessfulParseError) {
+          return res(ctx.status(200), ctx.data({}))
+        }
+        return res(ctx.status(200), ctx.data(dataReturned))
       })
     )
   }
 
+  describe('when called and response parsing fails', () => {
+    beforeEach(() => {
+      setup({ isUnsuccessfulParseError: true })
+    })
+
+    it('throws a 404', async () => {
+      const { result } = renderHook(() => useSessions({ provider }), {
+        wrapper,
+      })
+
+      await waitFor(() => expect(result.current.isError).toBeTruthy())
+      await waitFor(() =>
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            status: 404,
+            dev: 'useSessions - 404 schema parsing failed',
+          })
+        )
+      )
+    })
+  })
+
   describe('when called and user is unauthenticated', () => {
     beforeEach(() => {
       setup({
-        me: null,
+        dataReturned: {
+          me: null,
+        },
       })
     })
 
-    describe('when data is loaded', () => {
-      it('returns null', async () => {
-        const { result } = renderHook(() => useSessions({ provider }), {
-          wrapper,
-        })
-
-        await waitFor(() => expect(result.current.data).toEqual(null))
+    it('returns null', async () => {
+      const { result } = renderHook(() => useSessions({ provider }), {
+        wrapper,
       })
+
+      await waitFor(() => expect(result.current.data).toEqual(null))
     })
   })
 
   describe('when called and user is authenticated', () => {
     beforeEach(() => {
       setup({
-        me: {
-          sessions: {
-            edges: [...sessions.edges],
-          },
-          tokens: {
-            edges: [...tokens.edges],
+        dataReturned: {
+          me: {
+            sessions: {
+              edges: [...sessions.edges],
+            },
+            tokens: {
+              edges: [...tokens.edges],
+            },
           },
         },
       })

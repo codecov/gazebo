@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
+import { NetworkErrorObject } from 'shared/api/helpers'
 import { mapEdges } from 'shared/utils/graphql'
 
 const SessionSchema = z.object({
@@ -26,22 +27,24 @@ const UserTokenSchema = z.object({
 export type UserToken = z.infer<typeof UserTokenSchema>
 
 const RequestSchema = z.object({
-  me: z.object({
-    sessions: z.object({
-      edges: z.array(
-        z.object({
-          node: SessionSchema,
-        })
-      ),
-    }),
-    tokens: z.object({
-      edges: z.array(
-        z.object({
-          node: UserTokenSchema,
-        })
-      ),
-    }),
-  }),
+  me: z
+    .object({
+      sessions: z.object({
+        edges: z.array(
+          z.object({
+            node: SessionSchema,
+          })
+        ),
+      }),
+      tokens: z.object({
+        edges: z.array(
+          z.object({
+            node: UserTokenSchema,
+          })
+        ),
+      }),
+    })
+    .nullable(),
 })
 
 interface UseSessionsArgs {
@@ -51,32 +54,32 @@ interface UseSessionsArgs {
 export function useSessions({ provider }: UseSessionsArgs) {
   const query = `
     query MySessions {
-        me {
-          sessions {
-            edges {
-              node{
-                sessionid
-                name
-                ip
-                lastseen
-                useragent
-                type
-                lastFour
-              }
+      me {
+        sessions {
+          edges {
+            node{
+              sessionid
+              name
+              ip
+              lastseen
+              useragent
+              type
+              lastFour
             }
           }
-          tokens {
-            edges {
-              node {
-                type
-                name
-                lastFour
-                id
-              }
+        }
+        tokens {
+          edges {
+            node {
+              type
+              name
+              lastFour
+              id
             }
           }
         }
       }
+    }
   `
 
   return useQuery({
@@ -90,11 +93,11 @@ export function useSessions({ provider }: UseSessionsArgs) {
         const parsedRes = RequestSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
-          // other hooks seem to
-          // return Promise.reject(something)
-          // but the spec says should return null.
-          // lmk thoughts
-          return null
+          return Promise.reject({
+            status: 404,
+            data: {},
+            dev: 'useSessions - 404 schema parsing failed',
+          } satisfies NetworkErrorObject)
         }
 
         const data = parsedRes.data
