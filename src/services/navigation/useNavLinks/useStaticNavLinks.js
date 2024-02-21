@@ -110,6 +110,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    termsOfService: {
+      text: 'Terms of Service',
+      path: () => `${config.MARKETING_BASE_URL}/terms-of-service`,
+      isExternalLink: true,
+      openNewTab: true,
+    },
     blog: {
       path: () => `${config.MARKETING_BASE_URL}/blog`,
       isExternalLink: true,
