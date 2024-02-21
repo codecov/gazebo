@@ -9,7 +9,6 @@ import {
   usePlanData,
 } from 'services/account'
 import { useStartTrial } from 'services/trial'
-import { useRedirect } from 'shared/useRedirect'
 import {
   canApplySentryUpgrade,
   isFreePlan,
@@ -29,20 +28,18 @@ function PlansActionsBilling({ plan }) {
   })
 
   const { mutate, isLoading } = useStartTrial()
-  const { hardRedirect } = useRedirect({ href: `/${provider}/${owner}` })
 
   const canStartTrial =
     planData?.plan?.trialStatus === TrialStatuses.NOT_STARTED &&
     isFreePlan(planData?.plan?.value) &&
     planData?.hasPrivateRepos
 
-  if (canStartTrial) {
+  if (!canStartTrial) {
     return (
       <div className="flex items-center gap-4 self-start">
         <Button
           onClick={() => {
             mutate({ owner })
-            hardRedirect()
           }}
           hook="start-trial"
           variant="primary"
