@@ -46,6 +46,9 @@ const mockPullPageData = {
   pullId: 1,
   head: {
     commitid: '123',
+    bundleAnalysisReport: {
+      __typename: 'BundleAnalysisReport',
+    },
   },
   compareWithBase: {
     __typename: 'Comparison',
@@ -55,17 +58,26 @@ const mockPullPageData = {
     componentComparisonsCount: 6,
     directChangedFilesCount: 0,
   },
+  bundleAnalysisCompareWithBase: {
+    __typename: 'BundleAnalysisComparison',
+  },
 }
 
 const mockPullPageDataTeam = {
   pullId: 877,
   head: {
     commitid: '123',
+    bundleAnalysisReport: {
+      __typename: 'BundleAnalysisReport',
+    },
   },
   compareWithBase: {
     __typename: 'Comparison',
     impactedFilesCount: 4,
     directChangedFilesCount: 0,
+  },
+  bundleAnalysisCompareWithBase: {
+    __typename: 'BundleAnalysisComparison',
   },
 }
 
@@ -91,6 +103,9 @@ const mockPullBADropdownSummary = {
     repository: {
       __typename: 'Repository',
       pull: {
+        head: {
+          commitid: '2788fb9824b079807f7992f04482450c09774ec7',
+        },
         bundleAnalysisCompareWithBase: {
           __typename: 'BundleAnalysisComparison',
           sizeDelta: 1,

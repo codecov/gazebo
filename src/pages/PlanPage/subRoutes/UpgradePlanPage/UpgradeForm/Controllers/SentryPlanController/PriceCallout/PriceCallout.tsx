@@ -1,9 +1,11 @@
+import { Fragment } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useAvailablePlans } from 'services/account'
+import { useAccountDetails, useAvailablePlans } from 'services/account'
 import {
   findSentryPlans,
   formatNumberToUSD,
+  getNextBillingDate,
   isAnnualPlan,
   Plans,
 } from 'shared/utils/billing'
@@ -38,6 +40,8 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
     baseUnitPrice: sentryPlanYear?.baseUnitPrice,
   })
   const isPerYear = isAnnualPlan(newPlan)
+  const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const nextBillingDate = getNextBillingDate(accountDetails)
 
   if (isPerYear) {
     const nonBundledCost = calculateSentryNonBundledCost({
@@ -61,6 +65,12 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
             )}
           </span>{' '}
           with the Sentry bundle plan
+          {nextBillingDate && (
+            <Fragment>
+              ,<span className="font-semibold"> next billing date</span> is{' '}
+              {nextBillingDate}
+            </Fragment>
+          )}
         </p>
       </div>
     )
@@ -92,7 +102,13 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
                 additional{' '}
                 {formatNumberToUSD((perMonthPrice - perYearPrice) * 12)}
               </span>{' '}
-              a year with an annual plan{' '}
+              a year with annual billing
+              {nextBillingDate && (
+                <Fragment>
+                  ,<span className="font-semibold"> next billing date</span> is{' '}
+                  {nextBillingDate}
+                </Fragment>
+              )}{' '}
               <button
                 className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
                 onClick={() => setFormValue('newPlan', Plans.USERS_SENTRYY)}

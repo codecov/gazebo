@@ -6,9 +6,9 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import PullBundleAnalysisTable, {
+import PullBundleComparisonTable, {
   useTableData,
-} from './PullBundleAnalysisTable'
+} from './PullBundleComparisonTable'
 
 const mockPullBundleListData = {
   owner: {
@@ -104,7 +104,7 @@ interface SetupArgs {
   nonComparisonType?: boolean
 }
 
-describe('PullBundleAnalysisTable', () => {
+describe('PullBundleComparisonTable', () => {
   function setup(
     { isEmptyList = false, nonComparisonType = false }: SetupArgs = {
       isEmptyList: false,
@@ -113,7 +113,7 @@ describe('PullBundleAnalysisTable', () => {
   ) {
     const user = userEvent.setup()
     server.use(
-      graphql.query('PullBundleList', (req, res, ctx) => {
+      graphql.query('PullBundleComparisonList', (req, res, ctx) => {
         if (isEmptyList) {
           return res(ctx.status(200), ctx.data(mockEmptyPullBundleListData))
         } else if (nonComparisonType) {
@@ -131,7 +131,7 @@ describe('PullBundleAnalysisTable', () => {
     describe('renders header', () => {
       it('renders name column', async () => {
         setup()
-        render(<PullBundleAnalysisTable />, { wrapper })
+        render(<PullBundleComparisonTable />, { wrapper })
 
         const nameColumn = await screen.findByText('Bundle name')
         expect(nameColumn).toBeInTheDocument()
@@ -139,7 +139,7 @@ describe('PullBundleAnalysisTable', () => {
 
       it('renders previous size column', async () => {
         setup()
-        render(<PullBundleAnalysisTable />, { wrapper })
+        render(<PullBundleComparisonTable />, { wrapper })
 
         const prevSizeColumn = await screen.findByText('Previous size')
         expect(prevSizeColumn).toBeInTheDocument()
@@ -147,7 +147,7 @@ describe('PullBundleAnalysisTable', () => {
 
       it('renders new size column', async () => {
         setup()
-        render(<PullBundleAnalysisTable />, { wrapper })
+        render(<PullBundleComparisonTable />, { wrapper })
 
         const newSizeColumn = await screen.findByText('New size')
         expect(newSizeColumn).toBeInTheDocument()
@@ -155,7 +155,7 @@ describe('PullBundleAnalysisTable', () => {
 
       it('renders change column', async () => {
         setup()
-        render(<PullBundleAnalysisTable />, { wrapper })
+        render(<PullBundleComparisonTable />, { wrapper })
 
         const changeColumn = await screen.findByText('Change')
         expect(changeColumn).toBeInTheDocument()
@@ -165,7 +165,7 @@ describe('PullBundleAnalysisTable', () => {
     describe('renders rows', () => {
       it('renders bundle name', async () => {
         setup()
-        render(<PullBundleAnalysisTable />, { wrapper })
+        render(<PullBundleComparisonTable />, { wrapper })
 
         const bundleName = await screen.findByText('bundle.js')
         expect(bundleName).toBeInTheDocument()
@@ -173,7 +173,7 @@ describe('PullBundleAnalysisTable', () => {
 
       it('renders previous size', async () => {
         setup()
-        render(<PullBundleAnalysisTable />, { wrapper })
+        render(<PullBundleComparisonTable />, { wrapper })
 
         const prevSize = await screen.findByText('3B')
         expect(prevSize).toBeInTheDocument()
@@ -181,7 +181,7 @@ describe('PullBundleAnalysisTable', () => {
 
       it('renders new size', async () => {
         setup()
-        render(<PullBundleAnalysisTable />, { wrapper })
+        render(<PullBundleComparisonTable />, { wrapper })
 
         const newSize = await screen.findByText('2B')
         expect(newSize).toBeInTheDocument()
@@ -189,7 +189,7 @@ describe('PullBundleAnalysisTable', () => {
 
       it('renders change', async () => {
         setup()
-        render(<PullBundleAnalysisTable />, { wrapper })
+        render(<PullBundleComparisonTable />, { wrapper })
 
         const change = await screen.findByText('+1B')
         expect(change).toBeInTheDocument()
@@ -200,7 +200,7 @@ describe('PullBundleAnalysisTable', () => {
   describe('there are no bundles present', () => {
     it('renders no bundles message', async () => {
       setup({ isEmptyList: true })
-      render(<PullBundleAnalysisTable />, { wrapper })
+      render(<PullBundleComparisonTable />, { wrapper })
 
       const noBundlesMessage = await screen.findByText(
         'No bundles were found in this pull'
@@ -213,7 +213,7 @@ describe('PullBundleAnalysisTable', () => {
     it('renders an empty document', async () => {
       setup({ nonComparisonType: true })
 
-      const { container } = render(<PullBundleAnalysisTable />, { wrapper })
+      const { container } = render(<PullBundleComparisonTable />, { wrapper })
 
       await waitFor(() => expect(container).toBeEmptyDOMElement())
     })
@@ -228,7 +228,7 @@ describe('useTableData', () => {
     }
   ) {
     server.use(
-      graphql.query('PullBundleList', (req, res, ctx) => {
+      graphql.query('PullBundleComparisonList', (req, res, ctx) => {
         if (nonComparisonType) {
           return res(ctx.status(200), ctx.data(mockNonComparisonTypeData))
         } else {

@@ -55,8 +55,9 @@ const createPullData = ({ overrideCommits, overrideComparison } = {}) => {
                   __typename: 'ImpactedFiles',
                   results: [
                     {
-                      fileName: 'usePullBundleList.tsx',
-                      headName: 'src/services/pull/usePullBundleList.tsx',
+                      fileName: 'usePullBundleComparisonList.tsx',
+                      headName:
+                        'src/services/pull/usePullBundleComparisonList.tsx',
                       isCriticalFile: false,
                       missesCount: 0,
                       baseCoverage: {
@@ -86,9 +87,9 @@ const createPullData = ({ overrideCommits, overrideComparison } = {}) => {
                       changeCoverage: null,
                     },
                     {
-                      fileName: 'PullBundleAnalysisTable.tsx',
+                      fileName: 'PullBundleComparisonTable.tsx',
                       headName:
-                        'src/pages/PullRequestPage/PullBundleAnalysis/PullBundleAnalysisTable/PullBundleAnalysisTable.tsx',
+                        'src/pages/PullRequestPage/PullBundleAnalysis/PullBundleComparisonTable/PullBundleComparisonTable.tsx',
                       isCriticalFile: false,
                       missesCount: 0,
                       baseCoverage: null,

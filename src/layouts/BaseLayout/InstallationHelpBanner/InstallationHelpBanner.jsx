@@ -27,7 +27,7 @@ function ResyncButton() {
       onClick={triggerResync}
       type="button"
     >
-      re-syncing
+      resyncing
     </button>
   )
 }

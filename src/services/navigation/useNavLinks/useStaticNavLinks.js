@@ -110,6 +110,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    termsOfService: {
+      text: 'Terms of Service',
+      path: () => `${config.MARKETING_BASE_URL}/terms-of-service`,
+      isExternalLink: true,
+      openNewTab: true,
+    },
     blog: {
       path: () => `${config.MARKETING_BASE_URL}/blog`,
       isExternalLink: true,
@@ -314,6 +320,12 @@ export function useStaticNavLinks() {
       text: 'Next.js Custom Config',
       path: () =>
         'https://nextjs.org/docs/app/api-reference/next-config-js/webpack',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    quickStart: {
+      text: 'Quick Start',
+      path: () => 'https://docs.codecov.com/docs/quick-start',
       isExternalLink: true,
       openNewTab: true,
     },
