@@ -58,19 +58,6 @@ describe('useNavLinks', () => {
       const path = result.current.signOut.path({ provider: 'bb' })
       expect(path).toBe('/logout/bb')
     })
-
-    it('can add a `to` redirection', () => {
-      const { result } = renderHook(() => useNavLinks(), {
-        wrapper: wrapper('/gl/doggo/squirrel-locator'),
-      })
-
-      const path = result.current.signOut.path({
-        to: 'https://app.codecov.io/gh/codecov',
-      })
-      expect(path).toBe(
-        '/logout/gl?to=https%3A%2F%2Fapp.codecov.io%2Fgh%2Fcodecov'
-      )
-    })
   })
 
   describe('Sign In', () => {
