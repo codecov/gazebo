@@ -24,7 +24,7 @@ function HeaderTeam() {
     <div className="flex flex-col justify-between gap-2 border-b border-ds-gray-secondary pb-2 text-xs md:flex-row">
       <div className="flex flex-row flex-wrap items-center gap-6 divide-x divide-ds-gray-secondary">
         <div>
-          <h1 className="flex items-center gap-2 text-lg font-semibold">
+          <h1 className="flex items-center gap-2 text-xl font-semibold">
             {pull?.title}
             <span
               className={cs(
