@@ -244,6 +244,15 @@ describe('OtherCIOrgToken', () => {
 
   describe('ending', () => {
     beforeEach(() => setup())
+    it('renders quick start link', async () => {
+      render(<OtherCIOrgToken />, { wrapper })
+
+      const link = await screen.findByRole('link', { name: /learn more/ })
+      expect(link).toHaveAttribute(
+        'href',
+        'https://docs.codecov.com/docs/quick-start'
+      )
+    })
     it('renders body', async () => {
       render(<OtherCIOrgToken />, { wrapper })
 

@@ -18,7 +18,7 @@ const TruncatedMessage: React.FC<React.PropsWithChildren> = ({ children }) => {
         ref={ref}
         data-testid="truncate-message-pre"
         className={cs(
-          'text-lg font-semibold break-all whitespace-pre-wrap font-sans w-fit',
+          'text-xl font-semibold break-all whitespace-pre-wrap font-sans w-fit',
           {
             'line-clamp-1': label === TruncateStates.EXPAND,
           }

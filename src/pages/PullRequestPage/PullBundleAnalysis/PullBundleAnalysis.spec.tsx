@@ -14,12 +14,14 @@ import PullBundleAnalysis from './PullBundleAnalysis'
 import { TBundleAnalysisComparisonResult } from '../hooks'
 
 jest.mock('./EmptyTable', () => () => <div>EmptyTable</div>)
-jest.mock('./PullBundleAnalysisTable', () => () => (
-  <div>PullBundleAnalysisTable</div>
+jest.mock('./PullBundleHeadTable', () => () => <div>PullBundleHeadTable</div>)
+jest.mock('./PullBundleComparisonTable', () => () => (
+  <div>PullBundleComparisonTable</div>
 ))
 
 const mockPullPageData = (
   compareType: TBundleAnalysisComparisonResult = 'BundleAnalysisComparison',
+  headBundleType: string = 'BundleAnalysisReport',
   coverageEnabled: boolean = true,
   bundleAnalysisEnabled: boolean = true
 ) => ({
@@ -32,6 +34,9 @@ const mockPullPageData = (
         pullId: 1,
         head: {
           commitid: '123',
+          bundleAnalysisReport: {
+            __typename: headBundleType,
+          },
         },
         compareWithBase: {
           __typename: 'Comparison',
@@ -51,6 +56,9 @@ const mockSummaryData = {
     repository: {
       __typename: 'Repository',
       pull: {
+        head: {
+          commitid: '2788fb9824b079807f7992f04482450c09774ec7',
+        },
         bundleAnalysisCompareWithBase: {
           __typename: 'BundleAnalysisComparison',
           sizeDelta: 10,
@@ -89,6 +97,7 @@ afterAll(() => {
 
 interface SetupArgs {
   compareType?: TBundleAnalysisComparisonResult
+  headBundleType?: string
   coverageEnabled?: boolean
   bundleAnalysisEnabled?: boolean
 }
@@ -96,6 +105,7 @@ interface SetupArgs {
 describe('PullBundleAnalysis', () => {
   function setup({
     compareType = 'BundleAnalysisComparison',
+    headBundleType = 'BundleAnalysisReport',
     coverageEnabled = false,
     bundleAnalysisEnabled = false,
   }: SetupArgs) {
@@ -106,6 +116,7 @@ describe('PullBundleAnalysis', () => {
           ctx.data(
             mockPullPageData(
               compareType,
+              headBundleType,
               coverageEnabled,
               bundleAnalysisEnabled
             )
@@ -131,11 +142,11 @@ describe('PullBundleAnalysis', () => {
         expect(message).not.toBeInTheDocument()
       })
 
-      it('displays the PullBundleAnalysisTable', async () => {
+      it('displays the PullBundleComparisonTable', async () => {
         setup({ coverageEnabled: true, bundleAnalysisEnabled: true })
         render(<PullBundleAnalysis />, { wrapper })
 
-        const table = await screen.findByText('PullBundleAnalysisTable')
+        const table = await screen.findByText('PullBundleComparisonTable')
         expect(table).toBeInTheDocument()
       })
     })
@@ -211,16 +222,33 @@ describe('PullBundleAnalysis', () => {
         expect(banner).toBeInTheDocument()
       })
 
-      it('renders empty table', async () => {
-        setup({
-          compareType: 'MissingBaseCommit',
-          coverageEnabled: true,
-          bundleAnalysisEnabled: true,
-        })
-        render(<PullBundleAnalysis />, { wrapper })
+      describe('there is no bundle report on head', () => {
+        it('renders empty table', async () => {
+          setup({
+            compareType: 'MissingBaseCommit',
+            headBundleType: 'MissingHeadReport',
+            coverageEnabled: true,
+            bundleAnalysisEnabled: true,
+          })
+          render(<PullBundleAnalysis />, { wrapper })
 
-        const emptyTable = await screen.findByText('EmptyTable')
-        expect(emptyTable).toBeInTheDocument()
+          const emptyTable = await screen.findByText('EmptyTable')
+          expect(emptyTable).toBeInTheDocument()
+        })
+      })
+
+      describe('there is a bundle report on head', () => {
+        it('renders the PullBundleHeadTable', async () => {
+          setup({
+            compareType: 'MissingBaseCommit',
+            coverageEnabled: true,
+            bundleAnalysisEnabled: true,
+          })
+          render(<PullBundleAnalysis />, { wrapper })
+
+          const pullHeadTable = await screen.findByText('PullBundleHeadTable')
+          expect(pullHeadTable).toBeInTheDocument()
+        })
       })
     })
   })
@@ -235,11 +263,11 @@ describe('PullBundleAnalysis', () => {
         expect(message).toBeInTheDocument()
       })
 
-      it('displays the PullBundleAnalysisTable', async () => {
+      it('displays the PullBundleComparisonTable', async () => {
         setup({ coverageEnabled: false, bundleAnalysisEnabled: true })
         render(<PullBundleAnalysis />, { wrapper })
 
-        const table = await screen.findByText('PullBundleAnalysisTable')
+        const table = await screen.findByText('PullBundleComparisonTable')
         expect(table).toBeInTheDocument()
       })
     })
@@ -309,16 +337,35 @@ describe('PullBundleAnalysis', () => {
         expect(banner).toBeInTheDocument()
       })
 
-      it('renders empty table', async () => {
-        setup({
-          compareType: 'MissingBaseCommit',
-          coverageEnabled: false,
-          bundleAnalysisEnabled: true,
-        })
-        render(<PullBundleAnalysis />, { wrapper })
+      describe('there is no bundle report on head', () => {
+        it('renders empty table', async () => {
+          setup({
+            compareType: 'MissingBaseCommit',
+            headBundleType: 'MissingHeadReport',
+            coverageEnabled: false,
+            bundleAnalysisEnabled: true,
+          })
+          render(<PullBundleAnalysis />, { wrapper })
 
-        const emptyTable = await screen.findByText('EmptyTable')
-        expect(emptyTable).toBeInTheDocument()
+          const emptyTable = await screen.findByText('EmptyTable')
+          expect(emptyTable).toBeInTheDocument()
+        })
+      })
+
+      describe('there is a bundle report on head', () => {
+        it('renders the PullBundleHeadTable', async () => {
+          setup({
+            compareType: 'MissingBaseCommit',
+            coverageEnabled: false,
+            bundleAnalysisEnabled: true,
+          })
+          render(<PullBundleAnalysis />, { wrapper })
+
+          const pullBundleHeadTable = await screen.findByText(
+            'PullBundleHeadTable'
+          )
+          expect(pullBundleHeadTable).toBeInTheDocument()
+        })
       })
     })
   })

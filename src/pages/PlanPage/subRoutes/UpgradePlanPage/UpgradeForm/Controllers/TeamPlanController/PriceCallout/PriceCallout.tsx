@@ -1,9 +1,11 @@
+import { Fragment } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useAvailablePlans } from 'services/account'
+import { useAccountDetails, useAvailablePlans } from 'services/account'
 import {
   findTeamPlans,
   formatNumberToUSD,
+  getNextBillingDate,
   isAnnualPlan,
   Plans,
 } from 'shared/utils/billing'
@@ -35,6 +37,8 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
     baseUnitPrice: teamPlanYear?.baseUnitPrice,
   })
   const isPerYear = isAnnualPlan(newPlan)
+  const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const nextBillingDate = getNextBillingDate(accountDetails)
 
   if (isPerYear) {
     return (
@@ -50,7 +54,13 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
           <span className="font-semibold">
             save {formatNumberToUSD((perMonthPrice - perYearPrice) * 12)}
           </span>{' '}
-          with the annual plan
+          with annual billing
+          {nextBillingDate && (
+            <Fragment>
+              ,<span className="font-semibold"> next billing date</span> is{' '}
+              {nextBillingDate}
+            </Fragment>
+          )}
         </p>
       </div>
     )
@@ -71,7 +81,13 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
           <span className="font-semibold">
             {formatNumberToUSD((perMonthPrice - perYearPrice) * 12)}
           </span>{' '}
-          a year with the annual plan,{' '}
+          a year with annual billing
+          {nextBillingDate && (
+            <Fragment>
+              ,<span className="font-semibold"> next billing date</span> is{' '}
+              {nextBillingDate}
+            </Fragment>
+          )}{' '}
           <button
             className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
             onClick={() => setFormValue('newPlan', Plans.USERS_TEAMY)}
