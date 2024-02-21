@@ -108,10 +108,7 @@ const ReposTable = ({
   const shouldDisplayPublicReposOnly = tierName === TierNames.TEAM ? true : null
 
   const repoDisplay = useContext(ActiveContext)
-  const activated =
-    repoDisplayOptions[
-      repoDisplay.toUpperCase() as keyof typeof repoDisplayOptions
-    ]?.status
+  const activated = repoDisplay === repoDisplayOptions.CONFIGURED.text
 
   const {
     data: reposData,

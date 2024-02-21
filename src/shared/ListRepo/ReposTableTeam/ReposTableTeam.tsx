@@ -146,10 +146,8 @@ const ReposTableTeam = ({ searchValue }: ReposTableTeamProps) => {
   const { owner } = useParams<{ owner: string }>()
 
   const repoDisplay = useContext(ActiveContext)
-  const activated =
-    repoDisplayOptions[
-      repoDisplay.toUpperCase() as keyof typeof repoDisplayOptions
-    ]?.status
+
+  const activated = repoDisplay === repoDisplayOptions.CONFIGURED.text
 
   const {
     data: reposData,
