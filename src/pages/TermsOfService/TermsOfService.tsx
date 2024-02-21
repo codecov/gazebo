@@ -194,10 +194,11 @@ export default function TermsOfService() {
                 <span className="font-semibold">
                   I agree to{' '}
                   <A
-                    href="https://about.codecov.io/terms-of-service"
                     hook="terms of service"
                     isExternal
-                    to={undefined}
+                    to={{
+                      pageName: 'termsOfService',
+                    }}
                   >
                     terms of services
                   </A>{' '}
