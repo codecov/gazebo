@@ -126,7 +126,7 @@ describe('GitHubHelpBanner', () => {
         wrapper: wrapper(),
       })
 
-      const reSync = screen.getByText(/Re-sync/)
+      const reSync = screen.getByText(/Resync/)
       expect(reSync).toBeInTheDocument()
 
       await user.click(reSync)

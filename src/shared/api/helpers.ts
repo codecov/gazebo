@@ -5,6 +5,14 @@ import config from 'config'
 
 import { snakeifyKeys } from 'shared/utils/snakeifyKeys'
 
+export interface NetworkErrorObject {
+  status: number
+  data: {
+    detail?: React.ReactNode
+  }
+  dev: `${string} - ${number} ${string}`
+}
+
 const AllProvidersArray = [
   'gh',
   'gl',
