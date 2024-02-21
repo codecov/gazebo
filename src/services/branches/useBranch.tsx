@@ -6,6 +6,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
+import { type NetworkErrorObject } from 'shared/api/helpers'
 import A from 'ui/A'
 
 export const BranchSchema = z
@@ -95,7 +96,8 @@ export const useBranch = ({
           return Promise.reject({
             status: 404,
             data: {},
-          })
+            dev: 'useBranch - 404 schema parsing failed',
+          } satisfies NetworkErrorObject)
         }
 
         const data = parsedData.data
@@ -104,7 +106,8 @@ export const useBranch = ({
           return Promise.reject({
             status: 404,
             data: {},
-          })
+            dev: 'useBranch - 404 NotFoundError',
+          } satisfies NetworkErrorObject)
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
@@ -120,7 +123,8 @@ export const useBranch = ({
                 </p>
               ),
             },
-          })
+            dev: 'useBranch - 403 OwnerNotActivatedError',
+          } satisfies NetworkErrorObject)
         }
 
         return {

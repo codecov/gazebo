@@ -25,10 +25,8 @@ export function useNavLinks() {
   return {
     signOut: {
       text: 'Sign Out',
-      path: ({ provider = p, to } = { provider: p }) => {
-        const query = qs.stringify({ to }, { addQueryPrefix: true })
-
-        return `${config.API_URL}/logout/${provider}${query}`
+      path: ({ provider = p } = { provider: p }) => {
+        return `${config.API_URL}/logout/${provider}`
       },
       isExternalLink: true,
     },
