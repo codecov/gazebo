@@ -34,7 +34,7 @@ function PlansActionsBilling({ plan }) {
     isFreePlan(planData?.plan?.value) &&
     planData?.hasPrivateRepos
 
-  if (!canStartTrial) {
+  if (canStartTrial) {
     return (
       <div className="flex items-center gap-4 self-start">
         <Button

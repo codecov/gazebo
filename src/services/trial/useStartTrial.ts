@@ -2,8 +2,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
-// import { renderToast } from 'services/toast'
 import { LOCAL_STORAGE_USER_STARTED_TRIAL_KEY } from 'pages/OwnerPage/OwnerPage'
+import { renderToast } from 'services/toast'
 import Api from 'shared/api'
 import { useRedirect } from 'shared/useRedirect'
 
@@ -82,17 +82,15 @@ export const useStartTrial = () => {
       hardRedirect()
     },
     onError: () => {
-      localStorage.setItem(LOCAL_STORAGE_USER_STARTED_TRIAL_KEY, 'true')
-      hardRedirect()
-      // renderToast({
-      //   type: 'error',
-      //   title: 'Error starting trial',
-      //   content:
-      //     'Please try again. If the error persists please contact support',
-      //   options: {
-      //     duration: 10000,
-      //   },
-      // })
+      renderToast({
+        type: 'error',
+        title: 'Error starting trial',
+        content:
+          'Please try again. If the error persists please contact support',
+        options: {
+          duration: 10000,
+        },
+      })
     },
   })
 

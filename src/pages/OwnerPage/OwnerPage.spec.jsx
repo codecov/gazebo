@@ -4,11 +4,14 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { renderToast } from 'services/toast'
+
 import OwnerPage from './OwnerPage'
 
 jest.mock('./Header', () => () => 'Header')
 jest.mock('./Tabs', () => () => 'Tabs')
 jest.mock('shared/ListRepo', () => () => 'ListRepo')
+jest.mock('services/toast')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -185,6 +188,45 @@ describe('OwnerPage', () => {
     it('does not render links to the settings', () => {
       render(<OwnerPage />, { wrapper })
       expect(screen.queryByText(/Tabs/)).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when user arrives on page after starting a trial', () => {
+    beforeEach(() => {
+      setup({
+        owner: {
+          username: 'codecov',
+          isCurrentUserPartOfOrg: false,
+        },
+      })
+    })
+
+    it('renders the start trial toast', async () => {
+      localStorage.setItem('user-started-trial', 'true')
+      render(<OwnerPage />, { wrapper })
+
+      await waitFor(() =>
+        expect(renderToast).toHaveBeenCalledWith({
+          title: '14 day trial has started',
+          type: 'generic',
+          content: '',
+          options: {
+            duration: 5000,
+            position: 'bottom-left',
+          },
+        })
+      )
+    })
+
+    it('removes user started trial from localstorage', async () => {
+      localStorage.setItem('user-started-trial', 'true')
+      const mockRemoveItem = jest.spyOn(
+        window.localStorage.__proto__,
+        'removeItem'
+      )
+
+      render(<OwnerPage />, { wrapper })
+      await waitFor(() => expect(mockRemoveItem).toHaveBeenCalled())
     })
   })
 })
