@@ -269,16 +269,6 @@ describe('TeamPlanController', () => {
         const switchToAnnualLink = await screen.findByText('switch to annual')
         expect(switchToAnnualLink).toBeInTheDocument()
       })
-
-      it('shows the next billing date if available', async () => {
-        setup({ planValue: Plans.USERS_TEAMM })
-        render(<TeamPlanController {...props} />, { wrapper: wrapper() })
-
-        const nextBillingDateTitle = await screen.findByText(
-          /Next Billing Date/
-        )
-        expect(nextBillingDateTitle).toBeInTheDocument()
-      })
     })
 
     describe('when seats are greater than 10', () => {

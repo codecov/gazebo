@@ -14,6 +14,9 @@ const mockSummaryData = (sizeDelta: number) => ({
     repository: {
       __typename: 'Repository',
       pull: {
+        head: {
+          commitid: '2788fb9824b079807f7992f04482450c09774ec7',
+        },
         bundleAnalysisCompareWithBase: {
           __typename: 'BundleAnalysisComparison',
           sizeDelta,
@@ -29,6 +32,9 @@ const mockComparisonError = {
     repository: {
       __typename: 'Repository',
       pull: {
+        head: {
+          commitid: '2788fb9824b079807f7992f04482450c09774ec7',
+        },
         bundleAnalysisCompareWithBase: {
           __typename: 'MissingHeadCommit',
           message: 'Missing head commit',
@@ -43,6 +49,9 @@ const mockFirstPullRequest = {
     repository: {
       __typename: 'Repository',
       pull: {
+        head: {
+          commitid: '2788fb9824b079807f7992f04482450c09774ec7',
+        },
         bundleAnalysisCompareWithBase: {
           __typename: 'FirstPullRequest',
           message: 'First pull request',

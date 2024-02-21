@@ -235,6 +235,15 @@ describe('CircleCIOrgToken', () => {
 
   describe('ending', () => {
     beforeEach(() => setup(true))
+    it('renders quick start link', async () => {
+      render(<CircleCIOrgToken />, { wrapper })
+
+      const link = await screen.findByRole('link', { name: /learn more/ })
+      expect(link).toHaveAttribute(
+        'href',
+        'https://docs.codecov.com/docs/quick-start'
+      )
+    })
     it('renders body', async () => {
       render(<CircleCIOrgToken />, { wrapper })
 
