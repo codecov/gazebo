@@ -147,7 +147,7 @@ const ReposTableTeam = ({ searchValue }: ReposTableTeamProps) => {
 
   const repoDisplay = useContext(ActiveContext)
 
-  const activated = repoDisplay === repoDisplayOptions.CONFIGURED.text
+  const activated = repoDisplay !== repoDisplayOptions.NOT_CONFIGURED.text
 
   const {
     data: reposData,
