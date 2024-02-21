@@ -3,7 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { usePullBundleList } from './usePullBundleList'
+import { usePullBundleComparisonList } from './usePullBundleComparisonList'
 
 const mockPullBundleListData = {
   owner: {
@@ -93,7 +93,7 @@ interface SetupArgs {
   isNotFoundError?: boolean
 }
 
-describe('usePullBundleList', () => {
+describe('usePullBundleComparisonList', () => {
   function setup({
     isUnsuccessfulParseError = false,
     isNullOwner = false,
@@ -101,7 +101,7 @@ describe('usePullBundleList', () => {
     isOwnerNotActivatedError = false,
   }: SetupArgs = {}) {
     server.use(
-      graphql.query('PullBundleList', (req, res, ctx) => {
+      graphql.query('PullBundleComparisonList', (req, res, ctx) => {
         if (isNotFoundError) {
           return res(ctx.status(200), ctx.data(mockNotFoundError))
         } else if (isOwnerNotActivatedError) {
@@ -122,7 +122,7 @@ describe('usePullBundleList', () => {
       setup()
       const { result } = renderHook(
         () =>
-          usePullBundleList({
+          usePullBundleComparisonList({
             provider: 'github',
             owner: 'codecov',
             repo: 'test-repo',
@@ -168,7 +168,7 @@ describe('usePullBundleList', () => {
       setup({ isNullOwner: true })
       const { result } = renderHook(
         () =>
-          usePullBundleList({
+          usePullBundleComparisonList({
             provider: 'github',
             owner: 'codecov',
             repo: 'test-repo',
@@ -198,7 +198,7 @@ describe('usePullBundleList', () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
-          usePullBundleList({
+          usePullBundleComparisonList({
             provider: 'github',
             owner: 'codecov',
             repo: 'test-repo',
@@ -234,7 +234,7 @@ describe('usePullBundleList', () => {
       setup({ isNotFoundError: true })
       const { result } = renderHook(
         () =>
-          usePullBundleList({
+          usePullBundleComparisonList({
             provider: 'github',
             owner: 'codecov',
             repo: 'test-repo',
@@ -270,7 +270,7 @@ describe('usePullBundleList', () => {
       setup({ isOwnerNotActivatedError: true })
       const { result } = renderHook(
         () =>
-          usePullBundleList({
+          usePullBundleComparisonList({
             provider: 'github',
             owner: 'codecov',
             repo: 'test-repo',

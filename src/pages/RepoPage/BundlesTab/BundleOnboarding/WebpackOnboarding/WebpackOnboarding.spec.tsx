@@ -1,59 +1,130 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import WebpackOnboarding from './WebpackOnboarding'
 
+const mockGetRepo = {
+  owner: {
+    isCurrentUserPartOfOrg: true,
+    repository: {
+      private: false,
+      uploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629295',
+      defaultBranch: 'main',
+      yaml: '',
+      activated: false,
+      oldestCommitAt: '',
+    },
+  },
+}
+
+const mockGetOrgUploadToken = (hasOrgUploadToken: boolean | null) => ({
+  owner: {
+    orgUploadToken: hasOrgUploadToken
+      ? '9e6a6189-20f1-482d-ab62-ecfaa2629290'
+      : null,
+  },
+})
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      suspense: true,
+      retry: false,
+    },
+  },
+})
+const server = setupServer()
+
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <MemoryRouter initialEntries={['/gh/codecov/test-repo/bundles/new/webpack']}>
-    <Route path="/:provider/:owner/:repo/bundles/new/webpack">{children}</Route>
-  </MemoryRouter>
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh/codecov/test-repo/bundles/new']}>
+      <Route path="/:provider/:owner/:repo/bundles/new">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
 )
 
+beforeAll(() => {
+  server.listen()
+})
+
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
+
 describe('WebpackOnboarding', () => {
+  function setup(hasOrgUploadToken: boolean | null) {
+    server.use(
+      graphql.query('GetRepo', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(mockGetRepo))
+      ),
+      graphql.query('GetOrgUploadToken', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data(mockGetOrgUploadToken(hasOrgUploadToken))
+        )
+      })
+    )
+  }
+
   describe('step 1', () => {
-    it('renders header', () => {
+    it('renders header', async () => {
+      setup(null)
       render(<WebpackOnboarding />, { wrapper })
 
-      const stepText = screen.getByText('Step 1:')
+      const stepText = await screen.findByText('Step 1:')
       expect(stepText).toBeInTheDocument()
 
-      const headerText = screen.getByText('Install the Codecov Webpack Plugin')
+      const headerText = await screen.findByText(
+        'Install the Codecov Webpack Plugin'
+      )
       expect(headerText).toBeInTheDocument()
     })
 
-    it('renders body', () => {
+    it('renders body', async () => {
+      setup(null)
       render(<WebpackOnboarding />, { wrapper })
 
-      const bodyText = screen.getByText(/To install the/)
+      const bodyText = await screen.findByText(/To install the/)
       expect(bodyText).toBeInTheDocument()
 
-      const pluginName = screen.getByText('@codecov/webpack-plugin')
+      const pluginName = await screen.findByText('@codecov/webpack-plugin')
       expect(pluginName).toBeInTheDocument()
     })
 
     describe('code blocks', () => {
-      it('renders npm install', () => {
+      it('renders npm install', async () => {
+        setup(null)
         render(<WebpackOnboarding />, { wrapper })
 
-        const npmInstallCommand = screen.getByText(
+        const npmInstallCommand = await screen.findByText(
           'npm install @codecov/webpack-plugin --save-dev'
         )
         expect(npmInstallCommand).toBeInTheDocument()
       })
 
-      it('renders yarn install', () => {
+      it('renders yarn install', async () => {
+        setup(null)
         render(<WebpackOnboarding />, { wrapper })
 
-        const yarnInstallCommand = screen.getByText(
+        const yarnInstallCommand = await screen.findByText(
           'yarn add @codecov/webpack-plugin --dev'
         )
         expect(yarnInstallCommand).toBeInTheDocument()
       })
 
-      it('renders pnpm install', () => {
+      it('renders pnpm install', async () => {
+        setup(null)
         render(<WebpackOnboarding />, { wrapper })
 
-        const pnpmInstallCommand = screen.getByText(
+        const pnpmInstallCommand = await screen.findByText(
           'pnpm add @codecov/webpack-plugin --save-dev'
         )
         expect(pnpmInstallCommand).toBeInTheDocument()
@@ -62,135 +133,185 @@ describe('WebpackOnboarding', () => {
   })
 
   describe('step 2', () => {
-    it('renders header', () => {
+    it('renders header', async () => {
+      setup(null)
       render(<WebpackOnboarding />, { wrapper })
 
-      const stepText = screen.getByText('Step 2:')
+      const stepText = await screen.findByText('Step 2:')
       expect(stepText).toBeInTheDocument()
 
-      const headerText = screen.getByText('Configure the bundler plugin')
+      const headerText = await screen.findByText('Copy Codecov token')
       expect(headerText).toBeInTheDocument()
     })
 
-    it('renders body', () => {
+    it('renders body', async () => {
+      setup(null)
       render(<WebpackOnboarding />, { wrapper })
 
-      const bodyText = screen.getByText(
-        /Import the bundler plugin, and add it to the end of your plugin array found inside your/
+      const bodyText = await screen.findByText(
+        /Set an environment variable in your build environment with the following upload token./
       )
       expect(bodyText).toBeInTheDocument()
-
-      const webpackConfig = screen.getByText('webpack.config.js')
-      expect(webpackConfig).toBeInTheDocument()
-
-      const note = screen.getByText('Note:')
-      expect(note).toBeInTheDocument()
-
-      const orgSettingsLink = screen.getByRole('link', { name: 'org settings' })
-      expect(orgSettingsLink).toBeInTheDocument()
-      expect(orgSettingsLink).toHaveAttribute(
-        'href',
-        '/account/gh/codecov/org-upload-token'
-      )
     })
 
-    it('renders plugin config', () => {
-      render(<WebpackOnboarding />, { wrapper })
+    describe('there is an org token', () => {
+      it('renders code block with org token', async () => {
+        setup(true)
+        render(<WebpackOnboarding />, { wrapper })
 
-      const pluginText = screen.getByText(/\/\/ webpack.config.js/)
-      expect(pluginText).toBeInTheDocument()
+        const token = await screen.findByText(
+          /9e6a6189-20f1-482d-ab62-ecfaa2629290/
+        )
+        expect(token).toBeInTheDocument()
+      })
+    })
+
+    describe('there is no org token', () => {
+      it('renders code block with repo token', async () => {
+        setup(false)
+        render(<WebpackOnboarding />, { wrapper })
+
+        const token = await screen.findByText(
+          /9e6a6189-20f1-482d-ab62-ecfaa2629295/
+        )
+        expect(token).toBeInTheDocument()
+      })
     })
   })
 
   describe('step 3', () => {
-    it('renders header', () => {
+    it('renders header', async () => {
+      setup(null)
       render(<WebpackOnboarding />, { wrapper })
 
-      const stepText = screen.getByText('Step 3:')
+      const stepText = await screen.findByText('Step 3:')
       expect(stepText).toBeInTheDocument()
 
-      const headerText = screen.getByText('Commit your latest changes')
+      const headerText = await screen.findByText('Configure the bundler plugin')
       expect(headerText).toBeInTheDocument()
     })
 
-    it('renders body', () => {
+    it('renders body', async () => {
+      setup(null)
       render(<WebpackOnboarding />, { wrapper })
 
-      const bodyText = screen.getByText(
+      const bodyText = await screen.findByText(
+        /Import the bundler plugin, and add it to the end of your plugin array found inside your/
+      )
+      expect(bodyText).toBeInTheDocument()
+
+      const webpackConfig = await screen.findByText('webpack.config.js')
+      expect(webpackConfig).toBeInTheDocument()
+    })
+
+    it('renders plugin config', async () => {
+      setup(null)
+      render(<WebpackOnboarding />, { wrapper })
+
+      const pluginText = await screen.findByText(/\/\/ webpack.config.js/)
+      expect(pluginText).toBeInTheDocument()
+    })
+  })
+
+  describe('step 4', () => {
+    it('renders header', async () => {
+      setup(null)
+      render(<WebpackOnboarding />, { wrapper })
+
+      const stepText = await screen.findByText('Step 4:')
+      expect(stepText).toBeInTheDocument()
+
+      const headerText = await screen.findByText('Commit your latest changes')
+      expect(headerText).toBeInTheDocument()
+    })
+
+    it('renders body', async () => {
+      setup(null)
+      render(<WebpackOnboarding />, { wrapper })
+
+      const bodyText = await screen.findByText(
         'The plugin requires at least one commit to be made to properly upload bundle analysis information up to Codecov.'
       )
       expect(bodyText).toBeInTheDocument()
     })
 
-    it('renders git commit', () => {
+    it('renders git commit', async () => {
+      setup(null)
       render(<WebpackOnboarding />, { wrapper })
 
-      const gitCommit = screen.getByText(
+      const gitCommit = await screen.findByText(
         'git add -A && git commit -m "Added Codecov bundler plugin"'
       )
       expect(gitCommit).toBeInTheDocument()
     })
   })
 
-  describe('step 4', () => {
-    it('renders header', () => {
+  describe('step 5', () => {
+    it('renders header', async () => {
+      setup(null)
       render(<WebpackOnboarding />, { wrapper })
 
-      const stepText = screen.getByText('Step 4:')
+      const stepText = await screen.findByText('Step 5:')
       expect(stepText).toBeInTheDocument()
 
-      const headerText = screen.getByText('Build the application')
+      const headerText = await screen.findByText('Build the application')
       expect(headerText).toBeInTheDocument()
     })
 
-    it('renders body', () => {
+    it('renders body', async () => {
+      setup(null)
       render(<WebpackOnboarding />, { wrapper })
 
-      const bodyText = screen.getByText(
+      const bodyText = await screen.findByText(
         'When building your application the plugin will automatically upload the stats information to Codecov.'
       )
       expect(bodyText).toBeInTheDocument()
     })
 
     describe('renders code block', () => {
-      it('renders npm build', () => {
+      it('renders npm build', async () => {
+        setup(null)
         render(<WebpackOnboarding />, { wrapper })
 
-        const npmBuild = screen.getByText('npm run build')
+        const npmBuild = await screen.findByText('npm run build')
         expect(npmBuild).toBeInTheDocument()
       })
 
-      it('renders yarn build', () => {
+      it('renders yarn build', async () => {
+        setup(null)
         render(<WebpackOnboarding />, { wrapper })
 
-        const yarnBuild = screen.getByText('yarn run build')
+        const yarnBuild = await screen.findByText('yarn run build')
         expect(yarnBuild).toBeInTheDocument()
       })
 
-      it('renders pnpm build', () => {
+      it('renders pnpm build', async () => {
+        setup(null)
         render(<WebpackOnboarding />, { wrapper })
 
-        const pnpmBuild = screen.getByText('pnpm run build')
+        const pnpmBuild = await screen.findByText('pnpm run build')
         expect(pnpmBuild).toBeInTheDocument()
       })
     })
   })
 
   describe('linking out to setup feedback', () => {
-    it('renders correct preview text', () => {
+    it('renders correct preview text', async () => {
+      setup(null)
       render(<WebpackOnboarding />, { wrapper })
 
-      const text = screen.getByText(/How was your setup experience\?/)
+      const text = await screen.findByText(/How was your setup experience\?/)
       expect(text).toBeInTheDocument()
 
-      const letUsKnow = screen.getByText(/Let us know in/)
+      const letUsKnow = await screen.findByText(/Let us know in/)
       expect(letUsKnow).toBeInTheDocument()
     })
 
-    it('renders link', () => {
+    it('renders link', async () => {
+      setup(null)
       render(<WebpackOnboarding />, { wrapper })
 
-      const link = screen.getByText('this issue')
+      const link = await screen.findByText('this issue')
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute(
         'href',

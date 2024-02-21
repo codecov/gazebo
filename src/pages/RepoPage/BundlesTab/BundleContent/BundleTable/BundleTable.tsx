@@ -13,7 +13,7 @@ import { useParams } from 'react-router-dom'
 import { useBranchBundleSummary } from 'services/branches'
 import {
   formatSizeToString,
-  formatTimeToString,
+  formatTimeToStringDeprecated,
 } from 'shared/utils/bundleAnalysis'
 import Icon from 'ui/Icon'
 
@@ -44,7 +44,7 @@ const columns = [
   }),
   columnHelper.accessor('loadTime', {
     header: 'Estimated load time (3G)',
-    cell: (info) => formatTimeToString(info.getValue()),
+    cell: (info) => formatTimeToStringDeprecated(info.getValue()),
   }),
 ]
 

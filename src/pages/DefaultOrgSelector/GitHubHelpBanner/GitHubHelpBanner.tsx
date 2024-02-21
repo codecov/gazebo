@@ -30,7 +30,7 @@ function ResyncButton() {
         onClick={() => triggerResync()}
         type="button"
       >
-        Re-sync
+        Resync
       </button>
       to refresh your organizations.
     </span>

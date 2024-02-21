@@ -182,10 +182,13 @@ describe('RepoPageTabs', () => {
         wrapper: wrapper('/gh/codecov/test-repo/bundles'),
       })
 
-      const tab = await screen.findByText('Bundles')
+      const tab = await screen.findByText(/Bundles/)
       expect(tab).toBeInTheDocument()
       expect(tab).toHaveAttribute('aria-current', 'page')
       expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/bundles')
+
+      const betaBadge = await screen.findByText('beta')
+      expect(betaBadge).toBeInTheDocument()
     })
   })
 
@@ -403,9 +406,9 @@ describe('useRepoTabs', () => {
         )
 
         const expectedTab = [
-          {
+          expect.objectContaining({
             pageName: 'bundles',
-          },
+          }),
         ]
         await waitFor(() =>
           expect(result.current).toEqual(expect.arrayContaining(expectedTab))
@@ -425,9 +428,9 @@ describe('useRepoTabs', () => {
         )
 
         const expectedTab = [
-          {
+          expect.objectContaining({
             pageName: 'bundles',
-          },
+          }),
         ]
         await waitFor(() =>
           expect(result.current).toEqual(expect.arrayContaining(expectedTab))
@@ -449,9 +452,9 @@ describe('useRepoTabs', () => {
         await waitForElementToBeRemoved(await screen.findByText('Loading'))
 
         const expectedTab = [
-          {
+          expect.objectContaining({
             pageName: 'bundles',
-          },
+          }),
         ]
         await waitFor(() =>
           expect(result.current).not.toEqual(
@@ -473,9 +476,9 @@ describe('useRepoTabs', () => {
         )
 
         const expectedTab = [
-          {
+          expect.objectContaining({
             pageName: 'bundles',
-          },
+          }),
         ]
         await waitFor(() =>
           expect(result.current).toEqual(expect.arrayContaining(expectedTab))
@@ -497,9 +500,9 @@ describe('useRepoTabs', () => {
         await waitForElementToBeRemoved(await screen.findByText('Loading'))
 
         const expectedTab = [
-          {
+          expect.objectContaining({
             pageName: 'bundles',
-          },
+          }),
         ]
         await waitFor(() =>
           expect(result.current).not.toEqual(
