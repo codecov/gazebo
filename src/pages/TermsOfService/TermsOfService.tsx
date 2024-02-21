@@ -128,10 +128,10 @@ export default function TermsOfService() {
               <RadioInput
                 {...register('customerIntent')}
                 // @ts-expect-error
-                dataMarketing="Perosnal use"
+                dataMarketing="Personal use"
                 id="customerIntent"
-                aria-label="Perosnal use"
-                label="Perosnal Use"
+                aria-label="Personal use"
+                label="Personal Use"
                 value={CustomerIntent.PERSONAL}
               />
               <p className="ml-5 text-ds-gray-quinary">

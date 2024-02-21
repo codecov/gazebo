@@ -240,7 +240,7 @@ describe('TermsOfService', () => {
         /I agree to the TOS and privacy policy/i
       )
 
-      const customerIntent = screen.getByRole('radio', { name: /Perosnal use/ })
+      const customerIntent = screen.getByRole('radio', { name: /Personal use/ })
       await user.click(customerIntent)
 
       await user.click(selectedTos)
@@ -590,7 +590,7 @@ async function expectPageIsReady() {
 }
 
 async function expectUserToChooseCustomerIntent(user: UserEvent) {
-  const customerIntent = screen.getByRole('radio', { name: /Perosnal use/ })
+  const customerIntent = screen.getByRole('radio', { name: /Personal use/ })
 
   await user.click(customerIntent)
 }
