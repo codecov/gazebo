@@ -5,6 +5,7 @@ import { useRepo } from 'services/repo'
 import { providerToInternalProvider } from 'shared/utils/provider'
 import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
+import Icon from 'ui/Icon'
 
 const orbsString = `orbs:
   codecov/codecov@3.2.4
@@ -25,6 +26,19 @@ function CircleCIRepoToken() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-3">
         <div>
+          <div className="mb-4 flex flex-col gap-2 overflow-auto border-l-4 border-ds-blue bg-ds-gray-primary p-4">
+            Before integrating with Codecov, ensure that your project already
+            generates coverage reports. Codecov relies on these reports to
+            provide the coverage analysis.
+            <A
+              to={{ pageName: 'quickStart' }}
+              isExternal
+              hook="quick-start-link-circle-ci-repo"
+            >
+              <Icon name="bookOpen" size="sm" />
+              Read our documentation
+            </A>
+          </div>
           <h2 className="text-base font-semibold">
             Step 1: add repository token to{' '}
             <A

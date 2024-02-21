@@ -64,6 +64,23 @@ describe('CircleCIRepoToken', () => {
     )
   }
 
+  describe('prologue', () => {
+    beforeEach(() => setup())
+
+    it('renders quick start box', async () => {
+      render(<CircleCIRepoToken />, { wrapper })
+
+      const docsLink = await screen.findByRole('link', {
+        name: /Read our documentation/,
+      })
+      expect(docsLink).toBeInTheDocument()
+      expect(docsLink).toHaveAttribute(
+        'href',
+        'https://docs.codecov.com/docs/quick-start'
+      )
+    })
+  })
+
   describe('step one', () => {
     beforeEach(() => setup())
 
