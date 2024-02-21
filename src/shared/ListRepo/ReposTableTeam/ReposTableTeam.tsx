@@ -147,7 +147,12 @@ const ReposTableTeam = ({ searchValue }: ReposTableTeamProps) => {
 
   const repoDisplay = useContext(ActiveContext)
 
-  const activated = repoDisplay !== repoDisplayOptions.NOT_CONFIGURED.text
+  const activated =
+    repoDisplayOptions[
+      repoDisplay
+        .replace(/\s/g, '_')
+        .toUpperCase() as keyof typeof repoDisplayOptions
+    ]?.status
 
   const {
     data: reposData,
