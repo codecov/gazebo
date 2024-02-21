@@ -1,4 +1,7 @@
+import { useHistory } from 'react-router-dom'
+
 import { Branch } from 'services/branches'
+import { useNavLinks } from 'services/navigation'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Select from 'ui/Select'
@@ -7,7 +10,11 @@ import { SummaryField, SummaryRoot } from 'ui/Summary'
 import { useBundleSummary } from './hooks/useBundleSummary'
 
 const BundleSummary: React.FC = () => {
+  const { bundles } = useNavLinks()
+  const history = useHistory()
+
   const {
+    defaultBranch,
     branchSelectorProps,
     setBranchSearchTerm,
     branchList,
@@ -30,13 +37,19 @@ const BundleSummary: React.FC = () => {
           </h3>
           <span className="min-w-[16rem] text-sm">
             <Select
-              dataMarketing="branch-selector-repo-page"
+              dataMarketing="branch-selector-bundle-tab"
               {...branchSelectorProps}
               // @ts-expect-error Select needs to be typed
               ariaName="bundle branch selector"
-              // TODO: Update this to update navigation once branches have been
-              // added to the route
-              onChange={(item: Branch) => {}}
+              onChange={(item: Branch) => {
+                if (item?.name === defaultBranch) {
+                  history.push(bundles.path())
+                } else {
+                  history.push(
+                    bundles.path({ branch: encodeURIComponent(item?.name) })
+                  )
+                }
+              }}
               variant="gray"
               renderItem={(item: Branch) => <span>{item?.name}</span>}
               isLoading={branchListIsFetching}
