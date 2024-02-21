@@ -1,12 +1,13 @@
 import isEqual from 'lodash/isEqual'
 import isUndefined from 'lodash/isUndefined'
+import { useEffect } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 
 import config from 'config'
 
 import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
 import { useLocationParams } from 'services/navigation'
-import { useInternalUser, useUser } from 'services/user'
+import { CustomerIntent, useInternalUser, useUser } from 'services/user'
 
 const SetUpActions = Object.freeze({
   INSTALL: 'install',
@@ -43,6 +44,7 @@ const useUserAccessGate = () => {
     suspense: false,
     enabled: !!provider && !config.IS_SELF_HOSTED,
   })
+  const { mutate: updateDefaultOrg } = useUpdateDefaultOrganization()
 
   const {
     data: internalUser,
@@ -55,7 +57,19 @@ const useUserAccessGate = () => {
     suspense: false,
   })
 
-  useOnboardingRedirect({ username: userData?.user?.username })
+  useEffect(() => {
+    if (userData?.user?.customerIntent === CustomerIntent.PERSONAL) {
+      updateDefaultOrg({ username: userData?.user?.username })
+    }
+  }, [
+    userData?.user?.customerIntent,
+    userData?.user?.username,
+    updateDefaultOrg,
+  ])
+
+  useOnboardingRedirect({
+    username: userData?.user?.username,
+  })
 
   const foundUser = userData && userIsSuccess
   const foundInternalUser = internalUser && internalUserIsSuccess

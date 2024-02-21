@@ -67,6 +67,7 @@ interface UserPartial {
       name: string
       avatarUrl: string
       termsAgreement?: boolean
+      customerIntent?: 'PERSONAL' | 'BUSINESS'
     }
     trackingMetadata: {
       ownerid: number
@@ -784,6 +785,85 @@ describe('useUserAccessGate', () => {
           },
         })
       )
+    })
+  })
+
+  describe('customer intent functionality', () => {
+    describe('when customer intent is set to PERSONAL', () => {
+      it('fires update default org mutation', async () => {
+        const username = 'chetney'
+        const { mockMutationVariables } = setup({
+          user: {
+            me: {
+              owner: {
+                defaultOrgUsername: '',
+              },
+              user: {
+                ...userSignedInIdentity,
+                username,
+                termsAgreement: false,
+                customerIntent: 'PERSONAL',
+              },
+              trackingMetadata: { ownerid: 123 },
+              ...userSignedInIdentity,
+              termsAgreement: true,
+            },
+          },
+          internalUser: internalUserHasSyncedProviders,
+        })
+
+        const { result } = renderHook(() => useUserAccessGate(), {
+          wrapper: wrapper(['/gh']),
+        })
+
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+
+        await waitFor(() =>
+          expect(mockMutationVariables).toHaveBeenLastCalledWith({
+            input: {
+              username,
+            },
+          })
+        )
+      })
+    })
+
+    describe('when customer intent is set to BUSINESS', () => {
+      it('does not fire update default org mutation', async () => {
+        const username = 'chetney'
+
+        const { mockMutationVariables } = setup({
+          user: {
+            me: {
+              owner: {
+                defaultOrgUsername: '',
+              },
+              user: {
+                ...userSignedInIdentity,
+                username,
+                termsAgreement: false,
+                customerIntent: 'BUSINESS',
+              },
+              trackingMetadata: { ownerid: 123 },
+              ...userSignedInIdentity,
+              termsAgreement: true,
+            },
+          },
+          internalUser: internalUserHasSyncedProviders,
+        })
+
+        const { result } = renderHook(() => useUserAccessGate(), {
+          wrapper: wrapper(['/gh']),
+        })
+
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+
+        await waitFor(() =>
+          expect(mockMutationVariables).not.toHaveBeenCalled()
+        )
+      })
     })
   })
 })
