@@ -332,6 +332,9 @@ graphql.query('PullBADropdownSummary', (req, res, ctx) => {
         repository: {
           __typename: 'Repository',
           pull: {
+            head: {
+              commitid: '2788fb9824b079807f7992f04482450c09774ec7',
+            },
             bundleAnalysisCompareWithBase: {
               __typename: 'BundleAnalysisComparison',
               sizeDelta: 1,
@@ -380,7 +383,7 @@ graphql.query('CommitBundleList', (req, res, ctx) => {
   )
 })
 
-graphql.query('PullBundleList', (req, res, ctx) => {
+graphql.query('PullBundleComparisonList', (req, res, ctx) => {
   return res(
     ctx.status(200),
     ctx.data({

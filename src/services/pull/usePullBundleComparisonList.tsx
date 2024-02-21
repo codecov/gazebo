@@ -15,13 +15,21 @@ import {
 import Api from 'shared/api'
 import A from 'ui/A'
 
-const BAComparisonSchema = z.object({
-  __typename: z.literal('BundleAnalysisComparison'),
+const BundleSchema = z.object({
+  name: z.string(),
+  changeType: z.string(),
   sizeDelta: z.number(),
+  sizeTotal: z.number(),
   loadTimeDelta: z.number(),
+  loadTimeTotal: z.number(),
 })
 
-const BundleAnalysisCompareWithParentSchema = z
+const BAComparisonSchema = z.object({
+  __typename: z.literal('BundleAnalysisComparison'),
+  bundles: z.array(BundleSchema),
+})
+
+const BundleAnalysisCompareWithBaseSchema = z
   .discriminatedUnion('__typename', [
     BAComparisonSchema,
     FirstPullRequestSchema,
@@ -36,13 +44,8 @@ const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   pull: z
     .object({
-      head: z
-        .object({
-          commitid: z.string(),
-        })
-        .nullable(),
       bundleAnalysisCompareWithBase:
-        BundleAnalysisCompareWithParentSchema.nullable(),
+        BundleAnalysisCompareWithBaseSchema.nullable(),
     })
     .nullable(),
 })
@@ -60,20 +63,27 @@ const RequestSchema = z.object({
 })
 
 const query = `
-query PullBADropdownSummary($owner: String!, $repo: String!, $pullId: Int!) {
+query PullBundleComparisonList(
+  $owner: String!
+  $repo: String!
+  $pullId: Int!
+) {
   owner(username: $owner) {
     repository(name: $repo) {
       __typename
       ... on Repository {
         pull(id: $pullId) {
-          head {
-            commitid
-          }
           bundleAnalysisCompareWithBase {
             __typename
             ... on BundleAnalysisComparison {
-              sizeDelta
-              loadTimeDelta
+              bundles {
+                name
+                changeType
+                sizeDelta
+                sizeTotal
+                loadTimeDelta
+                loadTimeTotal
+              }
             }
             ... on FirstPullRequest {
               message
@@ -103,21 +113,21 @@ query PullBADropdownSummary($owner: String!, $repo: String!, $pullId: Int!) {
   }
 }`
 
-interface UsePullBADropdownSummaryArgs {
+interface UsePullBundleComparisonListArgs {
   provider: string
   owner: string
   repo: string
   pullId: number
 }
 
-export function usePullBADropdownSummary({
+export function usePullBundleComparisonList({
   provider,
   owner,
   repo,
   pullId,
-}: UsePullBADropdownSummaryArgs) {
+}: UsePullBundleComparisonListArgs) {
   return useQuery({
-    queryKey: ['PullBADropdownSummary', provider, owner, repo, pullId],
+    queryKey: ['PullBundleComparisonList', provider, owner, repo, pullId],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
@@ -163,9 +173,9 @@ export function usePullBADropdownSummary({
           })
         }
 
-        const pull = data?.owner?.repository?.pull ?? null
-
-        return { pull }
+        return {
+          pull: data?.owner?.repository?.pull ?? null,
+        }
       }),
   })
 }

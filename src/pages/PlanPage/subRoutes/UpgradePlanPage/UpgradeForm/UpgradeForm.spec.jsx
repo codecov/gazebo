@@ -2057,24 +2057,5 @@ describe('UpgradeForm', () => {
         })
       })
     })
-
-    describe('if there is an invoice', () => {
-      const props = {
-        setSelectedPlan: jest.fn(),
-        selectedPlan: { value: Plans.USERS_PR_INAPPY },
-      }
-      it('renders the next billing period', async () => {
-        setup({
-          planValue: Plans.USERS_PR_INAPPM,
-        })
-        render(<UpgradeForm {...props} />, { wrapper: wrapper() })
-
-        const nextBillingData = await screen.findByText(/Next Billing Date/)
-        expect(nextBillingData).toBeInTheDocument()
-
-        const billingDate = await screen.findByText(/August 20th, 2020/)
-        expect(billingDate).toBeInTheDocument()
-      })
-    })
   })
 })

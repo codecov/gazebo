@@ -6,29 +6,28 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
+import gt from 'lodash/gt'
 import isEmpty from 'lodash/isEmpty'
 import { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useBranchBundleSummary } from 'services/branches'
-import {
-  formatSizeToString,
-  formatTimeToStringDeprecated,
-} from 'shared/utils/bundleAnalysis'
+import { usePullBundleComparisonList } from 'services/pull/usePullBundleComparisonList'
+import { formatSizeToString } from 'shared/utils/bundleAnalysis'
 import Icon from 'ui/Icon'
-
 import 'ui/Table/Table.css'
 
 interface URLParams {
   provider: string
   owner: string
   repo: string
+  pullId: string
 }
 
 interface BundleColumn {
   name: string
-  currSize: number
-  loadTime: number
+  prevSize: number
+  newSize: number
+  change: number
 }
 
 const columnHelper = createColumnHelper<BundleColumn>()
@@ -38,43 +37,61 @@ const columns = [
     header: 'Bundle name',
     cell: (info) => info.renderValue(),
   }),
-  columnHelper.accessor('currSize', {
-    header: 'Current size',
+  columnHelper.accessor('prevSize', {
+    header: 'Previous size',
     cell: (info) => formatSizeToString(info.getValue()),
   }),
-  columnHelper.accessor('loadTime', {
-    header: 'Estimated load time (3G)',
-    cell: (info) => formatTimeToStringDeprecated(info.getValue()),
+  columnHelper.accessor('newSize', {
+    header: 'New size',
+    cell: (info) => formatSizeToString(info.getValue()),
+  }),
+  columnHelper.accessor('change', {
+    header: 'Change',
+    cell: (info) => {
+      const value = info.getValue()
+      if (gt(value, 0)) {
+        return `+${formatSizeToString(value)}`
+      }
+      return formatSizeToString(value)
+    },
   }),
 ]
 
 export const useTableData = () => {
-  const { provider, owner, repo } = useParams<URLParams>()
-  const { data } = useBranchBundleSummary({ provider, owner, repo })
+  const { provider, owner, repo, pullId } = useParams<URLParams>()
+  const { data } = usePullBundleComparisonList({
+    provider,
+    owner,
+    repo,
+    pullId: Number(pullId),
+  })
 
   return useMemo(() => {
     if (
-      data?.branch?.head?.bundleAnalysisReport?.__typename !==
-      'BundleAnalysisReport'
+      data?.pull?.bundleAnalysisCompareWithBase?.__typename !==
+      'BundleAnalysisComparison'
     ) {
       return []
     }
 
-    return data?.branch?.head?.bundleAnalysisReport?.bundles?.map((bundle) => ({
-      name: bundle.name,
-      currSize: bundle.sizeTotal,
-      loadTime: bundle.loadTimeTotal,
-    }))
+    return data?.pull?.bundleAnalysisCompareWithBase?.bundles?.map(
+      (bundle) => ({
+        name: bundle.name,
+        prevSize: bundle.sizeTotal - bundle.sizeDelta,
+        newSize: bundle.sizeTotal,
+        change: bundle.sizeDelta,
+      })
+    )
   }, [data])
 }
 
 const BundleTable: React.FC = () => {
-  const [sorting, setSorting] = useState([{ id: 'currSize', desc: true }])
+  const [sorting, setSorting] = useState([{ id: 'change', desc: true }])
 
-  const data = useTableData()
+  const tableData = useTableData()
   const table = useReactTable({
-    data,
-    columns,
+    data: tableData,
+    columns: columns,
     state: {
       sorting,
     },
@@ -83,18 +100,13 @@ const BundleTable: React.FC = () => {
     getSortedRowModel: getSortedRowModel(),
   })
 
-  if (isEmpty(data)) {
-    return <p className="p-4">No bundles were found in this commit</p>
+  if (isEmpty(tableData)) {
+    return <p className="m-4">No bundles were found in this pull</p>
   }
 
   return (
     <div className="tableui">
-      <table>
-        <colgroup>
-          <col className="w-full @sm/table:w-8/12" />
-          <col className="@sm/table:w-2/12" />
-          <col className="@sm/table:w-2/12" />
-        </colgroup>
+      <table className="!border-t-0">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
@@ -150,4 +162,23 @@ const BundleTable: React.FC = () => {
   )
 }
 
-export default BundleTable
+const PullBundleComparisonTable: React.FC = () => {
+  const { provider, owner, repo, pullId } = useParams<URLParams>()
+  const { data } = usePullBundleComparisonList({
+    provider,
+    owner,
+    repo,
+    pullId: Number(pullId),
+  })
+
+  if (
+    data?.pull?.bundleAnalysisCompareWithBase?.__typename !==
+    'BundleAnalysisComparison'
+  ) {
+    return null
+  }
+
+  return <BundleTable />
+}
+
+export default PullBundleComparisonTable

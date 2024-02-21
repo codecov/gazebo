@@ -1,6 +1,6 @@
-const KILOBYTE = 1000
-const MEGABYTE = 1000000
-const GIGABYTE = 1000000000
+const KILOBYTE = 1_000
+const MEGABYTE = 1_000_000
+const GIGABYTE = 1_000_000_000
 
 const formatSettings = {
   style: 'unit',
@@ -42,7 +42,23 @@ export const formatSizeToString = (bytes: number) => {
   }).format(bytes / GIGABYTE)
 }
 
-export const formatTimeToString = (seconds: number) => {
+const SECOND = 1_000
+
+export const formatTimeToString = (milliseconds: number) => {
+  if (milliseconds > SECOND) {
+    return Intl.NumberFormat('en-US', {
+      ...formatSettings,
+      unit: 'second',
+    }).format(milliseconds / SECOND)
+  }
+
+  return Intl.NumberFormat('en-US', {
+    ...formatSettings,
+    unit: 'millisecond',
+  }).format(milliseconds)
+}
+
+export const formatTimeToStringDeprecated = (seconds: number) => {
   return Intl.NumberFormat('en-US', {
     ...formatSettings,
     unit: 'second',

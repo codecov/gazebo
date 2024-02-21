@@ -84,7 +84,7 @@ describe('RepoOrgNotFound', () => {
       render(<RepoOrgNotFound />, { wrapper })
 
       const resyncButton = screen.getByRole('button', {
-        name: /re-sync/i,
+        name: /resync/i,
       })
       expect(resyncButton).toBeInTheDocument()
     })
@@ -95,7 +95,7 @@ describe('RepoOrgNotFound', () => {
         render(<RepoOrgNotFound />, { wrapper })
 
         const resyncButton = screen.getByRole('button', {
-          name: /re-sync/i,
+          name: /resync/i,
         })
         await user.click(resyncButton)
 
@@ -107,7 +107,7 @@ describe('RepoOrgNotFound', () => {
         render(<RepoOrgNotFound />, { wrapper })
 
         const resyncButton = screen.getByRole('button', {
-          name: /re-sync/i,
+          name: /resync/i,
         })
         await user.click(resyncButton)
 
