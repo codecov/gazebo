@@ -15,6 +15,9 @@ const mockPullData = {
         pullId: 1,
         head: {
           commitid: '123',
+          bundleAnalysisReport: {
+            __typename: 'BundleAnalysisReport',
+          },
         },
         compareWithBase: {
           __typename: 'Comparison',
@@ -23,6 +26,9 @@ const mockPullData = {
           flagComparisonsCount: 1,
           componentComparisonsCount: 6,
           directChangedFilesCount: 0,
+        },
+        bundleAnalysisCompareWithBase: {
+          __typename: 'BundleAnalysisComparison',
         },
       },
     },
@@ -39,11 +45,17 @@ const mockPullDataTeam = {
         pullId: 1,
         head: {
           commitid: '123',
+          bundleAnalysisReport: {
+            __typename: 'BundleAnalysisReport',
+          },
         },
         compareWithBase: {
           __typename: 'Comparison',
           impactedFilesCount: 4,
           directChangedFilesCount: 0,
+        },
+        bundleAnalysisCompareWithBase: {
+          __typename: 'BundleAnalysisComparison',
         },
       },
     },
@@ -159,6 +171,9 @@ describe('usePullPageData', () => {
                 pullId: 1,
                 head: {
                   commitid: '123',
+                  bundleAnalysisReport: {
+                    __typename: 'BundleAnalysisReport',
+                  },
                 },
                 compareWithBase: {
                   __typename: 'Comparison',
@@ -167,6 +182,9 @@ describe('usePullPageData', () => {
                   flagComparisonsCount: 1,
                   componentComparisonsCount: 6,
                   directChangedFilesCount: 0,
+                },
+                bundleAnalysisCompareWithBase: {
+                  __typename: 'BundleAnalysisComparison',
                 },
               },
             })
@@ -345,11 +363,17 @@ describe('usePullPageData', () => {
               pullId: 1,
               head: {
                 commitid: '123',
+                bundleAnalysisReport: {
+                  __typename: 'BundleAnalysisReport',
+                },
               },
               compareWithBase: {
                 __typename: 'Comparison',
                 impactedFilesCount: 4,
                 directChangedFilesCount: 0,
+              },
+              bundleAnalysisCompareWithBase: {
+                __typename: 'BundleAnalysisComparison',
               },
             },
           })

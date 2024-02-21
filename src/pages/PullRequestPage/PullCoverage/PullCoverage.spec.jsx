@@ -11,7 +11,7 @@ import { ComparisonReturnType } from 'shared/utils/comparison'
 import PullRequestPageContent from './PullCoverage'
 
 jest.mock('./Summary', () => () => <div>CompareSummary</div>)
-jest.mock('../FirstPullBanner', () => () => <div>FirstPullBanner</div>)
+jest.mock('./FirstPullBanner', () => () => <div>FirstPullBanner</div>)
 jest.mock('./PullCoverageTabs', () => () => 'PullCoverageTabs')
 
 jest.mock('./routes/FilesChangedTab', () => () => <div>FilesChangedTab</div>)
@@ -27,7 +27,7 @@ jest.mock('./routes/ComponentsTab', () => () => <div>ComponentsTab</div>)
 jest.mock('shared/featureFlags')
 
 const mockPullData = (resultType) => {
-  if (resultType === ComparisonReturnType.MISSING_BASE_COMMIT) {
+  if (resultType !== ComparisonReturnType.SUCCESSFUL_COMPARISON) {
     return {
       owner: {
         repository: {
@@ -38,10 +38,16 @@ const mockPullData = (resultType) => {
             pullId: 1,
             head: {
               commitid: '123',
+              bundleAnalysisReport: {
+                __typename: 'MissingHeadReport',
+              },
             },
             compareWithBase: {
               __typename: resultType,
               message: resultType,
+            },
+            bundleAnalysisCompareWithBase: {
+              __typename: 'BundleAnalysisComparison',
             },
           },
         },
@@ -59,6 +65,9 @@ const mockPullData = (resultType) => {
           pullId: 1,
           head: {
             commitid: '123',
+            bundleAnalysisReport: {
+              __typename: 'MissingHeadReport',
+            },
           },
           compareWithBase: {
             __typename: resultType,
@@ -67,6 +76,9 @@ const mockPullData = (resultType) => {
             directChangedFilesCount: 4,
             flagComparisonsCount: 5,
             componentComparisonsCount: 6,
+          },
+          bundleAnalysisCompareWithBase: {
+            __typename: 'BundleAnalysisComparison',
           },
         },
       },
@@ -85,11 +97,17 @@ const mockPullDataTeam = {
         pullId: 1,
         head: {
           commitid: '123',
+          bundleAnalysisReport: {
+            __typename: 'MissingHeadReport',
+          },
         },
         compareWithBase: {
           __typename: ComparisonReturnType.SUCCESSFUL_COMPARISON,
           impactedFilesCount: 2,
           directChangedFilesCount: 4,
+        },
+        bundleAnalysisCompareWithBase: {
+          __typename: 'BundleAnalysisComparison',
         },
       },
     },
@@ -193,13 +211,11 @@ describe('PullRequestPageContent', () => {
   describe('result type is first pull request', () => {
     beforeEach(() => setup(ComparisonReturnType.FIRST_PULL_REQUEST))
 
-    it('does not render the error banner', () => {
+    it('renders the first pull banner', async () => {
       render(<PullRequestPageContent />, { wrapper: wrapper() })
 
-      const errorBanner = screen.queryByRole('heading', {
-        name: 'Missing Base Commit',
-      })
-      expect(errorBanner).not.toBeInTheDocument()
+      const firstPull = await screen.findByText('FirstPullBanner')
+      expect(firstPull).toBeInTheDocument()
     })
   })
 

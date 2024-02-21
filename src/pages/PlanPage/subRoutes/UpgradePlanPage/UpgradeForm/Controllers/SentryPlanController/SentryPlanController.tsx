@@ -1,8 +1,5 @@
 import { FieldValues, UseFormRegister } from 'react-hook-form'
-import { useParams } from 'react-router-dom'
 
-import { useAccountDetails } from 'services/account'
-import { getNextBillingDate } from 'shared/utils/billing'
 import { MIN_SENTRY_SEATS } from 'shared/utils/upgradeForm'
 import TextInput from 'ui/TextInput'
 
@@ -31,10 +28,6 @@ const SentryPlanController: React.FC<SentryPlanControllerProps> = ({
   register,
   errors,
 }) => {
-  const { provider, owner } = useParams<{ owner: string; provider: string }>()
-  const { data: accountDetails } = useAccountDetails({ provider, owner })
-  const nextBillingDate = getNextBillingDate(accountDetails)
-
   return (
     <>
       <div className="flex flex-col gap-2">
@@ -60,12 +53,6 @@ const SentryPlanController: React.FC<SentryPlanControllerProps> = ({
         newPlan={newPlan}
         setFormValue={setFormValue}
       />
-      {nextBillingDate && (
-        <p className="mt-1 flex">
-          Next Billing Date
-          <span className="ml-auto">{nextBillingDate}</span>
-        </p>
-      )}
       {errors?.seats && (
         <p className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
           {errors?.seats?.message}

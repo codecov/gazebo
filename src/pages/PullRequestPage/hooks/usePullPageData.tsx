@@ -16,6 +16,20 @@ import {
 import Api from 'shared/api'
 import A from 'ui/A'
 
+const BundleAnalysisComparisonResult = z.union([
+  z.literal('BundleAnalysisComparison'),
+  FirstPullRequestSchema.shape.__typename,
+  MissingBaseCommitSchema.shape.__typename,
+  MissingComparisonSchema.shape.__typename,
+  MissingHeadCommitSchema.shape.__typename,
+  MissingHeadReportSchema.shape.__typename,
+  MissingBaseReportSchema.shape.__typename,
+])
+
+export type TBundleAnalysisComparisonResult = z.infer<
+  typeof BundleAnalysisComparisonResult
+>
+
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   coverageEnabled: z.boolean().nullable(),
@@ -26,6 +40,12 @@ const RepositorySchema = z.object({
       head: z
         .object({
           commitid: z.string(),
+          bundleAnalysisReport: z
+            .discriminatedUnion('__typename', [
+              z.object({ __typename: z.literal('BundleAnalysisReport') }),
+              z.object({ __typename: z.literal('MissingHeadReport') }),
+            ])
+            .nullable(),
         })
         .nullable(),
       compareWithBase: z
@@ -45,6 +65,11 @@ const RepositorySchema = z.object({
           MissingHeadCommitSchema,
           MissingHeadReportSchema,
         ])
+        .nullable(),
+      bundleAnalysisCompareWithBase: z
+        .object({
+          __typename: BundleAnalysisComparisonResult,
+        })
         .nullable(),
     })
     .nullable(),
@@ -81,6 +106,9 @@ query PullPageData(
           pullId
           head {
             commitid
+            bundleAnalysisReport {
+              __typename
+            }
           }
           compareWithBase {
             __typename
@@ -109,6 +137,9 @@ query PullPageData(
             ... on MissingHeadReport {
               message
             }
+          }
+          bundleAnalysisCompareWithBase {
+            __typename
           }
         }
       }
