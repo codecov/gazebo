@@ -701,12 +701,17 @@ export function useNavLinks() {
     },
     bundles: {
       path: (
-        { provider = p, owner = o, repo = r } = {
+        { provider = p, owner = o, repo = r, branch } = {
           provider: p,
           owner: o,
           repo: r,
         }
-      ) => `/${provider}/${owner}/${repo}/bundles`,
+      ) => {
+        if (branch) {
+          return `/${provider}/${owner}/${repo}/bundles/${branch}`
+        }
+        return `/${provider}/${owner}/${repo}/bundles`
+      },
       text: 'Bundles',
     },
     bundleOnboarding: {

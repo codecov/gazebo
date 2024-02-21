@@ -35,6 +35,7 @@ const wrapper =
         <Route path="/admin/:provider/:owner/users">{children}</Route>
         <Route path="/account/:provider/:owner">{children}</Route>
         <Route path="/account/:provider/:owner/billing">{children}</Route>
+        <Route path="/:provider/:owner/:repo/bundles/:branch">{children}</Route>
         <Route path="/:provider/:owner/:repo/bundles">{children}</Route>
       </MemoryRouter>
     )
@@ -1791,6 +1792,17 @@ describe('useNavLinks', () => {
         repo: 'test-repo',
       })
       expect(path).toBe('/bb/test-owner/test-repo/bundles')
+    })
+
+    describe('passing branch option', () => {
+      it('appends the branch param', () => {
+        const { result } = renderHook(() => useNavLinks(), {
+          wrapper: wrapper('/gh/codecov/cool-repo'),
+        })
+
+        const path = result.current.bundles.path({ branch: 'test-branch' })
+        expect(path).toBe('/gh/codecov/cool-repo/bundles/test-branch')
+      })
     })
   })
 
