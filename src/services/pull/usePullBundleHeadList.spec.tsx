@@ -3,7 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { useBranchBundleSummary } from './useBranchBundles'
+import { usePullBundleHeadList } from './usePullBundleHeadList'
 
 const mockRepoOverview = {
   owner: {
@@ -23,7 +23,7 @@ const mockBranchBundleSummary = {
   owner: {
     repository: {
       __typename: 'Repository',
-      branch: {
+      pull: {
         head: {
           commitid: '543a5268dce725d85be7747c0f9b61e9a68dea57',
           bundleAnalysisReport: {
@@ -94,21 +94,15 @@ interface SetupArgs {
   isNullOwner?: boolean
 }
 
-describe('useBranchBundleSummary', () => {
+describe('usePullBundleHeadList', () => {
   function setup({
     isNotFoundError = false,
     isOwnerNotActivatedError = false,
     isUnsuccessfulParseError = false,
     isNullOwner = false,
   }: SetupArgs) {
-    const passedBranch = jest.fn()
-
     server.use(
-      graphql.query('BranchBundleSummaryData', (req, res, ctx) => {
-        if (req.variables?.branch) {
-          passedBranch(req.variables?.branch)
-        }
-
+      graphql.query('PullBundleHeadList', (req, res, ctx) => {
         if (isNotFoundError) {
           return res(ctx.status(200), ctx.data(mockRepoNotFound))
         } else if (isOwnerNotActivatedError) {
@@ -125,48 +119,7 @@ describe('useBranchBundleSummary', () => {
         return res(ctx.status(200), ctx.data(mockRepoOverview))
       })
     )
-
-    return { passedBranch }
   }
-
-  describe('passing branch name', () => {
-    it('uses the branch name passed in', async () => {
-      const { passedBranch } = setup({})
-      renderHook(
-        () =>
-          useBranchBundleSummary({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-          }),
-        { wrapper }
-      )
-
-      await waitFor(() => expect(passedBranch).toHaveBeenCalled())
-      await waitFor(() => expect(passedBranch).toHaveBeenCalledWith('main'))
-    })
-  })
-
-  describe('no branch name passed', () => {
-    it('uses the default branch', async () => {
-      const { passedBranch } = setup({})
-      renderHook(
-        () =>
-          useBranchBundleSummary({
-            provider: 'gh',
-            owner: 'codecov',
-            repo: 'codecov',
-            branch: 'cool-branch',
-          }),
-        { wrapper }
-      )
-
-      await waitFor(() => expect(passedBranch).toHaveBeenCalled())
-      await waitFor(() =>
-        expect(passedBranch).toHaveBeenCalledWith('cool-branch')
-      )
-    })
-  })
 
   describe('returns repository typename of repository', () => {
     describe('there is valid data', () => {
@@ -174,22 +127,20 @@ describe('useBranchBundleSummary', () => {
         setup({})
         const { result } = renderHook(
           () =>
-            useBranchBundleSummary({
+            usePullBundleHeadList({
               provider: 'gh',
               owner: 'codecov',
               repo: 'codecov',
+              pullId: 123,
             }),
           { wrapper }
         )
 
         const expectedResponse = {
-          branch: {
+          pull: {
             head: {
-              commitid: '543a5268dce725d85be7747c0f9b61e9a68dea57',
               bundleAnalysisReport: {
                 __typename: 'BundleAnalysisReport',
-                sizeTotal: 100,
-                loadTimeTotal: 200,
                 bundles: [
                   { name: 'bundle1', sizeTotal: 50, loadTimeTotal: 100 },
                 ],
@@ -209,16 +160,17 @@ describe('useBranchBundleSummary', () => {
         setup({ isNullOwner: true })
         const { result } = renderHook(
           () =>
-            useBranchBundleSummary({
+            usePullBundleHeadList({
               provider: 'gh',
               owner: 'codecov',
               repo: 'codecov',
+              pullId: 123,
             }),
           { wrapper }
         )
 
         const expectedResponse = {
-          branch: null,
+          pull: null,
         }
 
         await waitFor(() =>
@@ -243,10 +195,11 @@ describe('useBranchBundleSummary', () => {
       setup({ isNotFoundError: true })
       const { result } = renderHook(
         () =>
-          useBranchBundleSummary({
+          usePullBundleHeadList({
             provider: 'gh',
             owner: 'codecov',
             repo: 'codecov',
+            pullId: 123,
           }),
         { wrapper }
       )
@@ -277,10 +230,11 @@ describe('useBranchBundleSummary', () => {
       setup({ isOwnerNotActivatedError: true })
       const { result } = renderHook(
         () =>
-          useBranchBundleSummary({
+          usePullBundleHeadList({
             provider: 'gh',
             owner: 'codecov',
             repo: 'codecov',
+            pullId: 123,
           }),
         { wrapper }
       )
@@ -311,10 +265,11 @@ describe('useBranchBundleSummary', () => {
       setup({ isUnsuccessfulParseError: true })
       const { result } = renderHook(
         () =>
-          useBranchBundleSummary({
+          usePullBundleHeadList({
             provider: 'gh',
             owner: 'codecov',
             repo: 'codecov',
+            pullId: 123,
           }),
         { wrapper }
       )

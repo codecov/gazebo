@@ -113,7 +113,7 @@ describe('InstallationHelpBanner', () => {
         wrapper: wrapper(),
       })
 
-      const reSync = await screen.findByText(/re-syncing/)
+      const reSync = await screen.findByText(/resyncing/)
       expect(reSync).toBeInTheDocument()
 
       await user.click(reSync)
