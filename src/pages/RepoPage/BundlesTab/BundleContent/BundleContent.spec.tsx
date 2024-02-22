@@ -5,7 +5,16 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useFlags } from 'shared/featureFlags'
+
 import BundleContent from './BundleContent'
+
+jest.mock('shared/featureFlags')
+const mockedUseFlags = useFlags as jest.Mock<{
+  newBundleTab: boolean
+}>
+
+jest.mock('./BundleSummary', () => () => <div>BundleSummary</div>)
 
 const mockRepoOverview = {
   owner: {
@@ -87,10 +96,13 @@ afterAll(() => {
 
 interface SetupArgs {
   isBundleError?: boolean
+  flagValue?: boolean
 }
 
 describe('BundleContent', () => {
-  function setup({ isBundleError = false }: SetupArgs) {
+  function setup({ isBundleError = false, flagValue = false }: SetupArgs) {
+    mockedUseFlags.mockReturnValue({ newBundleTab: flagValue })
+
     server.use(
       graphql.query('BranchBundleSummaryData', (req, res, ctx) => {
         if (isBundleError) {
@@ -105,12 +117,24 @@ describe('BundleContent', () => {
     )
   }
 
-  it('renders the bundle summary', async () => {
-    setup({})
-    render(<BundleContent />, { wrapper })
+  describe('flag is off', () => {
+    it('renders the bundle summary', async () => {
+      setup({ flagValue: false })
+      render(<BundleContent />, { wrapper })
 
-    const report = await screen.findByText(/Report:/)
-    expect(report).toBeInTheDocument()
+      const report = await screen.findByText(/Report:/)
+      expect(report).toBeInTheDocument()
+    })
+  })
+
+  describe('flag is on', () => {
+    it('renders the new bundle summary', async () => {
+      setup({ flagValue: true })
+      render(<BundleContent />, { wrapper })
+
+      const report = await screen.findByText(/BundleSummary/)
+      expect(report).toBeInTheDocument()
+    })
   })
 
   describe('when the bundle type is BundleAnalysisReport', () => {

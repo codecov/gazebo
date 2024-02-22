@@ -1,11 +1,14 @@
+// ts-ignore
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import userEvent, { type UserEvent } from '@testing-library/user-event'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
+import { type ReactNode } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { InternalUserData } from 'services/user/useInternalUser'
 import { useFlags } from 'shared/featureFlags'
 
 import TermsOfService from './TermsOfService'
@@ -14,13 +17,15 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 const server = setupServer()
-let errorMock
+let errorMock: jest.Mock
+
+type TestStep = (user: UserEvent, args?: { email: string }) => Promise<void>
 
 let testLocation = {
   pathname: '',
-}
+} as { pathname: string }
 
-const wrapper = ({ children }) => (
+const wrapper = ({ children }: { children: ReactNode }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/cool-repo']}>
       <Route path="/:provider/:owner/:repo">
@@ -54,11 +59,20 @@ const mockedUserData = {
   email: null,
   name: null,
   externalId: null,
-  owners: [],
+  owners: null,
   termsAgreement: false,
 }
 
 jest.mock('shared/featureFlags')
+const mockedUseFlags = useFlags as jest.Mock<{ termsOfServicePage: boolean }>
+
+interface Setup {
+  internalUserData?: InternalUserData
+  isValidationError?: boolean
+  isUnAuthError?: boolean
+  isUnknownError?: boolean
+  termsOfServicePageFlag?: boolean
+}
 
 describe('TermsOfService', () => {
   beforeEach(() => jest.resetModules())
@@ -69,11 +83,11 @@ describe('TermsOfService', () => {
     isUnAuthError = false,
     isUnknownError = false,
     termsOfServicePageFlag = true,
-  } = {}) {
+  }: Setup = {}) {
     const mockMutationVariables = jest.fn()
     const user = userEvent.setup()
 
-    useFlags.mockReturnValue({
+    mockedUseFlags.mockReturnValue({
       termsOfServicePage: termsOfServicePageFlag,
     })
 
@@ -133,11 +147,12 @@ describe('TermsOfService', () => {
   describe('page renders', () => {
     beforeEach(() =>
       setup({
-        useUserData: {
-          me: {
-            email: 'chetney@cr.com',
-            termsAgreement: false,
-          },
+        internalUserData: {
+          email: '',
+          name: '',
+          externalId: '',
+          owners: null,
+          termsAgreement: false,
         },
       })
     )
@@ -211,7 +226,7 @@ describe('TermsOfService', () => {
           email: 'personal@cr.com',
           name: 'Chetney',
           externalId: '1234',
-          owners: [],
+          owners: null,
           termsAgreement: false,
         },
       })
@@ -225,6 +240,9 @@ describe('TermsOfService', () => {
         /I agree to the TOS and privacy policy/i
       )
 
+      const customerIntent = screen.getByRole('radio', { name: /Personal use/ })
+      await user.click(customerIntent)
+
       await user.click(selectedTos)
 
       const submit = await screen.findByRole('button', { name: /Continue/ })
@@ -237,6 +255,7 @@ describe('TermsOfService', () => {
             businessEmail: 'personal@cr.com',
             termsAgreement: true,
             marketingConsent: false,
+            customerIntent: 'PERSONAL',
           },
         })
       )
@@ -261,11 +280,15 @@ describe('TermsOfService', () => {
         internalUserData: {
           email: 'personal@cr.com',
           termsAgreement: false,
+          externalId: '1234',
+          owners: null,
+          name: 'Chetney',
         },
       },
       [expectPageIsReady],
       [expectSubmitIsDisabled],
       [expectUserSignsTOS],
+      [expectUserToChooseCustomerIntent],
       [expectSubmitIsEnabled],
     ],
     [
@@ -276,11 +299,15 @@ describe('TermsOfService', () => {
         internalUserData: {
           email: 'chetney@cr.com',
           termsAgreement: false,
+          name: 'Chetney',
+          externalId: '1234',
+          owners: null,
         },
       },
       [expectPageIsReady],
       [expectUserSelectsMarketingWithFoundEmail, { email: 'chetney@cr.com' }],
       [expectSubmitIsDisabled],
+      [expectUserToChooseCustomerIntent],
       [expectUserSignsTOS],
       [expectSubmitIsEnabled],
     ],
@@ -292,6 +319,9 @@ describe('TermsOfService', () => {
         internalUserData: {
           email: 'chetney@cr.com',
           termsAgreement: false,
+          name: 'Chetney',
+          externalId: '1234',
+          owners: null,
         },
       },
       [expectPageIsReady],
@@ -299,6 +329,7 @@ describe('TermsOfService', () => {
       [expectUserSelectsMarketingWithFoundEmail, { email: 'chetney@cr.com' }],
       [expectSubmitIsDisabled],
       [expectUserSignsTOS],
+      [expectUserToChooseCustomerIntent],
       [expectSubmitIsEnabled],
     ],
     [
@@ -309,10 +340,14 @@ describe('TermsOfService', () => {
         internalUserData: {
           email: 'chetney@cr.com',
           termsAgreement: false,
+          name: 'Chetney',
+          externalId: '1234',
+          owners: null,
         },
       },
       [expectPageIsReady],
       [expectSubmitIsDisabled],
+      [expectUserToChooseCustomerIntent],
       [expectUserSignsTOS],
       [expectSubmitIsEnabled],
       [expectUserSignsTOS],
@@ -326,6 +361,10 @@ describe('TermsOfService', () => {
           'user checks marketing consent and is required to provide an email, sign TOS (check email validation messages)',
         internalUserData: {
           termsAgreement: false,
+          name: 'Chetney',
+          externalId: '1234',
+          owners: null,
+          email: '',
         },
       },
       [expectPageIsReady],
@@ -339,6 +378,7 @@ describe('TermsOfService', () => {
       [expectSubmitIsDisabled],
       [expectUserSelectsMarketing],
       [expectSubmitIsDisabled],
+      [expectUserToChooseCustomerIntent],
       [expectUserSignsTOS],
       [expectSubmitIsEnabled],
     ],
@@ -349,6 +389,10 @@ describe('TermsOfService', () => {
           'user checks marketing consent and does not provide an email, sign TOS (check email validation messages)',
         internalUserData: {
           termsAgreement: false,
+          email: '',
+          name: 'Chetney',
+          externalId: '1234',
+          owners: null,
         },
       },
       [expectPageIsReady],
@@ -356,6 +400,7 @@ describe('TermsOfService', () => {
       [expectSubmitIsDisabled],
       [expectUserSignsTOS],
       [expectSubmitIsDisabled],
+      [expectUserToChooseCustomerIntent],
     ],
     [
       'case #7',
@@ -365,11 +410,15 @@ describe('TermsOfService', () => {
         internalUserData: {
           termsAgreement: false,
           email: 'personal@cr.com',
+          name: 'Chetney',
+          externalId: '1234',
+          owners: null,
         },
       },
       [expectPageIsReady],
       [expectUserSignsTOS],
       [expectClickSubmit],
+      [expectUserToChooseCustomerIntent],
       [
         expectRendersServerFailureResult,
         {
@@ -392,11 +441,15 @@ describe('TermsOfService', () => {
         internalUserData: {
           termsAgreement: false,
           email: 'personal@cr.com',
+          name: 'Chetney',
+          externalId: '1234',
+          owners: null,
         },
       },
       [expectPageIsReady],
       [expectUserSignsTOS],
       [expectClickSubmit],
+      [expectUserToChooseCustomerIntent],
       [
         expectRendersServerFailureResult,
         {
@@ -414,11 +467,15 @@ describe('TermsOfService', () => {
         internalUserData: {
           termsAgreement: false,
           email: 'personal@cr.com',
+          name: 'Chetney',
+          externalId: '1234',
+          owners: null,
         },
       },
       [expectPageIsReady],
       [expectUserSignsTOS],
       [expectClickSubmit],
+      [expectUserToChooseCustomerIntent],
       [expectRendersServerFailureResult, 'validation error'],
     ],
     [
@@ -429,13 +486,15 @@ describe('TermsOfService', () => {
         isValidationError: true,
         internalUserData: {
           termsAgreement: true,
+          name: 'Chetney',
+          externalId: '1234',
           email: '',
           owners: [
             {
               avatarUrl: 'http://127.0.0.1/avatar-url',
               integrationId: null,
               name: null,
-              ownerid: null,
+              ownerid: 2,
               stats: null,
               service: 'github',
               username: 'chetney',
@@ -445,40 +504,82 @@ describe('TermsOfService', () => {
       },
       [expectRedirectTo, '/gh/codecov/cool-repo'],
     ],
-  ])('form validation, %s', (_, initializeTest, ...steps) => {
-    beforeEach(() => {
-      const spy = jest.spyOn(console, 'error')
-      errorMock = jest.fn()
-      spy.mockImplementation(errorMock)
-    })
+    [
+      'case #11',
+      {
+        validationDescription: 'provide no customer intent, does not submit',
+        internalUserData: {
+          termsAgreement: true,
+          name: 'Chetney',
+          externalId: '1234',
+          email: '',
+          owners: [
+            {
+              avatarUrl: 'http://roland.com/avatar-url',
+              integrationId: null,
+              name: null,
+              ownerid: 2,
+              stats: null,
+              service: 'github',
+              username: 'roland',
+            },
+          ],
+        },
+      },
+      [expectPageIsReady],
+      [expectSubmitIsDisabled],
+      [expectUserSignsTOS],
+      [expectSubmitIsDisabled],
+    ],
+  ])(
+    'form validation, %s',
+    (
+      _,
+      initializeTest: {
+        internalUserData: InternalUserData
+        validationDescription: string
+        isValidationError?: boolean
+        isUnAuthError?: boolean
+        isUnknownError?: boolean
+      },
+      ...steps
+    ) => {
+      beforeEach(() => {
+        const spy = jest.spyOn(console, 'error')
+        errorMock = jest.fn()
+        spy.mockImplementation(errorMock)
+      })
 
-    afterEach(() => {
-      errorMock.mockReset()
-    })
+      afterEach(() => {
+        errorMock.mockReset()
+      })
 
-    describe(`
+      describe(`
         Has signed in: ${!!initializeTest.internalUserData}
         Has a email via oauth: ${initializeTest.internalUserData?.email}
       `, () => {
-      jest.mock('./hooks/useTermsOfService', () => ({
-        useSaveTermsAgreement: jest.fn(() => ({ data: 'mocked' })),
-      }))
+        jest.mock('./hooks/useTermsOfService', () => ({
+          useSaveTermsAgreement: jest.fn(() => ({ data: 'mocked' })),
+        }))
 
-      it(`scenario: ${initializeTest.validationDescription}`, async () => {
-        const { user } = setup({
-          isUnknownError: initializeTest.isUnknownError,
-          isValidationError: initializeTest.isValidationError,
-          isUnAuthError: initializeTest.isUnAuthError,
-          internalUserData: initializeTest.internalUserData,
+        it(`scenario: ${initializeTest.validationDescription}`, async () => {
+          const { user } = setup({
+            isUnknownError: initializeTest?.isUnknownError,
+            isValidationError: initializeTest?.isValidationError,
+            isUnAuthError: initializeTest?.isUnAuthError,
+            internalUserData: initializeTest.internalUserData,
+          })
+          render(<TermsOfService />, { wrapper })
+
+          for (const [step, args] of steps as Array<
+            [TestStep, { email: string }]
+          >) {
+            await step(user, args)
+          }
         })
-        render(<TermsOfService />, { wrapper })
-
-        for (const [step, args] of steps) {
-          await step(user, args)
-        }
       })
-    })
-  })
+    }
+  )
 })
 
 // Form validation assertion helper functions
@@ -488,7 +589,13 @@ async function expectPageIsReady() {
   expect(welcome).toBeInTheDocument()
 }
 
-async function expectUserSignsTOS(user) {
+async function expectUserToChooseCustomerIntent(user: UserEvent) {
+  const customerIntent = screen.getByRole('radio', { name: /Personal use/ })
+
+  await user.click(customerIntent)
+}
+
+async function expectUserSignsTOS(user: UserEvent) {
   const selectedTos = screen.getByLabelText(
     /I agree to the TOS and privacy policy/i
   )
@@ -496,7 +603,10 @@ async function expectUserSignsTOS(user) {
   await user.click(selectedTos)
 }
 
-async function expectUserSelectsMarketingWithFoundEmail(user, args) {
+async function expectUserSelectsMarketingWithFoundEmail(
+  user: UserEvent,
+  args: { email: string }
+) {
   const selectedMarketing = screen.getByLabelText(
     /I would like to receive updates via email/i
   )
@@ -508,7 +618,7 @@ async function expectUserSelectsMarketingWithFoundEmail(user, args) {
   await user.click(selectedMarketing)
 }
 
-async function expectUserSelectsMarketing(user, args) {
+async function expectUserSelectsMarketing(user: UserEvent) {
   const selectedMarketing = screen.getByLabelText(
     /I would like to receive updates via email/i
   )
@@ -516,7 +626,10 @@ async function expectUserSelectsMarketing(user, args) {
   await user.click(selectedMarketing)
 }
 
-async function expectUserTextEntryEmailField(user, args) {
+async function expectUserTextEntryEmailField(
+  user: UserEvent,
+  args: { email: string }
+) {
   const emailInput = screen.getByLabelText(/Contact email/i)
 
   await user.type(emailInput, args.email)
@@ -547,13 +660,13 @@ async function expectUserIsNotWarnedForValidEmail() {
   expect(warning).not.toBeInTheDocument()
 }
 
-async function expectClickSubmit(user) {
+async function expectClickSubmit(user: UserEvent) {
   const submit = screen.getByRole('button', { name: /Continue/ })
 
   await user.click(submit)
 }
 
-async function expectEmailRequired(user) {
+async function expectEmailRequired(user: UserEvent) {
   const selectedMarketing = screen.getByLabelText(
     /I would like to receive updates via email/i
   )
@@ -564,7 +677,10 @@ async function expectEmailRequired(user) {
   expect(emailRequired).toBeInTheDocument()
 }
 
-async function expectRendersServerFailureResult(user, expectedError = {}) {
+async function expectRendersServerFailureResult(
+  user: UserEvent,
+  expectedError = {}
+) {
   expect(await screen.findByRole('button', { name: /Continue/ })).toBeTruthy()
   const submit = screen.getByRole('button', { name: /Continue/ })
 
@@ -584,9 +700,12 @@ async function expectRendersServerFailureResult(user, expectedError = {}) {
 
   const issueLink = screen.getByRole('link', { name: /contact support/i })
   expect(issueLink).toBeInTheDocument()
-  expect(issueLink.href).toBe('https://codecovpro.zendesk.com/hc/en-us')
+  expect(issueLink).toHaveAttribute(
+    'href',
+    'https://codecovpro.zendesk.com/hc/en-us'
+  )
 }
 
-async function expectRedirectTo(user, to) {
+async function expectRedirectTo(user: UserEvent, to: string) {
   await waitFor(() => expect(testLocation.pathname).toBe(to))
 }

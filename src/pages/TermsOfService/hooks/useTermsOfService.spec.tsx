@@ -85,6 +85,7 @@ describe('useSaveTermsAgreement', () => {
         result.current.mutate({
           businessEmail: 'test@test.com',
           termsAgreement: true,
+          customerIntent: 'PERSONAL',
         })
 
         await waitFor(() => expect(successFn).toBeCalledWith('completed'))
@@ -115,6 +116,7 @@ describe('useSaveTermsAgreement', () => {
         result.current.mutate({
           businessEmail: 'test@test.com',
           termsAgreement: true,
+          customerIntent: 'PERSONAL',
         })
 
         await waitFor(() => expect(successFn).toBeCalledWith('completed'))
@@ -144,6 +146,7 @@ describe('useSaveTermsAgreement', () => {
       result.current.mutate({
         businessEmail: null,
         termsAgreement: true,
+        customerIntent: 'PERSONAL',
       })
 
       await waitFor(() => expect(successFn).toBeCalledWith('completed'))
@@ -175,6 +178,7 @@ describe('useSaveTermsAgreement', () => {
         result.current.mutate({
           businessEmail: 'test@test.com',
           termsAgreement: true,
+          customerIntent: 'PERSONAL',
         })
 
         await waitFor(() =>

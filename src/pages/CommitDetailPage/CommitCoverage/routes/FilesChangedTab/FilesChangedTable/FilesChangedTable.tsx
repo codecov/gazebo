@@ -10,7 +10,9 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
-import { isArray, isEmpty, isNumber } from 'lodash'
+import isArray from 'lodash/isArray'
+import isEmpty from 'lodash/isEmpty'
+import isNumber from 'lodash/isNumber'
 import qs from 'qs'
 import { Fragment, lazy, Suspense, useMemo, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
