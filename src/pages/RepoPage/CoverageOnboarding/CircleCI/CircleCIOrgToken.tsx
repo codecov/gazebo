@@ -7,7 +7,7 @@ import { providerToInternalProvider } from 'shared/utils/provider'
 import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
 
-import IntroBlurb from '../IntroBlurb'
+import IntroBlurb from '../IntroBlurb/IntroBlurb'
 
 const orbsString = `orbs:
   codecov: codecov/codecov@4.0.1

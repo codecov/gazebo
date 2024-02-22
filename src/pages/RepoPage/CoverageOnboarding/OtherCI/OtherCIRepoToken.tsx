@@ -7,7 +7,7 @@ import CopyClipboard from 'ui/CopyClipboard'
 
 import { InstructionBoxRepoToken } from './TerminalInstructions'
 
-import IntroBlurb from '../IntroBlurb'
+import IntroBlurb from '../IntroBlurb/IntroBlurb'
 
 interface URLParams {
   provider: string
