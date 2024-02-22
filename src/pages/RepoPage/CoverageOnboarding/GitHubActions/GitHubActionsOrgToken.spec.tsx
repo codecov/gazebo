@@ -79,6 +79,23 @@ describe('GitHubActionsOrgToken', () => {
     )
   }
 
+  describe('prologue', () => {
+    beforeEach(() => setup(true))
+
+    it('renders quick start box', async () => {
+      render(<GitHubActionsOrgToken />, { wrapper })
+
+      const docsLink = await screen.findByRole('link', {
+        name: /Read our documentation/,
+      })
+      expect(docsLink).toBeInTheDocument()
+      expect(docsLink).toHaveAttribute(
+        'href',
+        'https://docs.codecov.com/docs/quick-start'
+      )
+    })
+  })
+
   describe('step one', () => {
     describe('when org upload token exists', () => {
       beforeEach(() => setup(true))

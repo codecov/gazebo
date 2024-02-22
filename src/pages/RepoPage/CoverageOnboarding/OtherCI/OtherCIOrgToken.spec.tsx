@@ -79,6 +79,23 @@ describe('OtherCIOrgToken', () => {
     return { user }
   }
 
+  describe('prologue', () => {
+    beforeEach(() => setup())
+
+    it('renders quick start box', async () => {
+      render(<OtherCIOrgToken />, { wrapper })
+
+      const docsLink = await screen.findByRole('link', {
+        name: /Read our documentation/,
+      })
+      expect(docsLink).toBeInTheDocument()
+      expect(docsLink).toHaveAttribute(
+        'href',
+        'https://docs.codecov.com/docs/quick-start'
+      )
+    })
+  })
+
   describe('step one', () => {
     describe('when org has upload token', () => {
       beforeEach(() => setup())
