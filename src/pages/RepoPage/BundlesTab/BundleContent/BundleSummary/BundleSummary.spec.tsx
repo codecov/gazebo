@@ -1,18 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { render, screen } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { Suspense } from 'react'
-import { MemoryRouter, Route, useLocation } from 'react-router-dom'
-import useIntersection from 'react-use/lib/useIntersection'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import BundleSummary from './BundleSummary'
-
-jest.mock('react-use/lib/useIntersection')
-const mockedUseIntersection = useIntersection as unknown as jest.Mock<{
-  isIntersecting: boolean
-}>
 
 const mockRepoOverview = {
   __typename: 'Repository',
@@ -24,36 +16,16 @@ const mockRepoOverview = {
   languages: [],
 }
 
-const mockMainBranchSearch = {
-  __typename: 'Repository',
-  branches: {
-    edges: [
-      {
-        node: {
-          name: 'main',
-          head: {
-            commitid: '321fdsa',
-          },
-        },
-      },
-    ],
-    pageInfo: {
-      hasNextPage: false,
-      endCursor: 'end-cursor',
-    },
-  },
-}
-
-const mockBranch = (name: string) => ({
+const mockBranch = {
   branch: {
-    name: name,
+    name: 'main',
     head: {
       commitid: '321fdsa',
     },
   },
-})
+}
 
-const mockBranches = (hasNextPage = false) => ({
+const mockBranches = {
   __typename: 'Repository',
   branches: {
     edges: [
@@ -75,47 +47,43 @@ const mockBranches = (hasNextPage = false) => ({
       },
     ],
     pageInfo: {
-      hasNextPage: hasNextPage,
+      hasNextPage: false,
       endCursor: 'end-cursor',
+    },
+  },
+}
+
+const server = setupServer()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      suspense: true,
     },
   },
 })
 
-const server = setupServer()
-let testLocation: ReturnType<typeof useLocation>
-const wrapper =
-  (
-    queryClient: QueryClient,
-    initialEntries = '/gh/codecov/test-repo/bundles'
-  ): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route
-            path={[
-              '/:provider/:owner/:repo/bundles/:branch',
-              '/:provider/:owner/:repo/bundles',
-            ]}
-          >
-            <Suspense fallback={<p>loading</p>}>{children}</Suspense>
-          </Route>
-          <Route
-            path="*"
-            render={({ location }) => {
-              testLocation = location
-              return null
-            }}
-          />
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh/codecov/test-repo/bundles']}>
+      <Route
+        path={[
+          '/:provider/:owner/:repo/bundles/:branch',
+          '/:provider/:owner/:repo/bundles',
+        ]}
+      >
+        {children}
+      </Route>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
 
 beforeAll(() => {
   server.listen()
 })
 
 afterEach(() => {
+  queryClient.clear()
   server.resetHandlers()
 })
 
@@ -123,24 +91,8 @@ afterAll(() => {
   server.close()
 })
 
-describe('BundleBundleSummary', () => {
-  function setup(
-    { hasNextPage } = {
-      hasNextPage: false,
-    }
-  ) {
-    const user = userEvent.setup()
-    const fetchNextPage = jest.fn()
-    const mockSearching = jest.fn()
-    const queryClient = new QueryClient({
-      defaultOptions: {
-        queries: {
-          suspense: true,
-          retry: false,
-        },
-      },
-    })
-
+describe('BundleSummary', () => {
+  function setup() {
     server.use(
       graphql.query('GetRepoOverview', (req, res, ctx) =>
         res(
@@ -149,177 +101,63 @@ describe('BundleBundleSummary', () => {
         )
       ),
       graphql.query('GetBranch', (req, res, ctx) => {
-        let branch = 'main'
-        if (req.variables?.branch) {
-          branch = req.variables?.branch
-        }
-
         return res(
           ctx.status(200),
           ctx.data({
             owner: {
-              repository: { __typename: 'Repository', ...mockBranch(branch) },
+              repository: { __typename: 'Repository', ...mockBranch },
             },
           })
         )
       }),
       graphql.query('GetBranches', (req, res, ctx) => {
-        if (req.variables?.after) {
-          fetchNextPage(req.variables?.after)
-        }
-
-        if (req.variables?.filters?.searchValue === 'main') {
-          return res(
-            ctx.status(200),
-            ctx.data({ owner: { repository: mockMainBranchSearch } })
-          )
-        }
-
-        if (req.variables?.filters?.searchValue) {
-          mockSearching(req.variables?.filters?.searchValue)
-        }
-
         return res(
           ctx.status(200),
-          ctx.data({ owner: { repository: mockBranches(hasNextPage) } })
+          ctx.data({ owner: { repository: mockBranches } })
         )
       })
     )
-
-    return { fetchNextPage, mockSearching, user, queryClient }
   }
 
-  describe('with populated data', () => {
-    it('renders the branch selector', async () => {
-      const { queryClient } = setup()
-      render(<BundleSummary />, { wrapper: wrapper(queryClient) })
+  it('renders branch selector', async () => {
+    setup()
+    render(<BundleSummary />, { wrapper })
 
-      const branchContext = await screen.findByText(/Branch Context/)
-      expect(branchContext).toBeInTheDocument()
+    const branchSelector = await screen.findByRole('button', {
+      name: 'bundle branch selector',
     })
-
-    it('renders default branch as selected branch', async () => {
-      const { queryClient } = setup()
-      render(<BundleSummary />, { wrapper: wrapper(queryClient) })
-
-      const dropDownBtn = await screen.findByText('main')
-      expect(dropDownBtn).toBeInTheDocument()
-    })
-
-    it('renders the source commit short sha', async () => {
-      const { queryClient } = setup()
-      render(<BundleSummary />, { wrapper: wrapper(queryClient) })
-
-      const shortSha = await screen.findByText(/321fdsa/)
-      expect(shortSha).toBeInTheDocument()
-    })
+    expect(branchSelector).toBeInTheDocument()
   })
 
-  describe('navigating branches', () => {
-    describe('user selects a branch', () => {
-      it('navigates to the selected branch', async () => {
-        const { user, queryClient } = setup()
-        render(<BundleSummary />, { wrapper: wrapper(queryClient) })
+  it('renders total size', async () => {
+    setup()
+    render(<BundleSummary />, { wrapper })
 
-        const select = await screen.findByRole('button', {
-          name: 'bundle branch selector',
-        })
-        await user.click(select)
-
-        const branch = await screen.findByText('branch-1')
-        await user.click(branch)
-
-        await waitFor(() =>
-          expect(testLocation.pathname).toBe(
-            '/gh/codecov/test-repo/bundles/branch-1'
-          )
-        )
-      })
-    })
-
-    describe('user selects the default branch', () => {
-      it('clears the branch from the url', async () => {
-        const { user, queryClient } = setup()
-        render(<BundleSummary />, {
-          wrapper: wrapper(
-            queryClient,
-            '/gh/codecov/test-repo/bundles/branch-1'
-          ),
-        })
-
-        const select = await screen.findByRole('button', {
-          name: 'bundle branch selector',
-        })
-        await user.click(select)
-
-        const branch = await screen.findByText('main')
-        await user.click(branch)
-
-        await waitFor(() =>
-          expect(testLocation.pathname).toBe('/gh/codecov/test-repo/bundles')
-        )
-      })
-    })
+    const totalSize = await screen.findByText(/Total size/)
+    expect(totalSize).toBeInTheDocument()
   })
 
-  describe('when onLoadMore is triggered', () => {
-    describe('when there is not a next page', () => {
-      it('does not call fetchNextPage', async () => {
-        const { user, fetchNextPage, queryClient } = setup({
-          hasNextPage: false,
-        })
+  it('renders gzip', async () => {
+    setup()
+    render(<BundleSummary />, { wrapper })
 
-        mockedUseIntersection.mockReturnValue({
-          isIntersecting: true,
-        })
-
-        render(<BundleSummary />, { wrapper: wrapper(queryClient) })
-
-        const select = await screen.findByRole('button', {
-          name: 'bundle branch selector',
-        })
-        await user.click(select)
-
-        await waitFor(() => expect(fetchNextPage).not.toHaveBeenCalled())
-      })
-    })
-
-    describe('there is a next page', () => {
-      it('calls fetchNextPage', async () => {
-        const { fetchNextPage, user, queryClient } = setup({
-          hasNextPage: true,
-        })
-
-        mockedUseIntersection.mockReturnValue({
-          isIntersecting: true,
-        })
-
-        render(<BundleSummary />, { wrapper: wrapper(queryClient) })
-
-        const select = await screen.findByRole('button', {
-          name: 'bundle branch selector',
-        })
-        await user.click(select)
-
-        await waitFor(() => expect(fetchNextPage).toHaveBeenCalled())
-      })
-    })
+    const gzipSize = await screen.findByText(/gzip size/)
+    expect(gzipSize).toBeInTheDocument()
   })
 
-  describe('user searches for branch', () => {
-    it('calls the api with the search value', async () => {
-      const { mockSearching, user, queryClient } = setup()
-      render(<BundleSummary />, { wrapper: wrapper(queryClient) })
+  it('renders download time', async () => {
+    setup()
+    render(<BundleSummary />, { wrapper })
 
-      const select = await screen.findByText('main')
-      await user.click(select)
+    const downloadTime = await screen.findByText(/Download time/)
+    expect(downloadTime).toBeInTheDocument()
+  })
 
-      const input = await screen.findByRole('combobox')
-      await user.type(input, 'searching for branch')
+  it('renders modules', async () => {
+    setup()
+    render(<BundleSummary />, { wrapper })
 
-      await waitFor(() =>
-        expect(mockSearching).toHaveBeenCalledWith('searching for branch')
-      )
-    })
+    const modules = await screen.findByText(/Modules/)
+    expect(modules).toBeInTheDocument()
   })
 })
