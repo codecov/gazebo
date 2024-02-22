@@ -13,8 +13,8 @@ const BundleSummary: React.FC = () => {
   }, [])
 
   return (
-    <div className="flex flex-row gap-8 py-4">
-      <div className="flex flex-row gap-4">
+    <div className="flex flex-col gap-8 py-4 md:flex-row">
+      <div className="flex flex-col gap-4 md:flex-row">
         <BranchSelector resetBundleSelect={resetBundleSelect} />
         <BundleSelector ref={bundleSelectRef} />
       </div>
