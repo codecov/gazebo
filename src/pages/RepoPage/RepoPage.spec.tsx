@@ -98,6 +98,8 @@ const wrapper =
               path={[
                 '/:provider/:owner/:repo/blob/:ref/:path+',
                 '/:provider/:owner/:repo/commits',
+                '/:provider/:owner/:repo/bundles/:branch/:bundle',
+                '/:provider/:owner/:repo/bundles/:branch',
                 '/:provider/:owner/:repo/bundles',
                 '/:provider/:owner/:repo/flags',
                 '/:provider/:owner/:repo/new',
@@ -321,6 +323,119 @@ describe('RepoPage', () => {
 
           const coverage = await screen.findByText('CoverageTab')
           expect(coverage).toBeInTheDocument()
+        })
+      })
+
+      describe('testing bundles branch and bundle path', () => {
+        describe('bundles are enabled', () => {
+          it('renders bundles tab', async () => {
+            const { queryClient } = setup({
+              language: 'javascript',
+            })
+            render(<RepoPage />, {
+              wrapper: wrapper({
+                queryClient,
+                initialEntries:
+                  '/gh/codecov/cool-repo/bundles/test-branch/test-bundle',
+              }),
+            })
+
+            const bundlesTab = await screen.findByText('BundlesTab')
+            expect(bundlesTab).toBeInTheDocument()
+          })
+        })
+
+        describe('bundles are disabled', () => {
+          it('renders bundles tab', async () => {
+            const { queryClient } = setup({
+              bundleAnalysisEnabled: false,
+              language: 'javascript',
+            })
+            render(<RepoPage />, {
+              wrapper: wrapper({
+                queryClient,
+                initialEntries:
+                  '/gh/codecov/cool-repo/bundles/test-branch/test-bundle',
+              }),
+            })
+
+            const bundlesTab = await screen.findByText('BundlesTab')
+            expect(bundlesTab).toBeInTheDocument()
+          })
+
+          describe('there is no js or ts present', () => {
+            it('redirects to coverage tab', async () => {
+              const { queryClient } = setup({
+                bundleAnalysisEnabled: false,
+                coverageEnabled: true,
+              })
+              render(<RepoPage />, {
+                wrapper: wrapper({
+                  queryClient,
+                  initialEntries:
+                    '/gh/codecov/cool-repo/bundles/test-branch/test-bundle',
+                }),
+              })
+
+              const coverage = await screen.findByText('CoverageTab')
+              expect(coverage).toBeInTheDocument()
+            })
+          })
+        })
+      })
+
+      describe('testing bundles branch path', () => {
+        describe('bundles are enabled', () => {
+          it('renders bundles tab', async () => {
+            const { queryClient } = setup({
+              language: 'javascript',
+            })
+            render(<RepoPage />, {
+              wrapper: wrapper({
+                queryClient,
+                initialEntries: '/gh/codecov/cool-repo/bundles/test-branch',
+              }),
+            })
+
+            const bundlesTab = await screen.findByText('BundlesTab')
+            expect(bundlesTab).toBeInTheDocument()
+          })
+        })
+
+        describe('bundles are disabled', () => {
+          it('renders bundles tab', async () => {
+            const { queryClient } = setup({
+              bundleAnalysisEnabled: false,
+              language: 'javascript',
+            })
+            render(<RepoPage />, {
+              wrapper: wrapper({
+                queryClient,
+                initialEntries: '/gh/codecov/cool-repo/bundles/test-branch',
+              }),
+            })
+
+            const bundlesTab = await screen.findByText('BundlesTab')
+            expect(bundlesTab).toBeInTheDocument()
+          })
+
+          describe('there is no js or ts present', () => {
+            it('redirects to coverage tab', async () => {
+              const { queryClient } = setup({
+                bundleAnalysisEnabled: false,
+                coverageEnabled: true,
+              })
+              render(<RepoPage />, {
+                wrapper: wrapper({
+                  queryClient,
+                  initialEntries: '/gh/codecov/cool-repo/bundles/test-branch',
+                }),
+              })
+
+              const coverage = await screen.findByText('CoverageTab')
+              expect(coverage).toBeInTheDocument()
+            })
+          })
         })
       })
 
