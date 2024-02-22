@@ -74,7 +74,7 @@ const BranchSelector: React.FC<BranchSelectorProps> = ({
   }
 
   return (
-    <div className="min-w-[16rem]">
+    <div className="md:w-[16rem]">
       <h3 className="flex items-center gap-1 text-sm font-semibold text-ds-gray-octonary">
         <span className="text-ds-gray-quinary">
           <Icon name="branch" size="sm" variant="developer" />
