@@ -18,7 +18,13 @@ interface URLParams {
 const getDecodedBranch = (branch?: string) =>
   !!branch ? decodeURIComponent(branch) : undefined
 
-const BranchSelector: React.FC = () => {
+interface BranchSelectorProps {
+  resetBundleSelect: () => void
+}
+
+const BranchSelector: React.FC<BranchSelectorProps> = ({
+  resetBundleSelect,
+}) => {
   const history = useHistory()
   const { bundles: bundlesLink } = useNavLinks()
   const { provider, owner, repo, branch } = useParams<URLParams>()
@@ -83,10 +89,12 @@ const BranchSelector: React.FC = () => {
           items={branchList?.branches ?? []}
           value={selection}
           onChange={(item: Branch) => {
+            resetBundleSelect()
             if (item?.name === overview?.defaultBranch) {
               history.push(bundlesLink.path())
             } else {
               history.push(
+                // @ts-expect-error - useNavLinks needs to be typed
                 bundlesLink.path({ branch: encodeURIComponent(item?.name) })
               )
             }
