@@ -25,10 +25,8 @@ export function useNavLinks() {
   return {
     signOut: {
       text: 'Sign Out',
-      path: ({ provider = p, to } = { provider: p }) => {
-        const query = qs.stringify({ to }, { addQueryPrefix: true })
-
-        return `${config.API_URL}/logout/${provider}${query}`
+      path: ({ provider = p } = { provider: p }) => {
+        return `${config.API_URL}/logout/${provider}`
       },
       isExternalLink: true,
     },
@@ -703,12 +701,17 @@ export function useNavLinks() {
     },
     bundles: {
       path: (
-        { provider = p, owner = o, repo = r } = {
+        { provider = p, owner = o, repo = r, branch } = {
           provider: p,
           owner: o,
           repo: r,
         }
-      ) => `/${provider}/${owner}/${repo}/bundles`,
+      ) => {
+        if (branch) {
+          return `/${provider}/${owner}/${repo}/bundles/${branch}`
+        }
+        return `/${provider}/${owner}/${repo}/bundles`
+      },
       text: 'Bundles',
     },
     bundleOnboarding: {
