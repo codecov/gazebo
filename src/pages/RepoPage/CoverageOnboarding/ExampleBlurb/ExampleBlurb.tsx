@@ -2,7 +2,7 @@ import A from 'ui/A'
 
 const ExampleBlurb = () => {
   return (
-    <div>
+    <div data-testid="example-blurb">
       &#128193; See example{' '}
       <A
         to={{ pageName: 'codecovExampleWorkflow' }}

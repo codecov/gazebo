@@ -111,6 +111,13 @@ describe('OtherCI', () => {
       expect(box).toBeInTheDocument()
     })
 
+    it('renders example blurb', async () => {
+      render(<OtherCIRepoToken />, { wrapper })
+
+      const blurb = await screen.findByTestId('example-blurb')
+      expect(blurb).toBeInTheDocument()
+    })
+
     it('renders integrity check msg', async () => {
       render(<OtherCIRepoToken />, { wrapper })
 

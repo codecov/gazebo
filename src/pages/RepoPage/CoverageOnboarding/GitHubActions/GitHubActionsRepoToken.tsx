@@ -5,6 +5,8 @@ import { useRepo } from 'services/repo'
 import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
 
+import ExampleBlurb from '../ExampleBlurb'
+
 const codecovActionString = `- name: Upload coverage reports to Codecov
   uses: codecov/codecov-action@v3
   with:
@@ -70,6 +72,7 @@ function GitHubActionsRepoToken() {
           <CopyClipboard string={codecovActionString} />
         </div>
       </div>
+      <ExampleBlurb />
       <div>
         <p>
           After you committed your changes and ran the repo&apos;s CI/CD

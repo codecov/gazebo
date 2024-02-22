@@ -7,6 +7,8 @@ import CopyClipboard from 'ui/CopyClipboard'
 
 import { InstructionBoxRepoToken } from './TerminalInstructions'
 
+import ExampleBlurb from '../ExampleBlurb'
+
 interface URLParams {
   provider: string
   owner: string
@@ -57,6 +59,7 @@ function OtherCIRepoToken() {
           </p>
         </div>
       </div>
+      <ExampleBlurb />
       <div>
         <p>
           After you committed your changes and ran the repo&apos;s CI/CD

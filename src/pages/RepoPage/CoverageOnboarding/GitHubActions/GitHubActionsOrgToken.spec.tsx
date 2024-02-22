@@ -214,6 +214,13 @@ describe('GitHubActionsOrgToken', () => {
       const version = await screen.findByText(/v4.0.1/)
       expect(version).toBeInTheDocument()
     })
+
+    it('renders example blurb', async () => {
+      render(<GitHubActionsOrgToken />, { wrapper })
+
+      const blurb = await screen.findByTestId('example-blurb')
+      expect(blurb).toBeInTheDocument()
+    })
   })
 
   describe('step three', () => {

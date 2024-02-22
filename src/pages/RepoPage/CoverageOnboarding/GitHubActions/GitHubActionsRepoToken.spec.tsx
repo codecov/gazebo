@@ -137,6 +137,13 @@ describe('GitHubActions', () => {
       )
       expect(yamlBox).toBeInTheDocument()
     })
+
+    it('renders example blurb', async () => {
+      render(<GitHubActionsRepoToken />, { wrapper })
+
+      const blurb = await screen.findByTestId('example-blurb')
+      expect(blurb).toBeInTheDocument()
+    })
   })
 
   describe('step three', () => {
