@@ -149,7 +149,7 @@ describe('BundleSelector', () => {
     })
   })
 
-  describe('when there is branch data', () => {
+  describe('when there is bundle data', () => {
     it('enables the select', async () => {
       setup({})
       render(<BundleSelector />, { wrapper: wrapper() })
@@ -214,8 +214,8 @@ describe('BundleSelector', () => {
     })
 
     describe('user searches for bundle', () => {
-      describe('branch is found', () => {
-        it('renders the found branch', async () => {
+      describe('bundle is found', () => {
+        it('renders the found bundle', async () => {
           const { user } = setup({})
           render(<BundleSelector />, {
             wrapper: wrapper(),
@@ -234,7 +234,7 @@ describe('BundleSelector', () => {
         })
       })
 
-      describe('branch is not found', () => {
+      describe('bundle is not found', () => {
         it('displays no results found', async () => {
           const { user } = setup({})
           render(<BundleSelector />, {
