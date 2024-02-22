@@ -3,7 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { useBranchBundleSummary } from './useBranchBundles'
+import { useBranchBundleSummary } from './useBranchBundleSummary'
 
 const mockRepoOverview = {
   owner: {
