@@ -53,6 +53,22 @@ const mockBranches = {
   },
 }
 
+const mockBranchBundles = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      branch: {
+        head: {
+          bundleAnalysisReport: {
+            __typename: 'BundleAnalysisReport',
+            bundles: [{ name: 'bundle1' }],
+          },
+        },
+      },
+    },
+  },
+}
+
 const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -115,6 +131,9 @@ describe('BundleSummary', () => {
           ctx.status(200),
           ctx.data({ owner: { repository: mockBranches } })
         )
+      }),
+      graphql.query('BranchBundlesNames', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockBranchBundles))
       })
     )
   }
