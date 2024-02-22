@@ -1804,6 +1804,22 @@ describe('useNavLinks', () => {
         expect(path).toBe('/gh/codecov/cool-repo/bundles/test-branch')
       })
     })
+
+    describe('passing branch and bundle option', () => {
+      it('appends the branch and bundle param', () => {
+        const { result } = renderHook(() => useNavLinks(), {
+          wrapper: wrapper('/gh/codecov/cool-repo'),
+        })
+
+        const path = result.current.bundles.path({
+          branch: 'test-branch',
+          bundle: 'test-bundle',
+        })
+        expect(path).toBe(
+          '/gh/codecov/cool-repo/bundles/test-branch/test-bundle'
+        )
+      })
+    })
   })
 
   describe('bundle onboarding', () => {

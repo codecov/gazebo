@@ -138,6 +138,7 @@ describe('BranchSelector', () => {
     const user = userEvent.setup()
     const fetchNextPage = jest.fn()
     const mockSearching = jest.fn()
+    const mockResetBundleSelect = jest.fn()
 
     const queryClient = new QueryClient({
       defaultOptions: {
@@ -202,13 +203,14 @@ describe('BranchSelector', () => {
       mockSearching,
       user,
       queryClient,
+      mockResetBundleSelect,
     }
   }
 
   describe('with populated data', () => {
     it('renders the branch selector', async () => {
-      const { queryClient } = setup()
-      render(<BranchSelector />, {
+      const { queryClient, mockResetBundleSelect } = setup()
+      render(<BranchSelector resetBundleSelect={mockResetBundleSelect} />, {
         wrapper: wrapper(queryClient),
       })
 
@@ -217,8 +219,8 @@ describe('BranchSelector', () => {
     })
 
     it('renders default branch as selected branch', async () => {
-      const { queryClient } = setup()
-      render(<BranchSelector />, {
+      const { queryClient, mockResetBundleSelect } = setup()
+      render(<BranchSelector resetBundleSelect={mockResetBundleSelect} />, {
         wrapper: wrapper(queryClient),
       })
 
@@ -227,8 +229,8 @@ describe('BranchSelector', () => {
     })
 
     it('renders the source commit short sha', async () => {
-      const { queryClient } = setup()
-      render(<BranchSelector />, {
+      const { queryClient, mockResetBundleSelect } = setup()
+      render(<BranchSelector resetBundleSelect={mockResetBundleSelect} />, {
         wrapper: wrapper(queryClient),
       })
 
@@ -240,8 +242,8 @@ describe('BranchSelector', () => {
   describe('navigating branches', () => {
     describe('user selects a branch', () => {
       it('navigates to the selected branch', async () => {
-        const { user, queryClient } = setup()
-        render(<BranchSelector />, {
+        const { user, queryClient, mockResetBundleSelect } = setup()
+        render(<BranchSelector resetBundleSelect={mockResetBundleSelect} />, {
           wrapper: wrapper(queryClient),
         })
 
@@ -263,8 +265,8 @@ describe('BranchSelector', () => {
 
     describe('user selects the default branch', () => {
       it('clears the branch from the url', async () => {
-        const { user, queryClient } = setup()
-        render(<BranchSelector />, {
+        const { user, queryClient, mockResetBundleSelect } = setup()
+        render(<BranchSelector resetBundleSelect={mockResetBundleSelect} />, {
           wrapper: wrapper(
             queryClient,
             '/gh/codecov/test-repo/bundles/branch-1'
@@ -284,20 +286,38 @@ describe('BranchSelector', () => {
         )
       })
     })
+
+    it('calls resetBundleSelect when a branch is selected', async () => {
+      const { user, queryClient, mockResetBundleSelect } = setup()
+      render(<BranchSelector resetBundleSelect={mockResetBundleSelect} />, {
+        wrapper: wrapper(queryClient),
+      })
+
+      const select = await screen.findByRole('button', {
+        name: 'bundle branch selector',
+      })
+      await user.click(select)
+
+      const branch = await screen.findByText('branch-1')
+      await user.click(branch)
+
+      expect(mockResetBundleSelect).toHaveBeenCalled()
+    })
   })
 
   describe('when onLoadMore is triggered', () => {
     describe('when there is not a next page', () => {
       it('does not call fetchNextPage', async () => {
-        const { user, fetchNextPage, queryClient } = setup({
-          hasNextPage: false,
-        })
+        const { user, fetchNextPage, queryClient, mockResetBundleSelect } =
+          setup({
+            hasNextPage: false,
+          })
 
         mockedUseIntersection.mockReturnValue({
           isIntersecting: true,
         })
 
-        render(<BranchSelector />, {
+        render(<BranchSelector resetBundleSelect={mockResetBundleSelect} />, {
           wrapper: wrapper(queryClient),
         })
 
@@ -312,15 +332,16 @@ describe('BranchSelector', () => {
 
     describe('there is a next page', () => {
       it('calls fetchNextPage', async () => {
-        const { fetchNextPage, user, queryClient } = setup({
-          hasNextPage: true,
-        })
+        const { fetchNextPage, user, queryClient, mockResetBundleSelect } =
+          setup({
+            hasNextPage: true,
+          })
 
         mockedUseIntersection.mockReturnValue({
           isIntersecting: true,
         })
 
-        render(<BranchSelector />, {
+        render(<BranchSelector resetBundleSelect={mockResetBundleSelect} />, {
           wrapper: wrapper(queryClient),
         })
 
@@ -336,8 +357,9 @@ describe('BranchSelector', () => {
 
   describe('user searches for branch', () => {
     it('calls the api with the search value', async () => {
-      const { mockSearching, user, queryClient } = setup()
-      render(<BranchSelector />, {
+      const { mockSearching, user, queryClient, mockResetBundleSelect } =
+        setup()
+      render(<BranchSelector resetBundleSelect={mockResetBundleSelect} />, {
         wrapper: wrapper(queryClient),
       })
 
@@ -355,8 +377,10 @@ describe('BranchSelector', () => {
 
   describe('when the branch is not found', () => {
     it('displays select a branch in the button', async () => {
-      const { queryClient } = setup({ nullOverview: true })
-      render(<BranchSelector />, {
+      const { queryClient, mockResetBundleSelect } = setup({
+        nullOverview: true,
+      })
+      render(<BranchSelector resetBundleSelect={mockResetBundleSelect} />, {
         wrapper: wrapper(queryClient),
       })
 
