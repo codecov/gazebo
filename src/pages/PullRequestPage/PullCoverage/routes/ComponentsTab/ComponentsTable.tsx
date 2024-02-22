@@ -5,7 +5,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
-import { isArray } from 'lodash'
+import isArray from 'lodash/isArray'
 import qs, { type ParsedQs } from 'qs'
 import { useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
