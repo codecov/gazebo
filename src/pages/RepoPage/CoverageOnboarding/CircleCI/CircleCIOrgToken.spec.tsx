@@ -79,20 +79,14 @@ describe('CircleCIOrgToken', () => {
     )
   }
 
-  describe('prologue', () => {
+  describe('intro blurb', () => {
     beforeEach(() => setup(true))
 
-    it('renders quick start box', async () => {
+    it('renders intro blurb', async () => {
       render(<CircleCIOrgToken />, { wrapper })
 
-      const docsLink = await screen.findByRole('link', {
-        name: /Read our documentation/,
-      })
-      expect(docsLink).toBeInTheDocument()
-      expect(docsLink).toHaveAttribute(
-        'href',
-        'https://docs.codecov.com/docs/quick-start'
-      )
+      const blurb = await screen.findByTestId('intro-blurb')
+      expect(blurb).toBeInTheDocument()
     })
   })
 
