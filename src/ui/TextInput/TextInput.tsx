@@ -1,5 +1,6 @@
 import cs from 'classnames'
-import { defaultTo, uniqueId } from 'lodash'
+import defaultTo from 'lodash/defaultTo'
+import uniqueId from 'lodash/uniqueId'
 import { forwardRef, HTMLProps, Ref } from 'react'
 
 import Icon from 'ui/Icon'

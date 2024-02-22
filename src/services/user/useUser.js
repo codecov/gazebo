@@ -21,6 +21,7 @@ fragment CurrentUserFragment on Me {
     student
     studentCreatedAt
     studentUpdatedAt
+    customerIntent
   }
   trackingMetadata {
     service
