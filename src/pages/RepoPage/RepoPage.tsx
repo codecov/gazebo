@@ -88,7 +88,11 @@ function Routes({
         )}
         {bundleAnalysisEnabled && bundleAnalysisPrAndCommitPages ? (
           <SentryRoute
-            path={[`${path}/bundles/:branch`, `${path}/bundles`]}
+            path={[
+              `${path}/bundles/:branch/:bundle`,
+              `${path}/bundles/:branch`,
+              `${path}/bundles`,
+            ]}
             exact
           >
             <BundlesTab />
