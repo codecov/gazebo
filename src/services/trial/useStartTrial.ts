@@ -2,8 +2,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
+import { LOCAL_STORAGE_USER_STARTED_TRIAL_KEY } from 'pages/OwnerPage/OwnerPage'
 import { renderToast } from 'services/toast'
 import Api from 'shared/api'
+import { useRedirect } from 'shared/useRedirect'
 
 const StartTrialSchema = z.object({
   startTrial: z
@@ -49,6 +51,7 @@ interface StarTrialMutationArgs {
 export const useStartTrial = () => {
   const { provider } = useParams<Params>()
   const queryClient = useQueryClient()
+  const { hardRedirect } = useRedirect({ href: `/${provider}` })
 
   const mutation = useMutation({
     mutationFn: ({ owner }: StarTrialMutationArgs) => {
@@ -75,16 +78,8 @@ export const useStartTrial = () => {
       queryClient.invalidateQueries(['accountDetails'])
       queryClient.invalidateQueries(['GetPlanData'])
       queryClient.invalidateQueries(['GetAvailablePlans'])
-
-      renderToast({
-        type: 'generic',
-        title: '14 day trial has started',
-        content: '',
-        options: {
-          duration: 5000,
-          position: 'bottom-left',
-        },
-      })
+      localStorage.setItem(LOCAL_STORAGE_USER_STARTED_TRIAL_KEY, 'true')
+      hardRedirect()
     },
     onError: () => {
       renderToast({
