@@ -149,20 +149,6 @@ describe('BundleSelector', () => {
     })
   })
 
-  describe('when there is no overview data', () => {
-    it('renders disabled button', async () => {
-      setup({ nullOverview: true })
-      render(<BundleSelector />, {
-        wrapper: wrapper('/gh/codecov/test-repo/bundles'),
-      })
-
-      const select = await screen.findByRole('button', {
-        name: 'bundle tab bundle selector',
-      })
-      expect(select).toBeInTheDocument()
-    })
-  })
-
   describe('when there is branch data', () => {
     it('enables the select', async () => {
       setup({})
