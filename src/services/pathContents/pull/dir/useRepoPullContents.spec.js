@@ -155,6 +155,7 @@ describe('useRepoPullContents', () => {
           upperRange: 80,
           lowerRange: 60,
         },
+        pathContentsType: 'PathContents',
       }
 
       await waitFor(() =>

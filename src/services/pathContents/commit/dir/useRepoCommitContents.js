@@ -38,14 +38,14 @@ export const useRepoCommitContents = ({
         },
       }).then((res) => {
         let results
-        if (
-          res?.data?.owner?.repository?.commit?.pathContents?.__typename ===
-          'PathContents'
-        ) {
+        const pathContentsType =
+          res?.data?.owner?.repository?.commit?.pathContents?.__typename
+        if (pathContentsType === 'PathContents') {
           results = res?.data?.owner?.repository?.commit?.pathContents?.results
         }
         return {
           results: results ?? null,
+          pathContentsType,
           indicationRange:
             res?.data?.owner?.repository?.repositoryConfig?.indicationRange,
         }

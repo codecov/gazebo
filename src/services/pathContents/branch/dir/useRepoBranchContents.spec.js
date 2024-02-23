@@ -205,6 +205,7 @@ describe('useRepoBranchContents', () => {
               lowerRange: 60,
             },
             results: null,
+            pathContentsType: 'MissingCoverage',
           })
         )
       })
@@ -238,6 +239,7 @@ describe('useRepoBranchContents', () => {
               lowerRange: 60,
             },
             results: null,
+            pathContentsType: 'UnknownPath',
           })
         )
       })

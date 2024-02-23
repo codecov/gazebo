@@ -161,6 +161,7 @@ describe('useRepoCommitContents', () => {
           upperRange: 80,
           lowerRange: 60,
         },
+        pathContentsType: 'PathContents',
       }
 
       await waitFor(() =>

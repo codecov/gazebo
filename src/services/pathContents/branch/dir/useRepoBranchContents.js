@@ -26,15 +26,15 @@ function fetchRepoContents({
     },
   }).then((res) => {
     let results
-    if (
-      res?.data?.owner?.repository?.branch?.head?.pathContents?.__typename ===
-      'PathContents'
-    ) {
+    const pathContentsType =
+      res?.data?.owner?.repository?.branch?.head?.pathContents?.__typename
+    if (pathContentsType === 'PathContents') {
       results =
         res?.data?.owner?.repository?.branch?.head?.pathContents?.results
     }
     return {
       results: results ?? null,
+      pathContentsType,
       indicationRange:
         res?.data?.owner?.repository?.repositoryConfig?.indicationRange,
       __typename: res?.data?.owner?.repository?.branch?.head?.__typename,

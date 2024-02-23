@@ -30,6 +30,30 @@ const mockNoFiles = {
   },
 }
 
+const mockUnknownPath = {
+  username: 'nicholas-codecov',
+  repository: {
+    commit: {
+      pathContents: {
+        results: [],
+        __typename: 'UnknownPath',
+      },
+    },
+  },
+}
+
+const mockMissingCoverage = {
+  username: 'nicholas-codecov',
+  repository: {
+    commit: {
+      pathContents: {
+        results: [],
+        __typename: 'MissingCoverage',
+      },
+    },
+  },
+}
+
 const mockListData = {
   username: 'nicholas-codecov',
   repository: {
@@ -112,13 +136,25 @@ afterAll(() => {
 })
 
 describe('CommitDetailFileExplorer', () => {
-  function setup(noFiles = false) {
+  function setup(
+    noFiles = false,
+    missingCoverage = false,
+    unknownPath = false
+  ) {
     const user = userEvent.setup()
     const requestFilters = jest.fn()
 
     server.use(
       graphql.query('CommitPathContents', (req, res, ctx) => {
         requestFilters(req.variables.filters)
+
+        if (missingCoverage) {
+          return res(ctx.status(200), ctx.data({ owner: mockMissingCoverage }))
+        }
+
+        if (unknownPath) {
+          return res(ctx.status(200), ctx.data({ owner: mockUnknownPath }))
+        }
 
         if (noFiles || req.variables?.filters?.searchValue) {
           return res(ctx.status(200), ctx.data({ owner: mockNoFiles }))
@@ -298,6 +334,36 @@ describe('CommitDetailFileExplorer', () => {
         )
         expect(message).toBeInTheDocument()
       })
+    })
+  })
+
+  describe('commit contents returns unknown path', () => {
+    it('renders unknown path message', async () => {
+      setup(false, true, false)
+      render(<CommitDetailFileExplorer />, {
+        wrapper: wrapper([
+          '/gh/codecov/cool-repo/commit/sha256/tree/a/b/c?displayType=list',
+        ]),
+      })
+
+      const message = await screen.findByText('No coverage data available.')
+      expect(message).toBeInTheDocument()
+    })
+  })
+
+  describe('commit contents has missing coverage', () => {
+    it('renders the missing coverage message', async () => {
+      setup(false, false, true)
+      render(<CommitDetailFileExplorer />, {
+        wrapper: wrapper([
+          '/gh/codecov/cool-repo/commit/sha256/tree/a/b/c?displayType=list',
+        ]),
+      })
+
+      const message = await screen.findByText(
+        'Unknown filepath. Please ensure that files/directories exist and are not empty.'
+      )
+      expect(message).toBeInTheDocument()
     })
   })
 
