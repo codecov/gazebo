@@ -28,6 +28,8 @@ export const OrderingParameter = {
   FILE_NAME: 'FILE_NAME',
   MISSES_COUNT: 'MISSES_COUNT',
   PATCH_COVERAGE: 'PATCH_COVERAGE',
+  HEAD_COVERAGE: 'HEAD_COVERAGE',
+  CHANGE_COVERAGE: 'CHANGE_COVERAGE',
 } as const
 
 const ImpactedFilesOrdering = z.object({
@@ -74,6 +76,8 @@ const flagsComparisonsSchema = z
   })
   .nullable()
 
+export type FlagsComparison = z.infer<typeof flagsComparisonsSchema>
+
 const ComparisonSchema = z.object({
   __typename: z.literal('Comparison'),
   state: z.string(),
@@ -95,6 +99,8 @@ const CompareWithBaseSchema = z.discriminatedUnion('__typename', [
   MissingHeadCommitSchema,
   MissingHeadReportSchema,
 ])
+
+export type PullComparison = z.infer<typeof CompareWithBaseSchema>
 
 const CommitSchema = z.object({
   state: z.string().nullable(),

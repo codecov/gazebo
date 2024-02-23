@@ -35,6 +35,8 @@ const wrapper =
         <Route path="/admin/:provider/:owner/users">{children}</Route>
         <Route path="/account/:provider/:owner">{children}</Route>
         <Route path="/account/:provider/:owner/billing">{children}</Route>
+        <Route path="/:provider/:owner/:repo/bundles/:branch">{children}</Route>
+        <Route path="/:provider/:owner/:repo/bundles">{children}</Route>
       </MemoryRouter>
     )
 
@@ -56,19 +58,6 @@ describe('useNavLinks', () => {
 
       const path = result.current.signOut.path({ provider: 'bb' })
       expect(path).toBe('/logout/bb')
-    })
-
-    it('can add a `to` redirection', () => {
-      const { result } = renderHook(() => useNavLinks(), {
-        wrapper: wrapper('/gl/doggo/squirrel-locator'),
-      })
-
-      const path = result.current.signOut.path({
-        to: 'https://app.codecov.io/gh/codecov',
-      })
-      expect(path).toBe(
-        '/logout/gl?to=https%3A%2F%2Fapp.codecov.io%2Fgh%2Fcodecov'
-      )
     })
   })
 
@@ -1779,6 +1768,57 @@ describe('useNavLinks', () => {
         owner: 'test-owner',
       })
       expect(path).toBe('/account/bb/test-owner')
+    })
+  })
+
+  describe('bundles tab', () => {
+    it('returns the correct link with nothing passed', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov/cool-repo'),
+      })
+
+      const path = result.current.bundles.path()
+      expect(path).toBe('/gh/codecov/cool-repo/bundles')
+    })
+
+    it('can override the params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov/cool-repo'),
+      })
+
+      const path = result.current.bundles.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo/bundles')
+    })
+
+    describe('passing branch option', () => {
+      it('appends the branch param', () => {
+        const { result } = renderHook(() => useNavLinks(), {
+          wrapper: wrapper('/gh/codecov/cool-repo'),
+        })
+
+        const path = result.current.bundles.path({ branch: 'test-branch' })
+        expect(path).toBe('/gh/codecov/cool-repo/bundles/test-branch')
+      })
+    })
+
+    describe('passing branch and bundle option', () => {
+      it('appends the branch and bundle param', () => {
+        const { result } = renderHook(() => useNavLinks(), {
+          wrapper: wrapper('/gh/codecov/cool-repo'),
+        })
+
+        const path = result.current.bundles.path({
+          branch: 'test-branch',
+          bundle: 'test-bundle',
+        })
+        expect(path).toBe(
+          '/gh/codecov/cool-repo/bundles/test-branch/test-bundle'
+        )
+      })
     })
   })
 

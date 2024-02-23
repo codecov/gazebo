@@ -60,7 +60,7 @@ const RequestSchema = z.object({
 })
 
 const query = `
-query PullDropdownSummary($owner: String!, $repo: String!, $pullId: Int!) {
+query PullCoverageDropdownSummary($owner: String!, $repo: String!, $pullId: Int!) {
   owner(username: $owner) {
     repository(name: $repo) {
       __typename
@@ -119,7 +119,7 @@ export function usePullCoverageDropdownSummary({
   pullId,
 }: usePullCoverageDropdownSummaryArgs) {
   return useQuery({
-    queryKey: ['PullDropdownSummary', provider, owner, repo, pullId],
+    queryKey: ['PullCoverageDropdownSummary', provider, owner, repo, pullId],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
@@ -161,7 +161,11 @@ export function usePullCoverageDropdownSummary({
           })
         }
 
-        return data
+        const pull = data?.owner?.repository?.pull ?? null
+
+        return {
+          pull,
+        }
       }),
   })
 }

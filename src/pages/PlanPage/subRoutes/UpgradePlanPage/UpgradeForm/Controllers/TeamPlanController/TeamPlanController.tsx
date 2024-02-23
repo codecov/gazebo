@@ -1,8 +1,5 @@
 import { FieldValues, UseFormRegister } from 'react-hook-form'
-import { useParams } from 'react-router-dom'
 
-import { useAccountDetails } from 'services/account'
-import { getNextBillingDate } from 'shared/utils/billing'
 import { MIN_NB_SEATS_PRO } from 'shared/utils/upgradeForm'
 import TextInput from 'ui/TextInput'
 
@@ -31,9 +28,9 @@ const PlanController: React.FC<PlanControllerProps> = ({
   register,
   errors,
 }) => {
-  const { provider, owner } = useParams<{ owner: string; provider: string }>()
-  const { data: accountDetails } = useAccountDetails({ provider, owner })
-  const nextBillingDate = getNextBillingDate(accountDetails)
+  if (seats > 10) {
+    setFormValue('seats', '10')
+  }
 
   return (
     <>
@@ -60,12 +57,6 @@ const PlanController: React.FC<PlanControllerProps> = ({
         newPlan={newPlan}
         setFormValue={setFormValue}
       />
-      {nextBillingDate && (
-        <p className="mt-1 flex">
-          Next Billing Date
-          <span className="ml-auto">{nextBillingDate}</span>
-        </p>
-      )}
       {errors?.seats && (
         <p className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
           {errors?.seats?.message}

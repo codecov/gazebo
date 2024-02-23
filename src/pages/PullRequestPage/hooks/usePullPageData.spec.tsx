@@ -9,10 +9,15 @@ const mockPullData = {
   owner: {
     repository: {
       __typename: 'Repository',
+      coverageEnabled: true,
+      bundleAnalysisEnabled: true,
       pull: {
         pullId: 1,
         head: {
           commitid: '123',
+          bundleAnalysisReport: {
+            __typename: 'BundleAnalysisReport',
+          },
         },
         compareWithBase: {
           __typename: 'Comparison',
@@ -21,6 +26,9 @@ const mockPullData = {
           flagComparisonsCount: 1,
           componentComparisonsCount: 6,
           directChangedFilesCount: 0,
+        },
+        bundleAnalysisCompareWithBase: {
+          __typename: 'BundleAnalysisComparison',
         },
       },
     },
@@ -31,15 +39,23 @@ const mockPullDataTeam = {
   owner: {
     repository: {
       __typename: 'Repository',
+      coverageEnabled: true,
+      bundleAnalysisEnabled: true,
       pull: {
         pullId: 1,
         head: {
           commitid: '123',
+          bundleAnalysisReport: {
+            __typename: 'BundleAnalysisReport',
+          },
         },
         compareWithBase: {
           __typename: 'Comparison',
           impactedFilesCount: 4,
           directChangedFilesCount: 0,
+        },
+        bundleAnalysisCompareWithBase: {
+          __typename: 'BundleAnalysisComparison',
         },
       },
     },
@@ -149,10 +165,15 @@ describe('usePullPageData', () => {
 
           await waitFor(() =>
             expect(result.current.data).toStrictEqual({
+              coverageEnabled: true,
+              bundleAnalysisEnabled: true,
               pull: {
                 pullId: 1,
                 head: {
                   commitid: '123',
+                  bundleAnalysisReport: {
+                    __typename: 'BundleAnalysisReport',
+                  },
                 },
                 compareWithBase: {
                   __typename: 'Comparison',
@@ -161,6 +182,9 @@ describe('usePullPageData', () => {
                   flagComparisonsCount: 1,
                   componentComparisonsCount: 6,
                   directChangedFilesCount: 0,
+                },
+                bundleAnalysisCompareWithBase: {
+                  __typename: 'BundleAnalysisComparison',
                 },
               },
             })
@@ -190,6 +214,8 @@ describe('usePullPageData', () => {
 
           await waitFor(() =>
             expect(result.current.data).toStrictEqual({
+              coverageEnabled: null,
+              bundleAnalysisEnabled: null,
               pull: null,
             })
           )
@@ -331,15 +357,23 @@ describe('usePullPageData', () => {
 
         await waitFor(() =>
           expect(result.current.data).toStrictEqual({
+            coverageEnabled: true,
+            bundleAnalysisEnabled: true,
             pull: {
               pullId: 1,
               head: {
                 commitid: '123',
+                bundleAnalysisReport: {
+                  __typename: 'BundleAnalysisReport',
+                },
               },
               compareWithBase: {
                 __typename: 'Comparison',
                 impactedFilesCount: 4,
                 directChangedFilesCount: 0,
+              },
+              bundleAnalysisCompareWithBase: {
+                __typename: 'BundleAnalysisComparison',
               },
             },
           })

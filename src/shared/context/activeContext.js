@@ -1,3 +1,3 @@
 import { createContext } from 'react'
 
-export const ActiveContext = createContext('Active')
+export const ActiveContext = createContext('Configured')

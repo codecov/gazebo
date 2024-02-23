@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom'
 
 import { useAccountDetails } from 'services/account'
 
+import EmailAddress from './EmailAddress'
 import PaymentCard from './PaymentCard'
 
 interface URLParams {
@@ -21,6 +22,7 @@ function BillingDetails() {
   return (
     <div className="flex flex-col border">
       <h3 className="p-4 font-semibold">Billing details</h3>
+      <EmailAddress />
       <PaymentCard
         subscriptionDetail={accountDetails?.subscriptionDetail}
         provider={provider}

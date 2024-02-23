@@ -65,7 +65,6 @@ function AnalyticsPage() {
       </Suspense>
       <ReposTable
         owner={owner}
-        sortItem={sortItem}
         searchValue={params?.search}
         filterValues={params?.repositories}
       />

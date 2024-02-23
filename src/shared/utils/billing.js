@@ -1,7 +1,7 @@
 import { format, fromUnixTime } from 'date-fns'
-import { isUndefined } from 'lodash'
 import isArray from 'lodash/isArray'
 import isString from 'lodash/isString'
+import isUndefined from 'lodash/isUndefined'
 
 import { useFlags } from 'shared/featureFlags'
 

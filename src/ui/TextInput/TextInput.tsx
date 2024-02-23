@@ -1,5 +1,6 @@
 import cs from 'classnames'
-import { defaultTo, uniqueId } from 'lodash'
+import defaultTo from 'lodash/defaultTo'
+import uniqueId from 'lodash/uniqueId'
 import { forwardRef, HTMLProps, Ref } from 'react'
 
 import Icon from 'ui/Icon'
@@ -9,13 +10,14 @@ interface TextInputProps extends HTMLProps<HTMLInputElement> {
   label?: string
   icon?: keyof OutlineIconCollection
   placeholder?: string
-  variant?: 'default' | 'topRounded'
+  variant?: 'default' | 'topRounded' | 'billing'
   dataMarketing?: string
 }
 
 const VariantClasses = {
   default: 'rounded border',
   topRounded: 'border-t border-r border-l focus:border rounded-tl rounded-tr',
+  billing: 'bg-ds-gray-primary py-3 px-4 rounded ',
 }
 
 const styles = {

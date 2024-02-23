@@ -16,14 +16,36 @@ import {
 import Api from 'shared/api'
 import A from 'ui/A'
 
+const BundleAnalysisComparisonResult = z.union([
+  z.literal('BundleAnalysisComparison'),
+  FirstPullRequestSchema.shape.__typename,
+  MissingBaseCommitSchema.shape.__typename,
+  MissingComparisonSchema.shape.__typename,
+  MissingHeadCommitSchema.shape.__typename,
+  MissingHeadReportSchema.shape.__typename,
+  MissingBaseReportSchema.shape.__typename,
+])
+
+export type TBundleAnalysisComparisonResult = z.infer<
+  typeof BundleAnalysisComparisonResult
+>
+
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
+  coverageEnabled: z.boolean().nullable(),
+  bundleAnalysisEnabled: z.boolean().nullable(),
   pull: z
     .object({
       pullId: z.number(),
       head: z
         .object({
           commitid: z.string(),
+          bundleAnalysisReport: z
+            .discriminatedUnion('__typename', [
+              z.object({ __typename: z.literal('BundleAnalysisReport') }),
+              z.object({ __typename: z.literal('MissingHeadReport') }),
+            ])
+            .nullable(),
         })
         .nullable(),
       compareWithBase: z
@@ -44,6 +66,11 @@ const RepositorySchema = z.object({
           MissingHeadReportSchema,
         ])
         .nullable(),
+      bundleAnalysisCompareWithBase: z
+        .object({
+          __typename: BundleAnalysisComparisonResult,
+        })
+        .nullable(),
     })
     .nullable(),
 })
@@ -63,15 +90,25 @@ const PullPageDataSchema = z.object({
 })
 
 const query = `
-query PullPageData($owner: String!, $repo: String!, $pullId: Int!, $isTeamPlan: Boolean!) {
+query PullPageData(
+  $owner: String!
+  $repo: String!
+  $pullId: Int!
+  $isTeamPlan: Boolean!
+) {
   owner(username: $owner) {
     repository(name: $repo) {
       __typename
       ... on Repository {
+        coverageEnabled
+        bundleAnalysisEnabled
         pull(id: $pullId) {
           pullId
           head {
             commitid
+            bundleAnalysisReport {
+              __typename
+            }
           }
           compareWithBase {
             __typename
@@ -100,6 +137,9 @@ query PullPageData($owner: String!, $repo: String!, $pullId: Int!, $isTeamPlan: 
             ... on MissingHeadReport {
               message
             }
+          }
+          bundleAnalysisCompareWithBase {
+            __typename
           }
         }
       }
@@ -185,8 +225,15 @@ export const usePullPageData = ({
           })
         }
 
+        const pull = data?.owner?.repository?.pull ?? null
+        const coverageEnabled = data?.owner?.repository?.coverageEnabled ?? null
+        const bundleAnalysisEnabled =
+          data?.owner?.repository?.bundleAnalysisEnabled ?? null
+
         return {
-          pull: data?.owner?.repository?.pull ?? null,
+          pull,
+          coverageEnabled,
+          bundleAnalysisEnabled,
         }
       }),
   })

@@ -1,4 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { ParsedQs } from 'qs'
 import { z } from 'zod'
 
 import {
@@ -75,17 +76,30 @@ const UploadsSchema = z.object({
   ),
 })
 
-const ImpactedFileSchema = z.object({
-  headName: z.string().nullable(),
-  patchCoverage: CoverageObjSchema.nullable(),
-  baseCoverage: CoverageObjSchema.nullable(),
-  headCoverage: CoverageObjSchema.nullable(),
-})
+const ImpactedFileSchema = z
+  .object({
+    headName: z.string().nullable(),
+    patchCoverage: CoverageObjSchema.nullable(),
+    baseCoverage: CoverageObjSchema.nullable(),
+    headCoverage: CoverageObjSchema.nullable(),
+  })
+  .nullable()
+
+export type ImpactedFileType = z.infer<typeof ImpactedFileSchema>
 
 const ImpactedFileResultsSchema = z.object({
   __typename: z.literal('ImpactedFiles'),
   results: z.array(ImpactedFileSchema.nullable()),
 })
+
+const ImpactedFileResultsUnionSchema = z.discriminatedUnion('__typename', [
+  ImpactedFileResultsSchema,
+  UnknownFlagsSchema,
+])
+
+export type ImpactedFileResultsUnionType = z.infer<
+  typeof ImpactedFileResultsUnionSchema
+>
 
 const ComparisonSchema = z.object({
   __typename: z.literal('Comparison'),
@@ -93,10 +107,7 @@ const ComparisonSchema = z.object({
   directChangedFilesCount: z.number(),
   state: z.string(),
   patchTotals: CoverageObjSchema.nullable(),
-  impactedFiles: z.discriminatedUnion('__typename', [
-    ImpactedFileResultsSchema,
-    UnknownFlagsSchema,
-  ]),
+  impactedFiles: ImpactedFileResultsUnionSchema,
 })
 
 const CompareWithParentSchema = z.discriminatedUnion('__typename', [
@@ -132,6 +143,8 @@ const CommitSchema = z.object({
     .nullable(),
   compareWithParent: CompareWithParentSchema.nullable(),
 })
+
+export type CommitType = z.infer<typeof CommitSchema>
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
@@ -282,8 +295,8 @@ interface UseCommitArgs {
   commitid: string
   filters?: {
     hasUnintendedChanges?: boolean
-    flags?: Array<string>
-    components?: Array<string>
+    flags?: Array<string> | Array<ParsedQs>
+    components?: Array<string> | Array<ParsedQs>
     ordering?: {
       direction?: 'DESC' | 'ASC'
       parameter?:

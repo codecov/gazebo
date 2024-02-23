@@ -10,8 +10,16 @@ const mockCommitData = {
     isCurrentUserPartOfOrg: true,
     repository: {
       __typename: 'Repository',
+      bundleAnalysisEnabled: true,
+      coverageEnabled: true,
       commit: {
         commitid: 'id-1',
+        compareWithParent: {
+          __typename: 'Comparison',
+        },
+        bundleAnalysisCompareWithParent: {
+          __typename: 'BundleAnalysisComparison',
+        },
       },
     },
   },
@@ -118,8 +126,16 @@ describe('useCommitPageData', () => {
 
           const expectedResult = {
             isCurrentUserPartOfOrg: true,
+            bundleAnalysisEnabled: true,
+            coverageEnabled: true,
             commit: {
               commitid: 'id-1',
+              compareWithParent: {
+                __typename: 'Comparison',
+              },
+              bundleAnalysisCompareWithParent: {
+                __typename: 'BundleAnalysisComparison',
+              },
             },
           }
 
@@ -148,6 +164,8 @@ describe('useCommitPageData', () => {
 
           const expectedResult = {
             isCurrentUserPartOfOrg: null,
+            bundleAnalysisEnabled: null,
+            coverageEnabled: null,
             commit: null,
           }
 

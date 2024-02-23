@@ -10,6 +10,9 @@ const mockPullBASummaryData = {
     repository: {
       __typename: 'Repository',
       pull: {
+        head: {
+          commitid: '2788fb9824b079807f7992f04482450c09774ec7',
+        },
         bundleAnalysisCompareWithBase: {
           __typename: 'BundleAnalysisComparison',
           sizeDelta: 1,
@@ -116,16 +119,14 @@ describe('usePullBADropdownSummary', () => {
       )
 
       const expectedResult = {
-        owner: {
-          repository: {
-            __typename: 'Repository',
-            pull: {
-              bundleAnalysisCompareWithBase: {
-                __typename: 'BundleAnalysisComparison',
-                sizeDelta: 1,
-                loadTimeDelta: 2,
-              },
-            },
+        pull: {
+          head: {
+            commitid: '2788fb9824b079807f7992f04482450c09774ec7',
+          },
+          bundleAnalysisCompareWithBase: {
+            __typename: 'BundleAnalysisComparison',
+            sizeDelta: 1,
+            loadTimeDelta: 2,
           },
         },
       }
@@ -151,7 +152,7 @@ describe('usePullBADropdownSummary', () => {
       )
 
       await waitFor(() =>
-        expect(result.current.data).toStrictEqual({ owner: null })
+        expect(result.current.data).toStrictEqual({ pull: null })
       )
     })
   })

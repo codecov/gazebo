@@ -6,6 +6,7 @@ import {
   canApplySentryUpgrade,
   findProPlans,
   findSentryPlans,
+  findTeamPlans,
   isFreePlan,
   isPaidPlan,
   isSentryPlan,
@@ -156,6 +157,7 @@ export const getDefaultValuesUpgradeForm = ({
   accountDetails,
   plans,
   trialStatus,
+  selectedPlan,
 }) => {
   const currentPlan = accountDetails?.plan
   const currentPlanValue = currentPlan?.value
@@ -164,19 +166,21 @@ export const getDefaultValuesUpgradeForm = ({
   const inactiveUserCount = accountDetails?.inactiveUserCount
 
   const { proPlanYear } = findProPlans({ plans })
-  const { sentryPlanYear } = findSentryPlans({ plans })
+  const { sentryPlanYear, sentryPlanMonth } = findSentryPlans({ plans })
+  const { teamPlanYear, teamPlanMonth } = findTeamPlans({ plans })
+
   const isSentryUpgrade = canApplySentryUpgrade({
     plan: currentPlanValue,
     plans,
   })
 
-  // if the current plan is a pro plan, we return it, otherwise select by default the first pro plan
-  let newPlan = proPlanYear?.value
+  const isMonthlyPlan = accountDetails?.plan?.billingRate === 'monthly'
 
+  let newPlan = proPlanYear?.value
   if (isSentryUpgrade && !isSentryPlan(currentPlanValue)) {
-    newPlan = sentryPlanYear?.value
-  } else if (isTeamPlan(currentPlanValue)) {
-    newPlan = proPlanYear?.value
+    newPlan = isMonthlyPlan ? sentryPlanMonth?.value : sentryPlanYear?.value
+  } else if (isTeamPlan(currentPlanValue) || isTeamPlan(selectedPlan?.value)) {
+    newPlan = isMonthlyPlan ? teamPlanMonth?.value : teamPlanYear?.value
   } else if (isPaidPlan(currentPlanValue)) {
     newPlan = currentPlanValue
   }

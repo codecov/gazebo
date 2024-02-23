@@ -98,6 +98,7 @@ describe('calculatePriceTeamPlan', () => {
 describe('getDefaultValuesUpgradeForm', () => {
   const proPlanYear = { value: Plans.USERS_PR_INAPPY }
   const sentryPlanYear = { value: Plans.USERS_SENTRYY }
+  const teamPlanMonth = { value: Plans.USERS_TEAMM }
 
   describe('when current plan is basic', () => {
     it('returns pro year plan', () => {
@@ -135,20 +136,20 @@ describe('getDefaultValuesUpgradeForm', () => {
     })
   })
 
-  describe('when current plan is team', () => {
-    it('returns pro year plan', () => {
+  describe('when current plan is team monthly', () => {
+    it('returns team monthly plan', () => {
       const accountDetails = {
-        plan: { value: Plans.USERS_TEAMM, quantity: 1 },
+        plan: { value: Plans.USERS_TEAMM, quantity: 1, billingRate: 'monthly' },
       }
 
       const data = getDefaultValuesUpgradeForm({
         accountDetails,
         proPlanYear,
-        plans: [proPlanYear],
+        plans: [teamPlanMonth],
       })
 
       expect(data).toStrictEqual({
-        newPlan: Plans.USERS_PR_INAPPY,
+        newPlan: 'users-teamm',
         seats: 2,
       })
     })
@@ -552,6 +553,29 @@ describe('shouldRenderCancelLink', () => {
       )
 
       expect(value).toBeFalsy()
+    })
+  })
+
+  describe('user intended plan is Team', () => {
+    it('sets new plan to team', () => {
+      const accountDetails = {
+        plan: { value: Plans.USERS_BASIC, quantity: 1 },
+      }
+      const plans = [
+        { value: Plans.USERS_TEAMY },
+        { value: Plans.USERS_PR_INAPPY },
+      ]
+
+      const data = getDefaultValuesUpgradeForm({
+        accountDetails,
+        plans,
+        selectedPlan: { value: Plans.USERS_TEAMY },
+      })
+
+      expect(data).toStrictEqual({
+        newPlan: Plans.USERS_TEAMY,
+        seats: 2,
+      })
     })
   })
 })

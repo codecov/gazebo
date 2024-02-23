@@ -12,8 +12,8 @@ describe('OrgControlTable', () => {
     const user = userEvent.setup()
     return { user }
   }
-  describe('when rendering with repo display set to active', () => {
-    it('renders the active button selected', () => {
+  describe('when rendering with repo display set to "Configured"', () => {
+    it('renders the "Configured" button selected', () => {
       render(
         <OrgControlTable
           sortItem={orderingOptions[0]}
@@ -22,22 +22,23 @@ describe('OrgControlTable', () => {
           setSearchValue={jest.fn()}
           searchValue=""
           canRefetch={true}
-          repoDisplay="Active"
+          repoDisplay="Configured"
         />
       )
 
       const buttonEnabled = screen.getByRole('button', {
-        name: /Active/,
+        name: 'Configured',
+        exact: true,
       })
       const buttonDisabled = screen.getByRole('button', {
-        name: /Inactive/i,
+        name: /Not Configured/,
       })
       // no better way to assert the button is selected yet
       expect(buttonEnabled).toHaveClass('bg-ds-primary-base')
       expect(buttonDisabled).not.toHaveClass('bg-ds-primary-base')
     })
 
-    describe('when clicking on inactive button', () => {
+    describe('when clicking on "Not Configured" button', () => {
       it('calls setRepoDisplay with false', async () => {
         const { user } = setup()
         const setRepoDisplay = jest.fn()
@@ -53,16 +54,18 @@ describe('OrgControlTable', () => {
           />
         )
 
-        const inactiveButton = screen.getByRole('button', { name: /Inactive/ })
+        const inactiveButton = screen.getByRole('button', {
+          name: /Not Configured/,
+        })
         await user.click(inactiveButton)
 
-        expect(setRepoDisplay).toHaveBeenCalledWith('Inactive')
+        expect(setRepoDisplay).toHaveBeenCalledWith('Not Configured')
       })
     })
   })
 
-  describe('when rendering with repo display set to inactive', () => {
-    it('renders the not yet active button selected', () => {
+  describe('when rendering with repo display set to "Not Configured"', () => {
+    it('renders the "Not Configured" button selected', () => {
       render(
         <OrgControlTable
           sortItem={orderingOptions[0]}
@@ -71,22 +74,23 @@ describe('OrgControlTable', () => {
           setSearchValue={jest.fn()}
           searchValue=""
           canRefetch={true}
-          repoDisplay="Inactive"
+          repoDisplay="Not Configured"
         />
       )
 
       const buttonEnabled = screen.getByRole('button', {
-        name: /Active/,
+        name: 'Configured',
+        exact: true,
       })
       const buttonDisabled = screen.getByRole('button', {
-        name: /Inactive/,
+        name: /Not Configured/,
       })
       // no better way to assert the button is selected yet
       expect(buttonEnabled).not.toHaveClass('bg-ds-primary-base')
       expect(buttonDisabled).toHaveClass('bg-ds-primary-base')
     })
 
-    describe('when clicking on Active button', () => {
+    describe('when clicking on "Configured" button', () => {
       it('calls setActive with false', async () => {
         const { user } = setup()
         const setRepoDisplay = jest.fn()
@@ -102,13 +106,14 @@ describe('OrgControlTable', () => {
           />
         )
 
-        const activeButton = screen.getByRole('button', {
-          name: /Active/,
+        const configuredButton = screen.getByRole('button', {
+          name: 'Configured',
+          exact: true,
         })
 
-        await user.click(activeButton)
+        await user.click(configuredButton)
 
-        expect(setRepoDisplay).toHaveBeenCalledWith('Active')
+        expect(setRepoDisplay).toHaveBeenCalledWith('Configured')
       })
     })
   })

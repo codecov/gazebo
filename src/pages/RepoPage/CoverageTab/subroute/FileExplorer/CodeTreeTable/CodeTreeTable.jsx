@@ -12,6 +12,7 @@ function CodeTreeTable() {
     isMissingHeadReport,
     isLoading,
     hasFlagsSelected,
+    hasComponentsSelected,
   } = useRepoBranchContentsTable()
 
   return (
@@ -29,6 +30,7 @@ function CodeTreeTable() {
           isSearching={isSearching}
           isMissingHeadReport={isMissingHeadReport}
           hasFlagsSelected={hasFlagsSelected}
+          hasComponentsSelected={hasComponentsSelected}
         />
       ) : null}
     </div>

@@ -5,6 +5,7 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build",
+    "build:stats": "craco build --config craco.stats.config.js",
     "test": "craco test",
     "test:mutation": "npx stryker run",
     "test:ci": "craco test --collectCoverage --reporters=default --reporters=jest-junit",
@@ -88,6 +89,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@codecov/webpack-plugin": "^0.0.1-beta.0",
     "@craco/craco": "^7.1.0",
     "@sentry/webpack-plugin": "^1.21.0",
     "@spotlightjs/spotlight": "^1.2.7",
@@ -144,7 +146,7 @@
     "webpack-hook-plugin": "^1.0.7"
   },
   "engines": {
-    "node": "18.8.0"
+    "node": "20.11.0"
   },
   "jest": {
     "transformIgnorePatterns": [
@@ -162,8 +164,8 @@
     "workerDirectory": "public"
   },
   "volta": {
-    "node": "18.8.0",
-    "npm": "8.19.1"
+    "node": "20.11.0",
+    "npm": "10.4.0"
   },
   "overrides": {
     "react-refresh": "^0.12.0"

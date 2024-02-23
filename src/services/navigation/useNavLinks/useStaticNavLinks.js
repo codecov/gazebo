@@ -110,6 +110,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    termsOfService: {
+      text: 'Terms of Service',
+      path: () => `${config.MARKETING_BASE_URL}/terms-of-service`,
+      isExternalLink: true,
+      openNewTab: true,
+    },
     blog: {
       path: () => `${config.MARKETING_BASE_URL}/blog`,
       isExternalLink: true,
@@ -246,6 +252,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    bundleConfigFeedback: {
+      text: 'New bundle analysis set up feedback',
+      path: () => 'https://github.com/codecov/feedback/issues/270',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     missingComparisonCommit: {
       text: 'comparison commit troubleshooting',
       path: () =>
@@ -301,6 +313,39 @@ export function useStaticNavLinks() {
     feedback: {
       text: 'Feedback',
       path: () => 'https://github.com/codecov/feedback/discussions',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    nextJSCustomConfig: {
+      text: 'Next.js Custom Config',
+      path: () =>
+        'https://nextjs.org/docs/app/api-reference/next-config-js/webpack',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    quickStart: {
+      text: 'Quick Start',
+      path: () => 'https://docs.codecov.com/docs/quick-start',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    codecovExampleWorkflow: {
+      text: 'Github Codecov Example workflow',
+      path: () =>
+        'https://github.com/codecov/example-python/blob/main/.github/workflows/ci.yml',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    codecovActionRepo: {
+      text: 'Github Codecov Action Repo',
+      path: () => 'https://github.com/codecov/codecov-action',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    codecovYamlValidator: {
+      text: 'VSCode Yaml Validator Extension',
+      path: () =>
+        `https://marketplace.visualstudio.com/items?itemName=Codecov.codecov#:~:text=Codecov's%20official%20validator%20extension%20for,and%20configuration%20of%20new%20repositories.&text=Launch%20VS%20Code%20Quick%20Open,following%20command%2C%20and%20press%20enter.&text=Create%2C%20manage%2C%20and%20validate%20the,Code%20with%20our%20latest%20extension.`,
       isExternalLink: true,
       openNewTab: true,
     },

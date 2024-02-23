@@ -10,7 +10,6 @@ import GitHubActionsOrgToken from './GitHubActionsOrgToken'
 const mockGetRepo = {
   owner: {
     isCurrentUserPartOfOrg: true,
-    orgUploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629290',
     repository: {
       private: false,
       uploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629295',
@@ -21,6 +20,14 @@ const mockGetRepo = {
     },
   },
 }
+
+const mockGetOrgUploadToken = (hasOrgUploadToken: boolean | null) => ({
+  owner: {
+    orgUploadToken: hasOrgUploadToken
+      ? '9e6a6189-20f1-482d-ab62-ecfaa2629290'
+      : null,
+  },
+})
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -58,57 +65,131 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('GitHubActionsOrgToken', () => {
-  function setup() {
+  function setup(hasOrgUploadToken: boolean | null) {
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockGetRepo))
-      )
+      ),
+      graphql.query('GetOrgUploadToken', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data(mockGetOrgUploadToken(hasOrgUploadToken))
+        )
+      })
     )
   }
 
+  describe('intro blurb', () => {
+    beforeEach(() => setup(true))
+
+    it('renders intro blurb', async () => {
+      render(<GitHubActionsOrgToken />, { wrapper })
+
+      const blurb = await screen.findByTestId('intro-blurb')
+      expect(blurb).toBeInTheDocument()
+    })
+  })
+
   describe('step one', () => {
-    beforeEach(() => setup())
+    describe('when org upload token exists', () => {
+      beforeEach(() => setup(true))
 
-    it('renders header', async () => {
-      render(<GitHubActionsOrgToken />, { wrapper })
+      it('renders header', async () => {
+        render(<GitHubActionsOrgToken />, { wrapper })
 
-      const header = await screen.findByRole('heading', { name: /Step 1/ })
-      expect(header).toBeInTheDocument()
+        const header = await screen.findByRole('heading', { name: /Step 1/ })
+        expect(header).toBeInTheDocument()
 
-      const repositorySecretLink = await screen.findByRole('link', {
-        name: /repository secret/,
+        const repositorySecretLink = await screen.findByRole('link', {
+          name: /repository secret/,
+        })
+        expect(repositorySecretLink).toBeInTheDocument()
+        expect(repositorySecretLink).toHaveAttribute(
+          'href',
+          'https://github.com/codecov/cool-repo/settings/secrets/actions'
+        )
       })
-      expect(repositorySecretLink).toBeInTheDocument()
-      expect(repositorySecretLink).toHaveAttribute(
-        'href',
-        'https://github.com/codecov/cool-repo/settings/secrets/actions'
-      )
+
+      it('renders body', async () => {
+        render(<GitHubActionsOrgToken />, { wrapper })
+
+        const body = await screen.findByText(
+          /Admin required to access repo settings > secrets and variable > actions/
+        )
+        expect(body).toBeInTheDocument()
+      })
+
+      it('renders token box', async () => {
+        render(<GitHubActionsOrgToken />, { wrapper })
+
+        const codecovToken = await screen.findByText(/CODECOV_TOKEN=/)
+        expect(codecovToken).toBeInTheDocument()
+
+        const tokenValue = await screen.findByText(
+          /9e6a6189-20f1-482d-ab62-ecfaa2629290/
+        )
+        expect(tokenValue).toBeInTheDocument()
+      })
+
+      it('renders global token copy', async () => {
+        render(<GitHubActionsOrgToken />, { wrapper })
+
+        const globalToken = await screen.findByText(/global token/)
+        expect(globalToken).toBeInTheDocument()
+      })
     })
 
-    it('renders body', async () => {
-      render(<GitHubActionsOrgToken />, { wrapper })
+    describe('when org upload token does not exist', () => {
+      beforeEach(() => setup(false))
 
-      const body = await screen.findByText(
-        /Admin required to access repo settings > secrets and variable > actions/
-      )
-      expect(body).toBeInTheDocument()
-    })
+      it('renders header', async () => {
+        render(<GitHubActionsOrgToken />, { wrapper })
 
-    it('renders token box', async () => {
-      render(<GitHubActionsOrgToken />, { wrapper })
+        const header = await screen.findByRole('heading', { name: /Step 1/ })
+        expect(header).toBeInTheDocument()
 
-      const codecovToken = await screen.findByText(/CODECOV_TOKEN=/)
-      expect(codecovToken).toBeInTheDocument()
+        const repositorySecretLink = await screen.findByRole('link', {
+          name: /repository secret/,
+        })
+        expect(repositorySecretLink).toBeInTheDocument()
+        expect(repositorySecretLink).toHaveAttribute(
+          'href',
+          'https://github.com/codecov/cool-repo/settings/secrets/actions'
+        )
+      })
 
-      const tokenValue = await screen.findByText(
-        /9e6a6189-20f1-482d-ab62-ecfaa2629290/
-      )
-      expect(tokenValue).toBeInTheDocument()
+      it('renders body', async () => {
+        render(<GitHubActionsOrgToken />, { wrapper })
+
+        const body = await screen.findByText(
+          /Admin required to access repo settings > secrets and variable > actions/
+        )
+        expect(body).toBeInTheDocument()
+      })
+
+      it('renders token box', async () => {
+        render(<GitHubActionsOrgToken />, { wrapper })
+
+        const codecovToken = await screen.findByText(/CODECOV_TOKEN=/)
+        expect(codecovToken).toBeInTheDocument()
+
+        const tokenValue = await screen.findByText(
+          /9e6a6189-20f1-482d-ab62-ecfaa2629295/
+        )
+        expect(tokenValue).toBeInTheDocument()
+      })
+
+      it('renders repo token copy', async () => {
+        render(<GitHubActionsOrgToken />, { wrapper })
+
+        const globalToken = await screen.findByText(/repository token/)
+        expect(globalToken).toBeInTheDocument()
+      })
     })
   })
 
   describe('step two', () => {
-    beforeEach(() => setup())
+    beforeEach(() => setup(true))
 
     it('renders header', async () => {
       render(<GitHubActionsOrgToken />, { wrapper })
@@ -137,10 +218,24 @@ describe('GitHubActionsOrgToken', () => {
       )
       expect(yamlBox).toBeInTheDocument()
     })
+
+    it('renders the correct ci version', async () => {
+      render(<GitHubActionsOrgToken />, { wrapper })
+
+      const version = await screen.findByText(/v4.0.1/)
+      expect(version).toBeInTheDocument()
+    })
+
+    it('renders example blurb', async () => {
+      render(<GitHubActionsOrgToken />, { wrapper })
+
+      const blurb = await screen.findByTestId('example-blurb')
+      expect(blurb).toBeInTheDocument()
+    })
   })
 
   describe('step three', () => {
-    beforeEach(() => setup())
+    beforeEach(() => setup(true))
     it('renders first body', async () => {
       render(<GitHubActionsOrgToken />, { wrapper })
 
@@ -166,7 +261,16 @@ describe('GitHubActionsOrgToken', () => {
   })
 
   describe('ending', () => {
-    beforeEach(() => setup())
+    beforeEach(() => setup(true))
+    it('renders quick start link', async () => {
+      render(<GitHubActionsOrgToken />, { wrapper })
+
+      const link = await screen.findByRole('link', { name: /learn more/ })
+      expect(link).toHaveAttribute(
+        'href',
+        'https://docs.codecov.com/docs/quick-start'
+      )
+    })
     it('renders body', async () => {
       render(<GitHubActionsOrgToken />, { wrapper })
 

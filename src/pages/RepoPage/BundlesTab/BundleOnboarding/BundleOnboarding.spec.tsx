@@ -1,10 +1,47 @@
-import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, waitFor } from '@testing-library/react'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
+
+import { useRedirect } from 'shared/useRedirect'
 
 import BundleOnboarding from './BundleOnboarding'
 
+jest.mock('shared/useRedirect')
+const mockedUseRedirect = useRedirect as jest.Mock
+
 jest.mock('./ViteOnboarding', () => () => <div>ViteOnboarding</div>)
 jest.mock('./RollupOnboarding', () => () => <div>RollupOnboarding</div>)
+jest.mock('./WebpackOnboarding', () => () => <div>WebpackOnboarding</div>)
+
+const mockGetRepo = (hasUploadToken: boolean, isActive: boolean) => ({
+  owner: {
+    isCurrentUserPartOfOrg: true,
+    repository: {
+      private: false,
+      uploadToken: hasUploadToken
+        ? '9e6a6189-20f1-482d-ab62-ecfaa2629295'
+        : null,
+      defaultBranch: 'main',
+      yaml: '',
+      activated: false,
+      oldestCommitAt: '',
+      active: isActive,
+    },
+  },
+})
+
+const server = setupServer()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      suspense: true,
+    },
+  },
+})
 
 const wrapper =
   (
@@ -12,23 +49,65 @@ const wrapper =
   ): React.FC<React.PropsWithChildren> =>
   ({ children }) =>
     (
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route
-          path={[
-            '/:provider/:owner/:repo/bundles/new',
-            '/:provider/:owner/:repo/bundles/new/rollup',
-            '/:provider/:owner/:repo/bundles/new/webpack',
-          ]}
-        >
-          {children}
-        </Route>
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route
+            path={[
+              '/:provider/:owner/:repo/bundles/new',
+              '/:provider/:owner/:repo/bundles/new/rollup',
+              '/:provider/:owner/:repo/bundles/new/webpack',
+              '/:provider',
+            ]}
+          >
+            <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
     )
 
+beforeAll(() => {
+  server.listen()
+})
+
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
+
+interface SetupArgs {
+  hasCommits?: boolean
+  hasUploadToken?: boolean
+}
+
 describe('BundleOnboarding', () => {
+  function setup(
+    { hasCommits = false, hasUploadToken = false }: SetupArgs = {
+      hasCommits: false,
+      hasUploadToken: false,
+    }
+  ) {
+    const hardRedirect = jest.fn()
+    mockedUseRedirect.mockImplementation((data) => ({
+      hardRedirect: () => hardRedirect(data),
+    }))
+
+    server.use(
+      graphql.query('GetRepo', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(mockGetRepo(hasUploadToken, hasCommits)))
+      )
+    )
+
+    return { hardRedirect }
+  }
+
   describe('on /new route', () => {
     describe('rendering tabs', () => {
       it('renders selected vite tab', async () => {
+        setup({ hasCommits: true, hasUploadToken: true })
         render(<BundleOnboarding />, { wrapper: wrapper() })
 
         const viteTab = await screen.findByText('Vite')
@@ -37,6 +116,7 @@ describe('BundleOnboarding', () => {
       })
 
       it('renders rollup tab', async () => {
+        setup({ hasCommits: true, hasUploadToken: true })
         render(<BundleOnboarding />, { wrapper: wrapper() })
 
         const rollupTab = await screen.findByText('Rollup')
@@ -45,6 +125,7 @@ describe('BundleOnboarding', () => {
       })
 
       it('renders webpack tab', async () => {
+        setup({ hasCommits: true, hasUploadToken: true })
         render(<BundleOnboarding />, { wrapper: wrapper() })
 
         const webpackTab = await screen.findByText('Webpack')
@@ -55,9 +136,10 @@ describe('BundleOnboarding', () => {
 
     describe('rendering body', () => {
       it('renders vite onboarding', async () => {
+        setup({ hasCommits: true, hasUploadToken: true })
         render(<BundleOnboarding />, { wrapper: wrapper() })
 
-        const viteOnboarding = screen.getByText('ViteOnboarding')
+        const viteOnboarding = await screen.findByText('ViteOnboarding')
         expect(viteOnboarding).toBeInTheDocument()
       })
     })
@@ -65,7 +147,8 @@ describe('BundleOnboarding', () => {
 
   describe('on /new/rollup route', () => {
     describe('rendering tabs', () => {
-      it('renders selected vite tab', async () => {
+      it('renders vite tab', async () => {
+        setup({ hasCommits: true, hasUploadToken: true })
         render(<BundleOnboarding />, {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/rollup'),
         })
@@ -75,7 +158,8 @@ describe('BundleOnboarding', () => {
         expect(viteTab).not.toHaveAttribute('aria-current', 'page')
       })
 
-      it('renders rollup tab', async () => {
+      it('renders selected rollup tab', async () => {
+        setup({ hasCommits: true, hasUploadToken: true })
         render(<BundleOnboarding />, {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/rollup'),
         })
@@ -86,6 +170,7 @@ describe('BundleOnboarding', () => {
       })
 
       it('renders webpack tab', async () => {
+        setup({ hasCommits: true, hasUploadToken: true })
         render(<BundleOnboarding />, {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/rollup'),
         })
@@ -98,11 +183,12 @@ describe('BundleOnboarding', () => {
 
     describe('rendering body', () => {
       it('renders rollup onboarding', async () => {
+        setup({ hasCommits: true, hasUploadToken: true })
         render(<BundleOnboarding />, {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/rollup'),
         })
 
-        const rollupOnboarding = screen.queryByText('RollupOnboarding')
+        const rollupOnboarding = await screen.findByText('RollupOnboarding')
         expect(rollupOnboarding).toBeInTheDocument()
       })
     })
@@ -110,7 +196,8 @@ describe('BundleOnboarding', () => {
 
   describe('on /new/webpack route', () => {
     describe('rendering tabs', () => {
-      it('renders selected vite tab', async () => {
+      it('renders vite tab', async () => {
+        setup({ hasCommits: true, hasUploadToken: true })
         render(<BundleOnboarding />, {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/webpack'),
         })
@@ -121,6 +208,7 @@ describe('BundleOnboarding', () => {
       })
 
       it('renders rollup tab', async () => {
+        setup({ hasCommits: true, hasUploadToken: true })
         render(<BundleOnboarding />, {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/webpack'),
         })
@@ -130,7 +218,8 @@ describe('BundleOnboarding', () => {
         expect(rollupTab).not.toHaveAttribute('aria-current', 'page')
       })
 
-      it('renders webpack tab', async () => {
+      it('renders selected webpack tab', async () => {
+        setup({ hasCommits: true, hasUploadToken: true })
         render(<BundleOnboarding />, {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/webpack'),
         })
@@ -142,14 +231,32 @@ describe('BundleOnboarding', () => {
     })
 
     describe('rendering body', () => {
-      it('renders webpack onboarding', () => {
+      it('renders webpack onboarding', async () => {
+        setup({ hasCommits: true, hasUploadToken: true })
         render(<BundleOnboarding />, {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/webpack'),
         })
 
-        const webpackOnboarding = screen.queryByText('WebpackOnboarding')
-        expect(webpackOnboarding).not.toBeInTheDocument()
+        const webpackOnboarding = await screen.findByText('WebpackOnboarding')
+        expect(webpackOnboarding).toBeInTheDocument()
       })
+    })
+  })
+
+  describe('upload token is not present', () => {
+    it('redirects to provider', async () => {
+      const { hardRedirect } = setup({ hasUploadToken: false })
+      render(<BundleOnboarding />, { wrapper: wrapper() })
+
+      await waitFor(() => expect(hardRedirect).toBeCalled())
+    })
+
+    it('displays 404', async () => {
+      setup({ hasUploadToken: false })
+      render(<BundleOnboarding />, { wrapper: wrapper() })
+
+      const fourOhFour = await screen.findByText('Not found')
+      expect(fourOhFour).toBeInTheDocument()
     })
   })
 })
