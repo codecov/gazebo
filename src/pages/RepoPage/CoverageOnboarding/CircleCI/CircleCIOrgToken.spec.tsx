@@ -216,6 +216,13 @@ describe('CircleCIOrgToken', () => {
       const yamlCode = await screen.findByText(/codecov\/codecov@4.0.1/)
       expect(yamlCode).toBeInTheDocument()
     })
+
+    it('renders example blurb', async () => {
+      render(<CircleCIOrgToken />, { wrapper })
+
+      const blurb = await screen.findByTestId('example-blurb')
+      expect(blurb).toBeInTheDocument()
+    })
   })
 
   describe('step three', () => {

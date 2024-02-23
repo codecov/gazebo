@@ -7,6 +7,7 @@ import CopyClipboard from 'ui/CopyClipboard'
 
 import { InstructionBoxOrgToken } from './TerminalInstructions'
 
+import ExampleBlurb from '../ExampleBlurb'
 import IntroBlurb from '../IntroBlurb/IntroBlurb'
 
 interface URLParams {
@@ -49,6 +50,7 @@ function OtherCIOrgToken() {
         </h2>
         <InstructionBoxOrgToken />
       </div>
+      <ExampleBlurb />
       <div>
         <h3 className="text-base font-semibold">
           Step 3: upload coverage to Codecov via CLI after your tests have run
