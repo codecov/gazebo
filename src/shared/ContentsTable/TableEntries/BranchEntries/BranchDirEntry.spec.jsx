@@ -163,7 +163,7 @@ describe('BranchDirEntry', () => {
 
     await waitFor(() =>
       expect(queryClient.getQueryState().data).toStrictEqual({
-        __typename: 'PathContents',
+        __typename: undefined,
         indicationRange: {
           upperRange: 80,
           lowerRange: 60,
