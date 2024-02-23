@@ -5,10 +5,14 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { renderToast } from 'services/toast'
+import { useRedirect } from 'shared/useRedirect'
+
 
 import { useStartTrial } from './useStartTrial'
 
 jest.mock('services/toast')
+jest.mock('shared/useRedirect')
+const mockedUseRedirect = useRedirect as jest.Mock
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -48,6 +52,11 @@ describe('useStartTrial', () => {
   function setup({ isOtherError = false, isServerError = false }: SetupArgs) {
     const variablesPassed = jest.fn()
     const mockRenderToast = renderToast as jest.Mock
+    const mockSetItem = jest.spyOn(window.localStorage.__proto__, 'setItem')
+    const hardRedirect = jest.fn()
+    mockedUseRedirect.mockImplementation((data) => ({
+      hardRedirect: () => hardRedirect(data),
+    }))
 
     server.use(
       graphql.mutation('startTrial', (req, res, ctx) => {
@@ -70,7 +79,7 @@ describe('useStartTrial', () => {
       })
     )
 
-    return { variablesPassed, mockRenderToast }
+    return { variablesPassed, mockRenderToast, mockSetItem }
   }
 
   describe('calling mutation', () => {
@@ -89,36 +98,12 @@ describe('useStartTrial', () => {
         )
       })
 
-      it('triggers render toast', async () => {
-        const { mockRenderToast } = setup({})
-
+      it('sets user started trial localstorage', async () => {
+        const { mockSetItem } = setup({})
         const { result } = renderHook(() => useStartTrial(), { wrapper })
 
         result.current.mutate({ owner: 'codecov' })
-
-        await waitFor(() =>
-          expect(mockRenderToast).not.toBeCalledWith({
-            type: 'error',
-            title: 'Error starting trial',
-            content:
-              'Please try again. If the error persists please contact support',
-            options: {
-              duration: 10000,
-            },
-          })
-        )
-
-        await waitFor(() =>
-          expect(mockRenderToast).toBeCalledWith({
-            type: 'generic',
-            title: '14 day trial has started',
-            content: '',
-            options: {
-              duration: 5000,
-              position: 'bottom-left',
-            },
-          })
-        )
+        await waitFor(() => expect(mockSetItem).toHaveBeenCalled())
       })
     })
 
@@ -143,18 +128,6 @@ describe('useStartTrial', () => {
                 'Please try again. If the error persists please contact support',
               options: {
                 duration: 10000,
-              },
-            })
-          )
-
-          await waitFor(() =>
-            expect(mockRenderToast).not.toBeCalledWith({
-              type: 'generic',
-              title: '14 day trial has started',
-              content: '',
-              options: {
-                duration: 5000,
-                position: 'bottom-left',
               },
             })
           )

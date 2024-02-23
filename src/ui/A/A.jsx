@@ -114,6 +114,7 @@ A.propTypes = {
     'upDirectory',
     'black',
     'blueSeptenary',
+    'configure',
   ]),
   isExternal: PropTypes.bool,
 }
