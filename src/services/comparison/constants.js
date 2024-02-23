@@ -21,6 +21,7 @@ fragment ComparisonFragment on Comparison {
       }
       changeCoverage
       segments (filters: $filters) {
+        __typename
         ... on SegmentComparisons {
           results {
             header
@@ -37,6 +38,9 @@ fragment ComparisonFragment on Comparison {
               }
             }
           }
+        }
+        ... on UnknownPath {
+          message
         }
       }
     }

@@ -22,6 +22,7 @@ const mockData = {
       },
       commit: {
         pathContents: {
+          __typename: 'PathContents',
           results: [
             {
               name: 'file.ts',

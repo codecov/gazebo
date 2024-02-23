@@ -62,6 +62,7 @@ const mockNoHeadReport = {
     branch: {
       head: {
         pathContents: {
+          __typename: 'PathContents',
           results: [],
         },
         __typename: 'MissingHeadReport',

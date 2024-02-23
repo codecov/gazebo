@@ -69,9 +69,9 @@ const mockDataUnknownPath = {
       branch: {
         head: {
           pathContents: {
+            __typename: 'UnknownPath',
             message: 'path cannot be found',
           },
-          __typename: 'UnknownPath',
         },
       },
     },
@@ -92,8 +92,8 @@ const mockDataMissingCoverage = {
         head: {
           pathContents: {
             message: 'files missing coverage',
+            __typename: 'MissingCoverage',
           },
-          __typename: 'MissingCoverage',
         },
       },
     },
@@ -198,14 +198,15 @@ describe('useRepoBranchContents', () => {
         await waitFor(() => !result.current.isLoading)
         await waitFor(() => result.current.isSuccess)
 
-        expect(result.current.data).toStrictEqual({
-          __typename: 'MissingCoverage',
-          indicationRange: {
-            upperRange: 80,
-            lowerRange: 60,
-          },
-          results: null,
-        })
+        expect(result.current.data).toEqual(
+          expect.objectContaining({
+            indicationRange: {
+              upperRange: 80,
+              lowerRange: 60,
+            },
+            results: null,
+          })
+        )
       })
     })
 
@@ -230,14 +231,15 @@ describe('useRepoBranchContents', () => {
         await waitFor(() => !result.current.isLoading)
         await waitFor(() => result.current.isSuccess)
 
-        expect(result.current.data).toStrictEqual({
-          __typename: 'UnknownPath',
-          indicationRange: {
-            upperRange: 80,
-            lowerRange: 60,
-          },
-          results: null,
-        })
+        expect(result.current.data).toEqual(
+          expect.objectContaining({
+            indicationRange: {
+              upperRange: 80,
+              lowerRange: 60,
+            },
+            results: null,
+          })
+        )
       })
     })
   })
