@@ -19,7 +19,7 @@ const mockRepoOverview = {
   },
 }
 
-const mockBranchBundleSummary = {
+const mockBranchBundles = {
   owner: {
     repository: {
       __typename: 'Repository',
@@ -116,7 +116,7 @@ describe('useBranchBundlesNames', () => {
           return res(ctx.status(200), ctx.data(mockNullOwner))
         }
 
-        return res(ctx.status(200), ctx.data(mockBranchBundleSummary))
+        return res(ctx.status(200), ctx.data(mockBranchBundles))
       }),
       graphql.query('GetRepoOverview', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockRepoOverview))
