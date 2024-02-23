@@ -7,7 +7,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api/api'
-import { type NetworkErrorObject } from 'shared/api/helpers'
+import type { NetworkErrorObject } from 'shared/api/helpers'
 import A from 'ui/A'
 
 const BundleDataSchema = z.object({
