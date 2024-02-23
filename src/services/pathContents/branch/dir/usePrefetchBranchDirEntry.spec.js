@@ -58,12 +58,62 @@ const mockData = {
   },
 }
 
+const mockDataUnknownPath = {
+  owner: {
+    username: 'codecov',
+    repository: {
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          pathContents: {
+            message: 'path cannot be found',
+          },
+          __typename: 'UnknownPath',
+        },
+      },
+    },
+  },
+}
+
+const mockDataMissingCoverage = {
+  owner: {
+    username: 'codecov',
+    repository: {
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          pathContents: {
+            message: 'files missing coverage',
+          },
+          __typename: 'MissingCoverage',
+        },
+      },
+    },
+  },
+}
+
 describe('usePrefetchBranchDirEntry', () => {
-  function setup() {
+  function setup(isMissingCoverage = false, isUnknownPath = false) {
     server.use(
-      graphql.query('BranchContents', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockData))
-      )
+      graphql.query('BranchContents', (req, res, ctx) => {
+        if (isMissingCoverage) {
+          return res(ctx.status(200), ctx.data(mockDataMissingCoverage))
+        }
+        if (isUnknownPath) {
+          return res(ctx.status(200), ctx.data(mockDataUnknownPath))
+        }
+        return res(ctx.status(200), ctx.data(mockData))
+      })
     )
   }
 
@@ -109,6 +159,52 @@ describe('usePrefetchBranchDirEntry', () => {
           partials: 1,
         },
       ],
+    })
+  })
+
+  describe('on missing coverage', () => {
+    it('returns no results', async () => {
+      setup(true)
+      const { result } = renderHook(
+        () => usePrefetchBranchDirEntry({ branch: 'main', path: 'src' }),
+        { wrapper }
+      )
+
+      await result.current.runPrefetch()
+      await waitFor(() => queryClient.getQueryState().isFetching)
+      await waitFor(() => !queryClient.getQueryState().isFetching)
+
+      expect(queryClient.getQueryState().data).toStrictEqual({
+        __typename: 'MissingCoverage',
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+        results: null,
+      })
+    })
+  })
+
+  describe('on unknown path', () => {
+    it('returns no results', async () => {
+      setup(false, true)
+      const { result } = renderHook(
+        () => usePrefetchBranchDirEntry({ branch: 'main', path: 'src' }),
+        { wrapper }
+      )
+
+      await result.current.runPrefetch()
+      await waitFor(() => queryClient.getQueryState().isFetching)
+      await waitFor(() => !queryClient.getQueryState().isFetching)
+
+      expect(queryClient.getQueryState().data).toStrictEqual({
+        __typename: 'UnknownPath',
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+        results: null,
+      })
     })
   })
 })

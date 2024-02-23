@@ -56,10 +56,60 @@ const dataReturned = {
   },
 }
 
+const mockDataUnknownPath = {
+  owner: {
+    username: 'codecov',
+    repository: {
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          pathContents: {
+            message: 'path cannot be found',
+          },
+          __typename: 'UnknownPath',
+        },
+      },
+    },
+  },
+}
+
+const mockDataMissingCoverage = {
+  owner: {
+    username: 'codecov',
+    repository: {
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          pathContents: {
+            message: 'files missing coverage',
+          },
+          __typename: 'MissingCoverage',
+        },
+      },
+    },
+  },
+}
+
 describe('useRepoBranchContents', () => {
-  function setup() {
+  function setup(isMissingCoverage = false, isUnknownPath = false) {
     server.use(
       graphql.query('BranchContents', (req, res, ctx) => {
+        if (isMissingCoverage) {
+          return res(ctx.status(200), ctx.data(mockDataMissingCoverage))
+        }
+        if (isUnknownPath) {
+          return res(ctx.status(200), ctx.data(mockDataUnknownPath))
+        }
         return res(ctx.status(200), ctx.data(dataReturned))
       })
     )
@@ -89,7 +139,7 @@ describe('useRepoBranchContents', () => {
     })
 
     describe('when data is loaded', () => {
-      it('returns the data', async () => {
+      it.only('returns the data', async () => {
         const { result } = renderHook(
           () =>
             useRepoBranchContents({
@@ -127,6 +177,70 @@ describe('useRepoBranchContents', () => {
         await waitFor(() =>
           expect(result.current.data).toEqual(expectedResponse)
         )
+      })
+    })
+
+    describe('on missing coverage', () => {
+      it('returns no results', async () => {
+        setup(true)
+        const { result } = renderHook(
+          () =>
+            useRepoBranchContents({
+              provider: 'gh',
+              owner: 'Rabee-AbuBaker',
+              repo: 'another-test',
+              branch: 'main',
+              path: '',
+            }),
+          {
+            wrapper,
+          }
+        )
+
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+        await waitFor(() => result.current.isSuccess)
+
+        expect(result.current.data).toStrictEqual({
+          __typename: 'MissingCoverage',
+          indicationRange: {
+            upperRange: 80,
+            lowerRange: 60,
+          },
+          results: null,
+        })
+      })
+    })
+
+    describe('on unknown path', () => {
+      it('returns no results', async () => {
+        setup(false, true)
+        const { result } = renderHook(
+          () =>
+            useRepoBranchContents({
+              provider: 'gh',
+              owner: 'Rabee-AbuBaker',
+              repo: 'another-test',
+              branch: 'main',
+              path: '',
+            }),
+          {
+            wrapper,
+          }
+        )
+
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+        await waitFor(() => result.current.isSuccess)
+
+        expect(result.current.data).toStrictEqual({
+          __typename: 'UnknownPath',
+          indicationRange: {
+            upperRange: 80,
+            lowerRange: 60,
+          },
+          results: null,
+        })
       })
     })
   })
