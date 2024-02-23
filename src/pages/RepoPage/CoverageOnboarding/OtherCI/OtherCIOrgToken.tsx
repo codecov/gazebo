@@ -8,6 +8,7 @@ import CopyClipboard from 'ui/CopyClipboard'
 import { InstructionBoxOrgToken } from './TerminalInstructions'
 
 import ExampleBlurb from '../ExampleBlurb'
+import IntroBlurb from '../IntroBlurb/IntroBlurb'
 
 interface URLParams {
   provider: string
@@ -25,6 +26,7 @@ function OtherCIOrgToken() {
 
   return (
     <div className="flex flex-col gap-6">
+      <IntroBlurb />
       <div className="flex flex-col gap-3">
         <h2 className="text-base font-semibold">
           Step 1: add {tokenCopy} token as a secret to your CI Provider

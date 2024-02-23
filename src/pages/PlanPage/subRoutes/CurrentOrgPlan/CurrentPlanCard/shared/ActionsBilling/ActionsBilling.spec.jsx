@@ -6,8 +6,11 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
+import { useRedirect } from 'shared/useRedirect'
 
 import ActionsBilling from './ActionsBilling'
+
+jest.mock('shared/useRedirect')
 
 const allPlans = [
   {
@@ -192,6 +195,10 @@ describe('Actions Billing', () => {
   ) {
     const user = userEvent.setup()
     const mockMutationVars = jest.fn()
+    const hardRedirect = jest.fn()
+    useRedirect.mockImplementation((data) => ({
+      hardRedirect: () => hardRedirect(data),
+    }))
 
     server.use(
       rest.get('/internal/gh/critical-role/account-details/', (req, res, ctx) =>
@@ -209,7 +216,7 @@ describe('Actions Billing', () => {
       })
     )
 
-    return { mockMutationVars, user }
+    return { mockMutationVars, user, hardRedirect }
   }
 
   describe('rendering component', () => {
@@ -527,6 +534,29 @@ describe('Actions Billing', () => {
               })
             )
           })
+        })
+
+        it('redirects to the home page', async () => {
+          const { user, hardRedirect } = setup({
+            accountDetails: mockedFreeAccountDetails,
+            plans: sentryPlans,
+            trialPlanData: {
+              hasPrivateRepos: true,
+              plan: {
+                ...mockTrialData.plan,
+                trialStatus: TrialStatuses.NOT_STARTED,
+              },
+            },
+          })
+          render(<ActionsBilling />, { wrapper })
+
+          const startTrialBtn = await screen.findByRole('button', {
+            name: /Start trial/,
+          })
+          expect(startTrialBtn).toBeInTheDocument()
+
+          await user.click(startTrialBtn)
+          await waitFor(() => expect(hardRedirect).toHaveBeenCalled())
         })
       })
 

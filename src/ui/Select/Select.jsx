@@ -164,7 +164,7 @@ const Select = forwardRef(
             className={cs(SelectClasses.button, ButtonVariantClass[variant])}
             {...getToggleButtonProps()}
           >
-            <span className="inline-flex items-center gap-1">
+            <span className="inline-flex items-center gap-1 overflow-hidden">
               {buttonIcon}
               {renderButton()}
             </span>

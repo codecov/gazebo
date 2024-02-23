@@ -79,6 +79,17 @@ describe('CircleCIOrgToken', () => {
     )
   }
 
+  describe('intro blurb', () => {
+    beforeEach(() => setup(true))
+
+    it('renders intro blurb', async () => {
+      render(<CircleCIOrgToken />, { wrapper })
+
+      const blurb = await screen.findByTestId('intro-blurb')
+      expect(blurb).toBeInTheDocument()
+    })
+  })
+
   describe('step one', () => {
     describe('when org upload token exists', () => {
       beforeEach(() => setup(true))

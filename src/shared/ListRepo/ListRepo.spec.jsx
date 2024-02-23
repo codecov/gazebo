@@ -91,7 +91,7 @@ describe('ListRepo', () => {
         wrapper: wrapper(),
       })
 
-      expect(screen.getByText(/Inactive/)).toBeInTheDocument()
+      expect(screen.getByText(/Not Configured/)).toBeInTheDocument()
     })
 
     it('renders the repo table', () => {
@@ -118,7 +118,7 @@ describe('ListRepo', () => {
     })
   })
 
-  describe('switches active/inactive/all repos', () => {
+  describe('switches Configured/Not Configured/All repos', () => {
     it('switches to active repos', async () => {
       const { user } = setup()
       render(<ListRepo canRefetch />, {
@@ -126,30 +126,31 @@ describe('ListRepo', () => {
       })
 
       const button = screen.getByRole('button', {
-        name: /Active/,
+        name: 'Configured',
+        exact: true,
       })
       await user.click(button)
       expect(testLocation.state.repoDisplay).toEqual(
-        expect.stringContaining('Active')
+        expect.stringMatching('Configured')
       )
     })
 
-    it('switches to inactive repos', async () => {
+    it('switches to Not Configured repos', async () => {
       const { user } = setup()
       render(<ListRepo canRefetch />, {
         wrapper: wrapper({ url: '/gh', path: '/:provider' }),
       })
 
       const button = screen.getByRole('button', {
-        name: /Inactive/,
+        name: /Not Configured/,
       })
       await user.click(button)
       expect(testLocation.state.repoDisplay).toEqual(
-        expect.stringContaining('Inactive')
+        expect.stringContaining('Not Configured')
       )
     })
 
-    it('switches to active repos owner page', async () => {
+    it('switches to Configured repos owner page', async () => {
       const { user } = setup()
       render(<ListRepo canRefetch />, {
         wrapper: wrapper({
@@ -158,11 +159,12 @@ describe('ListRepo', () => {
         }),
       })
       const button = screen.getByRole('button', {
-        name: /Active/,
+        name: 'Configured',
+        exact: true,
       })
       await user.click(button)
       expect(testLocation.state.repoDisplay).toEqual(
-        expect.stringContaining('Active')
+        expect.stringMatching('Configured')
       )
     })
 

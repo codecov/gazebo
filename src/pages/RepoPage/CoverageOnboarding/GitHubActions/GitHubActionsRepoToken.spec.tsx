@@ -66,6 +66,17 @@ describe('GitHubActions', () => {
     )
   }
 
+  describe('intro blurb', () => {
+    beforeEach(() => setup())
+
+    it('renders intro blurb', async () => {
+      render(<GitHubActionsRepoToken />, { wrapper })
+
+      const blurb = await screen.findByTestId('intro-blurb')
+      expect(blurb).toBeInTheDocument()
+    })
+  })
+
   describe('step one', () => {
     beforeEach(() => setup())
 

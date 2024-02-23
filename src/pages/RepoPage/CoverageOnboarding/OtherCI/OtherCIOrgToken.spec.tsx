@@ -79,6 +79,17 @@ describe('OtherCIOrgToken', () => {
     return { user }
   }
 
+  describe('intro blurb', () => {
+    beforeEach(() => setup())
+
+    it('renders intro blurb', async () => {
+      render(<OtherCIOrgToken />, { wrapper })
+
+      const blurb = await screen.findByTestId('intro-blurb')
+      expect(blurb).toBeInTheDocument()
+    })
+  })
+
   describe('step one', () => {
     describe('when org has upload token', () => {
       beforeEach(() => setup())
