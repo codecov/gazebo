@@ -17,6 +17,7 @@ export const query = `
         }
         commit(id: $commit) {
           pathContents(path: $path, filters: $filters) {
+            __typename
             ... on PathContents {
               results {
                 __typename

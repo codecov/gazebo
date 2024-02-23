@@ -27,7 +27,7 @@ function fetchRepoContents({
   }).then((res) => {
     let results
     if (
-      res?.data?.owner?.repository?.branch?.head?.pathContents.__typename ===
+      res?.data?.owner?.repository?.branch?.head?.pathContents?.__typename ===
       'PathContents'
     ) {
       results =

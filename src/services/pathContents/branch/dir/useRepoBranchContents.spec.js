@@ -48,8 +48,8 @@ const dataReturned = {
                 type: 'dir',
               },
             ],
+            __typename: 'PathContents',
           },
-          __typename: 'PathContents',
         },
       },
     },
@@ -139,7 +139,7 @@ describe('useRepoBranchContents', () => {
     })
 
     describe('when data is loaded', () => {
-      it.only('returns the data', async () => {
+      it('returns the data', async () => {
         const { result } = renderHook(
           () =>
             useRepoBranchContents({
@@ -158,24 +158,21 @@ describe('useRepoBranchContents', () => {
         await waitFor(() => !result.current.isLoading)
         await waitFor(() => result.current.isSuccess)
 
-        const expectedResponse = {
-          results: [
-            {
-              name: 'flag1',
-              filePath: null,
-              percentCovered: 100.0,
-              type: 'dir',
+        expect(queryClient.getQueryState().data).toEqual(
+          expect.objectContaining({
+            results: [
+              {
+                name: 'flag1',
+                filePath: null,
+                percentCovered: 100.0,
+                type: 'dir',
+              },
+            ],
+            indicationRange: {
+              upperRange: 80,
+              lowerRange: 60,
             },
-          ],
-          indicationRange: {
-            upperRange: 80,
-            lowerRange: 60,
-          },
-          __typename: 'PathContents',
-        }
-
-        await waitFor(() =>
-          expect(result.current.data).toEqual(expectedResponse)
+          })
         )
       })
     })

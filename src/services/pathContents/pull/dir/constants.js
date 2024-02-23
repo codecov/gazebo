@@ -18,6 +18,7 @@ export const query = `
           head {
             commitid
             pathContents(path: $path, filters: $filters) {
+              __typename
               ... on PathContents {
                 results {
                   __typename
@@ -32,9 +33,11 @@ export const query = `
                     isCriticalFile
                   }
                 }
-                __typename
               }
               ... on UnknownPath {
+                message
+              }
+              ... on MissingCoverage {
                 message
               }
             }
