@@ -3,7 +3,7 @@ import A from 'ui/A'
 const ExampleBlurb = () => {
   return (
     <div data-testid="example-blurb">
-      &#128193; See example{' '}
+      &#128193; See an example{' '}
       <A
         to={{ pageName: 'codecovExampleWorkflow' }}
         isExternal
