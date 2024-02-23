@@ -1,7 +1,7 @@
 import { forwardRef, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
-import { useBranchBundlesNames } from 'services/branches/useBranchBundlesNames'
+import { useBranchBundlesNames } from 'services/bundleAnalysis'
 import { useNavLinks } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import Select from 'ui/Select'

@@ -7,6 +7,9 @@ import CopyClipboard from 'ui/CopyClipboard'
 
 import { InstructionBoxRepoToken } from './TerminalInstructions'
 
+import ExampleBlurb from '../ExampleBlurb'
+import IntroBlurb from '../IntroBlurb/IntroBlurb'
+
 interface URLParams {
   provider: string
   owner: string
@@ -19,6 +22,7 @@ function OtherCIRepoToken() {
 
   return (
     <div className="flex flex-col gap-6">
+      <IntroBlurb />
       <div className="flex flex-col gap-3">
         <h2 className="text-base font-semibold">
           Step 1: add repository token as a secret to your CI Provider
@@ -57,6 +61,7 @@ function OtherCIRepoToken() {
           </p>
         </div>
       </div>
+      <ExampleBlurb />
       <div>
         <p>
           After you committed your changes and ran the repo&apos;s CI/CD

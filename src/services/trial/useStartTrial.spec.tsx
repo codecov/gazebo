@@ -7,7 +7,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { renderToast } from 'services/toast'
 import { useRedirect } from 'shared/useRedirect'
 
-
 import { useStartTrial } from './useStartTrial'
 
 jest.mock('services/toast')

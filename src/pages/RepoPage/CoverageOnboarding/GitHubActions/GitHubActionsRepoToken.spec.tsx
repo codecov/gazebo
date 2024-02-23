@@ -66,6 +66,17 @@ describe('GitHubActions', () => {
     )
   }
 
+  describe('intro blurb', () => {
+    beforeEach(() => setup())
+
+    it('renders intro blurb', async () => {
+      render(<GitHubActionsRepoToken />, { wrapper })
+
+      const blurb = await screen.findByTestId('intro-blurb')
+      expect(blurb).toBeInTheDocument()
+    })
+  })
+
   describe('step one', () => {
     beforeEach(() => setup())
 
@@ -136,6 +147,13 @@ describe('GitHubActions', () => {
         /Upload coverage reports to Codecov/
       )
       expect(yamlBox).toBeInTheDocument()
+    })
+
+    it('renders example blurb', async () => {
+      render(<GitHubActionsRepoToken />, { wrapper })
+
+      const blurb = await screen.findByTestId('example-blurb')
+      expect(blurb).toBeInTheDocument()
     })
   })
 

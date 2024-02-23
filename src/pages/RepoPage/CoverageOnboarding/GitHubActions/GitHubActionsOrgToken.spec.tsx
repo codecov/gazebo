@@ -79,6 +79,17 @@ describe('GitHubActionsOrgToken', () => {
     )
   }
 
+  describe('intro blurb', () => {
+    beforeEach(() => setup(true))
+
+    it('renders intro blurb', async () => {
+      render(<GitHubActionsOrgToken />, { wrapper })
+
+      const blurb = await screen.findByTestId('intro-blurb')
+      expect(blurb).toBeInTheDocument()
+    })
+  })
+
   describe('step one', () => {
     describe('when org upload token exists', () => {
       beforeEach(() => setup(true))
@@ -213,6 +224,13 @@ describe('GitHubActionsOrgToken', () => {
 
       const version = await screen.findByText(/v4.0.1/)
       expect(version).toBeInTheDocument()
+    })
+
+    it('renders example blurb', async () => {
+      render(<GitHubActionsOrgToken />, { wrapper })
+
+      const blurb = await screen.findByTestId('example-blurb')
+      expect(blurb).toBeInTheDocument()
     })
   })
 

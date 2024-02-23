@@ -1,7 +1,6 @@
 import { useEffect, useLayoutEffect } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
-
 import NotFound from 'pages/NotFound'
 import { useOwnerPageData } from 'pages/OwnerPage/hooks'
 import { useSentryToken } from 'services/account'
