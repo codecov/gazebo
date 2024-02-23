@@ -1,7 +1,7 @@
 import isString from 'lodash/isString'
 import { useParams } from 'react-router-dom'
 
-import { useBranchBundleSummary } from 'services/branches'
+import { useBranchBundleSummary } from 'services/bundleAnalysis'
 import { formatSizeToString } from 'shared/utils/bundleAnalysis'
 import A from 'ui/A'
 
