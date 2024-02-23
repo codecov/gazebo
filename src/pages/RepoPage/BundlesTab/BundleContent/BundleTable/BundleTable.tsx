@@ -10,7 +10,7 @@ import isEmpty from 'lodash/isEmpty'
 import { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useBranchBundleSummary } from 'services/branches'
+import { useBranchBundleSummary } from 'services/bundleAnalysis'
 import {
   formatSizeToString,
   formatTimeToStringDeprecated,
