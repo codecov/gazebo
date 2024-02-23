@@ -10,10 +10,10 @@ import RepoOrgNotFound from './RepoOrgNotFound'
 const optionButtonOptions = [
   { text: 'All' },
   {
-    text: 'Active',
+    text: 'Configured',
   },
   {
-    text: 'Inactive',
+    text: 'Not Configured',
   },
 ]
 
