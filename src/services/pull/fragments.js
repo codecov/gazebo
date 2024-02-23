@@ -212,7 +212,6 @@ fragment FileComparisonWithBase on Pull {
         }
         changeCoverage
         segments(filters: $filters) {
-          __typename
           ... on SegmentComparisons {
             results {
               header
@@ -229,9 +228,6 @@ fragment FileComparisonWithBase on Pull {
                 }
               }
             }
-          }
-          ... on UnknownPath {
-            message
           }
         }
       }
