@@ -20,6 +20,7 @@ const mockData = {
       branch: {
         head: {
           pathContents: {
+            __typename: 'PathContents',
             results: [
               {
                 __typename: 'PathContentDir',
@@ -33,7 +34,6 @@ const mockData = {
               },
             ],
           },
-          __typename: 'PathContents',
         },
       },
     },
