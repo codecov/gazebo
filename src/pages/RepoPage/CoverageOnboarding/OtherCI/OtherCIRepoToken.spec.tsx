@@ -63,6 +63,17 @@ describe('OtherCI', () => {
     return { user }
   }
 
+  describe('intro blurb', () => {
+    beforeEach(() => setup())
+
+    it('renders intro blurb', async () => {
+      render(<OtherCIRepoToken />, { wrapper })
+
+      const blurb = await screen.findByTestId('intro-blurb')
+      expect(blurb).toBeInTheDocument()
+    })
+  })
+
   describe('step one', () => {
     beforeEach(() => setup())
 

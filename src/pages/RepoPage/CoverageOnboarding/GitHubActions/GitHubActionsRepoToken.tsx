@@ -5,6 +5,8 @@ import { useRepo } from 'services/repo'
 import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
 
+import IntroBlurb from '../IntroBlurb/IntroBlurb'
+
 const codecovActionString = `- name: Upload coverage reports to Codecov
   uses: codecov/codecov-action@v3
   with:
@@ -24,6 +26,7 @@ function GitHubActionsRepoToken() {
 
   return (
     <div className="flex flex-col gap-6">
+      <IntroBlurb />
       <div className="flex flex-col gap-4">
         <div>
           <h2 className="text-base font-semibold">
