@@ -36,8 +36,8 @@ export function usePrefetchBranchDirEntry({ branch, path, filters }) {
         }).then((res) => {
           let results
           if (
-            res?.data?.owner?.repository?.branch?.head?.__typename ===
-            'PathContents'
+            res?.data?.owner?.repository?.branch?.head?.pathContents
+              ?.__typename === 'PathContents'
           ) {
             results =
               res?.data?.owner?.repository?.branch?.head?.pathContents?.results

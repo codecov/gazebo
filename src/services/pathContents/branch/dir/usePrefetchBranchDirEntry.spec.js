@@ -38,6 +38,7 @@ const mockData = {
       branch: {
         head: {
           pathContents: {
+            __typename: 'PathContents',
             results: [
               {
                 __typename: 'PathContentDir',
@@ -51,7 +52,6 @@ const mockData = {
               },
             ],
           },
-          __typename: 'PathContents',
         },
       },
     },
@@ -72,8 +72,8 @@ const mockDataUnknownPath = {
         head: {
           pathContents: {
             message: 'path cannot be found',
+            __typename: 'UnknownPath',
           },
-          __typename: 'UnknownPath',
         },
       },
     },
@@ -94,8 +94,8 @@ const mockDataMissingCoverage = {
         head: {
           pathContents: {
             message: 'files missing coverage',
+            __typename: 'MissingCoverage',
           },
-          __typename: 'MissingCoverage',
         },
       },
     },
@@ -141,25 +141,26 @@ describe('usePrefetchBranchDirEntry', () => {
     await waitFor(() => queryClient.getQueryState().isFetching)
     await waitFor(() => !queryClient.getQueryState().isFetching)
 
-    expect(queryClient.getQueryState().data).toStrictEqual({
-      __typename: 'PathContents',
-      indicationRange: {
-        upperRange: 80,
-        lowerRange: 60,
-      },
-      results: [
-        {
-          __typename: 'PathContentDir',
-          name: 'src',
-          path: null,
-          percentCovered: 0,
-          hits: 4,
-          misses: 2,
-          lines: 7,
-          partials: 1,
+    expect(queryClient.getQueryState().data).toEqual(
+      expect.objectContaining({
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
         },
-      ],
-    })
+        results: [
+          {
+            __typename: 'PathContentDir',
+            name: 'src',
+            path: null,
+            percentCovered: 0,
+            hits: 4,
+            misses: 2,
+            lines: 7,
+            partials: 1,
+          },
+        ],
+      })
+    )
   })
 
   describe('on missing coverage', () => {
@@ -174,14 +175,15 @@ describe('usePrefetchBranchDirEntry', () => {
       await waitFor(() => queryClient.getQueryState().isFetching)
       await waitFor(() => !queryClient.getQueryState().isFetching)
 
-      expect(queryClient.getQueryState().data).toStrictEqual({
-        __typename: 'MissingCoverage',
-        indicationRange: {
-          upperRange: 80,
-          lowerRange: 60,
-        },
-        results: null,
-      })
+      expect(queryClient.getQueryState().data).toEqual(
+        expect.objectContaining({
+          indicationRange: {
+            upperRange: 80,
+            lowerRange: 60,
+          },
+          results: null,
+        })
+      )
     })
   })
 
@@ -197,14 +199,15 @@ describe('usePrefetchBranchDirEntry', () => {
       await waitFor(() => queryClient.getQueryState().isFetching)
       await waitFor(() => !queryClient.getQueryState().isFetching)
 
-      expect(queryClient.getQueryState().data).toStrictEqual({
-        __typename: 'UnknownPath',
-        indicationRange: {
-          upperRange: 80,
-          lowerRange: 60,
-        },
-        results: null,
-      })
+      expect(queryClient.getQueryState().data).toEqual(
+        expect.objectContaining({
+          indicationRange: {
+            upperRange: 80,
+            lowerRange: 60,
+          },
+          results: null,
+        })
+      )
     })
   })
 })

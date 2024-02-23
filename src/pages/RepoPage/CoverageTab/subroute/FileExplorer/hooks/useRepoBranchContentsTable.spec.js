@@ -20,6 +20,7 @@ const mockCommitContentData = {
       branch: {
         head: {
           pathContents: {
+            __typename: 'PathContents',
             results: [
               {
                 name: 'src',
@@ -54,7 +55,10 @@ const mockCommitNoContentData = {
       },
       branch: {
         head: {
-          pathContents: { results: [] },
+          pathContents: {
+            __typename: 'PathContents',
+            results: [],
+          },
         },
       },
     },
