@@ -79,6 +79,17 @@ describe('OtherCIOrgToken', () => {
     return { user }
   }
 
+  describe('intro blurb', () => {
+    beforeEach(() => setup())
+
+    it('renders intro blurb', async () => {
+      render(<OtherCIOrgToken />, { wrapper })
+
+      const blurb = await screen.findByTestId('intro-blurb')
+      expect(blurb).toBeInTheDocument()
+    })
+  })
+
   describe('step one', () => {
     describe('when org has upload token', () => {
       beforeEach(() => setup())
@@ -139,31 +150,38 @@ describe('OtherCIOrgToken', () => {
         })
       })
     })
+  })
 
-    describe('step two', () => {
-      it('renders header', async () => {
-        setup()
-        render(<OtherCIOrgToken />, { wrapper })
+  describe('step two', () => {
+    it('renders header', async () => {
+      setup()
+      render(<OtherCIOrgToken />, { wrapper })
 
-        const header = await screen.findByText(/Step 2/)
-        expect(header).toBeInTheDocument()
+      const header = await screen.findByText(/Step 2/)
+      expect(header).toBeInTheDocument()
 
-        const headerLink = await screen.findByRole('link', {
-          name: /uploader to your/,
-        })
-        expect(headerLink).toBeInTheDocument()
-        expect(headerLink).toHaveAttribute(
-          'href',
-          'https://docs.codecov.com/docs/codecov-uploader'
-        )
+      const headerLink = await screen.findByRole('link', {
+        name: /uploader to your/,
       })
+      expect(headerLink).toBeInTheDocument()
+      expect(headerLink).toHaveAttribute(
+        'href',
+        'https://docs.codecov.com/docs/codecov-uploader'
+      )
+    })
 
-      it('renders instruction box', async () => {
-        render(<OtherCIOrgToken />, { wrapper })
+    it('renders instruction box', async () => {
+      render(<OtherCIOrgToken />, { wrapper })
 
-        const box = await screen.findByTestId('instruction-box')
-        expect(box).toBeInTheDocument()
-      })
+      const box = await screen.findByTestId('instruction-box')
+      expect(box).toBeInTheDocument()
+    })
+
+    it('renders example blurb', async () => {
+      render(<OtherCIOrgToken />, { wrapper })
+
+      const blurb = await screen.findByTestId('example-blurb')
+      expect(blurb).toBeInTheDocument()
     })
   })
 

@@ -8,7 +8,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { TrialStatuses } from 'services/account'
 import { useRedirect } from 'shared/useRedirect'
 
-
 import ActionsBilling from './ActionsBilling'
 
 jest.mock('shared/useRedirect')
