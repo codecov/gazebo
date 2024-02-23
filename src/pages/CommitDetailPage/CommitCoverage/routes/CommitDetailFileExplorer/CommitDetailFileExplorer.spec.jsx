@@ -136,11 +136,11 @@ afterAll(() => {
 })
 
 describe('CommitDetailFileExplorer', () => {
-  function setup(
+  function setup({
     noFiles = false,
     missingCoverage = false,
-    unknownPath = false
-  ) {
+    unknownPath = false,
+  } = {}) {
     const user = userEvent.setup()
     const requestFilters = jest.fn()
 
@@ -324,7 +324,7 @@ describe('CommitDetailFileExplorer', () => {
     })
 
     describe('there is no results found', () => {
-      beforeEach(() => setup(true))
+      beforeEach(() => setup({ noFiles: true }))
 
       it('displays error fetching data message', async () => {
         render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
@@ -339,7 +339,7 @@ describe('CommitDetailFileExplorer', () => {
 
   describe('commit contents returns unknown path', () => {
     it('renders unknown path message', async () => {
-      setup(false, true, false)
+      setup({ missingCoverage: true })
       render(<CommitDetailFileExplorer />, {
         wrapper: wrapper([
           '/gh/codecov/cool-repo/commit/sha256/tree/a/b/c?displayType=list',
@@ -353,7 +353,7 @@ describe('CommitDetailFileExplorer', () => {
 
   describe('commit contents has missing coverage', () => {
     it('renders the missing coverage message', async () => {
-      setup(false, false, true)
+      setup({ unknownPath: true })
       render(<CommitDetailFileExplorer />, {
         wrapper: wrapper([
           '/gh/codecov/cool-repo/commit/sha256/tree/a/b/c?displayType=list',
