@@ -21,7 +21,7 @@ const ExampleBlurb = () => {
       </A>
       <br />
       <br />
-      &#128161; Checkout our{' '}
+      &#128161; Check out our{' '}
       <A
         to={{ pageName: 'codecovYamlValidator' }}
         isExternal
