@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useBranchBundleSummary } from 'services/branches'
+import { useBranchBundleSummary } from 'services/bundleAnalysis'
 import { useFlags } from 'shared/featureFlags'
 import Spinner from 'ui/Spinner'
 
