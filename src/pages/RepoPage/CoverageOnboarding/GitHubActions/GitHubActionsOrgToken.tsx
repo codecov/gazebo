@@ -6,6 +6,9 @@ import { useRepo } from 'services/repo'
 import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
 
+import ExampleBlurb from '../ExampleBlurb'
+import IntroBlurb from '../IntroBlurb'
+
 interface URLParams {
   provider: string
   owner: string
@@ -29,6 +32,7 @@ function GitHubActionsOrgToken() {
 
   return (
     <div className="flex flex-col gap-6">
+      <IntroBlurb />
       <div className="flex flex-col gap-4">
         <div>
           <h2 className="text-base font-semibold">
@@ -75,6 +79,7 @@ function GitHubActionsOrgToken() {
           <CopyClipboard string={orgTokenActionString} />
         </div>
       </div>
+      <ExampleBlurb />
       <div>
         <p>
           After you committed your changes and ran the repo&apos;s CI/CD

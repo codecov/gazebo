@@ -110,7 +110,9 @@ const ReposTable = ({
   const repoDisplay = useContext(ActiveContext)
   const activated =
     repoDisplayOptions[
-      repoDisplay.toUpperCase() as keyof typeof repoDisplayOptions
+      repoDisplay
+        .replace(/\s/g, '_')
+        .toUpperCase() as keyof typeof repoDisplayOptions
     ]?.status
 
   const {
@@ -141,7 +143,7 @@ const ReposTable = ({
 
   const table = useReactTable({
     columns: getReposColumnsHelper({
-      inactive: repoDisplay === repoDisplayOptions.INACTIVE.text,
+      inactive: repoDisplay === repoDisplayOptions.NOT_CONFIGURED.text,
       isCurrentUserPartOfOrg: isCurrentUserPartOfOrg,
       owner,
     }),
