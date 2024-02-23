@@ -6,6 +6,7 @@ import { providerToInternalProvider } from 'shared/utils/provider'
 import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
 
+import ExampleBlurb from '../ExampleBlurb'
 import IntroBlurb from '../IntroBlurb/IntroBlurb'
 
 const orbsString = `orbs:
@@ -86,6 +87,7 @@ function CircleCIRepoToken() {
           </A>
         </small>
       </div>
+      <ExampleBlurb />
       <div>
         <p>
           After you committed your changes and ran the repo&apos;s CI/CD
