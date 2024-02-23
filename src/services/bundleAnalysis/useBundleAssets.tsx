@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import isNull from 'lodash/isNull'
 import { z } from 'zod'
 
 import { MissingHeadReportSchema } from 'services/comparison'
@@ -31,9 +32,11 @@ type BundleAsset = z.infer<typeof BundleAssetSchema>
 
 const BundleAnalysisReportSchema = z.object({
   __typename: z.literal('BundleAnalysisReport'),
-  bundle: z.object({
-    assets: z.array(BundleAssetSchema),
-  }),
+  bundle: z
+    .object({
+      assets: z.array(BundleAssetSchema),
+    })
+    .nullable(),
 })
 
 const BundleReportSchema = z.discriminatedUnion('__typename', [
@@ -187,7 +190,8 @@ export const useBundleAssets = ({
         let assets: Array<BundleAsset> = []
         if (
           data?.owner?.repository?.branch?.head?.bundleAnalysisReport
-            ?.__typename === 'BundleAnalysisReport'
+            ?.__typename === 'BundleAnalysisReport' &&
+          !isNull(data.owner.repository.branch.head.bundleAnalysisReport.bundle)
         ) {
           assets =
             data.owner.repository.branch.head.bundleAnalysisReport.bundle.assets
