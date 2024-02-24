@@ -68,6 +68,11 @@ export function useRepoOverview({
   repo,
   opts = {},
 }: UseRepoOverviewArgs) {
+  let enabled = true
+  if (opts?.enabled !== undefined) {
+    enabled = opts.enabled
+  }
+
   return useQuery({
     queryKey: ['GetRepoOverview', provider, owner, repo],
     queryFn: ({ signal }) => {
@@ -139,6 +144,6 @@ export function useRepoOverview({
         }
       })
     },
-    enabled: !!opts?.enabled,
+    enabled,
   })
 }
