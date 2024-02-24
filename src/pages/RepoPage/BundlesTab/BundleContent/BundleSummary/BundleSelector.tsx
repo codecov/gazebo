@@ -30,7 +30,7 @@ const BundleSelector = forwardRef(({}, ref) => {
   const [selectedBundle, setSelectedBundle] = useState<string | undefined>(
     () => {
       if (bundle) {
-        return bundle
+        return decodeURIComponent(bundle)
       }
       return undefined
     }
