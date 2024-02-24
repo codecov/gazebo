@@ -1,8 +1,11 @@
-import { useCallback, useRef } from 'react'
+import { lazy, Suspense, useCallback, useRef } from 'react'
 
 import BranchSelector from './BranchSelector'
-import BundleDetails from './BundleDetails'
-import BundleSelector from './BundleSelector'
+import { NoDetails } from './BundleDetails'
+import { BundleSelectorSkeleton } from './BundleSelector'
+
+const BundleDetails = lazy(() => import('./BundleDetails'))
+const BundleSelector = lazy(() => import('./BundleSelector'))
 
 const BundleSummary: React.FC = () => {
   const bundleSelectRef = useRef<{ resetSelected: () => void }>(null)
@@ -15,9 +18,13 @@ const BundleSummary: React.FC = () => {
     <div className="flex flex-col gap-8 py-4 md:flex-row md:justify-between">
       <div className="flex flex-col gap-4 md:flex-row">
         <BranchSelector resetBundleSelect={resetBundleSelect} />
-        <BundleSelector ref={bundleSelectRef} />
+        <Suspense fallback={<BundleSelectorSkeleton />}>
+          <BundleSelector ref={bundleSelectRef} />
+        </Suspense>
       </div>
-      <BundleDetails />
+      <Suspense fallback={<NoDetails />}>
+        <BundleDetails />
+      </Suspense>
     </div>
   )
 }

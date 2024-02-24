@@ -7,7 +7,7 @@ import {
 } from 'shared/utils/bundleAnalysis'
 import { SummaryField, SummaryRoot } from 'ui/Summary'
 
-const NoDetails: React.FC = () => {
+export const NoDetails: React.FC = () => {
   return (
     <SummaryRoot>
       <SummaryField>
