@@ -57,12 +57,16 @@ interface UseRepoOverviewArgs {
   provider: string
   owner: string
   repo: string
+  opts?: {
+    enabled?: boolean
+  }
 }
 
 export function useRepoOverview({
   provider,
   owner,
   repo,
+  opts = {},
 }: UseRepoOverviewArgs) {
   return useQuery({
     queryKey: ['GetRepoOverview', provider, owner, repo],
@@ -135,5 +139,6 @@ export function useRepoOverview({
         }
       })
     },
+    enabled: opts?.enabled,
   })
 }
