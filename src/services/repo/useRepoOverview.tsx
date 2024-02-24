@@ -139,6 +139,6 @@ export function useRepoOverview({
         }
       })
     },
-    enabled: opts?.enabled,
+    enabled: !!opts?.enabled,
   })
 }
