@@ -222,7 +222,7 @@ describe('useIndirectChangedFilesTable', () => {
   })
 
   describe('when called with flags and components', () => {
-    it.only('sends correct api variables', async () => {
+    it('sends correct api variables', async () => {
       const { variablesPassed } = setup()
       const path = `/gh/test-org/test-repo/pull/5${qs.stringify(
         { flags: ['flag-1'], components: ['component-1'] },
