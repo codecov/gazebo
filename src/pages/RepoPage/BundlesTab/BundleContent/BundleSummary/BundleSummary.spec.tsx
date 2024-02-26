@@ -18,6 +18,36 @@ const mockRepoOverview = {
   languages: [],
 }
 
+const mockBundleSummary = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      branch: {
+        head: {
+          bundleAnalysisReport: {
+            __typename: 'BundleAnalysisReport',
+            bundle: {
+              name: 'bundle1',
+              moduleCount: 10,
+              sizeTotal: 1000,
+              bundleData: {
+                loadTime: {
+                  threeG: 1000,
+                  highSpeed: 500,
+                },
+                size: {
+                  gzip: 1000,
+                  uncompress: 2000,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
 const mockBranch = {
   branch: {
     name: 'main',
@@ -144,6 +174,9 @@ describe('BundleSummary', () => {
       }),
       graphql.query('BranchBundlesNames', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockBranchBundles))
+      }),
+      graphql.query('BundleSummary', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockBundleSummary))
       })
     )
 
