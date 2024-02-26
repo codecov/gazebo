@@ -33,13 +33,22 @@ export function usePrefetchBranchDirEntry({ branch, path, filters }) {
             path,
             filters,
           },
-        }).then((res) => ({
-          results:
-            res?.data?.owner?.repository?.branch?.head?.pathContents?.results,
-          indicationRange:
-            res?.data?.owner?.repository?.repositoryConfig?.indicationRange,
-          __typename: res?.data?.owner?.repository?.branch?.head?.__typename,
-        })),
+        }).then((res) => {
+          let results
+          if (
+            res?.data?.owner?.repository?.branch?.head?.pathContents
+              ?.__typename === 'PathContents'
+          ) {
+            results =
+              res?.data?.owner?.repository?.branch?.head?.pathContents?.results
+          }
+          return {
+            results: results ?? null,
+            indicationRange:
+              res?.data?.owner?.repository?.repositoryConfig?.indicationRange,
+            __typename: res?.data?.owner?.repository?.branch?.head?.__typename,
+          }
+        }),
       staleTime: 10000,
     })
 

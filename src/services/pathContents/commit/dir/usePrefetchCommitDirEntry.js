@@ -38,11 +38,21 @@ export function usePrefetchCommitDirEntry({
             path,
             filters,
           },
-        }).then((res) => ({
-          results: res?.data?.owner?.repository?.commit?.pathContents?.results,
-          indicationRange:
-            res?.data?.owner?.repository?.repositoryConfig?.indicationRange,
-        })),
+        }).then((res) => {
+          let results
+          if (
+            res?.data?.owner?.repository?.commit?.pathContents?.__typename ===
+            'PathContents'
+          ) {
+            results =
+              res?.data?.owner?.repository?.commit?.pathContents?.results
+          }
+          return {
+            results: results ?? null,
+            indicationRange:
+              res?.data?.owner?.repository?.repositoryConfig?.indicationRange,
+          }
+        }),
       staleTime: 10000,
       ...opts,
     })

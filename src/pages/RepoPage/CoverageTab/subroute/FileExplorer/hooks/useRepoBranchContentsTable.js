@@ -248,5 +248,6 @@ export function useRepoBranchContentsTable() {
     isSearching: !!params?.search,
     isMissingHeadReport:
       branchData?.__typename === CommitErrorTypes.MISSING_HEAD_REPORT,
+    pathContentsType: branchData?.pathContentsType,
   }
 }
