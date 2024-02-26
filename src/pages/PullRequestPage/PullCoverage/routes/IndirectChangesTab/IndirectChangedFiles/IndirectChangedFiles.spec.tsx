@@ -321,7 +321,7 @@ describe('IndirectChangedFiles', () => {
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
       )
 
-      const nameExpander = await screen.findByTestId('file-diff-expand')
+      const nameExpander = await screen.findByTestId('name-expand')
       await user.click(nameExpander)
 
       const fileDiff = await screen.findByText('FileDiff Component')
