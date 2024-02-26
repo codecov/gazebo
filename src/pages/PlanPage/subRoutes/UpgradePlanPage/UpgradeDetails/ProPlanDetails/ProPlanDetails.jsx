@@ -31,20 +31,24 @@ function ProPlanDetails() {
       <h3 className="p-4 font-semibold">{proPlanYear?.marketingName} plan</h3>
       <hr />
       <div className="flex flex-col gap-4 p-4">
-        <BenefitList
-          iconName="check"
-          iconColor="text-ds-pink-quinary"
-          benefits={proPlanYear?.benefits}
-        />
         <div>
+          <p className="mb-2 text-xs font-semibold">Pricing</p>
           <p className="text-xs font-semibold">
-            <span className="text-2xl">${proPlanYear?.baseUnitPrice}</span>
-            /per user, per month
+            <span className="mr-1 text-2xl">${proPlanYear?.baseUnitPrice}</span>
+            per user / month
           </p>
           <p className="text-xs text-ds-gray-quaternary">
             billed annually or ${proPlanMonth?.baseUnitPrice} for monthly
             billing
           </p>
+        </div>
+        <div>
+          <p className="mb-2 text-xs font-semibold">Includes</p>
+          <BenefitList
+            iconName="check"
+            iconColor="text-ds-pink-quinary"
+            benefits={proPlanYear?.benefits}
+          />
         </div>
         {scheduledPhase && (
           <ScheduledPlanDetails scheduledPhase={scheduledPhase} />
