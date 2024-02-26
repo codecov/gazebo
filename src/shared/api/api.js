@@ -99,10 +99,9 @@ function graphql({
           })
     )
     .catch((err) => {
-      if (err.status === 401) {
+      if (err.status === 401 && config.IS_SELF_HOSTED) {
         window.location.href = '/login'
       }
-      return Promise.reject(err)
     })
 }
 
