@@ -25,6 +25,7 @@ const mockCommitContentData = {
       },
       commit: {
         pathContents: {
+          __typename: 'PathContents',
           results: [
             {
               name: 'src',
@@ -57,7 +58,10 @@ const mockCommitNoContentData = {
         },
       },
       commit: {
-        pathContents: { results: [] },
+        pathContents: {
+          __typename: 'PathContents',
+          results: [],
+        },
       },
     },
   },

@@ -227,6 +227,7 @@ export function useRepoCommitContentsTable() {
     data,
     headers,
     handleSort,
+    pathContentsType: commitData?.pathContentsType,
     isLoading: commitIsLoading,
     isSearching: !!params?.search,
   }

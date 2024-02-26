@@ -23,14 +23,32 @@ const defaultQueryParams = {
 }
 
 function CommitDetailFileExplorer() {
-  const { data, headers, handleSort, isSearching, isLoading } =
-    useRepoCommitContentsTable()
+  const {
+    data,
+    headers,
+    handleSort,
+    isSearching,
+    isLoading,
+    pathContentsType,
+  } = useRepoCommitContentsTable()
 
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const { treePaths } = useCommitTreePaths()
 
   const hasFlagsSelected = params?.flags?.length > 0
   const hasComponentsSelected = params?.components?.length > 0
+  if (pathContentsType === 'UnknownPath') {
+    return (
+      <p className="m-4">
+        Unknown filepath. Please ensure that files/directories exist and are not
+        empty.
+      </p>
+    )
+  }
+
+  if (pathContentsType === 'MissingCoverage') {
+    return <p className="m-4">No coverage data available.</p>
+  }
 
   return (
     <div className="mt-2 flex flex-col gap-2">
