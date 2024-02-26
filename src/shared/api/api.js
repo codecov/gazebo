@@ -89,14 +89,21 @@ function graphql({
       query,
       variables,
     }),
-  }).then(async (res) =>
-    res.ok
-      ? await res.json()
-      : Promise.reject({
-          status: res.status,
-          data: await res.json(),
-        })
-  )
+  })
+    .then(async (res) =>
+      res.ok
+        ? await res.json()
+        : Promise.reject({
+            status: res.status,
+            data: await res.json(),
+          })
+    )
+    .catch((err) => {
+      if (err.status === 401) {
+        window.location.href = '/login'
+      }
+      return Promise.reject(err)
+    })
 }
 
 function graphqlMutation({ mutationPath, ...graphqlParams }) {
