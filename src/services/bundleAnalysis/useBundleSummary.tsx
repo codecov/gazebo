@@ -5,6 +5,7 @@ import { MissingHeadReportSchema } from 'services/comparison'
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
+  useRepoOverview,
 } from 'services/repo'
 import Api from 'shared/api/api'
 import type { NetworkErrorObject } from 'shared/api/helpers'
@@ -118,17 +119,32 @@ interface UseBundleSummaryArgs {
   provider: string
   owner: string
   repo: string
-  branch: string
+  branch?: string
   bundle: string
+  opts?: {
+    enabled?: boolean
+  }
 }
 
 export const useBundleSummary = ({
   provider,
   owner,
   repo,
-  branch,
+  branch: branchParam,
   bundle,
+  opts = {},
 }: UseBundleSummaryArgs) => {
+  const { data: overview } = useRepoOverview({
+    provider,
+    owner,
+    repo,
+    opts: {
+      enabled: !branchParam,
+    },
+  })
+
+  const branch = branchParam ?? overview?.defaultBranch
+
   return useQuery({
     queryKey: ['BundleSummary', provider, owner, repo, branch, bundle],
     queryFn: ({ signal }) =>
@@ -186,5 +202,6 @@ export const useBundleSummary = ({
 
         return { bundleSummary }
       }),
+    enabled: opts?.enabled,
   })
 }
