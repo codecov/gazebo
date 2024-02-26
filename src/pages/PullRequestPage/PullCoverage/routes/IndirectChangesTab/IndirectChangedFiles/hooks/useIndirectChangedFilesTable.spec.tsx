@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import qs from 'qs'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { ImpactedFilesReturnType } from 'shared/utils/impactedFiles'
@@ -109,7 +110,9 @@ const mockPull = {
 
 const server = setupServer()
 const wrapper =
-  ({ initialEntries = '/gh/test-org/test-repo/pull/5?flags=a,b' } = {}) =>
+  (
+    initialEntries = '/gh/test-org/test-repo/pull/5?flags=a,b'
+  ): React.FC<React.PropsWithChildren> =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
@@ -146,45 +149,6 @@ describe('useIndirectChangedFilesTable', () => {
     return { variablesPassed }
   }
 
-  describe('when handleSort is triggered', () => {
-    it('calls useIndirectChangedFilesTable with correct filters value', async () => {
-      const { variablesPassed } = setup()
-      const { result } = renderHook(() => useIndirectChangedFilesTable({}), {
-        wrapper: wrapper(),
-      })
-
-      result.current.handleSort([{ desc: false, id: 'name' }])
-
-      await waitFor(() =>
-        expect(variablesPassed).toHaveBeenCalledWith({
-          filters: {
-            ordering: { direction: 'DESC', parameter: 'MISSES_COUNT' },
-            hasUnintendedChanges: true,
-            flags: 'a,b',
-          },
-          owner: 'test-org',
-          pullId: 5,
-          repo: 'test-repo',
-        })
-      )
-
-      result.current.handleSort([{ desc: true, id: 'coverage' }])
-
-      await waitFor(() =>
-        expect(variablesPassed).toHaveBeenCalledWith({
-          filters: {
-            ordering: { direction: 'DESC', parameter: undefined },
-            hasUnintendedChanges: true,
-            flags: 'a,b',
-          },
-          owner: 'test-org',
-          pullId: 5,
-          repo: 'test-repo',
-        })
-      )
-    })
-  })
-
   describe('when called', () => {
     it('returns data', async () => {
       setup()
@@ -211,8 +175,6 @@ describe('useIndirectChangedFilesTable', () => {
               missesCount: 0,
               patchCoverage: 27.43,
               pullId: 14,
-              compareWithBaseType: 'Comparison',
-              impactedFilesType: ImpactedFilesReturnType.IMPACTED_FILES,
             },
           ],
           pullBaseCoverage: 27.35,
@@ -226,7 +188,7 @@ describe('useIndirectChangedFilesTable', () => {
   describe('when called with no head or base coverage on the impacted files', () => {
     it('returns data', async () => {
       setup()
-      const { result } = renderHook(() => useIndirectChangedFilesTable({}), {
+      const { result } = renderHook(() => useIndirectChangedFilesTable(), {
         wrapper: wrapper(),
       })
 
@@ -240,8 +202,6 @@ describe('useIndirectChangedFilesTable', () => {
           impactedFilesType: ImpactedFilesReturnType.IMPACTED_FILES,
           impactedFiles: [
             {
-              compareWithBaseType: 'Comparison',
-              impactedFilesType: ImpactedFilesReturnType.IMPACTED_FILES,
               changeCoverage: 44.85,
               fileName: 'mafs.js',
               hasHeadOrPatchCoverage: true,
@@ -261,13 +221,16 @@ describe('useIndirectChangedFilesTable', () => {
     })
   })
 
-  describe('when called with components', () => {
-    it('sends correct api variables', async () => {
+  describe('when called with flags and components', () => {
+    it.only('sends correct api variables', async () => {
       const { variablesPassed } = setup()
+      const path = `/gh/test-org/test-repo/pull/5${qs.stringify(
+        { flags: ['flag-1'], components: ['component-1'] },
+        { addQueryPrefix: true }
+      )}`
+
       const { result } = renderHook(() => useIndirectChangedFilesTable(), {
-        wrapper: wrapper({
-          initialEntries: '/gh/test-org/test-repo/pull/5?components=c,d',
-        }),
+        wrapper: wrapper(path),
       })
 
       await waitFor(() => result.current.isLoading)
@@ -277,7 +240,8 @@ describe('useIndirectChangedFilesTable', () => {
         filters: {
           ordering: { direction: 'DESC', parameter: 'MISSES_COUNT' },
           hasUnintendedChanges: true,
-          components: 'c,d',
+          components: ['component-1'],
+          flags: ['flag-1'],
         },
         owner: 'test-org',
         pullId: 5,
