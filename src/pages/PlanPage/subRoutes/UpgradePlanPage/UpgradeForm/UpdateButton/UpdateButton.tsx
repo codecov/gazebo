@@ -9,11 +9,12 @@ import Button from 'ui/Button'
 import { NewPlanType } from '../constants'
 
 const TEAM_TO_PRO_UPGRADE_WITH_SEAT_DELTA_METRIC_KEY =
-  'billing_change.user.team.change.to.pro'
+  'billing_change.user.team.change.to.pro.test'
 const PRO_TO_TEAM_CHANGE_WITH_SEAT_DELTA_METRIC_KEY =
-  'billing_change.user.pro.change.to.team'
-const NEW_PRO_SEATS_ADDED_METRIC_KEY = 'billing_change.user.new.pro.seats'
-const NEW_TEAM_SEATS_ADDED_METRIC_KEY = 'billing_change.user.new.team.seats'
+  'billing_change.user.pro.change.to.team.test'
+const NEW_PRO_SEATS_ADDED_METRIC_KEY = 'billing_change.user.new.pro.seats.test'
+const NEW_TEAM_SEATS_ADDED_METRIC_KEY =
+  'billing_change.user.new.team.seats.test'
 
 interface BillingControlsProps {
   seats: number
@@ -39,25 +40,25 @@ const UpdateButton: React.FC<BillingControlsProps> = ({
 
   const updateBillingMetrics = () => {
     if (isTeamPlan(currentPlanValue) && isProPlan(newPlan)) {
-      metrics.increment(
+      metrics.distribution(
         TEAM_TO_PRO_UPGRADE_WITH_SEAT_DELTA_METRIC_KEY,
         seatDelta
       )
     }
 
     if (isProPlan(currentPlanValue) && isTeamPlan(newPlan)) {
-      metrics.increment(
+      metrics.distribution(
         PRO_TO_TEAM_CHANGE_WITH_SEAT_DELTA_METRIC_KEY,
         seatDelta
       )
     }
 
     if (isSamePlan && isProPlan(newPlan)) {
-      metrics.increment(NEW_PRO_SEATS_ADDED_METRIC_KEY, seatDelta)
+      metrics.distribution(NEW_PRO_SEATS_ADDED_METRIC_KEY, seatDelta)
     }
 
     if (isSamePlan && isTeamPlan(newPlan)) {
-      metrics.increment(NEW_TEAM_SEATS_ADDED_METRIC_KEY, seatDelta)
+      metrics.distribution(NEW_TEAM_SEATS_ADDED_METRIC_KEY, seatDelta)
     }
   }
 
