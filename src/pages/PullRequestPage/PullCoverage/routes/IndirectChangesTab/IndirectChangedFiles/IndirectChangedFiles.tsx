@@ -18,8 +18,10 @@ import 'ui/FileList/FileList.css'
 import TotalsNumber from 'ui/TotalsNumber'
 
 import { useIndirectChangedFilesTable } from './hooks'
+import NameColumn from './NameColumn/NameColumn'
 
 import FileDiff from '../FileDiff'
+
 
 interface ImpactedFile {
   missesCount: number | undefined
@@ -44,23 +46,8 @@ function getColumns() {
       header: 'Name',
       cell: ({ getValue, row }) => {
         return (
-          <div
-            className="flex cursor-pointer items-center gap-2"
-            data-testid="file-diff-expand"
-            onClick={() => row.toggleExpanded()}
-          >
-            <span
-              className={cs({
-                'text-ds-blue-darker': row.getIsExpanded(),
-                'text-current': !row.getIsExpanded(),
-              })}
-            >
-              <Icon
-                size="md"
-                name={row.getIsExpanded() ? 'chevronDown' : 'chevronRight'}
-                variant="solid"
-              />
-            </span>
+          <div className="flex cursor-pointer items-center gap-2">
+            <NameColumn row={row} getValue={() => ''}></NameColumn>
             <div className="flex flex-col break-all">
               <A
                 hook={undefined}
@@ -72,12 +59,12 @@ function getColumns() {
               >
                 {getValue()}
               </A>
-              {row.original.isCriticalFile && (
-                <span className="self-center rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
-                  Critical File
-                </span>
-              )}
             </div>
+            {row.original.isCriticalFile && (
+              <span className="self-center rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
+                Critical File
+              </span>
+            )}
           </div>
         )
       },
@@ -147,12 +134,8 @@ export default function IndirectChangedFiles() {
   const { data, isLoading, sorting, setSorting } =
     useIndirectChangedFilesTable()
   const impactedFiles = useMemo(() => {
-    if (data?.compareWithBaseType === 'Comparison' && data?.impactedFiles) {
-      return data?.impactedFiles
-    }
-
-    return []
-  }, [data?.compareWithBaseType, data?.impactedFiles])
+    return data?.impactedFiles ?? []
+  }, [data?.impactedFiles])
 
   const table = useReactTable({
     columns: getColumns(),

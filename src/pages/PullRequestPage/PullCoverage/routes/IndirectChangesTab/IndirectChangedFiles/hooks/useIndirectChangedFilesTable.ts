@@ -2,7 +2,7 @@ import { SortingState } from '@tanstack/react-table'
 import { isArray } from 'lodash'
 import isNumber from 'lodash/isNumber'
 import qs, { ParsedQs } from 'qs'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import { PullSchemaType, usePull } from 'services/pull'
@@ -157,7 +157,9 @@ export const useIndirectChangedFilesTable = () => {
     },
   })
 
-  const data = transformIndirectChangesData(pullData?.pull)
+  const data = useMemo(() => {
+    return transformIndirectChangesData(pullData?.pull)
+  }, [pullData?.pull])
 
   return { data, isLoading, sorting, setSorting }
 }
