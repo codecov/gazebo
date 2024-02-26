@@ -6,6 +6,30 @@ import { useNavLinks } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import Select from 'ui/Select'
 
+export const BundleSelectorSkeleton: React.FC = () => {
+  return (
+    <div className="md:w-[16rem]">
+      <h3 className="flex items-center gap-1 text-sm font-semibold text-ds-gray-octonary">
+        Bundle
+      </h3>
+      <span className="max-w-[16rem] text-sm">
+        <Select
+          // @ts-expect-error
+          disabled={true}
+          resourceName="bundle"
+          placeholder="Select bundle"
+          dataMarketing="bundle-selector-bundle-tab"
+          ariaName="bundle tab bundle selector"
+          variant="gray"
+          isLoading={false}
+          items={[]}
+          value={'Select bundle'}
+        />
+      </span>
+    </div>
+  )
+}
+
 interface URLParams {
   provider: string
   owner: string
@@ -30,7 +54,7 @@ const BundleSelector = forwardRef(({}, ref) => {
   const [selectedBundle, setSelectedBundle] = useState<string | undefined>(
     () => {
       if (bundle) {
-        return bundle
+        return decodeURIComponent(bundle)
       }
       return undefined
     }

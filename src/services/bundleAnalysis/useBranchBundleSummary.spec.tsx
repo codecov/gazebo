@@ -138,12 +138,15 @@ describe('useBranchBundleSummary', () => {
             provider: 'gh',
             owner: 'codecov',
             repo: 'codecov',
+            branch: 'cool-branch',
           }),
         { wrapper }
       )
 
       await waitFor(() => expect(passedBranch).toHaveBeenCalled())
-      await waitFor(() => expect(passedBranch).toHaveBeenCalledWith('main'))
+      await waitFor(() =>
+        expect(passedBranch).toHaveBeenCalledWith('cool-branch')
+      )
     })
   })
 
@@ -156,15 +159,12 @@ describe('useBranchBundleSummary', () => {
             provider: 'gh',
             owner: 'codecov',
             repo: 'codecov',
-            branch: 'cool-branch',
           }),
         { wrapper }
       )
 
       await waitFor(() => expect(passedBranch).toHaveBeenCalled())
-      await waitFor(() =>
-        expect(passedBranch).toHaveBeenCalledWith('cool-branch')
-      )
+      await waitFor(() => expect(passedBranch).toHaveBeenCalledWith('main'))
     })
   })
 
