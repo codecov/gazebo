@@ -223,7 +223,7 @@ describe('ReposTable', () => {
     describe('renders active table headers', () => {
       it('renders table name header', async () => {
         render(<ReposTable searchValue="" owner="owner1" />, {
-          wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
+          wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
         })
 
         const header = await screen.findByText(/Name/)
@@ -232,7 +232,7 @@ describe('ReposTable', () => {
 
       it('renders table coverage header', async () => {
         render(<ReposTable searchValue="" owner="owner1" />, {
-          wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
+          wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
         })
 
         const header = await screen.findByText(/Test coverage/)
@@ -241,7 +241,7 @@ describe('ReposTable', () => {
 
       it('renders table last updated header', async () => {
         render(<ReposTable searchValue="" owner="owner1" />, {
-          wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
+          wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
         })
 
         const header = await screen.findByText(/Last updated/)
@@ -250,7 +250,7 @@ describe('ReposTable', () => {
 
       it('renders table tracked lines header', async () => {
         render(<ReposTable searchValue="" owner="owner1" />, {
-          wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
+          wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
         })
 
         const header = await screen.findByText(/Tracked lines/)
@@ -260,7 +260,7 @@ describe('ReposTable', () => {
 
     it('renders table repo name', async () => {
       render(<ReposTable searchValue="" owner="owner1" />, {
-        wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
+        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
       })
 
       const buttons = await screen.findAllByText(/Repo name/)
@@ -269,7 +269,7 @@ describe('ReposTable', () => {
 
     it('links to /:organization/:owner/:repo', async () => {
       render(<ReposTable searchValue="" owner="" />, {
-        wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
+        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
       })
 
       const repo1 = await screen.findByRole('link', {
@@ -289,7 +289,7 @@ describe('ReposTable', () => {
 
     it('renders last updated column', async () => {
       render(<ReposTable searchValue="" owner="owner1" />, {
-        wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
+        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
       })
 
       expect(await screen.findByText(/3 days ago/)).toBeTruthy()
@@ -302,7 +302,7 @@ describe('ReposTable', () => {
 
     it('renders coverage column', async () => {
       render(<ReposTable searchValue="" owner="owner1" />, {
-        wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
+        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
       })
 
       expect(await screen.findByText(/43\.00/)).toBeTruthy()
@@ -315,7 +315,7 @@ describe('ReposTable', () => {
 
     it('renders tracked lines column', async () => {
       render(<ReposTable searchValue="" owner="owner1" />, {
-        wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
+        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
       })
 
       expect(await screen.findByText('99')).toBeTruthy()
@@ -328,7 +328,7 @@ describe('ReposTable', () => {
 
     it('renders handles null coverage', async () => {
       render(<ReposTable searchValue="" owner="owner1" />, {
-        wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
+        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
       })
 
       expect(await screen.findByText(/No data/)).toBeTruthy()
@@ -396,7 +396,7 @@ describe('ReposTable', () => {
 
       it('links to /:organization/:owner/:repo/new', async () => {
         render(<ReposTable searchValue="" owner="owner1" />, {
-          wrapper: wrapper(repoDisplayOptions.INACTIVE.text),
+          wrapper: wrapper(repoDisplayOptions.NOT_CONFIGURED.text),
         })
 
         const repo1 = await screen.findByRole('link', {
@@ -415,13 +415,13 @@ describe('ReposTable', () => {
         expect(repo3).toHaveAttribute('href', '/gl/owner1/Repo name 3/new')
       })
 
-      it('renders set up repo copy', async () => {
+      it('renders configure repo copy', async () => {
         render(<ReposTable searchValue="" owner="owner1" />, {
-          wrapper: wrapper(repoDisplayOptions.INACTIVE.text),
+          wrapper: wrapper(repoDisplayOptions.NOT_CONFIGURED.text),
         })
 
         const setupRepo = await screen.findAllByRole('link', {
-          name: /Setup repo chevron-right.svg/,
+          name: /Configure/,
         })
         expect(setupRepo.length).toBe(3)
 
@@ -438,9 +438,9 @@ describe('ReposTable', () => {
         })
       })
 
-      it('does not link to setup repo from repo name', async () => {
+      it('does not link to configure repo from repo name', async () => {
         render(<ReposTable searchValue="" owner="" />, {
-          wrapper: wrapper(repoDisplayOptions.INACTIVE.text),
+          wrapper: wrapper(repoDisplayOptions.NOT_CONFIGURED.text),
         })
 
         const repo1 = await screen.findByText('Repo name 1')
@@ -453,15 +453,15 @@ describe('ReposTable', () => {
         expect(repo3).not.toHaveAttribute('href')
       })
 
-      it('does not show setup repo link', async () => {
+      it('does not show configure repo link', async () => {
         render(<ReposTable searchValue="" owner="" />, {
-          wrapper: wrapper(repoDisplayOptions.INACTIVE.text),
+          wrapper: wrapper(repoDisplayOptions.NOT_CONFIGURED.text),
         })
 
-        const inactiveCopy = await screen.findAllByText('Inactive')
-        expect(inactiveCopy.length).toBe(3)
+        const notConfiguredCopy = await screen.findAllByText('Inactive')
+        expect(notConfiguredCopy.length).toBe(3)
 
-        const repo1 = screen.queryByText('setup repo')
+        const repo1 = screen.queryByText('Configure')
         expect(repo1).not.toBeInTheDocument()
       })
     })
@@ -477,7 +477,7 @@ describe('ReposTable', () => {
 
     it('only renders public repos', async () => {
       render(<ReposTable searchValue="" owner="owner1" />, {
-        wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
+        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
       })
       const buttons = await screen.findAllByText(/Repo name/)
       expect(buttons.length).toBe(1)
@@ -491,7 +491,7 @@ describe('ReposTable', () => {
         edges: mockRepositories,
       })
       render(<ReposTable searchValue="" owner="owner1" />, {
-        wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
+        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
       })
 
       const header = await screen.findByText(/Name/)
@@ -522,7 +522,7 @@ describe('ReposTable', () => {
       })
 
       render(<ReposTable searchValue="" owner="owner1" />, {
-        wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
+        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
       })
 
       const header = await screen.findByText(/Test coverage/)
@@ -552,7 +552,7 @@ describe('ReposTable', () => {
       })
 
       render(<ReposTable searchValue="" owner="owner1" />, {
-        wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
+        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
       })
 
       const header = await screen.findByText(/Last updated/)
@@ -588,7 +588,7 @@ describe('ReposTable', () => {
 
     it('renders no repos detected', async () => {
       render(<ReposTable searchValue="" owner="" />, {
-        wrapper: wrapper(repoDisplayOptions.ACTIVE.text),
+        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
       })
 
       expect(

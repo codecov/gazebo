@@ -22,8 +22,8 @@ const defaultQueryParams = {
 }
 
 export const repoDisplayOptions = Object.freeze({
-  ACTIVE: { text: 'Active', status: true },
-  INACTIVE: { text: 'Inactive', status: false },
+  CONFIGURED: { text: 'Configured', status: true },
+  NOT_CONFIGURED: { text: 'Not Configured', status: false },
   ALL: { text: 'All', status: undefined },
 })
 

@@ -36,6 +36,11 @@ const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   pull: z
     .object({
+      head: z
+        .object({
+          commitid: z.string(),
+        })
+        .nullable(),
       bundleAnalysisCompareWithBase:
         BundleAnalysisCompareWithParentSchema.nullable(),
     })
@@ -61,6 +66,9 @@ query PullBADropdownSummary($owner: String!, $repo: String!, $pullId: Int!) {
       __typename
       ... on Repository {
         pull(id: $pullId) {
+          head {
+            commitid
+          }
           bundleAnalysisCompareWithBase {
             __typename
             ... on BundleAnalysisComparison {

@@ -2,13 +2,6 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import {
-  FirstPullRequestSchema,
-  MissingBaseCommitSchema,
-  MissingBaseReportSchema,
-  MissingHeadCommitSchema,
-  MissingHeadReportSchema,
-} from 'services/comparison/schemas'
-import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo/schemas'
@@ -17,35 +10,30 @@ import A from 'ui/A'
 
 const BundleSchema = z.object({
   name: z.string(),
-  changeType: z.string(),
-  sizeDelta: z.number(),
   sizeTotal: z.number(),
-  loadTimeDelta: z.number(),
   loadTimeTotal: z.number(),
 })
-
-const BAComparisonSchema = z.object({
-  __typename: z.literal('BundleAnalysisComparison'),
-  bundles: z.array(BundleSchema),
-})
-
-const BundleAnalysisCompareWithBaseSchema = z
-  .discriminatedUnion('__typename', [
-    BAComparisonSchema,
-    FirstPullRequestSchema,
-    MissingBaseCommitSchema,
-    MissingBaseReportSchema,
-    MissingHeadCommitSchema,
-    MissingHeadReportSchema,
-  ])
-  .nullable()
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   pull: z
     .object({
-      bundleAnalysisCompareWithBase:
-        BundleAnalysisCompareWithBaseSchema.nullable(),
+      head: z
+        .object({
+          bundleAnalysisReport: z
+            .discriminatedUnion('__typename', [
+              z.object({
+                __typename: z.literal('BundleAnalysisReport'),
+                bundles: z.array(BundleSchema),
+              }),
+              z.object({
+                __typename: z.literal('MissingHeadReport'),
+                message: z.string(),
+              }),
+            ])
+            .nullable(),
+        })
+        .nullable(),
     })
     .nullable(),
 })
@@ -63,42 +51,25 @@ const RequestSchema = z.object({
 })
 
 const query = `
-query PullBundleList(
-  $owner: String!
-  $repo: String!
-  $pullId: Int!
-) {
+query PullBundleHeadList($owner: String!, $repo: String!, $pullId: Int!) {
   owner(username: $owner) {
     repository(name: $repo) {
       __typename
       ... on Repository {
         pull(id: $pullId) {
-          bundleAnalysisCompareWithBase {
-            __typename
-            ... on BundleAnalysisComparison {
-              bundles {
-                name
-                changeType
-                sizeDelta
-                sizeTotal
-                loadTimeDelta
-                loadTimeTotal
+          head {
+            bundleAnalysisReport {
+              __typename
+              ... on BundleAnalysisReport {
+                bundles {
+                  name
+                  sizeTotal
+                  loadTimeTotal
+                }
               }
-            }
-            ... on FirstPullRequest {
-              message
-            }
-            ... on MissingBaseCommit {
-              message
-            }
-            ... on MissingHeadCommit {
-              message
-            }
-            ... on MissingBaseReport {
-              message
-            }
-            ... on MissingHeadReport {
-              message
+              ... on MissingHeadReport {
+                message
+              }
             }
           }
         }
@@ -113,21 +84,21 @@ query PullBundleList(
   }
 }`
 
-interface UsePullBundleListArgs {
+interface UsePullBundleComparisonListArgs {
   provider: string
   owner: string
   repo: string
   pullId: number
 }
 
-export function usePullBundleList({
+export function usePullBundleHeadList({
   provider,
   owner,
   repo,
   pullId,
-}: UsePullBundleListArgs) {
+}: UsePullBundleComparisonListArgs) {
   return useQuery({
-    queryKey: ['PullBundleList', provider, owner, repo, pullId],
+    queryKey: ['PullBundleHeadList', provider, owner, repo, pullId],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,

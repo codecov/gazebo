@@ -63,6 +63,17 @@ describe('OtherCI', () => {
     return { user }
   }
 
+  describe('intro blurb', () => {
+    beforeEach(() => setup())
+
+    it('renders intro blurb', async () => {
+      render(<OtherCIRepoToken />, { wrapper })
+
+      const blurb = await screen.findByTestId('intro-blurb')
+      expect(blurb).toBeInTheDocument()
+    })
+  })
+
   describe('step one', () => {
     beforeEach(() => setup())
 
@@ -109,6 +120,13 @@ describe('OtherCI', () => {
 
       const box = await screen.findByTestId('instruction-box')
       expect(box).toBeInTheDocument()
+    })
+
+    it('renders example blurb', async () => {
+      render(<OtherCIRepoToken />, { wrapper })
+
+      const blurb = await screen.findByTestId('example-blurb')
+      expect(blurb).toBeInTheDocument()
     })
 
     it('renders integrity check msg', async () => {

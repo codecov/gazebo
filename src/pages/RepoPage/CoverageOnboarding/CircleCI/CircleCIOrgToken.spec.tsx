@@ -79,6 +79,17 @@ describe('CircleCIOrgToken', () => {
     )
   }
 
+  describe('intro blurb', () => {
+    beforeEach(() => setup(true))
+
+    it('renders intro blurb', async () => {
+      render(<CircleCIOrgToken />, { wrapper })
+
+      const blurb = await screen.findByTestId('intro-blurb')
+      expect(blurb).toBeInTheDocument()
+    })
+  })
+
   describe('step one', () => {
     describe('when org upload token exists', () => {
       beforeEach(() => setup(true))
@@ -204,6 +215,13 @@ describe('CircleCIOrgToken', () => {
 
       const yamlCode = await screen.findByText(/codecov\/codecov@4.0.1/)
       expect(yamlCode).toBeInTheDocument()
+    })
+
+    it('renders example blurb', async () => {
+      render(<CircleCIOrgToken />, { wrapper })
+
+      const blurb = await screen.findByTestId('example-blurb')
+      expect(blurb).toBeInTheDocument()
     })
   })
 

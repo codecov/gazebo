@@ -1,15 +1,18 @@
-import { useLayoutEffect } from 'react'
+import { useEffect, useLayoutEffect } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
 import { useOwnerPageData } from 'pages/OwnerPage/hooks'
 import { useSentryToken } from 'services/account'
 import { useLocationParams } from 'services/navigation'
+import { renderToast } from 'services/toast'
 import { ActiveContext } from 'shared/context'
 import ListRepo from 'shared/ListRepo'
 
 import Header from './Header'
 import Tabs from './Tabs'
+
+export const LOCAL_STORAGE_USER_STARTED_TRIAL_KEY = 'user-started-trial'
 
 const useSentryTokenRedirect = ({ ownerData }) => {
   const { push } = useHistory()
@@ -39,6 +42,24 @@ function OwnerPage() {
   })
 
   useSentryTokenRedirect({ ownerData })
+  const userStartedTrial = localStorage.getItem(
+    LOCAL_STORAGE_USER_STARTED_TRIAL_KEY
+  )
+
+  useEffect(() => {
+    if (userStartedTrial) {
+      renderToast({
+        type: 'generic',
+        title: '14 day trial has started',
+        content: '',
+        options: {
+          duration: 5000,
+          position: 'bottom-left',
+        },
+      })
+      localStorage.removeItem(LOCAL_STORAGE_USER_STARTED_TRIAL_KEY)
+    }
+  }, [userStartedTrial])
 
   if (!ownerData) {
     return <NotFound />

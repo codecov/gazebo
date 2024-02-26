@@ -31,6 +31,34 @@ const mockNoFiles = {
   },
 }
 
+const mockMissingCoverage = {
+  username: 'nicholas-codecov',
+  repository: {
+    branch: {
+      head: {
+        pathContents: {
+          results: [],
+          __typename: 'MissingCoverage',
+        },
+      },
+    },
+  },
+}
+
+const mockUnknownPath = {
+  username: 'nicholas-codecov',
+  repository: {
+    branch: {
+      head: {
+        pathContents: {
+          results: [],
+          __typename: 'UnknownPath',
+        },
+      },
+    },
+  },
+}
+
 const mockTreeData = {
   username: 'nicholas-codecov',
   repository: {
@@ -123,10 +151,18 @@ afterAll(() => {
 
 describe('CodeTreeTable', () => {
   function setup(
-    { noFiles = false, noHeadReport = false, noFlagCoverage = false } = {
+    {
+      noFiles = false,
+      noHeadReport = false,
+      noFlagCoverage = false,
+      missingCoverage = false,
+      unknownPath = false,
+    } = {
       noFiles: false,
       noHeadReport: false,
       noFlagCoverage: false,
+      missingCoverage: false,
+      unknownPath: false,
     }
   ) {
     const user = userEvent.setup()
@@ -136,6 +172,14 @@ describe('CodeTreeTable', () => {
       graphql.query('BranchContents', (req, res, ctx) => {
         if (req.variables?.filters) {
           requestFilters(req.variables?.filters)
+        }
+
+        if (missingCoverage) {
+          return res(ctx.status(200), ctx.data({ owner: mockMissingCoverage }))
+        }
+
+        if (unknownPath) {
+          return res(ctx.status(200), ctx.data({ owner: mockUnknownPath }))
         }
 
         if (noHeadReport) {
@@ -268,6 +312,28 @@ describe('CodeTreeTable', () => {
             '/gh/codecov/cool-repo/blob/main/a%2Fb%2Fc%2Ffile.js'
           )
         })
+      })
+    })
+
+    describe('when branch contents returns unknown path', () => {
+      it('renders unknown path message', async () => {
+        setup({ missingCoverage: true })
+        render(<CodeTreeTable />, { wrapper: wrapper() })
+
+        const message = await screen.findByText('No coverage data available.')
+        expect(message).toBeInTheDocument()
+      })
+    })
+
+    describe('branch contents has missing coverage', () => {
+      it('renders the missing coverage message', async () => {
+        setup({ unknownPath: true })
+        render(<CodeTreeTable />, { wrapper: wrapper() })
+
+        const message = await screen.findByText(
+          'Unknown filepath. Please ensure that files/directories exist and are not empty.'
+        )
+        expect(message).toBeInTheDocument()
       })
     })
 
