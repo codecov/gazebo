@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
+import qs from 'qs'
 import { lazy, Suspense } from 'react'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
 import { useFlags } from 'shared/featureFlags'
@@ -38,6 +39,7 @@ interface URLParams {
 }
 
 const CommitDetailPage: React.FC = () => {
+  const location = useLocation()
   const { provider, owner, repo, commit: commitSha } = useParams<URLParams>()
   const shortSHA = commitSha?.slice(0, 7)
 
@@ -64,6 +66,7 @@ const CommitDetailPage: React.FC = () => {
     return <NotFound />
   }
 
+  let defaultDropdown: Array<'coverage' | 'bundle'> = []
   // default to displaying only coverage
   let displayMode: TDisplayMode = DISPLAY_MODE.COVERAGE
   if (
@@ -71,6 +74,17 @@ const CommitDetailPage: React.FC = () => {
     commitPageData?.coverageEnabled &&
     bundleAnalysisPrAndCommitPages
   ) {
+    const queryString = qs.parse(location.search, {
+      ignoreQueryPrefix: true,
+      depth: 1,
+    })
+
+    if (queryString?.dropdown === 'bundle') {
+      defaultDropdown.push('bundle')
+    } else if (queryString?.dropdown === 'coverage') {
+      defaultDropdown.push('coverage')
+    }
+
     displayMode = DISPLAY_MODE.BOTH
   } else if (
     commitPageData?.bundleAnalysisEnabled &&
@@ -96,7 +110,7 @@ const CommitDetailPage: React.FC = () => {
       />
       <Header />
       {displayMode === DISPLAY_MODE.BOTH ? (
-        <SummaryDropdown type="multiple">
+        <SummaryDropdown type="multiple" defaultValue={defaultDropdown}>
           <CommitCoverageDropdown>
             <Suspense fallback={<Loader />}>
               <CommitCoverage />
