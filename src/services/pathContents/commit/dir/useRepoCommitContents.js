@@ -36,11 +36,20 @@ export const useRepoCommitContents = ({
           path,
           filters,
         },
-      }).then((res) => ({
-        results: res?.data?.owner?.repository?.commit?.pathContents?.results,
-        indicationRange:
-          res?.data?.owner?.repository?.repositoryConfig?.indicationRange,
-      })),
+      }).then((res) => {
+        let results
+        const pathContentsType =
+          res?.data?.owner?.repository?.commit?.pathContents?.__typename
+        if (pathContentsType === 'PathContents') {
+          results = res?.data?.owner?.repository?.commit?.pathContents?.results
+        }
+        return {
+          results: results ?? null,
+          pathContentsType,
+          indicationRange:
+            res?.data?.owner?.repository?.repositoryConfig?.indicationRange,
+        }
+      }),
     ...opts,
   })
 }

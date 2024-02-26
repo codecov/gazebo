@@ -20,6 +20,7 @@ const mockPullContentData = {
         head: {
           commitid: 'sha-123',
           pathContents: {
+            __typename: 'PathContents',
             results: [
               {
                 name: 'src',
@@ -55,7 +56,10 @@ const mockPullNoContentData = {
       pull: {
         head: {
           commitid: null,
-          pathContents: { results: [] },
+          pathContents: {
+            __typename: 'PathContents',
+            results: [],
+          },
         },
       },
     },

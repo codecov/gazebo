@@ -31,6 +31,34 @@ const mockNoFiles = {
   },
 }
 
+const mockUnknownPath = {
+  username: 'nicholas-codecov',
+  repository: {
+    branch: {
+      head: {
+        pathContents: {
+          results: [],
+          __typename: 'UnknownPath',
+        },
+      },
+    },
+  },
+}
+
+const mockMissingCoverage = {
+  username: 'nicholas-codecov',
+  repository: {
+    branch: {
+      head: {
+        pathContents: {
+          results: [],
+          __typename: 'MissingCoverage',
+        },
+      },
+    },
+  },
+}
+
 const mockListData = {
   username: 'nicholas-codecov',
   repository: {
@@ -62,6 +90,7 @@ const mockNoHeadReport = {
     branch: {
       head: {
         pathContents: {
+          __typename: 'PathContents',
           results: [],
         },
         __typename: 'MissingHeadReport',
@@ -111,10 +140,18 @@ afterAll(() => {
 
 describe('FileListTable', () => {
   function setup(
-    { noFiles = false, noHeadReport = false, noFlagCoverage = false } = {
+    {
+      noFiles = false,
+      noHeadReport = false,
+      noFlagCoverage = false,
+      missingCoverage = false,
+      unknownPath = false,
+    } = {
       noFiles: false,
       noHeadReport: false,
       noFlagCoverage: false,
+      missingCoverage: false,
+      unknownPath: false,
     }
   ) {
     const user = userEvent.setup()
@@ -136,6 +173,14 @@ describe('FileListTable', () => {
 
         if (noFlagCoverage) {
           return res(ctx.status(200), ctx.data({ owner: mockNoFiles }))
+        }
+
+        if (missingCoverage) {
+          return res(ctx.status(200), ctx.data({ owner: mockMissingCoverage }))
+        }
+
+        if (unknownPath) {
+          return res(ctx.status(200), ctx.data({ owner: mockUnknownPath }))
         }
 
         return res(ctx.status(200), ctx.data({ owner: mockListData }))
@@ -284,6 +329,42 @@ describe('FileListTable', () => {
 
         const message = await screen.findByText(
           "No coverage report uploaded for the selected flags in this branch's head commit"
+        )
+        expect(message).toBeInTheDocument()
+      })
+    })
+
+    describe('when branch contents returns unknown path', () => {
+      it('renders unknown path message', async () => {
+        setup({ missingCoverage: true })
+        render(<FileListTable />, {
+          wrapper: wrapper(
+            `/gh/codecov/cool-repo/tree/main/a/b/c${qs.stringify(
+              { displayType: 'list', flags: ['flag-1'] },
+              { addQueryPrefix: true }
+            )}`
+          ),
+        })
+
+        const message = await screen.findByText('No coverage data available.')
+        expect(message).toBeInTheDocument()
+      })
+    })
+
+    describe('branch contents has missing coverage', () => {
+      it('renders the missing coverage message', async () => {
+        setup({ unknownPath: true })
+        render(<FileListTable />, {
+          wrapper: wrapper(
+            `/gh/codecov/cool-repo/tree/main/a/b/c${qs.stringify(
+              { displayType: 'list', flags: ['flag-1'] },
+              { addQueryPrefix: true }
+            )}`
+          ),
+        })
+
+        const message = await screen.findByText(
+          'Unknown filepath. Please ensure that files/directories exist and are not empty.'
         )
         expect(message).toBeInTheDocument()
       })

@@ -24,6 +24,7 @@ const mockData = {
         head: {
           commitid: 'commit123',
           pathContents: {
+            __typename: 'PathContents',
             results: [
               {
                 name: 'file.ts',
@@ -32,6 +33,52 @@ const mockData = {
                 type: 'file',
               },
             ],
+          },
+        },
+      },
+    },
+  },
+}
+
+const mockDataUnknownPath = {
+  owner: {
+    username: 'codecov',
+    repository: {
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      pull: {
+        head: {
+          commitid: 'commit123',
+          pathContents: {
+            message: 'Unknown path',
+            __typename: 'Unknown Path',
+          },
+        },
+      },
+    },
+  },
+}
+
+const mockDataMissingCoverage = {
+  owner: {
+    username: 'codecov',
+    repository: {
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      pull: {
+        head: {
+          commitid: 'commit123',
+          pathContents: {
+            message: 'files missing coverage',
+            __typename: 'MissingCoverage',
           },
         },
       },
@@ -59,11 +106,17 @@ afterAll(() => {
 })
 
 describe('useRepoPullContents', () => {
-  function setup() {
+  function setup(isMissingCoverage = false, isUnknownPath = false) {
     server.use(
-      graphql.query('PullPathContents', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockData))
-      )
+      graphql.query('PullPathContents', (req, res, ctx) => {
+        if (isMissingCoverage) {
+          return res(ctx.status(200), ctx.data(mockDataMissingCoverage))
+        }
+        if (isUnknownPath) {
+          return res(ctx.status(200), ctx.data(mockDataUnknownPath))
+        }
+        return res(ctx.status(200), ctx.data(mockData))
+      })
     )
   }
 
@@ -102,11 +155,74 @@ describe('useRepoPullContents', () => {
           upperRange: 80,
           lowerRange: 60,
         },
+        pathContentsType: 'PathContents',
       }
 
       await waitFor(() =>
         expect(result.current.data).toStrictEqual(expectedData)
       )
+    })
+
+    describe('on missing coverage', () => {
+      it('returns no results', async () => {
+        setup(true)
+        const { result } = renderHook(
+          () =>
+            useRepoPullContents({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'test',
+              pullId: '123',
+              path: '',
+            }),
+          { wrapper }
+        )
+
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+        await waitFor(() => result.current.isSuccess)
+
+        expect(result.current.data).toEqual(
+          expect.objectContaining({
+            indicationRange: {
+              upperRange: 80,
+              lowerRange: 60,
+            },
+            results: null,
+          })
+        )
+      })
+    })
+
+    describe('on unknown path', () => {
+      it('returns no results', async () => {
+        setup(false, true)
+        const { result } = renderHook(
+          () =>
+            useRepoPullContents({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'test',
+              pullId: '123',
+              path: '',
+            }),
+          { wrapper }
+        )
+
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+        await waitFor(() => result.current.isSuccess)
+
+        expect(result.current.data).toEqual(
+          expect.objectContaining({
+            indicationRange: {
+              upperRange: 80,
+              lowerRange: 60,
+            },
+            results: null,
+          })
+        )
+      })
     })
   })
 })

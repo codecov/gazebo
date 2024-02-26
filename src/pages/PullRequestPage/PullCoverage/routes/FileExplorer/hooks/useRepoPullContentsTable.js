@@ -224,6 +224,7 @@ export function useRepoPullContentsTable() {
     data,
     headers,
     handleSort,
+    pathContentsType: pullData?.pathContentsType,
     isLoading: pullIsLoading,
     isSearching: !!params?.search,
   }

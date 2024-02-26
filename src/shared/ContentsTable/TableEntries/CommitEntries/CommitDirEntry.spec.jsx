@@ -19,6 +19,7 @@ const mockData = {
     },
     commit: {
       pathContents: {
+        __typename: 'PathContents',
         results: [
           {
             __typename: 'PathContentDir',
