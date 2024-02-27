@@ -8,7 +8,7 @@ import './codecov-theme.css'
 
 const YamlEditor = forwardRef(({ ...props }, ref) => {
   return (
-    <div className="lg:w-2/3">
+    <div className="md:w-3/4">
       <AceEditor
         ref={ref}
         mode="yaml"
