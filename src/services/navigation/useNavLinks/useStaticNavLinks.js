@@ -349,5 +349,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    installSelfHosted: {
+      text: 'Codecov Self-Hosted Installation Guide',
+      path: () =>
+        'https://docs.codecov.com/docs/installing-codecov-self-hosted',
+      isExternalLink: true,
+      openNewTab: true,
+    },
   }
 }

@@ -1,10 +1,9 @@
+import { EnterpriseLoginProviders } from 'services/config/useLoginProviders'
 import {
   loginProviderImage,
   LoginProvidersEnum,
 } from 'shared/utils/loginProviders'
 import Button from 'ui/Button'
-
-import { EnterpriseLoginProviders } from '../useServiceProviders'
 
 type LoginProviders = typeof LoginProvidersEnum
 
