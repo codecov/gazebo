@@ -33,6 +33,36 @@ const mockNoFiles = {
   },
 }
 
+const mockUnknownPath = {
+  username: 'nicholas-codecov',
+  repository: {
+    pull: {
+      head: {
+        commitid: '123',
+        pathContents: {
+          results: [],
+          __typename: 'UnknownPath',
+        },
+      },
+    },
+  },
+}
+
+const mockMissingCoverage = {
+  username: 'nicholas-codecov',
+  repository: {
+    pull: {
+      head: {
+        commitid: '123',
+        pathContents: {
+          results: [],
+          __typename: 'MissingCoverage',
+        },
+      },
+    },
+  },
+}
+
 const mockListData = {
   username: 'nicholas-codecov',
   repository: {
@@ -121,7 +151,11 @@ afterAll(() => {
 })
 
 describe('FileExplorer', () => {
-  function setup(noFiles = false) {
+  function setup(
+    noFiles = false,
+    missingCoverage = false,
+    unknownPath = false
+  ) {
     const user = userEvent.setup()
     const requestFilters = jest.fn()
 
@@ -129,6 +163,14 @@ describe('FileExplorer', () => {
       graphql.query('PullPathContents', (req, res, ctx) => {
         if (req.variables?.filters) {
           requestFilters(req.variables?.filters)
+        }
+
+        if (missingCoverage) {
+          return res(ctx.status(200), ctx.data({ owner: mockMissingCoverage }))
+        }
+
+        if (unknownPath) {
+          return res(ctx.status(200), ctx.data({ owner: mockUnknownPath }))
         }
 
         if (noFiles || req.variables?.filters?.searchValue) {
@@ -254,6 +296,28 @@ describe('FileExplorer', () => {
             '/gh/codecov/cool-repo/pull/123/blob/a/b/c/file.js'
           )
         })
+      })
+    })
+
+    describe('pull contents returns unknown path', () => {
+      it('renders unknown path message', async () => {
+        setup(false, true, false)
+        render(<FileExplorer />, { wrapper: wrapper() })
+
+        const message = await screen.findByText('No coverage data available.')
+        expect(message).toBeInTheDocument()
+      })
+    })
+
+    describe('pull contents has missing coverage', () => {
+      it('renders the missing coverage message', async () => {
+        setup(false, false, true)
+        render(<FileExplorer />, { wrapper: wrapper() })
+
+        const message = await screen.findByText(
+          'Unknown filepath. Please ensure that files/directories exist and are not empty.'
+        )
+        expect(message).toBeInTheDocument()
       })
     })
 

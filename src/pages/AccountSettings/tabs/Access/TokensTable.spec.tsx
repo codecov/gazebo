@@ -7,9 +7,11 @@ import { useRevokeUserToken } from 'services/access'
 import TokensTable from './TokensTable'
 
 jest.mock('services/access')
+const mockedUseRevokeUserToken = useRevokeUserToken as jest.Mock
+
 window.confirm = () => true
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/bb/critical-role/bells-hells']}>
     <Route path="/:provider/:owner/:repo">{children}</Route>
   </MemoryRouter>
@@ -19,7 +21,7 @@ describe('TokensTable', () => {
   function setup() {
     const user = userEvent.setup()
     const mutate = jest.fn()
-    useRevokeUserToken.mockReturnValue({ mutate })
+    mockedUseRevokeUserToken.mockReturnValue({ mutate })
 
     return { mutate, user }
   }
@@ -38,19 +40,19 @@ describe('TokensTable', () => {
           <TokensTable
             tokens={[
               {
-                id: 32,
+                id: '32',
                 type: 'api',
                 name: 'token name 1',
                 lastFour: 'aaaa',
               },
               {
-                id: 6,
+                id: '6',
                 type: 'api',
                 name: 'token name 2',
                 lastFour: 'bbbb',
               },
               {
-                id: 8,
+                id: '8',
                 type: 'api',
                 name: 'token name 3',
                 lastFour: 'cccc',
@@ -71,13 +73,13 @@ describe('TokensTable', () => {
           <TokensTable
             tokens={[
               {
-                id: 32,
+                id: '32',
                 type: 'api',
                 name: 'token name 1',
                 lastFour: 'aaaa',
               },
               {
-                id: 6,
+                id: '6',
                 type: 'api',
                 name: 'token name 2',
                 lastFour: 'bbbb',
@@ -95,18 +97,18 @@ describe('TokensTable', () => {
         expect(name2).toBeInTheDocument()
       })
 
-      it('renders tokens table ips', () => {
+      it('renders token last four digits', () => {
         render(
           <TokensTable
             tokens={[
               {
-                id: 32,
+                id: '32',
                 type: 'api',
                 name: 'token name 1',
                 lastFour: 'aaaa',
               },
               {
-                id: 6,
+                id: '6',
                 type: 'api',
                 name: 'token name 2',
                 lastFour: 'bbbb',
@@ -133,7 +135,7 @@ describe('TokensTable', () => {
           <TokensTable
             tokens={[
               {
-                id: 32,
+                id: '32',
                 type: 'api',
                 name: 'token name 1',
                 lastFour: 'aaaa',
@@ -145,10 +147,14 @@ describe('TokensTable', () => {
           }
         )
 
-        await user.click(screen.getAllByText(/Revoke/)[0])
+        const button = screen.getAllByText(/Revoke/)[0]
+
+        if (button) {
+          await user.click(button)
+        }
 
         expect(mutate).toBeCalled()
-        expect(mutate).toBeCalledWith({ tokenid: 32 })
+        expect(mutate).toBeCalledWith({ tokenid: '32' })
       })
     })
 

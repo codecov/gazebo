@@ -51,6 +51,34 @@ const mockListData = {
   },
 }
 
+const mockUnknownPath = {
+  username: 'nicholas-codecov',
+  repository: {
+    branch: {
+      head: {
+        pathContents: {
+          results: [],
+          __typename: 'UnknownPath',
+        },
+      },
+    },
+  },
+}
+
+const mockMissingCoverage = {
+  username: 'nicholas-codecov',
+  repository: {
+    branch: {
+      head: {
+        pathContents: {
+          results: [],
+          __typename: 'MissingCoverage',
+        },
+      },
+    },
+  },
+}
+
 const mockTreeData = {
   username: 'nicholas-codecov',
   repository: {
@@ -134,7 +162,7 @@ afterAll(() => {
 })
 
 describe('FileExplorer', () => {
-  function setup() {
+  function setup(missingCoverage = false, unknownPath = false) {
     const user = userEvent.setup()
 
     server.use(
@@ -144,6 +172,14 @@ describe('FileExplorer', () => {
           req.variables?.filters?.displayType === 'LIST'
         ) {
           return res(ctx.status(200), ctx.data({ owner: mockListData }))
+        }
+
+        if (missingCoverage) {
+          return res(ctx.status(200), ctx.data({ owner: mockMissingCoverage }))
+        }
+
+        if (unknownPath) {
+          return res(ctx.status(200), ctx.data({ owner: mockUnknownPath }))
         }
 
         return res(ctx.status(200), ctx.data({ owner: mockTreeData }))
@@ -220,6 +256,28 @@ describe('FileExplorer', () => {
             search: 'cool-search',
           })
         )
+      })
+    })
+
+    describe('branch contents returns unknown path', () => {
+      it('renders unknown path message', async () => {
+        setup(true, false)
+        render(<FileExplorer />, { wrapper: wrapper() })
+
+        const message = await screen.findByText('No coverage data available.')
+        expect(message).toBeInTheDocument()
+      })
+    })
+
+    describe('branch contents has missing coverage', () => {
+      it('renders the missing coverage message', async () => {
+        setup(false, true)
+        render(<FileExplorer />, { wrapper: wrapper() })
+
+        const message = await screen.findByText(
+          'Unknown filepath. Please ensure that files/directories exist and are not empty.'
+        )
+        expect(message).toBeInTheDocument()
       })
     })
 

@@ -14,6 +14,7 @@ const mockData = {
       head: {
         commitid: '123',
         pathContents: {
+          __typename: 'PathContents',
           results: [
             {
               __typename: 'PathContentDir',
@@ -126,6 +127,7 @@ describe('PullDirEntry', () => {
 
     await waitFor(() =>
       expect(queryClient.getQueryState().data).toStrictEqual({
+        __typename: 'PathContents',
         results: [
           {
             __typename: 'PathContentDir',

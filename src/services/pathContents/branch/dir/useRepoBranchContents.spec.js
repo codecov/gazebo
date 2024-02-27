@@ -48,8 +48,52 @@ const dataReturned = {
                 type: 'dir',
               },
             ],
+            __typename: 'PathContents',
           },
-          __typename: 'PathContents',
+        },
+      },
+    },
+  },
+}
+
+const mockDataUnknownPath = {
+  owner: {
+    username: 'codecov',
+    repository: {
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          pathContents: {
+            __typename: 'UnknownPath',
+            message: 'path cannot be found',
+          },
+        },
+      },
+    },
+  },
+}
+
+const mockDataMissingCoverage = {
+  owner: {
+    username: 'codecov',
+    repository: {
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      branch: {
+        head: {
+          pathContents: {
+            message: 'files missing coverage',
+            __typename: 'MissingCoverage',
+          },
         },
       },
     },
@@ -57,9 +101,15 @@ const dataReturned = {
 }
 
 describe('useRepoBranchContents', () => {
-  function setup() {
+  function setup(isMissingCoverage = false, isUnknownPath = false) {
     server.use(
       graphql.query('BranchContents', (req, res, ctx) => {
+        if (isMissingCoverage) {
+          return res(ctx.status(200), ctx.data(mockDataMissingCoverage))
+        }
+        if (isUnknownPath) {
+          return res(ctx.status(200), ctx.data(mockDataUnknownPath))
+        }
         return res(ctx.status(200), ctx.data(dataReturned))
       })
     )
@@ -108,24 +158,89 @@ describe('useRepoBranchContents', () => {
         await waitFor(() => !result.current.isLoading)
         await waitFor(() => result.current.isSuccess)
 
-        const expectedResponse = {
-          results: [
-            {
-              name: 'flag1',
-              filePath: null,
-              percentCovered: 100.0,
-              type: 'dir',
+        expect(queryClient.getQueryState().data).toEqual(
+          expect.objectContaining({
+            results: [
+              {
+                name: 'flag1',
+                filePath: null,
+                percentCovered: 100.0,
+                type: 'dir',
+              },
+            ],
+            indicationRange: {
+              upperRange: 80,
+              lowerRange: 60,
             },
-          ],
-          indicationRange: {
-            upperRange: 80,
-            lowerRange: 60,
-          },
-          __typename: 'PathContents',
-        }
+          })
+        )
+      })
+    })
 
-        await waitFor(() =>
-          expect(result.current.data).toEqual(expectedResponse)
+    describe('on missing coverage', () => {
+      it('returns no results', async () => {
+        setup(true)
+        const { result } = renderHook(
+          () =>
+            useRepoBranchContents({
+              provider: 'gh',
+              owner: 'Rabee-AbuBaker',
+              repo: 'another-test',
+              branch: 'main',
+              path: '',
+            }),
+          {
+            wrapper,
+          }
+        )
+
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+        await waitFor(() => result.current.isSuccess)
+
+        expect(result.current.data).toEqual(
+          expect.objectContaining({
+            indicationRange: {
+              upperRange: 80,
+              lowerRange: 60,
+            },
+            results: null,
+            pathContentsType: 'MissingCoverage',
+          })
+        )
+      })
+    })
+
+    describe('on unknown path', () => {
+      it('returns no results', async () => {
+        setup(false, true)
+        const { result } = renderHook(
+          () =>
+            useRepoBranchContents({
+              provider: 'gh',
+              owner: 'Rabee-AbuBaker',
+              repo: 'another-test',
+              branch: 'main',
+              path: '',
+            }),
+          {
+            wrapper,
+          }
+        )
+
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+        await waitFor(() => result.current.isSuccess)
+
+        expect(result.current.data).toEqual(
+          expect.objectContaining({
+            indicationRange: {
+              upperRange: 80,
+              lowerRange: 60,
+            },
+            results: null,
+            pathContentsType: 'UnknownPath',
+          })
         )
       })
     })
