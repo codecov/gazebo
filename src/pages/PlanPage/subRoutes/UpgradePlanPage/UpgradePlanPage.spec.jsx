@@ -357,7 +357,7 @@ describe('UpgradePlanPage', () => {
         expect(teamPlanPrice).toBeInTheDocument()
 
         const teamPlanPricingScheme = await screen.findByText(
-          /\/per user, per month/
+          /per user \/ month/
         )
         expect(teamPlanPricingScheme).toBeInTheDocument()
       })

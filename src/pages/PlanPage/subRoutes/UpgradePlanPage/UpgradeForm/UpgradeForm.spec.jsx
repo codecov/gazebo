@@ -412,7 +412,7 @@ describe('UpgradeForm', () => {
         await user.type(input, '1')
 
         const proceedToCheckoutButton = await screen.findByRole('button', {
-          name: /Proceed to Checkout/,
+          name: /Proceed to checkout/,
         })
         expect(proceedToCheckoutButton).toBeDisabled()
 
@@ -427,7 +427,7 @@ describe('UpgradeForm', () => {
         render(<UpgradeForm {...props} />, { wrapper: wrapper() })
 
         const proceedToCheckoutButton = await screen.findByRole('button', {
-          name: /Proceed to Checkout/,
+          name: /Proceed to checkout/,
         })
         expect(proceedToCheckoutButton).toBeInTheDocument()
       })
@@ -541,7 +541,7 @@ describe('UpgradeForm', () => {
           await user.type(input, '20')
 
           const proceedToCheckoutButton = await screen.findByRole('button', {
-            name: /Proceed to Checkout/,
+            name: /Proceed to checkout/,
           })
           await user.click(proceedToCheckoutButton)
 
@@ -572,7 +572,7 @@ describe('UpgradeForm', () => {
           await user.click(optionBtn)
 
           const proceedToCheckoutButton = await screen.findByRole('button', {
-            name: /Proceed to Checkout/,
+            name: /Proceed to checkout/,
           })
           await user.click(proceedToCheckoutButton)
 
@@ -598,7 +598,7 @@ describe('UpgradeForm', () => {
           await user.type(input, '20')
 
           const proceedToCheckoutButton = await screen.findByRole('button', {
-            name: /Proceed to Checkout/,
+            name: /Proceed to checkout/,
           })
           await user.click(proceedToCheckoutButton)
 
@@ -626,7 +626,7 @@ describe('UpgradeForm', () => {
           await user.type(input, '20')
 
           const proceedToCheckoutButton = await screen.findByRole('button', {
-            name: /Proceed to Checkout/,
+            name: /Proceed to checkout/,
           })
           await user.click(proceedToCheckoutButton)
 
@@ -656,7 +656,7 @@ describe('UpgradeForm', () => {
           await user.type(input, '20')
 
           const proceedToCheckoutButton = await screen.findByRole('button', {
-            name: /Proceed to Checkout/,
+            name: /Proceed to checkout/,
           })
           await user.click(proceedToCheckoutButton)
 
