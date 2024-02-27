@@ -38,7 +38,7 @@ const UpdateButton: React.FC<BillingControlsProps> = ({
         hook="submit-upgrade"
         to={undefined}
       >
-        {isFreePlan(currentPlanValue) ? 'Proceed to Checkout' : 'Update'}
+        {isFreePlan(currentPlanValue) ? 'Proceed to checkout' : 'Update'}
       </Button>
     </div>
   )
