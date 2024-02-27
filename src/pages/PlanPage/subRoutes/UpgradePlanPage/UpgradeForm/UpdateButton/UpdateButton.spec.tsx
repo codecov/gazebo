@@ -1,7 +1,8 @@
+import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { rest } from 'msw'
+import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -9,6 +10,17 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { Plans } from 'shared/utils/billing'
 
 import UpdateButton from './UpdateButton'
+jest.mock('@sentry/react', () => {
+  const originalModule = jest.requireActual('@sentry/react')
+  return {
+    ...originalModule,
+    metrics: {
+      ...originalModule.metrics,
+      increment: jest.fn(),
+      gauge: jest.fn(),
+    },
+  }
+})
 
 const server = setupServer()
 const queryClient = new QueryClient({
@@ -50,6 +62,13 @@ const mockAccountDetailsProMonthly = {
   },
 }
 
+const mockAccountDetailsTeamMonthly = {
+  plan: {
+    value: Plans.USERS_TEAMM,
+    quantity: 3,
+  },
+}
+
 interface SetupArgs {
   planValue: string
 }
@@ -64,9 +83,23 @@ describe('UpdateButton', () => {
       rest.get(`/internal/gh/codecov/account-details/`, (req, res, ctx) => {
         if (planValue === Plans.USERS_BASIC) {
           return res(ctx.status(200), ctx.json(mockAccountDetailsBasic))
+        } else if (planValue === Plans.USERS_TEAMM) {
+          return res(ctx.status(200), ctx.json(mockAccountDetailsTeamMonthly))
         } else {
           return res(ctx.status(200), ctx.json(mockAccountDetailsProMonthly))
         }
+      }),
+      graphql.query('CurrentUser', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            me: {
+              trackingMetadata: {
+                ownerid: 12345,
+              },
+            },
+          })
+        )
       })
     )
 
@@ -154,6 +187,146 @@ describe('UpdateButton', () => {
         const button = await screen.findByText('Update')
         expect(button).toBeInTheDocument()
         expect(button).toBeDisabled()
+      })
+    })
+
+    describe('sends metrics to sentry', () => {
+      it('updates counter on load and checkout', async () => {
+        const { user } = setup({ planValue: Plans.USERS_PR_INAPPM })
+
+        const props = {
+          isValid: true,
+          newPlan: Plans.USERS_PR_INAPPM,
+          seats: 4,
+        }
+
+        render(<UpdateButton {...props} />, {
+          wrapper,
+        })
+
+        const button = await screen.findByText('Update')
+        expect(button).toBeInTheDocument()
+        await user.click(button)
+        expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+          'billing_change.user.visited.page'
+        )
+        expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+          'billing_change.user.checkout.from.page'
+        )
+      })
+
+      it('updates gauge on team to pro', async () => {
+        const { user } = setup({ planValue: Plans.USERS_TEAMM })
+
+        const props = {
+          isValid: true,
+          newPlan: Plans.USERS_PR_INAPPM,
+          seats: 4,
+        }
+
+        render(<UpdateButton {...props} />, {
+          wrapper,
+        })
+
+        const button = await screen.findByText('Update')
+        expect(button).toBeInTheDocument()
+        await user.click(button)
+        expect(Sentry.metrics.gauge).toHaveBeenCalledWith(
+          'billing_change.user.team.seats.test1',
+          -3,
+          {
+            tags: { ownerId: 12345 },
+          }
+        )
+        expect(Sentry.metrics.gauge).toHaveBeenCalledWith(
+          'billing_change.user.pro.seats.test1',
+          4,
+          {
+            tags: { ownerId: 12345 },
+          }
+        )
+      })
+
+      it('updates gauge on pro to team', async () => {
+        const { user } = setup({ planValue: Plans.USERS_PR_INAPPM })
+
+        const props = {
+          isValid: true,
+          newPlan: Plans.USERS_TEAMM,
+          seats: 2,
+        }
+
+        render(<UpdateButton {...props} />, {
+          wrapper,
+        })
+
+        const button = await screen.findByText('Update')
+        expect(button).toBeInTheDocument()
+        await user.click(button)
+        expect(Sentry.metrics.gauge).toHaveBeenCalledWith(
+          'billing_change.user.team.seats.test1',
+          2,
+          {
+            tags: { ownerId: 12345 },
+          }
+        )
+        expect(Sentry.metrics.gauge).toHaveBeenCalledWith(
+          'billing_change.user.pro.seats.test1',
+          -4,
+          {
+            tags: { ownerId: 12345 },
+          }
+        )
+      })
+
+      it('updates seat count on a team plan change', async () => {
+        const { user } = setup({ planValue: Plans.USERS_TEAMM })
+
+        const props = {
+          isValid: true,
+          newPlan: Plans.USERS_TEAMM,
+          seats: 5,
+        }
+
+        render(<UpdateButton {...props} />, {
+          wrapper,
+        })
+
+        const button = await screen.findByText('Update')
+        expect(button).toBeInTheDocument()
+        await user.click(button)
+        expect(Sentry.metrics.gauge).toHaveBeenCalledWith(
+          'billing_change.user.team.seats.test1',
+          2,
+          {
+            tags: { ownerId: 12345 },
+          }
+        )
+      })
+
+      it('updates seat count on a pro plan change', async () => {
+        const { user } = setup({ planValue: Plans.USERS_PR_INAPPM })
+
+        const props = {
+          isValid: true,
+          newPlan: Plans.USERS_PR_INAPPM,
+          seats: 1,
+        }
+
+        render(<UpdateButton {...props} />, {
+          wrapper,
+        })
+
+        const button = await screen.findByText('Update')
+        expect(button).toBeInTheDocument()
+        await user.click(button)
+        expect(Sentry.metrics.gauge).toHaveBeenCalledWith(
+          'billing_change.user.pro.seats.test1',
+          -3,
+          {
+            tags: { ownerId: 12345 },
+          }
+        )
       })
     })
   })

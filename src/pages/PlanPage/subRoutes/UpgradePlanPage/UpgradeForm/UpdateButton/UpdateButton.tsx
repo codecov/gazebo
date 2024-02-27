@@ -10,13 +10,12 @@ import Button from 'ui/Button'
 import { NewPlanType } from '../constants'
 
 const TEAM_SEATS_ADDED_AND_REMOVED_METRIC_KEY =
-  'billing_change.user.team.change.to.pro.test1'
+  'billing_change.user.team.seats.test1'
 const PRO_SEATS_ADDED_AND_REMOVED_METRIC_KEY =
-  'billing_change.user.team.change.to.pro.test1'
-const BILLING_PAGE_VISIT_METRIC_KEY =
-  'billing_change.user.team.change.to.pro.test1'
+  'billing_change.user.pro.seats.test1'
+const BILLING_PAGE_VISIT_METRIC_KEY = 'billing_change.user.visited.page'
 const BILLING_PAGE_CHECKOUT_METRIC_KEY =
-  'billing_change.user.team.change.to.pro.test1'
+  'billing_change.user.checkout.from.page'
 
 interface BillingControlsProps {
   seats: number
@@ -42,51 +41,41 @@ const UpdateButton: React.FC<BillingControlsProps> = ({
   const ownerId = currentUser.trackingMetadata.ownerid
 
   useEffect(() => {
-    return () => {
-      metrics.increment(BILLING_PAGE_VISIT_METRIC_KEY)
-    }
+    metrics.increment(BILLING_PAGE_VISIT_METRIC_KEY)
   }, [])
 
-  const updateGaugeMetric = (
-    isPlanConditionMet: boolean,
-    planTypeKey: string,
-    value: number
-  ) => {
-    if (isPlanConditionMet) {
-      metrics.gauge(planTypeKey, value, {
-        tags: {
-          ownerId,
-        },
-      })
-    }
+  const updateGaugeMetric = (planTypeKey: string, value: number) => {
+    metrics.gauge(planTypeKey, value, {
+      tags: {
+        ownerId,
+      },
+    })
   }
 
   const updateBillingMetrics = () => {
     const seatDelta = seats - currentPlanQuantity
-    if (!isSamePlan) {
+    if (isTeamPlan(currentPlanValue) && isProPlan(newPlan)) {
       updateGaugeMetric(
-        isTeamPlan(currentPlanValue),
         TEAM_SEATS_ADDED_AND_REMOVED_METRIC_KEY,
-        currentPlanValue * -1
+        currentPlanQuantity * -1
       )
+      updateGaugeMetric(PRO_SEATS_ADDED_AND_REMOVED_METRIC_KEY, seats)
+    }
+
+    if (isProPlan(currentPlanValue) && isTeamPlan(newPlan)) {
+      updateGaugeMetric(TEAM_SEATS_ADDED_AND_REMOVED_METRIC_KEY, seats)
       updateGaugeMetric(
-        isProPlan(currentPlanValue),
         PRO_SEATS_ADDED_AND_REMOVED_METRIC_KEY,
-        currentPlanValue * -1
+        currentPlanQuantity * -1
       )
     }
 
-    if (isSamePlan) {
-      updateGaugeMetric(
-        isProPlan(newPlan),
-        PRO_SEATS_ADDED_AND_REMOVED_METRIC_KEY,
-        seatDelta
-      )
-      updateGaugeMetric(
-        isTeamPlan(newPlan),
-        TEAM_SEATS_ADDED_AND_REMOVED_METRIC_KEY,
-        seatDelta
-      )
+    if (isSamePlan && isTeamPlan(newPlan)) {
+      updateGaugeMetric(TEAM_SEATS_ADDED_AND_REMOVED_METRIC_KEY, seatDelta)
+    }
+
+    if (isSamePlan && isProPlan(newPlan)) {
+      updateGaugeMetric(PRO_SEATS_ADDED_AND_REMOVED_METRIC_KEY, seatDelta)
     }
 
     metrics.increment(BILLING_PAGE_CHECKOUT_METRIC_KEY)
