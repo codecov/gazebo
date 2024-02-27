@@ -1,5 +1,5 @@
 import { SortingState } from '@tanstack/react-table'
-import { isArray } from 'lodash'
+import isArray from 'lodash/isArray'
 import isNumber from 'lodash/isNumber'
 import qs, { ParsedQs } from 'qs'
 import { useMemo, useState } from 'react'
