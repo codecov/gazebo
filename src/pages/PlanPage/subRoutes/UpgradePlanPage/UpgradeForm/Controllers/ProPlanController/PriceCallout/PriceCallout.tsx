@@ -88,7 +88,7 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
               ,<span className="font-semibold"> next billing date</span> is{' '}
               {nextBillingDate}
             </Fragment>
-          )}
+          )}{' '}
           <button
             className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
             onClick={() => setFormValue('newPlan', Plans.USERS_PR_INAPPY)}
