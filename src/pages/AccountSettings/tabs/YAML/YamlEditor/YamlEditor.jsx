@@ -8,20 +8,18 @@ import './codecov-theme.css'
 
 const YamlEditor = forwardRef(({ ...props }, ref) => {
   return (
-    <div className="md:w-3/4">
-      <AceEditor
-        ref={ref}
-        mode="yaml"
-        theme="github"
-        name="yaml-editor"
-        width="auto"
-        minLines={80}
-        highlightActiveLine={false}
-        editorProps={{ $blockScrolling: true }}
-        setOptions={{ useWorker: false }}
-        {...props}
-      />
-    </div>
+    <AceEditor
+      ref={ref}
+      mode="yaml"
+      theme="github"
+      name="yaml-editor"
+      width="auto"
+      minLines={80}
+      highlightActiveLine={false}
+      editorProps={{ $blockScrolling: true }}
+      setOptions={{ useWorker: false }}
+      {...props}
+    />
   )
 })
 

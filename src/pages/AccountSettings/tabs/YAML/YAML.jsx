@@ -74,11 +74,13 @@ function YAML({ owner }) {
         control={control}
         name="editor"
         render={({ field: { onChange, value } }) => (
-          <YamlEditor
-            value={value}
-            onChange={onChange}
-            placeholder={`All ${owner} repos will inherit this configuration`}
-          />
+          <div className="md:w-3/4">
+            <YamlEditor
+              value={value}
+              onChange={onChange}
+              placeholder={`All ${owner} repos will inherit this configuration`}
+            />
+          </div>
         )}
       />
       <div className="float-right mt-4">

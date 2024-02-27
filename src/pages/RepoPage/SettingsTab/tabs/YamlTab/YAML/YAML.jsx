@@ -14,7 +14,13 @@ function YAML({ yaml }) {
         </p>
       </div>
       <hr />
-      <YamlEditor value={yaml} readOnly placeholder="Repo YAML Configuration" />
+      <div className="md:w-3/4">
+        <YamlEditor
+          value={yaml}
+          readOnly
+          placeholder="Repo YAML Configuration"
+        />
+      </div>
     </div>
   )
 }
