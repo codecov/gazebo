@@ -191,7 +191,7 @@ describe('UpdateButton', () => {
     })
 
     describe('sends metrics to sentry', () => {
-      it.only('updates counter on load and checkout', async () => {
+      it('updates counter on load and checkout', async () => {
         const { user } = setup({ planValue: Plans.USERS_TEAMM })
 
         const props = {
