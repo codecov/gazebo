@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { chain } from 'lodash/chain'
+// eslint-disable-next-line no-restricted-imports
+import _ from 'lodash'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -102,7 +103,7 @@ describe('useFileWithMainCoverage', () => {
           ...data.owner.repository.commit.coverageFile,
           totals: 0,
           flagNames: ['a', 'b'],
-          coverage: chain(data.owner.repository.commit.coverageFile.coverage)
+          coverage: _.chain(data.owner.repository.commit.coverageFile.coverage)
             .keyBy('line')
             .mapValues('coverage')
             .value(),
@@ -186,7 +187,7 @@ describe('useFileWithMainCoverage', () => {
           totals: 0,
           flagNames: [],
           isCriticalFile: true,
-          coverage: chain(
+          coverage: _.chain(
             data.owner.repository.branch.head.coverageFile.coverage
           )
             .keyBy('line')
