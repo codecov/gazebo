@@ -38,7 +38,7 @@ const UpdateButton: React.FC<BillingControlsProps> = ({
   const noChangeInSeats = seats === currentPlanQuantity
   const disabled = !isValid || (isSamePlan && noChangeInSeats)
   const { data: currentUser } = useUser()
-  const ownerId = currentUser.trackingMetadata.ownerid
+  const ownerId = currentUser?.trackingMetadata?.ownerid ?? 'No owner id'
 
   useEffect(() => {
     metrics.increment(BILLING_PAGE_VISIT_METRIC_KEY)
