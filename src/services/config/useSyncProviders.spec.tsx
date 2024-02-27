@@ -4,10 +4,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import {
-  EnterpriseLoginProviders,
-  useServiceProviders,
-} from './useServiceProviders'
+import { EnterpriseSyncProviders, useSyncProviders } from './useSyncProviders'
 
 const server = setupServer()
 const queryClient = new QueryClient({
@@ -36,21 +33,21 @@ afterAll(() => {
 })
 
 interface SetupArgs {
-  loginProviders?: Array<EnterpriseLoginProviders>
+  syncProviders?: Array<EnterpriseSyncProviders>
   hasParsingError?: boolean
 }
 
-describe('useServiceProviders', () => {
-  function setup({ loginProviders, hasParsingError }: SetupArgs) {
+describe('useSyncProviders', () => {
+  function setup({ syncProviders, hasParsingError }: SetupArgs) {
     server.use(
-      graphql.query('GetServiceProviders', (req, res, ctx) => {
+      graphql.query('GetSyncProviders', (req, res, ctx) => {
         if (hasParsingError) {
           return res(ctx.status(200), ctx.data({ idk: true }))
         }
 
         return res(
           ctx.status(200),
-          ctx.data({ config: { loginProviders: loginProviders } })
+          ctx.data({ config: { syncProviders: syncProviders } })
         )
       })
     )
@@ -59,20 +56,14 @@ describe('useServiceProviders', () => {
   describe('third party services are configured providers', () => {
     it('returns data', async () => {
       setup({
-        loginProviders: ['GITHUB', 'GITLAB', 'BITBUCKET', 'OKTA'],
+        syncProviders: ['GITHUB', 'GITLAB', 'BITBUCKET'],
       })
-      const { result } = renderHook(() => useServiceProviders(), { wrapper })
+      const { result } = renderHook(() => useSyncProviders({}), { wrapper })
 
       await waitFor(() => result.current.isSuccess)
 
       await waitFor(() =>
-        expect(result.current.data).toStrictEqual({
-          providerList: ['GITHUB', 'GITLAB', 'BITBUCKET', 'OKTA'],
-          github: true,
-          gitlab: true,
-          bitbucket: true,
-          okta: true,
-        })
+        expect(result.current.data).toStrictEqual(['gh', 'gl', 'bb'])
       )
     })
   })
@@ -80,28 +71,18 @@ describe('useServiceProviders', () => {
   describe('self hosted services are configured providers', () => {
     it('returns data', async () => {
       setup({
-        loginProviders: [
+        syncProviders: [
           'GITHUB_ENTERPRISE',
           'GITLAB_ENTERPRISE',
           'BITBUCKET_SERVER',
         ],
       })
-      const { result } = renderHook(() => useServiceProviders(), { wrapper })
+      const { result } = renderHook(() => useSyncProviders({}), { wrapper })
 
       await waitFor(() => result.current.isSuccess)
 
       await waitFor(() =>
-        expect(result.current.data).toStrictEqual({
-          providerList: [
-            'GITHUB_ENTERPRISE',
-            'GITLAB_ENTERPRISE',
-            'BITBUCKET_SERVER',
-          ],
-          github: true,
-          gitlab: true,
-          bitbucket: true,
-          okta: false,
-        })
+        expect(result.current.data).toStrictEqual(['ghe', 'gle', 'bbs'])
       )
     })
   })
@@ -120,7 +101,7 @@ describe('useServiceProviders', () => {
         hasParsingError: true,
       })
 
-      const { result } = renderHook(() => useServiceProviders(), { wrapper })
+      const { result } = renderHook(() => useSyncProviders({}), { wrapper })
 
       await waitFor(() => expect(result.current.isError).toBeTruthy())
 
