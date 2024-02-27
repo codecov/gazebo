@@ -1,20 +1,22 @@
 import { metrics } from '@sentry/react'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useAccountDetails } from 'services/account'
+import { useUser } from 'services/user'
 import { isFreePlan, isProPlan, isTeamPlan } from 'shared/utils/billing'
 import Button from 'ui/Button'
 
 import { NewPlanType } from '../constants'
 
-const TEAM_TO_PRO_UPGRADE_WITH_SEAT_DELTA_METRIC_KEY =
-  'billing_change.user.team.change.to.pro.test'
-const PRO_TO_TEAM_CHANGE_WITH_SEAT_DELTA_METRIC_KEY =
-  'billing_change.user.pro.change.to.team.test'
-const NEW_PRO_SEATS_ADDED_METRIC_KEY = 'billing_change.user.new.pro.seats.test'
-const NEW_TEAM_SEATS_ADDED_METRIC_KEY =
-  'billing_change.user.new.team.seats.test'
+const TEAM_SEATS_ADDED_AND_REMOVED_METRIC_KEY =
+  'billing_change.user.team.change.to.pro.test1'
+const PRO_SEATS_ADDED_AND_REMOVED_METRIC_KEY =
+  'billing_change.user.team.change.to.pro.test1'
+const BILLING_PAGE_VISIT_METRIC_KEY =
+  'billing_change.user.team.change.to.pro.test1'
+const BILLING_PAGE_CHECKOUT_METRIC_KEY =
+  'billing_change.user.team.change.to.pro.test1'
 
 interface BillingControlsProps {
   seats: number
@@ -36,30 +38,58 @@ const UpdateButton: React.FC<BillingControlsProps> = ({
   const isSamePlan = newPlan === currentPlanValue
   const noChangeInSeats = seats === currentPlanQuantity
   const disabled = !isValid || (isSamePlan && noChangeInSeats)
-  const seatDelta = seats - currentPlanQuantity
+  const { data: currentUser } = useUser()
+  const ownerId = currentUser.trackingMetadata.ownerid
+
+  useEffect(() => {
+    return () => {
+      metrics.increment(BILLING_PAGE_VISIT_METRIC_KEY)
+    }
+  }, [])
+
+  const updateGaugeMetric = (
+    isPlanConditionMet: boolean,
+    planTypeKey: string,
+    value: number
+  ) => {
+    if (isPlanConditionMet) {
+      metrics.gauge(planTypeKey, value, {
+        tags: {
+          ownerId,
+        },
+      })
+    }
+  }
 
   const updateBillingMetrics = () => {
-    if (isTeamPlan(currentPlanValue) && isProPlan(newPlan)) {
-      metrics.distribution(
-        TEAM_TO_PRO_UPGRADE_WITH_SEAT_DELTA_METRIC_KEY,
+    const seatDelta = seats - currentPlanQuantity
+    if (!isSamePlan) {
+      updateGaugeMetric(
+        isTeamPlan(currentPlanValue),
+        TEAM_SEATS_ADDED_AND_REMOVED_METRIC_KEY,
+        currentPlanValue * -1
+      )
+      updateGaugeMetric(
+        isProPlan(currentPlanValue),
+        PRO_SEATS_ADDED_AND_REMOVED_METRIC_KEY,
+        currentPlanValue * -1
+      )
+    }
+
+    if (isSamePlan) {
+      updateGaugeMetric(
+        isProPlan(newPlan),
+        PRO_SEATS_ADDED_AND_REMOVED_METRIC_KEY,
+        seatDelta
+      )
+      updateGaugeMetric(
+        isTeamPlan(newPlan),
+        TEAM_SEATS_ADDED_AND_REMOVED_METRIC_KEY,
         seatDelta
       )
     }
 
-    if (isProPlan(currentPlanValue) && isTeamPlan(newPlan)) {
-      metrics.distribution(
-        PRO_TO_TEAM_CHANGE_WITH_SEAT_DELTA_METRIC_KEY,
-        seatDelta
-      )
-    }
-
-    if (isSamePlan && isProPlan(newPlan)) {
-      metrics.distribution(NEW_PRO_SEATS_ADDED_METRIC_KEY, seatDelta)
-    }
-
-    if (isSamePlan && isTeamPlan(newPlan)) {
-      metrics.distribution(NEW_TEAM_SEATS_ADDED_METRIC_KEY, seatDelta)
-    }
+    metrics.increment(BILLING_PAGE_CHECKOUT_METRIC_KEY)
   }
 
   return (
