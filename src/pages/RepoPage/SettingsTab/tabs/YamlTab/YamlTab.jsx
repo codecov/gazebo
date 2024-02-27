@@ -12,7 +12,7 @@ function YamlTab() {
   return (
     <div className="flex flex-col gap-8">
       <YAML yaml={repository?.yaml} />
-      <div className="flex flex-col gap-4 border-2 border-ds-gray-primary p-4 xl:w-3/5">
+      <div className="flex flex-col gap-4 border-2 border-ds-gray-primary p-4 md:w-3/4">
         <CurrentRepoSettings
           botUsername={repository?.bot?.username}
           defaultBranch={repository?.defaultBranch}
