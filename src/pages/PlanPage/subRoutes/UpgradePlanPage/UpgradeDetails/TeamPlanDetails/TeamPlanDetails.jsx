@@ -27,7 +27,7 @@ function TeamPlanDetails() {
   const trialStatus = planData?.plan?.trialStatus
 
   return (
-    <div className="h-fit border">
+    <div className="h-fit min-w-[275px] border">
       <h3 className="p-4 font-semibold">{teamPlanYear?.marketingName} plan</h3>
       <hr />
       <div className="flex flex-col gap-4 p-4">
