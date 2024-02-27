@@ -17,6 +17,7 @@ export const query = `
         }
         commit(id: $commit) {
           pathContents(path: $path, filters: $filters) {
+            __typename
             ... on PathContents {
               results {
                 __typename
@@ -32,6 +33,12 @@ export const query = `
                 }
               }
               __typename
+            }
+            ... on UnknownPath {
+              message
+            }
+            ... on MissingCoverage {
+              message
             }
           }
         }

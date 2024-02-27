@@ -38,10 +38,18 @@ export const useRepoPullContents = ({
           filters,
         },
       }).then((res) => {
+        let results
+        const pathContentsType =
+          res?.data?.owner?.repository?.pull?.head?.pathContents?.__typename
+        if (pathContentsType === 'PathContents') {
+          results =
+            res?.data?.owner?.repository?.pull?.head?.pathContents?.results
+        }
+
         return {
-          results:
-            res?.data?.owner?.repository?.pull?.head?.pathContents?.results,
+          results: results ?? null,
           commitid: res?.data?.owner?.repository?.pull?.head?.commitid,
+          pathContentsType,
           indicationRange:
             res?.data?.owner?.repository?.repositoryConfig?.indicationRange,
         }
