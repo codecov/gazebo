@@ -34,8 +34,8 @@ function ProPlanDetails() {
         <div>
           <p className="mb-2 text-xs font-semibold">Pricing</p>
           <p className="text-xs font-semibold">
-            <span className="mr-1 text-2xl">${proPlanYear?.baseUnitPrice}</span>
-            per user/month
+            <span className="text-2xl">${proPlanYear?.baseUnitPrice}</span> per
+            user/month
           </p>
           <p className="text-xs text-ds-gray-quaternary">
             billed annually or ${proPlanMonth?.baseUnitPrice} for monthly

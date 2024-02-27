@@ -23,8 +23,8 @@ function PlanPricing({ value, baseUnitPrice }) {
 
   return (
     <h2 className="text-xs font-semibold">
-      <span className="mr-1 text-2xl uppercase">${baseUnitPrice}</span>
-      per user/month
+      <span className="text-2xl uppercase">${baseUnitPrice}</span> per
+      user/month
     </h2>
   )
 }
