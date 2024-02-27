@@ -30,7 +30,7 @@ function ProPlanDetails() {
     <div className="h-fit min-w-[275px] border">
       <h3 className="p-4 font-semibold">{proPlanYear?.marketingName} plan</h3>
       <hr />
-      <div className="flex flex-col gap-4 p-4">
+      <div className="flex flex-col gap-6 p-4">
         <div>
           <p className="mb-2 text-xs font-semibold">Pricing</p>
           <p className="text-xs font-semibold">

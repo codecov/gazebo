@@ -81,8 +81,8 @@ const BillingControls: React.FC<BillingControlsProps> = ({
           ]}
         />
         <p>
-          <span className="font-semibold">${baseUnitPrice}</span>
-          /per seat, billed {billingRate}
+          <span className="font-semibold">${baseUnitPrice}</span> per seat /
+          month, billed {billingRate}
         </p>
       </div>
     </div>

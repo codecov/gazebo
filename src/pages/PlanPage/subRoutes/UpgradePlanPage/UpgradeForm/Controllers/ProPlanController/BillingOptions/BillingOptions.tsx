@@ -57,7 +57,7 @@ const BillingControls: React.FC<BillingControlsProps> = ({
 
   return (
     <div className="flex w-fit flex-col gap-2">
-      <h3 className="font-semibold">Billing</h3>
+      <h3 className="font-semibold">Choose a billing cycle</h3>
       <div className="inline-flex items-center gap-2">
         <OptionButton
           type="button"
@@ -81,8 +81,8 @@ const BillingControls: React.FC<BillingControlsProps> = ({
           ]}
         />
         <p>
-          <span className="font-semibold">${baseUnitPrice}</span>
-          /per seat, billed {billingRate}
+          <span className="font-semibold">${baseUnitPrice}</span> per seat /
+          month, billed {billingRate}
         </p>
       </div>
     </div>

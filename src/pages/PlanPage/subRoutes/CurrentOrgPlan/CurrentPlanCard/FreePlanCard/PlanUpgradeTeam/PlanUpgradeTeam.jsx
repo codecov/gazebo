@@ -26,7 +26,7 @@ function PlanUpgradeTeam() {
 
   let buttonText = 'Manage plan'
   if (isFreePlan(currentPlan?.value) || isTrialPlan(currentPlan?.value)) {
-    buttonText = 'Upgrade to Team'
+    buttonText = 'Upgrade'
   }
 
   return (

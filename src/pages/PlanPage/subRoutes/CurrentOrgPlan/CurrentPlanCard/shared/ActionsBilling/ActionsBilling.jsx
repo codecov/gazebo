@@ -57,7 +57,7 @@ function PlansActionsBilling({ plan }) {
     return (
       <div className="flex self-start">
         <Button to={{ pageName: 'upgradeOrgPlan' }} variant="primary">
-          {isSentryPlan(plan?.value) ? 'Manage plan' : 'Upgrade to Sentry Pro'}
+          {isSentryPlan(plan?.value) ? 'Manage plan' : 'Upgrade'}
         </Button>
       </div>
     )
@@ -67,7 +67,7 @@ function PlansActionsBilling({ plan }) {
     <div className="flex self-start">
       <Button to={{ pageName: 'upgradeOrgPlan' }} variant="primary">
         {isFreePlan(plan?.value) || isTrialPlan(plan?.value)
-          ? 'Upgrade to Pro'
+          ? 'Upgrade'
           : 'Manage plan'}
       </Button>
     </div>
