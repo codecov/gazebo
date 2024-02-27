@@ -10,9 +10,9 @@ import Button from 'ui/Button'
 import { NewPlanType } from '../constants'
 
 const TEAM_SEATS_ADDED_AND_REMOVED_METRIC_KEY =
-  'billing_change.user.team.seats.test1'
+  'billing_change.user.team.seats.change'
 const PRO_SEATS_ADDED_AND_REMOVED_METRIC_KEY =
-  'billing_change.user.pro.seats.test1'
+  'billing_change.user.pro.seats.change'
 const BILLING_PAGE_VISIT_METRIC_KEY = 'billing_change.user.visited.page'
 const BILLING_PAGE_CHECKOUT_METRIC_KEY =
   'billing_change.user.checkout.from.page'
@@ -90,7 +90,7 @@ const UpdateButton: React.FC<BillingControlsProps> = ({
         variant="primary"
         hook="submit-upgrade"
         to={undefined}
-        onClick={updateBillingMetrics()}
+        onClick={updateBillingMetrics}
       >
         {isFreePlan(currentPlanValue) ? 'Proceed to Checkout' : 'Update'}
       </Button>
