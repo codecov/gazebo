@@ -25,7 +25,7 @@ function SentryPlanDetails() {
   const trialStatus = planData?.plan?.trialStatus
 
   return (
-    <div className="flex flex-col gap-4 border p-4">
+    <div className="flex min-w-[280px] flex-col gap-4 border p-4">
       <img src={sentryCodecov} alt="sentry codecov logos" width="110px" />
       <h3 className="text-2xl font-semibold text-ds-pink-quinary">
         {sentryPlanYear?.marketingName} plan
@@ -40,7 +40,7 @@ function SentryPlanDetails() {
         benefits={sentryPlanYear?.benefits}
       />
       <p className="text-ds-gray-quaternary">
-        ${sentryPlanMonth?.baseUnitPrice} per user / month if paid monthly
+        ${sentryPlanMonth?.baseUnitPrice} per user/month if paid monthly
       </p>
       {/* TODO_UPGRADE_FORM: Note that there never was schedules shown here like it is in the pro plan details page. This
       is a bug imo and needs to be here in a future ticket */}

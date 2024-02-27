@@ -50,8 +50,8 @@ function PlanUpgradeTeam() {
             <p className="text-xs font-semibold">Pricing</p>
             <div className="text-xs">
               <p className="font-semibold">
-                <span className="text-2xl">${yearlyUnitPrice}</span>
-                /per user, per month
+                <span className="text-2xl">${yearlyUnitPrice}</span> per
+                user/month
               </p>
               <p className="text-ds-gray-senary">
                 billed annually, or ${monthlyUnitPrice} per user billing monthly

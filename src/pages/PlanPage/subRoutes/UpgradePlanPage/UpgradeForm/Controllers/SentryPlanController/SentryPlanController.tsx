@@ -34,7 +34,7 @@ const SentryPlanController: React.FC<SentryPlanControllerProps> = ({
         <BillingOptions newPlan={newPlan} setFormValue={setFormValue} />
       </div>
       <div className="flex flex-col gap-2 xl:w-5/12">
-        <div className="w-2/6">
+        <div className="w-1/2">
           <TextInput
             data-cy="seats"
             dataMarketing="plan-pricing-seats"
@@ -42,7 +42,7 @@ const SentryPlanController: React.FC<SentryPlanControllerProps> = ({
             id="nb-seats"
             size={20}
             type="number"
-            label="Seat count"
+            label="Enter seat count"
             min={MIN_SENTRY_SEATS}
           />
         </div>

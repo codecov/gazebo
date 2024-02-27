@@ -264,7 +264,7 @@ describe('SentryPlanDetails', () => {
       render(<SentryPlanDetails />, { wrapper: wrapper() })
 
       const disclaimer = await screen.findByText(
-        /\$12 per user \/ month if paid monthly/i
+        /\$12 per user\/month if paid monthly/i
       )
       expect(disclaimer).toBeInTheDocument()
     })

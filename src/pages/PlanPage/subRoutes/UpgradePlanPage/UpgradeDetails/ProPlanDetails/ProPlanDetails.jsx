@@ -27,7 +27,7 @@ function ProPlanDetails() {
   const trialStatus = planData?.plan?.trialStatus
 
   return (
-    <div className="h-fit min-w-[275px] border">
+    <div className="h-fit min-w-[280px] border">
       <h3 className="p-4 font-semibold">{proPlanYear?.marketingName} plan</h3>
       <hr />
       <div className="flex flex-col gap-6 p-4">
@@ -35,7 +35,7 @@ function ProPlanDetails() {
           <p className="mb-2 text-xs font-semibold">Pricing</p>
           <p className="text-xs font-semibold">
             <span className="mr-1 text-2xl">${proPlanYear?.baseUnitPrice}</span>
-            per user / month
+            per user/month
           </p>
           <p className="text-xs text-ds-gray-quaternary">
             billed annually or ${proPlanMonth?.baseUnitPrice} for monthly

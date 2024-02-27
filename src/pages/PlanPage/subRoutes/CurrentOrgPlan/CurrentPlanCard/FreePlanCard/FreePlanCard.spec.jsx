@@ -332,7 +332,7 @@ describe('FreePlanCard', () => {
       const cost = await screen.findByText(/\$10/)
       expect(cost).toBeInTheDocument()
 
-      const annualBillingText = await screen.findByText(/per user, per month/)
+      const annualBillingText = await screen.findByText(/per user\/month/)
       expect(annualBillingText).toBeInTheDocument()
 
       const monthlyBillingText = await screen.findByText(
@@ -444,7 +444,7 @@ describe('FreePlanCard', () => {
       })
 
       const upgradeLink = await screen.findByRole('link', {
-        name: /Upgrade to Sentry Pro/,
+        name: /Upgrade/,
       })
       expect(upgradeLink).toBeInTheDocument()
       expect(upgradeLink).toHaveAttribute(
@@ -474,7 +474,7 @@ describe('FreePlanCard', () => {
       expect(perMonth).toBeInTheDocument()
 
       const billingCycleInfo = await screen.findByText(
-        /over 5 users is \$10\/per user per month, billed annually/
+        /over 5 users is \$10 per user\/month, billed annually/
       )
       expect(billingCycleInfo).toBeInTheDocument()
     })

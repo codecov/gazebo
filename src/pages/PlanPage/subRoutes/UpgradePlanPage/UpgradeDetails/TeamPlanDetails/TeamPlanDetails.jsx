@@ -27,7 +27,7 @@ function TeamPlanDetails() {
   const trialStatus = planData?.plan?.trialStatus
 
   return (
-    <div className="h-fit min-w-[275px] border">
+    <div className="h-fit min-w-[280px] border">
       <h3 className="p-4 font-semibold">{teamPlanYear?.marketingName} plan</h3>
       <hr />
       <div className="flex flex-col gap-6 p-4">
@@ -37,7 +37,7 @@ function TeamPlanDetails() {
             <span className="mr-1 text-2xl">
               ${teamPlanYear?.baseUnitPrice}
             </span>
-            per user / month
+            per user/month
           </p>
           <p className="text-xs text-ds-gray-quaternary">
             billed annually or ${teamPlanMonth?.baseUnitPrice} for monthly

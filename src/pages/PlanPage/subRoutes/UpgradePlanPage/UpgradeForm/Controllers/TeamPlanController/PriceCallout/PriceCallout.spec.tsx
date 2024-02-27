@@ -142,7 +142,7 @@ describe('PriceCallout', () => {
         })
 
         const annualPrice = await screen.findByText(
-          /\/per month billed annually at \$480.00/
+          /\/month billed annually at \$480.00/
         )
         expect(annualPrice).toBeInTheDocument()
       })

@@ -22,7 +22,7 @@ function PlanDetails({
           /per month
         </p>
         <p className="text-ds-gray-senary">
-          over 5 users is ${sentryAnnualUnitPrice}/per user per month, billed
+          over 5 users is ${sentryAnnualUnitPrice} per user/month, billed
           annually
         </p>
       </div>
@@ -32,8 +32,7 @@ function PlanDetails({
   return (
     <div className="text-xs">
       <p className="font-semibold">
-        <span className="text-2xl">${proYearlyUnitPrice}</span>
-        /per user, per month
+        <span className="text-2xl">${proYearlyUnitPrice}</span> per user/month
       </p>
       <p className="text-ds-gray-senary">
         billed annually, or ${proMonthlyUnitPrice} per user billing monthly
