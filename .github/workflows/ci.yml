@@ -178,21 +178,21 @@ jobs:
           token: ${{ secrets.CODECOV_ORG_TOKEN }}
           url: ${{ secrets.CODECOV_URL }}
       
-      - name: Upload test results to codecov
+      - name: Upload test results to codecov (Staging)
         uses: codecov/test-results-action@v1
         if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
         with:
           token: ${{ secrets.secrets.CODECOV_ORG_TOKEN_STAGING }}
           url: ${{ secrets.CODECOV_STAGING_URL }}
       
-      - name: Upload test results to codecov
+      - name: Upload test results to codecov (QA)
         uses: codecov/test-results-action@v1
         if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
         with:
           token: ${{ secrets.secrets.CODECOV_QA_TOKEN }}
           url: ${{ secrets.CODECOV_QA_URL }}
       
-      - name: Upload test results to codecov
+      - name: Upload test results to codecov (Public QA)
         uses: codecov/test-results-action@v1
         if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
         with:
