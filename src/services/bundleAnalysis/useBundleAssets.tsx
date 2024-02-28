@@ -6,6 +6,7 @@ import { MissingHeadReportSchema } from 'services/comparison'
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
+  useRepoOverview,
 } from 'services/repo'
 import Api from 'shared/api'
 import { type NetworkErrorObject } from 'shared/api/helpers'
@@ -125,17 +126,41 @@ interface UseBundleAssetsArgs {
   provider: string
   owner: string
   repo: string
-  branch: string
+  branch?: string
   bundle: string
+  opts?: {
+    enabled?: boolean
+  }
 }
 
 export const useBundleAssets = ({
   provider,
   owner,
   repo,
-  branch,
+  branch: branchArg,
   bundle,
+  opts,
 }: UseBundleAssetsArgs) => {
+  const { data: repoOverview, isSuccess } = useRepoOverview({
+    provider,
+    repo,
+    owner,
+    opts: {
+      enabled: !branchArg,
+    },
+  })
+
+  let enabled = true
+  if (opts?.enabled !== undefined) {
+    enabled = opts.enabled
+  }
+
+  if (opts?.enabled !== undefined && !branchArg) {
+    enabled = opts.enabled && isSuccess
+  }
+
+  const branch = branchArg ?? repoOverview?.defaultBranch
+
   return useQuery({
     queryKey: ['BundleAssets', provider, owner, repo, branch, bundle],
     queryFn: ({ signal }) =>
@@ -199,5 +224,6 @@ export const useBundleAssets = ({
 
         return { assets }
       }),
+    enabled: enabled,
   })
 }
