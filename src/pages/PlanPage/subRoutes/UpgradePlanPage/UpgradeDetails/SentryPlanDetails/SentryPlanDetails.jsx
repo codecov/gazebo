@@ -35,7 +35,7 @@ function SentryPlanDetails() {
           <p className="text-xs font-semibold">
             <span className="text-2xl">${SENTRY_PRICE}</span>/month
           </p>
-          <p className="text-xs text-ds-gray-quaternary">
+          <p className="text-xs text-ds-gray-senary">
             over 5 users is ${sentryPlanYear?.baseUnitPrice} per user/month,
             billed annually
           </p>

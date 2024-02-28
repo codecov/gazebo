@@ -37,7 +37,7 @@ function TeamPlanDetails() {
             <span className="text-2xl">${teamPlanYear?.baseUnitPrice}</span> per
             user/month
           </p>
-          <p className="text-xs text-ds-gray-quaternary">
+          <p className="text-xs text-ds-gray-senary">
             billed annually or ${teamPlanMonth?.baseUnitPrice} for monthly
             billing
           </p>
