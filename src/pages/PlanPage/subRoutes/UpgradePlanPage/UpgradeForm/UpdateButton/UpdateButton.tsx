@@ -1,6 +1,10 @@
 import React, { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
+import {
+  incrementBillingPageVisitCounter,
+  updateBillingMetrics,
+} from 'pages/PlanPage/PlanMetrics/planMetrics'
 import { useAccountDetails } from 'services/account'
 import { useUser } from 'services/user'
 import { isFreePlan } from 'shared/utils/billing'
