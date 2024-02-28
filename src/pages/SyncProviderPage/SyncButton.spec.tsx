@@ -14,8 +14,11 @@ describe('SyncButton', () => {
     it('renders sync button', () => {
       render(<SyncButton provider="gh" />, { wrapper })
 
-      const text = screen.getByText('Sync with Github')
-      expect(text).toBeInTheDocument()
+      const link = screen.getByRole('link', { name: /Sync with Github/ })
+
+      const expectedRedirect = encodeURIComponent('http://localhost/gh')
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute('href', `/login/gh?to=${expectedRedirect}`)
     })
   })
 
@@ -23,8 +26,11 @@ describe('SyncButton', () => {
     it('renders sync button', () => {
       render(<SyncButton provider="gl" />, { wrapper })
 
-      const text = screen.getByText('Sync with Gitlab')
-      expect(text).toBeInTheDocument()
+      const link = screen.getByRole('link', { name: /Sync with Gitlab/ })
+
+      const expectedRedirect = encodeURIComponent('http://localhost/gl')
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute('href', `/login/gl?to=${expectedRedirect}`)
     })
   })
 
@@ -32,8 +38,53 @@ describe('SyncButton', () => {
     it('renders sync button', () => {
       render(<SyncButton provider="bb" />, { wrapper })
 
-      const text = screen.getByText('Sync with BitBucket')
-      expect(text).toBeInTheDocument()
+      const link = screen.getByRole('link', { name: /Sync with BitBucket/ })
+
+      const expectedRedirect = encodeURIComponent('http://localhost/bb')
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute('href', `/login/bb?to=${expectedRedirect}`)
+    })
+  })
+
+  describe('provider is set to ghe', () => {
+    it('renders sync button', () => {
+      render(<SyncButton provider="ghe" />, { wrapper })
+
+      const link = screen.getByRole('link', {
+        name: /Sync with Github Enterprise/,
+      })
+
+      const expectedRedirect = encodeURIComponent('http://localhost/ghe')
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute('href', `/login/ghe?to=${expectedRedirect}`)
+    })
+  })
+
+  describe('provider is set to gle', () => {
+    it('renders sync button', () => {
+      render(<SyncButton provider="gle" />, { wrapper })
+
+      const link = screen.getByRole('link', {
+        name: /Sync with Gitlab Enterprise/,
+      })
+
+      const expectedRedirect = encodeURIComponent('http://localhost/gle')
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute('href', `/login/gle?to=${expectedRedirect}`)
+    })
+  })
+
+  describe('provider is set to bbs', () => {
+    it('renders sync button', () => {
+      render(<SyncButton provider="bbs" />, { wrapper })
+
+      const link = screen.getByRole('link', {
+        name: /Sync with BitBucket Server/,
+      })
+
+      const expectedRedirect = encodeURIComponent('http://localhost/bbs')
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute('href', `/login/bbs?to=${expectedRedirect}`)
     })
   })
 })

@@ -163,88 +163,257 @@ describe('RepoPageTabs', () => {
     )
   }
 
-  describe('coverage tab is rendered', () => {
-    it('renders the correct details', async () => {
-      setup({})
-      render(<RepoPageTabs refetchEnabled={false} />, { wrapper: wrapper() })
+  describe('coverage tab', () => {
+    describe('when coverage is enabled', () => {
+      it('renders the coverage tab', async () => {
+        setup({
+          isCurrentUserPartOfOrg: false,
+          coverageEnabled: true,
+        })
+        render(<RepoPageTabs refetchEnabled={false} />, { wrapper: wrapper() })
 
-      const tab = await screen.findByText('Coverage')
-      expect(tab).toBeInTheDocument()
-      expect(tab).toHaveAttribute('aria-current', 'page')
-      expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo')
+        const tab = await screen.findByText('Coverage')
+        expect(tab).toBeInTheDocument()
+        expect(tab).toHaveAttribute('aria-current', 'page')
+        expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo')
+      })
+    })
+
+    describe('when user belongs to the org', () => {
+      it('renders the coverage tab', async () => {
+        setup({
+          isCurrentUserPartOfOrg: true,
+          coverageEnabled: false,
+        })
+        render(<RepoPageTabs refetchEnabled={false} />, { wrapper: wrapper() })
+
+        const tab = await screen.findByText('Coverage')
+        expect(tab).toBeInTheDocument()
+        expect(tab).toHaveAttribute('aria-current', 'page')
+        expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo')
+      })
+    })
+
+    describe('user does not belong to org, and coverage is disabled', () => {
+      it('does not render coverage tab', async () => {
+        setup({
+          isCurrentUserPartOfOrg: false,
+          coverageEnabled: false,
+        })
+        render(<RepoPageTabs refetchEnabled={false} />, { wrapper: wrapper() })
+
+        const loading = await screen.findByText('Loading')
+        await waitForElementToBeRemoved(loading)
+
+        const tab = screen.queryByText('Coverage')
+        expect(tab).not.toBeInTheDocument()
+      })
     })
   })
 
-  describe('bundles tab is rendered', () => {
-    it('renders the correct details', async () => {
-      setup({ language: 'javascript' })
-      render(<RepoPageTabs refetchEnabled={false} />, {
-        wrapper: wrapper('/gh/codecov/test-repo/bundles'),
+  describe('bundles tab', () => {
+    describe('bundle analysis is enabled', () => {
+      it('renders bundles tab', async () => {
+        setup({ bundleAnalysisEnabled: true })
+        render(<RepoPageTabs refetchEnabled={false} />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles'),
+        })
+
+        const tab = await screen.findByText(/Bundles/)
+        expect(tab).toBeInTheDocument()
+        expect(tab).toHaveAttribute('aria-current', 'page')
+        expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/bundles')
+
+        const betaBadge = await screen.findByText('beta')
+        expect(betaBadge).toBeInTheDocument()
       })
+    })
 
-      const tab = await screen.findByText(/Bundles/)
-      expect(tab).toBeInTheDocument()
-      expect(tab).toHaveAttribute('aria-current', 'page')
-      expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/bundles')
+    describe('js or ts is present and user belongs to the org', () => {
+      it('renders the bundles tab', async () => {
+        setup({ language: 'javascript', isCurrentUserPartOfOrg: true })
+        render(<RepoPageTabs refetchEnabled={false} />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles'),
+        })
 
-      const betaBadge = await screen.findByText('beta')
-      expect(betaBadge).toBeInTheDocument()
+        const tab = await screen.findByText(/Bundles/)
+        expect(tab).toBeInTheDocument()
+        expect(tab).toHaveAttribute('aria-current', 'page')
+        expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/bundles')
+
+        const betaBadge = await screen.findByText('beta')
+        expect(betaBadge).toBeInTheDocument()
+      })
+    })
+
+    describe('user does not belong to the org', () => {
+      it('does not render the bundles tab', async () => {
+        setup({ language: 'javascript', isCurrentUserPartOfOrg: false })
+        render(<RepoPageTabs refetchEnabled={false} />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles'),
+        })
+
+        const loader = await screen.findByText('Loading')
+        await waitForElementToBeRemoved(loader)
+
+        const tab = screen.queryByText(/Bundles/)
+        expect(tab).not.toBeInTheDocument()
+
+        const betaBadge = screen.queryByText('beta')
+        expect(betaBadge).not.toBeInTheDocument()
+      })
     })
   })
 
-  describe('flags tab is rendered', () => {
-    it('renders the correct details', async () => {
-      setup({ coverageEnabled: true })
-      render(<RepoPageTabs refetchEnabled={false} />, {
-        wrapper: wrapper('/gh/codecov/test-repo/flags'),
-      })
+  describe('flags tab', () => {
+    describe('rendered when coverage is enabled', () => {
+      it('renders the flags tab', async () => {
+        setup({ coverageEnabled: true })
+        render(<RepoPageTabs refetchEnabled={false} />, {
+          wrapper: wrapper('/gh/codecov/test-repo/flags'),
+        })
 
-      const tab = await screen.findByText('Flags')
-      expect(tab).toBeInTheDocument()
-      expect(tab).toHaveAttribute('aria-current', 'page')
-      expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/flags')
+        const tab = await screen.findByText('Flags')
+        expect(tab).toBeInTheDocument()
+        expect(tab).toHaveAttribute('aria-current', 'page')
+        expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/flags')
+      })
+    })
+
+    describe('when coverage is not enabled', () => {
+      it('does not render the flags tab', async () => {
+        setup({ coverageEnabled: false })
+        render(<RepoPageTabs refetchEnabled={false} />, {
+          wrapper: wrapper('/gh/codecov/test-repo/flags'),
+        })
+
+        const loader = await screen.findByText('Loading')
+        await waitForElementToBeRemoved(loader)
+
+        const tab = screen.queryByText('Flags')
+        expect(tab).not.toBeInTheDocument()
+      })
     })
   })
 
-  describe('commits tab is rendered', () => {
-    it('renders the correct details', async () => {
-      setup({ bundleAnalysisEnabled: true })
-      render(<RepoPageTabs refetchEnabled={false} />, {
-        wrapper: wrapper('/gh/codecov/test-repo/commits'),
-      })
+  describe('commits tab', () => {
+    describe('coverage is enabled', () => {
+      it('renders the commits tab', async () => {
+        setup({ coverageEnabled: true })
+        render(<RepoPageTabs refetchEnabled={false} />, {
+          wrapper: wrapper('/gh/codecov/test-repo/commits'),
+        })
 
-      const tab = await screen.findByText('Commits')
-      expect(tab).toBeInTheDocument()
-      expect(tab).toHaveAttribute('aria-current', 'page')
-      expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/commits')
+        const tab = await screen.findByText('Commits')
+        expect(tab).toBeInTheDocument()
+        expect(tab).toHaveAttribute('aria-current', 'page')
+        expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/commits')
+      })
+    })
+
+    describe('bundle analysis is enabled', () => {
+      it('renders the commits tab', async () => {
+        setup({ bundleAnalysisEnabled: true })
+        render(<RepoPageTabs refetchEnabled={false} />, {
+          wrapper: wrapper('/gh/codecov/test-repo/commits'),
+        })
+
+        const tab = await screen.findByText('Commits')
+        expect(tab).toBeInTheDocument()
+        expect(tab).toHaveAttribute('aria-current', 'page')
+        expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/commits')
+      })
+    })
+
+    describe('nothing is enabled', () => {
+      it('does not render the commits tab', async () => {
+        setup({ bundleAnalysisEnabled: false, coverageEnabled: false })
+        render(<RepoPageTabs refetchEnabled={false} />, {
+          wrapper: wrapper('/gh/codecov/test-repo/commits'),
+        })
+
+        const loader = await screen.findByText('Loading')
+        await waitForElementToBeRemoved(loader)
+
+        const tab = screen.queryByText('Commits')
+        expect(tab).not.toBeInTheDocument()
+      })
     })
   })
 
-  describe('pulls tab is rendered', () => {
-    it('renders the correct details', async () => {
-      setup({ bundleAnalysisEnabled: true })
-      render(<RepoPageTabs refetchEnabled={false} />, {
-        wrapper: wrapper('/gh/codecov/test-repo/pulls'),
-      })
+  describe('pulls tab', () => {
+    describe('coverage enabled', () => {
+      it('renders the pulls tab', async () => {
+        setup({ coverageEnabled: true })
+        render(<RepoPageTabs refetchEnabled={false} />, {
+          wrapper: wrapper('/gh/codecov/test-repo/pulls'),
+        })
 
-      const tab = await screen.findByText('Pulls')
-      expect(tab).toBeInTheDocument()
-      expect(tab).toHaveAttribute('aria-current', 'page')
-      expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/pulls')
+        const tab = await screen.findByText('Pulls')
+        expect(tab).toBeInTheDocument()
+        expect(tab).toHaveAttribute('aria-current', 'page')
+        expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/pulls')
+      })
+    })
+
+    describe('bundle analysis enabled', () => {
+      it('renders the pulls tab', async () => {
+        setup({ bundleAnalysisEnabled: true })
+        render(<RepoPageTabs refetchEnabled={false} />, {
+          wrapper: wrapper('/gh/codecov/test-repo/pulls'),
+        })
+
+        const tab = await screen.findByText('Pulls')
+        expect(tab).toBeInTheDocument()
+        expect(tab).toHaveAttribute('aria-current', 'page')
+        expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/pulls')
+      })
+    })
+
+    describe('nothing is enabled', () => {
+      it('does not render the pulls tab', async () => {
+        setup({ bundleAnalysisEnabled: false, coverageEnabled: false })
+        render(<RepoPageTabs refetchEnabled={false} />, {
+          wrapper: wrapper('/gh/codecov/test-repo/pulls'),
+        })
+
+        const loader = await screen.findByText('Loading')
+        await waitForElementToBeRemoved(loader)
+
+        const tab = screen.queryByText('Pulls')
+        expect(tab).not.toBeInTheDocument()
+      })
     })
   })
 
-  describe('settings tab is rendered', () => {
-    it('renders the correct details', async () => {
-      setup({})
-      render(<RepoPageTabs refetchEnabled={false} />, {
-        wrapper: wrapper('/gh/codecov/test-repo/settings'),
-      })
+  describe('settings tab', () => {
+    describe('user is part of the org', () => {
+      it('renders the settings tab', async () => {
+        setup({})
+        render(<RepoPageTabs refetchEnabled={false} />, {
+          wrapper: wrapper('/gh/codecov/test-repo/settings'),
+        })
 
-      const tab = await screen.findByText('Settings')
-      expect(tab).toBeInTheDocument()
-      expect(tab).toHaveAttribute('aria-current', 'page')
-      expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/settings')
+        const tab = await screen.findByText('Settings')
+        expect(tab).toBeInTheDocument()
+        expect(tab).toHaveAttribute('aria-current', 'page')
+        expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/settings')
+      })
+    })
+
+    describe('user is not part of the org', () => {
+      it('does not render the settings tab', async () => {
+        setup({ isCurrentUserPartOfOrg: false })
+        render(<RepoPageTabs refetchEnabled={false} />, {
+          wrapper: wrapper('/gh/codecov/test-repo/settings'),
+        })
+
+        const loader = await screen.findByText('Loading')
+        await waitForElementToBeRemoved(loader)
+
+        const tab = screen.queryByText('Settings')
+        expect(tab).not.toBeInTheDocument()
+      })
     })
   })
 })

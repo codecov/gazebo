@@ -55,7 +55,7 @@ describe('EnterpriseLandingPage', () => {
     { sendProviders = true }: SetupArgs = { sendProviders: true }
   ) {
     server.use(
-      graphql.query('GetServiceProviders', (req, res, ctx) => {
+      graphql.query('GetLoginProviders', (req, res, ctx) => {
         if (sendProviders) {
           return res(ctx.status(200), ctx.data(mockServiceProviders))
         }

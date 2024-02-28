@@ -151,17 +151,7 @@ function Button({
 
 Button.propTypes = {
   to: PropTypes.shape(AppLink.propTypes),
-  variant: PropTypes.oneOf([
-    'default',
-    'primary',
-    'danger',
-    'secondary',
-    'plain',
-    'github',
-    'gitlab',
-    'bitbucket',
-    'listbox',
-  ]),
+  variant: PropTypes.oneOf(Object.keys(variantClasses)),
   isLoading: PropTypes.bool,
   disabled: PropTypes.bool,
   hook: function (props, propName) {
