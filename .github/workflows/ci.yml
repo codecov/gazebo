@@ -171,13 +171,33 @@ jobs:
           JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
           TEST_LIST: ${{ tojson(fromjson(needs.runner-indexes.outputs.test_list_array)[matrix.runner-index]) }}
 
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
+      - name: Upload test results to codecov
+        uses: codecov/test-results-action@v1
+        if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
         with:
-          name: JEST Tests
-          path: reports/junit/*.xml
-          reporter: jest-junit
+          token: ${{ secrets.CODECOV_ORG_TOKEN }}
+          url: ${{ secrets.CODECOV_URL }}
+      
+      - name: Upload test results to codecov
+        uses: codecov/test-results-action@v1
+        if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
+        with:
+          token: ${{ secrets.secrets.CODECOV_ORG_TOKEN_STAGING }}
+          url: ${{ secrets.CODECOV_STAGING_URL }}
+      
+      - name: Upload test results to codecov
+        uses: codecov/test-results-action@v1
+        if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
+        with:
+          token: ${{ secrets.secrets.CODECOV_QA_TOKEN }}
+          url: ${{ secrets.CODECOV_QA_URL }}
+      
+      - name: Upload test results to codecov
+        uses: codecov/test-results-action@v1
+        if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
+        with:
+          token: ${{ secrets.secrets.CODECOV_PUBLIC_QA_TOKEN }}
+          url: ${{ secrets.CODECOV_PUBLIC_QA_URL }}
 
       - name: Install CLI
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
