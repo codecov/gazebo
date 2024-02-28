@@ -38,7 +38,7 @@ function ProPlanDetails() {
             user/month
           </p>
           <p className="text-xs text-ds-gray-senary">
-            billed annually or ${proPlanMonth?.baseUnitPrice} for monthly
+            billed annually, or ${proPlanMonth?.baseUnitPrice} for monthly
             billing
           </p>
         </div>

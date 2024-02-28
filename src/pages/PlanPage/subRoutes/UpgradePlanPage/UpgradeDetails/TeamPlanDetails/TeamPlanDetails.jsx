@@ -38,7 +38,7 @@ function TeamPlanDetails() {
             user/month
           </p>
           <p className="text-xs text-ds-gray-senary">
-            billed annually or ${teamPlanMonth?.baseUnitPrice} for monthly
+            billed annually, or ${teamPlanMonth?.baseUnitPrice} for monthly
             billing
           </p>
         </div>
