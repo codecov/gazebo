@@ -167,6 +167,8 @@ const PullSchema = z.object({
   compareWithBase: CompareWithBaseSchema.nullable(),
 })
 
+export type PullSchemaType = z.infer<typeof PullSchema>
+
 const RepositorySchema = z.object({
   defaultBranch: z.string().nullable(),
   private: z.boolean(),
@@ -264,6 +266,10 @@ interface UsePullArgs {
     hasUnintendedChanges?: boolean
     ordering?: z.infer<typeof ImpactedFilesOrdering>
   }
+  options?: {
+    suspense?: boolean
+    staleTime?: number
+  }
 }
 
 export function usePull({
@@ -272,6 +278,7 @@ export function usePull({
   repo,
   pullId,
   filters = {},
+  options = {},
 }: UsePullArgs) {
   const pullQuery = useQuery({
     queryKey: ['Pull', provider, owner, repo, pullId, query, filters],
@@ -340,6 +347,7 @@ export function usePull({
         }
       }),
     suspense: false,
+    ...options,
   })
 
   return pullQuery

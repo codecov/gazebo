@@ -17,29 +17,29 @@ export type EnterpriseLoginProviders = z.infer<
   typeof EnterpriseLoginProvidersUnionSchema
 >
 
-const GetServiceProvidersSchema = z.object({
+const GetLoginProvidersSchema = z.object({
   config: z.object({
     loginProviders: z.array(EnterpriseLoginProvidersUnionSchema),
   }),
 })
 
 const query = `
-query GetServiceProviders {
+query GetLoginProviders {
   config {
     loginProviders
   }
 }`
 
-export const useServiceProviders = () => {
+export const useLoginProviders = () => {
   return useQuery({
-    queryKey: ['GetServiceProviders'],
+    queryKey: ['GetLoginProviders'],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider: 'gh',
         signal,
         query,
       }).then((res) => {
-        const parsedRes = GetServiceProvidersSchema.safeParse(res?.data)
+        const parsedRes = GetLoginProvidersSchema.safeParse(res?.data)
 
         if (!parsedRes.success) {
           return Promise.reject({

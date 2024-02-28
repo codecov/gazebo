@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
+// eslint-disable-next-line no-restricted-imports
 import _ from 'lodash'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
