@@ -179,6 +179,12 @@ jobs:
           path: reports/junit/*.xml
           reporter: jest-junit
 
+      - name: Upload test results to codecov
+        uses: codecov/test-results-action@v1
+        if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
+        with:
+          token: ${{ secrets.CODECOV_ORG_TOKEN }}
+
       - name: Install CLI
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
         run: |
