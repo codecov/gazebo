@@ -130,6 +130,7 @@ interface UseBundleAssetsArgs {
   bundle: string
   opts?: {
     enabled?: boolean
+    suspense?: boolean
   }
 }
 
@@ -225,5 +226,6 @@ export const useBundleAssets = ({
         return { assets }
       }),
     enabled: enabled,
+    suspense: !!opts?.suspense,
   })
 }
