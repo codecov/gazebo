@@ -5,6 +5,20 @@ import { setupServer } from 'msw/node'
 
 import { useBundleAssets } from './useBundleAssets'
 
+const mockRepoOverview = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      private: false,
+      defaultBranch: 'main',
+      oldestCommitAt: '2022-10-10T11:59:59',
+      coverageEnabled: false,
+      bundleAnalysisEnabled: false,
+      languages: ['javascript'],
+    },
+  },
+}
+
 const mockBranchBundles = {
   owner: {
     repository: {
@@ -120,9 +134,11 @@ describe('useBundleAssets', () => {
     missingHeadReport = false,
   }: SetupArgs) {
     const passedBranch = jest.fn()
+    const madeRequest = jest.fn()
 
     server.use(
       graphql.query('BundleAssets', (req, res, ctx) => {
+        madeRequest()
         if (req.variables?.branch) {
           passedBranch(req.variables?.branch)
         }
@@ -140,11 +156,55 @@ describe('useBundleAssets', () => {
         }
 
         return res(ctx.status(200), ctx.data(mockBranchBundles))
+      }),
+      graphql.query('GetRepoOverview', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoOverview))
       })
     )
 
-    return { passedBranch }
+    return { passedBranch, madeRequest }
   }
+
+  describe('passing branch name', () => {
+    it('uses the branch name passed in', async () => {
+      const { passedBranch } = setup({})
+      renderHook(
+        () =>
+          useBundleAssets({
+            provider: 'gh',
+            owner: 'codecov',
+            repo: 'codecov',
+            branch: 'cool-branch',
+            bundle: 'test-bundle',
+          }),
+        { wrapper }
+      )
+
+      await waitFor(() => expect(passedBranch).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(passedBranch).toHaveBeenCalledWith('cool-branch')
+      )
+    })
+  })
+
+  describe('no branch name passed', () => {
+    it('uses the default branch', async () => {
+      const { passedBranch } = setup({})
+      renderHook(
+        () =>
+          useBundleAssets({
+            provider: 'gh',
+            owner: 'codecov',
+            repo: 'codecov',
+            bundle: 'test-bundle',
+          }),
+        { wrapper }
+      )
+
+      await waitFor(() => expect(passedBranch).toHaveBeenCalled())
+      await waitFor(() => expect(passedBranch).toHaveBeenCalledWith('main'))
+    })
+  })
 
   describe('returns repository typename of repository', () => {
     describe('there is valid data', () => {
@@ -343,6 +403,110 @@ describe('useBundleAssets', () => {
           })
         )
       )
+    })
+  })
+
+  describe('passing enabled to opts object', () => {
+    describe('enabled is true', () => {
+      describe('branch is not passed', () => {
+        it('runs the query', async () => {
+          const { madeRequest } = setup({})
+          renderHook(
+            () =>
+              useBundleAssets({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'codecov',
+                bundle: 'test-bundle',
+                opts: {
+                  enabled: true,
+                },
+              }),
+            { wrapper }
+          )
+
+          await waitFor(() => queryClient.isFetching())
+          await waitFor(() => !queryClient.isFetching())
+
+          await waitFor(() => expect(madeRequest).toHaveBeenCalled())
+        })
+      })
+
+      describe('branch is passed', () => {
+        it('runs the query', async () => {
+          const { madeRequest } = setup({})
+          renderHook(
+            () =>
+              useBundleAssets({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'codecov',
+                branch: 'cool-branch',
+                bundle: 'test-bundle',
+                opts: {
+                  enabled: true,
+                },
+              }),
+            { wrapper }
+          )
+
+          await waitFor(() => queryClient.isFetching())
+          await waitFor(() => !queryClient.isFetching())
+
+          await waitFor(() => expect(madeRequest).toHaveBeenCalled())
+        })
+      })
+    })
+
+    describe('enabled is false', () => {
+      describe('branch is not passed', () => {
+        it('does not run the query', async () => {
+          const { madeRequest } = setup({})
+          renderHook(
+            () =>
+              useBundleAssets({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'codecov',
+                bundle: 'test-bundle',
+                opts: {
+                  enabled: false,
+                },
+              }),
+            { wrapper }
+          )
+
+          await waitFor(() => queryClient.isFetching())
+          await waitFor(() => !queryClient.isFetching())
+
+          await waitFor(() => expect(madeRequest).not.toHaveBeenCalled())
+        })
+      })
+
+      describe('branch is passed', () => {
+        it('does not run the query', async () => {
+          const { madeRequest } = setup({})
+          renderHook(
+            () =>
+              useBundleAssets({
+                provider: 'gh',
+                owner: 'codecov',
+                repo: 'codecov',
+                branch: 'cool-branch',
+                bundle: 'test-bundle',
+                opts: {
+                  enabled: false,
+                },
+              }),
+            { wrapper }
+          )
+
+          await waitFor(() => queryClient.isFetching())
+          await waitFor(() => !queryClient.isFetching())
+
+          await waitFor(() => expect(madeRequest).not.toHaveBeenCalled())
+        })
+      })
     })
   })
 })

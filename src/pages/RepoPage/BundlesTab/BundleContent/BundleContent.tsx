@@ -1,14 +1,16 @@
 import { lazy, Suspense } from 'react'
-import { useParams } from 'react-router-dom'
+import { Route, Switch, useParams } from 'react-router-dom'
 
 import { useBranchBundleSummary } from 'services/bundleAnalysis'
 import { useFlags } from 'shared/featureFlags'
 import Spinner from 'ui/Spinner'
 
+import AssetsTable from './AssetsTable'
 import BundleSummary from './BundleSummary'
 import BundleSummaryOld from './BundleSummaryOld'
 
 const EmptyTable = lazy(() => import('./EmptyTable'))
+const AssetEmptyTable = lazy(() => import('./AssetsTable/EmptyTable'))
 const ErrorBanner = lazy(() => import('./ErrorBanner'))
 const BundleTable = lazy(() => import('./BundleTable'))
 
@@ -39,7 +41,23 @@ const BundleContent: React.FC = () => {
       {newBundleTab ? <BundleSummary /> : <BundleSummaryOld />}
       <Suspense fallback={<Loader />}>
         {bundleType === 'BundleAnalysisReport' ? (
-          <BundleTable />
+          newBundleTab ? (
+            <Switch>
+              <Route path="/:provider/:owner/:repo/bundles/:branch/:bundle">
+                <AssetsTable />
+              </Route>
+              <Route>
+                <AssetEmptyTable />
+              </Route>
+            </Switch>
+          ) : (
+            <BundleTable />
+          )
+        ) : newBundleTab ? (
+          <>
+            <ErrorBanner errorType={bundleType} />
+            <AssetEmptyTable />
+          </>
         ) : (
           <>
             <ErrorBanner errorType={bundleType} />
