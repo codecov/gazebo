@@ -10,7 +10,7 @@ import AssetsTable from './AssetsTable'
 
 jest.mock('./EmptyTable', () => () => <div>EmptyTable</div>)
 
-const mockBundles = {
+const mockAssets = {
   owner: {
     repository: {
       __typename: 'Repository',
@@ -43,7 +43,7 @@ const mockBundles = {
   },
 }
 
-const emptyBundles = {
+const mockEmptyAssets = {
   owner: {
     repository: {
       __typename: 'Repository',
@@ -127,12 +127,12 @@ describe('AssetsTable', () => {
     server.use(
       graphql.query('BundleAssets', (req, res, ctx) => {
         if (isEmptyBundles) {
-          return res(ctx.status(200), ctx.data(emptyBundles))
+          return res(ctx.status(200), ctx.data(mockEmptyAssets))
         } else if (isMissingHeadReport) {
           return res(ctx.status(200), ctx.data(mockMissingHeadReport))
         }
 
-        return res(ctx.status(200), ctx.data(mockBundles))
+        return res(ctx.status(200), ctx.data(mockAssets))
       })
     )
 
