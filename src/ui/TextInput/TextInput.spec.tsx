@@ -24,7 +24,7 @@ describe('TextInput', () => {
 
     it('renders the textbox with the name of the label', () => {
       expect(
-        screen.getByRole('textbox', { name: /label/i })
+        screen.getByRole('textbox', { name: /incorrect_label/i })
       ).toBeInTheDocument()
     })
   })
