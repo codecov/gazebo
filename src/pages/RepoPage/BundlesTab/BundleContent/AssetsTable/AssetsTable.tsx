@@ -39,29 +39,28 @@ const columns = [
   columnHelper.accessor('name', {
     header: 'Asset',
     cell: ({ getValue, row }) => {
-      return getValue()
-      // return (
-      //   <p className="flex flex-row break-all">
-      //     <span
-      //       data-action="clickable"
-      //       data-testid="modules-expand"
-      //       className={cs(
-      //         'inline-flex items-center gap-1 font-sans hover:underline focus:ring-2',
-      //         {
-      //           'text-ds-blue': row.getIsExpanded(),
-      //         }
-      //       )}
-      //       onClick={() => row.toggleExpanded()}
-      //     >
-      //       <Icon
-      //         size="md"
-      //         name={row.getIsExpanded() ? 'chevronDown' : 'chevronRight'}
-      //         variant="solid"
-      //       />
-      //     </span>
-      //     {getValue()}
-      //   </p>
-      // )
+      return (
+        <p className="flex flex-row break-all">
+          <span
+            data-action="clickable"
+            data-testid="modules-expand"
+            className={cs(
+              'inline-flex items-center gap-1 font-sans hover:underline focus:ring-2',
+              {
+                'text-ds-blue': row.getIsExpanded(),
+              }
+            )}
+            onClick={() => row.toggleExpanded()}
+          >
+            <Icon
+              size="md"
+              name={row.getIsExpanded() ? 'chevronDown' : 'chevronRight'}
+              variant="solid"
+            />
+          </span>
+          {getValue()}
+        </p>
+      )
     },
   }),
   columnHelper.accessor('extension', {
