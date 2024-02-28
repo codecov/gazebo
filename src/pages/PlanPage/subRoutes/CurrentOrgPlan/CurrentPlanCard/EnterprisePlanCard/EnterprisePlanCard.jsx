@@ -5,13 +5,12 @@ import BenefitList from 'shared/plan/BenefitList'
 import ScheduledPlanDetails from 'shared/plan/ScheduledPlanDetails'
 import A from 'ui/A'
 
-
 function EnterprisePlanCard({ plan, scheduledPhase }) {
   return (
     <div className="flex flex-col border">
       <div className="p-4">
         <h2 className="font-semibold">{plan?.marketingName} plan</h2>
-        <span className="text-gray-500">Current Plan</span>
+        <span className="text-gray-500">Current plan</span>
       </div>
       <hr />
       <div className="grid gap-4 p-4 sm:grid-cols-2 sm:gap-0">
