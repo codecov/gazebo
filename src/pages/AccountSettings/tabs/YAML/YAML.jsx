@@ -65,33 +65,33 @@ function YAML({ owner }) {
           </a>
         </p>
       </div>
-      {formState.errors.editor && (
-        <div className="my-4 rounded border border-ds-primary-red bg-ds-coverage-uncovered p-2 text-ds-primary-red">
-          <p>{formState.errors.editor.message}</p>
-        </div>
-      )}
-      <Controller
-        control={control}
-        name="editor"
-        render={({ field: { onChange, value } }) => (
-          <div className="md:w-3/4">
+      <div className="lg:w-3/4">
+        {formState.errors.editor && (
+          <div className="my-4 rounded border border-ds-primary-red bg-ds-coverage-uncovered p-2 text-ds-primary-red">
+            <p>{formState.errors.editor.message}</p>
+          </div>
+        )}
+        <Controller
+          control={control}
+          name="editor"
+          render={({ field: { onChange, value } }) => (
             <YamlEditor
               value={value}
               onChange={onChange}
               placeholder={`All ${owner} repos will inherit this configuration`}
             />
-          </div>
-        )}
-      />
-      <div className="float-right mt-4">
-        <Button
-          hook="save-yaml"
-          disabled={!formState.isDirty}
-          isLoading={formState.isSubmitting}
-          variant="primary"
-        >
-          Save Changes
-        </Button>
+          )}
+        />
+        <div className="float-right mt-4">
+          <Button
+            hook="save-yaml"
+            disabled={!formState.isDirty}
+            isLoading={formState.isSubmitting}
+            variant="primary"
+          >
+            Save Changes
+          </Button>
+        </div>
       </div>
     </form>
   )

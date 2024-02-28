@@ -8,7 +8,7 @@ function SettingsDescriptor({ title, description, content }) {
         <p>{description}</p>
         <hr />
       </div>
-      <div className="flex flex-col gap-2 border-2 border-ds-gray-primary p-4 md:w-3/4">
+      <div className="flex flex-col gap-2 border-2 border-ds-gray-primary p-4 lg:w-3/4">
         {content}
       </div>
     </div>

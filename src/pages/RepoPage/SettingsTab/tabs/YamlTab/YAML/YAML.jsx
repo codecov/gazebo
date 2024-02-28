@@ -14,7 +14,7 @@ function YAML({ yaml }) {
         </p>
       </div>
       <hr />
-      <div className="md:w-3/4">
+      <div className="lg:w-3/4">
         <YamlEditor
           value={yaml}
           readOnly
