@@ -17,10 +17,11 @@ import {
   formatTimeToString,
 } from 'shared/utils/bundleAnalysis'
 import Icon from 'ui/Icon'
-
-import 'ui/FileList/FileList.css'
+import Spinner from 'ui/Spinner'
 
 import EmptyTable from './EmptyTable'
+
+import 'ui/FileList/FileList.css'
 
 const isNumericValue = (value: string) =>
   value === 'size' || value === 'loadTime'
@@ -84,11 +85,15 @@ interface URLParams {
   bundle: string
 }
 
-// const Loader = () => (
-//   <div className="flex justify-center bg-ds-gray-primary py-4">
-//     <Spinner />
-//   </div>
-// )
+interface LoaderProps {
+  className?: string
+}
+
+const Loader = ({ className }: LoaderProps) => (
+  <div className={cs('flex justify-center py-4', className)}>
+    <Spinner />
+  </div>
+)
 
 const AssetsTable: React.FC = () => {
   const tableRef = useRef<HTMLDivElement | null>(null)
@@ -96,13 +101,13 @@ const AssetsTable: React.FC = () => {
   const [sorting, setSorting] = useState([{ id: 'size', desc: true }])
   const { provider, owner, repo, branch, bundle } = useParams<URLParams>()
 
-  const { data } = useBundleAssets({
+  const { data, isLoading } = useBundleAssets({
     provider,
     owner,
     repo,
     branch,
     bundle,
-    opts: { enabled: bundle !== '' },
+    opts: { enabled: bundle !== '', suspense: false },
   })
 
   const tableData: Array<Column> = useMemo(() => {
@@ -132,7 +137,7 @@ const AssetsTable: React.FC = () => {
     getExpandedRowModel: getExpandedRowModel(),
   })
 
-  if (!data || data.assets.length === 0) {
+  if (data?.assets?.length === 0) {
     return <EmptyTable />
   }
 
@@ -181,57 +186,65 @@ const AssetsTable: React.FC = () => {
             })}
           </div>
         ))}
-        <div>
-          {table.getCoreRowModel().rows.map((row, i) => {
-            const isExpanded = row.getIsExpanded()
-            return (
-              <Fragment key={i}>
-                <div
-                  className={cs('filelistui-row', {
-                    'bg-ds-gray-primary sticky': isExpanded,
-                  })}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <div
-                      key={cell.id}
-                      {...(isNumericValue(cell.column.id)
-                        ? {
-                            'data-type': 'numeric',
-                          }
-                        : {})}
-                      className={cs({
-                        'w-8/12': cell.column.id === 'name',
-                        'w-2/12 justify-end	flex': cell.column.id === 'loadTime',
-                        'w-1/12 justify-end	flex':
-                          cell.column.id !== 'name' &&
-                          cell.column.id !== 'loadTime',
-                      })}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </div>
-                  ))}
-                </div>
-                <div data-expanded={row.getIsExpanded()}>
-                  {row.getIsExpanded() ? (
-                    <>
-                      <p>Modules</p>
-                      {/* ~~ Coming Soon ~~ */}
-                      {/* <Suspense fallback={<Loader />} key={i}>
-                        <ModulesTable
-                          asset={row.getValue('name')}
-                          branch={branch}
-                        />
-                      </Suspense> */}
-                    </>
-                  ) : null}
-                </div>
-              </Fragment>
-            )
-          })}
-        </div>
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <div>
+            {table.getCoreRowModel().rows.map((row, i) => {
+              const isExpanded = row.getIsExpanded()
+              return (
+                <Fragment key={i}>
+                  <div
+                    className={cs('filelistui-row', {
+                      'bg-ds-gray-primary sticky': isExpanded,
+                    })}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <div
+                        key={cell.id}
+                        {...(isNumericValue(cell.column.id)
+                          ? {
+                              'data-type': 'numeric',
+                            }
+                          : {})}
+                        className={cs({
+                          'w-8/12': cell.column.id === 'name',
+                          'w-2/12 justify-end	flex':
+                            cell.column.id === 'loadTime',
+                          'w-1/12 justify-end	flex':
+                            cell.column.id !== 'name' &&
+                            cell.column.id !== 'loadTime',
+                        })}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <div data-expanded={row.getIsExpanded()}>
+                    {row.getIsExpanded() ? (
+                      <>
+                        <p>Modules</p>
+                        {/* ~~ Coming Soon ~~ */}
+                        {/* <Suspense
+                          fallback={<Loader className="bg-ds-gray-secondary" />}
+                          key={i}
+                        >
+                          <ModulesTable
+                            asset={row.getValue('name')}
+                            branch={branch}
+                          />
+                        </Suspense> */}
+                      </>
+                    ) : null}
+                  </div>
+                </Fragment>
+              )
+            })}
+          </div>
+        )}
       </div>
     </div>
   )
