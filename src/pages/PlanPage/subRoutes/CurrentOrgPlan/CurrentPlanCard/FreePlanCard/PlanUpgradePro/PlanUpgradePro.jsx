@@ -19,7 +19,7 @@ function PlanDetails({
       <div className="text-xs">
         <p className="font-semibold">
           <span className="text-2xl">${SENTRY_PRICE}</span>
-          /per month
+          /month
         </p>
         <p className="text-ds-gray-senary">
           over 5 users is ${sentryAnnualUnitPrice} per user/month, billed

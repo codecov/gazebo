@@ -470,7 +470,7 @@ describe('FreePlanCard', () => {
       const cost = await screen.findByText(/\$29/)
       expect(cost).toBeInTheDocument()
 
-      const perMonth = await screen.findByText(/\/per month/)
+      const perMonth = await screen.findByText(/^\/month/)
       expect(perMonth).toBeInTheDocument()
 
       const billingCycleInfo = await screen.findByText(
