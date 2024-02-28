@@ -409,7 +409,7 @@ describe('useBundleAssets', () => {
   describe('passing enabled to opts object', () => {
     describe('enabled is true', () => {
       describe('branch is not passed', () => {
-        it('does not run the query', async () => {
+        it('runs the query', async () => {
           const { madeRequest } = setup({})
           renderHook(
             () =>
@@ -433,7 +433,7 @@ describe('useBundleAssets', () => {
       })
 
       describe('branch is passed', () => {
-        it('does not run the query', async () => {
+        it('runs the query', async () => {
           const { madeRequest } = setup({})
           renderHook(
             () =>
