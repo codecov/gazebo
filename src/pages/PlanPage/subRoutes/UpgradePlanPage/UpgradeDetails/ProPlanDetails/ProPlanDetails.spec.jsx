@@ -293,7 +293,7 @@ describe('ProPlanDetails', () => {
       render(<ProPlanDetails />, { wrapper: wrapper() })
 
       const disclaimer = await screen.findByText(
-        /billed annually or \$12 for monthly billing/i
+        /billed annually, or \$12 for monthly billing/i
       )
       expect(disclaimer).toBeInTheDocument()
     })
