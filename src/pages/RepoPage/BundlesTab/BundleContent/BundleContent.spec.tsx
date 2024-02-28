@@ -66,20 +66,79 @@ const mockBranchBundlesError = {
   },
 }
 
+const mockAssets = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      branch: {
+        head: {
+          bundleAnalysisReport: {
+            __typename: 'BundleAnalysisReport',
+            bundle: {
+              assets: [
+                {
+                  name: 'asset-1',
+                  extension: 'js',
+                  bundleData: {
+                    loadTime: {
+                      threeG: 2000,
+                      highSpeed: 2000,
+                    },
+                    size: {
+                      uncompress: 3000,
+                      gzip: 4000,
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+const mockMissingHeadReportAssets = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      branch: {
+        head: {
+          bundleAnalysisReport: {
+            __typename: 'MissingHeadReport',
+            message: 'Missing head report',
+          },
+        },
+      },
+    },
+  },
+}
+
 const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false, suspense: true } },
 })
 
-const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/codecov/test-repo/bundles']}>
-      <Route path="/:provider/:owner/:repo/bundles">
-        <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
-      </Route>
-    </MemoryRouter>
-  </QueryClientProvider>
-)
+const wrapper =
+  (
+    initialEntries = '/gh/codecov/test-repo/bundles'
+  ): React.FC<React.PropsWithChildren> =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route
+            path={[
+              '/:provider/:owner/:repo/bundles/:branch/:bundle',
+              '/:provider/:owner/:repo/bundles',
+            ]}
+          >
+            <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
 beforeAll(() => {
   server.listen()
@@ -113,66 +172,129 @@ describe('BundleContent', () => {
       }),
       graphql.query('GetRepoOverview', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockRepoOverview))
+      }),
+      graphql.query('BundleAssets', (req, res, ctx) => {
+        if (isBundleError) {
+          return res(ctx.status(200), ctx.data(mockMissingHeadReportAssets))
+        }
+
+        return res(ctx.status(200), ctx.data(mockAssets))
       })
     )
   }
 
-  describe('flag is off', () => {
-    it('renders the bundle summary', async () => {
-      setup({ flagValue: false })
-      render(<BundleContent />, { wrapper })
+  describe('rendering summary section', () => {
+    describe('flag is off', () => {
+      it('renders the bundle summary', async () => {
+        setup({ flagValue: false })
+        render(<BundleContent />, { wrapper: wrapper() })
 
-      const report = await screen.findByText(/Report:/)
-      expect(report).toBeInTheDocument()
+        const report = await screen.findByText(/Report:/)
+        expect(report).toBeInTheDocument()
+      })
+    })
+
+    describe('flag is on', () => {
+      it('renders the new bundle summary', async () => {
+        setup({ flagValue: true })
+        render(<BundleContent />, { wrapper: wrapper() })
+
+        const report = await screen.findByText(/BundleSummary/)
+        expect(report).toBeInTheDocument()
+      })
     })
   })
 
-  describe('flag is on', () => {
-    it('renders the new bundle summary', async () => {
-      setup({ flagValue: true })
-      render(<BundleContent />, { wrapper })
+  describe('rendering content section', () => {
+    describe('flag is on', () => {
+      describe('when the bundle type is BundleAnalysisReport', () => {
+        it('renders the bundle table', async () => {
+          setup({ flagValue: true })
+          render(<BundleContent />, {
+            wrapper: wrapper('/gh/codecov/test-repo/bundles/main/test-bundle'),
+          })
 
-      const report = await screen.findByText(/BundleSummary/)
-      expect(report).toBeInTheDocument()
+          const bundleName = await screen.findByText(/asset-1/)
+          expect(bundleName).toBeInTheDocument()
+
+          const type = await screen.findByText('js')
+          expect(type).toBeInTheDocument()
+
+          const bundleSize = await screen.findByText(/3kB/)
+          expect(bundleSize).toBeInTheDocument()
+
+          const bundleLoadTime = await screen.findByText(/2s/)
+          expect(bundleLoadTime).toBeInTheDocument()
+        })
+      })
+
+      describe('when the bundle type is not BundleAnalysisReport', () => {
+        it('renders the error banner', async () => {
+          setup({ isBundleError: true, flagValue: true })
+          render(<BundleContent />, {
+            wrapper: wrapper('/gh/codecov/test-repo/bundles/main/test-bundle'),
+          })
+
+          const bannerHeader = await screen.findByText(/Missing Head Report/)
+          expect(bannerHeader).toBeInTheDocument()
+
+          const bannerMessage = await screen.findByText(
+            'Unable to compare commits because the head of the pull request did not upload a bundle stats file.'
+          )
+          expect(bannerMessage).toBeInTheDocument()
+        })
+
+        it('renders the empty table', async () => {
+          setup({ isBundleError: true, flagValue: true })
+          render(<BundleContent />, {
+            wrapper: wrapper('/gh/codecov/test-repo/bundles/main/test-bundle'),
+          })
+
+          const dashes = await screen.findAllByText('-')
+          expect(dashes).toHaveLength(4)
+        })
+      })
     })
-  })
 
-  describe('when the bundle type is BundleAnalysisReport', () => {
-    it('renders the bundle table', async () => {
-      setup({})
-      render(<BundleContent />, { wrapper })
+    describe('flag is off', () => {
+      describe('when the bundle type is BundleAnalysisReport', () => {
+        it('renders the bundle table', async () => {
+          setup({})
+          render(<BundleContent />, { wrapper: wrapper() })
 
-      const bundleName = await screen.findByText(/bundle1/)
-      expect(bundleName).toBeInTheDocument()
+          const bundleName = await screen.findByText(/bundle1/)
+          expect(bundleName).toBeInTheDocument()
 
-      const bundleSize = await screen.findByText(/50B/)
-      expect(bundleSize).toBeInTheDocument()
+          const bundleSize = await screen.findByText(/50B/)
+          expect(bundleSize).toBeInTheDocument()
 
-      const bundleLoadTime = await screen.findByText(/100s/)
-      expect(bundleLoadTime).toBeInTheDocument()
-    })
-  })
+          const bundleLoadTime = await screen.findByText(/100s/)
+          expect(bundleLoadTime).toBeInTheDocument()
+        })
+      })
 
-  describe('when the bundle type is not BundleAnalysisReport', () => {
-    it('renders the error banner', async () => {
-      setup({ isBundleError: true })
-      render(<BundleContent />, { wrapper })
+      describe('when the bundle type is not BundleAnalysisReport', () => {
+        it('renders the error banner', async () => {
+          setup({ isBundleError: true })
+          render(<BundleContent />, { wrapper: wrapper() })
 
-      const bannerHeader = await screen.findByText(/Missing Head Report/)
-      expect(bannerHeader).toBeInTheDocument()
+          const bannerHeader = await screen.findByText(/Missing Head Report/)
+          expect(bannerHeader).toBeInTheDocument()
 
-      const bannerMessage = await screen.findByText(
-        'Unable to compare commits because the head of the pull request did not upload a bundle stats file.'
-      )
-      expect(bannerMessage).toBeInTheDocument()
-    })
+          const bannerMessage = await screen.findByText(
+            'Unable to compare commits because the head of the pull request did not upload a bundle stats file.'
+          )
+          expect(bannerMessage).toBeInTheDocument()
+        })
 
-    it('renders the empty table', async () => {
-      setup({ isBundleError: true })
-      render(<BundleContent />, { wrapper })
+        it('renders the empty table', async () => {
+          setup({ isBundleError: true })
+          render(<BundleContent />, { wrapper: wrapper() })
 
-      const dashes = await screen.findAllByText('-')
-      expect(dashes).toHaveLength(3)
+          const dashes = await screen.findAllByText('-')
+          expect(dashes).toHaveLength(3)
+        })
+      })
     })
   })
 })
