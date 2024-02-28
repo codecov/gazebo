@@ -107,7 +107,7 @@ const AssetsTable: React.FC = () => {
     repo,
     branch,
     bundle,
-    opts: { enabled: bundle !== '', suspense: true },
+    opts: { enabled: bundle !== '' },
   })
 
   const tableData: Array<Column> = useMemo(() => {

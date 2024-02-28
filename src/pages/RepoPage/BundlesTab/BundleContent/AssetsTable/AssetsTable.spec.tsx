@@ -3,7 +3,6 @@ import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import AssetsTable from './AssetsTable'
@@ -82,7 +81,6 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: false,
-      suspense: true,
     },
   },
 })
@@ -93,7 +91,7 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
       initialEntries={['/gh/codecov/test-repo/bundles/test-branch/test-bundle']}
     >
       <Route path="/:provider/:owner/:repo/bundles/:branch/:bundle">
-        <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+        {children}
       </Route>
     </MemoryRouter>
   </QueryClientProvider>
