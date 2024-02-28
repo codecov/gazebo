@@ -39,28 +39,29 @@ const columns = [
   columnHelper.accessor('name', {
     header: 'Asset',
     cell: ({ getValue, row }) => {
-      return (
-        <p className="flex flex-row break-all">
-          <span
-            data-action="clickable"
-            data-testid="modules-expand"
-            className={cs(
-              'inline-flex items-center gap-1 font-sans hover:underline focus:ring-2',
-              {
-                'text-ds-blue': row.getIsExpanded(),
-              }
-            )}
-            onClick={() => row.toggleExpanded()}
-          >
-            <Icon
-              size="md"
-              name={row.getIsExpanded() ? 'chevronDown' : 'chevronRight'}
-              variant="solid"
-            />
-          </span>
-          {getValue()}
-        </p>
-      )
+      return getValue()
+      // return (
+      //   <p className="flex flex-row break-all">
+      //     <span
+      //       data-action="clickable"
+      //       data-testid="modules-expand"
+      //       className={cs(
+      //         'inline-flex items-center gap-1 font-sans hover:underline focus:ring-2',
+      //         {
+      //           'text-ds-blue': row.getIsExpanded(),
+      //         }
+      //       )}
+      //       onClick={() => row.toggleExpanded()}
+      //     >
+      //       <Icon
+      //         size="md"
+      //         name={row.getIsExpanded() ? 'chevronDown' : 'chevronRight'}
+      //         variant="solid"
+      //       />
+      //     </span>
+      //     {getValue()}
+      //   </p>
+      // )
     },
   }),
   columnHelper.accessor('extension', {
@@ -107,7 +108,7 @@ const AssetsTable: React.FC = () => {
     repo,
     branch,
     bundle,
-    opts: { enabled: bundle !== '', suspense: false },
+    opts: { enabled: bundle !== '', suspense: true },
   })
 
   const tableData: Array<Column> = useMemo(() => {
@@ -190,10 +191,10 @@ const AssetsTable: React.FC = () => {
           <Loader />
         ) : (
           <div>
-            {table.getCoreRowModel().rows.map((row, i) => {
+            {table.getRowModel().rows.map((row, i) => {
               const isExpanded = row.getIsExpanded()
               return (
-                <Fragment key={i}>
+                <Fragment key={row.getValue('name')}>
                   <div
                     className={cs('filelistui-row', {
                       'bg-ds-gray-primary sticky': isExpanded,
