@@ -111,7 +111,7 @@ describe('UpdateButton', () => {
 
   describe('when rendered', () => {
     describe('when there is a valid basic plan', () => {
-      it('renders a valid Proceed to Checkout button', async () => {
+      it('renders a valid Proceed to checkout button', async () => {
         setup({ planValue: Plans.USERS_BASIC })
 
         const props = {
@@ -124,7 +124,7 @@ describe('UpdateButton', () => {
           wrapper,
         })
 
-        const button = await screen.findByText('Proceed to Checkout')
+        const button = await screen.findByText('Proceed to checkout')
         expect(button).toBeInTheDocument()
         expect(button).not.toBeDisabled()
       })

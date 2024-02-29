@@ -70,7 +70,7 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   if (hasTeamPlans && multipleTiers) {
     return (
       <div className="flex w-fit flex-col gap-2">
-        <h3 className="font-semibold">Plan</h3>
+        <h3 className="font-semibold">Choose a plan</h3>
         <div className="inline-flex items-center gap-2">
           <OptionButton
             type="button"

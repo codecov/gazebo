@@ -61,7 +61,7 @@ const UpdateButton: React.FC<BillingControlsProps> = ({
         to={undefined}
         onClick={sendBillingMetricsToSentry}
       >
-        {isFreePlan(currentPlanValue) ? 'Proceed to Checkout' : 'Update'}
+        {isFreePlan(currentPlanValue) ? 'Proceed to checkout' : 'Update'}
       </Button>
     </div>
   )

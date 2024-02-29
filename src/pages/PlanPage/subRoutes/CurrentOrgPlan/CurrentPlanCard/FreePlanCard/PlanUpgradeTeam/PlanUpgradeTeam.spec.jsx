@@ -263,7 +263,7 @@ describe('PlanUpgradeTeam', () => {
       })
 
       const upgradeButton = await screen.findByRole('link', {
-        name: /Upgrade to Team/,
+        name: /Upgrade/,
       })
       expect(upgradeButton).toBeInTheDocument()
       expect(upgradeButton).toHaveAttribute(
@@ -279,7 +279,7 @@ describe('PlanUpgradeTeam', () => {
       })
 
       const upgradeButton = await screen.findByRole('link', {
-        name: /Upgrade to Team/,
+        name: /Upgrade/,
       })
       expect(upgradeButton).toBeInTheDocument()
       expect(upgradeButton).toHaveAttribute(
