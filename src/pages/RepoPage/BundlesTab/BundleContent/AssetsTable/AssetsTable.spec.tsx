@@ -228,7 +228,7 @@ describe('AssetsTable', () => {
         setup({})
         render(<AssetsTable />, { wrapper })
 
-        const type = await screen.findByText('js')
+        const [type] = await screen.findAllByText('js')
         expect(type).toBeInTheDocument()
       })
 
@@ -236,7 +236,7 @@ describe('AssetsTable', () => {
         setup({})
         render(<AssetsTable />, { wrapper })
 
-        const size = await screen.findByText('3kB')
+        const [size] = await screen.findAllByText('3kB')
         expect(size).toBeInTheDocument()
       })
 
@@ -244,7 +244,7 @@ describe('AssetsTable', () => {
         setup({})
         render(<AssetsTable />, { wrapper })
 
-        const loadTime = await screen.findByText('2s')
+        const [loadTime] = await screen.findAllByText('2s')
         expect(loadTime).toBeInTheDocument()
       })
 
