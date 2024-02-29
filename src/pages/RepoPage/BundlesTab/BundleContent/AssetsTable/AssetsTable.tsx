@@ -8,7 +8,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
-import { Fragment, useMemo, useRef, useState } from 'react'
+import { Fragment, Suspense, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useBundleAssets } from 'services/bundleAnalysis'
@@ -20,6 +20,7 @@ import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 
 import EmptyTable from './EmptyTable'
+import ModulesTable from './ModulesTable'
 
 import 'ui/FileList/FileList.css'
 
@@ -225,19 +226,12 @@ const AssetsTable: React.FC = () => {
                   </div>
                   <div data-expanded={row.getIsExpanded()}>
                     {row.getIsExpanded() ? (
-                      <>
-                        <p>Modules</p>
-                        {/* ~~ Coming Soon ~~ */}
-                        {/* <Suspense
-                          fallback={<Loader className="bg-ds-gray-secondary" />}
-                          key={i}
-                        >
-                          <ModulesTable
-                            asset={row.getValue('name')}
-                            branch={branch}
-                          />
-                        </Suspense> */}
-                      </>
+                      <Suspense
+                        fallback={<Loader className="bg-ds-gray-secondary" />}
+                        key={i}
+                      >
+                        <ModulesTable asset={row.getValue('name')} />
+                      </Suspense>
                     ) : null}
                   </div>
                 </Fragment>

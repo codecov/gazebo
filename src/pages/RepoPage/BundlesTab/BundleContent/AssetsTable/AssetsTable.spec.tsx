@@ -42,6 +42,26 @@ const mockAssets = {
   },
 }
 
+const mockBundleAssetModules = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      branch: {
+        head: {
+          bundleAnalysisReport: {
+            __typename: 'BundleAnalysisReport',
+            bundle: {
+              asset: {
+                modules: [],
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
 const mockEmptyAssets = {
   owner: {
     repository: {
@@ -131,6 +151,9 @@ describe('AssetsTable', () => {
         }
 
         return res(ctx.status(200), ctx.data(mockAssets))
+      }),
+      graphql.query('BundleAssetModules', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockBundleAssetModules))
       })
     )
 
@@ -233,7 +256,9 @@ describe('AssetsTable', () => {
           const expandButton = await screen.findByTestId('modules-expand')
           await user.click(expandButton)
 
-          const modulesTable = await screen.findByText('Modules')
+          const modulesTable = await screen.findByText(
+            'No modules found for this asset.'
+          )
           expect(modulesTable).toBeInTheDocument()
         })
       })
