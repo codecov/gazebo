@@ -46,11 +46,13 @@ const columns = [
   }),
   columnHelper.accessor('extension', {
     header: 'Type',
-    cell: (info) => info.renderValue(),
+    cell: ({ renderValue }) => <p className="pr-2">{renderValue()}</p>,
   }),
   columnHelper.accessor('size', {
     header: 'Size',
-    cell: ({ getValue }) => formatSizeToString(getValue()),
+    cell: ({ getValue }) => (
+      <p className="pr-1">{formatSizeToString(getValue())}</p>
+    ),
   }),
   columnHelper.accessor('loadTime', {
     header: 'Estimated load time (3G)',
@@ -112,10 +114,10 @@ const ModulesTable: React.FC<ModulesTableProps> = ({ asset }) => {
     <div className="tableui bg-ds-gray-primary">
       <table>
         <colgroup>
-          <col className="w-full @sm/table:w-6/12" />
-          <col className="@sm/table:w-3/12" />
-          <col className="@sm/table:w-1/12" />
-          <col className="@sm/table:w-2/12" />
+          <col className="w-8/12" />
+          <col className="w-1/12" />
+          <col className="w-1/12" />
+          <col className="w-2/12" />
         </colgroup>
         <tbody>
           {table.getRowModel().rows.map((row) => (
