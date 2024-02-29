@@ -9,7 +9,7 @@ function GraphToken({ graphToken }) {
   }
 
   return (
-    <div className="flex flex-col border-2 border-ds-gray-primary p-4 xl:w-4/5 2xl:w-3/5">
+    <div className="flex flex-col border-2 border-ds-gray-primary p-4 lg:w-3/4">
       <h3 className="font-semibold">Graphing token</h3>
       <p>
         Use token in API request to repository graphs{' '}
