@@ -1,7 +1,12 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
+import {
+  incrementBillingPageVisitCounter,
+  updateBillingMetrics,
+} from 'pages/PlanPage/PlanMetrics/planMetrics'
 import { useAccountDetails } from 'services/account'
+import { useUser } from 'services/user'
 import { isFreePlan } from 'shared/utils/billing'
 import Button from 'ui/Button'
 
@@ -27,6 +32,23 @@ const UpdateButton: React.FC<BillingControlsProps> = ({
   const isSamePlan = newPlan === currentPlanValue
   const noChangeInSeats = seats === currentPlanQuantity
   const disabled = !isValid || (isSamePlan && noChangeInSeats)
+  const { data: currentUser } = useUser()
+  const ownerId = currentUser?.trackingMetadata?.ownerid ?? 'No owner id'
+
+  useEffect(() => {
+    incrementBillingPageVisitCounter()
+  }, [])
+
+  const sendBillingMetricsToSentry = () => {
+    updateBillingMetrics(
+      isSamePlan,
+      seats,
+      currentPlanValue,
+      newPlan,
+      currentPlanQuantity,
+      ownerId
+    )
+  }
 
   return (
     <div className="inline-flex">
@@ -37,6 +59,7 @@ const UpdateButton: React.FC<BillingControlsProps> = ({
         variant="primary"
         hook="submit-upgrade"
         to={undefined}
+        onClick={sendBillingMetricsToSentry}
       >
         {isFreePlan(currentPlanValue) ? 'Proceed to checkout' : 'Update'}
       </Button>

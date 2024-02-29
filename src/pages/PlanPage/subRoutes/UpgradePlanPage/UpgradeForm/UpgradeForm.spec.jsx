@@ -16,6 +16,7 @@ import UpgradeForm from './UpgradeForm'
 jest.mock('services/toastNotification')
 jest.mock('@stripe/react-stripe-js')
 jest.mock('shared/featureFlags')
+jest.mock('@sentry/react')
 
 const basicPlan = {
   marketingName: 'Basic',
