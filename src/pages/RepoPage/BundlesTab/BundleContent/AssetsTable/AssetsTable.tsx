@@ -154,9 +154,10 @@ const AssetsTable: React.FC = () => {
                   data-sortable="true"
                   onClick={header.column.getToggleSortingHandler()}
                   className={cs({
-                    'w-8/12': header.column.id === 'name',
-                    'w-2/12 justify-end	flex': header.column.id === 'loadTime',
-                    'w-1/12 justify-end	flex':
+                    'w-full @4xl/filelist:w-8/12': header.column.id === 'name',
+                    'w-2/12 hidden @4xl/filelist:block text-right':
+                      header.column.id === 'loadTime',
+                    'w-1/12 hidden @4xl/filelist:block text-right':
                       header.column.id !== 'name' &&
                       header.column.id !== 'loadTime',
                   })}
@@ -209,14 +210,30 @@ const AssetsTable: React.FC = () => {
                             }
                           : {})}
                         className={cs({
-                          'w-8/12': cell.column.id === 'name',
-                          'w-2/12 justify-end	flex':
+                          'w-full @4xl/filelist:w-8/12':
+                            cell.column.id === 'name',
+                          'w-2/12 hidden @4xl/filelist:block text-right':
                             cell.column.id === 'loadTime',
-                          'w-1/12 justify-end	flex':
+                          'w-1/12 hidden @4xl/filelist:block text-right':
                             cell.column.id !== 'name' &&
                             cell.column.id !== 'loadTime',
                         })}
                       >
+                        <div className="mb-6 flex justify-between gap-8 @md/filelist:justify-start @4xl/filelist:hidden">
+                          <div>Type: {row.original.extension}</div>
+                          <div>
+                            Size:{' '}
+                            <span className="font-mono">
+                              {formatSizeToString(row.original.size)}
+                            </span>
+                          </div>
+                          <div>
+                            Estimated load time (3G):{' '}
+                            <span className="font-mono">
+                              {formatTimeToString(row.original.loadTime)}
+                            </span>
+                          </div>
+                        </div>
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
