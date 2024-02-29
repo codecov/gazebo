@@ -48,7 +48,7 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
           <span className="font-semibold">
             {formatNumberToUSD(perYearPrice)}
           </span>
-          /per month billed annually at {formatNumberToUSD(perYearPrice * 12)}
+          /month billed annually at {formatNumberToUSD(perYearPrice * 12)}
         </p>
         <p>
           &#127881; You{' '}
@@ -73,14 +73,14 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
         <span className="font-semibold">
           {formatNumberToUSD(perMonthPrice)}
         </span>
-        /per month{' '}
+        /month
       </p>
       <div className="flex flex-row gap-1">
         <Icon size="sm" name="lightBulb" variant="solid" />
         <p>
-          You could save{' '}
+          You could{' '}
           <span className="font-semibold">
-            {formatNumberToUSD((perMonthPrice - perYearPrice) * 12)}
+            save {formatNumberToUSD((perMonthPrice - perYearPrice) * 12)}
           </span>{' '}
           a year with annual billing
           {nextBillingDate && (
@@ -88,7 +88,7 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
               ,<span className="font-semibold"> next billing date</span> is{' '}
               {nextBillingDate}
             </Fragment>
-          )}
+          )}{' '}
           <button
             className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
             onClick={() => setFormValue('newPlan', Plans.USERS_PR_INAPPY)}
