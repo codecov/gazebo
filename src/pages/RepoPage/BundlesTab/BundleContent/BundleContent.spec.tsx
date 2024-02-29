@@ -217,13 +217,13 @@ describe('BundleContent', () => {
           const bundleName = await screen.findByText(/asset-1/)
           expect(bundleName).toBeInTheDocument()
 
-          const type = await screen.findByText('js')
+          const [type] = await screen.findAllByText('js')
           expect(type).toBeInTheDocument()
 
-          const bundleSize = await screen.findByText(/3kB/)
+          const [bundleSize] = await screen.findAllByText(/3kB/)
           expect(bundleSize).toBeInTheDocument()
 
-          const bundleLoadTime = await screen.findByText(/2s/)
+          const [bundleLoadTime] = await screen.findAllByText(/2s/)
           expect(bundleLoadTime).toBeInTheDocument()
         })
       })
