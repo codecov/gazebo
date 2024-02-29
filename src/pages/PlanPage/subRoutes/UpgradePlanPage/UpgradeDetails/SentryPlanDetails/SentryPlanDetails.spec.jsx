@@ -229,23 +229,12 @@ describe('SentryPlanDetails', () => {
       expect(marketingName).toBeInTheDocument()
     })
 
-    it('renders the sentry image', async () => {
-      setup()
-
-      render(<SentryPlanDetails />, { wrapper: wrapper() })
-
-      const image = await screen.findByRole('img', {
-        name: 'sentry codecov logos',
-      })
-      expect(image).toBeInTheDocument()
-    })
-
     it('renders 29 monthly bundle', async () => {
       setup()
 
       render(<SentryPlanDetails />, { wrapper: wrapper() })
 
-      const price = await screen.findByRole('heading', { name: /\$29/i })
+      const price = await screen.findByText(/\$29/)
       expect(price).toBeInTheDocument()
     })
 
@@ -264,7 +253,7 @@ describe('SentryPlanDetails', () => {
       render(<SentryPlanDetails />, { wrapper: wrapper() })
 
       const disclaimer = await screen.findByText(
-        /\$12 per user \/ month if paid monthly/i
+        /over 5 users is \$10 per user\/month, billed annually/i
       )
       expect(disclaimer).toBeInTheDocument()
     })

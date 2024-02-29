@@ -219,7 +219,9 @@ describe('TeamPlanDetails', () => {
 
       render(<TeamPlanDetails />, { wrapper: wrapper() })
 
-      const disclaimer = await screen.findByText(/per user, per month/i)
+      const disclaimer = await screen.findByText(
+        /billed annually, or \$6 for monthly billing/i
+      )
       expect(disclaimer).toBeInTheDocument()
     })
 

@@ -54,7 +54,7 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
           <span className="font-semibold">
             {formatNumberToUSD(perYearPrice)}
           </span>
-          /per month billed annually at {formatNumberToUSD(perYearPrice * 12)}
+          /month billed annually at {formatNumberToUSD(perYearPrice * 12)}
         </p>
         <p>
           &#127881; You{' '}
@@ -85,14 +85,14 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
         <span className="font-semibold">
           {formatNumberToUSD(perMonthPrice)}
         </span>
-        /per month
+        /month
       </p>
       <div className="flex flex-row gap-1">
         <Icon size="sm" name="lightBulb" variant="solid" />
         <p>
-          You save{' '}
+          You{' '}
           <span className="font-semibold">
-            {formatNumberToUSD(nonBundledCost)}
+            save {formatNumberToUSD(nonBundledCost)}
           </span>{' '}
           with the Sentry bundle
           {seats > 5 && (
