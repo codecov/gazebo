@@ -123,14 +123,6 @@ describe('AccessTab', () => {
         expect(button).toBeInTheDocument()
       })
 
-      it('renders sessions title', async () => {
-        setup()
-        render(<Access />, { wrapper: wrapper() })
-
-        const sessionsTitle = await screen.findByText(/Login Sessions/)
-        expect(sessionsTitle).toBeInTheDocument()
-      })
-
       it('renders tokens summary', async () => {
         setup()
         render(<Access />, { wrapper: wrapper() })
@@ -157,19 +149,6 @@ describe('AccessTab', () => {
 
         const sessionsTitle = await screen.findByText(/No tokens created yet/)
         expect(sessionsTitle).toBeInTheDocument()
-      })
-    })
-
-    describe('on revoke', () => {
-      it('triggers confirmation Modal', async () => {
-        const { user } = setup()
-        render(<Access />, { wrapper: wrapper() })
-
-        const revokeButtons = await screen.findAllByText(/Revoke/)
-
-        await user.click(revokeButtons[0])
-
-        await waitFor(() => expect(window.confirm).toBeCalled())
       })
     })
 

@@ -6,7 +6,6 @@ import { useUser } from 'services/user'
 import Button from 'ui/Button'
 
 import CreateTokenModal from './CreateTokenModal'
-import SessionsTable from './SessionsTable'
 import TokensTable from './TokensTable'
 
 function Access() {
@@ -53,10 +52,6 @@ function Access() {
         )}
       </div>
       <TokensTable tokens={sessionData?.tokens} />
-      <h2 className="mb-4 mt-8 text-lg font-semibold">Login Sessions</h2>
-      <div className="max-w-screen-md">
-        <SessionsTable sessions={sessionData?.sessions} />
-      </div>
     </div>
   )
 }
