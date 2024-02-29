@@ -70,7 +70,7 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }) {
 
   return (
     <form
-      className="flex flex-col gap-4 border p-4 text-ds-gray-nonary md:w-2/3"
+      className="flex flex-col gap-6 border p-4 text-ds-gray-nonary md:w-2/3"
       onSubmit={handleSubmit(upgradePlan)}
     >
       <div className="flex flex-col gap-1">

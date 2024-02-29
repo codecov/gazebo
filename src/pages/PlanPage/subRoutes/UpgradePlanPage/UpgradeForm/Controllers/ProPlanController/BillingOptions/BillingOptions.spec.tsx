@@ -167,7 +167,9 @@ describe('BillingOptions', () => {
         const cost = await screen.findByText(/\$10/)
         expect(cost).toBeInTheDocument()
 
-        const content = await screen.findByText(/\/per seat, billed annually/)
+        const content = await screen.findByText(
+          /per seat\/month, billed annually/
+        )
         expect(content).toBeInTheDocument()
       })
 
@@ -242,7 +244,9 @@ describe('BillingOptions', () => {
         const cost = await screen.findByText(/\$12/)
         expect(cost).toBeInTheDocument()
 
-        const content = await screen.findByText(/\/per seat, billed monthly/)
+        const content = await screen.findByText(
+          /per seat\/month, billed monthly/
+        )
         expect(content).toBeInTheDocument()
       })
 
