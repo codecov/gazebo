@@ -755,5 +755,11 @@ export function useNavLinks() {
       ) => `/${provider}/${owner}/${repo}/bundles/new/webpack`,
       text: 'Webpack',
     },
+    teamPlanFeedbackSurvey: {
+      path: () =>
+        `https://docs.google.com/forms/d/e/1FAIpQLSeoMHPyECewV7X3UaT-uUxZCmYy1T6hEX_aecCD2ppPHGSvUw/viewform`,
+      text: 'Team plan feedback survey',
+      isExternalLink: true,
+    },
   }
 }

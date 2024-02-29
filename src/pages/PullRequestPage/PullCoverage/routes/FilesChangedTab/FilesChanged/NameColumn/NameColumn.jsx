@@ -5,7 +5,7 @@ import { usePrefetchSingleFileComp } from 'services/pull'
 import Icon from 'ui/Icon'
 
 export default function NameColumn({ row, getValue }) {
-  const nameColumn = row.getValue('name')
+  const nameColumn = row.getValue('headName')
   const [fileNames] = nameColumn?.props?.children
   const path = fileNames?.props?.children
 
