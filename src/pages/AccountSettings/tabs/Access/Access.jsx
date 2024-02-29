@@ -27,7 +27,7 @@ function Access() {
 
   return (
     <div className="flex flex-col">
-      <h2 className="text-lg font-semibold">API Tokens</h2>
+      <h2 className="text-lg font-semibold">API Tokenssssssssss</h2>
       <div className="flex items-center justify-between">
         <p>
           Tokens created to access Codecov&apos;s API as an authenticated user{' '}
