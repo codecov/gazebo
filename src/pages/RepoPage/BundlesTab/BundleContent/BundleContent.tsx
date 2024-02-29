@@ -18,6 +18,7 @@ interface URLParams {
   provider: string
   owner: string
   repo: string
+  branch?: string
 }
 
 const Loader = () => (
@@ -27,12 +28,12 @@ const Loader = () => (
 )
 
 const BundleContent: React.FC = () => {
-  const { provider, owner, repo } = useParams<URLParams>()
+  const { provider, owner, repo, branch } = useParams<URLParams>()
   const { newBundleTab } = useFlags({
     newBundleTab: false,
   })
 
-  const { data } = useBranchBundleSummary({ provider, owner, repo })
+  const { data } = useBranchBundleSummary({ provider, owner, repo, branch })
 
   const bundleType = data?.branch?.head?.bundleAnalysisReport?.__typename
 

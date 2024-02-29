@@ -132,6 +132,9 @@ interface UseBundleAssetModulesArgs {
   branch: string
   bundle: string
   asset: string
+  opts?: {
+    enabled?: boolean
+  }
 }
 
 export const useBundleAssetModules = ({
@@ -141,7 +144,13 @@ export const useBundleAssetModules = ({
   branch,
   bundle,
   asset,
+  opts = {},
 }: UseBundleAssetModulesArgs) => {
+  let enabled = true
+  if (opts.enabled) {
+    enabled = opts.enabled
+  }
+
   return useQuery({
     queryKey: [
       'BundleAssetModules',
@@ -212,5 +221,6 @@ export const useBundleAssetModules = ({
 
         return { modules }
       }),
+    enabled: enabled,
   })
 }
