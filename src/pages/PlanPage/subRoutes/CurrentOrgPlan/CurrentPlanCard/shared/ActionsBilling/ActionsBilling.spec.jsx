@@ -338,7 +338,7 @@ describe('Actions Billing', () => {
         render(<ActionsBilling />, { wrapper })
 
         const upgradeToProLink = await screen.findByRole('link', {
-          name: 'Upgrade to Pro',
+          name: 'Upgrade',
         })
         expect(upgradeToProLink).toBeInTheDocument()
         expect(upgradeToProLink).toHaveAttribute(
@@ -365,7 +365,7 @@ describe('Actions Billing', () => {
         render(<ActionsBilling />, { wrapper })
 
         const upgradeLink = await screen.findByRole('link', {
-          name: /Upgrade to Pro/,
+          name: /Upgrade/,
         })
         expect(upgradeLink).toBeInTheDocument()
         expect(upgradeLink).toHaveAttribute(
@@ -577,7 +577,7 @@ describe('Actions Billing', () => {
           render(<ActionsBilling />, { wrapper })
 
           const upgradeLink = await screen.findByRole('link', {
-            name: /Upgrade to Sentry Pro/,
+            name: /Upgrade/,
           })
           expect(upgradeLink).toBeInTheDocument()
           expect(upgradeLink).toHaveAttribute(

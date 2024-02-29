@@ -35,7 +35,7 @@ const ProPlanController: React.FC<ProPlanControllerProps> = ({
         <BillingOptions newPlan={newPlan} setFormValue={setFormValue} />
       </div>
       <div className="flex flex-col gap-2 xl:w-5/12">
-        <div className="w-2/6">
+        <div className="w-1/2">
           <TextInput
             data-cy="seats"
             dataMarketing="plan-pricing-seats"
@@ -43,7 +43,7 @@ const ProPlanController: React.FC<ProPlanControllerProps> = ({
             id="nb-seats"
             size={20}
             type="number"
-            label="Seat count"
+            label="Enter seat count"
             min={MIN_NB_SEATS_PRO}
           />
         </div>
