@@ -13,7 +13,7 @@ const queryClient = new QueryClient({
 })
 const wrapper =
   (initialEntries = '/gh') =>
-  ({ children }) =>
+  ({ children }: { children: React.ReactNode }) =>
     (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={[initialEntries]}>

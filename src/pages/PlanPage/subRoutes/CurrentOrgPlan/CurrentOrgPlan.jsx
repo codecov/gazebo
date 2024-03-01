@@ -11,6 +11,8 @@ import LatestInvoiceCard from './LatestInvoiceCard'
 function CurrentOrgPlan() {
   const { provider, owner } = useParams()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
+
+  console.log(accountDetails)
   const shouldRenderBillingDetails = [
     accountDetails?.planProvider !== 'github',
     !accountDetails?.rootOrganization,
