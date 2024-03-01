@@ -38,7 +38,7 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
 }) => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
-  const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const accountDetails = useAccountDetails({ provider, owner })
   const { proPlanYear, proPlanMonth } = findProPlans({ plans })
   const planParam = usePlanParams()
 

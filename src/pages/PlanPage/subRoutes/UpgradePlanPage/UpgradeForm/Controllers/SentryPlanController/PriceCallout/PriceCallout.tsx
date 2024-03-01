@@ -40,7 +40,7 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
     baseUnitPrice: sentryPlanYear?.baseUnitPrice,
   })
   const isPerYear = isAnnualPlan(newPlan)
-  const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const accountDetails = useAccountDetails({ provider, owner })
   const nextBillingDate = getNextBillingDate(accountDetails)
 
   if (isPerYear) {

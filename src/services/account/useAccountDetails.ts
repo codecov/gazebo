@@ -19,6 +19,17 @@ export interface Plan {
   value: string
 }
 
+export interface SubscriptionDetail {
+  customer: {
+    email: string
+    discount: string
+  }
+}
+
+export interface Organization {
+  plan: Plan | null
+}
+
 export interface AccountDetails {
   activatedStudentCount: number
   activatedUserCount: number
@@ -32,10 +43,10 @@ export interface AccountDetails {
   planAutoActivate: boolean
   planProvider: null | string
   repoTotalCredits: number
-  rootOrganization: null | string
+  rootOrganization: null | Organization
   scheduleDetail: null | string
   studentCount: number
-  subscriptionDetail: null | string
+  subscriptionDetail: null | SubscriptionDetail
   usesInvoice: boolean
 }
 

@@ -10,7 +10,7 @@ import AutoActivate from './AutoActivate'
 
 function MemberActivation() {
   const { owner, provider } = useParams()
-  const { data: accountDetails } = useAccountDetails({ owner, provider })
+  const accountDetails = useAccountDetails({ owner, provider })
 
   const { data: planData } = usePlanData({
     provider,

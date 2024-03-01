@@ -80,7 +80,7 @@ PlansActionsBilling.propTypes = {
 
 function ActionsBilling() {
   const { owner, provider } = useParams()
-  const { data: accountDetails } = useAccountDetails({ owner, provider })
+  const accountDetails = useAccountDetails({ owner, provider })
   const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
   const username = accountDetails?.rootOrganization?.username
 

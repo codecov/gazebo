@@ -9,7 +9,7 @@ import PlanPricing from '../shared/PlanPricing'
 
 function PaidPlanCard() {
   const { provider, owner } = useParams()
-  const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const accountDetails = useAccountDetails({ provider, owner })
   const { data: planData } = usePlanData({
     provider,
     owner,

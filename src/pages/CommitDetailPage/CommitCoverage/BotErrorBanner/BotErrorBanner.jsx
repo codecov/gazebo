@@ -16,7 +16,7 @@ export const ProvidersEnum = Object.freeze({
 
 function useProviderSetting() {
   const { owner, provider: paramProvider } = useParams()
-  const { data: accountDetails } = useAccountDetails({
+  const accountDetails = useAccountDetails({
     provider: paramProvider,
     owner,
   })

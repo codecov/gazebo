@@ -57,7 +57,7 @@ AlertBanners.propTypes = {
 export default function HeaderBanners() {
   const { owner, provider } = useParams()
   // TODO: refactor this to add a gql field for the integration id used to determine if the org has a GH app
-  const { data: accountDetails } = useAccountDetails({
+  const accountDetails = useAccountDetails({
     provider,
     owner,
   })

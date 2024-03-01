@@ -24,7 +24,7 @@ import UpdateButton from './UpdateButton'
 
 function UpgradeForm({ selectedPlan, setSelectedPlan }) {
   const { provider, owner } = useParams()
-  const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const accountDetails = useAccountDetails({ provider, owner })
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { data: planData } = usePlanData({ owner, provider })
   const { upgradePlan } = useUpgradeControls()

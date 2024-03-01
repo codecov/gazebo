@@ -44,7 +44,7 @@ function usePrintPage() {
 
 function InvoiceDetail() {
   const { provider, owner, id } = useParams()
-  const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const accountDetails = useAccountDetails({ provider, owner })
   const { data: invoice } = useInvoice({ provider, owner, id })
   const { invoiceDetailsPage } = useNavLinks()
 

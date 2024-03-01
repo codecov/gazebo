@@ -35,7 +35,7 @@ function CancelPlanPage() {
     provider: string
     owner: string
   }>()
-  const { data: accountDetailsData } = useAccountDetails({ provider, owner })
+  const accountDetailsData = useAccountDetails({ provider, owner })
   const { data: planData } = usePlanData({ provider, owner })
   const { data: plans } = useAvailablePlans({
     provider,

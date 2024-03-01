@@ -14,7 +14,7 @@ import PaidPlanCard from './PaidPlanCard'
 
 function CurrentPlanCard() {
   const { provider, owner } = useParams()
-  const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const accountDetails = useAccountDetails({ provider, owner })
   const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
   const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
   const collectionMethod = accountDetails?.subscriptionDetail?.collectionMethod

@@ -23,7 +23,7 @@ import { useSetCrumbs } from '../../context'
 function UpgradePlanPage() {
   const { provider, owner } = useParams()
   const setCrumbs = useSetCrumbs()
-  const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const accountDetails = useAccountDetails({ provider, owner })
   const { data: plans } = useAvailablePlans({ provider, owner })
   const planParam = usePlanParams()
 
