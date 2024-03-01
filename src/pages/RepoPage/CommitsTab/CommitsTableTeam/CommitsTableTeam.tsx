@@ -14,6 +14,7 @@ import {
   type CommitStatsEnum,
   useCommitsTeam,
 } from 'services/commits/useCommitsTeam'
+import { useRepoOverview } from 'services/repo'
 import Spinner from 'ui/Spinner'
 
 import { createCommitsTableTeamData } from './createCommitsTableTeamData'
@@ -41,14 +42,15 @@ function LoadMoreTrigger({
   )
 }
 interface CommitsTable {
-  name: JSX.Element
-  ciStatus: JSX.Element
-  patch: JSX.Element
+  name: React.ReactElement
+  ciStatus: React.ReactElement
+  patch: React.ReactElement
+  bundleAnalysis: React.ReactElement
 }
 
 const columnHelper = createColumnHelper<CommitsTable>()
 
-const columns = [
+const baseColumns = [
   columnHelper.accessor('name', {
     id: 'name',
     header: 'Name',
@@ -85,6 +87,7 @@ const CommitsTableTeam: React.FC<CommitsTableTeamProps> = ({
 }) => {
   const { provider, owner, repo } = useParams<URLParams>()
   const { ref, inView } = useInView()
+  const { data: overview } = useRepoOverview({ provider, owner, repo })
 
   const {
     data: commitsData,
@@ -114,6 +117,24 @@ const CommitsTableTeam: React.FC<CommitsTableTeamProps> = ({
     [commitsData?.pages]
   )
 
+  const columns = useMemo(() => {
+    if (
+      overview?.bundleAnalysisEnabled &&
+      !baseColumns.some((column) => column.id === 'bundleAnalysis')
+    ) {
+      return [
+        ...baseColumns,
+        columnHelper.accessor('bundleAnalysis', {
+          header: 'Bundle Analysis',
+          id: 'bundleAnalysis',
+          cell: ({ renderValue }) => renderValue(),
+        }),
+      ]
+    }
+
+    return baseColumns
+  }, [overview?.bundleAnalysisEnabled])
+
   const table = useReactTable({
     columns,
     data: tableData,
@@ -135,8 +156,7 @@ const CommitsTableTeam: React.FC<CommitsTableTeamProps> = ({
                   <th
                     key={header.id}
                     className={cs({
-                      'text-right':
-                        header.id === 'ciStatus' || header.id === 'patch',
+                      'text-right': header.id !== 'name',
                     })}
                   >
                     {flexRender(
