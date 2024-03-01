@@ -9,11 +9,11 @@ import Coverage from './Coverage'
 import CIStatus from '../shared/CIStatus'
 import Title from '../shared/Title'
 
-export const createCommitsTableData = ({
-  pages,
-}: {
+interface CommitsTableData {
   pages?: Array<{ commits: Array<Commit | null> }>
-}) => {
+}
+
+export const createCommitsTableData = ({ pages }: CommitsTableData) => {
   if (!isArray(pages)) {
     return []
   }
@@ -50,6 +50,13 @@ export const createCommitsTableData = ({
       change = totals?.coverage - commit?.parent?.totals?.coverage
     }
 
+    let bundleAnalysis = undefined
+    if (commit?.bundleAnalysisReport?.__typename === 'BundleAnalysisReport') {
+      bundleAnalysis = <p>Upload: ✅</p>
+    } else {
+      bundleAnalysis = <p>Upload: ❌</p>
+    }
+
     return {
       name: (
         <Title
@@ -77,6 +84,7 @@ export const createCommitsTableData = ({
           large={false}
         />
       ),
+      bundleAnalysis,
     }
   })
 }
