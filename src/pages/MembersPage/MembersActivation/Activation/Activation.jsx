@@ -8,7 +8,7 @@ import ChangePlanLink from './ChangePlanLink'
 
 function Activation() {
   const { owner, provider } = useParams()
-  const accountDetails = useAccountDetails({ owner, provider })
+  const { data: accountDetails } = useAccountDetails({ owner, provider })
 
   const { data: planData } = usePlanData({
     provider,

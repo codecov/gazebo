@@ -42,7 +42,7 @@ const UserText: React.FC<UserTextProps> = ({
 
 const UserCount: React.FC = () => {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
-  const accountDetails = useAccountDetails({ provider, owner })
+  const { data: accountDetails } = useAccountDetails({ provider, owner })
 
   const activatedStudentCount = accountDetails?.activatedStudentCount
   const activatedUserCount = accountDetails?.activatedUserCount

@@ -174,7 +174,7 @@ function MembersTable({ handleActivate, params }) {
     [sortBy]
   )
 
-  const accountDetails = useAccountDetails({ owner, provider })
+  const { data: accountDetails } = useAccountDetails({ owner, provider })
   const maxSeatsReached =
     accountDetails?.activatedUserCount >= accountDetails?.plan?.quantity &&
     !isFreePlan(accountDetails?.plan?.value)

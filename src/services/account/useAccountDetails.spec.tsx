@@ -71,7 +71,7 @@ describe('useAccountDetails', () => {
         }
       )
 
-      await waitFor(() => expect(result.current).toEqual(accountDetails))
+      await waitFor(() => expect(result.current.data).toEqual(accountDetails))
     })
   })
 })

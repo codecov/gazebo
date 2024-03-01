@@ -26,7 +26,7 @@ type FormData = z.infer<typeof emailSchema>
 
 function EmailAddress() {
   const { provider, owner } = useParams<URLParams>()
-  const accountDetails = useAccountDetails({ provider, owner })
+  const { data: accountDetails } = useAccountDetails({ provider, owner })
   const [isFormOpen, setIsFormOpen] = useState(false)
   const currentCustomerEmail =
     accountDetails?.subscriptionDetail?.customer?.email || 'No email provided'
@@ -83,6 +83,7 @@ function EmailAddress() {
           />
           {errors?.newCustomerEmail && (
             <p className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
+              {/* @ts-expect-error */}
               {errors?.newCustomerEmail?.message}
             </p>
           )}

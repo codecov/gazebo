@@ -64,7 +64,7 @@ function MembersList() {
   })
 
   const { activate } = useActivateUser({ owner, provider })
-  const accountDetails = useAccountDetails({ owner, provider })
+  const { data: accountDetails } = useAccountDetails({ owner, provider })
   const [isOpen, setIsOpen] = useState(false)
 
   return (

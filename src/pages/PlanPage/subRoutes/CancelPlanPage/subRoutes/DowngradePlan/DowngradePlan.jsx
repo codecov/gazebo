@@ -11,7 +11,7 @@ import { useSetCrumbs } from '../../../../context'
 
 function DowngradePlan() {
   const { provider, owner } = useParams()
-  const accountDetails = useAccountDetails({ provider, owner })
+  const { data: accountDetails } = useAccountDetails({ provider, owner })
   const setCrumbs = useSetCrumbs()
 
   useLayoutEffect(() => {

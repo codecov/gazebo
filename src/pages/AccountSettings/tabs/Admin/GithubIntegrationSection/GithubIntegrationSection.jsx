@@ -35,7 +35,7 @@ GithubIntegrationCopy.propTypes = {
 function GithubIntegrationSection() {
   const { provider, owner } = useParams()
   const shouldRender = provider === 'gh' && !config.IS_SELF_HOSTED
-  const accountDetails = useAccountDetails({
+  const { data: accountDetails } = useAccountDetails({
     provider,
     owner,
     opts: {

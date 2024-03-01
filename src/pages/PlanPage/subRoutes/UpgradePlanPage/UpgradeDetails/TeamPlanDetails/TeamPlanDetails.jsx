@@ -15,7 +15,7 @@ import Icon from 'ui/Icon'
 function TeamPlanDetails() {
   const { provider, owner } = useParams()
   const { data: planData } = usePlanData({ provider, owner })
-  const accountDetails = useAccountDetails({ provider, owner })
+  const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { teamPlanYear, teamPlanMonth } = findTeamPlans({ plans })
 

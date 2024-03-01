@@ -37,7 +37,7 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
     baseUnitPrice: teamPlanYear?.baseUnitPrice,
   })
   const isPerYear = isAnnualPlan(newPlan)
-  const accountDetails = useAccountDetails({ provider, owner })
+  const { data: accountDetails } = useAccountDetails({ provider, owner })
   const nextBillingDate = getNextBillingDate(accountDetails)
 
   if (isPerYear) {
