@@ -1,11 +1,11 @@
-import { render, screen } from '@testing-library/react'
+import { render, RenderResult, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
 import InfoMessageStripeCallback from './InfoMessageStripeCallback'
 
 describe('InfoMessageStripeCallback', () => {
-  let wrapper
-  function setup(url) {
+  let wrapper: RenderResult
+  function setup(url: string) {
     wrapper = render(<InfoMessageStripeCallback />, {
       wrapper: ({ children }) => (
         <MemoryRouter initialEntries={[url]}>{children}</MemoryRouter>

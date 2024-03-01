@@ -16,7 +16,9 @@ const invoice = {
 }
 
 describe('LatestInvoiceCard', () => {
-  function setup({ invoices }) {
+  function setup({ invoices }: { invoices: any }) {
+    // TODO: figure out proper mock
+    // @ts-expect-error
     useInvoices.mockReturnValue({ data: invoices })
 
     render(

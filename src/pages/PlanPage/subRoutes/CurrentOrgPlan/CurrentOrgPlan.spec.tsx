@@ -28,7 +28,13 @@ const mockedAccountDetails = {
 }
 
 describe('CurrentOrgPlan', () => {
-  function setup({ accountDetails = mockedAccountDetails } = {}) {
+  function setup({
+    accountDetails = mockedAccountDetails,
+  }: {
+    accountDetails?: object
+  }) {
+    // TODO: figure out proper mock
+    // @ts-expect-error
     useAccountDetails.mockReturnValue({
       data: accountDetails,
     })
@@ -45,7 +51,7 @@ describe('CurrentOrgPlan', () => {
 
   describe('when plan value and org root are provided', () => {
     beforeEach(() => {
-      setup()
+      setup({})
     })
 
     it('renders CurrentPlanCard', () => {

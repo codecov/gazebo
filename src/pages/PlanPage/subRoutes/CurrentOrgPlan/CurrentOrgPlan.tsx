@@ -8,9 +8,17 @@ import InfoMessageCancellation from './InfoMessageCancellation'
 import InfoMessageStripeCallback from './InfoMessageStripeCallback'
 import LatestInvoiceCard from './LatestInvoiceCard'
 
+interface URLParams {
+  provider: string
+  owner: string
+}
+
 function CurrentOrgPlan() {
-  const { provider, owner } = useParams()
-  const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const { provider, owner } = useParams<URLParams>()
+  const { data: accountDetails } = useAccountDetails({
+    provider,
+    owner,
+  })
 
   console.log(accountDetails)
   const shouldRenderBillingDetails = [

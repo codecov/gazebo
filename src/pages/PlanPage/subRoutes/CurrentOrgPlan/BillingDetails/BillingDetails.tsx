@@ -12,7 +12,10 @@ interface URLParams {
 
 function BillingDetails() {
   const { provider, owner } = useParams<URLParams>()
-  const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const { data: accountDetails } = useAccountDetails({
+    provider,
+    owner,
+  })
   const subscriptionDetail = accountDetails?.subscriptionDetail
 
   if (!subscriptionDetail) {
@@ -25,8 +28,8 @@ function BillingDetails() {
       <EmailAddress />
       <PaymentCard
         subscriptionDetail={accountDetails?.subscriptionDetail}
-        provider={provider}
-        owner={owner}
+        provider={provider || ''}
+        owner={owner || ''}
       />
     </div>
   )
