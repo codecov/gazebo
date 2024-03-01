@@ -302,7 +302,7 @@ describe('IndirectChangedFiles', () => {
           expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
         )
 
-        const criticalFileLabel = await screen.findByText(/Critical File/i)
+        const criticalFileLabel = await screen.findByText(/Critical file/i)
         expect(criticalFileLabel).toBeInTheDocument()
       })
     })

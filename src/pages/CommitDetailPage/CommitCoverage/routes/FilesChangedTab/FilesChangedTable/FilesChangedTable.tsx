@@ -30,7 +30,7 @@ const CommitFileDiff = lazy(() => import('../shared/CommitFileDiff'))
 const columnHelper = createColumnHelper<ImpactedFileType>()
 
 const isNumericValue = (value: string) =>
-  value === 'patchPercentage' || value === 'head' || value === 'change'
+  value === 'patchPercentage' || value === 'coverage' || value === 'change'
 
 function getFilter(sorting: Array<{ id: string; desc: boolean }>) {
   const state = sorting.at(0)
@@ -79,27 +79,31 @@ function getColumns({ commitId }: { commitId: string }) {
       header: 'Name',
       cell: ({ getValue, row }) => {
         const headName = getValue()
+        const isDeletedFile = row.original?.headCoverage === null
+
         return (
-          <div className="flex flex-row break-all">
-            <span
-              data-action="clickable"
-              data-testid="file-diff-expand"
-              className={cs(
-                'inline-flex items-center gap-1 font-sans hover:underline focus:ring-2',
-                {
-                  'text-ds-blue': row.getIsExpanded(),
-                }
-              )}
-              {...{
-                onClick: row.getToggleExpandedHandler(),
-              }}
-            >
-              <Icon
-                size="md"
-                name={row.getIsExpanded() ? 'chevronDown' : 'chevronRight'}
-                variant="solid"
-              />
-            </span>
+          <div className="flex flex-row items-center break-all">
+            {!isDeletedFile && (
+              <span
+                data-action="clickable"
+                data-testid="file-diff-expand"
+                className={cs(
+                  'inline-flex items-center gap-1 font-sans hover:underline focus:ring-2',
+                  {
+                    'text-ds-blue': row.getIsExpanded(),
+                  }
+                )}
+                {...{
+                  onClick: row.getToggleExpandedHandler(),
+                }}
+              >
+                <Icon
+                  size="md"
+                  name={row.getIsExpanded() ? 'chevronDown' : 'chevronRight'}
+                  variant="solid"
+                />
+              </span>
+            )}
             {/* @ts-expect-error */}
             <A
               to={{
@@ -112,6 +116,16 @@ function getColumns({ commitId }: { commitId: string }) {
             >
               {headName}
             </A>
+            {row.original?.isCriticalFile && (
+              <span className="ml-2 h-fit flex-none rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
+                Critical file
+              </span>
+            )}
+            {isDeletedFile && (
+              <div className="ml-2 h-fit flex-none rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
+                Deleted file
+              </div>
+            )}
           </div>
         )
       },
@@ -189,9 +203,7 @@ function getColumns({ commitId }: { commitId: string }) {
               />
             )
           } else {
-            return (
-              <span className="ml-4 text-sm text-ds-gray-quinary">No data</span>
-            )
+            return <>-</>
           }
         },
       }

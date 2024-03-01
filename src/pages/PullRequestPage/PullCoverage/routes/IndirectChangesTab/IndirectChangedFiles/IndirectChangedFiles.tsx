@@ -22,7 +22,6 @@ import NameColumn from './NameColumn/NameColumn'
 
 import FileDiff from '../FileDiff'
 
-
 interface ImpactedFile {
   missesCount: number | undefined
   headCoverage?: number | null | undefined
@@ -61,8 +60,8 @@ function getColumns() {
               </A>
             </div>
             {row.original.isCriticalFile && (
-              <span className="self-center rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
-                Critical File
+              <span className="flex-none self-center rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
+                Critical file
               </span>
             )}
           </div>
