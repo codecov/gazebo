@@ -28,8 +28,8 @@ function BillingDetails() {
       <EmailAddress />
       <PaymentCard
         subscriptionDetail={accountDetails?.subscriptionDetail}
-        provider={provider || ''}
-        owner={owner || ''}
+        provider={provider}
+        owner={owner}
       />
     </div>
   )

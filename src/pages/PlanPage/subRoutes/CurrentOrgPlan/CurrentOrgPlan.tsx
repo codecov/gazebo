@@ -20,7 +20,6 @@ function CurrentOrgPlan() {
     owner,
   })
 
-  console.log(accountDetails)
   const shouldRenderBillingDetails = [
     accountDetails?.planProvider !== 'github',
     !accountDetails?.rootOrganization,
@@ -28,9 +27,11 @@ function CurrentOrgPlan() {
 
   return (
     <div className="w-full lg:w-4/5">
-      <InfoMessageCancellation
-        subscriptionDetail={accountDetails?.subscriptionDetail}
-      />
+      {accountDetails?.subscriptionDetail && (
+        <InfoMessageCancellation
+          subscriptionDetail={accountDetails?.subscriptionDetail}
+        />
+      )}
       <InfoMessageStripeCallback />
       {accountDetails?.plan && (
         <div className="flex flex-col gap-4 sm:mr-4 sm:flex-initial md:w-2/3 lg:w-3/4">
