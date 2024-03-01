@@ -11,6 +11,7 @@ import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
 
 import { useCommits } from 'services/commits/useCommits'
+import { useRepoOverview } from 'services/repo'
 import Spinner from 'ui/Spinner'
 
 import { createCommitsTableData } from './createCommitsTableData'
@@ -43,11 +44,12 @@ interface CommitsTableHelper {
   ciStatus: React.ReactElement
   patch: React.ReactElement
   change: React.ReactElement
+  bundleAnalysis: React.ReactElement
 }
 
 const columnHelper = createColumnHelper<CommitsTableHelper>()
 
-const columns = [
+const baseColumns = [
   columnHelper.accessor('name', {
     id: 'name',
     header: 'Name',
@@ -83,8 +85,9 @@ interface URLParams {
 }
 
 const CommitsTable = () => {
-  const { provider, owner, repo, pullId } = useParams<URLParams>()
   const { ref, inView } = useInView()
+  const { provider, owner, repo, pullId } = useParams<URLParams>()
+  const { data: overview } = useRepoOverview({ provider, owner, repo })
 
   const {
     data: commitsData,
@@ -111,6 +114,24 @@ const CommitsTable = () => {
     () => createCommitsTableData({ pages: commitsData?.pages }),
     [commitsData?.pages]
   )
+
+  const columns = useMemo(() => {
+    if (
+      overview?.bundleAnalysisEnabled &&
+      !baseColumns.some((column) => column.id === 'bundleAnalysis')
+    ) {
+      return [
+        ...baseColumns,
+        columnHelper.accessor('bundleAnalysis', {
+          header: 'Bundle Analysis',
+          id: 'bundleAnalysis',
+          cell: ({ renderValue }) => renderValue(),
+        }),
+      ]
+    }
+
+    return baseColumns
+  }, [overview?.bundleAnalysisEnabled])
 
   const table = useReactTable({
     columns,
@@ -159,9 +180,9 @@ const CommitsTable = () => {
                     <td
                       key={cell.id}
                       className={cs('text-sm', {
-                        'w-full max-w-0 font-medium @md/table:w-auto @md/table:max-w-none':
+                        'w-full max-w-0 font-medium @md/table:w-auto @md/table:max-w-none text-left':
                           cell.column.id === 'title',
-                        'text-right': cell.column.id === 'change',
+                        'text-right': cell.column.id !== 'name',
                       })}
                     >
                       {flexRender(
