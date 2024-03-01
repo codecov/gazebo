@@ -356,7 +356,7 @@ describe('createCommitsTableData', () => {
           pages: [{ commits: [commitData] }],
         })
 
-        expect(result[0]?.bundleAnalysis).toStrictEqual(<p>Upload: ❌</p>)
+        expect(result[0]?.bundleAnalysis).toStrictEqual(<p>Upload: &#x274B;</p>)
       })
     })
 
@@ -389,7 +389,7 @@ describe('createCommitsTableData', () => {
           pages: [{ commits: [commitData] }],
         })
 
-        expect(result[0]?.bundleAnalysis).toStrictEqual(<p>Upload: ✅</p>)
+        expect(result[0]?.bundleAnalysis).toStrictEqual(<p>Upload: &#x2705;</p>)
       })
     })
   })
