@@ -11,6 +11,20 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import PullsTable from './PullsTable'
 
+const mockRepoOverview = (bundleAnalysisEnabled = false) => ({
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      private: false,
+      defaultBranch: 'main',
+      oldestCommitAt: '2022-10-10T11:59:59',
+      coverageEnabled: false,
+      bundleAnalysisEnabled,
+      languages: ['javascript'],
+    },
+  },
+})
+
 const node1 = {
   pullId: 1,
   title: 'first pull',
@@ -30,6 +44,9 @@ const node1 = {
   head: {
     totals: {
       percentCovered: 45,
+    },
+    bundleAnalysisReport: {
+      __typename: 'MissingHeadReport',
     },
   },
 }
@@ -54,6 +71,9 @@ const node2 = {
     totals: {
       percentCovered: 45,
     },
+    bundleAnalysisReport: {
+      __typename: 'BundleAnalysisReport',
+    },
   },
 }
 
@@ -76,6 +96,9 @@ const node3 = {
   head: {
     totals: {
       percentCovered: 45,
+    },
+    bundleAnalysisReport: {
+      __typename: 'MissingHeadReport',
     },
   },
 }
@@ -106,13 +129,23 @@ afterAll(() => {
 
 interface SetupArgs {
   noEntries?: boolean
+  bundleAnalysisEnabled?: boolean
 }
 
 describe('PullsTable', () => {
-  function setup({ noEntries = false }: SetupArgs) {
+  function setup({
+    noEntries = false,
+    bundleAnalysisEnabled = false,
+  }: SetupArgs) {
     const queryClient = new QueryClient()
 
     server.use(
+      graphql.query('GetRepoOverview', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data(mockRepoOverview(bundleAnalysisEnabled))
+        )
+      }),
       graphql.query('GetPulls', (req, res, ctx) => {
         if (noEntries) {
           return res(
@@ -204,6 +237,29 @@ describe('PullsTable', () => {
       const patchColumn = await screen.findByText('Change from')
       expect(patchColumn).toBeInTheDocument()
     })
+
+    describe('bundle analysis is enabled', () => {
+      it('renders bundle analysis column', async () => {
+        const { queryClient } = setup({ bundleAnalysisEnabled: true })
+        render(<PullsTable />, { wrapper: wrapper(queryClient) })
+
+        const bundleAnalysis = await screen.findByText('Bundle Analysis')
+        expect(bundleAnalysis).toBeInTheDocument()
+      })
+    })
+
+    describe('bundle analysis is disabled', () => {
+      it('does not render bundle analysis column', async () => {
+        const { queryClient } = setup({ bundleAnalysisEnabled: false })
+        render(<PullsTable />, { wrapper: wrapper(queryClient) })
+
+        const spinner = await screen.findByTestId('spinner')
+        await waitForElementToBeRemoved(spinner)
+
+        const bundleAnalysis = screen.queryByText('Bundle Analysis')
+        expect(bundleAnalysis).not.toBeInTheDocument()
+      })
+    })
   })
 
   describe('renders table body', () => {
@@ -237,6 +293,29 @@ describe('PullsTable', () => {
 
       const coverage = await screen.findByText('75.00%')
       expect(coverage).toBeInTheDocument()
+    })
+
+    describe('bundle analysis is enabled', () => {
+      it('renders bundle analysis column', async () => {
+        const { queryClient } = setup({ bundleAnalysisEnabled: true })
+        render(<PullsTable />, { wrapper: wrapper(queryClient) })
+
+        const bundleAnalysis = await screen.findByText('Upload: ✅')
+        expect(bundleAnalysis).toBeInTheDocument()
+      })
+    })
+
+    describe('bundle analysis is disabled', () => {
+      it('does not render bundle analysis column', async () => {
+        const { queryClient } = setup({ bundleAnalysisEnabled: false })
+        render(<PullsTable />, { wrapper: wrapper(queryClient) })
+
+        const spinner = await screen.findByTestId('spinner')
+        await waitForElementToBeRemoved(spinner)
+
+        const bundleAnalysis = screen.queryByText('Upload: ✅')
+        expect(bundleAnalysis).not.toBeInTheDocument()
+      })
     })
   })
 
