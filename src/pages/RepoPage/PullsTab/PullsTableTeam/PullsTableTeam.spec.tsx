@@ -11,6 +11,20 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import PullsTableTeam from './PullsTableTeam'
 
+const mockRepoOverview = (bundleAnalysisEnabled = false) => ({
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      private: false,
+      defaultBranch: 'main',
+      oldestCommitAt: '2022-10-10T11:59:59',
+      coverageEnabled: false,
+      bundleAnalysisEnabled,
+      languages: ['javascript'],
+    },
+  },
+})
+
 const node1 = {
   pullId: 1,
   title: 'first pull',
@@ -24,6 +38,11 @@ const node1 = {
     __typename: 'Comparison',
     patchTotals: {
       percentCovered: 75,
+    },
+  },
+  head: {
+    bundleAnalysisReport: {
+      __typename: 'BundleAnalysisReport',
     },
   },
 }
@@ -43,6 +62,11 @@ const node2 = {
       percentCovered: 87,
     },
   },
+  head: {
+    bundleAnalysisReport: {
+      __typename: 'MissingHeadReport',
+    },
+  },
 }
 
 const node3 = {
@@ -58,6 +82,11 @@ const node3 = {
     __typename: 'Comparison',
     patchTotals: {
       percentCovered: 92,
+    },
+  },
+  head: {
+    bundleAnalysisReport: {
+      __typename: 'MissingHeadReport',
     },
   },
 }
@@ -88,13 +117,23 @@ afterAll(() => {
 
 interface SetupArgs {
   noEntries?: boolean
+  bundleAnalysisEnabled?: boolean
 }
 
 describe('PullsTableTeam', () => {
-  function setup({ noEntries = false }: SetupArgs) {
+  function setup({
+    noEntries = false,
+    bundleAnalysisEnabled = false,
+  }: SetupArgs) {
     const queryClient = new QueryClient()
 
     server.use(
+      graphql.query('GetRepoOverview', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data(mockRepoOverview(bundleAnalysisEnabled))
+        )
+      }),
       graphql.query('GetPullsTeam', (req, res, ctx) => {
         if (noEntries) {
           return res(
@@ -170,6 +209,29 @@ describe('PullsTableTeam', () => {
       const patchColumn = await screen.findByText('Patch %')
       expect(patchColumn).toBeInTheDocument()
     })
+
+    describe('bundle analysis is enabled', () => {
+      it('renders bundle analysis column', async () => {
+        const { queryClient } = setup({ bundleAnalysisEnabled: true })
+        render(<PullsTableTeam />, { wrapper: wrapper(queryClient) })
+
+        const bundleAnalysis = await screen.findByText('Bundle Analysis')
+        expect(bundleAnalysis).toBeInTheDocument()
+      })
+    })
+
+    describe('bundle analysis is disabled', () => {
+      it('does not render bundle analysis column', async () => {
+        const { queryClient } = setup({ bundleAnalysisEnabled: false })
+        render(<PullsTableTeam />, { wrapper: wrapper(queryClient) })
+
+        const spinner = await screen.findByTestId('spinner')
+        await waitForElementToBeRemoved(spinner)
+
+        const bundleAnalysis = screen.queryByText('Bundle Analysis')
+        expect(bundleAnalysis).not.toBeInTheDocument()
+      })
+    })
   })
 
   describe('renders table body', () => {
@@ -187,6 +249,29 @@ describe('PullsTableTeam', () => {
 
       const patch = await screen.findByText('87.00%')
       expect(patch).toBeInTheDocument()
+    })
+
+    describe('bundle analysis is enabled', () => {
+      it('renders bundle analysis column', async () => {
+        const { queryClient } = setup({ bundleAnalysisEnabled: true })
+        render(<PullsTableTeam />, { wrapper: wrapper(queryClient) })
+
+        const bundleAnalysis = await screen.findByText('Upload: ✅')
+        expect(bundleAnalysis).toBeInTheDocument()
+      })
+    })
+
+    describe('bundle analysis is disabled', () => {
+      it('does not render bundle analysis column', async () => {
+        const { queryClient } = setup({ bundleAnalysisEnabled: false })
+        render(<PullsTableTeam />, { wrapper: wrapper(queryClient) })
+
+        const spinner = await screen.findByTestId('spinner')
+        await waitForElementToBeRemoved(spinner)
+
+        const bundleAnalysis = screen.queryByText('Upload: ✅')
+        expect(bundleAnalysis).not.toBeInTheDocument()
+      })
     })
   })
 

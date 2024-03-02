@@ -13,6 +13,7 @@ import { useParams } from 'react-router-dom'
 import { useLocationParams } from 'services/navigation'
 import { usePullsTeam } from 'services/pulls/usePullsTeam'
 import 'ui/Table/Table.css'
+import { useRepoOverview } from 'services/repo'
 import Spinner from 'ui/Spinner'
 
 import { createPullsTableTeamData } from './createPullsTableTeamData'
@@ -39,9 +40,10 @@ function LoadMoreTrigger({ intersectionRef }: { intersectionRef: any }) {
 const columnHelper = createColumnHelper<{
   title: React.ReactElement
   patch: React.ReactElement
+  bundleAnalysis: React.ReactElement
 }>()
 
-const columns = [
+const baseColumns = [
   columnHelper.accessor('title', {
     id: 'title',
     header: () => 'Name',
@@ -70,6 +72,7 @@ export default function PullsTableTeam() {
   const { ref, inView } = useInView()
   // we really need to TS'ify and generic'ify useLocationParams
   const { params } = useLocationParams(defaultParams)
+  const { data: overview } = useRepoOverview({ provider, owner, repo })
 
   const {
     data: pullsData,
@@ -104,6 +107,24 @@ export default function PullsTableTeam() {
       }),
     [pullsData?.pages]
   )
+
+  const columns = useMemo(() => {
+    if (
+      overview?.bundleAnalysisEnabled &&
+      !baseColumns.some((column) => column.id === 'bundleAnalysis')
+    ) {
+      return [
+        ...baseColumns,
+        columnHelper.accessor('bundleAnalysis', {
+          header: 'Bundle Analysis',
+          id: 'bundleAnalysis',
+          cell: ({ renderValue }) => renderValue(),
+        }),
+      ]
+    }
+
+    return baseColumns
+  }, [overview?.bundleAnalysisEnabled])
 
   const table = useReactTable({
     columns,
