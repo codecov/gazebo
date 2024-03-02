@@ -33,6 +33,7 @@ describe('InfoMessageCancellation', () => {
 
   describe('when the subscription isnt cancelled', () => {
     beforeEach(() => {
+      // @ts-expect-error
       setup({
         ...subscriptionDetail,
         cancelAtPeriodEnd: false,
@@ -46,6 +47,7 @@ describe('InfoMessageCancellation', () => {
 
   describe('when the subscription is cancelled', () => {
     beforeEach(() => {
+      // @ts-expect-error
       setup({
         ...subscriptionDetail,
         cancelAtPeriodEnd: true,

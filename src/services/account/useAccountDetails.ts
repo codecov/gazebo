@@ -43,7 +43,7 @@ export const PlanSchema = z.object({
   benefits: z.array(z.string()),
   billingRate: z.string().nullable(),
   marketingName: z.string(),
-  monthlyUploadLimit: z.number().nullable(),
+  monthlyUploadLimit: z.number().nullish(),
   value: z.string(),
   quantity: z.number(),
 })
@@ -119,18 +119,16 @@ export function useAccountDetails({
     queryKey: ['accountDetails', provider, owner],
     queryFn: ({ signal }) =>
       fetchAccountDetails({ provider, owner, signal }).then((res) => {
-        return res
+        const parsedRes = AccountDetailsSchema.safeParse(res)
 
-        // const parsedRes = AccountDetailsSchema.safeParse(res?.data)
+        if (!parsedRes.success) {
+          return Promise.reject({
+            status: 404,
+            data: null,
+          })
+        }
 
-        // if (!parsedRes.success) {
-        //   return Promise.reject({
-        //     status: 404,
-        //     data: null,
-        //   })
-        // }
-
-        // return parsedRes.data
+        return parsedRes.data
       }),
     ...opts,
   })
