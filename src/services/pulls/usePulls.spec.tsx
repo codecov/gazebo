@@ -18,6 +18,9 @@ const node1 = {
     totals: {
       percentCovered: 90,
     },
+    bundleAnalysisReport: {
+      __typename: 'MissingHeadReport',
+    },
   },
   compareWithBase: {
     __typename: 'Comparison',
@@ -41,6 +44,9 @@ const node2 = {
     totals: {
       percentCovered: 90,
     },
+    bundleAnalysisReport: {
+      __typename: 'MissingHeadReport',
+    },
   },
   compareWithBase: {
     __typename: 'Comparison',
@@ -63,6 +69,9 @@ const node3 = {
   head: {
     totals: {
       percentCovered: 90,
+    },
+    bundleAnalysisReport: {
+      __typename: 'MissingHeadReport',
     },
   },
   compareWithBase: {
