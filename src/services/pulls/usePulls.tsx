@@ -47,10 +47,12 @@ const PullSchema = z
             percentCovered: z.number().nullable(),
           })
           .nullable(),
-        bundleAnalysisReport: z.discriminatedUnion('__typename', [
-          z.object({ __typename: z.literal('BundleAnalysisReport') }),
-          z.object({ __typename: z.literal('MissingHeadReport') }),
-        ]),
+        bundleAnalysisReport: z
+          .discriminatedUnion('__typename', [
+            z.object({ __typename: z.literal('BundleAnalysisReport') }),
+            z.object({ __typename: z.literal('MissingHeadReport') }),
+          ])
+          .nullable(),
       })
       .nullable(),
     compareWithBase: z
