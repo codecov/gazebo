@@ -54,7 +54,7 @@ function UpgradePlanPage() {
     setCrumbs([
       {
         pageName: 'upgradeOrgPlan',
-        text: isFreePlan(plan?.value) ? 'upgrade plan' : 'manage plan',
+        text: isFreePlan(plan?.value) ? 'Upgrade plan' : 'Manage plan',
       },
     ])
   }, [setCrumbs, plan?.value])
