@@ -300,7 +300,7 @@ describe('CommitsTableTeam', () => {
           wrapper: wrapper(queryClient),
         })
 
-        const bundleAnalysis = screen.queryByText('Bundle Analysis')
+        const bundleAnalysis = screen.queryByText('Upload: ❌')
         expect(bundleAnalysis).not.toBeInTheDocument()
       })
     })
