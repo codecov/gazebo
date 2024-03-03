@@ -56,7 +56,7 @@ export const createCommitsTableData = ({
       bundleAnalysis = <p>Upload: &#x2705;</p>
     } else {
       // this hex code is for ❌
-      bundleAnalysis = <p>Upload: &#x274B;</p>
+      bundleAnalysis = <p>Upload: &#x274C;</p>
     }
 
     return {

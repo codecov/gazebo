@@ -369,7 +369,7 @@ describe('CommitsTable', () => {
           wrapper: wrapper(queryClient),
         })
 
-        const bundleAnalysis = screen.queryByText('Upload: &#x274B;')
+        const bundleAnalysis = screen.queryByText('Upload: ❌')
         expect(bundleAnalysis).not.toBeInTheDocument()
       })
     })
