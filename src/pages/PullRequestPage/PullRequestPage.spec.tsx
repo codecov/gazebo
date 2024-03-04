@@ -108,8 +108,14 @@ const mockPullBADropdownSummary = {
         },
         bundleAnalysisCompareWithBase: {
           __typename: 'BundleAnalysisComparison',
-          sizeDelta: 1,
-          loadTimeDelta: 2,
+          bundleChange: {
+            loadTime: {
+              threeG: 2,
+            },
+            size: {
+              uncompress: 1,
+            },
+          },
         },
       },
     },
@@ -117,7 +123,7 @@ const mockPullBADropdownSummary = {
 }
 
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
+  defaultOptions: { queries: { retry: false, suspense: true } },
 })
 const server = setupServer()
 
@@ -329,6 +335,32 @@ describe('PullRequestPage', () => {
 
       const notFound = await screen.findByText(/Not found/)
       expect(notFound).toBeInTheDocument()
+    })
+  })
+
+  describe('dropdown query param is present in the url', () => {
+    describe('query param is coverage', () => {
+      it('renders the PullCoverage component', async () => {
+        setup({ bundleAnalysisEnabled: true, coverageEnabled: true })
+        render(<PullRequestPage />, {
+          wrapper: wrapper('/gh/test-org/test-repo/pull/12?dropdown=coverage'),
+        })
+
+        const PullCoverage = await screen.findByText(/PullCoverage/)
+        expect(PullCoverage).toBeInTheDocument()
+      })
+    })
+
+    describe('query param is bundle', () => {
+      it('renders the PullBundleAnalysis component', async () => {
+        setup({ bundleAnalysisEnabled: true, coverageEnabled: true })
+        render(<PullRequestPage />, {
+          wrapper: wrapper('/gh/test-org/test-repo/pull/12?dropdown=bundle'),
+        })
+
+        const PullBundleAnalysis = await screen.findByText(/PullBundleAnalysis/)
+        expect(PullBundleAnalysis).toBeInTheDocument()
+      })
     })
   })
 })

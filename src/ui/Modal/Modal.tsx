@@ -37,7 +37,7 @@ const Modal: React.FC<ModalProps> = ({
       isOpen={isOpen}
       onRequestClose={onClose}
       className="flex h-screen w-screen items-center justify-center"
-      overlayClassName="fixed inset-0 bg-gray-900 bg-opacity-75 z-10"
+      overlayClassName="fixed inset-0 bg-gray-900 bg-opacity-75 z-30"
       {...rest}
     >
       <div className={modalSizes[size]}>

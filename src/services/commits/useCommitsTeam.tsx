@@ -18,6 +18,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
+import { type NetworkErrorObject } from 'shared/api/helpers'
 import { mapEdges } from 'shared/utils/graphql'
 import A from 'ui/A'
 
@@ -59,6 +60,16 @@ const CommitSchema = z.object({
       MissingComparisonSchema,
       MissingHeadCommitSchema,
       MissingHeadReportSchema,
+    ])
+    .nullable(),
+  bundleAnalysisReport: z
+    .discriminatedUnion('__typename', [
+      z.object({
+        __typename: z.literal('BundleAnalysisReport'),
+      }),
+      z.object({
+        __typename: z.literal('MissingHeadReport'),
+      }),
     ])
     .nullable(),
 })
@@ -122,6 +133,9 @@ query GetCommitsTeam(
               author {
                 username
                 avatarUrl
+              }
+              bundleAnalysisReport {
+                __typename
               }
               compareWithParent {
                 __typename
@@ -219,7 +233,8 @@ export function useCommitsTeam({
           return Promise.reject({
             status: 404,
             data: {},
-          })
+            dev: `useCommitsTeam - 404 Failed to parse`,
+          } satisfies NetworkErrorObject)
         }
 
         const data = parsedData.data
@@ -228,7 +243,8 @@ export function useCommitsTeam({
           return Promise.reject({
             status: 404,
             data: {},
-          })
+            dev: `useCommitsTeam - 404 NotFoundError`,
+          } satisfies NetworkErrorObject)
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
@@ -244,7 +260,8 @@ export function useCommitsTeam({
                 </p>
               ),
             },
-          })
+            dev: `useCommitsTeam - 403 OwnerNotActivated`,
+          } satisfies NetworkErrorObject)
         }
 
         const commits = mapEdges(data?.owner?.repository?.commits)

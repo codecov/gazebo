@@ -45,6 +45,9 @@ describe('createCommitsTableTeamData', () => {
             __typename: 'MissingBaseCommit',
             message: 'Missing base commit',
           },
+          bundleAnalysisReport: {
+            __typename: 'MissingHeadReport',
+          },
         } as const
 
         const result = createCommitsTableTeamData({
@@ -70,6 +73,9 @@ describe('createCommitsTableTeamData', () => {
             patchTotals: {
               percentCovered: 100,
             },
+          },
+          bundleAnalysisReport: {
+            __typename: 'MissingHeadReport',
           },
         } as const
 
@@ -103,6 +109,9 @@ describe('createCommitsTableTeamData', () => {
               patchTotals: {
                 percentCovered: null,
               },
+            },
+            bundleAnalysisReport: {
+              __typename: 'MissingHeadReport',
             },
           } as const
 
@@ -142,6 +151,9 @@ describe('createCommitsTableTeamData', () => {
               percentCovered: 100,
             },
           },
+          bundleAnalysisReport: {
+            __typename: 'MissingHeadReport',
+          },
         } as const
 
         const result = createCommitsTableTeamData({
@@ -177,6 +189,9 @@ describe('createCommitsTableTeamData', () => {
               percentCovered: 100,
             },
           },
+          bundleAnalysisReport: {
+            __typename: 'MissingHeadReport',
+          },
         } as const
 
         const result = createCommitsTableTeamData({
@@ -185,6 +200,62 @@ describe('createCommitsTableTeamData', () => {
 
         expect(result[0]?.ciStatus).toStrictEqual(
           <CIStatus ciPassed={true} commitid="commit123" coverage={100} />
+        )
+      })
+    })
+
+    describe('bundleAnalysisReport __typename is not BundleAnalysisReport', () => {
+      it('returns no report uploaded', () => {
+        const commitData = {
+          ciPassed: null,
+          message: null,
+          commitid: 'commit-123',
+          createdAt: '2021-11-01T19:44:10.795533+00:00',
+          author: null,
+          compareWithParent: {
+            __typename: 'MissingBaseCommit',
+            message: 'Missing base commit',
+          },
+          bundleAnalysisReport: {
+            __typename: 'MissingHeadReport',
+          },
+        } as const
+
+        const result = createCommitsTableTeamData({
+          pages: [{ commits: [commitData] }],
+        })
+
+        expect(result[0]?.bundleAnalysis).toStrictEqual(
+          <p className="text-right">Upload: ❌</p>
+        )
+      })
+    })
+
+    describe('bundleAnalysisReport __typename is BundleAnalysisReport', () => {
+      it('returns successful upload', () => {
+        const commitData = {
+          ciPassed: null,
+          message: null,
+          commitid: 'commit-123',
+          createdAt: '2021-11-01T19:44:10.795533+00:00',
+          author: null,
+          compareWithParent: {
+            __typename: 'Comparison',
+            patchTotals: {
+              percentCovered: 100,
+            },
+          },
+          bundleAnalysisReport: {
+            __typename: 'BundleAnalysisReport',
+          },
+        } as const
+
+        const result = createCommitsTableTeamData({
+          pages: [{ commits: [commitData] }],
+        })
+
+        expect(result[0]?.bundleAnalysis).toStrictEqual(
+          <p className="text-right">Upload: ✅</p>
         )
       })
     })
