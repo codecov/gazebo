@@ -15,6 +15,7 @@ import {
   useCommitsTeam,
 } from 'services/commits/useCommitsTeam'
 import { useRepoOverview } from 'services/repo'
+import { useFlags } from 'shared/featureFlags'
 import Spinner from 'ui/Spinner'
 
 import { createCommitsTableTeamData } from './createCommitsTableTeamData'
@@ -88,6 +89,9 @@ const CommitsTableTeam: React.FC<CommitsTableTeamProps> = ({
   const { provider, owner, repo } = useParams<URLParams>()
   const { ref, inView } = useInView()
   const { data: overview } = useRepoOverview({ provider, owner, repo })
+  const { bundleAnalysisPrAndCommitPages } = useFlags({
+    bundleAnalysisPrAndCommitPages: false,
+  })
 
   const {
     data: commitsData,
@@ -120,7 +124,8 @@ const CommitsTableTeam: React.FC<CommitsTableTeamProps> = ({
   const columns = useMemo(() => {
     if (
       overview?.bundleAnalysisEnabled &&
-      !baseColumns.some((column) => column.id === 'bundleAnalysis')
+      !baseColumns.some((column) => column.id === 'bundleAnalysis') &&
+      bundleAnalysisPrAndCommitPages
     ) {
       return [
         ...baseColumns,
@@ -133,7 +138,7 @@ const CommitsTableTeam: React.FC<CommitsTableTeamProps> = ({
     }
 
     return baseColumns
-  }, [overview?.bundleAnalysisEnabled])
+  }, [bundleAnalysisPrAndCommitPages, overview?.bundleAnalysisEnabled])
 
   const table = useReactTable({
     columns,
