@@ -105,17 +105,21 @@ function getColumns({ commitId }: { commitId: string }) {
               </span>
             )}
             {/* @ts-expect-error */}
-            <A
-              to={{
-                pageName: 'commitFileDiff',
-                options: {
-                  commit: commitId,
-                  tree: headName,
-                },
-              }}
-            >
-              {headName}
-            </A>
+            {isDeletedFile ? (
+              <>{headName}</>
+            ) : (
+              <A
+                to={{
+                  pageName: 'commitFileDiff',
+                  options: {
+                    commit: commitId,
+                    tree: headName,
+                  },
+                }}
+              >
+                {headName}
+              </A>
+            )}
             {row.original?.isCriticalFile && (
               <span className="ml-2 h-fit flex-none rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
                 Critical file

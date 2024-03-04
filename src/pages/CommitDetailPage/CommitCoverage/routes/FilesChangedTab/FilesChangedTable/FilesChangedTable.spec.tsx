@@ -403,6 +403,52 @@ describe('FilesChangedTable', () => {
     })
   })
 
+  describe('highlights deleted files', () => {
+    it('renders deleted file', async () => {
+      const { queryClient } = setup({
+        __typename: 'ImpactedFiles',
+        results: [
+          {
+            headName: 'src/main.rs',
+            isCriticalFile: false,
+            baseCoverage: null,
+            headCoverage: null,
+            patchCoverage: null,
+          },
+        ],
+      })
+      render(<FilesChangedTable />, { wrapper: wrapper(queryClient) })
+
+      const deletedFile = await screen.findByText(/Deleted file/)
+      expect(deletedFile).toBeInTheDocument()
+    })
+
+    it('renders non-deleted file', async () => {
+      const { queryClient } = setup({
+        __typename: 'ImpactedFiles',
+        results: [
+          {
+            headName: 'src/main.rs',
+            isCriticalFile: false,
+            baseCoverage: {
+              coverage: 40.0,
+            },
+            headCoverage: {
+              coverage: 50.0,
+            },
+            patchCoverage: {
+              coverage: 100.0,
+            },
+          },
+        ],
+      })
+      render(<FilesChangedTable />, { wrapper: wrapper(queryClient) })
+
+      const deletedFile = screen.queryByText(/Deleted file/)
+      expect(deletedFile).not.toBeInTheDocument()
+    })
+  })
+
   describe('flags query param is set', () => {
     const mockData = {
       __typename: 'ImpactedFiles',
