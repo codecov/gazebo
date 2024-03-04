@@ -60,7 +60,7 @@ export default function ComponentsMultiSelect() {
   }
 
   return (
-    <>
+    <div className="w-1/6">
       <MultiSelect
         // @ts-expect-error
         disabled={false}
@@ -87,6 +87,6 @@ export default function ComponentsMultiSelect() {
           </span>
         )}
       />
-    </>
+    </div>
   )
 }

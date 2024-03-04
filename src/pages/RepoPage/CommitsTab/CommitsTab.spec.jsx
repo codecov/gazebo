@@ -92,6 +92,9 @@ const mockCommits = {
                   percentCovered: 100,
                 },
               },
+              bundleAnalysisReport: {
+                __typename: 'BundleAnalysisReport',
+              },
             },
           },
         ],
