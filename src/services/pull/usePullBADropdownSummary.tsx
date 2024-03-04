@@ -13,12 +13,19 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo/schemas'
 import Api from 'shared/api'
+import { type NetworkErrorObject } from 'shared/api/helpers'
 import A from 'ui/A'
 
 const BAComparisonSchema = z.object({
   __typename: z.literal('BundleAnalysisComparison'),
-  sizeDelta: z.number(),
-  loadTimeDelta: z.number(),
+  bundleChange: z.object({
+    loadTime: z.object({
+      threeG: z.number(),
+    }),
+    size: z.object({
+      uncompress: z.number(),
+    }),
+  }),
 })
 
 const BundleAnalysisCompareWithParentSchema = z
@@ -72,8 +79,14 @@ query PullBADropdownSummary($owner: String!, $repo: String!, $pullId: Int!) {
           bundleAnalysisCompareWithBase {
             __typename
             ... on BundleAnalysisComparison {
-              sizeDelta
-              loadTimeDelta
+              bundleChange {
+                loadTime {
+                  threeG
+                }
+                size {
+                  uncompress
+                }
+              }
             }
             ... on FirstPullRequest {
               message
@@ -134,8 +147,9 @@ export function usePullBADropdownSummary({
         if (!parsedRes.success) {
           return Promise.reject({
             status: 404,
-            data: null,
-          })
+            data: {},
+            dev: `usePullBADropdownSummary - 404 failed to parse`,
+          } satisfies NetworkErrorObject)
         }
 
         const data = parsedRes.data
@@ -144,7 +158,8 @@ export function usePullBADropdownSummary({
           return Promise.reject({
             status: 404,
             data: {},
-          })
+            dev: `usePullBADropdownSummary - 404 NotFoundError`,
+          } satisfies NetworkErrorObject)
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
@@ -160,7 +175,8 @@ export function usePullBADropdownSummary({
                 </p>
               ),
             },
-          })
+            dev: `usePullBADropdownSummary - 404 OwnerNotActivatedError`,
+          } satisfies NetworkErrorObject)
         }
 
         const pull = data?.owner?.repository?.pull ?? null

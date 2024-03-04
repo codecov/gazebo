@@ -47,7 +47,7 @@ function getFilter(sorting: Array<{ id: string; desc: boolean }>) {
       }
     }
 
-    if (state.id === 'coverage') {
+    if (state.id === 'head') {
       return {
         direction,
         parameter: OrderingParameter.HEAD_COVERAGE,
@@ -79,45 +79,63 @@ function getColumns({ commitId }: { commitId: string }) {
       header: 'Name',
       cell: ({ getValue, row }) => {
         const headName = getValue()
+        const isDeletedFile = row.original?.headCoverage === null
+
         return (
-          <div className="flex flex-row break-all">
-            <span
-              data-action="clickable"
-              data-testid="file-diff-expand"
-              className={cs(
-                'inline-flex items-center gap-1 font-sans hover:underline focus:ring-2',
-                {
-                  'text-ds-blue': row.getIsExpanded(),
-                }
-              )}
-              {...{
-                onClick: row.getToggleExpandedHandler(),
-              }}
-            >
-              <Icon
-                size="md"
-                name={row.getIsExpanded() ? 'chevronDown' : 'chevronRight'}
-                variant="solid"
-              />
-            </span>
-            {/* @ts-expect-error */}
-            <A
-              to={{
-                pageName: 'commitFileDiff',
-                options: {
-                  commit: commitId,
-                  tree: headName,
-                },
-              }}
-            >
-              {headName}
-            </A>
+          <div className="flex flex-row items-center break-all">
+            {!isDeletedFile ? (
+              <span
+                data-action="clickable"
+                data-testid="file-diff-expand"
+                className={cs(
+                  'inline-flex items-center gap-1 font-sans hover:underline focus:ring-2',
+                  {
+                    'text-ds-blue': row.getIsExpanded(),
+                  }
+                )}
+                {...{
+                  onClick: row.getToggleExpandedHandler(),
+                }}
+              >
+                <Icon
+                  size="md"
+                  name={row.getIsExpanded() ? 'chevronDown' : 'chevronRight'}
+                  variant="solid"
+                />
+              </span>
+            ) : null}
+            {isDeletedFile ? (
+              <>{headName}</>
+            ) : (
+              /* @ts-expect-error */
+              <A
+                to={{
+                  pageName: 'commitFileDiff',
+                  options: {
+                    commit: commitId,
+                    tree: headName,
+                  },
+                }}
+              >
+                {headName}
+              </A>
+            )}
+            {row.original?.isCriticalFile ? (
+              <span className="ml-2 h-fit flex-none rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
+                Critical file
+              </span>
+            ) : null}
+            {isDeletedFile ? (
+              <div className="ml-2 h-fit flex-none rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
+                Deleted file
+              </div>
+            ) : null}
           </div>
         )
       },
     }),
     columnHelper.accessor('headCoverage.coverage', {
-      id: 'coverage',
+      id: 'head',
       header: 'HEAD',
       cell: ({ getValue }) => {
         const value = getValue()
@@ -189,9 +207,7 @@ function getColumns({ commitId }: { commitId: string }) {
               />
             )
           } else {
-            return (
-              <span className="ml-4 text-sm text-ds-gray-quinary">No data</span>
-            )
+            return <>-</>
           }
         },
       }
@@ -224,7 +240,7 @@ interface URLParams {
 export default function FilesChangedTable() {
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const [sorting, setSorting] = useState<SortingState>([
-    { id: 'coverage', desc: false },
+    { id: 'head', desc: false },
   ])
   const { provider, owner, repo, commit: commitSha } = useParams<URLParams>()
   const location = useLocation()

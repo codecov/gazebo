@@ -69,8 +69,9 @@ const commit = (state = 'complete') => ({
       __typename: 'ImpactedFiles',
       results: [
         {
-          patchCoverage: { coverage: 75 },
           headName: 'flag1/mafs.js',
+          isCriticalFile: false,
+          patchCoverage: { coverage: 75 },
           baseCoverage: { coverage: 100 },
           headCoverage: { coverage: 90 },
         },
