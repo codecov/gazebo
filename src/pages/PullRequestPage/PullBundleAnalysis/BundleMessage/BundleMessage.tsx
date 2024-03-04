@@ -74,7 +74,7 @@ const BundleMessage: React.FC = () => {
   }
 
   if (comparison?.__typename === 'BundleAnalysisComparison') {
-    const sizeDelta = comparison?.sizeDelta
+    const sizeDelta = comparison?.bundleChange?.size?.uncompress
     const positiveSize = Math.abs(sizeDelta)
     if (sizeDelta < 0) {
       return (
