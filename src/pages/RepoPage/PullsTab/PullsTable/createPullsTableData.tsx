@@ -22,6 +22,15 @@ export const createPullsTableData = ({ pulls }: { pulls?: Array<Pull> }) => {
     const title = pull?.title ?? 'Pull Request'
     const pullId = pull?.pullId ?? NaN
 
+    let bundleAnalysis = undefined
+    if (
+      pull?.head?.bundleAnalysisReport?.__typename === 'BundleAnalysisReport'
+    ) {
+      bundleAnalysis = <p className="text-right">Upload: &#x2705;</p>
+    } else {
+      bundleAnalysis = <p className="text-right">Upload: &#x274C;</p>
+    }
+
     return {
       title: (
         <Title
@@ -61,6 +70,7 @@ export const createPullsTableData = ({ pulls }: { pulls?: Array<Pull> }) => {
           large={false}
         />
       ),
+      bundleAnalysis,
     }
   })
 }
