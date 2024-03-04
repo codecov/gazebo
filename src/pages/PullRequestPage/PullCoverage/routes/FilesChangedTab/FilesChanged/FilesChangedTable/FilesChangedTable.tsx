@@ -91,40 +91,52 @@ function getColumns({ pullId }: { pullId: string }) {
       header: 'Name',
       cell: ({ getValue, row }) => {
         const headName = getValue()
+        const isDeletedFile = row.original?.headCoverage === null
 
         return (
-          <div className="flex flex-row break-all">
-            <span
-              data-action="clickable"
-              data-testid="file-diff-expand"
-              className={cs(
-                'inline-flex items-center gap-1 font-sans hover:underline focus:ring-2',
-                {
-                  'text-ds-blue': row.getIsExpanded(),
-                }
-              )}
-              onClick={row.getToggleExpandedHandler()}
-            >
-              <Icon
-                size="md"
-                name={row.getIsExpanded() ? 'chevronDown' : 'chevronRight'}
-                variant="solid"
-              />
-            </span>
-            {/* @ts-expect-error */}
-            <A
-              to={{
-                pageName: 'pullFileView',
-                options: { pullId, tree: headName },
-              }}
-            >
-              {headName}
-            </A>
-            {row.original?.isCriticalFile && (
-              <span className="ml-2 rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
-                Critical File
+          <div className="flex flex-row items-center break-all">
+            {!isDeletedFile ? (
+              <span
+                data-action="clickable"
+                data-testid="file-diff-expand"
+                className={cs(
+                  'inline-flex items-center gap-1 font-sans hover:underline focus:ring-2',
+                  {
+                    'text-ds-blue': row.getIsExpanded(),
+                  }
+                )}
+                onClick={row.getToggleExpandedHandler()}
+              >
+                <Icon
+                  size="md"
+                  name={row.getIsExpanded() ? 'chevronDown' : 'chevronRight'}
+                  variant="solid"
+                />
               </span>
+            ) : null}
+            {isDeletedFile ? (
+              <>{headName}</>
+            ) : (
+              /* @ts-expect-error */
+              <A
+                to={{
+                  pageName: 'pullFileView',
+                  options: { pullId, tree: headName },
+                }}
+              >
+                {headName}
+              </A>
             )}
+            {row.original?.isCriticalFile ? (
+              <span className="ml-2 h-fit flex-none rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
+                Critical file
+              </span>
+            ) : null}
+            {isDeletedFile ? (
+              <div className="ml-2 h-fit flex-none rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
+                Deleted file
+              </div>
+            ) : null}
           </div>
         )
       },
@@ -132,7 +144,12 @@ function getColumns({ pullId }: { pullId: string }) {
     columnHelper.accessor('missesCount', {
       id: 'missedLines',
       header: 'Missed lines',
-      cell: ({ renderValue }) => renderValue(),
+      cell: ({ renderValue, row }) => {
+        if (!row.original?.headCoverage) {
+          return <>-</>
+        }
+        return renderValue()
+      },
     }),
     columnHelper.accessor('headCoverage.percentCovered', {
       id: 'head',

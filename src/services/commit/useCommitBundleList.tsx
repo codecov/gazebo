@@ -13,15 +13,28 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo/schemas'
 import Api from 'shared/api'
+import { type NetworkErrorObject } from 'shared/api/helpers'
 import A from 'ui/A'
 
 const BundleSchema = z.object({
   name: z.string(),
   changeType: z.string(),
-  sizeDelta: z.number(),
-  sizeTotal: z.number(),
-  loadTimeDelta: z.number(),
-  loadTimeTotal: z.number(),
+  bundleChange: z.object({
+    loadTime: z.object({
+      threeG: z.number(),
+    }),
+    size: z.object({
+      uncompress: z.number(),
+    }),
+  }),
+  bundleData: z.object({
+    loadTime: z.object({
+      threeG: z.number(),
+    }),
+    size: z.object({
+      uncompress: z.number(),
+    }),
+  }),
 })
 
 const BAComparisonSchema = z.object({
@@ -63,11 +76,7 @@ const RequestSchema = z.object({
 })
 
 const query = `
-query CommitBundleList(
-  $owner: String!
-  $repo: String!
-  $commitid: String!
-) {
+query CommitBundleList($owner: String!, $repo: String!, $commitid: String!) {
   owner(username: $owner) {
     repository(name: $repo) {
       __typename
@@ -79,10 +88,22 @@ query CommitBundleList(
               bundles {
                 name
                 changeType
-                sizeDelta
-                sizeTotal
-                loadTimeDelta
-                loadTimeTotal
+                bundleChange {
+                  loadTime {
+                    threeG
+                  }
+                  size {
+                    uncompress
+                  }
+                }
+                bundleData {
+                  loadTime {
+                    threeG
+                  }
+                  size {
+                    uncompress
+                  }
+                }
               }
             }
             ... on FirstPullRequest {
@@ -144,8 +165,9 @@ export function useCommitBundleList({
         if (!parsedRes.success) {
           return Promise.reject({
             status: 404,
-            data: null,
-          })
+            data: {},
+            dev: `useCommitBundleList - 404 failed to parse`,
+          } satisfies NetworkErrorObject)
         }
 
         const data = parsedRes.data
@@ -154,7 +176,8 @@ export function useCommitBundleList({
           return Promise.reject({
             status: 404,
             data: {},
-          })
+            dev: `useCommitBundleList - 404 NotFoundError`,
+          } satisfies NetworkErrorObject)
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
@@ -170,7 +193,8 @@ export function useCommitBundleList({
                 </p>
               ),
             },
-          })
+            dev: `useCommitBundleList - 403 OwnerNotActivatedError`,
+          } satisfies NetworkErrorObject)
         }
 
         return {

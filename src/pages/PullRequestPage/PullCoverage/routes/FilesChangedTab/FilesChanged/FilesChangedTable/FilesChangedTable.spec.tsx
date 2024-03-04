@@ -381,7 +381,7 @@ describe('FilesChangedTable', () => {
       const { queryClient } = setup()
       render(<FilesChangedTable />, { wrapper: wrapper(queryClient) })
 
-      const criticalFile = await screen.findByText('Critical File')
+      const criticalFile = await screen.findByText('Critical file')
       expect(criticalFile).toBeInTheDocument()
     })
 
@@ -430,8 +430,63 @@ describe('FilesChangedTable', () => {
       const file = await screen.findByText('flag1/src/App.tsx')
       expect(file).toBeInTheDocument()
 
-      const nonCriticalFile = screen.queryByText('Critical File')
+      const nonCriticalFile = screen.queryByText('Critical file')
       expect(nonCriticalFile).not.toBeInTheDocument()
+    })
+  })
+
+  describe('highlights deleted files', () => {
+    it('renders non-deleted file', async () => {
+      const { queryClient } = setup({})
+      render(<FilesChangedTable />, { wrapper: wrapper(queryClient) })
+
+      const deletedFile = screen.queryByText('Deleted file')
+      expect(deletedFile).not.toBeInTheDocument()
+    })
+
+    it('renders deleted file', async () => {
+      const { queryClient } = setup({
+        overrideComparison: {
+          state: 'complete',
+          __typename: 'Comparison',
+          flagComparisons: [],
+          patchTotals: {
+            percentCovered: 92.12,
+          },
+          baseTotals: {
+            percentCovered: 98.25,
+          },
+          headTotals: {
+            percentCovered: 78.33,
+          },
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [
+              {
+                isCriticalFile: false,
+                missesCount: 0,
+                fileName: 'src/App.tsx',
+                headName: 'flag1/src/App.tsx',
+                baseCoverage: {
+                  percentCovered: 45.38,
+                },
+                headCoverage: null,
+                patchCoverage: null,
+                changeCoverage: null,
+              },
+            ],
+          },
+          changeCoverage: 38.94,
+          hasDifferentNumberOfHeadAndBaseReports: true,
+        },
+      })
+      render(<FilesChangedTable />, { wrapper: wrapper(queryClient) })
+
+      const file = await screen.findByText('flag1/src/App.tsx')
+      expect(file).toBeInTheDocument()
+
+      const deletedFile = await screen.findByText('Deleted file')
+      expect(deletedFile).toBeInTheDocument()
     })
   })
 
