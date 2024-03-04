@@ -1,5 +1,6 @@
+import qs from 'qs'
 import { lazy, Suspense } from 'react'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
 import { useRepoSettings } from 'services/repo'
@@ -39,6 +40,7 @@ const Loader = () => (
 )
 
 function PullRequestPage() {
+  const location = useLocation()
   const { provider, owner, repo, pullId } = useParams<URLParams>()
   const { multipleTiers, bundleAnalysisPrAndCommitPages } = useFlags({
     multipleTiers: false,
@@ -65,6 +67,7 @@ function PullRequestPage() {
     return <NotFound />
   }
 
+  let defaultDropdown: Array<'coverage' | 'bundle'> = []
   // default to displaying only coverage
   let displayMode: TDisplayMode = DISPLAY_MODE.COVERAGE
   if (
@@ -72,6 +75,17 @@ function PullRequestPage() {
     data?.coverageEnabled &&
     bundleAnalysisPrAndCommitPages
   ) {
+    const queryString = qs.parse(location.search, {
+      ignoreQueryPrefix: true,
+      depth: 1,
+    })
+
+    if (queryString?.dropdown === 'bundle') {
+      defaultDropdown.push('bundle')
+    } else if (queryString?.dropdown === 'coverage') {
+      defaultDropdown.push('coverage')
+    }
+
     displayMode = DISPLAY_MODE.BOTH
   } else if (data?.bundleAnalysisEnabled && bundleAnalysisPrAndCommitPages) {
     displayMode = DISPLAY_MODE.BUNDLE_ANALYSIS
@@ -94,7 +108,7 @@ function PullRequestPage() {
       />
       <Header />
       {displayMode === DISPLAY_MODE.BOTH ? (
-        <SummaryDropdown type="multiple">
+        <SummaryDropdown type="multiple" defaultValue={defaultDropdown}>
           <PullCoverageDropdown>
             <Suspense fallback={<Loader />}>
               <PullCoverage />
