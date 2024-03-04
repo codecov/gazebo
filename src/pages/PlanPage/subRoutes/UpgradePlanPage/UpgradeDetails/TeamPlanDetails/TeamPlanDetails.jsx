@@ -17,7 +17,7 @@ function TeamPlanDetails() {
   const { data: planData } = usePlanData({ provider, owner })
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: plans } = useAvailablePlans({ provider, owner })
-  const { teamPlanYear } = findTeamPlans({ plans })
+  const { teamPlanYear, teamPlanMonth } = findTeamPlans({ plans })
 
   const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
   const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
@@ -27,20 +27,29 @@ function TeamPlanDetails() {
   const trialStatus = planData?.plan?.trialStatus
 
   return (
-    <div className="h-fit border">
-      <h3 className="pl-4 pt-4 font-semibold">
-        {teamPlanYear?.marketingName} plan
-      </h3>
-      <p className="pl-4 text-xs">
-        <span className="text-base">${teamPlanYear?.baseUnitPrice}</span>
-        /per user, per month
-      </p>
-      <div className="flex flex-col gap-4 p-4">
-        <BenefitList
-          iconName="check"
-          iconColor="text-ds-pink-quinary"
-          benefits={teamPlanYear?.benefits}
-        />
+    <div className="h-fit border md:w-[280px]">
+      <h3 className="p-4 font-semibold">{teamPlanYear?.marketingName} plan</h3>
+      <hr />
+      <div className="flex flex-col gap-6 p-4">
+        <div>
+          <p className="mb-2 text-xs font-semibold">Pricing</p>
+          <p className="text-xs font-semibold">
+            <span className="text-2xl">${teamPlanYear?.baseUnitPrice}</span> per
+            user/month
+          </p>
+          <p className="text-xs text-ds-gray-senary">
+            billed annually, or ${teamPlanMonth?.baseUnitPrice} for monthly
+            billing
+          </p>
+        </div>
+        <div>
+          <p className="mb-2 text-xs font-semibold">Includes</p>
+          <BenefitList
+            iconName="check"
+            iconColor="text-ds-pink-quinary"
+            benefits={teamPlanYear?.benefits}
+          />
+        </div>
         {scheduledPhase && (
           <ScheduledPlanDetails scheduledPhase={scheduledPhase} />
         )}

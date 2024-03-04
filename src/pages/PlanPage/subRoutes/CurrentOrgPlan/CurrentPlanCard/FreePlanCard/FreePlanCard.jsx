@@ -61,7 +61,7 @@ function FreePlanCard({ plan, scheduledPhase }) {
           <span className="text-gray-500">
             {trialOngoing
               ? "You'll be downgraded to the Developer plan when your trial expires."
-              : 'Current Plan'}
+              : 'Current plan'}
           </span>
         </div>
         <hr />

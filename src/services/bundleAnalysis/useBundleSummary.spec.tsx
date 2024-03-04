@@ -5,6 +5,20 @@ import { setupServer } from 'msw/node'
 
 import { useBundleSummary } from './useBundleSummary'
 
+const mockRepoOverview = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      private: false,
+      defaultBranch: 'main',
+      oldestCommitAt: '2022-10-10T11:59:59',
+      coverageEnabled: false,
+      bundleAnalysisEnabled: false,
+      languages: ['javascript'],
+    },
+  },
+}
+
 const mockBundleSummary = {
   owner: {
     repository: {
@@ -116,8 +130,14 @@ describe('useBundleSummary', () => {
     isNullOwner = false,
     missingHeadReport = false,
   }: SetupArgs) {
+    const passedBranch = jest.fn()
+
     server.use(
       graphql.query('BundleSummary', (req, res, ctx) => {
+        if (req.variables?.branch) {
+          passedBranch(req.variables?.branch)
+        }
+
         if (isNotFoundError) {
           return res(ctx.status(200), ctx.data(mockRepoNotFound))
         } else if (isOwnerNotActivatedError) {
@@ -131,9 +151,53 @@ describe('useBundleSummary', () => {
         }
 
         return res(ctx.status(200), ctx.data(mockBundleSummary))
+      }),
+      graphql.query('GetRepoOverview', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoOverview))
       })
     )
+
+    return { passedBranch }
   }
+
+  describe('passing branch name', () => {
+    it('uses the branch name passed in', async () => {
+      const { passedBranch } = setup({})
+      renderHook(
+        () =>
+          useBundleSummary({
+            provider: 'gh',
+            owner: 'codecov',
+            repo: 'codecov',
+            branch: 'main',
+            bundle: 'test-bundle',
+          }),
+        { wrapper }
+      )
+
+      await waitFor(() => expect(passedBranch).toHaveBeenCalled())
+      await waitFor(() => expect(passedBranch).toHaveBeenCalledWith('main'))
+    })
+  })
+
+  describe('no branch name passed', () => {
+    it('uses the default branch', async () => {
+      const { passedBranch } = setup({})
+      renderHook(
+        () =>
+          useBundleSummary({
+            provider: 'gh',
+            owner: 'codecov',
+            repo: 'codecov',
+            bundle: 'test-bundle',
+          }),
+        { wrapper }
+      )
+
+      await waitFor(() => expect(passedBranch).toHaveBeenCalled())
+      await waitFor(() => expect(passedBranch).toHaveBeenCalledWith('main'))
+    })
+  })
 
   describe('returns repository typename of repository', () => {
     describe('there is valid data', () => {

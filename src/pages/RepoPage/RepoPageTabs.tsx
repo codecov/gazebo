@@ -56,18 +56,22 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
     location = { pathname: `/${provider}/${owner}/${repo}/blob` }
   }
 
-  const tabs: TabArgs[] = [
-    {
+  const tabs: TabArgs[] = []
+
+  const isCurrentUserPartOfOrg = repoData?.isCurrentUserPartOfOrg
+  if (repoOverview?.coverageEnabled || isCurrentUserPartOfOrg) {
+    tabs.push({
       pageName: 'overview',
       children: 'Coverage',
       exact: !matchTree && !matchBlobs && !matchCoverageOnboarding,
       location,
-    },
-  ]
+    })
+  }
 
   const jsOrTsPresent = repoOverview?.jsOrTsPresent
   if (
-    (jsOrTsPresent || repoOverview?.bundleAnalysisEnabled) &&
+    ((jsOrTsPresent && isCurrentUserPartOfOrg) ||
+      repoOverview?.bundleAnalysisEnabled) &&
     bundleAnalysisPrAndCommitPages
   ) {
     tabs.push({
@@ -89,7 +93,7 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
     tabs.push({ pageName: 'commits' }, { pageName: 'pulls' })
   }
 
-  if (repoData?.isCurrentUserPartOfOrg) {
+  if (isCurrentUserPartOfOrg) {
     tabs.push({ pageName: 'settings' })
   }
 

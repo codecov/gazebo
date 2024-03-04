@@ -27,24 +27,26 @@ function SettingsTab() {
   if (!currentOwner?.isCurrentUserPartOfOrg) return <NotFound />
 
   return (
-    <SidebarLayout sidebar={<SideMenuSettings />}>
-      <Suspense fallback={tabLoading}>
-        <Switch>
-          <SentryRoute path="/:provider/:owner/:repo/settings" exact>
-            <GeneralTab />
-          </SentryRoute>
-          <SentryRoute path="/:provider/:owner/:repo/settings/yaml" exact>
-            <YamlTab />
-          </SentryRoute>
-          <SentryRoute path="/:provider/:owner/:repo/settings/badge" exact>
-            <BadgesAndGraphsTab />
-          </SentryRoute>
-          <SentryRoute path="/:provider/:owner/:repo/settings/*">
-            <NotFound />
-          </SentryRoute>
-        </Switch>
-      </Suspense>
-    </SidebarLayout>
+    <div className="mt-2">
+      <SidebarLayout sidebar={<SideMenuSettings />}>
+        <Suspense fallback={tabLoading}>
+          <Switch>
+            <SentryRoute path="/:provider/:owner/:repo/settings" exact>
+              <GeneralTab />
+            </SentryRoute>
+            <SentryRoute path="/:provider/:owner/:repo/settings/yaml" exact>
+              <YamlTab />
+            </SentryRoute>
+            <SentryRoute path="/:provider/:owner/:repo/settings/badge" exact>
+              <BadgesAndGraphsTab />
+            </SentryRoute>
+            <SentryRoute path="/:provider/:owner/:repo/settings/*">
+              <NotFound />
+            </SentryRoute>
+          </Switch>
+        </Suspense>
+      </SidebarLayout>
+    </div>
   )
 }
 
