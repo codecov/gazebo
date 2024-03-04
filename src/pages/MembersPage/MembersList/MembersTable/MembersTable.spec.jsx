@@ -104,11 +104,11 @@ describe('MembersTable', () => {
 
   function setup(
     {
-      accountDetails = accountDetailsParsedObj,
+      accountDetails = {},
       mockUserRequest = mockBaseUserRequest(false),
       usePaginatedRequest = false,
     } = {
-      accountDetails: accountDetailsParsedObj,
+      accountDetails: {},
       mockUserRequest: mockBaseUserRequest(false),
       usePaginatedRequest: false,
     }
@@ -117,7 +117,7 @@ describe('MembersTable', () => {
     useImage.mockReturnValue({ src: 'mocked-avatar-url' })
     server.use(
       rest.get('/internal/:provider/codecov/account-details', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json(accountDetailsParsedObj))
+        res(ctx.status(200), ctx.json(accountDetails))
       ),
       rest.get('/internal/:provider/codecov/users', (req, res, ctx) => {
         requestSearchParams = req.url.searchParams
