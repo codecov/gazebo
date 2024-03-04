@@ -18,8 +18,8 @@ function ToggleHeader({
         <TitleCoverage coverage={LINE_STATE.PARTIAL} />
         <TitleCoverage coverage={LINE_STATE.COVERED} />
         <TitleHitCount showHitCount={showHitCount} />
-        {showFlagsSelect && <TitleFlags />}
-        {showComponentsSelect && <ComponentsMultiSelect />}
+        {showFlagsSelect ? <TitleFlags /> : null}
+        {showComponentsSelect ? <ComponentsMultiSelect /> : null}
       </div>
     </Title>
   )
