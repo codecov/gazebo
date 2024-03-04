@@ -17,8 +17,14 @@ const mockSummaryData = (sizeDelta: number) => ({
       commit: {
         bundleAnalysisCompareWithParent: {
           __typename: 'BundleAnalysisComparison',
-          sizeDelta,
-          loadTimeDelta: 0,
+          bundleChange: {
+            loadTime: {
+              threeG: 2,
+            },
+            size: {
+              uncompress: sizeDelta,
+            },
+          },
         },
       },
     },
