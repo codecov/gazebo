@@ -17,7 +17,7 @@ export default defineConfig({
   plugins: [
     // Put the Codecov rollup plugin after all other plugins
     codecovRollupPlugin({
-      enableBundleAnalysis: process.env.NODE_ENV,
+      enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
       bundleName: "<bundle project name>",
       uploadToken: process.env.CODECOV_TOKEN,
     }),
