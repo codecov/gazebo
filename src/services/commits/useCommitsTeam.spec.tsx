@@ -47,6 +47,9 @@ const node1 = {
       percentCovered: 100,
     },
   },
+  bundleAnalysisReport: {
+    __typename: 'MissingHeadReport',
+  },
 }
 
 const node2 = {
@@ -64,6 +67,9 @@ const node2 = {
       percentCovered: 100,
     },
   },
+  bundleAnalysisReport: {
+    __typename: 'MissingHeadReport',
+  },
 }
 
 const node3 = {
@@ -80,6 +86,9 @@ const node3 = {
     patchTotals: {
       percentCovered: 100,
     },
+  },
+  bundleAnalysisReport: {
+    __typename: 'MissingHeadReport',
   },
 }
 
