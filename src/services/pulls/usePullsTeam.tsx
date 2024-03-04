@@ -40,6 +40,16 @@ const PullSchema = z
         avatarUrl: z.string(),
       })
       .nullable(),
+    head: z
+      .object({
+        bundleAnalysisReport: z
+          .discriminatedUnion('__typename', [
+            z.object({ __typename: z.literal('BundleAnalysisReport') }),
+            z.object({ __typename: z.literal('MissingHeadReport') }),
+          ])
+          .nullable(),
+      })
+      .nullable(),
     compareWithBase: z
       .discriminatedUnion('__typename', [
         z.object({
@@ -123,6 +133,11 @@ query GetPullsTeam(
               author {
                 username
                 avatarUrl
+              }
+              head {
+                bundleAnalysisReport {
+                  __typename
+                }
               }
               compareWithBase {
                 __typename

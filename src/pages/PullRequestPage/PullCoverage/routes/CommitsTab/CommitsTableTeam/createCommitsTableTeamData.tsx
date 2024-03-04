@@ -41,6 +41,13 @@ export const createCommitsTableTeamData = ({
       )
     }
 
+    let bundleAnalysis = undefined
+    if (commit?.bundleAnalysisReport?.__typename === 'BundleAnalysisReport') {
+      bundleAnalysis = <p className="text-right">Upload: &#x2705;</p>
+    } else {
+      bundleAnalysis = <p className="text-right">Upload: &#x274C;</p>
+    }
+
     return {
       name: (
         <Title
@@ -58,6 +65,7 @@ export const createCommitsTableTeamData = ({
         />
       ),
       patch,
+      bundleAnalysis,
     }
   })
 }

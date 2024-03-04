@@ -92,6 +92,9 @@ const mockCommits = {
                   percentCovered: 100,
                 },
               },
+              bundleAnalysisReport: {
+                __typename: 'BundleAnalysisReport',
+              },
             },
           },
         ],
@@ -168,6 +171,9 @@ const mockCommitTeamResponse = {
                 patchTotals: {
                   percentCovered: 80,
                 },
+              },
+              bundleAnalysisReport: {
+                __typename: 'MissingHeadReport',
               },
             },
           },

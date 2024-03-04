@@ -7,7 +7,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { ImpactedFilesReturnType } from 'shared/utils/impactedFiles'
+import { PullComparison } from 'services/pull'
 
 import IndirectChangedFiles from './IndirectChangedFiles'
 
@@ -32,7 +32,7 @@ const mockImpactedFiles = [
   },
 ]
 
-const mockPull = ({ overrideComparison } = {}) => ({
+const mockPull = (overrideComparison?: PullComparison) => ({
   owner: {
     isCurrentUserPartOfOrg: true,
     repository: {
@@ -168,7 +168,11 @@ afterAll(() => {
   server.close()
 })
 
-const wrapper =
+type WrapperClosure = (
+  initialEntries?: string[]
+) => React.FC<React.PropsWithChildren>
+
+const wrapper: WrapperClosure =
   (initialEntries = ['/gh/test-org/test-repo/pull/12']) =>
   ({ children }) =>
     (
@@ -180,16 +184,21 @@ const wrapper =
     )
 
 describe('IndirectChangedFiles', () => {
-  function setup({ overrideComparison } = {}) {
+  function setup(overrideComparison?: PullComparison) {
+    const mockVars = jest.fn()
+
     server.use(
       graphql.query('Pull', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockPull({ overrideComparison })))
+        mockVars(req.variables)
+        return res(ctx.status(200), ctx.data(mockPull(overrideComparison)))
       }),
 
       graphql.query('ImpactedFileComparison', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockSingularImpactedFilesData))
       )
     )
+
+    return { mockVars }
   }
 
   describe('when rendered with impacted files', () => {
@@ -271,7 +280,7 @@ describe('IndirectChangedFiles', () => {
         expect(link).toBeInTheDocument()
         expect(link).toHaveAttribute(
           'href',
-          '/gh/test-org/test-repo/pull/12/blob/flag1/mafs.js'
+          '/gh/test-org/test-repo/pull/2510/blob/flag1/mafs.js'
         )
       })
 
@@ -323,43 +332,41 @@ describe('IndirectChangedFiles', () => {
   describe('when rendered without change', () => {
     beforeEach(() => {
       setup({
-        overrideComparison: {
-          state: 'complete',
-          __typename: 'Comparison',
-          flagComparisons: [],
-          patchTotals: {
-            percentCovered: 33,
-          },
-          baseTotals: {
-            percentCovered: 77,
-          },
-          headTotals: {
-            percentCovered: 100,
-          },
-          impactedFiles: {
-            __typename: 'ImpactedFiles',
-            results: [
-              {
-                isCriticalFile: true,
-                missesCount: 3,
-                fileName: 'mafs.js',
-                headName: 'flag1/mafs.js',
-                baseCoverage: {
-                  percentCovered: null,
-                },
-                headCoverage: {
-                  percentCovered: null,
-                },
-                patchCoverage: {
-                  percentCovered: null,
-                },
-                changeCoverage: null,
-              },
-            ],
-          },
-          changeCoverage: null,
-          hasDifferentNumberOfHeadAndBaseReports: true,
+        state: 'complete',
+        __typename: 'Comparison',
+        flagComparisons: [],
+        patchTotals: {
+          percentCovered: 33,
         },
+        baseTotals: {
+          percentCovered: 77,
+        },
+        headTotals: {
+          percentCovered: 100,
+        },
+        impactedFiles: {
+          __typename: 'ImpactedFiles',
+          results: [
+            {
+              isCriticalFile: true,
+              missesCount: 3,
+              fileName: 'mafs.js',
+              headName: 'flag1/mafs.js',
+              baseCoverage: {
+                percentCovered: null,
+              },
+              headCoverage: {
+                percentCovered: null,
+              },
+              patchCoverage: {
+                percentCovered: null,
+              },
+              changeCoverage: null,
+            },
+          ],
+        },
+        changeCoverage: null,
+        hasDifferentNumberOfHeadAndBaseReports: true,
       })
     })
 
@@ -378,13 +385,24 @@ describe('IndirectChangedFiles', () => {
   describe('when rendered with an empty list of impacted files', () => {
     beforeEach(() => {
       setup({
-        compareWithBase: {
-          ...mockPull().owner.repository.pull.compareWithBase,
-          impactedFiles: {
-            __typename: ImpactedFilesReturnType.IMPACTED_FILES,
-            results: [],
-          },
+        state: 'complete',
+        __typename: 'Comparison',
+        flagComparisons: [],
+        patchTotals: {
+          percentCovered: null,
         },
+        baseTotals: {
+          percentCovered: null,
+        },
+        headTotals: {
+          percentCovered: null,
+        },
+        impactedFiles: {
+          __typename: 'ImpactedFiles',
+          results: [],
+        },
+        changeCoverage: null,
+        hasDifferentNumberOfHeadAndBaseReports: true,
       })
     })
 
@@ -418,6 +436,144 @@ describe('IndirectChangedFiles', () => {
       )
       const change = await screen.findByText('Change')
       expect(change).toBeInTheDocument()
+    })
+  })
+
+  describe('sorting the table', () => {
+    const user = userEvent.setup()
+    it('sorts by name', async () => {
+      const { mockVars } = setup()
+      render(<IndirectChangedFiles />, { wrapper: wrapper() })
+
+      const header = await screen.findByText(/Name/)
+      expect(header).toBeInTheDocument()
+      await user.click(header)
+      await waitFor(() => {
+        expect(mockVars).toHaveBeenCalledWith(
+          expect.objectContaining({
+            filters: expect.objectContaining({
+              ordering: {
+                direction: 'ASC',
+                parameter: 'FILE_NAME',
+              },
+            }),
+          })
+        )
+      })
+      await user.click(header)
+      await waitFor(() => {
+        expect(mockVars).toHaveBeenCalledWith(
+          expect.objectContaining({
+            filters: expect.objectContaining({
+              ordering: {
+                direction: 'DESC',
+                parameter: 'FILE_NAME',
+              },
+            }),
+          })
+        )
+      })
+    })
+
+    it('sorts by head coverage', async () => {
+      const { mockVars } = setup()
+      render(<IndirectChangedFiles />, { wrapper: wrapper() })
+      const header = await screen.findByText(/HEAD/)
+      expect(header).toBeInTheDocument()
+      await user.click(header)
+      await waitFor(() => {
+        expect(mockVars).toHaveBeenCalledWith(
+          expect.objectContaining({
+            filters: expect.objectContaining({
+              ordering: {
+                direction: 'DESC',
+                parameter: 'HEAD_COVERAGE',
+              },
+            }),
+          })
+        )
+      })
+      await user.click(header)
+      await waitFor(() => {
+        expect(mockVars).toHaveBeenCalledWith(
+          expect.objectContaining({
+            filters: expect.objectContaining({
+              ordering: {
+                direction: 'DESC',
+                parameter: 'HEAD_COVERAGE',
+              },
+            }),
+          })
+        )
+      })
+    })
+
+    it('sorts by change', async () => {
+      const { mockVars } = setup()
+      render(<IndirectChangedFiles />, { wrapper: wrapper() })
+
+      const header = await screen.findByText(/Change/)
+      expect(header).toBeInTheDocument()
+      await user.click(header)
+      await waitFor(() => {
+        expect(mockVars).toHaveBeenCalledWith(
+          expect.objectContaining({
+            filters: expect.objectContaining({
+              ordering: {
+                direction: 'DESC',
+                parameter: 'CHANGE_COVERAGE',
+              },
+            }),
+          })
+        )
+      })
+      await user.click(header)
+      await waitFor(() => {
+        expect(mockVars).toHaveBeenCalledWith(
+          expect.objectContaining({
+            filters: expect.objectContaining({
+              ordering: {
+                direction: 'ASC',
+                parameter: 'CHANGE_COVERAGE',
+              },
+            }),
+          })
+        )
+      })
+    })
+
+    it('sorts by missed lines', async () => {
+      const { mockVars } = setup()
+      render(<IndirectChangedFiles />, { wrapper: wrapper() })
+
+      const header = await screen.findByText(/Missed/)
+      expect(header).toBeInTheDocument()
+      await user.click(header)
+      await waitFor(() => {
+        expect(mockVars).toHaveBeenCalledWith(
+          expect.objectContaining({
+            filters: expect.objectContaining({
+              ordering: {
+                direction: 'DESC',
+                parameter: 'MISSES_COUNT',
+              },
+            }),
+          })
+        )
+      })
+      await user.click(header)
+      await waitFor(() => {
+        expect(mockVars).toHaveBeenCalledWith(
+          expect.objectContaining({
+            filters: expect.objectContaining({
+              ordering: {
+                direction: 'ASC',
+                parameter: 'MISSES_COUNT',
+              },
+            }),
+          })
+        )
+      })
     })
   })
 })

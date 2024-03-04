@@ -50,6 +50,15 @@ export const createCommitsTableData = ({
       change = totals?.coverage - commit?.parent?.totals?.coverage
     }
 
+    let bundleAnalysis = undefined
+    if (commit?.bundleAnalysisReport?.__typename === 'BundleAnalysisReport') {
+      // this hex code is for ✅
+      bundleAnalysis = <p>Upload: &#x2705;</p>
+    } else {
+      // this hex code is for ❌
+      bundleAnalysis = <p>Upload: &#x274C;</p>
+    }
+
     return {
       name: (
         <Title
@@ -77,6 +86,7 @@ export const createCommitsTableData = ({
           large={false}
         />
       ),
+      bundleAnalysis,
     }
   })
 }
