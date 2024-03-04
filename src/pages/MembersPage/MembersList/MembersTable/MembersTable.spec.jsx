@@ -6,6 +6,7 @@ import { setupServer } from 'msw/node'
 import { mockAllIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { accountDetailsParsedObj } from 'services/account/mocks'
 import { useImage } from 'services/image'
 import { Plans } from 'shared/utils/billing'
 
@@ -103,11 +104,11 @@ describe('MembersTable', () => {
 
   function setup(
     {
-      accountDetails = {},
+      accountDetails = accountDetailsParsedObj,
       mockUserRequest = mockBaseUserRequest(false),
       usePaginatedRequest = false,
     } = {
-      accountDetails: {},
+      accountDetails: accountDetailsParsedObj,
       mockUserRequest: mockBaseUserRequest(false),
       usePaginatedRequest: false,
     }
@@ -116,7 +117,7 @@ describe('MembersTable', () => {
     useImage.mockReturnValue({ src: 'mocked-avatar-url' })
     server.use(
       rest.get('/internal/:provider/codecov/account-details', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json(accountDetails))
+        res(ctx.status(200), ctx.json(accountDetailsParsedObj))
       ),
       rest.get('/internal/:provider/codecov/users', (req, res, ctx) => {
         requestSearchParams = req.url.searchParams
@@ -299,8 +300,15 @@ describe('MembersTable', () => {
             beforeEach(() =>
               setup({
                 accountDetails: {
+                  ...accountDetailsParsedObj,
                   activatedUserCount: 5,
-                  plan: { value: Plans.USERS_BASIC, quantity: 5 },
+                  plan: {
+                    baseUnitPrice: 1,
+                    benefits: ['a', 'b'],
+                    marketingName: 'test',
+                    value: Plans.USERS_BASIC,
+                    quantity: 5,
+                  },
                 },
               })
             )
@@ -319,7 +327,17 @@ describe('MembersTable', () => {
         describe('there are open seats', () => {
           beforeEach(() =>
             setup({
-              accountDetails: { activatedUserCount: 1, plan: { quantity: 5 } },
+              accountDetails: {
+                ...accountDetailsParsedObj,
+                activatedUserCount: 1,
+                plan: {
+                  baseUnitPrice: 1,
+                  benefits: ['a', 'b'],
+                  marketingName: 'test',
+                  value: Plans.USERS_FREE,
+                  quantity: 5,
+                },
+              },
             })
           )
 
@@ -365,7 +383,17 @@ describe('MembersTable', () => {
       it('calls handleActivate', async () => {
         const { user } = setup({
           mockUserRequest: mockBaseUserRequest({ student: true }),
-          accountDetails: { activatedUserCount: 1, plan: { quantity: 0 } },
+          accountDetails: {
+            ...accountDetailsParsedObj,
+            activatedUserCount: 1,
+            plan: {
+              baseUnitPrice: 1,
+              benefits: ['a', 'b'],
+              marketingName: 'test',
+              value: Plans.USERS_BASIC,
+              quantity: 0,
+            },
+          },
         })
         const handleActivate = jest.fn()
         render(<MembersTable handleActivate={handleActivate} />, {
