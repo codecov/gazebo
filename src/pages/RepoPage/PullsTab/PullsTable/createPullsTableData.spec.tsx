@@ -59,6 +59,9 @@ describe('createPullsTableData', () => {
             totals: {
               percentCovered: 0,
             },
+            bundleAnalysisReport: {
+              __typename: 'MissingHeadReport',
+            },
           },
         } as const
 
@@ -127,6 +130,9 @@ describe('createPullsTableData', () => {
             totals: {
               percentCovered: 9,
             },
+            bundleAnalysisReport: {
+              __typename: 'MissingHeadReport',
+            },
           },
         } as const
 
@@ -162,6 +168,9 @@ describe('createPullsTableData', () => {
           head: {
             totals: {
               percentCovered: 9,
+            },
+            bundleAnalysisReport: {
+              __typename: 'MissingHeadReport',
             },
           },
         } as const
@@ -200,6 +209,9 @@ describe('createPullsTableData', () => {
             head: {
               totals: {
                 percentCovered: 9,
+              },
+              bundleAnalysisReport: {
+                __typename: 'MissingHeadReport',
               },
             },
           } as const
@@ -240,6 +252,9 @@ describe('createPullsTableData', () => {
             totals: {
               percentCovered: 9,
             },
+            bundleAnalysisReport: {
+              __typename: 'MissingHeadReport',
+            },
           },
         } as const
 
@@ -253,12 +268,16 @@ describe('createPullsTableData', () => {
               totals: {
                 percentCovered: 9,
               },
+              bundleAnalysisReport: {
+                __typename: 'MissingHeadReport',
+              },
             }}
             pullId={123}
             state={'OPEN'}
           />
         )
       })
+
       it('returns the title component', () => {
         const pullData = {
           author: {
@@ -276,6 +295,9 @@ describe('createPullsTableData', () => {
           head: {
             totals: {
               percentCovered: 0,
+            },
+            bundleAnalysisReport: {
+              __typename: 'MissingHeadReport',
             },
           },
         } as const
@@ -295,6 +317,76 @@ describe('createPullsTableData', () => {
             title="super cool pull request"
             updatestamp="2023-04-25T15:38:48.046832"
           />
+        )
+      })
+    })
+
+    describe('bundleAnalysisReport __typename is not BundleAnalysisReport', () => {
+      it('returns no report uploaded', () => {
+        const pullData = {
+          author: null,
+          pullId: 123,
+          state: 'OPEN',
+          updatestamp: null,
+          title: null,
+          compareWithBase: {
+            __typename: 'Comparison',
+            patchTotals: {
+              percentCovered: 100,
+            },
+            changeCoverage: 0,
+          },
+          head: {
+            totals: {
+              percentCovered: 9,
+            },
+            bundleAnalysisReport: {
+              __typename: 'MissingHeadReport',
+            },
+          },
+        } as const
+
+        const result = createPullsTableData({
+          pulls: [pullData],
+        })
+
+        expect(result[0]?.bundleAnalysis).toStrictEqual(
+          <p className="text-right">Upload: ❌</p>
+        )
+      })
+    })
+
+    describe('bundleAnalysisReport __typename is BundleAnalysisReport', () => {
+      it('returns successful upload', () => {
+        const pullData = {
+          author: null,
+          pullId: 123,
+          state: 'OPEN',
+          updatestamp: null,
+          title: null,
+          compareWithBase: {
+            __typename: 'Comparison',
+            patchTotals: {
+              percentCovered: 100,
+            },
+            changeCoverage: 0,
+          },
+          head: {
+            totals: {
+              percentCovered: 9,
+            },
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+            },
+          },
+        } as const
+
+        const result = createPullsTableData({
+          pulls: [pullData],
+        })
+
+        expect(result[0]?.bundleAnalysis).toStrictEqual(
+          <p className="text-right">Upload: ✅</p>
         )
       })
     })
