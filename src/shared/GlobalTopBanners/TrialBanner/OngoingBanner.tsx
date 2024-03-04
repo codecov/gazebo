@@ -39,14 +39,6 @@ const OngoingBanner: React.FC<OngoingBannerProps> = ({ dateDiff }) => {
         </p>
       </TopBanner.Start>
       <TopBanner.End>
-        <p>
-          {/* @ts-expect-error */}
-          Need help? View our <A to={{ pageName: 'docs' }}>
-            get started docs
-          </A>{' '}
-          or {/* @ts-expect-error */}
-          see our <A to={{ pageName: 'support' }}>support</A> page.
-        </p>
         <Button
           to={{ pageName: 'upgradeOrgPlan' }}
           hook="ongoing-trial-banner-to-upgrade-page"
