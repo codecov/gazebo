@@ -6,7 +6,7 @@ const PullBundleDropdown: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
   return (
-    <SummaryDropdown.Item value="bundle-analysis">
+    <SummaryDropdown.Item value="bundle">
       <SummaryDropdown.Trigger>
         <BundleMessage />
       </SummaryDropdown.Trigger>
