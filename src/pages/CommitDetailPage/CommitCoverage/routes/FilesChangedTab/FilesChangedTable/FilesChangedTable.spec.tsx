@@ -115,6 +115,7 @@ describe('FilesChangedTable', () => {
       results: [
         {
           headName: 'src/index2.py',
+          isCriticalFile: false,
           baseCoverage: {
             coverage: 62.5,
           },
@@ -173,6 +174,7 @@ describe('FilesChangedTable', () => {
       results: [
         {
           headName: '',
+          isCriticalFile: false,
           baseCoverage: null,
           headCoverage: null,
           patchCoverage: null,
@@ -188,12 +190,12 @@ describe('FilesChangedTable', () => {
       expect(coverage).not.toBeInTheDocument()
     })
 
-    it('renders no available data copy', async () => {
+    it('renders dashes', async () => {
       const { queryClient } = setup(mockEmptyData)
       render(<FilesChangedTable />, { wrapper: wrapper(queryClient) })
 
-      const copy = await screen.findByText('No data')
-      expect(copy).toBeInTheDocument()
+      const copy = await screen.findAllByText('-')
+      expect(copy).toHaveLength(3)
     })
   })
 
@@ -203,6 +205,7 @@ describe('FilesChangedTable', () => {
       results: [
         {
           headName: '',
+          isCriticalFile: false,
           baseCoverage: null,
           headCoverage: {
             coverage: 67,
@@ -297,6 +300,7 @@ describe('FilesChangedTable', () => {
       results: [
         {
           headName: 'src/index2.py',
+          isCriticalFile: false,
           baseCoverage: {
             coverage: 62.5,
           },
@@ -330,6 +334,7 @@ describe('FilesChangedTable', () => {
       results: [
         {
           headName: '',
+          isCriticalFile: false,
           baseCoverage: null,
           headCoverage: null,
           patchCoverage: null,
@@ -346,12 +351,111 @@ describe('FilesChangedTable', () => {
     })
   })
 
+  describe('highlights critical files', () => {
+    it('renders critical file', async () => {
+      const { queryClient } = setup({
+        __typename: 'ImpactedFiles',
+        results: [
+          {
+            headName: 'src/main.rs',
+            isCriticalFile: true,
+            baseCoverage: {
+              coverage: 40.0,
+            },
+            headCoverage: {
+              coverage: 50.0,
+            },
+            patchCoverage: {
+              coverage: 100.0,
+            },
+          },
+        ],
+      })
+      render(<FilesChangedTable />, { wrapper: wrapper(queryClient) })
+
+      const criticalFile = await screen.findByText(/Critical file/)
+      expect(criticalFile).toBeInTheDocument()
+    })
+
+    it('renders non-critical file', async () => {
+      const { queryClient } = setup({
+        __typename: 'ImpactedFiles',
+        results: [
+          {
+            headName: 'src/main.rs',
+            isCriticalFile: false,
+            baseCoverage: {
+              coverage: 40.0,
+            },
+            headCoverage: {
+              coverage: 50.0,
+            },
+            patchCoverage: {
+              coverage: 100.0,
+            },
+          },
+        ],
+      })
+      render(<FilesChangedTable />, { wrapper: wrapper(queryClient) })
+
+      const criticalFile = screen.queryByText(/Critical file/)
+      expect(criticalFile).not.toBeInTheDocument()
+    })
+  })
+
+  describe('highlights deleted files', () => {
+    it('renders deleted file', async () => {
+      const { queryClient } = setup({
+        __typename: 'ImpactedFiles',
+        results: [
+          {
+            headName: 'src/main.rs',
+            isCriticalFile: false,
+            baseCoverage: null,
+            headCoverage: null,
+            patchCoverage: null,
+          },
+        ],
+      })
+      render(<FilesChangedTable />, { wrapper: wrapper(queryClient) })
+
+      const deletedFile = await screen.findByText(/Deleted file/)
+      expect(deletedFile).toBeInTheDocument()
+    })
+
+    it('renders non-deleted file', async () => {
+      const { queryClient } = setup({
+        __typename: 'ImpactedFiles',
+        results: [
+          {
+            headName: 'src/main.rs',
+            isCriticalFile: false,
+            baseCoverage: {
+              coverage: 40.0,
+            },
+            headCoverage: {
+              coverage: 50.0,
+            },
+            patchCoverage: {
+              coverage: 100.0,
+            },
+          },
+        ],
+      })
+      render(<FilesChangedTable />, { wrapper: wrapper(queryClient) })
+
+      const deletedFile = screen.queryByText(/Deleted file/)
+      expect(deletedFile).not.toBeInTheDocument()
+    })
+  })
+
   describe('flags query param is set', () => {
     const mockData = {
       __typename: 'ImpactedFiles',
       results: [
         {
           headName: 'src/index2.py',
+          isCriticalFile: false,
           baseCoverage: {
             coverage: 62.5,
           },
@@ -396,6 +500,7 @@ describe('FilesChangedTable', () => {
       results: [
         {
           headName: 'src/index2.py',
+          isCriticalFile: false,
           baseCoverage: {
             coverage: 62.5,
           },
@@ -441,6 +546,7 @@ describe('FilesChangedTable', () => {
       results: [
         {
           headName: 'src/index2.py',
+          isCriticalFile: false,
           baseCoverage: {
             coverage: 62.5,
           },
@@ -453,6 +559,7 @@ describe('FilesChangedTable', () => {
         },
         {
           headName: 'src/index3.py',
+          isCriticalFile: false,
           baseCoverage: {
             coverage: 64.5,
           },
