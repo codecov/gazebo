@@ -108,8 +108,14 @@ const mockPullBADropdownSummary = {
         },
         bundleAnalysisCompareWithBase: {
           __typename: 'BundleAnalysisComparison',
-          sizeDelta: 1,
-          loadTimeDelta: 2,
+          bundleChange: {
+            loadTime: {
+              threeG: 2,
+            },
+            size: {
+              uncompress: 1,
+            },
+          },
         },
       },
     },
