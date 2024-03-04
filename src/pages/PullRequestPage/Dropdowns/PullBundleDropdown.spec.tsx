@@ -22,8 +22,14 @@ const mockSummaryData = (sizeDelta: number) => ({
         },
         bundleAnalysisCompareWithBase: {
           __typename: 'BundleAnalysisComparison',
-          sizeDelta,
-          loadTimeDelta: 0,
+          bundleChange: {
+            loadTime: {
+              threeG: 0,
+            },
+            size: {
+              uncompress: sizeDelta,
+            },
+          },
         },
       },
     },
