@@ -15,8 +15,14 @@ const mockPullBASummaryData = {
         },
         bundleAnalysisCompareWithBase: {
           __typename: 'BundleAnalysisComparison',
-          sizeDelta: 1,
-          loadTimeDelta: 2,
+          bundleChange: {
+            size: {
+              uncompress: 1,
+            },
+            loadTime: {
+              threeG: 2,
+            },
+          },
         },
       },
     },
@@ -125,8 +131,14 @@ describe('usePullBADropdownSummary', () => {
           },
           bundleAnalysisCompareWithBase: {
             __typename: 'BundleAnalysisComparison',
-            sizeDelta: 1,
-            loadTimeDelta: 2,
+            bundleChange: {
+              loadTime: {
+                threeG: 2,
+              },
+              size: {
+                uncompress: 1,
+              },
+            },
           },
         },
       }
@@ -186,7 +198,7 @@ describe('usePullBADropdownSummary', () => {
         expect(result.current.error).toEqual(
           expect.objectContaining({
             status: 404,
-            data: null,
+            data: {},
           })
         )
       )
