@@ -30,7 +30,7 @@ const CommitFileDiff = lazy(() => import('../shared/CommitFileDiff'))
 const columnHelper = createColumnHelper<ImpactedFileType>()
 
 const isNumericValue = (value: string) =>
-  value === 'patchPercentage' || value === 'coverage' || value === 'change'
+  value === 'patchPercentage' || value === 'head' || value === 'change'
 
 function getFilter(sorting: Array<{ id: string; desc: boolean }>) {
   const state = sorting.at(0)
@@ -47,7 +47,7 @@ function getFilter(sorting: Array<{ id: string; desc: boolean }>) {
       }
     }
 
-    if (state.id === 'coverage') {
+    if (state.id === 'head') {
       return {
         direction,
         parameter: OrderingParameter.HEAD_COVERAGE,
@@ -83,7 +83,7 @@ function getColumns({ commitId }: { commitId: string }) {
 
         return (
           <div className="flex flex-row items-center break-all">
-            {!isDeletedFile && (
+            {!isDeletedFile ? (
               <span
                 data-action="clickable"
                 data-testid="file-diff-expand"
@@ -103,7 +103,7 @@ function getColumns({ commitId }: { commitId: string }) {
                   variant="solid"
                 />
               </span>
-            )}
+            ) : null}
             {isDeletedFile ? (
               <>{headName}</>
             ) : (
@@ -120,22 +120,22 @@ function getColumns({ commitId }: { commitId: string }) {
                 {headName}
               </A>
             )}
-            {row.original?.isCriticalFile && (
+            {row.original?.isCriticalFile ? (
               <span className="ml-2 h-fit flex-none rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
                 Critical file
               </span>
-            )}
-            {isDeletedFile && (
+            ) : null}
+            {isDeletedFile ? (
               <div className="ml-2 h-fit flex-none rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
                 Deleted file
               </div>
-            )}
+            ) : null}
           </div>
         )
       },
     }),
     columnHelper.accessor('headCoverage.coverage', {
-      id: 'coverage',
+      id: 'head',
       header: 'HEAD',
       cell: ({ getValue }) => {
         const value = getValue()
@@ -240,7 +240,7 @@ interface URLParams {
 export default function FilesChangedTable() {
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const [sorting, setSorting] = useState<SortingState>([
-    { id: 'coverage', desc: false },
+    { id: 'head', desc: false },
   ])
   const { provider, owner, repo, commit: commitSha } = useParams<URLParams>()
   const location = useLocation()

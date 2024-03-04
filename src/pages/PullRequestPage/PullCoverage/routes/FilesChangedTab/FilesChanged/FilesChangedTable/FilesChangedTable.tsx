@@ -95,7 +95,7 @@ function getColumns({ pullId }: { pullId: string }) {
 
         return (
           <div className="flex flex-row items-center break-all">
-            {!isDeletedFile && (
+            {!isDeletedFile ? (
               <span
                 data-action="clickable"
                 data-testid="file-diff-expand"
@@ -113,7 +113,7 @@ function getColumns({ pullId }: { pullId: string }) {
                   variant="solid"
                 />
               </span>
-            )}
+            ) : null}
             {isDeletedFile ? (
               <>{headName}</>
             ) : (
@@ -127,16 +127,16 @@ function getColumns({ pullId }: { pullId: string }) {
                 {headName}
               </A>
             )}
-            {row.original?.isCriticalFile && (
+            {row.original?.isCriticalFile ? (
               <span className="ml-2 h-fit flex-none rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
                 Critical file
               </span>
-            )}
-            {isDeletedFile && (
+            ) : null}
+            {isDeletedFile ? (
               <div className="ml-2 h-fit flex-none rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
                 Deleted file
               </div>
-            )}
+            ) : null}
           </div>
         )
       },
@@ -145,8 +145,7 @@ function getColumns({ pullId }: { pullId: string }) {
       id: 'missedLines',
       header: 'Missed lines',
       cell: ({ renderValue, row }) => {
-        if (row.original?.headCoverage === null) {
-          // File was deleted, render a dash.
+        if (!row.original?.headCoverage) {
           return <>-</>
         }
         return renderValue()

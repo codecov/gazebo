@@ -59,11 +59,11 @@ function getColumns() {
                 {getValue()}
               </A>
             </div>
-            {row.original.isCriticalFile && (
+            {row.original.isCriticalFile ? (
               <span className="flex-none self-center rounded border border-ds-gray-tertiary p-1 text-xs text-ds-gray-senary">
                 Critical file
               </span>
-            )}
+            ) : null}
           </div>
         )
       },
