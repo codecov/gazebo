@@ -12,6 +12,7 @@ import { useParams } from 'react-router-dom'
 
 import { useCommits } from 'services/commits/useCommits'
 import { useRepoOverview } from 'services/repo'
+import { useFlags } from 'shared/featureFlags'
 import Spinner from 'ui/Spinner'
 
 import { createCommitsTableData } from './createCommitsTableData'
@@ -88,6 +89,9 @@ const CommitsTable = () => {
   const { ref, inView } = useInView()
   const { provider, owner, repo, pullId } = useParams<URLParams>()
   const { data: overview } = useRepoOverview({ provider, owner, repo })
+  const { bundleAnalysisPrAndCommitPages } = useFlags({
+    bundleAnalysisPrAndCommitPages: false,
+  })
 
   const {
     data: commitsData,
@@ -118,7 +122,8 @@ const CommitsTable = () => {
   const columns = useMemo(() => {
     if (
       overview?.bundleAnalysisEnabled &&
-      !baseColumns.some((column) => column.id === 'bundleAnalysis')
+      !baseColumns.some((column) => column.id === 'bundleAnalysis') &&
+      bundleAnalysisPrAndCommitPages
     ) {
       return [
         ...baseColumns,
@@ -131,7 +136,7 @@ const CommitsTable = () => {
     }
 
     return baseColumns
-  }, [overview?.bundleAnalysisEnabled])
+  }, [bundleAnalysisPrAndCommitPages, overview?.bundleAnalysisEnabled])
 
   const table = useReactTable({
     columns,
