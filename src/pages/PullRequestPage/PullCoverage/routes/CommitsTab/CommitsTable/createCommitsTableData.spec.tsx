@@ -54,6 +54,9 @@ describe('createCommitsTableData', () => {
             __typename: 'MissingBaseCommit',
             message: 'Missing base commit',
           },
+          bundleAnalysisReport: {
+            __typename: 'BundleAnalysisReport',
+          },
         } as const
 
         const result = createCommitsTableData({
@@ -87,6 +90,9 @@ describe('createCommitsTableData', () => {
             patchTotals: {
               percentCovered: 100,
             },
+          },
+          bundleAnalysisReport: {
+            __typename: 'BundleAnalysisReport',
           },
         } as const
 
@@ -128,6 +134,9 @@ describe('createCommitsTableData', () => {
               patchTotals: {
                 percentCovered: null,
               },
+            },
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
             },
           } as const
 
@@ -175,6 +184,9 @@ describe('createCommitsTableData', () => {
               percentCovered: 100,
             },
           },
+          bundleAnalysisReport: {
+            __typename: 'BundleAnalysisReport',
+          },
         } as const
 
         const result = createCommitsTableData({
@@ -218,6 +230,9 @@ describe('createCommitsTableData', () => {
               percentCovered: 100,
             },
           },
+          bundleAnalysisReport: {
+            __typename: 'BundleAnalysisReport',
+          },
         } as const
 
         const result = createCommitsTableData({
@@ -252,6 +267,9 @@ describe('createCommitsTableData', () => {
             patchTotals: {
               percentCovered: 100,
             },
+          },
+          bundleAnalysisReport: {
+            __typename: 'BundleAnalysisReport',
           },
         } as const
 
@@ -288,6 +306,9 @@ describe('createCommitsTableData', () => {
               percentCovered: 99,
             },
           },
+          bundleAnalysisReport: {
+            __typename: 'BundleAnalysisReport',
+          },
         } as const
 
         const result = createCommitsTableData({
@@ -303,6 +324,72 @@ describe('createCommitsTableData', () => {
             value={null}
           />
         )
+      })
+    })
+
+    describe('bundleAnalysisReport __typename is not BundleAnalysisReport', () => {
+      it('returns no report uploaded', () => {
+        const commitData = {
+          ciPassed: null,
+          message: null,
+          commitid: 'commit-123',
+          createdAt: '2021-11-01T19:44:10.795533+00:00',
+          author: null,
+          totals: {
+            coverage: 100,
+          },
+          parent: {
+            totals: {
+              coverage: 0,
+            },
+          },
+          compareWithParent: {
+            __typename: 'MissingBaseCommit',
+            message: 'Missing base commit',
+          },
+          bundleAnalysisReport: {
+            __typename: 'MissingHeadReport',
+          },
+        } as const
+
+        const result = createCommitsTableData({
+          pages: [{ commits: [commitData] }],
+        })
+
+        expect(result[0]?.bundleAnalysis).toStrictEqual(<p>Upload: ❌</p>)
+      })
+    })
+
+    describe('bundleAnalysisReport __typename is BundleAnalysisReport', () => {
+      it('returns no report uploaded', () => {
+        const commitData = {
+          ciPassed: null,
+          message: null,
+          commitid: 'commit-123',
+          createdAt: '2021-11-01T19:44:10.795533+00:00',
+          author: null,
+          totals: {
+            coverage: 100,
+          },
+          parent: {
+            totals: {
+              coverage: 0,
+            },
+          },
+          compareWithParent: {
+            __typename: 'MissingBaseCommit',
+            message: 'Missing base commit',
+          },
+          bundleAnalysisReport: {
+            __typename: 'BundleAnalysisReport',
+          },
+        } as const
+
+        const result = createCommitsTableData({
+          pages: [{ commits: [commitData] }],
+        })
+
+        expect(result[0]?.bundleAnalysis).toStrictEqual(<p>Upload: ✅</p>)
       })
     })
   })

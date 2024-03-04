@@ -75,6 +75,12 @@ const CommitSchema = z.object({
       MissingHeadReportSchema,
     ])
     .nullable(),
+  bundleAnalysisReport: z
+    .discriminatedUnion('__typename', [
+      z.object({ __typename: z.literal('BundleAnalysisReport') }),
+      z.object({ __typename: z.literal('MissingHeadReport') }),
+    ])
+    .nullable(),
 })
 
 export type Commit = z.infer<typeof CommitSchema>
@@ -170,6 +176,9 @@ query GetCommits(
                 ... on MissingHeadReport {
                   message
                 }
+              }
+              bundleAnalysisReport {
+                __typename
               }
             }
           }
