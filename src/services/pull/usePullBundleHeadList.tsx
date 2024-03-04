@@ -6,12 +6,19 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo/schemas'
 import Api from 'shared/api'
+import { type NetworkErrorObject } from 'shared/api/helpers'
 import A from 'ui/A'
 
 const BundleSchema = z.object({
   name: z.string(),
-  sizeTotal: z.number(),
-  loadTimeTotal: z.number(),
+  bundleData: z.object({
+    loadTime: z.object({
+      threeG: z.number(),
+    }),
+    size: z.object({
+      uncompress: z.number(),
+    }),
+  }),
 })
 
 const RepositorySchema = z.object({
@@ -63,8 +70,14 @@ query PullBundleHeadList($owner: String!, $repo: String!, $pullId: Int!) {
               ... on BundleAnalysisReport {
                 bundles {
                   name
-                  sizeTotal
-                  loadTimeTotal
+                  bundleData {
+                    loadTime {
+                      threeG
+                    }
+                    size {
+                      uncompress
+                    }
+                  }
                 }
               }
               ... on MissingHeadReport {
@@ -115,8 +128,9 @@ export function usePullBundleHeadList({
         if (!parsedRes.success) {
           return Promise.reject({
             status: 404,
-            data: null,
-          })
+            data: {},
+            dev: `usePullBundleHeadList - 404 failed to parse`,
+          } satisfies NetworkErrorObject)
         }
 
         const data = parsedRes.data
@@ -125,7 +139,8 @@ export function usePullBundleHeadList({
           return Promise.reject({
             status: 404,
             data: {},
-          })
+            dev: `usePullBundleHeadList - 404 NotFoundError`,
+          } satisfies NetworkErrorObject)
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
@@ -141,7 +156,8 @@ export function usePullBundleHeadList({
                 </p>
               ),
             },
-          })
+            dev: `usePullBundleHeadList - 404 OwnerNotActivatedError`,
+          } satisfies NetworkErrorObject)
         }
 
         return {
