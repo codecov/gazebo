@@ -172,6 +172,9 @@ const mockCommitTeamResponse = {
                   percentCovered: 80,
                 },
               },
+              bundleAnalysisReport: {
+                __typename: 'MissingHeadReport',
+              },
             },
           },
         ],
