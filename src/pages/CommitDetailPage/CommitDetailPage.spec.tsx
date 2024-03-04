@@ -94,19 +94,20 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { suspense: true } },
 })
 
-const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter
-      initialEntries={[
-        '/gh/test-org/test-repo/commit/e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed',
-      ]}
-    >
-      <Route path="/:provider/:owner/:repo/commit/:commit">
-        <Suspense fallback={null}>{children}</Suspense>
-      </Route>
-    </MemoryRouter>
-  </QueryClientProvider>
-)
+const wrapper =
+  (
+    initialEntries = '/gh/test-org/test-repo/commit/e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed'
+  ): React.FC<React.PropsWithChildren> =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path="/:provider/:owner/:repo/commit/:commit">
+            <Suspense fallback={null}>{children}</Suspense>
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
 beforeAll(() => {
   server.listen()
@@ -164,6 +165,9 @@ describe('CommitDetailPage', () => {
       }),
       graphql.query('CommitDropdownSummary', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockCoverageDropdownSummary))
+      }),
+      graphql.query('CommitComponents', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({ owner: null }))
       })
     )
   }
@@ -172,7 +176,7 @@ describe('CommitDetailPage', () => {
     describe('renders the breadcrumb', () => {
       it('renders owner crumb', async () => {
         setup()
-        render(<CommitPage />, { wrapper })
+        render(<CommitPage />, { wrapper: wrapper() })
 
         const ownerCrumb = await screen.findByRole('link', { name: 'test-org' })
         expect(ownerCrumb).toBeInTheDocument()
@@ -181,7 +185,7 @@ describe('CommitDetailPage', () => {
 
       it('renders repo crumb', async () => {
         setup()
-        render(<CommitPage />, { wrapper })
+        render(<CommitPage />, { wrapper: wrapper() })
 
         const repoCrumb = await screen.findByRole('link', { name: 'test-repo' })
         expect(repoCrumb).toBeInTheDocument()
@@ -190,7 +194,7 @@ describe('CommitDetailPage', () => {
 
       it('renders commits crumb', async () => {
         setup()
-        render(<CommitPage />, { wrapper })
+        render(<CommitPage />, { wrapper: wrapper() })
 
         const commitsCrumb = await screen.findByRole('link', {
           name: 'commits',
@@ -204,7 +208,7 @@ describe('CommitDetailPage', () => {
 
       it('renders commit sha crumb', async () => {
         setup()
-        render(<CommitPage />, { wrapper })
+        render(<CommitPage />, { wrapper: wrapper() })
 
         const shortSha = 'e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed'.slice(0, 7)
         const commitShaCrumb = await screen.findByText(shortSha)
@@ -214,7 +218,7 @@ describe('CommitDetailPage', () => {
 
     it('renders the header component', async () => {
       setup()
-      render(<CommitPage />, { wrapper })
+      render(<CommitPage />, { wrapper: wrapper() })
 
       const header = await screen.findByText(/Header/)
       expect(header).toBeInTheDocument()
@@ -223,7 +227,7 @@ describe('CommitDetailPage', () => {
     describe('coverage is enabled', () => {
       it('renders the CommitCoverage component', async () => {
         setup()
-        render(<CommitPage />, { wrapper })
+        render(<CommitPage />, { wrapper: wrapper() })
 
         const CommitCoverage = await screen.findByText(/CommitCoverage/)
         expect(CommitCoverage).toBeInTheDocument()
@@ -233,7 +237,7 @@ describe('CommitDetailPage', () => {
     describe('bundle analysis is enabled', () => {
       it('renders the CommitBundleAnalysis component', async () => {
         setup({ bundleAnalysisEnabled: true, coverageEnabled: false })
-        render(<CommitPage />, { wrapper })
+        render(<CommitPage />, { wrapper: wrapper() })
 
         const CommitBundleAnalysis = await screen.findByText(
           /CommitBundleAnalysis/
@@ -245,7 +249,7 @@ describe('CommitDetailPage', () => {
     describe('bundle analysis and coverage are enabled', () => {
       it('renders the CommitBundleAnalysis and CommitCoverage components', async () => {
         setup({ bundleAnalysisEnabled: true, coverageEnabled: true })
-        render(<CommitPage />, { wrapper })
+        render(<CommitPage />, { wrapper: wrapper() })
 
         const coverageReport = await screen.findByText(/Coverage report:/)
         expect(coverageReport).toBeInTheDocument()
@@ -259,10 +263,42 @@ describe('CommitDetailPage', () => {
   describe('when commit is not found, and user is not part of org', () => {
     it('renders NotFound', async () => {
       setup({ notFoundCommit: true })
-      render(<CommitPage />, { wrapper })
+      render(<CommitPage />, { wrapper: wrapper() })
 
       const notFound = await screen.findByText('Not found')
       expect(notFound).toBeInTheDocument()
+    })
+  })
+
+  describe('dropdown query param is present in the url', () => {
+    describe('query param is coverage', () => {
+      it('renders the CommitCoverage component', async () => {
+        setup({ bundleAnalysisEnabled: true, coverageEnabled: true })
+        render(<CommitPage />, {
+          wrapper: wrapper(
+            '/gh/test-org/test-repo/commit/e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed?dropdown=coverage'
+          ),
+        })
+
+        const CommitCoverage = await screen.findByText(/CommitCoverage/)
+        expect(CommitCoverage).toBeInTheDocument()
+      })
+    })
+
+    describe('query param is bundle', () => {
+      it('renders the CommitBundleAnalysis component', async () => {
+        setup({ bundleAnalysisEnabled: true, coverageEnabled: true })
+        render(<CommitPage />, {
+          wrapper: wrapper(
+            '/gh/test-org/test-repo/commit/e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed?dropdown=bundle'
+          ),
+        })
+
+        const CommitBundleAnalysis = await screen.findByText(
+          /CommitBundleAnalysis/
+        )
+        expect(CommitBundleAnalysis).toBeInTheDocument()
+      })
     })
   })
 })
