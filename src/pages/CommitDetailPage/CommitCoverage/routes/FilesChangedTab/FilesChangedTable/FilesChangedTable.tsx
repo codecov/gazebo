@@ -104,10 +104,10 @@ function getColumns({ commitId }: { commitId: string }) {
                 />
               </span>
             )}
-            {/* @ts-expect-error */}
             {isDeletedFile ? (
               <>{headName}</>
             ) : (
+              /* @ts-expect-error */
               <A
                 to={{
                   pageName: 'commitFileDiff',
