@@ -65,8 +65,8 @@ export const useTableData = () => {
     ) {
       return data?.pull?.head?.bundleAnalysisReport?.bundles?.map((bundle) => ({
         name: bundle.name,
-        currSize: bundle.sizeTotal,
-        loadTime: bundle.loadTimeTotal,
+        currSize: bundle.bundleData.size.uncompress,
+        loadTime: bundle.bundleData.loadTime.threeG,
       }))
     }
 
