@@ -66,7 +66,7 @@ function FlagMultiSelect() {
   }
 
   return (
-    <div className="w-1/6">
+    <div className="w-full sm:w-60">
       <MultiSelect
         disabled={!flagsMeasurementsActive || !isTimescaleEnabled}
         dataMarketing="coverage-tab-flag-multi-select"

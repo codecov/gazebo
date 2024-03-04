@@ -82,7 +82,7 @@ export const TitleFlags = () => {
   }
 
   return (
-    <div className="w-full sm:w-52">
+    <div className="w-full sm:w-60">
       <MultiSelect
         disabled={!flagsMeasurementsActive || !isTimescaleEnabled}
         dataMarketing="fileviwer-filter-by-flags"
