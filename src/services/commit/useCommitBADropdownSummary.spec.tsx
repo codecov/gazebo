@@ -12,8 +12,14 @@ const mockCommitBASummaryData = {
       commit: {
         bundleAnalysisCompareWithParent: {
           __typename: 'BundleAnalysisComparison',
-          sizeDelta: 1,
-          loadTimeDelta: 2,
+          bundleChange: {
+            loadTime: {
+              threeG: 2,
+            },
+            size: {
+              uncompress: 1,
+            },
+          },
         },
       },
     },
@@ -119,8 +125,14 @@ describe('useCommitBADropdownSummary', () => {
         commit: {
           bundleAnalysisCompareWithParent: {
             __typename: 'BundleAnalysisComparison',
-            sizeDelta: 1,
-            loadTimeDelta: 2,
+            bundleChange: {
+              loadTime: {
+                threeG: 2,
+              },
+              size: {
+                uncompress: 1,
+              },
+            },
           },
         },
       }
@@ -180,7 +192,7 @@ describe('useCommitBADropdownSummary', () => {
         expect(result.current.error).toEqual(
           expect.objectContaining({
             status: 404,
-            data: null,
+            data: {},
           })
         )
       )
