@@ -77,9 +77,11 @@ export const useTableData = () => {
     return data?.pull?.bundleAnalysisCompareWithBase?.bundles?.map(
       (bundle) => ({
         name: bundle.name,
-        prevSize: bundle.sizeTotal - bundle.sizeDelta,
-        newSize: bundle.sizeTotal,
-        change: bundle.sizeDelta,
+        prevSize:
+          bundle.bundleData.size.uncompress -
+          bundle.bundleChange.size.uncompress,
+        newSize: bundle.bundleData.size.uncompress,
+        change: bundle.bundleChange.size.uncompress,
       })
     )
   }, [data])
