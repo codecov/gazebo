@@ -20,6 +20,7 @@ export const createPullsTableTeamData = ({
   if (isEmpty(pulls)) {
     return []
   }
+
   return pulls.filter(Boolean).map((pull) => {
     let patch = <p className="text-right">No report uploaded</p>
     if (pull?.compareWithBase?.__typename === 'Comparison') {
@@ -36,6 +37,15 @@ export const createPullsTableTeamData = ({
           />
         </div>
       )
+    }
+
+    let bundleAnalysis = undefined
+    if (
+      pull?.head?.bundleAnalysisReport?.__typename === 'BundleAnalysisReport'
+    ) {
+      bundleAnalysis = <p className="text-right">Upload: &#x2705;</p>
+    } else {
+      bundleAnalysis = <p className="text-right">Upload: &#x274C;</p>
     }
 
     const updatestamp = pull?.updatestamp ?? undefined
@@ -56,6 +66,7 @@ export const createPullsTableTeamData = ({
         />
       ),
       patch,
+      bundleAnalysis,
     }
   })
 }

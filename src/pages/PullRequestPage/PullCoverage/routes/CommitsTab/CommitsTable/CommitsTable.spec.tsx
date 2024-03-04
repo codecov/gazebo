@@ -9,7 +9,28 @@ import { setupServer } from 'msw/node'
 import { mockIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useFlags } from 'shared/featureFlags'
+
 import CommitsTable from './CommitsTable'
+
+jest.mock('shared/featureFlags')
+const mockedUseFlags = useFlags as jest.Mock<{
+  bundleAnalysisPrAndCommitPages: boolean
+}>
+
+const mockRepoOverview = (bundleAnalysisEnabled = false) => ({
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      private: false,
+      defaultBranch: 'main',
+      oldestCommitAt: '2022-10-10T11:59:59',
+      coverageEnabled: false,
+      bundleAnalysisEnabled,
+      languages: ['javascript'],
+    },
+  },
+})
 
 const node1 = {
   ciPassed: true,
@@ -33,6 +54,9 @@ const node1 = {
     patchTotals: {
       percentCovered: 80,
     },
+  },
+  bundleAnalysisReport: {
+    __typename: 'MissingHeadReport',
   },
 }
 
@@ -59,6 +83,9 @@ const node2 = {
       percentCovered: 90,
     },
   },
+  bundleAnalysisReport: {
+    __typename: 'BundleAnalysisReport',
+  },
 }
 
 const node3 = {
@@ -83,6 +110,9 @@ const node3 = {
     patchTotals: {
       percentCovered: 100,
     },
+  },
+  bundleAnalysisReport: {
+    __typename: 'BundleAnalysisReport',
   },
 }
 
@@ -112,13 +142,27 @@ afterAll(() => {
 
 interface SetupArgs {
   noEntries?: boolean
+  bundleAnalysisEnabled?: boolean
 }
 
 describe('CommitsTable', () => {
-  function setup({ noEntries = false }: SetupArgs) {
+  function setup({
+    noEntries = false,
+    bundleAnalysisEnabled = false,
+  }: SetupArgs) {
     const queryClient = new QueryClient()
 
+    mockedUseFlags.mockReturnValue({
+      bundleAnalysisPrAndCommitPages: true,
+    })
+
     server.use(
+      graphql.query('GetRepoOverview', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data(mockRepoOverview(bundleAnalysisEnabled))
+        )
+      }),
       graphql.query('GetCommits', (req, res, ctx) => {
         if (noEntries) {
           return res(
@@ -226,6 +270,30 @@ describe('CommitsTable', () => {
       const coverageColumn = await screen.findByText('Coverage')
       expect(coverageColumn).toBeInTheDocument()
     })
+
+    describe('bundle analysis is enabled', () => {
+      it('renders bundle analysis column', async () => {
+        const { queryClient } = setup({ bundleAnalysisEnabled: true })
+        render(<CommitsTable />, {
+          wrapper: wrapper(queryClient),
+        })
+
+        const bundleAnalysis = await screen.findByText('Bundle Analysis')
+        expect(bundleAnalysis).toBeInTheDocument()
+      })
+    })
+
+    describe('bundle analysis is disabled', () => {
+      it('does not render bundle analysis column', async () => {
+        const { queryClient } = setup({ bundleAnalysisEnabled: false })
+        render(<CommitsTable />, {
+          wrapper: wrapper(queryClient),
+        })
+
+        const bundleAnalysis = screen.queryByText('Bundle Analysis')
+        expect(bundleAnalysis).not.toBeInTheDocument()
+      })
+    })
   })
 
   describe('renders table body', () => {
@@ -291,6 +359,30 @@ describe('CommitsTable', () => {
 
       const coverageColumn = await screen.findByText('89.00%')
       expect(coverageColumn).toBeInTheDocument()
+    })
+
+    describe('bundle analysis is enabled', () => {
+      it('renders bundle analysis column', async () => {
+        const { queryClient } = setup({ bundleAnalysisEnabled: true })
+        render(<CommitsTable />, {
+          wrapper: wrapper(queryClient),
+        })
+
+        const bundleAnalysis = await screen.findByText(/Upload: ✅/)
+        expect(bundleAnalysis).toBeInTheDocument()
+      })
+    })
+
+    describe('bundle analysis is disabled', () => {
+      it('does not render bundle analysis column', async () => {
+        const { queryClient } = setup({ bundleAnalysisEnabled: false })
+        render(<CommitsTable />, {
+          wrapper: wrapper(queryClient),
+        })
+
+        const bundleAnalysis = screen.queryByText('Upload: ❌')
+        expect(bundleAnalysis).not.toBeInTheDocument()
+      })
     })
   })
 

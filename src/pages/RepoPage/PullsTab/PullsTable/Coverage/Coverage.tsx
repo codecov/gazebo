@@ -23,6 +23,9 @@ interface CoverageProps {
     totals?: {
       percentCovered: number | null
     } | null
+    bundleAnalysisReport?: {
+      __typename: string
+    } | null
   } | null
   pullId: number
   state: IconEnumState

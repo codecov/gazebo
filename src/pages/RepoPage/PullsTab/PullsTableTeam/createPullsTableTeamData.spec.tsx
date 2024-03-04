@@ -44,6 +44,11 @@ describe('createPullsTableTeamData', () => {
             __typename: 'MissingBaseCommit',
             message: 'Missing base commit',
           },
+          head: {
+            bundleAnalysisReport: {
+              __typename: 'MissingHeadReport',
+            },
+          },
         } as const
 
         const result = createPullsTableTeamData({
@@ -68,6 +73,11 @@ describe('createPullsTableTeamData', () => {
             __typename: 'Comparison',
             patchTotals: {
               percentCovered: 100,
+            },
+          },
+          head: {
+            bundleAnalysisReport: {
+              __typename: 'MissingHeadReport',
             },
           },
         } as const
@@ -103,6 +113,11 @@ describe('createPullsTableTeamData', () => {
                 percentCovered: null,
               },
             },
+            head: {
+              bundleAnalysisReport: {
+                __typename: 'MissingHeadReport',
+              },
+            },
           } as const
 
           const result = createPullsTableTeamData({
@@ -124,6 +139,68 @@ describe('createPullsTableTeamData', () => {
       })
     })
 
+    describe('bundleAnalysisReport __typename is not BundleAnalysisReport', () => {
+      it('returns no report uploaded', () => {
+        const pullData = {
+          author: null,
+          pullId: 123,
+          state: 'OPEN',
+          updatestamp: null,
+          title: null,
+          compareWithBase: {
+            __typename: 'Comparison',
+            patchTotals: {
+              percentCovered: 100,
+            },
+          },
+          head: {
+            bundleAnalysisReport: {
+              __typename: 'MissingHeadReport',
+            },
+          },
+        } as const
+
+        const result = createPullsTableTeamData({
+          pages: [{ pulls: [pullData] }],
+        })
+
+        expect(result[0]?.bundleAnalysis).toStrictEqual(
+          <p className="text-right">Upload: ❌</p>
+        )
+      })
+    })
+
+    describe('bundleAnalysisReport __typename is BundleAnalysisReport', () => {
+      it('returns successful upload', () => {
+        const pullData = {
+          author: null,
+          pullId: 123,
+          state: 'OPEN',
+          updatestamp: null,
+          title: null,
+          compareWithBase: {
+            __typename: 'Comparison',
+            patchTotals: {
+              percentCovered: 100,
+            },
+          },
+          head: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+            },
+          },
+        } as const
+
+        const result = createPullsTableTeamData({
+          pages: [{ pulls: [pullData] }],
+        })
+
+        expect(result[0]?.bundleAnalysis).toStrictEqual(
+          <p className="text-right">Upload: ✅</p>
+        )
+      })
+    })
+
     describe('pull details are all non-null values', () => {
       it('returns the title component', () => {
         const pullData = {
@@ -138,6 +215,11 @@ describe('createPullsTableTeamData', () => {
           compareWithBase: {
             __typename: 'MissingBaseCommit',
             message: 'Missing base commit',
+          },
+          head: {
+            bundleAnalysisReport: {
+              __typename: 'MissingHeadReport',
+            },
           },
         } as const
 
