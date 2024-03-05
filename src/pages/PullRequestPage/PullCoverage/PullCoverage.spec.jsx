@@ -114,6 +114,20 @@ const mockPullDataTeam = {
   },
 }
 
+const mockOverview = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      private: true,
+      defaultBranch: 'main',
+      oldestCommitAt: '2022-10-10T11:59:59',
+      coverageEnabled: true,
+      bundleAnalysisEnabled: true,
+      languages: ['typescript'],
+    },
+  },
+}
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
@@ -165,13 +179,8 @@ describe('PullRequestPageContent', () => {
         }
         return res(ctx.status(200), ctx.data(mockPullData(resultType)))
       }),
-      graphql.query('GetRepoSettings', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
-            owner: { repository: { private: true } },
-          })
-        )
+      graphql.query('GetRepoOverview', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockOverview))
       }),
       graphql.query('OwnerTier', (req, res, ctx) => {
         return res(
