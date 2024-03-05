@@ -184,7 +184,14 @@ const CommitsTableTeam: React.FC<CommitsTableTeamProps> = ({
               table.getRowModel().rows.map((row) => (
                 <tr key={row.id}>
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id}>
+                    <td
+                      key={cell.id}
+                      className={cs('text-sm', {
+                        'w-full max-w-0 font-medium @md/table:w-auto @md/table:max-w-none text-left':
+                          cell.column.id === 'name',
+                        'text-right': cell.column.id !== 'name',
+                      })}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
