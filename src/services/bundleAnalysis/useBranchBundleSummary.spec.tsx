@@ -30,7 +30,19 @@ const mockBranchBundleSummary = {
             __typename: 'BundleAnalysisReport',
             sizeTotal: 100,
             loadTimeTotal: 200,
-            bundles: [{ name: 'bundle1', sizeTotal: 50, loadTimeTotal: 100 }],
+            bundleData: {
+              loadTime: { threeG: 200 },
+              size: { uncompress: 100 },
+            },
+            bundles: [
+              {
+                name: 'bundle1',
+                bundleData: {
+                  loadTime: { threeG: 100 },
+                  size: { uncompress: 50 },
+                },
+              },
+            ],
           },
         },
       },
@@ -188,10 +200,18 @@ describe('useBranchBundleSummary', () => {
               commitid: '543a5268dce725d85be7747c0f9b61e9a68dea57',
               bundleAnalysisReport: {
                 __typename: 'BundleAnalysisReport',
-                sizeTotal: 100,
-                loadTimeTotal: 200,
+                bundleData: {
+                  loadTime: { threeG: 200 },
+                  size: { uncompress: 100 },
+                },
                 bundles: [
-                  { name: 'bundle1', sizeTotal: 50, loadTimeTotal: 100 },
+                  {
+                    name: 'bundle1',
+                    bundleData: {
+                      loadTime: { threeG: 100 },
+                      size: { uncompress: 50 },
+                    },
+                  },
                 ],
               },
             },
