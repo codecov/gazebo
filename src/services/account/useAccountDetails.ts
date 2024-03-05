@@ -87,16 +87,18 @@ export const SubscriptionDetailSchema = z
   })
   .nullable()
 
-export const PlanSchema = z.object({
-  baseUnitPrice: z.number(),
-  benefits: z.array(z.string()),
-  billingRate: z.string().nullable(),
-  marketingName: z.string(),
-  monthlyUploadLimit: z.number().nullish(),
-  quantity: z.number().nullish(),
-  value: z.string(),
-  trialDays: z.number().nullish(),
-})
+export const PlanSchema = z
+  .object({
+    baseUnitPrice: z.number(),
+    benefits: z.array(z.string()),
+    billingRate: z.string().nullable(),
+    marketingName: z.string(),
+    monthlyUploadLimit: z.number().nullish(),
+    quantity: z.number().nullish(),
+    value: z.string(),
+    trialDays: z.number().nullish(),
+  })
+  .nullable()
 
 export const AccountDetailsSchema = z.object({
   activatedStudentCount: z.number(),

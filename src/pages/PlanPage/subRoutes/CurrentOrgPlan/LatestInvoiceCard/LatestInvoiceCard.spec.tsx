@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
+import { z } from 'zod'
 
-import { useInvoices } from 'services/account'
+import { InvoiceSchema, useInvoices } from 'services/account'
 
 import LatestInvoiceCard from './LatestInvoiceCard'
 
@@ -13,13 +14,12 @@ const invoice = {
   total: 9600.0,
   invoicePdf:
     'https://pay.stripe.com/invoice/acct_14SJTOGlVGuVgOrk/invst_Hs2qfFwArnp6AMjWPlwtyqqszoBzO3q/pdf',
-}
+} as z.infer<typeof InvoiceSchema>
 
 describe('LatestInvoiceCard', () => {
-  function setup({ invoices }: { invoices: any }) {
-    // TODO: figure out proper mock
-    // @ts-expect-error
-    useInvoices.mockReturnValue({ data: invoices })
+  function setup({ invoices }: { invoices: z.infer<typeof InvoiceSchema>[] }) {
+    const mockedUseInvoices = useInvoices as jest.Mock
+    mockedUseInvoices.mockReturnValue({ data: invoices })
 
     render(
       <MemoryRouter initialEntries={['/plan/gh/codecov']}>
