@@ -53,10 +53,10 @@ export const createCommitsTableData = ({
     let bundleAnalysis = undefined
     if (commit?.bundleAnalysisReport?.__typename === 'BundleAnalysisReport') {
       // this hex code is for ✅
-      bundleAnalysis = <p>Upload: &#x2705;</p>
+      bundleAnalysis = <>Upload: &#x2705;</>
     } else {
       // this hex code is for ❌
-      bundleAnalysis = <p>Upload: &#x274C;</p>
+      bundleAnalysis = <>Upload: &#x274C;</>
     }
 
     return {
