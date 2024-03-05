@@ -122,6 +122,20 @@ const mockPullBADropdownSummary = {
   },
 }
 
+const mockOverview = (privateRepo = false) => ({
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      private: privateRepo,
+      defaultBranch: 'main',
+      oldestCommitAt: '2022-10-10T11:59:59',
+      coverageEnabled: true,
+      bundleAnalysisEnabled: true,
+      languages: ['typescript'],
+    },
+  },
+})
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false, suspense: true } },
 })
@@ -207,13 +221,8 @@ describe('PullRequestPage', () => {
           })
         )
       }),
-      graphql.query('GetRepoSettings', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
-            owner: { repository: { private: privateRepo } },
-          })
-        )
+      graphql.query('GetRepoOverview', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockOverview(privateRepo)))
       }),
       graphql.query('OwnerTier', (req, res, ctx) => {
         return res(
