@@ -148,6 +148,9 @@ export default function PullsTableTeam() {
           <colgroup>
             <col className="w-full @sm/table:w-10/12" />
             <col className="@sm/table:w-2/12" />
+            {overview?.bundleAnalysisEnabled ? (
+              <col className="@sm/table:w-1/12" />
+            ) : null}
           </colgroup>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -155,9 +158,9 @@ export default function PullsTableTeam() {
                 {headerGroup.headers.map((header) => (
                   <th key={header.id} scope="col">
                     <div
-                      className={cs('flex gap-1 items-center', {
-                        'flex-row-reverse justify-end': header.id === 'title',
-                        'justify-end': header.id === 'patch',
+                      className={cs('text-xs', {
+                        'text-left': header.id === 'title',
+                        'text-right': header.id !== 'title',
                       })}
                     >
                       {flexRender(
@@ -186,7 +189,7 @@ export default function PullsTableTeam() {
                       className={cs('text-sm', {
                         'w-full max-w-0 font-medium @md/table:w-auto @md/table:max-w-none':
                           cell.column.id === 'title',
-                        'justify-end': cell.column.id === 'patch',
+                        'text-right': cell.column.id !== 'title',
                       })}
                     >
                       {flexRender(
