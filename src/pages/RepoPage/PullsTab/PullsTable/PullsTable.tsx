@@ -166,8 +166,13 @@ export default function PullsTableTeam() {
       <div className="tableui">
         <table>
           <colgroup>
-            <col className="w-full @sm/table:w-10/12" />
+            <col className="w-full @sm/table:w-6/12" />
             <col className="@sm/table:w-2/12" />
+            <col className="@sm/table:w-1/12" />
+            <col className="@sm/table:w-1/12" />
+            {overview?.bundleAnalysisEnabled ? (
+              <col className="@sm/table:w-1/12" />
+            ) : null}
           </colgroup>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -205,8 +210,7 @@ export default function PullsTableTeam() {
                       className={cs('text-sm', {
                         'w-full max-w-0 font-medium @md/table:w-auto @md/table:max-w-none':
                           cell.column.id === 'title',
-                        'flex justify-end': cell.column.id === 'change',
-                        'text-right': cell.column.id === 'patch',
+                        'text-right': cell.column.id !== 'title',
                       })}
                     >
                       {flexRender(
