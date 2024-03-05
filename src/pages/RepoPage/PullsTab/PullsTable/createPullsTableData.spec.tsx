@@ -350,9 +350,7 @@ describe('createPullsTableData', () => {
           pulls: [pullData],
         })
 
-        expect(result[0]?.bundleAnalysis).toStrictEqual(
-          <p className="text-right">Upload: ❌</p>
-        )
+        expect(result[0]?.bundleAnalysis).toStrictEqual(<>Upload: ❌</>)
       })
     })
 
@@ -385,9 +383,7 @@ describe('createPullsTableData', () => {
           pulls: [pullData],
         })
 
-        expect(result[0]?.bundleAnalysis).toStrictEqual(
-          <p className="text-right">Upload: ✅</p>
-        )
+        expect(result[0]?.bundleAnalysis).toStrictEqual(<>Upload: ✅</>)
       })
     })
   })

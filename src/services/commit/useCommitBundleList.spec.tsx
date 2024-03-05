@@ -16,18 +16,42 @@ const mockCommitBundleListData = {
             {
               name: 'bundle.js',
               changeType: 'added',
-              sizeDelta: 1,
-              sizeTotal: 2,
-              loadTimeDelta: 3,
-              loadTimeTotal: 4,
+              bundleChange: {
+                loadTime: {
+                  threeG: 3,
+                },
+                size: {
+                  uncompress: 1,
+                },
+              },
+              bundleData: {
+                loadTime: {
+                  threeG: 4,
+                },
+                size: {
+                  uncompress: 2,
+                },
+              },
             },
             {
               name: 'bundle.css',
               changeType: 'removed',
-              sizeDelta: 5,
-              sizeTotal: 6,
-              loadTimeDelta: 7,
-              loadTimeTotal: 8,
+              bundleChange: {
+                loadTime: {
+                  threeG: 7,
+                },
+                size: {
+                  uncompress: 5,
+                },
+              },
+              bundleData: {
+                loadTime: {
+                  threeG: 8,
+                },
+                size: {
+                  uncompress: 6,
+                },
+              },
             },
           ],
         },
@@ -139,18 +163,42 @@ describe('useCommitBundleList', () => {
               {
                 name: 'bundle.js',
                 changeType: 'added',
-                sizeDelta: 1,
-                sizeTotal: 2,
-                loadTimeDelta: 3,
-                loadTimeTotal: 4,
+                bundleChange: {
+                  loadTime: {
+                    threeG: 3,
+                  },
+                  size: {
+                    uncompress: 1,
+                  },
+                },
+                bundleData: {
+                  loadTime: {
+                    threeG: 4,
+                  },
+                  size: {
+                    uncompress: 2,
+                  },
+                },
               },
               {
                 name: 'bundle.css',
                 changeType: 'removed',
-                sizeDelta: 5,
-                sizeTotal: 6,
-                loadTimeDelta: 7,
-                loadTimeTotal: 8,
+                bundleChange: {
+                  loadTime: {
+                    threeG: 7,
+                  },
+                  size: {
+                    uncompress: 5,
+                  },
+                },
+                bundleData: {
+                  loadTime: {
+                    threeG: 8,
+                  },
+                  size: {
+                    uncompress: 6,
+                  },
+                },
               },
             ],
           },
@@ -212,7 +260,7 @@ describe('useCommitBundleList', () => {
         expect(result.current.error).toEqual(
           expect.objectContaining({
             status: 404,
-            data: null,
+            data: {},
           })
         )
       )

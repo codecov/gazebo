@@ -302,8 +302,56 @@ describe('IndirectChangedFiles', () => {
           expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
         )
 
-        const criticalFileLabel = await screen.findByText(/Critical File/i)
+        const criticalFileLabel = await screen.findByText(/Critical file/i)
         expect(criticalFileLabel).toBeInTheDocument()
+      })
+
+      it('does not render the critical file label', async () => {
+        setup({
+          state: 'complete',
+          __typename: 'Comparison',
+          flagComparisons: [],
+          patchTotals: {
+            percentCovered: 92.12,
+          },
+          baseTotals: {
+            percentCovered: 98.25,
+          },
+          headTotals: {
+            percentCovered: 78.33,
+          },
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [
+              {
+                isCriticalFile: false,
+                missesCount: 3,
+                fileName: 'mafs.js',
+                headName: 'flag1/mafs.js',
+                baseCoverage: {
+                  percentCovered: 45.38,
+                },
+                headCoverage: {
+                  percentCovered: 90.23,
+                },
+                patchCoverage: {
+                  percentCovered: 27.43,
+                },
+                changeCoverage: 41,
+              },
+            ],
+          },
+          changeCoverage: 38.94,
+          hasDifferentNumberOfHeadAndBaseReports: true,
+        })
+        render(<IndirectChangedFiles />, { wrapper: wrapper() })
+
+        await waitFor(() =>
+          expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
+        )
+
+        const criticalFileLabel = screen.queryByText(/Critical file/i)
+        expect(criticalFileLabel).not.toBeInTheDocument()
       })
     })
   })

@@ -87,15 +87,13 @@ describe('createPullsTableTeamData', () => {
         })
 
         expect(result[0]?.patch).toStrictEqual(
-          <div className="text-right">
-            <TotalsNumber
-              large={false}
-              light={false}
-              plain={true}
-              showChange={false}
-              value={100}
-            />
-          </div>
+          <TotalsNumber
+            large={false}
+            light={false}
+            plain={true}
+            showChange={false}
+            value={100}
+          />
         )
       })
 
@@ -125,15 +123,13 @@ describe('createPullsTableTeamData', () => {
           })
 
           expect(result[0]?.patch).toStrictEqual(
-            <div className="text-right">
-              <TotalsNumber
-                large={false}
-                light={false}
-                plain={true}
-                showChange={false}
-                value={0}
-              />
-            </div>
+            <TotalsNumber
+              large={false}
+              light={false}
+              plain={true}
+              showChange={false}
+              value={0}
+            />
           )
         })
       })
@@ -164,9 +160,7 @@ describe('createPullsTableTeamData', () => {
           pages: [{ pulls: [pullData] }],
         })
 
-        expect(result[0]?.bundleAnalysis).toStrictEqual(
-          <p className="text-right">Upload: ❌</p>
-        )
+        expect(result[0]?.bundleAnalysis).toStrictEqual(<>Upload: ❌</>)
       })
     })
 
@@ -195,9 +189,7 @@ describe('createPullsTableTeamData', () => {
           pages: [{ pulls: [pullData] }],
         })
 
-        expect(result[0]?.bundleAnalysis).toStrictEqual(
-          <p className="text-right">Upload: ✅</p>
-        )
+        expect(result[0]?.bundleAnalysis).toStrictEqual(<>Upload: ✅</>)
       })
     })
 
