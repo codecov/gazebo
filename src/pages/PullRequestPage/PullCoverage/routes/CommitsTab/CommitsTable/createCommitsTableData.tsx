@@ -31,15 +31,13 @@ export const createCommitsTableData = ({
       patchPercentage =
         commit?.compareWithParent?.patchTotals?.percentCovered ?? 0
       patch = (
-        <div className="text-right">
-          <TotalsNumber
-            plain={true}
-            large={false}
-            light={false}
-            value={patchPercentage}
-            showChange={false}
-          />
-        </div>
+        <TotalsNumber
+          plain={true}
+          large={false}
+          light={false}
+          value={patchPercentage}
+          showChange={false}
+        />
       )
     }
 

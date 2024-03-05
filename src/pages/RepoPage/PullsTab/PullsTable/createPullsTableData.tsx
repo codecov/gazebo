@@ -26,9 +26,9 @@ export const createPullsTableData = ({ pulls }: { pulls?: Array<Pull> }) => {
     if (
       pull?.head?.bundleAnalysisReport?.__typename === 'BundleAnalysisReport'
     ) {
-      bundleAnalysis = <span>Upload: &#x2705;</span>
+      bundleAnalysis = <>Upload: &#x2705;</>
     } else {
-      bundleAnalysis = <span>Upload: &#x274C;</span>
+      bundleAnalysis = <>Upload: &#x274C;</>
     }
 
     return {
