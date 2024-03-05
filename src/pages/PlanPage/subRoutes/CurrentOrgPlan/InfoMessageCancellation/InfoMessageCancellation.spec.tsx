@@ -18,16 +18,6 @@ const subscriptionDetail = {
   },
 } as z.infer<typeof SubscriptionDetailSchema>
 
-const wrapper = (subDetail = subscriptionDetail) =>
-  render(
-    <InfoMessageCancellation
-      subscriptionDetail={subDetail}
-      // @ts-expect-error
-      provider="gh"
-      owner="codecov"
-    />
-  )
-
 describe('InfoMessageCancellation', () => {
   describe('when the subscription isnt cancelled', () => {
     const subDetail = {
@@ -36,7 +26,14 @@ describe('InfoMessageCancellation', () => {
     } as z.infer<typeof SubscriptionDetailSchema>
 
     it('doesnt render anything', () => {
-      const { container } = wrapper(subDetail)
+      const { container } = render(
+        <InfoMessageCancellation
+          subscriptionDetail={subDetail}
+          // @ts-expect-error
+          provider="gh"
+          owner="codecov"
+        />
+      )
       expect(container).toBeEmptyDOMElement()
     })
   })
@@ -48,7 +45,14 @@ describe('InfoMessageCancellation', () => {
     } as z.infer<typeof SubscriptionDetailSchema>
 
     it('renders a message that your subscription is cancelling', () => {
-      wrapper(subDetail)
+      render(
+        <InfoMessageCancellation
+          subscriptionDetail={subDetail}
+          // @ts-expect-error
+          provider="gh"
+          owner="codecov"
+        />
+      )
       expect(
         screen.getByText(/Subscription Pending Cancellation/)
       ).toBeInTheDocument()
