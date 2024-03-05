@@ -20,7 +20,7 @@ function ToggleHeader({
           <TitleCoverage coverage={LINE_STATE.COVERED} />
           <TitleHitCount showHitCount={showHitCount} />
         </div>
-        <div className="mt-2 flex flex-row items-center space-x-2 lg:mt-0">
+        <div className="mt-2 flex flex-col items-center space-y-2 lg:mt-0 lg:flex-row lg:space-x-2 lg:space-y-0">
           {showFlagsSelect ? <TitleFlags /> : null}
           {showComponentsSelect ? <ComponentsMultiSelect /> : null}
         </div>
