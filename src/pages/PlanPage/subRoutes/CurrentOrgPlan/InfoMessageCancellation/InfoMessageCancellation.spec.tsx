@@ -1,4 +1,4 @@
-import { render, RenderResult, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { z } from 'zod'
 
 import { SubscriptionDetailSchema } from 'services/account'
@@ -18,43 +18,37 @@ const subscriptionDetail = {
   },
 } as z.infer<typeof SubscriptionDetailSchema>
 
-describe('InfoMessageCancellation', () => {
-  let wrapper: RenderResult
-  function setup(subscriptionDetail: z.infer<typeof SubscriptionDetailSchema>) {
-    wrapper = render(
-      <InfoMessageCancellation
-        subscriptionDetail={subscriptionDetail}
-        // @ts-expect-error
-        provider="gh"
-        owner="codecov"
-      />
-    )
-  }
-
-  describe('when the subscription isnt cancelled', () => {
-    beforeEach(() => {
+const wrapper = (subDetail = subscriptionDetail) =>
+  render(
+    <InfoMessageCancellation
+      subscriptionDetail={subDetail}
       // @ts-expect-error
-      setup({
-        ...subscriptionDetail,
-        cancelAtPeriodEnd: false,
-      })
-    })
+      provider="gh"
+      owner="codecov"
+    />
+  )
+
+describe('InfoMessageCancellation', () => {
+  describe('when the subscription isnt cancelled', () => {
+    const subDetail = {
+      ...subscriptionDetail,
+      cancelAtPeriodEnd: false,
+    } as z.infer<typeof SubscriptionDetailSchema>
 
     it('doesnt render anything', () => {
-      expect(wrapper.container).toBeEmptyDOMElement()
+      const { container } = wrapper(subDetail)
+      expect(container).toBeEmptyDOMElement()
     })
   })
 
   describe('when the subscription is cancelled', () => {
-    beforeEach(() => {
-      // @ts-expect-error
-      setup({
-        ...subscriptionDetail,
-        cancelAtPeriodEnd: true,
-      })
-    })
+    const subDetail = {
+      ...subscriptionDetail,
+      cancelAtPeriodEnd: true,
+    } as z.infer<typeof SubscriptionDetailSchema>
 
     it('renders a message that your subscription is cancelling', () => {
+      wrapper(subDetail)
       expect(
         screen.getByText(/Subscription Pending Cancellation/)
       ).toBeInTheDocument()

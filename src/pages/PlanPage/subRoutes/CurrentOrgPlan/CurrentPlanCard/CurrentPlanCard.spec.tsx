@@ -65,7 +65,7 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 
-const wrapper = ({ children }: { children: React.ReactNode }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/plan/bb/critical-role']}>
       <Route path="/plan/:provider/:owner">{children}</Route>

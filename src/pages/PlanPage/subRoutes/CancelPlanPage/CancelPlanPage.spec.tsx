@@ -95,8 +95,8 @@ const server = setupServer()
 
 let testLocation: { pathname: string }
 const wrapper =
-  (initialEntries = '') =>
-  ({ children }: { children: React.ReactNode }) =>
+  (initialEntries = ''): React.FC<React.PropsWithChildren> =>
+  ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
         <Suspense fallback={null}>

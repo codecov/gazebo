@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
+import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { accountDetailsObject, accountDetailsParsedObj } from './mocks'
@@ -13,8 +14,8 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 const wrapper =
-  (initialEntries = '/gh') =>
-  ({ children }: { children: React.ReactNode }) =>
+  (initialEntries = '/gh'): React.FC<React.PropsWithChildren> =>
+  ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={[initialEntries]}>
