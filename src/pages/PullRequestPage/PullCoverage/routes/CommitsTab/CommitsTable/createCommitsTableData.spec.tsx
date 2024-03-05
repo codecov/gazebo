@@ -101,15 +101,13 @@ describe('createCommitsTableData', () => {
         })
 
         expect(result[0]?.patch).toStrictEqual(
-          <div className="text-right">
-            <TotalsNumber
-              large={false}
-              light={false}
-              plain={true}
-              showChange={false}
-              value={100}
-            />
-          </div>
+          <TotalsNumber
+            large={false}
+            light={false}
+            plain={true}
+            showChange={false}
+            value={100}
+          />
         )
       })
 
@@ -145,15 +143,13 @@ describe('createCommitsTableData', () => {
           })
 
           expect(result[0]?.patch).toStrictEqual(
-            <div className="text-right">
-              <TotalsNumber
-                large={false}
-                light={false}
-                plain={true}
-                showChange={false}
-                value={0}
-              />
-            </div>
+            <TotalsNumber
+              large={false}
+              light={false}
+              plain={true}
+              showChange={false}
+              value={0}
+            />
           )
         })
       })
@@ -356,7 +352,7 @@ describe('createCommitsTableData', () => {
           pages: [{ commits: [commitData] }],
         })
 
-        expect(result[0]?.bundleAnalysis).toStrictEqual(<p>Upload: ❌</p>)
+        expect(result[0]?.bundleAnalysis).toStrictEqual(<>Upload: ❌</>)
       })
     })
 
@@ -389,7 +385,7 @@ describe('createCommitsTableData', () => {
           pages: [{ commits: [commitData] }],
         })
 
-        expect(result[0]?.bundleAnalysis).toStrictEqual(<p>Upload: ✅</p>)
+        expect(result[0]?.bundleAnalysis).toStrictEqual(<>Upload: ✅</>)
       })
     })
   })

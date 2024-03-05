@@ -18,10 +18,22 @@ import A from 'ui/A'
 const BundleSchema = z.object({
   name: z.string(),
   changeType: z.string(),
-  sizeDelta: z.number(),
-  sizeTotal: z.number(),
-  loadTimeDelta: z.number(),
-  loadTimeTotal: z.number(),
+  bundleData: z.object({
+    loadTime: z.object({
+      threeG: z.number(),
+    }),
+    size: z.object({
+      uncompress: z.number(),
+    }),
+  }),
+  bundleChange: z.object({
+    loadTime: z.object({
+      threeG: z.number(),
+    }),
+    size: z.object({
+      uncompress: z.number(),
+    }),
+  }),
 })
 
 const BAComparisonSchema = z.object({
@@ -63,11 +75,7 @@ const RequestSchema = z.object({
 })
 
 const query = `
-query PullBundleComparisonList(
-  $owner: String!
-  $repo: String!
-  $pullId: Int!
-) {
+query PullBundleComparisonList($owner: String!, $repo: String!, $pullId: Int!) {
   owner(username: $owner) {
     repository(name: $repo) {
       __typename
@@ -79,10 +87,22 @@ query PullBundleComparisonList(
               bundles {
                 name
                 changeType
-                sizeDelta
-                sizeTotal
-                loadTimeDelta
-                loadTimeTotal
+                bundleData {
+                  loadTime {
+                    threeG
+                  }
+                  size {
+                    uncompress
+                  }
+                }
+                bundleChange {
+                  loadTime {
+                    threeG
+                  }
+                  size {
+                    uncompress
+                  }
+                }
               }
             }
             ... on FirstPullRequest {
