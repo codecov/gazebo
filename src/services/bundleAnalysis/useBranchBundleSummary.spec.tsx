@@ -28,8 +28,6 @@ const mockBranchBundleSummary = {
           commitid: '543a5268dce725d85be7747c0f9b61e9a68dea57',
           bundleAnalysisReport: {
             __typename: 'BundleAnalysisReport',
-            sizeTotal: 100,
-            loadTimeTotal: 200,
             bundleData: {
               loadTime: { threeG: 200 },
               size: { uncompress: 100 },
