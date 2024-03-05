@@ -204,7 +204,7 @@ const ReposTable = ({
           <tbody>
             {isLoading ? (
               <tr>
-                <td>
+                <td colSpan={table.getAllColumns().length}>
                   <Loader />
                 </td>
               </tr>
