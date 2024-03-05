@@ -3,7 +3,7 @@ import { lazy, Suspense } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
-import { useRepoSettings } from 'services/repo'
+import { useRepoOverview } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 import Breadcrumb from 'ui/Breadcrumb'
@@ -47,13 +47,11 @@ function PullRequestPage() {
     bundleAnalysisPrAndCommitPages: false,
   })
 
-  const { data: settings } = useRepoSettings()
+  const { data: overview } = useRepoOverview({ provider, owner, repo })
 
   const { data: tierData } = useTier({ provider, owner })
   const isTeamPlan =
-    multipleTiers &&
-    tierData === TierNames.TEAM &&
-    settings?.repository?.private
+    multipleTiers && tierData === TierNames.TEAM && overview?.private
 
   const { data, isLoading } = usePullPageData({
     provider,
