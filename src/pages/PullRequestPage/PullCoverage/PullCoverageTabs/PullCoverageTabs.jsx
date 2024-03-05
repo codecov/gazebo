@@ -5,7 +5,7 @@ import {
   pullFileviewString,
   pullTreeviewString,
 } from 'pages/PullRequestPage/utils'
-import { useRepoSettings } from 'services/repo'
+import { useRepoOverview } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 import ToggleHeader from 'ui/FileViewer/ToggleHeader'
@@ -14,6 +14,12 @@ import TabNavigation from 'ui/TabNavigation'
 import { useTabsCounts } from './hooks'
 
 function PullCoverageTabs() {
+  const { provider, owner, repo, pullId } = useParams()
+  const { pathname, search } = useLocation()
+  const { multipleTiers } = useFlags({
+    multipleTiers: false,
+  })
+
   const {
     flagsCount,
     componentsCount,
@@ -21,13 +27,12 @@ function PullCoverageTabs() {
     directChangedFilesCount,
     commitsCount,
   } = useTabsCounts()
-  const { data: settings, isLoading: settingsLoading } = useRepoSettings()
-  const { multipleTiers } = useFlags({
-    multipleTiers: false,
+  const { data: overview, isLoading: overviewLoading } = useRepoOverview({
+    provider,
+    owner,
+    repo,
   })
 
-  const { pathname, search } = useLocation()
-  const { provider, owner, repo, pullId } = useParams()
   const { data: tierData, isLoading } = useTier({ provider, owner })
   const searchParams = qs.parse(search, { ignoreQueryPrefix: true })
   const flags = searchParams?.flags ?? []
@@ -47,15 +52,11 @@ function PullCoverageTabs() {
     }
   }
 
-  if (isLoading || settingsLoading) {
+  if (isLoading || overviewLoading) {
     return null
   }
 
-  if (
-    multipleTiers &&
-    tierData === TierNames.TEAM &&
-    settings?.repository?.private
-  ) {
+  if (multipleTiers && tierData === TierNames.TEAM && overview?.private) {
     return (
       <TabNavigation
         tabs={[
@@ -163,9 +164,7 @@ function PullCoverageTabs() {
         <ToggleHeader
           coverageIsLoading={false}
           showHitCount={true}
-          showFlagsSelect={
-            tierData !== TierNames.TEAM || !settings?.repository?.private
-          }
+          showFlagsSelect={tierData !== TierNames.TEAM || !overview?.private}
         />
       }
     />

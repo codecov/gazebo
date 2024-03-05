@@ -11,6 +11,20 @@ import PullCoverageTabs from './PullCoverageTabs'
 
 jest.mock('shared/featureFlags')
 
+const mockOverview = (privateRepo = false) => ({
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      private: privateRepo,
+      defaultBranch: 'main',
+      oldestCommitAt: '2022-10-10T11:59:59',
+      coverageEnabled: true,
+      bundleAnalysisEnabled: true,
+      languages: ['typescript'],
+    },
+  },
+})
+
 const mockCommits = {
   owner: {
     repository: {
@@ -186,13 +200,8 @@ describe('PullCoverageTabs', () => {
           })
         )
       }),
-      graphql.query('GetRepoSettings', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
-            owner: { repository: { private: privateRepo } },
-          })
-        )
+      graphql.query('GetRepoOverview', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockOverview(privateRepo)))
       }),
       graphql.query('FlagsSelect', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockFlagsResponse))
