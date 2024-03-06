@@ -57,21 +57,6 @@ describe('OngoingBanner', () => {
       expect(upgradeLink).toHaveAttribute('href', '/plan/gh/codecov/upgrade')
     })
 
-    it('renders support info text', () => {
-      render(<OngoingBanner dateDiff={3} />, { wrapper })
-
-      const docsLink = screen.getByRole('link', { name: /get started docs/ })
-      expect(docsLink).toBeInTheDocument()
-      expect(docsLink).toHaveAttribute('href', 'https://docs.codecov.io/')
-
-      const supportLink = screen.getByRole('link', { name: /support/ })
-      expect(supportLink).toBeInTheDocument()
-      expect(supportLink).toHaveAttribute(
-        'href',
-        'https://codecovpro.zendesk.com/hc/en-us'
-      )
-    })
-
     it('renders button to upgrade', () => {
       render(<OngoingBanner dateDiff={3} />, { wrapper })
 

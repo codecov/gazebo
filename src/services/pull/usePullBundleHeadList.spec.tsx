@@ -19,7 +19,7 @@ const mockRepoOverview = {
   },
 }
 
-const mockBranchBundleSummary = {
+const mockPullBundleList = {
   owner: {
     repository: {
       __typename: 'Repository',
@@ -28,9 +28,15 @@ const mockBranchBundleSummary = {
           commitid: '543a5268dce725d85be7747c0f9b61e9a68dea57',
           bundleAnalysisReport: {
             __typename: 'BundleAnalysisReport',
-            sizeTotal: 100,
-            loadTimeTotal: 200,
-            bundles: [{ name: 'bundle1', sizeTotal: 50, loadTimeTotal: 100 }],
+            bundles: [
+              {
+                name: 'bundle1',
+                bundleData: {
+                  loadTime: { threeG: 200 },
+                  size: { uncompress: 100 },
+                },
+              },
+            ],
           },
         },
       },
@@ -113,7 +119,7 @@ describe('usePullBundleHeadList', () => {
           return res(ctx.status(200), ctx.data(mockNullOwner))
         }
 
-        return res(ctx.status(200), ctx.data(mockBranchBundleSummary))
+        return res(ctx.status(200), ctx.data(mockPullBundleList))
       }),
       graphql.query('GetRepoOverview', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockRepoOverview))
@@ -142,7 +148,13 @@ describe('usePullBundleHeadList', () => {
               bundleAnalysisReport: {
                 __typename: 'BundleAnalysisReport',
                 bundles: [
-                  { name: 'bundle1', sizeTotal: 50, loadTimeTotal: 100 },
+                  {
+                    name: 'bundle1',
+                    bundleData: {
+                      loadTime: { threeG: 200 },
+                      size: { uncompress: 100 },
+                    },
+                  },
                 ],
               },
             },

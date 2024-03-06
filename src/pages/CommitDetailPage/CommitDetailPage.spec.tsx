@@ -81,8 +81,14 @@ const mockBundleDropdownSummary = {
       commit: {
         bundleAnalysisCompareWithParent: {
           __typename: 'BundleAnalysisComparison',
-          sizeDelta: 10000,
-          loadTimeDelta: 0,
+          bundleChange: {
+            loadTime: {
+              threeG: 2,
+            },
+            size: {
+              uncompress: 10000,
+            },
+          },
         },
       },
     },

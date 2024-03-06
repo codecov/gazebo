@@ -13,7 +13,7 @@ import { useParams } from 'react-router-dom'
 import { usePullBundleHeadList } from 'services/pull/usePullBundleHeadList'
 import {
   formatSizeToString,
-  formatTimeToStringDeprecated,
+  formatTimeToString,
 } from 'shared/utils/bundleAnalysis'
 import Icon from 'ui/Icon'
 
@@ -45,7 +45,7 @@ const columns = [
   }),
   columnHelper.accessor('loadTime', {
     header: 'Estimated load time (3G)',
-    cell: (info) => formatTimeToStringDeprecated(info.getValue()),
+    cell: (info) => formatTimeToString(info.getValue()),
   }),
 ]
 
@@ -65,8 +65,8 @@ export const useTableData = () => {
     ) {
       return data?.pull?.head?.bundleAnalysisReport?.bundles?.map((bundle) => ({
         name: bundle.name,
-        currSize: bundle.sizeTotal,
-        loadTime: bundle.loadTimeTotal,
+        currSize: bundle.bundleData.size.uncompress,
+        loadTime: bundle.bundleData.loadTime.threeG,
       }))
     }
 

@@ -152,12 +152,23 @@ const CommitsTable = () => {
     <>
       <div className="tableui">
         <table>
+          <colgroup>
+            <col className="w-full @sm/table:w-5/12" />
+            <col className="@sm/table:w-1/12" />
+            <col className="@sm/table:w-2/12" />
+            <col className="@sm/table:w-2/12" />
+            <col className="@sm/table:w-1/12" />
+            {overview?.bundleAnalysisEnabled ? (
+              <col className="@sm/table:w-1/12" />
+            ) : null}
+          </colgroup>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
+                    scope="col"
                     className={cs({
                       'text-right': header.id !== 'name',
                     })}
@@ -186,7 +197,7 @@ const CommitsTable = () => {
                       key={cell.id}
                       className={cs('text-sm', {
                         'w-full max-w-0 font-medium @md/table:w-auto @md/table:max-w-none text-left':
-                          cell.column.id === 'title',
+                          cell.column.id === 'name',
                         'text-right': cell.column.id !== 'name',
                       })}
                     >

@@ -4,7 +4,7 @@ import { Redirect, Switch, useParams } from 'react-router-dom'
 import { SentryRoute } from 'sentry'
 
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
-import { useRepoSettings } from 'services/repo'
+import { useRepoOverview } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 import { ComparisonReturnType } from 'shared/utils/comparison'
@@ -35,15 +35,13 @@ const Loader = () => (
 
 function PullCoverageContent() {
   const { owner, repo, pullId, provider } = useParams()
-  const { data: settings } = useRepoSettings()
+  const { data: overview } = useRepoOverview({ provider, owner, repo })
   const { multipleTiers } = useFlags({
     multipleTiers: false,
   })
   const { data: tierData } = useTier({ provider, owner })
   const isTeamPlan =
-    multipleTiers &&
-    tierData === TierNames.TEAM &&
-    settings?.repository?.private
+    multipleTiers && tierData === TierNames.TEAM && overview?.private
 
   const { data } = usePullPageData({
     provider,
@@ -128,15 +126,13 @@ function PullCoverageContent() {
 
 function PullCoverage() {
   const { owner, repo, pullId, provider } = useParams()
-  const { data: settings } = useRepoSettings()
+  const { data: overview } = useRepoOverview({ provider, owner, repo })
   const { multipleTiers } = useFlags({
     multipleTiers: false,
   })
   const { data: tierData } = useTier({ provider, owner })
   const isTeamPlan =
-    multipleTiers &&
-    tierData === TierNames.TEAM &&
-    settings?.repository?.private
+    multipleTiers && tierData === TierNames.TEAM && overview?.private
 
   const { data } = usePullPageData({
     provider,

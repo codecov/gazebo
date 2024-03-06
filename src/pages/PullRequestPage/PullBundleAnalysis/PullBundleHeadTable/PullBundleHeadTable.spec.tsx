@@ -31,9 +31,19 @@ const mockBranchBundles = {
           commitid: '543a5268dce725d85be7747c0f9b61e9a68dea57',
           bundleAnalysisReport: {
             __typename: 'BundleAnalysisReport',
-            sizeTotal: 100,
-            loadTimeTotal: 200,
-            bundles: [{ name: 'bundle1', sizeTotal: 50, loadTimeTotal: 100 }],
+            bundles: [
+              {
+                name: 'bundle1',
+                bundleData: {
+                  loadTime: {
+                    threeG: 200,
+                  },
+                  size: {
+                    uncompress: 100,
+                  },
+                },
+              },
+            ],
           },
         },
       },
@@ -50,8 +60,6 @@ const mockBranchBundlesEmpty = {
           commitid: '543a5268dce725d85be7747c0f9b61e9a68dea57',
           bundleAnalysisReport: {
             __typename: 'BundleAnalysisReport',
-            sizeTotal: 0,
-            loadTimeTotal: 0,
             bundles: [],
           },
         },
@@ -186,7 +194,7 @@ describe('PullBundleHeadTable', () => {
         setup()
         render(<PullBundleHeadTable />, { wrapper })
 
-        const currSize = await screen.findByText('50B')
+        const currSize = await screen.findByText('100B')
         expect(currSize).toBeInTheDocument()
       })
 
@@ -194,7 +202,7 @@ describe('PullBundleHeadTable', () => {
         setup()
         render(<PullBundleHeadTable />, { wrapper })
 
-        const loadTime = await screen.findByText('100s')
+        const loadTime = await screen.findByText('200ms')
         expect(loadTime).toBeInTheDocument()
       })
     })
@@ -257,8 +265,8 @@ describe('useTableData', () => {
         expect(result.current).toStrictEqual([
           {
             name: 'bundle1',
-            currSize: 50,
-            loadTime: 100,
+            currSize: 100,
+            loadTime: 200,
           },
         ])
       )

@@ -21,18 +21,42 @@ const mockPullBundleListData = {
             {
               name: 'bundle.js',
               changeType: 'added',
-              sizeDelta: 1,
-              sizeTotal: 3,
-              loadTimeDelta: 3,
-              loadTimeTotal: 4,
+              bundleChange: {
+                loadTime: {
+                  threeG: 3,
+                },
+                size: {
+                  uncompress: 1,
+                },
+              },
+              bundleData: {
+                loadTime: {
+                  threeG: 3,
+                },
+                size: {
+                  uncompress: 3,
+                },
+              },
             },
             {
               name: 'bundle.css',
               changeType: 'added',
-              sizeDelta: -1000,
-              sizeTotal: 3000,
-              loadTimeDelta: 33,
-              loadTimeTotal: 45,
+              bundleData: {
+                loadTime: {
+                  threeG: 45,
+                },
+                size: {
+                  uncompress: 3000,
+                },
+              },
+              bundleChange: {
+                loadTime: {
+                  threeG: 33,
+                },
+                size: {
+                  uncompress: -1000,
+                },
+              },
             },
           ],
         },

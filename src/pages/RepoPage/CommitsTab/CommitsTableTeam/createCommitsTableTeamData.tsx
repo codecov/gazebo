@@ -29,23 +29,21 @@ export const createCommitsTableTeamData = ({
       patchPercentage =
         commit?.compareWithParent?.patchTotals?.percentCovered ?? 0
       patch = (
-        <div className="text-right">
-          <TotalsNumber
-            plain={true}
-            large={false}
-            light={false}
-            value={patchPercentage}
-            showChange={false}
-          />
-        </div>
+        <TotalsNumber
+          plain={true}
+          large={false}
+          light={false}
+          value={patchPercentage}
+          showChange={false}
+        />
       )
     }
 
     let bundleAnalysis = undefined
     if (commit?.bundleAnalysisReport?.__typename === 'BundleAnalysisReport') {
-      bundleAnalysis = <p className="text-right">Upload: &#x2705;</p>
+      bundleAnalysis = <>Upload: &#x2705;</>
     } else {
-      bundleAnalysis = <p className="text-right">Upload: &#x274C;</p>
+      bundleAnalysis = <>Upload: &#x274C;</>
     }
 
     return {
