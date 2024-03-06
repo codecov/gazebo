@@ -27,13 +27,13 @@ function CurrentOrgPlan() {
 
   return (
     <div className="w-full lg:w-4/5">
-      {accountDetails?.subscriptionDetail && (
+      {accountDetails?.subscriptionDetail ? (
         <InfoMessageCancellation
           subscriptionDetail={accountDetails?.subscriptionDetail}
         />
-      )}
+      ) : null}
       <InfoMessageStripeCallback />
-      {accountDetails?.plan && (
+      {accountDetails?.plan ? (
         <div className="flex flex-col gap-4 sm:mr-4 sm:flex-initial md:w-2/3 lg:w-3/4">
           <CurrentPlanCard />
           {shouldRenderBillingDetails && (
@@ -43,7 +43,7 @@ function CurrentOrgPlan() {
             </>
           )}
         </div>
-      )}
+      ) : null}
     </div>
   )
 }

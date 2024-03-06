@@ -29,12 +29,19 @@ const owner = 'codecov'
 
 const server = setupServer()
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  // We still want to test our zod schema for any changes against the mocks
+  process.env.REACT_APP_ZOD_IGNORE_TESTS = 'false'
+  server.listen()
+})
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-afterAll(() => server.close())
+afterAll(() => {
+  process.env.REACT_APP_ZOD_IGNORE_TESTS = 'true'
+  server.close()
+})
 
 describe('useAccountDetails', () => {
   function setup() {

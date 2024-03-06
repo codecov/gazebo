@@ -107,7 +107,7 @@ export const AccountDetailsSchema = z.object({
   email: z.string().nullable(),
   inactiveUserCount: z.number(),
   integrationId: z.number().nullable(),
-  name: z.string(),
+  name: z.string().nullable(),
   nbActivePrivateRepos: z.number().nullable(),
   plan: PlanSchema,
   planAutoActivate: z.boolean(),
@@ -179,6 +179,8 @@ export function useAccountDetails({
         }
 
         const parsedRes = AccountDetailsSchema.safeParse(res)
+
+        console.log(parsedRes)
 
         if (!parsedRes.success) {
           return Promise.reject({
