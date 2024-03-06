@@ -175,12 +175,10 @@ export function useAccountDetails({
         // TODO: remove this bandage once we convert remaining useAccountDetails components to TS
         // including tests.
         if (process.env.REACT_APP_ZOD_IGNORE_TESTS === 'true') {
-          return res
+          return res as z.infer<typeof AccountDetailsSchema>
         }
 
         const parsedRes = AccountDetailsSchema.safeParse(res)
-
-        console.log(parsedRes)
 
         if (!parsedRes.success) {
           return Promise.reject({

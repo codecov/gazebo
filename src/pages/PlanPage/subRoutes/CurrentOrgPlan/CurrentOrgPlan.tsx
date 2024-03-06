@@ -20,10 +20,10 @@ function CurrentOrgPlan() {
     owner,
   })
 
-  const shouldRenderBillingDetails = [
-    accountDetails?.planProvider !== 'github',
-    !accountDetails?.rootOrganization,
-  ].every(Boolean)
+  const shouldRenderBillingDetails =
+    (accountDetails?.planProvider !== 'github' &&
+      !accountDetails?.rootOrganization) ||
+    accountDetails?.usesInvoice
 
   return (
     <div className="w-full lg:w-4/5">
