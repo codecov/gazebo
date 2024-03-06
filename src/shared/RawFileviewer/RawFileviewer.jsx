@@ -32,6 +32,7 @@ function FileTitle({
   withKey,
   coverageIsLoading,
   showFlagsSelect,
+  showComponentsSelect,
 }) {
   if (withKey) {
     return (
@@ -40,6 +41,7 @@ function FileTitle({
         sticky={sticky}
         coverageIsLoading={coverageIsLoading}
         showFlagsSelect={showFlagsSelect}
+        showComponentsSelect={showComponentsSelect}
       />
     )
   }
@@ -52,6 +54,7 @@ FileTitle.propTypes = {
   withKey: PropTypes.bool,
   coverageIsLoading: PropTypes.bool,
   showFlagsSelect: PropTypes.bool,
+  showComponentsSelect: PropTypes.bool,
 }
 
 function CodeRendererContent({
@@ -110,6 +113,7 @@ function RawFileViewer({
   stickyPadding,
   commit,
   showFlagsSelect,
+  showComponentsSelect = false,
 }) {
   const { owner, repo, provider, path: urlPath } = useParams()
   const location = useLocation()
@@ -155,6 +159,7 @@ function RawFileViewer({
         title={title}
         sticky={sticky}
         showFlagsSelect={showFlagsSelect}
+        showComponentsSelect={showComponentsSelect}
       />
       <div id={path} className="target:ring">
         <CodeRendererProgressHeader path={path} fileCoverage={fileCoverage} />
@@ -178,6 +183,7 @@ RawFileViewer.propTypes = {
   stickyPadding: PropTypes.number,
   commit: PropTypes.string,
   showFlagsSelect: PropTypes.bool,
+  showComponentsSelect: PropTypes.bool,
 }
 
 export default RawFileViewer
