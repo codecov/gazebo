@@ -269,7 +269,7 @@ describe('FileView', () => {
     describe('displaying the components selector', () => {
       it('renders the components multi select', async () => {
         setup()
-        render(<FileView />, { wrapper: wrapper() })
+        render(<FileView showComponentsSelect={true} />, { wrapper: wrapper() })
 
         const select = await screen.findByText('All components')
         expect(select).toBeInTheDocument()
