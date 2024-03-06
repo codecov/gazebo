@@ -5,7 +5,6 @@ import userEvent, { type UserEvent } from '@testing-library/user-event'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
-import { type ReactNode } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { InternalUserData } from 'services/user/useInternalUser'
@@ -25,7 +24,7 @@ let testLocation = {
   pathname: '',
 } as { pathname: string }
 
-const wrapper = ({ children }: { children: ReactNode }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/cool-repo']}>
       <Route path="/:provider/:owner/:repo">

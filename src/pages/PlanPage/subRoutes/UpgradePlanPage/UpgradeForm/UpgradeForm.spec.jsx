@@ -7,6 +7,7 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TrialStatuses } from 'services/account'
+import { accountDetailsParsedObj } from 'services/account/mocks'
 import { useAddNotification } from 'services/toastNotification'
 import { useFlags } from 'shared/featureFlags'
 import { Plans } from 'shared/utils/billing'
@@ -121,12 +122,14 @@ const trialPlan = {
 }
 
 const mockAccountDetailsBasic = {
+  ...accountDetailsParsedObj,
   plan: basicPlan,
   activatedUserCount: 1,
   inactiveUserCount: 0,
 }
 
 const mockAccountDetailsProMonthly = {
+  ...accountDetailsParsedObj,
   plan: proPlanMonth,
   activatedUserCount: 7,
   inactiveUserCount: 0,
@@ -147,30 +150,35 @@ const mockAccountDetailsProMonthly = {
 }
 
 const mockAccountDetailsProYearly = {
+  ...accountDetailsParsedObj,
   plan: proPlanYear,
   activatedUserCount: 11,
   inactiveUserCount: 0,
 }
 
 const mockAccountDetailsTrial = {
+  ...accountDetailsParsedObj,
   plan: trialPlan,
   activatedUserCount: 28,
   inactiveUserCount: 0,
 }
 
 const mockAccountDetailsTeamYearly = {
+  ...accountDetailsParsedObj,
   plan: teamPlanYear,
   activatedUserCount: 5,
   inactiveUserCount: 0,
 }
 
 const mockAccountDetailsTeamMonthly = {
+  ...accountDetailsParsedObj,
   plan: teamPlanMonth,
   activatedUserCount: 5,
   inactiveUserCount: 0,
 }
 
 const mockAccountDetailsSentryYearly = {
+  ...accountDetailsParsedObj,
   plan: sentryPlanYear,
   activatedUserCount: 7,
   inactiveUserCount: 0,

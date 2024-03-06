@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/react'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
@@ -26,8 +27,8 @@ jest.mock('@sentry/react', () => {
 console.error = () => {}
 
 const wrapper =
-  (initialEntries = '') =>
-  ({ children }: { children: React.ReactNode }) =>
+  (initialEntries = ''): React.FC<React.PropsWithChildren> =>
+  ({ children }) =>
     (
       <MemoryRouter initialEntries={[initialEntries]}>
         <Route path="/:provider/:owner">{children}</Route>
