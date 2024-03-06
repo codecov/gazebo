@@ -12,7 +12,7 @@ function Footer() {
     : []
 
   const leftMenu = [
-    { text: `© ${year} Sentries` },
+    { text: `© ${year} Sentry` },
     ...buildModeLeftMenu,
     { to: { pageName: 'terms' } },
     { to: { pageName: 'privacy' } },

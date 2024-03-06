@@ -43,7 +43,6 @@ const HomePageRedirect = () => {
   if (setupAction) {
     redirectURL += `?setup_action=${setupAction}`
   }
-
   return <Redirect to={redirectURL} />
 }
 
