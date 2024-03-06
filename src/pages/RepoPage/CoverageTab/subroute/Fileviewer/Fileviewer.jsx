@@ -6,8 +6,6 @@ import RawFileviewer from 'shared/RawFileviewer'
 import { useTreePaths } from 'shared/treePaths'
 import Breadcrumb from 'ui/Breadcrumb'
 
-import ComponentsSelectCoverage from '../ComponentsMultiSelect'
-
 function FileView() {
   const { treePaths } = useTreePaths()
   const { provider, owner, ref: commit } = useParams()
@@ -21,9 +19,6 @@ function FileView() {
 
   return (
     <>
-      <div className="flex justify-end bg-ds-gray-primary p-2">
-        <ComponentsSelectCoverage />
-      </div>
       <RawFileviewer
         title={
           <div className="text-sm font-normal">
@@ -34,6 +29,7 @@ function FileView() {
         sticky
         stickyPadding={215}
         showFlagsSelect={showFlagSelector}
+        showComponentsSelect
       />
     </>
   )
