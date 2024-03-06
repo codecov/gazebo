@@ -1,22 +1,50 @@
 import cs from 'classnames'
-import PropTypes from 'prop-types'
 
-const getVariantClasses = ({ light, large }) =>
+const getVariantClasses = ({
+  light,
+  large,
+}: {
+  light?: boolean
+  large?: boolean
+}) =>
   cs({
     'text-xl font-light': large,
     'font-semibold': !large && !light,
   })
 
-const getNumberClasses = ({ value, plain, showChange }) =>
+const getNumberClasses = ({
+  value,
+  plain,
+  showChange,
+}: {
+  value: number
+  plain: boolean
+  showChange?: boolean
+}) =>
   cs({
     'bg-ds-coverage-covered': value > 0 && !plain,
     'bg-ds-coverage-uncovered': value < 0 && !plain,
     "before:content-['+']": value > 0 && showChange,
   })
 
-const validateValue = (value) => (value && !isNaN(value)) || value === 0
+const validateValue = (value: number) => (value && !isNaN(value)) || value === 0
 
-const TotalsNumber = ({ value, plain, light, showChange, large, ...props }) => {
+const TotalsNumber = ({
+  value,
+  plain,
+  light,
+  showChange,
+  large,
+  ...props
+}: {
+  value: number
+  plain: boolean
+  light?: boolean
+  showChange?: boolean
+  large?: boolean
+  className?: string
+  variant?: string
+}) => {
   const containerClass = getVariantClasses({ light, large })
   const numberClass = getNumberClasses({ value, plain, showChange })
   const isValid = validateValue(value)
@@ -34,14 +62,6 @@ const TotalsNumber = ({ value, plain, light, showChange, large, ...props }) => {
       )}
     </div>
   )
-}
-
-TotalsNumber.propTypes = {
-  value: PropTypes.number,
-  plain: PropTypes.bool,
-  large: PropTypes.bool,
-  light: PropTypes.bool,
-  showChange: PropTypes.bool,
 }
 
 export default TotalsNumber

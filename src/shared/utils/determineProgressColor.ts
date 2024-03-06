@@ -4,6 +4,10 @@ export const determineProgressColor = ({
   coverage,
   upperRange,
   lowerRange,
+}: {
+  coverage: number
+  upperRange: number
+  lowerRange: number
 }) => {
   if (isNumber(coverage)) {
     if (coverage < lowerRange) {
