@@ -3,14 +3,13 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 
 import TeamPlanFeedbackBanner from './TeamPlanFeedbackBanner'
-
-
 
 jest.mock('shared/featureFlags')
 const mockedUseFlags = useFlags as jest.Mock<{ multipleTiers: boolean }>
@@ -40,8 +39,8 @@ afterEach(() => {
 afterAll(() => server.close())
 
 const wrapper =
-  (initialEntries = '') =>
-  ({ children }: { children: React.ReactNode }) =>
+  (initialEntries = ''): React.FC<React.PropsWithChildren> =>
+  ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={[initialEntries]}>

@@ -57,10 +57,3 @@ export const formatTimeToString = (milliseconds: number) => {
     unit: 'millisecond',
   }).format(milliseconds)
 }
-
-export const formatTimeToStringDeprecated = (seconds: number) => {
-  return Intl.NumberFormat('en-US', {
-    ...formatSettings,
-    unit: 'second',
-  }).format(seconds)
-}
