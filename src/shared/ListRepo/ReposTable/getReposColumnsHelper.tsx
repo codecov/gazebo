@@ -88,7 +88,6 @@ export const getReposColumnsHelper = ({
         const repo = info.row.original
         return typeof repo?.coverage === 'number' ? (
           <TotalsNumber
-            className
             value={repo.coverage}
             plain={true}
             light={false}

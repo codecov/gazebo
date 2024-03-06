@@ -17,17 +17,18 @@ const getNumberClasses = ({
   plain,
   showChange,
 }: {
-  value: number
-  plain: boolean
+  value?: number | null
+  plain?: boolean
   showChange?: boolean
 }) =>
   cs({
-    'bg-ds-coverage-covered': value > 0 && !plain,
-    'bg-ds-coverage-uncovered': value < 0 && !plain,
-    "before:content-['+']": value > 0 && showChange,
+    'bg-ds-coverage-covered': value && value > 0 && !plain,
+    'bg-ds-coverage-uncovered': value && value < 0 && !plain,
+    "before:content-['+']": value && value > 0 && showChange,
   })
 
-const validateValue = (value: number) => (value && !isNaN(value)) || value === 0
+const validateValue = (value?: number | null) =>
+  (value && !isNaN(value)) || value === 0
 
 const TotalsNumber = ({
   value,
@@ -37,8 +38,8 @@ const TotalsNumber = ({
   large,
   ...props
 }: {
-  value: number
-  plain: boolean
+  value?: number | null
+  plain?: boolean
   light?: boolean
   showChange?: boolean
   large?: boolean

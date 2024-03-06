@@ -311,13 +311,12 @@ describe('createCommitsTableData', () => {
           pages: [{ commits: [commitData] }],
         })
 
-        expect(result[0]?.change).toStrictEqual(
+        expect(result[0]?.change).toEqual(
           <TotalsNumber
             large={false}
             light={false}
             plain={false}
             showChange={true}
-            value={null}
           />
         )
       })
