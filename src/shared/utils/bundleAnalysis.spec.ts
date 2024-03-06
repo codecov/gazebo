@@ -1,8 +1,4 @@
-import {
-  formatSizeToString,
-  formatTimeToString,
-  formatTimeToStringDeprecated,
-} from './bundleAnalysis'
+import { formatSizeToString, formatTimeToString } from './bundleAnalysis'
 
 describe('formatSizeToString', () => {
   describe('size is less then one kilobyte', () => {
@@ -99,12 +95,5 @@ describe('formatTimeToString', () => {
       const time = formatTimeToString(123)
       expect(time).toBe('123ms')
     })
-  })
-})
-
-describe('formatTimeToStringDeprecated', () => {
-  it('returns time in seconds', () => {
-    const time = formatTimeToStringDeprecated(123)
-    expect(time).toBe('123s')
   })
 })
