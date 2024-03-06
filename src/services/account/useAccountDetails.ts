@@ -77,7 +77,7 @@ export const SubscriptionDetailSchema = z
     currentPeriodEnd: z.number(),
     customer: z
       .object({
-        discount: z.number(),
+        discount: z.number().nullable(),
         email: z.string(),
       })
       .nullable(),
