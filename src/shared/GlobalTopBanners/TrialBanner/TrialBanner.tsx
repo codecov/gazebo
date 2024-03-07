@@ -45,14 +45,15 @@ const TrialBanner: React.FC = () => {
     providerString = provider
   }
 
-  const { data: ownerData } = useOwner({
-    username: owner,
-    opts: { enabled: enableQuery },
-  })
   const { data: planData } = usePlanData({
     provider: providerString,
     owner: owner || '',
-    opts: { enabled: ownerData?.isCurrentUserPartOfOrg },
+    opts: { enabled: enableQuery },
+  })
+
+  const { data: ownerData } = useOwner({
+    username: owner,
+    opts: { enabled: enableQuery },
   })
 
   const planValue = planData?.plan?.value
