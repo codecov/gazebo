@@ -1,15 +1,16 @@
 import isEmpty from 'lodash/isEmpty'
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { Redirect, Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
 import { useCommit } from 'services/commit'
 import { useCommitErrors } from 'services/commitErrors'
-import { useRepoSettingsTeam } from 'services/repo'
+import { useRepoOverview } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { useOwner } from 'services/user'
 import { extractUploads } from 'shared/utils/extractUploads'
+import { metrics } from 'shared/utils/metrics'
 import Spinner from 'ui/Spinner'
 
 import BotErrorBanner from './BotErrorBanner'
@@ -42,7 +43,7 @@ const Loader = () => (
 function CommitRoutes() {
   const { provider, owner, repo, commit: commitSha } = useParams()
   const { data: tierName } = useTier({ owner, provider })
-  const { data: repoData } = useRepoSettingsTeam()
+  const { data: overview } = useRepoOverview({ provider, owner, repo })
   const { data: commitPageData } = useCommitPageData({
     provider,
     owner,
@@ -58,9 +59,7 @@ function CommitRoutes() {
     return <ErrorBanner errorType={compareTypeName} />
   }
 
-  const showIndirectChanges = !(
-    repoData?.repository?.private && tierName === TierNames.TEAM
-  )
+  const showIndirectChanges = !(overview.private && tierName === TierNames.TEAM)
 
   return (
     <Suspense fallback={<Loader />}>
@@ -153,7 +152,7 @@ function CommitCoverageRoutes() {
 function CommitCoverage() {
   const { provider, owner, repo, commit: commitSha } = useParams()
   const { data: tierName } = useTier({ owner, provider })
-  const { data: repoData } = useRepoSettingsTeam()
+  const { data: overview } = useRepoOverview({ provider, owner, repo })
   const { data: commitPageData } = useCommitPageData({
     provider,
     owner,
@@ -161,9 +160,15 @@ function CommitCoverage() {
     commitId: commitSha,
   })
 
-  const showCommitSummary = !(
-    repoData?.repository?.private && tierName === TierNames.TEAM
-  )
+  useEffect(() => {
+    if (overview.bundleAnalysisEnabled && overview.coverageEnabled) {
+      metrics.increment('commit_detail_page.coverage_dropdown.opened', 1)
+    } else if (overview.coverageEnabled) {
+      metrics.increment('commit_detail_page.coverage_page.visited_page', 1)
+    }
+  }, [overview.bundleAnalysisEnabled, overview.coverageEnabled])
+
+  const showCommitSummary = !(overview.private && tierName === TierNames.TEAM)
   const showFirstPullBanner =
     commitPageData?.commit?.compareWithParent?.__typename === 'FirstPullRequest'
 
