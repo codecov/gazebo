@@ -77,7 +77,8 @@ export const SubscriptionDetailSchema = z
     currentPeriodEnd: z.number(),
     customer: z
       .object({
-        discount: z.number(),
+        // TODO: fix this. This has a different shape in the backend, not just an int
+        discount: z.number().nullish(),
         email: z.string(),
       })
       .nullable(),
