@@ -1,9 +1,9 @@
 /* eslint-disable camelcase */
 import { metrics as sentryMetrics } from '@sentry/react'
 
-type LeafKeyUnion<T, K extends string = ''> = {
+type MetricKeyNameUnion<T, K extends string = ''> = {
   [P in keyof T]: T[P] extends object
-    ? LeafKeyUnion<T[P], `${K}${K extends '' ? '' : '.'}${string & P}`>
+    ? MetricKeyNameUnion<T[P], `${K}${K extends '' ? '' : '.'}${string & P}`>
     : `${K}${K extends '' ? '' : '.'}${string & P}`
 }[keyof T]
 
@@ -85,27 +85,27 @@ type SetData = Parameters<typeof sentryMetrics.set>['2']
 
 export const metrics = {
   distribution: (
-    name: LeafKeyUnion<DistributionKeys>,
+    name: MetricKeyNameUnion<DistributionKeys>,
     value: DistributionValue,
     data?: DistributionData
   ) => {
     sentryMetrics.distribution(name, value, data)
   },
   gauge: (
-    name: LeafKeyUnion<GaugeKeys>,
+    name: MetricKeyNameUnion<GaugeKeys>,
     value: GaugeValue,
     data?: GaugeData
   ) => {
     sentryMetrics.gauge(name, value, data)
   },
   increment: (
-    name: LeafKeyUnion<IncrementKeys>,
+    name: MetricKeyNameUnion<IncrementKeys>,
     value: IncrementValue,
     data?: IncrementData
   ) => {
     sentryMetrics.increment(name, value, data)
   },
-  set: (name: LeafKeyUnion<SetKeys>, value: SetValue, data?: SetData) => {
+  set: (name: MetricKeyNameUnion<SetKeys>, value: SetValue, data?: SetData) => {
     sentryMetrics.set(name, value, data)
   },
 } as const

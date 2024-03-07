@@ -652,7 +652,7 @@ describe('CommitCoverage', () => {
 
   describe('sending metrics', () => {
     describe('when only coverage is enabled', () => {
-      it('send correct metrics', async () => {
+      it('sends correct metrics', async () => {
         const { queryClient } = setup({
           coverageEnabled: true,
           bundleAnalysisEnabled: false,
@@ -671,7 +671,7 @@ describe('CommitCoverage', () => {
     })
 
     describe('when coverage and bundle analysis are enabled', () => {
-      it('send correct metrics', async () => {
+      it('sends correct metrics', async () => {
         const { queryClient } = setup({
           coverageEnabled: true,
           bundleAnalysisEnabled: true,
