@@ -18,13 +18,19 @@ export function useUpgradePlan({ provider, owner }) {
     })
   }
 
+  function formatPlanValue(planValue) {
+    const beforeLastChar = planValue.substring(0, planValue.length - 1)
+    const lastChar = planValue.substring(planValue.length - 1)
+    return beforeLastChar + '-' + lastChar
+  }
+
   return useMutation({
     mutationFn: (formData) => {
       const path = getPathAccountDetails({ provider, owner })
       const body = {
         plan: {
           quantity: formData?.seats,
-          value: formData?.newPlan,
+          value: formatPlanValue(formData?.newPlan),
         },
       }
       return Api.patch({ path, provider, body }).then((data) => {
