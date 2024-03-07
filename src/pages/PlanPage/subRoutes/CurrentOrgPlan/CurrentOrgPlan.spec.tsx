@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
+import { z } from 'zod'
 
-import { useAccountDetails } from 'services/account'
+import { AccountDetailsSchema, useAccountDetails } from 'services/account'
 
 import CurrentOrgPlan from './CurrentOrgPlan'
 
@@ -21,17 +22,23 @@ const queryClient = new QueryClient({
 
 const mockedAccountDetails = {
   planProvider: 'github',
-  rootOrganization: 'codecov',
+  rootOrganization: {},
   plan: {
     value: 'users-free',
   },
-}
+} as z.infer<typeof AccountDetailsSchema>
 
 describe('CurrentOrgPlan', () => {
-  function setup({ accountDetails = mockedAccountDetails } = {}) {
-    useAccountDetails.mockReturnValue({
+  function setup({
+    accountDetails = mockedAccountDetails,
+  }: {
+    accountDetails?: z.infer<typeof AccountDetailsSchema>
+  }) {
+    const mockedUseAccountDetails = useAccountDetails as jest.Mock
+    mockedUseAccountDetails.mockReturnValue({
       data: accountDetails,
     })
+
     render(
       <MemoryRouter initialEntries={['/billing/gh/codecov']}>
         <Route path="/billing/:provider/:owner">
@@ -45,7 +52,7 @@ describe('CurrentOrgPlan', () => {
 
   describe('when plan value and org root are provided', () => {
     beforeEach(() => {
-      setup()
+      setup({})
     })
 
     it('renders CurrentPlanCard', () => {
@@ -69,8 +76,12 @@ describe('CurrentOrgPlan', () => {
           rootOrganization: null,
           plan: {
             value: 'users-free',
+            baseUnitPrice: 12,
+            benefits: ['a', 'b'],
+            billingRate: '1',
+            marketingName: 'bob',
           },
-        },
+        } as z.infer<typeof AccountDetailsSchema>,
       })
     })
 
@@ -89,7 +100,9 @@ describe('CurrentOrgPlan', () => {
 
   describe('when plan value is not provided', () => {
     beforeEach(() => {
-      setup({ accountDetails: { plan: null } })
+      setup({
+        accountDetails: { plan: null } as z.infer<typeof AccountDetailsSchema>,
+      })
     })
 
     it('does not render CurrentPlanCard', () => {

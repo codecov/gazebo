@@ -23,7 +23,8 @@ const BundleSummaryOld: React.FC = () => {
 
   if (branchHead?.bundleAnalysisReport?.__typename === 'BundleAnalysisReport') {
     const shortSha = branchHead?.commitid?.slice(0, 7)
-    const sizeTotal = branchHead?.bundleAnalysisReport?.sizeTotal
+    const sizeTotal =
+      branchHead?.bundleAnalysisReport?.bundleData?.size?.uncompress
 
     return (
       <div className="bg-ds-gray-primary p-4">

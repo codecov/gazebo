@@ -1,14 +1,21 @@
 import { format, fromUnixTime } from 'date-fns'
+import { z } from 'zod'
 
 import Message from 'old_ui/Message'
-import { subscriptionDetailType } from 'services/account'
+import { SubscriptionDetailSchema } from 'services/account'
 
-function getPeriodEnd(subscriptionDetail) {
-  const periodEnd = fromUnixTime(subscriptionDetail.currentPeriodEnd)
+function getPeriodEnd(
+  subscriptionDetail: z.infer<typeof SubscriptionDetailSchema>
+) {
+  const periodEnd = fromUnixTime(subscriptionDetail!.currentPeriodEnd)
   return format(periodEnd, 'MMMM do yyyy, h:mm aaaa')
 }
 
-function InfoMessageCancellation({ subscriptionDetail }) {
+function InfoMessageCancellation({
+  subscriptionDetail,
+}: {
+  subscriptionDetail: z.infer<typeof SubscriptionDetailSchema>
+}) {
   if (!subscriptionDetail?.cancelAtPeriodEnd) return null
   const periodEnd = getPeriodEnd(subscriptionDetail)
   return (
@@ -22,10 +29,6 @@ function InfoMessageCancellation({ subscriptionDetail }) {
       </Message>
     </div>
   )
-}
-
-InfoMessageCancellation.propTypes = {
-  subscriptionDetail: subscriptionDetailType,
 }
 
 export default InfoMessageCancellation

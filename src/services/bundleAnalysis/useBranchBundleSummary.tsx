@@ -13,14 +13,26 @@ import A from 'ui/A'
 
 const BundleSchema = z.object({
   name: z.string(),
-  sizeTotal: z.number(),
-  loadTimeTotal: z.number(),
+  bundleData: z.object({
+    loadTime: z.object({
+      threeG: z.number(),
+    }),
+    size: z.object({
+      uncompress: z.number(),
+    }),
+  }),
 })
 
 const BundleAnalysisReportSchema = z.object({
   __typename: z.literal('BundleAnalysisReport'),
-  sizeTotal: z.number(),
-  loadTimeTotal: z.number(),
+  bundleData: z.object({
+    loadTime: z.object({
+      threeG: z.number(),
+    }),
+    size: z.object({
+      uncompress: z.number(),
+    }),
+  }),
   bundles: z.array(BundleSchema),
 })
 
@@ -72,12 +84,24 @@ const query = `query BranchBundleSummaryData(
             bundleAnalysisReport {
               __typename
               ... on BundleAnalysisReport {
-                sizeTotal
-                loadTimeTotal
+                bundleData {
+                  loadTime {
+                    threeG
+                  }
+                  size {
+                    uncompress
+                  }
+                }
                 bundles {
                   name
-                  sizeTotal
-                  loadTimeTotal
+                  bundleData {
+                    loadTime {
+                      threeG
+                    }
+                    size {
+                      uncompress
+                    }
+                  }
                 }
               }
               ... on MissingHeadReport {
