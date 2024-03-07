@@ -10,10 +10,10 @@ export const InvoiceSchema = z
     amountPaid: z.number().nullable(),
     amountRemaining: z.number().nullable(),
     currency: z.string().nullable(),
-    customerAddress: z.object({}).nullish(),
+    customerAddress: z.string().nullish(),
     customerName: z.string().nullable(),
     created: z.number(),
-    dueDate: z.number(),
+    dueDate: z.number().nullish(),
     id: z.string().nullable(),
     invoicePdf: z.string(),
     lineItems: z
