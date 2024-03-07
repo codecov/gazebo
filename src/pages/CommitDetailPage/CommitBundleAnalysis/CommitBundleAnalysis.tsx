@@ -1,6 +1,8 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
+import { useRepoOverview } from 'services/repo'
+import { metrics } from 'shared/utils/metrics'
 import Spinner from 'ui/Spinner'
 
 import BundleMessage from './BundleMessage'
@@ -59,12 +61,21 @@ const BundleContent: React.FC<BundleContentProps> = ({ bundleCompareType }) => {
 
 const CommitBundleAnalysis: React.FC = () => {
   const { provider, owner, repo, commit: commitSha } = useParams<URLParams>()
+  const { data: overview } = useRepoOverview({ provider, owner, repo })
   const { data: commitPageData } = useCommitPageData({
     provider,
     owner,
     repo,
     commitId: commitSha,
   })
+
+  useEffect(() => {
+    if (overview?.bundleAnalysisEnabled && overview?.coverageEnabled) {
+      metrics.increment('commit_detail_page.bundle_dropdown.opened', 1)
+    } else if (overview?.bundleAnalysisEnabled) {
+      metrics.increment('commit_detail_page.bundle_page.visited_page', 1)
+    }
+  }, [overview?.bundleAnalysisEnabled, overview?.coverageEnabled])
 
   const bundleCompareType =
     commitPageData?.commit?.bundleAnalysisCompareWithParent?.__typename

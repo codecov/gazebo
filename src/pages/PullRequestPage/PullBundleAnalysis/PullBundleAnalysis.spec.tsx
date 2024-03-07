@@ -1,7 +1,9 @@
+import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
   render,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { graphql } from 'msw'
@@ -75,6 +77,23 @@ const mockSummaryData = {
   },
 }
 
+const mockRepoOverview = ({
+  bundleAnalysisEnabled = false,
+  coverageEnabled = false,
+}) => ({
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      private: false,
+      defaultBranch: 'main',
+      oldestCommitAt: '2022-10-10T11:59:59',
+      coverageEnabled,
+      bundleAnalysisEnabled,
+      languages: ['javascript'],
+    },
+  },
+})
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false, suspense: true } },
 })
@@ -131,6 +150,12 @@ describe('PullBundleAnalysis', () => {
       }),
       graphql.query('PullBADropdownSummary', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockSummaryData))
+      }),
+      graphql.query('GetRepoOverview', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data(mockRepoOverview({ coverageEnabled, bundleAnalysisEnabled }))
+        )
       })
     )
   }
@@ -154,6 +179,19 @@ describe('PullBundleAnalysis', () => {
 
         const table = await screen.findByText('PullBundleComparisonTable')
         expect(table).toBeInTheDocument()
+      })
+
+      it('sends bundle dropdown metrics', async () => {
+        setup({ coverageEnabled: true, bundleAnalysisEnabled: true })
+        render(<PullBundleAnalysis />, { wrapper })
+
+        await waitFor(() =>
+          expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+            'pull_request_page.bundle_dropdown.opened',
+            1,
+            undefined
+          )
+        )
       })
     })
 
@@ -275,6 +313,19 @@ describe('PullBundleAnalysis', () => {
 
         const table = await screen.findByText('PullBundleComparisonTable')
         expect(table).toBeInTheDocument()
+      })
+
+      it('sends bundle dropdown metrics', async () => {
+        setup({ coverageEnabled: false, bundleAnalysisEnabled: true })
+        render(<PullBundleAnalysis />, { wrapper })
+
+        await waitFor(() =>
+          expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+            'pull_request_page.bundle_page.visited_page',
+            1,
+            undefined
+          )
+        )
       })
     })
 

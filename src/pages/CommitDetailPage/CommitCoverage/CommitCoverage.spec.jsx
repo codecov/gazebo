@@ -1,7 +1,9 @@
+import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
   render,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { graphql } from 'msw'
@@ -287,6 +289,24 @@ const mockCommitPageData = (
   },
 })
 
+const mockRepoOverview = ({
+  bundleAnalysisEnabled = false,
+  coverageEnabled = false,
+  isPrivate = false,
+}) => ({
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      private: isPrivate,
+      defaultBranch: 'main',
+      oldestCommitAt: '2022-10-10T11:59:59',
+      coverageEnabled,
+      bundleAnalysisEnabled,
+      languages: ['javascript'],
+    },
+  },
+})
+
 const server = setupServer()
 
 const wrapper =
@@ -327,6 +347,8 @@ describe('CommitCoverage', () => {
       hasErroredUploads = false,
       hasCommitPageDataError = false,
       hasFirstPR = false,
+      coverageEnabled = true,
+      bundleAnalysisEnabled = true,
     } = {
       isPrivate: false,
       tierName: TierNames.PRO,
@@ -357,6 +379,18 @@ describe('CommitCoverage', () => {
         return res(
           ctx.status(200),
           ctx.data(mockRepoSettingsTeamData(isPrivate))
+        )
+      }),
+      graphql.query('GetRepoOverview', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data(
+            mockRepoOverview({
+              coverageEnabled,
+              bundleAnalysisEnabled,
+              isPrivate,
+            })
+          )
         )
       }),
       graphql.query('OwnerTier', (req, res, ctx) => {
@@ -613,6 +647,46 @@ describe('CommitCoverage', () => {
 
       const missingBaseCommit = await screen.findByText(/Missing Base Commit/)
       expect(missingBaseCommit).toBeInTheDocument()
+    })
+  })
+
+  describe('sending metrics', () => {
+    describe('when only coverage is enabled', () => {
+      it('sends correct metrics', async () => {
+        const { queryClient } = setup({
+          coverageEnabled: true,
+          bundleAnalysisEnabled: false,
+        })
+        render(<CommitCoverage />, { wrapper: wrapper({ queryClient }) })
+
+        await waitFor(() => expect(Sentry.metrics.increment).toHaveBeenCalled())
+        await waitFor(() =>
+          expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+            'commit_detail_page.coverage_page.visited_page',
+            1,
+            undefined
+          )
+        )
+      })
+    })
+
+    describe('when coverage and bundle analysis are enabled', () => {
+      it('sends correct metrics', async () => {
+        const { queryClient } = setup({
+          coverageEnabled: true,
+          bundleAnalysisEnabled: true,
+        })
+        render(<CommitCoverage />, { wrapper: wrapper({ queryClient }) })
+
+        await waitFor(() => expect(Sentry.metrics.increment).toHaveBeenCalled())
+        await waitFor(() =>
+          expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+            'commit_detail_page.coverage_dropdown.opened',
+            1,
+            undefined
+          )
+        )
+      })
     })
   })
 })

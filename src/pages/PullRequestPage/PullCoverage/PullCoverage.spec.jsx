@@ -1,5 +1,6 @@
+import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -114,19 +115,22 @@ const mockPullDataTeam = {
   },
 }
 
-const mockOverview = {
+const mockRepoOverview = ({
+  bundleAnalysisEnabled = false,
+  coverageEnabled = false,
+}) => ({
   owner: {
     repository: {
       __typename: 'Repository',
-      private: true,
+      private: false,
       defaultBranch: 'main',
       oldestCommitAt: '2022-10-10T11:59:59',
-      coverageEnabled: true,
-      bundleAnalysisEnabled: true,
+      coverageEnabled,
+      bundleAnalysisEnabled,
       languages: ['typescript'],
     },
   },
-}
+})
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -166,12 +170,22 @@ afterAll(() => {
 
 describe('PullRequestPageContent', () => {
   function setup(
-    resultType = ComparisonReturnType.SUCCESSFUL_COMPARISON,
-    tierValue = TierNames.BASIC
+    {
+      resultType = ComparisonReturnType.SUCCESSFUL_COMPARISON,
+      tierValue = TierNames.BASIC,
+      bundleAnalysisEnabled = false,
+      coverageEnabled = false,
+    } = {
+      resultType: ComparisonReturnType.SUCCESSFUL_COMPARISON,
+      tierValue: TierNames.BASIC,
+      bundleAnalysisEnabled: false,
+      coverageEnabled: false,
+    }
   ) {
     useFlags.mockReturnValue({
       multipleTiers: true,
     })
+
     server.use(
       graphql.query('PullPageData', (req, res, ctx) => {
         if (req.variables.isTeamPlan) {
@@ -180,7 +194,10 @@ describe('PullRequestPageContent', () => {
         return res(ctx.status(200), ctx.data(mockPullData(resultType)))
       }),
       graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockOverview))
+        return res(
+          ctx.status(200),
+          ctx.data(mockRepoOverview({ bundleAnalysisEnabled, coverageEnabled }))
+        )
       }),
       graphql.query('OwnerTier', (req, res, ctx) => {
         return res(
@@ -194,7 +211,7 @@ describe('PullRequestPageContent', () => {
   }
 
   it('renders the compare summary', async () => {
-    setup(ComparisonReturnType.SUCCESSFUL_COMPARISON)
+    setup({ resultType: ComparisonReturnType.SUCCESSFUL_COMPARISON })
 
     render(<PullRequestPageContent />, {
       wrapper: wrapper(),
@@ -205,9 +222,8 @@ describe('PullRequestPageContent', () => {
   })
 
   describe('result type was not successful', () => {
-    beforeEach(() => setup(ComparisonReturnType.MISSING_BASE_COMMIT))
-
     it('renders an error banner', async () => {
+      setup({ resultType: ComparisonReturnType.MISSING_BASE_COMMIT })
       render(<PullRequestPageContent />, { wrapper: wrapper() })
 
       const errorBanner = await screen.findByRole('heading', {
@@ -218,9 +234,8 @@ describe('PullRequestPageContent', () => {
   })
 
   describe('result type is first pull request', () => {
-    beforeEach(() => setup(ComparisonReturnType.FIRST_PULL_REQUEST))
-
     it('renders the first pull banner', async () => {
+      setup({ resultType: ComparisonReturnType.FIRST_PULL_REQUEST })
       render(<PullRequestPageContent />, { wrapper: wrapper() })
 
       const firstPull = await screen.findByText('FirstPullBanner')
@@ -229,10 +244,9 @@ describe('PullRequestPageContent', () => {
   })
 
   describe('result type was successful', () => {
-    beforeEach(() => setup())
-
     describe('on the indirect changes path', () => {
       it('renders indirect changes tab', async () => {
+        setup()
         render(<PullRequestPageContent />, {
           wrapper: wrapper('/gh/codecov/test-repo/pull/1/indirect-changes'),
         })
@@ -244,6 +258,7 @@ describe('PullRequestPageContent', () => {
 
     describe('on the commits path', () => {
       it('renders the commits tab', async () => {
+        setup()
         render(<PullRequestPageContent />, {
           wrapper: wrapper('/gh/codecov/test-repo/pull/1/commits'),
         })
@@ -255,6 +270,7 @@ describe('PullRequestPageContent', () => {
 
     describe('on the flags path', () => {
       it('renders the flags tab', async () => {
+        setup()
         render(<PullRequestPageContent />, {
           wrapper: wrapper('/gh/codecov/test-repo/pull/1/flags'),
         })
@@ -266,6 +282,7 @@ describe('PullRequestPageContent', () => {
 
     describe('on the components path', () => {
       it('renders the components tab', async () => {
+        setup()
         render(<PullRequestPageContent />, {
           wrapper: wrapper('/gh/codecov/test-repo/pull/1/components'),
         })
@@ -277,6 +294,7 @@ describe('PullRequestPageContent', () => {
 
     describe('on the root path', () => {
       it('renders files changed tab', async () => {
+        setup()
         render(<PullRequestPageContent />, { wrapper: wrapper() })
 
         const filesChangedTab = await screen.findByText('FilesChangedTab')
@@ -286,6 +304,7 @@ describe('PullRequestPageContent', () => {
 
     describe('on a random path', () => {
       it('redirects to the files changed tab', async () => {
+        setup()
         render(<PullRequestPageContent />, {
           wrapper: wrapper('/gh/codecov/test-repo/pull/1/blah'),
         })
@@ -297,10 +316,9 @@ describe('PullRequestPageContent', () => {
   })
 
   describe('testing tree route', () => {
-    beforeEach(() => setup())
-
     describe('not path provided', () => {
       it('renders FileExplorer', async () => {
+        setup()
         render(<PullRequestPageContent />, {
           wrapper: wrapper('/gh/codecov/test-repo/pull/1/tree'),
         })
@@ -312,6 +330,7 @@ describe('PullRequestPageContent', () => {
 
     describe('path provided', () => {
       it('renders FileExplorer', async () => {
+        setup()
         render(<PullRequestPageContent />, {
           wrapper: wrapper('/gh/codecov/test-repo/pull/1/tree/src/dir'),
         })
@@ -325,7 +344,6 @@ describe('PullRequestPageContent', () => {
   describe('testing blob path', () => {
     it('renders FileViewer', async () => {
       setup()
-
       render(<PullRequestPageContent />, {
         wrapper: wrapper('/gh/codecov/test-repo/pull/1/blob/src/file.js'),
       })
@@ -337,14 +355,58 @@ describe('PullRequestPageContent', () => {
 
   describe('user is on team plan', () => {
     it('returns a valid response', async () => {
-      setup(ComparisonReturnType.SUCCESSFUL_COMPARISON, TierNames.TEAM)
-
+      setup({
+        resultType: ComparisonReturnType.SUCCESSFUL_COMPARISON,
+        tierValue: TierNames.TEAM,
+      })
       render(<PullRequestPageContent />, {
         wrapper: wrapper(),
       })
 
       const filesChangedTab = await screen.findByText('FilesChangedTab')
       expect(filesChangedTab).toBeInTheDocument()
+    })
+  })
+
+  describe('user lands on page', () => {
+    describe('coverage and bundle analysis is enabled', () => {
+      it('sends dropdown metric to sentry', async () => {
+        setup({
+          coverageEnabled: true,
+          bundleAnalysisEnabled: true,
+        })
+        render(<PullRequestPageContent />, {
+          wrapper: wrapper(),
+        })
+
+        await waitFor(() =>
+          expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+            'pull_request_page.coverage_dropdown.opened',
+            1,
+            undefined
+          )
+        )
+      })
+    })
+
+    describe('bundle analysis is disabled', () => {
+      it('sends coverage page metric to sentry', async () => {
+        setup({
+          coverageEnabled: true,
+          bundleAnalysisEnabled: false,
+        })
+        render(<PullRequestPageContent />, {
+          wrapper: wrapper(),
+        })
+
+        await waitFor(() =>
+          expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+            'pull_request_page.coverage_page.visited_page',
+            1,
+            undefined
+          )
+        )
+      })
     })
   })
 })
