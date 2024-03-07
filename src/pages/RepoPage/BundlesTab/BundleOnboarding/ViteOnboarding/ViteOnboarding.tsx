@@ -7,6 +7,14 @@ import { metrics } from 'shared/utils/metrics'
 import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
 
+import {
+  copiedBuildCommandMetric,
+  copiedCommitMetric,
+  copiedConfigMetric,
+  copiedInstallCommandMetric,
+  copiedTokenMetric,
+} from '../metricHelpers'
+
 const npmInstall = `npm install @codecov/vite-plugin --save-dev`
 const yarnInstall = `yarn add @codecov/vite-plugin --dev`
 const pnpmInstall = `pnpm add @codecov/vite-plugin --save-dev`
@@ -32,24 +40,6 @@ const npmBuild = `npm run build`
 const yarnBuild = `yarn run build`
 const pnpmBuild = `pnpm run build`
 
-const copiedInstallCommand = (packageManager: 'npm' | 'yarn' | 'pnpm') => {
-  metrics.increment('bundles_tab.onboarding.vite.copied.install_command', 1, {
-    tags: {
-      // eslint-disable-next-line camelcase
-      package_manager: packageManager,
-    },
-  })
-}
-
-const copiedBuildCommand = (packageManager: 'npm' | 'yarn' | 'pnpm') => {
-  metrics.increment('bundles_tab.onboarding.vite.copied.build_command', 1, {
-    tags: {
-      // eslint-disable-next-line camelcase
-      package_manager: packageManager,
-    },
-  })
-}
-
 const StepOne: React.FC = () => {
   return (
     <div className="pt-4">
@@ -71,7 +61,7 @@ const StepOne: React.FC = () => {
             string={npmInstall}
             testIdExtension="-npm-install"
             onClick={() => {
-              copiedInstallCommand('npm')
+              copiedInstallCommandMetric('npm', 'vite')
             }}
           />
         </pre>
@@ -81,7 +71,7 @@ const StepOne: React.FC = () => {
             string={yarnInstall}
             testIdExtension="-yarn-install"
             onClick={() => {
-              copiedInstallCommand('yarn')
+              copiedInstallCommandMetric('yarn', 'vite')
             }}
           />
         </pre>
@@ -91,7 +81,7 @@ const StepOne: React.FC = () => {
             string={pnpmInstall}
             testIdExtension="-pnpm-install"
             onClick={() => {
-              copiedInstallCommand('pnpm')
+              copiedInstallCommandMetric('pnpm', 'vite')
             }}
           />
         </pre>
@@ -117,7 +107,7 @@ const StepTwo: React.FC<{ uploadToken: string }> = ({ uploadToken }) => {
             string={uploadToken}
             testIdExtension="-upload-token"
             onClick={() => {
-              metrics.increment('bundles_tab.onboarding.vite.copied.token', 1)
+              copiedTokenMetric('vite')
             }}
           />
         </pre>
@@ -147,7 +137,7 @@ const StepThree: React.FC = () => {
           string={pluginConfig}
           testIdExtension="-plugin-config"
           onClick={() => {
-            metrics.increment('bundles_tab.onboarding.vite.copied.config', 1)
+            copiedConfigMetric('vite')
           }}
         />
       </pre>
@@ -172,7 +162,7 @@ const StepFour: React.FC = () => {
           string={commitString}
           testIdExtension="-commit-command"
           onClick={() => {
-            metrics.increment('bundles_tab.onboarding.vite.copied.commit', 1)
+            copiedCommitMetric('vite')
           }}
         />
       </pre>
@@ -197,7 +187,7 @@ const StepFive: React.FC = () => {
             string={npmBuild}
             testIdExtension="-npm-build"
             onClick={() => {
-              copiedBuildCommand('npm')
+              copiedBuildCommandMetric('npm', 'vite')
             }}
           />
         </pre>
@@ -207,7 +197,7 @@ const StepFive: React.FC = () => {
             string={yarnBuild}
             testIdExtension="-yarn-build"
             onClick={() => {
-              copiedBuildCommand('yarn')
+              copiedBuildCommandMetric('yarn', 'vite')
             }}
           />
         </pre>
@@ -217,7 +207,7 @@ const StepFive: React.FC = () => {
             string={pnpmBuild}
             testIdExtension="-pnpm-build"
             onClick={() => {
-              copiedBuildCommand('pnpm')
+              copiedBuildCommandMetric('pnpm', 'vite')
             }}
           />
         </pre>

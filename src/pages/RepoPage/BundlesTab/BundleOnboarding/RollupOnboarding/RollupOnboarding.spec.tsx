@@ -146,9 +146,9 @@ describe('RollupOnboarding', () => {
 
             await waitFor(() =>
               expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-                'bundles_tab.onboarding.rollup.copied.install_command',
+                'bundles_tab.onboarding.copied.install_command',
                 1,
-                { tags: { package_manager: 'npm' } }
+                { tags: { package_manager: 'npm', bundler: 'rollup' } }
               )
             )
           })
@@ -178,9 +178,9 @@ describe('RollupOnboarding', () => {
 
             await waitFor(() =>
               expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-                'bundles_tab.onboarding.rollup.copied.install_command',
+                'bundles_tab.onboarding.copied.install_command',
                 1,
-                { tags: { package_manager: 'yarn' } }
+                { tags: { package_manager: 'yarn', bundler: 'rollup' } }
               )
             )
           })
@@ -210,9 +210,9 @@ describe('RollupOnboarding', () => {
 
             await waitFor(() =>
               expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-                'bundles_tab.onboarding.rollup.copied.install_command',
+                'bundles_tab.onboarding.copied.install_command',
                 1,
-                { tags: { package_manager: 'pnpm' } }
+                { tags: { package_manager: 'pnpm', bundler: 'rollup' } }
               )
             )
           })
@@ -279,9 +279,9 @@ describe('RollupOnboarding', () => {
 
         await waitFor(() =>
           expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-            'bundles_tab.onboarding.rollup.copied.token',
+            'bundles_tab.onboarding.copied.token',
             1,
-            undefined
+            { tags: { bundler: 'rollup' } }
           )
         )
       })
@@ -333,9 +333,9 @@ describe('RollupOnboarding', () => {
 
         await waitFor(() =>
           expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-            'bundles_tab.onboarding.rollup.copied.config',
+            'bundles_tab.onboarding.copied.config',
             1,
-            undefined
+            { tags: { bundler: 'rollup' } }
           )
         )
       })
@@ -386,9 +386,9 @@ describe('RollupOnboarding', () => {
 
         await waitFor(() =>
           expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-            'bundles_tab.onboarding.rollup.copied.commit',
+            'bundles_tab.onboarding.copied.commit',
             1,
-            undefined
+            { tags: { bundler: 'rollup' } }
           )
         )
       })
@@ -439,9 +439,9 @@ describe('RollupOnboarding', () => {
 
             await waitFor(() =>
               expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-                'bundles_tab.onboarding.rollup.copied.build_command',
+                'bundles_tab.onboarding.copied.build_command',
                 1,
-                { tags: { package_manager: 'npm' } }
+                { tags: { package_manager: 'npm', bundler: 'rollup' } }
               )
             )
           })
@@ -469,9 +469,9 @@ describe('RollupOnboarding', () => {
 
             await waitFor(() =>
               expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-                'bundles_tab.onboarding.rollup.copied.build_command',
+                'bundles_tab.onboarding.copied.build_command',
                 1,
-                { tags: { package_manager: 'yarn' } }
+                { tags: { package_manager: 'yarn', bundler: 'rollup' } }
               )
             )
           })
@@ -499,9 +499,9 @@ describe('RollupOnboarding', () => {
 
             await waitFor(() =>
               expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-                'bundles_tab.onboarding.rollup.copied.build_command',
+                'bundles_tab.onboarding.copied.build_command',
                 1,
-                { tags: { package_manager: 'pnpm' } }
+                { tags: { package_manager: 'pnpm', bundler: 'rollup' } }
               )
             )
           })

@@ -7,6 +7,14 @@ import { metrics } from 'shared/utils/metrics'
 import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
 
+import {
+  copiedBuildCommandMetric,
+  copiedCommitMetric,
+  copiedConfigMetric,
+  copiedInstallCommandMetric,
+  copiedTokenMetric,
+} from '../metricHelpers'
+
 const npmInstall = `npm install @codecov/webpack-plugin --save-dev`
 const yarnInstall = `yarn add @codecov/webpack-plugin --dev`
 const pnpmInstall = `pnpm add @codecov/webpack-plugin --save-dev`
@@ -33,28 +41,6 @@ const npmBuild = `npm run build`
 const yarnBuild = `yarn run build`
 const pnpmBuild = `pnpm run build`
 
-const copiedInstallCommand = (packageManager: 'npm' | 'yarn' | 'pnpm') => {
-  metrics.increment(
-    'bundles_tab.onboarding.webpack.copied.install_command',
-    1,
-    {
-      tags: {
-        // eslint-disable-next-line camelcase
-        package_manager: packageManager,
-      },
-    }
-  )
-}
-
-const copiedBuildCommand = (packageManager: 'npm' | 'yarn' | 'pnpm') => {
-  metrics.increment('bundles_tab.onboarding.webpack.copied.build_command', 1, {
-    tags: {
-      // eslint-disable-next-line camelcase
-      package_manager: packageManager,
-    },
-  })
-}
-
 const StepOne: React.FC = () => {
   return (
     <div className="pt-4">
@@ -76,7 +62,7 @@ const StepOne: React.FC = () => {
             string={npmInstall}
             testIdExtension="-npm-install"
             onClick={() => {
-              copiedInstallCommand('npm')
+              copiedInstallCommandMetric('npm', 'webpack')
             }}
           />
         </pre>
@@ -86,7 +72,7 @@ const StepOne: React.FC = () => {
             string={yarnInstall}
             testIdExtension="-yarn-install"
             onClick={() => {
-              copiedInstallCommand('yarn')
+              copiedInstallCommandMetric('yarn', 'webpack')
             }}
           />
         </pre>
@@ -96,7 +82,7 @@ const StepOne: React.FC = () => {
             string={pnpmInstall}
             testIdExtension="-pnpm-install"
             onClick={() => {
-              copiedInstallCommand('pnpm')
+              copiedInstallCommandMetric('pnpm', 'webpack')
             }}
           />
         </pre>
@@ -122,10 +108,7 @@ const StepTwo: React.FC<{ uploadToken: string }> = ({ uploadToken }) => {
             string={uploadToken}
             testIdExtension="-upload-token"
             onClick={() => {
-              metrics.increment(
-                'bundles_tab.onboarding.webpack.copied.token',
-                1
-              )
+              copiedTokenMetric('webpack')
             }}
           />
         </pre>
@@ -170,7 +153,7 @@ const StepThree: React.FC = () => {
           string={pluginConfig}
           testIdExtension="-plugin-config"
           onClick={() => {
-            metrics.increment('bundles_tab.onboarding.webpack.copied.config', 1)
+            copiedConfigMetric('webpack')
           }}
         />
       </pre>
@@ -195,7 +178,7 @@ const StepFour: React.FC = () => {
           string={commitString}
           testIdExtension="-commit-command"
           onClick={() => {
-            metrics.increment('bundles_tab.onboarding.webpack.copied.commit', 1)
+            copiedCommitMetric('webpack')
           }}
         />
       </pre>
@@ -220,7 +203,7 @@ const StepFive: React.FC = () => {
             string={npmBuild}
             testIdExtension="-npm-build"
             onClick={() => {
-              copiedBuildCommand('npm')
+              copiedBuildCommandMetric('npm', 'webpack')
             }}
           />
         </pre>
@@ -230,7 +213,7 @@ const StepFive: React.FC = () => {
             string={yarnBuild}
             testIdExtension="-yarn-build"
             onClick={() => {
-              copiedBuildCommand('yarn')
+              copiedBuildCommandMetric('yarn', 'webpack')
             }}
           />
         </pre>
@@ -240,7 +223,7 @@ const StepFive: React.FC = () => {
             string={pnpmBuild}
             testIdExtension="-pnpm-build"
             onClick={() => {
-              copiedBuildCommand('pnpm')
+              copiedBuildCommandMetric('pnpm', 'webpack')
             }}
           />
         </pre>

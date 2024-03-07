@@ -55,32 +55,12 @@ type IncrementKeys = {
     }
     onboarding: {
       visited_page: string
-      rollup: {
-        copied: {
-          token: string
-          config: string
-          commit: string
-          install_command: string
-          build_command: string
-        }
-      }
-      vite: {
-        copied: {
-          token: string
-          config: string
-          commit: string
-          install_command: string
-          build_command: string
-        }
-      }
-      webpack: {
-        copied: {
-          token: string
-          config: string
-          commit: string
-          install_command: string
-          build_command: string
-        }
+      copied: {
+        token: string
+        config: string
+        commit: string
+        install_command: string
+        build_command: string
       }
     }
   }
