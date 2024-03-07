@@ -20,13 +20,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Cache node_modules
         id: cache-node-modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-gazebo-node-modules
         with:
@@ -53,13 +53,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Cache node_modules
         id: cache-node-modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-gazebo-node-modules
         with:
@@ -82,13 +82,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Cache node_modules
         id: cache-node-modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-gazebo-node-modules
         with:
@@ -147,13 +147,13 @@ jobs:
           fetch-depth: 2
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Cache node_modules
         id: cache-node-modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-gazebo-node-modules
         with:
@@ -177,21 +177,21 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_ORG_TOKEN }}
           url: ${{ secrets.CODECOV_URL }}
-      
+
       - name: Upload test results to codecov
         uses: codecov/test-results-action@v1
         if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
         with:
           token: ${{ secrets.CODECOV_ORG_TOKEN_STAGING }}
           url: ${{ secrets.CODECOV_STAGING_URL }}
-      
+
       - name: Upload test results to codecov
         uses: codecov/test-results-action@v1
         if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
         with:
           token: ${{ secrets.CODECOV_QA_TOKEN }}
           url: ${{ secrets.CODECOV_QA_URL }}
-      
+
       - name: Upload test results to codecov
         uses: codecov/test-results-action@v1
         if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov'}}
@@ -235,15 +235,15 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 2
-        
+
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-        
+
       - name: Cache node_modules
         id: cache-node-modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-gazebo-node-modules
         with:
@@ -251,15 +251,15 @@ jobs:
             node_modules
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-              ${{ runner.os }}-${{ env.cache-name }}-
-        
+            ${{ runner.os }}-${{ env.cache-name }}-
+
       - name: Build and upload stats
         run: |
           npm run build:stats
         env:
           CODECOV_API_URL: ${{ secrets.CODECOV_API_URL }}
           CODECOV_ORG_TOKEN: ${{ secrets.CODECOV_ORG_TOKEN }}
-          CODECOV_BUNDLE_NAME: "gazebo-production"
+          CODECOV_BUNDLE_NAME: 'gazebo-production'
 
   upload-bundle-stats-to-staging:
     name: Upload Bundle Stats - Staging
@@ -273,13 +273,13 @@ jobs:
           fetch-depth: 2
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Cache node_modules
         id: cache-node-modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-gazebo-node-modules
         with:
@@ -295,7 +295,7 @@ jobs:
         env:
           CODECOV_API_URL: ${{ secrets.CODECOV_STAGING_API_URL }}
           CODECOV_ORG_TOKEN: ${{ secrets.CODECOV_ORG_TOKEN_STAGING }}
-          CODECOV_BUNDLE_NAME: "gazebo-staging"
+          CODECOV_BUNDLE_NAME: 'gazebo-staging'
 
   storybook:
     name: Run storybook
@@ -309,13 +309,13 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Cache node_modules
         id: cache-node-modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-gazebo-node-modules
         with:
@@ -341,12 +341,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Run Fossa
-        uses: fossas/fossa-action@v1.3.1
+        uses: fossas/fossa-action@v1.3.3
         with:
           api-key: ${{secrets.FOSSA_API_KEY}}
 
@@ -359,13 +359,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Cache node_modules
         id: cache-node-modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-gazebo-node-modules
         with:
