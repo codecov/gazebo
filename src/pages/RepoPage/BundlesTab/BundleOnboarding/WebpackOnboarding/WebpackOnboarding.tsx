@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom'
 
 import { useOrgUploadToken } from 'services/orgUploadToken'
 import { useRepo } from 'services/repo'
-import { metrics } from 'shared/utils/metrics'
 import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
 
@@ -13,6 +12,7 @@ import {
   copiedConfigMetric,
   copiedInstallCommandMetric,
   copiedTokenMetric,
+  visitedOnboardingMetric,
 } from '../metricHelpers'
 
 const npmInstall = `npm install @codecov/webpack-plugin --save-dev`
@@ -249,11 +249,7 @@ const WebpackOnboarding: React.FC = () => {
   }
 
   useEffect(() => {
-    metrics.increment('bundles_tab.onboarding.visited_page', 1, {
-      tags: {
-        bundler: 'webpack',
-      },
-    })
+    visitedOnboardingMetric('webpack')
   }, [])
 
   return (

@@ -45,3 +45,9 @@ export const copiedCommitMetric = (bundler: Bundlers) => {
     tags: { bundler },
   })
 }
+
+export const visitedOnboardingMetric = (bundler: Bundlers) => {
+  metrics.increment('bundles_tab.onboarding.visited_page', 1, {
+    tags: { bundler },
+  })
+}
