@@ -80,10 +80,10 @@ export const SubscriptionDetailSchema = z
         id: z.string(),
         discount: z
           .object({
-            name: z.string(),
-            percentOff: z.number(),
-            durationInMonths: z.number(),
-            expires: z.number(),
+            name: z.string().nullable(),
+            percentOff: z.number().nullable(),
+            durationInMonths: z.number().nullable(),
+            expires: z.number().nullable(),
           })
           .nullish(),
         email: z.string(),
