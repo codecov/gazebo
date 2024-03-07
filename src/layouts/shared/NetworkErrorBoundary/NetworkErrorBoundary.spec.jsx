@@ -190,7 +190,7 @@ describe('NetworkErrorBoundary', () => {
 
       await waitFor(() =>
         expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-          'network_errors.401',
+          'network_errors.network_status.401',
           1,
           undefined
         )
@@ -249,7 +249,7 @@ describe('NetworkErrorBoundary', () => {
 
       await waitFor(() =>
         expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-          'network_errors.403',
+          'network_errors.network_status.403',
           1,
           undefined
         )
@@ -325,7 +325,7 @@ describe('NetworkErrorBoundary', () => {
 
       await waitFor(() =>
         expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-          'network_errors.404',
+          'network_errors.network_status.404',
           1,
           undefined
         )
@@ -401,7 +401,7 @@ describe('NetworkErrorBoundary', () => {
 
       await waitFor(() =>
         expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-          'network_errors.500',
+          'network_errors.network_status.500',
           1,
           undefined
         )
@@ -447,7 +447,7 @@ describe('NetworkErrorBoundary', () => {
 
       await waitFor(() =>
         expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-          'network_errors.unauthenticated_error',
+          'network_errors.graphql.unauthenticated_error',
           1,
           undefined
         )
