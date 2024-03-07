@@ -15,6 +15,7 @@ function CopyClipboard({
   showLabel = false,
   variant = 'default',
   onClick = () => {},
+  testIdExtension,
 }) {
   const [showSuccess, setShowSuccess] = useState(false)
 
@@ -52,7 +53,7 @@ function CopyClipboard({
       )}
 
       <span
-        data-testid="clipboard"
+        data-testid={`clipboard${testIdExtension}`}
         className={cs('cursor-pointer text-xs font-semibold', {
           [copyIconClass]: variant === 'muted',
           'sr-only': !showLabel,
@@ -70,6 +71,7 @@ CopyClipboard.propTypes = {
   showLabel: PropTypes.bool,
   variant: PropTypes.oneOf(['default', 'muted']),
   onClick: PropTypes.func,
+  testIdExtension: PropTypes.string,
 }
 
 export default CopyClipboard

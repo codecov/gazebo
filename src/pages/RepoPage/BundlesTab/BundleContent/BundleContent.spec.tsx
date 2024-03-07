@@ -1,5 +1,6 @@
+import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
@@ -192,6 +193,19 @@ describe('BundleContent', () => {
       })
     )
   }
+
+  it('sends bundle tab metric to sentry', async () => {
+    setup({})
+    render(<BundleContent />, { wrapper: wrapper() })
+
+    await waitFor(() =>
+      expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+        'bundles_tab.bundle_details.visited_page',
+        1,
+        undefined
+      )
+    )
+  })
 
   describe('rendering summary section', () => {
     describe('flag is off', () => {
