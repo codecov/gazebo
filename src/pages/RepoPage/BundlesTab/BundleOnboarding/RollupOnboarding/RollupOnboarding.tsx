@@ -1,7 +1,9 @@
+import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useOrgUploadToken } from 'services/orgUploadToken'
 import { useRepo } from 'services/repo'
+import { metrics } from 'shared/utils/metrics'
 import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
 
@@ -30,6 +32,24 @@ const npmBuild = `npm run build`
 const yarnBuild = `yarn run build`
 const pnpmBuild = `pnpm run build`
 
+const copiedInstallCommand = (packageManager: 'npm' | 'yarn' | 'pnpm') => {
+  metrics.increment('bundles_tab.onboarding.rollup.copied.install_command', 1, {
+    tags: {
+      // eslint-disable-next-line camelcase
+      package_manager: packageManager,
+    },
+  })
+}
+
+const copiedBuildCommand = (packageManager: 'npm' | 'yarn' | 'pnpm') => {
+  metrics.increment('bundles_tab.onboarding.rollup.copied.build_command', 1, {
+    tags: {
+      // eslint-disable-next-line camelcase
+      package_manager: packageManager,
+    },
+  })
+}
+
 const StepOne: React.FC = () => {
   return (
     <div className="pt-4">
@@ -46,13 +66,34 @@ const StepOne: React.FC = () => {
       </p>
       <div className="flex flex-col gap-4">
         <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          {npmInstall} <CopyClipboard string={npmInstall} />
+          {npmInstall}{' '}
+          <CopyClipboard
+            string={npmInstall}
+            testIdExtension="-npm-install"
+            onClick={() => {
+              copiedInstallCommand('npm')
+            }}
+          />
         </pre>
         <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          {yarnInstall} <CopyClipboard string={yarnInstall} />
+          {yarnInstall}{' '}
+          <CopyClipboard
+            string={yarnInstall}
+            testIdExtension="-yarn-install"
+            onClick={() => {
+              copiedInstallCommand('yarn')
+            }}
+          />
         </pre>
         <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          {pnpmInstall} <CopyClipboard string={pnpmInstall} />
+          {pnpmInstall}{' '}
+          <CopyClipboard
+            string={pnpmInstall}
+            testIdExtension="-pnpm-install"
+            onClick={() => {
+              copiedInstallCommand('pnpm')
+            }}
+          />
         </pre>
       </div>
     </div>
@@ -71,7 +112,14 @@ const StepTwo: React.FC<{ uploadToken: string }> = ({ uploadToken }) => {
       </p>
       <div className="flex flex-col gap-4">
         <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          CODECOV_TOKEN={uploadToken} <CopyClipboard string={uploadToken} />
+          CODECOV_TOKEN={uploadToken}{' '}
+          <CopyClipboard
+            string={uploadToken}
+            testIdExtension="-upload-token"
+            onClick={() => {
+              metrics.increment('bundles_tab.onboarding.rollup.copied.token', 1)
+            }}
+          />
         </pre>
       </div>
     </div>
@@ -95,7 +143,13 @@ const StepThree: React.FC = () => {
       </p>
       <pre className="flex items-start justify-between overflow-auto whitespace-pre rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
         {pluginConfig}
-        <CopyClipboard string={pluginConfig} />
+        <CopyClipboard
+          string={pluginConfig}
+          testIdExtension="-plugin-config"
+          onClick={() => {
+            metrics.increment('bundles_tab.onboarding.rollup.copied.config', 1)
+          }}
+        />
       </pre>
     </div>
   )
@@ -113,7 +167,14 @@ const StepFour: React.FC = () => {
         bundle analysis information up to Codecov.
       </p>
       <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-        {commitString} <CopyClipboard string={commitString} />
+        {commitString}{' '}
+        <CopyClipboard
+          string={commitString}
+          testIdExtension="-commit-command"
+          onClick={() => {
+            metrics.increment('bundles_tab.onboarding.rollup.copied.commit', 1)
+          }}
+        />
       </pre>
     </div>
   )
@@ -131,13 +192,34 @@ const StepFive: React.FC = () => {
       </p>
       <div className="flex flex-col gap-4">
         <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          {npmBuild} <CopyClipboard string={npmBuild} />
+          {npmBuild}{' '}
+          <CopyClipboard
+            string={npmBuild}
+            testIdExtension="-npm-build"
+            onClick={() => {
+              copiedBuildCommand('npm')
+            }}
+          />
         </pre>
         <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          {yarnBuild} <CopyClipboard string={yarnBuild} />
+          {yarnBuild}{' '}
+          <CopyClipboard
+            string={yarnBuild}
+            testIdExtension="-yarn-build"
+            onClick={() => {
+              copiedBuildCommand('yarn')
+            }}
+          />
         </pre>
         <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          {pnpmBuild} <CopyClipboard string={pnpmBuild} />
+          {pnpmBuild}{' '}
+          <CopyClipboard
+            string={pnpmBuild}
+            testIdExtension="-pnpm-build"
+            onClick={() => {
+              copiedBuildCommand('pnpm')
+            }}
+          />
         </pre>
       </div>
     </div>
@@ -159,6 +241,14 @@ const RollupOnboarding: React.FC = () => {
   if (orgUploadToken) {
     uploadToken = orgUploadToken
   }
+
+  useEffect(() => {
+    metrics.increment('bundles_tab.onboarding.visited_page', 1, {
+      tags: {
+        bundler: 'rollup',
+      },
+    })
+  }, [])
 
   return (
     <div className="flex flex-col gap-6">
