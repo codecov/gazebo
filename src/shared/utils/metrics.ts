@@ -64,6 +64,15 @@ type IncrementKeys = {
       }
     }
   }
+  network_errors: {
+    '401': string
+    '403': string
+    '404': string
+    '500': string
+    unauthenticated_error: string
+    unauthorized_error: string
+    not_found_error: string
+  }
 }
 
 type SetKeys = {
