@@ -11,8 +11,8 @@ function withOpacity(variableName) {
 
 module.exports = {
   content: [
-    './src/**/*.{js,jsx,ts,tsx}',
-    './src/*.{js,jsx,ts,tsx}',
+    './src/**/*.{css,js,jsx,ts,tsx}',
+    './src/*.{css,js,jsx,ts,tsx}',
     './public/*.html',
   ],
   mode: 'jit',
