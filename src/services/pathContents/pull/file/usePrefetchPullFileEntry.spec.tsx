@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import { ReactNode } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { usePrefetchPullFileEntry } from './usePrefetchPullFileEntry'
@@ -19,7 +20,7 @@ const queryClient = new QueryClient({
     error: () => {},
   },
 })
-const wrapper = ({ children }) => (
+const wrapper = ({ children }: { children: ReactNode }) => (
   <MemoryRouter
     initialEntries={['/gh/codecov/test-repo/tree/main/src/file.js']}
   >
@@ -40,37 +41,39 @@ afterAll(() => server.close())
 const mockData = {
   owner: {
     repository: {
+      __typename: 'Repository',
       commit: {
         commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
         flagNames: ['a', 'b'],
         coverageFile: {
+          hashedPath: 'afsd',
           isCriticalFile: true,
           content:
             'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
           coverage: [
             {
               line: 1,
-              coverage: 1,
+              coverage: 'H',
             },
             {
               line: 2,
-              coverage: 1,
+              coverage: 'H',
             },
             {
               line: 4,
-              coverage: 1,
+              coverage: 'H',
             },
             {
               line: 5,
-              coverage: 1,
+              coverage: 'H',
             },
             {
               line: 7,
-              coverage: 1,
+              coverage: 'H',
             },
             {
               line: 8,
-              coverage: 1,
+              coverage: 'H',
             },
           ],
         },
@@ -97,7 +100,7 @@ describe('usePrefetchPullFileEntry', () => {
     const { result } = renderHook(
       () =>
         usePrefetchPullFileEntry({
-          commitSha: 'f00162848a3cebc0728d915763c2fd9e92132408',
+          ref: 'f00162848a3cebc0728d915763c2fd9e92132408',
           path: 'src/file.js',
         }),
       { wrapper }
@@ -111,7 +114,7 @@ describe('usePrefetchPullFileEntry', () => {
     const { result } = renderHook(
       () =>
         usePrefetchPullFileEntry({
-          commitSha: 'f00162848a3cebc0728d915763c2fd9e92132408',
+          ref: 'f00162848a3cebc0728d915763c2fd9e92132408',
           path: 'src/file.js',
         }),
       { wrapper }
@@ -119,21 +122,24 @@ describe('usePrefetchPullFileEntry', () => {
 
     await result.current.runPrefetch()
 
-    await waitFor(() => queryClient.getQueryState().isFetching)
+    await waitFor(() => queryClient.isFetching())
 
-    expect(queryClient.getQueryState().data.content).toBe(
-      mockData.owner.repository.commit.coverageFile.content
-    )
-    expect(queryClient.getQueryState().data.coverage).toStrictEqual({
-      1: 1,
-      2: 1,
-      4: 1,
-      5: 1,
-      7: 1,
-      8: 1,
+    const queryKey = queryClient.getQueriesData({})?.at(0)?.at(0) as Array<any>
+
+    expect(queryClient.getQueryState(queryKey)?.data).toStrictEqual({
+      hashedPath: 'afsd',
+      content: mockData.owner.repository.commit.coverageFile.content,
+      coverage: {
+        1: 'H',
+        2: 'H',
+        4: 'H',
+        5: 'H',
+        7: 'H',
+        8: 'H',
+      },
+      flagNames: ['a', 'b'],
+      isCriticalFile: true,
+      totals: 0,
     })
-    expect(queryClient.getQueryState().data.flagNames).toStrictEqual(['a', 'b'])
-    expect(queryClient.getQueryState().data.isCriticalFile).toBe(true)
-    expect(queryClient.getQueryState().data.totals).toBe(0)
   })
 })

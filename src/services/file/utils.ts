@@ -1,9 +1,14 @@
 import keyBy from 'lodash/keyBy'
 import mapValues from 'lodash/mapValues'
 
-export function extractCoverageFromResponse(res) {
-  const commit = res?.data?.owner?.repository?.commit
-  const branch = res?.data?.owner?.repository?.branch?.head
+import { PathContentsRepositorySchema } from 'services/pathContents/constants'
+
+export function extractCoverageFromResponse(
+  repository: PathContentsRepositorySchema | undefined | null
+) {
+  if (!repository) return null
+  const commit = repository?.commit
+  const branch = repository?.branch?.head
   const coverageSource = commit || branch
   const coverageFile = coverageSource?.coverageFile
   if (!coverageFile) return null
@@ -15,9 +20,11 @@ export function extractCoverageFromResponse(res) {
   return {
     content: coverageFile?.content,
     coverage: fileCoverage,
-    totals: isNaN(coverageTotal) ? 0 : coverageTotal,
+    totals:
+      typeof coverageTotal !== 'number' || isNaN(coverageTotal)
+        ? 0
+        : coverageTotal,
     flagNames: coverageSource?.flagNames ?? [],
-    componentNames: coverageSource?.componentNames ?? [],
     isCriticalFile: !!coverageFile?.isCriticalFile,
     ...(hashedPath && { hashedPath }),
   }

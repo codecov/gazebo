@@ -19,6 +19,7 @@ describe('adjustListIfUpDir', () => {
         expect(result).toStrictEqual([
           {
             name: (
+              /* @ts-expect-error */
               <A
                 to={{ options: {}, pageName: 'commitTreeView', text: 'src' }}
                 variant="upDirectory"

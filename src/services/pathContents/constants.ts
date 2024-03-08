@@ -34,7 +34,7 @@ const CoverageForFileSchema = z.object({
     .nullish(),
 })
 
-const RepositorySchema = z.object({
+export const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   commit: CoverageForFileSchema.nullish(),
   branch: z
@@ -45,14 +45,16 @@ const RepositorySchema = z.object({
     .nullish(),
 })
 
-export const RequestSchema = z.object({
+export type PathContentsRepositorySchema = z.infer<typeof RepositorySchema>
+
+export const PathContentsRequestSchema = z.object({
   owner: z
     .object({
       repository: z
-        .union([
-          RepositorySchema.partial(),
-          RepoNotFoundErrorSchema.partial(),
-          RepoOwnerNotActivatedErrorSchema.partial(),
+        .discriminatedUnion('__typename', [
+          RepositorySchema,
+          RepoNotFoundErrorSchema,
+          RepoOwnerNotActivatedErrorSchema,
         ])
         .nullish(),
     })
