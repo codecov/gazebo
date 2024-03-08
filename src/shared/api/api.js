@@ -99,6 +99,7 @@ function graphql({
           })
     )
     .catch((err) => {
+      // guest_access set to false => 401 error
       if (err.status === 401 && config.IS_SELF_HOSTED) {
         window.location.href = '/login'
       }
