@@ -10,6 +10,7 @@ const SentryPlugin = new SentryWebpackPlugin({
   include: './build/static/js',
   authToken: process.env.SENTRY_AUTH_TOKEN,
   urlPrefix: '~/static/js',
+  release: process.env.GITHUB_SHA,
 })
 
 module.exports = {
