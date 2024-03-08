@@ -111,7 +111,7 @@ export const AccountDetailsSchema = z.object({
   name: z.string().nullable(),
   nbActivePrivateRepos: z.number().nullable(),
   plan: PlanSchema,
-  planAutoActivate: z.boolean(),
+  planAutoActivate: z.boolean().nullable(),
   planProvider: z.string().nullable(),
   repoTotalCredits: z.number(),
   rootOrganization: z
@@ -176,12 +176,10 @@ export function useAccountDetails({
         // TODO: remove this bandage once we convert remaining useAccountDetails components to TS
         // including tests.
         if (process.env.REACT_APP_ZOD_IGNORE_TESTS === 'true') {
-          return res
+          return res as z.infer<typeof AccountDetailsSchema>
         }
 
         const parsedRes = AccountDetailsSchema.safeParse(res)
-
-        console.log(parsedRes)
 
         if (!parsedRes.success) {
           return Promise.reject({
