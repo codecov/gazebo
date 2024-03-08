@@ -12,7 +12,16 @@ describe('adjustListIfUpDir', () => {
             { pageName: 'commitTreeView', text: 'directory', options: {} },
           ],
           displayType: 'TREE',
-          rawTableRows: [{ rowId: 1 }],
+          rawTableRows: [
+            {
+              name: <h1>file.asdf</h1>,
+              lines: '',
+              hits: '',
+              misses: '',
+              partials: '',
+              coverage: <h1>so much</h1>,
+            },
+          ],
         })
 
         expect(result).toHaveLength(2)
@@ -33,7 +42,14 @@ describe('adjustListIfUpDir', () => {
             partials: '',
             coverage: '',
           },
-          { rowId: 1 },
+          {
+            name: <h1>file.asdf</h1>,
+            lines: '',
+            hits: '',
+            misses: '',
+            partials: '',
+            coverage: <h1>so much</h1>,
+          },
         ])
       })
     })
@@ -43,11 +59,29 @@ describe('adjustListIfUpDir', () => {
         const result = adjustListIfUpDir({
           treePaths: [{ pageName: 'commitTreeView', text: 'src', options: {} }],
           displayType: 'TREE',
-          rawTableRows: [{ rowId: 1 }],
+          rawTableRows: [
+            {
+              name: <h1>file.asdf</h1>,
+              lines: '',
+              hits: '',
+              misses: '',
+              partials: '',
+              coverage: <h1>so much</h1>,
+            },
+          ],
         })
 
         expect(result).toHaveLength(1)
-        expect(result).toStrictEqual([{ rowId: 1 }])
+        expect(result).toStrictEqual([
+          {
+            name: <h1>file.asdf</h1>,
+            lines: '',
+            hits: '',
+            misses: '',
+            partials: '',
+            coverage: <h1>so much</h1>,
+          },
+        ])
       })
     })
   })
@@ -61,11 +95,29 @@ describe('adjustListIfUpDir', () => {
             { pageName: 'commitTreeView', text: 'directory', options: {} },
           ],
           displayType: 'LIST',
-          rawTableRows: [{ rowId: 1 }],
+          rawTableRows: [
+            {
+              name: <h1>file.asdf</h1>,
+              lines: '',
+              hits: '',
+              misses: '',
+              partials: '',
+              coverage: <h1>so much</h1>,
+            },
+          ],
         })
 
         expect(result).toHaveLength(1)
-        expect(result).toStrictEqual([{ rowId: 1 }])
+        expect(result).toStrictEqual([
+          {
+            name: <h1>file.asdf</h1>,
+            lines: '',
+            hits: '',
+            misses: '',
+            partials: '',
+            coverage: <h1>so much</h1>,
+          },
+        ])
       })
     })
 
@@ -74,11 +126,29 @@ describe('adjustListIfUpDir', () => {
         const result = adjustListIfUpDir({
           treePaths: [{ pageName: 'commitTreeView', text: 'src', options: {} }],
           displayType: 'LIST',
-          rawTableRows: [{ rowId: 1 }],
+          rawTableRows: [
+            {
+              name: <h1>file.asdf</h1>,
+              lines: '',
+              hits: '',
+              misses: '',
+              partials: '',
+              coverage: <h1>so much</h1>,
+            },
+          ],
         })
 
         expect(result).toHaveLength(1)
-        expect(result).toStrictEqual([{ rowId: 1 }])
+        expect(result).toStrictEqual([
+          {
+            name: <h1>file.asdf</h1>,
+            lines: '',
+            hits: '',
+            misses: '',
+            partials: '',
+            coverage: <h1>so much</h1>,
+          },
+        ])
       })
     })
   })

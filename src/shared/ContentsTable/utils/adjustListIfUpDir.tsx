@@ -1,4 +1,5 @@
 import qs from 'qs'
+import { ReactNode } from 'react'
 
 import A from 'ui/A'
 
@@ -14,14 +15,23 @@ type TreePath = {
   }
 }
 
-export function adjustListIfUpDir<RowType>({
+type Row = {
+  name: ReactNode
+  lines: string
+  hits: string
+  misses: string
+  partials: string
+  coverage: ReactNode
+}
+
+export function adjustListIfUpDir({
   treePaths,
   displayType,
   rawTableRows,
 }: {
   treePaths: TreePath[]
   displayType: 'LIST' | 'TREE'
-  rawTableRows: RowType[]
+  rawTableRows: Row[]
 }) {
   if (treePaths.length > 1 && displayType === displayTypeParameter.tree) {
     const upDir = treePaths?.at(-2)
