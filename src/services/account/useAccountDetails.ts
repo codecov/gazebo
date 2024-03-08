@@ -111,7 +111,7 @@ export const AccountDetailsSchema = z.object({
   name: z.string().nullable(),
   nbActivePrivateRepos: z.number().nullable(),
   plan: PlanSchema,
-  planAutoActivate: z.boolean(),
+  planAutoActivate: z.boolean().nullable(),
   planProvider: z.string().nullable(),
   repoTotalCredits: z.number(),
   rootOrganization: z
