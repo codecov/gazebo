@@ -26,9 +26,9 @@ import MissingFileData from 'shared/ContentsTable/MissingFileData'
 import PullDirEntry from 'shared/ContentsTable/TableEntries/PullEntries/PullDirEntry'
 import PullFileEntry from 'shared/ContentsTable/TableEntries/PullEntries/PullFileEntry'
 import { useTableDefaultSort } from 'shared/ContentsTable/useTableDefaultSort'
+import { adjustListIfUpDir } from 'shared/ContentsTable/utils'
 import { usePullTreePaths } from 'shared/treePaths'
 import { determineProgressColor } from 'shared/utils/determineProgressColor'
-import A from 'ui/A'
 import CoverageProgress from 'ui/CoverageProgress'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
@@ -163,7 +163,7 @@ function useTableData() {
       return []
     }
 
-    const tableRows: FileExplorerColumn[] = tableData.map(
+    const rawTableRows: FileExplorerColumn[] = tableData.map(
       (file: PathContentFile | PathContentDir) => ({
         name:
           file.__typename === 'PathContentDir' ? (
@@ -206,27 +206,11 @@ function useTableData() {
         ),
       })
     )
-
-    if (
-      treePaths.length > 0 &&
-      filters?.displayType === displayTypeParameter.tree
-    ) {
-      const upDir = treePaths?.at(-2)
-      tableRows.unshift({
-        name: (
-          /* @ts-expect-error */
-          <A to={upDir} variant="upDirectory">
-            <div className="pl-1">..</div>
-          </A>
-        ),
-        lines: '',
-        hits: '',
-        partials: '',
-        misses: '',
-        coverage: null,
-      })
-    }
-    return tableRows
+    return adjustListIfUpDir({
+      treePaths,
+      displayType: filters?.displayType || displayTypeParameter.tree,
+      rawTableRows,
+    })
   }, [pullData, filters, treePaths, pullId, urlPath])
 
   return {
