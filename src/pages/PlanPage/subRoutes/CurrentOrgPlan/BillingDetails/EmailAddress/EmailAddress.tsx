@@ -83,7 +83,6 @@ function EmailAddress() {
           />
           {errors?.newCustomerEmail && (
             <p className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
-              {/* @ts-expect-error */}
               {errors?.newCustomerEmail?.message}
             </p>
           )}
