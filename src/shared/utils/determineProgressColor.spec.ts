@@ -40,8 +40,7 @@ describe('determineProgressColor', () => {
   describe('coverage value is not a number', () => {
     it('returns default', () => {
       const result = determineProgressColor({
-        // @ts-expect-error
-        coverage: 'coverage',
+        coverage: null,
         upperRange: 80,
         lowerRange: 60,
       })

@@ -65,7 +65,7 @@ export function useRepoBackfilled() {
         }
 
         return {
-          ...parsedData.data.config,
+          ...parsedData.data?.config,
           ...parsedData.data?.owner?.repository,
         }
       }),

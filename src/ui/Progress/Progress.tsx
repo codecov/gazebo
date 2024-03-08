@@ -21,12 +21,12 @@ function Progress({
   color = 'default',
   variant = 'default',
 }: {
-  amount: number
+  amount?: number | null
   label: boolean
   color?: keyof typeof progressColors
   variant?: keyof typeof progressVariants
 }) {
-  const amountInNumber = isNaN(amount) ? 0 : Number(amount)
+  const amountInNumber = amount && isNaN(amount) ? 0 : Number(amount)
   const totalsProps = variant === 'tall' ? { light: true } : {}
 
   return (

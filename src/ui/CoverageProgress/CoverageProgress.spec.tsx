@@ -14,7 +14,6 @@ describe('CoverageProgress', () => {
 
   describe('when rendered with no coverage', () => {
     it('renders no report text', () => {
-      // @ts-expect-error
       render(<CoverageProgress amount={null} />)
 
       const text = screen.getByText(/No report uploaded/)

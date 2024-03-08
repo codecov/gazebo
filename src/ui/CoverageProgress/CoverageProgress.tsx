@@ -6,7 +6,7 @@ const CoverageProgress = ({
   color = 'primary',
   variant = 'default',
 }: {
-  amount: number
+  amount?: number | null
   color?: keyof typeof progressColors
   variant?: keyof typeof progressVariants
 }) => {

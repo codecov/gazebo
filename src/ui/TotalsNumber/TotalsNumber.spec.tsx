@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react'
 import TotalsNumber from '.'
 
 describe('TotalsNumber', () => {
-  function setup({ value, variant }: { value: number; variant: string }) {
+  function setup({ value, variant }: { value?: number; variant: string }) {
     render(
       <TotalsNumber
         value={value}
@@ -30,7 +30,6 @@ describe('TotalsNumber', () => {
     })
 
     it('renders - when there is an invalid value', () => {
-      // @ts-expect-error
       setup({ value: undefined, variant: 'default' })
       const changeValue = screen.getByTestId('change-value')
       expect(changeValue).toHaveTextContent('-')

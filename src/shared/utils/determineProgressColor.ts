@@ -5,7 +5,7 @@ export const determineProgressColor = ({
   upperRange,
   lowerRange,
 }: {
-  coverage: number
+  coverage: number | null
   upperRange: number
   lowerRange: number
 }) => {
