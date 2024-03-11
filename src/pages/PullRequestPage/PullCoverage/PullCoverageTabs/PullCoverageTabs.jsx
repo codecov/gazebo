@@ -87,13 +87,6 @@ function PullCoverageTabs() {
             location: customLocation,
           },
         ]}
-        // component={
-        //   <ToggleHeader
-        //     coverageIsLoading={false}
-        //     showHitCount={true}
-        //     showFlagsSelect={false}
-        //   />
-        // }
       />
     )
   }

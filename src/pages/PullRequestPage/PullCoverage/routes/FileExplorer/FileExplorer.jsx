@@ -63,7 +63,6 @@ function FileExplorer() {
           <Breadcrumb paths={treePaths} />
         </div>
         <div className="flex gap-2">
-          {/* <ComponentsSelector /> */}
           <SearchField
             dataMarketing="pull-files-search"
             placeholder="Search for files"
