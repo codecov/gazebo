@@ -47,6 +47,24 @@ const mockData = {
   },
 }
 
+const mockDataRepositoryNotFound = {
+  owner: {
+    repository: {
+      __typename: 'NotFoundError',
+      message: 'repository not found',
+    },
+  },
+}
+
+const mockDataOwnerNotActivated = {
+  owner: {
+    repository: {
+      __typename: 'OwnerNotActivatedError',
+      message: 'owner not activated',
+    },
+  },
+}
+
 const mockDataUnknownPath = {
   owner: {
     username: 'codecov',
@@ -115,9 +133,24 @@ afterAll(() => {
 })
 
 describe('useRepoPullContents', () => {
-  function setup(isMissingCoverage = false, isUnknownPath = false) {
+  function setup({
+    invalidSchema = false,
+    repositoryNotFound = false,
+    ownerNotActivated = false,
+    isMissingCoverage = false,
+    isUnknownPath = false,
+  }) {
     server.use(
       graphql.query('PullPathContents', (req, res, ctx) => {
+        if (invalidSchema) {
+          return res(ctx.status(200), ctx.data({}))
+        }
+        if (repositoryNotFound) {
+          return res(ctx.status(200), ctx.data(mockDataRepositoryNotFound))
+        }
+        if (ownerNotActivated) {
+          return res(ctx.status(200), ctx.data(mockDataOwnerNotActivated))
+        }
         if (isMissingCoverage) {
           return res(ctx.status(200), ctx.data(mockDataMissingCoverage))
         }
@@ -131,7 +164,7 @@ describe('useRepoPullContents', () => {
 
   describe('when called', () => {
     beforeEach(() => {
-      setup()
+      setup({})
     })
 
     it('returns path contents', async () => {
@@ -179,7 +212,7 @@ describe('useRepoPullContents', () => {
 
     describe('on missing coverage', () => {
       it('returns no results', async () => {
-        setup(true)
+        setup({ isMissingCoverage: true })
         const { result } = renderHook(
           () =>
             useRepoPullContents({
@@ -210,7 +243,7 @@ describe('useRepoPullContents', () => {
 
     describe('on unknown path', () => {
       it('returns no results', async () => {
-        setup(false, true)
+        setup({ isUnknownPath: true })
         const { result } = renderHook(
           () =>
             useRepoPullContents({
@@ -236,6 +269,90 @@ describe('useRepoPullContents', () => {
           results: null,
           pathContentsType: 'UnknownPath',
         })
+      })
+    })
+
+    describe('on invalid schema', () => {
+      it('returns 404', async () => {
+        setup({ invalidSchema: true })
+        const { result } = renderHook(
+          () =>
+            useRepoPullContents({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'test',
+              pullId: '123',
+              path: '',
+            }),
+          { wrapper }
+        )
+
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+        await waitFor(() => result.current.isError)
+
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            status: 404,
+            dev: 'useRepoPullContents - 404 schema parsing failed',
+          })
+        )
+      })
+    })
+
+    describe('on repository not found', () => {
+      it('returns 404', async () => {
+        setup({ repositoryNotFound: true })
+        const { result } = renderHook(
+          () =>
+            useRepoPullContents({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'test',
+              pullId: '123',
+              path: '',
+            }),
+          { wrapper }
+        )
+
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+        await waitFor(() => result.current.isError)
+
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            status: 404,
+            dev: 'useRepoPullContents - 404 NotFoundError',
+          })
+        )
+      })
+    })
+
+    describe('on owner not activated', () => {
+      it('returns 403', async () => {
+        setup({ ownerNotActivated: true })
+        const { result } = renderHook(
+          () =>
+            useRepoPullContents({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'test',
+              pullId: '123',
+              path: '',
+            }),
+          { wrapper }
+        )
+
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+        await waitFor(() => result.current.isError)
+
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            status: 403,
+            dev: 'useRepoPullContents - 403 OwnerNotActivatedError',
+          })
+        )
       })
     })
   })
