@@ -122,11 +122,12 @@ const ReposTable = ({
     isLoading,
     isFetchingNextPage,
   } = useRepos({
+    provider,
+    owner,
     activated,
     sortItem: getOrderingDirection(sorting),
     term: searchValue,
     repoNames: filterValues,
-    owner,
     isPublic: shouldDisplayPublicReposOnly,
   })
 

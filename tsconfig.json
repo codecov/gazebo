@@ -38,7 +38,8 @@
     "**/*.cjs",
     "**/*.mjs",
     "**/*.js",
-    "**/*.jsx"
+    "**/*.jsx",
+    "global.d.ts"
   ],
   "exclude": ["node_modules", "dist", "public"]
 }

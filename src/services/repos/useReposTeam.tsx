@@ -18,41 +18,12 @@ const RepositorySchema = z
     author: z.object({
       username: z.string().nullable(),
     }),
+    coverageEnabled: z.boolean().nullable(),
+    bundleAnalysisEnabled: z.boolean().nullable(),
   })
   .nullable()
 
 export type Repository = z.infer<typeof RepositorySchema>
-
-const repositoryFragment = `
-  fragment RepoForList on Repository {
-    name
-    active
-    activated
-    private
-    latestCommitAt
-    lines
-    author {
-      username
-    }
-  }
-`
-
-interface FetchReposTeamArgs {
-  provider: string
-  owner: string
-  variables: {
-    filters: {
-      activated?: boolean
-      term?: string
-      repoNames?: string[]
-    }
-    ordering?: string
-    direction?: string
-    first?: number
-  }
-  after?: string
-  signal?: AbortSignal
-}
 
 const RequestSchema = z.object({
   owner: z
@@ -75,61 +46,45 @@ const RequestSchema = z.object({
     .nullable(),
 })
 
-function fetchReposForOwner({
-  provider,
-  owner,
-  variables,
-  after,
-  signal,
-}: FetchReposTeamArgs) {
-  const query = `
-    query GetReposTeam($filters: RepositorySetFilters!, $owner: String!, $ordering: RepositoryOrdering!, $direction: OrderingDirection!, $after: String, $first: Int) {
-        owner(username: $owner) {
-          isCurrentUserPartOfOrg
-          repositories(filters: $filters, ordering: $ordering, orderingDirection: $direction, first: $first, after: $after) {
-            edges {
-              node {
-                ...RepoForList
-              }
-            }
-            pageInfo {
-                hasNextPage
-                endCursor
-            }
+const query = `query GetReposTeam(
+  $filters: RepositorySetFilters!
+  $owner: String!
+  $ordering: RepositoryOrdering!
+  $direction: OrderingDirection!
+  $after: String
+  $first: Int
+) {
+  owner(username: $owner) {
+    isCurrentUserPartOfOrg
+    repositories(
+      filters: $filters
+      ordering: $ordering
+      orderingDirection: $direction
+      first: $first
+      after: $after
+    ) {
+      edges {
+        node {
+          name
+          active
+          activated
+          private
+          latestCommitAt
+          lines
+          author {
+            username
           }
+          coverageEnabled
+          bundleAnalysisEnabled
         }
       }
-      ${repositoryFragment}
-  `
-
-  return Api.graphql({
-    provider,
-    query,
-    signal,
-    variables: {
-      ...variables,
-      owner,
-      after,
-    },
-  }).then((res) => {
-    const parsedRes = RequestSchema.safeParse(res?.data)
-
-    if (!parsedRes.success) {
-      return Promise.reject({
-        status: 404,
-        data: null,
-      })
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
     }
-
-    const owner = parsedRes.data?.owner
-
-    return {
-      repos: mapEdges(owner?.repositories),
-      pageInfo: owner?.repositories?.pageInfo,
-      isCurrentUserPartOfOrg: !!owner?.isCurrentUserPartOfOrg,
-    }
-  })
-}
+  }
+}`
 
 interface UseReposTeamArgs {
   activated?: boolean
@@ -163,12 +118,32 @@ export function useReposTeam({
   return useInfiniteQuery({
     queryKey: ['GetReposTeam', provider, variables, owner],
     queryFn: ({ pageParam, signal }) => {
-      return fetchReposForOwner({
+      return Api.graphql({
         provider,
-        variables,
-        owner,
-        after: pageParam,
+        query,
         signal,
+        variables: {
+          ...variables,
+          owner,
+          after: pageParam,
+        },
+      }).then((res) => {
+        const parsedRes = RequestSchema.safeParse(res?.data)
+
+        if (!parsedRes.success) {
+          return Promise.reject({
+            status: 404,
+            data: null,
+          })
+        }
+
+        const owner = parsedRes.data?.owner
+
+        return {
+          repos: mapEdges(owner?.repositories),
+          pageInfo: owner?.repositories?.pageInfo,
+          isCurrentUserPartOfOrg: !!owner?.isCurrentUserPartOfOrg,
+        }
       })
     },
     getNextPageParam: (data) =>

@@ -6,9 +6,17 @@ import { useInvoices } from 'services/account'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 
+interface URLParams {
+  provider: string
+  owner: string
+}
+
 function LatestInvoiceCard() {
-  const { provider, owner } = useParams()
-  const { data: invoices } = useInvoices({ provider, owner })
+  const { provider, owner } = useParams<URLParams>()
+  const { data: invoices } = useInvoices({
+    provider: provider,
+    owner: owner,
+  })
   const latestInvoice = !!invoices?.length && invoices[0]
 
   if (!latestInvoice || !latestInvoice?.created) return null
@@ -36,6 +44,7 @@ function LatestInvoiceCard() {
                 pageName: 'invoiceDetail',
                 options: { id: latestInvoice?.id },
               }}
+              hook="invoice-detail-page"
               isExternal={false}
             >
               View
@@ -44,7 +53,12 @@ function LatestInvoiceCard() {
         </div>
       </div>
       <div className="flex self-start p-4">
-        <A to={{ pageName: 'invoicesPage' }} variant="semibold">
+        <A
+          to={{ pageName: 'invoicesPage' }}
+          hook="all-invoice-page"
+          variant="semibold"
+          isExternal={false}
+        >
           See all invoices{' '}
           <Icon name="chevronRight" size="sm" variant="solid" />
         </A>

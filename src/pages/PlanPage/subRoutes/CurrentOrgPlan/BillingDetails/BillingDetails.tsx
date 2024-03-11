@@ -12,7 +12,10 @@ interface URLParams {
 
 function BillingDetails() {
   const { provider, owner } = useParams<URLParams>()
-  const { data: accountDetails } = useAccountDetails({ provider, owner })
+  const { data: accountDetails } = useAccountDetails({
+    provider,
+    owner,
+  })
   const subscriptionDetail = accountDetails?.subscriptionDetail
 
   if (!subscriptionDetail) {

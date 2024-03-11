@@ -4,7 +4,6 @@ import userEvent from '@testing-library/user-event'
 import { Location } from 'history'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import type { ReactNode } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import ComponentsSelector from './ComponentsSelector'
@@ -25,7 +24,7 @@ const server = setupServer()
 
 let testLocation: Location
 
-const wrapper = ({ children }: { children: ReactNode }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/cool-repo/commit/123']}>
       <Route path="/:provider/:owner/:repo/commit/:commit">{children}</Route>

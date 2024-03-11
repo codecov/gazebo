@@ -202,7 +202,7 @@ describe('PullBundleHeadTable', () => {
         setup()
         render(<PullBundleHeadTable />, { wrapper })
 
-        const loadTime = await screen.findByText('200s')
+        const loadTime = await screen.findByText('200ms')
         expect(loadTime).toBeInTheDocument()
       })
     })

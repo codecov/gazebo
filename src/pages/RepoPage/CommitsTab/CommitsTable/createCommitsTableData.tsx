@@ -43,7 +43,7 @@ export const createCommitsTableData = ({ pages }: CommitsTableData) => {
 
     const totals = commit?.totals
 
-    let change = null
+    let change = undefined
     if (commit?.parent?.totals?.coverage != null && totals?.coverage != null) {
       change = totals?.coverage - commit?.parent?.totals?.coverage
     }

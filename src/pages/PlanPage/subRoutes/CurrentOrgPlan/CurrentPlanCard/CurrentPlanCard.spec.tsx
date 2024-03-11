@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
+import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import CurrentPlanCard from './CurrentPlanCard'
@@ -17,6 +18,7 @@ const proPlanDetails = {
     benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 5,
     value: 'users-inappm',
+    billingRate: null,
   },
 }
 
@@ -52,6 +54,7 @@ const trialPlanDetails = {
   plan: {
     marketingName: 'Pro Trial Team',
     baseUnitPrice: 12,
+    billingRate: null,
     benefits: ['Configurable # of users', 'Unlimited repos'],
     quantity: 5,
     value: 'users-trial',
@@ -62,7 +65,7 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/plan/bb/critical-role']}>
       <Route path="/plan/:provider/:owner">{children}</Route>
