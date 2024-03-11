@@ -70,10 +70,12 @@ beforeAll(() => {
   server.listen()
   jest.spyOn(global.console, 'error')
 })
+
 beforeEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
+
 afterAll(() => {
   server.close()
   jest.resetAllMocks()
@@ -83,6 +85,10 @@ describe('useRepos', () => {
   function setup({ invalidResponse = false } = {}) {
     server.use(
       graphql.query('ReposForOwner', (req, res, ctx) => {
+        if (invalidResponse) {
+          return res(ctx.status(200), ctx.data({}))
+        }
+
         const data = {
           owner: {
             username: 'codecov',
@@ -107,7 +113,8 @@ describe('useRepos', () => {
             },
           },
         }
-        return res(ctx.status(200), ctx.data(invalidResponse ? {} : data))
+
+        return res(ctx.status(200), ctx.data(data))
       })
     )
   }
