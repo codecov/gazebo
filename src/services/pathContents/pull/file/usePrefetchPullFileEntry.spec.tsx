@@ -83,17 +83,57 @@ const mockData = {
   },
 }
 
+const mockDataRepositoryNotFound = {
+  owner: {
+    repository: {
+      __typename: 'NotFoundError',
+      message: 'repository not found',
+    },
+  },
+}
+
+const mockDataOwnerNotActivated = {
+  owner: {
+    repository: {
+      __typename: 'OwnerNotActivatedError',
+      message: 'owner not activated',
+    },
+  },
+}
+
 describe('usePrefetchPullFileEntry', () => {
-  function setup() {
+  function setup({
+    invalidSchema = false,
+    repositoryNotFound = false,
+    ownerNotActivated = false,
+    nullOwner = false,
+  }) {
     server.use(
-      graphql.query('CoverageForFile', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockData))
-      )
+      graphql.query('CoverageForFile', (req, res, ctx) => {
+        if (invalidSchema) {
+          return res(ctx.status(200), ctx.data({}))
+        }
+        if (repositoryNotFound) {
+          return res(ctx.status(200), ctx.data(mockDataRepositoryNotFound))
+        }
+        if (ownerNotActivated) {
+          return res(ctx.status(200), ctx.data(mockDataOwnerNotActivated))
+        }
+        if (nullOwner) {
+          return res(
+            ctx.status(200),
+            ctx.data({
+              owner: null,
+            })
+          )
+        }
+        return res(ctx.status(200), ctx.data(mockData))
+      })
     )
   }
 
   beforeEach(async () => {
-    setup()
+    setup({})
   })
 
   it('returns runPrefetch function', () => {
@@ -141,5 +181,105 @@ describe('usePrefetchPullFileEntry', () => {
       isCriticalFile: true,
       totals: 0,
     })
+  })
+
+  it('fails to parse bad schema', async () => {
+    setup({ invalidSchema: true })
+    const { result } = renderHook(
+      () =>
+        usePrefetchPullFileEntry({
+          ref: 'f00162848a3cebc0728d915763c2fd9e92132408',
+          path: 'src/file.js',
+        }),
+      { wrapper }
+    )
+
+    await result.current.runPrefetch()
+
+    const queryKey = queryClient.getQueriesData({})?.at(0)?.at(0) as Array<any>
+
+    await waitFor(() =>
+      expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
+        expect.objectContaining({
+          status: 404,
+          dev: 'usePrefetchPullFileEntry - 404 schema parsing failed',
+        })
+      )
+    )
+  })
+
+  it('rejects on repository not found error', async () => {
+    setup({ repositoryNotFound: true })
+    const { result } = renderHook(
+      () =>
+        usePrefetchPullFileEntry({
+          ref: 'f00162848a3cebc0728d915763c2fd9e92132408',
+          path: 'src/file.js',
+        }),
+      { wrapper }
+    )
+
+    await result.current.runPrefetch()
+
+    const queryKey = queryClient.getQueriesData({})?.at(0)?.at(0) as Array<any>
+
+    await waitFor(() =>
+      expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
+        expect.objectContaining({
+          status: 404,
+          dev: 'usePrefetchPullFileEntry - 404 NotFoundError',
+        })
+      )
+    )
+  })
+
+  it('rejects on owner not activated error', async () => {
+    setup({ ownerNotActivated: true })
+    const { result } = renderHook(
+      () =>
+        usePrefetchPullFileEntry({
+          ref: 'f00162848a3cebc0728d915763c2fd9e92132408',
+          path: 'src/file.js',
+        }),
+      { wrapper }
+    )
+
+    await result.current.runPrefetch()
+
+    const queryKey = queryClient.getQueriesData({})?.at(0)?.at(0) as Array<any>
+
+    await waitFor(() =>
+      expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
+        expect.objectContaining({
+          status: 403,
+          dev: 'usePrefetchPullFileEntry - 403 OwnerNotActivatedError',
+        })
+      )
+    )
+  })
+
+  it('rejects when cannot extract coverage from response', async () => {
+    setup({ nullOwner: true })
+    const { result } = renderHook(
+      () =>
+        usePrefetchPullFileEntry({
+          ref: 'f00162848a3cebc0728d915763c2fd9e92132408',
+          path: 'src/file.js',
+        }),
+      { wrapper }
+    )
+
+    await result.current.runPrefetch()
+
+    const queryKey = queryClient.getQueriesData({})?.at(0)?.at(0) as Array<any>
+
+    await waitFor(() =>
+      expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
+        expect.objectContaining({
+          status: 404,
+          dev: 'usePrefetchCommitFileEntry - 404 failed to find coverage file',
+        })
+      )
+    )
   })
 })
