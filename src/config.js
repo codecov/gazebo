@@ -46,7 +46,6 @@ export function removeReactAppPrefix(obj) {
       keys['SENTRY_ERROR_SAMPLE_RATE']
     )
   }
-
   return keys
 }
 
