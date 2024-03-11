@@ -63,15 +63,12 @@ function PullCoverageContent() {
 
   const resultType = data?.pull?.compareWithBase?.__typename
 
-  if (
-    resultType !== ComparisonReturnType.SUCCESSFUL_COMPARISON &&
-    resultType !== ComparisonReturnType.FIRST_PULL_REQUEST
-  ) {
-    return <ErrorBanner errorType={resultType} />
-  }
-
   return (
     <Suspense fallback={<Loader />}>
+      {resultType !== ComparisonReturnType.SUCCESSFUL_COMPARISON &&
+      resultType !== ComparisonReturnType.FIRST_PULL_REQUEST ? (
+        <ErrorBanner errorType={resultType} />
+      ) : null}
       <Switch>
         <SentryRoute
           path={[
