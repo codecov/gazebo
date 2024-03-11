@@ -75,55 +75,63 @@ describe('ReposTableTeam', () => {
     return { mockApiVars, fetchNextPage, user }
   }
 
-  describe('when rendered with active true', () => {
-    beforeEach(() => {
-      setup({
-        edges: [
-          {
-            node: {
-              private: false,
-              activated: true,
-              author: {
-                username: 'owner1',
-              },
-              name: 'Repo name 1',
-              latestCommitAt: subDays(new Date(), 3).toISOString(),
-              active: true,
-              lines: 99,
-            },
+  describe('rendering table', () => {
+    const edges = (
+      { coverageEnabled, bundleAnalysisEnabled } = {
+        coverageEnabled: true,
+        bundleAnalysisEnabled: true,
+      }
+    ) => [
+      {
+        node: {
+          private: false,
+          activated: true,
+          author: {
+            username: 'owner1',
           },
-          {
-            node: {
-              private: true,
-              activated: true,
-              author: {
-                username: 'owner1',
-              },
-              name: 'Repo name 2',
-              latestCommitAt: subDays(new Date(), 2).toISOString(),
-              active: true,
-              lines: 101,
-            },
+          name: 'Repo name 1',
+          latestCommitAt: subDays(new Date(), 3).toISOString(),
+          active: true,
+          lines: 99,
+          coverageEnabled,
+          bundleAnalysisEnabled,
+        },
+      },
+      {
+        node: {
+          private: true,
+          activated: true,
+          author: {
+            username: 'owner1',
           },
-          {
-            node: {
-              private: true,
-              activated: true,
-              author: {
-                username: 'owner1',
-              },
-              name: 'Repo name 3',
-              latestCommitAt: null,
-              active: true,
-              lines: 207,
-            },
+          name: 'Repo name 2',
+          latestCommitAt: subDays(new Date(), 2).toISOString(),
+          active: true,
+          lines: 101,
+          coverageEnabled,
+          bundleAnalysisEnabled,
+        },
+      },
+      {
+        node: {
+          private: true,
+          activated: true,
+          author: {
+            username: 'owner1',
           },
-        ],
-      })
-    })
+          name: 'Repo name 3',
+          latestCommitAt: null,
+          active: true,
+          lines: 207,
+          coverageEnabled,
+          bundleAnalysisEnabled,
+        },
+      },
+    ]
 
     describe('renders active table headers', () => {
       it('renders table name header', async () => {
+        setup({ edges: edges() })
         render(<ReposTableTeam searchValue="" />, {
           wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
         })
@@ -133,6 +141,7 @@ describe('ReposTableTeam', () => {
       })
 
       it('renders table last updated header', async () => {
+        setup({ edges: edges() })
         render(<ReposTableTeam searchValue="" />, {
           wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
         })
@@ -142,6 +151,7 @@ describe('ReposTableTeam', () => {
       })
 
       it('renders table tracked lines header', async () => {
+        setup({ edges: edges() })
         render(<ReposTableTeam searchValue="" />, {
           wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
         })
@@ -152,6 +162,7 @@ describe('ReposTableTeam', () => {
     })
 
     it('renders table repo name', async () => {
+      setup({ edges: edges() })
       render(<ReposTableTeam searchValue="" />, {
         wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
       })
@@ -160,27 +171,56 @@ describe('ReposTableTeam', () => {
       expect(buttons.length).toBe(3)
     })
 
-    it('links to /:organization/:owner/:repo', async () => {
-      render(<ReposTableTeam searchValue="" />, {
-        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
-      })
+    describe('rendered with coverageEnabled as true', () => {
+      it('links to /:organization/:owner/:repo', async () => {
+        setup({ edges: edges() })
+        render(<ReposTableTeam searchValue="" />, {
+          wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+        })
 
-      const repo1 = await screen.findByRole('link', {
-        name: 'globe-alt.svg owner1 / Repo name 1',
-      })
-      const repo2 = await screen.findByRole('link', {
-        name: 'lock-closed.svg owner1 / Repo name 2',
-      })
-      const repo3 = await screen.findByRole('link', {
-        name: 'lock-closed.svg owner1 / Repo name 3',
-      })
+        const repo1 = await screen.findByRole('link', {
+          name: 'globe-alt.svg owner1 / Repo name 1',
+        })
+        const repo2 = await screen.findByRole('link', {
+          name: 'lock-closed.svg owner1 / Repo name 2',
+        })
+        const repo3 = await screen.findByRole('link', {
+          name: 'lock-closed.svg owner1 / Repo name 3',
+        })
 
-      expect(repo1).toHaveAttribute('href', '/gl/owner1/Repo name 1')
-      expect(repo2).toHaveAttribute('href', '/gl/owner1/Repo name 2')
-      expect(repo3).toHaveAttribute('href', '/gl/owner1/Repo name 3')
+        expect(repo1).toHaveAttribute('href', '/gl/owner1/Repo name 1')
+        expect(repo2).toHaveAttribute('href', '/gl/owner1/Repo name 2')
+        expect(repo3).toHaveAttribute('href', '/gl/owner1/Repo name 3')
+      })
+    })
+
+    describe('rendered with only bundleAnalysisEnabled as true', () => {
+      it('links to /:organization/:owner/:repo', async () => {
+        setup({
+          edges: edges({ coverageEnabled: false, bundleAnalysisEnabled: true }),
+        })
+        render(<ReposTableTeam searchValue="" />, {
+          wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+        })
+
+        const repo1 = await screen.findByRole('link', {
+          name: 'globe-alt.svg owner1 / Repo name 1',
+        })
+        const repo2 = await screen.findByRole('link', {
+          name: 'lock-closed.svg owner1 / Repo name 2',
+        })
+        const repo3 = await screen.findByRole('link', {
+          name: 'lock-closed.svg owner1 / Repo name 3',
+        })
+
+        expect(repo1).toHaveAttribute('href', '/gl/owner1/Repo name 1/bundles')
+        expect(repo2).toHaveAttribute('href', '/gl/owner1/Repo name 2/bundles')
+        expect(repo3).toHaveAttribute('href', '/gl/owner1/Repo name 3/bundles')
+      })
     })
 
     it('renders last updated column', async () => {
+      setup({ edges: edges() })
       render(<ReposTableTeam searchValue="" />, {
         wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
       })
@@ -194,6 +234,7 @@ describe('ReposTableTeam', () => {
     })
 
     it('renders tracked lines column', async () => {
+      setup({ edges: edges() })
       render(<ReposTableTeam searchValue="" />, {
         wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
       })
@@ -207,7 +248,7 @@ describe('ReposTableTeam', () => {
     })
   })
 
-  describe('when rendered with active false', () => {
+  describe('when rendered with coverageEnabled as false', () => {
     describe('user belongs to org', () => {
       beforeEach(() => {
         setup({
@@ -223,6 +264,8 @@ describe('ReposTableTeam', () => {
                 latestCommitAt: subDays(new Date(), 3).toISOString(),
                 active: false,
                 lines: 99,
+                coverageEnabled: false,
+                bundleAnalysisEnabled: false,
               },
             },
             {
@@ -236,6 +279,8 @@ describe('ReposTableTeam', () => {
                 latestCommitAt: subDays(new Date(), 2).toISOString(),
                 active: false,
                 lines: 101,
+                coverageEnabled: false,
+                bundleAnalysisEnabled: false,
               },
             },
             {
@@ -249,6 +294,8 @@ describe('ReposTableTeam', () => {
                 latestCommitAt: subDays(new Date(), 5).toISOString(),
                 active: false,
                 lines: 207,
+                coverageEnabled: false,
+                bundleAnalysisEnabled: false,
               },
             },
           ],
@@ -307,6 +354,8 @@ describe('ReposTableTeam', () => {
                 latestCommitAt: subDays(new Date(), 3).toISOString(),
                 active: false,
                 lines: 0,
+                coverageEnabled: true,
+                bundleAnalysisEnabled: true,
               },
             },
             {
@@ -320,6 +369,8 @@ describe('ReposTableTeam', () => {
                 latestCommitAt: subDays(new Date(), 2).toISOString(),
                 active: false,
                 lines: 0,
+                coverageEnabled: true,
+                bundleAnalysisEnabled: true,
               },
             },
             {
@@ -333,6 +384,8 @@ describe('ReposTableTeam', () => {
                 latestCommitAt: subDays(new Date(), 5).toISOString(),
                 active: false,
                 lines: 0,
+                coverageEnabled: true,
+                bundleAnalysisEnabled: true,
               },
             },
           ],
@@ -378,7 +431,7 @@ describe('ReposTableTeam', () => {
     })
 
     it('renders no repos detected', async () => {
-      render(<ReposTableTeam />, {
+      render(<ReposTableTeam searchValue="" />, {
         wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
       })
 
@@ -424,6 +477,8 @@ describe('ReposTableTeam', () => {
               latestCommitAt: subDays(new Date(), 3).toISOString(),
               active: false,
               lines: 0,
+              coverageEnabled: true,
+              bundleAnalysisEnabled: true,
             },
           },
         ],
@@ -451,6 +506,8 @@ describe('ReposTableTeam', () => {
               latestCommitAt: subDays(new Date(), 3).toISOString(),
               active: false,
               lines: 0,
+              coverageEnabled: true,
+              bundleAnalysisEnabled: true,
             },
           },
         ],
@@ -485,6 +542,8 @@ describe('ReposTableTeam', () => {
               latestCommitAt: subDays(new Date(), 3).toISOString(),
               active: true,
               lines: 0,
+              coverageEnabled: true,
+              bundleAnalysisEnabled: true,
             },
           },
           {
@@ -498,6 +557,8 @@ describe('ReposTableTeam', () => {
               latestCommitAt: subDays(new Date(), 2).toISOString(),
               active: true,
               lines: 0,
+              coverageEnabled: true,
+              bundleAnalysisEnabled: true,
             },
           },
           {
@@ -511,6 +572,8 @@ describe('ReposTableTeam', () => {
               latestCommitAt: subDays(new Date(), 5).toISOString(),
               active: false,
               lines: 0,
+              coverageEnabled: true,
+              bundleAnalysisEnabled: true,
             },
           },
         ],
@@ -541,6 +604,8 @@ describe('ReposTableTeam', () => {
               latestCommitAt: subDays(new Date(), 3).toISOString(),
               active: true,
               lines: 0,
+              coverageEnabled: true,
+              bundleAnalysisEnabled: true,
             },
           },
           {
@@ -554,6 +619,8 @@ describe('ReposTableTeam', () => {
               latestCommitAt: subDays(new Date(), 2).toISOString(),
               active: true,
               lines: 0,
+              coverageEnabled: true,
+              bundleAnalysisEnabled: true,
             },
           },
           {
@@ -567,6 +634,8 @@ describe('ReposTableTeam', () => {
               latestCommitAt: subDays(new Date(), 5).toISOString(),
               active: false,
               lines: 0,
+              coverageEnabled: true,
+              bundleAnalysisEnabled: true,
             },
           },
         ],
@@ -596,6 +665,8 @@ describe('ReposTableTeam', () => {
               latestCommitAt: subDays(new Date(), 3).toISOString(),
               active: true,
               lines: 0,
+              coverageEnabled: true,
+              bundleAnalysisEnabled: true,
             },
           },
           {
@@ -609,6 +680,8 @@ describe('ReposTableTeam', () => {
               latestCommitAt: subDays(new Date(), 2).toISOString(),
               active: true,
               lines: 0,
+              coverageEnabled: true,
+              bundleAnalysisEnabled: true,
             },
           },
           {
@@ -622,6 +695,8 @@ describe('ReposTableTeam', () => {
               latestCommitAt: subDays(new Date(), 5).toISOString(),
               active: false,
               lines: 0,
+              coverageEnabled: true,
+              bundleAnalysisEnabled: true,
             },
           },
         ],
@@ -652,6 +727,8 @@ describe('ReposTableTeam', () => {
               latestCommitAt: subDays(new Date(), 3).toISOString(),
               active: true,
               lines: 0,
+              coverageEnabled: true,
+              bundleAnalysisEnabled: true,
             },
           },
           {
@@ -665,6 +742,8 @@ describe('ReposTableTeam', () => {
               latestCommitAt: subDays(new Date(), 2).toISOString(),
               active: true,
               lines: 0,
+              coverageEnabled: true,
+              bundleAnalysisEnabled: true,
             },
           },
           {
@@ -678,6 +757,8 @@ describe('ReposTableTeam', () => {
               latestCommitAt: subDays(new Date(), 5).toISOString(),
               active: true,
               lines: 0,
+              coverageEnabled: true,
+              bundleAnalysisEnabled: true,
             },
           },
         ],
@@ -710,6 +791,8 @@ describe('ReposTableTeam', () => {
                 latestCommitAt: subDays(new Date(), 3).toISOString(),
                 active: true,
                 lines: 0,
+                coverageEnabled: true,
+                bundleAnalysisEnabled: true,
               },
             },
             {
@@ -723,6 +806,8 @@ describe('ReposTableTeam', () => {
                 latestCommitAt: subDays(new Date(), 2).toISOString(),
                 active: true,
                 lines: 0,
+                coverageEnabled: true,
+                bundleAnalysisEnabled: true,
               },
             },
             {
@@ -736,6 +821,8 @@ describe('ReposTableTeam', () => {
                 latestCommitAt: subDays(new Date(), 5).toISOString(),
                 active: true,
                 lines: 0,
+                coverageEnabled: true,
+                bundleAnalysisEnabled: true,
               },
             },
           ],
