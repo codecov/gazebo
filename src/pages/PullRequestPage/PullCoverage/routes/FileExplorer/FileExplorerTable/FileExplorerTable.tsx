@@ -91,16 +91,12 @@ function useTableData() {
   const { treePaths } = usePullTreePaths()
   const [sortBy, setSortBy] = useTableDefaultSort()
 
-  const { flags, components, search, displayType } = useMemo(() => {
+  const { components, search, displayType } = useMemo(() => {
     const queryParams = qs.parse(location.search, {
       ignoreQueryPrefix: true,
       depth: 1,
     })
 
-    let flags: string[] | ParsedQs[] | undefined
-    if (isArray(queryParams?.flags) && queryParams?.flags?.length) {
-      flags = queryParams.flags
-    }
     let components: string[] | ParsedQs[] | undefined
     if (isArray(queryParams?.components) && queryParams?.components?.length) {
       components = queryParams.components
@@ -118,7 +114,6 @@ function useTableData() {
     }
 
     return {
-      flags,
       components,
       search,
       displayType,
@@ -138,10 +133,9 @@ function useTableData() {
               parameter: toPathContentsFilterParameter(sortBy[0].id),
             }
           : undefined,
-      flags,
       components,
     }),
-    [sortBy, flags, components, search, displayType]
+    [sortBy, components, search, displayType]
   )
 
   const { data: pullData, isLoading } = useRepoPullContents({
@@ -218,7 +212,6 @@ function useTableData() {
     pathContentsType: pullData?.pathContentsType,
     isLoading,
     isSearching: !!search,
-    hasFlagsSelected: !!flags && flags.length > 0,
     hasComponentsSelected: !!components && components.length > 0,
     sortBy,
     setSortBy,
@@ -231,7 +224,6 @@ function FileExplorerTable() {
     pathContentsType,
     isLoading,
     isSearching,
-    hasFlagsSelected,
     hasComponentsSelected,
     sortBy,
     setSortBy,
@@ -269,7 +261,7 @@ function FileExplorerTable() {
     return (
       <MissingFileData
         isSearching={isSearching}
-        hasFlagsSelected={hasFlagsSelected}
+        hasFlagsSelected={false}
         hasComponentsSelected={hasComponentsSelected}
       />
     )
