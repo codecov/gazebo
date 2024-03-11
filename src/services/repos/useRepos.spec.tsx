@@ -38,6 +38,8 @@ const repo1 = {
     },
   },
   latestCommitAt: null,
+  coverageEnabled: true,
+  bundleAnalysisEnabled: true,
 }
 
 const repo2 = {
@@ -58,46 +60,8 @@ const repo2 = {
     },
   },
   latestCommitAt: null,
-}
-
-const repo3 = {
-  name: 'react',
-  activated: true,
-  active: false,
-  private: false,
-  coverage: null,
-  updatedAt: '2021-04-22T14:09:39.826948+00:00',
-  author: {
-    username: 'facebook',
-  },
-  repositoryConfig: {
-    indicationRange: {
-      upperRange: 80,
-      lowerRange: 60,
-    },
-  },
-  latestCommitAt: null,
-  lines: 20,
-}
-
-const repo4 = {
-  name: 'python',
-  active: false,
-  activated: true,
-  private: false,
-  coverage: null,
-  updatedAt: '2021-04-22T14:09:39.826948+00:00',
-  author: {
-    username: 'felipe',
-  },
-  repositoryConfig: {
-    indicationRange: {
-      upperRange: 80,
-      lowerRange: 60,
-    },
-  },
-  latestCommitAt: null,
-  lines: 29,
+  coverageEnabled: true,
+  bundleAnalysisEnabled: true,
 }
 
 const server = setupServer()
@@ -118,28 +82,20 @@ afterAll(() => {
 describe('useRepos', () => {
   function setup({ invalidResponse = false } = {}) {
     server.use(
-      graphql.query('MyRepos', (req, res, ctx) => {
+      graphql.query('ReposForOwner', (req, res, ctx) => {
         const data = {
-          me: {
-            user: {
-              username: 'febg',
-            },
-            viewableRepositories: {
+          owner: {
+            username: 'codecov',
+            repositories: {
               edges: req.variables.after
                 ? [
                     {
-                      node: repo4,
+                      node: repo2,
                     },
                   ]
                 : [
                     {
                       node: repo1,
-                    },
-                    {
-                      node: repo2,
-                    },
-                    {
-                      node: repo3,
                     },
                   ],
               pageInfo: {
@@ -152,95 +108,41 @@ describe('useRepos', () => {
           },
         }
         return res(ctx.status(200), ctx.data(invalidResponse ? {} : data))
-      }),
-      graphql.query('ReposForOwner', (req, res, ctx) => {
-        const data = {
-          owner: {
-            username: 'codecov',
-            repositories: {
-              edges: [
-                {
-                  node: repo1,
-                },
-                {
-                  node: repo2,
-                },
-              ],
-              pageInfo: {
-                hasNextPage: false,
-                endCursor: 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
-              },
-            },
-          },
-        }
-        return res(ctx.status(200), ctx.data(invalidResponse ? {} : data))
       })
     )
   }
 
-  describe('when called and user is authenticated', () => {
-    beforeEach(() => {
-      setup()
-    })
+  it('returns repositories of the owner', async () => {
+    setup()
+    const { result } = renderHook(
+      () => useRepos({ provider: '', owner: 'codecov' }),
+      {
+        wrapper: wrapper(),
+      }
+    )
 
-    it('returns repositories', async () => {
+    await waitFor(() => {
+      expect(result.current.data?.pages).toEqual([
+        {
+          repos: [repo1],
+          pageInfo: {
+            hasNextPage: true,
+            endCursor: 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
+          },
+        },
+      ])
+    })
+  })
+
+  describe('when calling next page', () => {
+    it('returns next set of repositories', async () => {
+      setup()
       const { result } = renderHook(
-        () =>
-          useRepos({
-            owner: '',
-          }),
+        () => useRepos({ provider: '', owner: '' }),
         {
           wrapper: wrapper(),
         }
       )
-
-      await waitFor(() => {
-        expect(result.current.data?.pages).toEqual([
-          {
-            repos: [repo1, repo2, repo3],
-            pageInfo: {
-              hasNextPage: true,
-              endCursor: 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
-            },
-          },
-        ])
-      })
-    })
-  })
-
-  describe('when called for an owner', () => {
-    beforeEach(() => {
-      setup()
-    })
-
-    it('returns repositories of the owner', async () => {
-      const { result } = renderHook(() => useRepos({ owner: 'codecov' }), {
-        wrapper: wrapper(),
-      })
-
-      await waitFor(() => {
-        expect(result.current.data?.pages).toEqual([
-          {
-            repos: [repo1, repo2],
-            pageInfo: {
-              hasNextPage: false,
-              endCursor: 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
-            },
-          },
-        ])
-      })
-    })
-  })
-
-  describe('when call next page', () => {
-    beforeEach(async () => {
-      setup()
-    })
-
-    it('returns repositories of the user', async () => {
-      const { result } = renderHook(() => useRepos({ owner: '' }), {
-        wrapper: wrapper(),
-      })
 
       await waitFor(() => result.current.isFetching)
       await waitFor(() => !result.current.isFetching)
@@ -250,7 +152,7 @@ describe('useRepos', () => {
       await waitFor(() => {
         expect(result.current.data?.pages).toEqual([
           {
-            repos: [repo1, repo2, repo3],
+            repos: [repo1],
             pageInfo: {
               hasNextPage: true,
               endCursor: 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
@@ -261,34 +163,22 @@ describe('useRepos', () => {
               endCursor: 'aa',
               hasNextPage: false,
             },
-            repos: [repo4],
+            repos: [repo2],
           },
         ])
       })
     })
   })
 
-  describe('error parsing request', () => {
-    it('throws an error', async () => {
-      setup({ invalidResponse: true })
-      const { result } = renderHook(() => useRepos({ owner: '' }), {
-        wrapper: wrapper(),
-      })
-
-      await waitFor(() => expect(result.current.isError).toBeTruthy())
-
-      expect(result.current.error).toEqual(
-        expect.objectContaining({ status: 404 })
-      )
-    })
-  })
-
   describe('error parsing request for owner', () => {
     it('throws an error', async () => {
       setup({ invalidResponse: true })
-      const { result } = renderHook(() => useRepos({ owner: 'owner1' }), {
-        wrapper: wrapper(),
-      })
+      const { result } = renderHook(
+        () => useRepos({ provider: '', owner: 'owner1' }),
+        {
+          wrapper: wrapper(),
+        }
+      )
 
       await waitFor(() => expect(result.current.isError).toBeTruthy())
 
