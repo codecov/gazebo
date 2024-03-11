@@ -8,8 +8,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import FileExplorer from './FileExplorer'
 
-jest.mock('../ComponentsSelector', () => () => 'ComponentsSelector')
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -221,6 +219,32 @@ describe('FileExplorer', () => {
       })
     )
 
+    // Mock so the components selector will be populated
+    server.use(
+      graphql.query('PullComponentsSelector', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              repository: {
+                __typename: 'Repository',
+                pull: {
+                  compareWithBase: {
+                    __typename: 'Comparison',
+                    componentComparisons: [
+                      { name: 'component-1' },
+                      { name: 'component-2' },
+                      { name: 'component-3' },
+                    ],
+                  },
+                },
+              },
+            },
+          })
+        )
+      )
+    )
+
     return { requestFilters, user }
   }
 
@@ -276,7 +300,7 @@ describe('FileExplorer', () => {
         setup()
         render(<FileExplorer />, { wrapper: wrapper() })
 
-        const selector = await screen.findByText('ComponentsSelector')
+        const selector = await screen.findByText('All components')
         expect(selector).toBeInTheDocument()
       })
     })
@@ -695,6 +719,36 @@ describe('FileExplorer', () => {
         expect(await screen.findByText(/no results found/i)).toBeTruthy()
         const noResults = screen.getByText(/no results found/i)
         expect(noResults).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('filtering by component', () => {
+    describe('api variables are being set', () => {
+      it('sets the correct api variables', async () => {
+        const { requestFilters, user } = setup()
+
+        render(<FileExplorer />, { wrapper: wrapper() })
+
+        expect(await screen.findByText('All components')).toBeTruthy()
+        const components = screen.getByText('All components')
+        await user.click(components)
+
+        expect(await screen.findByText('component-1')).toBeTruthy()
+        const component1 = screen.getByText('component-1')
+        await user.click(component1)
+
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
+
+        await waitFor(() =>
+          expect(requestFilters).toHaveBeenCalledWith({
+            components: ['component-1'],
+            displayType: 'TREE',
+            ordering: { direction: 'ASC', parameter: 'NAME' },
+            searchValue: '',
+          })
+        )
       })
     })
   })
