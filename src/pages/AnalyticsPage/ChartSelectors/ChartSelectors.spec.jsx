@@ -80,7 +80,13 @@ afterAll(() => {
 })
 
 describe('ChartSelectors', () => {
-  afterEach(() => jest.resetAllMocks())
+  beforeEach(() => {
+    jest.resetAllMocks()
+  })
+
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
 
   function setup({ hasNextPage = false, tierValue = TierNames.PRO }) {
     // https://github.com/testing-library/user-event/issues/1034
@@ -381,6 +387,7 @@ describe('ChartSelectors', () => {
             activated: true,
             first: Infinity,
             owner: 'codecov',
+            provider: 'gh',
             sortItem: {
               direction: 'ASC',
               ordering: 'NAME',
@@ -506,6 +513,7 @@ describe('ChartSelectors', () => {
           activated: true,
           first: Infinity,
           owner: 'codecov',
+          provider: 'gh',
           sortItem: {
             direction: 'ASC',
             ordering: 'NAME',
