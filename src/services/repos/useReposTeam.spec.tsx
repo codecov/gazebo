@@ -27,6 +27,8 @@ const repo1 = {
   author: {
     username: 'codecov',
   },
+  coverageEnabled: true,
+  bundleAnalysisEnabled: true,
 }
 
 const repo2 = {
@@ -39,6 +41,8 @@ const repo2 = {
   author: {
     username: 'codecov',
   },
+  coverageEnabled: true,
+  bundleAnalysisEnabled: true,
 }
 
 const repo3 = {
@@ -51,6 +55,8 @@ const repo3 = {
   author: {
     username: 'codecov',
   },
+  coverageEnabled: true,
+  bundleAnalysisEnabled: true,
 }
 
 const repo4 = {
@@ -63,6 +69,8 @@ const repo4 = {
   author: {
     username: 'codecov',
   },
+  coverageEnabled: true,
+  bundleAnalysisEnabled: true,
 }
 
 const server = setupServer()
