@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 
-import ComponentsMultiSelect from 'pages/RepoPage/CoverageTab/subroute/ComponentsMultiSelect'
+import ComponentsMultiSelect from 'pages/PullRequestPage/PullCoverage/routes/ComponentsSelector'
 import { useRepoOverview } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'

@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom'
 
+import ToggleHeader from 'pages/PullRequestPage/Header/ToggleHeader/ToggleHeader'
 import RawFileviewer from 'shared/RawFileviewer'
 import { usePullTreePaths } from 'shared/treePaths'
 import Breadcrumb from 'ui/Breadcrumb'
@@ -13,6 +14,7 @@ function FileViewer() {
 
   return (
     <>
+      <ToggleHeader />
       <RawFileviewer
         title={
           <div className="text-sm font-normal">
@@ -22,7 +24,6 @@ function FileViewer() {
         commit={data?.pull?.head?.commitid}
         withKey={false}
         stickyPadding={410}
-        showComponentsSelect
       />
     </>
   )

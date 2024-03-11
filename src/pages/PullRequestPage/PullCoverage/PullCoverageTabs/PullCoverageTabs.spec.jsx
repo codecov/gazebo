@@ -396,41 +396,6 @@ describe('PullCoverageTabs', () => {
     })
   })
 
-  describe('rendering toggle header legend', () => {
-    beforeEach(() => setup())
-
-    it('renders uncovered legend', async () => {
-      render(<PullCoverageTabs />, { wrapper: wrapper() })
-
-      const legend = await screen.findByText('uncovered')
-      expect(legend).toBeInTheDocument()
-    })
-
-    it('renders partial legend', async () => {
-      render(<PullCoverageTabs />, { wrapper: wrapper() })
-
-      const legend = await screen.findByText('partial')
-      expect(legend).toBeInTheDocument()
-    })
-
-    it('renders covered legend', async () => {
-      render(<PullCoverageTabs />, { wrapper: wrapper() })
-
-      const legend = await screen.findByText('covered')
-      expect(legend).toBeInTheDocument()
-    })
-
-    it('renders hit count legend', async () => {
-      render(<PullCoverageTabs />, { wrapper: wrapper() })
-
-      const hitIcon = await screen.findByText('n')
-      expect(hitIcon).toBeInTheDocument()
-
-      const legend = await screen.findByText('upload #')
-      expect(legend).toBeInTheDocument()
-    })
-  })
-
   describe('Team plan', () => {
     describe('with multiple tiers flag', () => {
       describe('is a team plan on a public repo', () => {
@@ -462,13 +427,6 @@ describe('PullCoverageTabs', () => {
 
           const componentsTab = await screen.findByText('Components')
           expect(componentsTab).toBeInTheDocument()
-        })
-
-        it('does render the flag select', async () => {
-          render(<PullCoverageTabs />, { wrapper: wrapper() })
-
-          const flagSelect = await screen.findByText('Search for Flags')
-          expect(flagSelect).toBeInTheDocument()
         })
       })
 
@@ -540,13 +498,6 @@ describe('PullCoverageTabs', () => {
 
           const componentsTab = await screen.findByText('Components')
           expect(componentsTab).toBeInTheDocument()
-        })
-
-        it('does render the flag select', async () => {
-          render(<PullCoverageTabs />, { wrapper: wrapper() })
-
-          const flagSelect = await screen.findByText('Search for Flags')
-          expect(flagSelect).toBeInTheDocument()
         })
       })
 
@@ -620,13 +571,6 @@ describe('PullCoverageTabs', () => {
           const componentsTab = await screen.findByText('Components')
           expect(componentsTab).toBeInTheDocument()
         })
-
-        it('does render the flag select', async () => {
-          render(<PullCoverageTabs />, { wrapper: wrapper() })
-
-          const flagSelect = await screen.findByText('Search for Flags')
-          expect(flagSelect).toBeInTheDocument()
-        })
       })
 
       describe('is a team plan on a private repo', () => {
@@ -697,13 +641,6 @@ describe('PullCoverageTabs', () => {
 
           const componentsTab = await screen.findByText('Components')
           expect(componentsTab).toBeInTheDocument()
-        })
-
-        it('does render the flag select', async () => {
-          render(<PullCoverageTabs />, { wrapper: wrapper() })
-
-          const flagSelect = await screen.findByText('Search for Flags')
-          expect(flagSelect).toBeInTheDocument()
         })
       })
 
