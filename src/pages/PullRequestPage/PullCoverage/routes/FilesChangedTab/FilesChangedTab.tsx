@@ -1,12 +1,12 @@
 import { lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
+import ToggleHeader from 'pages/PullRequestPage/Header/ToggleHeader/ToggleHeader'
 import { useRepoSettingsTeam } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 import Spinner from 'ui/Spinner'
 
-import ComponentsSelector from '../ComponentsSelector'
 
 const FilesChangedTable = lazy(() => import('./FilesChanged'))
 const TeamFilesChangedTable = lazy(() => import('./FilesChanged/TableTeam'))
@@ -42,6 +42,7 @@ function FilesChangedTab() {
   ) {
     return (
       <Suspense fallback={<Loader />}>
+        <ToggleHeader showComponentsSelect />
         <TeamFilesChangedTable />
       </Suspense>
     )
@@ -49,9 +50,7 @@ function FilesChangedTab() {
 
   return (
     <Suspense fallback={<Loader />}>
-      <div className="flex justify-end bg-ds-gray-primary p-2">
-        <ComponentsSelector />
-      </div>
+      <ToggleHeader showFlagsSelect showComponentsSelect />
       <FilesChangedTable />
     </Suspense>
   )

@@ -8,7 +8,6 @@ import {
 import { useRepoOverview } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
-import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import TabNavigation from 'ui/TabNavigation'
 
 import { useTabsCounts } from './hooks'
@@ -88,13 +87,13 @@ function PullCoverageTabs() {
             location: customLocation,
           },
         ]}
-        component={
-          <ToggleHeader
-            coverageIsLoading={false}
-            showHitCount={true}
-            showFlagsSelect={false}
-          />
-        }
+        // component={
+        //   <ToggleHeader
+        //     coverageIsLoading={false}
+        //     showHitCount={true}
+        //     showFlagsSelect={false}
+        //   />
+        // }
       />
     )
   }
@@ -160,13 +159,6 @@ function PullCoverageTabs() {
           location: customLocation,
         },
       ]}
-      component={
-        <ToggleHeader
-          coverageIsLoading={false}
-          showHitCount={true}
-          showFlagsSelect={tierData !== TierNames.TEAM || !overview?.private}
-        />
-      }
     />
   )
 }

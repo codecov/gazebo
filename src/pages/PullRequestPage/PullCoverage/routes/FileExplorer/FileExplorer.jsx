@@ -2,6 +2,7 @@ import qs from 'qs'
 import { useLocation } from 'react-router-dom'
 
 import Table from 'old_ui/Table'
+import ToggleHeader from 'pages/PullRequestPage/Header/ToggleHeader/ToggleHeader'
 import { useLocationParams } from 'services/navigation'
 import ContentsTableHeader from 'shared/ContentsTable/ContentsTableHeader'
 import DisplayTypeButton from 'shared/ContentsTable/DisplayTypeButton'
@@ -12,8 +13,6 @@ import SearchField from 'ui/SearchField'
 import Spinner from 'ui/Spinner'
 
 import { useRepoPullContentsTable } from './hooks'
-
-import ComponentsSelector from '../ComponentsSelector'
 
 const Loader = () => (
   <div className="flex flex-1 justify-center">
@@ -64,7 +63,7 @@ function FileExplorer() {
           <Breadcrumb paths={treePaths} />
         </div>
         <div className="flex gap-2">
-          <ComponentsSelector />
+          {/* <ComponentsSelector /> */}
           <SearchField
             dataMarketing="pull-files-search"
             placeholder="Search for files"
@@ -73,6 +72,10 @@ function FileExplorer() {
           />
         </div>
       </ContentsTableHeader>
+      {/* Probably want to do team plan here too */}
+      <div className={`border-t border-ds-gray-tertiary`}>
+        <ToggleHeader showComponentsSelect showFlagsSelect />
+      </div>
       <Table
         data={data}
         columns={headers}

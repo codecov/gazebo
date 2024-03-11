@@ -16,8 +16,6 @@ import TotalsNumber from 'ui/TotalsNumber'
 import ComponentsNotConfigured from './ComponentsNotConfigured'
 import { ComponentsComparison, useComponentComparison } from './hooks'
 
-import ComponentsSelector from '../ComponentsSelector'
-
 import 'ui/Table/Table.css'
 
 const Loader = () => (
@@ -132,9 +130,6 @@ export default function ComponentsTable() {
 
   return (
     <>
-      <div className="flex justify-end bg-ds-gray-primary p-2">
-        <ComponentsSelector />
-      </div>
       <div className="tableui">
         <table>
           <colgroup>
