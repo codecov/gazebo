@@ -1,5 +1,7 @@
+import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -61,6 +63,10 @@ afterAll(() => {
 
 describe('WebpackOnboarding', () => {
   function setup(hasOrgUploadToken: boolean | null) {
+    // mock out to clear error
+    window.prompt = jest.fn()
+    const user = userEvent.setup()
+
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockGetRepo))
@@ -72,7 +78,24 @@ describe('WebpackOnboarding', () => {
         )
       })
     )
+
+    return { user }
   }
+
+  describe('rendering onboarding', () => {
+    it('sends webpack onboarding metric', async () => {
+      setup(null)
+      render(<WebpackOnboarding />, { wrapper })
+
+      await waitFor(() =>
+        expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+          'bundles_tab.onboarding.visited_page',
+          1,
+          { tags: { bundler: 'webpack' } }
+        )
+      )
+    })
+  })
 
   describe('step 1', () => {
     it('renders header', async () => {
@@ -100,34 +123,100 @@ describe('WebpackOnboarding', () => {
     })
 
     describe('code blocks', () => {
-      it('renders npm install', async () => {
-        setup(null)
-        render(<WebpackOnboarding />, { wrapper })
+      describe('npm', () => {
+        it('renders npm install', async () => {
+          setup(null)
+          render(<WebpackOnboarding />, { wrapper })
 
-        const npmInstallCommand = await screen.findByText(
-          'npm install @codecov/webpack-plugin --save-dev'
-        )
-        expect(npmInstallCommand).toBeInTheDocument()
+          const npmInstallCommand = await screen.findByText(
+            'npm install @codecov/webpack-plugin --save-dev'
+          )
+          expect(npmInstallCommand).toBeInTheDocument()
+        })
+
+        describe('user clicks copy button', () => {
+          it('sends metric to sentry', async () => {
+            const { user } = setup(null)
+            render(<WebpackOnboarding />, { wrapper })
+
+            const npmInstallCopy = await screen.findByTestId(
+              'clipboard-npm-install'
+            )
+            await user.click(npmInstallCopy)
+
+            await waitFor(() =>
+              expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+                'bundles_tab.onboarding.copied.install_command',
+                1,
+                { tags: { package_manager: 'npm', bundler: 'webpack' } }
+              )
+            )
+          })
+        })
       })
 
-      it('renders yarn install', async () => {
-        setup(null)
-        render(<WebpackOnboarding />, { wrapper })
+      describe('yarn', () => {
+        it('renders yarn install', async () => {
+          setup(null)
+          render(<WebpackOnboarding />, { wrapper })
 
-        const yarnInstallCommand = await screen.findByText(
-          'yarn add @codecov/webpack-plugin --dev'
-        )
-        expect(yarnInstallCommand).toBeInTheDocument()
+          const yarnInstallCommand = await screen.findByText(
+            'yarn add @codecov/webpack-plugin --dev'
+          )
+          expect(yarnInstallCommand).toBeInTheDocument()
+        })
+
+        describe('user clicks copy button', () => {
+          it('sends metric to sentry', async () => {
+            const { user } = setup(null)
+            render(<WebpackOnboarding />, { wrapper })
+
+            const yarnInstallCopy = await screen.findByTestId(
+              'clipboard-yarn-install'
+            )
+            await user.click(yarnInstallCopy)
+
+            await waitFor(() =>
+              expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+                'bundles_tab.onboarding.copied.install_command',
+                1,
+                { tags: { package_manager: 'yarn', bundler: 'webpack' } }
+              )
+            )
+          })
+        })
       })
 
-      it('renders pnpm install', async () => {
-        setup(null)
-        render(<WebpackOnboarding />, { wrapper })
+      describe('pnpm', () => {
+        it('renders pnpm install', async () => {
+          setup(null)
+          render(<WebpackOnboarding />, { wrapper })
 
-        const pnpmInstallCommand = await screen.findByText(
-          'pnpm add @codecov/webpack-plugin --save-dev'
-        )
-        expect(pnpmInstallCommand).toBeInTheDocument()
+          const pnpmInstallCommand = await screen.findByText(
+            'pnpm add @codecov/webpack-plugin --save-dev'
+          )
+          expect(pnpmInstallCommand).toBeInTheDocument()
+        })
+
+        describe('user clicks copy button', () => {
+          it('sends metric to sentry', async () => {
+            const { user } = setup(null)
+            render(<WebpackOnboarding />, { wrapper })
+
+            const pnpmInstallCopy = await screen.findByTestId(
+              'clipboard-pnpm-install'
+            )
+            await user.click(pnpmInstallCopy)
+
+            await waitFor(() =>
+              expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+                'bundles_tab.onboarding.copied.install_command',
+                1,
+                { tags: { package_manager: 'pnpm', bundler: 'webpack' } }
+              )
+            )
+          })
+        })
       })
     })
   })
@@ -177,6 +266,26 @@ describe('WebpackOnboarding', () => {
         expect(token).toBeInTheDocument()
       })
     })
+
+    describe('user clicks copy button', () => {
+      it('sends metric to sentry', async () => {
+        const { user } = setup(true)
+        render(<WebpackOnboarding />, { wrapper })
+
+        const uploadTokenCopy = await screen.findByTestId(
+          'clipboard-upload-token'
+        )
+        await user.click(uploadTokenCopy)
+
+        await waitFor(() =>
+          expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+            'bundles_tab.onboarding.copied.token',
+            1,
+            { tags: { bundler: 'webpack' } }
+          )
+        )
+      })
+    })
   })
 
   describe('step 3', () => {
@@ -211,6 +320,26 @@ describe('WebpackOnboarding', () => {
       const pluginText = await screen.findByText(/\/\/ webpack.config.js/)
       expect(pluginText).toBeInTheDocument()
     })
+
+    describe('user clicks copy button', () => {
+      it('sends metric to sentry', async () => {
+        const { user } = setup(true)
+        render(<WebpackOnboarding />, { wrapper })
+
+        const pluginConfigCopy = await screen.findByTestId(
+          'clipboard-plugin-config'
+        )
+        await user.click(pluginConfigCopy)
+
+        await waitFor(() =>
+          expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+            'bundles_tab.onboarding.copied.config',
+            1,
+            { tags: { bundler: 'webpack' } }
+          )
+        )
+      })
+    })
   })
 
   describe('step 4', () => {
@@ -244,6 +373,26 @@ describe('WebpackOnboarding', () => {
       )
       expect(gitCommit).toBeInTheDocument()
     })
+
+    describe('user clicks copy button', () => {
+      it('sends metric to sentry', async () => {
+        const { user } = setup(true)
+        render(<WebpackOnboarding />, { wrapper })
+
+        const commitCommand = await screen.findByTestId(
+          'clipboard-commit-command'
+        )
+        await user.click(commitCommand)
+
+        await waitFor(() =>
+          expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+            'bundles_tab.onboarding.copied.commit',
+            1,
+            { tags: { bundler: 'webpack' } }
+          )
+        )
+      })
+    })
   })
 
   describe('step 5', () => {
@@ -269,28 +418,94 @@ describe('WebpackOnboarding', () => {
     })
 
     describe('renders code block', () => {
-      it('renders npm build', async () => {
-        setup(null)
-        render(<WebpackOnboarding />, { wrapper })
+      describe('npm', () => {
+        it('renders npm build', async () => {
+          setup(null)
+          render(<WebpackOnboarding />, { wrapper })
 
-        const npmBuild = await screen.findByText('npm run build')
-        expect(npmBuild).toBeInTheDocument()
+          const npmBuild = await screen.findByText('npm run build')
+          expect(npmBuild).toBeInTheDocument()
+        })
+
+        describe('user clicks copy button', () => {
+          it('sends metric to sentry', async () => {
+            const { user } = setup(true)
+            render(<WebpackOnboarding />, { wrapper })
+
+            const npmBuildCommand = await screen.findByTestId(
+              'clipboard-npm-build'
+            )
+            await user.click(npmBuildCommand)
+
+            await waitFor(() =>
+              expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+                'bundles_tab.onboarding.copied.build_command',
+                1,
+                { tags: { package_manager: 'npm', bundler: 'webpack' } }
+              )
+            )
+          })
+        })
       })
 
-      it('renders yarn build', async () => {
-        setup(null)
-        render(<WebpackOnboarding />, { wrapper })
+      describe('yarn', () => {
+        it('renders yarn build', async () => {
+          setup(null)
+          render(<WebpackOnboarding />, { wrapper })
 
-        const yarnBuild = await screen.findByText('yarn run build')
-        expect(yarnBuild).toBeInTheDocument()
+          const yarnBuild = await screen.findByText('yarn run build')
+          expect(yarnBuild).toBeInTheDocument()
+        })
+
+        describe('user clicks copy button', () => {
+          it('sends metric to sentry', async () => {
+            const { user } = setup(true)
+            render(<WebpackOnboarding />, { wrapper })
+
+            const yarnBuildCommand = await screen.findByTestId(
+              'clipboard-yarn-build'
+            )
+            await user.click(yarnBuildCommand)
+
+            await waitFor(() =>
+              expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+                'bundles_tab.onboarding.copied.build_command',
+                1,
+                { tags: { package_manager: 'yarn', bundler: 'webpack' } }
+              )
+            )
+          })
+        })
       })
 
-      it('renders pnpm build', async () => {
-        setup(null)
-        render(<WebpackOnboarding />, { wrapper })
+      describe('pnpm', () => {
+        it('renders pnpm build', async () => {
+          setup(null)
+          render(<WebpackOnboarding />, { wrapper })
 
-        const pnpmBuild = await screen.findByText('pnpm run build')
-        expect(pnpmBuild).toBeInTheDocument()
+          const pnpmBuild = await screen.findByText('pnpm run build')
+          expect(pnpmBuild).toBeInTheDocument()
+        })
+
+        describe('user clicks copy button', () => {
+          it('sends metric to sentry', async () => {
+            const { user } = setup(true)
+            render(<WebpackOnboarding />, { wrapper })
+
+            const pnpmBuildCommand = await screen.findByTestId(
+              'clipboard-pnpm-build'
+            )
+            await user.click(pnpmBuildCommand)
+
+            await waitFor(() =>
+              expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+                'bundles_tab.onboarding.copied.build_command',
+                1,
+                { tags: { package_manager: 'pnpm', bundler: 'webpack' } }
+              )
+            )
+          })
+        })
       })
     })
   })

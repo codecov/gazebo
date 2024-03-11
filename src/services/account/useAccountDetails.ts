@@ -10,12 +10,12 @@ export const InvoiceSchema = z
     amountPaid: z.number().nullable(),
     amountRemaining: z.number().nullable(),
     currency: z.string().nullable(),
-    customerAddress: z.object({}).nullish(),
+    customerAddress: z.string().nullish(),
     customerName: z.string().nullable(),
     created: z.number(),
-    dueDate: z.number(),
+    dueDate: z.number().nullish(),
     id: z.string().nullable(),
-    invoicePdf: z.string(),
+    invoicePdf: z.string().nullable(),
     lineItems: z
       .array(
         z.object({
@@ -77,11 +77,12 @@ export const SubscriptionDetailSchema = z
     currentPeriodEnd: z.number(),
     customer: z
       .object({
-        discount: z.number(),
+        // TODO: fix this. This has a different shape in the backend, not just an int
+        discount: z.number().nullish(),
         email: z.string(),
       })
       .nullable(),
-    defaultPaymentMethod: PaymentMethodSchema,
+    defaultPaymentMethod: PaymentMethodSchema.nullable(),
     latestInvoice: InvoiceSchema,
     trialEnd: z.number().nullish(),
   })
@@ -110,7 +111,7 @@ export const AccountDetailsSchema = z.object({
   name: z.string().nullable(),
   nbActivePrivateRepos: z.number().nullable(),
   plan: PlanSchema,
-  planAutoActivate: z.boolean(),
+  planAutoActivate: z.boolean().nullable(),
   planProvider: z.string().nullable(),
   repoTotalCredits: z.number(),
   rootOrganization: z
@@ -175,12 +176,10 @@ export function useAccountDetails({
         // TODO: remove this bandage once we convert remaining useAccountDetails components to TS
         // including tests.
         if (process.env.REACT_APP_ZOD_IGNORE_TESTS === 'true') {
-          return res
+          return res as z.infer<typeof AccountDetailsSchema>
         }
 
         const parsedRes = AccountDetailsSchema.safeParse(res)
-
-        console.log(parsedRes)
 
         if (!parsedRes.success) {
           return Promise.reject({

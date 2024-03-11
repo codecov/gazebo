@@ -40,7 +40,7 @@ describe('determineProgressColor', () => {
   describe('coverage value is not a number', () => {
     it('returns default', () => {
       const result = determineProgressColor({
-        coverage: 'coverage',
+        coverage: null,
         upperRange: 80,
         lowerRange: 60,
       })

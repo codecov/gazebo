@@ -13,10 +13,12 @@ const EmptyTable: React.FC = () => {
           <tr>
             <th>Bundle name</th>
             <th>
-              <div className="flex flex-row-reverse">Current size</div>
+              <div className="flex flex-row-reverse justify-end">
+                Current size
+              </div>
             </th>
             <th>
-              <div className="flex flex-row-reverse">
+              <div className="flex flex-row-reverse justify-end">
                 Estimated load time (3G)
               </div>
             </th>

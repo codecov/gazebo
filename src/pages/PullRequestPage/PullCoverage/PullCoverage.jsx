@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { Redirect, Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
@@ -8,6 +8,7 @@ import { useRepoOverview } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 import { ComparisonReturnType } from 'shared/utils/comparison'
+import { metrics } from 'shared/utils/metrics'
 import Spinner from 'ui/Spinner'
 
 import ErrorBanner from './ErrorBanner'
@@ -36,10 +37,19 @@ const Loader = () => (
 function PullCoverageContent() {
   const { owner, repo, pullId, provider } = useParams()
   const { data: overview } = useRepoOverview({ provider, owner, repo })
+  const { data: tierData } = useTier({ provider, owner })
   const { multipleTiers } = useFlags({
     multipleTiers: false,
   })
-  const { data: tierData } = useTier({ provider, owner })
+
+  useEffect(() => {
+    if (overview?.bundleAnalysisEnabled && overview?.coverageEnabled) {
+      metrics.increment('pull_request_page.coverage_dropdown.opened', 1)
+    } else if (overview?.coverageEnabled) {
+      metrics.increment('pull_request_page.coverage_page.visited_page', 1)
+    }
+  }, [overview?.bundleAnalysisEnabled, overview?.coverageEnabled])
+
   const isTeamPlan =
     multipleTiers && tierData === TierNames.TEAM && overview?.private
 
@@ -131,6 +141,15 @@ function PullCoverage() {
     multipleTiers: false,
   })
   const { data: tierData } = useTier({ provider, owner })
+
+  useEffect(() => {
+    if (overview?.bundleAnalysisEnabled && overview?.coverageEnabled) {
+      metrics.increment('pull_request_page.coverage_dropdown.opened', 1)
+    } else if (overview?.coverageEnabled) {
+      metrics.increment('pull_request_page.coverage_page.visited_page', 1)
+    }
+  }, [overview?.bundleAnalysisEnabled, overview?.coverageEnabled])
+
   const isTeamPlan =
     multipleTiers && tierData === TierNames.TEAM && overview?.private
 
