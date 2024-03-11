@@ -8,21 +8,32 @@ import InfoMessageCancellation from './InfoMessageCancellation'
 import InfoMessageStripeCallback from './InfoMessageStripeCallback'
 import LatestInvoiceCard from './LatestInvoiceCard'
 
+interface URLParams {
+  provider: string
+  owner: string
+}
+
 function CurrentOrgPlan() {
-  const { provider, owner } = useParams()
-  const { data: accountDetails } = useAccountDetails({ provider, owner })
-  const shouldRenderBillingDetails = [
-    accountDetails?.planProvider !== 'github',
-    !accountDetails?.rootOrganization,
-  ].every(Boolean)
+  const { provider, owner } = useParams<URLParams>()
+  const { data: accountDetails } = useAccountDetails({
+    provider,
+    owner,
+  })
+
+  const shouldRenderBillingDetails =
+    (accountDetails?.planProvider !== 'github' &&
+      !accountDetails?.rootOrganization) ||
+    accountDetails?.usesInvoice
 
   return (
     <div className="w-full lg:w-4/5">
-      <InfoMessageCancellation
-        subscriptionDetail={accountDetails?.subscriptionDetail}
-      />
+      {accountDetails?.subscriptionDetail ? (
+        <InfoMessageCancellation
+          subscriptionDetail={accountDetails?.subscriptionDetail}
+        />
+      ) : null}
       <InfoMessageStripeCallback />
-      {accountDetails?.plan && (
+      {accountDetails?.plan ? (
         <div className="flex flex-col gap-4 sm:mr-4 sm:flex-initial md:w-2/3 lg:w-3/4">
           <CurrentPlanCard />
           {shouldRenderBillingDetails && (
@@ -32,7 +43,7 @@ function CurrentOrgPlan() {
             </>
           )}
         </div>
-      )}
+      ) : null}
     </div>
   )
 }

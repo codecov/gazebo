@@ -26,8 +26,8 @@ const UpdateButton: React.FC<BillingControlsProps> = ({
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
 
-  const currentPlanValue = accountDetails?.plan?.value
-  const currentPlanQuantity = accountDetails?.plan?.quantity
+  const currentPlanValue = accountDetails?.plan?.value || '0'
+  const currentPlanQuantity = accountDetails?.plan?.quantity || 0
 
   const isSamePlan = newPlan === currentPlanValue
   const noChangeInSeats = seats === currentPlanQuantity

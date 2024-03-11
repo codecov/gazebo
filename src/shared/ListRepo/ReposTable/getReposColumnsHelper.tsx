@@ -24,11 +24,19 @@ export const getReposColumnsHelper = ({
     id: 'name',
     cell: (info) => {
       const repo = info.row.original
+
+      let pageName = 'new'
+      if (!!repo?.coverageEnabled) {
+        pageName = 'repo'
+      } else if (!!repo?.bundleAnalysisEnabled) {
+        pageName = 'bundles'
+      }
+
       return (
         <RepoTitleLink
           repo={repo}
           showRepoOwner={!owner}
-          pageName={!!repo?.active ? 'repo' : 'new'}
+          pageName={pageName}
           disabledLink={!isCurrentUserPartOfOrg && !repo?.active}
         />
       )
@@ -88,7 +96,6 @@ export const getReposColumnsHelper = ({
         const repo = info.row.original
         return typeof repo?.coverage === 'number' ? (
           <TotalsNumber
-            className
             value={repo.coverage}
             plain={true}
             light={false}

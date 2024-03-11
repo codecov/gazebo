@@ -1,5 +1,6 @@
+import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
@@ -98,6 +99,23 @@ const mockComparisonError = {
   },
 }
 
+const mockRepoOverview = ({
+  bundleAnalysisEnabled = false,
+  coverageEnabled = false,
+}) => ({
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      private: false,
+      defaultBranch: 'main',
+      oldestCommitAt: '2022-10-10T11:59:59',
+      coverageEnabled,
+      bundleAnalysisEnabled,
+      languages: ['javascript'],
+    },
+  },
+})
+
 const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -186,6 +204,12 @@ describe('CommitBundleAnalysis', () => {
         }
 
         return res(ctx.status(200), ctx.data(mockSummaryData(sizeDelta)))
+      }),
+      graphql.query('GetRepoOverview', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data(mockRepoOverview({ coverageEnabled, bundleAnalysisEnabled }))
+        )
       })
     )
   }
@@ -199,6 +223,20 @@ describe('CommitBundleAnalysis', () => {
         'CommitBundleAnalysisTable'
       )
       expect(commitBundleAnalysisTable).toBeInTheDocument()
+    })
+
+    it('sends bundle dropdown metric to sentry', async () => {
+      setup({ coverageEnabled: true, bundleAnalysisEnabled: true })
+      render(<CommitBundleAnalysis />, { wrapper })
+
+      await waitFor(() => expect(Sentry.metrics.increment).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+          'commit_detail_page.bundle_dropdown.opened',
+          1,
+          undefined
+        )
+      )
     })
 
     describe('there is no data', () => {
@@ -483,6 +521,20 @@ describe('CommitBundleAnalysis', () => {
         'CommitBundleAnalysisTable'
       )
       expect(commitBundleAnalysisTable).toBeInTheDocument()
+    })
+
+    it('sends bundle dropdown metric to sentry', async () => {
+      setup({ coverageEnabled: false, bundleAnalysisEnabled: true })
+      render(<CommitBundleAnalysis />, { wrapper })
+
+      await waitFor(() => expect(Sentry.metrics.increment).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+          'commit_detail_page.bundle_page.visited_page',
+          1,
+          undefined
+        )
+      )
     })
   })
 })

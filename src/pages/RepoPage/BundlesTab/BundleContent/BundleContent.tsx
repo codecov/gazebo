@@ -1,8 +1,9 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { Route, Switch, useParams } from 'react-router-dom'
 
 import { useBranchBundleSummary } from 'services/bundleAnalysis'
 import { useFlags } from 'shared/featureFlags'
+import { metrics } from 'shared/utils/metrics'
 import Spinner from 'ui/Spinner'
 
 import AssetsTable from './AssetsTable'
@@ -32,6 +33,10 @@ const BundleContent: React.FC = () => {
   const { newBundleTab } = useFlags({
     newBundleTab: false,
   })
+
+  useEffect(() => {
+    metrics.increment('bundles_tab.bundle_details.visited_page', 1)
+  }, [])
 
   const { data } = useBranchBundleSummary({ provider, owner, repo, branch })
 

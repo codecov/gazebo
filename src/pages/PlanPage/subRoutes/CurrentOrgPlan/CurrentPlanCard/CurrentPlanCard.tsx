@@ -12,8 +12,13 @@ import EnterprisePlanCard from './EnterprisePlanCard'
 import FreePlanCard from './FreePlanCard'
 import PaidPlanCard from './PaidPlanCard'
 
+interface URLParams {
+  provider: string
+  owner: string
+}
+
 function CurrentPlanCard() {
-  const { provider, owner } = useParams()
+  const { provider, owner } = useParams<URLParams>()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
   const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase

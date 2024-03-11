@@ -109,24 +109,15 @@ function Example() {
     }),
     columnHelper.accessor('head', {
       header: () => 'HEAD %',
-      cell: (info) => (
-        /* @ts-expect-error */
-        <TotalsNumber value={info.renderValue()} plain />
-      ),
+      cell: (info) => <TotalsNumber value={info.renderValue()} plain />,
     }),
     columnHelper.accessor('patch', {
       header: () => 'Patch %',
-      cell: (info) => (
-        /* @ts-expect-error */
-        <TotalsNumber value={info.renderValue()} plain />
-      ),
+      cell: (info) => <TotalsNumber value={info.renderValue()} plain />,
     }),
     columnHelper.accessor('change', {
       header: () => 'Change',
-      cell: (info) => (
-        /* @ts-expect-error */
-        <TotalsNumber value={info.renderValue()} />
-      ),
+      cell: (info) => <TotalsNumber value={info.renderValue()} />,
     }),
   ]
 
@@ -225,17 +216,14 @@ function Example() {
                         <div className="font-mono">{row.original.missed}</div>
                       </div>
                       <div>
-                        {/* @ts-expect-error */}
                         head: <TotalsNumber value={row.original.head} plain />
                       </div>
                       <div>
                         {' '}
-                        {/* @ts-expect-error */}
                         patch: <TotalsNumber value={row.original.patch} plain />
                       </div>
                       <div>
                         {' '}
-                        {/* @ts-expect-error */}
                         Change: <TotalsNumber value={row.original.change} />
                       </div>
                     </div>

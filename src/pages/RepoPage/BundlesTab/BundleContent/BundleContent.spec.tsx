@@ -1,5 +1,6 @@
+import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
@@ -39,9 +40,19 @@ const mockBranchBundles = {
           commitid: '543a5268dce725d85be7747c0f9b61e9a68dea57',
           bundleAnalysisReport: {
             __typename: 'BundleAnalysisReport',
-            sizeTotal: 100,
-            loadTimeTotal: 200,
-            bundles: [{ name: 'bundle1', sizeTotal: 50, loadTimeTotal: 100 }],
+            bundleData: {
+              loadTime: { threeG: 200 },
+              size: { uncompress: 100 },
+            },
+            bundles: [
+              {
+                name: 'bundle1',
+                bundleData: {
+                  loadTime: { threeG: 100 },
+                  size: { uncompress: 50 },
+                },
+              },
+            ],
           },
         },
       },
@@ -183,6 +194,19 @@ describe('BundleContent', () => {
     )
   }
 
+  it('sends bundle tab metric to sentry', async () => {
+    setup({})
+    render(<BundleContent />, { wrapper: wrapper() })
+
+    await waitFor(() =>
+      expect(Sentry.metrics.increment).toHaveBeenCalledWith(
+        'bundles_tab.bundle_details.visited_page',
+        1,
+        undefined
+      )
+    )
+  })
+
   describe('rendering summary section', () => {
     describe('flag is off', () => {
       it('renders the bundle summary', async () => {
@@ -268,7 +292,7 @@ describe('BundleContent', () => {
           const bundleSize = await screen.findByText(/50B/)
           expect(bundleSize).toBeInTheDocument()
 
-          const bundleLoadTime = await screen.findByText(/100s/)
+          const bundleLoadTime = await screen.findByText(/100ms/)
           expect(bundleLoadTime).toBeInTheDocument()
         })
       })

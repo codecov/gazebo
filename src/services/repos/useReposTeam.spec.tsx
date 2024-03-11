@@ -27,6 +27,8 @@ const repo1 = {
   author: {
     username: 'codecov',
   },
+  coverageEnabled: true,
+  bundleAnalysisEnabled: true,
 }
 
 const repo2 = {
@@ -39,6 +41,8 @@ const repo2 = {
   author: {
     username: 'codecov',
   },
+  coverageEnabled: true,
+  bundleAnalysisEnabled: true,
 }
 
 const repo3 = {
@@ -51,6 +55,8 @@ const repo3 = {
   author: {
     username: 'codecov',
   },
+  coverageEnabled: true,
+  bundleAnalysisEnabled: true,
 }
 
 const repo4 = {
@@ -63,21 +69,35 @@ const repo4 = {
   author: {
     username: 'codecov',
   },
+  coverageEnabled: true,
+  bundleAnalysisEnabled: true,
 }
 
 const server = setupServer()
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+  jest.spyOn(global.console, 'error')
+})
+
 beforeEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+  jest.resetAllMocks()
+})
 
 describe('useReposTeam', () => {
-  function setup() {
+  function setup({ invalidResponse = false } = {}) {
     server.use(
       graphql.query('GetReposTeam', (req, res, ctx) => {
+        if (invalidResponse) {
+          return res(ctx.status(200), ctx.data({}))
+        }
+
         const data = {
           owner: {
             isCurrentUserPartOfOrg: true,
@@ -114,11 +134,8 @@ describe('useReposTeam', () => {
   }
 
   describe('when called', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('returns repositories', async () => {
+      setup()
       const { result } = renderHook(
         () =>
           useReposTeam({
@@ -149,11 +166,8 @@ describe('useReposTeam', () => {
   })
 
   describe('when call next page', () => {
-    beforeEach(async () => {
-      setup()
-    })
-
     it('returns repositories of the user', async () => {
+      setup()
       const { result } = renderHook(
         () =>
           useReposTeam({
@@ -196,6 +210,29 @@ describe('useReposTeam', () => {
           ],
           pageParams: [undefined, 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA='],
         })
+      )
+    })
+  })
+
+  describe('error parsing request for owner', () => {
+    it('throws an error', async () => {
+      setup({ invalidResponse: true })
+      const { result } = renderHook(
+        () =>
+          useReposTeam({
+            owner: 'codecov',
+            activated: true,
+            first: 2,
+          }),
+        {
+          wrapper,
+        }
+      )
+
+      await waitFor(() => expect(result.current.isError).toBeTruthy())
+
+      expect(result.current.error).toEqual(
+        expect.objectContaining({ status: 404 })
       )
     })
   })

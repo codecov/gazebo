@@ -1,13 +1,14 @@
 import { render, screen } from 'custom-testing-library'
 
 import { QueryClientProvider } from '@tanstack/react-query'
+import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { queryClient } from 'pages/RepoPage/repo-jest-setup'
 
 import InactiveRepo from './InactiveRepo'
 
-const wrapper = ({ children }: { children: React.ReactElement }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov']}>
       <Route path="/:provider/:owner">{children}</Route>

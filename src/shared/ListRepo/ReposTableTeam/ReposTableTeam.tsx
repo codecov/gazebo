@@ -1,3 +1,4 @@
+import type { SortingState } from '@tanstack/react-table'
 import {
   createColumnHelper,
   flexRender,
@@ -5,7 +6,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import type { SortingState } from '@tanstack/react-table'
 import cs from 'classnames'
 import isEmpty from 'lodash/isEmpty'
 import PropTypes from 'prop-types'
@@ -23,10 +23,10 @@ import { formatTimeToNow } from 'shared/utils/dates'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 
+import 'ui/Table/Table.css'
 import InactiveRepo from '../InactiveRepo'
 import { repoDisplayOptions } from '../ListRepo'
 import NoReposBlock from '../NoReposBlock'
-import 'ui/Table/Table.css'
 import RepoTitleLink from '../RepoTitleLink'
 
 export function getSortingOption(
@@ -72,11 +72,18 @@ const getColumns = ({
     id: 'name',
     cell: (info) => {
       const repo = info.row.original
+      let pageName = 'new'
+      if (!!repo?.coverageEnabled) {
+        pageName = 'repo'
+      } else if (!!repo?.bundleAnalysisEnabled) {
+        pageName = 'bundles'
+      }
+
       return (
         <RepoTitleLink
           repo={repo}
           showRepoOwner={!!repo?.author?.username}
-          pageName={!!repo?.active ? 'repo' : 'new'}
+          pageName={pageName}
           disabledLink={!isCurrentUserPartOfOrg && !repo?.active}
         />
       )
@@ -103,6 +110,7 @@ const getColumns = ({
       }),
     ]
   }
+
   return [
     nameColumn,
     columnHelper.accessor('latestCommitAt', {

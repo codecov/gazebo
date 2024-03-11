@@ -23,7 +23,7 @@
 }
 
 .tableui td {
-  @apply py-3 @sm/table:px-4;
+  @apply py-3 px-3.5 @sm/table:px-4;
 }
 
 /* <div className="tableui" data-highlight-row="onHover"> */
