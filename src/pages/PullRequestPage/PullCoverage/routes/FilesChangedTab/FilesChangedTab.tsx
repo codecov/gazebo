@@ -7,7 +7,6 @@ import { TierNames, useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 import Spinner from 'ui/Spinner'
 
-
 const FilesChangedTable = lazy(() => import('./FilesChanged'))
 const TeamFilesChangedTable = lazy(() => import('./FilesChanged/TableTeam'))
 
@@ -42,7 +41,7 @@ function FilesChangedTab() {
   ) {
     return (
       <Suspense fallback={<Loader />}>
-        <ToggleHeader showComponentsSelect />
+        <ToggleHeader />
         <TeamFilesChangedTable />
       </Suspense>
     )
@@ -50,7 +49,7 @@ function FilesChangedTab() {
 
   return (
     <Suspense fallback={<Loader />}>
-      <ToggleHeader showFlagsSelect showComponentsSelect />
+      <ToggleHeader />
       <FilesChangedTable />
     </Suspense>
   )

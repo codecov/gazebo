@@ -3,7 +3,6 @@ import isNil from 'lodash/isNil'
 import { CommitStateEnum } from 'shared/utils/commit'
 import { ComparisonReturnType } from 'shared/utils/comparison'
 import { ImpactedFilesReturnType } from 'shared/utils/impactedFiles'
-import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import Spinner from 'ui/Spinner'
 
 import ImpactedFiles from './IndirectChangedFiles'
@@ -74,8 +73,6 @@ function IndirectChangesTab() {
   ) {
     return (
       <>
-        {/* TODO: Team plan stuff */}
-        <ToggleHeader showFlagsSelect showComponentsSelect />
         <IndirectChangesInfo />
         <ImpactedFiles />
       </>

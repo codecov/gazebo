@@ -71,16 +71,15 @@ function FileExplorer() {
           />
         </div>
       </ContentsTableHeader>
-      {/* Probably want to do team plan here too */}
-      <div className={`border-t border-ds-gray-tertiary`}>
-        <ToggleHeader showComponentsSelect showFlagsSelect />
+      <div className="border-t border-ds-gray-tertiary">
+        <ToggleHeader noBottomBorder />
+        <Table
+          data={data}
+          columns={headers}
+          onSort={handleSort}
+          enableHover={true}
+        />
       </div>
-      <Table
-        data={data}
-        columns={headers}
-        onSort={handleSort}
-        enableHover={true}
-      />
       {isLoading && <Loader />}
       {data?.length === 0 && !isLoading && (
         <MissingFileData
