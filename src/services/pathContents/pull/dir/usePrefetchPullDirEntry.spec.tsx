@@ -163,6 +163,7 @@ describe('usePrefetchPullDirEntry', () => {
   })
 
   it('fails to parse bad schema', async () => {
+    setup({ invalidSchema: true })
     const { result } = renderHook(
       () =>
         usePrefetchPullDirEntry({
@@ -178,21 +179,14 @@ describe('usePrefetchPullDirEntry', () => {
 
     const queryKey = queryClient.getQueriesData({})?.at(0)?.at(0) as Array<any>
 
-    expect(queryClient.getQueryState(queryKey)?.data).toStrictEqual({
-      __typename: 'PathContents',
-      results: [
-        {
-          __typename: 'PathContentDir',
-          name: 'src',
-          path: null,
-          percentCovered: 40.0,
-          hits: 4,
-          misses: 2,
-          lines: 10,
-          partials: 1,
-        },
-      ],
-    })
+    await waitFor(() =>
+      expect(queryClient.getQueryState(queryKey)?.error).toEqual(
+        expect.objectContaining({
+          status: 404,
+          dev: 'usePrefetchPullDirEntry - 404 schema parsing failed',
+        })
+      )
+    )
   })
 
   it('rejects on repository not found error', async () => {
