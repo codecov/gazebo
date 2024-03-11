@@ -3,7 +3,7 @@ import A from 'ui/A'
 
 function FlagsNotConfigured() {
   return (
-    <div className="mt-2 flex flex-col items-center justify-center gap-2 text-base text-ds-gray-octonary">
+    <div className="mt-8 flex flex-col items-center justify-center gap-2 text-base text-ds-gray-octonary">
       <div className="flex min-w-[60%] flex-col justify-center gap-2 text-center">
         <img
           alt="Flags feature not configured"

@@ -229,7 +229,10 @@ describe('PullRequestPageContent', () => {
       const errorBanner = await screen.findByRole('heading', {
         name: 'Missing Base Commit',
       })
+      const filesChangedTab = await screen.findByText('FilesChangedTab')
+
       expect(errorBanner).toBeInTheDocument()
+      expect(filesChangedTab).toBeInTheDocument() // first tab on page
     })
   })
 
