@@ -15,7 +15,7 @@ export const InvoiceSchema = z
     created: z.number(),
     dueDate: z.number().nullish(),
     id: z.string().nullable(),
-    invoicePdf: z.string(),
+    invoicePdf: z.string().nullable(),
     lineItems: z
       .array(
         z.object({
@@ -82,7 +82,7 @@ export const SubscriptionDetailSchema = z
         email: z.string(),
       })
       .nullable(),
-    defaultPaymentMethod: PaymentMethodSchema,
+    defaultPaymentMethod: PaymentMethodSchema.nullable(),
     latestInvoice: InvoiceSchema,
     trialEnd: z.number().nullish(),
   })
