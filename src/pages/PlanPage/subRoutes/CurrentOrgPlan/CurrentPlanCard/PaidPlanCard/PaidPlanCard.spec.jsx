@@ -41,7 +41,7 @@ const mockTeamPlan = {
   baseUnitPrice: 123,
   benefits: ['Team benefits', 'Unlimited private repositories'],
   planUserCount: 8,
-  monthlyUploadLimit: null,
+  monthlyUploadLimit: 2500,
   trialStatus: TrialStatuses.CANNOT_TRIAL,
   trialStartDate: '',
   trialEndDate: '',
@@ -107,6 +107,18 @@ describe('PaidPlanCard', () => {
             owner: {
               hasPrivateRepos: true,
               plan,
+            },
+          })
+        )
+      ),
+      graphql.query('PlanPageData', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              username: 'popcorn',
+              isCurrentUserPartOfOrg: true,
+              numberOfUploads: 123,
             },
           })
         )
@@ -227,6 +239,32 @@ describe('PaidPlanCard', () => {
         /Scheduled Plan Details/
       )
       expect(scheduledPlanDetails).toBeInTheDocument()
+    })
+  })
+
+  describe('Number of uploads', () => {
+    it('shows for team plan', async () => {
+      setup({ plan: mockTeamPlan })
+      render(<PaidPlanCard />, {
+        wrapper,
+      })
+
+      const numberOfUploads = await screen.findByText(
+        /123 of 2500 uploads in the last 30 days/
+      )
+      expect(numberOfUploads).toBeInTheDocument()
+    })
+
+    it('does not show for pro plan', async () => {
+      setup()
+      render(<PaidPlanCard />, {
+        wrapper,
+      })
+
+      const numberOfUploads = screen.queryByText(
+        /123 of 2500 uploads in the last 30 days/
+      )
+      expect(numberOfUploads).not.toBeInTheDocument()
     })
   })
 })

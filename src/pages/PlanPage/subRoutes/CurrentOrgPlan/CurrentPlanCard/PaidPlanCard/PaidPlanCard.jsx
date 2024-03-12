@@ -1,8 +1,11 @@
+import isNumber from 'lodash/isNumber'
 import { useParams } from 'react-router-dom'
 
+import { usePlanPageData } from 'pages/PlanPage/hooks'
 import { useAccountDetails, usePlanData } from 'services/account'
 import BenefitList from 'shared/plan/BenefitList'
 import ScheduledPlanDetails from 'shared/plan/ScheduledPlanDetails'
+import { isTeamPlan } from 'shared/utils/billing'
 
 import ActionsBilling from '../shared/ActionsBilling/ActionsBilling'
 import PlanPricing from '../shared/PlanPricing'
@@ -14,6 +17,8 @@ function PaidPlanCard() {
     provider,
     owner,
   })
+  const { data: ownerData } = usePlanPageData()
+
   const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
   const plan = planData?.plan
   const marketingName = plan?.marketingName
@@ -21,6 +26,7 @@ function PaidPlanCard() {
   const value = plan?.value
   const baseUnitPrice = plan?.baseUnitPrice
   const seats = plan?.planUserCount
+  const numberOfUploads = ownerData?.numberOfUploads
 
   return (
     <div className="flex flex-col border">
@@ -42,16 +48,22 @@ function PaidPlanCard() {
           <p className="text-xs font-semibold">Pricing</p>
           <div>
             <PlanPricing value={value} baseUnitPrice={baseUnitPrice} />
-            {seats && (
+            {seats ? (
               <p className="text-xs text-ds-gray-senary">
                 plan has {seats} seats
               </p>
-            )}
+            ) : null}
           </div>
           <ActionsBilling />
-          {scheduledPhase && (
+          {scheduledPhase ? (
             <ScheduledPlanDetails scheduledPhase={scheduledPhase} />
-          )}
+          ) : null}
+          {isNumber(numberOfUploads) && isTeamPlan(plan.value) ? (
+            <p className="text-xs text-ds-gray-senary">
+              {numberOfUploads} of {planData.plan.monthlyUploadLimit} uploads in
+              the last 30 days
+            </p>
+          ) : null}
         </div>
       </div>
     </div>
