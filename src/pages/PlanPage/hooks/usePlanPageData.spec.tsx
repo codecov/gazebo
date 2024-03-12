@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import { ReactNode } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { usePlanPageData } from './usePlanPageData'
@@ -15,7 +16,7 @@ const mockOwner = {
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const wrapper = ({ children }) => (
+const wrapper = ({ children }: { children: ReactNode }) => (
   <MemoryRouter initialEntries={['/gh']}>
     <Route path="/:provider">
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -52,12 +53,7 @@ describe('usePlanPageData', () => {
     })
 
     it('returns data for the owner page', async () => {
-      const { result } = renderHook(
-        () => usePlanPageData({ username: mockOwner.username }),
-        {
-          wrapper,
-        }
-      )
+      const { result } = renderHook(() => usePlanPageData(), { wrapper })
 
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
