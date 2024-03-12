@@ -75,3 +75,4 @@ component_management:
       name: UI
       paths:
         - src/ui/**
+
