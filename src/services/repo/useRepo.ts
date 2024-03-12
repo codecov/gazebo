@@ -44,7 +44,7 @@ const query = `
     }
 `
 
-export interface UseRepoArgs {
+type UseRepoArgs = {
   provider: string
   owner: string
   repo: string
