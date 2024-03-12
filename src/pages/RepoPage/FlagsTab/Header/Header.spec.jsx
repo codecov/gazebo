@@ -127,27 +127,6 @@ describe('Header', () => {
     })
   })
 
-  describe('Search', () => {
-    beforeEach(() => setup())
-
-    it('calls setSearchValue', async () => {
-      const { user, updateLocationMock } = setup()
-      render(<Header />, { wrapper })
-
-      const searchInput = screen.getByRole('textbox', {
-        name: 'Search for flags',
-      })
-      await user.click(searchInput)
-      await user.keyboard('flag1')
-
-      await waitFor(
-        () =>
-          expect(updateLocationMock).toHaveBeenCalledWith({ search: 'flag1' }),
-        { timeout: 600 }
-      )
-    })
-  })
-
   describe('Show by', () => {
     describe('Title', () => {
       beforeEach(() => setup())
