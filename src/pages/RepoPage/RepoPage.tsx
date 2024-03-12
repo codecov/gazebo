@@ -43,6 +43,7 @@ interface RoutesProps {
   coverageEnabled?: boolean
   bundleAnalysisEnabled?: boolean
   jsOrTsPresent?: boolean
+  isRepoPrivate: boolean
 }
 
 function Routes({
@@ -51,15 +52,33 @@ function Routes({
   coverageEnabled,
   bundleAnalysisEnabled,
   jsOrTsPresent,
+  isRepoPrivate,
 }: RoutesProps) {
   const { bundleAnalysisPrAndCommitPages } = useFlags({
     bundleAnalysisPrAndCommitPages: false,
   })
 
-  // repo is currently active and activated
-  if (isRepoActive && isRepoActivated) {
-    const productEnabled = coverageEnabled || bundleAnalysisEnabled
+  const productEnabled = coverageEnabled || bundleAnalysisEnabled
+  if (productEnabled && isRepoPrivate) {
+    throw new CustomError({
+      status: 403,
+      detail: (
+        <p>
+          Activation is required to view this repo, please{' '}
+          <A
+            to={{ pageName: 'membersTab' }}
+            isExternal={false}
+            hook="repo-page-to-members-tab"
+          >
+            click here{' '}
+          </A>{' '}
+          to activate your account.
+        </p>
+      ),
+    })
+  }
 
+  if (isRepoActive && isRepoActivated) {
     return (
       <Switch>
         {coverageEnabled ? (
@@ -210,35 +229,14 @@ function RepoPage() {
   const coverageEnabled = repoOverview?.coverageEnabled
   const bundleAnalysisEnabled = repoOverview?.bundleAnalysisEnabled
   const jsOrTsPresent = repoOverview?.jsOrTsPresent
-  const isCurrentUserActivated = repoData?.isCurrentUserActivated
   const isRepoActive = repoData?.repository?.active
   const isRepoActivated = repoData?.repository?.activated
   const isRepoPrivate = !!repoData?.repository?.private
-
   if (!refetchEnabled && !isRepoActivated) {
     setRefetchEnabled(true)
   }
 
   if (!repoData?.repository) return <NotFound />
-
-  if (!isCurrentUserActivated && isRepoPrivate) {
-    throw new CustomError({
-      status: 403,
-      detail: (
-        <p>
-          Activation is required to view this repo, please{' '}
-          <A
-            to={{ pageName: 'membersTab' }}
-            isExternal={false}
-            hook="repo-page-to-members-tab"
-          >
-            click here{' '}
-          </A>{' '}
-          to activate your account.
-        </p>
-      ),
-    })
-  }
 
   return (
     <RepoBreadcrumbProvider>
@@ -252,6 +250,7 @@ function RepoPage() {
             coverageEnabled={coverageEnabled}
             bundleAnalysisEnabled={bundleAnalysisEnabled}
             jsOrTsPresent={jsOrTsPresent}
+            isRepoPrivate={isRepoPrivate}
           />
         </Suspense>
       </div>
