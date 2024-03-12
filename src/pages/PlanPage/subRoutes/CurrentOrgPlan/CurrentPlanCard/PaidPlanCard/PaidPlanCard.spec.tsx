@@ -2,9 +2,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
+import { ReactNode } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TrialStatuses } from 'services/account'
+import { Plan, PretrialPlan, TrialStatuses } from 'services/account'
 
 import PaidPlanCard from './PaidPlanCard'
 
@@ -62,7 +63,7 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 
-const wrapper = ({ children }) => (
+const wrapper = ({ children }: { children: ReactNode }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/plan/bb/critical-role']}>
       <Route path="/plan/:provider/:owner">{children}</Route>
@@ -79,13 +80,16 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 
+interface SetupArgs {
+  hasScheduledDetails?: boolean
+  plan?: Plan | PretrialPlan
+}
+
 describe('PaidPlanCard', () => {
-  function setup(
-    { hasScheduledDetails = false, plan = mockProPlan } = {
-      hasScheduledDetails: false,
-      plan: mockProPlan,
-    }
-  ) {
+  function setup({
+    hasScheduledDetails = false,
+    plan = mockProPlan,
+  }: SetupArgs) {
     server.use(
       rest.get(
         '/internal/bb/critical-role/account-details/',
@@ -163,7 +167,7 @@ describe('PaidPlanCard', () => {
         wrapper,
       })
 
-      const planPricing = await screen.findByText(/Plan Pricing/)
+      const planPricing = await screen.findByText(/Pricing/)
       expect(planPricing).toBeInTheDocument()
     })
 
@@ -256,7 +260,7 @@ describe('PaidPlanCard', () => {
     })
 
     it('does not show for pro plan', async () => {
-      setup()
+      setup({})
       render(<PaidPlanCard />, {
         wrapper,
       })

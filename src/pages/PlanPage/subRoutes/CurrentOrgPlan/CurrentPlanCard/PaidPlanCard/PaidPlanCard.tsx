@@ -10,8 +10,13 @@ import { isTeamPlan } from 'shared/utils/billing'
 import ActionsBilling from '../shared/ActionsBilling/ActionsBilling'
 import PlanPricing from '../shared/PlanPricing'
 
+type URLParams = {
+  provider: string
+  owner: string
+}
+
 function PaidPlanCard() {
-  const { provider, owner } = useParams()
+  const { provider, owner } = useParams<URLParams>()
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { data: planData } = usePlanData({
     provider,
@@ -39,7 +44,7 @@ function PaidPlanCard() {
         <div className="flex flex-col gap-2">
           <p className="text-xs font-semibold">Includes</p>
           <BenefitList
-            benefits={benefits}
+            benefits={benefits ?? []}
             iconName="check"
             iconColor="text-ds-pink-quinary"
           />
@@ -47,7 +52,9 @@ function PaidPlanCard() {
         <div className="flex flex-col gap-3 border-t pt-2 sm:border-0 sm:p-0">
           <p className="text-xs font-semibold">Pricing</p>
           <div>
-            <PlanPricing value={value} baseUnitPrice={baseUnitPrice} />
+            {value && baseUnitPrice ? (
+              <PlanPricing value={value} baseUnitPrice={baseUnitPrice} />
+            ) : null}
             {seats ? (
               <p className="text-xs text-ds-gray-senary">
                 plan has {seats} seats
@@ -58,10 +65,10 @@ function PaidPlanCard() {
           {scheduledPhase ? (
             <ScheduledPlanDetails scheduledPhase={scheduledPhase} />
           ) : null}
-          {isNumber(numberOfUploads) && isTeamPlan(plan.value) ? (
+          {isNumber(numberOfUploads) && isTeamPlan(plan?.value) ? (
             <p className="text-xs text-ds-gray-senary">
-              {numberOfUploads} of {planData.plan.monthlyUploadLimit} uploads in
-              the last 30 days
+              {numberOfUploads} of {planData?.plan?.monthlyUploadLimit} uploads
+              in the last 30 days
             </p>
           ) : null}
         </div>
