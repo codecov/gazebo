@@ -285,7 +285,7 @@ describe('App', () => {
         pathname: '/',
         expected: {
           page: /LoginPage/i,
-          location: '/login/gh',
+          location: '/login',
           search: '',
         },
       },
