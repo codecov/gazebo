@@ -15,7 +15,7 @@ function FlagsNotConfigured() {
         </span>
         <span>
           Learn how flags can{' '}
-          <A hook="flags" to={{ pageName: 'flags' }}>
+          <A hook="flags" to={{ pageName: 'flags' }} isExternal>
             help your team today
           </A>
           .
