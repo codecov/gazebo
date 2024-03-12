@@ -2,6 +2,7 @@ import { render, screen } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
+import { PropsWithChildren } from 'react'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
 import { useActivateFlagMeasurements } from 'services/repo'
@@ -24,7 +25,7 @@ const queryClient = new QueryClient({
   },
 })
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov/gazebo/flags']}>
     <Route path="/:provider/:owner/:repo/flags" exact={true}>
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -39,12 +40,16 @@ describe('TriggerSyncBanner', () => {
     const user = userEvent.setup()
     const mutate = jest.fn()
 
-    useParams.mockReturnValue({
+    const mockedUseParams = useParams as jest.Mock
+    const mockedUseActivateFlagMeasurements =
+      useActivateFlagMeasurements as jest.Mock
+
+    mockedUseParams.mockReturnValue({
       owner: 'codecov',
       provider: 'gh',
       repo: 'gazebo',
     })
-    useActivateFlagMeasurements.mockReturnValue({ mutate })
+    mockedUseActivateFlagMeasurements.mockReturnValue({ mutate })
 
     return { mutate, user }
   }
