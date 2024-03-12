@@ -49,7 +49,7 @@ function FilesChangedTab() {
 
   return (
     <Suspense fallback={<Loader />}>
-      <div className="flex justify-end bg-ds-gray-primary p-2">
+      <div className="flex justify-end">
         <ComponentsSelector />
       </div>
       <FilesChangedTable />
