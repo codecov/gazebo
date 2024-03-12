@@ -234,7 +234,7 @@ describe('EraseRepoContent', () => {
       })
       await user.click(modalEraseButton)
 
-      await waitFor(() => expect(mutate).toBeCalled())
+      await waitFor(() => expect(mutate).toHaveBeenCalled())
       await waitFor(() =>
         expect(addNotification).toHaveBeenCalledWith({
           type: 'success',
@@ -259,7 +259,7 @@ describe('EraseRepoContent', () => {
       })
       await user.click(modalEraseButton)
 
-      await waitFor(() => expect(mutate).toBeCalled())
+      await waitFor(() => expect(mutate).toHaveBeenCalled())
       await waitFor(() =>
         expect(addNotification).toHaveBeenCalledWith({
           type: 'error',

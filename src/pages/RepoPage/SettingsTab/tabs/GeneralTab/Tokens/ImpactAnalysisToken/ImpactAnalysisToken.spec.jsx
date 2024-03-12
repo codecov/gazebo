@@ -211,7 +211,7 @@ describe('ImpactAnalysisToken', () => {
       })
       await user.click(generate)
 
-      await waitFor(() => expect(mutate).toBeCalled())
+      await waitFor(() => expect(mutate).toHaveBeenCalled())
     })
   })
 
@@ -231,7 +231,7 @@ describe('ImpactAnalysisToken', () => {
       })
       await user.click(generate)
 
-      await waitFor(() => expect(mutate).toBeCalled())
+      await waitFor(() => expect(mutate).toHaveBeenCalled())
     })
   })
 

@@ -215,10 +215,13 @@ describe('PlanDetailsControls', () => {
         await user.click(teamBtn)
 
         await waitFor(() =>
-          expect(mockSetValue).toBeCalledWith('newPlan', Plans.USERS_TEAMY)
+          expect(mockSetValue).toHaveBeenCalledWith(
+            'newPlan',
+            Plans.USERS_TEAMY
+          )
         )
         await waitFor(() =>
-          expect(mockSetSelectedPlan).toBeCalledWith(teamPlanYear)
+          expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
         )
       })
     })
@@ -247,10 +250,13 @@ describe('PlanDetailsControls', () => {
         await user.click(proBtn)
 
         await waitFor(() =>
-          expect(mockSetValue).toBeCalledWith('newPlan', Plans.USERS_SENTRYY)
+          expect(mockSetValue).toHaveBeenCalledWith(
+            'newPlan',
+            Plans.USERS_SENTRYY
+          )
         )
         await waitFor(() =>
-          expect(mockSetSelectedPlan).toBeCalledWith(sentryPlanYear)
+          expect(mockSetSelectedPlan).toHaveBeenCalledWith(sentryPlanYear)
         )
       })
     })
@@ -310,10 +316,13 @@ describe('PlanDetailsControls', () => {
         await user.click(teamBtn)
 
         await waitFor(() =>
-          expect(mockSetValue).toBeCalledWith('newPlan', Plans.USERS_TEAMY)
+          expect(mockSetValue).toHaveBeenCalledWith(
+            'newPlan',
+            Plans.USERS_TEAMY
+          )
         )
         await waitFor(() =>
-          expect(mockSetSelectedPlan).toBeCalledWith(teamPlanYear)
+          expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
         )
       })
     })
@@ -342,10 +351,13 @@ describe('PlanDetailsControls', () => {
         await user.click(proBtn)
 
         await waitFor(() =>
-          expect(mockSetValue).toBeCalledWith('newPlan', Plans.USERS_PR_INAPPY)
+          expect(mockSetValue).toHaveBeenCalledWith(
+            'newPlan',
+            Plans.USERS_PR_INAPPY
+          )
         )
         await waitFor(() =>
-          expect(mockSetSelectedPlan).toBeCalledWith(proPlanYear)
+          expect(mockSetSelectedPlan).toHaveBeenCalledWith(proPlanYear)
         )
       })
     })

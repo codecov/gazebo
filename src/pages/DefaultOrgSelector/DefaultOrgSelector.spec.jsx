@@ -350,7 +350,7 @@ describe('DefaultOrgSelector', () => {
       await user.click(addNewOrg)
 
       await waitFor(() =>
-        expect(mockWindow).toBeCalledWith(
+        expect(mockWindow).toHaveBeenCalledWith(
           'https://github.com/apps/codecov/installations/new',
           '_blank'
         )
@@ -1184,7 +1184,7 @@ describe('DefaultOrgSelector', () => {
 
       await user.click(selectOrg)
 
-      await waitFor(() => expect(fetchNextPage).toBeCalled())
+      await waitFor(() => expect(fetchNextPage).toHaveBeenCalled())
       await waitFor(() => expect(fetchNextPage).toHaveBeenCalledWith('MTI='))
     })
   })

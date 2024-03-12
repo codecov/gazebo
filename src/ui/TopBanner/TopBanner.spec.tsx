@@ -152,7 +152,7 @@ describe('TopBanner', () => {
         await user.click(button)
 
         await waitFor(() =>
-          expect(mockSetItem).toBeCalledWith(
+          expect(mockSetItem).toHaveBeenCalledWith(
             'dismissed-top-banners',
             JSON.stringify({ 'testing-initial-dismiss-banner': 'true' })
           )
@@ -181,7 +181,7 @@ describe('TopBanner', () => {
         await user.click(button)
 
         await waitFor(() =>
-          expect(mockSetItem).toBeCalledWith(
+          expect(mockSetItem).toHaveBeenCalledWith(
             'dismissed-top-banners',
             JSON.stringify({
               'testing-initial-dismiss-banner': 'true',

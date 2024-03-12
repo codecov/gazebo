@@ -371,7 +371,7 @@ describe('MembersTable', () => {
         expect(await screen.findByRole('button')).toBeTruthy()
 
         await waitFor(() =>
-          expect(handleActivate).toBeCalledWith({
+          expect(handleActivate).toHaveBeenCalledWith({
             activated: false,
             ownerid: 1,
           })
@@ -408,7 +408,7 @@ describe('MembersTable', () => {
         expect(await screen.findByRole('button')).toBeTruthy()
 
         await waitFor(() =>
-          expect(handleActivate).toBeCalledWith({
+          expect(handleActivate).toHaveBeenCalledWith({
             activated: false,
             ownerid: 1,
           })

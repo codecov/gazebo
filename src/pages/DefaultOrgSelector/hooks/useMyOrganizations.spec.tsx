@@ -93,7 +93,7 @@ describe('useMyOrganizations', () => {
         })
 
         await waitFor(() => expect(result.current.isSuccess).toBe(true))
-        expect(thrownMock).not.toBeCalled()
+        expect(thrownMock).not.toHaveBeenCalled()
 
         expect(result.current.data).toEqual({
           pageParams: [undefined],
@@ -152,7 +152,7 @@ describe('useMyOrganizations', () => {
         })
 
         await waitFor(() => expect(result.current.isSuccess).toBe(true))
-        expect(thrownMock).not.toBeCalled()
+        expect(thrownMock).not.toHaveBeenCalled()
 
         expect(result.current.data).toEqual({
           pageParams: [undefined],
@@ -188,7 +188,7 @@ describe('useMyOrganizations', () => {
 
         await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
 
-        expect(thrownMock).toBeCalledWith(
+        expect(thrownMock).toHaveBeenCalledWith(
           'Error at useMyOrganizations: Unauthenticated'
         )
         expect(result.current.data).toEqual({
@@ -207,8 +207,10 @@ describe('useMyOrganizations', () => {
 
         await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
 
-        expect(thrownMock).toBeCalledWith('POST /graphql/gh net::ERR_FAILED')
-        expect(thrownMock).toBeCalledWith(
+        expect(thrownMock).toHaveBeenCalledWith(
+          'POST /graphql/gh net::ERR_FAILED'
+        )
+        expect(thrownMock).toHaveBeenCalledWith(
           'Error at useMyOrganizations: Failed to fetch'
         )
         expect(result.current.data).toEqual({
@@ -263,7 +265,7 @@ describe('useMyOrganizations', () => {
       })
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true))
-      expect(thrownMock).not.toBeCalled()
+      expect(thrownMock).not.toHaveBeenCalled()
 
       expect(result.current.data).toEqual({
         pageParams: [undefined],
@@ -329,7 +331,7 @@ describe('useMyOrganizations', () => {
       })
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true))
-      expect(thrownMock).not.toBeCalled()
+      expect(thrownMock).not.toHaveBeenCalled()
 
       expect(result.current.data).toEqual({
         pageParams: [undefined],
