@@ -1,10 +1,14 @@
-import PropTypes from 'prop-types'
-
 import { useDeleteFlag } from 'services/deleteFlag'
 import Button from 'ui/Button'
 import Modal from 'ui/Modal'
 
-const DeleteFlagModal = ({ flagName, closeModal, isOpen }) => {
+type Props = {
+  isOpen: boolean
+  flagName?: string
+  closeModal: () => void
+}
+
+const DeleteFlagModal = ({ isOpen, closeModal, flagName }: Props) => {
   const { mutate } = useDeleteFlag()
 
   return (
@@ -35,7 +39,11 @@ const DeleteFlagModal = ({ flagName, closeModal, isOpen }) => {
             <Button
               hook="update-default-org"
               variant="danger"
+              to={undefined}
+              disabled={false}
               onClick={() => {
+                // TODO: fix when we convert the hooks to TS
+                // @ts-expect-error
                 mutate({ flagName })
                 closeModal()
               }}
@@ -47,12 +55,6 @@ const DeleteFlagModal = ({ flagName, closeModal, isOpen }) => {
       }
     />
   )
-}
-
-DeleteFlagModal.propTypes = {
-  flagName: PropTypes.string,
-  closeModal: PropTypes.func,
-  isOpen: PropTypes.bool.isRequired,
 }
 
 export default DeleteFlagModal
