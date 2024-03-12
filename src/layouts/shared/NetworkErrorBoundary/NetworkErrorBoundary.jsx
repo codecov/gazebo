@@ -14,6 +14,10 @@ import img403 from './assets/error-403.svg'
 import img404 from './assets/error-404.svg'
 import img500 from './assets/error-500.svg'
 import styles from './NetworkErrorBoundary.module.css'
+import {
+  sendGraphQLErrorMetrics,
+  sendNetworkErrorMetrics,
+} from './networkErrorMetrics'
 
 const errorToUI = {
   401: {
@@ -151,10 +155,15 @@ class NetworkErrorBoundary extends Component {
     // if the error is not a network error, we don't do anything and
     // another error boundary will take it from there
     if (Object.keys(errorToUI).includes(String(error.status))) {
+      sendNetworkErrorMetrics(error.status)
       return { hasNetworkError: true, error }
     }
-    if (Object.keys(graphQLErrorToUI).includes(error.__typename))
+
+    if (Object.keys(graphQLErrorToUI).includes(error.__typename)) {
+      sendGraphQLErrorMetrics(error.__typename)
       return { hasGraphqlError: true, error }
+    }
+
     return {}
   }
 

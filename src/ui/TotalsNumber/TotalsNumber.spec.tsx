@@ -3,13 +3,14 @@ import { render, screen } from '@testing-library/react'
 import TotalsNumber from '.'
 
 describe('TotalsNumber', () => {
-  function setup({ value, variant }) {
+  function setup({ value, variant }: { value?: number; variant: string }) {
     render(
       <TotalsNumber
         value={value}
         variant={variant}
         showChange
         data-testid="change-value"
+        plain
       />
     )
   }

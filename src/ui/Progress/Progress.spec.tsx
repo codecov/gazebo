@@ -1,15 +1,22 @@
 import { render, screen } from 'custom-testing-library'
 
-import Progress from './Progress'
+import Progress, { progressColors, progressVariants } from './Progress'
 
 describe('Progress', () => {
-  let props
-
-  function setup(over = {}) {
-    props = {
-      ...over,
-    }
-    render(<Progress {...props} />)
+  function setup({
+    amount,
+    label = false,
+    variant = 'default',
+    color = 'default',
+  }: {
+    amount: number
+    label?: boolean
+    variant?: keyof typeof progressVariants
+    color?: keyof typeof progressColors
+  }) {
+    render(
+      <Progress amount={amount} label={label} variant={variant} color={color} />
+    )
   }
 
   describe('display default', () => {

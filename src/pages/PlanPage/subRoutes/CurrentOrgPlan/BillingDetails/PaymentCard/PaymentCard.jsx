@@ -70,7 +70,7 @@ function PaymentCard({ subscriptionDetail, provider, owner }) {
 }
 
 PaymentCard.propTypes = {
-  subscriptionDetail: subscriptionDetailType,
+  subscriptionDetail: PropTypes.oneOf([subscriptionDetailType, null]),
   provider: PropTypes.string.isRequired,
   owner: PropTypes.string.isRequired,
 }

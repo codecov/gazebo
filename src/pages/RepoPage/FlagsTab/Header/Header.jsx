@@ -6,7 +6,6 @@ import { useRepoBackfilled, useRepoFlagsSelect } from 'services/repo'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'
-import SearchField from 'ui/SearchField'
 import Select from 'ui/Select'
 
 import { TIME_OPTION_VALUES, TimeOptions } from '../constants'
@@ -43,7 +42,7 @@ const Header = ({ controlsDisabled, children }) => {
 
   return (
     <div className="flex flex-col justify-end divide-y divide-solid divide-ds-gray-secondary">
-      <div className="mb-4 grid w-2/3 divide-y divide-solid divide-ds-gray-secondary sm:w-full sm:grid-cols-2 sm:divide-x sm:divide-y-0 md:grid-cols-4">
+      <div className="grid w-2/3 divide-y divide-solid divide-ds-gray-secondary sm:w-full sm:grid-cols-2 sm:divide-x sm:divide-y-0 md:grid-cols-4">
         <div className="mr-4 flex flex-col justify-between gap-2 p-4 sm:border-l sm:border-ds-gray-secondary sm:py-0 md:border-l-0">
           <h3 className="text-sm font-semibold text-ds-gray-octonary">
             Configured flags
@@ -107,15 +106,6 @@ const Header = ({ controlsDisabled, children }) => {
         </p>
       </div>
       {children}
-      <div className="flex justify-end pt-4">
-        <SearchField
-          dataMarketing="flags-search"
-          disabled={controlsDisabled}
-          placeholder={'Search for flags'}
-          searchValue={params?.search}
-          setSearchValue={(search) => updateParams({ search })}
-        />
-      </div>
     </div>
   )
 }
