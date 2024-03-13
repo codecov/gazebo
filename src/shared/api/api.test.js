@@ -1,6 +1,8 @@
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 
+import config from 'config'
+
 import Api from './api'
 
 const rawUserData = {
@@ -89,6 +91,9 @@ const server = setupServer(
         },
       })
     )
+  }),
+  graphql.query('UnauthorizationError', (req, res, ctx) => {
+    return res(ctx.status(401), ctx.data(undefined))
   })
 )
 
@@ -336,6 +341,31 @@ describe('when using a graphql mutation', () => {
           me: 'Codecov',
         },
       })
+    })
+  })
+
+  describe('when graphql query returns a 401 error', () => {
+    config.IS_SELF_HOSTED = true
+
+    beforeAll(() => {
+      const location = window.location
+      delete global.window.location
+      global.window.location = Object.assign({}, location)
+    })
+
+    it('has a 401 error', async () => {
+      let error
+
+      try {
+        await Api.graphql({
+          provider: 'gh',
+          query: 'query UnauthorizationError { random }',
+        })
+      } catch (err) {
+        error = err
+      }
+      expect(error.status).toBe(401)
+      expect(window.location.href).toBe('/login')
     })
   })
 })
