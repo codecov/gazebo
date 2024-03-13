@@ -3,30 +3,39 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import { ReactNode } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import PullDirEntry from './PullDirEntry'
 
 const mockData = {
-  username: 'codecov',
-  repository: {
-    pull: {
-      head: {
-        commitid: '123',
-        pathContents: {
-          __typename: 'PathContents',
-          results: [
-            {
-              __typename: 'PathContentDir',
-              name: 'src',
-              path: null,
-              percentCovered: 0.0,
-              hits: 4,
-              misses: 2,
-              lines: 7,
-              partials: 1,
-            },
-          ],
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
+      },
+      pull: {
+        head: {
+          commitid: 'commit123',
+          pathContents: {
+            __typename: 'PathContents',
+            results: [
+              {
+                __typename: 'PathContentDir',
+                name: 'src',
+                path: null,
+                hits: 4,
+                misses: 2,
+                partials: 1,
+                lines: 10,
+                percentCovered: 40.0,
+              },
+            ],
+          },
         },
       },
     },
@@ -44,7 +53,7 @@ const wrapper =
       initialEntries: ['/gh/codecov/test-repo/pull/123/tree'],
     }
   ) =>
-  ({ children }) =>
+  ({ children }: { children: ReactNode }) =>
     (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={initialEntries}>
@@ -70,7 +79,7 @@ describe('PullDirEntry', () => {
   function setup() {
     server.use(
       graphql.query('PullPathContents', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner: mockData }))
+        res(ctx.status(200), ctx.data(mockData))
       )
     )
   }
@@ -125,18 +134,20 @@ describe('PullDirEntry', () => {
     const dir = screen.getByText('dir')
     await user.hover(dir)
 
+    const queryKey = queryClient.getQueriesData({})?.at(0)?.at(0) as Array<any>
+
     await waitFor(() =>
-      expect(queryClient.getQueryState().data).toStrictEqual({
+      expect(queryClient.getQueryState(queryKey)?.data).toStrictEqual({
         __typename: 'PathContents',
         results: [
           {
             __typename: 'PathContentDir',
             name: 'src',
             path: null,
-            percentCovered: 0,
+            percentCovered: 40.0,
             hits: 4,
             misses: 2,
-            lines: 7,
+            lines: 10,
             partials: 1,
           },
         ],
@@ -151,7 +162,7 @@ describe('PullDirEntry', () => {
         name="dir"
         urlPath="path/to/directory"
         filters={{
-          ordering: { direction: 'asc', parameter: 'name' },
+          ordering: { direction: 'ASC', parameter: 'NAME' },
           flags: ['a', 'b'],
         }}
       />,
