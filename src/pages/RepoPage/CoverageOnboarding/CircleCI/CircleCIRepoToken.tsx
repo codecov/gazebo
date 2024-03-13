@@ -49,7 +49,7 @@ function CircleCIRepoToken() {
         </div>
         <pre className="flex items-center gap-2 overflow-auto rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
           CODECOV_TOKEN={data?.repository?.uploadToken}
-          <CopyClipboard string={data?.repository?.uploadToken} />
+          <CopyClipboard string={data?.repository?.uploadToken || ''} />
         </pre>
       </div>
       <div className="flex flex-col gap-3">
