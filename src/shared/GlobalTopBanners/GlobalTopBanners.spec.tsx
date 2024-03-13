@@ -5,10 +5,6 @@ import GlobalTopBanners from './GlobalTopBanners'
 jest.mock('./RequestInstallBanner', () => () => 'RequestInstallBanner')
 jest.mock('./TrialBanner', () => () => 'TrialBanner')
 jest.mock('./TeamPlanFeedbackBanner', () => () => 'TeamPlanFeedbackBanner')
-jest.mock(
-  '../../layouts/BaseLayout/InstallationHelpBanner',
-  () => () => 'InstallationHelpBanner'
-)
 
 describe('GlobalTopBanners', () => {
   it('renders sentry trial banner', async () => {
@@ -29,13 +25,6 @@ describe('GlobalTopBanners', () => {
     render(<GlobalTopBanners />)
 
     const banner = await screen.findByText(/TeamPlanFeedbackBanner/)
-    expect(banner).toBeInTheDocument()
-  })
-
-  it('renders installation help banner', async () => {
-    render(<GlobalTopBanners />)
-
-    const banner = await screen.findByText(/InstallationHelpBanner/)
     expect(banner).toBeInTheDocument()
   })
 })
