@@ -20,17 +20,18 @@ const RequestSchema = z.object({
     .nullable(),
 })
 
+const query = `
+  query PlanPageData($username: String!) {
+    owner(username: $username) {
+      username
+      isCurrentUserPartOfOrg
+      numberOfUploads
+    }
+  }
+`
+
 export function usePlanPageData() {
   const { owner, provider } = useParams<URLParams>()
-  const query = `
-      query PlanPageData($username: String!) {
-        owner(username: $username) {
-          username
-          isCurrentUserPartOfOrg
-          numberOfUploads
-        }
-      }
-    `
 
   const variables = {
     username: owner,
