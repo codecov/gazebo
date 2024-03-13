@@ -44,7 +44,7 @@ function ToggleHeader({ showHitCount = false, noBottomBorder = false }) {
       </div>
       <div className="ml-auto flex w-full flex-wrap items-center justify-between gap-2 md:mt-2 md:w-auto">
         {!isTeamPlan ? <TitleFlags /> : null}
-        <ComponentsMultiSelect />
+        {!isTeamPlan ? <ComponentsMultiSelect /> : null}
       </div>
     </div>
   )
