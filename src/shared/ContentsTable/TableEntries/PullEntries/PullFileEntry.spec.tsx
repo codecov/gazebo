@@ -3,7 +3,6 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { ReactNode } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import PullFileEntry from './PullFileEntry'
@@ -69,7 +68,7 @@ const wrapper: ({
       initialEntries: ['/gh/codecov/test-repo/coolCommitSha/blob/file.js'],
     }
   ) =>
-  ({ children }: { children: ReactNode }) =>
+  ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={initialEntries}>
