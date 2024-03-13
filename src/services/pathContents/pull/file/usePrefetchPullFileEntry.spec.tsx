@@ -2,7 +2,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { ReactNode } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { usePrefetchPullFileEntry } from './usePrefetchPullFileEntry'
@@ -21,7 +20,7 @@ const queryClient = new QueryClient({
   },
 })
 
-const wrapper = ({ children }: { children: ReactNode }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter
     initialEntries={['/gh/codecov/test-repo/tree/main/src/file.js']}
   >
