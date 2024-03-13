@@ -6,14 +6,7 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
-
 import BundleContent from './BundleContent'
-
-jest.mock('shared/featureFlags')
-const mockedUseFlags = useFlags as jest.Mock<{
-  newBundleTab: boolean
-}>
 
 jest.mock('./BundleSummary', () => () => <div>BundleSummary</div>)
 
@@ -166,13 +159,10 @@ afterAll(() => {
 
 interface SetupArgs {
   isBundleError?: boolean
-  flagValue?: boolean
 }
 
 describe('BundleContent', () => {
-  function setup({ isBundleError = false, flagValue = false }: SetupArgs) {
-    mockedUseFlags.mockReturnValue({ newBundleTab: flagValue })
-
+  function setup({ isBundleError = false }: SetupArgs) {
     server.use(
       graphql.query('BranchBundleSummaryData', (req, res, ctx) => {
         if (isBundleError) {
@@ -208,116 +198,61 @@ describe('BundleContent', () => {
   })
 
   describe('rendering summary section', () => {
-    describe('flag is off', () => {
-      it('renders the bundle summary', async () => {
-        setup({ flagValue: false })
-        render(<BundleContent />, { wrapper: wrapper() })
+    it('renders the bundle summary', async () => {
+      setup({})
+      render(<BundleContent />, { wrapper: wrapper() })
 
-        const report = await screen.findByText(/Report:/)
-        expect(report).toBeInTheDocument()
-      })
-    })
-
-    describe('flag is on', () => {
-      it('renders the new bundle summary', async () => {
-        setup({ flagValue: true })
-        render(<BundleContent />, { wrapper: wrapper() })
-
-        const report = await screen.findByText(/BundleSummary/)
-        expect(report).toBeInTheDocument()
-      })
+      const report = await screen.findByText(/BundleSummary/)
+      expect(report).toBeInTheDocument()
     })
   })
 
   describe('rendering content section', () => {
-    describe('flag is on', () => {
-      describe('when the bundle type is BundleAnalysisReport', () => {
-        it('renders the bundle table', async () => {
-          setup({ flagValue: true })
-          render(<BundleContent />, {
-            wrapper: wrapper('/gh/codecov/test-repo/bundles/main/test-bundle'),
-          })
-
-          const bundleName = await screen.findByText(/asset-1/)
-          expect(bundleName).toBeInTheDocument()
-
-          const [type] = await screen.findAllByText('js')
-          expect(type).toBeInTheDocument()
-
-          const [bundleSize] = await screen.findAllByText(/3kB/)
-          expect(bundleSize).toBeInTheDocument()
-
-          const [bundleLoadTime] = await screen.findAllByText(/2s/)
-          expect(bundleLoadTime).toBeInTheDocument()
-        })
-      })
-
-      describe('when the bundle type is not BundleAnalysisReport', () => {
-        it('renders the error banner', async () => {
-          setup({ isBundleError: true, flagValue: true })
-          render(<BundleContent />, {
-            wrapper: wrapper('/gh/codecov/test-repo/bundles/main/test-bundle'),
-          })
-
-          const bannerHeader = await screen.findByText(/Missing Head Report/)
-          expect(bannerHeader).toBeInTheDocument()
-
-          const bannerMessage = await screen.findByText(
-            'Unable to compare commits because the head of the pull request did not upload a bundle stats file.'
-          )
-          expect(bannerMessage).toBeInTheDocument()
+    describe('when the bundle type is BundleAnalysisReport', () => {
+      it('renders the bundle table', async () => {
+        setup({})
+        render(<BundleContent />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/main/test-bundle'),
         })
 
-        it('renders the empty table', async () => {
-          setup({ isBundleError: true, flagValue: true })
-          render(<BundleContent />, {
-            wrapper: wrapper('/gh/codecov/test-repo/bundles/main/test-bundle'),
-          })
+        const bundleName = await screen.findByText(/asset-1/)
+        expect(bundleName).toBeInTheDocument()
 
-          const dashes = await screen.findAllByText('-')
-          expect(dashes).toHaveLength(4)
-        })
+        const [type] = await screen.findAllByText('js')
+        expect(type).toBeInTheDocument()
+
+        const [bundleSize] = await screen.findAllByText(/3kB/)
+        expect(bundleSize).toBeInTheDocument()
+
+        const [bundleLoadTime] = await screen.findAllByText(/2s/)
+        expect(bundleLoadTime).toBeInTheDocument()
       })
     })
 
-    describe('flag is off', () => {
-      describe('when the bundle type is BundleAnalysisReport', () => {
-        it('renders the bundle table', async () => {
-          setup({})
-          render(<BundleContent />, { wrapper: wrapper() })
-
-          const bundleName = await screen.findByText(/bundle1/)
-          expect(bundleName).toBeInTheDocument()
-
-          const bundleSize = await screen.findByText(/50B/)
-          expect(bundleSize).toBeInTheDocument()
-
-          const bundleLoadTime = await screen.findByText(/100ms/)
-          expect(bundleLoadTime).toBeInTheDocument()
+    describe('when the bundle type is not BundleAnalysisReport', () => {
+      it('renders the error banner', async () => {
+        setup({ isBundleError: true })
+        render(<BundleContent />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/main/test-bundle'),
         })
+
+        const bannerHeader = await screen.findByText(/Missing Head Report/)
+        expect(bannerHeader).toBeInTheDocument()
+
+        const bannerMessage = await screen.findByText(
+          'Unable to compare commits because the head of the pull request did not upload a bundle stats file.'
+        )
+        expect(bannerMessage).toBeInTheDocument()
       })
 
-      describe('when the bundle type is not BundleAnalysisReport', () => {
-        it('renders the error banner', async () => {
-          setup({ isBundleError: true })
-          render(<BundleContent />, { wrapper: wrapper() })
-
-          const bannerHeader = await screen.findByText(/Missing Head Report/)
-          expect(bannerHeader).toBeInTheDocument()
-
-          const bannerMessage = await screen.findByText(
-            'Unable to compare commits because the head of the pull request did not upload a bundle stats file.'
-          )
-          expect(bannerMessage).toBeInTheDocument()
+      it('renders the empty table', async () => {
+        setup({ isBundleError: true })
+        render(<BundleContent />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/main/test-bundle'),
         })
 
-        it('renders the empty table', async () => {
-          setup({ isBundleError: true })
-          render(<BundleContent />, { wrapper: wrapper() })
-
-          const dashes = await screen.findAllByText('-')
-          expect(dashes).toHaveLength(3)
-        })
+        const dashes = await screen.findAllByText('-')
+        expect(dashes).toHaveLength(4)
       })
     })
   })
