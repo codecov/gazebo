@@ -25,9 +25,7 @@ export function useNavLinks() {
   return {
     signOut: {
       text: 'Sign Out',
-      path: ({ provider = p } = { provider: p }) => {
-        return `${config.API_URL}/logout/${provider}`
-      },
+      path: () => `${config.API_URL}/logout`,
       isExternalLink: true,
     },
     signIn: {
