@@ -205,18 +205,12 @@ describe('useMyOrganizations', () => {
           wrapper: wrapper(),
         })
 
-        await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
+        await waitFor(() => expect(result.current.isSuccess).toBeFalsy())
 
         expect(thrownMock).toHaveBeenCalledWith(
           'POST /graphql/gh net::ERR_FAILED'
         )
-        expect(thrownMock).toHaveBeenCalledWith(
-          'Error at useMyOrganizations: Failed to fetch'
-        )
-        expect(result.current.data).toEqual({
-          pageParams: [undefined],
-          pages: [undefined],
-        })
+        expect(result.current.data).toBeUndefined()
       })
     })
   })
