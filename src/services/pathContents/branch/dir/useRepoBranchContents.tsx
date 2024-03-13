@@ -1,0 +1,167 @@
+import { useQuery } from '@tanstack/react-query'
+import { z } from 'zod'
+
+import { RepoConfig } from 'services/repo/useRepoConfig'
+import Api from 'shared/api'
+
+import { query } from './constants'
+
+interface FetchRepoContentsArgs {
+  provider: string
+  owner: string
+  repo: string
+  branch: string
+  path: string
+  filters?: {}
+  signal?: AbortSignal
+}
+
+export const PathContentsResultSchema = z
+  .object({
+    __typename: z.string(),
+    hits: z.number().nullable(),
+    misses: z.number().nullable(),
+    partials: z.number().nullable(),
+    lines: z.number().nullable(),
+    name: z.string(),
+    path: z.string().nullable(),
+    percentCovered: z.number().nullable(),
+  })
+  .nullable()
+
+export const PathContentsSchema = z.object({
+  __typename: z.literal('PathContents'),
+  results: z.array(PathContentsResultSchema),
+})
+
+export const UnknownPathSchema = z.object({
+  __typename: z.literal('UnknownPath'),
+  message: z.string(),
+})
+
+export const MissingCoverageSchema = z.object({
+  __typename: z.literal('MissingCoverage'),
+  message: z.string(),
+})
+
+const PathContentsUnionSchema = z.discriminatedUnion('__typename', [
+  PathContentsSchema,
+  UnknownPathSchema,
+  MissingCoverageSchema,
+])
+
+export type PathContentResultType = z.infer<typeof PathContentsResultSchema>
+
+const BranchContentsSchema = z.object({
+  owner: z
+    .object({
+      repository: z.object({
+        repoConfig: RepoConfig,
+        branch: z.object({
+          head: z
+            .object({
+              pathContents: PathContentsUnionSchema,
+            })
+            .nullable(),
+        }),
+      }),
+    })
+    .nullable(),
+})
+
+function fetchRepoContents({
+  provider,
+  owner,
+  repo,
+  branch,
+  path,
+  filters,
+  signal,
+}: FetchRepoContentsArgs) {
+  return Api.graphql({
+    provider,
+    query,
+    signal,
+    variables: {
+      name: owner,
+      repo,
+      branch,
+      path,
+      filters,
+    },
+  }).then((res) => {
+    const parsedData = BranchContentsSchema.safeParse(res?.data)
+
+    if (!parsedData.success) {
+      console.log('FAILED')
+      console.log(parsedData)
+      return Promise.reject({
+        status: 404,
+        data: {},
+      })
+    }
+
+    let results
+    const pathContentsType =
+      parsedData?.data?.owner?.repository?.branch?.head?.pathContents
+        ?.__typename
+    if (pathContentsType === 'PathContents') {
+      results =
+        parsedData?.data?.owner?.repository?.branch?.head?.pathContents?.results
+    }
+    return {
+      results: results ?? null,
+      pathContentsType,
+      indicationRange:
+        parsedData?.data?.owner?.repository?.repoConfig?.indicationRange,
+      __typename: res?.data?.owner?.repository?.branch?.head?.__typename,
+    }
+  })
+}
+
+interface RepoBranchContentsArgs {
+  provider: string
+  owner: string
+  repo: string
+  branch: string
+  path: string
+  filters?: {}
+  opts?: {
+    suspense?: boolean
+    enabled?: boolean
+  }
+}
+
+export function useRepoBranchContents({
+  provider,
+  owner,
+  repo,
+  branch,
+  path,
+  filters,
+  ...options
+}: RepoBranchContentsArgs) {
+  return useQuery({
+    queryKey: [
+      'BranchContents',
+      provider,
+      owner,
+      repo,
+      branch,
+      path,
+      filters,
+      query,
+    ],
+    queryFn: ({ signal }) =>
+      fetchRepoContents({
+        provider,
+        owner,
+        repo,
+        branch,
+        path,
+        filters,
+        signal,
+      }),
+    ...options,
+  })
+}
