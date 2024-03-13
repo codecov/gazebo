@@ -12,14 +12,8 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TierNames, TTierNames } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 
 import RepoPageTabs, { useRepoTabs } from './RepoPageTabs'
-
-jest.mock('shared/featureFlags')
-const mockedUseFlags = useFlags as jest.Mock<{
-  bundleAnalysisPrAndCommitPages: boolean
-}>
 
 const mockRepoOverview = ({
   language = '',
@@ -133,10 +127,6 @@ describe('RepoPageTabs', () => {
     tierName = TierNames.PRO,
     isCurrentUserPartOfOrg = true,
   }: SetupArgs) {
-    mockedUseFlags.mockReturnValue({
-      bundleAnalysisPrAndCommitPages: true,
-    })
-
     server.use(
       graphql.query('GetRepoOverview', (req, res, ctx) => {
         return res(
@@ -427,10 +417,6 @@ describe('useRepoTabs', () => {
     tierName = TierNames.PRO,
     isCurrentUserPartOfOrg = true,
   }: SetupArgs) {
-    mockedUseFlags.mockReturnValue({
-      bundleAnalysisPrAndCommitPages: true,
-    })
-
     server.use(
       graphql.query('GetRepoOverview', (req, res, ctx) => {
         return res(
