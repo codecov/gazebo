@@ -40,6 +40,18 @@ describe('DeactivatedRepo', () => {
           ctx.data({
             owner: {
               isCurrentUserPartOfOrg,
+              isAdmin: null,
+              isCurrentUserActivated: null,
+              orgUploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629290',
+              repository: {
+                private: false,
+                uploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629295',
+                defaultBranch: 'main',
+                yaml: '',
+                activated: false,
+                oldestCommitAt: '',
+                active: false,
+              },
             },
           })
         )

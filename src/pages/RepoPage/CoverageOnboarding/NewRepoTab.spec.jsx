@@ -22,9 +22,11 @@ const mockCurrentUser = {
   },
 }
 
-const mockGetRepo = (noUploadToken, hasCommits) => ({
+const mockGetRepo = (noUploadToken = false, hasCommits = false) => ({
   owner: {
     isCurrentUserPartOfOrg: true,
+    isAdmin: null,
+    isCurrentUserActivated: null,
     repository: {
       private: false,
       uploadToken: noUploadToken
