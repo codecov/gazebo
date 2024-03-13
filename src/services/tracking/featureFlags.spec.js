@@ -33,7 +33,7 @@ describe('useTrackFeatureFlags', () => {
         })
       )
 
-      expect(mockIdentifyUser).lastCalledWith({
+      expect(mockIdentifyUser).toHaveBeenLastCalledWith({
         kind: 'user',
         name: 'doggo',
         email: 'test@test.com',
@@ -83,7 +83,7 @@ describe('useTrackFeatureFlags', () => {
         })
       )
 
-      expect(mockIdentifyUser).lastCalledWith({
+      expect(mockIdentifyUser).toHaveBeenLastCalledWith({
         kind: 'user',
         name: 'doggo',
         email: 'test@test.com',
@@ -134,7 +134,7 @@ describe('useTrackFeatureFlags', () => {
         })
       )
 
-      expect(mockIdentifyUser).lastCalledWith({
+      expect(mockIdentifyUser).toHaveBeenLastCalledWith({
         kind: 'user',
         name: 'doggo',
         email: 'test@test.com',
@@ -184,7 +184,7 @@ describe('useTrackFeatureFlags', () => {
         })
       )
 
-      expect(mockIdentifyUser).lastCalledWith({
+      expect(mockIdentifyUser).toHaveBeenLastCalledWith({
         kind: 'user',
         name: 'doggo',
         email: 'test@test.com',

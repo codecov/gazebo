@@ -104,8 +104,11 @@ describe('LoginPage', () => {
           wrapper: wrapper('/login?state=cool%20state%20value'),
         })
 
-        expect(mockSetItem).toBeCalled()
-        expect(mockSetItem).toBeCalledWith('sentry-token', 'cool state value')
+        expect(mockSetItem).toHaveBeenCalled()
+        expect(mockSetItem).toHaveBeenCalledWith(
+          'sentry-token',
+          'cool state value'
+        )
       })
     })
 
@@ -118,7 +121,7 @@ describe('LoginPage', () => {
           wrapper: wrapper('/login'),
         })
 
-        expect(mockSetItem).not.toBeCalled()
+        expect(mockSetItem).not.toHaveBeenCalled()
       })
     })
   })

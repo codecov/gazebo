@@ -66,7 +66,7 @@ describe('UpgradeModal', () => {
         const close = screen.getByLabelText('Close')
         await user.click(close)
 
-        expect(setIsOpen).toBeCalledWith(false)
+        expect(setIsOpen).toHaveBeenCalledWith(false)
       })
     })
 
@@ -81,7 +81,7 @@ describe('UpgradeModal', () => {
         const cancel = screen.getByRole('button', { name: 'Cancel' })
         await user.click(cancel)
 
-        expect(setIsOpen).toBeCalledWith(false)
+        expect(setIsOpen).toHaveBeenCalledWith(false)
       })
     })
   })

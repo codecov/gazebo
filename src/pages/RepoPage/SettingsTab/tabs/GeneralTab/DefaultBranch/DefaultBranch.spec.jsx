@@ -299,7 +299,7 @@ describe('DefaultBranch', () => {
         const select = screen.getByText('main')
         await user.click(select)
 
-        await waitFor(() => expect(fetchesNextPage).toBeCalled())
+        await waitFor(() => expect(fetchesNextPage).toHaveBeenCalled())
       })
     })
 
@@ -312,7 +312,7 @@ describe('DefaultBranch', () => {
         const select = await screen.findByText('main')
         await user.click(select)
 
-        await waitFor(() => expect(fetchesNextPage).not.toBeCalled())
+        await waitFor(() => expect(fetchesNextPage).not.toHaveBeenCalled())
       })
     })
   })
@@ -333,7 +333,7 @@ describe('DefaultBranch', () => {
       await user.keyboard('cool branch name')
 
       await waitFor(() =>
-        expect(fetchFilters).toBeCalledWith({
+        expect(fetchFilters).toHaveBeenCalledWith({
           searchValue: 'cool branch name',
           mergedBranches: true,
         })

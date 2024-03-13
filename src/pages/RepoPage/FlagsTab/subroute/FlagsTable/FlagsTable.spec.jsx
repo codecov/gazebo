@@ -20,8 +20,10 @@ const mockRepoConfig = {
 
 const mockGetRepo = {
   owner: {
-    isAdmin: true,
     isCurrentUserPartOfOrg: true,
+    orgUploadToken: 'token',
+    isAdmin: true,
+    isCurrentUserActivated: null,
     repository: {
       private: false,
       uploadToken: 'token',
@@ -29,6 +31,7 @@ const mockGetRepo = {
       yaml: '',
       activated: true,
       oldestCommitAt: '2020-01-01T12:00:00',
+      active: true,
     },
   },
 }

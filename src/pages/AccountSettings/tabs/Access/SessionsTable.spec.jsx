@@ -204,8 +204,8 @@ describe('SessionsTable', () => {
         )
 
         await user.click(screen.getAllByText(/Revoke/)[0])
-        expect(mutate).toBeCalled()
-        expect(mutate).toBeCalledWith({ sessionid: 32 })
+        expect(mutate).toHaveBeenCalled()
+        expect(mutate).toHaveBeenCalledWith({ sessionid: 32 })
       })
     })
   })

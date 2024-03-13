@@ -92,7 +92,7 @@ describe('useRegenerateRepositoryToken', () => {
       result.current.mutate()
 
       await waitFor(() =>
-        expect(addNotification).toBeCalledWith({
+        expect(addNotification).toHaveBeenCalledWith({
           type: 'error',
           text: 'Error',
         })
@@ -118,7 +118,7 @@ describe('useRegenerateRepositoryToken', () => {
       result.current.mutate()
 
       await waitFor(() =>
-        expect(addNotification).toBeCalledWith({
+        expect(addNotification).toHaveBeenCalledWith({
           type: 'error',
         })
       )

@@ -235,7 +235,7 @@ describe('CommitDetailFileExplorer', () => {
           render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
           await waitFor(() =>
-            expect(requestFilters).toBeCalledWith({
+            expect(requestFilters).toHaveBeenCalledWith({
               ordering: { direction: 'ASC', parameter: 'NAME' },
             })
           )
@@ -291,7 +291,7 @@ describe('CommitDetailFileExplorer', () => {
           })
 
           await waitFor(() =>
-            expect(requestFilters).toBeCalledWith({
+            expect(requestFilters).toHaveBeenCalledWith({
               displayType: 'LIST',
               ordering: { direction: 'DESC', parameter: 'MISSES' },
             })

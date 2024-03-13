@@ -19,6 +19,11 @@ jest.mock('./WebpackOnboarding', () => () => <div>WebpackOnboarding</div>)
 const mockGetRepo = (hasUploadToken: boolean, isActive: boolean) => ({
   owner: {
     isCurrentUserPartOfOrg: true,
+    orgUploadToken: hasUploadToken
+      ? '9e6a6189-20f1-482d-ab62-ecfaa2629290'
+      : null,
+    isAdmin: null,
+    isCurrentUserActivated: null,
     repository: {
       private: false,
       uploadToken: hasUploadToken
@@ -248,7 +253,7 @@ describe('BundleOnboarding', () => {
       const { hardRedirect } = setup({ hasUploadToken: false })
       render(<BundleOnboarding />, { wrapper: wrapper() })
 
-      await waitFor(() => expect(hardRedirect).toBeCalled())
+      await waitFor(() => expect(hardRedirect).toHaveBeenCalled())
     })
 
     it('displays 404', async () => {

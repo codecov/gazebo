@@ -185,7 +185,7 @@ describe('Header', () => {
             const button = screen.getByText('All flags')
             await user.click(button)
 
-            expect(fetchNextPage).toBeCalled()
+            expect(fetchNextPage).toHaveBeenCalled()
           })
         })
 
@@ -205,7 +205,7 @@ describe('Header', () => {
             const button = screen.getByText('All flags')
             await user.click(button)
 
-            expect(fetchNextPage).not.toBeCalled()
+            expect(fetchNextPage).not.toHaveBeenCalled()
           })
         })
       })
@@ -249,7 +249,7 @@ describe('Header', () => {
 
           await waitFor(
             () =>
-              expect(useRepoFlagsSelect).toBeCalledWith({
+              expect(useRepoFlagsSelect).toHaveBeenCalledWith({
                 filters: { term: 'flag2' },
                 options: { suspense: false },
               }),

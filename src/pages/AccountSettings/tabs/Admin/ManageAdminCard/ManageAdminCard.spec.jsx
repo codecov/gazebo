@@ -185,7 +185,9 @@ describe('ManageAdminCard', () => {
       const input = screen.getByRole('combobox')
       await user.type(input, 'cool-user')
 
-      await waitFor(() => expect(searchParams).toBeCalledWith('cool-user'))
+      await waitFor(() =>
+        expect(searchParams).toHaveBeenCalledWith('cool-user')
+      )
 
       expect(await screen.findByText('searching-user')).toBeTruthy()
       const searchedUser = screen.getByText('searching-user')
@@ -193,8 +195,8 @@ describe('ManageAdminCard', () => {
 
       await user.click(searchedUser)
 
-      await waitFor(() => expect(mutate).toBeCalled())
-      await waitFor(() => expect(mutate).toBeCalledWith('10'))
+      await waitFor(() => expect(mutate).toHaveBeenCalled())
+      await waitFor(() => expect(mutate).toHaveBeenCalledWith('10'))
     })
   })
 })

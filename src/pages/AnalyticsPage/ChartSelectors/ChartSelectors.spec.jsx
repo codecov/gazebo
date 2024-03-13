@@ -209,7 +209,7 @@ describe('ChartSelectors', () => {
       })
 
       await waitFor(() =>
-        expect(updateParams).toBeCalledWith({
+        expect(updateParams).toHaveBeenCalledWith({
           endDate: null,
           startDate: new Date('2022-03-31T00:00:00.000Z'),
         })
@@ -330,7 +330,9 @@ describe('ChartSelectors', () => {
         await user.click(repo1)
 
         await waitFor(() =>
-          expect(updateParams).toBeCalledWith({ repositories: ['Repo name 1'] })
+          expect(updateParams).toHaveBeenCalledWith({
+            repositories: ['Repo name 1'],
+          })
         )
       })
     })
@@ -424,7 +426,7 @@ describe('ChartSelectors', () => {
           const multiselect = screen.getByText('All Repos')
           await user.click(multiselect)
 
-          expect(fetchNextPage).toBeCalled()
+          expect(fetchNextPage).toHaveBeenCalled()
         })
       })
 
@@ -448,7 +450,7 @@ describe('ChartSelectors', () => {
           const multiselect = screen.getByText('All Repos')
           await user.click(multiselect)
 
-          expect(fetchNextPage).not.toBeCalled()
+          expect(fetchNextPage).not.toHaveBeenCalled()
         })
       })
     })
