@@ -29,6 +29,20 @@ export type PathContentsFilters = {
   components?: string[] | ParsedQs[]
 }
 
+export function toPathContentsFilterParameter(
+  parameter: string
+): PathContentsFiltersParam {
+  const uppercaseParam = parameter.toUpperCase()
+  // This is the only way I could find to get TS to be okay with this.
+  let match: PathContentsFiltersParam = 'NAME'
+  pathContentsFiltersParam.forEach((param) => {
+    if (uppercaseParam === param) {
+      match = uppercaseParam
+    }
+  })
+  return match
+}
+
 const CoverageSchema = z.array(
   z
     .object({
