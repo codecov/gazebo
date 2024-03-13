@@ -42,13 +42,22 @@ const wrapper =
 
 describe('useNavLinks', () => {
   describe('Sign Out', () => {
-    it('returns the correct link', () => {
+    it('returns the correct link with nothing passed', () => {
       const { result } = renderHook(() => useNavLinks(), {
         wrapper: wrapper('/gl/doggo/squirrel-locator'),
       })
 
       const path = result.current.signOut.path()
-      expect(path).toBe('/logout')
+      expect(path).toBe('/logout/gl')
+    })
+
+    it('can override the params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/doggo/squirrel-locator'),
+      })
+
+      const path = result.current.signOut.path({ provider: 'bb' })
+      expect(path).toBe('/logout/bb')
     })
   })
 
