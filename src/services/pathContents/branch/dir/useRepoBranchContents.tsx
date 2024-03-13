@@ -16,17 +16,27 @@ interface FetchRepoContentsArgs {
   signal?: AbortSignal
 }
 
-export const PathContentsResultSchema = z
-  .object({
-    __typename: z.string(),
-    hits: z.number().nullable(),
-    misses: z.number().nullable(),
-    partials: z.number().nullable(),
-    lines: z.number().nullable(),
-    name: z.string(),
-    path: z.string().nullable(),
-    percentCovered: z.number().nullable(),
-  })
+const BasePathContentSchema = z.object({
+  hits: z.number().nullable(),
+  misses: z.number().nullable(),
+  partials: z.number().nullable(),
+  lines: z.number().nullable(),
+  name: z.string(),
+  path: z.string().nullable(),
+  percentCovered: z.number().nullable(),
+})
+
+const PathContentFileSchema = BasePathContentSchema.extend({
+  __typename: z.literal('PathContentFile'),
+  isCriticalFile: z.boolean().nullable(),
+})
+
+const PathContentDirSchema = BasePathContentSchema.extend({
+  __typename: z.literal('PathContentDir'),
+})
+
+const PathContentsResultSchema = z
+  .union([PathContentFileSchema, PathContentDirSchema])
   .nullable()
 
 export const PathContentsSchema = z.object({

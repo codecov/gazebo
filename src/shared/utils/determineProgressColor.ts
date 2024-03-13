@@ -6,17 +6,16 @@ export const determineProgressColor = ({
   lowerRange,
 }: {
   coverage: number | null
-  upperRange: number
-  lowerRange: number
+  upperRange?: number | null
+  lowerRange?: number | null
 }) => {
-  if (isNumber(coverage)) {
-    if (coverage < lowerRange) {
-      return 'danger'
-    } else if (coverage >= lowerRange && coverage < upperRange) {
-      return 'warning'
-    }
+  if (!isNumber(coverage) || !isNumber(upperRange) || !isNumber(lowerRange)) {
     return 'primary'
   }
-
+  if (coverage < lowerRange) {
+    return 'danger'
+  } else if (coverage >= lowerRange && coverage < upperRange) {
+    return 'warning'
+  }
   return 'primary'
 }
