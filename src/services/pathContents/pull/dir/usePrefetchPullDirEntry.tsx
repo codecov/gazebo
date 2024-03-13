@@ -1,15 +1,28 @@
-import { type QueryOptions, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
+import { z } from 'zod'
 
-import { extractCoverageFromResponse } from 'services/file/utils'
+import {
+  RepoNotFoundErrorSchema,
+  RepoOwnerNotActivatedErrorSchema,
+} from 'services/repo'
 import Api from 'shared/api'
 import { NetworkErrorObject } from 'shared/api/helpers'
 import A from 'ui/A'
 
-import {
-  PathContentsRequestSchema,
-  queryForCommitFile as query,
-} from '../../constants'
+import { PathContentsFilters, query, RepositorySchema } from './constants'
+
+const RequestSchema = z.object({
+  owner: z
+    .object({
+      repository: z.discriminatedUnion('__typename', [
+        RepositorySchema,
+        RepoNotFoundErrorSchema,
+        RepoOwnerNotActivatedErrorSchema,
+      ]),
+    })
+    .nullable(),
+})
 
 interface URLParams {
   provider: string
@@ -17,58 +30,56 @@ interface URLParams {
   repo: string
 }
 
-interface UsePrefetchCommitFileEntryArgs {
-  commitSha: string
+interface UsePrefetchPullDirEntryArgs {
+  pullId: string
   path: string
-  flags?: Array<string>
-  components?: Array<string>
-  options?: QueryOptions
+  filters?: PathContentsFilters
+  opts?: {
+    suspense?: boolean
+  }
 }
 
-export function usePrefetchCommitFileEntry({
-  commitSha,
+export function usePrefetchPullDirEntry({
+  pullId,
   path,
-  flags = [],
-  components = [],
-  options = {},
-}: UsePrefetchCommitFileEntryArgs) {
+  filters,
+  opts = {},
+}: UsePrefetchPullDirEntryArgs) {
   const { provider, owner, repo } = useParams<URLParams>()
   const queryClient = useQueryClient()
 
   const runPrefetch = async () => {
     await queryClient.prefetchQuery({
       queryKey: [
-        'commit',
+        'PullPathContents',
         provider,
         owner,
         repo,
-        commitSha,
+        pullId,
         path,
-        flags,
-        components,
+        filters,
+        query,
       ],
-      queryFn: ({ signal }) => {
-        return Api.graphql({
+      queryFn: ({ signal }) =>
+        Api.graphql({
           provider,
           query,
           signal,
           variables: {
-            provider,
             owner,
             repo,
-            ref: commitSha,
+            pullId: parseInt(pullId, 10),
             path,
-            flags,
-            components,
+            filters,
           },
         }).then((res) => {
-          const parsedRes = PathContentsRequestSchema.safeParse(res?.data)
+          const parsedRes = RequestSchema.safeParse(res?.data)
 
           if (!parsedRes.success) {
             return Promise.reject({
               status: 404,
               data: {},
-              dev: 'usePrefetchCommitFileEntry - 404 schema parsing failed',
+              dev: 'usePrefetchPullDirEntry - 404 schema parsing failed',
             } satisfies NetworkErrorObject)
           }
 
@@ -78,7 +89,7 @@ export function usePrefetchCommitFileEntry({
             return Promise.reject({
               status: 404,
               data: {},
-              dev: 'usePrefetchCommitFileEntry - 404 NotFoundError',
+              dev: 'usePrefetchPullDirEntry - 404 NotFoundError',
             } satisfies NetworkErrorObject)
           }
 
@@ -97,25 +108,14 @@ export function usePrefetchCommitFileEntry({
                   </p>
                 ),
               },
-              dev: 'usePrefetchCommitFileEntry - 403 OwnerNotActivatedError',
+              dev: 'usePrefetchPullDirEntry - 403 OwnerNotActivatedError',
             } satisfies NetworkErrorObject)
           }
 
-          const coverage = extractCoverageFromResponse(data?.owner?.repository)
-
-          if (!coverage) {
-            return Promise.reject({
-              status: 404,
-              data: {},
-              dev: 'usePrefetchCommitFileEntry - 404 failed to find coverage file',
-            } satisfies NetworkErrorObject)
-          }
-
-          return coverage
-        })
-      },
+          return data?.owner?.repository?.pull?.head?.pathContents
+        }),
       staleTime: 10000,
-      ...(!!options && options),
+      ...opts,
     })
   }
 

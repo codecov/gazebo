@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import { ReactNode } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import PullFileEntry from './PullFileEntry'
@@ -10,23 +11,44 @@ import PullFileEntry from './PullFileEntry'
 import { displayTypeParameter } from '../../constants'
 
 const mockData = {
+  __typename: 'Repository',
   commit: {
     commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
     flagNames: ['a', 'b'],
     coverageFile: {
       isCriticalFile: true,
+      hashedPath: 'hashed-path',
       content:
-        'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n',
+        'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n',
       coverage: [
         {
           line: 1,
-          coverage: 1,
+          coverage: 'H',
         },
         {
           line: 2,
-          coverage: 1,
+          coverage: 'P',
+        },
+        {
+          line: 3,
+          coverage: 'H',
+        },
+        {
+          line: 4,
+          coverage: 'M',
+        },
+        {
+          line: 5,
+          coverage: 'H',
+        },
+        {
+          line: 6,
+          coverage: 'H',
         },
       ],
+      totals: {
+        coverage: 66.67,
+      },
     },
   },
   branch: null,
@@ -43,7 +65,7 @@ const wrapper =
       initialEntries: ['/gh/codecov/test-repo/coolCommitSha/blob/file.js'],
     }
   ) =>
-  ({ children }) =>
+  ({ children }: { children: ReactNode }) =>
     (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={initialEntries}>
@@ -199,21 +221,30 @@ describe('PullFileEntry', () => {
 
       await user.hover(screen.getByText('file.js'))
 
-      await waitFor(() => queryClient.getQueryState().isFetching)
-      await waitFor(() => !queryClient.getQueryState().isFetching)
+      await waitFor(() => queryClient.isFetching())
+      await waitFor(() => !queryClient.isFetching())
+
+      const queryKey = queryClient
+        .getQueriesData({})
+        ?.at(0)
+        ?.at(0) as Array<any>
 
       await waitFor(() =>
-        expect(queryClient.getQueryState().data).toStrictEqual({
+        expect(queryClient?.getQueryState(queryKey)?.data).toStrictEqual({
           content:
-            'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n',
+            'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n',
           coverage: {
-            1: 1,
-            2: 1,
+            1: 'H',
+            2: 'P',
+            3: 'H',
+            4: 'M',
+            5: 'H',
+            6: 'H',
           },
           flagNames: ['a', 'b'],
-          componentNames: [],
+          hashedPath: 'hashed-path',
           isCriticalFile: true,
-          totals: 0,
+          totals: 66.67,
         })
       )
     })
