@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { ReactNode } from 'react'
+import { PropsWithChildren } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import PullDirEntry from './PullDirEntry'
@@ -47,13 +47,17 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper =
+const wrapper: ({
+  initialEntries,
+}?: {
+  initialEntries: string[]
+}) => React.FC<PropsWithChildren> =
   (
     { initialEntries } = {
       initialEntries: ['/gh/codecov/test-repo/pull/123/tree'],
     }
   ) =>
-  ({ children }: { children: ReactNode }) =>
+  ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={initialEntries}>
