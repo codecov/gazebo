@@ -290,9 +290,9 @@ describe('Actions Billing', () => {
 
           await user.click(startTrialBtn)
 
-          await waitFor(() => expect(mockMutationVars).toBeCalled())
+          await waitFor(() => expect(mockMutationVars).toHaveBeenCalled())
           await waitFor(() =>
-            expect(mockMutationVars).toBeCalledWith({
+            expect(mockMutationVars).toHaveBeenCalledWith({
               input: { orgUsername: 'critical-role' },
             })
           )
@@ -527,9 +527,9 @@ describe('Actions Billing', () => {
 
             await user.click(startTrialBtn)
 
-            await waitFor(() => expect(mockMutationVars).toBeCalled())
+            await waitFor(() => expect(mockMutationVars).toHaveBeenCalled())
             await waitFor(() =>
-              expect(mockMutationVars).toBeCalledWith({
+              expect(mockMutationVars).toHaveBeenCalledWith({
                 input: { orgUsername: 'critical-role' },
               })
             )

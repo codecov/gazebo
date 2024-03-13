@@ -151,8 +151,8 @@ describe('AdminTable', () => {
           expect(btn).toBeInTheDocument()
           await user.click(btn)
 
-          await waitFor(() => expect(mutate).toBeCalled())
-          expect(mutate).toBeCalledWith({ owner: '1' })
+          await waitFor(() => expect(mutate).toHaveBeenCalled())
+          expect(mutate).toHaveBeenCalledWith({ owner: '1' })
         })
       })
     })

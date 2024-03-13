@@ -475,7 +475,7 @@ describe('DiffLine', () => {
       const button = screen.getByRole('button', { name: /# 1/ })
       await user.click(button)
 
-      expect(mockHandleClick).toBeCalled()
+      expect(mockHandleClick).toHaveBeenCalled()
     })
   })
 

@@ -56,7 +56,7 @@ describe('Toggle', () => {
 
       await user.click(button)
 
-      expect(mockFn).toBeCalled()
+      expect(mockFn).toHaveBeenCalled()
     })
   })
 
@@ -107,7 +107,7 @@ describe('Toggle', () => {
 
       await user.click(button)
 
-      expect(mockFn).toBeCalled()
+      expect(mockFn).toHaveBeenCalled()
     })
   })
 
@@ -161,7 +161,7 @@ describe('Toggle', () => {
 
       await user.click(button)
 
-      expect(mockFn).not.toBeCalled()
+      expect(mockFn).not.toHaveBeenCalled()
     })
 
     it('has disabled state on button', () => {

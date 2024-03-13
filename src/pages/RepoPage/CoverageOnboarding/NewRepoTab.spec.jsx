@@ -182,7 +182,7 @@ describe('NewRepoTab', () => {
         const { hardRedirect } = setup({ noUploadToken: true })
         render(<NewRepoTab />, { wrapper: wrapper() })
 
-        await waitFor(() => expect(hardRedirect).toBeCalled())
+        await waitFor(() => expect(hardRedirect).toHaveBeenCalled())
       })
 
       it('displays 404', async () => {

@@ -85,7 +85,7 @@ describe('OngoingBanner', () => {
       await user.click(dismissBtn)
 
       await waitFor(() =>
-        expect(mockSetItem).toBeCalledWith(
+        expect(mockSetItem).toHaveBeenCalledWith(
           'dismissed-top-banners',
           JSON.stringify({ 'global-top-ongoing-trial-banner': 'true' })
         )

@@ -168,7 +168,7 @@ describe('InstallationHelpBanner', () => {
       await user.click(dismissButton)
 
       await waitFor(() =>
-        expect(mockSetItem).toBeCalledWith(
+        expect(mockSetItem).toHaveBeenCalledWith(
           'dismissed-top-banners',
           JSON.stringify({ 'install-help-banner': 'true' })
         )

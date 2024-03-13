@@ -350,7 +350,7 @@ describe('Summary', () => {
         })
         await user.click(select)
 
-        await waitFor(() => expect(fetchNextPage).toBeCalled())
+        await waitFor(() => expect(fetchNextPage).toHaveBeenCalled())
       })
     })
 
@@ -381,7 +381,7 @@ describe('Summary', () => {
         })
         await user.click(select)
 
-        expect(fetchNextPage).not.toBeCalled()
+        expect(fetchNextPage).not.toHaveBeenCalled()
       })
     })
   })

@@ -253,7 +253,7 @@ describe('BundleOnboarding', () => {
       const { hardRedirect } = setup({ hasUploadToken: false })
       render(<BundleOnboarding />, { wrapper: wrapper() })
 
-      await waitFor(() => expect(hardRedirect).toBeCalled())
+      await waitFor(() => expect(hardRedirect).toHaveBeenCalled())
     })
 
     it('displays 404', async () => {
