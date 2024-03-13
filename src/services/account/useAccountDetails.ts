@@ -80,8 +80,15 @@ export const SubscriptionDetailSchema = z
     currentPeriodEnd: z.number(),
     customer: z
       .object({
-        id: z.string().nullish(),
-        discount: z.any(),
+        id: z.string(),
+        discount: z
+          .object({
+            name: z.string().nullable(),
+            percentOff: z.number().nullable(),
+            durationInMonths: z.number().nullable(),
+            expires: z.number().nullable(),
+          })
+          .nullish(),
         email: z.string(),
       })
       .nullable(),

@@ -98,7 +98,13 @@ export const accountDetailsObject = {
     cancel_at_period_end: false,
     current_period_end: 1636479475,
     customer: {
-      discount: 25,
+      id: 'blahblah',
+      discount: {
+        name: 'yep',
+        percent_off: 25,
+        duration_in_months: 12,
+        expires: 1,
+      },
       email: 'niceone@gmail.com',
     },
     collection_method: null,
@@ -204,7 +210,13 @@ export const accountDetailsParsedObj = {
     cancelAtPeriodEnd: false,
     currentPeriodEnd: 1636479475,
     customer: {
-      discount: 25,
+      id: 'blahblah',
+      discount: {
+        name: 'yep',
+        percentOff: 25,
+        durationInMonths: 12,
+        expires: 1,
+      },
       email: 'niceone@gmail.com',
     },
     collectionMethod: null,
