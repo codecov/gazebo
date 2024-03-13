@@ -13,7 +13,6 @@ import PullRequestPage from './PullRequestPage'
 jest.mock('shared/featureFlags')
 const mockedUseFlags = useFlags as jest.Mock<{
   multipleTiers: boolean
-  bundleAnalysisPrAndCommitPages: boolean
 }>
 
 jest.mock('./Header', () => () => 'Header')
@@ -183,7 +182,6 @@ describe('PullRequestPage', () => {
   }: SetupArgs) {
     mockedUseFlags.mockReturnValue({
       multipleTiers: true,
-      bundleAnalysisPrAndCommitPages: true,
     })
 
     server.use(

@@ -42,9 +42,8 @@ const Loader = () => (
 function PullRequestPage() {
   const location = useLocation()
   const { provider, owner, repo, pullId } = useParams<URLParams>()
-  const { multipleTiers, bundleAnalysisPrAndCommitPages } = useFlags({
+  const { multipleTiers } = useFlags({
     multipleTiers: false,
-    bundleAnalysisPrAndCommitPages: false,
   })
 
   const { data: overview } = useRepoOverview({ provider, owner, repo })
@@ -68,11 +67,7 @@ function PullRequestPage() {
   let defaultDropdown: Array<'coverage' | 'bundle'> = []
   // default to displaying only coverage
   let displayMode: TDisplayMode = DISPLAY_MODE.COVERAGE
-  if (
-    data?.bundleAnalysisEnabled &&
-    data?.coverageEnabled &&
-    bundleAnalysisPrAndCommitPages
-  ) {
+  if (data?.bundleAnalysisEnabled && data?.coverageEnabled) {
     const queryString = qs.parse(location.search, {
       ignoreQueryPrefix: true,
       depth: 1,
@@ -85,7 +80,7 @@ function PullRequestPage() {
     }
 
     displayMode = DISPLAY_MODE.BOTH
-  } else if (data?.bundleAnalysisEnabled && bundleAnalysisPrAndCommitPages) {
+  } else if (data?.bundleAnalysisEnabled) {
     displayMode = DISPLAY_MODE.BUNDLE_ANALYSIS
   }
 
