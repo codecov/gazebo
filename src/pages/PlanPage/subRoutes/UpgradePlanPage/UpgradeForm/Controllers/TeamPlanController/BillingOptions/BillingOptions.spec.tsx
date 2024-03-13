@@ -184,7 +184,7 @@ describe('BillingOptions', () => {
           await user.click(monthlyBtn)
 
           await waitFor(() =>
-            expect(mockSetFormValue).toBeCalledWith(
+            expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
               Plans.USERS_TEAMM
             )
@@ -261,7 +261,7 @@ describe('BillingOptions', () => {
           await user.click(annualBtn)
 
           await waitFor(() =>
-            expect(mockSetFormValue).toBeCalledWith(
+            expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
               Plans.USERS_TEAMY
             )

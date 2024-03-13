@@ -64,6 +64,19 @@ type IncrementKeys = {
       }
     }
   }
+  network_errors: {
+    network_status: {
+      '401': string
+      '403': string
+      '404': string
+      '500': string
+    }
+    graphql: {
+      unauthenticated_error: string
+      unauthorized_error: string
+      not_found_error: string
+    }
+  }
 }
 
 type SetKeys = {

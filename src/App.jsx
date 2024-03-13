@@ -147,7 +147,7 @@ const MainAppRoutes = () => (
           <EnterpriseLandingPage />
         </BaseLayout>
       ) : (
-        <Redirect to="/login/gh" />
+        <Redirect to="/login" />
       )}
     </SentryRoute>
     <SentryRoute path="*">

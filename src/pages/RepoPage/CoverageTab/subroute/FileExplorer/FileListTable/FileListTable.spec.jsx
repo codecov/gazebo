@@ -258,7 +258,7 @@ describe('FileListTable', () => {
           })
 
           await waitFor(() =>
-            expect(requestFilters).toBeCalledWith(
+            expect(requestFilters).toHaveBeenCalledWith(
               expect.objectContaining({
                 displayType: 'LIST',
                 ordering: { direction: 'DESC', parameter: 'MISSES' },

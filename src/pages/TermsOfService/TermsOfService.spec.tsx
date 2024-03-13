@@ -694,7 +694,7 @@ async function expectRendersServerFailureResult(
     /There was an error with our servers. Please try again later or/i
   )
   expect(error).toBeInTheDocument()
-  await waitFor(() => expect(errorMock).toBeCalled())
+  await waitFor(() => expect(errorMock).toHaveBeenCalled())
   await waitFor(() => expect(errorMock).toHaveBeenLastCalledWith(expectedError))
 
   const issueLink = screen.getByRole('link', { name: /contact support/i })

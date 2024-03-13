@@ -10,7 +10,9 @@ import OtherCIOrgToken from './OtherCIOrgToken'
 const mockGetRepo = {
   owner: {
     isCurrentUserPartOfOrg: true,
-    orgUploadToken: '9e6a6189-20f1-482d-ab62-test',
+    orgUploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629290',
+    isAdmin: null,
+    isCurrentUserActivated: null,
     repository: {
       private: false,
       uploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629295',
@@ -18,6 +20,7 @@ const mockGetRepo = {
       yaml: '',
       activated: false,
       oldestCommitAt: '',
+      active: true,
     },
   },
 }

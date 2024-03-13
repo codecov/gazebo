@@ -267,7 +267,7 @@ describe('CodeTreeTable', () => {
           await waitFor(() => expect(queryClient.isFetching()).toBe(0))
 
           await waitFor(() =>
-            expect(requestFilters).toBeCalledWith(
+            expect(requestFilters).toHaveBeenCalledWith(
               expect.objectContaining({
                 ordering: { direction: 'ASC', parameter: 'NAME' },
               })

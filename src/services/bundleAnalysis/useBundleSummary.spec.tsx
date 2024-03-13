@@ -30,7 +30,6 @@ const mockBundleSummary = {
             bundle: {
               name: 'bundle1',
               moduleCount: 10,
-              sizeTotal: 1000,
               bundleData: {
                 loadTime: {
                   threeG: 1000,
@@ -219,7 +218,6 @@ describe('useBundleSummary', () => {
           const expectedResponse = {
             bundleSummary: {
               name: 'bundle1',
-              sizeTotal: 1000,
               moduleCount: 10,
               bundleData: {
                 loadTime: {

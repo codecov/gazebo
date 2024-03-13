@@ -418,7 +418,7 @@ describe('MembersList', () => {
           const activeToggle = await screen.findByText('Activated')
           expect(activeToggle).toBeInTheDocument()
 
-          await waitFor(() => expect(mockActivateUser).toBeCalled())
+          await waitFor(() => expect(mockActivateUser).toHaveBeenCalled())
         })
       })
     })

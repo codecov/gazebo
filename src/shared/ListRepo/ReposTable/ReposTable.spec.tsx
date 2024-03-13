@@ -23,7 +23,18 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 const server = setupServer()
-const mockRepositories = [
+const mockRepositories = (
+  {
+    coverageEnabled = true,
+    bundleAnalysisEnabled = true,
+  }: {
+    coverageEnabled?: boolean
+    bundleAnalysisEnabled?: boolean
+  } = {
+    coverageEnabled: true,
+    bundleAnalysisEnabled: true,
+  }
+) => [
   {
     node: {
       private: false,
@@ -38,6 +49,8 @@ const mockRepositories = [
       lines: 99,
       updatedAt: '2020-08-25T16:36:19.67986800:00',
       repositoryConfig: null,
+      coverageEnabled,
+      bundleAnalysisEnabled,
     },
   },
   {
@@ -54,6 +67,8 @@ const mockRepositories = [
       lines: 101,
       updatedAt: '2020-08-25T16:36:19.67986800:00',
       repositoryConfig: null,
+      coverageEnabled,
+      bundleAnalysisEnabled,
     },
   },
   {
@@ -69,6 +84,8 @@ const mockRepositories = [
       lines: 207,
       updatedAt: '2020-08-25T16:36:19.67986800:00',
       repositoryConfig: null,
+      coverageEnabled,
+      bundleAnalysisEnabled,
     },
   },
 ]
@@ -137,6 +154,43 @@ describe('ReposTable', () => {
         if (isPublic) {
           filteredEdges = edges.filter((edge) => edge.node.private === false)
         }
+
+        if (req?.variables?.after === '2') {
+          return res(
+            ctx.status(200),
+            ctx.data({
+              owner: {
+                repositories: {
+                  edges: [
+                    {
+                      node: {
+                        private: false,
+                        activated: true,
+                        author: {
+                          username: 'owner2',
+                        },
+                        name: 'Repo name extra',
+                        latestCommitAt: subDays(new Date(), 5).toISOString(),
+                        coverage: 50,
+                        active: true,
+                        lines: 20,
+                        updatedAt: '2020-08-25T16:36:19.67986800:00',
+                        repositoryConfig: null,
+                        coverageEnabled: true,
+                        bundleAnalysisEnabled: true,
+                      },
+                    },
+                  ],
+                  pageInfo: {
+                    hasNextPage: false,
+                    endCursor: '3',
+                  },
+                },
+              },
+            })
+          )
+        }
+
         return res(
           ctx.status(200),
           ctx.data({
@@ -157,108 +211,56 @@ describe('ReposTable', () => {
           ctx.status(200),
           ctx.data({ owner: { plan: { tierName: tierValue } } })
         )
-      }),
-      graphql.query('MyRepos', (req, res, ctx) => {
-        myReposMock(req.variables)
-        if (req?.variables?.after === '2') {
-          return res(
-            ctx.status(200),
-            ctx.data({
-              me: {
-                viewableRepositories: {
-                  edges: [
-                    {
-                      node: {
-                        private: false,
-                        activated: true,
-                        author: {
-                          username: 'owner2',
-                        },
-                        name: 'Repo name extra',
-                        latestCommitAt: subDays(new Date(), 5).toISOString(),
-                        coverage: 50,
-                        active: true,
-                        lines: 20,
-                        updatedAt: '2020-08-25T16:36:19.67986800:00',
-                        repositoryConfig: null,
-                      },
-                    },
-                  ],
-                  pageInfo: {
-                    hasNextPage: false,
-                    endCursor: '3',
-                  },
-                },
-              },
-            })
-          )
-        }
-
-        return res(
-          ctx.status(200),
-          ctx.data({
-            me: {
-              viewableRepositories: {
-                edges,
-                pageInfo: {
-                  hasNextPage: true,
-                  endCursor: '2',
-                },
-              },
-            },
-          })
-        )
       })
     )
     return { myReposMock, reposForOwnerMock }
   }
 
-  describe('when rendered with active true', () => {
-    beforeEach(() => {
-      setup({
-        edges: mockRepositories,
+  describe('renders active table headers', () => {
+    it('renders table name header', async () => {
+      setup({ edges: mockRepositories() })
+      render(<ReposTable searchValue="" owner="owner1" />, {
+        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
       })
+
+      const header = await screen.findByText(/Name/)
+      expect(header).toBeInTheDocument()
     })
 
-    describe('renders active table headers', () => {
-      it('renders table name header', async () => {
-        render(<ReposTable searchValue="" owner="owner1" />, {
-          wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
-        })
-
-        const header = await screen.findByText(/Name/)
-        expect(header).toBeInTheDocument()
+    it('renders table coverage header', async () => {
+      setup({ edges: mockRepositories() })
+      render(<ReposTable searchValue="" owner="owner1" />, {
+        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
       })
 
-      it('renders table coverage header', async () => {
-        render(<ReposTable searchValue="" owner="owner1" />, {
-          wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
-        })
-
-        const header = await screen.findByText(/Test coverage/)
-        expect(header).toBeInTheDocument()
-      })
-
-      it('renders table last updated header', async () => {
-        render(<ReposTable searchValue="" owner="owner1" />, {
-          wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
-        })
-
-        const header = await screen.findByText(/Last updated/)
-        expect(header).toBeInTheDocument()
-      })
-
-      it('renders table tracked lines header', async () => {
-        render(<ReposTable searchValue="" owner="owner1" />, {
-          wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
-        })
-
-        const header = await screen.findByText(/Tracked lines/)
-        expect(header).toBeInTheDocument()
-      })
+      const header = await screen.findByText(/Test coverage/)
+      expect(header).toBeInTheDocument()
     })
 
+    it('renders table last updated header', async () => {
+      setup({ edges: mockRepositories() })
+      render(<ReposTable searchValue="" owner="owner1" />, {
+        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+      })
+
+      const header = await screen.findByText(/Last updated/)
+      expect(header).toBeInTheDocument()
+    })
+
+    it('renders table tracked lines header', async () => {
+      setup({ edges: mockRepositories() })
+      render(<ReposTable searchValue="" owner="owner1" />, {
+        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+      })
+
+      const header = await screen.findByText(/Tracked lines/)
+      expect(header).toBeInTheDocument()
+    })
+  })
+
+  describe('rendering table', () => {
     it('renders table repo name', async () => {
+      setup({ edges: mockRepositories() })
       render(<ReposTable searchValue="" owner="owner1" />, {
         wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
       })
@@ -267,27 +269,59 @@ describe('ReposTable', () => {
       expect(buttons.length).toBe(3)
     })
 
-    it('links to /:organization/:owner/:repo', async () => {
-      render(<ReposTable searchValue="" owner="" />, {
-        wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
-      })
+    describe('coverage enabled', () => {
+      it('links to /:organization/:owner/:repo', async () => {
+        setup({ edges: mockRepositories() })
+        render(<ReposTable searchValue="" owner="" />, {
+          wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+        })
 
-      const repo1 = await screen.findByRole('link', {
-        name: 'globe-alt.svg owner1 / Repo name 1',
-      })
-      const repo2 = await screen.findByRole('link', {
-        name: 'lock-closed.svg owner1 / Repo name 2',
-      })
-      const repo3 = await screen.findByRole('link', {
-        name: 'lock-closed.svg owner1 / Repo name 3',
-      })
+        const repo1 = await screen.findByRole('link', {
+          name: 'globe-alt.svg owner1 / Repo name 1',
+        })
+        const repo2 = await screen.findByRole('link', {
+          name: 'lock-closed.svg owner1 / Repo name 2',
+        })
+        const repo3 = await screen.findByRole('link', {
+          name: 'lock-closed.svg owner1 / Repo name 3',
+        })
 
-      expect(repo1).toHaveAttribute('href', '/gl/owner1/Repo name 1')
-      expect(repo2).toHaveAttribute('href', '/gl/owner1/Repo name 2')
-      expect(repo3).toHaveAttribute('href', '/gl/owner1/Repo name 3')
+        expect(repo1).toHaveAttribute('href', '/gl/owner1/Repo name 1')
+        expect(repo2).toHaveAttribute('href', '/gl/owner1/Repo name 2')
+        expect(repo3).toHaveAttribute('href', '/gl/owner1/Repo name 3')
+      })
+    })
+
+    describe('only bundle analysis enabled', () => {
+      it('links to /:organization/:owner/:repo/bundles', async () => {
+        setup({
+          edges: mockRepositories({
+            coverageEnabled: false,
+            bundleAnalysisEnabled: true,
+          }),
+        })
+        render(<ReposTable searchValue="" owner="" />, {
+          wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
+        })
+
+        const repo1 = await screen.findByRole('link', {
+          name: 'globe-alt.svg owner1 / Repo name 1',
+        })
+        const repo2 = await screen.findByRole('link', {
+          name: 'lock-closed.svg owner1 / Repo name 2',
+        })
+        const repo3 = await screen.findByRole('link', {
+          name: 'lock-closed.svg owner1 / Repo name 3',
+        })
+
+        expect(repo1).toHaveAttribute('href', '/gl/owner1/Repo name 1/bundles')
+        expect(repo2).toHaveAttribute('href', '/gl/owner1/Repo name 2/bundles')
+        expect(repo3).toHaveAttribute('href', '/gl/owner1/Repo name 3/bundles')
+      })
     })
 
     it('renders last updated column', async () => {
+      setup({ edges: mockRepositories() })
       render(<ReposTable searchValue="" owner="owner1" />, {
         wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
       })
@@ -301,6 +335,7 @@ describe('ReposTable', () => {
     })
 
     it('renders coverage column', async () => {
+      setup({ edges: mockRepositories() })
       render(<ReposTable searchValue="" owner="owner1" />, {
         wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
       })
@@ -314,6 +349,7 @@ describe('ReposTable', () => {
     })
 
     it('renders tracked lines column', async () => {
+      setup({ edges: mockRepositories() })
       render(<ReposTable searchValue="" owner="owner1" />, {
         wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
       })
@@ -327,6 +363,7 @@ describe('ReposTable', () => {
     })
 
     it('renders handles null coverage', async () => {
+      setup({ edges: mockRepositories() })
       render(<ReposTable searchValue="" owner="owner1" />, {
         wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
       })
@@ -337,7 +374,7 @@ describe('ReposTable', () => {
     })
   })
 
-  describe('when rendered with active false', () => {
+  describe('when rendered with coverage enabled and bundle enabled as false', () => {
     describe('user belongs to org', () => {
       beforeEach(() => {
         setup({
@@ -356,6 +393,8 @@ describe('ReposTable', () => {
                 repositoryConfig: null,
                 lines: 3,
                 updatedAt: '2020-08-25T16:36:19.67986800:00',
+                coverageEnabled: false,
+                bundleAnalysisEnabled: false,
               },
             },
             {
@@ -372,6 +411,8 @@ describe('ReposTable', () => {
                 lines: 0,
                 repositoryConfig: null,
                 updatedAt: '2020-08-25T16:36:19.67986800:00',
+                coverageEnabled: false,
+                bundleAnalysisEnabled: false,
               },
             },
             {
@@ -388,6 +429,8 @@ describe('ReposTable', () => {
                 lines: 0,
                 repositoryConfig: null,
                 updatedAt: '2020-08-25T16:36:19.67986800:00',
+                coverageEnabled: false,
+                bundleAnalysisEnabled: false,
               },
             },
           ],
@@ -434,7 +477,7 @@ describe('ReposTable', () => {
       beforeEach(() => {
         setup({
           isCurrentUserPartOfOrg: false,
-          edges: mockRepositories,
+          edges: mockRepositories(),
         })
       })
 
@@ -471,7 +514,7 @@ describe('ReposTable', () => {
     beforeEach(() => {
       setup({
         tierValue: TierNames.TEAM,
-        edges: mockRepositories,
+        edges: mockRepositories(),
       })
     })
 
@@ -488,7 +531,7 @@ describe('ReposTable', () => {
     const user = userEvent.setup()
     it('sorts by name', async () => {
       const { reposForOwnerMock } = setup({
-        edges: mockRepositories,
+        edges: mockRepositories(),
       })
       render(<ReposTable searchValue="" owner="owner1" />, {
         wrapper: wrapper(repoDisplayOptions.CONFIGURED.text),
@@ -518,7 +561,7 @@ describe('ReposTable', () => {
 
     it('sorts by coverage', async () => {
       const { reposForOwnerMock } = setup({
-        edges: mockRepositories,
+        edges: mockRepositories(),
       })
 
       render(<ReposTable searchValue="" owner="owner1" />, {
@@ -548,7 +591,7 @@ describe('ReposTable', () => {
 
     it('sorts by last commit', async () => {
       const { reposForOwnerMock } = setup({
-        edges: mockRepositories,
+        edges: mockRepositories(),
       })
 
       render(<ReposTable searchValue="" owner="owner1" />, {
@@ -637,11 +680,14 @@ describe('ReposTable', () => {
               lines: 99,
               updatedAt: '2020-08-25T16:36:19.67986800:00',
               repositoryConfig: null,
+              coverageEnabled: false,
+              bundleAnalysisEnabled: false,
             },
           },
         ],
       })
     })
+
     it('fetches additional pages', async () => {
       render(<ReposTable searchValue="" owner="" />, {
         wrapper: wrapper(repoDisplayOptions.ALL.text),
@@ -674,6 +720,8 @@ describe('ReposTable', () => {
               updatedAt: '2020-08-25T16:36:19.67986800:00',
               repositoryConfig: null,
               lines: 123,
+              coverageEnabled: false,
+              bundleAnalysisEnabled: false,
             },
           },
           {
@@ -690,6 +738,8 @@ describe('ReposTable', () => {
               updatedAt: '2020-08-25T16:36:19.67986800:00',
               repositoryConfig: null,
               lines: 123,
+              coverageEnabled: false,
+              bundleAnalysisEnabled: false,
             },
           },
           {
@@ -706,6 +756,8 @@ describe('ReposTable', () => {
               updatedAt: '2020-08-25T16:36:19.67986800:00',
               repositoryConfig: null,
               lines: 123,
+              coverageEnabled: false,
+              bundleAnalysisEnabled: false,
             },
           },
         ],

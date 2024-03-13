@@ -88,7 +88,7 @@ describe('useSaveTermsAgreement', () => {
           customerIntent: 'PERSONAL',
         })
 
-        await waitFor(() => expect(successFn).toBeCalledWith('completed'))
+        await waitFor(() => expect(successFn).toHaveBeenCalledWith('completed'))
 
         expect(invalidateQueries).toHaveBeenCalledWith({
           queryKey: ['InternalUser'],
@@ -119,7 +119,7 @@ describe('useSaveTermsAgreement', () => {
           customerIntent: 'PERSONAL',
         })
 
-        await waitFor(() => expect(successFn).toBeCalledWith('completed'))
+        await waitFor(() => expect(successFn).toHaveBeenCalledWith('completed'))
 
         expect(invalidateQueries).toHaveBeenCalledWith({
           queryKey: ['InternalUser'],
@@ -149,7 +149,7 @@ describe('useSaveTermsAgreement', () => {
         customerIntent: 'PERSONAL',
       })
 
-      await waitFor(() => expect(successFn).toBeCalledWith('completed'))
+      await waitFor(() => expect(successFn).toHaveBeenCalledWith('completed'))
 
       expect(invalidateQueries).toHaveBeenCalledWith({
         queryKey: ['InternalUser'],
@@ -182,10 +182,12 @@ describe('useSaveTermsAgreement', () => {
         })
 
         await waitFor(() =>
-          expect(spyErrorMock).toBeCalledWith('POST /graphql/ net::ERR_FAILED')
+          expect(spyErrorMock).toHaveBeenCalledWith(
+            'POST /graphql/ net::ERR_FAILED'
+          )
         )
 
-        expect(errorFn).toBeCalledWith('error')
+        expect(errorFn).toHaveBeenCalledWith('error')
       })
     })
   })

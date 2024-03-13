@@ -144,8 +144,8 @@ describe('YamlModal', () => {
       const svg = await screen.findByText(/x.svg/)
       await user.click(svg)
 
-      expect(showModal).toBeCalled()
-      expect(showModal).toBeCalledWith(false)
+      expect(showModal).toHaveBeenCalled()
+      expect(showModal).toHaveBeenCalledWith(false)
     })
   })
 })

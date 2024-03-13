@@ -80,7 +80,13 @@ afterAll(() => {
 })
 
 describe('ChartSelectors', () => {
-  afterEach(() => jest.resetAllMocks())
+  beforeEach(() => {
+    jest.resetAllMocks()
+  })
+
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
 
   function setup({ hasNextPage = false, tierValue = TierNames.PRO }) {
     // https://github.com/testing-library/user-event/issues/1034
@@ -203,7 +209,7 @@ describe('ChartSelectors', () => {
       })
 
       await waitFor(() =>
-        expect(updateParams).toBeCalledWith({
+        expect(updateParams).toHaveBeenCalledWith({
           endDate: null,
           startDate: new Date('2022-03-31T00:00:00.000Z'),
         })
@@ -324,7 +330,9 @@ describe('ChartSelectors', () => {
         await user.click(repo1)
 
         await waitFor(() =>
-          expect(updateParams).toBeCalledWith({ repositories: ['Repo name 1'] })
+          expect(updateParams).toHaveBeenCalledWith({
+            repositories: ['Repo name 1'],
+          })
         )
       })
     })
@@ -381,6 +389,7 @@ describe('ChartSelectors', () => {
             activated: true,
             first: Infinity,
             owner: 'codecov',
+            provider: 'gh',
             sortItem: {
               direction: 'ASC',
               ordering: 'NAME',
@@ -417,7 +426,7 @@ describe('ChartSelectors', () => {
           const multiselect = screen.getByText('All Repos')
           await user.click(multiselect)
 
-          expect(fetchNextPage).toBeCalled()
+          expect(fetchNextPage).toHaveBeenCalled()
         })
       })
 
@@ -441,7 +450,7 @@ describe('ChartSelectors', () => {
           const multiselect = screen.getByText('All Repos')
           await user.click(multiselect)
 
-          expect(fetchNextPage).not.toBeCalled()
+          expect(fetchNextPage).not.toHaveBeenCalled()
         })
       })
     })
@@ -506,6 +515,7 @@ describe('ChartSelectors', () => {
           activated: true,
           first: Infinity,
           owner: 'codecov',
+          provider: 'gh',
           sortItem: {
             direction: 'ASC',
             ordering: 'NAME',

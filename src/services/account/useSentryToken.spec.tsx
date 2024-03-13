@@ -134,7 +134,7 @@ describe('useSentryToken', () => {
 
         result.current.mutate('super-cool-token')
 
-        await waitFor(() => expect(mockAddToast).not.toBeCalled())
+        await waitFor(() => expect(mockAddToast).not.toHaveBeenCalled())
       })
 
       it('removes item from local storage', async () => {
@@ -149,9 +149,9 @@ describe('useSentryToken', () => {
 
         result.current.mutate('super-cool-token')
 
-        await waitFor(() => expect(mockRemoveItem).toBeCalled())
+        await waitFor(() => expect(mockRemoveItem).toHaveBeenCalled())
         await waitFor(() =>
-          expect(mockRemoveItem).toBeCalledWith('sentry-token')
+          expect(mockRemoveItem).toHaveBeenCalledWith('sentry-token')
         )
       })
     })
@@ -169,9 +169,9 @@ describe('useSentryToken', () => {
 
         result.current.mutate('super-cool-token')
 
-        await waitFor(() => expect(mockAddToast).toBeCalled())
+        await waitFor(() => expect(mockAddToast).toHaveBeenCalled())
         await waitFor(() =>
-          expect(mockAddToast).toBeCalledWith(
+          expect(mockAddToast).toHaveBeenCalledWith(
             expect.objectContaining({ type: 'error', disappearAfter: 10000 })
           )
         )
@@ -189,9 +189,9 @@ describe('useSentryToken', () => {
 
         result.current.mutate('super-cool-token')
 
-        await waitFor(() => expect(mockRemoveItem).toBeCalled())
+        await waitFor(() => expect(mockRemoveItem).toHaveBeenCalled())
         await waitFor(() =>
-          expect(mockRemoveItem).toBeCalledWith('sentry-token')
+          expect(mockRemoveItem).toHaveBeenCalledWith('sentry-token')
         )
       })
     })
@@ -209,9 +209,9 @@ describe('useSentryToken', () => {
 
         result.current.mutate('super-cool-token')
 
-        await waitFor(() => expect(mockAddToast).toBeCalled())
+        await waitFor(() => expect(mockAddToast).toHaveBeenCalled())
         await waitFor(() =>
-          expect(mockAddToast).toBeCalledWith(
+          expect(mockAddToast).toHaveBeenCalledWith(
             expect.objectContaining({ type: 'error', disappearAfter: 10000 })
           )
         )
@@ -229,9 +229,9 @@ describe('useSentryToken', () => {
 
         result.current.mutate('super-cool-token')
 
-        await waitFor(() => expect(mockRemoveItem).toBeCalled())
+        await waitFor(() => expect(mockRemoveItem).toHaveBeenCalled())
         await waitFor(() =>
-          expect(mockRemoveItem).toBeCalledWith('sentry-token')
+          expect(mockRemoveItem).toHaveBeenCalledWith('sentry-token')
         )
       })
     })
@@ -249,9 +249,9 @@ describe('useSentryToken', () => {
 
         result.current.mutate('super-cool-token')
 
-        await waitFor(() => expect(mockAddToast).toBeCalled())
+        await waitFor(() => expect(mockAddToast).toHaveBeenCalled())
         await waitFor(() =>
-          expect(mockAddToast).toBeCalledWith(
+          expect(mockAddToast).toHaveBeenCalledWith(
             expect.objectContaining({ type: 'error', disappearAfter: 10000 })
           )
         )
@@ -269,9 +269,9 @@ describe('useSentryToken', () => {
 
         result.current.mutate('super-cool-token')
 
-        await waitFor(() => expect(mockRemoveItem).toBeCalled())
+        await waitFor(() => expect(mockRemoveItem).toHaveBeenCalled())
         await waitFor(() =>
-          expect(mockRemoveItem).toBeCalledWith('sentry-token')
+          expect(mockRemoveItem).toHaveBeenCalledWith('sentry-token')
         )
       })
     })

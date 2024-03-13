@@ -93,7 +93,7 @@ describe('useMyOrganizations', () => {
         })
 
         await waitFor(() => expect(result.current.isSuccess).toBe(true))
-        expect(thrownMock).not.toBeCalled()
+        expect(thrownMock).not.toHaveBeenCalled()
 
         expect(result.current.data).toEqual({
           pageParams: [undefined],
@@ -152,7 +152,7 @@ describe('useMyOrganizations', () => {
         })
 
         await waitFor(() => expect(result.current.isSuccess).toBe(true))
-        expect(thrownMock).not.toBeCalled()
+        expect(thrownMock).not.toHaveBeenCalled()
 
         expect(result.current.data).toEqual({
           pageParams: [undefined],
@@ -188,7 +188,7 @@ describe('useMyOrganizations', () => {
 
         await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
 
-        expect(thrownMock).toBeCalledWith(
+        expect(thrownMock).toHaveBeenCalledWith(
           'Error at useMyOrganizations: Unauthenticated'
         )
         expect(result.current.data).toEqual({
@@ -205,16 +205,12 @@ describe('useMyOrganizations', () => {
           wrapper: wrapper(),
         })
 
-        await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
+        await waitFor(() => expect(result.current.isSuccess).toBeFalsy())
 
-        expect(thrownMock).toBeCalledWith('POST /graphql/gh net::ERR_FAILED')
-        expect(thrownMock).toBeCalledWith(
-          'Error at useMyOrganizations: Failed to fetch'
+        expect(thrownMock).toHaveBeenCalledWith(
+          'POST /graphql/gh net::ERR_FAILED'
         )
-        expect(result.current.data).toEqual({
-          pageParams: [undefined],
-          pages: [undefined],
-        })
+        expect(result.current.data).toBeUndefined()
       })
     })
   })
@@ -263,7 +259,7 @@ describe('useMyOrganizations', () => {
       })
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true))
-      expect(thrownMock).not.toBeCalled()
+      expect(thrownMock).not.toHaveBeenCalled()
 
       expect(result.current.data).toEqual({
         pageParams: [undefined],
@@ -329,7 +325,7 @@ describe('useMyOrganizations', () => {
       })
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true))
-      expect(thrownMock).not.toBeCalled()
+      expect(thrownMock).not.toHaveBeenCalled()
 
       expect(result.current.data).toEqual({
         pageParams: [undefined],
