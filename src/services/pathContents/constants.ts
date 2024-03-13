@@ -1,9 +1,47 @@
+import { ParsedQs } from 'qs'
 import { z } from 'zod'
 
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
+import { DisplayType } from 'shared/ContentsTable/constants'
+
+const pathContentsFiltersParam = [
+  'NAME',
+  'COVERAGE',
+  'HITS',
+  'MISSES',
+  'PARTIALS',
+  'LINES',
+] as const
+
+type PathContentsFiltersParam = (typeof pathContentsFiltersParam)[number]
+
+export type PathContentsFilters = {
+  searchValue?: string
+  displayType?: DisplayType
+  ordering?: {
+    direction: 'ASC' | 'DESC'
+    parameter: PathContentsFiltersParam
+  }
+  flags?: string[] | ParsedQs[]
+  components?: string[] | ParsedQs[]
+}
+
+export function toPathContentsFilterParameter(
+  parameter: string
+): PathContentsFiltersParam {
+  const uppercaseParam = parameter.toUpperCase()
+  // This is the only way I could find to get TS to be okay with this.
+  let match: PathContentsFiltersParam = 'NAME'
+  pathContentsFiltersParam.forEach((param) => {
+    if (uppercaseParam === param) {
+      match = uppercaseParam
+    }
+  })
+  return match
+}
 
 const CoverageSchema = z.array(
   z
@@ -34,7 +72,7 @@ const CoverageForFileSchema = z.object({
     .nullish(),
 })
 
-const RepositorySchema = z.object({
+export const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   commit: CoverageForFileSchema.nullish(),
   branch: z
@@ -45,14 +83,16 @@ const RepositorySchema = z.object({
     .nullish(),
 })
 
-export const RequestSchema = z.object({
+export type PathContentsRepositorySchema = z.infer<typeof RepositorySchema>
+
+export const PathContentsRequestSchema = z.object({
   owner: z
     .object({
       repository: z
-        .union([
-          RepositorySchema.partial(),
-          RepoNotFoundErrorSchema.partial(),
-          RepoOwnerNotActivatedErrorSchema.partial(),
+        .discriminatedUnion('__typename', [
+          RepositorySchema,
+          RepoNotFoundErrorSchema,
+          RepoOwnerNotActivatedErrorSchema,
         ])
         .nullish(),
     })

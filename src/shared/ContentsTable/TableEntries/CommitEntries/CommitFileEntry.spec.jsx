@@ -10,15 +10,15 @@ import CommitFileEntry from './CommitFileEntry'
 import { displayTypeParameter } from '../../constants'
 
 const mockData = {
+  __typename: 'Repository',
   commit: {
     commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
     flagNames: ['a', 'b'],
     coverageFile: {
       isCriticalFile: true,
       hashedPath: 'hashed-path',
-      totals: null,
       content:
-        'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n',
+        'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n',
       coverage: [
         {
           line: 1,
@@ -26,9 +26,28 @@ const mockData = {
         },
         {
           line: 2,
+          coverage: 'P',
+        },
+        {
+          line: 4,
+          coverage: 'H',
+        },
+        {
+          line: 5,
+          coverage: 'M',
+        },
+        {
+          line: 7,
+          coverage: 'H',
+        },
+        {
+          line: 8,
           coverage: 'H',
         },
       ],
+      totals: {
+        coverage: 66.67,
+      },
     },
   },
   branch: null,
@@ -262,18 +281,23 @@ describe('CommitFileEntry', () => {
       await waitFor(() => queryClient.getQueryState().isFetching)
       await waitFor(() => !queryClient.getQueryState().isFetching)
 
+      const queryKey = queryClient.getQueriesData({}).at(0).at(0)
+
       await waitFor(() =>
-        expect(queryClient.getQueryState().data).toStrictEqual({
+        expect(queryClient.getQueryState(queryKey).data).toStrictEqual({
           content:
-            'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n',
+            'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n',
           coverage: {
             1: 'H',
-            2: 'H',
+            2: 'P',
+            4: 'H',
+            5: 'M',
+            7: 'H',
+            8: 'H',
           },
           flagNames: ['a', 'b'],
-          componentNames: [],
           isCriticalFile: true,
-          totals: 0,
+          totals: 66.67,
           hashedPath: 'hashed-path',
         })
       )
@@ -303,9 +327,9 @@ describe('CommitFileEntry', () => {
           await waitFor(() => queryClient.getQueryState().isFetching)
           await waitFor(() => !queryClient.getQueryState().isFetching)
 
-          await waitFor(() => expect(mockVars).toHaveBeenCalled())
+          await waitFor(() => expect(mockVars).toBeCalled())
           await waitFor(() =>
-            expect(mockVars).toHaveBeenCalledWith(
+            expect(mockVars).toBeCalledWith(
               expect.objectContaining({ flags: ['flag-1'] })
             )
           )
@@ -335,9 +359,9 @@ describe('CommitFileEntry', () => {
           await waitFor(() => queryClient.getQueryState().isFetching)
           await waitFor(() => !queryClient.getQueryState().isFetching)
 
-          await waitFor(() => expect(mockVars).toHaveBeenCalled())
+          await waitFor(() => expect(mockVars).toBeCalled())
           await waitFor(() =>
-            expect(mockVars).toHaveBeenCalledWith(
+            expect(mockVars).toBeCalledWith(
               expect.objectContaining({ flags: [] })
             )
           )
