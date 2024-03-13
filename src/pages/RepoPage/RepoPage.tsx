@@ -6,7 +6,6 @@ import { SentryRoute } from 'sentry'
 import NotFound from 'pages/NotFound'
 import { useRepo, useRepoOverview } from 'services/repo'
 import CustomError from 'shared/CustomError'
-import { useFlags } from 'shared/featureFlags'
 import A from 'ui/A'
 import LoadingLogo from 'ui/LoadingLogo'
 
@@ -52,10 +51,6 @@ function Routes({
   bundleAnalysisEnabled,
   jsOrTsPresent,
 }: RoutesProps) {
-  const { bundleAnalysisPrAndCommitPages } = useFlags({
-    bundleAnalysisPrAndCommitPages: false,
-  })
-
   // repo is currently active and activated
   if (isRepoActive && isRepoActivated) {
     const productEnabled = coverageEnabled || bundleAnalysisEnabled
@@ -86,7 +81,7 @@ function Routes({
             <NewRepoTab />
           </SentryRoute>
         )}
-        {bundleAnalysisEnabled && bundleAnalysisPrAndCommitPages ? (
+        {bundleAnalysisEnabled ? (
           <SentryRoute
             path={[
               `${path}/bundles/:branch/:bundle`,
@@ -97,7 +92,7 @@ function Routes({
           >
             <BundlesTab />
           </SentryRoute>
-        ) : jsOrTsPresent && bundleAnalysisPrAndCommitPages ? (
+        ) : jsOrTsPresent ? (
           <SentryRoute
             path={[
               `${path}/bundles/new`,
@@ -171,7 +166,7 @@ function Routes({
       >
         <NewRepoTab />
       </SentryRoute>
-      {jsOrTsPresent && bundleAnalysisPrAndCommitPages ? (
+      {jsOrTsPresent ? (
         <SentryRoute
           path={[
             `${path}/bundles/new`,
