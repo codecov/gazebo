@@ -1,10 +1,15 @@
+import { History, Location } from 'history'
 import omitBy from 'lodash/omitBy'
 import qs from 'qs'
 import { useHistory, useLocation } from 'react-router-dom'
 
-export function useLocationParams(defaultParams = {}) {
-  const { push } = useHistory()
-  const { pathname, search, state } = useLocation()
+interface LocationParams {
+  [key: string]: string | number | boolean | []
+}
+
+export function useLocationParams(defaultParams: LocationParams = {}) {
+  const { push }: { push: History['push'] } = useHistory()
+  const { pathname, search, state }: Location<unknown> = useLocation()
   const params = state || {
     ...defaultParams,
     ...qs.parse(search, {
@@ -12,7 +17,7 @@ export function useLocationParams(defaultParams = {}) {
     }),
   }
 
-  function updateWindowLocation(params) {
+  function updateWindowLocation(params: LocationParams) {
     const locationParams = omitBy(
       params,
       (value, key) => value === defaultParams[key]
@@ -22,12 +27,12 @@ export function useLocationParams(defaultParams = {}) {
   }
 
   // Create new state
-  function setParams(newParams) {
+  function setParams(newParams: LocationParams) {
     updateWindowLocation(newParams)
   }
 
   // Retain previous state
-  function updateParams(newParams) {
+  function updateParams(newParams: LocationParams) {
     updateWindowLocation({
       ...params,
       ...newParams,

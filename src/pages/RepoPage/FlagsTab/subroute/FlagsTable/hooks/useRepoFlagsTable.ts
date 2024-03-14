@@ -42,8 +42,16 @@ type URLParams = {
 }
 
 function useRepoFlagsTable() {
-  // TODO: Convert to Typescript which will fix the @ts-expect-errors below
-  const { params } = useLocationParams({
+  // @ts-expect-error
+  const {
+    params,
+  }: {
+    params: {
+      search: string
+      historicalTrend: TimeOptionValues
+      flags: string[]
+    }
+  } = useLocationParams({
     search: '',
     historicalTrend: '',
     flags: [],
@@ -56,18 +64,15 @@ function useRepoFlagsTable() {
     repo,
   })
   const isAdmin = repoData?.isAdmin
-  // @ts-expect-error
   const isSearching = Boolean(params?.search)
   const [sortBy, setSortBy] = useState<OrderingDirection>('ASC')
   const { afterDate, interval } = useMeasurementVariables(
-    // @ts-expect-error
     params?.historicalTrend,
     repoData?.repository?.oldestCommitAt
   )
 
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useRepoFlags({
-      // @ts-expect-error
       filters: { term: params?.search, flagsNames: params?.flags },
       orderingDirection: sortBy,
       beforeDate: format(new Date(), 'yyyy-MM-dd'),
