@@ -2,26 +2,20 @@ import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
-  getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 
 import { PathContentResultType } from 'services/pathContents/branch/dir/useRepoBranchContents'
 import { IndicationRangeType } from 'services/repo/useRepoConfig'
 import { OrderingDirection } from 'services/repos'
-import { displayTypeParameter } from 'shared/ContentsTable/constants'
-import BranchDirEntry from 'shared/ContentsTable/TableEntries/BranchEntries/BranchDirEntry'
-import BranchFileEntry from 'shared/ContentsTable/TableEntries/BranchEntries/BranchFileEntry'
-import { adjustListIfUpDir } from 'shared/ContentsTable/utils'
-import { useTreePaths } from 'shared/treePaths'
-import { determineProgressColor } from 'shared/utils/determineProgressColor'
-import CoverageProgress from 'ui/CoverageProgress'
 import Icon from 'ui/Icon'
 
 import { useRepoBranchContentsTable } from '../hooks'
 import { Loader, RepoContentsResult } from '../shared'
+
+// Define the second type of objects within the array
 
 const columnHelper = createColumnHelper<PathContentResultType>()
 
@@ -64,7 +58,7 @@ function getOrderingDirection(sorting: Array<{ id: string; desc: boolean }>) {
   return undefined
 }
 
-const getBaseColumns = (
+export const getBaseColumns = (
   branch: string,
   urlPath: string,
   indicationRange: IndicationRangeType,
@@ -74,32 +68,7 @@ const getBaseColumns = (
     columnHelper.accessor('name', {
       id: 'name',
       header: () => 'Files',
-      cell: ({ row, renderValue }) => {
-        if (row?.original?.__typename === 'PathContentDir') {
-          return (
-            <BranchDirEntry
-              name={row?.original?.name}
-              branch={branch}
-              urlPath={urlPath}
-              filters={filters}
-            />
-          )
-        }
-        if (row?.original?.__typename === 'PathContentFile') {
-          return (
-            <BranchFileEntry
-              name={row?.original?.name}
-              urlPath={urlPath}
-              branch={branch}
-              path={row?.original?.path}
-              displayType={displayTypeParameter.tree}
-              isCriticalFile={row.original.isCriticalFile}
-              filters={filters}
-            />
-          )
-        }
-        return renderValue()
-      },
+      cell: ({ renderValue }) => renderValue(),
     }),
     columnHelper.accessor('lines', {
       id: 'lines',
@@ -122,19 +91,9 @@ const getBaseColumns = (
       cell: ({ renderValue }) => renderValue(),
     }),
     columnHelper.accessor('percentCovered', {
-      id: 'coverage',
+      id: 'percentCovered',
       header: () => 'Coverage %',
-      cell: ({ renderValue }) => {
-        return (
-          <CoverageProgress
-            amount={renderValue()}
-            color={determineProgressColor({
-              coverage: renderValue(),
-              ...indicationRange,
-            })}
-          />
-        )
-      },
+      cell: ({ renderValue }) => renderValue(),
     }),
   ]
 
@@ -143,10 +102,10 @@ const getBaseColumns = (
 
 function CodeTreeTable() {
   const [sorting, setSorting] = useState([{ id: 'name', desc: false }])
-  const { treePaths } = useTreePaths()
   const ordering = getOrderingDirection(sorting)
   const {
     data,
+    indicationRange,
     isSearching,
     isMissingHeadReport,
     isLoading,
@@ -158,24 +117,14 @@ function CodeTreeTable() {
     filters,
   } = useRepoBranchContentsTable(ordering)
 
-  const tableData = useMemo(() => {
-    const finalizedTableRows = adjustListIfUpDir({
-      treePaths,
-      displayType: displayTypeParameter.tree,
-      rawTableRows: data?.results,
-    })
-    return finalizedTableRows ?? []
-  }, [data?.results, treePaths])
-
   const table = useReactTable({
-    columns: getBaseColumns(branch, urlPath, data?.indicationRange, filters),
+    columns: getBaseColumns(branch, urlPath, indicationRange, filters),
     getCoreRowModel: getCoreRowModel(),
-    data: tableData,
+    data: data ?? [],
     state: {
       sorting,
     },
     onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
   })
 
   if (pathContentsType === 'UnknownPath') {
@@ -190,7 +139,6 @@ function CodeTreeTable() {
   if (pathContentsType === 'MissingCoverage') {
     return <p className="m-4">No coverage data available.</p>
   }
-
   return (
     <div className="z-10 flex flex-col gap-4">
       <div className="tableui">
@@ -266,7 +214,7 @@ function CodeTreeTable() {
         </table>
       </div>
       <Loader isLoading={isLoading} />
-      {data?.results?.length === 0 && !isLoading ? (
+      {data?.length === 0 && !isLoading ? (
         <RepoContentsResult
           isSearching={isSearching}
           isMissingHeadReport={isMissingHeadReport}

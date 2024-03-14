@@ -44,6 +44,8 @@ export const PathContentsSchema = z.object({
   results: z.array(PathContentsResultSchema),
 })
 
+export type PathContentsSchemaType = z.infer<typeof PathContentsResultSchema>
+
 export const UnknownPathSchema = z.object({
   __typename: z.literal('UnknownPath'),
   message: z.string(),
