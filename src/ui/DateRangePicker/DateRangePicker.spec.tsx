@@ -2,7 +2,6 @@ import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import DateRangePicker from './DateRangePicker'
-
 ;(() => {
   return (global.ResizeObserver = class ResizeObserver {
     [x: string]: any
@@ -80,7 +79,7 @@ describe('DateRangePicker', () => {
 
       await user.click(date)
 
-      await waitFor(() => expect(mockOnChange).toBeCalled())
+      await waitFor(() => expect(mockOnChange).toHaveBeenCalled())
     })
   })
 })

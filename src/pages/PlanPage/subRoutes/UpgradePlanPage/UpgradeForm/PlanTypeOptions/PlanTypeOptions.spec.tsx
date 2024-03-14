@@ -327,13 +327,13 @@ describe('PlanTypeOptions', () => {
           await user.click(teamBtn)
 
           await waitFor(() =>
-            expect(mockSetFormValue).toBeCalledWith(
+            expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
               Plans.USERS_TEAMY
             )
           )
           await waitFor(() =>
-            expect(mockSetSelectedPlan).toBeCalledWith(teamPlanYear)
+            expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
           )
         })
       })
@@ -366,13 +366,13 @@ describe('PlanTypeOptions', () => {
           await user.click(proBtn)
 
           await waitFor(() =>
-            expect(mockSetFormValue).toBeCalledWith(
+            expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
               Plans.USERS_SENTRYY
             )
           )
           await waitFor(() =>
-            expect(mockSetSelectedPlan).toBeCalledWith(sentryPlanYear)
+            expect(mockSetSelectedPlan).toHaveBeenCalledWith(sentryPlanYear)
           )
         })
       })
@@ -473,13 +473,13 @@ describe('PlanTypeOptions', () => {
           await user.click(teamBtn)
 
           await waitFor(() =>
-            expect(mockSetFormValue).toBeCalledWith(
+            expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
               Plans.USERS_TEAMY
             )
           )
           await waitFor(() =>
-            expect(mockSetSelectedPlan).toBeCalledWith(teamPlanYear)
+            expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
           )
         })
       })
@@ -512,13 +512,13 @@ describe('PlanTypeOptions', () => {
           await user.click(proBtn)
 
           await waitFor(() =>
-            expect(mockSetFormValue).toBeCalledWith(
+            expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
               Plans.USERS_SENTRYY
             )
           )
           await waitFor(() =>
-            expect(mockSetSelectedPlan).toBeCalledWith(sentryPlanYear)
+            expect(mockSetSelectedPlan).toHaveBeenCalledWith(sentryPlanYear)
           )
         })
       })
@@ -619,13 +619,13 @@ describe('PlanTypeOptions', () => {
           await user.click(teamBtn)
 
           await waitFor(() =>
-            expect(mockSetFormValue).toBeCalledWith(
+            expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
               Plans.USERS_TEAMY
             )
           )
           await waitFor(() =>
-            expect(mockSetSelectedPlan).toBeCalledWith(teamPlanYear)
+            expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
           )
         })
       })
@@ -658,13 +658,13 @@ describe('PlanTypeOptions', () => {
           await user.click(proBtn)
 
           await waitFor(() =>
-            expect(mockSetFormValue).toBeCalledWith(
+            expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
               Plans.USERS_SENTRYY
             )
           )
           await waitFor(() =>
-            expect(mockSetSelectedPlan).toBeCalledWith(sentryPlanYear)
+            expect(mockSetSelectedPlan).toHaveBeenCalledWith(sentryPlanYear)
           )
         })
       })
@@ -800,13 +800,13 @@ describe('PlanTypeOptions', () => {
           await user.click(teamBtn)
 
           await waitFor(() =>
-            expect(mockSetFormValue).toBeCalledWith(
+            expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
               Plans.USERS_TEAMY
             )
           )
           await waitFor(() =>
-            expect(mockSetSelectedPlan).toBeCalledWith(teamPlanYear)
+            expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
           )
         })
       })
@@ -839,13 +839,13 @@ describe('PlanTypeOptions', () => {
           await user.click(proBtn)
 
           await waitFor(() =>
-            expect(mockSetFormValue).toBeCalledWith(
+            expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
               Plans.USERS_SENTRYY
             )
           )
           await waitFor(() =>
-            expect(mockSetSelectedPlan).toBeCalledWith(sentryPlanYear)
+            expect(mockSetSelectedPlan).toHaveBeenCalledWith(sentryPlanYear)
           )
         })
       })
@@ -948,13 +948,13 @@ describe('PlanTypeOptions', () => {
           await user.click(teamBtn)
 
           await waitFor(() =>
-            expect(mockSetFormValue).toBeCalledWith(
+            expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
               Plans.USERS_TEAMY
             )
           )
           await waitFor(() =>
-            expect(mockSetSelectedPlan).toBeCalledWith(teamPlanYear)
+            expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
           )
         })
       })
@@ -987,13 +987,13 @@ describe('PlanTypeOptions', () => {
           await user.click(proBtn)
 
           await waitFor(() =>
-            expect(mockSetFormValue).toBeCalledWith(
+            expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
               Plans.USERS_PR_INAPPY
             )
           )
           await waitFor(() =>
-            expect(mockSetSelectedPlan).toBeCalledWith(proPlanYear)
+            expect(mockSetSelectedPlan).toHaveBeenCalledWith(proPlanYear)
           )
         })
       })
@@ -1094,13 +1094,13 @@ describe('PlanTypeOptions', () => {
           await user.click(teamBtn)
 
           await waitFor(() =>
-            expect(mockSetFormValue).toBeCalledWith(
+            expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
               Plans.USERS_TEAMY
             )
           )
           await waitFor(() =>
-            expect(mockSetSelectedPlan).toBeCalledWith(teamPlanYear)
+            expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
           )
         })
       })
@@ -1133,13 +1133,13 @@ describe('PlanTypeOptions', () => {
           await user.click(proBtn)
 
           await waitFor(() =>
-            expect(mockSetFormValue).toBeCalledWith(
+            expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
               Plans.USERS_PR_INAPPY
             )
           )
           await waitFor(() =>
-            expect(mockSetSelectedPlan).toBeCalledWith(proPlanYear)
+            expect(mockSetSelectedPlan).toHaveBeenCalledWith(proPlanYear)
           )
         })
       })
@@ -1240,13 +1240,13 @@ describe('PlanTypeOptions', () => {
           await user.click(teamBtn)
 
           await waitFor(() =>
-            expect(mockSetFormValue).toBeCalledWith(
+            expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
               Plans.USERS_TEAMY
             )
           )
           await waitFor(() =>
-            expect(mockSetSelectedPlan).toBeCalledWith(teamPlanYear)
+            expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
           )
         })
       })
@@ -1279,13 +1279,13 @@ describe('PlanTypeOptions', () => {
           await user.click(proBtn)
 
           await waitFor(() =>
-            expect(mockSetFormValue).toBeCalledWith(
+            expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
               Plans.USERS_PR_INAPPY
             )
           )
           await waitFor(() =>
-            expect(mockSetSelectedPlan).toBeCalledWith(proPlanYear)
+            expect(mockSetSelectedPlan).toHaveBeenCalledWith(proPlanYear)
           )
         })
       })
@@ -1386,13 +1386,13 @@ describe('PlanTypeOptions', () => {
           await user.click(teamBtn)
 
           await waitFor(() =>
-            expect(mockSetFormValue).toBeCalledWith(
+            expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
               Plans.USERS_TEAMY
             )
           )
           await waitFor(() =>
-            expect(mockSetSelectedPlan).toBeCalledWith(teamPlanYear)
+            expect(mockSetSelectedPlan).toHaveBeenCalledWith(teamPlanYear)
           )
         })
       })
@@ -1425,13 +1425,13 @@ describe('PlanTypeOptions', () => {
           await user.click(proBtn)
 
           await waitFor(() =>
-            expect(mockSetFormValue).toBeCalledWith(
+            expect(mockSetFormValue).toHaveBeenCalledWith(
               'newPlan',
               Plans.USERS_PR_INAPPY
             )
           )
           await waitFor(() =>
-            expect(mockSetSelectedPlan).toBeCalledWith(proPlanYear)
+            expect(mockSetSelectedPlan).toHaveBeenCalledWith(proPlanYear)
           )
         })
       })
@@ -1464,13 +1464,13 @@ describe('PlanTypeOptions', () => {
       await user.click(proBtn)
 
       await waitFor(() =>
-        expect(mockSetFormValue).toBeCalledWith(
+        expect(mockSetFormValue).toHaveBeenCalledWith(
           'newPlan',
           Plans.USERS_PR_INAPPM
         )
       )
       await waitFor(() =>
-        expect(mockSetSelectedPlan).toBeCalledWith(proPlanMonth)
+        expect(mockSetSelectedPlan).toHaveBeenCalledWith(proPlanMonth)
       )
     })
   })

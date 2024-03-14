@@ -22,9 +22,11 @@ const mockCurrentUser = {
   },
 }
 
-const mockGetRepo = (noUploadToken, hasCommits) => ({
+const mockGetRepo = (noUploadToken = false, hasCommits = false) => ({
   owner: {
     isCurrentUserPartOfOrg: true,
+    isAdmin: null,
+    isCurrentUserActivated: null,
     repository: {
       private: false,
       uploadToken: noUploadToken
@@ -180,7 +182,7 @@ describe('NewRepoTab', () => {
         const { hardRedirect } = setup({ noUploadToken: true })
         render(<NewRepoTab />, { wrapper: wrapper() })
 
-        await waitFor(() => expect(hardRedirect).toBeCalled())
+        await waitFor(() => expect(hardRedirect).toHaveBeenCalled())
       })
 
       it('displays 404', async () => {

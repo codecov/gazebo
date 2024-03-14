@@ -32,7 +32,6 @@ const mockBundleSummary = {
             bundle: {
               name: 'bundle1',
               moduleCount: 10,
-              sizeTotal: 1000,
               bundleData: {
                 loadTime: {
                   threeG: 1000,

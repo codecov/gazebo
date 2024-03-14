@@ -221,7 +221,10 @@ describe('PriceCallout', () => {
 
           await user.click(switchToAnnual)
 
-          expect(mockSetFormValue).toBeCalledWith('newPlan', Plans.USERS_TEAMY)
+          expect(mockSetFormValue).toHaveBeenCalledWith(
+            'newPlan',
+            Plans.USERS_TEAMY
+          )
         })
       })
 

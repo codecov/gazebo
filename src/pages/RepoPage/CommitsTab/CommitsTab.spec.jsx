@@ -479,9 +479,9 @@ describe('CommitsTab', () => {
           await waitFor(() => queryClient.isFetching)
           await waitFor(() => !queryClient.isFetching)
 
-          await waitFor(() => expect(fetchNextPage).toBeCalled())
+          await waitFor(() => expect(fetchNextPage).toHaveBeenCalled())
           await waitFor(() =>
-            expect(fetchNextPage).toBeCalledWith('some cursor')
+            expect(fetchNextPage).toHaveBeenCalledWith('some cursor')
           )
         })
       })
@@ -596,9 +596,9 @@ describe('CommitsTab', () => {
         const search = await screen.findByPlaceholderText('Search for branches')
         await user.type(search, 'searching for a branch')
 
-        await waitFor(() => expect(branchSearch).toBeCalled())
+        await waitFor(() => expect(branchSearch).toHaveBeenCalled())
         await waitFor(() =>
-          expect(branchSearch).toBeCalledWith('searching for a branch')
+          expect(branchSearch).toHaveBeenCalledWith('searching for a branch')
         )
       })
 
@@ -622,7 +622,7 @@ describe('CommitsTab', () => {
         const search = await screen.findByPlaceholderText('Search for branches')
         await user.type(search, 'searching for a branch')
 
-        await waitFor(() => expect(branchSearch).toBeCalled())
+        await waitFor(() => expect(branchSearch).toHaveBeenCalled())
 
         const allCommits = screen.queryByText('All branches')
         expect(allCommits).not.toBeInTheDocument()
@@ -645,9 +645,9 @@ describe('CommitsTab', () => {
         const search = await screen.findByPlaceholderText('Search commits')
         await user.type(search, 'searching for a commit')
 
-        await waitFor(() => expect(commitSearch).toBeCalled())
+        await waitFor(() => expect(commitSearch).toHaveBeenCalled())
         await waitFor(() =>
-          expect(commitSearch).toBeCalledWith('searching for a commit')
+          expect(commitSearch).toHaveBeenCalledWith('searching for a commit')
         )
       })
     })
@@ -777,9 +777,9 @@ describe('CommitsTab', () => {
         const search = await screen.findByPlaceholderText('Search for branches')
         await user.type(search, 'searching for a branch')
 
-        await waitFor(() => expect(branchSearch).toBeCalled())
+        await waitFor(() => expect(branchSearch).toHaveBeenCalled())
         await waitFor(() =>
-          expect(branchSearch).toBeCalledWith('searching for a branch')
+          expect(branchSearch).toHaveBeenCalledWith('searching for a branch')
         )
       })
 
@@ -807,7 +807,7 @@ describe('CommitsTab', () => {
         const search = await screen.findByPlaceholderText('Search for branches')
         await user.type(search, 'searching for a branch')
 
-        await waitFor(() => expect(branchSearch).toBeCalled())
+        await waitFor(() => expect(branchSearch).toHaveBeenCalled())
 
         const allCommits = screen.queryByText('All branches')
         expect(allCommits).not.toBeInTheDocument()
@@ -834,9 +834,9 @@ describe('CommitsTab', () => {
         const search = await screen.findByPlaceholderText('Search commits')
         await user.type(search, 'searching for a commit')
 
-        await waitFor(() => expect(commitSearch).toBeCalled())
+        await waitFor(() => expect(commitSearch).toHaveBeenCalled())
         await waitFor(() =>
-          expect(commitSearch).toBeCalledWith('searching for a commit')
+          expect(commitSearch).toHaveBeenCalledWith('searching for a commit')
         )
       })
     })

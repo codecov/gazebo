@@ -243,7 +243,7 @@ const WebpackOnboarding: React.FC = () => {
   const { data: repoData } = useRepo({ provider, owner, repo })
   const { data: orgUploadToken } = useOrgUploadToken({ provider, owner })
 
-  let uploadToken: string = repoData?.repository?.uploadToken
+  let uploadToken = repoData?.repository?.uploadToken
   if (orgUploadToken) {
     uploadToken = orgUploadToken
   }
@@ -255,7 +255,7 @@ const WebpackOnboarding: React.FC = () => {
   return (
     <div className="flex flex-col gap-6">
       <StepOne />
-      <StepTwo uploadToken={uploadToken} />
+      <StepTwo uploadToken={uploadToken || ''} />
       <StepThree />
       <StepFour />
       <StepFive />

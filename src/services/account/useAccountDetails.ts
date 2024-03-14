@@ -11,9 +11,12 @@ export const InvoiceSchema = z
     amountRemaining: z.number().nullable(),
     currency: z.string().nullable(),
     customerAddress: z.string().nullish(),
+    customerEmail: z.any(),
     customerName: z.string().nullable(),
+    customerShipping: z.any(),
     created: z.number(),
     dueDate: z.number().nullish(),
+    footer: z.any(),
     id: z.string().nullable(),
     invoicePdf: z.string().nullable(),
     lineItems: z
@@ -77,8 +80,15 @@ export const SubscriptionDetailSchema = z
     currentPeriodEnd: z.number(),
     customer: z
       .object({
-        // TODO: fix this. This has a different shape in the backend, not just an int
-        discount: z.number().nullish(),
+        id: z.string(),
+        discount: z
+          .object({
+            name: z.string().nullable(),
+            percentOff: z.number().nullable(),
+            durationInMonths: z.number().nullable(),
+            expires: z.number().nullable(),
+          })
+          .nullish(),
         email: z.string(),
       })
       .nullable(),

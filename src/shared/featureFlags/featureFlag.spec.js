@@ -33,7 +33,7 @@ describe('withFeatureFlagProvider', () => {
     afterEach(() => jest.clearAllMocks())
     beforeEach(() => setup('test'))
     it(`Apply's withLDProvider`, () => {
-      expect(withLDProvider).toBeCalledTimes(1)
+      expect(withLDProvider).toHaveBeenCalledTimes(1)
       expect(screen.getByText(/I rendered/)).toBeTruthy()
     })
   })
@@ -42,7 +42,7 @@ describe('withFeatureFlagProvider', () => {
     afterEach(() => jest.clearAllMocks())
     beforeEach(() => setup())
     it('Does not apply withLDProvider', () => {
-      expect(withLDProvider).toBeCalledTimes(0)
+      expect(withLDProvider).toHaveBeenCalledTimes(0)
       expect(screen.getByText(/I rendered/)).toBeTruthy()
     })
   })
@@ -110,7 +110,7 @@ describe('useIdentifyUser', () => {
         useIdentifyUser({ name: 'doggo', key: 'hello', avatar: 'doggo.picz' })
       )
 
-      expect(mockIdentify).lastCalledWith({
+      expect(mockIdentify).toHaveBeenLastCalledWith({
         name: 'doggo',
         key: 'hello',
         avatar: 'doggo.picz',
@@ -119,7 +119,7 @@ describe('useIdentifyUser', () => {
 
     it('guest users are not reported', () => {
       setup({ name: 'doggo', key: 'hello', guest: true }, 'woofwoof')
-      expect(mockIdentify).toBeCalledTimes(0)
+      expect(mockIdentify).toHaveBeenCalledTimes(0)
     })
   })
 
@@ -128,7 +128,7 @@ describe('useIdentifyUser', () => {
     it('never phones home', () => {
       renderHook(() => useIdentifyUser({ key: 'abc' }))
 
-      expect(mockIdentify).toBeCalledTimes(0)
+      expect(mockIdentify).toHaveBeenCalledTimes(0)
     })
   })
 })

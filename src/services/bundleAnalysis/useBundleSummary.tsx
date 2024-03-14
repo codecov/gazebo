@@ -28,7 +28,6 @@ const BundleAnalysisReportSchema = z.object({
     .object({
       name: z.string(),
       moduleCount: z.number(),
-      sizeTotal: z.number(),
       bundleData: BundleDataSchema,
     })
     .nullable(),
@@ -85,7 +84,6 @@ query BundleSummary(
                 bundle(name: $bundle) {
                   name
                   moduleCount
-                  sizeTotal
                   bundleData {
                     loadTime {
                       threeG

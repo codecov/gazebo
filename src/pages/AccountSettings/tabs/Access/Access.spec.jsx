@@ -169,7 +169,7 @@ describe('AccessTab', () => {
 
         await user.click(revokeButtons[0])
 
-        await waitFor(() => expect(window.confirm).toBeCalled())
+        await waitFor(() => expect(window.confirm).toHaveBeenCalled())
       })
     })
 

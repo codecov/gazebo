@@ -64,7 +64,7 @@ describe('useRepoActivation', () => {
 
       result.current.toggleRepoState(true)
 
-      await waitFor(() => expect(mutate).toBeCalled())
+      await waitFor(() => expect(mutate).toHaveBeenCalled())
       expect(result.current.variables).toStrictEqual({ activated: false })
     })
   })

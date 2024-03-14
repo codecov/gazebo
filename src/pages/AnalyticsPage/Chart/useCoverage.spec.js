@@ -256,7 +256,7 @@ describe('useCoverage', () => {
         }
       )
 
-      await waitFor(() => expect(selectMock).toBeCalled())
+      await waitFor(() => expect(selectMock).toHaveBeenCalled())
     })
   })
 

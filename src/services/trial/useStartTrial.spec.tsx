@@ -91,7 +91,7 @@ describe('useStartTrial', () => {
         result.current.mutate({ owner: 'codecov' })
 
         await waitFor(() =>
-          expect(variablesPassed).toBeCalledWith({
+          expect(variablesPassed).toHaveBeenCalledWith({
             input: { orgUsername: 'codecov' },
           })
         )
@@ -120,7 +120,7 @@ describe('useStartTrial', () => {
           result.current.mutate({ owner: 'codecov' })
 
           await waitFor(() =>
-            expect(mockRenderToast).toBeCalledWith({
+            expect(mockRenderToast).toHaveBeenCalledWith({
               type: 'error',
               title: 'Error starting trial',
               content:
@@ -142,7 +142,7 @@ describe('useStartTrial', () => {
           result.current.mutate({ owner: 'codecov' })
 
           await waitFor(() =>
-            expect(mockRenderToast).toBeCalledWith({
+            expect(mockRenderToast).toHaveBeenCalledWith({
               type: 'error',
               title: 'Error starting trial',
               content:
