@@ -25,7 +25,9 @@ afterAll(() => {
 })
 
 const wrapper =
-  (initialEntries = ['/gh?setup_action=install']) =>
+  (
+    initialEntries = ['/gh?setup_action=install']
+  ): React.FC<React.PropsWithChildren> =>
   ({ children }) => {
     return (
       <QueryClientProvider client={queryClient}>
@@ -131,6 +133,19 @@ describe('InstallationHelpBanner', () => {
 
       render(<InstallationHelpBanner />, {
         wrapper: wrapper(['/bb?setup_action=install']),
+      })
+
+      const body = screen.queryByText(/Installed organization/)
+      expect(body).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when provider does not exist', () => {
+    it('does not render banner body', () => {
+      setup()
+
+      render(<InstallationHelpBanner />, {
+        wrapper: wrapper(['?setup_action=install']),
       })
 
       const body = screen.queryByText(/Installed organization/)

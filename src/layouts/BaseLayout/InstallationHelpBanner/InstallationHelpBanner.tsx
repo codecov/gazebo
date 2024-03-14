@@ -24,7 +24,7 @@ function ResyncButton() {
   return (
     <button
       className="text-ds-blue hover:underline"
-      onClick={triggerResync}
+      onClick={() => triggerResync()}
       type="button"
     >
       resyncing
@@ -33,11 +33,12 @@ function ResyncButton() {
 }
 
 function InstallationHelpBanner() {
-  const { provider } = useParams()
+  const { provider } = useParams<{ provider: string }>()
   const { params } = useLocationParams()
 
-  if (providerToName(provider) !== 'Github') return null
+  if (provider && providerToName(provider) !== 'Github') return null
 
+  // @ts-expect-errors useLocationParams needs to be updated to support generic types
   const { setup_action: setupAction } = params
   if (setupAction !== 'install') return null
 
@@ -46,7 +47,7 @@ function InstallationHelpBanner() {
       <TopBanner.Start>
         <p className="items-center gap-1 text-xs md:flex">
           <span className="flex items-center gap-1 font-semibold">
-            <Icon name="information-circle" />
+            <Icon name="informationCircle" />
             Installed organization
           </span>
           - it may take a few minutes to appear as a selection, if you
