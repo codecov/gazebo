@@ -1,5 +1,16 @@
-td {
+#sparklineTable table {
+  min-width: unset;
+  display: table;
+}
+
+#sparklineTable tr {
+  border: none;
+  text-align: unset;
+}
+
+#sparklineTable td {
   --dot-size: 4px;
+  padding: 0;
 }
 
 .line::before {

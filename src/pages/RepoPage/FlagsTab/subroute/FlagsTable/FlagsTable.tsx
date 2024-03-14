@@ -5,6 +5,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import cs from 'classnames'
+import isEmpty from 'lodash/isEmpty'
 import { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -14,7 +16,6 @@ import A from 'ui/A'
 import Button from 'ui/Button'
 import CoverageProgress from 'ui/CoverageProgress'
 import Icon from 'ui/Icon'
-import Spinner from 'ui/Spinner'
 
 import DeleteFlagModal from './DeleteFlagModal'
 import useRepoFlagsTable from './hooks'
@@ -23,10 +24,13 @@ import TableSparkline from './TableEntries/TableSparkline'
 import 'ui/Table/Table.css'
 
 interface FlagsTableHelper {
-  name: React.ReactElement
-  coverage: React.ReactElement
-  trend: React.ReactElement
-  delete: React.ReactElement
+  name: string
+  lowerRange: number
+  upperRange: number
+  coverage: number | null
+  percentChange: number
+  measurements: any[]
+  delete: false | JSX.Element | null | undefined
 }
 
 const columnHelper = createColumnHelper<FlagsTableHelper>()
@@ -35,17 +39,49 @@ const columns = [
   columnHelper.accessor('name', {
     id: 'name',
     header: () => 'Flags',
-    cell: ({ renderValue }) => renderValue(),
+    cell: ({ renderValue }) => (
+      <A
+        to={{
+          pageName: 'coverage',
+          options: { queryParams: { flags: [renderValue()] } },
+        }}
+        variant="black"
+        isExternal={false}
+        hook={'flag-to-coverage-page'}
+      >
+        {renderValue()}
+      </A>
+    ),
   }),
   columnHelper.accessor('coverage', {
     id: 'coverage',
     header: () => 'Coverage %',
-    cell: ({ renderValue }) => renderValue(),
+    cell: ({ renderValue, row }) => (
+      <>
+        <CoverageProgress
+          amount={renderValue()}
+          color={determineProgressColor({
+            coverage: renderValue(),
+            lowerRange: row.original.lowerRange,
+            upperRange: row.original.upperRange,
+          })}
+        />
+        {typeof renderValue() !== 'number' && (
+          <span className="grow text-right font-semibold">-</span>
+        )}
+      </>
+    ),
   }),
-  columnHelper.accessor('trend', {
-    id: 'trend',
+  columnHelper.accessor('percentChange', {
+    id: 'percentChange',
     header: () => 'Trend',
-    cell: ({ renderValue }) => renderValue(),
+    cell: ({ row }) => (
+      <TableSparkline
+        measurements={row.original.measurements}
+        change={row.original.percentChange}
+        name={row.original.name}
+      />
+    ),
   }),
   columnHelper.accessor('delete', {
     id: 'delete',
@@ -60,73 +96,42 @@ function createTableData({
   setModalInfo,
   isAdmin,
 }: {
-  tableData?: any[]
+  tableData: any[]
   indicationRange?: { upperRange: number; lowerRange: number } | null
-  setModalInfo: any
+  setModalInfo: (data: any) => void
   isAdmin?: boolean | null
 }) {
-  if (!tableData) {
-    return []
-  }
-
-  return tableData.map(
-    ({
-      name,
-      percentCovered,
-      percentChange,
-      measurements,
-    }: {
-      name: string
-      percentCovered: number
-      percentChange: number
-      measurements: any[]
-    }) => ({
-      name: (
-        <A
-          to={{
-            pageName: 'coverage',
-            options: { queryParams: { flags: [name] } },
-          }}
-          variant="black"
-          isExternal={false}
-          hook={'flag-to-coverage-page'}
-        >
-          {name}
-        </A>
-      ),
-      coverage: (
-        <>
-          <CoverageProgress
-            amount={percentCovered}
-            // @ts-expect-error
-            color={determineProgressColor({
-              coverage: percentCovered,
-              ...indicationRange,
-            })}
-          />
-          {typeof percentCovered != 'number' && (
-            <span className="grow text-right font-semibold">-</span>
-          )}
-        </>
-      ),
-      trend: (
-        <TableSparkline
-          measurements={measurements}
-          change={percentChange}
-          name={name}
-        />
-      ),
-      delete: isAdmin && (
-        <button
-          data-testid="delete-flag"
-          onClick={() => setModalInfo({ flagName: name, showModal: true })}
-          className="text-ds-gray-tertiary hover:text-ds-gray-senary"
-        >
-          <Icon size="md" name="trash" variant="outline" />
-        </button>
-      ),
-    })
-  )
+  return tableData?.length > 0
+    ? tableData?.map(
+        ({
+          name,
+          percentCovered,
+          percentChange,
+          measurements,
+        }: {
+          name: string
+          percentCovered: number | null
+          percentChange: number
+          measurements: any[]
+        }) => ({
+          name: name,
+          lowerRange: indicationRange?.lowerRange || 0,
+          upperRange: indicationRange?.upperRange || 100,
+          coverage: percentCovered,
+          measurements,
+          percentChange,
+          delete: isAdmin && (
+            <button
+              data-testid="delete-flag"
+              onClick={() => setModalInfo({ flagName: name, showModal: true })}
+              className="text-ds-gray-tertiary hover:text-ds-gray-senary"
+            >
+              <Icon size="md" name="trash" variant="outline" />
+            </button>
+          ),
+        })
+      )
+    : []
 }
 
 const getEmptyStateText = ({ isSearching }: { isSearching: boolean }) =>
@@ -146,6 +151,8 @@ function FlagsTable() {
     showModal: false,
   })
 
+  const indicationRange = repoConfigData?.indicationRange
+
   const {
     data,
     isAdmin,
@@ -161,23 +168,16 @@ function FlagsTable() {
     () =>
       createTableData({
         isAdmin,
-        tableData: data,
-        indicationRange: repoConfigData?.indicationRange,
+        tableData: data!,
+        indicationRange,
         setModalInfo,
       }),
-    [data, repoConfigData, isAdmin]
+    [data, indicationRange, isAdmin]
   )
 
-  const [sorting, setSorting] = useState([{ id: 'change', desc: true }])
-
   const table = useReactTable({
-    // @ts-expect-error
     columns,
     data: tableData,
-    onSortingChange: setSorting,
-    state: {
-      sorting,
-    },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   })
@@ -195,16 +195,17 @@ function FlagsTable() {
         <table>
           <colgroup>
             <col className="w-full @sm/table:w-4/12" />
-            <col className="@sm/table:w-4/12" />
-            <col className="@sm/table:w-4/12" />
+            <col className="@sm/table:w-3/12" />
+            <col className="@sm/table:w-3/12" />
             <col className="@sm/table:w-1/12" />
           </colgroup>
-          <thead>
+          <thead data-testid="header-row">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
+                    className={cs({ 'text-right': header.id !== 'name' })}
                     data-sortable={header.column.getCanSort()}
                   >
                     <div>
@@ -212,43 +213,26 @@ function FlagsTable() {
                         header.column.columnDef.header,
                         header.getContext()
                       )}
-                      <span
-                        className="text-ds-blue-darker group-hover/columnheader:opacity-100"
-                        data-sort-direction={header.column.getIsSorted()}
-                      >
-                        <Icon name="arrowUp" size="sm" />
-                      </span>
                     </div>
                   </th>
                 ))}
               </tr>
             ))}
           </thead>
-          <tbody>
-            {isLoading ? (
-              <tr>
-                <td>
-                  <Spinner />
-                </td>
+          <tbody data-testid="body-row">
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id} className="">
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id} className="">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
               </tr>
-            ) : (
-              table.getRowModel().rows.map((row) => (
-                <tr key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))
-            )}
+            ))}
           </tbody>
         </table>
       </div>
-      {tableData?.length === 0 && !isLoading && (
+      {isEmpty(tableData) && !isLoading && (
         <p className="flex flex-1 justify-center">
           {getEmptyStateText({ isSearching })}
         </p>

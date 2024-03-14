@@ -92,6 +92,7 @@ const Sparkline: React.FC<SparklineProps> = ({
 
   return (
     <table
+      id="sparklineTable"
       style={tableCssProperties as TableCustomCSSProperties}
       className="flex flex-1"
     >
