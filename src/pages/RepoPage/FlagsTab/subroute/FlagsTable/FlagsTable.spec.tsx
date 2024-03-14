@@ -3,7 +3,7 @@ import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { Suspense } from 'react'
+import { PropsWithChildren, Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import FlagsTable from './FlagsTable'
@@ -110,9 +110,9 @@ const queryClient = new QueryClient({
   },
 })
 const server = setupServer()
-let testLocation
+let testLocation: any
 const wrapper =
-  (initialEntries = '/gh/codecov/gazebo/flags') =>
+  (initialEntries = '/gh/codecov/gazebo/flags'): React.FC<PropsWithChildren> =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
@@ -139,9 +139,13 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('RepoContentsTable', () => {
-  function setup(
-    { noData, noReportsUploaded } = { noData: false, noReportsUploaded: false }
-  ) {
+  function setup({
+    noData = false,
+    noReportsUploaded = false,
+  }: {
+    noData?: boolean
+    noReportsUploaded?: boolean
+  }) {
     const user = userEvent.setup()
     const fetchNextPage = jest.fn()
     const handleSort = jest.fn()
@@ -180,7 +184,7 @@ describe('RepoContentsTable', () => {
 
   describe('when rendered', () => {
     beforeEach(() => {
-      setup()
+      setup({})
     })
 
     it('renders table headers', async () => {
@@ -263,7 +267,7 @@ describe('RepoContentsTable', () => {
 
   describe('flag name is clicked', () => {
     it('goes to coverage page', async () => {
-      const { user } = setup()
+      const { user } = setup({})
 
       render(<FlagsTable />, { wrapper: wrapper() })
 
@@ -286,7 +290,7 @@ describe('RepoContentsTable', () => {
 
   describe('when the delete icon is clicked', () => {
     it('calls functions to open modal', async () => {
-      const { user } = setup()
+      const { user } = setup({})
       render(<FlagsTable />, { wrapper: wrapper() })
 
       await expect(screen.findByTestId('spinner')).resolves.toBeInTheDocument()
@@ -301,7 +305,9 @@ describe('RepoContentsTable', () => {
 
       const [firstIcon] = trashIconButtons
       await act(async () => {
-        await user.click(firstIcon)
+        if (firstIcon) {
+          await user.click(firstIcon)
+        }
       })
 
       const deleteFlagModalText = screen.getByText('Delete Flag')
@@ -363,7 +369,7 @@ describe('RepoContentsTable', () => {
 
   describe('when hasNextPage is true', () => {
     it('renders load more button', async () => {
-      setup()
+      setup({})
       render(<FlagsTable />, { wrapper: wrapper() })
 
       await expect(screen.findByTestId('spinner')).resolves.toBeInTheDocument()
@@ -376,7 +382,7 @@ describe('RepoContentsTable', () => {
     })
 
     it('fires next page button click', async () => {
-      const { fetchNextPage, user } = setup()
+      const { fetchNextPage, user } = setup({})
       render(<FlagsTable />, { wrapper: wrapper() })
 
       await expect(screen.findByTestId('spinner')).resolves.toBeInTheDocument()
@@ -394,7 +400,7 @@ describe('RepoContentsTable', () => {
 
   describe('when sorting', () => {
     it('calls handleSort', async () => {
-      const { handleSort, user } = setup()
+      const { handleSort, user } = setup({})
       render(<FlagsTable />, { wrapper: wrapper() })
 
       await expect(screen.findByTestId('spinner')).resolves.toBeInTheDocument()
