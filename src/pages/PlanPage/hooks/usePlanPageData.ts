@@ -1,14 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
-import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import Api from 'shared/api'
 import { NetworkErrorObject } from 'shared/api/helpers'
-
-type URLParams = {
-  owner: string
-  provider: string
-}
 
 const RequestSchema = z.object({
   owner: z
@@ -30,15 +24,18 @@ const query = `
   }
 `
 
-export function usePlanPageData() {
-  const { owner, provider } = useParams<URLParams>()
+type UsePlanPageDataParams = {
+  owner: string
+  provider: string
+}
 
+export function usePlanPageData({ owner, provider }: UsePlanPageDataParams) {
   const variables = {
     username: owner,
   }
 
   return useQuery({
-    queryKey: ['PlanPageData', variables, provider, query],
+    queryKey: ['PlanPageData', variables, provider],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,

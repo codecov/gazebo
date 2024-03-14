@@ -50,7 +50,14 @@ describe('usePlanPageData', () => {
     })
 
     it('returns data for the owner page', async () => {
-      const { result } = renderHook(() => usePlanPageData(), { wrapper })
+      const { result } = renderHook(
+        () =>
+          usePlanPageData({
+            owner: 'popcorn',
+            provider: 'gh',
+          }),
+        { wrapper }
+      )
 
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
@@ -62,7 +69,14 @@ describe('usePlanPageData', () => {
   describe('when schema parsing fails', () => {
     it('rejects with status 404', async () => {
       setup({ invalidSchema: true })
-      const { result } = renderHook(() => usePlanPageData(), { wrapper })
+      const { result } = renderHook(
+        () =>
+          usePlanPageData({
+            owner: 'popcorn',
+            provider: 'gh',
+          }),
+        { wrapper }
+      )
 
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)

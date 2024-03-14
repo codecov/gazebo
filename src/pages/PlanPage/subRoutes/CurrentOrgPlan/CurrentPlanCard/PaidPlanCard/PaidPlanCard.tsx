@@ -22,7 +22,7 @@ function PaidPlanCard() {
     provider,
     owner,
   })
-  const { data: ownerData } = usePlanPageData()
+  const { data: ownerData } = usePlanPageData({ owner, provider })
 
   const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
   const plan = planData?.plan
