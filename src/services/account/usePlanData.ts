@@ -10,37 +10,41 @@ export const TrialStatuses = {
   CANNOT_TRIAL: 'CANNOT_TRIAL',
 } as const
 
+const PlanSchema = z.object({
+  baseUnitPrice: z.number(),
+  benefits: z.array(z.string()),
+  billingRate: z.string().nullable(),
+  marketingName: z.string(),
+  monthlyUploadLimit: z.number().nullable(),
+  value: z.string(),
+  pretrialUsersCount: z.number().nullable(),
+  trialEndDate: z.string().nullable(),
+  trialStatus: z.nativeEnum(TrialStatuses),
+  trialStartDate: z.string().nullable(),
+  trialTotalDays: z.number().nullable(),
+  planUserCount: z.number().nullable(),
+})
+
+export type Plan = z.infer<typeof PlanSchema>
+
+const PretrialPlanSchema = z.object({
+  baseUnitPrice: z.number(),
+  benefits: z.array(z.string()),
+  billingRate: z.string().nullable(),
+  marketingName: z.string(),
+  monthlyUploadLimit: z.number().nullable(),
+  value: z.string(),
+})
+
+export type PretrialPlan = z.infer<typeof PretrialPlanSchema>
+
 export const PlanDataSchema = z
   .object({
     owner: z
       .object({
         hasPrivateRepos: z.boolean(),
-        plan: z
-          .object({
-            baseUnitPrice: z.number(),
-            benefits: z.array(z.string()),
-            billingRate: z.string().nullable(),
-            marketingName: z.string(),
-            monthlyUploadLimit: z.number().nullable(),
-            value: z.string(),
-            pretrialUsersCount: z.number().nullable(),
-            trialEndDate: z.string().nullable(),
-            trialStatus: z.nativeEnum(TrialStatuses),
-            trialStartDate: z.string().nullable(),
-            trialTotalDays: z.number().nullable(),
-            planUserCount: z.number().nullable(),
-          })
-          .nullish(),
-        pretrialPlan: z
-          .object({
-            baseUnitPrice: z.number(),
-            benefits: z.array(z.string()),
-            billingRate: z.string().nullable(),
-            marketingName: z.string(),
-            monthlyUploadLimit: z.number().nullable(),
-            value: z.string(),
-          })
-          .nullish(),
+        plan: PlanSchema.nullish(),
+        pretrialPlan: PretrialPlanSchema.nullish(),
       })
       .nullish(),
   })

@@ -26,7 +26,7 @@ import PlanPricing from '../shared/PlanPricing'
 
 function FreePlanCard({ plan, scheduledPhase }) {
   const { provider, owner } = useParams()
-  const { data: ownerData } = usePlanPageData()
+  const { data: ownerData } = usePlanPageData({ owner, provider })
   const { data: planData } = usePlanData({
     provider,
     owner,
