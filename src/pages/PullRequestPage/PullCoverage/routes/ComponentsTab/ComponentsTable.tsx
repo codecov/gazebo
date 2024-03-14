@@ -17,6 +17,7 @@ import ComponentsNotConfigured from './ComponentsNotConfigured'
 import { ComponentsComparison, useComponentComparison } from './hooks'
 
 import 'ui/Table/Table.css'
+import ComponentsSelector from '../ComponentsSelector'
 
 const Loader = () => (
   <div className="mb-4 flex justify-center pt-4">
@@ -130,6 +131,9 @@ export default function ComponentsTable() {
 
   return (
     <>
+      <div className="my-2 flex flex-row-reverse">
+        <ComponentsSelector />
+      </div>
       <div className="tableui">
         <table>
           <colgroup>
