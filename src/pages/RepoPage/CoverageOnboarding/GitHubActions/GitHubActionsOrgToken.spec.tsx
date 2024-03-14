@@ -110,7 +110,7 @@ describe('GitHubActionsOrgToken', () => {
         expect(repositorySecretLink).toBeInTheDocument()
         expect(repositorySecretLink).toHaveAttribute(
           'href',
-          'https://github.com/codecov/cool-repo/settings/secrets/actions'
+          'https://github.com/codecov/cool-repo/settings/secrets/actions/new'
         )
       })
 
@@ -158,7 +158,7 @@ describe('GitHubActionsOrgToken', () => {
         expect(repositorySecretLink).toBeInTheDocument()
         expect(repositorySecretLink).toHaveAttribute(
           'href',
-          'https://github.com/codecov/cool-repo/settings/secrets/actions'
+          'https://github.com/codecov/cool-repo/settings/secrets/actions/new'
         )
       })
 

@@ -1622,7 +1622,7 @@ describe('useNavLinks', () => {
 
       const path = result.current.githubRepoSecrets.path()
       expect(path).toBe(
-        'https://github.com/codecov/cool-repo/settings/secrets/actions'
+        'https://github.com/codecov/cool-repo/settings/secrets/actions/new'
       )
     })
 
@@ -1636,7 +1636,7 @@ describe('useNavLinks', () => {
         repo: 'test-repo',
       })
       expect(path).toBe(
-        'https://github.com/test-owner/test-repo/settings/secrets/actions'
+        'https://github.com/test-owner/test-repo/settings/secrets/actions/new'
       )
     })
   })
