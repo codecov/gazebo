@@ -4,7 +4,7 @@ import qs from 'qs'
 import { useHistory, useLocation } from 'react-router-dom'
 
 interface LocationParams {
-  [key: string]: string | number | boolean | []
+  [key: string]: string | number | boolean | any[]
 }
 
 export function useLocationParams(defaultParams: LocationParams = {}) {
