@@ -186,8 +186,12 @@ const wrapper = ({ children }) => (
 describe('FreePlanCard', () => {
   function setup(
     {
-      owner,
-      plans,
+      owner = {
+        username: 'codecov',
+        isCurrentUserPartOfOrg: true,
+        numberOfUploads: 10,
+      },
+      plans = allPlans,
       trialStatus = TrialStatuses.CANNOT_TRIAL,
       planValue = 'users-basic',
       flagValue = false,
