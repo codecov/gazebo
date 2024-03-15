@@ -1,5 +1,6 @@
+import qs from 'qs'
 import { useMemo } from 'react'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
 import {
@@ -21,24 +22,6 @@ const defaultQueryParams = {
   displayType: '',
   flags: [],
   components: [],
-}
-
-const getQueryFilters = (
-  params: any,
-  sortBy?: { direction?: string; ordering?: string }
-) => {
-  return {
-    ...(params?.search && { searchValue: params.search }),
-    // doing a ternary here because it's an array and arrays + && do not go well
-    ...(params?.flags ? { flags: params.flags } : {}),
-    ...(params?.components ? { components: params.components } : {}),
-    ...(sortBy && {
-      ordering: {
-        direction: sortBy?.direction,
-        parameter: sortBy?.ordering,
-      },
-    }),
-  }
 }
 
 interface URLParams {
@@ -69,8 +52,30 @@ export function useRepoBranchContentsTable(sortItem?: {
   })
 
   const branch = (branchParam || repoOverview?.defaultBranch) as string
-  const filters = getQueryFilters(params, sortItem)
+  const location = useLocation()
+
+  const queryParams = qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+    depth: 1,
+  })
+
   const urlPath = pathParam || ''
+
+  const filters = useMemo(() => {
+    return {
+      ...(queryParams?.flags ? { flags: queryParams.flags } : {}),
+      ...(queryParams?.components
+        ? { components: queryParams.components }
+        : {}),
+      ...(sortItem && {
+        ordering: {
+          direction: sortItem?.direction,
+          parameter: sortItem?.ordering,
+        },
+      }),
+      ...(queryParams?.search && { searchValue: queryParams.search }),
+    }
+  }, [queryParams.flags, queryParams.components, sortItem, queryParams.search])
 
   const { data: branchData, isLoading } = useRepoBranchContents({
     provider,
@@ -90,7 +95,7 @@ export function useRepoBranchContentsTable(sortItem?: {
 
   const finalizedTableRows = useMemo(() => {
     const createTableData = (branchData: PathContentResultType[]) => {
-      const yy = branchData.map((result) => {
+      const rawTableRows = branchData.map((result) => {
         let name
         if (result?.__typename === 'PathContentDir') {
           name = (
@@ -98,7 +103,7 @@ export function useRepoBranchContentsTable(sortItem?: {
               name={result.name}
               branch={branch}
               urlPath={urlPath}
-              filters={filters}
+              filters
             />
           )
         }
@@ -111,7 +116,7 @@ export function useRepoBranchContentsTable(sortItem?: {
               path={result.path}
               displayType={displayTypeParameter.tree}
               isCriticalFile={result.isCriticalFile}
-              filters={filters}
+              filters
             />
           )
         }
@@ -142,20 +147,13 @@ export function useRepoBranchContentsTable(sortItem?: {
       return adjustListIfUpDir({
         treePaths,
         displayType: displayTypeParameter.tree,
-        rawTableRows: yy,
+        rawTableRows,
       })
     }
 
     let rawData = createTableData(branchData?.results ?? [])
     return rawData
-  }, [
-    branchData?.results,
-    branch,
-    filters,
-    indicationRange,
-    treePaths,
-    urlPath,
-  ])
+  }, [branchData?.results, branch, indicationRange, treePaths, urlPath])
 
   return {
     data: finalizedTableRows ?? [],
@@ -178,6 +176,5 @@ export function useRepoBranchContentsTable(sortItem?: {
       branchData?.__typename === CommitErrorTypes.MISSING_HEAD_REPORT,
     pathContentsType: branchData?.pathContentsType,
     urlPath,
-    filters,
   }
 }

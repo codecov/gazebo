@@ -5,17 +5,14 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { PathContentResultType } from 'services/pathContents/branch/dir/useRepoBranchContents'
-import { IndicationRangeType } from 'services/repo/useRepoConfig'
 import { OrderingDirection } from 'services/repos'
 import Icon from 'ui/Icon'
 
 import { useRepoBranchContentsTable } from '../hooks'
 import { Loader, RepoContentsResult } from '../shared'
-
-// Define the second type of objects within the array
 
 const columnHelper = createColumnHelper<PathContentResultType>()
 
@@ -58,12 +55,7 @@ function getOrderingDirection(sorting: Array<{ id: string; desc: boolean }>) {
   return undefined
 }
 
-export const getBaseColumns = (
-  branch: string,
-  urlPath: string,
-  indicationRange: IndicationRangeType,
-  filters: any
-) => {
+export const getBaseColumns = () => {
   const baseColumns = [
     columnHelper.accessor('name', {
       id: 'name',
@@ -102,29 +94,26 @@ export const getBaseColumns = (
 
 function CodeTreeTable() {
   const [sorting, setSorting] = useState([{ id: 'name', desc: false }])
-  const ordering = getOrderingDirection(sorting)
+  const ordering = useMemo(() => getOrderingDirection(sorting), [sorting])
   const {
     data,
-    indicationRange,
     isSearching,
     isMissingHeadReport,
     isLoading,
     hasFlagsSelected,
     hasComponentsSelected,
     pathContentsType,
-    branch,
-    urlPath,
-    filters,
   } = useRepoBranchContentsTable(ordering)
 
   const table = useReactTable({
-    columns: getBaseColumns(branch, urlPath, indicationRange, filters),
+    columns: getBaseColumns(),
     getCoreRowModel: getCoreRowModel(),
     data: data ?? [],
     state: {
       sorting,
     },
     onSortingChange: setSorting,
+    manualSorting: true,
   })
 
   if (pathContentsType === 'UnknownPath') {

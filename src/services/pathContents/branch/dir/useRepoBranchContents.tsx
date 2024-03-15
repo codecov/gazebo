@@ -48,18 +48,24 @@ export type PathContentsSchemaType = z.infer<typeof PathContentsResultSchema>
 
 export const UnknownPathSchema = z.object({
   __typename: z.literal('UnknownPath'),
-  message: z.string(),
+  message: z.string().nullish(),
 })
 
 export const MissingCoverageSchema = z.object({
   __typename: z.literal('MissingCoverage'),
-  message: z.string(),
+  message: z.string().nullish(),
+})
+
+const MissingHeadReportSchema = z.object({
+  __typename: z.literal('MissingHeadReport'),
+  message: z.string().nullish(),
 })
 
 const PathContentsUnionSchema = z.discriminatedUnion('__typename', [
   PathContentsSchema,
   UnknownPathSchema,
   MissingCoverageSchema,
+  MissingHeadReportSchema,
 ])
 
 export type PathContentResultType = z.infer<typeof PathContentsResultSchema>
@@ -106,11 +112,8 @@ function fetchRepoContents({
 
     if (!parsedData.success) {
       console.log('FAILED')
-      console.log(parsedData)
-      return Promise.reject({
-        status: 404,
-        data: {},
-      })
+      console.log(parsedData, res)
+      return null
     }
 
     let results
