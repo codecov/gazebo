@@ -1,4 +1,6 @@
 import PropTypes from 'prop-types'
+import qs from 'qs'
+import { useLocation } from 'react-router-dom'
 
 import { usePrefetchBranchFileEntry } from 'services/pathContents/branch/file'
 
@@ -12,8 +14,18 @@ function BranchFileEntry({
   name,
   urlPath,
   displayType,
-  filters,
 }) {
+  const location = useLocation()
+  const queryParams = qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+    depth: 1,
+  })
+
+  const filters = {
+    ...(queryParams?.flags ? { flags: queryParams.flags } : {}),
+    ...(queryParams?.components ? { components: queryParams.components } : {}),
+  }
+
   const flags = filters?.flags?.length > 0 ? filters?.flags : []
 
   const { runPrefetch } = usePrefetchBranchFileEntry({
@@ -22,10 +34,10 @@ function BranchFileEntry({
     flags,
   })
 
-  const queryParams = {
-    flags: filters?.flags,
-    components: filters?.components,
-  }
+  // const queryParams = {
+  //   flags: filters?.flags,
+  //   components: filters?.components,
+  // }
 
   return (
     <FileEntry
@@ -36,7 +48,7 @@ function BranchFileEntry({
       displayType={displayType}
       urlPath={urlPath}
       runPrefetch={runPrefetch}
-      queryParams={queryParams}
+      queryParams={filters}
     />
   )
 }
@@ -48,10 +60,6 @@ BranchFileEntry.propTypes = {
   name: PropTypes.string.isRequired,
   displayType: PropTypes.oneOf(Object.values(displayTypeParameter)),
   urlPath: PropTypes.string.isRequired,
-  filters: PropTypes.shape({
-    flags: PropTypes.arrayOf(PropTypes.string),
-    components: PropTypes.arrayOf(PropTypes.string),
-  }),
 }
 
 export default BranchFileEntry
