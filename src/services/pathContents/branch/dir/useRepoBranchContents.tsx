@@ -111,8 +111,6 @@ function fetchRepoContents({
     const parsedData = BranchContentsSchema.safeParse(res?.data)
 
     if (!parsedData.success) {
-      console.log('FAILED')
-      console.log(parsedData, res)
       return null
     }
 
