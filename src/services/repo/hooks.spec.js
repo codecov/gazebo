@@ -48,16 +48,48 @@ describe('useRepo', () => {
     )
   }
 
+  describe('when called with unsuccessful res', () => {
+    const badData = {
+      owner: {
+        isCurrentUserPartOfOrg: '',
+        isAdmin: '',
+        isCurrentUserActivated: '',
+        repository: {},
+      },
+    }
+
+    beforeEach(() => {
+      setup(badData)
+    })
+
+    describe('when incorrect data is loaded', () => {
+      it('throws an error', async () => {
+        const { result } = renderHook(
+          () => useRepo({ provider, owner, repo }),
+          {
+            wrapper: wrapper(),
+          }
+        )
+
+        await waitFor(() => expect(result.current.status).toEqual('error'))
+      })
+    })
+  })
+
   describe('when called with successful res', () => {
     const dataReturned = {
       owner: {
         isCurrentUserPartOfOrg: true,
+        isAdmin: null,
+        isCurrentUserActivated: null,
         repository: {
           defaultBranch: 'master',
           private: true,
           uploadToken: 'token',
           yaml: 'yaml',
           active: true,
+          activated: true,
+          oldestCommitAt: '',
         },
       },
     }
@@ -77,42 +109,17 @@ describe('useRepo', () => {
 
         const expectedResponse = {
           isCurrentUserPartOfOrg: true,
+          isAdmin: null,
+          isCurrentUserActivated: null,
           repository: {
             defaultBranch: 'master',
             private: true,
             uploadToken: 'token',
             yaml: 'yaml',
             active: true,
+            activated: true,
+            oldestCommitAt: '',
           },
-        }
-
-        await waitFor(() =>
-          expect(result.current.data).toEqual(expectedResponse)
-        )
-      })
-    })
-  })
-
-  describe('when called with unsuccessful res', () => {
-    const dataReturned = {
-      noOwnerSent: 1,
-    }
-
-    beforeEach(() => {
-      setup(dataReturned)
-    })
-
-    describe('when data is loaded', () => {
-      it('returns the data', async () => {
-        const { result } = renderHook(
-          () => useRepo({ provider, owner, repo }),
-          {
-            wrapper: wrapper(),
-          }
-        )
-        const expectedResponse = {
-          repository: undefined,
-          isCurrentUserPartOfOrg: undefined,
         }
 
         await waitFor(() =>

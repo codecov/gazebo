@@ -7,11 +7,19 @@ import BannerHeading from 'ui/Banner/BannerHeading'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 
+type URLParams = {
+  provider: string
+  owner: string
+  repo: string
+}
+
 function TriggerSyncBanner() {
-  const { provider, owner, repo } = useParams()
+  const { provider, owner, repo } = useParams<URLParams>()
   const { mutate } = useActivateFlagMeasurements({ provider, owner, repo })
 
   const enableFlagAnalytics = () => {
+    // TODO: remove when we type out useActivateFlagMeasurements hook
+    // @ts-expect-error
     mutate({ provider, owner, repo })
   }
 
@@ -20,7 +28,7 @@ function TriggerSyncBanner() {
       <Banner variant="plain">
         <BannerHeading>
           <div className="flex items-center gap-2">
-            <Icon name="information-circle" />
+            <Icon name="informationCircle" />
             <h2 className="font-semibold">
               You need to enable Flag analytics to see coverage data
             </h2>
@@ -35,9 +43,11 @@ function TriggerSyncBanner() {
             </p>
             <div className="flex self-start">
               <Button
+                to={undefined}
                 hook="backfill-task"
                 variant="primary"
                 onClick={enableFlagAnalytics}
+                disabled={false}
               >
                 Enable flag analytics
               </Button>

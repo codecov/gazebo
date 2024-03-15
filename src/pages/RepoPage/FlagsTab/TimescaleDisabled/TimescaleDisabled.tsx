@@ -13,8 +13,8 @@ function TimescaleDisabled() {
         />
         <span className="text-3xl">The Flags feature is not yet enabled </span>
         <span className="text-base">
-          Learn how you can{' '}
-          <A hook="flags" to={{ pageName: 'deployingFlagsSupport' }}>
+          Learn how you can
+          <A hook="flags" to={{ pageName: 'deployingFlagsSupport' }} isExternal>
             enable flags in your infrastructure today
           </A>
           .

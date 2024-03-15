@@ -136,8 +136,10 @@ describe('useSunburstChart', () => {
         wrapper: wrapper(['/critical-role/c3/bells-hells']),
       })
 
-      await waitFor(() => expect(mockDetectedBranch).toBeCalled())
-      await waitFor(() => expect(mockDetectedBranch).toBeCalledWith('main'))
+      await waitFor(() => expect(mockDetectedBranch).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(mockDetectedBranch).toHaveBeenCalledWith('main')
+      )
     })
   })
 
@@ -156,9 +158,9 @@ describe('useSunburstChart', () => {
         wrapper: wrapper(['/critical-role/c3/bells-hells/tree/something']),
       })
 
-      await waitFor(() => expect(mockDetectedBranch).toBeCalled())
+      await waitFor(() => expect(mockDetectedBranch).toHaveBeenCalled())
       await waitFor(() =>
-        expect(mockDetectedBranch).toBeCalledWith('something')
+        expect(mockDetectedBranch).toHaveBeenCalledWith('something')
       )
     })
   })

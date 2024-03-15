@@ -15,7 +15,7 @@ const mockOwner = {
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/gh']}>
     <Route path="/:provider">
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -33,36 +33,62 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('usePlanPageData', () => {
-  function setup() {
+  function setup({ invalidSchema = false }) {
     server.use(
       graphql.query('PlanPageData', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
-            owner: mockOwner,
-          })
-        )
+        if (invalidSchema) {
+          return res(ctx.status(200), ctx.data({}))
+        }
+        return res(ctx.status(200), ctx.data({ owner: mockOwner }))
       })
     )
   }
 
   describe('when called', () => {
     beforeEach(() => {
-      setup()
+      setup({})
     })
 
     it('returns data for the owner page', async () => {
       const { result } = renderHook(
-        () => usePlanPageData({ username: mockOwner.username }),
-        {
-          wrapper,
-        }
+        () =>
+          usePlanPageData({
+            owner: 'popcorn',
+            provider: 'gh',
+          }),
+        { wrapper }
       )
 
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
 
       await waitFor(() => expect(result.current.data).toEqual(mockOwner))
+    })
+  })
+
+  describe('when schema parsing fails', () => {
+    it('rejects with status 404', async () => {
+      setup({ invalidSchema: true })
+      const { result } = renderHook(
+        () =>
+          usePlanPageData({
+            owner: 'popcorn',
+            provider: 'gh',
+          }),
+        { wrapper }
+      )
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      await waitFor(() =>
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            status: 404,
+            dev: 'usePlanPageData - 404 schema parsing failed',
+          })
+        )
+      )
     })
   })
 })

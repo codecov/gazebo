@@ -251,7 +251,7 @@ describe('useComponentComparison', () => {
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
 
-      await waitFor(() => expect(componentsMock).toBeCalledTimes(1))
+      await waitFor(() => expect(componentsMock).toHaveBeenCalledTimes(1))
       await waitFor(() =>
         expect(componentsMock).toHaveBeenCalledWith(componentsFilter)
       )

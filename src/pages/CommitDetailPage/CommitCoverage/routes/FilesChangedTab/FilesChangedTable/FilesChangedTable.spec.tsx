@@ -479,7 +479,7 @@ describe('FilesChangedTable', () => {
       render(<FilesChangedTable />, { wrapper: wrapper(queryClient, path) })
 
       await waitFor(() =>
-        expect(mockVars).toBeCalledWith({
+        expect(mockVars).toHaveBeenCalledWith({
           commitid: '123',
           filters: expect.objectContaining({
             flags: ['flag-1'],
@@ -524,7 +524,7 @@ describe('FilesChangedTable', () => {
       render(<FilesChangedTable />, { wrapper: wrapper(queryClient, path) })
 
       await waitFor(() =>
-        expect(mockVars).toBeCalledWith({
+        expect(mockVars).toHaveBeenCalledWith({
           commitid: '123',
           filters: expect.objectContaining({
             components: ['component-1'],

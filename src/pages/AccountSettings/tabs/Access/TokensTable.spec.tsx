@@ -153,8 +153,8 @@ describe('TokensTable', () => {
           await user.click(button)
         }
 
-        expect(mutate).toBeCalled()
-        expect(mutate).toBeCalledWith({ tokenid: '32' })
+        expect(mutate).toHaveBeenCalled()
+        expect(mutate).toHaveBeenCalledWith({ tokenid: '32' })
       })
     })
 

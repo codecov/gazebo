@@ -1,3 +1,5 @@
+/* eslint-disable testing-library/prefer-user-event */
+/* eslint-disable testing-library/await-fire-event */
 import { fireEvent, render, screen } from '@testing-library/react'
 
 import Pagination from '.'
@@ -40,17 +42,16 @@ describe('Pagination', () => {
       ${'300'}      | ${300}
       ${/Next/}     | ${11}
     `('pages', ({ button, location }) => {
-      let buttonEl
-      beforeEach(() => {
-        setup(props)
-        buttonEl = screen.getByRole('button', { name: button })
-      })
       it('renders expected button', () => {
+        setup(props)
+        const buttonEl = screen.getByRole('button', { name: button })
         expect(buttonEl).toBeInTheDocument()
       })
-      it('clicking emits the correct page data', () => {
+      it('clicking emits the correct page data', async () => {
+        setup(props)
+        const buttonEl = screen.getByRole('button', { name: button })
         fireEvent.click(buttonEl)
-        expect(mockOnClick).lastCalledWith(location)
+        expect(mockOnClick).toHaveBeenLastCalledWith(location)
       })
     })
   })
@@ -63,18 +64,17 @@ describe('Pagination', () => {
     })
 
     describe('Previous', () => {
-      let buttonEl
-      beforeEach(() => {
-        setup(props)
-        buttonEl = screen.getByRole('button', { name: /Previous/ })
-      })
       it('renders disabled button', () => {
+        setup(props)
+        const buttonEl = screen.getByRole('button', { name: /Previous/ })
         expect(buttonEl).toBeInTheDocument()
         expect(buttonEl).toBeDisabled()
       })
       it('Clicking on button does not fire event', () => {
+        setup(props)
+        const buttonEl = screen.getByRole('button', { name: /Previous/ })
         fireEvent.click(buttonEl)
-        expect(mockOnClick).toBeCalledTimes(0)
+        expect(mockOnClick).toHaveBeenCalledTimes(0)
       })
     })
 
@@ -85,17 +85,16 @@ describe('Pagination', () => {
       ${'10'}   | ${10}
       ${/Next/} | ${2}
     `('pages', ({ button, location }) => {
-      let buttonEl
-      beforeEach(() => {
-        setup(props)
-        buttonEl = screen.getByRole('button', { name: button })
-      })
       it('renders expected button', () => {
+        setup(props)
+        const buttonEl = screen.getByRole('button', { name: button })
         expect(buttonEl).toBeInTheDocument()
       })
       it('clicking emits the correct page data', () => {
+        setup(props)
+        const buttonEl = screen.getByRole('button', { name: button })
         fireEvent.click(buttonEl)
-        expect(mockOnClick).lastCalledWith(location)
+        expect(mockOnClick).toHaveBeenLastCalledWith(location)
       })
     })
   })
@@ -108,18 +107,17 @@ describe('Pagination', () => {
     })
 
     describe('Next', () => {
-      let buttonEl
-      beforeEach(() => {
-        setup(props)
-        buttonEl = screen.getByRole('button', { name: /Next/ })
-      })
       it('renders disabled button', () => {
+        setup(props)
+        const buttonEl = screen.getByRole('button', { name: /Next/ })
         expect(buttonEl).toBeInTheDocument()
         expect(buttonEl).toBeDisabled()
       })
       it('Clicking on button does not fire event', () => {
+        setup(props)
+        const buttonEl = screen.getByRole('button', { name: /Next/ })
         fireEvent.click(buttonEl)
-        expect(mockOnClick).toBeCalledTimes(0)
+        expect(mockOnClick).toHaveBeenCalledTimes(0)
       })
     })
 
@@ -130,17 +128,16 @@ describe('Pagination', () => {
       ${'9'}        | ${9}
       ${'10'}       | ${10}
     `('pages', ({ button, location }) => {
-      let buttonEl
-      beforeEach(() => {
-        setup(props)
-        buttonEl = screen.getByRole('button', { name: button })
-      })
       it('renders expected button', () => {
+        setup(props)
+        const buttonEl = screen.getByRole('button', { name: button })
         expect(buttonEl).toBeInTheDocument()
       })
       it('clicking emits the correct page data', () => {
+        setup(props)
+        const buttonEl = screen.getByRole('button', { name: button })
         fireEvent.click(buttonEl)
-        expect(mockOnClick).lastCalledWith(location)
+        expect(mockOnClick).toHaveBeenLastCalledWith(location)
       })
     })
   })

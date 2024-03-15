@@ -194,7 +194,7 @@ describe('SingleLine', () => {
       const button = screen.getByRole('button')
       await user.click(button)
 
-      expect(mockHandleClick).toBeCalled()
+      expect(mockHandleClick).toHaveBeenCalled()
     })
   })
 
