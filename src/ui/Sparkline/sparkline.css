@@ -1,6 +1,9 @@
-#sparklineTable table {
-  min-width: unset;
-  display: table;
+.tableui table {
+  border: unset;
+}
+
+#sparklineTable tbody {
+  border: unset;
 }
 
 #sparklineTable tr {

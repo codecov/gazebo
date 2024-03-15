@@ -16,6 +16,7 @@ import A from 'ui/A'
 import Button from 'ui/Button'
 import CoverageProgress from 'ui/CoverageProgress'
 import Icon from 'ui/Icon'
+import Spinner from 'ui/Spinner'
 
 import DeleteFlagModal from './DeleteFlagModal'
 import useRepoFlagsTable from './hooks'
@@ -137,6 +138,12 @@ function createTableData({
 const getEmptyStateText = ({ isSearching }: { isSearching: boolean }) =>
   isSearching ? 'No results found' : 'There was a problem getting flags data'
 
+const Loader = () => (
+  <div className="mb-4 flex justify-center pt-4">
+    <Spinner />
+  </div>
+)
+
 type URLParams = {
   provider: string
   owner: string
@@ -220,15 +227,26 @@ function FlagsTable() {
             ))}
           </thead>
           <tbody data-testid="body-row">
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="">
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
+            {isLoading ? (
+              <tr>
+                <td>
+                  <Loader />
+                </td>
               </tr>
-            ))}
+            ) : (
+              table.getRowModel().rows.map((row) => (
+                <tr key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
