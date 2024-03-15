@@ -198,13 +198,14 @@ describe('useMyOrganizations', () => {
       })
     })
 
-    describe('there is was an api error', () => {
+    describe('there was an api error', () => {
       it('returns the user', async () => {
         const { thrownMock } = setup({ apiError: true })
         const { result } = renderHook(() => useMyOrganizations(), {
           wrapper: wrapper(),
         })
 
+        await waitFor(() => !result.current.isLoading)
         await waitFor(() => expect(result.current.isSuccess).toBeFalsy())
 
         expect(thrownMock).toHaveBeenCalledWith(
