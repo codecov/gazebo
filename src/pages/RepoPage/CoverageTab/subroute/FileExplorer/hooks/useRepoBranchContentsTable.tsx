@@ -103,7 +103,6 @@ export function useRepoBranchContentsTable(sortItem?: {
               name={result.name}
               branch={branch}
               urlPath={urlPath}
-              // filters={filters}
             />
           )
         }
@@ -116,7 +115,6 @@ export function useRepoBranchContentsTable(sortItem?: {
               path={result.path}
               displayType={displayTypeParameter.tree}
               isCriticalFile={result.isCriticalFile}
-              // filters={filters}
             />
           )
         }
