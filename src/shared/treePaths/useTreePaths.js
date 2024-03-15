@@ -38,8 +38,6 @@ export function useTreePaths(passedPath) {
     { suspense: false }
   )
 
-  // Use useMemo to memoize the calculation of treePaths.
-  // It will only recalculate when one of the dependencies changes.
   const treePaths = useMemo(() => {
     const branch = urlBranch && decodeURIComponent(urlBranch)
     const ref = urlRef && decodeURIComponent(urlRef)
