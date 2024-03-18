@@ -89,25 +89,32 @@ function graphql({
       query,
       variables,
     }),
-  })
-    .then(async (res) =>
-      res.ok
-        ? await res.json()
-        : Promise.reject({
-            status: res.status,
-            data: await res.json(),
-          })
-    )
-    .catch((err) => {
-      if (err.status === 401 && config.IS_SELF_HOSTED) {
+  }).then(async (res) => {
+    const data = await res.json()
+
+    if (data?.errors) {
+      if (
+        data?.errors?.[0]?.extensions?.status === 403 &&
+        config.IS_SELF_HOSTED
+      ) {
         window.location.href = '/login'
       }
 
       return Promise.reject({
-        status: err.status,
-        data: err.data,
+        status: data?.errors?.[0]?.extensions?.status,
+        data: data?.errors?.[0]?.message,
       })
-    })
+    }
+
+    if (!res.ok) {
+      return Promise.reject({
+        status: res.status,
+        data: data,
+      })
+    }
+
+    return data
+  })
 }
 
 function graphqlMutation({ mutationPath, ...graphqlParams }) {
