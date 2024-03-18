@@ -1,5 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import {
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Location } from 'history'
 import { graphql } from 'msw'
@@ -119,7 +124,7 @@ describe('ComponentsSelector', () => {
     })
 
     it('calls the api with search term', async () => {
-      const { user, mockApiVars } = setup()
+      const { user } = setup()
 
       render(<ComponentsSelector />, { wrapper })
 
@@ -127,21 +132,28 @@ describe('ComponentsSelector', () => {
       expect(select).toBeInTheDocument()
       await user.click(select)
 
-      const searchBox = screen.getByPlaceholderText('Search for components')
-      await user.type(searchBox, 'component-2')
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
-
-      await waitFor(() =>
-        expect(mockApiVars).toHaveBeenCalledWith({
-          owner: 'codecov',
-          commitId: '123',
-          repo: 'cool-repo',
-          provider: 'gh',
-          filters: { components: ['component-2'] },
-        })
+      let component1: HTMLElement | null = await screen.findByText(
+        'component-1'
       )
+      expect(component1).toBeInTheDocument()
+      let component2 = await screen.findByText('component-2')
+      expect(component2).toBeInTheDocument()
+      let component3: HTMLElement | null = await screen.findByText(
+        'component-3'
+      )
+      expect(component3).toBeInTheDocument()
+
+      const searchBox = screen.getByPlaceholderText('Search for components')
+      await user.type(searchBox, '2')
+
+      await waitForElementToBeRemoved(component1)
+
+      component1 = screen.queryByText('component-1')
+      expect(component1).not.toBeInTheDocument()
+      component2 = await screen.findByText('component-2')
+      expect(component2).toBeInTheDocument()
+      component3 = screen.queryByText('component-3')
+      expect(component3).not.toBeInTheDocument()
     })
   })
 
