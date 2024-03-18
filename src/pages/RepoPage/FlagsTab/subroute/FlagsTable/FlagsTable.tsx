@@ -1,3 +1,4 @@
+/* eslint-disable max-nested-callbacks */
 import {
   createColumnHelper,
   flexRender,
@@ -6,8 +7,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
-import isEmpty from 'lodash/isEmpty'
-import { useMemo, useState } from 'react'
+import { memo, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useRepoConfig } from 'services/repo/useRepoConfig'
@@ -25,67 +25,28 @@ import TableSparkline from './TableEntries/TableSparkline'
 import 'ui/Table/Table.css'
 
 interface FlagsTableHelper {
-  name: string
-  lowerRange: number
-  upperRange: number
-  coverage: number | null
-  percentChange: number
-  measurements: any[]
-  delete: false | JSX.Element | null | undefined
+  name: JSX.Element
+  coverage: JSX.Element
+  trend: JSX.Element
+  delete: JSX.Element | null
 }
 
 const columnHelper = createColumnHelper<FlagsTableHelper>()
 
 const columns = [
   columnHelper.accessor('name', {
-    id: 'name',
     header: () => 'Flags',
-    cell: ({ renderValue }) => (
-      <A
-        to={{
-          pageName: 'coverage',
-          options: { queryParams: { flags: [renderValue()] } },
-        }}
-        variant="black"
-        isExternal={false}
-        hook={'flag-to-coverage-page'}
-      >
-        {renderValue()}
-      </A>
-    ),
+    cell: ({ renderValue }) => renderValue(),
   }),
   columnHelper.accessor('coverage', {
-    id: 'coverage',
     header: () => 'Coverage %',
-    cell: ({ renderValue, row }) => (
-      <>
-        <CoverageProgress
-          amount={renderValue()}
-          color={determineProgressColor({
-            coverage: renderValue(),
-            lowerRange: row.original.lowerRange,
-            upperRange: row.original.upperRange,
-          })}
-        />
-        {typeof renderValue() !== 'number' && (
-          <span className="grow text-right font-semibold">-</span>
-        )}
-      </>
-    ),
+    cell: ({ renderValue }) => renderValue(),
   }),
-  columnHelper.accessor('percentChange', {
-    id: 'percentChange',
+  columnHelper.accessor('trend', {
     header: () => 'Trend',
-    cell: ({ row }) => (
-      <TableSparkline
-        measurements={row.original.measurements}
-        change={row.original.percentChange}
-        name={row.original.name}
-      />
-    ),
+    cell: ({ renderValue }) => renderValue(),
   }),
   columnHelper.accessor('delete', {
-    id: 'delete',
     header: () => '',
     cell: ({ renderValue }) => renderValue(),
   }),
@@ -97,52 +58,157 @@ function createTableData({
   setModalInfo,
   isAdmin,
 }: {
-  tableData: any[]
+  tableData: any[] | null // TODO: update type when we convert useRepoFlags to TS
   indicationRange?: { upperRange: number; lowerRange: number } | null
   setModalInfo: (data: any) => void
   isAdmin?: boolean | null
 }) {
-  return tableData?.length > 0
-    ? tableData?.map(
-        ({
-          name,
-          percentCovered,
-          percentChange,
-          measurements,
-        }: {
-          name: string
-          percentCovered: number | null
-          percentChange: number
-          measurements: any[]
-        }) => ({
-          name: name,
-          lowerRange: indicationRange?.lowerRange || 0,
-          upperRange: indicationRange?.upperRange || 100,
-          coverage: percentCovered,
-          measurements,
-          percentChange,
-          delete: isAdmin && (
-            <button
-              data-testid="delete-flag"
-              onClick={() => setModalInfo({ flagName: name, showModal: true })}
-              className="text-ds-gray-tertiary hover:text-ds-gray-senary"
-            >
-              <Icon size="md" name="trash" variant="outline" />
-            </button>
-          ),
-        })
-      )
-    : []
-}
+  if (tableData === null) {
+    return []
+  }
 
-const getEmptyStateText = ({ isSearching }: { isSearching: boolean }) =>
-  isSearching ? 'No results found' : 'There was a problem getting flags data'
+  const data = tableData.map(
+    ({
+      name,
+      percentCovered,
+      percentChange,
+      measurements,
+    }: {
+      name: string
+      percentCovered: number | null
+      percentChange: number
+      measurements: any[]
+    }) => ({
+      name: (
+        <A
+          to={{
+            pageName: 'coverage',
+            options: { queryParams: { flags: [name] } },
+          }}
+          variant="black"
+          isExternal={false}
+          hook={'flag-to-coverage-page'}
+        >
+          {name}
+        </A>
+      ),
+      coverage: (
+        <>
+          <CoverageProgress
+            amount={percentCovered}
+            color={determineProgressColor({
+              coverage: percentCovered,
+              lowerRange: indicationRange?.lowerRange || 0,
+              upperRange: indicationRange?.upperRange || 100,
+            })}
+          />
+          {typeof percentCovered !== 'number' && (
+            <span className="grow text-right font-semibold">-</span>
+          )}
+        </>
+      ),
+      trend: (
+        <TableSparkline
+          measurements={measurements}
+          change={percentChange}
+          name={name}
+        />
+      ),
+      delete: isAdmin ? (
+        <button
+          data-testid="delete-flag"
+          onClick={() => setModalInfo({ flagName: name, showModal: true })}
+          className="text-ds-gray-tertiary hover:text-ds-gray-senary"
+        >
+          <Icon size="md" name="trash" variant="outline" />
+        </button>
+      ) : null,
+    })
+  )
+  return data
+}
 
 const Loader = () => (
   <div className="mb-4 flex justify-center pt-4">
     <Spinner />
   </div>
 )
+
+const FlagTable = memo(function Table({
+  tableData,
+  isLoading,
+}: {
+  tableData: any[] // TODO: update type when we convert useRepoFlags to TS
+  isLoading: boolean
+}) {
+  const [sorting, setSorting] = useState([{ id: 'name', desc: true }])
+  const table = useReactTable({
+    columns,
+    data: tableData,
+    state: {
+      sorting,
+    },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  })
+
+  return (
+    <div className="tableui">
+      <table>
+        <colgroup>
+          <col className="@sm/table:w-4/12" />
+          <col className="@sm/table:w-3/12" />
+          <col className="@sm/table:w-3/12" />
+          <col className="@sm/table:w-1/12" />
+        </colgroup>
+        <thead data-testid="header-row">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <th
+                  key={header.id}
+                  className={cs({ 'text-right': header.id !== 'name' })}
+                  data-sortable={header.column.getCanSort()}
+                  {...{
+                    onClick: header.column.getToggleSortingHandler(),
+                  }}
+                >
+                  <div>
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+                  </div>
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+
+        <tbody data-testid="body-row">
+          {isLoading ? (
+            <tr>
+              <td colSpan={table.getAllColumns().length}>
+                <Loader />
+              </td>
+            </tr>
+          ) : (
+            table.getRowModel().rows.map((row) => (
+              <tr key={row.id} data-testid={`row-${row.id}`}>
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
+  )
+})
 
 type URLParams = {
   provider: string
@@ -164,30 +230,20 @@ function FlagsTable() {
     data,
     isAdmin,
     isLoading,
-    // handleSort,
     isSearching,
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
   } = useRepoFlagsTable()
 
-  const tableData = useMemo(
-    () =>
-      createTableData({
-        isAdmin,
-        tableData: data!,
-        indicationRange,
-        setModalInfo,
-      }),
-    [data, indicationRange, isAdmin]
-  )
-
-  const table = useReactTable({
-    columns,
-    data: tableData,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-  })
+  const tableData = useMemo(() => {
+    return createTableData({
+      isAdmin,
+      tableData: data,
+      indicationRange,
+      setModalInfo,
+    })
+  }, [data, isAdmin, indicationRange])
 
   return (
     <>
@@ -198,64 +254,15 @@ function FlagsTable() {
         }}
         isOpen={modalInfo?.showModal}
       />
-      <div className="tableui">
-        <table>
-          <colgroup>
-            <col className="w-full @sm/table:w-4/12" />
-            <col className="@sm/table:w-3/12" />
-            <col className="@sm/table:w-3/12" />
-            <col className="@sm/table:w-1/12" />
-          </colgroup>
-          <thead data-testid="header-row">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    className={cs({ 'text-right': header.id !== 'name' })}
-                    data-sortable={header.column.getCanSort()}
-                  >
-                    <div>
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody data-testid="body-row">
-            {isLoading ? (
-              <tr>
-                <td>
-                  <Loader />
-                </td>
-              </tr>
-            ) : (
-              table.getRowModel().rows.map((row) => (
-                <tr key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-      {isEmpty(tableData) && !isLoading && (
+      <FlagTable tableData={tableData} isLoading={isLoading} />
+      {!tableData?.length && !isLoading && (
         <p className="flex flex-1 justify-center">
-          {getEmptyStateText({ isSearching })}
+          {isSearching
+            ? 'No results found'
+            : 'There was a problem getting flags data'}
         </p>
       )}
-      {hasNextPage && (
+      {hasNextPage ? (
         <div className="mt-4 flex flex-1 justify-center">
           <Button
             disabled={false}
@@ -267,7 +274,7 @@ function FlagsTable() {
             Load More
           </Button>
         </div>
-      )}
+      ) : null}
     </>
   )
 }

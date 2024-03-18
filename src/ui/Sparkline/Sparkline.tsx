@@ -1,12 +1,7 @@
-import {
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from '@tanstack/react-table'
 import { extent } from 'd3-array'
 import { scaleLinear } from 'd3-scale'
 import isFinite from 'lodash/isFinite'
+import uniqueId from 'lodash/uniqueId'
 import { useMemo } from 'react'
 
 import './sparkline.css'
@@ -94,24 +89,6 @@ const Sparkline: React.FC<SparklineProps> = ({
     '--line-width': `${lineSize}px`,
   }
 
-  const columnHelper = createColumnHelper<SparklineData>()
-
-  const columns = [
-    columnHelper.accessor('value', {
-      id: 'value',
-      header: () => '',
-      cell: ({ renderValue }) => (
-        <span className="sr-only">{dataTemplate(renderValue())}</span>
-      ),
-    }),
-  ]
-
-  const table = useReactTable({
-    columns,
-    data,
-    getCoreRowModel: getCoreRowModel(),
-  })
-
   return (
     <table
       id="sparklineTable"
@@ -120,32 +97,31 @@ const Sparkline: React.FC<SparklineProps> = ({
     >
       <caption className="sr-only">{description}</caption>
       <tbody className="flex flex-1 flex-row">
-        {table.getRowModel().rows.map((row) => (
-          <tr
-            key={row.id}
-            className="relative flex flex-1 flex-row justify-start"
-          >
-            {row.getVisibleCells().map((cell) => (
+        {data.map(({ start, end, mode, value }) => {
+          // Inline styles are not performant but because this is memoized it should be ok.
+          const properties = {
+            '--start': start
+              ? yScale(start).toFixed(2)
+              : FALLBACK_LINE_POS.toString(),
+            '--size': end
+              ? yScale(end).toFixed(2)
+              : FALLBACK_LINE_POS.toString(),
+          }
+          return (
+            <tr
+              className="relative flex flex-1 flex-row justify-start"
+              key={uniqueId(dataTemplate + description)}
+            >
               <td
-                key={cell.id}
                 className="line absolute inset-0 flex flex-1 p-0 before:absolute before:inset-0 before:bg-ds-pink before:content-[''] after:absolute after:inset-0 after:bg-gradient-to-b after:from-ds-pink after:to-white after:content-['']"
-                style={
-                  {
-                    '--start': row.original.start
-                      ? yScale(row.original.start).toFixed(2)
-                      : FALLBACK_LINE_POS.toString(),
-                    '--size': row.original.end
-                      ? yScale(row.original.end).toFixed(2)
-                      : FALLBACK_LINE_POS.toString(),
-                  } as TableCustomCSSProperties
-                }
-                data-mode={row.original.mode}
+                style={properties as TableCustomCSSProperties}
+                data-mode={mode}
               >
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                <span className="sr-only">{dataTemplate(value)}</span>
               </td>
-            ))}
-          </tr>
-        ))}
+            </tr>
+          )
+        })}
       </tbody>
     </table>
   )

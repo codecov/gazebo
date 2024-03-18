@@ -43,7 +43,7 @@ const mockFlagMeasurements = {
         edges: [
           {
             node: {
-              name: 'flag1',
+              name: 'flagA',
               percentCovered: 93.26,
               percentChange: -1.56,
               measurements: [{ avg: 51.78 }, { avg: 93.356 }],
@@ -51,10 +51,18 @@ const mockFlagMeasurements = {
           },
           {
             node: {
-              name: 'flag2',
+              name: 'flagB',
               percentCovered: 91.74,
               percentChange: null,
               measurements: [{ avg: null }, { avg: null }],
+            },
+          },
+          {
+            node: {
+              name: 'testtest',
+              percentCovered: 1.0,
+              percentChange: 1.0,
+              measurements: [{ avg: 51.78 }, { avg: 93.356 }],
             },
           },
         ],
@@ -74,7 +82,7 @@ const mockNoReportsUploadedMeasurements = {
         edges: [
           {
             node: {
-              name: 'flag1',
+              name: 'flagA',
             },
           },
         ],
@@ -138,7 +146,7 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 
-describe('RepoContentsTable', () => {
+describe('FlagsTable', () => {
   function setup({
     noData = false,
     noReportsUploaded = false,
@@ -148,12 +156,9 @@ describe('RepoContentsTable', () => {
   }) {
     const user = userEvent.setup()
     const fetchNextPage = jest.fn()
-    const handleSort = jest.fn()
 
     server.use(
       graphql.query('FlagMeasurements', (req, res, ctx) => {
-        handleSort(req?.variables?.orderingDirection)
-
         if (req?.variables?.after) {
           fetchNextPage(req?.variables?.after)
         }
@@ -179,7 +184,7 @@ describe('RepoContentsTable', () => {
       )
     )
 
-    return { fetchNextPage, handleSort, user }
+    return { fetchNextPage, user }
   }
 
   describe('when rendered', () => {
@@ -213,18 +218,18 @@ describe('RepoContentsTable', () => {
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
       )
 
-      const flag1 = await screen.findByRole('link', { name: 'flag1' })
-      expect(flag1).toBeInTheDocument()
-      expect(flag1).toHaveAttribute(
+      const flagA = await screen.findByRole('link', { name: 'flagA' })
+      expect(flagA).toBeInTheDocument()
+      expect(flagA).toHaveAttribute(
         'href',
-        '/gh/codecov/gazebo?flags%5B0%5D=flag1'
+        '/gh/codecov/gazebo?flags%5B0%5D=flagA'
       )
 
-      const flag2 = await screen.findByRole('link', { name: 'flag2' })
-      expect(flag2).toBeInTheDocument()
-      expect(flag2).toHaveAttribute(
+      const flagB = await screen.findByRole('link', { name: 'flagB' })
+      expect(flagB).toBeInTheDocument()
+      expect(flagB).toHaveAttribute(
         'href',
-        '/gh/codecov/gazebo?flags%5B0%5D=flag2'
+        '/gh/codecov/gazebo?flags%5B0%5D=flagB'
       )
     })
 
@@ -251,13 +256,13 @@ describe('RepoContentsTable', () => {
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
       )
 
-      const flag1SparkLine = screen.getByText(/Flag flag1 trend sparkline/)
-      expect(flag1SparkLine).toBeInTheDocument()
+      const flagaSparkLine = screen.getByText(/Flag flagA trend sparkline/)
+      expect(flagaSparkLine).toBeInTheDocument()
 
       const minusOne = screen.getByText(/-1.56/)
       expect(minusOne).toBeInTheDocument()
 
-      const flag2SparkLine = screen.getByText(/Flag flag2 trend sparkline/)
+      const flag2SparkLine = screen.getByText(/Flag flagB trend sparkline/)
       expect(flag2SparkLine).toBeInTheDocument()
 
       const noData = screen.getByText('No Data')
@@ -276,14 +281,14 @@ describe('RepoContentsTable', () => {
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
       )
 
-      const flag1 = screen.getByRole('link', { name: 'flag1' })
-      expect(flag1).toBeInTheDocument()
-      expect(flag1).toHaveAttribute(
+      const flagA = screen.getByRole('link', { name: 'flagA' })
+      expect(flagA).toBeInTheDocument()
+      expect(flagA).toHaveAttribute(
         'href',
-        '/gh/codecov/gazebo?flags%5B0%5D=flag1'
+        '/gh/codecov/gazebo?flags%5B0%5D=flagA'
       )
 
-      user.click(flag1)
+      user.click(flagA)
       expect(testLocation.pathname).toBe('/gh/codecov/gazebo/flags')
     })
   })
@@ -301,7 +306,7 @@ describe('RepoContentsTable', () => {
       const trashIconButtons = screen.getAllByRole('button', {
         name: /trash/,
       })
-      expect(trashIconButtons).toHaveLength(2)
+      expect(trashIconButtons).toHaveLength(3)
 
       const [firstIcon] = trashIconButtons
       await act(async () => {
@@ -399,8 +404,8 @@ describe('RepoContentsTable', () => {
   })
 
   describe('when sorting', () => {
-    it('calls handleSort', async () => {
-      const { handleSort, user } = setup({})
+    it('updates state to reflect column sorted on', async () => {
+      const { user } = setup({})
       render(<FlagsTable />, { wrapper: wrapper() })
 
       await expect(screen.findByTestId('spinner')).resolves.toBeInTheDocument()
@@ -411,10 +416,17 @@ describe('RepoContentsTable', () => {
       const flags = screen.getByText('Flags')
 
       await user.click(flags)
-      await waitFor(() => expect(handleSort).toHaveBeenLastCalledWith('DESC'))
 
-      await user.click(flags)
-      await waitFor(() => expect(handleSort).toHaveBeenLastCalledWith('ASC'))
+      const flagA = screen.getByTestId('row-0')
+      const flagARole = screen.getByRole('link', { name: 'flagA' })
+      const flagB = screen.getByTestId('row-1')
+      const flagBRole = screen.getByRole('link', { name: 'flagB' })
+      const testFlag = screen.getByTestId('row-2')
+      const testFlagRole = screen.getByRole('link', { name: 'testtest' })
+
+      expect(flagA).toContainElement(flagARole)
+      expect(flagB).toContainElement(flagBRole)
+      expect(testFlag).toContainElement(testFlagRole)
     })
   })
 
