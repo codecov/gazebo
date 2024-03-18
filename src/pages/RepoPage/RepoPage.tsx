@@ -101,7 +101,7 @@ function Routes({
           <SentryRoute
             path={[
               `${path}/bundles/new`,
-              `${path}bundles/new/rollup`,
+              `${path}/bundles/new/rollup`,
               `${path}/bundles/new/webpack`,
             ]}
             exact
