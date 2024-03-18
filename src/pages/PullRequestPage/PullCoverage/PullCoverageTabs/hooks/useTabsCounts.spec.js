@@ -21,52 +21,6 @@ const wrapper =
       </QueryClientProvider>
     )
 
-const mockCommits = {
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      commits: {
-        totalCount: 11,
-        edges: [
-          {
-            node: {
-              ciPassed: true,
-              message: 'commit message 1',
-              commitid: 'id1',
-              createdAt: '2021-08-30T19:33:49.819672',
-              author: {
-                username: 'user-1',
-                avatarUrl: 'http://127.0.0.1/avatar-url',
-              },
-              totals: {
-                coverage: 100,
-              },
-              parent: {
-                totals: {
-                  coverage: 100,
-                },
-              },
-              compareWithParent: {
-                __typename: 'Comparison',
-                patchTotals: {
-                  percentCovered: 100,
-                },
-              },
-              bundleAnalysisReport: {
-                __typename: 'BundleAnalysisReport',
-              },
-            },
-          },
-        ],
-        pageInfo: {
-          hasNextPage: false,
-          endCursor: null,
-        },
-      },
-    },
-  },
-}
-
 const mockPullData = {
   owner: {
     isCurrentUserPartOfOrg: true,
@@ -76,6 +30,9 @@ const mockPullData = {
       bundleAnalysisEnabled: true,
       pull: {
         pullId: 1,
+        commits: {
+          totalCount: 11,
+        },
         head: {
           commitid: '123',
           bundleAnalysisReport: {
@@ -118,9 +75,6 @@ describe('useTabsCount', () => {
     server.use(
       graphql.query('PullPageData', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockPullData))
-      ),
-      graphql.query('GetCommits', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockCommits))
       )
     )
   }
