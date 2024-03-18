@@ -4,16 +4,18 @@ import {
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
+  OnChangeFn,
+  SortingState,
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
-import { memo, useMemo, useState } from 'react'
+import { memo, useEffect, useMemo, useState } from 'react'
+import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
 
 import { useRepoConfig } from 'services/repo/useRepoConfig'
 import { determineProgressColor } from 'shared/utils/determineProgressColor'
 import A from 'ui/A'
-import Button from 'ui/Button'
 import CoverageProgress from 'ui/CoverageProgress'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
@@ -137,11 +139,14 @@ const Loader = () => (
 const FlagTable = memo(function Table({
   tableData,
   isLoading,
+  sorting,
+  setSorting,
 }: {
   tableData: any[] // TODO: update type when we convert useRepoFlags to TS
   isLoading: boolean
+  sorting?: SortingState
+  setSorting?: OnChangeFn<SortingState> | undefined
 }) {
-  const [sorting, setSorting] = useState([{ id: 'name', desc: true }])
   const table = useReactTable({
     columns,
     data: tableData,
@@ -210,6 +215,22 @@ const FlagTable = memo(function Table({
   )
 })
 
+function LoadMoreTrigger({
+  intersectionRef,
+}: {
+  intersectionRef: React.Ref<HTMLSpanElement>
+}) {
+  return (
+    <span
+      ref={intersectionRef}
+      data-testId={'Loading'}
+      className="invisible relative top-[-65px] block leading-[0]"
+    >
+      Loading
+    </span>
+  )
+}
+
 type URLParams = {
   provider: string
   owner: string
@@ -223,6 +244,10 @@ function FlagsTable() {
     flagName: null,
     showModal: false,
   })
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: 'name', desc: true },
+  ])
+  const { ref, inView } = useInView()
 
   const indicationRange = repoConfigData?.indicationRange
 
@@ -234,7 +259,13 @@ function FlagsTable() {
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-  } = useRepoFlagsTable()
+  } = useRepoFlagsTable(sorting[0]?.desc)
+
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage()
+    }
+  }, [inView, hasNextPage, fetchNextPage])
 
   const tableData = useMemo(() => {
     return createTableData({
@@ -254,7 +285,12 @@ function FlagsTable() {
         }}
         isOpen={modalInfo?.showModal}
       />
-      <FlagTable tableData={tableData} isLoading={isLoading} />
+      <FlagTable
+        tableData={tableData}
+        isLoading={isLoading}
+        sorting={sorting}
+        setSorting={setSorting}
+      />
       {!tableData?.length && !isLoading && (
         <p className="flex flex-1 justify-center">
           {isSearching
@@ -262,19 +298,8 @@ function FlagsTable() {
             : 'There was a problem getting flags data'}
         </p>
       )}
-      {hasNextPage ? (
-        <div className="mt-4 flex flex-1 justify-center">
-          <Button
-            disabled={false}
-            to={undefined}
-            hook="load-more"
-            isLoading={isFetchingNextPage}
-            onClick={fetchNextPage}
-          >
-            Load More
-          </Button>
-        </div>
-      ) : null}
+      {isFetchingNextPage ? <Spinner /> : null}
+      {hasNextPage ? <LoadMoreTrigger intersectionRef={ref} /> : null}
     </>
   )
 }

@@ -1,6 +1,7 @@
-import { renderHook } from '@testing-library/react'
+import { renderHook, waitFor } from '@testing-library/react'
 import { format, subDays, subMonths } from 'date-fns'
 import { useParams } from 'react-router-dom'
+import { act } from 'react-test-renderer'
 
 import { useLocationParams } from 'services/navigation'
 import { useRepo } from 'services/repo'
@@ -91,6 +92,69 @@ describe('useRepoFlagsTable', () => {
       const { result } = renderHook(() => useRepoFlagsTable())
 
       expect(result.current.data).toEqual([])
+    })
+  })
+
+  describe('when handleSort is triggered', () => {
+    beforeEach(() => {
+      setup({ repoData: emptyRepoFlagsMock })
+    })
+
+    it('calls useRepoFlagsTable with desc value', async () => {
+      const { result } = renderHook(() => useRepoFlagsTable(true))
+
+      act(() => {
+        result.current.handleSort([{ desc: true }])
+      })
+
+      await waitFor(() =>
+        expect(useRepoFlags).toHaveBeenCalledWith({
+          afterDate: '2020-06-11',
+          beforeDate: format(new Date(), 'yyyy-MM-dd'),
+          filters: { term: '', flagsNames: [] },
+          interval: 'INTERVAL_30_DAY',
+          orderingDirection: 'DESC',
+          suspense: false,
+        })
+      )
+    })
+
+    it('calls useRepoFlagsTable with asc value when the array is empty', async () => {
+      const { result } = renderHook(() => useRepoFlagsTable())
+
+      act(() => {
+        result.current.handleSort([])
+      })
+
+      await waitFor(() =>
+        expect(useRepoFlags).toHaveBeenCalledWith({
+          afterDate: '2020-06-11',
+          beforeDate: format(new Date(), 'yyyy-MM-dd'),
+          filters: { term: '', flagsNames: [] },
+          interval: 'INTERVAL_30_DAY',
+          orderingDirection: 'ASC',
+          suspense: false,
+        })
+      )
+    })
+
+    it('calls useRepoFlagsTable with asc value', async () => {
+      const { result } = renderHook(() => useRepoFlagsTable(false))
+
+      act(() => {
+        result.current.handleSort([{ desc: false }])
+      })
+
+      await waitFor(() =>
+        expect(useRepoFlags).toHaveBeenCalledWith({
+          afterDate: '2020-06-11',
+          beforeDate: format(new Date(), 'yyyy-MM-dd'),
+          filters: { term: '', flagsNames: [] },
+          interval: 'INTERVAL_30_DAY',
+          orderingDirection: 'ASC',
+          suspense: false,
+        })
+      )
     })
   })
 
