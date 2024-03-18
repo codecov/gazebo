@@ -1,5 +1,5 @@
 import isUndefined from 'lodash/isUndefined'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useBranchComponents } from 'services/branches'
@@ -36,27 +36,28 @@ export default function ComponentsMultiSelect() {
     owner,
     repo,
     branch: currentBranchSelected?.name ?? '',
-    filters: {
-      components: componentSearch ? [componentSearch] : undefined,
-    },
   })
 
-  const components = data?.branch?.head?.components
-    ? data?.branch?.head?.components
-    : []
+  const components = useMemo(() => {
+    return data?.branch?.head?.components
+  }, [data])
+
+  const componentNames = useMemo(() => {
+    const names = new Set<string>()
+    // @ts-expect-errors, useLocation params needs to be updated to have full types
+    params?.components?.forEach((component: string) => names.add(component))
+    if (!isUndefined(components)) {
+      components?.forEach((component: { name: string }) =>
+        names.add(component?.name)
+      )
+    }
+    return Array.from(names).filter((name: string) =>
+      name.toLowerCase().includes(componentSearch.toLowerCase())
+    )
+  }, [params, componentSearch, components])
+
   if (!components?.length && !isLoading && !componentSearch) {
     return null
-  }
-
-  const componentsNames = new Set()
-  // @ts-expect-errors, useLocation params needs to be updated to have full types
-  params?.components?.forEach((component: String) =>
-    componentsNames.add(component)
-  )
-  if (!isUndefined(components)) {
-    components?.forEach((component: { name: String }) =>
-      componentsNames.add(component?.name)
-    )
   }
 
   return (
@@ -67,7 +68,7 @@ export default function ComponentsMultiSelect() {
         dataMarketing="coverage-tab-component-multi-select"
         hook="coverage-tab-component-multi-select"
         ariaName="Select components to show"
-        items={[...componentsNames]}
+        items={[...componentNames]}
         resourceName="component"
         isLoading={isLoading}
         selectedItemsOverride={selectedComponents}
