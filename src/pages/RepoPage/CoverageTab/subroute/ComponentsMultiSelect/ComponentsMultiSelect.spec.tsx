@@ -229,9 +229,6 @@ describe('ComponentsMultiSelect', () => {
 
       render(<ComponentsMultiSelect />, { wrapper })
 
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
-
       const select = await screen.findByText('All components')
       expect(select).toBeInTheDocument()
       await user.click(select)
