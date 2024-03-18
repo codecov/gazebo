@@ -83,6 +83,7 @@ describe('useRepo', () => {
         isAdmin: null,
         isCurrentUserActivated: null,
         repository: {
+          __typename: 'Repository',
           defaultBranch: 'master',
           private: true,
           uploadToken: 'token',
@@ -112,6 +113,7 @@ describe('useRepo', () => {
           isAdmin: null,
           isCurrentUserActivated: null,
           repository: {
+            __typename: 'Repository',
             defaultBranch: 'master',
             private: true,
             uploadToken: 'token',

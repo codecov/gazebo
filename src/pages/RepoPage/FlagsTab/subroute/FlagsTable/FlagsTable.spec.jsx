@@ -25,6 +25,7 @@ const mockGetRepo = {
     isAdmin: true,
     isCurrentUserActivated: null,
     repository: {
+      __typename: 'Repository',
       private: false,
       uploadToken: 'token',
       defaultBranch: 'main',
