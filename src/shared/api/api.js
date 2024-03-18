@@ -99,21 +99,16 @@ function graphql({
       ) {
         window.location.href = '/login'
       }
-
-      return Promise.reject({
-        status: data?.errors?.[0]?.extensions?.status,
-        data: data?.errors?.[0]?.message,
-      })
     }
 
-    if (!res.ok) {
-      return Promise.reject({
-        status: res.status,
-        data: data,
-      })
+    if (res.ok) {
+      return data
     }
 
-    return data
+    return Promise.reject({
+      status: res.status,
+      data: data,
+    })
   })
 }
 
