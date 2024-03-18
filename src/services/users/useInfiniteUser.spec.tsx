@@ -220,4 +220,34 @@ describe('useInfiniteUser', () => {
       )
     })
   })
+
+  describe('when the schema is invalid', () => {
+    beforeEach(() => {
+      server.use(
+        rest.get('/internal/gh/codecov/users', (req, res, ctx) => {
+          return res(ctx.status(200), ctx.json({ count: 2 }))
+        })
+      )
+    })
+
+    it('throws an error', async () => {
+      const { result } = renderHook(
+        () =>
+          useInfiniteUsers(
+            { provider: 'gh', owner: 'codecov', query: {} },
+            { retry: false }
+          ),
+        { wrapper }
+      )
+
+      await waitFor(() => expect(result.current.isError).toBeTruthy())
+      await waitFor(() =>
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            status: 404,
+          })
+        )
+      )
+    })
+  })
 })
