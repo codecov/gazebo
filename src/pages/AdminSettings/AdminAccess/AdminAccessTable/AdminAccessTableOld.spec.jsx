@@ -6,7 +6,7 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import AdminAccessTable from './AdminAccessTable'
+import AdminAccessTableOld from './AdminAccessTableOld'
 
 const mockFirstResponse = {
   count: 1,
@@ -109,7 +109,7 @@ describe('AdminAccessTable', () => {
     })
 
     it('displays the table heading', async () => {
-      render(<AdminAccessTable />, { wrapper: wrapper() })
+      render(<AdminAccessTableOld />, { wrapper: wrapper() })
 
       const admin = await screen.findByText('Admin')
       expect(admin).toBeInTheDocument()
@@ -122,7 +122,7 @@ describe('AdminAccessTable', () => {
     })
 
     it('displays the button', async () => {
-      render(<AdminAccessTable />, { wrapper: wrapper() })
+      render(<AdminAccessTableOld />, { wrapper: wrapper() })
 
       const button = await screen.findByText('Load More')
       expect(button).toBeInTheDocument()
@@ -135,7 +135,7 @@ describe('AdminAccessTable', () => {
     })
 
     it('displays an initial user set', async () => {
-      render(<AdminAccessTable />, { wrapper: wrapper() })
+      render(<AdminAccessTableOld />, { wrapper: wrapper() })
 
       const user = await screen.findByText('User 1')
       expect(user).toBeInTheDocument()
@@ -143,7 +143,7 @@ describe('AdminAccessTable', () => {
 
     it('displays extended list after button click', async () => {
       const user = userEvent.setup()
-      render(<AdminAccessTable />, { wrapper: wrapper() })
+      render(<AdminAccessTableOld />, { wrapper: wrapper() })
 
       const user1 = await screen.findByText('User 1')
       expect(user1).toBeInTheDocument()
@@ -168,7 +168,7 @@ describe('AdminAccessTable', () => {
     })
 
     it('displays an empty table', async () => {
-      render(<AdminAccessTable />, { wrapper: wrapper() })
+      render(<AdminAccessTableOld />, { wrapper: wrapper() })
 
       const table = await screen.findByTestId('body-row')
       expect(table).toBeEmptyDOMElement()

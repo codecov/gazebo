@@ -19,7 +19,7 @@ const createTable = ({ tableData }) =>
       }))
     : []
 
-function AdminAccessTable() {
+function AdminAccessTableOld() {
   const { data, isFetching, hasNextPage, fetchNextPage } = useAdminAccessList()
 
   const tableContent = createTable({
@@ -44,4 +44,4 @@ function AdminAccessTable() {
   )
 }
 
-export default AdminAccessTable
+export default AdminAccessTableOld

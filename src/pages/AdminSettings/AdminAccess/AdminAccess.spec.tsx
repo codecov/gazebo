@@ -2,7 +2,10 @@ import { render, screen } from '@testing-library/react'
 
 import AdminAccess from './AdminAccess'
 
-jest.mock('./AdminAccessTable', () => () => 'AdminAccessTable')
+jest.mock(
+  './AdminAccessTable/AdminAccessTableOld',
+  () => () => 'AdminAccessTableOld'
+)
 
 describe('AdminAccess', () => {
   function setup() {
@@ -69,7 +72,7 @@ describe('AdminAccess', () => {
     })
 
     it('renders component', () => {
-      const table = screen.getByText('AdminAccessTable')
+      const table = screen.getByText('AdminAccessTableOld')
       expect(table).toBeInTheDocument()
     })
   })
