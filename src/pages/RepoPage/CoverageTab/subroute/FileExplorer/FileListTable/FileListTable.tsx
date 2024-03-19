@@ -129,7 +129,7 @@ function FileListTable() {
     return <p className="m-4">No coverage data available.</p>
   }
   return (
-    <div className="z-10 flex flex-col gap-4">
+    <div className="flex flex-col gap-4">
       <div className="tableui">
         <table>
           <thead>
