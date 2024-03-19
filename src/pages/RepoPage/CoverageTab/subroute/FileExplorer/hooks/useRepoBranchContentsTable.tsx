@@ -1,4 +1,4 @@
-import qs from 'qs'
+import qs, { ParsedQs } from 'qs'
 import { useMemo } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
@@ -16,6 +16,16 @@ import { useTreePaths } from 'shared/treePaths'
 import { CommitErrorTypes } from 'shared/utils/commit'
 import { determineProgressColor } from 'shared/utils/determineProgressColor'
 import CoverageProgress from 'ui/CoverageProgress'
+
+function determineDisplayType(
+  displayType?: string | string[] | ParsedQs | ParsedQs[],
+  isSearching?: boolean
+) {
+  return displayType?.toString().toUpperCase() === displayTypeParameter.list ||
+    isSearching
+    ? displayTypeParameter.list
+    : displayTypeParameter.tree
+}
 
 const defaultQueryParams = {
   search: '',
@@ -44,7 +54,6 @@ export function useRepoBranchContentsTable(sortItem?: {
     branch: branchParam,
   } = useParams<URLParams>()
   const { params } = useLocationParams(defaultQueryParams)
-
   const { data: repoOverview } = useRepoOverview({
     provider,
     repo,
@@ -60,6 +69,13 @@ export function useRepoBranchContentsTable(sortItem?: {
   })
 
   const urlPath = pathParam || ''
+  // useLocationParams needs to be updated to have full types
+  // @ts-expect-error
+  const isSearching = !!params?.search
+  const selectedDisplayType = determineDisplayType(
+    queryParams?.displayType,
+    isSearching
+  )
 
   const filters = useMemo(() => {
     return {
@@ -67,6 +83,7 @@ export function useRepoBranchContentsTable(sortItem?: {
       ...(queryParams?.components
         ? { components: queryParams.components }
         : {}),
+      displayType: selectedDisplayType,
       ...(sortItem && {
         ordering: {
           direction: sortItem?.direction,
@@ -75,7 +92,13 @@ export function useRepoBranchContentsTable(sortItem?: {
       }),
       ...(queryParams?.search && { searchValue: queryParams.search }),
     }
-  }, [queryParams.flags, queryParams.components, sortItem, queryParams.search])
+  }, [
+    queryParams.flags,
+    queryParams.components,
+    sortItem,
+    queryParams.search,
+    selectedDisplayType,
+  ])
 
   const { data: branchData, isLoading } = useRepoBranchContents({
     provider,
@@ -113,7 +136,7 @@ export function useRepoBranchContentsTable(sortItem?: {
               urlPath={urlPath}
               branch={branch}
               path={result.path}
-              displayType={displayTypeParameter.tree}
+              displayType={selectedDisplayType}
               isCriticalFile={result.isCriticalFile}
             />
           )
@@ -122,7 +145,7 @@ export function useRepoBranchContentsTable(sortItem?: {
         const hits = result?.hits
         const partials = result?.partials
         const misses = result?.misses
-        const percentCovered = (
+        const coverage = (
           <CoverageProgress
             amount={result?.percentCovered}
             color={determineProgressColor({
@@ -138,20 +161,27 @@ export function useRepoBranchContentsTable(sortItem?: {
           hits,
           partials,
           misses,
-          percentCovered,
+          coverage,
         }
       })
 
       return adjustListIfUpDir({
         treePaths,
-        displayType: displayTypeParameter.tree, // change this
+        displayType: selectedDisplayType,
         rawTableRows,
       })
     }
 
     let rawData = createTableData(branchData?.results ?? [])
     return rawData
-  }, [branchData?.results, branch, indicationRange, treePaths, urlPath])
+  }, [
+    branchData?.results,
+    branch,
+    indicationRange,
+    treePaths,
+    urlPath,
+    selectedDisplayType,
+  ])
 
   return {
     data: finalizedTableRows ?? [],
@@ -167,9 +197,7 @@ export function useRepoBranchContentsTable(sortItem?: {
       : false,
     isLoading,
     branch,
-    // useLocationParams needs to be updated to have full types
-    // @ts-expect-error
-    isSearching: !!params?.search,
+    isSearching,
     isMissingHeadReport:
       branchData?.__typename === CommitErrorTypes.MISSING_HEAD_REPORT,
     pathContentsType: branchData?.pathContentsType,

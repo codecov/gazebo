@@ -92,8 +92,8 @@ export const getBaseColumns = () => {
   return baseColumns
 }
 
-function CodeTreeTable() {
-  const [sorting, setSorting] = useState([{ id: 'name', desc: false }])
+function FileListTable() {
+  const [sorting, setSorting] = useState([{ id: 'misses', desc: true }])
   const ordering = useMemo(() => getOrderingDirection(sorting), [sorting])
   const {
     data,
@@ -215,4 +215,4 @@ function CodeTreeTable() {
   )
 }
 
-export default CodeTreeTable
+export default FileListTable
