@@ -70,7 +70,7 @@ export function useTreePaths(passedPath) {
     }
 
     return [repoPath, ...paths]
-  }, [urlBranch, urlRef, urlPath, passedPath, repoOverview, params, repo]) // Add all external dependencies here
+  }, [urlBranch, urlRef, urlPath, passedPath, repoOverview, params, repo])
 
   return { treePaths }
 }

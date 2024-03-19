@@ -34,11 +34,6 @@ function BranchFileEntry({
     flags,
   })
 
-  // const queryParams = {
-  //   flags: filters?.flags,
-  //   components: filters?.components,
-  // }
-
   return (
     <FileEntry
       linkRef={branch}
