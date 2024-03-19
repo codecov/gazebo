@@ -5,19 +5,12 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
-
 import CommitPage from './CommitDetailPage'
 
 jest.mock('ui/TruncatedMessage/hooks')
 jest.mock('./Header', () => () => 'Header')
 jest.mock('./CommitCoverage', () => () => 'CommitCoverage')
 jest.mock('./CommitBundleAnalysis', () => () => 'CommitBundleAnalysis')
-
-jest.mock('shared/featureFlags')
-const mockedUseFlags = useFlags as jest.Mock<{
-  bundleAnalysisPrAndCommitPages: boolean
-}>
 
 const mockNotFoundCommit = {
   owner: {
@@ -146,10 +139,6 @@ describe('CommitDetailPage', () => {
       bundleAnalysisEnabled: false,
     }
   ) {
-    mockedUseFlags.mockReturnValue({
-      bundleAnalysisPrAndCommitPages: true,
-    })
-
     server.use(
       graphql.query('CommitPageData', (req, res, ctx) => {
         if (notFoundCommit) {

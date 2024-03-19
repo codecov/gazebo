@@ -2,7 +2,6 @@ import { useParams } from 'react-router-dom'
 
 import { useRepo, useRepoOverview } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 import Badge from 'ui/Badge'
 import TabNavigation from 'ui/TabNavigation'
 
@@ -42,10 +41,6 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
     },
   })
 
-  const { bundleAnalysisPrAndCommitPages } = useFlags({
-    bundleAnalysisPrAndCommitPages: false,
-  })
-
   const matchTree = useMatchTreePath()
   const matchBlobs = useMatchBlobsPath()
   const matchCoverageOnboarding = useMatchCoverageOnboardingPath()
@@ -70,9 +65,8 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
 
   const jsOrTsPresent = repoOverview?.jsOrTsPresent
   if (
-    ((jsOrTsPresent && isCurrentUserPartOfOrg) ||
-      repoOverview?.bundleAnalysisEnabled) &&
-    bundleAnalysisPrAndCommitPages
+    (jsOrTsPresent && isCurrentUserPartOfOrg) ||
+    repoOverview?.bundleAnalysisEnabled
   ) {
     tabs.push({
       pageName: 'bundles',

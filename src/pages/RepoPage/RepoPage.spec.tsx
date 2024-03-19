@@ -8,7 +8,6 @@ import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
 import { TierNames } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 
 import { RepoBreadcrumbProvider } from './context'
 import RepoPage from './RepoPage'
@@ -21,11 +20,6 @@ jest.mock('./PullsTab', () => () => 'PullsTab')
 jest.mock('./FlagsTab', () => () => 'FlagsTab')
 jest.mock('./SettingsTab', () => () => 'SettingsTab')
 jest.mock('shared/featureFlags')
-
-jest.mock('shared/featureFlags')
-const mockedUseFlags = useFlags as jest.Mock<{
-  bundleAnalysisPrAndCommitPages: boolean
-}>
 
 const mockGetRepo = ({
   noUploadToken = false,
@@ -176,10 +170,6 @@ describe('RepoPage', () => {
       bundleAnalysisEnabled: true,
     }
   ) {
-    mockedUseFlags.mockReturnValue({
-      bundleAnalysisPrAndCommitPages: true,
-    })
-
     const user = userEvent.setup()
     const queryClient = new QueryClient({
       defaultOptions: {

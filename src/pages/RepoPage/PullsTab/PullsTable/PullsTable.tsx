@@ -14,7 +14,6 @@ import { useLocationParams } from 'services/navigation'
 import { usePulls } from 'services/pulls'
 import 'ui/Table/Table.css'
 import { useRepoOverview } from 'services/repo'
-import { useFlags } from 'shared/featureFlags'
 import Spinner from 'ui/Spinner'
 
 import { createPullsTableData } from './createPullsTableData'
@@ -94,9 +93,6 @@ export default function PullsTableTeam() {
   // we really need to TS'ify and generic'ify useLocationParams
   const { params } = useLocationParams(defaultParams)
   const { data: overview } = useRepoOverview({ provider, owner, repo })
-  const { bundleAnalysisPrAndCommitPages } = useFlags({
-    bundleAnalysisPrAndCommitPages: false,
-  })
 
   const {
     data: pullsData,
@@ -135,8 +131,7 @@ export default function PullsTableTeam() {
   const columns = useMemo(() => {
     if (
       overview?.bundleAnalysisEnabled &&
-      !baseColumns.some((column) => column.id === 'bundleAnalysis') &&
-      bundleAnalysisPrAndCommitPages
+      !baseColumns.some((column) => column.id === 'bundleAnalysis')
     ) {
       return [
         ...baseColumns,
@@ -149,7 +144,7 @@ export default function PullsTableTeam() {
     }
 
     return baseColumns
-  }, [bundleAnalysisPrAndCommitPages, overview?.bundleAnalysisEnabled])
+  }, [overview?.bundleAnalysisEnabled])
 
   const table = useReactTable({
     columns,
