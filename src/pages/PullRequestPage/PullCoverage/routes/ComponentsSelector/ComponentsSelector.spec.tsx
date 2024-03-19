@@ -127,7 +127,7 @@ describe('ComponentsSelector', () => {
       expect(searchBoxUpdated).toHaveAttribute('value', 'component-2')
     })
 
-    it('calls the api with search term', async () => {
+    it('shows components matching the search regex', async () => {
       const { user } = setup()
 
       render(<ComponentsSelector />, { wrapper })
@@ -148,7 +148,7 @@ describe('ComponentsSelector', () => {
       expect(component3).toBeInTheDocument()
 
       const searchBox = screen.getByPlaceholderText('Search for components')
-      await user.type(searchBox, '2')
+      await user.type(searchBox, 'c.*-2')
 
       await waitForElementToBeRemoved(component1)
 
@@ -158,6 +158,31 @@ describe('ComponentsSelector', () => {
       expect(component2).toBeInTheDocument()
       component3 = screen.queryByText('component-3')
       expect(component3).not.toBeInTheDocument()
+    })
+
+    it('falls back to substring search when bad regex is provided', async () => {
+      const { user } = setup()
+
+      render(<ComponentsSelector />, { wrapper })
+
+      const select = await screen.findByText('All components')
+      expect(select).toBeInTheDocument()
+      await user.click(select)
+
+      const component1 = await screen.findByText('component-1')
+      expect(component1).toBeInTheDocument()
+      const component2 = await screen.findByText('component-2')
+      expect(component2).toBeInTheDocument()
+      const component3 = await screen.findByText('component-3')
+      expect(component3).toBeInTheDocument()
+
+      const searchBox = screen.getByPlaceholderText('Search for components')
+      await user.type(searchBox, '(')
+
+      await waitForElementToBeRemoved(component1)
+
+      const noResults = await screen.findByText('No results found')
+      expect(noResults).toBeInTheDocument()
     })
   })
 

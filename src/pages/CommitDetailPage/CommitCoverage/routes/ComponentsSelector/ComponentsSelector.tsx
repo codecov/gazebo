@@ -37,9 +37,14 @@ function ComponentsSelector() {
         names.add(component?.name)
       )
     }
-    return Array.from(names).filter((name: string) =>
-      name.toLowerCase().includes(componentSearch.toLowerCase())
-    )
+    try {
+      const regex = new RegExp(componentSearch, 'i')
+      return Array.from(names).filter((name: string) => regex.test(name))
+    } catch (e) {
+      return Array.from(names).filter((name: string) =>
+        name.toLowerCase().includes(componentSearch.toLowerCase())
+      )
+    }
   }, [params, componentSearch, components])
 
   if (!components?.length && !isLoading && !componentSearch) {
