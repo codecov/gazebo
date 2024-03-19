@@ -95,7 +95,7 @@ function createTableData({
         </A>
       ),
       coverage: (
-        <>
+        <div className="flex flex-row">
           <CoverageProgress
             amount={percentCovered}
             color={determineProgressColor({
@@ -107,7 +107,7 @@ function createTableData({
           {typeof percentCovered !== 'number' && (
             <span className="grow text-right font-semibold">-</span>
           )}
-        </>
+        </div>
       ),
       trend: (
         <TableSparkline
@@ -116,14 +116,16 @@ function createTableData({
           name={name}
         />
       ),
-      delete: isAdmin ? (
-        <button
-          data-testid="delete-flag"
-          onClick={() => setModalInfo({ flagName: name, showModal: true })}
-          className="text-ds-gray-tertiary hover:text-ds-gray-senary"
-        >
-          <Icon size="md" name="trash" variant="outline" />
-        </button>
+      delete: true ? (
+        <div className="flex items-center justify-center">
+          <button
+            data-testid="delete-flag"
+            onClick={() => setModalInfo({ flagName: name, showModal: true })}
+            className="text-ds-gray-tertiary hover:text-ds-gray-senary"
+          >
+            <Icon size="md" name="trash" variant="outline" />
+          </button>
+        </div>
       ) : null,
     })
   )
@@ -163,8 +165,8 @@ const FlagTable = memo(function Table({
       <table>
         <colgroup>
           <col className="@sm/table:w-4/12" />
-          <col className="@sm/table:w-3/12" />
-          <col className="@sm/table:w-3/12" />
+          <col className="@sm/table:w-4/12" />
+          <col className="@sm/table:w-4/12" />
           <col className="@sm/table:w-1/12" />
         </colgroup>
         <thead data-testid="header-row">
@@ -173,17 +175,28 @@ const FlagTable = memo(function Table({
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className={cs({ 'text-right': header.id !== 'name' })}
+                  className={cs({
+                    'text-right': header.id !== 'name',
+                  })}
                   data-sortable={header.column.getCanSort()}
                   {...{
-                    onClick: header.column.getToggleSortingHandler(),
+                    onClick:
+                      header.column.id === 'name'
+                        ? header.column.getToggleSortingHandler()
+                        : undefined,
                   }}
                 >
-                  <div>
+                  <div className="flex flex-row">
                     {flexRender(
                       header.column.columnDef.header,
                       header.getContext()
                     )}
+                    <span
+                      className="text-ds-blue-darker group-hover/columnheader:opacity-100"
+                      data-sort-direction={header.column.getIsSorted()}
+                    >
+                      <Icon name="arrowUp" size="sm" />
+                    </span>
                   </div>
                 </th>
               ))}
@@ -298,7 +311,7 @@ function FlagsTable() {
             : 'There was a problem getting flags data'}
         </p>
       )}
-      {isFetchingNextPage ? <Spinner /> : null}
+      {isFetchingNextPage ? <Loader /> : null}
       {hasNextPage ? <LoadMoreTrigger intersectionRef={ref} /> : null}
     </>
   )
