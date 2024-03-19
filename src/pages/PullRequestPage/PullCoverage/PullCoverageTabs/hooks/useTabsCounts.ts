@@ -31,7 +31,6 @@ export const useTabsCounts = () => {
   const compareWithBase = pullPageData?.pull?.compareWithBase
 
   if (compareWithBase?.__typename !== 'Comparison') {
-    console.log('not comparison')
     return {
       flagsCount: 0,
       componentsCount: 0,
