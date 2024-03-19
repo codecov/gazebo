@@ -3,9 +3,7 @@ import { lazy, Suspense } from 'react'
 import A from 'ui/A'
 import Spinner from 'ui/Spinner'
 
-const AdminAccessTableOld = lazy(
-  () => import('./AdminAccessTable/AdminAccessTableOld')
-)
+const AdminAccessTable = lazy(() => import('./AdminAccessTable'))
 
 const Loader = () => (
   <div className="flex justify-center py-8">
@@ -43,7 +41,7 @@ function AdminAccess() {
         </A>
       </p>
       <Suspense fallback={<Loader />}>
-        <AdminAccessTableOld />
+        <AdminAccessTable />
       </Suspense>
     </>
   )
