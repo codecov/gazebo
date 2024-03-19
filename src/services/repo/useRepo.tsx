@@ -105,7 +105,7 @@ export function useRepo({ provider, owner, repo, opts = {} }: UseRepoArgs) {
             status: 404,
             data: {},
             dev: 'useRepo - 404 NotFoundError',
-          })
+          } satisfies NetworkErrorObject)
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
@@ -122,7 +122,7 @@ export function useRepo({ provider, owner, repo, opts = {} }: UseRepoArgs) {
               ),
             },
             dev: 'useRepo - 403 OwnerNotActivatedError',
-          })
+          } satisfies NetworkErrorObject)
         }
 
         return (
