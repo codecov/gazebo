@@ -199,7 +199,7 @@ export function useRepoBranchContentsTable(sortItem?: {
     branch,
     isSearching,
     isMissingHeadReport:
-      branchData?.__typename === CommitErrorTypes.MISSING_HEAD_REPORT,
+      branchData?.pathContentsType === CommitErrorTypes.MISSING_HEAD_REPORT,
     pathContentsType: branchData?.pathContentsType,
     urlPath,
   }

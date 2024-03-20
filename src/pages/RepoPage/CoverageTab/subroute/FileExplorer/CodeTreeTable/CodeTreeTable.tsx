@@ -23,7 +23,6 @@ function getOrderingDirection(sorting: Array<{ id: string; desc: boolean }>) {
     const direction = state?.desc
       ? OrderingDirection.DESC
       : OrderingDirection.ASC
-
     let ordering = undefined
     if (state.id === 'name') {
       ordering = 'NAME'
@@ -64,7 +63,7 @@ export const getBaseColumns = () => {
     }),
     columnHelper.accessor('lines', {
       id: 'lines',
-      header: () => 'Lines',
+      header: () => 'Tracked lines',
       cell: ({ renderValue }) => renderValue(),
     }),
     columnHelper.accessor('hits', {
@@ -73,7 +72,7 @@ export const getBaseColumns = () => {
       cell: ({ renderValue }) => renderValue(),
     }),
     columnHelper.accessor('partials', {
-      id: 'change',
+      id: 'partials',
       header: () => 'Partial',
       cell: ({ renderValue }) => renderValue(),
     }),

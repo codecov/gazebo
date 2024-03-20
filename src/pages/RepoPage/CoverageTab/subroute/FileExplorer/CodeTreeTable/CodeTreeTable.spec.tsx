@@ -60,7 +60,7 @@ const mockUnknownPath = {
 }
 
 const mockTreeData = {
-  username: 'nicholas-codecov',
+  username: 'codecov-tree',
   repository: {
     branch: {
       head: {
@@ -76,6 +76,21 @@ const mockTreeData = {
               path: 'src',
               percentCovered: 100.0,
             },
+          ],
+          __typename: 'PathContents',
+        },
+      },
+    },
+  },
+}
+
+const mockTreeDataNested = {
+  username: 'codecov-tree',
+  repository: {
+    branch: {
+      head: {
+        pathContents: {
+          results: [
             {
               __typename: 'PathContentFile',
               hits: 9,
@@ -85,6 +100,7 @@ const mockTreeData = {
               name: 'file.js',
               path: 'a/b/c/file.js',
               percentCovered: 100.0,
+              isCriticalFile: false,
             },
           ],
           __typename: 'PathContents',
@@ -100,9 +116,8 @@ const mockNoHeadReport = {
     branch: {
       head: {
         pathContents: {
-          results: [],
+          __typename: 'MissingHeadReport',
         },
-        __typename: 'MissingHeadReport',
       },
     },
   },
@@ -123,12 +138,14 @@ const mockOverview = {
 }
 
 const wrapper =
-  (initialEntries = '/gh/codecov/cool-repo/tree/main/a/b/c') =>
+  (
+    initialEntries = '/gh/codecov/cool-repo/tree/main/'
+  ): React.FC<React.PropsWithChildren> =>
   ({ children }) => {
     return (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/:provider/:owner/:repo/tree/:branch/:path+">
+          <Route path="/:provider/:owner/:repo/tree/:branch/:path*">
             {children}
           </Route>
         </MemoryRouter>
@@ -150,21 +167,14 @@ afterAll(() => {
 })
 
 describe('CodeTreeTable', () => {
-  function setup(
-    {
-      noFiles = false,
-      noHeadReport = false,
-      noFlagCoverage = false,
-      missingCoverage = false,
-      unknownPath = false,
-    } = {
-      noFiles: false,
-      noHeadReport: false,
-      noFlagCoverage: false,
-      missingCoverage: false,
-      unknownPath: false,
-    }
-  ) {
+  function setup({
+    noFiles = false,
+    noHeadReport = false,
+    noFlagCoverage = false,
+    missingCoverage = false,
+    unknownPath = false,
+    isNestedTreeData = false,
+  }) {
     const user = userEvent.setup()
     const requestFilters = jest.fn()
 
@@ -194,6 +204,10 @@ describe('CodeTreeTable', () => {
           return res(ctx.status(200), ctx.data({ owner: mockNoFiles }))
         }
 
+        if (isNestedTreeData) {
+          return res(ctx.status(200), ctx.data({ owner: mockTreeDataNested }))
+        }
+
         return res(ctx.status(200), ctx.data({ owner: mockTreeData }))
       }),
       graphql.query('GetRepoOverview', (req, res, ctx) => {
@@ -207,7 +221,7 @@ describe('CodeTreeTable', () => {
   describe('rendering table', () => {
     describe('displaying the table head', () => {
       it('has a files column', async () => {
-        setup()
+        setup({})
         render(<CodeTreeTable />, { wrapper: wrapper() })
 
         const files = await screen.findByText('Files')
@@ -215,7 +229,7 @@ describe('CodeTreeTable', () => {
       })
 
       it('has a tracked lines column', async () => {
-        setup()
+        setup({})
         render(<CodeTreeTable />, { wrapper: wrapper() })
 
         const trackedLines = await screen.findByText('Tracked lines')
@@ -223,7 +237,7 @@ describe('CodeTreeTable', () => {
       })
 
       it('has a covered column', async () => {
-        setup()
+        setup({})
         render(<CodeTreeTable />, { wrapper: wrapper() })
 
         const covered = await screen.findByText('Covered')
@@ -231,7 +245,7 @@ describe('CodeTreeTable', () => {
       })
 
       it('has a partial column', async () => {
-        setup()
+        setup({})
         render(<CodeTreeTable />, { wrapper: wrapper() })
 
         const partial = await screen.findByText('Partial')
@@ -239,7 +253,7 @@ describe('CodeTreeTable', () => {
       })
 
       it('has a missed column', async () => {
-        setup()
+        setup({})
         render(<CodeTreeTable />, { wrapper: wrapper() })
 
         const missed = await screen.findByText('Missed')
@@ -247,7 +261,7 @@ describe('CodeTreeTable', () => {
       })
 
       it('has a coverage column', async () => {
-        setup()
+        setup({})
         render(<CodeTreeTable />, { wrapper: wrapper() })
 
         const coverage = await screen.findByText('Coverage %')
@@ -258,7 +272,8 @@ describe('CodeTreeTable', () => {
     describe('table is displaying file tree', () => {
       describe('default sort is set', () => {
         it('sets default sort to name asc', async () => {
-          const { requestFilters } = setup()
+          const { requestFilters } = setup({})
+
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
           await waitFor(() =>
@@ -278,7 +293,7 @@ describe('CodeTreeTable', () => {
 
       describe('displaying a directory', () => {
         it('has the correct url', async () => {
-          setup()
+          setup({})
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
           expect(await screen.findByText('src')).toBeTruthy()
@@ -287,18 +302,19 @@ describe('CodeTreeTable', () => {
 
           const table = await screen.findByRole('table')
           const links = await within(table).findAllByRole('link')
-
-          expect(links[1]).toHaveAttribute(
+          expect(links[0]).toHaveAttribute(
             'href',
-            '/gh/codecov/cool-repo/tree/main/a%2Fb%2Fc%2Fsrc'
+            '/gh/codecov/cool-repo/tree/main/src'
           )
         })
       })
 
       describe('displaying a file', () => {
         it('has the correct url', async () => {
-          setup()
-          render(<CodeTreeTable />, { wrapper: wrapper() })
+          setup({ isNestedTreeData: true })
+          render(<CodeTreeTable />, {
+            wrapper: wrapper('/gh/codecov/cool-repo/tree/main/a/b/c/'),
+          })
 
           expect(await screen.findByText('file.js')).toBeTruthy()
           const file = screen.getByText('file.js')
@@ -306,8 +322,7 @@ describe('CodeTreeTable', () => {
 
           const table = await screen.findByRole('table')
           const links = await within(table).findAllByRole('link')
-
-          expect(links[2]).toHaveAttribute(
+          expect(links[1]).toHaveAttribute(
             'href',
             '/gh/codecov/cool-repo/blob/main/a%2Fb%2Fc%2Ffile.js'
           )
@@ -376,7 +391,7 @@ describe('CodeTreeTable', () => {
         setup({ noFlagCoverage: true })
         render(<CodeTreeTable />, {
           wrapper: wrapper(
-            `/gh/codecov/cool-repo/tree/main/a/b/c${qs.stringify(
+            `/gh/codecov/cool-repo/tree/main/${qs.stringify(
               { flags: ['flag-1'] },
               { addQueryPrefix: true }
             )}`
@@ -395,7 +410,7 @@ describe('CodeTreeTable', () => {
     describe('sorting on head column', () => {
       describe('sorting in asc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
+          const { requestFilters, user } = setup({})
 
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
@@ -415,7 +430,7 @@ describe('CodeTreeTable', () => {
 
       describe('sorting in desc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
+          const { requestFilters, user } = setup({})
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
           expect(await screen.findByText('Files')).toBeTruthy()
@@ -438,9 +453,9 @@ describe('CodeTreeTable', () => {
     })
 
     describe('sorting on tracked lines column', () => {
-      describe('sorting in asc order', () => {
+      describe('sorting in desc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
+          const { requestFilters, user } = setup({})
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
           expect(await screen.findByText('Tracked lines')).toBeTruthy()
@@ -450,16 +465,16 @@ describe('CodeTreeTable', () => {
           await waitFor(() =>
             expect(requestFilters).toHaveBeenCalledWith(
               expect.objectContaining({
-                ordering: { direction: 'ASC', parameter: 'LINES' },
+                ordering: { direction: 'DESC', parameter: 'LINES' },
               })
             )
           )
         })
       })
 
-      describe('sorting in desc order', () => {
+      describe('sorting in asc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
+          const { requestFilters, user } = setup({})
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
           expect(await screen.findByText('Tracked lines')).toBeTruthy()
@@ -473,7 +488,7 @@ describe('CodeTreeTable', () => {
           await waitFor(() => {
             expect(requestFilters).toHaveBeenCalledWith(
               expect.objectContaining({
-                ordering: { direction: 'DESC', parameter: 'LINES' },
+                ordering: { direction: 'ASC', parameter: 'LINES' },
               })
             )
           })
@@ -482,9 +497,9 @@ describe('CodeTreeTable', () => {
     })
 
     describe('sorting on the covered column', () => {
-      describe('sorting in asc order', () => {
+      describe('sorting in desc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
+          const { requestFilters, user } = setup({})
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
           expect(await screen.findByText('Covered')).toBeTruthy()
@@ -494,16 +509,16 @@ describe('CodeTreeTable', () => {
           await waitFor(() =>
             expect(requestFilters).toHaveBeenCalledWith(
               expect.objectContaining({
-                ordering: { direction: 'ASC', parameter: 'HITS' },
+                ordering: { direction: 'DESC', parameter: 'HITS' },
               })
             )
           )
         })
       })
 
-      describe('sorting in desc order', () => {
+      describe('sorting in asc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
+          const { requestFilters, user } = setup({})
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
           expect(await screen.findByText('Covered')).toBeTruthy()
@@ -517,7 +532,7 @@ describe('CodeTreeTable', () => {
           await waitFor(() => {
             expect(requestFilters).toHaveBeenCalledWith(
               expect.objectContaining({
-                ordering: { direction: 'DESC', parameter: 'HITS' },
+                ordering: { direction: 'ASC', parameter: 'HITS' },
               })
             )
           })
@@ -526,9 +541,9 @@ describe('CodeTreeTable', () => {
     })
 
     describe('sorting on the partial column', () => {
-      describe('sorting in asc order', () => {
+      describe('sorting in desc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
+          const { requestFilters, user } = setup({})
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
           expect(await screen.findByText('Partial')).toBeTruthy()
@@ -538,16 +553,16 @@ describe('CodeTreeTable', () => {
           await waitFor(() =>
             expect(requestFilters).toHaveBeenCalledWith(
               expect.objectContaining({
-                ordering: { direction: 'ASC', parameter: 'PARTIALS' },
+                ordering: { direction: 'DESC', parameter: 'PARTIALS' },
               })
             )
           )
         })
       })
 
-      describe('sorting in desc order', () => {
+      describe('sorting in ASC order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
+          const { requestFilters, user } = setup({})
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
           expect(await screen.findByText('Partial')).toBeTruthy()
@@ -561,7 +576,7 @@ describe('CodeTreeTable', () => {
           await waitFor(() => {
             expect(requestFilters).toHaveBeenCalledWith(
               expect.objectContaining({
-                ordering: { direction: 'DESC', parameter: 'PARTIALS' },
+                ordering: { direction: 'ASC', parameter: 'PARTIALS' },
               })
             )
           })
@@ -570,9 +585,9 @@ describe('CodeTreeTable', () => {
     })
 
     describe('sorting on the coverage line', () => {
-      describe('sorting in asc order', () => {
+      describe('sorting in desc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
+          const { requestFilters, user } = setup({})
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
           expect(await screen.findByText('Missed')).toBeTruthy()
@@ -581,15 +596,15 @@ describe('CodeTreeTable', () => {
 
           expect(requestFilters).toHaveBeenCalledWith(
             expect.objectContaining({
-              ordering: { direction: 'ASC', parameter: 'MISSES' },
+              ordering: { direction: 'DESC', parameter: 'MISSES' },
             })
           )
         })
       })
 
-      describe('sorting in desc order', () => {
+      describe('sorting in asc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
+          const { requestFilters, user } = setup({})
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
           expect(await screen.findByText('Missed')).toBeTruthy()
@@ -603,7 +618,7 @@ describe('CodeTreeTable', () => {
           await waitFor(() => {
             expect(requestFilters).toHaveBeenCalledWith(
               expect.objectContaining({
-                ordering: { direction: 'DESC', parameter: 'MISSES' },
+                ordering: { direction: 'ASC', parameter: 'MISSES' },
               })
             )
           })
