@@ -534,7 +534,7 @@ describe('FileListTable', () => {
       })
     })
 
-    describe('sorting on the coverage line', () => {
+    describe('sorting on the misses line', () => {
       describe('sorting in desc order', () => {
         it('sets the correct api variables', async () => {
           const { requestFilters, user } = setup({})
@@ -542,14 +542,48 @@ describe('FileListTable', () => {
 
           let missed = await screen.findByText('Missed')
           await user.click(missed)
-
-          missed = await screen.findByText('Missed')
           await user.click(missed)
 
           await waitFor(() => {
             expect(requestFilters).toHaveBeenCalledWith(
               expect.objectContaining({
                 ordering: { direction: 'DESC', parameter: 'MISSES' },
+              })
+            )
+          })
+        })
+      })
+    })
+
+    describe('sorting on the coverage line', () => {
+      describe('sorting in desc order', () => {
+        it('sets the correct api variables', async () => {
+          const { requestFilters, user } = setup({})
+          render(<FileListTable />, { wrapper: wrapper() })
+
+          expect(await screen.findByText('Coverage %')).toBeTruthy()
+          const coverage = screen.getByText('Coverage %')
+          await user.click(coverage)
+          await user.click(coverage)
+          expect(requestFilters).toHaveBeenCalledWith(
+            expect.objectContaining({
+              ordering: { direction: 'DESC', parameter: 'COVERAGE' },
+            })
+          )
+        })
+      })
+
+      describe('sorting in asc order', () => {
+        it('sets the correct api variables', async () => {
+          const { requestFilters, user } = setup({})
+          render(<FileListTable />, { wrapper: wrapper() })
+          expect(await screen.findByText('Coverage %')).toBeTruthy()
+          let coverage = screen.getByText('Coverage %')
+          await user.click(coverage)
+          await waitFor(() => {
+            expect(requestFilters).toHaveBeenCalledWith(
+              expect.objectContaining({
+                ordering: { direction: 'ASC', parameter: 'COVERAGE' },
               })
             )
           })

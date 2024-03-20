@@ -28,7 +28,7 @@ function getOrderingDirection(sorting: Array<{ id: string; desc: boolean }>) {
       ordering = 'NAME'
     }
 
-    if (state.id === 'coverage') {
+    if (state.id === 'percentCovered') {
       ordering = 'COVERAGE'
     }
 
