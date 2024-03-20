@@ -74,11 +74,11 @@ const BranchContentsSchema = z.object({
   owner: z
     .object({
       repository: z.object({
-        repoConfig: RepoConfig,
+        repositoryConfig: RepoConfig,
         branch: z.object({
           head: z
             .object({
-              pathContents: PathContentsUnionSchema,
+              pathContents: PathContentsUnionSchema.nullish(),
             })
             .nullable(),
         }),
@@ -111,6 +111,7 @@ function fetchRepoContents({
     const parsedData = BranchContentsSchema.safeParse(res?.data)
 
     if (!parsedData.success) {
+      console.log('FAIL', parsedData.error)
       return null
     }
 
@@ -122,11 +123,12 @@ function fetchRepoContents({
       results =
         parsedData?.data?.owner?.repository?.branch?.head?.pathContents?.results
     }
+
     return {
       results: results ?? null,
       pathContentsType,
       indicationRange:
-        parsedData?.data?.owner?.repository?.repoConfig?.indicationRange,
+        parsedData?.data?.owner?.repository?.repositoryConfig?.indicationRange,
       __typename: res?.data?.owner?.repository?.branch?.head?.__typename,
     }
   })

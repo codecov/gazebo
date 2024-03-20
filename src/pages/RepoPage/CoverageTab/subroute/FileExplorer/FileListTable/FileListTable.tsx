@@ -64,7 +64,7 @@ export const getBaseColumns = () => {
     }),
     columnHelper.accessor('lines', {
       id: 'lines',
-      header: () => 'Lines',
+      header: () => 'Tracked lines',
       cell: ({ renderValue }) => renderValue(),
     }),
     columnHelper.accessor('hits', {
@@ -73,7 +73,7 @@ export const getBaseColumns = () => {
       cell: ({ renderValue }) => renderValue(),
     }),
     columnHelper.accessor('partials', {
-      id: 'change',
+      id: 'partials',
       header: () => 'Partial',
       cell: ({ renderValue }) => renderValue(),
     }),
@@ -104,7 +104,6 @@ function FileListTable() {
     hasComponentsSelected,
     pathContentsType,
   } = useRepoBranchContentsTable(ordering)
-
   const table = useReactTable({
     columns: getBaseColumns(),
     getCoreRowModel: getCoreRowModel(),

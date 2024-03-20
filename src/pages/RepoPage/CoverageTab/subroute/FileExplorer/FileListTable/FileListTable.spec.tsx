@@ -90,10 +90,9 @@ const mockNoHeadReport = {
     branch: {
       head: {
         pathContents: {
-          __typename: 'PathContents',
+          __typename: 'MissingHeadReport',
           results: [],
         },
-        __typename: 'MissingHeadReport',
       },
     },
   },
@@ -114,12 +113,14 @@ const mockOverview = {
 }
 
 const wrapper =
-  (initialEntries = '/gh/codecov/cool-repo/tree/main/a/b/c') =>
+  (
+    initialEntries = '/gh/codecov/cool-repo/tree/main/a/b/c'
+  ): React.FC<React.PropsWithChildren> =>
   ({ children }) => {
     return (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/:provider/:owner/:repo/tree/:branch/:path+">
+          <Route path="/:provider/:owner/:repo/tree/:branch/:path*">
             {children}
           </Route>
         </MemoryRouter>
@@ -139,22 +140,14 @@ afterAll(() => {
 })
 
 describe('FileListTable', () => {
-  function setup(
-    {
-      noFiles = false,
-      noHeadReport = false,
-      noFlagCoverage = false,
-      missingCoverage = false,
-      unknownPath = false,
-    } = {
-      noFiles: false,
-      noHeadReport: false,
-      noFlagCoverage: false,
-      missingCoverage: false,
-      unknownPath: false,
-    }
-  ) {
-    const user = userEvent.setup()
+  function setup({
+    noFiles = false,
+    noHeadReport = false,
+    noFlagCoverage = false,
+    missingCoverage = false,
+    unknownPath = false,
+  }) {
+    const user = userEvent.setup({})
     const requestFilters = jest.fn()
 
     server.use(
@@ -196,7 +189,7 @@ describe('FileListTable', () => {
   describe('rendering table', () => {
     describe('displaying the table head', () => {
       it('has a files column', async () => {
-        setup()
+        setup({})
         render(<FileListTable />, { wrapper: wrapper() })
 
         const files = await screen.findByText('Files')
@@ -204,7 +197,7 @@ describe('FileListTable', () => {
       })
 
       it('has a tracked lines column', async () => {
-        setup()
+        setup({})
         render(<FileListTable />, { wrapper: wrapper() })
 
         const trackedLines = await screen.findByText('Tracked lines')
@@ -212,7 +205,7 @@ describe('FileListTable', () => {
       })
 
       it('has a covered column', async () => {
-        setup()
+        setup({})
         render(<FileListTable />, { wrapper: wrapper() })
 
         const covered = await screen.findByText('Covered')
@@ -220,7 +213,7 @@ describe('FileListTable', () => {
       })
 
       it('has a partial column', async () => {
-        setup()
+        setup({})
         render(<FileListTable />, { wrapper: wrapper() })
 
         const partial = await screen.findByText('Partial')
@@ -228,7 +221,7 @@ describe('FileListTable', () => {
       })
 
       it('has a missed column', async () => {
-        setup()
+        setup({})
         render(<FileListTable />, { wrapper: wrapper() })
 
         const missed = await screen.findByText('Missed')
@@ -236,7 +229,7 @@ describe('FileListTable', () => {
       })
 
       it('has a coverage column', async () => {
-        setup()
+        setup({})
         render(<FileListTable />, { wrapper: wrapper() })
 
         const coverage = await screen.findByText('Coverage %')
@@ -247,7 +240,7 @@ describe('FileListTable', () => {
     describe('table is displaying file list', () => {
       describe('display type is set', () => {
         it('set to list', async () => {
-          const { requestFilters } = setup()
+          const { requestFilters } = setup({})
           render(<FileListTable />, {
             wrapper: wrapper(
               `/gh/codecov/cool-repo/tree/main/a/b/c${qs.stringify(
@@ -270,7 +263,7 @@ describe('FileListTable', () => {
 
       describe('displaying a file', () => {
         it('has the correct url', async () => {
-          setup()
+          setup({})
           render(<FileListTable />, {
             wrapper: wrapper(
               `/gh/codecov/cool-repo/tree/main/a/b/c${qs.stringify(
@@ -294,7 +287,9 @@ describe('FileListTable', () => {
     describe('there is no results found', () => {
       it('displays error fetching data message', async () => {
         setup({ noFiles: true })
-        render(<FileListTable />, { wrapper: wrapper() })
+        render(<FileListTable />, {
+          wrapper: wrapper('/gh/codecov/cool-repo/tree/main/'),
+        })
 
         const message = await screen.findByText(
           'There is no coverage on the default branch for this repository. Use the Branch Context selector above to choose a different branch.'
@@ -306,7 +301,9 @@ describe('FileListTable', () => {
     describe('when head commit has no reports', () => {
       it('renders no report uploaded message', async () => {
         setup({ noHeadReport: true })
-        render(<FileListTable />, { wrapper: wrapper() })
+        render(<FileListTable />, {
+          wrapper: wrapper('/gh/codecov/cool-repo/tree/main'),
+        })
 
         const message = await screen.findByText(
           'No coverage report uploaded for this branch head commit'
@@ -375,11 +372,12 @@ describe('FileListTable', () => {
     describe('sorting on head column', () => {
       describe('sorting in asc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
+          const { requestFilters, user } = setup({})
 
           render(<FileListTable />, { wrapper: wrapper() })
 
           let files = await screen.findByText('Files')
+          await user.click(files)
           await user.click(files)
 
           expect(requestFilters).toHaveBeenCalledWith(
@@ -392,7 +390,7 @@ describe('FileListTable', () => {
 
       describe('sorting in desc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
+          const { requestFilters, user } = setup({})
           render(<FileListTable />, { wrapper: wrapper() })
 
           let files = await screen.findByText('Files')
@@ -414,7 +412,7 @@ describe('FileListTable', () => {
     describe('sorting on tracked lines column', () => {
       describe('sorting in asc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
+          const { requestFilters, user } = setup({})
           render(<FileListTable />, { wrapper: wrapper() })
 
           let trackedLines = await screen.findByText('Tracked lines')
@@ -433,7 +431,7 @@ describe('FileListTable', () => {
 
       describe('sorting in desc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
+          const { requestFilters, user } = setup({})
           render(<FileListTable />, { wrapper: wrapper() })
 
           let trackedLines = await screen.findByText('Tracked lines')
@@ -456,7 +454,7 @@ describe('FileListTable', () => {
     describe('sorting on the covered column', () => {
       describe('sorting in asc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
+          const { requestFilters, user } = setup({})
           render(<FileListTable />, { wrapper: wrapper() })
 
           const covered = await screen.findByText('Covered')
@@ -474,7 +472,7 @@ describe('FileListTable', () => {
 
       describe('sorting in desc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
+          const { requestFilters, user } = setup({})
           render(<FileListTable />, { wrapper: wrapper() })
 
           let covered = await screen.findByText('Covered')
@@ -497,7 +495,7 @@ describe('FileListTable', () => {
     describe('sorting on the partial column', () => {
       describe('sorting in asc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
+          const { requestFilters, user } = setup({})
           render(<FileListTable />, { wrapper: wrapper() })
 
           let partial = await screen.findByText('Partial')
@@ -516,7 +514,7 @@ describe('FileListTable', () => {
 
       describe('sorting in desc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
+          const { requestFilters, user } = setup({})
           render(<FileListTable />, { wrapper: wrapper() })
 
           let partial = await screen.findByText('Partial')
@@ -539,7 +537,7 @@ describe('FileListTable', () => {
     describe('sorting on the coverage line', () => {
       describe('sorting in desc order', () => {
         it('sets the correct api variables', async () => {
-          const { requestFilters, user } = setup()
+          const { requestFilters, user } = setup({})
           render(<FileListTable />, { wrapper: wrapper() })
 
           let missed = await screen.findByText('Missed')
