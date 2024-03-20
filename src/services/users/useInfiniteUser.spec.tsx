@@ -70,6 +70,7 @@ describe('useInfiniteUser', () => {
         if (pageNumber > 1) {
           return res(ctx.status(200), ctx.json(mockSecondResponse))
         }
+
         return res(ctx.status(200), ctx.json(mockFirstResponse))
       })
     )
