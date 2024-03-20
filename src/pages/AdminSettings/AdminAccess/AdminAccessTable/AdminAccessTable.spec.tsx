@@ -41,6 +41,14 @@ const mockSecondResponse = {
       isAdmin: true,
       activated: true,
     },
+    {
+      ownerid: 3,
+      username: null,
+      email: null,
+      name: null,
+      isAdmin: true,
+      activated: true,
+    },
   ],
   total_pages: 2,
 }
@@ -123,6 +131,17 @@ describe('AdminAccessTable', () => {
 
       const username = await screen.findByText('user2-codecov')
       expect(username).toBeInTheDocument()
+    })
+
+    it('displays admin ownerid when name and username not available', async () => {
+      // This really should never happen, but it's better than showing nothing.
+      render(<AdminAccessTable />, { wrapper })
+
+      const loading = await screen.findByText('Loading')
+      mockIsIntersecting(loading, true)
+
+      const ownerid = await screen.findByText('3')
+      expect(ownerid).toBeInTheDocument()
     })
 
     it('displays admin email', async () => {

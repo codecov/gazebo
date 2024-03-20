@@ -12,8 +12,8 @@ const RequestSchema = z.object({
   results: z.array(
     z.object({
       ownerid: z.number(),
-      username: z.string(),
-      email: z.string(),
+      username: z.string().nullable(),
+      email: z.string().nullable(),
       name: z.string().nullable(),
       isAdmin: z.boolean(),
       activated: z.boolean(),

@@ -56,8 +56,8 @@ function AdminAccessTable() {
   const data = useMemo(
     () =>
       adminList.map((admin) => ({
-        name: admin.name || admin.username,
-        email: admin.email,
+        name: admin.name || admin.username || admin.ownerid.toString(),
+        email: admin.email || '',
       })),
     [adminList]
   )
