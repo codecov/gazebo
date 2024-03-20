@@ -21,16 +21,16 @@ const mockBaseUserRequest = ({ student = false } = { student: false }) => ({
   results: [
     {
       activated: false,
-      is_admin: false,
+      isAdmin: false,
       username: 'codecov-user',
       email: 'user@codecov.io',
       ownerid: 1,
       student,
       name: 'codecov',
-      last_pull_timestamp: null,
+      lastPullTimestamp: null,
     },
   ],
-  total_pages: 1,
+  totalPages: 1,
 })
 
 const mockedFirstResponse = {
@@ -46,6 +46,7 @@ const mockedFirstResponse = {
       isAdmin: true,
       student: false,
       activated: false,
+      lastPullTimestamp: null,
     },
   ],
   totalPages: 2,
@@ -64,9 +65,10 @@ const mockSecondResponse = {
       isAdmin: false,
       student: false,
       activated: true,
+      lastPullTimestamp: null,
     },
   ],
-  total_pages: 2,
+  totalPages: 2,
 }
 
 const queryClient = new QueryClient({
@@ -184,7 +186,7 @@ describe('MembersTable', () => {
           beforeEach(() =>
             setup({
               mockUserRequest: {
-                ...mockBaseUserRequest,
+                ...mockBaseUserRequest(),
                 results: [
                   {
                     ...mockBaseUserRequest().results[0],
@@ -224,7 +226,7 @@ describe('MembersTable', () => {
           beforeEach(() =>
             setup({
               mockUserRequest: {
-                ...mockBaseUserRequest,
+                ...mockBaseUserRequest(),
                 results: [
                   {
                     ...mockBaseUserRequest().results[0],
@@ -353,7 +355,6 @@ describe('MembersTable', () => {
       })
     })
   })
-
   describe('user interacts with toggle', () => {
     describe('user is not a student', () => {
       it('calls handleActivate', async () => {
@@ -683,7 +684,7 @@ describe('MembersTable', () => {
       beforeEach(() => {
         setup({
           mockUserRequest: {
-            ...mockBaseUserRequest,
+            ...mockBaseUserRequest(),
             results: [
               {
                 ...mockBaseUserRequest().results[0],

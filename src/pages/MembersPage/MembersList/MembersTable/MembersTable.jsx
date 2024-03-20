@@ -182,12 +182,12 @@ function MembersTable({ handleActivate, params }) {
   const tableContent = useMemo(
     () =>
       createTable({
-        tableData: data,
+        tableData: data?.results,
         handleActivate,
         provider,
         maxSeatsReached,
       }),
-    [data, handleActivate, provider, maxSeatsReached]
+    [data?.results, handleActivate, provider, maxSeatsReached]
   )
 
   return (
