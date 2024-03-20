@@ -89,6 +89,7 @@ const BundleSelector = forwardRef(({}, ref) => {
         <Select
           ref={ref}
           // @ts-expect-error
+          // using bundles here and not bundlesState because we don't want to disable the select if there aren't any matching bundles in the search
           disabled={bundles.length === 0}
           resourceName="bundle"
           placeholder="Select bundle"
