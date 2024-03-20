@@ -27,10 +27,10 @@ import TableSparkline from './TableEntries/TableSparkline'
 import 'ui/Table/Table.css'
 
 interface FlagsTableHelper {
-  name: JSX.Element
-  coverage: JSX.Element
-  trend: JSX.Element
-  delete: JSX.Element | null
+  name: React.ReactNode
+  coverage: React.ReactNode
+  trend: React.ReactNode
+  delete: React.ReactNode
 }
 
 const columnHelper = createColumnHelper<FlagsTableHelper>()
