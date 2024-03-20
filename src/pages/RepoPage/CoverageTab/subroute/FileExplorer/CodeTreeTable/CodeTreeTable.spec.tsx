@@ -584,7 +584,7 @@ describe('CodeTreeTable', () => {
       })
     })
 
-    describe('sorting on the coverage line', () => {
+    describe('sorting on the misses line', () => {
       describe('sorting in desc order', () => {
         it('sets the correct api variables', async () => {
           const { requestFilters, user } = setup({})
@@ -610,15 +610,51 @@ describe('CodeTreeTable', () => {
           expect(await screen.findByText('Missed')).toBeTruthy()
           let missed = screen.getByText('Missed')
           await user.click(missed)
-
-          expect(await screen.findByText('Missed')).toBeTruthy()
-          missed = screen.getByText('Missed')
           await user.click(missed)
 
           await waitFor(() => {
             expect(requestFilters).toHaveBeenCalledWith(
               expect.objectContaining({
                 ordering: { direction: 'ASC', parameter: 'MISSES' },
+              })
+            )
+          })
+        })
+      })
+    })
+
+    describe('sorting on the coverage line', () => {
+      describe('sorting in desc order', () => {
+        it('sets the correct api variables', async () => {
+          const { requestFilters, user } = setup({})
+          render(<CodeTreeTable />, { wrapper: wrapper() })
+
+          expect(await screen.findByText('Coverage %')).toBeTruthy()
+          const coverage = screen.getByText('Coverage %')
+          await user.click(coverage)
+
+          expect(requestFilters).toHaveBeenCalledWith(
+            expect.objectContaining({
+              ordering: { direction: 'DESC', parameter: 'COVERAGE' },
+            })
+          )
+        })
+      })
+
+      describe('sorting in asc order', () => {
+        it('sets the correct api variables', async () => {
+          const { requestFilters, user } = setup({})
+          render(<CodeTreeTable />, { wrapper: wrapper() })
+
+          expect(await screen.findByText('Coverage %')).toBeTruthy()
+          let coverage = screen.getByText('Coverage %')
+          await user.click(coverage)
+          await user.click(coverage)
+
+          await waitFor(() => {
+            expect(requestFilters).toHaveBeenCalledWith(
+              expect.objectContaining({
+                ordering: { direction: 'ASC', parameter: 'COVERAGE' },
               })
             )
           })
