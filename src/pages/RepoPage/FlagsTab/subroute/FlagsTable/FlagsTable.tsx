@@ -175,9 +175,6 @@ const FlagTable = memo(function Table({
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className={cs({
-                    'text-right': header.id !== 'name',
-                  })}
                   data-sortable={header.column.getCanSort()}
                   {...{
                     onClick:
@@ -186,17 +183,23 @@ const FlagTable = memo(function Table({
                         : undefined,
                   }}
                 >
-                  <div className="flex flex-row">
+                  <div
+                    className={cs('flex flex-row', {
+                      'justify-end': header.id !== 'name',
+                    })}
+                  >
                     {flexRender(
                       header.column.columnDef.header,
                       header.getContext()
                     )}
-                    <span
-                      className="text-ds-blue-darker group-hover/columnheader:opacity-100"
-                      data-sort-direction={header.column.getIsSorted()}
-                    >
-                      <Icon name="arrowUp" size="sm" />
-                    </span>
+                    {header.id === 'name' ? (
+                      <span
+                        className="text-ds-blue-darker group-hover/columnheader:opacity-100"
+                        data-sort-direction={header.column.getIsSorted()}
+                      >
+                        <Icon name="arrowUp" size="sm" />
+                      </span>
+                    ) : null}
                   </div>
                 </th>
               ))}
