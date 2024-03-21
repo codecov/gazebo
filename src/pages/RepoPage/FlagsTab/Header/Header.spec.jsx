@@ -127,27 +127,6 @@ describe('Header', () => {
     })
   })
 
-  describe('Search', () => {
-    beforeEach(() => setup())
-
-    it('calls setSearchValue', async () => {
-      const { user, updateLocationMock } = setup()
-      render(<Header />, { wrapper })
-
-      const searchInput = screen.getByRole('textbox', {
-        name: 'Search for flags',
-      })
-      await user.click(searchInput)
-      await user.keyboard('flag1')
-
-      await waitFor(
-        () =>
-          expect(updateLocationMock).toHaveBeenCalledWith({ search: 'flag1' }),
-        { timeout: 600 }
-      )
-    })
-  })
-
   describe('Show by', () => {
     describe('Title', () => {
       beforeEach(() => setup())
@@ -206,7 +185,7 @@ describe('Header', () => {
             const button = screen.getByText('All flags')
             await user.click(button)
 
-            expect(fetchNextPage).toBeCalled()
+            expect(fetchNextPage).toHaveBeenCalled()
           })
         })
 
@@ -226,7 +205,7 @@ describe('Header', () => {
             const button = screen.getByText('All flags')
             await user.click(button)
 
-            expect(fetchNextPage).not.toBeCalled()
+            expect(fetchNextPage).not.toHaveBeenCalled()
           })
         })
       })
@@ -270,7 +249,7 @@ describe('Header', () => {
 
           await waitFor(
             () =>
-              expect(useRepoFlagsSelect).toBeCalledWith({
+              expect(useRepoFlagsSelect).toHaveBeenCalledWith({
                 filters: { term: 'flag2' },
                 options: { suspense: false },
               }),

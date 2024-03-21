@@ -318,7 +318,7 @@ describe('useImpactedFilesTable', () => {
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
 
-      await waitFor(() => expect(callsHandleSort).toBeCalledTimes(1))
+      await waitFor(() => expect(callsHandleSort).toHaveBeenCalledTimes(1))
       await waitFor(() =>
         expect(callsHandleSort).toHaveBeenNthCalledWith(1, {
           direction: 'DESC',
@@ -333,7 +333,7 @@ describe('useImpactedFilesTable', () => {
       await waitFor(() => !result.current.isLoading)
 
       // Accounts for both handleSort being called both times during api call
-      await waitFor(() => expect(callsHandleSort).toBeCalledTimes(2))
+      await waitFor(() => expect(callsHandleSort).toHaveBeenCalledTimes(2))
       await waitFor(() =>
         expect(callsHandleSort).toHaveBeenNthCalledWith(2, {
           direction: 'DESC',
@@ -355,7 +355,7 @@ describe('useImpactedFilesTable', () => {
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
 
-      await waitFor(() => expect(flagsMock).toBeCalledTimes(1))
+      await waitFor(() => expect(flagsMock).toHaveBeenCalledTimes(1))
       await waitFor(() => expect(flagsMock).toHaveBeenCalledWith('flag1,flag2'))
     })
   })
@@ -372,7 +372,7 @@ describe('useImpactedFilesTable', () => {
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
 
-      await waitFor(() => expect(componentsMock).toBeCalledTimes(1))
+      await waitFor(() => expect(componentsMock).toHaveBeenCalledTimes(1))
       await waitFor(() =>
         expect(componentsMock).toHaveBeenCalledWith('component1,component2')
       )
@@ -391,12 +391,12 @@ describe('useImpactedFilesTable', () => {
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
 
-      await waitFor(() => expect(componentsMock).toBeCalledTimes(1))
+      await waitFor(() => expect(componentsMock).toHaveBeenCalledTimes(1))
       await waitFor(() =>
         expect(componentsMock).toHaveBeenCalledWith('component1,component2')
       )
 
-      await waitFor(() => expect(flagsMock).toBeCalledTimes(1))
+      await waitFor(() => expect(flagsMock).toHaveBeenCalledTimes(1))
       await waitFor(() => expect(flagsMock).toHaveBeenCalledWith('flag1,flag2'))
     })
   })

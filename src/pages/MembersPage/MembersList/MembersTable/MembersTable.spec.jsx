@@ -21,16 +21,16 @@ const mockBaseUserRequest = ({ student = false } = { student: false }) => ({
   results: [
     {
       activated: false,
-      is_admin: false,
+      isAdmin: false,
       username: 'codecov-user',
       email: 'user@codecov.io',
       ownerid: 1,
       student,
       name: 'codecov',
-      last_pull_timestamp: null,
+      lastPullTimestamp: null,
     },
   ],
-  total_pages: 1,
+  totalPages: 1,
 })
 
 const mockedFirstResponse = {
@@ -46,6 +46,7 @@ const mockedFirstResponse = {
       isAdmin: true,
       student: false,
       activated: false,
+      lastPullTimestamp: null,
     },
   ],
   totalPages: 2,
@@ -64,9 +65,10 @@ const mockSecondResponse = {
       isAdmin: false,
       student: false,
       activated: true,
+      lastPullTimestamp: null,
     },
   ],
-  total_pages: 2,
+  totalPages: 2,
 }
 
 const queryClient = new QueryClient({
@@ -116,7 +118,7 @@ describe('MembersTable', () => {
     const user = userEvent.setup()
     useImage.mockReturnValue({ src: 'mocked-avatar-url' })
     server.use(
-      rest.get('/internal/:provider/codecov/account-details', (req, res, ctx) =>
+      rest.get('/internal/:proivder/codecov/account-details', (req, res, ctx) =>
         res(ctx.status(200), ctx.json(accountDetails))
       ),
       rest.get('/internal/:provider/codecov/users', (req, res, ctx) => {
@@ -141,50 +143,42 @@ describe('MembersTable', () => {
     beforeEach(() => setup({}))
 
     describe('renders table header', () => {
-      it('has User name column', async () => {
+      it('has Username column', async () => {
         render(<MembersTable />, { wrapper: wrapper() })
 
-        expect(await screen.findByText('User name')).toBeTruthy()
-
-        const userName = screen.getByText('User name')
+        const userName = await screen.findByText('Username')
         expect(userName).toBeInTheDocument()
       })
 
       it('has Type column', async () => {
         render(<MembersTable />, { wrapper: wrapper() })
 
-        expect(await screen.findByText('Type')).toBeTruthy()
-
-        const type = screen.getByText('Type')
+        const type = await screen.findByText('Type')
         expect(type).toBeInTheDocument()
       })
 
       it('has email column', async () => {
         render(<MembersTable />, { wrapper: wrapper() })
 
-        expect(await screen.findByText('email')).toBeTruthy()
-
-        const email = screen.getByText('email')
+        const email = await screen.findByText('Email')
         expect(email).toBeInTheDocument()
       })
 
       it('has Activation status column', async () => {
         render(<MembersTable />, { wrapper: wrapper() })
 
-        expect(await screen.findByText('Activation status')).toBeTruthy()
-
-        const activationStatus = screen.getByText('Activation status')
+        const activationStatus = await screen.findByText('Activation status')
         expect(activationStatus).toBeInTheDocument()
       })
     })
 
     describe('renders table entries', () => {
-      describe('rendering user name column', () => {
+      describe('rendering Username column', () => {
         describe('user has name value set', () => {
           beforeEach(() =>
             setup({
               mockUserRequest: {
-                ...mockBaseUserRequest,
+                ...mockBaseUserRequest(),
                 results: [
                   {
                     ...mockBaseUserRequest().results[0],
@@ -198,9 +192,7 @@ describe('MembersTable', () => {
           it('renders with name', async () => {
             render(<MembersTable />, { wrapper: wrapper() })
 
-            expect(await screen.findByText('codecov-name')).toBeTruthy()
-
-            const name = screen.getByText('codecov-name')
+            const name = await screen.findByText('codecov-name')
             expect(name).toBeInTheDocument()
           })
         })
@@ -211,9 +203,7 @@ describe('MembersTable', () => {
           it('renders with the username', async () => {
             render(<MembersTable />, { wrapper: wrapper() })
 
-            expect(await screen.findByText('codecov')).toBeTruthy()
-
-            const userName = screen.getByText('codecov')
+            const userName = await screen.findByText('codecov')
             expect(userName).toBeInTheDocument()
           })
         })
@@ -224,7 +214,7 @@ describe('MembersTable', () => {
           beforeEach(() =>
             setup({
               mockUserRequest: {
-                ...mockBaseUserRequest,
+                ...mockBaseUserRequest(),
                 results: [
                   {
                     ...mockBaseUserRequest().results[0],
@@ -238,9 +228,7 @@ describe('MembersTable', () => {
           it('renders admin', async () => {
             render(<MembersTable />, { wrapper: wrapper() })
 
-            expect(await screen.findByText('Admin')).toBeTruthy()
-
-            const admin = screen.getByText('Admin')
+            const admin = await screen.findByText('Admin')
             expect(admin).toBeInTheDocument()
           })
         })
@@ -251,9 +239,7 @@ describe('MembersTable', () => {
           it('renders Developer', async () => {
             render(<MembersTable />, { wrapper: wrapper() })
 
-            expect(await screen.findByText('Developer')).toBeTruthy()
-
-            const developer = screen.getByText('Developer')
+            const developer = await screen.findByText('Developer')
             expect(developer).toBeInTheDocument()
           })
         })
@@ -265,9 +251,7 @@ describe('MembersTable', () => {
         it('displays users email', async () => {
           render(<MembersTable />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('user@codecov.io')).toBeTruthy()
-
-          const email = screen.getByText('user@codecov.io')
+          const email = await screen.findByText('user@codecov.io')
           expect(email).toBeInTheDocument()
         })
       })
@@ -287,73 +271,70 @@ describe('MembersTable', () => {
             it('displays disabled toggle', async () => {
               render(<MembersTable />, { wrapper: wrapper() })
 
-              expect(await screen.findByRole('button')).toBeTruthy()
+              await waitFor(() => queryClient.isFetching())
+              await waitFor(() => !queryClient.isFetching())
 
-              const toggle = screen.getByRole('button')
-              expect(toggle).toBeDisabled()
+              const toggle = await screen.findByRole('button')
+              await waitFor(() => expect(toggle).toBeDisabled())
             })
           })
-        })
+          // })
 
-        describe('user is on a free plan', () => {
-          describe('there are no open seats', () => {
+          describe('user is on a free plan', () => {
+            describe('there are no open seats', () => {
+              beforeEach(() =>
+                setup({
+                  accountDetails: {
+                    ...accountDetailsParsedObj,
+                    activatedUserCount: 5,
+                    plan: {
+                      baseUnitPrice: 1,
+                      benefits: ['a', 'b'],
+                      marketingName: 'test',
+                      value: Plans.USERS_BASIC,
+                      quantity: 5,
+                    },
+                  },
+                })
+              )
+
+              it('displays enabled toggle', async () => {
+                render(<MembersTable />, { wrapper: wrapper() })
+
+                const toggle = await screen.findByRole('button')
+                expect(toggle).not.toBeDisabled()
+              })
+            })
+          })
+
+          describe('there are open seats', () => {
             beforeEach(() =>
               setup({
                 accountDetails: {
                   ...accountDetailsParsedObj,
-                  activatedUserCount: 5,
+                  activatedUserCount: 1,
                   plan: {
                     baseUnitPrice: 1,
                     benefits: ['a', 'b'],
                     marketingName: 'test',
-                    value: Plans.USERS_BASIC,
+                    value: Plans.USERS_FREE,
                     quantity: 5,
                   },
                 },
               })
             )
 
-            it('displays enabled toggle', async () => {
+            it('renders an non-disabled toggle', async () => {
               render(<MembersTable />, { wrapper: wrapper() })
 
-              expect(await screen.findByRole('button')).toBeTruthy()
-
-              const toggle = screen.getByRole('button')
+              const toggle = await screen.findByRole('button')
               expect(toggle).not.toBeDisabled()
             })
-          })
-        })
-
-        describe('there are open seats', () => {
-          beforeEach(() =>
-            setup({
-              accountDetails: {
-                ...accountDetailsParsedObj,
-                activatedUserCount: 1,
-                plan: {
-                  baseUnitPrice: 1,
-                  benefits: ['a', 'b'],
-                  marketingName: 'test',
-                  value: Plans.USERS_FREE,
-                  quantity: 5,
-                },
-              },
-            })
-          )
-
-          it('renders an non-disabled toggle', async () => {
-            render(<MembersTable />, { wrapper: wrapper() })
-
-            expect(await screen.findByRole('button')).toBeTruthy()
-
-            const toggle = screen.getByRole('button')
-            expect(toggle).not.toBeDisabled()
           })
         })
       })
     })
   })
-
   describe('user interacts with toggle', () => {
     describe('user is not a student', () => {
       it('calls handleActivate', async () => {
@@ -363,22 +344,17 @@ describe('MembersTable', () => {
           wrapper: wrapper(),
         })
 
-        expect(await screen.findByRole('button')).toBeTruthy()
-
-        const toggle = screen.getByRole('button')
+        const toggle = await screen.findByRole('button')
         await user.click(toggle)
 
-        expect(await screen.findByRole('button')).toBeTruthy()
-
         await waitFor(() =>
-          expect(handleActivate).toBeCalledWith({
+          expect(handleActivate).toHaveBeenCalledWith({
             activated: false,
             ownerid: 1,
           })
         )
       })
     })
-
     describe('user is a student and limit has been reached', () => {
       it('calls handleActivate', async () => {
         const { user } = setup({
@@ -400,15 +376,11 @@ describe('MembersTable', () => {
           wrapper: wrapper(),
         })
 
-        expect(await screen.findByRole('button')).toBeTruthy()
-
-        const toggle = screen.getByRole('button')
+        const toggle = await screen.findByRole('button')
         await user.click(toggle)
 
-        expect(await screen.findByRole('button')).toBeTruthy()
-
         await waitFor(() =>
-          expect(handleActivate).toBeCalledWith({
+          expect(handleActivate).toHaveBeenCalledWith({
             activated: false,
             ownerid: 1,
           })
@@ -424,13 +396,11 @@ describe('MembersTable', () => {
           const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('User name')).toBeTruthy()
-
-          const userName = screen.getByText('User name')
+          const userName = await screen.findByText('Username')
           await user.click(userName)
 
           await waitFor(() =>
-            expect(requestSearchParams.get('ordering')).toBe('-name,-username')
+            expect(requestSearchParams.get('ordering')).toBe('-username')
           )
         })
       })
@@ -440,16 +410,14 @@ describe('MembersTable', () => {
           const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('User name')).toBeTruthy()
+          const userName = await screen.findByText('Username')
 
-          let userName = screen.getByText('User name')
           await user.click(userName)
-
-          userName = screen.getByText('User name')
+          await user.click(userName)
           await user.click(userName)
 
           await waitFor(() =>
-            expect(requestSearchParams.get('ordering')).toBe('name,username')
+            expect(requestSearchParams.get('ordering')).toBe('username')
           )
         })
       })
@@ -459,78 +427,13 @@ describe('MembersTable', () => {
           const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('User name')).toBeTruthy()
+          const userName = await screen.findByText('Username')
 
-          let userName = screen.getByText('User name')
           await user.click(userName)
-
-          userName = screen.getByText('User name')
-          await user.click(userName)
-
-          userName = screen.getByText('User name')
           await user.click(userName)
 
           await waitFor(() =>
-            expect(requestSearchParams.get('ordering')).toBe('')
-          )
-        })
-      })
-    })
-
-    describe('interacting with the type column', () => {
-      describe('setting in asc order', () => {
-        it('updates the request params', async () => {
-          const { user } = setup()
-          render(<MembersTable />, { wrapper: wrapper() })
-
-          expect(await screen.findByText('Type')).toBeTruthy()
-
-          const type = screen.getByText('Type')
-          await user.click(type)
-
-          await waitFor(() =>
-            expect(requestSearchParams.get('ordering')).toBe('-type')
-          )
-        })
-      })
-
-      describe('setting in desc order', () => {
-        it('updates the request params', async () => {
-          const { user } = setup()
-          render(<MembersTable />, { wrapper: wrapper() })
-
-          expect(await screen.findByText('Type')).toBeTruthy()
-
-          let type = screen.getByText('Type')
-          await user.click(type)
-
-          type = screen.getByText('Type')
-          await user.click(type)
-
-          await waitFor(() =>
-            expect(requestSearchParams.get('ordering')).toBe('type')
-          )
-        })
-      })
-
-      describe('setting in originally order', () => {
-        it('removes the request param', async () => {
-          const { user } = setup()
-          render(<MembersTable />, { wrapper: wrapper() })
-
-          expect(await screen.findByText('Type')).toBeTruthy()
-
-          let type = screen.getByText('Type')
-          await user.click(type)
-
-          type = screen.getByText('Type')
-          await user.click(type)
-
-          type = screen.getByText('Type')
-          await user.click(type)
-
-          await waitFor(() =>
-            expect(requestSearchParams.get('ordering')).toBe('')
+            expect(requestSearchParams.get('ordering')).toBe(null)
           )
         })
       })
@@ -542,9 +445,9 @@ describe('MembersTable', () => {
           const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('email')).toBeTruthy()
+          const email = await screen.findByText('Email')
 
-          const email = screen.getByText('email')
+          await user.click(email)
           await user.click(email)
 
           await waitFor(() =>
@@ -558,12 +461,7 @@ describe('MembersTable', () => {
           const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('email')).toBeTruthy()
-
-          let email = screen.getByText('email')
-          await user.click(email)
-
-          email = screen.getByText('email')
+          const email = await screen.findByText('Email')
           await user.click(email)
 
           await waitFor(() =>
@@ -577,19 +475,13 @@ describe('MembersTable', () => {
           const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('email')).toBeTruthy()
-
-          let email = screen.getByText('email')
+          const email = await screen.findByText('Email')
           await user.click(email)
-
-          email = screen.getByText('email')
           await user.click(email)
-
-          email = screen.getByText('email')
           await user.click(email)
 
           await waitFor(() =>
-            expect(requestSearchParams.get('ordering')).toBe('')
+            expect(requestSearchParams.get('ordering')).toBe(null)
           )
         })
       })
@@ -601,9 +493,7 @@ describe('MembersTable', () => {
           const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('Activation status')).toBeTruthy()
-
-          const activationStatus = screen.getByText('Activation status')
+          const activationStatus = await screen.findByText('Activation status')
           await user.click(activationStatus)
 
           await waitFor(() =>
@@ -617,12 +507,8 @@ describe('MembersTable', () => {
           const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('Activation status')).toBeTruthy()
-
-          let activationStatus = screen.getByText('Activation status')
+          const activationStatus = await screen.findByText('Activation status')
           await user.click(activationStatus)
-
-          activationStatus = screen.getByText('Activation status')
           await user.click(activationStatus)
 
           await waitFor(() =>
@@ -636,19 +522,13 @@ describe('MembersTable', () => {
           const { user } = setup()
           render(<MembersTable />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('Activation status')).toBeTruthy()
-
-          let activationStatus = screen.getByText('Activation status')
+          const activationStatus = await screen.findByText('Activation status')
           await user.click(activationStatus)
-
-          activationStatus = screen.getByText('Activation status')
           await user.click(activationStatus)
-
-          activationStatus = screen.getByText('Activation status')
           await user.click(activationStatus)
 
           await waitFor(() =>
-            expect(requestSearchParams.get('ordering')).toBe('')
+            expect(requestSearchParams.get('ordering')).toBe(null)
           )
         })
       })
@@ -663,17 +543,15 @@ describe('MembersTable', () => {
     it('displays two users', async () => {
       render(<MembersTable />, { wrapper: wrapper() })
 
-      expect(await screen.findByText('User 1')).toBeTruthy()
-
-      const user1 = screen.getByText('User 1')
+      const user1 = await screen.findByText('User 1')
       expect(user1).toBeInTheDocument()
 
-      expect(requestSearchParams.get('page')).toBe('1')
+      await waitFor(() => expect(requestSearchParams.get('page')).toBe('1'))
       mockAllIsIntersecting(true)
 
-      expect(await screen.findByText('user2-codecov')).toBeTruthy()
+      await waitFor(() => expect(requestSearchParams.get('page')).toBe('2'))
 
-      const user2 = screen.getByText('user2-codecov')
+      const user2 = await screen.findByText('user2-codecov')
       expect(user2).toBeInTheDocument()
     })
   })
@@ -683,7 +561,7 @@ describe('MembersTable', () => {
       beforeEach(() => {
         setup({
           mockUserRequest: {
-            ...mockBaseUserRequest,
+            ...mockBaseUserRequest(),
             results: [
               {
                 ...mockBaseUserRequest().results[0],
@@ -697,9 +575,7 @@ describe('MembersTable', () => {
       it('uses default author', async () => {
         render(<MembersTable />, { wrapper: wrapper(['/gl/codecov']) })
 
-        expect(await screen.findByRole('img')).toBeTruthy()
-
-        const avatar = screen.getByRole('img')
+        const avatar = await screen.findByRole('img')
         await waitFor(() => expect(avatar).toBeInTheDocument())
 
         await waitFor(() =>

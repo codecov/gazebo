@@ -157,7 +157,9 @@ describe('SpecialOffer', () => {
         await user.click(button)
 
         await waitFor(() =>
-          expect(mockBody).toBeCalledWith({ apply_cancellation_discount: true })
+          expect(mockBody).toHaveBeenCalledWith({
+            apply_cancellation_discount: true,
+          })
         )
       })
 
@@ -173,7 +175,7 @@ describe('SpecialOffer', () => {
         await user.click(button)
 
         await waitFor(() =>
-          expect(mockToast).toBeCalledWith({
+          expect(mockToast).toHaveBeenCalledWith({
             type: 'success',
             text: 'Discount successfully applied.',
           })
@@ -208,7 +210,7 @@ describe('SpecialOffer', () => {
         await user.click(button)
 
         await waitFor(() =>
-          expect(mockToast).toBeCalledWith({
+          expect(mockToast).toHaveBeenCalledWith({
             type: 'error',
             text: 'Something went wrong while applying discount.',
           })

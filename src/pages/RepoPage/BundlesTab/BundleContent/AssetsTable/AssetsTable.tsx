@@ -170,6 +170,7 @@ const AssetsTable: React.FC = () => {
                   <div
                     className={cs('flex gap-1 items-center', {
                       'flex-row-reverse justify-end': header.id === 'name',
+                      'flex-row justify-end': header.id !== 'name',
                     })}
                   >
                     <span

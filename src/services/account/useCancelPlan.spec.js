@@ -78,7 +78,7 @@ describe('useCancelPlan', () => {
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
 
-      await waitFor(() => expect(mockBody).toBeCalled())
+      await waitFor(() => expect(mockBody).toHaveBeenCalled())
       await waitFor(() =>
         expect(mockBody).toHaveBeenCalledWith({
           plan: {

@@ -70,7 +70,6 @@ describe('PlanPage', () => {
         isCurrentUserPartOfOrg: true,
         numberOfUploads: 10,
       },
-      isSelfHosted: false,
     }
   ) {
     config.IS_SELF_HOSTED = isSelfHosted
@@ -86,10 +85,9 @@ describe('PlanPage', () => {
     beforeEach(() => {
       setup({
         owner: {
-          owner: {
-            username: 'codecov',
-            isCurrentUserPartOfOrg: false,
-          },
+          username: 'codecov',
+          isCurrentUserPartOfOrg: false,
+          numberOfUploads: null,
         },
       })
     })
@@ -105,12 +103,10 @@ describe('PlanPage', () => {
     beforeEach(() => {
       setup({
         owner: {
-          owner: {
-            username: 'codecov',
-            isCurrentUserPartOfOrg: false,
-          },
+          username: 'codecov',
+          isCurrentUserPartOfOrg: false,
+          numberOfUploads: null,
         },
-        isSelfHosted: true,
       })
     })
 
@@ -127,6 +123,7 @@ describe('PlanPage', () => {
         owner: {
           username: 'codecov',
           isCurrentUserPartOfOrg: true,
+          numberOfUploads: 30,
         },
       })
     })
@@ -152,6 +149,7 @@ describe('PlanPage', () => {
         owner: {
           username: 'codecov',
           isCurrentUserPartOfOrg: true,
+          numberOfUploads: 30,
         },
       })
     })

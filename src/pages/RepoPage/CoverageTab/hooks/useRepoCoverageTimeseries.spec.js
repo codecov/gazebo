@@ -122,9 +122,9 @@ describe('useRepoCoverageTimeseries', () => {
         }
       )
 
-      await waitFor(() => expect(config).toBeCalled())
+      await waitFor(() => expect(config).toHaveBeenCalled())
       await waitFor(() =>
-        expect(config).toBeCalledWith(
+        expect(config).toHaveBeenCalledWith(
           expect.objectContaining({ interval: 'INTERVAL_30_DAY' })
         )
       )
@@ -145,9 +145,9 @@ describe('useRepoCoverageTimeseries', () => {
         }
       )
 
-      await waitFor(() => expect(config).toBeCalled())
+      await waitFor(() => expect(config).toHaveBeenCalled())
       await waitFor(() =>
-        expect(config).toBeCalledWith(
+        expect(config).toHaveBeenCalledWith(
           expect.objectContaining({
             interval: 'INTERVAL_7_DAY',
           })
@@ -166,9 +166,9 @@ describe('useRepoCoverageTimeseries', () => {
         wrapper: wrapper('?trend=30 days'),
       })
 
-      await waitFor(() => expect(config).toBeCalled())
+      await waitFor(() => expect(config).toHaveBeenCalled())
       await waitFor(() =>
-        expect(config).toBeCalledWith(
+        expect(config).toHaveBeenCalledWith(
           expect.objectContaining({ interval: 'INTERVAL_1_DAY' })
         )
       )
@@ -185,9 +185,9 @@ describe('useRepoCoverageTimeseries', () => {
         wrapper: wrapper('?trend=6 months'),
       })
 
-      await waitFor(() => expect(config).toBeCalled())
+      await waitFor(() => expect(config).toHaveBeenCalled())
       await waitFor(() =>
-        expect(config).toBeCalledWith(
+        expect(config).toHaveBeenCalledWith(
           expect.objectContaining({ interval: 'INTERVAL_7_DAY' })
         )
       )
@@ -204,9 +204,9 @@ describe('useRepoCoverageTimeseries', () => {
         wrapper: wrapper('?trend=12 months'),
       })
 
-      await waitFor(() => expect(config).toBeCalled())
+      await waitFor(() => expect(config).toHaveBeenCalled())
       await waitFor(() =>
-        expect(config).toBeCalledWith(
+        expect(config).toHaveBeenCalledWith(
           expect.objectContaining({ interval: 'INTERVAL_30_DAY' })
         )
       )
@@ -269,7 +269,7 @@ describe('useRepoCoverageTimeseries', () => {
         wrapper: wrapper(''),
       })
 
-      await waitFor(() => expect(selectMock).toBeCalled())
+      await waitFor(() => expect(selectMock).toHaveBeenCalled())
     })
   })
 })

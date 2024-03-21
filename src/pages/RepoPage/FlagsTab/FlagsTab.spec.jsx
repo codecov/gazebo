@@ -15,11 +15,11 @@ jest.mock('services/repo/useRepoFlagsSelect')
 jest.mock('shared/featureFlags')
 
 jest.mock(
-  './BackfillBanners/TriggerSyncBanner/TriggerSyncBanner.jsx',
+  './BackfillBanners/TriggerSyncBanner/TriggerSyncBanner.tsx',
   () => () => 'Trigger Sync Banner'
 )
 jest.mock(
-  './BackfillBanners/SyncingBanner/SyncingBanner.jsx',
+  './BackfillBanners/SyncingBanner/SyncingBanner.tsx',
   () => () => 'Syncing Banner'
 )
 jest.mock('./subroute/FlagsTable/FlagsTable', () => () => 'Flags table')

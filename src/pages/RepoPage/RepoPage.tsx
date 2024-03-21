@@ -120,7 +120,7 @@ function Routes({
           <SentryRoute
             path={[
               `${path}/bundles/new`,
-              `${path}bundles/new/rollup`,
+              `${path}/bundles/new/rollup`,
               `${path}/bundles/new/webpack`,
             ]}
             exact
@@ -245,8 +245,8 @@ function RepoPage() {
         <RepoPageTabs refetchEnabled={refetchEnabled} />
         <Suspense fallback={<Loader />}>
           <Routes
-            isRepoActive={isRepoActive}
-            isRepoActivated={isRepoActivated}
+            isRepoActive={isRepoActive || false}
+            isRepoActivated={isRepoActivated || false}
             coverageEnabled={coverageEnabled}
             bundleAnalysisEnabled={bundleAnalysisEnabled}
             jsOrTsPresent={jsOrTsPresent}
