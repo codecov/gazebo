@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { useParams } from 'react-router-dom'
+import { useMemo } from 'react'
 import { z } from 'zod'
 
 import Api from 'shared/api'
@@ -22,20 +22,13 @@ const RequestSchema = z.object({
   totalPages: z.number(),
 })
 
-type URLParams = {
-  provider: string
-}
-
 export const useAdminAccessList = () => {
-  const { provider } = useParams<URLParams>()
-
   const { data, ...rest } = useInfiniteQuery({
-    queryKey: ['AdminAccessList', provider],
+    queryKey: ['AdminAccessList'],
     queryFn: ({ pageParam = 1, signal }) =>
       Api.get({
         path: `/users?is_admin=true&page=${pageParam}`,
         signal,
-        provider,
       }).then((res) => {
         const parsedData = RequestSchema.safeParse(res)
 
@@ -58,7 +51,10 @@ export const useAdminAccessList = () => {
   })
 
   return {
-    data: data?.pages.flatMap((page) => page.results) ?? [],
+    data: useMemo(
+      () => data?.pages.flatMap((page) => page.results) ?? [],
+      [data?.pages]
+    ),
     ...rest,
   }
 }
