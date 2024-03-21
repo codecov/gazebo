@@ -3,17 +3,20 @@ import { Redirect, Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
+import img403 from 'layouts/shared/NetworkErrorBoundary/assets/error-403.svg'
+import { NetworkErrorMessage } from 'layouts/shared/NetworkErrorBoundary/NetworkErrorBoundary'
 import NotFound from 'pages/NotFound'
 import { useRepo, useRepoOverview } from 'services/repo'
-import CustomError from 'shared/CustomError'
 import { useFlags } from 'shared/featureFlags'
 import A from 'ui/A'
+import Button from 'ui/Button'
 import LoadingLogo from 'ui/LoadingLogo'
 
 import { RepoBreadcrumbProvider } from './context'
 import DeactivatedRepo from './DeactivatedRepo'
 import RepoBreadcrumb from './RepoBreadcrumb'
 import RepoPageTabs from './RepoPageTabs'
+
 
 const BundlesTab = lazy(() => import('./BundlesTab'))
 const CommitsTab = lazy(() => import('./CommitsTab'))
@@ -44,6 +47,7 @@ interface RoutesProps {
   bundleAnalysisEnabled?: boolean
   jsOrTsPresent?: boolean
   isRepoPrivate: boolean
+  isCurrentUserActivated?: boolean | null
 }
 
 function Routes({
@@ -53,29 +57,40 @@ function Routes({
   bundleAnalysisEnabled,
   jsOrTsPresent,
   isRepoPrivate,
+  isCurrentUserActivated,
 }: RoutesProps) {
   const { bundleAnalysisPrAndCommitPages } = useFlags({
     bundleAnalysisPrAndCommitPages: false,
   })
 
   const productEnabled = coverageEnabled || bundleAnalysisEnabled
-  if (productEnabled && isRepoPrivate) {
-    throw new CustomError({
-      status: 403,
-      detail: (
-        <p>
-          Activation is required to view this repo, please{' '}
+  if (productEnabled && !isCurrentUserActivated && isRepoPrivate) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center text-center">
+        <img src={img403} alt="Forbidden" className="w-1/6" />
+        <h1 className="mt-6 text-2xl">Unauthorized</h1>
+        <p className="mt-6">
+          Activation is required to view this repo
           <A
             to={{ pageName: 'membersTab' }}
             isExternal={false}
             hook="repo-page-to-members-tab"
+            className="my-4"
           >
-            click here{' '}
-          </A>{' '}
-          to activate your account.
+            Click here to activate your account.
+          </A>
         </p>
-      ),
-    })
+        <NetworkErrorMessage />
+        <p className="mb-4 font-bold">Error 403</p>
+        <Button
+          to={{ pageName: 'owner' }}
+          disabled={undefined}
+          hook={undefined}
+        >
+          Return to previous page
+        </Button>
+      </div>
+    )
   }
 
   if (isRepoActive && isRepoActivated) {
@@ -229,6 +244,7 @@ function RepoPage() {
   const coverageEnabled = repoOverview?.coverageEnabled
   const bundleAnalysisEnabled = repoOverview?.bundleAnalysisEnabled
   const jsOrTsPresent = repoOverview?.jsOrTsPresent
+  const isCurrentUserActivated = repoData?.isCurrentUserActivated
   const isRepoActive = repoData?.repository?.active
   const isRepoActivated = repoData?.repository?.activated
   const isRepoPrivate = !!repoData?.repository?.private
@@ -251,6 +267,7 @@ function RepoPage() {
             bundleAnalysisEnabled={bundleAnalysisEnabled}
             jsOrTsPresent={jsOrTsPresent}
             isRepoPrivate={isRepoPrivate}
+            isCurrentUserActivated={isCurrentUserActivated}
           />
         </Suspense>
       </div>
