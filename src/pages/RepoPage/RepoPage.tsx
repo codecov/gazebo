@@ -3,20 +3,16 @@ import { Redirect, Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
-import img403 from 'layouts/shared/NetworkErrorBoundary/assets/error-403.svg'
-import { NetworkErrorMessage } from 'layouts/shared/NetworkErrorBoundary/NetworkErrorBoundary'
 import NotFound from 'pages/NotFound'
 import { useRepo, useRepoOverview } from 'services/repo'
 import { useFlags } from 'shared/featureFlags'
-import A from 'ui/A'
-import Button from 'ui/Button'
 import LoadingLogo from 'ui/LoadingLogo'
 
 import { RepoBreadcrumbProvider } from './context'
 import DeactivatedRepo from './DeactivatedRepo'
 import RepoBreadcrumb from './RepoBreadcrumb'
 import RepoPageTabs from './RepoPageTabs'
-
+import { UnauthorizedRepoDisplay } from './shared/UnauthorizedRepoDisplay'
 
 const BundlesTab = lazy(() => import('./BundlesTab'))
 const CommitsTab = lazy(() => import('./CommitsTab'))
@@ -64,35 +60,10 @@ function Routes({
   })
 
   const productEnabled = coverageEnabled || bundleAnalysisEnabled
-  if (productEnabled && !isCurrentUserActivated && isRepoPrivate) {
-    return (
-      <div className="flex h-full flex-col items-center justify-center text-center">
-        <img src={img403} alt="Forbidden" className="w-1/6" />
-        <h1 className="mt-6 text-2xl">Unauthorized</h1>
-        <p className="mt-6">
-          Activation is required to view this repo
-          <A
-            to={{ pageName: 'membersTab' }}
-            isExternal={false}
-            hook="repo-page-to-members-tab"
-            className="my-4"
-          >
-            Click here to activate your account.
-          </A>
-        </p>
-        <NetworkErrorMessage />
-        <p className="mb-4 font-bold">Error 403</p>
-        <Button
-          to={{ pageName: 'owner' }}
-          disabled={undefined}
-          hook={undefined}
-        >
-          Return to previous page
-        </Button>
-      </div>
-    )
-  }
-
+  const showUnauthorizedMessageCoverage =
+    isRepoPrivate && coverageEnabled && !isCurrentUserActivated
+  const showUnauthorizedMessageBundles =
+    isRepoPrivate && bundleAnalysisEnabled && !isCurrentUserActivated
   if (isRepoActive && isRepoActivated) {
     return (
       <Switch>
@@ -106,7 +77,11 @@ function Routes({
             ]}
             exact
           >
-            <CoverageTab />
+            {showUnauthorizedMessageCoverage ? (
+              <UnauthorizedRepoDisplay />
+            ) : (
+              <CoverageTab />
+            )}
           </SentryRoute>
         ) : (
           <SentryRoute
@@ -129,7 +104,11 @@ function Routes({
             ]}
             exact
           >
-            <BundlesTab />
+            {showUnauthorizedMessageBundles ? (
+              <UnauthorizedRepoDisplay />
+            ) : (
+              <BundlesTab />
+            )}
           </SentryRoute>
         ) : jsOrTsPresent && bundleAnalysisPrAndCommitPages ? (
           <SentryRoute
@@ -248,10 +227,10 @@ function RepoPage() {
   const isRepoActive = repoData?.repository?.active
   const isRepoActivated = repoData?.repository?.activated
   const isRepoPrivate = !!repoData?.repository?.private
+
   if (!refetchEnabled && !isRepoActivated) {
     setRefetchEnabled(true)
   }
-
   if (!repoData?.repository) return <NotFound />
 
   return (

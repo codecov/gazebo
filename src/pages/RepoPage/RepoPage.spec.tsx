@@ -745,16 +745,40 @@ describe('RepoPage', () => {
   })
 
   describe('user is not activated and repo is private', () => {
-    it('renders unauthorized access error', async () => {
-      const { queryClient } = setup({
-        hasRepoData: true,
-        isCurrentUserActivated: false,
-        isRepoPrivate: true,
+    describe('user does not have product enabled', () => {
+      it('renders setup tabs', async () => {
+        const { queryClient } = setup({
+          hasRepoData: true,
+          isCurrentUserActivated: false,
+          isRepoPrivate: true,
+          coverageEnabled: false,
+          bundleAnalysisEnabled: false,
+          language: 'javascript',
+        })
+        render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+        const repoCrumb = await screen.findByText('cool-repo')
+        expect(repoCrumb).toBeInTheDocument()
+        const coverageOnboarding = await screen.findByText('CoverageOnboarding')
+        expect(coverageOnboarding).toBeInTheDocument()
+        const bundlesTab = await screen.findByText('Bundles')
+        expect(bundlesTab).toBeInTheDocument()
       })
-      render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+    })
 
-      const error = await screen.findByText('Unauthorized')
-      expect(error).toBeInTheDocument()
+    describe('user has product enabled', () => {
+      it('renders unauthorized access error', async () => {
+        const { queryClient } = setup({
+          hasRepoData: true,
+          isCurrentUserActivated: false,
+          isRepoPrivate: true,
+        })
+        render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+        const repoCrumb = await screen.findByText('cool-repo')
+        expect(repoCrumb).toBeInTheDocument()
+
+        const error = await screen.findByText('Unauthorized')
+        expect(error).toBeInTheDocument()
+      })
     })
   })
 })
