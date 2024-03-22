@@ -60,10 +60,8 @@ function Routes({
   })
 
   const productEnabled = coverageEnabled || bundleAnalysisEnabled
-  const showUnauthorizedMessageCoverage =
-    isRepoPrivate && coverageEnabled && !isCurrentUserActivated
-  const showUnauthorizedMessageBundles =
-    isRepoPrivate && bundleAnalysisEnabled && !isCurrentUserActivated
+  const showUnauthorizedMessage =
+    productEnabled && isRepoPrivate && !isCurrentUserActivated
   if (isRepoActive && isRepoActivated) {
     return (
       <Switch>
@@ -77,7 +75,7 @@ function Routes({
             ]}
             exact
           >
-            {showUnauthorizedMessageCoverage ? (
+            {showUnauthorizedMessage ? (
               <UnauthorizedRepoDisplay />
             ) : (
               <CoverageTab />
@@ -104,7 +102,7 @@ function Routes({
             ]}
             exact
           >
-            {showUnauthorizedMessageBundles ? (
+            {showUnauthorizedMessage ? (
               <UnauthorizedRepoDisplay />
             ) : (
               <BundlesTab />
