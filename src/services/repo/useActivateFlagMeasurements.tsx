@@ -10,11 +10,13 @@ export const MEASUREMENT_TYPE = {
   COMPONENT_COVERAGE: 'COMPONENT_COVERAGE',
 } as const
 
+export type MeasurementType = keyof typeof MEASUREMENT_TYPE
+
 interface ActivateFlagMeasurementsProps {
   provider: string
   owner: string
   repo: string
-  measurementType: (typeof MEASUREMENT_TYPE)[keyof typeof MEASUREMENT_TYPE]
+  measurementType: MeasurementType
 }
 
 const ResponseSchema = z.object({
@@ -34,6 +36,23 @@ const ResponseSchema = z.object({
     .nullable(),
 })
 
+const query = `
+  mutation ActivateMeasurements($input: ActivateMeasurementsInput!) {
+    activateMeasurements(input: $input) {
+      error {
+        ... on UnauthenticatedError {
+          __typename
+          message
+        }
+        ... on ValidationError {
+          __typename
+          message
+        }
+      }
+    }
+  }
+`
+
 export function useActivateFlagMeasurements({
   provider,
   owner,
@@ -43,22 +62,6 @@ export function useActivateFlagMeasurements({
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: () => {
-      const query = `
-          mutation ActivateMeasurements($input: ActivateMeasurementsInput!) {
-            activateMeasurements(input: $input) {
-              error {
-                ... on UnauthenticatedError {
-                  __typename
-                  message
-                }
-                ... on ValidationError {
-                  __typename
-                  message
-                }
-              }
-            }
-          }
-        `
       const variables = {
         input: {
           owner,
