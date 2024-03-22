@@ -5,6 +5,7 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import {
+  MEASUREMENT_TYPE,
   useActivateFlagMeasurements,
   useEraseRepoContent,
   useRepo,
@@ -272,7 +273,12 @@ describe('useActivateFlagMeasurements', () => {
   function setup() {
     server.use(
       graphql.mutation('ActivateMeasurements', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data())
+        return res(
+          ctx.status(200),
+          ctx.data({
+            activateMeasurements: null,
+          })
+        )
       })
     )
   }
@@ -290,6 +296,7 @@ describe('useActivateFlagMeasurements', () => {
               provider: 'gh',
               owner: 'dancer',
               repo: 'bassuras',
+              measurementType: MEASUREMENT_TYPE.FLAG_COVERAGE,
             }),
           {
             wrapper: wrapper(),
@@ -298,7 +305,13 @@ describe('useActivateFlagMeasurements', () => {
 
         result.current.mutate()
 
-        await waitFor(() => expect(result.current.data).toEqual({}))
+        await waitFor(() =>
+          expect(result.current.data).toEqual({
+            data: {
+              activateMeasurements: null,
+            },
+          })
+        )
       })
     })
   })
