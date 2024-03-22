@@ -45,7 +45,7 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 const wrapper =
-  (initialEntries = '/gh') =>
+  (initialEntries = '/gh'): React.FC<React.PropsWithChildren> =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
@@ -55,17 +55,27 @@ const wrapper =
       </QueryClientProvider>
     )
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 beforeEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('useSelfHostedUserList', () => {
-  function setup() {
+  function setup({ invalidResponse = false }) {
     server.use(
       rest.get('/internal/users', (req, res, ctx) => {
+        if (invalidResponse) {
+          return res(ctx.status(200), ctx.json({}))
+        }
+
         const {
           url: { searchParams },
         } = req
@@ -81,11 +91,8 @@ describe('useSelfHostedUserList', () => {
   }
 
   describe('hook queries first dataset', () => {
-    beforeEach(async () => {
-      setup()
-    })
-
     it('returns the data', async () => {
+      setup({})
       const { result } = renderHook(
         () => useSelfHostedUserList({ search: '' }),
         { wrapper: wrapper() }
@@ -108,11 +115,8 @@ describe('useSelfHostedUserList', () => {
 
   describe('hook can fetch the next dataset', () => {
     describe('not other options set', () => {
-      beforeEach(async () => {
-        setup()
-      })
-
       it('returns the data', async () => {
+        setup({})
         const { result } = renderHook(
           () => useSelfHostedUserList({ search: '' }),
           {
@@ -149,11 +153,8 @@ describe('useSelfHostedUserList', () => {
     })
 
     describe('an option is set', () => {
-      beforeEach(async () => {
-        setup({ search: 'codecov' })
-      })
-
       it('returns the data', async () => {
+        setup({})
         const { result } = renderHook(
           () => useSelfHostedUserList({ search: 'codecov' }),
           {
@@ -190,6 +191,27 @@ describe('useSelfHostedUserList', () => {
           ])
         )
       })
+    })
+  })
+
+  describe('endpoint returns invalid data', () => {
+    beforeEach(() => {
+      console.error = () => {}
+    })
+
+    it('rejects with 404', async () => {
+      setup({ invalidResponse: true })
+      const { result } = renderHook(() => useSelfHostedUserList({}), {
+        wrapper: wrapper(),
+      })
+
+      await waitFor(() => expect(result.current.isError).toBeTruthy())
+      expect(result.current.error).toEqual(
+        expect.objectContaining({
+          status: 404,
+          dev: 'useSelfHostedUserList - 404 schema parsing failed',
+        })
+      )
     })
   })
 })
