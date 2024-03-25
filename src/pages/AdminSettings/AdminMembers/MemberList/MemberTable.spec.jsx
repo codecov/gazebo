@@ -154,7 +154,7 @@ describe('MemberTable', () => {
       setup()
       render(<MemberTable />, { wrapper })
 
-      const header = await screen.findByText('User Name')
+      const header = await screen.findByText('Username')
       expect(header).toBeInTheDocument()
     })
 

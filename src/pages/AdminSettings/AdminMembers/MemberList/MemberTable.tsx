@@ -37,7 +37,7 @@ const columnHelper = createColumnHelper<MembersColumns>()
 
 const columns = [
   columnHelper.accessor('username', {
-    header: 'User Name',
+    header: 'Username',
     cell: ({ renderValue }) => renderValue(),
   }),
   columnHelper.accessor('type', {
