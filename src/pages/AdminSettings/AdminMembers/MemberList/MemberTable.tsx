@@ -143,7 +143,7 @@ function MemberTable() {
   }, [fetchNextPage, inView, hasNextPage])
 
   const tableContent = useMemo(() => {
-    if (!data || data.length === 0 || !seatData) {
+    if (!data?.length || !seatData) {
       return []
     }
 

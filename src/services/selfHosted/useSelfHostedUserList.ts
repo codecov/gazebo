@@ -76,7 +76,7 @@ export const useSelfHostedUserList = ({
   )
 
   return {
-    data: memoedData,
     ...rest,
+    data: memoedData,
   }
 }
