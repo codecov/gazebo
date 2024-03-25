@@ -5,18 +5,18 @@ import { z } from 'zod'
 import Api from 'shared/api'
 
 const query = `
-  query BackfillComponentMemberships($name: String!, $repo: String!) {
-    config {
-      isTimescaleEnabled
-    }
-    owner(username:$name){
-      repository: repositoryDeprecated(name:$repo){
-        componentsMeasurementsActive
-        componentsMeasurementsBackfilled
-        componentsCount
-      }
+query BackfillComponentMemberships($name: String!, $repo: String!) {
+  config {
+    isTimescaleEnabled
+  }
+  owner(username: $name) {
+    repository(name: $repo) {
+      componentsMeasurementsActive
+      componentsMeasurementsBackfilled
+      componentsCount
     }
   }
+}
 `
 
 const BackfillComponentsMembershipSchema = z.object({
