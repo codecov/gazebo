@@ -2,11 +2,14 @@ import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
+
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo/schemas'
 import Api from 'shared/api'
+import { type NetworkErrorObject } from 'shared/api/helpers'
+import A from 'ui/A'
 
 const query = `
 query BackfillComponentMemberships($name: String!, $repo: String!) {
@@ -76,12 +79,44 @@ export function useComponentsBackfilled() {
             status: 404,
             data: {},
             dev: 'useComponentsBackfilled - 404 failed to parse',
-          })
+          } satisfies NetworkErrorObject)
+        }
+
+        const data = parsedData.data
+
+        if (data?.owner?.repository?.__typename === 'NotFoundError') {
+          return Promise.reject({
+            status: 404,
+            data: {},
+            dev: `useComponentsBackfilled - 404 NotFoundError`,
+          } satisfies NetworkErrorObject)
+        }
+
+        if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
+          return Promise.reject({
+            status: 403,
+            data: {
+              detail: (
+                <p>
+                  Activation is required to view this repo, please{' '}
+                  <A
+                    to={{ pageName: 'membersTab' }}
+                    hook="activate-members"
+                    isExternal={false}
+                  >
+                    click here{' '}
+                  </A>{' '}
+                  to activate your account.
+                </p>
+              ),
+            },
+            dev: `useComponentsBackfilled - 403 OwnerNotActivatedError`,
+          } satisfies NetworkErrorObject)
         }
 
         return {
-          ...parsedData.data?.config,
-          ...parsedData.data?.owner?.repository,
+          ...data?.config,
+          ...data?.owner?.repository,
         }
       }),
   })
