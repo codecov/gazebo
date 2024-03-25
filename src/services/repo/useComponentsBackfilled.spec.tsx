@@ -34,6 +34,7 @@ afterAll(() => server.close())
 const dataReturned = {
   owner: {
     repository: {
+      __typename: 'Repository',
       componentsMeasurementsActive: true,
       componentsMeasurementsBackfilled: true,
     },
@@ -64,6 +65,7 @@ describe('useComponentsBackfilled', () => {
         })
 
         const expectedResponse = {
+          __typename: 'Repository',
           componentsMeasurementsActive: true,
           componentsMeasurementsBackfilled: true,
         }
@@ -88,7 +90,7 @@ describe('useComponentsBackfilled', () => {
         expect(result.current.error).toEqual({
           status: 404,
           data: {},
-          dev: 'useComponentsBackfilled - 404 Not Found Error',
+          dev: 'useComponentsBackfilled - 404 failed to parse',
         })
       )
     })

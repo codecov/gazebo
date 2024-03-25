@@ -2,6 +2,10 @@ import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
+import {
+  RepoNotFoundErrorSchema,
+  RepoOwnerNotActivatedErrorSchema,
+} from 'services/repo/schemas'
 import Api from 'shared/api'
 
 const query = `
@@ -11,13 +15,22 @@ query BackfillComponentMemberships($name: String!, $repo: String!) {
   }
   owner(username: $name) {
     repository(name: $repo) {
-      componentsMeasurementsActive
-      componentsMeasurementsBackfilled
-      componentsCount
+      __typename
+      ... on Repository {
+        componentsMeasurementsActive
+        componentsMeasurementsBackfilled
+        componentsCount
+      }
     }
   }
 }
 `
+const RepositorySchema = z.object({
+  __typename: z.literal('Repository'),
+  componentsMeasurementsActive: z.boolean().nullish(),
+  componentsMeasurementsBackfilled: z.boolean().nullish(),
+  componentsCount: z.number().nullish(),
+})
 
 const BackfillComponentsMembershipSchema = z.object({
   config: z
@@ -26,11 +39,11 @@ const BackfillComponentsMembershipSchema = z.object({
     })
     .nullish(),
   owner: z.object({
-    repository: z.object({
-      componentsMeasurementsActive: z.boolean().nullish(),
-      componentsMeasurementsBackfilled: z.boolean().nullish(),
-      componentsCount: z.number().nullish(),
-    }),
+    repository: z.discriminatedUnion('__typename', [
+      RepositorySchema,
+      RepoNotFoundErrorSchema,
+      RepoOwnerNotActivatedErrorSchema,
+    ]),
   }),
 })
 
@@ -62,7 +75,7 @@ export function useComponentsBackfilled() {
           return Promise.reject({
             status: 404,
             data: {},
-            dev: 'useComponentsBackfilled - 404 Not Found Error',
+            dev: 'useComponentsBackfilled - 404 failed to parse',
           })
         }
 
