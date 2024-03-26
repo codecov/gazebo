@@ -25,6 +25,7 @@ jest.mock('shared/featureFlags')
 jest.mock('shared/featureFlags')
 const mockedUseFlags = useFlags as jest.Mock<{
   bundleAnalysisPrAndCommitPages: boolean
+  componentTab: boolean
 }>
 
 const mockGetRepo = ({
@@ -179,6 +180,7 @@ describe('RepoPage', () => {
   ) {
     mockedUseFlags.mockReturnValue({
       bundleAnalysisPrAndCommitPages: true,
+      componentTab: true,
     })
 
     const user = userEvent.setup()
@@ -507,6 +509,21 @@ describe('RepoPage', () => {
 
           const flags = await screen.findByText('FlagsTab')
           expect(flags).toBeInTheDocument()
+        })
+      })
+
+      describe('testing components path', () => {
+        it('renders components tab', async () => {
+          const { queryClient } = setup()
+          render(<RepoPage />, {
+            wrapper: wrapper({
+              queryClient,
+              initialEntries: '/gh/codecov/cool-repo/components',
+            }),
+          })
+
+          const components = await screen.findByText('FlagsTab')
+          expect(components).toBeInTheDocument()
         })
       })
 
