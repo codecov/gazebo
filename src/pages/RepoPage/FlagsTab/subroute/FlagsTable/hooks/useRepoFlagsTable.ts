@@ -2,25 +2,31 @@ import { format, sub } from 'date-fns'
 import { useCallback, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { SortingDirection } from 'old_ui/Table/constants'
 import {
   AFTER_DATE_FORMAT_OPTIONS,
   MEASUREMENT_TIME_INTERVALS,
+  TIME_OPTION_VALUES,
+  TimeOptionValues,
 } from 'pages/RepoPage/FlagsTab/constants'
 import { useLocationParams } from 'services/navigation'
 import { useRepo } from 'services/repo'
 import { useRepoFlags } from 'services/repo/useRepoFlags'
 
-const getSortByDirection = (sortBy) =>
-  sortBy.length > 0 && sortBy[0].desc
-    ? SortingDirection.DESC
-    : SortingDirection.ASC
+type OrderingDirection = 'ASC' | 'DESC'
 
-const useMeasurementVariables = (historicalTrend, oldestCommitAt) => {
-  const isAllTime = !Boolean(historicalTrend) || historicalTrend === 'ALL_TIME'
-  const selectedDate = isAllTime
-    ? new Date(oldestCommitAt)
-    : sub(new Date(), { ...AFTER_DATE_FORMAT_OPTIONS[historicalTrend] })
+const getSortByDirection = (sortBy: { id: string; desc: boolean }[]) =>
+  sortBy.length > 0 && sortBy[0]?.desc ? 'DESC' : 'ASC'
+
+const useMeasurementVariables = (
+  historicalTrend: TimeOptionValues,
+  oldestCommitAt?: string | null
+) => {
+  const isAllTime =
+    !Boolean(historicalTrend) || historicalTrend === TIME_OPTION_VALUES.ALL_TIME
+  const selectedDate =
+    isAllTime && oldestCommitAt
+      ? new Date(oldestCommitAt)
+      : sub(new Date(), { ...AFTER_DATE_FORMAT_OPTIONS[historicalTrend] })
   const afterDate = format(selectedDate, 'yyyy-MM-dd')
   const interval = isAllTime
     ? MEASUREMENT_TIME_INTERVALS.ALL_TIME
@@ -29,13 +35,29 @@ const useMeasurementVariables = (historicalTrend, oldestCommitAt) => {
   return { afterDate, interval }
 }
 
+type URLParams = {
+  provider: string
+  owner: string
+  repo: string
+}
+
 function useRepoFlagsTable() {
-  const { params } = useLocationParams({
+  // @ts-expect-error
+  const {
+    params,
+  }: {
+    params: {
+      search: string
+      historicalTrend: TimeOptionValues
+      flags: string[]
+    }
+  } = useLocationParams({
     search: '',
     historicalTrend: '',
     flags: [],
   })
-  const { provider, owner, repo } = useParams()
+
+  const { provider, owner, repo } = useParams<URLParams>()
   const { data: repoData } = useRepo({
     provider,
     owner,
@@ -43,7 +65,7 @@ function useRepoFlagsTable() {
   })
   const isAdmin = repoData?.isAdmin
   const isSearching = Boolean(params?.search)
-  const [sortBy, setSortBy] = useState(SortingDirection.ASC)
+  const [sortBy, setSortBy] = useState<OrderingDirection>('ASC')
   const { afterDate, interval } = useMeasurementVariables(
     params?.historicalTrend,
     repoData?.repository?.oldestCommitAt
@@ -60,7 +82,7 @@ function useRepoFlagsTable() {
     })
 
   const handleSort = useCallback(
-    (tableSortBy) => {
+    (tableSortBy: { id: string; desc: boolean }[]) => {
       const tableSortByDirection = getSortByDirection(tableSortBy)
       if (sortBy !== tableSortByDirection) {
         setSortBy(tableSortByDirection)

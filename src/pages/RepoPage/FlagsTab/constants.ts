@@ -13,6 +13,7 @@ export const MEASUREMENT_TIME_INTERVALS = {
 } as const
 
 export const AFTER_DATE_FORMAT_OPTIONS = {
+  ALL_TIME: { months: 6 },
   LAST_6_MONTHS: { months: 6 },
   LAST_3_MONTHS: { months: 3 },
   LAST_30_DAYS: { days: 30 },
@@ -26,6 +27,8 @@ export const TIME_OPTION_VALUES = {
   LAST_30_DAYS: 'LAST_30_DAYS',
   LAST_7_DAYS: 'LAST_7_DAYS',
 } as const
+
+export type TimeOptionValues = keyof typeof TIME_OPTION_VALUES
 
 export const TimeOptions = [
   { label: 'All time', value: TIME_OPTION_VALUES.ALL_TIME },

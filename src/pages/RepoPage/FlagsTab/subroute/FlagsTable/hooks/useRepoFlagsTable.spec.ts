@@ -1,7 +1,7 @@
 import { renderHook, waitFor } from '@testing-library/react'
 import { format, subDays, subMonths } from 'date-fns'
+import { act } from 'react-dom/test-utils'
 import { useParams } from 'react-router-dom'
-import { act } from 'react-test-renderer'
 
 import { useLocationParams } from 'services/navigation'
 import { useRepo } from 'services/repo'
@@ -56,20 +56,31 @@ describe('useRepoFlagsTable', () => {
   function setup({
     repoData,
     useParamsValue = { search: '', historicalTrend: '', flags: [] },
+  }: {
+    repoData: any
+    useParamsValue?: {
+      search?: string
+      historicalTrend?: string
+      flags?: string[]
+    }
   }) {
-    useParams.mockReturnValue({
+    const mockedUseParams = useParams as jest.Mock
+    const mockedUseRepo = useRepo as jest.Mock
+    const mockedUseRepoFlags = useRepoFlags as jest.Mock
+    const mockedUseLocationParams = useLocationParams as jest.Mock
+
+    mockedUseParams.mockReturnValue({
       provider: 'gh',
       owner: 'codecov',
       repo: 'gazebo',
     })
-    useRepo.mockReturnValue({
+    mockedUseRepo.mockReturnValue({
       data: {
         repository: { oldestCommitAt: '2020-06-11T18:28:52' },
       },
     })
-
-    useRepoFlags.mockReturnValue(repoData)
-    useLocationParams.mockReturnValue({
+    mockedUseRepoFlags.mockReturnValue(repoData)
+    mockedUseLocationParams.mockReturnValue({
       params: useParamsValue,
     })
   }
@@ -104,7 +115,7 @@ describe('useRepoFlagsTable', () => {
       const { result } = renderHook(() => useRepoFlagsTable())
 
       act(() => {
-        result.current.handleSort([{ desc: true }])
+        result.current.handleSort([{ id: '1', desc: true }])
       })
 
       await waitFor(() =>
@@ -142,7 +153,7 @@ describe('useRepoFlagsTable', () => {
       const { result } = renderHook(() => useRepoFlagsTable())
 
       act(() => {
-        result.current.handleSort([{ desc: false }])
+        result.current.handleSort([{ id: '1', desc: false }])
       })
 
       await waitFor(() =>
