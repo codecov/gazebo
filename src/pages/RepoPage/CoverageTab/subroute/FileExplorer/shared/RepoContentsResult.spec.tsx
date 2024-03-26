@@ -1,6 +1,15 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
 import RepoContentsResult from './RepoContentsResult'
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useParams: jest
+    .fn()
+    .mockReturnValue({ provider: 'p', owner: 'blah', repo: 'bloo' }),
+}))
 
 describe('RepoContentsResult', () => {
   it('renders no results if user is searching', async () => {
@@ -57,12 +66,41 @@ describe('RepoContentsResult', () => {
       hasComponentsSelected: false,
     }
 
-    render(<RepoContentsResult {...props} />)
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+        },
+      },
+    })
+
+    const mockedUseParams = useParams as jest.Mock
+    mockedUseParams.mockReturnValue({
+      owner: 'codecov',
+      provider: 'gh',
+      repo: 'cool-repo',
+    })
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter
+          initialEntries={['/gh/codecov/cool-repo/tree/main/a/b/c']}
+        >
+          <Route path="/:provider/:owner/:repo/tree/:branch/:path+">
+            <RepoContentsResult {...props} />
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
     const noCoverageForFlags = await screen.findByText(
-      /There is no coverage on the default branch for this repository. Use the Branch Context selector above to choose a different branch./
+      /Once merged to your default branch, Codecov will show your report results on this dashboard./
     )
     expect(noCoverageForFlags).toBeInTheDocument()
+
+    const link = await screen.findByTestId('settings-page')
+    expect(link).toBeInTheDocument()
+    expect(link).toHaveAttribute('href', '/gh/codecov/cool-repo/settings')
   })
 
   it('renders no coverage for components if user has components selected', async () => {
