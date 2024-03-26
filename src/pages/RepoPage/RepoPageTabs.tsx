@@ -42,8 +42,9 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
     },
   })
 
-  const { bundleAnalysisPrAndCommitPages } = useFlags({
+  const { bundleAnalysisPrAndCommitPages, componentTab } = useFlags({
     bundleAnalysisPrAndCommitPages: false,
+    componentTab: false,
   })
 
   const matchTree = useMatchTreePath()
@@ -87,6 +88,10 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
   const hideFlagsTab = !!repoOverview?.private && tierData === TierNames.TEAM
   if (repoOverview?.coverageEnabled && !hideFlagsTab) {
     tabs.push({ pageName: 'flagsTab' })
+  }
+
+  if (repoOverview?.coverageEnabled && componentTab) {
+    tabs.push({ pageName: 'componentsTab' })
   }
 
   if (repoOverview?.bundleAnalysisEnabled || repoOverview?.coverageEnabled) {
