@@ -40,6 +40,7 @@ const mockGetRepo = ({
     isCurrentUserPartOfOrg,
     isCurrentUserActivated,
     repository: {
+      __typename: 'Repository',
       private: isRepoPrivate,
       uploadToken: noUploadToken
         ? null

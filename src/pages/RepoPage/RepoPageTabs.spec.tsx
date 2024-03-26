@@ -53,6 +53,7 @@ const mockRepo = ({ isCurrentUserPartOfOrg = true }) => ({
     isCurrentUserPartOfOrg,
     isCurrentUserActivated: true,
     repository: {
+      __typename: 'Repository',
       private: false,
       uploadToken: null,
       defaultBranch: 'main',
