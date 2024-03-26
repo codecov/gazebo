@@ -10,7 +10,7 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov/test']}>
     <Route path="/:provider/:owner/:repo">
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -42,10 +42,14 @@ const dataReturned = {
           pathContents: {
             results: [
               {
-                name: 'flag1',
-                filePath: null,
+                __typename: 'PathContentDir',
+                hits: 9,
+                misses: 0,
+                partials: 0,
+                lines: 10,
+                name: 'src',
+                path: 'src',
                 percentCovered: 100.0,
-                type: 'dir',
               },
             ],
             __typename: 'PathContents',
@@ -157,15 +161,18 @@ describe('useRepoBranchContents', () => {
         await waitFor(() => result.current.isLoading)
         await waitFor(() => !result.current.isLoading)
         await waitFor(() => result.current.isSuccess)
-
-        expect(queryClient.getQueryState().data).toEqual(
+        expect(result.current.data).toEqual(
           expect.objectContaining({
             results: [
               {
-                name: 'flag1',
-                filePath: null,
+                __typename: 'PathContentDir',
+                hits: 9,
+                misses: 0,
+                partials: 0,
+                lines: 10,
+                name: 'src',
+                path: 'src',
                 percentCovered: 100.0,
-                type: 'dir',
               },
             ],
             indicationRange: {

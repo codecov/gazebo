@@ -3,18 +3,21 @@ import { z } from 'zod'
 
 import Api from 'shared/api'
 
+const IndicationRangeSchema = z
+  .object({
+    lowerRange: z.number(),
+    upperRange: z.number(),
+  })
+  .nullish()
+
 export const RepoConfig = z
   .object({
-    indicationRange: z
-      .object({
-        lowerRange: z.number(),
-        upperRange: z.number(),
-      })
-      .nullish(),
+    indicationRange: IndicationRangeSchema,
   })
   .nullish()
 
 type RepoConfigData = z.infer<typeof RepoConfig>
+export type IndicationRangeType = z.infer<typeof IndicationRangeSchema>
 
 export interface UseRepoConfigArgs {
   provider: string

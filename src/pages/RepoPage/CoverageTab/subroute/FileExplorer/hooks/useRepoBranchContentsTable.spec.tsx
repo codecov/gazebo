@@ -3,12 +3,12 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import qs from 'qs'
+import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
-import { act } from 'react-test-renderer'
 
 import { useRepoBranchContentsTable } from './useRepoBranchContentsTable'
 
-const mockCommitContentData = {
+const mockBranchContentData = {
   owner: {
     repository: {
       repositoryConfig: {
@@ -23,17 +23,23 @@ const mockCommitContentData = {
             __typename: 'PathContents',
             results: [
               {
+                hits: 9,
+                misses: 0,
+                partials: 0,
+                lines: 10,
                 name: 'src',
-                filePath: null,
-                percentCovered: 50.0,
-                type: 'dir',
+                path: 'src',
+                percentCovered: 100.0,
                 __typename: 'PathContentDir',
               },
               {
+                hits: 9,
+                misses: 0,
+                partials: 0,
+                lines: 10,
                 name: 'file.ts',
-                filePath: null,
-                percentCovered: 50.0,
-                type: 'file',
+                path: 'src/file.ts',
+                percentCovered: 100.0,
                 __typename: 'PathContentFile',
               },
             ],
@@ -71,7 +77,9 @@ const queryClient = new QueryClient({
 const server = setupServer()
 
 const wrapper =
-  (initialEntries = '/gh/test-org/test-repo/tree/main') =>
+  (
+    initialEntries = '/gh/test-org/test-repo/tree/main'
+  ): React.FC<React.PropsWithChildren> =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
@@ -113,24 +121,24 @@ const mockOverview = {
 
 describe('useRepoBranchContentsTable', () => {
   function setup({ noData } = { noData: false }) {
-    const calledCommitContents = jest.fn()
+    const calledBranchContents = jest.fn()
 
     server.use(
       graphql.query('BranchContents', (req, res, ctx) => {
-        calledCommitContents(req?.variables)
+        calledBranchContents(req?.variables)
 
         if (noData) {
           return res(ctx.status(200), ctx.data(mockCommitNoContentData))
         }
 
-        return res(ctx.status(200), ctx.data(mockCommitContentData))
+        return res(ctx.status(200), ctx.data(mockBranchContentData))
       }),
       graphql.query('GetRepoOverview', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockOverview))
       })
     )
 
-    return { calledCommitContents }
+    return { calledBranchContents }
   }
 
   describe('calling the hook', () => {
@@ -166,18 +174,6 @@ describe('useRepoBranchContentsTable', () => {
           await waitFor(() => expect(result.current.data.length).toBe(3))
         })
       })
-
-      it('sets the correct headers', async () => {
-        setup()
-        const { result } = renderHook(() => useRepoBranchContentsTable(), {
-          wrapper: wrapper(),
-        })
-
-        await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
-        await waitFor(() => expect(queryClient.isFetching()).toBe(0))
-
-        expect(result.current.headers.length).toBe(6)
-      })
     })
 
     describe('when there is no data', () => {
@@ -197,7 +193,7 @@ describe('useRepoBranchContentsTable', () => {
 
   describe('when there is a search param', () => {
     it('makes a gql request with the search value', async () => {
-      const { calledCommitContents } = setup()
+      const { calledBranchContents } = setup()
       renderHook(() => useRepoBranchContentsTable(), {
         wrapper: wrapper(
           `/gh/test-org/test-repo/tree/main${qs.stringify(
@@ -210,17 +206,12 @@ describe('useRepoBranchContentsTable', () => {
       await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
       await waitFor(() => expect(queryClient.isFetching()).toBe(0))
 
-      expect(calledCommitContents).toHaveBeenCalled()
-      expect(calledCommitContents).toHaveBeenCalledWith({
+      expect(calledBranchContents).toHaveBeenCalled()
+      expect(calledBranchContents).toHaveBeenCalledWith({
         branch: 'main',
         filters: {
           searchValue: 'file.js',
-          flags: [],
-          components: [],
-          ordering: {
-            direction: 'ASC',
-            parameter: 'NAME',
-          },
+          displayType: 'LIST',
         },
         name: 'test-org',
         repo: 'test-repo',
@@ -231,7 +222,7 @@ describe('useRepoBranchContentsTable', () => {
 
   describe('when called with the list param', () => {
     it('makes a gql request with the list param', async () => {
-      const { calledCommitContents } = setup()
+      const { calledBranchContents } = setup()
       renderHook(() => useRepoBranchContentsTable(), {
         wrapper: wrapper(
           `/gh/test-org/test-repo/tree/main${qs.stringify(
@@ -244,17 +235,11 @@ describe('useRepoBranchContentsTable', () => {
       await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
       await waitFor(() => expect(queryClient.isFetching()).toBe(0))
 
-      expect(calledCommitContents).toHaveBeenCalled()
-      expect(calledCommitContents).toHaveBeenCalledWith({
+      expect(calledBranchContents).toHaveBeenCalled()
+      expect(calledBranchContents).toHaveBeenCalledWith({
         branch: 'main',
         filters: {
           displayType: 'LIST',
-          flags: [],
-          components: [],
-          ordering: {
-            direction: 'DESC',
-            parameter: 'MISSES',
-          },
         },
         name: 'test-org',
         repo: 'test-repo',
@@ -265,7 +250,7 @@ describe('useRepoBranchContentsTable', () => {
 
   describe('when there is a flags param', () => {
     it('makes a gql request with the flags param', async () => {
-      const { calledCommitContents } = setup()
+      const { calledBranchContents } = setup()
       renderHook(() => useRepoBranchContentsTable(), {
         wrapper: wrapper(
           `/gh/test-org/test-repo/tree/main${qs.stringify(
@@ -278,16 +263,12 @@ describe('useRepoBranchContentsTable', () => {
       await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
       await waitFor(() => expect(queryClient.isFetching()).toBe(0))
 
-      expect(calledCommitContents).toHaveBeenCalled()
-      expect(calledCommitContents).toHaveBeenCalledWith({
+      expect(calledBranchContents).toHaveBeenCalled()
+      expect(calledBranchContents).toHaveBeenCalledWith({
         branch: 'main',
         filters: {
           flags: ['flag-1'],
-          components: [],
-          ordering: {
-            direction: 'ASC',
-            parameter: 'NAME',
-          },
+          displayType: 'TREE',
         },
         name: 'test-org',
         repo: 'test-repo',
@@ -298,7 +279,7 @@ describe('useRepoBranchContentsTable', () => {
 
   describe('when there is a components param', () => {
     it('makes a gql request with the components param', async () => {
-      const { calledCommitContents } = setup()
+      const { calledBranchContents } = setup()
       renderHook(() => useRepoBranchContentsTable(), {
         wrapper: wrapper(
           `/gh/test-org/test-repo/tree/main${qs.stringify(
@@ -311,51 +292,12 @@ describe('useRepoBranchContentsTable', () => {
       await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
       await waitFor(() => expect(queryClient.isFetching()).toBe(0))
 
-      expect(calledCommitContents).toHaveBeenCalled()
-      expect(calledCommitContents).toHaveBeenCalledWith({
+      expect(calledBranchContents).toHaveBeenCalled()
+      expect(calledBranchContents).toHaveBeenCalledWith({
         branch: 'main',
         filters: {
           components: ['component-1'],
-          flags: [],
-          ordering: {
-            direction: 'ASC',
-            parameter: 'NAME',
-          },
-        },
-        name: 'test-org',
-        repo: 'test-repo',
-        path: '',
-      })
-    })
-  })
-
-  describe('when handleSort is triggered', () => {
-    it('makes a gql request with the updated params', async () => {
-      const { calledCommitContents } = setup()
-      const { result } = renderHook(() => useRepoBranchContentsTable(), {
-        wrapper: wrapper(),
-      })
-
-      await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
-      await waitFor(() => expect(queryClient.isFetching()).toBe(0))
-
-      act(() => {
-        result.current.handleSort([{ desc: true, id: 'name' }])
-      })
-
-      await waitFor(() => expect(queryClient.isFetching()).toBeGreaterThan(0))
-      await waitFor(() => expect(queryClient.isFetching()).toBe(0))
-
-      expect(calledCommitContents).toHaveBeenCalledTimes(2)
-      expect(calledCommitContents).toHaveBeenNthCalledWith(2, {
-        branch: 'main',
-        filters: {
-          flags: [],
-          components: [],
-          ordering: {
-            direction: 'DESC',
-            parameter: 'NAME',
-          },
+          displayType: 'TREE',
         },
         name: 'test-org',
         repo: 'test-repo',
