@@ -89,6 +89,12 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
     tabs.push({ pageName: 'flagsTab' })
   }
 
+  const hideComponentsTab =
+    !!repoOverview?.private && tierData === TierNames.TEAM
+  if (repoOverview?.coverageEnabled && !hideComponentsTab) {
+    tabs.push({ pageName: 'componentsTab' })
+  }
+
   if (repoOverview?.bundleAnalysisEnabled || repoOverview?.coverageEnabled) {
     tabs.push({ pageName: 'commits' }, { pageName: 'pulls' })
   }

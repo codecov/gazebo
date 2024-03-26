@@ -88,6 +88,7 @@ const wrapper =
               '/:provider/:owner/:repo/commits',
               '/:provider/:owner/:repo/compare',
               '/:provider/:owner/:repo/flags',
+              '/:provider/:owner/:repo/components',
               '/:provider/:owner/:repo/new',
               '/:provider/:owner/:repo/pulls',
               '/:provider/:owner/:repo/settings',
@@ -291,6 +292,37 @@ describe('RepoPageTabs', () => {
         await waitForElementToBeRemoved(loader)
 
         const tab = screen.queryByText('Flags')
+        expect(tab).not.toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('components tab', () => {
+    describe('rendered when coverage is enabled', () => {
+      it('renders the components tab', async () => {
+        setup({ coverageEnabled: true })
+        render(<RepoPageTabs refetchEnabled={false} />, {
+          wrapper: wrapper('/gh/codecov/test-repo/components'),
+        })
+
+        const tab = await screen.findByText('Components')
+        expect(tab).toBeInTheDocument()
+        expect(tab).toHaveAttribute('aria-current', 'page')
+        expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/components')
+      })
+    })
+
+    describe('when coverage is not enabled', () => {
+      it('does not render the components tab', async () => {
+        setup({ coverageEnabled: false })
+        render(<RepoPageTabs refetchEnabled={false} />, {
+          wrapper: wrapper('/gh/codecov/test-repo/components'),
+        })
+
+        const loader = await screen.findByText('Loading')
+        await waitForElementToBeRemoved(loader)
+
+        const tab = screen.queryByText('Components')
         expect(tab).not.toBeInTheDocument()
       })
     })
@@ -747,6 +779,82 @@ describe('useRepoTabs', () => {
         const expectedTab = [
           {
             pageName: 'flagsTab',
+          },
+        ]
+        await waitFor(() =>
+          expect(result.current).not.toEqual(
+            expect.arrayContaining(expectedTab)
+          )
+        )
+      })
+    })
+  })
+
+  describe('components tab', () => {
+    describe('coverage is enabled', () => {
+      it('adds the components link to the array', async () => {
+        setup({ coverageEnabled: true })
+        const { result } = renderHook(
+          () =>
+            useRepoTabs({
+              refetchEnabled: false,
+            }),
+          { wrapper: wrapper('/gh/codecov/test-repo') }
+        )
+
+        const expectedTab = [
+          {
+            pageName: 'componentsTab',
+          },
+        ]
+        await waitFor(() =>
+          expect(result.current).toEqual(expect.arrayContaining(expectedTab))
+        )
+      })
+    })
+
+    describe('coverage is disabled', () => {
+      it('does not add the components link to the array', async () => {
+        setup({ coverageEnabled: false })
+        const { result } = renderHook(
+          () =>
+            useRepoTabs({
+              refetchEnabled: false,
+            }),
+          { wrapper: wrapper('/gh/codecov/test-repo') }
+        )
+
+        await waitForElementToBeRemoved(await screen.findByText('Loading'))
+
+        const expectedTab = [
+          {
+            pageName: 'componentsTab',
+          },
+        ]
+        await waitFor(() =>
+          expect(result.current).not.toEqual(
+            expect.arrayContaining(expectedTab)
+          )
+        )
+      })
+    })
+
+    describe('repo is private and tier is team', () => {
+      it('does not add the components link to the array', async () => {
+        setup({ isRepoPrivate: true, tierName: TierNames.TEAM })
+        const { result } = renderHook(
+          () =>
+            useRepoTabs({
+              refetchEnabled: false,
+            }),
+          { wrapper: wrapper('/gh/codecov/test-repo') }
+        )
+
+        await waitForElementToBeRemoved(await screen.findByText('Loading'))
+
+        const expectedTab = [
+          {
+            pageName: 'componentsTab',
           },
         ]
         await waitFor(() =>
