@@ -1,8 +1,6 @@
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 
-import ComponentsSelector from '../../ComponentsSelector'
-
 function IndirectChangesInfo() {
   return (
     <div className="flex justify-between bg-ds-gray-primary p-2">
@@ -14,7 +12,6 @@ function IndirectChangesInfo() {
           <A to={{ pageName: 'unexpectedChanges' }}>learn more.</A>
         </p>
       </div>
-      <ComponentsSelector />
     </div>
   )
 }
