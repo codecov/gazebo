@@ -19,6 +19,7 @@ import RepoPageTabs, { useRepoTabs } from './RepoPageTabs'
 jest.mock('shared/featureFlags')
 const mockedUseFlags = useFlags as jest.Mock<{
   bundleAnalysisPrAndCommitPages: boolean
+  componentTab: boolean
 }>
 
 const mockRepoOverview = ({
@@ -53,6 +54,7 @@ const mockRepo = ({ isCurrentUserPartOfOrg = true }) => ({
     isCurrentUserPartOfOrg,
     isCurrentUserActivated: true,
     repository: {
+      __typename: 'Repository',
       private: false,
       uploadToken: null,
       defaultBranch: 'main',
@@ -136,6 +138,7 @@ describe('RepoPageTabs', () => {
   }: SetupArgs) {
     mockedUseFlags.mockReturnValue({
       bundleAnalysisPrAndCommitPages: true,
+      componentTab: true,
     })
 
     server.use(
@@ -461,6 +464,7 @@ describe('useRepoTabs', () => {
   }: SetupArgs) {
     mockedUseFlags.mockReturnValue({
       bundleAnalysisPrAndCommitPages: true,
+      componentTab: true,
     })
 
     server.use(
@@ -838,7 +842,7 @@ describe('useRepoTabs', () => {
         )
       })
     })
-
+        
     describe('repo is private and tier is team', () => {
       it('does not add the components link to the array', async () => {
         setup({ isRepoPrivate: true, tierName: TierNames.TEAM })
@@ -864,7 +868,39 @@ describe('useRepoTabs', () => {
         )
       })
     })
+        
+    describe('feature flag is off', () => {
+      it('does not add the components link to the array', async () => {
+        mockedUseFlags.mockReturnValueOnce({
+          bundleAnalysisPrAndCommitPages: true,
+          componentTab: false,
+        })
+
+        setup({ coverageEnabled: true })
+        const { result } = renderHook(
+          () =>
+            useRepoTabs({
+              refetchEnabled: false,
+            }),
+          { wrapper: wrapper('/gh/codecov/test-repo') }
+        )
+
+        await waitForElementToBeRemoved(await screen.findByText('Loading'))
+
+        const expectedTab = [
+          {
+            pageName: 'componentsTab',
+          },
+        ]
+        await waitFor(() =>
+          expect(result.current).not.toEqual(
+            expect.arrayContaining(expectedTab)
+          )
+        )
+      })
+    })
   })
+          
 
   describe('commits and pulls tab', () => {
     describe('bundle analysis is enabled', () => {

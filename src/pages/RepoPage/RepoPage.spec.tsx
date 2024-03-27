@@ -26,6 +26,7 @@ jest.mock('shared/featureFlags')
 jest.mock('shared/featureFlags')
 const mockedUseFlags = useFlags as jest.Mock<{
   bundleAnalysisPrAndCommitPages: boolean
+  componentTab: boolean
 }>
 
 const mockGetRepo = ({
@@ -41,6 +42,7 @@ const mockGetRepo = ({
     isCurrentUserPartOfOrg,
     isCurrentUserActivated,
     repository: {
+      __typename: 'Repository',
       private: isRepoPrivate,
       uploadToken: noUploadToken
         ? null
@@ -180,6 +182,7 @@ describe('RepoPage', () => {
   ) {
     mockedUseFlags.mockReturnValue({
       bundleAnalysisPrAndCommitPages: true,
+      componentTab: true,
     })
 
     const user = userEvent.setup()
@@ -521,7 +524,7 @@ describe('RepoPage', () => {
             }),
           })
 
-          const components = await screen.findByText('ComponentsTab')
+          const components = await screen.findByText('FlagsTab')
           expect(components).toBeInTheDocument()
         })
       })

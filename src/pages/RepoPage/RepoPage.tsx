@@ -53,8 +53,9 @@ function Routes({
   bundleAnalysisEnabled,
   jsOrTsPresent,
 }: RoutesProps) {
-  const { bundleAnalysisPrAndCommitPages } = useFlags({
+  const { bundleAnalysisPrAndCommitPages, componentTab } = useFlags({
     bundleAnalysisPrAndCommitPages: false,
+    componentTab: false,
   })
 
   // repo is currently active and activated
@@ -115,9 +116,9 @@ function Routes({
             <FlagsTab />
           </SentryRoute>
         ) : null}
-        {coverageEnabled ? (
+        {coverageEnabled && componentTab ? (
           <SentryRoute path={`${path}/components`} exact>
-            <ComponentsTab />
+            <FlagsTab />
           </SentryRoute>
         ) : null}
         {productEnabled ? (
