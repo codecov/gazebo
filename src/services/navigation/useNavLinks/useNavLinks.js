@@ -380,6 +380,17 @@ export function useNavLinks() {
       isExternalLink: false,
       text: 'Flags',
     },
+    componentsTab: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/components`,
+      isExternalLink: false,
+      text: 'Components',
+    },
     branches: {
       path: (
         { provider = p, owner = o, repo = r } = {
@@ -658,7 +669,7 @@ export function useNavLinks() {
           owner: o,
           repo: r,
         }
-      ) => `https://github.com/${owner}/${repo}/settings/secrets/actions`,
+      ) => `https://github.com/${owner}/${repo}/settings/secrets/actions/new`,
       isExternalLink: true,
       openNewTab: true,
     },
