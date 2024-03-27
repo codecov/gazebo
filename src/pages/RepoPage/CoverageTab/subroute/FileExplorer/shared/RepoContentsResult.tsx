@@ -1,3 +1,7 @@
+import A from 'ui/A'
+import Banner from 'ui/Banner'
+import BannerContent from 'ui/Banner/BannerContent'
+
 interface RepoContentsProps {
   isSearching: boolean
   isMissingHeadReport: boolean
@@ -11,50 +15,49 @@ const RepoContentsResult: React.FC<RepoContentsProps> = ({
   hasFlagsSelected,
   hasComponentsSelected,
 }) => {
+  let copy: JSX.Element | string = ''
+
   if (isSearching) {
-    return <p className="flex flex-1 justify-center">No results found</p>
-  }
-
-  if (isMissingHeadReport) {
-    return (
-      <p className="flex flex-1 justify-center">
-        No coverage report uploaded for this branch head commit
-      </p>
-    )
-  }
-
-  if (hasComponentsSelected && hasFlagsSelected) {
-    return (
-      <p className="flex flex-1 justify-center">
+    copy = 'No results found'
+  } else if (isMissingHeadReport) {
+    copy = 'No coverage report uploaded for this branch head commit'
+  } else if (hasComponentsSelected && hasFlagsSelected) {
+    copy = `
         No coverage reported for the selected flag/component combination in this
-        branch&apos;s head commit
-      </p>
-    )
-  }
-
-  if (hasComponentsSelected) {
-    return (
-      <p className="flex flex-1 justify-center">
+        branch's head commit
+      `
+  } else if (hasComponentsSelected) {
+    copy = `
         No coverage report uploaded for the selected components in this
-        branch&apos;s head commit
-      </p>
-    )
-  }
-
-  if (hasFlagsSelected) {
-    return (
-      <p className="flex flex-1 justify-center">
-        No coverage report uploaded for the selected flags in this branch&apos;s
+        branch's head commit
+      `
+  } else if (hasFlagsSelected) {
+    copy = `
+        No coverage report uploaded for the selected flags in this branch's
         head commit
+      `
+  } else {
+    copy = (
+      <p>
+        Once merged to your default branch, Codecov will show your report
+        results on this dashboard.{' '}
+        <A
+          to={{ pageName: 'settings' }}
+          hook={'repo-to-edit-branch'}
+          variant="semibold"
+          isExternal={false}
+          data-testid="settings-page"
+        >
+          edit default branch
+        </A>
       </p>
     )
   }
 
   return (
-    <p className="flex flex-1 justify-center">
-      There is no coverage on the default branch for this repository. Use the
-      Branch Context selector above to choose a different branch.
-    </p>
+    <Banner>
+      <BannerContent>{copy}</BannerContent>
+    </Banner>
   )
 }
 
