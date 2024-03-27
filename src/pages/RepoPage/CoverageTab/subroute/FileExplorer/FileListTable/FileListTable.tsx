@@ -5,7 +5,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 
 import { OrderingDirection } from 'services/repos'
 import { Row } from 'shared/ContentsTable/utils'
@@ -94,7 +94,7 @@ export const getBaseColumns = () => {
 
 function FileListTable() {
   const [sorting, setSorting] = useState([{ id: 'misses', desc: true }])
-  const ordering = useMemo(() => getOrderingDirection(sorting), [sorting])
+  const ordering = getOrderingDirection(sorting)
   const {
     data,
     isSearching,
