@@ -8,6 +8,7 @@ const SentryPlugin = sentryWebpackPlugin({
   org: process.env.SENTRY_ORG || 'codecov',
   project: process.env.SENTRY_PROJECT || 'gazebo',
   authToken: process.env.SENTRY_AUTH_TOKEN,
+  release: process.env.GAZEBO_SHA || Date.now().toString(),
 })
 
 module.exports = {
