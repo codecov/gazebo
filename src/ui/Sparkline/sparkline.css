@@ -1,5 +1,24 @@
-td {
+.tableui table {
+  border: unset;
+}
+
+#sparklineTable {
+  table-layout: fixed;
+  min-width: unset !important;
+}
+
+#sparklineTable tbody {
+  border: unset;
+}
+
+#sparklineTable tr {
+  border: none;
+  text-align: unset;
+}
+
+#sparklineTable td {
   --dot-size: 4px;
+  padding: 0;
 }
 
 .line::before {

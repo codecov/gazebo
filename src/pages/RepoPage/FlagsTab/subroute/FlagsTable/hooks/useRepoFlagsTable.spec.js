@@ -101,7 +101,7 @@ describe('useRepoFlagsTable', () => {
     })
 
     it('calls useRepoFlagsTable with desc value', async () => {
-      const { result } = renderHook(() => useRepoFlagsTable())
+      const { result } = renderHook(() => useRepoFlagsTable(true))
 
       act(() => {
         result.current.handleSort([{ desc: true }])
@@ -139,7 +139,7 @@ describe('useRepoFlagsTable', () => {
     })
 
     it('calls useRepoFlagsTable with asc value', async () => {
-      const { result } = renderHook(() => useRepoFlagsTable())
+      const { result } = renderHook(() => useRepoFlagsTable(false))
 
       act(() => {
         result.current.handleSort([{ desc: false }])
