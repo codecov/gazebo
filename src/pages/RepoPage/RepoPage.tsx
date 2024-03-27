@@ -118,7 +118,7 @@ function Routes({
         ) : null}
         {coverageEnabled && componentTab ? (
           <SentryRoute path={`${path}/components`} exact>
-            <FlagsTab />
+            <ComponentsTab />
           </SentryRoute>
         ) : null}
         {productEnabled ? (

@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 
-import { useActivateFlagMeasurements } from 'services/repo'
+import { MEASUREMENT_TYPE, useActivateFlagMeasurements } from 'services/repo'
 import Banner from 'ui/Banner'
 import BannerContent from 'ui/Banner/BannerContent'
 import BannerHeading from 'ui/Banner/BannerHeading'
@@ -15,13 +15,12 @@ type URLParams = {
 
 function TriggerSyncBanner() {
   const { provider, owner, repo } = useParams<URLParams>()
-  const { mutate } = useActivateFlagMeasurements({ provider, owner, repo })
-
-  const enableComponentAnalytics = () => {
-    // TODO: remove when we type out useActivateFlagMeasurements hook
-    // @ts-expect-error
-    mutate({ provider, owner, repo })
-  }
+  const { mutate } = useActivateFlagMeasurements({
+    provider,
+    owner,
+    repo,
+    measurementType: MEASUREMENT_TYPE.FLAG_COVERAGE,
+  })
 
   return (
     <div className="py-4">
@@ -46,7 +45,7 @@ function TriggerSyncBanner() {
                 to={undefined}
                 hook="backfill-task"
                 variant="primary"
-                onClick={enableComponentAnalytics}
+                onClick={mutate}
                 disabled={false}
               >
                 Enable component analytics

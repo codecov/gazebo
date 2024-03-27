@@ -101,7 +101,7 @@ describe('useRepoComponentsTable', () => {
     })
 
     it('calls useRepoComponentsTable with desc value', async () => {
-      const { result } = renderHook(() => useRepoComponentsTable())
+      const { result } = renderHook(() => useRepoComponentsTable(true))
 
       act(() => {
         result.current.handleSort([{ desc: true }])
@@ -139,7 +139,7 @@ describe('useRepoComponentsTable', () => {
     })
 
     it('calls useRepoComponentsTable with asc value', async () => {
-      const { result } = renderHook(() => useRepoComponentsTable())
+      const { result } = renderHook(() => useRepoComponentsTable(true))
 
       act(() => {
         result.current.handleSort([{ desc: false }])

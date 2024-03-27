@@ -1,14 +1,18 @@
-import PropTypes from 'prop-types'
-
 import Sparkline from 'ui/Sparkline'
 import TotalsNumber from 'ui/TotalsNumber'
 
-const isDataEmpty = ({ measurements }) =>
+const isDataEmpty = ({ measurements }: { measurements: any[] }) =>
   !measurements ||
   measurements.length === 0 ||
   (measurements.length > 0 && measurements.every(({ avg }) => avg === null))
 
-function TableSparkline({ measurements, change, name }) {
+export type TableSparklineProps = {
+  measurements: any[]
+  name: string
+  change?: number | null
+}
+
+function TableSparkline({ measurements, name, change }: TableSparklineProps) {
   const noData = isDataEmpty({ measurements })
 
   return (
@@ -31,9 +35,3 @@ function TableSparkline({ measurements, change, name }) {
 }
 
 export default TableSparkline
-
-TableSparkline.propTypes = {
-  measurements: PropTypes.array.isRequired,
-  change: PropTypes.number,
-  name: PropTypes.string.isRequired,
-}

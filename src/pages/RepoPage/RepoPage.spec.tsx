@@ -524,7 +524,7 @@ describe('RepoPage', () => {
             }),
           })
 
-          const components = await screen.findByText('FlagsTab')
+          const components = await screen.findByText('ComponentsTab')
           expect(components).toBeInTheDocument()
         })
       })
