@@ -34,9 +34,11 @@ const ImpactedFilesOrdering = z.object({
   parameter: z.nativeEnum(OrderingParameter).optional(),
 })
 
-const CoverageObjSchema = z.object({
-  coverage: z.number().nullable(),
-})
+const CoverageObjSchema = z
+  .object({
+    coverage: z.number().nullable(),
+  })
+  .nullable()
 
 const ImpactedFileSchema = z
   .object({
