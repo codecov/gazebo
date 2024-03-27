@@ -86,6 +86,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    deployingComponentsSupport: {
+      text: 'Enabling Flags on Self Hosted',
+      path: () => 'https://docs.codecov.com/docs/components',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     enterprise: {
       text: 'Self Hosted',
       path: () => `${config.MARKETING_BASE_URL}/self-hosted`,
@@ -273,6 +279,12 @@ export function useStaticNavLinks() {
       openNewTab: true,
     },
     flagsFeedback: {
+      text: 'New repo set up feedback',
+      path: () => 'https://github.com/codecov/Codecov-user-feedback/issues/27',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    componentsFeedback: {
       text: 'New repo set up feedback',
       path: () => 'https://github.com/codecov/Codecov-user-feedback/issues/27',
       isExternalLink: true,

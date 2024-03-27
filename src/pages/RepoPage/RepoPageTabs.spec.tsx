@@ -842,7 +842,33 @@ describe('useRepoTabs', () => {
         )
       })
     })
+        
+    describe('repo is private and tier is team', () => {
+      it('does not add the components link to the array', async () => {
+        setup({ isRepoPrivate: true, tierName: TierNames.TEAM })
+        const { result } = renderHook(
+          () =>
+            useRepoTabs({
+              refetchEnabled: false,
+            }),
+          { wrapper: wrapper('/gh/codecov/test-repo') }
+        )
 
+        await waitForElementToBeRemoved(await screen.findByText('Loading'))
+
+        const expectedTab = [
+          {
+            pageName: 'componentsTab',
+          },
+        ]
+        await waitFor(() =>
+          expect(result.current).not.toEqual(
+            expect.arrayContaining(expectedTab)
+          )
+        )
+      })
+    })
+        
     describe('feature flag is off', () => {
       it('does not add the components link to the array', async () => {
         mockedUseFlags.mockReturnValueOnce({
@@ -874,6 +900,7 @@ describe('useRepoTabs', () => {
       })
     })
   })
+          
 
   describe('commits and pulls tab', () => {
     describe('bundle analysis is enabled', () => {

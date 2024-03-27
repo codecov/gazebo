@@ -90,7 +90,9 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
     tabs.push({ pageName: 'flagsTab' })
   }
 
-  if (repoOverview?.coverageEnabled && componentTab) {
+  const hideComponentsTab =
+    !!repoOverview?.private && tierData === TierNames.TEAM
+  if (repoOverview?.coverageEnabled && componentTab && !hideComponentsTab) {
     tabs.push({ pageName: 'componentsTab' })
   }
 
