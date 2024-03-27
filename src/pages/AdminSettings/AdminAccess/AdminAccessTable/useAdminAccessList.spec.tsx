@@ -43,7 +43,7 @@ const mockSecondResponse = {
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const wrapper =
+const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
   (initialEntries = '/admin/gh/access') =>
   ({ children }) =>
     (
@@ -55,7 +55,10 @@ const wrapper =
     )
 
 const server = setupServer()
-beforeAll(() => server.listen())
+beforeAll(() => {
+  console.error = () => {}
+  server.listen()
+})
 beforeEach(() => {
   server.resetHandlers()
   queryClient.clear()
@@ -63,9 +66,13 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('useAdminAccessList', () => {
-  function setup() {
+  function setup({ invalidResponse = false }) {
     server.use(
       rest.get('/internal/users', (req, res, ctx) => {
+        if (invalidResponse) {
+          return res(ctx.status(200), ctx.json({}))
+        }
+
         const {
           url: { searchParams },
         } = req
@@ -83,7 +90,7 @@ describe('useAdminAccessList', () => {
 
   describe('hook queries first dataset', () => {
     beforeEach(() => {
-      setup()
+      setup({})
     })
 
     it('returns the data', async () => {
@@ -108,7 +115,7 @@ describe('useAdminAccessList', () => {
 
   describe('hook fetches the next dataset', () => {
     beforeEach(() => {
-      setup()
+      setup({})
     })
 
     it('returns the data', async () => {
@@ -143,6 +150,26 @@ describe('useAdminAccessList', () => {
             activated: true,
           },
         ])
+      )
+    })
+  })
+
+  describe('endpoint returns invalid data', () => {
+    beforeEach(() => {
+      setup({ invalidResponse: true })
+    })
+
+    it('rejects with 404', async () => {
+      const { result } = renderHook(() => useAdminAccessList(), {
+        wrapper: wrapper(),
+      })
+
+      await waitFor(() => expect(result.current.isError).toBeTruthy())
+      expect(result.current.error).toEqual(
+        expect.objectContaining({
+          status: 404,
+          dev: 'useAdminAccessList - 404 schema parsing failed',
+        })
       )
     })
   })
