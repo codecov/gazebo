@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import TableSparkline from './TableSparkline'
+import TableSparkline, { TableSparklineProps } from './TableSparkline'
 
 const measurements = [
   { avg: 51.78 },
@@ -11,7 +11,7 @@ const measurements = [
 ]
 
 describe('TableSparkline', () => {
-  function setup(props) {
+  function setup(props: TableSparklineProps) {
     render(<TableSparkline {...props} />)
   }
 
