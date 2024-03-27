@@ -54,42 +54,38 @@ function getOrderingDirection(sorting: Array<{ id: string; desc: boolean }>) {
   return undefined
 }
 
-export const getBaseColumns = () => {
-  const baseColumns = [
-    columnHelper.accessor('name', {
-      id: 'name',
-      header: () => 'Files',
-      cell: ({ renderValue }) => renderValue(),
-    }),
-    columnHelper.accessor('lines', {
-      id: 'lines',
-      header: () => 'Tracked lines',
-      cell: ({ renderValue }) => renderValue(),
-    }),
-    columnHelper.accessor('hits', {
-      id: 'hits',
-      header: () => 'Covered',
-      cell: ({ renderValue }) => renderValue(),
-    }),
-    columnHelper.accessor('partials', {
-      id: 'partials',
-      header: () => 'Partial',
-      cell: ({ renderValue }) => renderValue(),
-    }),
-    columnHelper.accessor('misses', {
-      id: 'misses',
-      header: () => 'Missed',
-      cell: ({ renderValue }) => renderValue(),
-    }),
-    columnHelper.accessor('coverage', {
-      id: 'percentCovered',
-      header: () => 'Coverage %',
-      cell: ({ renderValue }) => renderValue(),
-    }),
-  ]
-
-  return baseColumns
-}
+const baseColumns = [
+  columnHelper.accessor('name', {
+    id: 'name',
+    header: () => 'Files',
+    cell: ({ renderValue }) => renderValue(),
+  }),
+  columnHelper.accessor('lines', {
+    id: 'lines',
+    header: () => 'Tracked lines',
+    cell: ({ renderValue }) => renderValue(),
+  }),
+  columnHelper.accessor('hits', {
+    id: 'hits',
+    header: () => 'Covered',
+    cell: ({ renderValue }) => renderValue(),
+  }),
+  columnHelper.accessor('partials', {
+    id: 'partials',
+    header: () => 'Partial',
+    cell: ({ renderValue }) => renderValue(),
+  }),
+  columnHelper.accessor('misses', {
+    id: 'misses',
+    header: () => 'Missed',
+    cell: ({ renderValue }) => renderValue(),
+  }),
+  columnHelper.accessor('coverage', {
+    id: 'percentCovered',
+    header: () => 'Coverage %',
+    cell: ({ renderValue }) => renderValue(),
+  }),
+]
 
 function CodeTreeTable() {
   const [sorting, setSorting] = useState([{ id: 'name', desc: false }])
@@ -105,7 +101,7 @@ function CodeTreeTable() {
   } = useRepoBranchContentsTable(ordering)
 
   const table = useReactTable({
-    columns: getBaseColumns(),
+    columns: baseColumns,
     getCoreRowModel: getCoreRowModel(),
     data: data ?? [],
     state: {
@@ -179,14 +175,9 @@ function CodeTreeTable() {
                     <td
                       key={cell.id}
                       className={cs({
-                        'flex justify-end': cell.column.id === 'coverage',
-                        'text-right':
-                          cell.column.id !== 'name' &&
-                          cell.column.id !== 'coverage',
-                        'w-5/12': cell.column.id === 'name',
-                        'w-1/12':
-                          cell.column.id !== 'name' &&
-                          cell.column.id !== 'coverage',
+                        'w-2/12': cell.column.id === 'percentCovered',
+                        'text-right w-1/12': cell.column.id !== 'name',
+                        'w-4/12': cell.column.id === 'name',
                       })}
                     >
                       {flexRender(
