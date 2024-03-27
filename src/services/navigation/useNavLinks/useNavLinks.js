@@ -380,6 +380,17 @@ export function useNavLinks() {
       isExternalLink: false,
       text: 'Flags',
     },
+    componentsTab: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/components`,
+      isExternalLink: false,
+      text: 'Components',
+    },
     branches: {
       path: (
         { provider = p, owner = o, repo = r } = {
