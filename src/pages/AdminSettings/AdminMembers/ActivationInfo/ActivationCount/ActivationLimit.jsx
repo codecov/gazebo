@@ -5,8 +5,8 @@ function ActivationLimit() {
     <p>
       Your org has reached the available seats. Any additional members will not
       have access to the app and pull request data. Please reach out to{' '}
-      <A href="mailto:success@codecov.io" hook="support email">
-        success@codecov.io
+      <A href="mailto:sales@codecov.io" hook="email-sales-activation-limit">
+        sales@codecov.io
       </A>{' '}
       to update your account.
     </p>
