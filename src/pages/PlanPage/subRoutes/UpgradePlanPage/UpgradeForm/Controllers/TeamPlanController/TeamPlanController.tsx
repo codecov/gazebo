@@ -28,10 +28,6 @@ const PlanController: React.FC<PlanControllerProps> = ({
   register,
   errors,
 }) => {
-  if (seats > 10) {
-    setFormValue('seats', '10')
-  }
-
   return (
     <>
       <div className="flex flex-col gap-2">

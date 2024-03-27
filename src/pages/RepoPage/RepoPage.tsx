@@ -52,8 +52,9 @@ function Routes({
   bundleAnalysisEnabled,
   jsOrTsPresent,
 }: RoutesProps) {
-  const { bundleAnalysisPrAndCommitPages } = useFlags({
+  const { bundleAnalysisPrAndCommitPages, componentTab } = useFlags({
     bundleAnalysisPrAndCommitPages: false,
+    componentTab: false,
   })
 
   // repo is currently active and activated
@@ -101,7 +102,7 @@ function Routes({
           <SentryRoute
             path={[
               `${path}/bundles/new`,
-              `${path}bundles/new/rollup`,
+              `${path}/bundles/new/rollup`,
               `${path}/bundles/new/webpack`,
             ]}
             exact
@@ -111,6 +112,11 @@ function Routes({
         ) : null}
         {coverageEnabled ? (
           <SentryRoute path={`${path}/flags`} exact>
+            <FlagsTab />
+          </SentryRoute>
+        ) : null}
+        {coverageEnabled && componentTab ? (
+          <SentryRoute path={`${path}/components`} exact>
             <FlagsTab />
           </SentryRoute>
         ) : null}
