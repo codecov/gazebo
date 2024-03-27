@@ -1,5 +1,6 @@
 import { lazy } from 'react'
 
+import InstallationHelpBanner from 'layouts/BaseLayout/InstallationHelpBanner'
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 
 const RequestInstallBanner = lazy(() => import('./RequestInstallBanner'))
@@ -12,6 +13,7 @@ const GlobalTopBanners: React.FC = () => {
       <RequestInstallBanner />
       <TrialBanner />
       <TeamPlanFeedbackBanner />
+      <InstallationHelpBanner />
     </SilentNetworkErrorWrapper>
   )
 }
