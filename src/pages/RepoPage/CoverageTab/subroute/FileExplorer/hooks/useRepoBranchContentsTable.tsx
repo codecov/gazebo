@@ -128,8 +128,7 @@ export function useRepoBranchContentsTable(sortItem?: {
               urlPath={urlPath}
             />
           )
-        }
-        if (result?.__typename === 'PathContentFile') {
+        } else if (result?.__typename === 'PathContentFile') {
           name = (
             <BranchFileEntry
               name={result.name}
