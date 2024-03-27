@@ -1,17 +1,8 @@
 /* eslint-disable camelcase */
 const { codecovWebpackPlugin } = require('@codecov/webpack-plugin')
-const SentryWebpackPlugin = require('@sentry/webpack-plugin')
 const WebpackHookPlugin = require('webpack-hook-plugin')
 
 const { resolve } = require('path')
-
-const SentryPlugin = new SentryWebpackPlugin({
-  org: process.env.SENTRY_ORG || 'codecov',
-  project: process.env.SENTRY_PROJECT || 'gazebo',
-  include: './build/static/js',
-  authToken: process.env.SENTRY_AUTH_TOKEN,
-  urlPrefix: '~/static/js',
-})
 
 module.exports = {
   webpack: {
@@ -36,7 +27,6 @@ module.exports = {
       sentry: resolve(__dirname, 'src/sentry'),
     },
     plugins: [
-      ...(process.env.SENTRY_AUTH_TOKEN ? [SentryPlugin] : []),
       ...(process.env.NODE_ENV === 'development'
         ? [
             new WebpackHookPlugin({
