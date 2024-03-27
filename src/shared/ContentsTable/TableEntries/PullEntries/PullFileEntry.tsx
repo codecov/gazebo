@@ -1,9 +1,18 @@
-import PropTypes from 'prop-types'
-
+import { PathContentsFilters } from 'services/pathContents/constants'
 import { usePrefetchPullFileEntry } from 'services/pathContents/pull/file'
 
-import { displayTypeParameter } from '../../constants'
+import { DisplayType } from '../../constants'
 import FileEntry from '../BaseEntries/FileEntry'
+
+interface PullFileEntryProps {
+  commitSha: string
+  path: string
+  isCriticalFile: boolean
+  name: string
+  displayType: DisplayType
+  urlPath: string
+  filters?: PathContentsFilters
+}
 
 function PullFileEntry({
   commitSha,
@@ -13,13 +22,13 @@ function PullFileEntry({
   urlPath,
   displayType,
   filters,
-}) {
-  const flags = filters?.flags?.length > 0 ? filters?.flags : []
+}: PullFileEntryProps) {
+  const flags =
+    filters?.flags && filters?.flags?.length > 0 ? filters?.flags : []
 
   const { runPrefetch } = usePrefetchPullFileEntry({
     path,
     ref: commitSha,
-    flags,
   })
 
   return (
@@ -34,19 +43,6 @@ function PullFileEntry({
       queryParams={{ flags }}
     />
   )
-}
-
-PullFileEntry.propTypes = {
-  commitSha: PropTypes.string.isRequired,
-  pullId: PropTypes.string,
-  urlPath: PropTypes.string,
-  isCriticalFile: PropTypes.bool,
-  name: PropTypes.string.isRequired,
-  displayType: PropTypes.oneOf(Object.values(displayTypeParameter)),
-  path: PropTypes.string,
-  filters: PropTypes.shape({
-    flags: PropTypes.arrayOf(PropTypes.string),
-  }),
 }
 
 export default PullFileEntry
