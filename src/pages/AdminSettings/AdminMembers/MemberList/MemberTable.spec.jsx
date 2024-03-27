@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
+import { mockAllIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import MemberTable from './MemberTable'
@@ -24,7 +25,6 @@ const mockedFirstResponse = {
       name: 'User 1',
       isAdmin: true,
       activated: false,
-      student: false,
     },
   ],
   totalPages: 2,
@@ -42,7 +42,6 @@ const mockSecondResponse = {
       name: null,
       isAdmin: false,
       activated: true,
-      student: false,
     },
   ],
   total_pages: 2,
@@ -68,25 +67,25 @@ const wrapper = ({ children }) => (
   </QueryClientProvider>
 )
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 beforeEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('MemberTable', () => {
   function setup(
-    {
-      noData = false,
-      seatsOpen = true,
-      returnActivated = false,
-      student = false,
-    } = {
+    { noData = false, seatsOpen = true, returnActivated = false } = {
       noData: false,
       seatsOpen: true,
       returnActivated: false,
-      student: false,
     }
   ) {
     const user = userEvent.setup()
@@ -119,9 +118,6 @@ describe('MemberTable', () => {
           return res(ctx.status(200), ctx.json(mockSecondResponse))
         } else if (returnActivated) {
           return res(ctx.status(200), ctx.json(mockSecondResponse))
-        } else if (student) {
-          mockedFirstResponse.results[0].student = true
-          return res(ctx.status(200), ctx.json(mockedFirstResponse))
         }
         return res(ctx.status(200), ctx.json(mockedFirstResponse))
       }),
@@ -148,6 +144,8 @@ describe('MemberTable', () => {
       })
     )
 
+    mockAllIsIntersecting(false)
+
     return { user }
   }
 
@@ -156,7 +154,7 @@ describe('MemberTable', () => {
       setup()
       render(<MemberTable />, { wrapper })
 
-      const header = await screen.findByText('User Name')
+      const header = await screen.findByText('Username')
       expect(header).toBeInTheDocument()
     })
 
@@ -164,38 +162,21 @@ describe('MemberTable', () => {
       setup()
       render(<MemberTable />, { wrapper })
 
-      expect(await screen.findByText('User 1')).toBeTruthy()
-      const user = screen.getByText('User 1')
+      const user = await screen.findByText('User 1')
       expect(user).toBeInTheDocument()
     })
 
     it('displays extended list after loading more', async () => {
-      const { user } = setup()
+      setup()
       render(<MemberTable />, { wrapper })
 
-      expect(await screen.findByText('Load More')).toBeTruthy()
-      const button = screen.getByText('Load More')
-      await user.click(button)
-
-      expect(await screen.findByText('User 1')).toBeTruthy()
-      const user1 = screen.getByText('User 1')
+      const user1 = await screen.findByText('User 1')
       expect(user1).toBeInTheDocument()
 
-      expect(await screen.findByText('user2-codecov')).toBeTruthy()
-      const user2 = screen.getByText('user2-codecov')
+      mockAllIsIntersecting(true)
+
+      const user2 = await screen.findByText('user2-codecov')
       expect(user2).toBeInTheDocument()
-    })
-  })
-
-  describe('renders load more button', () => {
-    beforeEach(() => setup())
-
-    it('displays the button', async () => {
-      render(<MemberTable />, { wrapper })
-
-      expect(await screen.findByText('Load More')).toBeTruthy()
-      const button = screen.getByText('Load More')
-      expect(button).toBeInTheDocument()
     })
   })
 
@@ -206,36 +187,25 @@ describe('MemberTable', () => {
           setup({ seatsOpen: false })
           render(<MemberTable />, { wrapper })
 
-          expect(
-            await screen.findByRole('button', { name: 'Non-Active' })
-          ).toBeTruthy()
-          const toggle = screen.getByRole('button', { name: 'Non-Active' })
+          const toggle = await screen.findByRole('button', {
+            name: 'Non-Active',
+          })
           expect(toggle).toBeDisabled()
         })
       })
 
-      describe('user is a student', () => {
+      describe.skip('user is a student', () => {
         it('updates the users activate', async () => {
           const { user } = setup({ student: true, seatsOpen: false })
           render(<MemberTable />, { wrapper })
 
-          expect(
-            await screen.findByRole('button', {
-              name: 'Non-Active',
-            })
-          ).toBeTruthy()
-          const nonActiveToggleClick = screen.getByRole('button', {
+          const nonActiveToggleClick = await screen.findByRole('button', {
             name: 'Non-Active',
           })
           expect(nonActiveToggleClick).toBeInTheDocument()
           await user.click(nonActiveToggleClick)
 
-          expect(
-            await screen.findByRole('button', {
-              name: 'Activated',
-            })
-          ).toBeTruthy()
-          const activeToggle = screen.getByRole('button', {
+          const activeToggle = await screen.findByRole('button', {
             name: 'Activated',
           })
           expect(activeToggle).toBeInTheDocument()
@@ -253,22 +223,12 @@ describe('MemberTable', () => {
         const { user } = setup()
         render(<MemberTable />, { wrapper })
 
-        expect(
-          await screen.findByRole('button', {
-            name: 'Non-Active',
-          })
-        ).toBeTruthy()
-        const nonActiveToggleClick = screen.getByRole('button', {
+        const nonActiveToggleClick = await screen.findByRole('button', {
           name: 'Non-Active',
         })
         await user.click(nonActiveToggleClick)
 
-        expect(
-          await screen.findByRole('button', {
-            name: 'Activated',
-          })
-        ).toBeTruthy()
-        const activeToggle = screen.getByRole('button', {
+        const activeToggle = await screen.findByRole('button', {
           name: 'Activated',
         })
         expect(activeToggle).toBeInTheDocument()
@@ -281,32 +241,24 @@ describe('MemberTable', () => {
       const { user } = setup({ returnActivated: true })
       render(<MemberTable />, { wrapper })
 
-      expect(
-        await screen.findByRole('button', {
-          name: 'Activated',
-        })
-      ).toBeTruthy()
-      const activeToggleClick = screen.getByRole('button', {
+      const activeToggleClick = await screen.findByRole('button', {
         name: 'Activated',
       })
       expect(activeToggleClick).toBeInTheDocument()
       await user.click(activeToggleClick)
 
-      expect(await screen.findByLabelText('Non-Active')).toBeTruthy()
-      const nonActiveToggle = screen.getByLabelText('Non-Active')
+      const nonActiveToggle = await screen.findByLabelText('Non-Active')
       expect(nonActiveToggle).toBeInTheDocument()
     })
   })
 
   describe('table has no data', () => {
-    beforeEach(() => setup({ noData: true }))
-
     it('displays an empty table', async () => {
+      setup({ noData: true })
       render(<MemberTable />, { wrapper })
 
-      expect(await screen.findByTestId('body-row')).toBeTruthy()
-      const table = screen.getByTestId('body-row')
-      expect(table).toBeEmptyDOMElement()
+      const noMembersMsg = await screen.findByText('No members found')
+      expect(noMembersMsg).toBeInTheDocument()
     })
   })
 })

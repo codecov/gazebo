@@ -14,10 +14,10 @@ const server = setupServer()
 const mockResponse = {
   planAutoActivate: true,
   seatsUsed: 1,
-  seatsAvailable: 10,
+  seatsLimit: 10,
 }
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh']}>
       <Route path="/:provider">{children}</Route>
@@ -28,29 +28,32 @@ const wrapper = ({ children }) => (
 beforeAll(() => {
   server.listen()
 })
+
 beforeEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
+
 afterAll(() => {
   server.close()
 })
 
 describe('useSelfHostedSettings', () => {
-  function setup() {
+  function setup({ invalidResponse = false }) {
     server.use(
-      rest.get('/internal/settings', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json(mockResponse))
-      )
+      rest.get('/internal/settings', (req, res, ctx) => {
+        if (invalidResponse) {
+          return res(ctx.status(200), ctx.json({}))
+        }
+
+        return res(ctx.status(200), ctx.json(mockResponse))
+      })
     )
   }
 
   describe('when called', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('returns data', async () => {
+      setup({})
       const { result } = renderHook(() => useSelfHostedSettings(), { wrapper })
 
       await waitFor(() => result.current.isFetching)
@@ -60,7 +63,28 @@ describe('useSelfHostedSettings', () => {
         expect(result.current.data).toStrictEqual({
           planAutoActivate: true,
           seatsUsed: 1,
-          seatsAvailable: 10,
+          seatsLimit: 10,
+        })
+      )
+    })
+  })
+
+  describe('invalid response', () => {
+    beforeAll(() => {
+      console.error = () => {}
+    })
+
+    it('rejects with 404', async () => {
+      setup({ invalidResponse: true })
+      const { result } = renderHook(() => useSelfHostedSettings(), {
+        wrapper,
+      })
+
+      await waitFor(() => expect(result.current.isError).toBeTruthy())
+      expect(result.current.error).toEqual(
+        expect.objectContaining({
+          status: 404,
+          dev: 'useSelfHostedSettings - 404 schema parsing failed',
         })
       )
     })
