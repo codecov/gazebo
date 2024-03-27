@@ -140,7 +140,7 @@ interface RepoBranchContentsArgs {
   branch: string
   path: string
   filters?: {}
-  opts?: {
+  options?: {
     suspense?: boolean
     enabled?: boolean
   }
@@ -153,7 +153,7 @@ export function useRepoBranchContents({
   branch,
   path,
   filters,
-  ...options
+  options,
 }: RepoBranchContentsArgs) {
   return useQuery({
     queryKey: [

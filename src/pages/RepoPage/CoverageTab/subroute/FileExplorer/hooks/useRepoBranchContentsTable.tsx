@@ -107,7 +107,7 @@ export function useRepoBranchContentsTable(sortItem?: {
     filters,
     branch,
     path: urlPath,
-    opts: {
+    options: {
       suspense: false,
     },
   })
