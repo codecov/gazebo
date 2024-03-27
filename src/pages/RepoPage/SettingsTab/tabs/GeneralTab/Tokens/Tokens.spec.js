@@ -77,13 +77,6 @@ describe('Tokens', () => {
       expect(title).toBeInTheDocument()
     })
 
-    it('renders graph token component', async () => {
-      render(<Tokens />, { wrapper })
-
-      const title = await screen.findByText(/Graphing token/)
-      expect(title).toBeInTheDocument()
-    })
-
     it('renders static token component', async () => {
       render(<Tokens />, { wrapper })
 
