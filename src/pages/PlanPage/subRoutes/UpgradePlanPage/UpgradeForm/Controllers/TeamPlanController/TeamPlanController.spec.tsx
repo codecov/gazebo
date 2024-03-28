@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
@@ -277,16 +277,21 @@ describe('TeamPlanController', () => {
         register: jest.fn(),
         newPlan: Plans.USERS_TEAMM,
         seats: 12,
-        errors: { seats: { message: '' } },
+        errors: {
+          seats: {
+            message: 'Team plan is only available for 10 or less users',
+          },
+        },
       }
 
-      it('limits the seats to 10', async () => {
+      it('shows error message', async () => {
         setup({ planValue: Plans.USERS_TEAMM })
         render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
-        await waitFor(() =>
-          expect(props.setFormValue).toHaveBeenCalledWith('seats', '10')
+        const error = await screen.findByText(
+          'Team plan is only available for 10 or less users'
         )
+        expect(error).toBeInTheDocument()
       })
     })
 
