@@ -14,6 +14,7 @@ const mockGetRepo = {
     isAdmin: null,
     isCurrentUserActivated: null,
     repository: {
+      __typename: 'Repository',
       private: false,
       uploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629295',
       defaultBranch: 'main',
@@ -95,7 +96,7 @@ describe('GitHubActions', () => {
       expect(repositorySecretLink).toBeInTheDocument()
       expect(repositorySecretLink).toHaveAttribute(
         'href',
-        'https://github.com/codecov/cool-repo/settings/secrets/actions'
+        'https://github.com/codecov/cool-repo/settings/secrets/actions/new'
       )
     })
 
@@ -108,11 +109,15 @@ describe('GitHubActions', () => {
       expect(body).toBeInTheDocument()
     })
 
-    it('renders token box', async () => {
+    it('renders token key box', async () => {
       render(<GitHubActionsRepoToken />, { wrapper })
 
-      const codecovToken = await screen.findByText(/CODECOV_TOKEN=/)
-      expect(codecovToken).toBeInTheDocument()
+      const tokenKey = await screen.findByTestId('token-key')
+      expect(tokenKey).toBeInTheDocument()
+    })
+
+    it('renders token box', async () => {
+      render(<GitHubActionsRepoToken />, { wrapper })
 
       const tokenValue = await screen.findByText(
         /9e6a6189-20f1-482d-ab62-ecfaa2629295/

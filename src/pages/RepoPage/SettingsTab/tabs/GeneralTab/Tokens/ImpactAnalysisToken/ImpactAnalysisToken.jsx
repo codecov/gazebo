@@ -21,7 +21,7 @@ function ImpactAnalysisToken({ profilingToken }) {
   }
 
   return (
-    <div className="flex flex-col gap-2 border-2 border-ds-gray-primary p-4 sm:flex-row xl:w-4/5 2xl:w-3/5">
+    <div className="flex flex-col gap-2 border-2 border-ds-gray-primary p-4 sm:flex-row lg:w-3/4">
       <div className="flex flex-1 flex-col">
         <div className="flex items-center gap-2">
           <h3 className="font-semibold">Impact analysis token</h3>

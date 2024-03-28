@@ -45,10 +45,18 @@ function GitHubActionsRepoToken() {
             &gt; actions
           </p>
         </div>
-        <pre className="flex items-center gap-2 overflow-auto rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          CODECOV_TOKEN={repoUploadToken}
-          <CopyClipboard string={repoUploadToken || ''} />
-        </pre>
+        <div className="flex gap-4">
+          <pre className="flex basis-1/3 items-center justify-between gap-2 rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
+            <div className="w-0 flex-1 overflow-hidden" data-testid="token-key">
+              CODECOV_TOKEN
+            </div>
+            <CopyClipboard string="CODECOV_TOKEN" />
+          </pre>
+          <pre className="flex basis-2/3 items-center justify-between gap-2 rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
+            <div className="w-0 flex-1 overflow-hidden">{repoUploadToken}</div>
+            <CopyClipboard string={repoUploadToken ?? ''} />
+          </pre>
+        </div>
       </div>
       <div className="flex flex-col gap-4">
         <div className="text-base">
