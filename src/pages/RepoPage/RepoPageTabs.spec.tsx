@@ -843,7 +843,6 @@ describe('useRepoTabs', () => {
     describe('feature flag is off', () => {
       it('does not add the components link to the array', async () => {
         mockedUseFlags.mockReturnValueOnce({
-          bundleAnalysisPrAndCommitPages: true,
           componentTab: false,
         })
 
