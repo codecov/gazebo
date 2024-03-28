@@ -1,4 +1,4 @@
-import { type QueryOptions, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 
 import { extractCoverageFromResponse } from 'services/file/utils'
@@ -17,49 +17,35 @@ interface URLParams {
   repo: string
 }
 
-interface UsePrefetchCommitFileEntryArgs {
-  commitSha: string
+interface UsePrefetchPullFileEntry {
+  ref: string
   path: string
-  flags?: Array<string>
-  components?: Array<string>
-  options?: QueryOptions
+  options?: {
+    suspense?: boolean
+  }
 }
 
-export function usePrefetchCommitFileEntry({
-  commitSha,
+export function usePrefetchPullFileEntry({
+  ref,
   path,
-  flags = [],
-  components = [],
   options = {},
-}: UsePrefetchCommitFileEntryArgs) {
+}: UsePrefetchPullFileEntry) {
   const { provider, owner, repo } = useParams<URLParams>()
   const queryClient = useQueryClient()
 
-  const runPrefetch = async () => {
+  const runPrefetch = async () =>
     await queryClient.prefetchQuery({
-      queryKey: [
-        'commit',
-        provider,
-        owner,
-        repo,
-        commitSha,
-        path,
-        flags,
-        components,
-      ],
-      queryFn: ({ signal }) => {
-        return Api.graphql({
+      queryKey: ['commit', provider, owner, repo, ref, path, query],
+      queryFn: ({ signal }) =>
+        Api.graphql({
           provider,
           query,
           signal,
           variables: {
-            provider,
             owner,
             repo,
-            ref: commitSha,
+            ref,
             path,
-            flags,
-            components,
           },
         }).then((res) => {
           const parsedRes = PathContentsRequestSchema.safeParse(res?.data)
@@ -68,7 +54,7 @@ export function usePrefetchCommitFileEntry({
             return Promise.reject({
               status: 404,
               data: {},
-              dev: 'usePrefetchCommitFileEntry - 404 schema parsing failed',
+              dev: 'usePrefetchPullFileEntry - 404 schema parsing failed',
             } satisfies NetworkErrorObject)
           }
 
@@ -78,7 +64,7 @@ export function usePrefetchCommitFileEntry({
             return Promise.reject({
               status: 404,
               data: {},
-              dev: 'usePrefetchCommitFileEntry - 404 NotFoundError',
+              dev: 'usePrefetchPullFileEntry - 404 NotFoundError',
             } satisfies NetworkErrorObject)
           }
 
@@ -97,7 +83,7 @@ export function usePrefetchCommitFileEntry({
                   </p>
                 ),
               },
-              dev: 'usePrefetchCommitFileEntry - 403 OwnerNotActivatedError',
+              dev: 'usePrefetchPullFileEntry - 403 OwnerNotActivatedError',
             } satisfies NetworkErrorObject)
           }
 
@@ -112,12 +98,10 @@ export function usePrefetchCommitFileEntry({
           }
 
           return coverage
-        })
-      },
+        }),
       staleTime: 10000,
-      ...(!!options && options),
+      ...options,
     })
-  }
 
   return { runPrefetch }
 }
