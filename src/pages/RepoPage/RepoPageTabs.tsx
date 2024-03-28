@@ -42,8 +42,7 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
     },
   })
 
-  const { bundleAnalysisPrAndCommitPages, componentTab } = useFlags({
-    bundleAnalysisPrAndCommitPages: false,
+  const { componentTab } = useFlags({
     componentTab: false,
   })
 
@@ -71,9 +70,8 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
 
   const jsOrTsPresent = repoOverview?.jsOrTsPresent
   if (
-    ((jsOrTsPresent && isCurrentUserPartOfOrg) ||
-      repoOverview?.bundleAnalysisEnabled) &&
-    bundleAnalysisPrAndCommitPages
+    (jsOrTsPresent && isCurrentUserPartOfOrg) ||
+    repoOverview?.bundleAnalysisEnabled
   ) {
     tabs.push({
       pageName: 'bundles',

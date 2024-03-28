@@ -2,18 +2,14 @@ import { lazy, Suspense, useEffect } from 'react'
 import { Route, Switch, useParams } from 'react-router-dom'
 
 import { useBranchBundleSummary } from 'services/bundleAnalysis'
-import { useFlags } from 'shared/featureFlags'
 import { metrics } from 'shared/utils/metrics'
 import Spinner from 'ui/Spinner'
 
 import AssetsTable from './AssetsTable'
 import BundleSummary from './BundleSummary'
-import BundleSummaryOld from './BundleSummaryOld'
 
-const EmptyTable = lazy(() => import('./EmptyTable'))
 const AssetEmptyTable = lazy(() => import('./AssetsTable/EmptyTable'))
 const ErrorBanner = lazy(() => import('./ErrorBanner'))
-const BundleTable = lazy(() => import('./BundleTable'))
 
 interface URLParams {
   provider: string
@@ -30,9 +26,6 @@ const Loader = () => (
 
 const BundleContent: React.FC = () => {
   const { provider, owner, repo, branch } = useParams<URLParams>()
-  const { newBundleTab } = useFlags({
-    newBundleTab: false,
-  })
 
   useEffect(() => {
     metrics.increment('bundles_tab.bundle_details.visited_page', 1)
@@ -44,30 +37,21 @@ const BundleContent: React.FC = () => {
 
   return (
     <div>
-      {newBundleTab ? <BundleSummary /> : <BundleSummaryOld />}
+      <BundleSummary />
       <Suspense fallback={<Loader />}>
         {bundleType === 'BundleAnalysisReport' ? (
-          newBundleTab ? (
-            <Switch>
-              <Route path="/:provider/:owner/:repo/bundles/:branch/:bundle">
-                <AssetsTable />
-              </Route>
-              <Route>
-                <AssetEmptyTable />
-              </Route>
-            </Switch>
-          ) : (
-            <BundleTable />
-          )
-        ) : newBundleTab ? (
-          <>
-            <ErrorBanner errorType={bundleType} />
-            <AssetEmptyTable />
-          </>
+          <Switch>
+            <Route path="/:provider/:owner/:repo/bundles/:branch/:bundle">
+              <AssetsTable />
+            </Route>
+            <Route>
+              <AssetEmptyTable />
+            </Route>
+          </Switch>
         ) : (
           <>
             <ErrorBanner errorType={bundleType} />
-            <EmptyTable />
+            <AssetEmptyTable />
           </>
         )}
       </Suspense>
