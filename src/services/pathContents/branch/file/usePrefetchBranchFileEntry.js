@@ -40,7 +40,9 @@ export function usePrefetchBranchFileEntry({
             path,
             flags,
           },
-        }).then(extractCoverageFromResponse),
+        }).then((res) =>
+          extractCoverageFromResponse(res.data.owner.repository)
+        ),
       staleTime: 10000,
     })
 

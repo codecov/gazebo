@@ -82,7 +82,7 @@ export function useCoverageWithFilters({
           flags,
           components,
         },
-      }).then(extractCoverageFromResponse)
+      }).then((res) => extractCoverageFromResponse(res.data.owner.repository))
     },
     ...(!!opts && opts),
   })
