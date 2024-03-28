@@ -92,7 +92,7 @@
     "@codecov/webpack-plugin": "^0.0.1-beta.0",
     "@craco/craco": "^7.1.0",
     "@sentry/webpack-plugin": "^1.21.0",
-    "@spotlightjs/spotlight": "^1.2.15",
+    "@spotlightjs/spotlight": "^1.2.16",
     "@storybook/addon-a11y": "^7.6.17",
     "@storybook/addon-actions": "^7.6.17",
     "@storybook/addon-essentials": "^7.6.17",
