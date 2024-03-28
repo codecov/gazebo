@@ -173,7 +173,7 @@ function MemberTable() {
                   <th key={header.id} scope="col">
                     <div
                       className={cs('flex gap-1 items-center justify-start', {
-                        'flex-row-reverse': header.id === 'activationStatus',
+                        'last:justify-end': header.id === 'activationStatus',
                       })}
                     >
                       {flexRender(
@@ -209,7 +209,7 @@ function MemberTable() {
                           className={cs(
                             'w-full max-w-0 @md/table:w-auto @md/table:max-w-none',
                             {
-                              'flex-row-reverse':
+                              'flex justify-end':
                                 cell.column.id === 'activationStatus',
                             }
                           )}
