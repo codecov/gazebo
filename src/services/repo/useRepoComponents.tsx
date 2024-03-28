@@ -101,7 +101,7 @@ interface FetchRepoComponentsArgs {
   repo: string
   filters?: {
     components?: string[]
-    term?: string
+    branch?: string
   }
   orderingDirection: 'ASC' | 'DESC'
   interval: 'INTERVAL_30_DAY' | 'INTERVAL_7_DAY' | 'INTERVAL_1_DAY'
@@ -191,7 +191,7 @@ function fetchRepoComponents({
 interface useRepoComponentsArgs {
   filters?: {
     components?: string[]
-    term?: string
+    branch?: string
   }
   orderingDirection?: 'ASC' | 'DESC'
   interval: 'INTERVAL_30_DAY' | 'INTERVAL_7_DAY' | 'INTERVAL_1_DAY'
