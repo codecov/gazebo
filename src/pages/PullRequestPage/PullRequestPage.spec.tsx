@@ -44,6 +44,9 @@ const mockPullHeadData = {
 
 const mockPullPageData = {
   pullId: 1,
+  commits: {
+    totalCount: 11,
+  },
   head: {
     commitid: '123',
     bundleAnalysisReport: {
@@ -65,6 +68,9 @@ const mockPullPageData = {
 
 const mockPullPageDataTeam = {
   pullId: 877,
+  commits: {
+    totalCount: 11,
+  },
   head: {
     commitid: '123',
     bundleAnalysisReport: {
