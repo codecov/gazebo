@@ -11,7 +11,7 @@ const SentryPlugin = sentryWebpackPlugin({
   release: {
     name: process.env.GAZEBO_SHA || Date.now().toString(),
     deploy: {
-      env: process.env.SENTRY_ENVIRONMENT,
+      env: process.env.REACT_APP_SENTRY_ENVIRONMENT || process.env.NODE_ENV,
     },
   },
 })
