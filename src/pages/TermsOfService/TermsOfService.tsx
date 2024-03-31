@@ -129,28 +129,34 @@ export default function TermsOfService() {
                 {...register('customerIntent')}
                 // @ts-expect-error
                 dataMarketing="Personal use"
-                id="customerIntent"
+                id="customerIntent-personal-use"
                 aria-label="Personal use"
                 label="Personal Use"
                 value={CustomerIntent.PERSONAL}
               />
-              <p className="ml-5 text-ds-gray-quinary">
+              <label
+                htmlFor="customerIntent-personal-use"
+                className="ml-5 text-ds-gray-quinary hover:cursor-pointer"
+              >
                 For Open Source and single developer projects, always free
-              </p>
+              </label>
             </div>
             <div className="bg-ds-gray-primary p-4">
               <RadioInput
                 {...register('customerIntent')}
                 // @ts-expect-error
                 dataMarketing="Business use"
-                id="customerIntent"
+                id="customerIntent-business-use"
                 aria-label="Business use"
                 label="Business Use"
                 value={CustomerIntent.BUSINESS}
               />
-              <p className="ml-5 text-ds-gray-quinary">
+              <label
+                htmlFor="customerIntent-business-use"
+                className="ml-5 text-ds-gray-quinary hover:cursor-pointer"
+              >
                 For development teams, start with a two week free trial
-              </p>
+              </label>
             </div>
             <div className="mt-4 flex gap-2">
               <input
