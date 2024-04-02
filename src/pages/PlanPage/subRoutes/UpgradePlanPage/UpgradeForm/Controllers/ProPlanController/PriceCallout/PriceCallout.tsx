@@ -9,7 +9,10 @@ import {
   isAnnualPlan,
   Plans,
 } from 'shared/utils/billing'
-import { calculatePriceProPlan } from 'shared/utils/upgradeForm'
+import {
+  calculatePriceProPlan,
+  MIN_NB_SEATS_PRO,
+} from 'shared/utils/upgradeForm'
 import Icon from 'ui/Icon'
 
 import { NewPlanType } from '../../../constants'
@@ -40,6 +43,10 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
 
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const nextBillingDate = getNextBillingDate(accountDetails)
+
+  if (seats < MIN_NB_SEATS_PRO) {
+    return null
+  }
 
   if (isPerYear) {
     return (

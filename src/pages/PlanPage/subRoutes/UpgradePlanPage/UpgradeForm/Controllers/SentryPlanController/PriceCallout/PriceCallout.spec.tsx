@@ -118,6 +118,24 @@ describe('PriceCallout', () => {
   }
 
   describe('when rendered', () => {
+    describe('and seat count is below acceptable range', () => {
+      const props = {
+        newPlan: Plans.USERS_PR_INAPPY,
+        seats: 1,
+      }
+
+      it('does not render anything', async () => {
+        const { mockSetFormValue } = setup()
+
+        render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
+          wrapper,
+        })
+
+        const perMonthPrice = screen.queryByText(/\$29.00/)
+        expect(perMonthPrice).not.toBeInTheDocument()
+      })
+    })
+
     describe('isPerYear is set to true', () => {
       const props = {
         newPlan: Plans.USERS_SENTRYY,

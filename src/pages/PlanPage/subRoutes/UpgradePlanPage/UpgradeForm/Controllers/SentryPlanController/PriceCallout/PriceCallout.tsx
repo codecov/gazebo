@@ -12,6 +12,7 @@ import {
 import {
   calculatePriceSentryPlan,
   calculateSentryNonBundledCost,
+  MIN_NB_SEATS_PRO,
 } from 'shared/utils/upgradeForm'
 import Icon from 'ui/Icon'
 
@@ -42,6 +43,10 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
   const isPerYear = isAnnualPlan(newPlan)
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const nextBillingDate = getNextBillingDate(accountDetails)
+
+  if (seats < MIN_NB_SEATS_PRO) {
+    return null
+  }
 
   if (isPerYear) {
     const nonBundledCost = calculateSentryNonBundledCost({

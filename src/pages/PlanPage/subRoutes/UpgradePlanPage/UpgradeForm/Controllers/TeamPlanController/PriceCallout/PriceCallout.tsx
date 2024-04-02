@@ -1,3 +1,4 @@
+import inRange from 'lodash/inRange'
 import { Fragment } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -9,7 +10,11 @@ import {
   isAnnualPlan,
   Plans,
 } from 'shared/utils/billing'
-import { calculatePriceTeamPlan } from 'shared/utils/upgradeForm'
+import {
+  calculatePriceTeamPlan,
+  MIN_NB_SEATS_PRO,
+  TEAM_PLAN_MAX_ACTIVE_USERS,
+} from 'shared/utils/upgradeForm'
 import Icon from 'ui/Icon'
 
 import { NewPlanType } from '../../../constants'
@@ -39,6 +44,10 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
   const isPerYear = isAnnualPlan(newPlan)
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const nextBillingDate = getNextBillingDate(accountDetails)
+
+  if (!inRange(seats, MIN_NB_SEATS_PRO, TEAM_PLAN_MAX_ACTIVE_USERS + 1)) {
+    return null
+  }
 
   if (isPerYear) {
     return (
