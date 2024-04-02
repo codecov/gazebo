@@ -12,6 +12,7 @@ const mockRepo = {
     isAdmin: null,
     isCurrentUserActivated: null,
     repository: {
+      __typename: 'Repository',
       private: false,
       uploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629295',
       defaultBranch: 'main',
@@ -19,6 +20,30 @@ const mockRepo = {
       activated: false,
       oldestCommitAt: '',
       active: true,
+    },
+  },
+}
+
+const mockNotFoundError = {
+  owner: {
+    isCurrentUserPartOfOrg: true,
+    isAdmin: null,
+    isCurrentUserActivated: null,
+    repository: {
+      __typename: 'NotFoundError',
+      message: 'repo not found',
+    },
+  },
+}
+
+const mockOwnerNotActivatedError = {
+  owner: {
+    isCurrentUserPartOfOrg: true,
+    isAdmin: null,
+    isCurrentUserActivated: null,
+    repository: {
+      __typename: 'OwnerNotActivatedError',
+      message: 'owner not activated',
     },
   },
 }
@@ -46,11 +71,23 @@ afterAll(() => {
 })
 
 describe('useRepo', () => {
-  function setup(invalidResponse = false) {
+  function setup({
+    failedToParseError = false,
+    isNotFoundError = false,
+    isOwnerNotActivatedError = false,
+  }: {
+    failedToParseError?: boolean
+    isNotFoundError?: boolean
+    isOwnerNotActivatedError?: boolean
+  }) {
     server.use(
       graphql.query('GetRepo', (req, res, ctx) => {
-        if (invalidResponse) {
+        if (failedToParseError) {
           return res(ctx.status(200), ctx.data({}))
+        } else if (isOwnerNotActivatedError) {
+          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
+        } else if (isNotFoundError) {
+          return res(ctx.status(200), ctx.data(mockNotFoundError))
         }
 
         return res(ctx.status(200), ctx.data(mockRepo))
@@ -60,7 +97,7 @@ describe('useRepo', () => {
 
   describe('calling hook', () => {
     it('returns the repository details successfully', async () => {
-      setup()
+      setup({})
       const { result } = renderHook(
         () =>
           useRepo({
@@ -79,6 +116,7 @@ describe('useRepo', () => {
           isAdmin: null,
           isCurrentUserActivated: null,
           repository: {
+            __typename: 'Repository',
             private: false,
             uploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629295',
             defaultBranch: 'main',
@@ -91,8 +129,8 @@ describe('useRepo', () => {
       )
     })
 
-    it('returns an error when unsuccessful', async () => {
-      setup(true)
+    it('can return a failed to parse error', async () => {
+      setup({ failedToParseError: true })
       const { result } = renderHook(
         () =>
           useRepo({
@@ -109,6 +147,53 @@ describe('useRepo', () => {
         expect(result.current.error).toEqual(
           expect.objectContaining({
             status: 404,
+            dev: 'useRepo - 404 failed to parse',
+          })
+        )
+      )
+    })
+    it('can return a not found error', async () => {
+      setup({ isNotFoundError: true })
+      const { result } = renderHook(
+        () =>
+          useRepo({
+            provider: 'gh',
+            owner: 'codecov',
+            repo: 'cool-repo',
+          }),
+        { wrapper }
+      )
+
+      await waitFor(() => expect(result.current.isError).toBeTruthy())
+
+      await waitFor(() =>
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            status: 404,
+            dev: 'useRepo - 404 NotFoundError',
+          })
+        )
+      )
+    })
+    it('can return an owner not activated error', async () => {
+      setup({ isOwnerNotActivatedError: true })
+      const { result } = renderHook(
+        () =>
+          useRepo({
+            provider: 'gh',
+            owner: 'codecov',
+            repo: 'cool-repo',
+          }),
+        { wrapper }
+      )
+
+      await waitFor(() => expect(result.current.isError).toBeTruthy())
+
+      await waitFor(() =>
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            status: 403,
+            dev: 'useRepo - 403 OwnerNotActivatedError',
           })
         )
       )

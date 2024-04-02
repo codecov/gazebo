@@ -13,6 +13,9 @@ const mockPullData = {
       bundleAnalysisEnabled: true,
       pull: {
         pullId: 1,
+        commits: {
+          totalCount: 11,
+        },
         head: {
           commitid: '123',
           bundleAnalysisReport: {
@@ -43,6 +46,9 @@ const mockPullDataTeam = {
       bundleAnalysisEnabled: true,
       pull: {
         pullId: 1,
+        commits: {
+          totalCount: 11,
+        },
         head: {
           commitid: '123',
           bundleAnalysisReport: {
@@ -169,6 +175,9 @@ describe('usePullPageData', () => {
               bundleAnalysisEnabled: true,
               pull: {
                 pullId: 1,
+                commits: {
+                  totalCount: 11,
+                },
                 head: {
                   commitid: '123',
                   bundleAnalysisReport: {
@@ -361,6 +370,9 @@ describe('usePullPageData', () => {
             bundleAnalysisEnabled: true,
             pull: {
               pullId: 1,
+              commits: {
+                totalCount: 11,
+              },
               head: {
                 commitid: '123',
                 bundleAnalysisReport: {

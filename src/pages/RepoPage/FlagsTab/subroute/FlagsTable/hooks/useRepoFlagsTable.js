@@ -11,12 +11,10 @@ import { useLocationParams } from 'services/navigation'
 import { useRepo } from 'services/repo'
 import { useRepoFlags } from 'services/repo/useRepoFlags'
 
-const getSortByDirection = (sortBy) =>
-  sortBy.length > 0 && sortBy[0].desc
-    ? SortingDirection.DESC
-    : SortingDirection.ASC
+const getSortByDirection = (isDesc) =>
+  isDesc ? SortingDirection.DESC : SortingDirection.ASC
 
-const useMeasurementVariables = (historicalTrend, oldestCommitAt) => {
+const createMeasurementVariables = (historicalTrend, oldestCommitAt) => {
   const isAllTime = !Boolean(historicalTrend) || historicalTrend === 'ALL_TIME'
   const selectedDate = isAllTime
     ? new Date(oldestCommitAt)
@@ -29,7 +27,7 @@ const useMeasurementVariables = (historicalTrend, oldestCommitAt) => {
   return { afterDate, interval }
 }
 
-function useRepoFlagsTable() {
+function useRepoFlagsTable(isDesc) {
   const { params } = useLocationParams({
     search: '',
     historicalTrend: '',
@@ -44,7 +42,7 @@ function useRepoFlagsTable() {
   const isAdmin = repoData?.isAdmin
   const isSearching = Boolean(params?.search)
   const [sortBy, setSortBy] = useState(SortingDirection.ASC)
-  const { afterDate, interval } = useMeasurementVariables(
+  const { afterDate, interval } = createMeasurementVariables(
     params?.historicalTrend,
     repoData?.repository?.oldestCommitAt
   )
@@ -59,15 +57,12 @@ function useRepoFlagsTable() {
       suspense: false,
     })
 
-  const handleSort = useCallback(
-    (tableSortBy) => {
-      const tableSortByDirection = getSortByDirection(tableSortBy)
-      if (sortBy !== tableSortByDirection) {
-        setSortBy(tableSortByDirection)
-      }
-    },
-    [sortBy]
-  )
+  const handleSort = useCallback(() => {
+    const tableSortByDirection = getSortByDirection(isDesc)
+    if (sortBy !== tableSortByDirection) {
+      setSortBy(tableSortByDirection)
+    }
+  }, [isDesc, sortBy])
 
   return {
     data,
