@@ -44,7 +44,7 @@ const defaultQueryParams = {
   flags: [],
 }
 
-export const TitleFlags = () => {
+export const TitleFlags = ({ commitDetailView = false }) => {
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const [selectedFlags, setSelectedFlags] = useState(params?.flags)
   const [flagSearch, setFlagSearch] = useState(null)
@@ -81,8 +81,10 @@ export const TitleFlags = () => {
     return null
   }
 
+  const selectorWidth = commitDetailView ? 'sm:w-48' : 'sm:w-60'
+
   return (
-    <div className="w-full sm:w-60">
+    <div className={`w-full ${selectorWidth}`}>
       <MultiSelect
         disabled={!flagsMeasurementsActive || !isTimescaleEnabled}
         dataMarketing="fileviwer-filter-by-flags"
@@ -110,6 +112,10 @@ export const TitleFlags = () => {
       />
     </div>
   )
+}
+
+TitleFlags.propTypes = {
+  commitDetailView: PropTypes.bool,
 }
 
 export const TitleHitCount = ({ showHitCount = false }) => {
