@@ -43,8 +43,16 @@ function ToggleHeader({ showHitCount = true, noBottomBorder = false }) {
         <TitleHitCount showHitCount={showHitCount} />
       </div>
       <div className="ml-auto flex w-full flex-wrap items-center justify-between gap-2 md:mt-2 md:w-auto">
-        {!isTeamPlan ? <TitleFlags /> : null}
-        {!isTeamPlan ? <ComponentsSelector /> : null}
+        {!isTeamPlan ? (
+          <div className="w-[90%]">
+            <TitleFlags />
+          </div>
+        ) : null}
+        {!isTeamPlan ? (
+          <div className="w-[90%]">
+            <ComponentsSelector />
+          </div>
+        ) : null}
       </div>
     </div>
   )
