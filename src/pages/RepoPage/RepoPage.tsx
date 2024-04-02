@@ -53,9 +53,8 @@ function Routes({
   bundleAnalysisEnabled,
   jsOrTsPresent,
 }: RoutesProps) {
-  const { bundleAnalysisPrAndCommitPages, componentTab } = useFlags({
+  const { componentTab } = useFlags({
     bundleAnalysisPrAndCommitPages: false,
-    componentTab: false,
   })
 
   // repo is currently active and activated
@@ -88,7 +87,7 @@ function Routes({
             <NewRepoTab />
           </SentryRoute>
         )}
-        {bundleAnalysisEnabled && bundleAnalysisPrAndCommitPages ? (
+        {bundleAnalysisEnabled ? (
           <SentryRoute
             path={[
               `${path}/bundles/:branch/:bundle`,
@@ -99,7 +98,7 @@ function Routes({
           >
             <BundlesTab />
           </SentryRoute>
-        ) : jsOrTsPresent && bundleAnalysisPrAndCommitPages ? (
+        ) : jsOrTsPresent ? (
           <SentryRoute
             path={[
               `${path}/bundles/new`,
@@ -178,7 +177,7 @@ function Routes({
       >
         <NewRepoTab />
       </SentryRoute>
-      {jsOrTsPresent && bundleAnalysisPrAndCommitPages ? (
+      {jsOrTsPresent ? (
         <SentryRoute
           path={[
             `${path}/bundles/new`,
