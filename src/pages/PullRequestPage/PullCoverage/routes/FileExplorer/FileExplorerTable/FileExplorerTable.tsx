@@ -5,43 +5,16 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
-import isArray from 'lodash/isArray'
-import isString from 'lodash/isString'
-import qs, { ParsedQs } from 'qs'
-import { ReactNode, useMemo } from 'react'
-import 'ui/Table/Table.css'
-import { useLocation, useParams } from 'react-router-dom'
+import { ReactNode } from 'react'
 
-import {
-  PathContentsFilters,
-  toPathContentsFilterParameter,
-} from 'services/pathContents/constants'
-import {
-  PathContentDir,
-  PathContentFile,
-  useRepoPullContents,
-} from 'services/pathContents/pull/dir'
-import { displayTypeParameter } from 'shared/ContentsTable/constants'
+import 'ui/Table/Table.css'
 import MissingFileData from 'shared/ContentsTable/MissingFileData'
-import PullDirEntry from 'shared/ContentsTable/TableEntries/PullEntries/PullDirEntry'
-import PullFileEntry from 'shared/ContentsTable/TableEntries/PullEntries/PullFileEntry'
-import { useTableDefaultSort } from 'shared/ContentsTable/useTableDefaultSort'
-import { adjustListIfUpDir } from 'shared/ContentsTable/utils'
-import { usePullTreePaths } from 'shared/treePaths'
-import { determineProgressColor } from 'shared/utils/determineProgressColor'
-import CoverageProgress from 'ui/CoverageProgress'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 
-interface URLParams {
-  provider: string
-  owner: string
-  repo: string
-  path: string
-  pullId: string
-}
+import useFileExplorerTableData from './useFileExplorerTableData'
 
-interface FileExplorerColumn {
+export interface FileExplorerColumn {
   name: ReactNode
   lines: string
   hits: string
@@ -79,145 +52,6 @@ const columns = [
   }),
 ]
 
-function useTableData() {
-  const {
-    provider,
-    owner,
-    repo,
-    path: urlPath,
-    pullId,
-  } = useParams<URLParams>()
-  const location = useLocation()
-  const { treePaths } = usePullTreePaths()
-  const [sortBy, setSortBy] = useTableDefaultSort()
-
-  const { components, search, displayType } = useMemo(() => {
-    const queryParams = qs.parse(location.search, {
-      ignoreQueryPrefix: true,
-      depth: 1,
-    })
-
-    let components: string[] | ParsedQs[] | undefined
-    if (isArray(queryParams?.components) && queryParams?.components?.length) {
-      components = queryParams.components
-    }
-    let search: string = ''
-    if (isString(queryParams?.search)) {
-      search = queryParams.search
-    }
-    let displayType: 'tree' | 'list' | undefined
-    if (
-      isString(queryParams?.displayType) &&
-      (queryParams.displayType === 'tree' || queryParams.displayType === 'list')
-    ) {
-      displayType = queryParams.displayType
-    }
-
-    return {
-      components,
-      search,
-      displayType,
-    }
-  }, [location.search])
-
-  const filters = useMemo<PathContentsFilters>(
-    () => ({
-      searchValue: search,
-      displayType: displayType
-        ? displayTypeParameter[displayType]
-        : displayTypeParameter.tree,
-      ordering:
-        sortBy.length && sortBy[0]?.id
-          ? {
-              direction: sortBy[0]?.desc ? 'DESC' : 'ASC',
-              parameter: toPathContentsFilterParameter(sortBy[0].id),
-            }
-          : undefined,
-      components,
-    }),
-    [sortBy, components, search, displayType]
-  )
-
-  const { data: pullData, isLoading } = useRepoPullContents({
-    provider,
-    owner,
-    repo,
-    pullId,
-    path: urlPath || '',
-    filters,
-    opts: {
-      suspense: false,
-    },
-  })
-
-  const data = useMemo(() => {
-    const tableData = pullData?.results
-
-    if (!tableData?.length) {
-      return []
-    }
-
-    const rawTableRows: FileExplorerColumn[] = tableData.map(
-      (file: PathContentFile | PathContentDir) => ({
-        name:
-          file.__typename === 'PathContentDir' ? (
-            <PullDirEntry
-              name={file.name}
-              pullId={pullId}
-              urlPath={urlPath}
-              filters={filters}
-            />
-          ) : (
-            <PullFileEntry
-              commitSha={pullData?.commitid || ''}
-              name={file.name}
-              urlPath={urlPath}
-              path={file.path || ''}
-              displayType={
-                filters?.displayType === displayTypeParameter.list ||
-                filters?.searchValue
-                  ? displayTypeParameter.list
-                  : displayTypeParameter.tree
-              }
-              isCriticalFile={file.isCriticalFile}
-            />
-          ),
-        lines: file.lines.toString(),
-        hits: file.hits.toString(),
-        partials: file.partials.toString(),
-        misses: file.misses.toString(),
-        coverage: (
-          <CoverageProgress
-            amount={file.percentCovered}
-            color={determineProgressColor({
-              coverage: file.percentCovered,
-              ...(pullData?.indicationRange || {
-                upperRange: 80,
-                lowerRange: 60,
-              }),
-            })}
-          />
-        ),
-      })
-    )
-    return adjustListIfUpDir({
-      treePaths,
-      displayType: filters?.displayType || displayTypeParameter.tree,
-      rawTableRows,
-    })
-  }, [pullData, filters, treePaths, pullId, urlPath])
-
-  return {
-    data,
-    pathContentsType: pullData?.pathContentsType,
-    isLoading,
-    isSearching: !!search,
-    hasComponentsSelected: !!components && components.length > 0,
-    sortBy,
-    setSortBy,
-  }
-}
-
 function FileExplorerTable() {
   const {
     data,
@@ -227,7 +61,7 @@ function FileExplorerTable() {
     hasComponentsSelected,
     sortBy,
     setSortBy,
-  } = useTableData()
+  } = useFileExplorerTableData()
   const table = useReactTable({
     data,
     columns,
