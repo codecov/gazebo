@@ -1,6 +1,9 @@
 import { FieldValues, UseFormRegister } from 'react-hook-form'
 
-import { MIN_NB_SEATS_PRO } from 'shared/utils/upgradeForm'
+import {
+  MIN_NB_SEATS_PRO,
+  TEAM_PLAN_MAX_ACTIVE_USERS,
+} from 'shared/utils/upgradeForm'
 import TextInput from 'ui/TextInput'
 
 import BillingOptions from './BillingOptions'
@@ -44,6 +47,7 @@ const PlanController: React.FC<PlanControllerProps> = ({
             type="number"
             label="Enter seat count"
             min={MIN_NB_SEATS_PRO}
+            max={TEAM_PLAN_MAX_ACTIVE_USERS}
           />
         </div>
         <UserCount />
