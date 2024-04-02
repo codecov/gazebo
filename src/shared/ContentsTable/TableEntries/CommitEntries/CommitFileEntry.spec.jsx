@@ -327,9 +327,9 @@ describe('CommitFileEntry', () => {
           await waitFor(() => queryClient.getQueryState().isFetching)
           await waitFor(() => !queryClient.getQueryState().isFetching)
 
-          await waitFor(() => expect(mockVars).toHaveBeenCalled())
+          await waitFor(() => expect(mockVars).toBeCalled())
           await waitFor(() =>
-            expect(mockVars).toHaveBeenCalledWith(
+            expect(mockVars).toBeCalledWith(
               expect.objectContaining({ flags: ['flag-1'] })
             )
           )
@@ -359,9 +359,9 @@ describe('CommitFileEntry', () => {
           await waitFor(() => queryClient.getQueryState().isFetching)
           await waitFor(() => !queryClient.getQueryState().isFetching)
 
-          await waitFor(() => expect(mockVars).toHaveBeenCalled())
+          await waitFor(() => expect(mockVars).toBeCalled())
           await waitFor(() =>
-            expect(mockVars).toHaveBeenCalledWith(
+            expect(mockVars).toBeCalledWith(
               expect.objectContaining({ flags: [] })
             )
           )
