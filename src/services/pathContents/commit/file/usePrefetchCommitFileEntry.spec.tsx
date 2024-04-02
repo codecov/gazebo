@@ -254,9 +254,9 @@ describe('usePrefetchCommitFileEntry', () => {
 
         await result.current.runPrefetch()
 
-        await waitFor(() => expect(mockVars).toHaveBeenCalled())
+        await waitFor(() => expect(mockVars).toBeCalled())
         await waitFor(() =>
-          expect(mockVars).toHaveBeenCalledWith(
+          expect(mockVars).toBeCalledWith(
             expect.objectContaining({ flags: ['flag-1', 'flag-2'] })
           )
         )
@@ -280,7 +280,7 @@ describe('usePrefetchCommitFileEntry', () => {
 
       await result.current.runPrefetch()
 
-      await waitFor(() => expect(mockVars).toHaveBeenCalled())
+      await waitFor(() => expect(mockVars).toBeCalled())
       await waitFor(() =>
         expect(mockVars).toHaveBeenCalledWith(
           expect.objectContaining({
