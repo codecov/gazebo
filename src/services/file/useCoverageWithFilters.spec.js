@@ -46,36 +46,38 @@ describe('useCoverageWithFilters', () => {
           commit: {
             commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
             flagNames: ['a', 'b'],
-            componentNames: ['c'],
             coverageFile: {
               content:
                 'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
               coverage: [
                 {
                   line: 1,
-                  coverage: 1,
+                  coverage: 'H',
                 },
                 {
                   line: 2,
-                  coverage: 1,
+                  coverage: 'P',
+                },
+                {
+                  line: 3,
+                  coverage: 'H',
                 },
                 {
                   line: 4,
-                  coverage: 1,
+                  coverage: 'M',
                 },
                 {
                   line: 5,
-                  coverage: 1,
+                  coverage: 'H',
                 },
                 {
-                  line: 7,
-                  coverage: 1,
-                },
-                {
-                  line: 8,
-                  coverage: 1,
+                  line: 6,
+                  coverage: 'H',
                 },
               ],
+              totals: {
+                coverage: 66.67,
+              },
             },
           },
           branch: null,
@@ -99,9 +101,8 @@ describe('useCoverageWithFilters', () => {
       await waitFor(() =>
         expect(result.current.data).toEqual({
           ...data.owner.repository.commit.coverageFile,
-          totals: 0,
+          totals: 66.67,
           flagNames: ['a', 'b'],
-          componentNames: ['c'],
           coverage: _.chain(data.owner.repository.commit.coverageFile.coverage)
             .keyBy('line')
             .mapValues('coverage')

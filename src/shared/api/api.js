@@ -90,23 +90,29 @@ function graphql({
       variables,
     }),
   })
-    .then(async (res) =>
-      res.ok
-        ? await res.json()
-        : Promise.reject({
-            status: res.status,
-            data: await res.json(),
-          })
-    )
-    .catch((err) => {
-      if (err.status === 401 && config.IS_SELF_HOSTED) {
-        window.location.href = '/login'
+    .then(async (res) => {
+      const data = await res.json()
+
+      if (data?.errors) {
+        if (
+          data?.errors?.[0]?.extensions?.status === 403 &&
+          config.IS_SELF_HOSTED
+        ) {
+          window.location.href = '/login'
+        }
+      }
+
+      if (res.ok) {
+        return data
       }
 
       return Promise.reject({
-        status: err.status,
-        data: err.data,
+        status: res.status,
+        data: data,
       })
+    })
+    .catch((error) => {
+      return Promise.reject(error)
     })
 }
 
