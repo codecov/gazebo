@@ -17,7 +17,7 @@ interface URLParams {
   repo: string
 }
 
-function ToggleHeader({ showHitCount = false, noBottomBorder = false }) {
+function ToggleHeader({ showHitCount = true, noBottomBorder = false }) {
   const { provider, owner, repo } = useParams<URLParams>()
   const noBottomBorderStyle = noBottomBorder
     ? 'border-b-0 pb-1'
