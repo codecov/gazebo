@@ -3,6 +3,7 @@ import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import { ReactNode } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import FileExplorer from './FileExplorer'
@@ -19,79 +20,104 @@ const queryClient = new QueryClient({
 const server = setupServer()
 
 const mockNoFiles = {
-  username: 'nicholas-codecov',
   repository: {
+    __typename: 'Repository',
     pull: {
       head: {
         commitid: '123',
         pathContents: {
-          results: [],
           __typename: 'PathContents',
+          results: [],
         },
+      },
+    },
+    repositoryConfig: {
+      indicationRange: {
+        upperRange: 80,
+        lowerRange: 60,
       },
     },
   },
 }
 
 const mockUnknownPath = {
-  username: 'nicholas-codecov',
   repository: {
+    __typename: 'Repository',
     pull: {
       head: {
         commitid: '123',
         pathContents: {
-          results: [],
           __typename: 'UnknownPath',
+          message: 'unknown path',
         },
+      },
+    },
+    repositoryConfig: {
+      indicationRange: {
+        upperRange: 80,
+        lowerRange: 60,
       },
     },
   },
 }
 
 const mockMissingCoverage = {
-  username: 'nicholas-codecov',
   repository: {
+    __typename: 'Repository',
     pull: {
       head: {
         commitid: '123',
         pathContents: {
-          results: [],
           __typename: 'MissingCoverage',
+          message: 'missing coverage',
         },
+      },
+    },
+    repositoryConfig: {
+      indicationRange: {
+        upperRange: 80,
+        lowerRange: 60,
       },
     },
   },
 }
 
 const mockListData = {
-  username: 'nicholas-codecov',
   repository: {
+    __typename: 'Repository',
     pull: {
       head: {
         commitid: '123',
         pathContents: {
+          __typename: 'PathContents',
           results: [
             {
               __typename: 'PathContentFile',
-              hits: 9,
-              misses: 0,
-              partials: 0,
-              lines: 10,
               name: 'file.js',
               path: 'a/b/c/file.js',
-              percentCovered: 100.0,
+              hits: 9,
+              misses: 1,
+              partials: 0,
+              lines: 10,
+              percentCovered: 90.0,
+              isCriticalFile: false,
             },
           ],
-          __typename: 'PathContents',
         },
+      },
+    },
+    repositoryConfig: {
+      indicationRange: {
+        upperRange: 80,
+        lowerRange: 60,
       },
     },
   },
 }
 
 const mockTreeData = {
-  username: 'nicholas-codecov',
   repository: {
+    __typename: 'Repository',
     pull: {
       head: {
         commitid: '123',
@@ -99,27 +125,34 @@ const mockTreeData = {
           results: [
             {
               __typename: 'PathContentDir',
-              hits: 9,
-              misses: 0,
-              partials: 0,
-              lines: 10,
               name: 'src',
               path: 'src',
-              percentCovered: 100.0,
+              hits: 9,
+              misses: 1,
+              partials: 0,
+              lines: 10,
+              percentCovered: 90.0,
             },
             {
               __typename: 'PathContentFile',
-              hits: 9,
-              misses: 0,
-              partials: 0,
-              lines: 10,
               name: 'file.js',
               path: 'a/b/c/file.js',
-              percentCovered: 100.0,
+              hits: 9,
+              misses: 1,
+              partials: 0,
+              lines: 10,
+              percentCovered: 90.0,
+              isCriticalFile: false,
             },
           ],
           __typename: 'PathContents',
         },
+      },
+    },
+    repositoryConfig: {
+      indicationRange: {
+        upperRange: 80,
+        lowerRange: 60,
       },
     },
   },
@@ -127,7 +160,7 @@ const mockTreeData = {
 
 const wrapper =
   (initialEntries = ['/gh/codecov/cool-repo/pull/123/tree/a/b/c']) =>
-  ({ children }) => {
+  ({ children }: { children: ReactNode }) => {
     return (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={initialEntries}>
@@ -256,7 +289,9 @@ describe('FileExplorer', () => {
 
           await waitFor(() =>
             expect(requestFilters).toHaveBeenCalledWith({
+              displayType: 'TREE',
               ordering: { direction: 'ASC', parameter: 'NAME' },
+              searchValue: '',
             })
           )
         })
@@ -335,6 +370,7 @@ describe('FileExplorer', () => {
             expect(requestFilters).toHaveBeenCalledWith({
               displayType: 'LIST',
               ordering: { direction: 'DESC', parameter: 'MISSES' },
+              searchValue: '',
             })
           )
         })
@@ -393,7 +429,9 @@ describe('FileExplorer', () => {
 
           await waitFor(() =>
             expect(requestFilters).toHaveBeenCalledWith({
+              displayType: 'TREE',
               ordering: { direction: 'ASC', parameter: 'NAME' },
+              searchValue: '',
             })
           )
         })
@@ -415,7 +453,9 @@ describe('FileExplorer', () => {
 
           await waitFor(() =>
             expect(requestFilters).toHaveBeenCalledWith({
+              displayType: 'TREE',
               ordering: { direction: 'DESC', parameter: 'NAME' },
+              searchValue: '',
             })
           )
         })
@@ -436,6 +476,8 @@ describe('FileExplorer', () => {
           await waitFor(() =>
             expect(requestFilters).toHaveBeenCalledWith({
               ordering: { direction: 'ASC', parameter: 'LINES' },
+              displayType: 'TREE',
+              searchValue: '',
             })
           )
         })
@@ -458,6 +500,8 @@ describe('FileExplorer', () => {
           await waitFor(() =>
             expect(requestFilters).toHaveBeenCalledWith({
               ordering: { direction: 'DESC', parameter: 'LINES' },
+              displayType: 'TREE',
+              searchValue: '',
             })
           )
         })
@@ -478,6 +522,8 @@ describe('FileExplorer', () => {
           await waitFor(() =>
             expect(requestFilters).toHaveBeenCalledWith({
               ordering: { direction: 'ASC', parameter: 'HITS' },
+              displayType: 'TREE',
+              searchValue: '',
             })
           )
         })
@@ -500,6 +546,8 @@ describe('FileExplorer', () => {
           await waitFor(() =>
             expect(requestFilters).toHaveBeenCalledWith({
               ordering: { direction: 'DESC', parameter: 'HITS' },
+              displayType: 'TREE',
+              searchValue: '',
             })
           )
         })
@@ -520,6 +568,8 @@ describe('FileExplorer', () => {
           await waitFor(() =>
             expect(requestFilters).toHaveBeenCalledWith({
               ordering: { direction: 'ASC', parameter: 'PARTIALS' },
+              displayType: 'TREE',
+              searchValue: '',
             })
           )
         })
@@ -542,6 +592,8 @@ describe('FileExplorer', () => {
           await waitFor(() =>
             expect(requestFilters).toHaveBeenCalledWith({
               ordering: { direction: 'DESC', parameter: 'PARTIALS' },
+              displayType: 'TREE',
+              searchValue: '',
             })
           )
         })
@@ -562,6 +614,8 @@ describe('FileExplorer', () => {
           await waitFor(() =>
             expect(requestFilters).toHaveBeenCalledWith({
               ordering: { direction: 'ASC', parameter: 'MISSES' },
+              displayType: 'TREE',
+              searchValue: '',
             })
           )
         })
@@ -584,6 +638,8 @@ describe('FileExplorer', () => {
           await waitFor(() =>
             expect(requestFilters).toHaveBeenCalledWith({
               ordering: { direction: 'DESC', parameter: 'MISSES' },
+              displayType: 'TREE',
+              searchValue: '',
             })
           )
         })
@@ -598,7 +654,7 @@ describe('FileExplorer', () => {
         render(<FileExplorer />, { wrapper: wrapper() })
 
         expect(
-          await await screen.findByRole('textbox', {
+          await screen.findByRole('textbox', {
             name: 'Search for files',
           })
         ).toBeTruthy()
@@ -609,6 +665,7 @@ describe('FileExplorer', () => {
 
         await waitFor(() =>
           expect(requestFilters).toHaveBeenCalledWith({
+            displayType: 'TREE',
             searchValue: 'cool-file.rs',
             ordering: { direction: 'ASC', parameter: 'NAME' },
           })
