@@ -43,7 +43,6 @@ const BundleSelector = forwardRef(({}, ref) => {
   const history = useHistory()
   const [search, setSearch] = useState('')
   const { bundles: bundlesLink } = useNavLinks()
-  const [bundlesState, setBundlesState] = useState<Array<string>>([])
   const {
     provider,
     owner,
@@ -79,6 +78,7 @@ const BundleSelector = forwardRef(({}, ref) => {
   // Note: There's no real way to test this as the data is resolved during
   // suspense and the component is not rendered until the data is resolved.
   const bundles = bundleData?.bundles ?? []
+  const [bundlesState, setBundlesState] = useState<Array<string>>(() => bundles)
 
   return (
     <div className="md:w-[16rem]">
@@ -89,6 +89,7 @@ const BundleSelector = forwardRef(({}, ref) => {
         <Select
           ref={ref}
           // @ts-expect-error
+          // using bundles here and not bundlesState because we don't want to disable the select if there aren't any matching bundles in the search
           disabled={bundles.length === 0}
           resourceName="bundle"
           placeholder="Select bundle"

@@ -28,6 +28,7 @@ const mockGetRepo = (noUploadToken = false, hasCommits = false) => ({
     isAdmin: null,
     isCurrentUserActivated: null,
     repository: {
+      __typename: 'Repository',
       private: false,
       uploadToken: noUploadToken
         ? null
