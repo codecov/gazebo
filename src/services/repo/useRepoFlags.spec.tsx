@@ -16,7 +16,7 @@ const queryClient = new QueryClient({
   },
 })
 
-const wrapper: React.FC<React.PropsWithChildren> = { children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov/gazebo/flags']}>
     <Route path="/:provider/:owner/:repo/flags">
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
