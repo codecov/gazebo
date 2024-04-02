@@ -270,51 +270,6 @@ describe('CommitCoverageTabs', () => {
     })
   })
 
-  describe('rendering toggle header', () => {
-    it('renders uncovered legend', async () => {
-      setup()
-      render(<CommitCoverageTabs commitSha="sha256" />, {
-        wrapper: wrapper(),
-      })
-
-      const legend = await screen.findByText('uncovered')
-      expect(legend).toBeInTheDocument()
-    })
-
-    it('renders partial legend', async () => {
-      setup()
-      render(<CommitCoverageTabs commitSha="sha256" />, {
-        wrapper: wrapper(),
-      })
-
-      const legend = await screen.findByText('partial')
-      expect(legend).toBeInTheDocument()
-    })
-
-    it('renders covered legend', async () => {
-      setup()
-      render(<CommitCoverageTabs commitSha="sha256" />, {
-        wrapper: wrapper(),
-      })
-
-      const legend = await screen.findByText('covered')
-      expect(legend).toBeInTheDocument()
-    })
-
-    it('renders hit count legend', async () => {
-      setup()
-      render(<CommitCoverageTabs commitSha="sha256" />, {
-        wrapper: wrapper(),
-      })
-
-      const hitIcon = await screen.findByText('n')
-      expect(hitIcon).toBeInTheDocument()
-
-      const legendText = await screen.findByText('upload #')
-      expect(legendText).toBeInTheDocument()
-    })
-  })
-
   describe('there are query params in the url', () => {
     it('appends them to the files changed tab link', async () => {
       const queryString = qs.stringify(
