@@ -42,7 +42,7 @@ function ToggleHeader({ showHitCount = true, noBottomBorder = false }) {
         <TitleCoverage coverage={LINE_STATE.COVERED} />
         <TitleHitCount showHitCount={showHitCount} />
       </div>
-      <div className="ml-auto flex w-full flex-wrap items-center justify-end gap-2 md:mt-2 md:w-1/2">
+      <div className="ml-auto flex w-full flex-wrap items-center justify-end gap-2 md:mt-2 md:w-auto">
         {!isTeamPlan ? <TitleFlags /> : null}
         {!isTeamPlan ? <ComponentsSelector /> : null}
       </div>
