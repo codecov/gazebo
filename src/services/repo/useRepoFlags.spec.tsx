@@ -4,6 +4,8 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import A from 'ui/A'
+
 import { useRepoFlags } from './useRepoFlags'
 
 const queryClient = new QueryClient({
@@ -14,7 +16,7 @@ const queryClient = new QueryClient({
   },
 })
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov/gazebo/flags']}>
     <Route path="/:provider/:owner/:repo/flags">
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -33,7 +35,7 @@ const initialData = [
     node: {
       name: 'flag1',
       percentCovered: 93.26,
-      percentChanged: 1.65,
+      percentChange: 1.65,
       measurements: [
         { avg: 91.74637512820512 },
         { avg: 91.85559083333332 },
@@ -46,7 +48,7 @@ const initialData = [
     node: {
       name: 'flag2',
       percentCovered: 92.72,
-      percentChanged: 1.58,
+      percentChange: 1.58,
       measurements: [
         { avg: 92.44361365466449 },
         { avg: 92.55269245333334 },
@@ -62,7 +64,7 @@ const expectedInitialData = [
   {
     name: 'flag1',
     percentCovered: 93.26,
-    percentChanged: 1.65,
+    percentChange: 1.65,
 
     measurements: [
       { avg: 91.74637512820512 },
@@ -74,7 +76,7 @@ const expectedInitialData = [
   {
     name: 'flag2',
     percentCovered: 92.72,
-    percentChanged: 1.58,
+    percentChange: 1.58,
 
     measurements: [
       { avg: 92.44361365466449 },
@@ -91,7 +93,7 @@ const nextPageData = [
     node: {
       name: 'flag3',
       percentCovered: 92.95,
-      percentChanged: 1.38,
+      percentChange: 1.38,
       measurements: [
         { avg: 92.92690138723546 },
         { avg: 92.99535449712643 },
@@ -107,7 +109,7 @@ const expectedNextPageData = [
   {
     name: 'flag3',
     percentCovered: 92.95,
-    percentChanged: 1.38,
+    percentChange: 1.38,
 
     measurements: [
       { avg: 92.92690138723546 },
@@ -119,17 +121,50 @@ const expectedNextPageData = [
   },
 ]
 
-const provider = 'gh'
-const owner = 'codecov'
-const repo = 'gazebo'
-
 describe('FlagMeasurements', () => {
-  function setup() {
+  function setup({
+    isSchemaInvalid = false,
+    isOwnerActivationError = false,
+    isNotFoundError = false,
+  } = {}) {
     server.use(
       graphql.query('FlagMeasurements', (req, res, ctx) => {
+        if (isSchemaInvalid) {
+          return res(ctx.status(200), ctx.data({}))
+        }
+
+        if (isOwnerActivationError) {
+          return res(
+            ctx.status(200),
+            ctx.data({
+              owner: {
+                repository: {
+                  __typename: 'OwnerNotActivatedError',
+                  message: 'Owner not activated',
+                },
+              },
+            })
+          )
+        }
+
+        if (isNotFoundError) {
+          return res(
+            ctx.status(200),
+            ctx.data({
+              owner: {
+                repository: {
+                  __typename: 'NotFoundError',
+                  message: 'Repo not found',
+                },
+              },
+            })
+          )
+        }
+
         const dataReturned = {
           owner: {
             repository: {
+              __typename: 'Repository',
               flags: {
                 edges: req.variables.after
                   ? [...nextPageData]
@@ -155,7 +190,12 @@ describe('FlagMeasurements', () => {
     describe('when data is loaded', () => {
       it('returns the data', async () => {
         const { result } = renderHook(
-          () => useRepoFlags({ provider, owner, repo }),
+          () =>
+            useRepoFlags({
+              interval: 'INTERVAL_30_DAY',
+              afterDate: '2021-09-01',
+              beforeDate: '2021-09-30',
+            }),
           {
             wrapper,
           }
@@ -178,7 +218,12 @@ describe('FlagMeasurements', () => {
 
     it('returns prev and next page flags data', async () => {
       const { result } = renderHook(
-        () => useRepoFlags({ provider, owner, repo }),
+        () =>
+          useRepoFlags({
+            interval: 'INTERVAL_30_DAY',
+            afterDate: '2021-09-01',
+            beforeDate: '2021-09-30',
+          }),
         {
           wrapper,
         }
@@ -197,6 +242,104 @@ describe('FlagMeasurements', () => {
           ...expectedInitialData,
           ...expectedNextPageData,
         ])
+      )
+    })
+  })
+
+  describe('when the schema is invalid', () => {
+    beforeEach(() => {
+      setup({ isSchemaInvalid: true })
+    })
+
+    it('returns an error', async () => {
+      const { result } = renderHook(
+        () =>
+          useRepoFlags({
+            interval: 'INTERVAL_30_DAY',
+            afterDate: '2021-09-01',
+            beforeDate: '2021-09-30',
+          }),
+        {
+          wrapper,
+        }
+      )
+
+      await waitFor(() =>
+        expect(result.current.error).toEqual({
+          status: 404,
+          data: {},
+          dev: 'useRepoFlags - 404 failed to parse',
+        })
+      )
+    })
+  })
+
+  describe('when repo is not found', () => {
+    beforeEach(() => {
+      setup({ isNotFoundError: true })
+    })
+
+    it('returns an error', async () => {
+      const { result } = renderHook(
+        () =>
+          useRepoFlags({
+            interval: 'INTERVAL_30_DAY',
+            afterDate: '2021-09-01',
+            beforeDate: '2021-09-30',
+          }),
+        {
+          wrapper,
+        }
+      )
+
+      await waitFor(() =>
+        expect(result.current.error).toEqual({
+          status: 404,
+          data: {},
+          dev: 'useRepoFlags - 404 NotFoundError',
+        })
+      )
+    })
+  })
+
+  describe('when owner is not activated', () => {
+    beforeEach(() => {
+      setup({ isOwnerActivationError: true })
+    })
+
+    it('returns an error', async () => {
+      const { result } = renderHook(
+        () =>
+          useRepoFlags({
+            interval: 'INTERVAL_30_DAY',
+            afterDate: '2021-09-01',
+            beforeDate: '2021-09-30',
+          }),
+        {
+          wrapper,
+        }
+      )
+
+      await waitFor(() =>
+        expect(result.current.error).toEqual({
+          status: 403,
+          data: {
+            detail: (
+              <p>
+                Activation is required to view this repo, please{' '}
+                <A
+                  to={{ pageName: 'membersTab' }}
+                  hook="activate-members"
+                  isExternal={false}
+                >
+                  click here{' '}
+                </A>{' '}
+                to activate your account.
+              </p>
+            ),
+          },
+          dev: 'useRepoFlags - 403 OwnerNotActivatedError',
+        })
       )
     })
   })
