@@ -359,13 +359,17 @@ describe('CodeTreeTable', () => {
 
         expect(
           await screen.findByText(
-            'There is no coverage on the default branch for this repository. Use the Branch Context selector above to choose a different branch.'
+            'Once merged to your default branch, Codecov will show your report results on this dashboard.'
           )
         ).toBeTruthy()
         const message = screen.getByText(
-          'There is no coverage on the default branch for this repository. Use the Branch Context selector above to choose a different branch.'
+          'Once merged to your default branch, Codecov will show your report results on this dashboard.'
         )
         expect(message).toBeInTheDocument()
+
+        const link = await screen.findByTestId('settings-page')
+        expect(link).toBeInTheDocument()
+        expect(link).toHaveAttribute('href', '/gh/codecov/cool-repo/settings')
       })
     })
 
