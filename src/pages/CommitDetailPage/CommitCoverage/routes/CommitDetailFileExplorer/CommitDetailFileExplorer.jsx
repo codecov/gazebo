@@ -1,5 +1,5 @@
 import Table from 'old_ui/Table'
-import ToggleHeader from 'pages/PullRequestPage/Header/ToggleHeader/ToggleHeader'
+import ToggleHeader from 'pages/CommitDetailPage/Header/ToggleHeader/ToggleHeader'
 import { useLocationParams } from 'services/navigation'
 import ContentsTableHeader from 'shared/ContentsTable/ContentsTableHeader'
 import DisplayTypeButton from 'shared/ContentsTable/DisplayTypeButton'

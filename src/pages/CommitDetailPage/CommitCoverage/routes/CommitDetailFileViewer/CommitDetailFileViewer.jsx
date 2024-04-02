@@ -1,10 +1,9 @@
 import { useParams } from 'react-router-dom'
 
-import ToggleHeader from 'pages/PullRequestPage/Header/ToggleHeader/ToggleHeader'
+import ToggleHeader from 'pages/CommitDetailPage/Header/ToggleHeader/ToggleHeader'
 import RawFileviewer from 'shared/RawFileviewer'
 import { useCommitTreePaths } from 'shared/treePaths'
 import Breadcrumb from 'ui/Breadcrumb'
-
 
 function CommitDetailFileViewer() {
   const { treePaths } = useCommitTreePaths()

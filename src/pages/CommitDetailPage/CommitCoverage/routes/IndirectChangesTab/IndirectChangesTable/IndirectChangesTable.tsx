@@ -15,7 +15,7 @@ import qs from 'qs'
 import { Fragment, lazy, Suspense, useMemo, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
-import ToggleHeader from 'pages/PullRequestPage/Header/ToggleHeader/ToggleHeader'
+import ToggleHeader from 'pages/CommitDetailPage/Header/ToggleHeader/ToggleHeader'
 import { ImpactedFileType, useCommit } from 'services/commit/useCommit'
 import A from 'ui/A'
 import Icon from 'ui/Icon'

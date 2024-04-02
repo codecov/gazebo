@@ -1,12 +1,11 @@
 import { lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 
-import ToggleHeader from 'pages/PullRequestPage/Header/ToggleHeader/ToggleHeader'
+import ToggleHeader from 'pages/CommitDetailPage/Header/ToggleHeader/ToggleHeader'
 import { useRepoSettingsTeam } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 import Spinner from 'ui/Spinner'
-
 
 const FilesChangedTable = lazy(() => import('./FilesChangedTable'))
 const FilesChangedTableTeam = lazy(() => import('./FilesChangedTableTeam'))
