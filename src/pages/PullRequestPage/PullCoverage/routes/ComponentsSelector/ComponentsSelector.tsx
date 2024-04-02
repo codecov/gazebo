@@ -1,5 +1,5 @@
 import isUndefined from 'lodash/isUndefined'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { useLocationParams } from 'services/navigation'
 import { usePullComponents } from 'services/pull'
@@ -19,32 +19,38 @@ function ComponentsSelector() {
     params?.components
   )
   const { data, isLoading } = usePullComponents({
-    filters: {
-      components: componentSearch ? [componentSearch] : undefined,
-    },
     options: {
       suspense: false,
     },
   })
 
-  const components =
-    data?.pull?.compareWithBase.__typename === 'Comparison'
+  const components = useMemo(() => {
+    return data?.pull?.compareWithBase.__typename === 'Comparison'
       ? data?.pull?.compareWithBase?.componentComparisons
       : []
+  }, [data])
+
+  const componentNames = useMemo(() => {
+    const names = new Set<string>()
+    // @ts-expect-errors, useLocation params needs to be updated to have full types
+    params?.components?.forEach((component: string) => names.add(component))
+    if (!isUndefined(components)) {
+      components?.forEach((component: { name: string }) =>
+        names.add(component?.name)
+      )
+    }
+    try {
+      const regex = new RegExp(componentSearch, 'i')
+      return Array.from(names).filter((name: string) => regex.test(name))
+    } catch (e) {
+      return Array.from(names).filter((name: string) =>
+        name.toLowerCase().includes(componentSearch.toLowerCase())
+      )
+    }
+  }, [params, componentSearch, components])
 
   if (!components?.length && !isLoading && !componentSearch) {
     return null
-  }
-
-  const componentsNames = new Set()
-  // @ts-expect-errors, useLocation params needs to be updated to have full types
-  params?.components?.forEach((component: String) =>
-    componentsNames.add(component)
-  )
-  if (!isUndefined(components)) {
-    components?.forEach((component: { name: String }) =>
-      componentsNames.add(component?.name)
-    )
   }
 
   return (
@@ -55,7 +61,7 @@ function ComponentsSelector() {
         dataMarketing="coverage-tab-component-multi-select"
         hook="coverage-tab-component-multi-select"
         ariaName="Select components to show"
-        items={[...componentsNames]}
+        items={[...componentNames]}
         resourceName="component"
         isLoading={isLoading}
         selectedItemsOverride={selectedComponents}

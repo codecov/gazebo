@@ -37,6 +37,11 @@ const RepositorySchema = z.object({
   pull: z
     .object({
       pullId: z.number(),
+      commits: z
+        .object({
+          totalCount: z.number(),
+        })
+        .nullable(),
       head: z
         .object({
           commitid: z.string(),
@@ -104,6 +109,9 @@ query PullPageData(
         bundleAnalysisEnabled
         pull(id: $pullId) {
           pullId
+          commits {
+            totalCount
+          }
           head {
             commitid
             bundleAnalysisReport {

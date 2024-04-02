@@ -79,6 +79,9 @@ const mockPullData = {
       bundleAnalysisEnabled: true,
       pull: {
         pullId: 1,
+        commits: {
+          totalCount: 11,
+        },
         head: {
           commitid: '123',
           bundleAnalysisReport: {

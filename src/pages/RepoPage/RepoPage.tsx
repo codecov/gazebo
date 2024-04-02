@@ -52,7 +52,7 @@ function Routes({
   bundleAnalysisEnabled,
   jsOrTsPresent,
 }: RoutesProps) {
-  const { bundleAnalysisPrAndCommitPages } = useFlags({
+  const { componentTab } = useFlags({
     bundleAnalysisPrAndCommitPages: false,
   })
 
@@ -86,7 +86,7 @@ function Routes({
             <NewRepoTab />
           </SentryRoute>
         )}
-        {bundleAnalysisEnabled && bundleAnalysisPrAndCommitPages ? (
+        {bundleAnalysisEnabled ? (
           <SentryRoute
             path={[
               `${path}/bundles/:branch/:bundle`,
@@ -97,11 +97,11 @@ function Routes({
           >
             <BundlesTab />
           </SentryRoute>
-        ) : jsOrTsPresent && bundleAnalysisPrAndCommitPages ? (
+        ) : jsOrTsPresent ? (
           <SentryRoute
             path={[
               `${path}/bundles/new`,
-              `${path}bundles/new/rollup`,
+              `${path}/bundles/new/rollup`,
               `${path}/bundles/new/webpack`,
             ]}
             exact
@@ -111,6 +111,11 @@ function Routes({
         ) : null}
         {coverageEnabled ? (
           <SentryRoute path={`${path}/flags`} exact>
+            <FlagsTab />
+          </SentryRoute>
+        ) : null}
+        {coverageEnabled && componentTab ? (
+          <SentryRoute path={`${path}/components`} exact>
             <FlagsTab />
           </SentryRoute>
         ) : null}
@@ -171,7 +176,7 @@ function Routes({
       >
         <NewRepoTab />
       </SentryRoute>
-      {jsOrTsPresent && bundleAnalysisPrAndCommitPages ? (
+      {jsOrTsPresent ? (
         <SentryRoute
           path={[
             `${path}/bundles/new`,

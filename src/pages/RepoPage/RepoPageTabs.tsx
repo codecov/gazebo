@@ -42,8 +42,8 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
     },
   })
 
-  const { bundleAnalysisPrAndCommitPages } = useFlags({
-    bundleAnalysisPrAndCommitPages: false,
+  const { componentTab } = useFlags({
+    componentTab: false,
   })
 
   const matchTree = useMatchTreePath()
@@ -70,9 +70,8 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
 
   const jsOrTsPresent = repoOverview?.jsOrTsPresent
   if (
-    ((jsOrTsPresent && isCurrentUserPartOfOrg) ||
-      repoOverview?.bundleAnalysisEnabled) &&
-    bundleAnalysisPrAndCommitPages
+    (jsOrTsPresent && isCurrentUserPartOfOrg) ||
+    repoOverview?.bundleAnalysisEnabled
   ) {
     tabs.push({
       pageName: 'bundles',
@@ -87,6 +86,10 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
   const hideFlagsTab = !!repoOverview?.private && tierData === TierNames.TEAM
   if (repoOverview?.coverageEnabled && !hideFlagsTab) {
     tabs.push({ pageName: 'flagsTab' })
+  }
+
+  if (repoOverview?.coverageEnabled && componentTab) {
+    tabs.push({ pageName: 'componentsTab' })
   }
 
   if (repoOverview?.bundleAnalysisEnabled || repoOverview?.coverageEnabled) {

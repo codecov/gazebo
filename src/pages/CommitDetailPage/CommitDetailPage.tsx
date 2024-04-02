@@ -4,7 +4,6 @@ import { lazy, Suspense } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
-import { useFlags } from 'shared/featureFlags'
 import Breadcrumb from 'ui/Breadcrumb'
 import Spinner from 'ui/Spinner'
 import SummaryDropdown from 'ui/SummaryDropdown'
@@ -43,10 +42,6 @@ const CommitDetailPage: React.FC = () => {
   const { provider, owner, repo, commit: commitSha } = useParams<URLParams>()
   const shortSHA = commitSha?.slice(0, 7)
 
-  const { bundleAnalysisPrAndCommitPages } = useFlags({
-    bundleAnalysisPrAndCommitPages: false,
-  })
-
   // reset cache when user navigates to the commit detail page
   const queryClient = useQueryClient()
   queryClient.setQueryData(['IgnoredUploadIds'], [])
@@ -71,8 +66,7 @@ const CommitDetailPage: React.FC = () => {
   let displayMode: TDisplayMode = DISPLAY_MODE.COVERAGE
   if (
     commitPageData?.bundleAnalysisEnabled &&
-    commitPageData?.coverageEnabled &&
-    bundleAnalysisPrAndCommitPages
+    commitPageData?.coverageEnabled
   ) {
     const queryString = qs.parse(location.search, {
       ignoreQueryPrefix: true,
@@ -86,10 +80,7 @@ const CommitDetailPage: React.FC = () => {
     }
 
     displayMode = DISPLAY_MODE.BOTH
-  } else if (
-    commitPageData?.bundleAnalysisEnabled &&
-    bundleAnalysisPrAndCommitPages
-  ) {
+  } else if (commitPageData?.bundleAnalysisEnabled) {
     displayMode = DISPLAY_MODE.BUNDLE_ANALYSIS
   }
 
