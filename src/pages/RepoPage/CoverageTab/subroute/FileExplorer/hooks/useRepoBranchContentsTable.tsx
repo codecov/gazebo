@@ -3,10 +3,7 @@ import { useMemo } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
-import {
-  PathContentResultType,
-  useRepoBranchContents,
-} from 'services/pathContents/branch/dir'
+import { useRepoBranchContents } from 'services/pathContents/branch/dir'
 import { useRepoOverview } from 'services/repo'
 import { displayTypeParameter } from 'shared/ContentsTable/constants'
 import BranchDirEntry from 'shared/ContentsTable/TableEntries/BranchEntries/BranchDirEntry'
@@ -117,62 +114,60 @@ export function useRepoBranchContentsTable(sortItem?: {
   const { treePaths } = useTreePaths()
 
   const finalizedTableRows = useMemo(() => {
-    const createTableData = (branchData: PathContentResultType[]) => {
-      const rawTableRows = branchData.map((result) => {
-        let name
-        if (result?.__typename === 'PathContentDir') {
-          name = (
-            <BranchDirEntry
-              name={result.name}
-              branch={branch}
-              urlPath={urlPath}
-            />
-          )
-        } else if (result?.__typename === 'PathContentFile') {
-          name = (
-            <BranchFileEntry
-              name={result.name}
-              urlPath={urlPath}
-              branch={branch}
-              path={result.path}
-              displayType={selectedDisplayType}
-              isCriticalFile={result.isCriticalFile}
-            />
-          )
-        }
-        const lines = result?.lines
-        const hits = result?.hits
-        const partials = result?.partials
-        const misses = result?.misses
-        const coverage = (
-          <CoverageProgress
-            amount={result?.percentCovered}
-            color={determineProgressColor({
-              coverage: result?.percentCovered ?? null,
-              ...indicationRange,
-            })}
+    const tableData = branchData?.results ?? []
+    const rawTableRows = tableData.map((result) => {
+      let name
+      if (result?.__typename === 'PathContentDir') {
+        name = (
+          <BranchDirEntry
+            name={result.name}
+            branch={branch}
+            urlPath={urlPath}
           />
         )
+      } else if (result?.__typename === 'PathContentFile') {
+        name = (
+          <BranchFileEntry
+            name={result.name}
+            urlPath={urlPath}
+            branch={branch}
+            path={result.path}
+            displayType={selectedDisplayType}
+            isCriticalFile={result.isCriticalFile}
+          />
+        )
+      }
+      const lines = result?.lines
+      const hits = result?.hits
+      const partials = result?.partials
+      const misses = result?.misses
+      const coverage = (
+        <CoverageProgress
+          amount={result?.percentCovered}
+          color={determineProgressColor({
+            coverage: result?.percentCovered ?? null,
+            ...indicationRange,
+          })}
+        />
+      )
 
-        return {
-          name,
-          lines,
-          hits,
-          partials,
-          misses,
-          coverage,
-        }
-      })
+      return {
+        name,
+        lines,
+        hits,
+        partials,
+        misses,
+        coverage,
+      }
+    })
 
-      return adjustListIfUpDir({
-        treePaths,
-        displayType: selectedDisplayType,
-        rawTableRows,
-      })
-    }
+    const adjustedTableData = adjustListIfUpDir({
+      treePaths,
+      displayType: selectedDisplayType,
+      rawTableRows,
+    })
 
-    let rawData = createTableData(branchData?.results ?? [])
-    return rawData
+    return adjustedTableData
   }, [
     branchData?.results,
     branch,
