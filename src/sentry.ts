@@ -77,20 +77,19 @@ export const setupSentry = ({
     history,
   })
 
-  const feedback = Sentry.feedbackIntegration({
-    colorScheme: 'light',
-    showBranding: false,
-    formTitle: 'Give Feedback',
-    buttonLabel: 'Give Feedback',
-    submitButtonLabel: 'Send Feedback',
-    nameLabel: 'Username',
-  })
-
   const integrations = [metrics, replay, tracing]
 
   // Only show feedback button in production
   // spotlight takes the place of the feedback widget in dev mode
   if (config.NODE_ENV === 'production') {
+    const feedback = Sentry.feedbackIntegration({
+      colorScheme: 'light',
+      showBranding: false,
+      formTitle: 'Give Feedback',
+      buttonLabel: 'Give Feedback',
+      submitButtonLabel: 'Send Feedback',
+      nameLabel: 'Username',
+    })
     integrations.push(feedback)
   }
 
