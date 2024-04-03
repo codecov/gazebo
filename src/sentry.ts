@@ -83,6 +83,7 @@ export const setupSentry = ({
     formTitle: 'Give Feedback',
     buttonLabel: 'Give Feedback',
     submitButtonLabel: 'Send Feedback',
+    nameLabel: 'Username',
   })
 
   const integrations = [metrics, replay, tracing]
