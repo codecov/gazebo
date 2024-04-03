@@ -14,7 +14,7 @@ const server = setupServer()
 const mockResponse = {
   planAutoActivate: true,
   seatsUsed: 1,
-  seatsAvailable: 10,
+  seatsLimit: 10,
 }
 
 beforeAll(() => server.listen())

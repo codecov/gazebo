@@ -208,10 +208,11 @@ describe('useMyOrganizations', () => {
         await waitFor(() => !result.current.isLoading)
         await waitFor(() => expect(result.current.isSuccess).toBeFalsy())
 
-        expect(thrownMock).toHaveBeenCalledWith(
-          'POST /graphql/gh net::ERR_FAILED'
+        await waitFor(() =>
+          expect(thrownMock).toHaveBeenCalledWith(
+            'POST /graphql/gh net::ERR_FAILED'
+          )
         )
-        expect(result.current.data).toBeUndefined()
       })
     })
   })

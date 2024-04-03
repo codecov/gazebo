@@ -18,7 +18,6 @@ import RepoPageTabs, { useRepoTabs } from './RepoPageTabs'
 
 jest.mock('shared/featureFlags')
 const mockedUseFlags = useFlags as jest.Mock<{
-  bundleAnalysisPrAndCommitPages: boolean
   componentTab: boolean
 }>
 
@@ -137,7 +136,6 @@ describe('RepoPageTabs', () => {
     isCurrentUserPartOfOrg = true,
   }: SetupArgs) {
     mockedUseFlags.mockReturnValue({
-      bundleAnalysisPrAndCommitPages: true,
       componentTab: true,
     })
 
@@ -463,7 +461,6 @@ describe('useRepoTabs', () => {
     isCurrentUserPartOfOrg = true,
   }: SetupArgs) {
     mockedUseFlags.mockReturnValue({
-      bundleAnalysisPrAndCommitPages: true,
       componentTab: true,
     })
 
@@ -846,7 +843,6 @@ describe('useRepoTabs', () => {
     describe('feature flag is off', () => {
       it('does not add the components link to the array', async () => {
         mockedUseFlags.mockReturnValueOnce({
-          bundleAnalysisPrAndCommitPages: true,
           componentTab: false,
         })
 

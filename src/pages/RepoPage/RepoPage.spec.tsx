@@ -24,7 +24,6 @@ jest.mock('shared/featureFlags')
 
 jest.mock('shared/featureFlags')
 const mockedUseFlags = useFlags as jest.Mock<{
-  bundleAnalysisPrAndCommitPages: boolean
   componentTab: boolean
 }>
 
@@ -179,7 +178,6 @@ describe('RepoPage', () => {
     }
   ) {
     mockedUseFlags.mockReturnValue({
-      bundleAnalysisPrAndCommitPages: true,
       componentTab: true,
     })
 

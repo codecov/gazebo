@@ -93,7 +93,17 @@ const server = setupServer(
     )
   }),
   graphql.query('UnauthorizationError', (req, res, ctx) => {
-    return res(ctx.status(401), ctx.data(undefined))
+    return res(
+      ctx.status(403),
+      ctx.errors([
+        {
+          message: 'Unauthorized',
+          extensions: {
+            status: 403,
+          },
+        },
+      ])
+    )
   })
 )
 
@@ -353,7 +363,7 @@ describe('when using a graphql mutation', () => {
       global.window.location = Object.assign({}, location)
     })
 
-    it('has a 401 error', async () => {
+    it('has a 403 error', async () => {
       let error
 
       try {
@@ -364,7 +374,7 @@ describe('when using a graphql mutation', () => {
       } catch (err) {
         error = err
       }
-      expect(error.status).toBe(401)
+      expect(error.status).toBe(403)
       expect(window.location.href).toBe('/login')
     })
   })

@@ -1,15 +1,19 @@
 /* eslint-disable camelcase */
-const SentryWebpackPlugin = require('@sentry/webpack-plugin')
+const { sentryWebpackPlugin } = require('@sentry/webpack-plugin')
 const WebpackHookPlugin = require('webpack-hook-plugin')
 
 const { resolve } = require('path')
 
-const SentryPlugin = new SentryWebpackPlugin({
+const SentryPlugin = sentryWebpackPlugin({
   org: process.env.SENTRY_ORG || 'codecov',
   project: process.env.SENTRY_PROJECT || 'gazebo',
-  include: './build/static/js',
   authToken: process.env.SENTRY_AUTH_TOKEN,
-  urlPrefix: '~/static/js',
+  release: {
+    name: process.env.GAZEBO_SHA || Date.now().toString(),
+    deploy: {
+      env: process.env.REACT_APP_SENTRY_ENVIRONMENT || process.env.NODE_ENV,
+    },
+  },
 })
 
 module.exports = {

@@ -1,7 +1,6 @@
 import { useRepoSettings } from 'services/repo'
 import { useFlags } from 'shared/featureFlags'
 
-import GraphToken from './GraphToken'
 import ImpactAnalysisToken from './ImpactAnalysisToken'
 import RepoUploadToken from './RepoUploadToken'
 import StaticAnalysisToken from './StaticAnalysisToken'
@@ -25,7 +24,6 @@ function Tokens() {
           staticAnalysisToken={repository?.staticAnalysisToken}
         />
       )}
-      <GraphToken graphToken={repository?.graphToken} />
     </>
   )
 }
