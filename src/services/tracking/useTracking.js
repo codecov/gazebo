@@ -48,20 +48,16 @@ export function useTracking() {
   useTrackFeatureFlags(user) // TODO: Can probably delete
   useUpdatePendoWithOwner(user)
 
-  let sentryUser = null
+  const maybeSentryUser = {}
   if (user?.email) {
-    sentryUser = {
-      email: user.email,
-    }
+    maybeSentryUser.email = user?.email
   }
-
   if (user?.user?.username) {
-    sentryUser = {
-      ...sentryUser,
-      username: user.user.username,
-    }
+    maybeSentryUser.username = user?.user?.username
   }
 
+  const sentryUser =
+    Object.keys(maybeSentryUser).length === 0 ? null : maybeSentryUser
   Sentry.setUser(sentryUser)
 
   return { data: user, ...all }
