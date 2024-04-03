@@ -1,6 +1,7 @@
 import { render, screen } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { PropsWithChildren } from 'react'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
@@ -59,11 +60,10 @@ describe('TriggerSyncBanner', () => {
       setup()
       render(<TriggerSyncBanner />, { wrapper })
 
-      expect(
-        screen.getByText(
-          'You need to enable Component analytics to see coverage data'
-        )
-      ).toBeInTheDocument()
+      const enableAnalyticsText = screen.getByText(
+        'You need to enable Component analytics to see coverage data'
+      )
+      expect(enableAnalyticsText).toBeInTheDocument()
       expect(
         screen.getByText(
           'Component analytics is disabled by default. Enable this feature below to see all your historical coverage data and coverage trend for each component.'
@@ -80,7 +80,7 @@ describe('TriggerSyncBanner', () => {
         const backfill = screen.getByTestId('backfill-task')
         await user.click(backfill)
 
-        expect(mutate).toHaveBeenCalled()
+        await waitFor(() => expect(mutate).toHaveBeenCalled())
       })
     })
   })

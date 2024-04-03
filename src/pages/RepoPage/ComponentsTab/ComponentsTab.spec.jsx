@@ -5,13 +5,10 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useRepoBackfilled, useRepoFlagsSelect } from 'services/repo'
 import { TierNames } from 'services/tier'
 
 import ComponentsTab from './ComponentsTab'
 
-jest.mock('services/repo/useRepoBackfilled')
-jest.mock('services/repo/useRepoFlagsSelect')
 jest.mock('shared/featureFlags')
 
 jest.mock(
@@ -29,15 +26,6 @@ jest.mock(
 jest.mock('./Header', () => ({ children }) => (
   <p>Components Header Component {children}</p>
 ))
-
-const flagsData = [
-  {
-    name: 'flag1',
-  },
-  {
-    name: 'flag2',
-  },
-]
 
 const mockRepoSettings = (isPrivate = false) => ({
   owner: {
@@ -89,16 +77,77 @@ afterAll(() => {
   server.close()
 })
 
+const backfillDataCompleted = {
+  config: {
+    isTimescaleEnabled: true,
+  },
+  owner: {
+    repository: {
+      flagsMeasurementsActive: true,
+      flagsMeasurementsBackfilled: true,
+    },
+  },
+}
+
+const backfillDataNotStarted = {
+  config: {
+    isTimescaleEnabled: true,
+  },
+  owner: {
+    repository: {
+      flagsMeasurementsActive: false,
+      flagsMeasurementsBackfilled: false,
+    },
+  },
+}
+
+const backfillDataInProgress = {
+  config: {
+    isTimescaleEnabled: true,
+  },
+  owner: {
+    repository: {
+      flagsMeasurementsActive: true,
+      flagsMeasurementsBackfilled: false,
+    },
+  },
+}
+
+const backfillDataTimeseriesNotEnabled = {
+  config: {
+    isTimescaleEnabled: false,
+  },
+  owner: {
+    repository: {
+      flagsMeasurementsActive: false,
+      flagsMeasurementsBackfilled: false,
+    },
+  },
+}
+
+const initialFlagData = [
+  {
+    name: 'flag1',
+    percentCovered: 93.26,
+  },
+]
+
+const nextPageFlagData = [
+  {
+    node: {
+      name: 'flag2',
+      percentCovered: 92.95,
+    },
+  },
+]
+
 describe('Components Tab', () => {
   function setup({
     data = {},
-    flags = flagsData,
+    flags = [nextPageFlagData, initialFlagData],
     tierValue = TierNames.PRO,
     isPrivate = false,
   }) {
-    useRepoFlagsSelect.mockReturnValue({ data: flags })
-    useRepoBackfilled.mockReturnValue(data)
-
     server.use(
       graphql.query('OwnerTier', (req, res, ctx) => {
         if (tierValue === TierNames.TEAM) {
@@ -114,6 +163,25 @@ describe('Components Tab', () => {
       }),
       graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
+      }),
+      graphql.query('BackfillFlagMemberships', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(data))
+      ),
+      graphql.query('FlagsSelect', (req, res, ctx) => {
+        const dataReturned = {
+          owner: {
+            repository: {
+              flags: {
+                edges: req.variables.after ? [...flags[0]] : [...flags[1]],
+                pageInfo: {
+                  hasNextPage: !req.variables.after,
+                  endCursor: req.variables.after ? 'aabb' : 'dW5pdA==',
+                },
+              },
+            },
+          },
+        }
+        return res(ctx.status(200), ctx.data(dataReturned))
       })
     )
   }
@@ -124,13 +192,7 @@ describe('Components Tab', () => {
         setup({
           tierValue: TierNames.TEAM,
           isPrivate: false,
-          data: {
-            data: {
-              flagsMeasurementsActive: true,
-              flagsMeasurementsBackfilled: true,
-              isTimescaleEnabled: true,
-            },
-          },
+          data: backfillDataCompleted,
         })
         render(<ComponentsTab />, { wrapper })
 
@@ -153,15 +215,7 @@ describe('Components Tab', () => {
 
   describe('when rendered without active or backfilled repo', () => {
     beforeEach(() => {
-      setup({
-        data: {
-          data: {
-            flagsMeasurementsActive: false,
-            flagsMeasurementsBackfilled: false,
-            isTimescaleEnabled: true,
-          },
-        },
-      })
+      setup({ data: backfillDataNotStarted })
     })
 
     it('renders header', async () => {
@@ -196,15 +250,7 @@ describe('Components Tab', () => {
 
   describe('when rendered while ongoing syncing', () => {
     beforeEach(() => {
-      setup({
-        data: {
-          data: {
-            flagsMeasurementsActive: true,
-            flagsMeasurementsBackfilled: false,
-            isTimescaleEnabled: true,
-          },
-        },
-      })
+      setup({ data: backfillDataInProgress })
     })
 
     it('renders header', async () => {
@@ -239,15 +285,7 @@ describe('Components Tab', () => {
 
   describe('when rendered with backfilled repo', () => {
     beforeEach(() => {
-      setup({
-        data: {
-          data: {
-            flagsMeasurementsActive: true,
-            flagsMeasurementsBackfilled: true,
-            isTimescaleEnabled: true,
-          },
-        },
-      })
+      setup({ data: backfillDataCompleted })
     })
 
     it('renders header', async () => {
@@ -275,14 +313,8 @@ describe('Components Tab', () => {
   describe('when rendered with no components', () => {
     beforeEach(() => {
       setup({
-        data: {
-          data: {
-            flagsMeasurementsActive: false,
-            flagsMeasurementsBackfilled: false,
-            isTimescaleEnabled: true,
-          },
-        },
-        flags: [],
+        data: backfillDataNotStarted,
+        flags: [[], []],
       })
     })
 
@@ -298,14 +330,8 @@ describe('Components Tab', () => {
   describe('when rendered without timescale enabled', () => {
     beforeEach(() => {
       setup({
-        data: {
-          data: {
-            flagsMeasurementsActive: false,
-            flagsMeasurementsBackfilled: false,
-            isTimescaleEnabled: false,
-          },
-        },
-        flags: [],
+        data: backfillDataTimeseriesNotEnabled,
+        flags: [[], []],
       })
     })
 

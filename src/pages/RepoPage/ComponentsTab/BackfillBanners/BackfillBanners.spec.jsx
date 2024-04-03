@@ -11,8 +11,6 @@ jest.mock('./hooks')
 describe('BackfillBanner', () => {
   function setup(data) {
     useRepoBackfillingStatus.mockReturnValue(data)
-
-    render(<BackfillBanners />)
   }
 
   describe('when rendered', () => {
@@ -22,7 +20,9 @@ describe('BackfillBanner', () => {
           componentsMeasurementsActive: false,
           isRepoBackfilling: false,
         })
-        expect(screen.getByText(/TriggerSyncBanner/)).toBeInTheDocument()
+        render(<BackfillBanners />)
+        const triggerSyncBanner = screen.getByText(/TriggerSyncBanner/)
+        expect(triggerSyncBanner).toBeInTheDocument()
       })
     })
     describe('when components are backfilling', () => {
@@ -31,7 +31,9 @@ describe('BackfillBanner', () => {
           componentsMeasurementsActive: true,
           isRepoBackfilling: true,
         })
-        expect(screen.getByText(/SyncingBanner/)).toBeInTheDocument()
+        render(<BackfillBanners />)
+        const syncingBanner = screen.getByText(/SyncingBanner/)
+        expect(syncingBanner).toBeInTheDocument()
       })
     })
   })

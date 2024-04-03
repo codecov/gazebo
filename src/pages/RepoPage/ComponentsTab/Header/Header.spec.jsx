@@ -1,62 +1,158 @@
 import { render, screen, waitFor } from 'custom-testing-library'
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import useIntersection from 'react-use/lib/useIntersection'
 
 import { useLocationParams } from 'services/navigation'
-import { useRepoBackfilled, useRepoFlagsSelect } from 'services/repo'
 
 import Header from './Header'
 
 jest.mock('react-use/lib/useIntersection')
 jest.mock('services/navigation/useLocationParams')
-jest.mock('services/repo/useRepoBackfilled')
-jest.mock('services/repo/useRepoFlagsSelect')
+
+const server = setupServer()
+const queryClient = new QueryClient()
+let testLocation = {
+  pathname: '',
+}
 
 const wrapper = ({ children }) => (
-  <MemoryRouter initialEntries={['/gh/codecov/gazebo/components']}>
-    <Route path="/:provider/:owner/:repo/components" exact={true}>
-      {children}
-    </Route>
-  </MemoryRouter>
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh/codecov/gazebo/components']}>
+      <Route path="/:provider/:owner/:repo/components" exact={true}>
+        {children}
+      </Route>
+      <Route
+        path="*"
+        render={({ location }) => {
+          testLocation.pathname = location.pathname
+          return null
+        }}
+      />
+    </MemoryRouter>
+  </QueryClientProvider>
 )
+
+beforeAll(() => {
+  console.error = () => {}
+  server.listen()
+})
+
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
+
+const backfillData = {
+  config: {
+    isTimescaleEnabled: true,
+  },
+  owner: {
+    repository: {
+      flagsMeasurementsActive: true,
+      flagsMeasurementsBackfilled: true,
+      flagsCount: 99,
+    },
+  },
+}
+
+const mockFirstResponse = {
+  owner: {
+    repository: {
+      flags: {
+        edges: [
+          {
+            node: {
+              name: 'flag1',
+            },
+          },
+        ],
+        pageInfo: {
+          hasNextPage: true,
+          endCursor: '1-flag-1',
+        },
+      },
+    },
+  },
+}
+
+const mockSecondResponse = {
+  owner: {
+    repository: {
+      flags: {
+        edges: [
+          {
+            node: {
+              name: 'flag2',
+            },
+          },
+        ],
+        pageInfo: {
+          hasNextPage: false,
+          endCursor: null,
+        },
+      },
+    },
+  },
+}
 
 describe('Header', () => {
   afterEach(() => jest.resetAllMocks())
 
-  function setup(setRepoComponents = true) {
+  function setup(
+    { noNextPage = false } = {
+      noNextPage: false,
+    }
+  ) {
     const user = userEvent.setup()
     const updateLocationMock = jest.fn()
+    const mockApiVars = jest.fn()
 
     useLocationParams.mockReturnValue({
       params: { search: '', historicalTrend: '', flags: [] },
       updateParams: updateLocationMock,
     })
-    useRepoBackfilled.mockReturnValue({
-      data: { flagsCount: 99 },
-    })
-    if (setRepoComponents) {
-      useRepoFlagsSelect.mockReturnValue({
-        data: [{ name: 'flag1' }],
-      })
-    }
 
-    return { user, updateLocationMock }
+    server.use(
+      graphql.query('BackfillFlagMemberships', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(backfillData))
+      ),
+      graphql.query('FlagsSelect', (req, res, ctx) => {
+        mockApiVars(req.variables)
+
+        if (!!req.variables?.after || noNextPage) {
+          return res(ctx.status(200), ctx.data(mockSecondResponse))
+        }
+
+        return res(ctx.status(200), ctx.data(mockFirstResponse))
+      })
+    )
+
+    return { user, updateLocationMock, mockApiVars }
   }
 
   describe('Configured Components', () => {
     beforeEach(() => setup())
 
-    it('Renders the label', () => {
+    it('Renders the label', async () => {
       render(<Header />, { wrapper })
 
-      expect(screen.getByText(/Configured components/)).toBeInTheDocument()
+      const page = await screen.findByText(/Configured components/)
+      expect(page).toBeInTheDocument()
     })
-    it('Renders the correct number of components on the repo', () => {
+    it('Renders the correct number of components on the repo', async () => {
       render(<Header />, { wrapper })
 
-      expect(screen.getByText(/99/)).toBeInTheDocument()
+      const page = await screen.findByText(/99/)
+      expect(page).toBeInTheDocument()
     })
   })
 
@@ -171,13 +267,7 @@ describe('Header', () => {
       describe('where onLoadMore is triggered', () => {
         describe('when there is a next page', () => {
           it('calls fetchNextPage', async () => {
-            const { user } = setup(false)
-            const fetchNextPage = jest.fn()
-            useRepoFlagsSelect.mockReturnValue({
-              data: [{ name: 'flag1' }],
-              fetchNextPage,
-              hasNextPage: true,
-            })
+            const { user } = setup()
             useIntersection.mockReturnValue({ isIntersecting: true })
 
             render(<Header />, { wrapper })
@@ -185,19 +275,17 @@ describe('Header', () => {
             const button = screen.getByText('All components')
             await user.click(button)
 
-            expect(fetchNextPage).toHaveBeenCalled()
+            const flag1 = await screen.findByText('flag1')
+            expect(flag1).toBeInTheDocument()
+
+            const flag2 = await screen.findByText('flag2')
+            expect(flag2).toBeInTheDocument()
           })
         })
 
         describe('when there is no next page', () => {
           it('does not calls fetchNextPage', async () => {
-            const { user } = setup(false)
-            const fetchNextPage = jest.fn()
-            useRepoFlagsSelect.mockReturnValue({
-              data: [{ name: 'flag1' }],
-              fetchNextPage,
-              hasNextPage: false,
-            })
+            const { user } = setup(true)
             useIntersection.mockReturnValue({ isIntersecting: true })
 
             render(<Header />, { wrapper })
@@ -205,7 +293,8 @@ describe('Header', () => {
             const button = screen.getByText('All components')
             await user.click(button)
 
-            expect(fetchNextPage).not.toHaveBeenCalled()
+            const flag2 = await screen.findByText('flag2')
+            expect(flag2).toBeInTheDocument()
           })
         })
       })
@@ -239,7 +328,7 @@ describe('Header', () => {
         })
 
         it('calls useRepoFlagsSelect with term', async () => {
-          const { user } = setup()
+          const { user, mockApiVars } = setup()
           render(<Header />, { wrapper })
 
           const button = screen.getByText('All components')
@@ -248,13 +337,12 @@ describe('Header', () => {
           const searchBox = screen.getByPlaceholderText('Search for Components')
           await user.type(searchBox, 'flag2')
 
-          await waitFor(
-            () =>
-              expect(useRepoFlagsSelect).toHaveBeenCalledWith({
-                filters: { term: 'flag2' },
-                options: { suspense: false },
-              }),
-            { timeout: 600 }
+          await waitFor(() =>
+            expect(mockApiVars).toHaveBeenCalledWith({
+              name: 'codecov',
+              repo: 'gazebo',
+              filters: { term: 'flag2' },
+            })
           )
         })
       })

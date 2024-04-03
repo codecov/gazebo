@@ -116,7 +116,7 @@ function createTableData({
           name={name}
         />
       ),
-      delete: true ? (
+      delete: isAdmin ? (
         <div className="flex items-center justify-center">
           <button
             data-testid="delete-flag"

@@ -13,31 +13,24 @@ const queryClient = new QueryClient({
   },
 })
 
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
+  <MemoryRouter initialEntries={['/gh/codecov/gazebo/components']}>
+    <Route path="/:provider/:owner/:repo/components" exact={true}>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </Route>
+  </MemoryRouter>
+)
+
 describe('SyncingBanner', () => {
-  function setup() {
-    render(
-      <MemoryRouter initialEntries={['/gh/codecov/gazebo/components']}>
-        <Route path="/:provider/:owner/:repo/components" exact={true}>
-          <QueryClientProvider client={queryClient}>
-            <SyncingBanner />
-          </QueryClientProvider>
-        </Route>
-      </MemoryRouter>
-    )
-  }
-
   describe('when rendered', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('renders heading and content components', () => {
-      expect(screen.getByText('Pulling historical data')).toBeInTheDocument()
-      expect(
-        screen.getByText(
-          'We are pulling in all of your historical components data, this will sometimes take a while. This page will update once data has been backfilled, feel free to navigate away in the meantime. For older data, it may take longer to populate.'
-        )
-      ).toBeInTheDocument()
+      render(<SyncingBanner />, { wrapper })
+      const historicalDataText = screen.getByText('Pulling historical data')
+      expect(historicalDataText).toBeInTheDocument()
+      const historicalDataTextLong = screen.getByText(
+        'We are pulling in all of your historical components data, this will sometimes take a while. This page will update once data has been backfilled, feel free to navigate away in the meantime. For older data, it may take longer to populate.'
+      )
+      expect(historicalDataTextLong).toBeInTheDocument()
     })
   })
 })

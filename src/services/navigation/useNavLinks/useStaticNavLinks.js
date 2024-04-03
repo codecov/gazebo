@@ -87,7 +87,7 @@ export function useStaticNavLinks() {
       openNewTab: true,
     },
     deployingComponentsSupport: {
-      text: 'Enabling Flags on Self Hosted',
+      text: 'Enabling Components on Self Hosted',
       path: () => 'https://docs.codecov.com/docs/components',
       isExternalLink: true,
       openNewTab: true,
@@ -285,7 +285,7 @@ export function useStaticNavLinks() {
       openNewTab: true,
     },
     componentsFeedback: {
-      text: 'New repo set up feedback',
+      text: 'Components analytics set up feedback',
       path: () => 'https://github.com/codecov/Codecov-user-feedback/issues/27',
       isExternalLink: true,
       openNewTab: true,
