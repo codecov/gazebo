@@ -8,10 +8,10 @@ import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
 import { TierNames } from 'services/tier'
+import { useFlags } from 'shared/featureFlags'
 
 import { RepoBreadcrumbProvider } from './context'
 import RepoPage from './RepoPage'
-import { useFlags } from 'shared/featureFlags'
 
 jest.mock('./BundlesTab', () => () => 'BundlesTab')
 jest.mock('./CommitsTab', () => () => 'CommitsTab')
