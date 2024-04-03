@@ -2,7 +2,6 @@ import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
-
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
@@ -64,7 +63,6 @@ const RequestSchema = z.object({
 interface UseRepoComponentsSelectArgs {
   filters?: {
     components?: string[]
-    branch?: string
   }
   opts?: {
     suspense?: boolean

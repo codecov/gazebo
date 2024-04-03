@@ -103,7 +103,6 @@ describe('RepoComponentsSelector', () => {
             useRepoComponentsSelect({
               filters: {
                 components: ['foo'],
-                branch: 'main',
               },
             }),
           {
