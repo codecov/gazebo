@@ -69,7 +69,7 @@ function ComponentsSelector() {
         }}
         onSearch={(term: string) => setComponentSearch(term)}
         renderSelected={(selectedItems: String[]) => (
-          <span className="flex items-center gap-2">
+          <span className="flex items-center gap-2 overflow-auto">
             <Icon variant="solid" name="database" />
             {selectedItems.length === 0 ? (
               'All components'

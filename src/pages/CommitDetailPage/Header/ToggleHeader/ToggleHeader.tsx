@@ -32,7 +32,7 @@ function ToggleHeader({ showHitCount = true, noBottomBorder = false }) {
 
   const containerClasses = cs(
     'flex w-full flex-1 flex-wrap items-start gap-2 bg-white sm:flex-row sm:items-center md:mb-1 lg:w-auto lg:flex-none',
-    'border-ds-gray-tertiary',
+    'border-ds-gray-tertiary overflow-auto',
     {
       'border-b-0 pb-1': noBottomBorder,
       'border-b pb-2': !noBottomBorder,
