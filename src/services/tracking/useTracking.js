@@ -1,3 +1,5 @@
+import * as Sentry from '@sentry/react'
+
 import { useUser } from 'services/user'
 
 import { useTrackFeatureFlags } from './featureFlags'
@@ -45,6 +47,22 @@ export function useTracking() {
 
   useTrackFeatureFlags(user) // TODO: Can probably delete
   useUpdatePendoWithOwner(user)
+
+  let sentryUser = null
+  if (user?.email) {
+    sentryUser = {
+      email: user.email,
+    }
+  }
+
+  if (user?.user?.username) {
+    sentryUser = {
+      ...sentryUser,
+      username: user.user.username,
+    }
+  }
+
+  Sentry.setUser(sentryUser)
 
   return { data: user, ...all }
 }
