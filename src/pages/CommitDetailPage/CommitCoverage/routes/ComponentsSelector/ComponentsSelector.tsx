@@ -52,7 +52,7 @@ function ComponentsSelector() {
   }
 
   return (
-    <div className="w-full break-words sm:w-48">
+    <div className="w-full sm:w-48">
       <MultiSelect
         // @ts-expect-error
         disabled={false}
@@ -69,12 +69,14 @@ function ComponentsSelector() {
         }}
         onSearch={(term: string) => setComponentSearch(term)}
         renderSelected={(selectedItems: String[]) => (
-          <span className="flex items-center gap-2 overflow-auto">
+          <span className="flex items-center gap-2">
             <Icon variant="solid" name="database" />
             {selectedItems.length === 0 ? (
               'All components'
             ) : (
-              <span>{selectedItems.length} selected components</span>
+              <span className="sm:text-xs">
+                {selectedItems.length} selected components
+              </span>
             )}
           </span>
         )}
