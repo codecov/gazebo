@@ -5,15 +5,14 @@ import { SentryRoute } from 'sentry'
 
 import NotFound from 'pages/NotFound'
 import { useRepo, useRepoOverview } from 'services/repo'
-import CustomError from 'shared/CustomError'
 import { useFlags } from 'shared/featureFlags'
-import A from 'ui/A'
 import LoadingLogo from 'ui/LoadingLogo'
 
 import { RepoBreadcrumbProvider } from './context'
 import DeactivatedRepo from './DeactivatedRepo'
 import RepoBreadcrumb from './RepoBreadcrumb'
 import RepoPageTabs from './RepoPageTabs'
+import { UnauthorizedRepoDisplay } from './shared/UnauthorizedRepoDisplay'
 
 const BundlesTab = lazy(() => import('./BundlesTab'))
 const CommitsTab = lazy(() => import('./CommitsTab'))
@@ -43,6 +42,8 @@ interface RoutesProps {
   coverageEnabled?: boolean
   bundleAnalysisEnabled?: boolean
   jsOrTsPresent?: boolean
+  isRepoPrivate: boolean
+  isCurrentUserActivated?: boolean | null
 }
 
 function Routes({
@@ -51,15 +52,17 @@ function Routes({
   coverageEnabled,
   bundleAnalysisEnabled,
   jsOrTsPresent,
+  isRepoPrivate,
+  isCurrentUserActivated,
 }: RoutesProps) {
-  const { bundleAnalysisPrAndCommitPages } = useFlags({
+  const { componentTab } = useFlags({
     bundleAnalysisPrAndCommitPages: false,
   })
 
-  // repo is currently active and activated
+  const productEnabled = coverageEnabled || bundleAnalysisEnabled
+  const showUnauthorizedMessage =
+    productEnabled && isRepoPrivate && !isCurrentUserActivated
   if (isRepoActive && isRepoActivated) {
-    const productEnabled = coverageEnabled || bundleAnalysisEnabled
-
     return (
       <Switch>
         {coverageEnabled ? (
@@ -72,7 +75,11 @@ function Routes({
             ]}
             exact
           >
-            <CoverageTab />
+            {showUnauthorizedMessage ? (
+              <UnauthorizedRepoDisplay />
+            ) : (
+              <CoverageTab />
+            )}
           </SentryRoute>
         ) : (
           <SentryRoute
@@ -86,7 +93,7 @@ function Routes({
             <NewRepoTab />
           </SentryRoute>
         )}
-        {bundleAnalysisEnabled && bundleAnalysisPrAndCommitPages ? (
+        {bundleAnalysisEnabled ? (
           <SentryRoute
             path={[
               `${path}/bundles/:branch/:bundle`,
@@ -95,9 +102,13 @@ function Routes({
             ]}
             exact
           >
-            <BundlesTab />
+            {showUnauthorizedMessage ? (
+              <UnauthorizedRepoDisplay />
+            ) : (
+              <BundlesTab />
+            )}
           </SentryRoute>
-        ) : jsOrTsPresent && bundleAnalysisPrAndCommitPages ? (
+        ) : jsOrTsPresent ? (
           <SentryRoute
             path={[
               `${path}/bundles/new`,
@@ -111,6 +122,11 @@ function Routes({
         ) : null}
         {coverageEnabled ? (
           <SentryRoute path={`${path}/flags`} exact>
+            <FlagsTab />
+          </SentryRoute>
+        ) : null}
+        {coverageEnabled && componentTab ? (
+          <SentryRoute path={`${path}/components`} exact>
             <FlagsTab />
           </SentryRoute>
         ) : null}
@@ -171,7 +187,7 @@ function Routes({
       >
         <NewRepoTab />
       </SentryRoute>
-      {jsOrTsPresent && bundleAnalysisPrAndCommitPages ? (
+      {jsOrTsPresent ? (
         <SentryRoute
           path={[
             `${path}/bundles/new`,
@@ -218,27 +234,7 @@ function RepoPage() {
   if (!refetchEnabled && !isRepoActivated) {
     setRefetchEnabled(true)
   }
-
   if (!repoData?.repository) return <NotFound />
-
-  if (!isCurrentUserActivated && isRepoPrivate) {
-    throw new CustomError({
-      status: 403,
-      detail: (
-        <p>
-          Activation is required to view this repo, please{' '}
-          <A
-            to={{ pageName: 'membersTab' }}
-            isExternal={false}
-            hook="repo-page-to-members-tab"
-          >
-            click here{' '}
-          </A>{' '}
-          to activate your account.
-        </p>
-      ),
-    })
-  }
 
   return (
     <RepoBreadcrumbProvider>
@@ -252,6 +248,8 @@ function RepoPage() {
             coverageEnabled={coverageEnabled}
             bundleAnalysisEnabled={bundleAnalysisEnabled}
             jsOrTsPresent={jsOrTsPresent}
+            isRepoPrivate={isRepoPrivate}
+            isCurrentUserActivated={isCurrentUserActivated}
           />
         </Suspense>
       </div>

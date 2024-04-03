@@ -7,7 +7,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import ComponentsTable from './ComponentsTable'
 
 jest.mock('./ComponentsNotConfigured', () => () => 'ComponentsNotConfigured')
-jest.mock('../ComponentsSelector', () => () => 'ComponentsSelector')
 
 const queryClient = new QueryClient()
 const server = setupServer()
@@ -132,13 +131,6 @@ describe('ComponentsTable', () => {
 
       const comparisonChangeCoverage = await screen.findByText('2.71%')
       expect(comparisonChangeCoverage).toBeInTheDocument()
-    })
-
-    it('renders ComponentsSelector', async () => {
-      render(<ComponentsTable />, { wrapper: wrapper() })
-
-      const selector = await screen.findByText('ComponentsSelector')
-      expect(selector).toBeInTheDocument()
     })
   })
 
