@@ -164,7 +164,10 @@ describe('usePrefetchPullFileEntry', () => {
 
     await waitFor(() => queryClient.isFetching())
 
-    const queryKey = queryClient.getQueriesData({})?.at(0)?.at(0) as Array<any>
+    const queryKey = queryClient
+      .getQueriesData({})
+      ?.at(0)
+      ?.at(0) as Array<string>
 
     expect(queryClient.getQueryState(queryKey)?.data).toStrictEqual({
       hashedPath: 'afsd',
@@ -198,7 +201,10 @@ describe('usePrefetchPullFileEntry', () => {
 
     await waitFor(() => queryClient.isFetching())
 
-    const queryKey = queryClient.getQueriesData({})?.at(0)?.at(0) as Array<any>
+    const queryKey = queryClient
+      .getQueriesData({})
+      ?.at(0)
+      ?.at(0) as Array<string>
 
     await waitFor(() =>
       expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
@@ -225,7 +231,10 @@ describe('usePrefetchPullFileEntry', () => {
 
     await waitFor(() => queryClient.isFetching())
 
-    const queryKey = queryClient.getQueriesData({})?.at(0)?.at(0) as Array<any>
+    const queryKey = queryClient
+      .getQueriesData({})
+      ?.at(0)
+      ?.at(0) as Array<string>
 
     await waitFor(() =>
       expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
@@ -252,7 +261,10 @@ describe('usePrefetchPullFileEntry', () => {
 
     await waitFor(() => queryClient.isFetching())
 
-    const queryKey = queryClient.getQueriesData({})?.at(0)?.at(0) as Array<any>
+    const queryKey = queryClient
+      .getQueriesData({})
+      ?.at(0)
+      ?.at(0) as Array<string>
 
     await waitFor(() =>
       expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
@@ -279,7 +291,10 @@ describe('usePrefetchPullFileEntry', () => {
 
     await waitFor(() => queryClient.isFetching())
 
-    const queryKey = queryClient.getQueriesData({})?.at(0)?.at(0) as Array<any>
+    const queryKey = queryClient
+      .getQueriesData({})
+      ?.at(0)
+      ?.at(0) as Array<string>
 
     await waitFor(() =>
       expect(queryClient?.getQueryState(queryKey)?.error).toEqual(

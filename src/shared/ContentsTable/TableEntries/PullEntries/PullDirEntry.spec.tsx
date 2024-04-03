@@ -137,7 +137,10 @@ describe('PullDirEntry', () => {
     const dir = screen.getByText('dir')
     await user.hover(dir)
 
-    const queryKey = queryClient.getQueriesData({})?.at(0)?.at(0) as Array<any>
+    const queryKey = queryClient
+      .getQueriesData({})
+      ?.at(0)
+      ?.at(0) as Array<string>
 
     await waitFor(() =>
       expect(queryClient.getQueryState(queryKey)?.data).toStrictEqual({
