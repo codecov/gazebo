@@ -82,7 +82,7 @@ export const TitleFlags = ({ commitDetailView = false }) => {
   }
 
   const selectorClasses = cs('w-full', {
-    'sm:w-48': commitDetailView,
+    'sm:w-52': commitDetailView,
     'sm:w-60': !commitDetailView,
   })
 

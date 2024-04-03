@@ -52,7 +52,7 @@ function ComponentsSelector() {
   }
 
   return (
-    <div className="w-full sm:w-48">
+    <div className="w-full sm:w-52">
       <MultiSelect
         // @ts-expect-error
         disabled={false}

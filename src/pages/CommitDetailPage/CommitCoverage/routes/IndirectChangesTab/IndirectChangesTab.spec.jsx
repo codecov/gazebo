@@ -7,10 +7,6 @@ jest.mock(
   () => () => 'IndirectChangesTable'
 )
 jest.mock('../ComponentsSelector', () => () => 'Components Selector')
-jest.mock(
-  '../../../Header/ToggleHeader/ToggleHeader',
-  () => () => 'Toggle header'
-)
 
 describe('IndirectChangesTab', () => {
   it('renders commits table', async () => {
@@ -18,12 +14,5 @@ describe('IndirectChangesTab', () => {
 
     const table = await screen.findByText(/IndirectChangesTable/)
     expect(table).toBeInTheDocument()
-  })
-
-  it('renders toggle header', async () => {
-    render(<IndirectChangesTab />)
-
-    const header = await screen.findByText(/Toggle header/)
-    expect(header).toBeInTheDocument()
   })
 })

@@ -1,6 +1,5 @@
 import { lazy, Suspense } from 'react'
 
-import ToggleHeader from 'pages/CommitDetailPage/Header/ToggleHeader/ToggleHeader'
 import Spinner from 'ui/Spinner'
 
 const IndirectChangesTable = lazy(() => import('./IndirectChangesTable'))
@@ -14,7 +13,6 @@ const Loader = () => (
 function IndirectChangesTab() {
   return (
     <Suspense fallback={<Loader />}>
-      <ToggleHeader />
       <IndirectChangesTable />
     </Suspense>
   )
