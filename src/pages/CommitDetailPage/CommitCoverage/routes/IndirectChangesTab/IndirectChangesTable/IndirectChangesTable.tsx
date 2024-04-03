@@ -15,7 +15,6 @@ import qs from 'qs'
 import { Fragment, lazy, Suspense, useMemo, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
-import ToggleHeader from 'pages/CommitDetailPage/Header/ToggleHeader/ToggleHeader'
 import { ImpactedFileType, useCommit } from 'services/commit/useCommit'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
@@ -219,71 +218,65 @@ export default function FilesChangedTable() {
   }
 
   return (
-    <>
-      <ToggleHeader />
-      <div className="filelistui" data-highlight-row="onHover">
-        <div>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <div key={headerGroup.id} className="filelistui-thead">
-              {headerGroup.headers.map((header) => {
-                return (
-                  <div
-                    key={header.id}
-                    className={cs('flex gap-1 items-center', {
-                      'flex-row-reverse justify-end w-8/12':
-                        header.id === 'name',
-                      'justify-end': header.id !== 'name',
-                      'w-3/12': header.id === 'change',
-                    })}
-                  >
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-          ))}
-          {isLoading ? (
-            <Loader />
-          ) : (
-            table.getRowModel().rows.map((row, i) => (
-              <Fragment key={i}>
-                <div className="filelistui-row">
-                  {row.getVisibleCells().map((cell) => {
-                    return (
-                      <div
-                        key={cell.id}
-                        {...(isNumericValue(cell.column.id)
-                          ? {
-                              'data-type': 'numeric',
-                            }
-                          : {})}
-                        className={cs({
-                          'w-8/12': cell.column.id === 'name',
-                          'flex justify-end': cell.column.id !== 'name',
-                          'w-3/12': cell.column.id === 'change',
-                        })}
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </div>
-                    )
+    <div className="filelistui" data-highlight-row="onHover">
+      <div>
+        {table.getHeaderGroups().map((headerGroup) => (
+          <div key={headerGroup.id} className="filelistui-thead">
+            {headerGroup.headers.map((header) => {
+              return (
+                <div
+                  key={header.id}
+                  className={cs('flex gap-1 items-center', {
+                    'flex-row-reverse justify-end w-8/12': header.id === 'name',
+                    'justify-end': header.id !== 'name',
+                    'w-3/12': header.id === 'change',
                   })}
+                >
+                  {flexRender(
+                    header.column.columnDef.header,
+                    header.getContext()
+                  )}
                 </div>
-                <div data-expanded={row.getIsExpanded()}>
-                  {row.getIsExpanded() ? (
-                    <RenderSubComponent row={row} />
-                  ) : null}
-                </div>
-              </Fragment>
-            ))
-          )}
-        </div>
+              )
+            })}
+          </div>
+        ))}
+        {isLoading ? (
+          <Loader />
+        ) : (
+          table.getRowModel().rows.map((row, i) => (
+            <Fragment key={i}>
+              <div className="filelistui-row">
+                {row.getVisibleCells().map((cell) => {
+                  return (
+                    <div
+                      key={cell.id}
+                      {...(isNumericValue(cell.column.id)
+                        ? {
+                            'data-type': 'numeric',
+                          }
+                        : {})}
+                      className={cs({
+                        'w-8/12': cell.column.id === 'name',
+                        'flex justify-end': cell.column.id !== 'name',
+                        'w-3/12': cell.column.id === 'change',
+                      })}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+              <div data-expanded={row.getIsExpanded()}>
+                {row.getIsExpanded() ? <RenderSubComponent row={row} /> : null}
+              </div>
+            </Fragment>
+          ))
+        )}
       </div>
-    </>
+    </div>
   )
 }

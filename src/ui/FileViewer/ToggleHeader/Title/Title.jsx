@@ -81,10 +81,13 @@ export const TitleFlags = ({ commitDetailView = false }) => {
     return null
   }
 
-  const selectorWidth = commitDetailView ? 'sm:w-48' : 'sm:w-60'
+  const selectorClasses = cs('w-full', {
+    'sm:w-48': commitDetailView,
+    'sm:w-60': !commitDetailView,
+  })
 
   return (
-    <div className={`w-full ${selectorWidth}`}>
+    <div className={selectorClasses}>
       <MultiSelect
         disabled={!flagsMeasurementsActive || !isTimescaleEnabled}
         dataMarketing="fileviwer-filter-by-flags"

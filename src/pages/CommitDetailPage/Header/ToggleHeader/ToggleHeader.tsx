@@ -1,3 +1,4 @@
+import cs from 'classnames'
 import { useParams } from 'react-router-dom'
 
 import ComponentsSelector from 'pages/CommitDetailPage/CommitCoverage/routes/ComponentsSelector'
@@ -19,9 +20,6 @@ interface URLParams {
 
 function ToggleHeader({ showHitCount = true, noBottomBorder = false }) {
   const { provider, owner, repo } = useParams<URLParams>()
-  const noBottomBorderStyle = noBottomBorder
-    ? 'border-b-0 pb-1'
-    : 'border-b pb-2'
 
   const { data: overview } = useRepoOverview({ provider, owner, repo })
   const { multipleTiers } = useFlags({
@@ -32,10 +30,17 @@ function ToggleHeader({ showHitCount = true, noBottomBorder = false }) {
   const isTeamPlan =
     multipleTiers && tierData === TierNames.TEAM && overview?.private
 
+  const containerClasses = cs(
+    'flex w-full flex-1 flex-wrap items-start gap-2 bg-white sm:flex-row sm:items-center md:mb-1 lg:w-auto lg:flex-none',
+    'border-ds-gray-tertiary',
+    {
+      'border-b-0 pb-1': noBottomBorder,
+      'border-b pb-2': !noBottomBorder,
+    }
+  )
+
   return (
-    <div
-      className={`flex w-full flex-1 flex-wrap items-start gap-2 bg-white sm:flex-row sm:items-center md:mb-1 lg:w-auto lg:flex-none ${noBottomBorderStyle} border-ds-gray-tertiary`}
-    >
+    <div className={containerClasses}>
       <div className="flex gap-2 pt-2">
         <TitleCoverage coverage={LINE_STATE.UNCOVERED} />
         <TitleCoverage coverage={LINE_STATE.PARTIAL} />
@@ -43,8 +48,12 @@ function ToggleHeader({ showHitCount = true, noBottomBorder = false }) {
         <TitleHitCount showHitCount={showHitCount} />
       </div>
       <div className="ml-auto flex w-full flex-wrap items-center justify-end gap-2 md:mt-2 md:w-auto">
-        {!isTeamPlan ? <TitleFlags commitDetailView={true} /> : null}
-        {!isTeamPlan ? <ComponentsSelector /> : null}
+        {!isTeamPlan && (
+          <>
+            <TitleFlags commitDetailView={true} />
+            <ComponentsSelector />
+          </>
+        )}
       </div>
     </div>
   )
