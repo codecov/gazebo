@@ -9,7 +9,6 @@ import {
 } from 'pages/RepoPage/utils'
 import { useRepoSettingsTeam } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
-import ToggleHeader from 'ui/FileViewer/ToggleHeader'
 import TabNavigation from 'ui/TabNavigation'
 
 function CommitCoverageTabs({
@@ -24,10 +23,6 @@ function CommitCoverageTabs({
 
   const showIndirectChanges = !(
     repoData?.repository?.private && tierName === TierNames.TEAM
-  )
-
-  const showFlagMultiSelect = !(
-    tierName === TierNames.TEAM && repoData?.repository?.private
   )
 
   const params = qs.parse(location.search, {
@@ -90,13 +85,6 @@ function CommitCoverageTabs({
           location: customLocation,
         },
       ]}
-      component={
-        <ToggleHeader
-          coverageIsLoading={false}
-          showHitCount={true}
-          showFlagsSelect={showFlagMultiSelect}
-        />
-      }
     />
   )
 }

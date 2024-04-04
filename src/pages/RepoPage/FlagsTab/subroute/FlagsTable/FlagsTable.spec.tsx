@@ -48,6 +48,7 @@ const mockFlagMeasurements = (after: boolean) => {
   return {
     owner: {
       repository: {
+        __typename: 'Repository',
         flags: {
           edges: after
             ? [
@@ -101,11 +102,15 @@ const mockFlagMeasurements = (after: boolean) => {
 const mockNoReportsUploadedMeasurements = {
   owner: {
     repository: {
+      __typename: 'Repository',
       flags: {
         edges: [
           {
             node: {
               name: 'flagA',
+              percentCovered: null,
+              percentChange: null,
+              measurements: [{ avg: null }, { avg: null }],
             },
           },
         ],
@@ -121,6 +126,7 @@ const mockNoReportsUploadedMeasurements = {
 const mockEmptyFlagMeasurements = {
   owner: {
     repository: {
+      __typename: 'Repository',
       flags: {
         edges: [],
         pageInfo: {
@@ -218,24 +224,18 @@ describe('FlagsTable', () => {
     it('renders table headers', async () => {
       render(<FlagsTable />, { wrapper: wrapper() })
 
-      const spinner = await screen.findByTestId('spinner')
-      await waitForElementToBeRemoved(spinner)
-
-      const flags = screen.getByText('Flags')
+      const flags = await screen.findByText('Flags')
       expect(flags).toBeInTheDocument()
 
-      const coverage = screen.getByText('Coverage %')
+      const coverage = await screen.findByText('Coverage %')
       expect(coverage).toBeInTheDocument()
 
-      const trend = screen.getByText('Trend')
+      const trend = await screen.findByText('Trend')
       expect(trend).toBeInTheDocument()
     })
 
     it('renders repo flags', async () => {
       render(<FlagsTable />, { wrapper: wrapper() })
-
-      const spinner = await screen.findByTestId('spinner')
-      await waitForElementToBeRemoved(spinner)
 
       const flagA = await screen.findByRole('link', { name: 'flagA' })
       expect(flagA).toBeInTheDocument()
@@ -255,32 +255,30 @@ describe('FlagsTable', () => {
     it('renders flags coverage', async () => {
       render(<FlagsTable />, { wrapper: wrapper() })
 
-      const spinner = await screen.findByTestId('spinner')
-      await waitForElementToBeRemoved(spinner)
-
-      const ninetyThreePercent = screen.getByText(/93.26%/)
+      const ninetyThreePercent = await screen.findByText(/93.26%/)
       expect(ninetyThreePercent).toBeInTheDocument()
 
-      const ninetyOnePercent = screen.getByText(/91.74%/)
+      const ninetyOnePercent = await screen.findByText(/91.74%/)
       expect(ninetyOnePercent).toBeInTheDocument()
     })
 
     it('renders flags sparkline with change', async () => {
       render(<FlagsTable />, { wrapper: wrapper() })
 
-      const spinner = await screen.findByTestId('spinner')
-      await waitForElementToBeRemoved(spinner)
-
-      const flagaSparkLine = screen.getByText(/Flag flagA trend sparkline/)
+      const flagaSparkLine = await screen.findByText(
+        /Flag flagA trend sparkline/
+      )
       expect(flagaSparkLine).toBeInTheDocument()
 
-      const minusOne = screen.getByText(/-1.56/)
+      const minusOne = await screen.findByText(/-1.56/)
       expect(minusOne).toBeInTheDocument()
 
-      const flag2SparkLine = screen.getByText(/Flag flagB trend sparkline/)
+      const flag2SparkLine = await screen.findByText(
+        /Flag flagB trend sparkline/
+      )
       expect(flag2SparkLine).toBeInTheDocument()
 
-      const noData = screen.getByText('No Data')
+      const noData = await screen.findByText('No Data')
       expect(noData).toBeInTheDocument()
     })
   })
@@ -291,10 +289,7 @@ describe('FlagsTable', () => {
 
       render(<FlagsTable />, { wrapper: wrapper() })
 
-      const spinner = await screen.findByTestId('spinner')
-      await waitForElementToBeRemoved(spinner)
-
-      const flagA = screen.getByRole('link', { name: 'flagA' })
+      const flagA = await screen.findByRole('link', { name: 'flagA' })
       expect(flagA).toBeInTheDocument()
       expect(flagA).toHaveAttribute(
         'href',
@@ -311,10 +306,7 @@ describe('FlagsTable', () => {
       const { user } = setup({})
       render(<FlagsTable />, { wrapper: wrapper() })
 
-      const spinner = await screen.findByTestId('spinner')
-      await waitForElementToBeRemoved(spinner)
-
-      const trashIconButtons = screen.getAllByRole('button', {
+      const trashIconButtons = await screen.findAllByRole('button', {
         name: /trash/,
       })
       expect(trashIconButtons).toHaveLength(3)
@@ -326,10 +318,10 @@ describe('FlagsTable', () => {
         }
       })
 
-      const deleteFlagModalText = screen.getByText('Delete Flag')
+      const deleteFlagModalText = await screen.findByText('Delete Flag')
       expect(deleteFlagModalText).toBeInTheDocument()
 
-      const cancelButton = screen.getByRole('button', {
+      const cancelButton = await screen.findByRole('button', {
         name: /Cancel/,
       })
       await user.click(cancelButton)
@@ -346,10 +338,7 @@ describe('FlagsTable', () => {
       it('renders expected empty state message', async () => {
         render(<FlagsTable />, { wrapper: wrapper() })
 
-        const spinner = await screen.findByTestId('spinner')
-        await waitForElementToBeRemoved(spinner)
-
-        const errorMessage = screen.getByText(
+        const errorMessage = await screen.findByText(
           /There was a problem getting flags data/
         )
         expect(errorMessage).toBeInTheDocument()
@@ -366,10 +355,7 @@ describe('FlagsTable', () => {
           wrapper: wrapper('/gh/codecov/gazebo/flags?search=blah'),
         })
 
-        const spinner = await screen.findByTestId('spinner')
-        await waitForElementToBeRemoved(spinner)
-
-        const noResultsFound = screen.getByText(/No results found/)
+        const noResultsFound = await screen.findByText(/No results found/)
         expect(noResultsFound).toBeInTheDocument()
       })
     })
@@ -384,7 +370,7 @@ describe('FlagsTable', () => {
       mockIsIntersecting(loading, true)
       await waitForElementToBeRemoved(loading)
 
-      const flagD = screen.getByRole('link', { name: 'flagD' })
+      const flagD = await screen.findByRole('link', { name: 'flagD' })
       expect(flagD).toBeInTheDocument()
     })
   })
@@ -394,19 +380,16 @@ describe('FlagsTable', () => {
       const { user } = setup({})
       render(<FlagsTable />, { wrapper: wrapper() })
 
-      const spinner = await screen.findByTestId('spinner')
-      await waitForElementToBeRemoved(spinner)
-
-      const flags = screen.getByText('Flags')
+      const flags = await screen.findByText('Flags')
 
       await user.click(flags)
 
-      const flagA = screen.getByTestId('row-0')
-      const flagARole = screen.getByRole('link', { name: 'flagA' })
-      const flagB = screen.getByTestId('row-1')
-      const flagBRole = screen.getByRole('link', { name: 'flagB' })
-      const testFlag = screen.getByTestId('row-2')
-      const testFlagRole = screen.getByRole('link', { name: 'testtest' })
+      const flagA = await screen.findByTestId('row-0')
+      const flagARole = await screen.findByRole('link', { name: 'flagA' })
+      const flagB = await screen.findByTestId('row-1')
+      const flagBRole = await screen.findByRole('link', { name: 'flagB' })
+      const testFlag = await screen.findByTestId('row-2')
+      const testFlagRole = await screen.findByRole('link', { name: 'testtest' })
 
       expect(flagA).toContainElement(flagARole)
       expect(flagB).toContainElement(flagBRole)
@@ -418,9 +401,6 @@ describe('FlagsTable', () => {
     it('renders no report data state', async () => {
       setup({ noReportsUploaded: true })
       render(<FlagsTable />, { wrapper: wrapper() })
-
-      const spinner = await screen.findByTestId('spinner')
-      await waitForElementToBeRemoved(spinner)
       const dash = await screen.findByText('-')
       expect(dash).toBeInTheDocument()
     })
