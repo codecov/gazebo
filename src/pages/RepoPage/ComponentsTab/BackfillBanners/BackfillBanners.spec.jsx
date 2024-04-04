@@ -10,6 +10,7 @@ jest.mock('./hooks')
 
 describe('BackfillBanner', () => {
   function setup(data) {
+    // TODO: when updating this to fetch components, add mock for BackfillComponentMemberships query
     useRepoBackfillingStatus.mockReturnValue(data)
   }
 

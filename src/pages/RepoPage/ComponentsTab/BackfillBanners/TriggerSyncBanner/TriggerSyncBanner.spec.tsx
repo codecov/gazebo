@@ -3,20 +3,13 @@ import { render, screen } from 'custom-testing-library'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
 import { PropsWithChildren } from 'react'
-import { MemoryRouter, Route, useParams } from 'react-router-dom'
+import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useActivateFlagMeasurements } from 'services/repo'
 
 import TriggerSyncBanner from './TriggerSyncBanner'
-
-jest.mock('services/user')
-
-jest.mock('services/repo/useActivateFlagMeasurements')
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
-  useParams: jest.fn(() => {}),
-}))
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,6 +27,21 @@ const wrapper: React.FC<PropsWithChildren> = ({ children }) => (
   </MemoryRouter>
 )
 
+const server = setupServer()
+
+beforeAll(() => {
+  server.listen()
+})
+
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
+
 describe('TriggerSyncBanner', () => {
   afterEach(() => jest.resetAllMocks())
 
@@ -41,17 +49,12 @@ describe('TriggerSyncBanner', () => {
     const user = userEvent.setup()
     const mutate = jest.fn()
 
-    const mockedUseParams = useParams as jest.Mock
-    const mockedUseActivateComponentMeasurements =
-      useActivateFlagMeasurements as jest.Mock
-
-    mockedUseParams.mockReturnValue({
-      owner: 'codecov',
-      provider: 'gh',
-      repo: 'gazebo',
-    })
-    mockedUseActivateComponentMeasurements.mockReturnValue({ mutate })
-
+    server.use(
+      graphql.mutation('ActivateMeasurements', (req, res, ctx) => {
+        mutate(req.variables)
+        return res(ctx.status(200), ctx.data({}))
+      })
+    )
     return { mutate, user }
   }
 
@@ -80,7 +83,15 @@ describe('TriggerSyncBanner', () => {
         const backfill = screen.getByTestId('backfill-task')
         await user.click(backfill)
 
-        await waitFor(() => expect(mutate).toHaveBeenCalled())
+        await waitFor(() =>
+          expect(mutate).toHaveBeenCalledWith({
+            input: {
+              measurementType: 'FLAG_COVERAGE',
+              owner: 'codecov',
+              repoName: 'gazebo',
+            },
+          })
+        )
       })
     })
   })
