@@ -17,11 +17,11 @@ type TreePath = {
 
 export type Row = {
   name: ReactNode
-  lines?: string | number | null
-  hits?: string | number | null
-  misses?: string | number | null
-  partials?: string | number | null
-  coverage?: ReactNode | number | null
+  lines?: string | number
+  hits?: string | number
+  misses?: string | number
+  partials?: string | number
+  coverage?: ReactNode
 }
 
 export function adjustListIfUpDir({

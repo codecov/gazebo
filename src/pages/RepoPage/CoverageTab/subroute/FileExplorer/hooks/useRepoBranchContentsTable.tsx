@@ -146,7 +146,8 @@ export function useRepoBranchContentsTable(sortItem?: {
           amount={result?.percentCovered}
           color={determineProgressColor({
             coverage: result?.percentCovered ?? null,
-            ...indicationRange,
+            lowerRange: indicationRange?.lowerRange || 0,
+            upperRange: indicationRange?.upperRange || 100,
           })}
         />
       )

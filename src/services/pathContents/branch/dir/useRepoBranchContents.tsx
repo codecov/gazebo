@@ -17,13 +17,13 @@ interface FetchRepoContentsArgs {
 }
 
 const BasePathContentSchema = z.object({
-  hits: z.number().nullable(),
-  misses: z.number().nullable(),
-  partials: z.number().nullable(),
-  lines: z.number().nullable(),
+  hits: z.number(),
+  misses: z.number(),
+  partials: z.number(),
+  lines: z.number(),
   name: z.string(),
   path: z.string().nullable(),
-  percentCovered: z.number().nullable(),
+  percentCovered: z.number(),
 })
 
 const PathContentFileSchema = BasePathContentSchema.extend({
