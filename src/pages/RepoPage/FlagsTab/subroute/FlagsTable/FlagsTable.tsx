@@ -60,74 +60,64 @@ function createTableData({
   setModalInfo,
   isAdmin,
 }: {
-  tableData: any[] | null // TODO: update type when we convert useRepoFlags to TS
+  tableData: ReturnType<typeof useRepoFlagsTable>['data']
   indicationRange?: { upperRange: number; lowerRange: number } | null
   setModalInfo: (data: any) => void
   isAdmin?: boolean | null
 }) {
-  if (tableData === null) {
-    return []
-  }
-
-  const data = tableData.map(
-    ({
-      name,
-      percentCovered,
-      percentChange,
-      measurements,
-    }: {
-      name: string
-      percentCovered: number | null
-      percentChange: number
-      measurements: any[]
-    }) => ({
-      name: (
-        <A
-          to={{
-            pageName: 'coverage',
-            options: { queryParams: { flags: [name] } },
-          }}
-          variant="black"
-          isExternal={false}
-          hook={'flag-to-coverage-page'}
-        >
-          {name}
-        </A>
-      ),
-      coverage: (
-        <div className="flex flex-row">
-          <CoverageProgress
-            amount={percentCovered}
-            color={determineProgressColor({
-              coverage: percentCovered,
-              lowerRange: indicationRange?.lowerRange || 0,
-              upperRange: indicationRange?.upperRange || 100,
-            })}
-          />
-          {typeof percentCovered !== 'number' && (
-            <span className="grow text-right font-semibold">-</span>
-          )}
-        </div>
-      ),
-      trend: (
-        <TableSparkline
-          measurements={measurements}
-          change={percentChange}
-          name={name}
-        />
-      ),
-      delete: true ? (
-        <div className="flex items-center justify-center">
-          <button
-            data-testid="delete-flag"
-            onClick={() => setModalInfo({ flagName: name, showModal: true })}
-            className="text-ds-gray-tertiary hover:text-ds-gray-senary"
-          >
-            <Icon size="md" name="trash" variant="outline" />
-          </button>
-        </div>
-      ) : null,
-    })
+  const data = tableData.flatMap((value) =>
+    value === null
+      ? []
+      : {
+          name: (
+            <A
+              to={{
+                pageName: 'coverage',
+                options: { queryParams: { flags: [value.name] } },
+              }}
+              variant="black"
+              isExternal={false}
+              hook={'flag-to-coverage-page'}
+            >
+              {value.name}
+            </A>
+          ),
+          coverage: (
+            <div className="flex flex-row">
+              <CoverageProgress
+                amount={value.percentCovered}
+                color={determineProgressColor({
+                  coverage: value.percentCovered,
+                  lowerRange: indicationRange?.lowerRange || 0,
+                  upperRange: indicationRange?.upperRange || 100,
+                })}
+              />
+              {typeof value.percentCovered !== 'number' && (
+                <span className="grow text-right font-semibold">-</span>
+              )}
+            </div>
+          ),
+          trend: (
+            <TableSparkline
+              measurements={value.measurements}
+              change={value.percentChange}
+              name={value.name}
+            />
+          ),
+          delete: true ? (
+            <div className="flex items-center justify-center">
+              <button
+                data-testid="delete-flag"
+                onClick={() =>
+                  setModalInfo({ flagName: value.name, showModal: true })
+                }
+                className="text-ds-gray-tertiary hover:text-ds-gray-senary"
+              >
+                <Icon size="md" name="trash" variant="outline" />
+              </button>
+            </div>
+          ) : null,
+        }
   )
   return data
 }
@@ -144,7 +134,7 @@ const FlagTable = memo(function Table({
   sorting,
   setSorting,
 }: {
-  tableData: any[] // TODO: update type when we convert useRepoFlags to TS
+  tableData: ReturnType<typeof createTableData>
   isLoading: boolean
   sorting?: SortingState
   setSorting?: OnChangeFn<SortingState> | undefined
@@ -275,7 +265,7 @@ function FlagsTable() {
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-  } = useRepoFlagsTable(sorting[0]?.desc)
+  } = useRepoFlagsTable(sorting[0]?.desc ?? false)
 
   useEffect(() => {
     if (inView && hasNextPage) {

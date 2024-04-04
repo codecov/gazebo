@@ -247,7 +247,7 @@ export function useRepoFlags({
   })
 
   return {
-    data: data?.pages.map((page) => page?.flags).flat() ?? null,
+    data: data?.pages.map((page) => page?.flags).flat() ?? [],
     ...rest,
   }
 }
