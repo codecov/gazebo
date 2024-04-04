@@ -4,7 +4,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { usePrefetchPullFileEntry } from './usePrefetchPullFileEntry'
+import { usePrefetchPullDirEntry } from './usePrefetchPullDirEntry'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,9 +21,7 @@ const queryClient = new QueryClient({
 })
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <MemoryRouter
-    initialEntries={['/gh/codecov/test-repo/tree/main/src/file.js']}
-  >
+  <MemoryRouter initialEntries={['/gh/codecov/test-repo/tree/main/src']}>
     <Route path="/:provider/:owner/:repo/tree/:branch/:path">
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </Route>
@@ -42,43 +40,32 @@ const mockData = {
   owner: {
     repository: {
       __typename: 'Repository',
-      commit: {
-        commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
-        flagNames: ['a', 'b'],
-        coverageFile: {
-          hashedPath: 'afsd',
-          isCriticalFile: true,
-          content:
-            'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
-          coverage: [
-            {
-              line: 1,
-              coverage: 'H',
-            },
-            {
-              line: 2,
-              coverage: 'H',
-            },
-            {
-              line: 4,
-              coverage: 'H',
-            },
-            {
-              line: 5,
-              coverage: 'H',
-            },
-            {
-              line: 7,
-              coverage: 'H',
-            },
-            {
-              line: 8,
-              coverage: 'H',
-            },
-          ],
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
         },
       },
-      branch: null,
+      pull: {
+        head: {
+          commitid: 'commit123',
+          pathContents: {
+            __typename: 'PathContents',
+            results: [
+              {
+                __typename: 'PathContentDir',
+                name: 'src',
+                path: null,
+                hits: 4,
+                misses: 2,
+                partials: 1,
+                lines: 10,
+                percentCovered: 40.0,
+              },
+            ],
+          },
+        },
+      },
     },
   },
 }
@@ -101,15 +88,14 @@ const mockDataOwnerNotActivated = {
   },
 }
 
-describe('usePrefetchPullFileEntry', () => {
+describe('usePrefetchPullDirEntry', () => {
   function setup({
     invalidSchema = false,
     repositoryNotFound = false,
     ownerNotActivated = false,
-    nullOwner = false,
   }) {
     server.use(
-      graphql.query('CoverageForFile', (req, res, ctx) => {
+      graphql.query('PullPathContents', (req, res, ctx) => {
         if (invalidSchema) {
           return res(ctx.status(200), ctx.data({}))
         }
@@ -118,14 +104,6 @@ describe('usePrefetchPullFileEntry', () => {
         }
         if (ownerNotActivated) {
           return res(ctx.status(200), ctx.data(mockDataOwnerNotActivated))
-        }
-        if (nullOwner) {
-          return res(
-            ctx.status(200),
-            ctx.data({
-              owner: null,
-            })
-          )
         }
         return res(ctx.status(200), ctx.data(mockData))
       })
@@ -139,9 +117,9 @@ describe('usePrefetchPullFileEntry', () => {
   it('returns runPrefetch function', () => {
     const { result } = renderHook(
       () =>
-        usePrefetchPullFileEntry({
-          ref: 'f00162848a3cebc0728d915763c2fd9e92132408',
-          path: 'src/file.js',
+        usePrefetchPullDirEntry({
+          pullId: 'pullasdf',
+          path: 'src',
         }),
       { wrapper }
     )
@@ -153,9 +131,9 @@ describe('usePrefetchPullFileEntry', () => {
   it('queries the api', async () => {
     const { result } = renderHook(
       () =>
-        usePrefetchPullFileEntry({
-          ref: 'f00162848a3cebc0728d915763c2fd9e92132408',
-          path: 'src/file.js',
+        usePrefetchPullDirEntry({
+          pullId: 'pullasdf',
+          path: 'src',
         }),
       { wrapper }
     )
@@ -170,19 +148,19 @@ describe('usePrefetchPullFileEntry', () => {
       ?.at(0) as Array<string>
 
     expect(queryClient.getQueryState(queryKey)?.data).toStrictEqual({
-      hashedPath: 'afsd',
-      content: mockData.owner.repository.commit.coverageFile.content,
-      coverage: {
-        1: 'H',
-        2: 'H',
-        4: 'H',
-        5: 'H',
-        7: 'H',
-        8: 'H',
-      },
-      flagNames: ['a', 'b'],
-      isCriticalFile: true,
-      totals: 0,
+      __typename: 'PathContents',
+      results: [
+        {
+          __typename: 'PathContentDir',
+          name: 'src',
+          path: null,
+          percentCovered: 40.0,
+          hits: 4,
+          misses: 2,
+          lines: 10,
+          partials: 1,
+        },
+      ],
     })
   })
 
@@ -190,9 +168,9 @@ describe('usePrefetchPullFileEntry', () => {
     setup({ invalidSchema: true })
     const { result } = renderHook(
       () =>
-        usePrefetchPullFileEntry({
-          ref: 'f00162848a3cebc0728d915763c2fd9e92132408',
-          path: 'src/file.js',
+        usePrefetchPullDirEntry({
+          pullId: 'pullasdf',
+          path: 'src',
         }),
       { wrapper }
     )
@@ -207,10 +185,10 @@ describe('usePrefetchPullFileEntry', () => {
       ?.at(0) as Array<string>
 
     await waitFor(() =>
-      expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
+      expect(queryClient.getQueryState(queryKey)?.error).toEqual(
         expect.objectContaining({
           status: 404,
-          dev: 'usePrefetchPullFileEntry - 404 schema parsing failed',
+          dev: 'usePrefetchPullDirEntry - 404 schema parsing failed',
         })
       )
     )
@@ -220,9 +198,9 @@ describe('usePrefetchPullFileEntry', () => {
     setup({ repositoryNotFound: true })
     const { result } = renderHook(
       () =>
-        usePrefetchPullFileEntry({
-          ref: 'f00162848a3cebc0728d915763c2fd9e92132408',
-          path: 'src/file.js',
+        usePrefetchPullDirEntry({
+          pullId: 'pullasdf',
+          path: 'src',
         }),
       { wrapper }
     )
@@ -237,10 +215,10 @@ describe('usePrefetchPullFileEntry', () => {
       ?.at(0) as Array<string>
 
     await waitFor(() =>
-      expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
+      expect(queryClient.getQueryState(queryKey)?.error).toEqual(
         expect.objectContaining({
           status: 404,
-          dev: 'usePrefetchPullFileEntry - 404 NotFoundError',
+          dev: 'usePrefetchPullDirEntry - 404 NotFoundError',
         })
       )
     )
@@ -250,9 +228,9 @@ describe('usePrefetchPullFileEntry', () => {
     setup({ ownerNotActivated: true })
     const { result } = renderHook(
       () =>
-        usePrefetchPullFileEntry({
-          ref: 'f00162848a3cebc0728d915763c2fd9e92132408',
-          path: 'src/file.js',
+        usePrefetchPullDirEntry({
+          pullId: 'pullasdf',
+          path: 'src',
         }),
       { wrapper }
     )
@@ -267,40 +245,10 @@ describe('usePrefetchPullFileEntry', () => {
       ?.at(0) as Array<string>
 
     await waitFor(() =>
-      expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
+      expect(queryClient.getQueryState(queryKey)?.error).toEqual(
         expect.objectContaining({
           status: 403,
-          dev: 'usePrefetchPullFileEntry - 403 OwnerNotActivatedError',
-        })
-      )
-    )
-  })
-
-  it('rejects when cannot extract coverage from response', async () => {
-    setup({ nullOwner: true })
-    const { result } = renderHook(
-      () =>
-        usePrefetchPullFileEntry({
-          ref: 'f00162848a3cebc0728d915763c2fd9e92132408',
-          path: 'src/file.js',
-        }),
-      { wrapper }
-    )
-
-    await result.current.runPrefetch()
-
-    await waitFor(() => queryClient.isFetching())
-
-    const queryKey = queryClient
-      .getQueriesData({})
-      ?.at(0)
-      ?.at(0) as Array<string>
-
-    await waitFor(() =>
-      expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
-        expect.objectContaining({
-          status: 404,
-          dev: 'usePrefetchCommitFileEntry - 404 failed to find coverage file',
+          dev: 'usePrefetchPullDirEntry - 403 OwnerNotActivatedError',
         })
       )
     )

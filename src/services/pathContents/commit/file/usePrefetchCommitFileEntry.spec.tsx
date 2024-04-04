@@ -185,7 +185,7 @@ describe('usePrefetchCommitFileEntry', () => {
       const queryKey = queryClient
         .getQueriesData({})
         ?.at(0)
-        ?.at(0) as Array<any>
+        ?.at(0) as Array<string>
 
       const expectedResponse = {
         content: mockData.owner.repository.commit.coverageFile.content,
@@ -227,7 +227,7 @@ describe('usePrefetchCommitFileEntry', () => {
         const queryKey = queryClient
           .getQueriesData({})
           ?.at(0)
-          ?.at(0) as Array<any>
+          ?.at(0) as Array<string>
 
         await waitFor(() =>
           expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
@@ -317,7 +317,7 @@ describe('usePrefetchCommitFileEntry', () => {
       const queryKey = queryClient
         .getQueriesData({})
         ?.at(0)
-        ?.at(0) as Array<any>
+        ?.at(0) as Array<string>
 
       await waitFor(() =>
         expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
@@ -354,7 +354,7 @@ describe('usePrefetchCommitFileEntry', () => {
       const queryKey = queryClient
         .getQueriesData({})
         ?.at(0)
-        ?.at(0) as Array<any>
+        ?.at(0) as Array<string>
 
       await waitFor(() =>
         expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
@@ -391,7 +391,7 @@ describe('usePrefetchCommitFileEntry', () => {
       const queryKey = queryClient
         .getQueriesData({})
         ?.at(0)
-        ?.at(0) as Array<any>
+        ?.at(0) as Array<string>
 
       await waitFor(() =>
         expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
