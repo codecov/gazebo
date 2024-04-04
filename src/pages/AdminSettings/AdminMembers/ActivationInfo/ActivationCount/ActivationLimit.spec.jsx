@@ -13,10 +13,10 @@ describe('ActivationCount', () => {
     })
 
     it('displays info message', async () => {
-      const link = await screen.findByText('success@codecov.io')
+      const link = await screen.findByText('sales@codecov.io')
 
       expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', 'mailto:success@codecov.io')
+      expect(link).toHaveAttribute('href', 'mailto:sales@codecov.io')
     })
   })
 })
