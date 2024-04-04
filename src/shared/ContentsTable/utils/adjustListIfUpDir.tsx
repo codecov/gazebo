@@ -40,7 +40,7 @@ export function adjustListIfUpDir({
         name: (
           /* @ts-expect-error */
           <A to={upDir} variant="upDirectory">
-            <div className="pl-1 ">..</div>
+            <div className="w-full pl-1">..</div>
           </A>
         ),
         lines: '',
