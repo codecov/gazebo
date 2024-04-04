@@ -48,6 +48,7 @@ const mockComponentMeasurements = (after: boolean) => {
   return {
     owner: {
       repository: {
+        __typename: 'Repository',
         flags: {
           edges: after
             ? [
@@ -101,11 +102,15 @@ const mockComponentMeasurements = (after: boolean) => {
 const mockNoReportsUploadedMeasurements = {
   owner: {
     repository: {
+      __typename: 'Repository',
       flags: {
         edges: [
           {
             node: {
               name: 'flagA',
+              percentCovered: null,
+              percentChange: null,
+              measurements: [],
             },
           },
         ],
@@ -121,6 +126,7 @@ const mockNoReportsUploadedMeasurements = {
 const mockEmptyComponentMeasurements = {
   owner: {
     repository: {
+      __typename: 'Repository',
       flags: {
         edges: [],
         pageInfo: {
@@ -251,36 +257,30 @@ describe('ComponentsTable', () => {
     it('renders components coverage', async () => {
       render(<ComponentsTable />, { wrapper: wrapper() })
 
-      const spinner = await screen.findByTestId('spinner')
-      await waitForElementToBeRemoved(spinner)
-
-      const ninetyThreePercent = screen.getByText(/93.26%/)
+      const ninetyThreePercent = await screen.findByText(/93.26%/)
       expect(ninetyThreePercent).toBeInTheDocument()
 
-      const ninetyOnePercent = screen.getByText(/91.74%/)
+      const ninetyOnePercent = await screen.findByText(/91.74%/)
       expect(ninetyOnePercent).toBeInTheDocument()
     })
 
     it('renders components sparkline with change', async () => {
       render(<ComponentsTable />, { wrapper: wrapper() })
 
-      const spinner = await screen.findByTestId('spinner')
-      await waitForElementToBeRemoved(spinner)
-
-      const componentaSparkLine = screen.getByText(
+      const componentaSparkLine = await screen.findByText(
         /Component flagA trend sparkline/
       )
       expect(componentaSparkLine).toBeInTheDocument()
 
-      const minusOne = screen.getByText(/-1.56/)
+      const minusOne = await screen.findByText(/-1.56/)
       expect(minusOne).toBeInTheDocument()
 
-      const component2SparkLine = screen.getByText(
+      const component2SparkLine = await screen.findByText(
         /Component flagB trend sparkline/
       )
       expect(component2SparkLine).toBeInTheDocument()
 
-      const noData = screen.getByText('No Data')
+      const noData = await screen.findByText('No Data')
       expect(noData).toBeInTheDocument()
     })
   })
@@ -291,10 +291,7 @@ describe('ComponentsTable', () => {
 
       render(<ComponentsTable />, { wrapper: wrapper() })
 
-      const spinner = await screen.findByTestId('spinner')
-      await waitForElementToBeRemoved(spinner)
-
-      const flagA = screen.getByRole('link', { name: 'flagA' })
+      const flagA = await screen.findByRole('link', { name: 'flagA' })
       expect(flagA).toBeInTheDocument()
       expect(flagA).toHaveAttribute(
         'href',
@@ -311,10 +308,7 @@ describe('ComponentsTable', () => {
       const { user } = setup({})
       render(<ComponentsTable />, { wrapper: wrapper() })
 
-      const spinner = await screen.findByTestId('spinner')
-      await waitForElementToBeRemoved(spinner)
-
-      const trashIconButtons = screen.getAllByRole('button', {
+      const trashIconButtons = await screen.findAllByRole('button', {
         name: /trash/,
       })
       expect(trashIconButtons).toHaveLength(3)
@@ -326,10 +320,12 @@ describe('ComponentsTable', () => {
         }
       })
 
-      const deleteComponentModalText = screen.getByText('Delete Component')
+      const deleteComponentModalText = await screen.findByText(
+        'Delete Component'
+      )
       expect(deleteComponentModalText).toBeInTheDocument()
 
-      const cancelButton = screen.getByRole('button', {
+      const cancelButton = await screen.findByRole('button', {
         name: /Cancel/,
       })
       await user.click(cancelButton)
@@ -348,10 +344,7 @@ describe('ComponentsTable', () => {
       it('renders expected empty state message', async () => {
         render(<ComponentsTable />, { wrapper: wrapper() })
 
-        const spinner = await screen.findByTestId('spinner')
-        await waitForElementToBeRemoved(spinner)
-
-        const errorMessage = screen.getByText(
+        const errorMessage = await screen.findByText(
           /There was a problem getting components data/
         )
         expect(errorMessage).toBeInTheDocument()
@@ -368,10 +361,7 @@ describe('ComponentsTable', () => {
           wrapper: wrapper('/gh/codecov/gazebo/components?search=blah'),
         })
 
-        const spinner = await screen.findByTestId('spinner')
-        await waitForElementToBeRemoved(spinner)
-
-        const noResultsFound = screen.getByText(/No results found/)
+        const noResultsFound = await screen.findByText(/No results found/)
         expect(noResultsFound).toBeInTheDocument()
       })
     })
@@ -396,19 +386,16 @@ describe('ComponentsTable', () => {
       const { user } = setup({})
       render(<ComponentsTable />, { wrapper: wrapper() })
 
-      const spinner = await screen.findByTestId('spinner')
-      await waitForElementToBeRemoved(spinner)
-
-      const components = screen.getByText('Components')
+      const components = await screen.findByText('Components')
 
       await user.click(components)
 
-      const flagA = screen.getByTestId('row-0')
-      const flagARole = screen.getByRole('link', { name: 'flagA' })
-      const flagB = screen.getByTestId('row-1')
-      const flagBRole = screen.getByRole('link', { name: 'flagB' })
-      const testFlag = screen.getByTestId('row-2')
-      const testFlagRole = screen.getByRole('link', { name: 'testtest' })
+      const flagA = await screen.findByTestId('row-0')
+      const flagARole = await screen.findByRole('link', { name: 'flagA' })
+      const flagB = await screen.findByTestId('row-1')
+      const flagBRole = await screen.findByRole('link', { name: 'flagB' })
+      const testFlag = await screen.findByTestId('row-2')
+      const testFlagRole = await screen.findByRole('link', { name: 'testtest' })
 
       expect(flagA).toContainElement(flagARole)
       expect(flagB).toContainElement(flagBRole)
@@ -421,8 +408,6 @@ describe('ComponentsTable', () => {
       setup({ noReportsUploaded: true })
       render(<ComponentsTable />, { wrapper: wrapper() })
 
-      const spinner = await screen.findByTestId('spinner')
-      await waitForElementToBeRemoved(spinner)
       const dash = await screen.findByText('-')
       expect(dash).toBeInTheDocument()
     })

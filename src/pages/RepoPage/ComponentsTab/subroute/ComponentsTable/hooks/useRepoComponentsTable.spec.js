@@ -78,6 +78,7 @@ const mockFlagMeasurements = (after) => {
   return {
     owner: {
       repository: {
+        __typename: 'Repository',
         flags: {
           edges: after
             ? []
@@ -86,6 +87,7 @@ const mockFlagMeasurements = (after) => {
                   node: {
                     name: 'flag1',
                     percentCovered: 93.26,
+                    percentChange: 1.65,
                     measurements: [],
                   },
                 },
@@ -93,6 +95,7 @@ const mockFlagMeasurements = (after) => {
                   node: {
                     name: 'flag2',
                     percentCovered: 91.74,
+                    percentChange: 2.65,
                     measurements: [],
                   },
                 },
@@ -112,11 +115,12 @@ const mockFlagMeasurements = (after) => {
 const mockEmptyFlagMeasurements = {
   owner: {
     repository: {
+      __typename: 'Repository',
       flags: {
-        edges: [],
+        edges: false ? [] : [],
         pageInfo: {
           hasNextPage: false,
-          endCursor: null,
+          endCursor: true ? 'aa' : 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
         },
       },
     },
@@ -124,8 +128,18 @@ const mockEmptyFlagMeasurements = {
 }
 
 const componentsData = [
-  { name: 'flag1', percentCovered: 93.26, measurements: [] },
-  { name: 'flag2', percentCovered: 91.74, measurements: [] },
+  {
+    name: 'flag1',
+    percentCovered: 93.26,
+    percentChange: 1.65,
+    measurements: [],
+  },
+  {
+    name: 'flag2',
+    percentCovered: 91.74,
+    percentChange: 2.65,
+    measurements: [],
+  },
 ]
 
 describe('useRepoComponentsTable', () => {
