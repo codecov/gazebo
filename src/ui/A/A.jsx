@@ -21,7 +21,7 @@ const variantClasses = {
   greyOctinary: `text-ds-gray-octinary`,
   grayQuinary: `text-ds-gray-quinary`,
   headerHighlight: `font-semibold text-ds-pink`,
-  upDirectory: `flex flex-grow text-ds-blue hover:no-underline focus:ring-0`,
+  upDirectory: `flex flex-grow text-ds-blue hover:no-underline focus:ring-0 w-full`,
   black: `text-black`,
   blueSeptenary: `text-ds-blue-septenary`,
   configure: `rounded bg-ds-blue px-4 py-1 font-semibold text-gray-100`,

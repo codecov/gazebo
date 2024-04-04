@@ -57,14 +57,16 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/codecov/test-repo']}>
-      <Route path="/:provider/:owner/:repo/">{children}</Route>
-    </MemoryRouter>
-  </QueryClientProvider>
-)
-
+const wrapper =
+  (initialEntries = ['/gh/codecov/test-repo/']) =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Route path="/:provider/:owner/:repo/">{children}</Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 beforeAll(() => {
   server.listen()
 })
@@ -107,7 +109,7 @@ describe('BranchFileEntry', () => {
           isCriticalFile={false}
           displayType={displayTypeParameter.list}
         />,
-        { wrapper }
+        { wrapper: wrapper() }
       )
 
       const file = await screen.findByText('dir/file.js')
@@ -128,7 +130,7 @@ describe('BranchFileEntry', () => {
           isCriticalFile={false}
           displayType={displayTypeParameter.tree}
         />,
-        { wrapper }
+        { wrapper: wrapper() }
       )
 
       const file = await screen.findByText('file.js')
@@ -147,7 +149,7 @@ describe('BranchFileEntry', () => {
           isCriticalFile={false}
           displayType={displayTypeParameter.tree}
         />,
-        { wrapper }
+        { wrapper: wrapper() }
       )
 
       await waitFor(() => queryClient.isFetching)
@@ -171,7 +173,7 @@ describe('BranchFileEntry', () => {
           isCriticalFile={true}
           displayType={displayTypeParameter.list}
         />,
-        { wrapper }
+        { wrapper: wrapper() }
       )
 
       const file = await screen.findByText('Critical File')
@@ -192,7 +194,7 @@ describe('BranchFileEntry', () => {
           isCriticalFile={false}
           displayType={displayTypeParameter.list}
         />,
-        { wrapper }
+        { wrapper: wrapper() }
       )
 
       const file = await screen.findByText('dir/file.js')
@@ -200,7 +202,7 @@ describe('BranchFileEntry', () => {
     })
   })
 
-  describe('flags filters is passed', () => {
+  describe('flags filters is set', () => {
     it('sets the correct href', async () => {
       setup()
       render(
@@ -211,12 +213,12 @@ describe('BranchFileEntry', () => {
           urlPath="dir"
           isCriticalFile={false}
           displayType={displayTypeParameter.tree}
-          filters={{
-            flags: ['flag-1'],
-            components: [],
-          }}
         />,
-        { wrapper }
+        {
+          wrapper: wrapper([
+            '/gh/codecov/test-repo/blob/main/dir%2Ffile.js?flags%5B0%5D=flag-1',
+          ]),
+        }
       )
 
       const a = await screen.findByRole('link')
@@ -238,12 +240,12 @@ describe('BranchFileEntry', () => {
           urlPath="dir"
           isCriticalFile={false}
           displayType={displayTypeParameter.tree}
-          filters={{
-            flags: ['flag-1'],
-            components: ['component-3.1415924'],
-          }}
         />,
-        { wrapper }
+        {
+          wrapper: wrapper([
+            '/gh/codecov/test-repo/blob/main/dir%2Ffile.js?flags%5B0%5D=flag-1&components%5B0%5D=component-3.1415924',
+          ]),
+        }
       )
 
       const a = await screen.findByRole('link')
@@ -267,7 +269,7 @@ describe('BranchFileEntry', () => {
           isCriticalFile={false}
           displayType={displayTypeParameter.tree}
         />,
-        { wrapper }
+        { wrapper: wrapper() }
       )
 
       const file = await screen.findByText('file.js')
@@ -318,9 +320,12 @@ describe('BranchFileEntry', () => {
               urlPath="dir"
               isCriticalFile={false}
               displayType={displayTypeParameter.tree}
-              filters={{ flags: ['flag-1'] }}
             />,
-            { wrapper }
+            {
+              wrapper: wrapper([
+                '/gh/codecov/test-repo/blob/main/dir%2Ffile.js?flags%5B0%5D=flag-1&components%5B0%5D=component-3.1415924',
+              ]),
+            }
           )
 
           const file = await screen.findByText('file.js')
@@ -352,7 +357,7 @@ describe('BranchFileEntry', () => {
               displayType={displayTypeParameter.tree}
               filters={{ flags: [] }}
             />,
-            { wrapper }
+            { wrapper: wrapper() }
           )
 
           const file = await screen.findByText('file.js')

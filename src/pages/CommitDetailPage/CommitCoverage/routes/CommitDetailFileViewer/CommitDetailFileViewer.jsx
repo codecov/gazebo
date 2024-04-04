@@ -1,10 +1,9 @@
 import { useParams } from 'react-router-dom'
 
+import ToggleHeader from 'pages/CommitDetailPage/Header/ToggleHeader/ToggleHeader'
 import RawFileviewer from 'shared/RawFileviewer'
 import { useCommitTreePaths } from 'shared/treePaths'
 import Breadcrumb from 'ui/Breadcrumb'
-
-import ComponentsSelector from '../ComponentsSelector'
 
 function CommitDetailFileViewer() {
   const { treePaths } = useCommitTreePaths()
@@ -12,9 +11,7 @@ function CommitDetailFileViewer() {
 
   return (
     <>
-      <div className="flex justify-end bg-ds-gray-primary p-2">
-        <ComponentsSelector />
-      </div>
+      <ToggleHeader />
       <RawFileviewer
         title={
           <div className="text-sm font-normal">

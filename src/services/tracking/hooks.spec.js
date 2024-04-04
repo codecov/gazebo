@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
@@ -20,12 +21,18 @@ const wrapper = ({ children }) => (
 
 const server = setupServer()
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 afterEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('useTracking', () => {
   let pendoCopy = window.pendo
@@ -143,6 +150,18 @@ describe('useTracking', () => {
         expect(window.pendo.initialize).toHaveBeenCalledTimes(1)
       )
     })
+
+    it('sets user in sentry', async () => {
+      renderHook(() => useTracking(), { wrapper })
+
+      await waitFor(() => expect(Sentry.setUser).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(Sentry.setUser).toHaveBeenCalledWith({
+          email: 'fake@test.com',
+          username: 'eugene_onegin',
+        })
+      )
+    })
   })
 
   describe('when the user is logged-in but missing data', () => {
@@ -218,6 +237,13 @@ describe('useTracking', () => {
         })
       )
     })
+
+    it('sets null user in sentry', async () => {
+      renderHook(() => useTracking(), { wrapper })
+
+      await waitFor(() => expect(Sentry.setUser).toHaveBeenCalled())
+      await waitFor(() => expect(Sentry.setUser).toHaveBeenCalledWith(null))
+    })
   })
 
   describe('when user is not logged in', () => {
@@ -246,6 +272,13 @@ describe('useTracking', () => {
           },
         })
       )
+    })
+
+    it('sets null user in sentry', async () => {
+      renderHook(() => useTracking(), { wrapper })
+
+      await waitFor(() => expect(Sentry.setUser).toHaveBeenCalled())
+      await waitFor(() => expect(Sentry.setUser).toHaveBeenCalledWith(null))
     })
   })
 })
