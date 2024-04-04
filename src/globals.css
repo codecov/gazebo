@@ -77,3 +77,8 @@
     --color-okta: 25, 25, 25;
   }
 }
+
+#sentry-feedback {
+  --submit-background: rgb(var(--color-ds-blue-darker));
+  --submit-background-hover: rgb(var(--color-ds-blue-quinary));
+}
