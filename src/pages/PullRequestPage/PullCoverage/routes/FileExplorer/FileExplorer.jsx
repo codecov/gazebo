@@ -2,6 +2,7 @@ import qs from 'qs'
 import { useLocation } from 'react-router-dom'
 
 import Table from 'old_ui/Table'
+import ToggleHeader from 'pages/PullRequestPage/Header/ToggleHeader/ToggleHeader'
 import { useLocationParams } from 'services/navigation'
 import ContentsTableHeader from 'shared/ContentsTable/ContentsTableHeader'
 import DisplayTypeButton from 'shared/ContentsTable/DisplayTypeButton'
@@ -12,8 +13,6 @@ import SearchField from 'ui/SearchField'
 import Spinner from 'ui/Spinner'
 
 import { useRepoPullContentsTable } from './hooks'
-
-import ComponentsSelector from '../ComponentsSelector'
 
 const Loader = () => (
   <div className="flex flex-1 justify-center">
@@ -64,7 +63,6 @@ function FileExplorer() {
           <Breadcrumb paths={treePaths} />
         </div>
         <div className="flex gap-2">
-          <ComponentsSelector />
           <SearchField
             dataMarketing="pull-files-search"
             placeholder="Search for files"
@@ -73,12 +71,15 @@ function FileExplorer() {
           />
         </div>
       </ContentsTableHeader>
-      <Table
-        data={data}
-        columns={headers}
-        onSort={handleSort}
-        enableHover={true}
-      />
+      <div className="border-t border-ds-gray-tertiary">
+        <ToggleHeader noBottomBorder />
+        <Table
+          data={data}
+          columns={headers}
+          onSort={handleSort}
+          enableHover={true}
+        />
+      </div>
       {isLoading && <Loader />}
       {data?.length === 0 && !isLoading && (
         <MissingFileData

@@ -17,8 +17,8 @@ function NoSeatsContent() {
     <p>
       You are currently not activated and unable to activate because there are
       no available seats. To resolve this, please contact your admin or email
-      <A hook="email success" href="mailto:success@codecov.com">
-        success@codecov.com
+      <A hook="email-sales-no-seats" href="mailto:sales@codecov.io">
+        sales@codecov.io
       </A>
       .
     </p>

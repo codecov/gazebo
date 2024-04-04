@@ -5,79 +5,100 @@ import { z } from 'zod'
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo/schemas'
+} from 'services/repo'
 import Api from 'shared/api'
 import { type NetworkErrorObject } from 'shared/api/helpers'
 import A from 'ui/A'
 
 const query = `
-query BackfillComponentMemberships($name: String!, $repo: String!) {
-  config {
-    isTimescaleEnabled
-  }
-  owner(username: $name) {
+query RepoComponentsSelector(
+  $owner: String!
+  $repo: String!
+  $filters: ComponentsFilters
+) {
+  owner(username: $owner) {
     repository(name: $repo) {
       __typename
       ... on Repository {
-        componentsMeasurementsActive
-        componentsMeasurementsBackfilled
-        componentsCount
+        components(filters: $filters) {
+          name
+        }
+      }
+      ... on NotFoundError {
+        message
+      }
+      ... on OwnerNotActivatedError {
+        message
       }
     }
   }
 }
 `
+
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
-  componentsMeasurementsActive: z.boolean().nullish(),
-  componentsMeasurementsBackfilled: z.boolean().nullish(),
-  componentsCount: z.number().nullish(),
+  components: z
+    .array(
+      z.object({
+        name: z.string(),
+      })
+    )
+    .nullable(),
 })
 
-const BackfillComponentsMembershipSchema = z.object({
-  config: z
+const RequestSchema = z.object({
+  owner: z
     .object({
-      isTimescaleEnabled: z.boolean().nullish(),
+      repository: z
+        .discriminatedUnion('__typename', [
+          RepositorySchema,
+          RepoNotFoundErrorSchema,
+          RepoOwnerNotActivatedErrorSchema,
+        ])
+        .nullable(),
     })
-    .nullish(),
-  owner: z.object({
-    repository: z.discriminatedUnion('__typename', [
-      RepositorySchema,
-      RepoNotFoundErrorSchema,
-      RepoOwnerNotActivatedErrorSchema,
-    ]),
-  }),
+    .nullable(),
 })
 
-interface URLParams {
-  provider: string
-  owner: string
-  repo: string
+interface UseRepoComponentsSelectArgs {
+  filters?: {
+    components?: string[]
+  }
+  opts?: {
+    suspense?: boolean
+  }
 }
 
-export function useComponentsBackfilled() {
-  const { provider, owner, repo } = useParams<URLParams>()
+export function useRepoComponentsSelect({
+  filters = undefined,
+  opts = {},
+}: UseRepoComponentsSelectArgs = {}) {
+  const { provider, owner, repo } = useParams<{
+    provider: string
+    owner: string
+    repo: string
+  }>()
+
   return useQuery({
-    queryKey: ['BackfillComponentMemberships', provider, owner, repo],
+    queryKey: ['RepoComponentsSelector', provider, owner, repo, query, filters],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
         query,
         signal,
         variables: {
-          name: owner,
+          owner,
           repo,
+          filters,
         },
       }).then((res) => {
-        const parsedData = BackfillComponentsMembershipSchema.safeParse(
-          res?.data
-        )
+        const parsedData = RequestSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
           return Promise.reject({
             status: 404,
             data: {},
-            dev: 'useComponentsBackfilled - 404 failed to parse',
+            dev: 'useRepoComponentsSelect - 404 Error parsing repo components data',
           } satisfies NetworkErrorObject)
         }
 
@@ -87,7 +108,7 @@ export function useComponentsBackfilled() {
           return Promise.reject({
             status: 404,
             data: {},
-            dev: `useComponentsBackfilled - 404 NotFoundError`,
+            dev: 'useRepoComponentsSelect - 404 RepoNotFoundError',
           } satisfies NetworkErrorObject)
         }
 
@@ -100,7 +121,7 @@ export function useComponentsBackfilled() {
                   Activation is required to view this repo, please{' '}
                   <A
                     to={{ pageName: 'membersTab' }}
-                    hook="activate-members"
+                    hook="members-page-link"
                     isExternal={false}
                   >
                     click here{' '}
@@ -109,14 +130,12 @@ export function useComponentsBackfilled() {
                 </p>
               ),
             },
-            dev: `useComponentsBackfilled - 403 OwnerNotActivatedError`,
+            dev: 'useRepoComponentsSelect - 403 OwnerNotActivatedError',
           } satisfies NetworkErrorObject)
         }
 
-        return {
-          ...data?.config,
-          ...data?.owner?.repository,
-        }
+        return { components: data?.owner?.repository?.components || [] }
       }),
+    ...opts,
   })
 }
