@@ -20,9 +20,10 @@ import Spinner from 'ui/Spinner'
 
 import { getReposColumnsHelper } from './getReposColumnsHelper'
 
-import 'ui/Table/Table.css'
 import { repoDisplayOptions } from '../ListRepo'
 import NoReposBlock from '../NoReposBlock'
+
+import 'ui/Table/Table.css'
 
 interface URLParams {
   provider: string
