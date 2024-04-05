@@ -16,8 +16,9 @@ import TotalsNumber from 'ui/TotalsNumber'
 import ComponentsNotConfigured from './ComponentsNotConfigured'
 import { ComponentsComparison, useComponentComparison } from './hooks'
 
-import 'ui/Table/Table.css'
 import ComponentsSelector from '../ComponentsSelector'
+
+import 'ui/Table/Table.css'
 
 const Loader = () => (
   <div className="mb-4 flex justify-center pt-4">
