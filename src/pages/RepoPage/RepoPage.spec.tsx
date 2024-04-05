@@ -19,6 +19,7 @@ jest.mock('./CoverageTab', () => () => 'CoverageTab')
 jest.mock('./CoverageOnboarding', () => () => 'CoverageOnboarding')
 jest.mock('./PullsTab', () => () => 'PullsTab')
 jest.mock('./FlagsTab', () => () => 'FlagsTab')
+jest.mock('./ComponentsTab', () => () => 'ComponentsTab')
 jest.mock('./SettingsTab', () => () => 'SettingsTab')
 jest.mock('shared/featureFlags')
 
@@ -103,6 +104,7 @@ const wrapper =
                 '/:provider/:owner/:repo/bundles/:branch',
                 '/:provider/:owner/:repo/bundles',
                 '/:provider/:owner/:repo/flags',
+                '/:provider/:owner/:repo/components',
                 '/:provider/:owner/:repo/new',
                 '/:provider/:owner/:repo/pulls',
                 '/:provider/:owner/:repo/settings',
@@ -520,7 +522,7 @@ describe('RepoPage', () => {
             }),
           })
 
-          const components = await screen.findByText('FlagsTab')
+          const components = await screen.findByText('ComponentsTab')
           expect(components).toBeInTheDocument()
         })
       })
