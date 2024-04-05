@@ -65,7 +65,12 @@ export function useResyncUser() {
   // useQuery will automatically feed the so we don't need to care about return
   const { isSuccess, isFetching } = useQuery({
     queryKey: ['isSyncing', provider],
-    queryFn: ({ signal }) => fetchIsSyncing({ provider, signal }),
+    queryFn: ({ signal }) => {
+      queryClient.invalidateQueries({
+        queryKey: ['repos'],
+      })
+      return fetchIsSyncing({ provider, signal })
+    },
     suspense: false,
     useErrorBoundary: false,
     refetchInterval: isSyncing ? 2000 : null,
