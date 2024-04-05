@@ -101,8 +101,8 @@ interface FetchRepoComponentsArgs {
   repo: string
   filters?: {
     components?: string[]
-    branch?: string
   }
+  branch?: string
   orderingDirection: 'ASC' | 'DESC'
   interval: 'INTERVAL_30_DAY' | 'INTERVAL_7_DAY' | 'INTERVAL_1_DAY'
   afterDate: string
@@ -120,6 +120,7 @@ function fetchRepoComponents({
   interval,
   afterDate,
   beforeDate,
+  branch,
   after,
   signal,
 }: FetchRepoComponentsArgs) {
@@ -136,6 +137,7 @@ function fetchRepoComponents({
       afterDate,
       beforeDate,
       after,
+      branch,
     },
   }).then((res) => {
     const parsedRes = RequestSchema.safeParse(res?.data)
