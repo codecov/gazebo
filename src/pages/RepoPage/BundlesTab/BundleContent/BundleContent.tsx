@@ -7,6 +7,7 @@ import Spinner from 'ui/Spinner'
 
 import AssetsTable from './AssetsTable'
 import BundleSummary from './BundleSummary'
+import InfoBanner from './InfoBanner'
 
 const AssetEmptyTable = lazy(() => import('./AssetsTable/EmptyTable'))
 const ErrorBanner = lazy(() => import('./ErrorBanner'))
@@ -16,6 +17,7 @@ interface URLParams {
   owner: string
   repo: string
   branch?: string
+  bundle?: string
 }
 
 const Loader = () => (
@@ -25,7 +27,7 @@ const Loader = () => (
 )
 
 const BundleContent: React.FC = () => {
-  const { provider, owner, repo, branch } = useParams<URLParams>()
+  const { provider, owner, repo, branch, bundle } = useParams<URLParams>()
 
   useEffect(() => {
     metrics.increment('bundles_tab.bundle_details.visited_page', 1)
@@ -44,7 +46,13 @@ const BundleContent: React.FC = () => {
             <Route path="/:provider/:owner/:repo/bundles/:branch/:bundle">
               <AssetsTable />
             </Route>
-            <Route>
+            <Route
+              path={[
+                '/:provider/:owner/:repo/bundles/:branch',
+                '/:provider/:owner/:repo/bundles/',
+              ]}
+            >
+              <InfoBanner branch={branch} bundle={bundle} />
               <AssetEmptyTable />
             </Route>
           </Switch>

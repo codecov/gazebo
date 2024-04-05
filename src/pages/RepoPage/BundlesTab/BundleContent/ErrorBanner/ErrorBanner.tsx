@@ -46,7 +46,7 @@ const BannerContent: React.FC<BannerProps> = ({ errorType }) => {
 const ErrorBanner: React.FC<BannerProps> = ({ errorType }) => {
   return (
     <Banner variant="warning">
-      <div className="flex flex-col gap-6 text-sm">
+      <div className="flex flex-col gap-4 text-sm">
         <BannerContent errorType={errorType} />
       </div>
     </Banner>
