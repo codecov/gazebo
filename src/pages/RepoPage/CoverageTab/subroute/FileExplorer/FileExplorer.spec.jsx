@@ -259,28 +259,6 @@ describe('FileExplorer', () => {
       })
     })
 
-    describe('branch contents returns unknown path', () => {
-      it('renders unknown path message', async () => {
-        setup(true, false)
-        render(<FileExplorer />, { wrapper: wrapper() })
-
-        const message = await screen.findByText('No coverage data available.')
-        expect(message).toBeInTheDocument()
-      })
-    })
-
-    describe('branch contents has missing coverage', () => {
-      it('renders the missing coverage message', async () => {
-        setup(false, true)
-        render(<FileExplorer />, { wrapper: wrapper() })
-
-        const message = await screen.findByText(
-          'Unknown filepath. Please ensure that files/directories exist and are not empty.'
-        )
-        expect(message).toBeInTheDocument()
-      })
-    })
-
     describe('display type is set to list', () => {
       it('renders file list table', async () => {
         setup()

@@ -2,6 +2,7 @@ import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
+  SortingState,
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
@@ -89,7 +90,9 @@ const baseColumns = [
 ]
 
 function FileListTable() {
-  const [sorting, setSorting] = useState([{ id: 'misses', desc: true }])
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: 'misses', desc: true },
+  ])
   const ordering = getOrderingDirection(sorting)
   const {
     data,
