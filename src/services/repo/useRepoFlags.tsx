@@ -77,7 +77,7 @@ const RepositorySchema = z.object({
     }),
     edges: z.array(
       z.object({
-        node: FlagEdgeSchema,
+        node: FlagEdgeSchema.nullable(),
       })
     ),
   }),

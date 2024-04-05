@@ -64,6 +64,7 @@ const defaultParams = {
 
 interface SetupArgs {
   isEmptyRepoFlags?: boolean
+  noOldestCommit?: boolean
   useParamsValue?: {
     search?: string
     historicalTrend?: string
@@ -72,20 +73,33 @@ interface SetupArgs {
 }
 
 describe('useRepoFlagsTable', () => {
-  function setup({ isEmptyRepoFlags = false, useParamsValue = {} }: SetupArgs) {
+  function setup({
+    isEmptyRepoFlags = false,
+    noOldestCommit = false,
+    useParamsValue = {},
+  }: SetupArgs) {
     mockedUseParams.mockReturnValue({
       provider: 'gh',
       owner: 'codecov',
       repo: 'gazebo',
     })
-    mockedUseRepo.mockReturnValue({
-      data: {
-        repository: { oldestCommitAt: '2020-06-11T18:28:52' },
-      },
-    })
     mockedUseLocationParams.mockReturnValue({
       params: { ...defaultParams, ...useParamsValue },
     })
+
+    if (noOldestCommit) {
+      mockedUseRepo.mockReturnValue({
+        data: {
+          repository: { oldestCommitAt: null },
+        },
+      })
+    } else {
+      mockedUseRepo.mockReturnValue({
+        data: {
+          repository: { oldestCommitAt: '2020-06-11T18:28:52' },
+        },
+      })
+    }
 
     if (isEmptyRepoFlags) {
       mockedUseRepoFlags.mockReturnValue(emptyRepoFlagsMock)
@@ -115,15 +129,13 @@ describe('useRepoFlagsTable', () => {
     })
   })
 
-  describe('when handleSort is triggered', () => {
+  describe('sorting', () => {
     beforeEach(() => {
       setup({ isEmptyRepoFlags: true })
     })
 
     it('calls useRepoFlagsTable with desc value', async () => {
-      const { result } = renderHook(() => useRepoFlagsTable(true))
-
-      result.current.handleSort()
+      renderHook(() => useRepoFlagsTable(true))
 
       await waitFor(() =>
         expect(useRepoFlags).toHaveBeenCalledWith({
@@ -137,27 +149,8 @@ describe('useRepoFlagsTable', () => {
       )
     })
 
-    it('calls useRepoFlagsTable with asc value when the array is empty', async () => {
-      const { result } = renderHook(() => useRepoFlagsTable(false))
-
-      result.current.handleSort()
-
-      await waitFor(() =>
-        expect(useRepoFlags).toHaveBeenCalledWith({
-          afterDate: format(sub(new Date(), { months: 3 }), 'yyyy-MM-dd'),
-          beforeDate: format(new Date(), 'yyyy-MM-dd'),
-          filters: { term: '', flagsNames: [] },
-          interval: 'INTERVAL_7_DAY',
-          orderingDirection: 'ASC',
-          suspense: false,
-        })
-      )
-    })
-
     it('calls useRepoFlagsTable with asc value', async () => {
-      const { result } = renderHook(() => useRepoFlagsTable(false))
-
-      result.current.handleSort()
+      renderHook(() => useRepoFlagsTable(false))
 
       await waitFor(() =>
         expect(useRepoFlags).toHaveBeenCalledWith({
@@ -220,6 +213,28 @@ describe('useRepoFlagsTable', () => {
 
         expect(useRepoFlags).toHaveBeenCalledWith({
           afterDate: '2020-06-11',
+          beforeDate: format(new Date(), 'yyyy-MM-dd'),
+          filters: { term: '', flagsNames: [] },
+          interval: 'INTERVAL_30_DAY',
+          orderingDirection: 'ASC',
+          suspense: false,
+        })
+      })
+    })
+
+    describe('when historical trend param is all time, but we do not have date of oldest commit', () => {
+      beforeEach(() => {
+        setup({
+          noOldestCommit: true,
+          useParamsValue: { historicalTrend: 'ALL_TIME' },
+        })
+      })
+
+      it('calls useRepoFlagsTable with correct query params', () => {
+        renderHook(() => useRepoFlagsTable(false))
+
+        expect(useRepoFlags).toHaveBeenCalledWith({
+          afterDate: format(sub(new Date(), { months: 6 }), 'yyyy-MM-dd'),
           beforeDate: format(new Date(), 'yyyy-MM-dd'),
           filters: { term: '', flagsNames: [] },
           interval: 'INTERVAL_30_DAY',

@@ -43,14 +43,17 @@ const columns = [
   columnHelper.accessor('coverage', {
     header: () => 'Coverage %',
     cell: ({ renderValue }) => renderValue(),
+    enableSorting: false,
   }),
   columnHelper.accessor('trend', {
     header: () => 'Trend',
     cell: ({ renderValue }) => renderValue(),
+    enableSorting: false,
   }),
   columnHelper.accessor('delete', {
     header: () => '',
     cell: ({ renderValue }) => renderValue(),
+    enableSorting: false,
   }),
 ]
 
@@ -104,7 +107,7 @@ function createTableData({
               name={value.name}
             />
           ),
-          delete: true ? (
+          delete: isAdmin ? (
             <div className="flex items-center justify-center">
               <button
                 data-testid="delete-flag"
@@ -116,7 +119,9 @@ function createTableData({
                 <Icon size="md" name="trash" variant="outline" />
               </button>
             </div>
-          ) : null,
+          ) : (
+            <></>
+          ),
         }
   )
   return data
@@ -140,14 +145,15 @@ const FlagTable = memo(function Table({
   setSorting?: OnChangeFn<SortingState> | undefined
 }) {
   const table = useReactTable({
-    columns,
     data: tableData,
+    columns,
     state: {
       sorting,
     },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    manualSorting: true,
   })
 
   return (

@@ -1,5 +1,4 @@
 import { format, sub } from 'date-fns'
-import { useCallback, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import {
@@ -54,12 +53,9 @@ function useRepoFlagsTable(isDesc: boolean) {
   const isAdmin = repoData?.isAdmin
   // @ts-expect-errors, useLocation params needs to be updated to have full types
   const isSearching = Boolean(params?.search)
-  const [sortBy, setSortBy] = useState<'ASC' | 'DESC'>(
-    getSortByDirection(isDesc)
-  )
   const { afterDate, interval } = createMeasurementVariables(
     // @ts-expect-errors, useLocation params needs to be updated to have full types
-    params?.historicalTrend,
+    params?.historicalTrend ?? 'LAST_3_MONTHS',
     repoData?.repository?.oldestCommitAt
   )
 
@@ -67,25 +63,17 @@ function useRepoFlagsTable(isDesc: boolean) {
     useRepoFlags({
       // @ts-expect-errors, useLocation params needs to be updated to have full types
       filters: { term: params?.search, flagsNames: params?.flags },
-      orderingDirection: sortBy,
+      orderingDirection: getSortByDirection(isDesc),
       beforeDate: format(new Date(), 'yyyy-MM-dd'),
       interval,
       afterDate,
       suspense: false,
     })
 
-  const handleSort = useCallback(() => {
-    const tableSortByDirection = getSortByDirection(isDesc)
-    if (sortBy !== tableSortByDirection) {
-      setSortBy(tableSortByDirection)
-    }
-  }, [isDesc, sortBy])
-
   return {
     data,
     isAdmin,
     isLoading,
-    handleSort,
     isSearching,
     hasNextPage,
     fetchNextPage,
