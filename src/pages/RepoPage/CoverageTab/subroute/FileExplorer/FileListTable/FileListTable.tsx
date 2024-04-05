@@ -15,6 +15,8 @@ import Icon from 'ui/Icon'
 import { useRepoBranchContentsTable } from '../hooks'
 import { Loader, RepoContentsResult } from '../shared'
 
+import 'ui/Table/Table.css'
+
 const columnHelper = createColumnHelper<Row>()
 
 function getOrderingDirection(sorting: Array<{ id: string; desc: boolean }>) {
