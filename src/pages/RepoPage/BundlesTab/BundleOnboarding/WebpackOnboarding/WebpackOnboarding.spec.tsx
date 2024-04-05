@@ -376,7 +376,7 @@ describe('WebpackOnboarding', () => {
       render(<WebpackOnboarding />, { wrapper })
 
       const gitCommit = await screen.findByText(
-        'git add -A && git commit -m "Added Codecov bundler plugin" && git push'
+        'git add -A && git commit -m "Add Codecov bundler plugin" && git push'
       )
       expect(gitCommit).toBeInTheDocument()
     })

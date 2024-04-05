@@ -35,7 +35,7 @@ module.exports = {
   ],
 };`
 
-const commitString = `git add -A && git commit -m "Added Codecov bundler plugin" && git push`
+const commitString = `git add -A && git commit -m "Add Codecov bundler plugin" && git push`
 
 const npmBuild = `npm run build`
 const yarnBuild = `yarn run build`
