@@ -39,6 +39,7 @@ const columns = [
   columnHelper.accessor('name', {
     header: () => 'Flags',
     cell: ({ renderValue }) => renderValue(),
+    invertSorting: true,
   }),
   columnHelper.accessor('coverage', {
     header: () => 'Coverage %',
@@ -166,12 +167,7 @@ const FlagTable = memo(function Table({
                 <th
                   key={header.id}
                   data-sortable={header.column.getCanSort()}
-                  {...{
-                    onClick:
-                      header.column.id === 'name'
-                        ? header.column.getToggleSortingHandler()
-                        : undefined,
-                  }}
+                  onClick={header.column.getToggleSortingHandler()}
                 >
                   <div
                     className={cs('flex flex-row', {
@@ -182,14 +178,12 @@ const FlagTable = memo(function Table({
                       header.column.columnDef.header,
                       header.getContext()
                     )}
-                    {header.id === 'name' ? (
-                      <span
-                        className="text-ds-blue-darker group-hover/columnheader:opacity-100"
-                        data-sort-direction={header.column.getIsSorted()}
-                      >
-                        <Icon name="arrowUp" size="sm" />
-                      </span>
-                    ) : null}
+                    <span
+                      className="text-ds-blue-darker group-hover/columnheader:opacity-100"
+                      data-sort-direction={header.column.getIsSorted()}
+                    >
+                      <Icon name="arrowUp" size="sm" />
+                    </span>
                   </div>
                 </th>
               ))}
@@ -251,7 +245,7 @@ function FlagsTable() {
     showModal: false,
   })
   const [sorting, setSorting] = useState<SortingState>([
-    { id: 'name', desc: true },
+    { id: 'coverage', desc: true },
   ])
   const { ref, inView } = useInView()
 
@@ -265,7 +259,7 @@ function FlagsTable() {
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-  } = useRepoFlagsTable(sorting[0]?.desc ?? false)
+  } = useRepoFlagsTable(sorting[0]?.desc ?? true)
 
   useEffect(() => {
     if (inView && hasNextPage) {
