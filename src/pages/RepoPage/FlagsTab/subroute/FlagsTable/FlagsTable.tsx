@@ -244,7 +244,7 @@ function FlagsTable() {
     showModal: false,
   })
   const [sorting, setSorting] = useState<SortingState>([
-    { id: 'coverage', desc: true },
+    { id: 'name', desc: true },
   ])
   const { ref, inView } = useInView()
 
