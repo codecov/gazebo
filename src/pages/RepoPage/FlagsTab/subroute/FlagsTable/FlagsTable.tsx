@@ -39,7 +39,6 @@ const columns = [
   columnHelper.accessor('name', {
     header: () => 'Flags',
     cell: ({ renderValue }) => renderValue(),
-    invertSorting: true,
   }),
   columnHelper.accessor('coverage', {
     header: () => 'Coverage %',
