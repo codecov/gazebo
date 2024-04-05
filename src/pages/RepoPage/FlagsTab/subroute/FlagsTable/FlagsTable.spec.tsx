@@ -13,7 +13,7 @@ import { PropsWithChildren, Suspense } from 'react'
 import { mockIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import FlagsTable from './FlagsTable'
+import FlagsTable, { FlagTable } from './FlagsTable'
 
 const mockRepoConfig = {
   owner: {
@@ -253,6 +253,8 @@ describe('FlagsTable', () => {
 
       const trend = await screen.findByText('Trend')
       expect(trend).toBeInTheDocument()
+
+      await waitFor(() => screen.findByRole('link', { name: 'flagA' }))
     })
 
     it('renders repo flags', async () => {
@@ -275,6 +277,8 @@ describe('FlagsTable', () => {
 
     it('does not render null flags', async () => {
       render(<FlagsTable />, { wrapper: wrapper() })
+
+      await waitFor(() => screen.findByRole('link', { name: 'flagA' }))
 
       const nullFlag = screen.queryByRole('link', { name: 'testtest' })
       expect(nullFlag).not.toBeInTheDocument()
@@ -333,6 +337,8 @@ describe('FlagsTable', () => {
     it('does not render delete button', async () => {
       setup({ isAdmin: false })
       render(<FlagsTable />, { wrapper: wrapper() })
+
+      await waitFor(() => screen.findByRole('link', { name: 'flagA' }))
 
       const trashIconButtons = screen.queryAllByRole('button', {
         name: /trash/,
@@ -443,6 +449,24 @@ describe('FlagsTable', () => {
       render(<FlagsTable />, { wrapper: wrapper() })
       const dash = await screen.findByText('-')
       expect(dash).toBeInTheDocument()
+    })
+  })
+
+  describe('when loading data', () => {
+    it('renders loader', async () => {
+      setup({})
+      render(
+        <FlagTable
+          tableData={[]}
+          isLoading={true}
+          sorting={[]}
+          setSorting={() => {}}
+        />,
+        { wrapper: wrapper() }
+      )
+
+      const loader = await screen.findByTestId('spinner')
+      expect(loader).toBeInTheDocument()
     })
   })
 })

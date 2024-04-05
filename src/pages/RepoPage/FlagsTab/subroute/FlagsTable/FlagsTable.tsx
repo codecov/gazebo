@@ -27,10 +27,10 @@ import TableSparkline from './TableEntries/TableSparkline'
 import 'ui/Table/Table.css'
 
 interface FlagsTableHelper {
-  name: React.ReactNode
-  coverage: React.ReactNode
-  trend: React.ReactNode
-  delete: React.ReactNode
+  name: React.ReactElement
+  coverage: React.ReactElement
+  trend: React.ReactElement
+  delete: React.ReactElement | null
 }
 
 const columnHelper = createColumnHelper<FlagsTableHelper>()
@@ -119,9 +119,7 @@ function createTableData({
                 <Icon size="md" name="trash" variant="outline" />
               </button>
             </div>
-          ) : (
-            <></>
-          ),
+          ) : null,
         }
   )
   return data
@@ -133,7 +131,7 @@ const Loader = () => (
   </div>
 )
 
-const FlagTable = memo(function Table({
+export const FlagTable = memo(function Table({
   tableData,
   isLoading,
   sorting,
@@ -228,7 +226,7 @@ function LoadMoreTrigger({
   return (
     <span
       ref={intersectionRef}
-      data-testId={'Loading'}
+      data-testid={'Loading'}
       className="invisible relative top-[-65px] block leading-[0]"
     >
       Loading
