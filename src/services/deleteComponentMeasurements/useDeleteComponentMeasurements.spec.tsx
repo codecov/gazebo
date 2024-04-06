@@ -26,7 +26,7 @@ const queryClient = new QueryClient({
 const ownerUsername = 'codecov'
 const repoName = 'gazebo'
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter
     initialEntries={[`/gh/${ownerUsername}/${repoName}/components`]}
   >
@@ -52,6 +52,7 @@ describe('useDeleteComponentMeasurements', () => {
 
     const addNotification = jest.fn()
 
+    //@ts-ignore
     useAddNotification.mockReturnValue(addNotification)
 
     return { addNotification, mutate }
