@@ -22,8 +22,9 @@ import { OrderingDirection, OrderingParameter } from 'services/pull/usePull'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
-import 'ui/FileList/FileList.css'
 import TotalsNumber from 'ui/TotalsNumber'
+
+import 'ui/FileList/FileList.css'
 
 const CommitFileDiff = lazy(() => import('../shared/CommitFileDiff'))
 

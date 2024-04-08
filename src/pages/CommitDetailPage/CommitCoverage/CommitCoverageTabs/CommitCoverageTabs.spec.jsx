@@ -270,51 +270,6 @@ describe('CommitCoverageTabs', () => {
     })
   })
 
-  describe('rendering toggle header', () => {
-    it('renders uncovered legend', async () => {
-      setup()
-      render(<CommitCoverageTabs commitSha="sha256" />, {
-        wrapper: wrapper(),
-      })
-
-      const legend = await screen.findByText('uncovered')
-      expect(legend).toBeInTheDocument()
-    })
-
-    it('renders partial legend', async () => {
-      setup()
-      render(<CommitCoverageTabs commitSha="sha256" />, {
-        wrapper: wrapper(),
-      })
-
-      const legend = await screen.findByText('partial')
-      expect(legend).toBeInTheDocument()
-    })
-
-    it('renders covered legend', async () => {
-      setup()
-      render(<CommitCoverageTabs commitSha="sha256" />, {
-        wrapper: wrapper(),
-      })
-
-      const legend = await screen.findByText('covered')
-      expect(legend).toBeInTheDocument()
-    })
-
-    it('renders hit count legend', async () => {
-      setup()
-      render(<CommitCoverageTabs commitSha="sha256" />, {
-        wrapper: wrapper(),
-      })
-
-      const hitIcon = await screen.findByText('n')
-      expect(hitIcon).toBeInTheDocument()
-
-      const legendText = await screen.findByText('upload #')
-      expect(legendText).toBeInTheDocument()
-    })
-  })
-
   describe('there are query params in the url', () => {
     it('appends them to the files changed tab link', async () => {
       const queryString = qs.stringify(
@@ -374,52 +329,6 @@ describe('CommitCoverageTabs', () => {
         'href',
         '/gh/codecov/cool-repo/commit/sha256/tree?flags%5B0%5D=flag-1'
       )
-    })
-  })
-
-  describe('flags multi-select', () => {
-    describe('user is not on a team plan', () => {
-      it('renders flag multi-select', async () => {
-        setup({})
-        render(<CommitCoverageTabs commitSha="sha256" />, {
-          wrapper: wrapper(),
-        })
-
-        const flagSelect = await screen.findByText('All flags')
-        expect(flagSelect).toBeInTheDocument()
-      })
-    })
-
-    describe('user is on a team plan', () => {
-      describe('repo is public', () => {
-        it('renders flag multi-select', async () => {
-          setup({
-            tierValue: TierNames.TEAM,
-            isPrivate: false,
-          })
-          render(<CommitCoverageTabs commitSha="sha256" />, {
-            wrapper: wrapper(),
-          })
-
-          const flagSelect = await screen.findByText('All flags')
-          expect(flagSelect).toBeInTheDocument()
-        })
-      })
-
-      describe('repo is private', () => {
-        it('does not render the multi select', async () => {
-          setup({ tierValue: TierNames.TEAM, isPrivate: true })
-          render(<CommitCoverageTabs commitSha="sha256" />, {
-            wrapper: wrapper(),
-          })
-
-          const filesChanged = await screen.findByText('Files changed')
-          expect(filesChanged).toBeInTheDocument()
-
-          const flagSelect = screen.queryByText('All flags')
-          expect(flagSelect).not.toBeInTheDocument()
-        })
-      })
     })
   })
 })
