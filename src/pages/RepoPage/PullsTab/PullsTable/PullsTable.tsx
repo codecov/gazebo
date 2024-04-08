@@ -12,13 +12,14 @@ import { useParams } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
 import { usePulls } from 'services/pulls'
-import 'ui/Table/Table.css'
 import { useRepoOverview } from 'services/repo'
 import Spinner from 'ui/Spinner'
 
 import { createPullsTableData } from './createPullsTableData'
 
 import { orderingEnum } from '../enums'
+
+import 'ui/Table/Table.css'
 
 const Loader = () => (
   <div className="mb-4 flex justify-center pt-4">

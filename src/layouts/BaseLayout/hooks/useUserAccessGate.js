@@ -44,7 +44,8 @@ const useUserAccessGate = () => {
     suspense: false,
     enabled: !!provider && !config.IS_SELF_HOSTED,
   })
-  const { mutate: updateDefaultOrg } = useUpdateDefaultOrganization()
+  const { mutate: updateDefaultOrg, isLoading: isMutationLoading } =
+    useUpdateDefaultOrganization()
 
   const {
     data: internalUser,
@@ -91,7 +92,12 @@ const useUserAccessGate = () => {
     redirectToSyncPage = isEqual(internalUser?.owners?.length, 0)
   }
 
-  if (!isUndefined(provider) && foundUser && !config.IS_SELF_HOSTED) {
+  if (
+    !isUndefined(provider) &&
+    foundUser &&
+    !config.IS_SELF_HOSTED &&
+    !isMutationLoading
+  ) {
     showDefaultOrgSelector = !userData?.owner?.defaultOrgUsername
   }
 

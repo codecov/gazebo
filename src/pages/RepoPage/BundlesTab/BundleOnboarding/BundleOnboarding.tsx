@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
 import { Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
@@ -9,9 +9,9 @@ import { useRedirect } from 'shared/useRedirect'
 import Spinner from 'ui/Spinner'
 import TabNavigation from 'ui/TabNavigation'
 
-const ViteOnboarding = lazy(() => import('./ViteOnboarding'))
-const RollupOnboarding = lazy(() => import('./RollupOnboarding'))
-const WebpackOnboarding = lazy(() => import('./WebpackOnboarding'))
+import RollupOnboarding from './RollupOnboarding'
+import ViteOnboarding from './ViteOnboarding'
+import WebpackOnboarding from './WebpackOnboarding'
 
 interface URLParams {
   provider: string
@@ -35,23 +35,19 @@ const Content: React.FC = () => {
           { pageName: 'bundleWebpackOnboarding' },
         ]}
       />
-      <Switch>
-        <SentryRoute path="/:provider/:owner/:repo/bundles/new" exact>
-          <Suspense fallback={<Loader />}>
+      <Suspense fallback={<Loader />}>
+        <Switch>
+          <SentryRoute path="/:provider/:owner/:repo/bundles/new" exact>
             <ViteOnboarding />
-          </Suspense>
-        </SentryRoute>
-        <SentryRoute path="/:provider/:owner/:repo/bundles/new/rollup">
-          <Suspense fallback={<Loader />}>
+          </SentryRoute>
+          <SentryRoute path="/:provider/:owner/:repo/bundles/new/rollup">
             <RollupOnboarding />
-          </Suspense>
-        </SentryRoute>
-        <SentryRoute path="/:provider/:owner/:repo/bundles/new/webpack">
-          <Suspense fallback={<Loader />}>
+          </SentryRoute>
+          <SentryRoute path="/:provider/:owner/:repo/bundles/new/webpack">
             <WebpackOnboarding />
-          </Suspense>
-        </SentryRoute>
-      </Switch>
+          </SentryRoute>
+        </Switch>
+      </Suspense>
     </>
   )
 }

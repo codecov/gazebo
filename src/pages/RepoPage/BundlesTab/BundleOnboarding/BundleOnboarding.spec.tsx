@@ -12,10 +12,6 @@ import BundleOnboarding from './BundleOnboarding'
 jest.mock('shared/useRedirect')
 const mockedUseRedirect = useRedirect as jest.Mock
 
-jest.mock('./ViteOnboarding', () => () => <div>ViteOnboarding</div>)
-jest.mock('./RollupOnboarding', () => () => <div>RollupOnboarding</div>)
-jest.mock('./WebpackOnboarding', () => () => <div>WebpackOnboarding</div>)
-
 const mockGetRepo = (hasUploadToken: boolean, isActive: boolean) => ({
   owner: {
     isCurrentUserPartOfOrg: true,
@@ -38,6 +34,12 @@ const mockGetRepo = (hasUploadToken: boolean, isActive: boolean) => ({
     },
   },
 })
+
+const mockGetOrgUploadToken = {
+  owner: {
+    orgUploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629290',
+  },
+}
 
 const server = setupServer()
 const queryClient = new QueryClient({
@@ -104,7 +106,10 @@ describe('BundleOnboarding', () => {
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockGetRepo(hasUploadToken, hasCommits)))
-      )
+      ),
+      graphql.query('GetOrgUploadToken', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockGetOrgUploadToken))
+      })
     )
 
     return { hardRedirect }
@@ -145,7 +150,9 @@ describe('BundleOnboarding', () => {
         setup({ hasCommits: true, hasUploadToken: true })
         render(<BundleOnboarding />, { wrapper: wrapper() })
 
-        const viteOnboarding = await screen.findByText('ViteOnboarding')
+        const viteOnboarding = await screen.findByText(
+          /Install the Codecov Vite Plugin/
+        )
         expect(viteOnboarding).toBeInTheDocument()
       })
     })
@@ -194,7 +201,9 @@ describe('BundleOnboarding', () => {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/rollup'),
         })
 
-        const rollupOnboarding = await screen.findByText('RollupOnboarding')
+        const rollupOnboarding = await screen.findByText(
+          /Install the Codecov Rollup Plugin/
+        )
         expect(rollupOnboarding).toBeInTheDocument()
       })
     })
@@ -243,7 +252,9 @@ describe('BundleOnboarding', () => {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/webpack'),
         })
 
-        const webpackOnboarding = await screen.findByText('WebpackOnboarding')
+        const webpackOnboarding = await screen.findByText(
+          /Install the Codecov Webpack Plugin/
+        )
         expect(webpackOnboarding).toBeInTheDocument()
       })
     })

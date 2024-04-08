@@ -2,6 +2,7 @@ import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
+  SortingState,
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
@@ -13,6 +14,8 @@ import Icon from 'ui/Icon'
 
 import { useRepoBranchContentsTable } from '../hooks'
 import { Loader, RepoContentsResult } from '../shared'
+
+import 'ui/Table/Table.css'
 
 const columnHelper = createColumnHelper<Row>()
 
@@ -88,7 +91,9 @@ const baseColumns = [
 ]
 
 function CodeTreeTable() {
-  const [sorting, setSorting] = useState([{ id: 'name', desc: false }])
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: 'name', desc: false },
+  ])
   const ordering = getOrderingDirection(sorting)
   const {
     data,
