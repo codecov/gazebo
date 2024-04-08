@@ -4,6 +4,9 @@ import { useParams } from 'react-router-dom'
 
 import Api from 'shared/api'
 
+// currently set the polling interval to 2000 ms
+export const POLLING_INTERVAL = 2000
+
 function fetchIsSyncing({ provider, signal }) {
   const query = `
       query IsSyncing {
@@ -69,17 +72,18 @@ export function useResyncUser() {
       queryClient.invalidateQueries({
         queryKey: ['repos'],
       })
+
       return fetchIsSyncing({ provider, signal })
     },
     suspense: false,
     useErrorBoundary: false,
-    refetchInterval: isSyncing ? 2000 : null,
+    refetchInterval: isSyncing ? POLLING_INTERVAL : null,
   })
 
   useEffect(() => {
     // need to have both here, cause this query needs to be called twice(?)
     if (isSuccess && !isFetching) {
-      queryClient.refetchQueries({
+      queryClient.invalidateQueries({
         queryKey: ['repos'],
       })
     }

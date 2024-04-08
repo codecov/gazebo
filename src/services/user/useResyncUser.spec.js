@@ -4,7 +4,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useResyncUser } from './useResyncUser'
+import { POLLING_INTERVAL, useResyncUser } from './useResyncUser'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -21,6 +21,8 @@ const wrapper =
     )
 
 const server = setupServer()
+
+const invalidateQueriesSpy = jest.spyOn(queryClient, 'invalidateQueries')
 
 beforeAll(() => {
   server.listen()
@@ -109,6 +111,42 @@ describe('useResyncUser', () => {
 
       await waitFor(() => expect(result.current.isSyncing).toBeTruthy())
     })
+
+    it('calls invalidate queries on each sync', async () => {
+      jest.useFakeTimers()
+      const { result } = renderHook(() => useResyncUser(), {
+        wrapper: wrapper(),
+      })
+
+      await waitFor(() => expect(result.current.isSyncing).toBe(true))
+
+      await waitFor(() => expect(invalidateQueriesSpy).toHaveBeenCalledTimes(2))
+
+      jest.advanceTimersByTime(POLLING_INTERVAL)
+
+      await waitFor(() => expect(invalidateQueriesSpy).toHaveBeenCalledTimes(4))
+
+      jest.advanceTimersByTime(POLLING_INTERVAL)
+
+      await waitFor(() => expect(invalidateQueriesSpy).toHaveBeenCalledTimes(6))
+
+      // sync on server finishes
+      syncStatus = false
+      // and wait for the request to get the new isSyncing
+      await waitFor(() => expect(result.current.isSyncing).toBe(false), {
+        // we need to make a longer timeout because the polling of the
+        // isSyncing is 2000ms; and we can't use fake timers as it
+        // doesn't work well with waitFor()
+        timeout: 3000,
+      })
+
+      await waitFor(() => expect(result.current.isSyncing).toBeFalsy())
+
+      // For some reason number of called times is doubling; but when console logging within the queryFn we see
+      // that the loop is being entered the correct number of times. This may be some jest weirdness
+      await waitFor(() => expect(invalidateQueriesSpy).toHaveBeenCalledTimes(8))
+      jest.useRealTimers()
+    })
   })
 
   describe('when a sync finishes', () => {
@@ -136,9 +174,7 @@ describe('useResyncUser', () => {
       await waitFor(() => expect(result.current.isSyncing).toBeFalsy())
     })
 
-    it('calls refetchQueries for repos', async () => {
-      const refetchQueriesSpy = jest.spyOn(queryClient, 'refetchQueries')
-
+    it('calls invalidateQueries for repos', async () => {
       const { result } = renderHook(() => useResyncUser(), {
         wrapper: wrapper(),
       })
@@ -155,7 +191,9 @@ describe('useResyncUser', () => {
       })
 
       await waitFor(() =>
-        expect(refetchQueriesSpy).toHaveBeenCalledWith({ queryKey: ['repos'] })
+        expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+          queryKey: ['repos'],
+        })
       )
     })
   })
