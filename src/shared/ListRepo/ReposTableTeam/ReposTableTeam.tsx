@@ -23,11 +23,12 @@ import { formatTimeToNow } from 'shared/utils/dates'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 
-import 'ui/Table/Table.css'
 import InactiveRepo from '../InactiveRepo'
 import { repoDisplayOptions } from '../ListRepo'
 import NoReposBlock from '../NoReposBlock'
 import RepoTitleLink from '../RepoTitleLink'
+
+import 'ui/Table/Table.css'
 
 export function getSortingOption(
   sorting: Array<{ id: string; desc: boolean }>

@@ -14,6 +14,7 @@ import { useParams } from 'react-router-dom'
 import { usePullBundleComparisonList } from 'services/pull/usePullBundleComparisonList'
 import { formatSizeToString } from 'shared/utils/bundleAnalysis'
 import Icon from 'ui/Icon'
+
 import 'ui/Table/Table.css'
 
 interface URLParams {

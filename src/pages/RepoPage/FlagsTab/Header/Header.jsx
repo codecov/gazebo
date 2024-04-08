@@ -1,6 +1,10 @@
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 
+import {
+  TIME_OPTION_VALUES,
+  TimeOptions,
+} from 'pages/RepoPage/shared/constants'
 import { useLocationParams } from 'services/navigation'
 import { useRepoBackfilled, useRepoFlagsSelect } from 'services/repo'
 import A from 'ui/A'
@@ -8,7 +12,6 @@ import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'
 import Select from 'ui/Select'
 
-import { TIME_OPTION_VALUES, TimeOptions } from '../constants'
 
 const Header = ({ controlsDisabled, children }) => {
   const [selectedFlags, setSelectedFlags] = useState([])

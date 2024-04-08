@@ -46,20 +46,4 @@ describe('Indiret changes Info', () => {
       })
     ).toBeInTheDocument()
   })
-
-  it('renders the expected components selector', () => {
-    render(
-      <MemoryRouter
-        initialEntries={[
-          '/provider/owner/repo/pull/pullId/indirectChangesInfo',
-        ]}
-      >
-        <Route path="/:provider/:owner/:repo/pull/:pullId/indirectChangesInfo">
-          <IndirectChangesInfo />
-        </Route>
-      </MemoryRouter>
-    )
-
-    expect(screen.getByText('ComponentsSelector')).toBeInTheDocument()
-  })
 })

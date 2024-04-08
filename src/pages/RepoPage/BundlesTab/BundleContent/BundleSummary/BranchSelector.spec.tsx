@@ -240,6 +240,21 @@ describe('BranchSelector', () => {
   })
 
   describe('navigating branches', () => {
+    describe('user lands on the page', () => {
+      it('redirects to the default branch', async () => {
+        const { queryClient, mockResetBundleSelect } = setup()
+        render(<BranchSelector resetBundleSelect={mockResetBundleSelect} />, {
+          wrapper: wrapper(queryClient),
+        })
+
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe(
+            '/gh/codecov/test-repo/bundles/main'
+          )
+        )
+      })
+    })
+
     describe('user selects a branch', () => {
       it('navigates to the selected branch', async () => {
         const { user, queryClient, mockResetBundleSelect } = setup()
@@ -259,30 +274,6 @@ describe('BranchSelector', () => {
           expect(testLocation.pathname).toBe(
             '/gh/codecov/test-repo/bundles/branch-1'
           )
-        )
-      })
-    })
-
-    describe('user selects the default branch', () => {
-      it('clears the branch from the url', async () => {
-        const { user, queryClient, mockResetBundleSelect } = setup()
-        render(<BranchSelector resetBundleSelect={mockResetBundleSelect} />, {
-          wrapper: wrapper(
-            queryClient,
-            '/gh/codecov/test-repo/bundles/branch-1'
-          ),
-        })
-
-        const select = await screen.findByRole('button', {
-          name: 'bundle branch selector',
-        })
-        await user.click(select)
-
-        const branch = await screen.findByText('main')
-        await user.click(branch)
-
-        await waitFor(() =>
-          expect(testLocation.pathname).toBe('/gh/codecov/test-repo/bundles')
         )
       })
     })

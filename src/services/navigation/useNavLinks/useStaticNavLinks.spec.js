@@ -42,6 +42,7 @@ describe('useStaticNavLinks', () => {
       ${links.userAppManagePage}             | ${'https://github.com/settings/connections/applications/c68c81cbfd179a50784a'}
       ${links.codecovAppInstallation}        | ${`https://github.com/apps/${config.GH_APP}/installations/new`}
       ${links.deployingFlagsSupport}         | ${'https://docs.codecov.com/docs/implementing-flags-with-timescaledb'}
+      ${links.deployingComponentsSupport}    | ${'https://docs.codecov.com/docs/components'}
       ${links.blog}                          | ${`${config.MARKETING_BASE_URL}/blog`}
       ${links.sales}                         | ${`${config.MARKETING_BASE_URL}/sales`}
       ${links.dedicatedEnterpriseCloudGuide} | ${`https://docs.codecov.com/docs/codecov-dedicated-enterprise-cloud-install-steps`}

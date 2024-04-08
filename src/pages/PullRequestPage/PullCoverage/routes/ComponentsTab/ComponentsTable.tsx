@@ -132,7 +132,7 @@ export default function ComponentsTable() {
 
   return (
     <>
-      <div className="flex justify-end bg-ds-gray-primary p-2">
+      <div className="my-2 flex flex-row-reverse">
         <ComponentsSelector />
       </div>
       <div className="tableui">

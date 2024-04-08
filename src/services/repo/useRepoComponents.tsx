@@ -1,0 +1,255 @@
+import { useInfiniteQuery } from '@tanstack/react-query'
+import { useParams } from 'react-router-dom'
+import z from 'zod'
+
+import {
+  RepoNotFoundErrorSchema,
+  RepoOwnerNotActivatedErrorSchema,
+} from 'services/repo/schemas'
+import Api from 'shared/api'
+import { type NetworkErrorObject } from 'shared/api/helpers'
+import { mapEdges } from 'shared/utils/graphql'
+import A from 'ui/A'
+
+const query = `
+query ComponentMeasurements(
+  $name: String!
+  $repo: String!
+  $filters: ComponentSetFilters
+  $orderingDirection: OrderingDirection!
+  $interval: MeasurementInterval!
+  $afterDate: DateTime!
+  $beforeDate: DateTime!
+  $after: String
+) {
+  owner(username: $name) {
+    repository(name: $repo) {
+      __typename
+      ... on Repository {
+        components(
+          filters: $filters
+          orderingDirection: $orderingDirection
+          after: $after
+          first: 15
+        ) {
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
+          edges {
+            node {
+              name
+              percentCovered
+              percentChange
+              measurements(
+                interval: $interval
+                after: $afterDate
+                before: $beforeDate
+              ) {
+                avg
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+`
+
+export const ComponentEdgeSchema = z.object({
+  name: z.string(),
+  percentCovered: z.number().nullable(),
+  percentChange: z.number().nullable(),
+  measurements: z.array(
+    z.object({
+      avg: z.number().nullable(),
+    })
+  ),
+})
+
+const RepositorySchema = z.object({
+  __typename: z.literal('Repository'),
+  components: z.object({
+    pageInfo: z.object({
+      hasNextPage: z.boolean(),
+      endCursor: z.string().nullable(),
+    }),
+    edges: z.array(
+      z.object({
+        node: ComponentEdgeSchema,
+      })
+    ),
+  }),
+})
+
+const RequestSchema = z.object({
+  owner: z
+    .object({
+      repository: z.discriminatedUnion('__typename', [
+        RepositorySchema,
+        RepoNotFoundErrorSchema,
+        RepoOwnerNotActivatedErrorSchema,
+      ]),
+    })
+    .nullable(),
+})
+
+interface FetchRepoComponentsArgs {
+  provider: string
+  owner: string
+  repo: string
+  filters?: {
+    components?: string[]
+  }
+  branch?: string
+  orderingDirection: 'ASC' | 'DESC'
+  interval: 'INTERVAL_30_DAY' | 'INTERVAL_7_DAY' | 'INTERVAL_1_DAY'
+  afterDate: string
+  beforeDate: string
+  after: string
+  signal?: AbortSignal
+}
+
+function fetchRepoComponents({
+  provider,
+  owner: name,
+  repo,
+  filters,
+  orderingDirection,
+  interval,
+  afterDate,
+  beforeDate,
+  branch,
+  after,
+  signal,
+}: FetchRepoComponentsArgs) {
+  return Api.graphql({
+    provider,
+    query,
+    signal,
+    variables: {
+      name,
+      repo,
+      filters,
+      orderingDirection,
+      interval,
+      afterDate,
+      beforeDate,
+      after,
+      branch,
+    },
+  }).then((res) => {
+    const parsedRes = RequestSchema.safeParse(res?.data)
+
+    if (!parsedRes.success) {
+      return Promise.reject({
+        status: 404,
+        data: {},
+        dev: `useRepoComponents - 404 failed to parse`,
+      } satisfies NetworkErrorObject)
+    }
+
+    const data = parsedRes.data
+
+    if (data?.owner?.repository?.__typename === 'NotFoundError') {
+      return Promise.reject({
+        status: 404,
+        data: {},
+        dev: `useRepoComponents - 404 NotFoundError`,
+      } satisfies NetworkErrorObject)
+    }
+
+    if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
+      return Promise.reject({
+        status: 403,
+        data: {
+          detail: (
+            <p>
+              Activation is required to view this repo, please{' '}
+              <A
+                to={{ pageName: 'membersTab' }}
+                hook="activate-members"
+                isExternal={false}
+              >
+                click here{' '}
+              </A>{' '}
+              to activate your account.
+            </p>
+          ),
+        },
+        dev: `useRepoComponents - 403 OwnerNotActivatedError`,
+      } satisfies NetworkErrorObject)
+    }
+
+    const components = data?.owner?.repository?.components
+    return {
+      components: mapEdges(components),
+      pageInfo: components?.pageInfo,
+    }
+  })
+}
+
+interface useRepoComponentsArgs {
+  filters?: {
+    components?: string[]
+    branch?: string
+  }
+  orderingDirection?: 'ASC' | 'DESC'
+  interval: 'INTERVAL_30_DAY' | 'INTERVAL_7_DAY' | 'INTERVAL_1_DAY'
+  afterDate: string
+  beforeDate: string
+  opts?: {
+    suspense?: boolean
+  }
+}
+
+export function useRepoComponents({
+  filters = {},
+  orderingDirection = 'DESC',
+  interval,
+  afterDate,
+  beforeDate,
+  opts = {},
+}: useRepoComponentsArgs) {
+  const { provider, owner, repo } = useParams<{
+    provider: string
+    owner: string
+    repo: string
+  }>()
+
+  const { data, ...rest } = useInfiniteQuery({
+    queryKey: [
+      'ComponentMeasurements',
+      provider,
+      owner,
+      repo,
+      filters,
+      orderingDirection,
+      interval,
+      afterDate,
+      beforeDate,
+    ],
+    queryFn: ({ pageParam: after, signal }) =>
+      fetchRepoComponents({
+        provider,
+        owner,
+        repo,
+        filters: filters,
+        orderingDirection,
+        interval,
+        afterDate,
+        beforeDate,
+        after,
+        signal,
+      }),
+    getNextPageParam: (data) =>
+      data?.pageInfo?.hasNextPage ? data.pageInfo.endCursor : undefined,
+    ...opts,
+  })
+
+  return {
+    data: data?.pages.map((page) => page?.components).flat() ?? null,
+    ...rest,
+  }
+}

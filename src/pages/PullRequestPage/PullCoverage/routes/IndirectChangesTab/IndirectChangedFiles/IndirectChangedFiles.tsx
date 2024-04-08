@@ -11,11 +11,13 @@ import {
 import cs from 'classnames'
 import { Fragment, Suspense, useMemo, useState } from 'react'
 
+import ToggleHeader from 'pages/PullRequestPage/Header/ToggleHeader/ToggleHeader'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
-import 'ui/FileList/FileList.css'
 import TotalsNumber from 'ui/TotalsNumber'
+
+import 'ui/FileList/FileList.css'
 
 import { useIndirectChangedFilesTable } from './hooks'
 import NameColumn from './NameColumn/NameColumn'
@@ -152,74 +154,80 @@ export default function IndirectChangedFiles() {
   })
 
   return (
-    <div className="filelistui" data-highlight-row="onHover">
-      <div>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <div key={headerGroup.id} className="filelistui-thead">
-            {headerGroup.headers.map((header) => {
-              const isSorted = header.column.getIsSorted()
-              return (
-                <div
-                  key={header.id}
-                  data-sortable="true"
-                  {...{
-                    onClick: header.column.getToggleSortingHandler(),
-                  }}
-                  className={cs('flex gap-1 items-center', {
-                    'flex-row-reverse justify-end w-6/12': header.id === 'name',
-                    'justify-end w-2/12': header.id !== 'name',
-                  })}
-                >
-                  <span
-                    className="text-ds-blue-darker"
-                    data-sort-direction={isSorted}
+    <>
+      <ToggleHeader />
+      <div className="filelistui" data-highlight-row="onHover">
+        <div>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <div key={headerGroup.id} className="filelistui-thead">
+              {headerGroup.headers.map((header) => {
+                const isSorted = header.column.getIsSorted()
+                return (
+                  <div
+                    key={header.id}
+                    data-sortable="true"
+                    {...{
+                      onClick: header.column.getToggleSortingHandler(),
+                    }}
+                    className={cs('flex gap-1 items-center', {
+                      'flex-row-reverse justify-end w-6/12':
+                        header.id === 'name',
+                      'justify-end w-2/12': header.id !== 'name',
+                    })}
                   >
-                    <Icon name="arrowUp" size="sm" />
-                  </span>
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
-                </div>
-              )
-            })}
-          </div>
-        ))}
-        {isLoading ? (
-          <Loader />
-        ) : (
-          table.getRowModel().rows.map((row, i) => (
-            <Fragment key={i}>
-              <div className="filelistui-row">
-                {row.getVisibleCells().map((cell) => {
-                  return (
-                    <div
-                      key={cell.id}
-                      {...(isNumericValue(cell.column.id)
-                        ? {
-                            'data-type': 'numeric',
-                          }
-                        : {})}
-                      className={cs({
-                        'w-6/12': cell.column.id === 'name',
-                        'flex justify-end w-2/12': cell.column.id !== 'name',
-                      })}
+                    <span
+                      className="text-ds-blue-darker"
+                      data-sort-direction={isSorted}
                     >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-              <div data-expanded={row.getIsExpanded()}>
-                {row.getIsExpanded() ? <RenderSubComponent row={row} /> : null}
-              </div>
-            </Fragment>
-          ))
-        )}
+                      <Icon name="arrowUp" size="sm" />
+                    </span>
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          ))}
+          {isLoading ? (
+            <Loader />
+          ) : (
+            table.getRowModel().rows.map((row, i) => (
+              <Fragment key={i}>
+                <div className="filelistui-row">
+                  {row.getVisibleCells().map((cell) => {
+                    return (
+                      <div
+                        key={cell.id}
+                        {...(isNumericValue(cell.column.id)
+                          ? {
+                              'data-type': 'numeric',
+                            }
+                          : {})}
+                        className={cs({
+                          'w-6/12': cell.column.id === 'name',
+                          'flex justify-end w-2/12': cell.column.id !== 'name',
+                        })}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+                <div data-expanded={row.getIsExpanded()}>
+                  {row.getIsExpanded() ? (
+                    <RenderSubComponent row={row} />
+                  ) : null}
+                </div>
+              </Fragment>
+            ))
+          )}
+        </div>
       </div>
-    </div>
+    </>
   )
 }
