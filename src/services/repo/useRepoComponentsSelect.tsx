@@ -20,7 +20,7 @@ query RepoComponentsSelector(
     repository(name: $repo) {
       __typename
       ... on Repository {
-        components(termId: $termId) {
+        componentsYaml(termId: $termId) {
           name
           id
         }
@@ -38,7 +38,7 @@ query RepoComponentsSelector(
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
-  components: z
+  componentsYaml: z
     .array(
       z.object({
         name: z.string(),
@@ -133,7 +133,7 @@ export function useRepoComponentsSelect({
           } satisfies NetworkErrorObject)
         }
 
-        return { components: data?.owner?.repository?.components || [] }
+        return { components: data?.owner?.repository?.componentsYaml || [] }
       }),
     ...opts,
   })
