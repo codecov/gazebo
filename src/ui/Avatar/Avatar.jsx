@@ -10,7 +10,6 @@ let borderedClasses = 'border-ds-grey-secondary border-2'
 
 function Avatar({ user, bordered, ariaLabel }) {
   const classes = cs(baseClasses, bordered ? borderedClasses : '')
-
   const { src, error, isLoading } = useImage({
     src: user?.avatarUrl,
   })
