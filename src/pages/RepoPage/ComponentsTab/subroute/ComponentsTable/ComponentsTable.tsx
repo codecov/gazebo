@@ -14,6 +14,7 @@ import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
 
 import { useRepoConfig } from 'services/repo/useRepoConfig'
+import ComponentsNotConfigured from 'shared/ComponentsNotConfigured'
 import { determineProgressColor } from 'shared/utils/determineProgressColor'
 import A from 'ui/A'
 import CoverageProgress from 'ui/CoverageProgress'
@@ -309,9 +310,7 @@ function ComponentsTable() {
       />
       {!tableData?.length && !isLoading && (
         <p className="flex flex-1 justify-center">
-          {isSearching
-            ? 'No results found'
-            : 'There was a problem getting components data'}
+          {isSearching ? 'No results found' : <ComponentsNotConfigured />}
         </p>
       )}
       {isFetchingNextPage ? <Loader /> : null}

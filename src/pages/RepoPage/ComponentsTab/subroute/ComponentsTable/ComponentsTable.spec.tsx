@@ -341,13 +341,11 @@ describe('ComponentsTable', () => {
         setup({ noData: true })
       })
 
-      it('renders expected empty state message', async () => {
+      it('renders expected no data message', async () => {
         render(<ComponentsTable />, { wrapper: wrapper() })
 
-        const errorMessage = await screen.findByText(
-          /There was a problem getting components data/
-        )
-        expect(errorMessage).toBeInTheDocument()
+        const noData = await screen.findByText(/No data to display/)
+        expect(noData).toBeInTheDocument()
       })
     })
 
