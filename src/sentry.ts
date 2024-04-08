@@ -1,5 +1,4 @@
 import * as Sentry from '@sentry/react'
-import { Replay } from '@sentry/replay'
 import * as Spotlight from '@spotlightjs/spotlight'
 import { createBrowserHistory } from 'history'
 import { Route } from 'react-router-dom'
@@ -43,6 +42,7 @@ const deClutterConfig = {
     // Chrome extensions
     /extensions\//i,
     /^chrome:\/\//i,
+    /^chrome-extension:\/\//i,
     // Other plugins
     /127\.0\.0\.1:4001\/isrunning/i, // Cacaoweb
     /webappstoolbarba\.texthelp\.com\//i,
@@ -65,25 +65,55 @@ export const setupSentry = ({
 }: {
   history: ReturnType<typeof createBrowserHistory>
 }) => {
-  const browserTracing = new Sentry.BrowserTracing({
-    routingInstrumentation: Sentry.reactRouterV5Instrumentation(history),
-    tracePropagationTargets: ['api.codecov.io', 'stage-api.codecov.dev'],
+  // no sentry dsn, don't init
+  if (!config.SENTRY_DSN) {
+    return
+  }
+
+  // configure sentry product integrations
+  const replay = Sentry.replayIntegration()
+  const metrics = Sentry.metrics.metricsAggregatorIntegration()
+  const tracing = Sentry.reactRouterV5BrowserTracingIntegration({
+    history,
   })
 
-  const metrics = Sentry.metrics.metricsAggregatorIntegration()
+  const integrations = [metrics, replay, tracing]
 
-  const replay = new Replay()
+  // Only show feedback button in production
+  // spotlight takes the place of the feedback widget in dev mode
+  if (config.NODE_ENV === 'production') {
+    const feedback = Sentry.feedbackIntegration({
+      colorScheme: 'light',
+      showBranding: false,
+      formTitle: 'Give Feedback',
+      buttonLabel: 'Give Feedback',
+      submitButtonLabel: 'Send Feedback',
+      nameLabel: 'Username',
+    })
+    integrations.push(feedback)
+  }
+
+  const tracePropagationTargets = ['api.codecov.io', 'stage-api.codecov.dev']
+  // wrapped in a silent try/catch incase the URL is invalid
+  try {
+    const { hostname } = new URL(config.API_URL)
+    // add the hostname to the tracePropagationTargets if it's not already there
+    if (!tracePropagationTargets.includes(hostname)) {
+      tracePropagationTargets.push(hostname)
+    }
+  } catch {}
 
   Sentry.init({
     dsn: config.SENTRY_DSN,
     debug: config.NODE_ENV !== 'production',
     release: config.SENTRY_RELEASE,
     environment: config.SENTRY_ENVIRONMENT,
-    integrations: [browserTracing, metrics, replay],
+    integrations,
+    tracePropagationTargets,
     tracesSampleRate: config?.SENTRY_TRACING_SAMPLE_RATE,
-    // Capture 10% of all sessions
+    // Capture n% of all sessions
     replaysSessionSampleRate: config?.SENTRY_SESSION_SAMPLE_RATE,
-    // Of the remaining 90% of sessions, if an error happens start capturing
+    // Of the remaining x% of sessions, if an error happens start capturing
     replaysOnErrorSampleRate: config?.SENTRY_ERROR_SAMPLE_RATE,
     beforeSend: (event, _hint) => {
       if (checkForBlockedUserAgents()) {
@@ -102,7 +132,7 @@ export const setupSentry = ({
     ...deClutterConfig,
   })
 
-  if (process.env.NODE_ENV === 'development') {
+  if (config.NODE_ENV === 'development') {
     Spotlight.init({
       injectImmediately: true,
       integrations: [Spotlight.sentry()],

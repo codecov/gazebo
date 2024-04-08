@@ -230,7 +230,7 @@ describe('PullFileEntry', () => {
       const queryKey = queryClient
         .getQueriesData({})
         ?.at(0)
-        ?.at(0) as Array<any>
+        ?.at(0) as Array<string>
 
       await waitFor(() =>
         expect(queryClient?.getQueryState(queryKey)?.data).toStrictEqual({

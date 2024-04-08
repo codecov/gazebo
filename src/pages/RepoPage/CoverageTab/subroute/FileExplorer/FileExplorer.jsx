@@ -18,28 +18,12 @@ function FileExplorer() {
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const isFileListDisplay = params?.displayType === 'list'
 
-  const {
-    data: branchData,
-    isLoading: branchIsLoading,
-    pathContentsType,
-  } = useRepoBranchContentsTable()
-
-  if (pathContentsType === 'UnknownPath') {
-    return (
-      <p className="m-4">
-        Unknown filepath. Please ensure that files/directories exist and are not
-        empty.
-      </p>
-    )
-  }
-
-  if (pathContentsType === 'MissingCoverage') {
-    return <p className="m-4">No coverage data available.</p>
-  }
+  const { data: branchData, isLoading: branchIsLoading } =
+    useRepoBranchContentsTable()
 
   return (
     <>
-      <div className="sticky top-[4.5rem] flex justify-between gap-2 bg-white pt-2">
+      <div className="sticky top-[4.5rem] z-10 flex justify-between gap-2 bg-white pt-2">
         <div className="flex flex-1 items-center gap-4">
           <DisplayTypeButton
             dataLength={branchData?.length}

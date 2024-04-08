@@ -9,8 +9,9 @@ import { useInView } from 'react-intersection-observer'
 
 import Spinner from 'ui/Spinner'
 
-import 'ui/Table/Table.css'
 import { useAdminAccessList } from './useAdminAccessList'
+
+import 'ui/Table/Table.css'
 
 type AdminAccessTableColumn = {
   name: string
