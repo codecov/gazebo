@@ -6,7 +6,7 @@ import { SortingDirection } from 'old_ui/Table/constants'
 import {
   AFTER_DATE_FORMAT_OPTIONS,
   MEASUREMENT_TIME_INTERVALS,
-} from 'pages/RepoPage/ComponentsTab/constants'
+} from 'pages/RepoPage/shared/constants'
 import { useLocationParams } from 'services/navigation'
 import { useRepo } from 'services/repo'
 import { useRepoFlags } from 'services/repo/useRepoFlags'
