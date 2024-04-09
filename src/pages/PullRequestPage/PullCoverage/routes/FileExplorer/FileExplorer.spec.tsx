@@ -155,7 +155,9 @@ const mockTreeData = {
   },
 }
 
-const wrapper: (initalEntries: string[]) => React.FC<React.PropsWithChildren> =
+const wrapper: (
+  initalEntries?: string[]
+) => React.FC<React.PropsWithChildren> =
   (initialEntries = ['/gh/codecov/cool-repo/pull/123/tree/a/b/c']) =>
   ({ children }) => {
     return (
