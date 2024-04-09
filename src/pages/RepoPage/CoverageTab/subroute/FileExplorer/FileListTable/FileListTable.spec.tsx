@@ -75,6 +75,7 @@ const mockListData = {
               name: 'file.js',
               path: 'a/b/c/file.js',
               percentCovered: 100.0,
+              isCriticalFile: false,
             },
           ],
           __typename: 'PathContents',

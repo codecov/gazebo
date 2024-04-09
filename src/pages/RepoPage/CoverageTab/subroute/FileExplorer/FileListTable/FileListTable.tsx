@@ -2,13 +2,12 @@ import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
-  SortingState,
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
-import { useState } from 'react'
 
 import { OrderingDirection } from 'services/repos'
+import { useTableDefaultSort } from 'shared/ContentsTable/useTableDefaultSort'
 import { Row } from 'shared/ContentsTable/utils'
 import Icon from 'ui/Icon'
 
@@ -92,9 +91,7 @@ const baseColumns = [
 ]
 
 function FileListTable() {
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: 'misses', desc: true },
-  ])
+  const [sorting, setSorting] = useTableDefaultSort()
   const ordering = getOrderingDirection(sorting)
   const {
     data,
@@ -108,7 +105,7 @@ function FileListTable() {
   const table = useReactTable({
     columns: baseColumns,
     getCoreRowModel: getCoreRowModel(),
-    data: data ?? [],
+    data: data,
     state: {
       sorting,
     },
@@ -132,6 +129,14 @@ function FileListTable() {
     <div className="flex flex-col gap-4">
       <div className="tableui">
         <table>
+          <colgroup>
+            <col className="w-full @sm/table:w-5/12" />
+            <col className="@sm/table:w-1/12" />
+            <col className="@sm/table:w-1/12" />
+            <col className="@sm/table:w-1/12" />
+            <col className="@sm/table:w-1/12" />
+            <col className="@sm/table:w-3/12" />
+          </colgroup>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>

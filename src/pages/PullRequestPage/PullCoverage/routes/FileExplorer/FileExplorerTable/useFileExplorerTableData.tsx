@@ -145,8 +145,8 @@ function useFileExplorerTableData() {
             color={determineProgressColor({
               coverage: file.percentCovered,
               ...(pullData?.indicationRange || {
-                upperRange: 80,
-                lowerRange: 60,
+                upperRange: 0,
+                lowerRange: 100,
               }),
             })}
           />
