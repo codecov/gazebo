@@ -5,6 +5,7 @@ import {
   AFTER_DATE_FORMAT_OPTIONS,
   MEASUREMENT_TIME_INTERVALS,
   TIME_OPTION_KEY,
+  TIME_OPTION_VALUES,
 } from 'pages/RepoPage/shared/constants'
 import { useLocationParams } from 'services/navigation'
 import { useRepo } from 'services/repo'
@@ -14,15 +15,14 @@ const getSortByDirection = (isDesc: boolean) => (isDesc ? 'DESC' : 'ASC')
 
 const createMeasurementVariables = (
   historicalTrend: TIME_OPTION_KEY,
-  oldestCommitAt?: string | null
+  oldestCommitAt: string = format(
+    sub(new Date(), { ...AFTER_DATE_FORMAT_OPTIONS.LAST_6_MONTHS }),
+    'yyyy-MM-dd'
+  )
 ) => {
-  const isAllTime = historicalTrend === 'ALL_TIME'
-  const getOldestCommitAt = () =>
-    oldestCommitAt
-      ? new Date(oldestCommitAt)
-      : sub(new Date(), { ...AFTER_DATE_FORMAT_OPTIONS.LAST_6_MONTHS })
+  const isAllTime = historicalTrend === TIME_OPTION_VALUES.ALL_TIME
   const selectedDate = isAllTime
-    ? getOldestCommitAt()
+    ? new Date(oldestCommitAt)
     : sub(new Date(), { ...AFTER_DATE_FORMAT_OPTIONS[historicalTrend] })
   const afterDate = format(selectedDate, 'yyyy-MM-dd')
   const interval = isAllTime
@@ -41,7 +41,7 @@ type URLParams = {
 function useRepoFlagsTable(isDesc: boolean) {
   const { params } = useLocationParams({
     search: '',
-    historicalTrend: 'LAST_3_MONTHS',
+    historicalTrend: TIME_OPTION_VALUES.LAST_3_MONTHS,
     flags: [],
   })
   const { provider, owner, repo } = useParams<URLParams>()
@@ -55,8 +55,8 @@ function useRepoFlagsTable(isDesc: boolean) {
   const isSearching = Boolean(params?.search)
   const { afterDate, interval } = createMeasurementVariables(
     // @ts-expect-errors, useLocation params needs to be updated to have full types
-    params?.historicalTrend ?? 'LAST_3_MONTHS',
-    repoData?.repository?.oldestCommitAt
+    params?.historicalTrend ?? TIME_OPTION_VALUES.LAST_3_MONTHS,
+    repoData?.repository?.oldestCommitAt ?? undefined
   )
 
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
