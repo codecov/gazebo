@@ -2,7 +2,7 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { format, sub, subDays, subMonths } from 'date-fns'
 import { useParams } from 'react-router-dom'
 
-import { TIME_OPTION_VALUES } from 'pages/RepoPage/FlagsTab/constants'
+import { TIME_OPTION_VALUES } from 'pages/RepoPage/shared/constants'
 import { useLocationParams } from 'services/navigation'
 import { useRepo } from 'services/repo'
 import { useRepoFlags } from 'services/repo/useRepoFlags'
