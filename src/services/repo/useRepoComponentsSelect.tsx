@@ -42,6 +42,7 @@ const RepositorySchema = z.object({
     .array(
       z.object({
         name: z.string(),
+        id: z.string(),
       })
     )
     .nullable(),

@@ -37,9 +37,11 @@ const dataReturned = {
       componentsYaml: [
         {
           name: 'foo',
+          id: '1',
         },
         {
           name: 'bar',
+          id: '2',
         },
       ],
     },
