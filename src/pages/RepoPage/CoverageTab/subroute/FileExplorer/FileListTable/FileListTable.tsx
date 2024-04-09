@@ -105,7 +105,7 @@ function FileListTable() {
   const table = useReactTable({
     columns: baseColumns,
     getCoreRowModel: getCoreRowModel(),
-    data: data,
+    data,
     state: {
       sorting,
     },

@@ -2,7 +2,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { ReactNode } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useRepoPullContents } from './useRepoPullContents'
@@ -113,7 +112,7 @@ const mockDataMissingCoverage = {
   },
 }
 
-const wrapper = ({ children }: { children: ReactNode }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/test/pull/123']}>
       <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>

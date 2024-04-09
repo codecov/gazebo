@@ -3,7 +3,6 @@ import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { ReactNode } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import FileExplorer from './FileExplorer'
@@ -156,9 +155,9 @@ const mockTreeData = {
   },
 }
 
-const wrapper =
+const wrapper: (initalEntries: string[]) => React.FC<React.PropsWithChildren> =
   (initialEntries = ['/gh/codecov/cool-repo/pull/123/tree/a/b/c']) =>
-  ({ children }: { children: ReactNode }) => {
+  ({ children }) => {
     return (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={initialEntries}>
