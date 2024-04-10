@@ -27,10 +27,10 @@ import TableSparkline from './TableEntries/TableSparkline'
 import 'ui/Table/Table.css'
 
 interface FlagsTableHelper {
-  name: React.ReactNode
-  coverage: React.ReactNode
-  trend: React.ReactNode
-  delete: React.ReactNode
+  name: React.ReactElement
+  coverage: React.ReactElement
+  trend: React.ReactElement
+  delete: React.ReactElement | null
 }
 
 const columnHelper = createColumnHelper<FlagsTableHelper>()
@@ -43,14 +43,17 @@ const columns = [
   columnHelper.accessor('coverage', {
     header: () => 'Coverage %',
     cell: ({ renderValue }) => renderValue(),
+    enableSorting: false,
   }),
   columnHelper.accessor('trend', {
     header: () => 'Trend',
     cell: ({ renderValue }) => renderValue(),
+    enableSorting: false,
   }),
   columnHelper.accessor('delete', {
     header: () => '',
     cell: ({ renderValue }) => renderValue(),
+    enableSorting: false,
   }),
 ]
 
@@ -60,74 +63,64 @@ function createTableData({
   setModalInfo,
   isAdmin,
 }: {
-  tableData: any[] | null // TODO: update type when we convert useRepoFlags to TS
+  tableData: ReturnType<typeof useRepoFlagsTable>['data']
   indicationRange?: { upperRange: number; lowerRange: number } | null
   setModalInfo: (data: any) => void
   isAdmin?: boolean | null
 }) {
-  if (tableData === null) {
-    return []
-  }
-
-  const data = tableData.map(
-    ({
-      name,
-      percentCovered,
-      percentChange,
-      measurements,
-    }: {
-      name: string
-      percentCovered: number | null
-      percentChange: number
-      measurements: any[]
-    }) => ({
-      name: (
-        <A
-          to={{
-            pageName: 'coverage',
-            options: { queryParams: { flags: [name] } },
-          }}
-          variant="black"
-          isExternal={false}
-          hook={'flag-to-coverage-page'}
-        >
-          {name}
-        </A>
-      ),
-      coverage: (
-        <div className="flex flex-row">
-          <CoverageProgress
-            amount={percentCovered}
-            color={determineProgressColor({
-              coverage: percentCovered,
-              lowerRange: indicationRange?.lowerRange || 0,
-              upperRange: indicationRange?.upperRange || 100,
-            })}
-          />
-          {typeof percentCovered !== 'number' && (
-            <span className="grow text-right font-semibold">-</span>
-          )}
-        </div>
-      ),
-      trend: (
-        <TableSparkline
-          measurements={measurements}
-          change={percentChange}
-          name={name}
-        />
-      ),
-      delete: true ? (
-        <div className="flex items-center justify-center">
-          <button
-            data-testid="delete-flag"
-            onClick={() => setModalInfo({ flagName: name, showModal: true })}
-            className="text-ds-gray-tertiary hover:text-ds-gray-senary"
-          >
-            <Icon size="md" name="trash" variant="outline" />
-          </button>
-        </div>
-      ) : null,
-    })
+  const data = tableData.flatMap((value) =>
+    value === null
+      ? []
+      : {
+          name: (
+            <A
+              to={{
+                pageName: 'coverage',
+                options: { queryParams: { flags: [value.name] } },
+              }}
+              variant="black"
+              isExternal={false}
+              hook={'flag-to-coverage-page'}
+            >
+              {value.name}
+            </A>
+          ),
+          coverage: (
+            <div className="flex flex-row">
+              <CoverageProgress
+                amount={value.percentCovered}
+                color={determineProgressColor({
+                  coverage: value.percentCovered,
+                  lowerRange: indicationRange?.lowerRange || 0,
+                  upperRange: indicationRange?.upperRange || 100,
+                })}
+              />
+              {typeof value.percentCovered !== 'number' && (
+                <span className="grow text-right font-semibold">-</span>
+              )}
+            </div>
+          ),
+          trend: (
+            <TableSparkline
+              measurements={value.measurements}
+              change={value.percentChange}
+              name={value.name}
+            />
+          ),
+          delete: isAdmin ? (
+            <div className="flex items-center justify-center">
+              <button
+                data-testid="delete-flag"
+                onClick={() =>
+                  setModalInfo({ flagName: value.name, showModal: true })
+                }
+                className="text-ds-gray-tertiary hover:text-ds-gray-senary"
+              >
+                <Icon size="md" name="trash" variant="outline" />
+              </button>
+            </div>
+          ) : null,
+        }
   )
   return data
 }
@@ -138,26 +131,27 @@ const Loader = () => (
   </div>
 )
 
-const FlagTable = memo(function Table({
+export const FlagTable = memo(function Table({
   tableData,
   isLoading,
   sorting,
   setSorting,
 }: {
-  tableData: any[] // TODO: update type when we convert useRepoFlags to TS
+  tableData: ReturnType<typeof createTableData>
   isLoading: boolean
   sorting?: SortingState
   setSorting?: OnChangeFn<SortingState> | undefined
 }) {
   const table = useReactTable({
-    columns,
     data: tableData,
+    columns,
     state: {
       sorting,
     },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    manualSorting: true,
   })
 
   return (
@@ -176,12 +170,7 @@ const FlagTable = memo(function Table({
                 <th
                   key={header.id}
                   data-sortable={header.column.getCanSort()}
-                  {...{
-                    onClick:
-                      header.column.id === 'name'
-                        ? header.column.getToggleSortingHandler()
-                        : undefined,
-                  }}
+                  onClick={header.column.getToggleSortingHandler()}
                 >
                   <div
                     className={cs('flex flex-row', {
@@ -192,14 +181,12 @@ const FlagTable = memo(function Table({
                       header.column.columnDef.header,
                       header.getContext()
                     )}
-                    {header.id === 'name' ? (
-                      <span
-                        className="text-ds-blue-darker group-hover/columnheader:opacity-100"
-                        data-sort-direction={header.column.getIsSorted()}
-                      >
-                        <Icon name="arrowUp" size="sm" />
-                      </span>
-                    ) : null}
+                    <span
+                      className="text-ds-blue-darker group-hover/columnheader:opacity-100"
+                      data-sort-direction={header.column.getIsSorted()}
+                    >
+                      <Icon name="arrowUp" size="sm" />
+                    </span>
                   </div>
                 </th>
               ))}
@@ -239,7 +226,7 @@ function LoadMoreTrigger({
   return (
     <span
       ref={intersectionRef}
-      data-testId={'Loading'}
+      data-testid={'Loading'}
       className="invisible relative top-[-65px] block leading-[0]"
     >
       Loading
@@ -275,7 +262,7 @@ function FlagsTable() {
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-  } = useRepoFlagsTable(sorting[0]?.desc)
+  } = useRepoFlagsTable(sorting[0]?.desc ?? true)
 
   useEffect(() => {
     if (inView && hasNextPage) {

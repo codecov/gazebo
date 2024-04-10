@@ -12,30 +12,20 @@ describe('ComponentsNotConfigured', () => {
   )
 
   describe('when rendered', () => {
-    it('shows message', () => {
+    it('renders the no data message', () => {
       render(<ComponentsNotConfigured />, { wrapper })
-      expect(
-        screen.getByText(/The Components feature is not yet configured/)
-      ).toBeInTheDocument()
+
+      const noDataMessage = screen.getByText('No data to display')
+      expect(noDataMessage).toBeInTheDocument()
     })
 
-    it('renders link', () => {
+    it('renders the configure components button', () => {
       render(<ComponentsNotConfigured />, { wrapper })
-      const componentssAnchor = screen.getByRole('link', {
-        name: /help your team today/i,
-      })
-      expect(componentssAnchor).toHaveAttribute(
-        'href',
-        'https://docs.codecov.com/docs/components'
-      )
-    })
 
-    it('renders empty state image', () => {
-      render(<ComponentsNotConfigured />, { wrapper })
-      const componentsMarketingImg = screen.getByRole('img', {
-        name: /Components feature not configured/,
+      const configureComponentsButton = screen.getByRole('link', {
+        name: 'Get started with components external-link.svg',
       })
-      expect(componentsMarketingImg).toBeInTheDocument()
+      expect(configureComponentsButton).toBeInTheDocument()
     })
   })
 })
