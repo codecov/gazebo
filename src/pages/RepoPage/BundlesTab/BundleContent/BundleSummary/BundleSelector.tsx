@@ -1,4 +1,4 @@
-import { forwardRef, useState } from 'react'
+import { forwardRef, useEffect, useMemo, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
 import { useBranchBundlesNames } from 'services/bundleAnalysis'
@@ -77,8 +77,15 @@ const BundleSelector = forwardRef(({}, ref) => {
 
   // Note: There's no real way to test this as the data is resolved during
   // suspense and the component is not rendered until the data is resolved.
-  const bundles = bundleData?.bundles ?? []
-  const [bundlesState, setBundlesState] = useState<Array<string>>([])
+  const bundles = useMemo(
+    () => bundleData?.bundles ?? [],
+    [bundleData?.bundles]
+  )
+  const [bundlesState, setBundlesState] = useState(bundles)
+
+  useEffect(() => {
+    setBundlesState(bundles)
+  }, [bundles, branch])
 
   return (
     <div className="md:w-[16rem]">
@@ -97,7 +104,7 @@ const BundleSelector = forwardRef(({}, ref) => {
           ariaName="bundle tab bundle selector"
           variant="gray"
           isLoading={bundlesIsLoading}
-          items={bundlesState?.length > 0 ? bundlesState : bundles}
+          items={bundlesState}
           value={selectedBundle ?? 'Select bundle'}
           onChange={(name: string) => {
             setSelectedBundle(name)
@@ -121,7 +128,7 @@ const BundleSelector = forwardRef(({}, ref) => {
                 )
               )
             } else {
-              setBundlesState([])
+              setBundlesState(bundles)
             }
           }}
           searchValue={search}
