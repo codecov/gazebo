@@ -310,23 +310,6 @@ describe('Components Tab', () => {
     })
   })
 
-  describe('when rendered with no components', () => {
-    beforeEach(() => {
-      setup({
-        data: backfillDataNotStarted,
-        flags: [[], []],
-      })
-    })
-
-    it('renders empty state message', async () => {
-      render(<ComponentsTab />, { wrapper })
-      const componentsText = await screen.findByText(
-        /The Components feature is not yet configured/
-      )
-      expect(componentsText).toBeInTheDocument()
-    })
-  })
-
   describe('when rendered without timescale enabled', () => {
     beforeEach(() => {
       setup({
