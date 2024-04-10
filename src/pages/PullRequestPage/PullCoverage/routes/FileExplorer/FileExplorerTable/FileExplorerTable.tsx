@@ -59,6 +59,7 @@ function FileExplorerTable() {
     isLoading,
     isSearching,
     hasComponentsSelected,
+    hasFlagsSelected,
     sortBy,
     setSortBy,
   } = useFileExplorerTableData()
@@ -95,7 +96,7 @@ function FileExplorerTable() {
     return (
       <MissingFileData
         isSearching={isSearching}
-        hasFlagsSelected={false}
+        hasFlagsSelected={hasFlagsSelected}
         hasComponentsSelected={hasComponentsSelected}
       />
     )

@@ -5,6 +5,8 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TierNames } from 'services/tier'
+
 import FileExplorer from './FileExplorer'
 
 const queryClient = new QueryClient({
@@ -155,6 +157,34 @@ const mockTreeData = {
   },
 }
 
+const mockRepoSettings = {
+  owner: {
+    repository: {
+      defaultBranch: 'main',
+      private: false,
+      uploadToken: 'token',
+      graphToken: 'token',
+      yaml: 'yaml',
+      bot: {
+        username: 'test',
+      },
+    },
+  },
+}
+
+const mockBackfillData = {
+  config: {
+    isTimescaleEnabled: true,
+  },
+  owner: {
+    repository: {
+      flagsMeasurementsActive: true,
+      flagsMeasurementsBackfilled: true,
+      flagsCount: 4,
+    },
+  },
+}
+
 const wrapper: (
   initalEntries?: string[]
 ) => React.FC<React.PropsWithChildren> =
@@ -246,6 +276,44 @@ describe('FileExplorer', () => {
       )
     )
 
+    // Mock so the flags selector will be populated
+    server.use(
+      graphql.query('PullFlagsSelect', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              repository: {
+                __typename: 'Repository',
+                pull: {
+                  compareWithBase: {
+                    __typename: 'Comparison',
+                    flagComparisons: [
+                      { name: 'flag-1' },
+                      { name: 'flag-2' },
+                      { name: 'flag-3' },
+                    ],
+                  },
+                },
+              },
+            },
+          })
+        )
+      ),
+      graphql.query('BackfillFlagMemberships', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockBackfillData))
+      }),
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({ owner: { plan: { tierName: TierNames.PRO } } })
+        )
+      }),
+      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoSettings))
+      })
+    )
+
     return { requestFilters, user }
   }
 
@@ -297,11 +365,19 @@ describe('FileExplorer', () => {
     })
 
     describe('when rendered', () => {
-      it('renders ComponentsSelector', async () => {
+      it('renders components selector', async () => {
         setup()
         render(<FileExplorer />, { wrapper: wrapper() })
 
         const selector = await screen.findByText('All components')
+        expect(selector).toBeInTheDocument()
+      })
+
+      it('renders flags selector', async () => {
+        setup()
+        render(<FileExplorer />, { wrapper: wrapper() })
+
+        const selector = await screen.findByText('All flags')
         expect(selector).toBeInTheDocument()
       })
     })
@@ -745,6 +821,34 @@ describe('FileExplorer', () => {
         await waitFor(() =>
           expect(requestFilters).toHaveBeenCalledWith({
             components: ['component-1'],
+            displayType: 'TREE',
+            ordering: { direction: 'ASC', parameter: 'NAME' },
+            searchValue: '',
+          })
+        )
+      })
+    })
+  })
+
+  describe('filtering by flag', () => {
+    describe('api variables are being set', () => {
+      it('sets the correct api variables', async () => {
+        const { requestFilters, user } = setup()
+
+        render(<FileExplorer />, { wrapper: wrapper() })
+
+        const components = await screen.findByText('All flags')
+        await user.click(components)
+
+        const component1 = await screen.findByText('flag-1')
+        await user.click(component1)
+
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
+
+        await waitFor(() =>
+          expect(requestFilters).toHaveBeenCalledWith({
+            flags: ['flag-1'],
             displayType: 'TREE',
             ordering: { direction: 'ASC', parameter: 'NAME' },
             searchValue: '',

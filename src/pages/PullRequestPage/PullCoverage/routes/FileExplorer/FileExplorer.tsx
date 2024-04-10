@@ -1,3 +1,4 @@
+import FlagMultiSelect from 'pages/RepoPage/CoverageTab/subroute/FileExplorer/FlagMultiSelect'
 import { useLocationParams } from 'services/navigation'
 import ContentsTableHeader from 'shared/ContentsTable/ContentsTableHeader'
 import DisplayTypeButton from 'shared/ContentsTable/DisplayTypeButton'
@@ -31,6 +32,7 @@ function FileExplorer() {
           <Breadcrumb paths={treePaths} />
         </div>
         <div className="flex gap-2">
+          <FlagMultiSelect />
           <ComponentsSelector />
           <SearchField
             // @ts-expect-error
