@@ -77,7 +77,7 @@ const RepositorySchema = z.object({
     }),
     edges: z.array(
       z.object({
-        node: FlagEdgeSchema,
+        node: FlagEdgeSchema.nullable(),
       })
     ),
   }),
@@ -247,7 +247,7 @@ export function useRepoFlags({
   })
 
   return {
-    data: data?.pages.map((page) => page?.flags).flat() ?? null,
+    data: data?.pages.map((page) => page?.flags).flat() ?? [],
     ...rest,
   }
 }

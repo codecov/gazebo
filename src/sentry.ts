@@ -89,6 +89,7 @@ export const setupSentry = ({
       buttonLabel: 'Give Feedback',
       submitButtonLabel: 'Send Feedback',
       nameLabel: 'Username',
+      isEmailRequired: true,
     })
     integrations.push(feedback)
   }
