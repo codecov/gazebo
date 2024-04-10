@@ -97,7 +97,7 @@ const BundleSelector = forwardRef(({}, ref) => {
           ariaName="bundle tab bundle selector"
           variant="gray"
           isLoading={bundlesIsLoading}
-          items={bundlesState}
+          items={bundlesState?.length > 0 ? bundlesState : bundles}
           value={selectedBundle ?? 'Select bundle'}
           onChange={(name: string) => {
             setSelectedBundle(name)
