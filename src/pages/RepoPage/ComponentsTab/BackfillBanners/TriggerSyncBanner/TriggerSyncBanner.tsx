@@ -19,7 +19,7 @@ function TriggerSyncBanner() {
     provider,
     owner,
     repo,
-    measurementType: MEASUREMENT_TYPE.FLAG_COVERAGE,
+    measurementType: MEASUREMENT_TYPE.COMPONENT_COVERAGE,
   })
 
   return (
