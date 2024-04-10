@@ -11,7 +11,6 @@ import Icon from 'ui/Icon'
 import { usePullHeadData } from './hooks'
 
 import { pullStateToColor } from '../constants'
-import PendoLink from '../PendoLink'
 
 function HeaderDefault() {
   const { provider, owner, repo, pullId } = useParams()
@@ -59,7 +58,6 @@ function HeaderDefault() {
           </span>
         </p>
       </div>
-      <PendoLink />
     </div>
   )
 }
