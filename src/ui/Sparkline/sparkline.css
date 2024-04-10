@@ -38,12 +38,3 @@
     0 100%
   );
 }
-
-.line[data-mode='empty']::before {
-  background: linear-gradient(
-    90deg,
-    transparent 50%,
-    theme('colors.ds.pink.DEFAULT') 50%
-  );
-  background-size: var(--dot-size) var(--dot-size);
-}
