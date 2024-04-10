@@ -13,7 +13,7 @@ import { PropsWithChildren, Suspense } from 'react'
 import { mockIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import FlagsTable from './FlagsTable'
+import FlagsTable, { FlagTable } from './FlagsTable'
 
 const mockRepoConfig = {
   owner: {
@@ -25,11 +25,11 @@ const mockRepoConfig = {
   },
 }
 
-const mockGetRepo = {
+const mockGetRepo = ({ isAdmin = true }) => ({
   owner: {
     isCurrentUserPartOfOrg: true,
     orgUploadToken: 'token',
-    isAdmin: true,
+    isAdmin: isAdmin,
     isCurrentUserActivated: null,
     repository: {
       __typename: 'Repository',
@@ -42,9 +42,12 @@ const mockGetRepo = {
       active: true,
     },
   },
-}
+})
 
-const mockFlagMeasurements = (after: boolean) => {
+const mockFlagMeasurements = ({
+  after = false,
+  nullFlag: includeNullFlag = false,
+}) => {
   return {
     owner: {
       repository: {
@@ -79,12 +82,14 @@ const mockFlagMeasurements = (after: boolean) => {
                   },
                 },
                 {
-                  node: {
-                    name: 'testtest',
-                    percentCovered: 1.0,
-                    percentChange: 1.0,
-                    measurements: [{ avg: 51.78 }, { avg: 93.356 }],
-                  },
+                  node: includeNullFlag
+                    ? null
+                    : {
+                        name: 'testtest',
+                        percentCovered: 1.0,
+                        percentChange: 1.0,
+                        measurements: [{ avg: 51.78 }, { avg: 93.356 }],
+                      },
                 },
               ],
           pageInfo: {
@@ -175,25 +180,41 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 
+interface SetupArgs {
+  noData?: boolean
+  includeNullFlag?: boolean
+  noReportsUploaded?: boolean
+  isAdmin?: boolean
+}
+
 describe('FlagsTable', () => {
   function setup({
     noData = false,
+    includeNullFlag = false,
     noReportsUploaded = false,
-  }: {
-    noData?: boolean
-    noReportsUploaded?: boolean
-  }) {
+    isAdmin = true,
+  }: SetupArgs) {
     const user = userEvent.setup()
     const fetchNextPage = jest.fn()
 
     server.use(
       graphql.query('FlagMeasurements', (req, res, ctx) => {
         if (req?.variables?.after) {
-          return res(ctx.status(200), ctx.data(mockFlagMeasurements(true)))
+          return res(
+            ctx.status(200),
+            ctx.data(mockFlagMeasurements({ after: true }))
+          )
         }
 
         if (noData) {
           return res(ctx.status(200), ctx.data(mockEmptyFlagMeasurements))
+        }
+
+        if (includeNullFlag) {
+          return res(
+            ctx.status(200),
+            ctx.data(mockFlagMeasurements({ nullFlag: true }))
+          )
         }
 
         if (noReportsUploaded) {
@@ -203,10 +224,10 @@ describe('FlagsTable', () => {
           )
         }
 
-        return res(ctx.status(200), ctx.data(mockFlagMeasurements(false)))
+        return res(ctx.status(200), ctx.data(mockFlagMeasurements({})))
       }),
       graphql.query('GetRepo', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockGetRepo))
+        return res(ctx.status(200), ctx.data(mockGetRepo({ isAdmin })))
       }),
       graphql.query('RepoConfig', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockRepoConfig))
@@ -218,7 +239,7 @@ describe('FlagsTable', () => {
 
   describe('when rendered', () => {
     beforeEach(() => {
-      setup({})
+      setup({ includeNullFlag: true })
     })
 
     it('renders table headers', async () => {
@@ -232,6 +253,8 @@ describe('FlagsTable', () => {
 
       const trend = await screen.findByText('Trend')
       expect(trend).toBeInTheDocument()
+
+      await waitFor(() => screen.findByRole('link', { name: 'flagA' }))
     })
 
     it('renders repo flags', async () => {
@@ -250,6 +273,15 @@ describe('FlagsTable', () => {
         'href',
         '/gh/codecov/gazebo?flags%5B0%5D=flagB'
       )
+    })
+
+    it('does not render null flags', async () => {
+      render(<FlagsTable />, { wrapper: wrapper() })
+
+      await waitFor(() => screen.findByRole('link', { name: 'flagA' }))
+
+      const nullFlag = screen.queryByRole('link', { name: 'testtest' })
+      expect(nullFlag).not.toBeInTheDocument()
     })
 
     it('renders flags coverage', async () => {
@@ -298,6 +330,20 @@ describe('FlagsTable', () => {
 
       user.click(flagA)
       expect(testLocation.pathname).toBe('/gh/codecov/gazebo/flags')
+    })
+  })
+
+  describe('when user is not an admin', () => {
+    it('does not render delete button', async () => {
+      setup({ isAdmin: false })
+      render(<FlagsTable />, { wrapper: wrapper() })
+
+      await waitFor(() => screen.findByRole('link', { name: 'flagA' }))
+
+      const trashIconButtons = screen.queryAllByRole('button', {
+        name: /trash/,
+      })
+      expect(trashIconButtons).toHaveLength(0)
     })
   })
 
@@ -403,6 +449,24 @@ describe('FlagsTable', () => {
       render(<FlagsTable />, { wrapper: wrapper() })
       const dash = await screen.findByText('-')
       expect(dash).toBeInTheDocument()
+    })
+  })
+
+  describe('when loading data', () => {
+    it('renders loader', async () => {
+      setup({})
+      render(
+        <FlagTable
+          tableData={[]}
+          isLoading={true}
+          sorting={[]}
+          setSorting={() => {}}
+        />,
+        { wrapper: wrapper() }
+      )
+
+      const loader = await screen.findByTestId('spinner')
+      expect(loader).toBeInTheDocument()
     })
   })
 })

@@ -1,21 +1,26 @@
 import { format, sub } from 'date-fns'
-import { useCallback, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { SortingDirection } from 'old_ui/Table/constants'
 import {
   AFTER_DATE_FORMAT_OPTIONS,
   MEASUREMENT_TIME_INTERVALS,
+  TIME_OPTION_KEY,
+  TIME_OPTION_VALUES,
 } from 'pages/RepoPage/shared/constants'
 import { useLocationParams } from 'services/navigation'
 import { useRepo } from 'services/repo'
 import { useRepoFlags } from 'services/repo/useRepoFlags'
 
-const getSortByDirection = (isDesc) =>
-  isDesc ? SortingDirection.DESC : SortingDirection.ASC
+const getSortByDirection = (isDesc: boolean) => (isDesc ? 'DESC' : 'ASC')
 
-const createMeasurementVariables = (historicalTrend, oldestCommitAt) => {
-  const isAllTime = !Boolean(historicalTrend) || historicalTrend === 'ALL_TIME'
+const createMeasurementVariables = (
+  historicalTrend: TIME_OPTION_KEY,
+  oldestCommitAt: string = format(
+    sub(new Date(), { ...AFTER_DATE_FORMAT_OPTIONS.LAST_6_MONTHS }),
+    'yyyy-MM-dd'
+  )
+) => {
+  const isAllTime = historicalTrend === TIME_OPTION_VALUES.ALL_TIME
   const selectedDate = isAllTime
     ? new Date(oldestCommitAt)
     : sub(new Date(), { ...AFTER_DATE_FORMAT_OPTIONS[historicalTrend] })
@@ -27,48 +32,48 @@ const createMeasurementVariables = (historicalTrend, oldestCommitAt) => {
   return { afterDate, interval }
 }
 
-function useRepoFlagsTable(isDesc) {
+type URLParams = {
+  provider: string
+  owner: string
+  repo: string
+}
+
+function useRepoFlagsTable(isDesc: boolean) {
   const { params } = useLocationParams({
     search: '',
-    historicalTrend: '',
+    historicalTrend: TIME_OPTION_VALUES.LAST_3_MONTHS,
     flags: [],
   })
-  const { provider, owner, repo } = useParams()
+  const { provider, owner, repo } = useParams<URLParams>()
   const { data: repoData } = useRepo({
     provider,
     owner,
     repo,
   })
   const isAdmin = repoData?.isAdmin
+  // @ts-expect-errors, useLocation params needs to be updated to have full types
   const isSearching = Boolean(params?.search)
-  const [sortBy, setSortBy] = useState(SortingDirection.ASC)
   const { afterDate, interval } = createMeasurementVariables(
-    params?.historicalTrend,
-    repoData?.repository?.oldestCommitAt
+    // @ts-expect-errors, useLocation params needs to be updated to have full types
+    params?.historicalTrend ?? TIME_OPTION_VALUES.LAST_3_MONTHS,
+    repoData?.repository?.oldestCommitAt ?? undefined
   )
 
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useRepoFlags({
+      // @ts-expect-errors, useLocation params needs to be updated to have full types
       filters: { term: params?.search, flagsNames: params?.flags },
-      orderingDirection: sortBy,
+      orderingDirection: getSortByDirection(isDesc),
       beforeDate: format(new Date(), 'yyyy-MM-dd'),
       interval,
       afterDate,
       suspense: false,
     })
 
-  const handleSort = useCallback(() => {
-    const tableSortByDirection = getSortByDirection(isDesc)
-    if (sortBy !== tableSortByDirection) {
-      setSortBy(tableSortByDirection)
-    }
-  }, [isDesc, sortBy])
-
   return {
     data,
     isAdmin,
     isLoading,
-    handleSort,
     isSearching,
     hasNextPage,
     fetchNextPage,

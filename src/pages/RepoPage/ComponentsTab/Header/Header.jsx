@@ -7,11 +7,11 @@ import {
 } from 'pages/RepoPage/shared/constants'
 import { useLocationParams } from 'services/navigation'
 import { useRepoBackfilled, useRepoFlagsSelect } from 'services/repo'
-import A from 'ui/A'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'
 import Select from 'ui/Select'
 
+import BranchSelector from './BranchSelector'
 
 const Header = ({ controlsDisabled, children }) => {
   const [selectedComponents, setSelectedComponents] = useState([])
@@ -46,6 +46,7 @@ const Header = ({ controlsDisabled, children }) => {
   return (
     <div className="flex flex-col justify-end divide-y divide-solid divide-ds-gray-secondary">
       <div className="grid w-2/3 divide-y divide-solid divide-ds-gray-secondary sm:w-full sm:grid-cols-2 sm:divide-x sm:divide-y-0 md:grid-cols-4">
+        <BranchSelector />
         <div className="mr-4 flex flex-col justify-between gap-2 p-4 sm:border-l sm:border-ds-gray-secondary sm:py-0 md:border-l-0">
           <h3 className="text-sm font-semibold text-ds-gray-octonary">
             Configured components
@@ -102,11 +103,6 @@ const Header = ({ controlsDisabled, children }) => {
             )}
           />
         </div>
-        <p className="p-4 text-xs md:py-0">
-          Please drop us a comment{' '}
-          <A to={{ pageName: 'componentsFeedback' }}>here</A> and let us know
-          what you think of our new Components page.
-        </p>
       </div>
       {children}
     </div>
