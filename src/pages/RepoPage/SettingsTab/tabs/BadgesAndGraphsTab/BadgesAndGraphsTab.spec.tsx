@@ -2,9 +2,15 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import { PropsWithChildren } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useBranches } from 'services/branches'
+
 import BadgesAndGraphsTab from './BadgesAndGraphsTab'
+
+jest.mock('services/branches')
+const mockedUseBranches = useBranches as jest.Mock
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -12,7 +18,7 @@ const queryClient = new QueryClient({
 
 const server = setupServer()
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings']}>
     <QueryClientProvider client={queryClient}>
       <Route path="/:provider/:owner/:repo/settings">{children}</Route>
@@ -21,6 +27,7 @@ const wrapper = ({ children }) => (
 )
 
 beforeAll(() => {
+  jest.clearAllMocks()
   server.listen()
   console.error = () => {}
 })
@@ -31,7 +38,7 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('BadgesAndGraphsTab', () => {
-  function setup({ graphToken }) {
+  function setup({ graphToken }: { graphToken: string | null }) {
     server.use(
       graphql.query('GetRepoSettings', (req, res, ctx) => {
         return res(
@@ -46,6 +53,14 @@ describe('BadgesAndGraphsTab', () => {
         )
       })
     )
+    mockedUseBranches.mockReturnValue({
+      data: {
+        branches: [],
+      },
+      isFetching: false,
+      hasNextPage: false,
+      fetchNextPage: () => {},
+    })
   }
 
   describe('when rendered with graphToken', () => {
