@@ -44,8 +44,9 @@ const mockBackfillComplete = {
   },
   owner: {
     repository: {
-      flagsMeasurementsActive: true,
-      flagsMeasurementsBackfilled: true,
+      __typename: 'Repository',
+      componentsMeasurementsActive: true,
+      componentsMeasurementsBackfilled: true,
     },
   },
 }
@@ -56,16 +57,17 @@ const mockBackfillInProgress = {
   },
   owner: {
     repository: {
-      flagsMeasurementsActive: true,
-      flagsMeasurementsBackfilled: false,
+      __typename: 'Repository',
+      componentsMeasurementsActive: true,
+      componentsMeasurementsBackfilled: false,
     },
   },
 }
 
-describe('useRepoBackfillingStatus', () => {
+describe('BackfillComponentMemberships', () => {
   function setup(data = mockBackfillComplete) {
     server.use(
-      graphql.query('BackfillFlagMemberships', (req, res, ctx) =>
+      graphql.query('BackfillComponentMemberships', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(data))
       )
     )
