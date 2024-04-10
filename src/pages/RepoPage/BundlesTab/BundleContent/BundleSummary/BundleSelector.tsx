@@ -78,7 +78,7 @@ const BundleSelector = forwardRef(({}, ref) => {
   // Note: There's no real way to test this as the data is resolved during
   // suspense and the component is not rendered until the data is resolved.
   const bundles = bundleData?.bundles ?? []
-  const [bundlesState, setBundlesState] = useState<Array<string>>(() => bundles)
+  const [bundlesState, setBundlesState] = useState(bundles)
 
   return (
     <div className="md:w-[16rem]">
@@ -121,7 +121,7 @@ const BundleSelector = forwardRef(({}, ref) => {
                 )
               )
             } else {
-              setBundlesState(bundles)
+              setBundlesState([])
             }
           }}
           searchValue={search}
