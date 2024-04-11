@@ -6,6 +6,7 @@ import Api from 'shared/api'
 
 // currently set the polling interval to 2000 ms
 export const POLLING_INTERVAL = 2000
+export const PAGE_SIZE = 20
 
 function fetchIsSyncing({ provider, signal }) {
   const query = `
@@ -76,7 +77,7 @@ export function useResyncUser() {
       const numRepos =
         data?.length > 0 ? data[data.length - 1]?.pages?.repos?.length : 0
 
-      if (numRepos < 20) {
+      if (numRepos < PAGE_SIZE) {
         queryClient.invalidateQueries({
           queryKey: ['repos'],
         })
