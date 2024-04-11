@@ -34,19 +34,21 @@ const dataReturned = {
   owner: {
     repository: {
       __typename: 'Repository',
-      components: [
+      componentsYaml: [
         {
           name: 'foo',
+          id: '1',
         },
         {
           name: 'bar',
+          id: '2',
         },
       ],
     },
   },
 }
 
-describe('RepoComponentsSelector', () => {
+describe('RepoComponentsYamlSelector', () => {
   function setup({
     isSchemaInvalid = false,
     isOwnerActivationError = false,
@@ -101,9 +103,7 @@ describe('RepoComponentsSelector', () => {
         const { result } = renderHook(
           () =>
             useRepoComponentsSelect({
-              filters: {
-                components: ['foo'],
-              },
+              termId: 'foo',
             }),
           {
             wrapper,
@@ -115,7 +115,7 @@ describe('RepoComponentsSelector', () => {
 
         await waitFor(() =>
           expect(result.current.data).toEqual({
-            components: dataReturned.owner.repository.components,
+            components: dataReturned.owner.repository.componentsYaml,
           })
         )
       })

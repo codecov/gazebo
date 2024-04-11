@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 
-import { MEASUREMENT_TYPE, useActivateFlagMeasurements } from 'services/repo'
+import { MEASUREMENT_TYPE, useActivateMeasurements } from 'services/repo'
 import Banner from 'ui/Banner'
 import BannerContent from 'ui/Banner/BannerContent'
 import BannerHeading from 'ui/Banner/BannerHeading'
@@ -15,11 +15,11 @@ type URLParams = {
 
 function TriggerSyncBanner() {
   const { provider, owner, repo } = useParams<URLParams>()
-  const { mutate } = useActivateFlagMeasurements({
+  const { mutate } = useActivateMeasurements({
     provider,
     owner,
     repo,
-    measurementType: MEASUREMENT_TYPE.FLAG_COVERAGE,
+    measurementType: MEASUREMENT_TYPE.COMPONENT_COVERAGE,
   })
 
   return (

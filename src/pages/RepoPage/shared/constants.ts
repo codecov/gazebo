@@ -27,6 +27,8 @@ export const TIME_OPTION_VALUES = {
   LAST_7_DAYS: 'LAST_7_DAYS',
 } as const
 
+export type TIME_OPTION_KEY = keyof typeof TIME_OPTION_VALUES
+
 export const TimeOptions = [
   { label: 'All time', value: TIME_OPTION_VALUES.ALL_TIME },
   { label: 'Last 6 months', value: TIME_OPTION_VALUES.LAST_6_MONTHS },
