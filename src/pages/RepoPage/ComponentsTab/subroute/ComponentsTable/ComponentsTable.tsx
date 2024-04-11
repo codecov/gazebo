@@ -30,7 +30,7 @@ interface ComponentsTableHelper {
   name: React.ReactNode
   coverage: React.ReactNode
   trend: React.ReactNode
-  delete: React.ReactNode
+  delete: React.ReactNode | null
 }
 
 const columnHelper = createColumnHelper<ComponentsTableHelper>()
