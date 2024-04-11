@@ -216,6 +216,7 @@ describe('TeamPlanController', () => {
     describe('when the user has a team plan monthly', () => {
       const props = {
         setFormValue: jest.fn(),
+        setSelectedPlan: jest.fn(),
         register: jest.fn(),
         newPlan: Plans.USERS_TEAMM,
         seats: 10,
@@ -274,6 +275,7 @@ describe('TeamPlanController', () => {
     describe('when seats are greater than 10', () => {
       const props = {
         setFormValue: jest.fn(),
+        setSelectedPlan: jest.fn(),
         register: jest.fn(),
         newPlan: Plans.USERS_TEAMM,
         seats: 12,
@@ -298,6 +300,7 @@ describe('TeamPlanController', () => {
     describe('when the user has a team plan yearly', () => {
       const props = {
         setFormValue: jest.fn(),
+        setSelectedPlan: jest.fn(),
         register: jest.fn(),
         newPlan: Plans.USERS_TEAMY,
         seats: 5,

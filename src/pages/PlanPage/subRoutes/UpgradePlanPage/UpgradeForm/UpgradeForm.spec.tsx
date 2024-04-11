@@ -6,7 +6,7 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TrialStatuses } from 'services/account'
+import { IndividualPlan, TrialStatuses } from 'services/account'
 import { accountDetailsParsedObj } from 'services/account/mocks'
 import { useAddNotification } from 'services/toastNotification'
 import { useFlags } from 'shared/featureFlags'
@@ -18,6 +18,9 @@ jest.mock('services/toastNotification')
 jest.mock('@stripe/react-stripe-js')
 jest.mock('shared/featureFlags')
 jest.mock('@sentry/react')
+
+const mockedUseAddNotification = useAddNotification as jest.Mock
+const mockedUseFlags = useFlags as jest.Mock
 
 const basicPlan = {
   marketingName: 'Basic',
@@ -223,6 +226,8 @@ const queryClient = new QueryClient({
   },
   logger: {
     error: () => {},
+    warn: () => {},
+    log: () => {},
   },
 })
 const server = setupServer()
@@ -234,9 +239,11 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 
-let testLocation
+let testLocation: any
 
-const wrapper =
+const wrapper: (
+  initialEntries?: string[]
+) => React.FC<React.PropsWithChildren> =
   (initialEntries = ['/gh/codecov']) =>
   ({ children }) =>
     (
@@ -256,34 +263,34 @@ const wrapper =
       </QueryClientProvider>
     )
 
+type SetupArgs = {
+  planValue?: (typeof Plans)[keyof typeof Plans]
+  successfulPatchRequest?: boolean
+  errorDetails?: string
+  trialStatus?: keyof typeof TrialStatuses
+  hasTeamPlans?: boolean
+  multipleTiers?: boolean
+  hasSentryPlans?: boolean
+  monthlyPlan?: boolean
+}
+
 describe('UpgradeForm', () => {
-  function setup(
-    {
-      planValue = Plans.USERS_BASIC,
-      successfulPatchRequest = true,
-      errorDetails = undefined,
-      trialStatus = TrialStatuses.NOT_STARTED,
-      multipleTiers = false,
-      hasTeamPlans = false,
-      hasSentryPlans = false,
-      monthlyPlan = true,
-    } = {
-      planValue: Plans.USERS_BASIC,
-      successfulPatchRequest: true,
-      errorDetails: undefined,
-      trialStatus: TrialStatuses.NOT_STARTED,
-      hasTeamPlans: false,
-      multipleTiers: false,
-      hasSentryPlans: false,
-      monthlyPlan: true,
-    }
-  ) {
+  function setup({
+    planValue = Plans.USERS_BASIC,
+    successfulPatchRequest = true,
+    errorDetails = undefined,
+    trialStatus = TrialStatuses.NOT_STARTED,
+    multipleTiers = false,
+    hasTeamPlans = false,
+    hasSentryPlans = false,
+    monthlyPlan = true,
+  }: SetupArgs) {
     const addNotification = jest.fn()
     const user = userEvent.setup()
     const patchRequest = jest.fn()
 
-    useAddNotification.mockReturnValue(addNotification)
-    useFlags.mockReturnValue({ multipleTiers })
+    mockedUseAddNotification.mockReturnValue(addNotification)
+    mockedUseFlags.mockReturnValue({ multipleTiers })
 
     server.use(
       rest.get(`/internal/gh/codecov/account-details/`, (req, res, ctx) => {
@@ -359,7 +366,7 @@ describe('UpgradeForm', () => {
     describe('when the user has a basic plan', () => {
       const props = {
         setSelectedPlan: jest.fn(),
-        selectedPlan: { value: Plans.USERS_PR_INAPPY },
+        selectedPlan: { value: Plans.USERS_PR_INAPPY } as IndividualPlan,
       }
       it('renders the organization and owner titles', async () => {
         setup({ planValue: Plans.USERS_BASIC })
@@ -687,7 +694,7 @@ describe('UpgradeForm', () => {
     describe('when the user has a pro plan monthly', () => {
       const props = {
         setSelectedPlan: jest.fn(),
-        selectedPlan: { value: Plans.USERS_PR_INAPPY },
+        selectedPlan: { value: Plans.USERS_PR_INAPPY } as IndividualPlan,
       }
       it('renders the organization and owner titles', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
@@ -1010,7 +1017,7 @@ describe('UpgradeForm', () => {
     describe('when the user has a pro plan yearly', () => {
       const props = {
         setSelectedPlan: jest.fn(),
-        selectedPlan: { value: Plans.USERS_PR_INAPPY },
+        selectedPlan: { value: Plans.USERS_PR_INAPPY } as IndividualPlan,
       }
       it('renders the organization and owner titles', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPY })
@@ -1357,7 +1364,7 @@ describe('UpgradeForm', () => {
     describe('when the user has a sentry plan yearly', () => {
       const props = {
         setSelectedPlan: jest.fn(),
-        selectedPlan: { value: Plans.USERS_SENTRYY },
+        selectedPlan: { value: Plans.USERS_SENTRYY } as IndividualPlan,
       }
       it('renders the organization and owner titles', async () => {
         setup({
@@ -1675,7 +1682,7 @@ describe('UpgradeForm', () => {
     describe('when the user has a team plan yearly', () => {
       const props = {
         setSelectedPlan: jest.fn(),
-        selectedPlan: { value: Plans.USERS_TEAMY },
+        selectedPlan: { value: Plans.USERS_TEAMY } as IndividualPlan,
       }
       it('renders the organization and owner titles', async () => {
         setup({
@@ -1811,7 +1818,7 @@ describe('UpgradeForm', () => {
         expect(update).toBeDisabled()
 
         const error = screen.getByText(
-          /Team plan is only available for 10 or less users/
+          /Team plan is only available for 10 seats or fewer./
         )
         expect(error).toBeInTheDocument()
       })
@@ -2037,7 +2044,7 @@ describe('UpgradeForm', () => {
     describe('user is currently on a trial', () => {
       const props = {
         setSelectedPlan: jest.fn(),
-        selectedPlan: { value: Plans.USERS_PR_INAPPY },
+        selectedPlan: { value: Plans.USERS_PR_INAPPY } as IndividualPlan,
       }
       describe('user chooses less than the number of active users', () => {
         it('does not display an error', async () => {

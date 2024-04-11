@@ -1,4 +1,5 @@
 import { Fragment } from 'react'
+import { UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
 import { useAccountDetails, useAvailablePlans } from 'services/account'
@@ -17,11 +18,12 @@ import {
 import Icon from 'ui/Icon'
 
 import { NewPlanType } from '../../../constants'
+import { UpgradeFormFields } from '../../../UpgradeForm'
 
 interface PriceCalloutProps {
   newPlan: NewPlanType
   seats: number
-  setFormValue: (x: string, y: string) => void
+  setFormValue: UseFormSetValue<UpgradeFormFields>
 }
 
 const PriceCallout: React.FC<PriceCalloutProps> = ({

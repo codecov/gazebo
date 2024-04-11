@@ -1,16 +1,5 @@
 import { UseFormRegister, UseFormSetValue } from 'react-hook-form'
-import { useParams } from 'react-router-dom'
 
-import {
-  IndividualPlan,
-  useAccountDetails,
-  useAvailablePlans,
-} from 'services/account'
-import {
-  canApplySentryUpgrade,
-  findProPlans,
-  findSentryPlans,
-} from 'shared/utils/billing'
 import {
   MIN_NB_SEATS_PRO,
   TEAM_PLAN_MAX_ACTIVE_USERS,
@@ -23,6 +12,9 @@ import PriceCallout from './PriceCallout'
 import UserCount from './UserCount'
 
 import { NewPlanType } from '../../constants'
+import { useParams } from 'react-router-dom'
+import { IndividualPlan, useAccountDetails, useAvailablePlans } from 'services/account'
+import { canApplySentryUpgrade, findProPlans, findSentryPlans } from 'shared/utils/billing'
 import { UpgradeFormFields } from '../../UpgradeForm'
 
 interface Errors {
@@ -37,11 +29,7 @@ interface ErrorBannerProps {
   setSelectedPlan: (plan: IndividualPlan) => void
 }
 
-function ErrorBanner({
-  errors,
-  setFormValue,
-  setSelectedPlan,
-}: ErrorBannerProps) {
+function ErrorBanner({ errors, setFormValue, setSelectedPlan }: ErrorBannerProps) {
   const { provider, owner } = useParams<{ provider: string; owner: string }>()
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { data: accountDetails } = useAccountDetails({ provider, owner })
@@ -64,9 +52,8 @@ function ErrorBanner({
           className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
           onClick={() => {
             setSelectedPlan(yearlyProPlan)
-            setFormValue('newPlan', yearlyProPlan.value, {
-              shouldValidate: true,
-            })
+            setFormValue('newPlan', yearlyProPlan.value, { shouldValidate: true })
+            setFormValue('seats', 11, { shouldValidate: true })
           }}
         >
           Upgrade to Pro
@@ -125,11 +112,7 @@ const PlanController: React.FC<PlanControllerProps> = ({
         newPlan={newPlan}
         setFormValue={setFormValue}
       />
-      <ErrorBanner
-        errors={errors}
-        setFormValue={setFormValue}
-        setSelectedPlan={setSelectedPlan}
-      />
+      <ErrorBanner errors={errors} setFormValue={setFormValue} setSelectedPlan={setSelectedPlan}/>
     </>
   )
 }
