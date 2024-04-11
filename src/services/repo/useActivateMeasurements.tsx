@@ -94,6 +94,7 @@ export function useActivateMeasurements({
 
       queryClient.invalidateQueries([
         'BackfillFlagMemberships',
+        'BackfillComponentMemberships',
         provider,
         owner,
         repo,
