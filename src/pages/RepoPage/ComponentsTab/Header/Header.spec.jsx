@@ -13,6 +13,7 @@ import Header from './Header'
 
 jest.mock('react-use/lib/useIntersection')
 jest.mock('services/navigation/useLocationParams')
+jest.mock('./BranchSelector', () => () => 'BranchSelector')
 
 const server = setupServer()
 const queryClient = new QueryClient()
@@ -167,6 +168,17 @@ describe('Header', () => {
       })
     })
 
+    describe('BranchSelector', () => {
+      beforeEach(() => setup())
+
+      it('Renders the BranchSelector', () => {
+        render(<Header />, { wrapper })
+
+        const branchSelector = screen.getByText('BranchSelector')
+        expect(branchSelector).toBeInTheDocument()
+      })
+    })
+
     describe('Select', () => {
       beforeEach(() => setup())
 
@@ -198,28 +210,6 @@ describe('Header', () => {
           historicalTrend: 'LAST_7_DAYS',
         })
       })
-    })
-  })
-
-  describe('Components feedback link', () => {
-    beforeEach(() => setup())
-
-    it('Renders the right copy', () => {
-      render(<Header />, { wrapper })
-
-      expect(screen.getByText(/Please drop us a comment/)).toBeInTheDocument()
-    })
-
-    it('Renders the right link', () => {
-      render(<Header />, { wrapper })
-
-      const link = screen.getByRole('link', {
-        name: /here/i,
-      })
-      expect(link).toBeInTheDocument()
-      expect(link.href).toBe(
-        'https://github.com/codecov/Codecov-user-feedback/issues/27'
-      )
     })
   })
 
