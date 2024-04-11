@@ -74,10 +74,11 @@ export function useResyncUser() {
       const numRepos = cache.findAll(['repos'])[0]?.state?.data?.pages[0]?.repos
         ?.length
 
-      if (numRepos < 20)
+      if (numRepos < 20) {
         queryClient.invalidateQueries({
           queryKey: ['repos'],
         })
+      }
 
       return fetchIsSyncing({ provider, signal })
     },
