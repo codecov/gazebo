@@ -74,68 +74,46 @@ const mockGetRepo = ({
   },
 })
 
-const mockFlagMeasurements = (after) => {
-  return {
-    owner: {
-      repository: {
-        __typename: 'Repository',
-        flags: {
-          edges: after
-            ? []
-            : [
-                {
-                  node: {
-                    name: 'flag1',
-                    percentCovered: 93.26,
-                    percentChange: 1.65,
-                    measurements: [],
-                  },
-                },
-                {
-                  node: {
-                    name: 'flag2',
-                    percentCovered: 91.74,
-                    percentChange: 2.65,
-                    measurements: [],
-                  },
-                },
-              ],
-          pageInfo: {
-            hasNextPage: after ? false : true,
-            endCursor: after
-              ? 'aa'
-              : 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
-          },
-        },
-      },
-    },
-  }
-}
-
-const mockEmptyFlagMeasurements = {
+const mockedComponentMeasurements = {
   owner: {
     repository: {
       __typename: 'Repository',
-      flags: {
-        edges: false ? [] : [],
-        pageInfo: {
-          hasNextPage: false,
-          endCursor: true ? 'aa' : 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
+      components: [
+        {
+          name: 'component1',
+          percentCovered: 93.26,
+          percentChange: 1.65,
+          measurements: [],
         },
-      },
+        {
+          name: 'component2',
+          percentCovered: 91.74,
+          percentChange: 2.65,
+          measurements: [],
+        },
+      ],
+    },
+  },
+}
+
+const mockEmptyComponentMeasurements = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      components: [],
     },
   },
 }
 
 const componentsData = [
   {
-    name: 'flag1',
+    name: 'component1',
     percentCovered: 93.26,
     percentChange: 1.65,
     measurements: [],
   },
   {
-    name: 'flag2',
+    name: 'component2',
     percentCovered: 91.74,
     percentChange: 2.65,
     measurements: [],
@@ -146,7 +124,7 @@ describe('useRepoComponentsTable', () => {
   function setup({
     repoData = mockGetRepo,
     noData = false,
-    useParamsValue = { search: '', historicalTrend: '', flags: [] },
+    useParamsValue = { search: '', historicalTrend: '', components: [] },
   }) {
     useLocationParams.mockReturnValue({
       params: useParamsValue,
@@ -155,15 +133,12 @@ describe('useRepoComponentsTable', () => {
     const requestFilters = jest.fn()
 
     server.use(
-      graphql.query('FlagMeasurements', (req, res, ctx) => {
+      graphql.query('ComponentMeasurements', (req, res, ctx) => {
         requestFilters(req.variables)
-        if (req?.variables?.after) {
-          return res(ctx.status(200), ctx.data(mockFlagMeasurements(true)))
-        }
         if (noData) {
-          return res(ctx.status(200), ctx.data(mockEmptyFlagMeasurements))
+          return res(ctx.status(200), ctx.data(mockEmptyComponentMeasurements))
         }
-        return res(ctx.status(200), ctx.data(mockFlagMeasurements(false)))
+        return res(ctx.status(200), ctx.data(mockedComponentMeasurements))
       }),
       graphql.query('GetRepo', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(repoData({})))
@@ -179,11 +154,6 @@ describe('useRepoComponentsTable', () => {
       wrapper: wrapper(),
     })
     await waitFor(() => expect(result.current.data).toEqual(componentsData))
-    await waitFor(() => expect(result.current.isLoading).toEqual(false))
-    await waitFor(() => expect(result.current.hasNextPage).toEqual(true))
-    await waitFor(() =>
-      expect(result.current.isFetchingNextPage).toEqual(false)
-    )
   })
 
   describe('when there is no data', () => {
@@ -201,7 +171,7 @@ describe('useRepoComponentsTable', () => {
       const { requestFilters } = setup({
         repoData: mockGetRepo,
         noData: true,
-        useParamsValue: { search: 'flag1' },
+        useParamsValue: { components: ['component1'] },
       })
 
       const { result } = renderHook(() => useRepoComponentsTable(true), {
@@ -211,9 +181,11 @@ describe('useRepoComponentsTable', () => {
       await waitFor(() => expect(result.current.isSearching).toEqual(true))
       await waitFor(() =>
         expect(requestFilters).toHaveBeenCalledWith({
-          afterDate: '2022-10-10',
-          beforeDate: format(new Date(), 'yyyy-MM-dd'),
-          filters: { term: 'flag1' },
+          after: '2022-10-10',
+          before: format(new Date(), 'yyyy-MM-dd'),
+          filters: {
+            components: ['component1'],
+          },
           interval: 'INTERVAL_30_DAY',
           orderingDirection: 'ASC',
           name: 'codecov',
@@ -236,9 +208,9 @@ describe('useRepoComponentsTable', () => {
 
         await waitFor(() =>
           expect(requestFilters).toHaveBeenCalledWith({
-            afterDate: '2022-10-10',
-            beforeDate: format(new Date(), 'yyyy-MM-dd'),
-            filters: { term: '', flagsNames: [] },
+            after: '2022-10-10',
+            before: format(new Date(), 'yyyy-MM-dd'),
+            filters: { components: [] },
             interval: 'INTERVAL_30_DAY',
             orderingDirection: 'ASC',
             name: 'codecov',
@@ -258,12 +230,12 @@ describe('useRepoComponentsTable', () => {
           wrapper: wrapper(),
         })
 
-        const afterDate = format(subMonths(new Date(), 6), 'yyyy-MM-dd')
+        const after = format(subMonths(new Date(), 6), 'yyyy-MM-dd')
         await waitFor(() =>
           expect(requestFilters).toHaveBeenCalledWith({
-            afterDate,
-            beforeDate: format(new Date(), 'yyyy-MM-dd'),
-            filters: { term: '' },
+            after,
+            before: format(new Date(), 'yyyy-MM-dd'),
+            filters: {},
             interval: 'INTERVAL_7_DAY',
             orderingDirection: 'ASC',
             name: 'codecov',
@@ -283,12 +255,12 @@ describe('useRepoComponentsTable', () => {
           wrapper: wrapper(),
         })
 
-        const afterDate = format(subDays(new Date(), 7), 'yyyy-MM-dd')
+        const after = format(subDays(new Date(), 7), 'yyyy-MM-dd')
         await waitFor(() =>
           expect(requestFilters).toHaveBeenCalledWith({
-            afterDate,
-            beforeDate: format(new Date(), 'yyyy-MM-dd'),
-            filters: { term: '' },
+            after,
+            before: format(new Date(), 'yyyy-MM-dd'),
+            filters: {},
             interval: 'INTERVAL_1_DAY',
             orderingDirection: 'ASC',
             name: 'codecov',
@@ -299,11 +271,11 @@ describe('useRepoComponentsTable', () => {
     })
   })
 
-  describe('when there is a flags param', () => {
+  describe('when there is a components param', () => {
     it('calls useRepoComponentsTable with correct filters values', async () => {
       const { requestFilters } = setup({
         repoData: mockGetRepo,
-        useParamsValue: { flags: ['flag1'] },
+        useParamsValue: { components: ['component1'] },
       })
 
       renderHook(() => useRepoComponentsTable(true), {
@@ -312,9 +284,9 @@ describe('useRepoComponentsTable', () => {
 
       await waitFor(() =>
         expect(requestFilters).toHaveBeenCalledWith({
-          afterDate: '2022-10-10',
-          beforeDate: format(new Date(), 'yyyy-MM-dd'),
-          filters: { flagsNames: ['flag1'] },
+          after: '2022-10-10',
+          before: format(new Date(), 'yyyy-MM-dd'),
+          filters: { components: ['component1'] },
           interval: 'INTERVAL_30_DAY',
           orderingDirection: 'ASC',
           name: 'codecov',
