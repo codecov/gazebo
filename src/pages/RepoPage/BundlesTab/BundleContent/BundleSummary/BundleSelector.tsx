@@ -84,13 +84,6 @@ const BundleSelector = forwardRef(({}, ref) => {
   )
   const [filteredBundles, setFilteredBundles] = useState<Array<string>>([])
 
-  let items = []
-  if (search !== '') {
-    items = filteredBundles
-  } else {
-    items = bundles
-  }
-
   return (
     <div className="md:w-[16rem]">
       <h3 className="flex items-center gap-1 text-sm font-semibold text-ds-gray-octonary">
@@ -108,7 +101,7 @@ const BundleSelector = forwardRef(({}, ref) => {
           ariaName="bundle tab bundle selector"
           variant="gray"
           isLoading={bundlesIsLoading}
-          items={items}
+          items={search !== '' ? filteredBundles : bundles}
           value={selectedBundle ?? 'Select bundle'}
           onChange={(name: string) => {
             setSelectedBundle(name)
