@@ -69,9 +69,15 @@ export function useResyncUser() {
   const { isSuccess, isFetching } = useQuery({
     queryKey: ['isSyncing', provider],
     queryFn: ({ signal }) => {
-      queryClient.invalidateQueries({
-        queryKey: ['repos'],
-      })
+      const cache = queryClient.getQueryCache()
+
+      const numRepos = cache.findAll(['repos'])[0]?.state?.data?.pages[0]?.repos
+        ?.length
+
+      if (numRepos > 100)
+        queryClient.invalidateQueries({
+          queryKey: ['repos'],
+        })
 
       return fetchIsSyncing({ provider, signal })
     },
