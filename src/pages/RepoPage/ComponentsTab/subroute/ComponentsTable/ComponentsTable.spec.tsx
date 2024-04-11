@@ -46,12 +46,14 @@ const mockedComponentMeasurements = {
           name: 'components1',
           percentCovered: 93.26,
           percentChange: -1.56,
+          lastUploaded: '2021-09-30T00:00:00Z',
           measurements: [{ avg: 51.78 }, { avg: 93.356 }],
         },
         {
           name: 'component2',
           percentCovered: 91.74,
           percentChange: null,
+          lastUploaded: null,
           measurements: [{ avg: null }, { avg: null }],
         },
 
@@ -59,6 +61,7 @@ const mockedComponentMeasurements = {
           name: 'testtest',
           percentCovered: 1.0,
           percentChange: 1.0,
+          lastUploaded: null,
           measurements: [{ avg: 51.78 }, { avg: 93.356 }],
         },
       ],
@@ -75,6 +78,7 @@ const mockNoReportsUploadedMeasurements = {
           name: 'components1',
           percentCovered: null,
           percentChange: null,
+          lastUploaded: null,
           measurements: [],
         },
       ],
@@ -183,6 +187,9 @@ describe('ComponentsTable', () => {
 
       const trend = await screen.findByText('Historical Trend')
       expect(trend).toBeInTheDocument()
+
+      const lastUploaded = await screen.findByText('Last Uploaded')
+      expect(lastUploaded).toBeInTheDocument()
     })
 
     it('renders repo components', async () => {
@@ -233,6 +240,13 @@ describe('ComponentsTable', () => {
 
       const noData = await screen.findByText('No Data')
       expect(noData).toBeInTheDocument()
+    })
+
+    it('renders last uploaded date', async () => {
+      render(<ComponentsTable />, { wrapper: wrapper() })
+
+      const lastUploaded = await screen.findByText('over 2 years ago')
+      expect(lastUploaded).toBeInTheDocument()
     })
   })
 

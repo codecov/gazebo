@@ -83,12 +83,14 @@ const mockedComponentMeasurements = {
           name: 'component1',
           percentCovered: 93.26,
           percentChange: 1.65,
+          lastUploaded: null,
           measurements: [],
         },
         {
           name: 'component2',
           percentCovered: 91.74,
           percentChange: 2.65,
+          lastUploaded: null,
           measurements: [],
         },
       ],
@@ -111,12 +113,14 @@ const componentsData = [
     percentCovered: 93.26,
     percentChange: 1.65,
     measurements: [],
+    lastUploaded: null,
   },
   {
     name: 'component2',
     percentCovered: 91.74,
     percentChange: 2.65,
     measurements: [],
+    lastUploaded: null,
   },
 ]
 

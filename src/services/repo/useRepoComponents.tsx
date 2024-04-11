@@ -36,6 +36,7 @@ query ComponentMeasurements(
           name
           percentCovered
           percentChange
+          lastUploaded
           measurements {
             avg
           }
@@ -50,6 +51,7 @@ export const ComponentEdgeSchema = z.object({
   name: z.string(),
   percentCovered: z.number().nullable(),
   percentChange: z.number().nullable(),
+  lastUploaded: z.string().nullable(),
   measurements: z.array(
     z.object({
       avg: z.number().nullable(),

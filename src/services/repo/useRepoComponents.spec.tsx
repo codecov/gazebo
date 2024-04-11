@@ -35,7 +35,7 @@ const expectedData = [
     name: 'component1',
     percentCovered: 93.26,
     percentChange: 1.65,
-
+    lastUploaded: '2021-09-30T00:00:00Z',
     measurements: [
       { avg: 91.74637512820512 },
       { avg: 91.85559083333332 },
@@ -47,7 +47,7 @@ const expectedData = [
     name: 'component2',
     percentCovered: 92.72,
     percentChange: 1.58,
-
+    lastUploaded: null,
     measurements: [
       { avg: 92.44361365466449 },
       { avg: 92.55269245333334 },

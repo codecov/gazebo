@@ -14,6 +14,7 @@ import { useParams } from 'react-router-dom'
 
 import { useRepoConfig } from 'services/repo/useRepoConfig'
 import ComponentsNotConfigured from 'shared/ComponentsNotConfigured'
+import { formatTimeToNow } from 'shared/utils/dates'
 import { determineProgressColor } from 'shared/utils/determineProgressColor'
 import A from 'ui/A'
 import CoverageProgress from 'ui/CoverageProgress'
@@ -27,10 +28,11 @@ import TableSparkline from './TableEntries/TableSparkline'
 import 'ui/Table/Table.css'
 
 interface ComponentsTableHelper {
-  name: React.ReactNode
-  coverage: React.ReactNode
-  trend: React.ReactNode
-  delete: React.ReactNode | null
+  name: React.ReactElement
+  coverage: React.ReactElement
+  trend: React.ReactElement
+  lastUploaded: React.ReactElement
+  delete: React.ReactElement | null
 }
 
 const columnHelper = createColumnHelper<ComponentsTableHelper>()
@@ -46,6 +48,10 @@ const columns = [
   }),
   columnHelper.accessor('trend', {
     header: () => 'Historical Trend',
+    cell: ({ renderValue }) => renderValue(),
+  }),
+  columnHelper.accessor('lastUploaded', {
+    header: () => 'Last Uploaded',
     cell: ({ renderValue }) => renderValue(),
   }),
   columnHelper.accessor('delete', {
@@ -75,11 +81,13 @@ function createTableData({
       percentCovered,
       percentChange,
       measurements,
+      lastUploaded,
     }: {
       name: string
       percentCovered: number | null
       percentChange: number | null
       measurements: any[]
+      lastUploaded: string | null
     }) => ({
       name: (
         <A
@@ -115,6 +123,11 @@ function createTableData({
           change={percentChange}
           name={name}
         />
+      ),
+      lastUploaded: (
+        <span className="flex items-center">
+          {lastUploaded ? formatTimeToNow(lastUploaded) : ''}
+        </span>
       ),
       delete: isAdmin ? (
         <div className="flex items-center justify-center">
@@ -167,6 +180,7 @@ const ComponentTable = memo(function Table({
           <col className="@sm/table:w-4/12" />
           <col className="@sm/table:w-3/12" />
           <col className="@sm/table:w-3/12" />
+          <col className="@sm/table:w-2/12" />
           <col className="@sm/table:w-3/12" />
         </colgroup>
         <thead data-testid="header-row">
