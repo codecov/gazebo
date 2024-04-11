@@ -8,7 +8,6 @@ import { setupServer } from 'msw/node'
 import { PropsWithChildren } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-
 import TriggerSyncBanner from './TriggerSyncBanner'
 
 const queryClient = new QueryClient({
@@ -86,7 +85,7 @@ describe('TriggerSyncBanner', () => {
         await waitFor(() =>
           expect(mutate).toHaveBeenCalledWith({
             input: {
-              measurementType: 'FLAG_COVERAGE',
+              measurementType: 'COMPONENT_COVERAGE',
               owner: 'codecov',
               repoName: 'gazebo',
             },
