@@ -366,7 +366,9 @@ describe('UpgradeForm', () => {
     describe('when the user has a basic plan', () => {
       const props = {
         setSelectedPlan: jest.fn(),
-        selectedPlan: { value: Plans.USERS_PR_INAPPY } as IndividualPlan,
+        selectedPlan: {
+          value: Plans.USERS_PR_INAPPY,
+        } as NonNullable<IndividualPlan>,
       }
       it('renders the organization and owner titles', async () => {
         setup({ planValue: Plans.USERS_BASIC })
@@ -694,7 +696,9 @@ describe('UpgradeForm', () => {
     describe('when the user has a pro plan monthly', () => {
       const props = {
         setSelectedPlan: jest.fn(),
-        selectedPlan: { value: Plans.USERS_PR_INAPPY } as IndividualPlan,
+        selectedPlan: {
+          value: Plans.USERS_PR_INAPPY,
+        } as NonNullable<IndividualPlan>,
       }
       it('renders the organization and owner titles', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPM })
@@ -1017,7 +1021,9 @@ describe('UpgradeForm', () => {
     describe('when the user has a pro plan yearly', () => {
       const props = {
         setSelectedPlan: jest.fn(),
-        selectedPlan: { value: Plans.USERS_PR_INAPPY } as IndividualPlan,
+        selectedPlan: {
+          value: Plans.USERS_PR_INAPPY,
+        } as NonNullable<IndividualPlan>,
       }
       it('renders the organization and owner titles', async () => {
         setup({ planValue: Plans.USERS_PR_INAPPY })
@@ -1364,7 +1370,9 @@ describe('UpgradeForm', () => {
     describe('when the user has a sentry plan yearly', () => {
       const props = {
         setSelectedPlan: jest.fn(),
-        selectedPlan: { value: Plans.USERS_SENTRYY } as IndividualPlan,
+        selectedPlan: {
+          value: Plans.USERS_SENTRYY,
+        } as NonNullable<IndividualPlan>,
       }
       it('renders the organization and owner titles', async () => {
         setup({
@@ -1682,7 +1690,9 @@ describe('UpgradeForm', () => {
     describe('when the user has a team plan yearly', () => {
       const props = {
         setSelectedPlan: jest.fn(),
-        selectedPlan: { value: Plans.USERS_TEAMY } as IndividualPlan,
+        selectedPlan: {
+          value: Plans.USERS_TEAMY,
+        } as NonNullable<IndividualPlan>,
       }
       it('renders the organization and owner titles', async () => {
         setup({
@@ -2044,7 +2054,9 @@ describe('UpgradeForm', () => {
     describe('user is currently on a trial', () => {
       const props = {
         setSelectedPlan: jest.fn(),
-        selectedPlan: { value: Plans.USERS_PR_INAPPY } as IndividualPlan,
+        selectedPlan: {
+          value: Plans.USERS_PR_INAPPY,
+        } as NonNullable<IndividualPlan>,
       }
       describe('user chooses less than the number of active users', () => {
         it('does not display an error', async () => {
