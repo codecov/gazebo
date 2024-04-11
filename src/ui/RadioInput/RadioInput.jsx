@@ -6,10 +6,19 @@ import { forwardRef } from 'react'
 import { dataMarketingType } from 'shared/propTypes'
 
 const RadioInput = forwardRef(
-  ({ label, showLabel = true, disabled, dataMarketing, ...props }, ref) => {
-    const id = uniqueId('radio-input')
+  (
+    {
+      label,
+      showLabel = true,
+      disabled,
+      dataMarketing,
+      id: idFromProps,
+      ...props
+    },
+    ref
+  ) => {
     const { className, ...newProps } = props
-
+    const id = idFromProps || uniqueId('radio-input')
     return (
       <div
         className={cs('flex items-center', {
@@ -44,6 +53,7 @@ RadioInput.propTypes = {
   disabled: PropTypes.bool,
   showLabel: PropTypes.bool,
   dataMarketing: dataMarketingType,
+  id: PropTypes.string,
 }
 
 export default RadioInput
