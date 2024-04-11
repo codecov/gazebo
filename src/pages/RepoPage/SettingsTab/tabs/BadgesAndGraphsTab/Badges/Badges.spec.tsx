@@ -39,7 +39,7 @@ describe('Badges', () => {
     mockedUseBranches.mockReturnValue({
       data: {
         branches: noBranches
-          ? []
+          ? undefined
           : [
               {
                 name: 'branch-1',
