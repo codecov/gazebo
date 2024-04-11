@@ -50,7 +50,6 @@ function ErrorBanner({
   const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
   const isSentryUpgrade = canApplySentryUpgrade({ plan, plans })
   const yearlyProPlan = isSentryUpgrade ? sentryPlanYear : proPlanYear
-  console.log(yearlyProPlan)
 
   if (!errors?.seats?.message) {
     return null

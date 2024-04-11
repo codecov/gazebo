@@ -9,6 +9,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { TrialStatuses } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
 import { Plans } from 'shared/utils/billing'
+import { UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE } from 'shared/utils/upgradeForm'
 
 import TeamPlanController from './TeamPlanController'
 
@@ -47,6 +48,16 @@ const teamPlanYear = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: 'users-teamy',
+  quantity: 5,
+}
+
+const proPlanYear = {
+  value: Plans.USERS_PR_INAPPY,
+  baseUnitPrice: 10,
+  benefits: ['asdf'],
+  billingRate: 'annually',
+  marketingName: 'Users Pro',
+  monthlyUploadLimit: null,
   quantity: 5,
 }
 
@@ -188,7 +199,12 @@ describe('TeamPlanController', () => {
           ctx.status(200),
           ctx.data({
             owner: {
-              availablePlans: [basicPlan, teamPlanMonth, teamPlanYear],
+              availablePlans: [
+                basicPlan,
+                teamPlanMonth,
+                teamPlanYear,
+                proPlanYear,
+              ],
             },
           })
         )
@@ -273,15 +289,17 @@ describe('TeamPlanController', () => {
     })
 
     describe('when seats are greater than 10', () => {
+      const setFormValue = jest.fn()
+      const setSelectedPlan = jest.fn()
       const props = {
-        setFormValue: jest.fn(),
-        setSelectedPlan: jest.fn(),
+        setFormValue,
+        setSelectedPlan,
         register: jest.fn(),
         newPlan: Plans.USERS_TEAMM,
         seats: 12,
         errors: {
           seats: {
-            message: 'Team plan is only available for 10 or less users',
+            message: UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE,
           },
         },
       }
@@ -291,9 +309,42 @@ describe('TeamPlanController', () => {
         render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
         const error = await screen.findByText(
-          'Team plan is only available for 10 or less users'
+          `💡 ${UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE}`
         )
         expect(error).toBeInTheDocument()
+      })
+
+      it('shows Upgrade to Pro button', async () => {
+        setup({ planValue: Plans.USERS_TEAMM })
+        render(<TeamPlanController {...props} />, { wrapper: wrapper() })
+
+        const button = await screen.findByRole('button', {
+          name: 'Upgrade to Pro',
+        })
+        expect(button).toBeInTheDocument()
+      })
+
+      describe('and user clicks Upgrade to Pro button', () => {
+        it('updates selected plan', async () => {
+          const { user } = setup({ planValue: Plans.USERS_TEAMM })
+          render(<TeamPlanController {...props} />, { wrapper: wrapper() })
+
+          const button = await screen.findByRole('button', {
+            name: 'Upgrade to Pro',
+          })
+          expect(button).toBeInTheDocument()
+
+          await user.click(button)
+
+          expect(setSelectedPlan).toHaveBeenCalledWith(
+            expect.objectContaining({ value: Plans.USERS_PR_INAPPY })
+          )
+          expect(setFormValue).toHaveBeenCalledWith(
+            'newPlan',
+            Plans.USERS_PR_INAPPY,
+            { shouldValidate: true }
+          )
+        })
       })
     })
 

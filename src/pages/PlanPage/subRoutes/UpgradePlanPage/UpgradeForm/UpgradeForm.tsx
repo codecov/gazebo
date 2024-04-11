@@ -31,7 +31,7 @@ type URLParams = {
 }
 
 type UpgradeFormProps = {
-  selectedPlan: IndividualPlan
+  selectedPlan: NonNullable<IndividualPlan>
   setSelectedPlan: (plan: IndividualPlan) => void
 }
 
@@ -88,12 +88,9 @@ function UpgradeForm({ selectedPlan, setSelectedPlan }: UpgradeFormProps) {
   const seats = watch('seats')
 
   useEffect(() => {
-    trigger()
+    // This is necessary because the validity of seats depends on the value of newPlan
+    trigger('seats')
   }, [newPlan, trigger])
-
-  if (!selectedPlan) {
-    return null
-  }
 
   return (
     <form
