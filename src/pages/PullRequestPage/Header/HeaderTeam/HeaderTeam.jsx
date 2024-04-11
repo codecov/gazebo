@@ -12,7 +12,6 @@ import TotalsNumber from 'ui/TotalsNumber'
 import { usePullHeadDataTeam } from './hooks'
 
 import { pullStateToColor } from '../constants'
-import PendoLink from '../PendoLink'
 
 function HeaderTeam() {
   const { provider, owner, repo, pullId } = useParams()
@@ -72,7 +71,6 @@ function HeaderTeam() {
           />
         </div>
       </div>
-      <PendoLink />
     </div>
   )
 }

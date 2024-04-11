@@ -3,7 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { MEASUREMENT_TYPE, useActivateFlagMeasurements } from './index'
+import { MEASUREMENT_TYPE, useActivateMeasurements } from './index'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -19,7 +19,7 @@ beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
-describe('useActivateFlagMeasurements', () => {
+describe('useActivateMeasurements', () => {
   function setup() {
     server.use(
       graphql.mutation('ActivateMeasurements', (req, res, ctx) => {
@@ -42,7 +42,7 @@ describe('useActivateFlagMeasurements', () => {
       it('returns expected output', async () => {
         const { result } = renderHook(
           () =>
-            useActivateFlagMeasurements({
+            useActivateMeasurements({
               provider: 'gh',
               owner: 'dancer',
               repo: 'bassuras',
@@ -85,7 +85,7 @@ describe('useActivateFlagMeasurements', () => {
 
         const { result } = renderHook(
           () =>
-            useActivateFlagMeasurements({
+            useActivateMeasurements({
               provider: 'gh',
               owner: 'dancer',
               repo: 'bassuras',
@@ -124,7 +124,7 @@ describe('useActivateFlagMeasurements', () => {
 
         const { result } = renderHook(
           () =>
-            useActivateFlagMeasurements({
+            useActivateMeasurements({
               provider: 'gh',
               owner: 'dancer',
               repo: 'bassuras',
@@ -140,7 +140,7 @@ describe('useActivateFlagMeasurements', () => {
         await waitFor(() =>
           expect(result.current.error).toEqual({
             data: {},
-            dev: 'useActivateFlagMeasurements - 404 failed to parse',
+            dev: 'useActivateMeasurements - 404 failed to parse',
             status: 404,
           })
         )

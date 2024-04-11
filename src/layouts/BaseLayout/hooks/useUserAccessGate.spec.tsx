@@ -239,11 +239,13 @@ afterAll(() => {
 type SetupArgs = {
   user: UserPartial
   internalUser: InternalUser
+  delayMutation?: boolean
 }
 
 describe('useUserAccessGate', () => {
   function setup(
     {
+      delayMutation = false,
       user = loggedInUser,
       internalUser = internalUserHasSyncedProviders,
     }: SetupArgs = {
@@ -263,6 +265,10 @@ describe('useUserAccessGate', () => {
       }),
       graphql.mutation('updateDefaultOrganization', (req, res, ctx) => {
         mockMutationVariables(req.variables)
+
+        if (delayMutation) {
+          return res(ctx.delay(1000), ctx.status(200), ctx.data({}))
+        }
 
         return res(
           ctx.status(200),
@@ -862,6 +868,47 @@ describe('useUserAccessGate', () => {
 
         await waitFor(() =>
           expect(mockMutationVariables).not.toHaveBeenCalled()
+        )
+      })
+    })
+
+    describe('when default org mutation is loading', () => {
+      it('does not set default org selector', async () => {
+        const username = 'chetney'
+
+        const { mockMutationVariables } = setup({
+          user: {
+            me: {
+              owner: {
+                defaultOrgUsername: '',
+              },
+              user: {
+                ...userSignedInIdentity,
+                username,
+                termsAgreement: false,
+                customerIntent: 'PERSONAL',
+              },
+              trackingMetadata: { ownerid: 123 },
+              ...userSignedInIdentity,
+              termsAgreement: true,
+            },
+          },
+          internalUser: internalUserHasSyncedProviders,
+          delayMutation: true,
+        })
+
+        const { result } = renderHook(() => useUserAccessGate(), {
+          wrapper: wrapper(['/gh']),
+        })
+
+        await waitFor(() =>
+          expect(mockMutationVariables).not.toHaveBeenCalled()
+        )
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+
+        await waitFor(() =>
+          expect(result.current.showDefaultOrgSelector).toBe(false)
         )
       })
     })

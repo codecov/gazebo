@@ -1,10 +1,11 @@
-import { useRepoBackfilled } from 'services/repo'
+import { useComponentsBackfilled } from 'services/repo'
 
 export function useRepoBackfillingStatus() {
-  const { data } = useRepoBackfilled()
+  const { data } = useComponentsBackfilled()
 
-  const componentsMeasurementsActive = data?.flagsMeasurementsActive
-  const componentsMeasurementsBackfilled = data?.flagsMeasurementsBackfilled
+  const componentsMeasurementsActive = data?.componentsMeasurementsActive
+  const componentsMeasurementsBackfilled =
+    data?.componentsMeasurementsBackfilled
   const isTimescaleEnabled = data?.isTimescaleEnabled
   const isRepoBackfilling =
     componentsMeasurementsActive && !componentsMeasurementsBackfilled

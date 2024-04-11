@@ -5,14 +5,10 @@ import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-import useIntersection from 'react-use/lib/useIntersection'
-
-import { useLocationParams } from 'services/navigation'
 
 import Header from './Header'
 
-jest.mock('react-use/lib/useIntersection')
-jest.mock('services/navigation/useLocationParams')
+jest.mock('./BranchSelector', () => () => 'BranchSelector')
 
 const server = setupServer()
 const queryClient = new QueryClient()
@@ -57,49 +53,28 @@ const backfillData = {
   },
   owner: {
     repository: {
-      flagsMeasurementsActive: true,
-      flagsMeasurementsBackfilled: true,
-      flagsCount: 99,
+      __typename: 'Repository',
+      componentsMeasurementsActive: true,
+      componentsMeasurementsBackfilled: true,
+      componentsCount: 99,
     },
   },
 }
 
-const mockFirstResponse = {
+const mockResponse = {
   owner: {
     repository: {
-      flags: {
-        edges: [
-          {
-            node: {
-              name: 'flag1',
-            },
-          },
-        ],
-        pageInfo: {
-          hasNextPage: true,
-          endCursor: '1-flag-1',
+      __typename: 'Repository',
+      componentsYaml: [
+        {
+          id: 'component1',
+          name: 'Component 1',
         },
-      },
-    },
-  },
-}
-
-const mockSecondResponse = {
-  owner: {
-    repository: {
-      flags: {
-        edges: [
-          {
-            node: {
-              name: 'flag2',
-            },
-          },
-        ],
-        pageInfo: {
-          hasNextPage: false,
-          endCursor: null,
+        {
+          id: 'component2',
+          name: 'Component 2',
         },
-      },
+      ],
     },
   },
 }
@@ -107,36 +82,22 @@ const mockSecondResponse = {
 describe('Header', () => {
   afterEach(() => jest.resetAllMocks())
 
-  function setup(
-    { noNextPage = false } = {
-      noNextPage: false,
-    }
-  ) {
+  function setup() {
     const user = userEvent.setup()
-    const updateLocationMock = jest.fn()
     const mockApiVars = jest.fn()
 
-    useLocationParams.mockReturnValue({
-      params: { search: '', historicalTrend: '', flags: [] },
-      updateParams: updateLocationMock,
-    })
-
     server.use(
-      graphql.query('BackfillFlagMemberships', (req, res, ctx) =>
+      graphql.query('BackfillComponentMemberships', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(backfillData))
       ),
-      graphql.query('FlagsSelect', (req, res, ctx) => {
+      graphql.query('RepoComponentsSelector', (req, res, ctx) => {
         mockApiVars(req.variables)
 
-        if (!!req.variables?.after || noNextPage) {
-          return res(ctx.status(200), ctx.data(mockSecondResponse))
-        }
-
-        return res(ctx.status(200), ctx.data(mockFirstResponse))
+        return res(ctx.status(200), ctx.data(mockResponse))
       })
     )
 
-    return { user, updateLocationMock, mockApiVars }
+    return { user, mockApiVars }
   }
 
   describe('Configured Components', () => {
@@ -160,10 +121,22 @@ describe('Header', () => {
     describe('Title', () => {
       beforeEach(() => setup())
 
-      it('Renders the label', () => {
+      it('Renders the label', async () => {
         render(<Header />, { wrapper })
 
-        expect(screen.getByText(/Historical trend/)).toBeInTheDocument()
+        const historicalTrend = await screen.findByText(/Historical trend/)
+        expect(historicalTrend).toBeInTheDocument()
+      })
+    })
+
+    describe('BranchSelector', () => {
+      beforeEach(() => setup())
+
+      it('Renders the BranchSelector', async () => {
+        render(<Header />, { wrapper })
+
+        const branchSelector = await screen.findByText('BranchSelector')
+        expect(branchSelector).toBeInTheDocument()
       })
     })
 
@@ -179,11 +152,11 @@ describe('Header', () => {
         })
         await user.click(historicalTrend)
 
-        expect(screen.getByText('Last 6 months')).toBeVisible()
+        expect(await screen.findByText('Last 6 months')).toBeVisible()
       })
 
       it('updates the location params on select', async () => {
-        const { user, updateLocationMock } = setup()
+        const { user } = setup()
         render(<Header />, { wrapper })
 
         const historicalTrend = screen.getByRole('button', {
@@ -191,35 +164,13 @@ describe('Header', () => {
         })
         await user.click(historicalTrend)
 
-        const item = screen.getByText('Last 7 days')
+        const item = await screen.findByText('Last 7 days')
         await user.click(item)
 
-        expect(updateLocationMock).toHaveBeenCalledWith({
-          historicalTrend: 'LAST_7_DAYS',
+        await waitFor(() => {
+          expect(testLocation.pathname).toBe('/gh/codecov/gazebo/components')
         })
       })
-    })
-  })
-
-  describe('Components feedback link', () => {
-    beforeEach(() => setup())
-
-    it('Renders the right copy', () => {
-      render(<Header />, { wrapper })
-
-      expect(screen.getByText(/Please drop us a comment/)).toBeInTheDocument()
-    })
-
-    it('Renders the right link', () => {
-      render(<Header />, { wrapper })
-
-      const link = screen.getByRole('link', {
-        name: /here/i,
-      })
-      expect(link).toBeInTheDocument()
-      expect(link.href).toBe(
-        'https://github.com/codecov/Codecov-user-feedback/issues/27'
-      )
     })
   })
 
@@ -227,10 +178,10 @@ describe('Header', () => {
     describe('Title', () => {
       beforeEach(() => setup())
 
-      it('renders the label', () => {
+      it('renders the label', async () => {
         render(<Header />, { wrapper })
 
-        const showBy = screen.getByText('Show by')
+        const showBy = await screen.findByText('Show by')
         expect(showBy).toBeInTheDocument()
       })
     })
@@ -241,60 +192,25 @@ describe('Header', () => {
           const { user } = setup()
           render(<Header />, { wrapper })
 
-          const button = screen.getByText('All components')
+          const button = await screen.findByText('All Components')
           await user.click(button)
 
-          const flag1 = screen.getByText('flag1')
-          expect(flag1).toBeInTheDocument()
+          const component1 = await screen.findByText('component1')
+          expect(component1).toBeInTheDocument()
         })
 
         it('updates the location params on select', async () => {
-          const { user, updateLocationMock } = setup()
+          const { user } = setup()
           render(<Header />, { wrapper })
 
-          const button = screen.getByText('All components')
+          const button = await screen.findByText('All Components')
           await user.click(button)
 
-          const flag1 = screen.getByText('flag1')
-          await user.click(flag1)
+          const component1 = await screen.findByText('component1')
+          await user.click(component1)
 
-          expect(updateLocationMock).toHaveBeenCalledWith({
-            flags: ['flag1'],
-          })
-        })
-      })
-
-      describe('where onLoadMore is triggered', () => {
-        describe('when there is a next page', () => {
-          it('calls fetchNextPage', async () => {
-            const { user } = setup()
-            useIntersection.mockReturnValue({ isIntersecting: true })
-
-            render(<Header />, { wrapper })
-
-            const button = screen.getByText('All components')
-            await user.click(button)
-
-            const flag1 = await screen.findByText('flag1')
-            expect(flag1).toBeInTheDocument()
-
-            const flag2 = await screen.findByText('flag2')
-            expect(flag2).toBeInTheDocument()
-          })
-        })
-
-        describe('when there is no next page', () => {
-          it('does not calls fetchNextPage', async () => {
-            const { user } = setup(true)
-            useIntersection.mockReturnValue({ isIntersecting: true })
-
-            render(<Header />, { wrapper })
-
-            const button = screen.getByText('All components')
-            await user.click(button)
-
-            const flag2 = await screen.findByText('flag2')
-            expect(flag2).toBeInTheDocument()
+          await waitFor(() => {
+            expect(testLocation.pathname).toBe('/gh/codecov/gazebo/components')
           })
         })
       })
@@ -304,7 +220,7 @@ describe('Header', () => {
           const { user } = setup()
           render(<Header />, { wrapper })
 
-          const button = screen.getByText('All components')
+          const button = await screen.findByText('All Components')
           await user.click(button)
 
           const searchBox = screen.getByPlaceholderText('Search for Components')
@@ -315,33 +231,35 @@ describe('Header', () => {
           const { user } = setup()
           render(<Header />, { wrapper })
 
-          const button = screen.getByText('All components')
+          const button = await screen.findByText('All Components')
           await user.click(button)
 
           const searchBox = screen.getByPlaceholderText('Search for Components')
-          await user.type(searchBox, 'flag2')
+          await user.type(searchBox, 'component2')
 
           const searchBoxUpdated = screen.getByPlaceholderText(
             'Search for Components'
           )
-          expect(searchBoxUpdated).toHaveAttribute('value', 'flag2')
+          expect(searchBoxUpdated).toHaveAttribute('value', 'component2')
         })
 
-        it('calls useRepoFlagsSelect with term', async () => {
+        it('calls useRepoComponentssSelect with term', async () => {
           const { user, mockApiVars } = setup()
           render(<Header />, { wrapper })
 
-          const button = screen.getByText('All components')
+          const button = await screen.findByText('All Components')
           await user.click(button)
 
-          const searchBox = screen.getByPlaceholderText('Search for Components')
-          await user.type(searchBox, 'flag2')
+          const searchBox = await screen.findByPlaceholderText(
+            'Search for Components'
+          )
+          await user.type(searchBox, 'component2')
 
           await waitFor(() =>
-            expect(mockApiVars).toHaveBeenCalledWith({
-              name: 'codecov',
+            expect(mockApiVars).toHaveBeenLastCalledWith({
+              owner: 'codecov',
               repo: 'gazebo',
-              filters: { term: 'flag2' },
+              termId: 'component2',
             })
           )
         })

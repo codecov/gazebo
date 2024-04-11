@@ -3,9 +3,7 @@ import { Redirect, useParams } from 'react-router-dom'
 import { SentryRoute } from 'sentry'
 
 import { useRepoSettingsTeam } from 'services/repo'
-import { useRepoFlagsSelect } from 'services/repo/useRepoFlagsSelect'
 import { TierNames, useTier } from 'services/tier'
-import ComponentsNotConfigured from 'shared/ComponentsNotConfigured'
 
 import blurredTable from './assets/blurredTable.png'
 import BackfillBanners from './BackfillBanners/BackfillBanners'
@@ -24,12 +22,7 @@ const showComponentsTable = ({
   return componentsMeasurementsActive && componentsMeasurementsBackfilled
 }
 
-const showComponentsData = ({ componentsData }) => {
-  return componentsData && componentsData?.length > 0
-}
-
 function ComponentsTab() {
-  const { data: componentsData } = useRepoFlagsSelect()
   const { provider, owner, repo } = useParams()
   const { data: tierData } = useTier({ owner, provider })
   const { data: repoSettings } = useRepoSettingsTeam()
@@ -47,10 +40,6 @@ function ComponentsTab() {
 
   if (!isTimescaleEnabled) {
     return <TimescaleDisabled />
-  }
-
-  if (!showComponentsData({ componentsData })) {
-    return <ComponentsNotConfigured />
   }
 
   return (

@@ -8,6 +8,7 @@ import config from 'config'
 import { SentryRoute } from 'sentry'
 
 import BaseLayout from 'layouts/BaseLayout'
+import EnterpriseLoginLayout from 'layouts/EnterpriseLoginLayout'
 import LoginLayout from 'layouts/LoginLayout'
 import { useLocationParams } from 'services/navigation'
 import { ToastNotificationProvider } from 'services/toastNotification'
@@ -143,9 +144,9 @@ const MainAppRoutes = () => (
     </SentryRoute>
     <SentryRoute path="/" exact>
       {config.IS_SELF_HOSTED ? (
-        <BaseLayout>
+        <EnterpriseLoginLayout>
           <EnterpriseLandingPage />
-        </BaseLayout>
+        </EnterpriseLoginLayout>
       ) : (
         <Redirect to="/login" />
       )}
