@@ -24,6 +24,7 @@ export const BundleSelectorSkeleton: React.FC = () => {
           isLoading={false}
           items={[]}
           value={'Select bundle'}
+          onChange={() => {}}
         />
       </span>
     </div>
