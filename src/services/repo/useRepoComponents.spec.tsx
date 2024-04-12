@@ -30,42 +30,12 @@ beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
-const initialData = [
-  {
-    node: {
-      name: 'component1',
-      percentCovered: 93.26,
-      percentChange: 1.65,
-      measurements: [
-        { avg: 91.74637512820512 },
-        { avg: 91.85559083333332 },
-        { avg: 91.95588104166666 },
-        { avg: 91.96796811111112 },
-      ],
-    },
-  },
-  {
-    node: {
-      name: 'component2',
-      percentCovered: 92.72,
-      percentChange: 1.58,
-      measurements: [
-        { avg: 92.44361365466449 },
-        { avg: 92.55269245333334 },
-        { avg: 92.84718477040816 },
-        { avg: 92.91016116666667 },
-        { avg: 92.92690138723546 },
-      ],
-    },
-  },
-]
-
-const expectedInitialData = [
+const expectedData = [
   {
     name: 'component1',
     percentCovered: 93.26,
     percentChange: 1.65,
-
+    lastUploaded: '2021-09-30T00:00:00Z',
     measurements: [
       { avg: 91.74637512820512 },
       { avg: 91.85559083333332 },
@@ -77,46 +47,13 @@ const expectedInitialData = [
     name: 'component2',
     percentCovered: 92.72,
     percentChange: 1.58,
-
+    lastUploaded: null,
     measurements: [
       { avg: 92.44361365466449 },
       { avg: 92.55269245333334 },
       { avg: 92.84718477040816 },
       { avg: 92.91016116666667 },
       { avg: 92.92690138723546 },
-    ],
-  },
-]
-
-const nextPageData = [
-  {
-    node: {
-      name: 'component3',
-      percentCovered: 92.95,
-      percentChange: 1.38,
-      measurements: [
-        { avg: 92.92690138723546 },
-        { avg: 92.99535449712643 },
-        { avg: 93.13587893358877 },
-        { avg: 93.04877792892155 },
-        { avg: 93.26297761904759 },
-      ],
-    },
-  },
-]
-
-const expectedNextPageData = [
-  {
-    name: 'component3',
-    percentCovered: 92.95,
-    percentChange: 1.38,
-
-    measurements: [
-      { avg: 92.92690138723546 },
-      { avg: 92.99535449712643 },
-      { avg: 93.13587893358877 },
-      { avg: 93.04877792892155 },
-      { avg: 93.26297761904759 },
     ],
   },
 ]
@@ -160,24 +97,17 @@ describe('ComponentMeasurements', () => {
             })
           )
         }
-
-        const dataReturned = {
-          owner: {
-            repository: {
-              __typename: 'Repository',
-              components: {
-                edges: req.variables.after
-                  ? [...nextPageData]
-                  : [...initialData],
-                pageInfo: {
-                  hasNextPage: !req.variables.after,
-                  endCursor: req.variables.after ? 'aabb' : 'dW5pdA==',
-                },
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              repository: {
+                __typename: 'Repository',
+                components: expectedData,
               },
             },
-          },
-        }
-        return res(ctx.status(200), ctx.data(dataReturned))
+          })
+        )
       })
     )
   }
@@ -193,8 +123,8 @@ describe('ComponentMeasurements', () => {
           () =>
             useRepoComponents({
               interval: 'INTERVAL_30_DAY',
-              afterDate: '2021-09-01',
-              beforeDate: '2021-09-30',
+              after: '2021-09-01',
+              before: '2021-09-30',
             }),
           {
             wrapper,
@@ -205,44 +135,11 @@ describe('ComponentMeasurements', () => {
         await waitFor(() => !result.current.isLoading)
 
         await waitFor(() =>
-          expect(result.current.data).toEqual(expectedInitialData)
+          expect(result.current.data).toEqual({
+            components: expectedData,
+          })
         )
       })
-    })
-  })
-
-  describe('when fetchNextPage is called', () => {
-    beforeEach(() => {
-      setup()
-    })
-
-    it('returns prev and next page components data', async () => {
-      const { result } = renderHook(
-        () =>
-          useRepoComponents({
-            interval: 'INTERVAL_30_DAY',
-            afterDate: '2021-09-01',
-            beforeDate: '2021-09-30',
-          }),
-        {
-          wrapper,
-        }
-      )
-
-      await waitFor(() => result.current.isFetching)
-      await waitFor(() => !result.current.isFetching)
-
-      result.current.fetchNextPage()
-
-      await waitFor(() => result.current.isFetching)
-      await waitFor(() => !result.current.isFetching)
-
-      await waitFor(() =>
-        expect(result.current.data).toEqual([
-          ...expectedInitialData,
-          ...expectedNextPageData,
-        ])
-      )
     })
   })
 
@@ -256,8 +153,8 @@ describe('ComponentMeasurements', () => {
         () =>
           useRepoComponents({
             interval: 'INTERVAL_30_DAY',
-            afterDate: '2021-09-01',
-            beforeDate: '2021-09-30',
+            after: '2021-09-01',
+            before: '2021-09-30',
           }),
         {
           wrapper,
@@ -284,8 +181,8 @@ describe('ComponentMeasurements', () => {
         () =>
           useRepoComponents({
             interval: 'INTERVAL_30_DAY',
-            afterDate: '2021-09-01',
-            beforeDate: '2021-09-30',
+            after: '2021-09-01',
+            before: '2021-09-30',
           }),
         {
           wrapper,
@@ -312,8 +209,8 @@ describe('ComponentMeasurements', () => {
         () =>
           useRepoComponents({
             interval: 'INTERVAL_30_DAY',
-            afterDate: '2021-09-01',
-            beforeDate: '2021-09-30',
+            after: '2021-09-01',
+            before: '2021-09-30',
           }),
         {
           wrapper,
