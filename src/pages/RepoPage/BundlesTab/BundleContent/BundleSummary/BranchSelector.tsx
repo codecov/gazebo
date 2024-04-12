@@ -66,16 +66,21 @@ const BranchSelector: React.FC<BranchSelectorProps> = ({
   })
 
   let selection = searchBranchValue?.branch
+  const emptyBranchName = 'Select branch'
   if (!selection) {
     selection = {
-      name: 'Select branch',
+      name: emptyBranchName,
       head: null,
     }
   }
 
   // if the selected branch is the default branch and no branch is selected
   // redirect to the default branch
-  if (selectedBranch === overview?.defaultBranch && !branch) {
+  if (
+    selectedBranch === overview?.defaultBranch &&
+    !branch &&
+    selection.name !== emptyBranchName
+  ) {
     history.push(
       // @ts-expect-error - useNavLinks needs to be typed
       bundlesLink.path({ branch: encodeURIComponent(selection?.name) })
