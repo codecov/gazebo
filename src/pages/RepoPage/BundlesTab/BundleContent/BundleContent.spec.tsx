@@ -70,6 +70,15 @@ const mockBranchBundlesError = {
   },
 }
 
+const mockEmptyBundleSummary = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      branch: null,
+    },
+  },
+}
+
 const mockAssets = {
   owner: {
     repository: {
@@ -160,16 +169,21 @@ afterAll(() => {
 
 interface SetupArgs {
   isBundleError?: boolean
+  isEmptyBundleSummary?: boolean
 }
 
 describe('BundleContent', () => {
-  function setup({ isBundleError = false }: SetupArgs) {
+  function setup({
+    isBundleError = false,
+    isEmptyBundleSummary = false,
+  }: SetupArgs) {
     server.use(
       graphql.query('BranchBundleSummaryData', (req, res, ctx) => {
         if (isBundleError) {
           return res(ctx.status(200), ctx.data(mockBranchBundlesError))
+        } else if (isEmptyBundleSummary) {
+          return res(ctx.status(200), ctx.data(mockEmptyBundleSummary))
         }
-
         return res(ctx.status(200), ctx.data(mockBranchBundles))
       }),
       graphql.query('GetRepoOverview', (req, res, ctx) => {
@@ -262,7 +276,7 @@ describe('BundleContent', () => {
       })
     })
 
-    describe('when the bundle type is not BundleAnalysisReport', () => {
+    describe('bundle type is MissingHeadReport', () => {
       it('renders the error banner', async () => {
         setup({ isBundleError: true })
         render(<BundleContent />, {
@@ -286,6 +300,62 @@ describe('BundleContent', () => {
 
         const dashes = await screen.findAllByText('-')
         expect(dashes).toHaveLength(4)
+      })
+    })
+
+    describe('when the bundle type is not BundleAnalysisReport', () => {
+      describe('there is no branch data and no branch set', () => {
+        it('renders the info banner', async () => {
+          setup({ isEmptyBundleSummary: true })
+          render(<BundleContent />, {
+            wrapper: wrapper('/gh/codecov/test-repo/bundles'),
+          })
+
+          const bannerHeader = await screen.findByText(/No Branch Selected/)
+          expect(bannerHeader).toBeInTheDocument()
+
+          const bannerMessage = await screen.findByText(
+            'Please select a branch to view the list of bundles.'
+          )
+          expect(bannerMessage).toBeInTheDocument()
+        })
+
+        it('renders the empty table', async () => {
+          setup({ isEmptyBundleSummary: true })
+          render(<BundleContent />, {
+            wrapper: wrapper('/gh/codecov/test-repo/bundles'),
+          })
+
+          const dashes = await screen.findAllByText('-')
+          expect(dashes).toHaveLength(4)
+        })
+      })
+
+      describe('there is a set branch but unknown bundle type', () => {
+        it('renders the error banner', async () => {
+          setup({ isEmptyBundleSummary: true })
+          render(<BundleContent />, {
+            wrapper: wrapper('/gh/codecov/test-repo/bundles/main'),
+          })
+
+          const bannerHeader = await screen.findByText(/Unknown Error/)
+          expect(bannerHeader).toBeInTheDocument()
+
+          const bannerMessage = await screen.findByText(
+            'An unknown error occurred while trying to load the bundle analysis reports.'
+          )
+          expect(bannerMessage).toBeInTheDocument()
+        })
+
+        it('renders the empty table', async () => {
+          setup({ isEmptyBundleSummary: true })
+          render(<BundleContent />, {
+            wrapper: wrapper('/gh/codecov/test-repo/bundles/main'),
+          })
+
+          const dashes = await screen.findAllByText('-')
+          expect(dashes).toHaveLength(4)
+        })
       })
     })
   })
