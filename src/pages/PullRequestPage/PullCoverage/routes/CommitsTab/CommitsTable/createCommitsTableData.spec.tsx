@@ -1,6 +1,5 @@
 import TotalsNumber from 'ui/TotalsNumber'
 
-import Coverage from './Coverage'
 import { createCommitsTableData } from './createCommitsTableData'
 
 import CIStatus from '../shared/CIStatus'
@@ -35,7 +34,7 @@ describe('createCommitsTableData', () => {
 
   describe('pages has valid commits', () => {
     describe('compareWithParent __typename is not Comparison', () => {
-      it('returns no report uploaded', () => {
+      it('returns a dash', () => {
         const commitData = {
           ciPassed: null,
           message: null,
@@ -63,9 +62,7 @@ describe('createCommitsTableData', () => {
           pages: [{ commits: [commitData] }],
         })
 
-        expect(result[0]?.patch).toStrictEqual(
-          <p className="text-right">No report uploaded</p>
-        )
+        expect(result[0]?.patch).toStrictEqual(<p className="text-right">-</p>)
       })
     })
 
@@ -274,7 +271,7 @@ describe('createCommitsTableData', () => {
         })
 
         expect(result[0]?.coverage).toStrictEqual(
-          <Coverage totals={{ coverage: 100 }} />
+          <TotalsNumber plain={true} value={100} />
         )
       })
 
@@ -324,7 +321,7 @@ describe('createCommitsTableData', () => {
     })
 
     describe('bundleAnalysisReport __typename is not BundleAnalysisReport', () => {
-      it('returns no report uploaded', () => {
+      it('returns x emoji', () => {
         const commitData = {
           ciPassed: null,
           message: null,
@@ -357,7 +354,7 @@ describe('createCommitsTableData', () => {
     })
 
     describe('bundleAnalysisReport __typename is BundleAnalysisReport', () => {
-      it('returns no report uploaded', () => {
+      it('returns check mark emoji', () => {
         const commitData = {
           ciPassed: null,
           message: null,
