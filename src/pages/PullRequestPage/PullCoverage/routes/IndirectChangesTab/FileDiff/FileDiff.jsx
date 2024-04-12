@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom'
 
 import { useNavLinks } from 'services/navigation'
 import { useSingularImpactedFileComparison } from 'services/pull'
+import { useRepoOverview } from 'services/repo'
 import { CODE_RENDERER_TYPE } from 'shared/utils/fileviewer'
 import A from 'ui/A'
 import CodeRenderer from 'ui/CodeRenderer'
@@ -20,8 +21,10 @@ const Loader = () => (
 )
 
 function FileDiff({ path }) {
-  const { provider, owner, repo, pullId } = useParams()
   const { pullFileView } = useNavLinks()
+  const { provider, owner, repo, pullId } = useParams()
+  const { data: overview } = useRepoOverview({ provider, owner, repo })
+
   const { data, isLoading } = useSingularImpactedFileComparison({
     provider,
     owner,
@@ -36,6 +39,14 @@ function FileDiff({ path }) {
   }
 
   const { fileLabel, headName, isCriticalFile, segments } = data
+
+  let fullFilePath = pullFileView.path({
+    pullId,
+    tree: path,
+  })
+  if (overview?.coverageEnabled && overview?.bundleAnalysisEnabled) {
+    fullFilePath = `${fullFilePath}?dropdown=coverage`
+  }
 
   return (
     <>
@@ -52,11 +63,7 @@ function FileDiff({ path }) {
                     <span className="border-l-2 pl-2">{fileLabel}</span>
                   )}
                 </div>
-                <A
-                  href={pullFileView.path({ pullId, tree: path })}
-                  isExternal
-                  hook="pull full file"
-                >
+                <A href={fullFilePath} isExternal hook="pull full file">
                   View full file
                 </A>
               </div>
