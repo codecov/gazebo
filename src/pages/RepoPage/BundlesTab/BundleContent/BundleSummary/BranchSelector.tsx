@@ -66,10 +66,9 @@ const BranchSelector: React.FC<BranchSelectorProps> = ({
   })
 
   let selection = searchBranchValue?.branch
-  const emptyBranchName = 'Select branch'
   if (!selection) {
     selection = {
-      name: emptyBranchName,
+      name: 'Select branch',
       head: null,
     }
   }
@@ -79,7 +78,7 @@ const BranchSelector: React.FC<BranchSelectorProps> = ({
   if (
     selectedBranch === overview?.defaultBranch &&
     !branch &&
-    selection.name !== emptyBranchName
+    selection.head !== null
   ) {
     history.push(
       // @ts-expect-error - useNavLinks needs to be typed

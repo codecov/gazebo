@@ -44,12 +44,13 @@ const mockMainBranchSearch = {
   },
 }
 
-const mockBranch = (name: string) => ({
+const mockBranch = (
+  name: string,
+  head: null | { commitid: string } = { commitid: '321fdsa' }
+) => ({
   branch: {
     name: name,
-    head: {
-      commitid: '321fdsa',
-    },
+    head: head,
   },
 })
 
@@ -126,7 +127,7 @@ afterAll(() => {
 interface SetupArgs {
   hasNextPage?: boolean
   nullOverview?: boolean
-  branch?: string
+  nullHead?: boolean
 }
 
 describe('BranchSelector', () => {
@@ -134,11 +135,11 @@ describe('BranchSelector', () => {
     {
       hasNextPage = false,
       nullOverview = false,
-      branch = 'main',
+      nullHead = false,
     }: SetupArgs = {
       hasNextPage: false,
       nullOverview: false,
-      branch: 'main',
+      nullHead: false,
     }
   ) {
     const user = userEvent.setup()
@@ -167,15 +168,21 @@ describe('BranchSelector', () => {
         )
       }),
       graphql.query('GetBranch', (req, res, ctx) => {
+        let branch = 'main'
         if (req.variables?.branch) {
           branch = req.variables?.branch
+        }
+
+        let mockedBranch = mockBranch(branch)
+        if (nullHead) {
+          mockedBranch = mockBranch(branch, null)
         }
 
         return res(
           ctx.status(200),
           ctx.data({
             owner: {
-              repository: { __typename: 'Repository', ...mockBranch(branch) },
+              repository: { __typename: 'Repository', ...mockedBranch },
             },
           })
         )
@@ -261,7 +268,7 @@ describe('BranchSelector', () => {
 
       it('does not redirect on Select branch', async () => {
         const { queryClient, mockResetBundleSelect } = setup({
-          branch: 'Select branch',
+          nullHead: true,
         })
         render(<BranchSelector resetBundleSelect={mockResetBundleSelect} />, {
           wrapper: wrapper(queryClient),
