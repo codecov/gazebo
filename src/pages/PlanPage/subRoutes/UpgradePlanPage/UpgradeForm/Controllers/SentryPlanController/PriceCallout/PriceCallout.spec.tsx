@@ -121,7 +121,7 @@ describe('PriceCallout', () => {
     describe('and seat count is below acceptable range', () => {
       const props = {
         newPlan: Plans.USERS_PR_INAPPY,
-        seats: 1,
+        seats: 4,
       }
 
       it('does not render calculator', async () => {

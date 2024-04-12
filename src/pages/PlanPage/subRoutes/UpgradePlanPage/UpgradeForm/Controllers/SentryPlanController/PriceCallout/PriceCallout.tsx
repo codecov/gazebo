@@ -13,7 +13,7 @@ import {
 import {
   calculatePriceSentryPlan,
   calculateSentryNonBundledCost,
-  MIN_NB_SEATS_PRO,
+  MIN_SENTRY_SEATS,
 } from 'shared/utils/upgradeForm'
 import Icon from 'ui/Icon'
 
@@ -46,7 +46,7 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const nextBillingDate = getNextBillingDate(accountDetails)
 
-  if (seats < MIN_NB_SEATS_PRO) {
+  if (seats < MIN_SENTRY_SEATS) {
     return null
   }
 
