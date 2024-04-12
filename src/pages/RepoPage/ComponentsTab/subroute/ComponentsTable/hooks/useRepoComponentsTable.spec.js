@@ -214,7 +214,7 @@ describe('useRepoComponentsTable', () => {
           expect(requestFilters).toHaveBeenCalledWith({
             after: '2022-10-10',
             before: format(new Date(), 'yyyy-MM-dd'),
-            filters: { components: [] },
+            filters: {},
             interval: 'INTERVAL_30_DAY',
             orderingDirection: 'ASC',
             name: 'codecov',

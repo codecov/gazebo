@@ -125,7 +125,7 @@ function createTableData({
         />
       ),
       lastUploaded: (
-        <span className="flex items-center">
+        <span className="flex justify-end">
           {lastUploaded ? formatTimeToNow(lastUploaded) : ''}
         </span>
       ),
