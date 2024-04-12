@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom'
 import config from 'config'
 
 import { Branch, useBranches } from 'services/branches'
+import A from 'ui/A'
 import Select from 'ui/Select'
 import SettingsDescriptor from 'ui/SettingsDescriptor'
 import TokenWrapper from 'ui/TokenWrapper'
@@ -91,7 +92,14 @@ function Badges({ graphToken }: BadgesProps) {
   return (
     <SettingsDescriptor
       title="Codecov badge"
-      description="A live icon that you can embed in code, such as in a README.md, to provide quick insight into your project's code coverage percentage."
+      description={
+        <>
+          {/* @ts-expect-error */}A live icon that you can embed in code, such
+          as in a README.md, to provide quick insight into your project&apos;s
+          code coverage percentage.{' '}
+          <A to={{ pageName: 'statusBadges' }}>Learn more</A>
+        </>
+      }
       content={
         <>
           <div className="mb-2 flex items-center gap-4 border-b pb-4">
