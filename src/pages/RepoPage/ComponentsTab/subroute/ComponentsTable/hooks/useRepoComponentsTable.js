@@ -47,7 +47,9 @@ function useRepoComponentsTable(isDesc) {
   )
 
   const { data, isLoading } = useRepoComponents({
-    filters: { components: params?.components },
+    filters: Boolean(params?.components?.length)
+      ? { components: params?.components }
+      : {},
     orderingDirection: sortBy,
     before: format(new Date(), 'yyyy-MM-dd'),
     interval,
