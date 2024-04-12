@@ -1,15 +1,15 @@
-import { useDeleteFlag } from 'services/deleteFlag'
+import { useDeleteComponentMeasurements } from 'services/deleteComponentMeasurements'
 import Button from 'ui/Button'
 import Modal from 'ui/Modal'
 
 type Props = {
   isOpen: boolean
-  componentName?: string
+  componentId?: string
   closeModal: () => void
 }
 
-const DeleteComponentModal = ({ isOpen, closeModal, componentName }: Props) => {
-  const { mutate } = useDeleteFlag()
+const DeleteComponentModal = ({ isOpen, closeModal, componentId }: Props) => {
+  const { mutate } = useDeleteComponentMeasurements()
 
   return (
     <Modal
@@ -21,7 +21,7 @@ const DeleteComponentModal = ({ isOpen, closeModal, componentName }: Props) => {
       body={
         <p>
           This will remove the{' '}
-          <span className="font-semibold">{componentName}</span> component from
+          <span className="font-semibold">{componentId}</span> component from
           the reports in app. You will also need to remove this component in
           your CI and codecov.yaml to stop uploads.
         </p>
@@ -45,7 +45,7 @@ const DeleteComponentModal = ({ isOpen, closeModal, componentName }: Props) => {
               onClick={() => {
                 // TODO: fix when we convert the hooks to TS
                 // @ts-expect-error
-                mutate({ componentName })
+                mutate({ componentId })
                 closeModal()
               }}
             >

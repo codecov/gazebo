@@ -9,12 +9,12 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
-import { memo, useEffect, useMemo, useState } from 'react'
-import { useInView } from 'react-intersection-observer'
+import { memo, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useRepoConfig } from 'services/repo/useRepoConfig'
 import ComponentsNotConfigured from 'shared/ComponentsNotConfigured'
+import { formatTimeToNow } from 'shared/utils/dates'
 import { determineProgressColor } from 'shared/utils/determineProgressColor'
 import A from 'ui/A'
 import CoverageProgress from 'ui/CoverageProgress'
@@ -28,10 +28,11 @@ import TableSparkline from './TableEntries/TableSparkline'
 import 'ui/Table/Table.css'
 
 interface ComponentsTableHelper {
-  name: React.ReactNode
-  coverage: React.ReactNode
-  trend: React.ReactNode
-  delete: React.ReactNode
+  name: React.ReactElement
+  coverage: React.ReactElement
+  trend: React.ReactElement
+  lastUploaded: React.ReactElement
+  delete: React.ReactElement | null
 }
 
 const columnHelper = createColumnHelper<ComponentsTableHelper>()
@@ -46,7 +47,11 @@ const columns = [
     cell: ({ renderValue }) => renderValue(),
   }),
   columnHelper.accessor('trend', {
-    header: () => 'Trend',
+    header: () => 'Historical Trend',
+    cell: ({ renderValue }) => renderValue(),
+  }),
+  columnHelper.accessor('lastUploaded', {
+    header: () => 'Last Uploaded',
     cell: ({ renderValue }) => renderValue(),
   }),
   columnHelper.accessor('delete', {
@@ -61,32 +66,34 @@ function createTableData({
   setModalInfo,
   isAdmin,
 }: {
-  tableData: any[] | null // TODO: update type when we convert useRepoComponents to TS
+  tableData: ReturnType<typeof useRepoComponentsTable>['data']
   indicationRange?: { upperRange: number; lowerRange: number } | null
   setModalInfo: (data: any) => void
   isAdmin?: boolean | null
 }) {
-  if (tableData === null) {
+  if (tableData == null) {
     return []
   }
 
-  const data = tableData.map(
+  const data = tableData?.map(
     ({
       name,
       percentCovered,
       percentChange,
       measurements,
+      lastUploaded,
     }: {
       name: string
       percentCovered: number | null
-      percentChange: number
+      percentChange: number | null
       measurements: any[]
+      lastUploaded: string | null
     }) => ({
       name: (
         <A
           to={{
             pageName: 'coverage',
-            options: { queryParams: { flags: [name] } },
+            options: { queryParams: { components: [name] } },
           }}
           variant="black"
           isExternal={false}
@@ -117,11 +124,16 @@ function createTableData({
           name={name}
         />
       ),
+      lastUploaded: (
+        <span className="flex items-center">
+          {lastUploaded ? formatTimeToNow(lastUploaded) : ''}
+        </span>
+      ),
       delete: isAdmin ? (
         <div className="flex items-center justify-center">
           <button
-            data-testid="delete-flag"
-            onClick={() => setModalInfo({ flagName: name, showModal: true })}
+            data-testid="delete-component"
+            onClick={() => setModalInfo({ componentId: name, showModal: true })}
             className="text-ds-gray-tertiary hover:text-ds-gray-senary"
           >
             <Icon size="md" name="trash" variant="outline" />
@@ -145,14 +157,14 @@ const ComponentTable = memo(function Table({
   sorting,
   setSorting,
 }: {
-  tableData: any[] // TODO: update type when we convert useRepoComponents to TS
+  tableData: ReturnType<typeof createTableData>
   isLoading: boolean
   sorting?: SortingState
   setSorting?: OnChangeFn<SortingState> | undefined
 }) {
   const table = useReactTable({
-    columns,
     data: tableData,
+    columns,
     state: {
       sorting,
     },
@@ -166,9 +178,10 @@ const ComponentTable = memo(function Table({
       <table>
         <colgroup>
           <col className="@sm/table:w-4/12" />
-          <col className="@sm/table:w-4/12" />
-          <col className="@sm/table:w-4/12" />
-          <col className="@sm/table:w-1/12" />
+          <col className="@sm/table:w-3/12" />
+          <col className="@sm/table:w-3/12" />
+          <col className="@sm/table:w-2/12" />
+          <col className="@sm/table:w-3/12" />
         </colgroup>
         <thead data-testid="header-row">
           {table.getHeaderGroups().map((headerGroup) => (
@@ -232,22 +245,6 @@ const ComponentTable = memo(function Table({
   )
 })
 
-function LoadMoreTrigger({
-  intersectionRef,
-}: {
-  intersectionRef: React.Ref<HTMLSpanElement>
-}) {
-  return (
-    <span
-      ref={intersectionRef}
-      data-testid={'Loading'}
-      className="invisible relative top-[-65px] block leading-[0]"
-    >
-      Loading
-    </span>
-  )
-}
-
 type URLParams = {
   provider: string
   owner: string
@@ -258,31 +255,17 @@ function ComponentsTable() {
   const { provider, owner, repo } = useParams<URLParams>()
   const { data: repoConfigData } = useRepoConfig({ provider, owner, repo })
   const [modalInfo, setModalInfo] = useState({
-    flagName: null,
+    componentId: null,
     showModal: false,
   })
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'name', desc: true },
   ])
-  const { ref, inView } = useInView()
-
   const indicationRange = repoConfigData?.indicationRange
 
-  const {
-    data,
-    isAdmin,
-    isLoading,
-    isSearching,
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-  } = useRepoComponentsTable(sorting[0]?.desc)
-
-  useEffect(() => {
-    if (inView && hasNextPage) {
-      fetchNextPage()
-    }
-  }, [inView, hasNextPage, fetchNextPage])
+  const { data, isAdmin, isLoading, isSearching } = useRepoComponentsTable(
+    sorting[0]?.desc
+  )
 
   const tableData = useMemo(() => {
     return createTableData({
@@ -296,9 +279,9 @@ function ComponentsTable() {
   return (
     <>
       <DeleteComponentModal
-        componentName={modalInfo?.flagName || ''}
+        componentId={modalInfo?.componentId || ''}
         closeModal={() => {
-          setModalInfo({ flagName: null, showModal: false })
+          setModalInfo({ componentId: null, showModal: false })
         }}
         isOpen={modalInfo?.showModal}
       />
@@ -313,8 +296,6 @@ function ComponentsTable() {
           {isSearching ? 'No results found' : <ComponentsNotConfigured />}
         </p>
       )}
-      {isFetchingNextPage ? <Loader /> : null}
-      {hasNextPage ? <LoadMoreTrigger intersectionRef={ref} /> : null}
     </>
   )
 }
