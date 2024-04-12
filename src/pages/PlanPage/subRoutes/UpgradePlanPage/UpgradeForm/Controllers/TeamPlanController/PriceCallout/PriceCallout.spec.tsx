@@ -123,7 +123,7 @@ describe('PriceCallout', () => {
         seats: 1,
       }
 
-      it('does not render anything', async () => {
+      it('does not render calculator', async () => {
         const { mockSetFormValue } = setup()
 
         render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
@@ -141,7 +141,7 @@ describe('PriceCallout', () => {
         seats: 11,
       }
 
-      it('does not render anything', async () => {
+      it('does not render calculator', async () => {
         const { mockSetFormValue } = setup()
 
         render(<PriceCallout {...props} setFormValue={mockSetFormValue} />, {
