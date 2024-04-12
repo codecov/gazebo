@@ -22,7 +22,7 @@ export const createPullsTableTeamData = ({
   }
 
   return pulls.filter(Boolean).map((pull) => {
-    let patch = <p className="text-right">No report uploaded</p>
+    let patch = <p className="text-right">-</p>
     if (pull?.compareWithBase?.__typename === 'Comparison') {
       const patchPercentage =
         pull?.compareWithBase?.patchTotals?.percentCovered ?? 0

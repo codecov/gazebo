@@ -46,13 +46,15 @@ const Coverage: React.FC<CoverageProps> = ({
         <A to={{ pageName: 'pullDetail', options: { pullId } }}>
           <span className="mx-6 font-mono text-ds-gray-quinary">#{pullId}</span>
         </A>
-        <TotalsNumber
-          value={head?.totals?.percentCovered}
-          plain={plain}
-          light={false}
-          large={false}
-          showChange={false}
-        />
+        <div className="flex-1">
+          <TotalsNumber
+            value={head?.totals?.percentCovered}
+            plain={plain}
+            light={false}
+            large={false}
+            showChange={false}
+          />
+        </div>
       </div>
     )
   }
@@ -64,9 +66,7 @@ const Coverage: React.FC<CoverageProps> = ({
       <A to={{ pageName: 'pullDetail', options: { pullId } }}>
         <span className="mx-6 font-mono text-ds-gray-quinary">#{pullId}</span>
       </A>
-      <span className="flex-1 text-right text-sm text-ds-gray-quinary">
-        No report uploaded yet
-      </span>
+      <span className="flex-1 text-right text-sm text-ds-gray-quinary">-</span>
     </div>
   )
 }
