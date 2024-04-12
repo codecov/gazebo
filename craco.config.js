@@ -6,7 +6,7 @@ const { resolve } = require('path')
 
 const SentryPlugin = sentryWebpackPlugin({
   org: process.env.SENTRY_ORG || 'codecov',
-  project: process.env.SENTRY_PROJECT || 'gazebo',
+  project: process.env.REACT_APP_SENTRY_PROJECT || 'gazebo',
   authToken: process.env.SENTRY_AUTH_TOKEN,
   release: {
     name: process.env.GAZEBO_SHA || Date.now().toString(),
