@@ -584,7 +584,7 @@ export function useNavLinks() {
       isExternalLink: false,
     },
     pullComponents: {
-      text: 'Flags',
+      text: 'Components',
       path: (
         { provider = p, owner = o, repo = r, pullId = pi, queryParams = {} } = {
           provider: p,

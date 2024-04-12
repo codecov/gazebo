@@ -13,6 +13,7 @@ import { useParams } from 'react-router-dom'
 import { useCommitsTeam } from 'services/commits'
 import { useRepoOverview } from 'services/repo'
 import Spinner from 'ui/Spinner'
+
 import 'ui/Table/Table.css'
 
 import { createCommitsTableTeamData } from './createCommitsTableTeamData'

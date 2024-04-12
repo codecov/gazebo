@@ -73,6 +73,15 @@ const BranchSelector: React.FC<BranchSelectorProps> = ({
     }
   }
 
+  // if the selected branch is the default branch and no branch is selected
+  // redirect to the default branch
+  if (selectedBranch === overview?.defaultBranch && !branch) {
+    history.push(
+      // @ts-expect-error - useNavLinks needs to be typed
+      bundlesLink.path({ branch: encodeURIComponent(selection?.name) })
+    )
+  }
+
   return (
     <div className="md:w-[16rem]">
       <h3 className="flex items-center gap-1 text-sm font-semibold text-ds-gray-octonary">
@@ -90,14 +99,10 @@ const BranchSelector: React.FC<BranchSelectorProps> = ({
           value={selection}
           onChange={(item: Branch) => {
             resetBundleSelect()
-            if (item?.name === overview?.defaultBranch) {
-              history.push(bundlesLink.path())
-            } else {
-              history.push(
-                // @ts-expect-error - useNavLinks needs to be typed
-                bundlesLink.path({ branch: encodeURIComponent(item?.name) })
-              )
-            }
+            history.push(
+              // @ts-expect-error - useNavLinks needs to be typed
+              bundlesLink.path({ branch: encodeURIComponent(item?.name) })
+            )
           }}
           variant="gray"
           renderItem={(item: Branch) => <span>{item?.name}</span>}

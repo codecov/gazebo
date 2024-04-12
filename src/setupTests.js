@@ -8,6 +8,7 @@ jest.mock('@sentry/react', () => {
   const originalModule = jest.requireActual('@sentry/react')
   return {
     ...originalModule,
+    setUser: jest.fn(),
     metrics: {
       ...originalModule.metrics,
       distribution: jest.fn(),

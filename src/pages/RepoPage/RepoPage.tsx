@@ -20,6 +20,7 @@ const CoverageTab = lazy(() => import('./CoverageTab'))
 const NewRepoTab = lazy(() => import('./CoverageOnboarding'))
 const PullsTab = lazy(() => import('./PullsTab'))
 const FlagsTab = lazy(() => import('./FlagsTab'))
+const ComponentsTab = lazy(() => import('./ComponentsTab'))
 const SettingsTab = lazy(() => import('./SettingsTab'))
 
 const path = '/:provider/:owner/:repo'
@@ -127,7 +128,7 @@ function Routes({
         ) : null}
         {coverageEnabled && componentTab ? (
           <SentryRoute path={`${path}/components`} exact>
-            <FlagsTab />
+            <ComponentsTab />
           </SentryRoute>
         ) : null}
         {productEnabled ? (

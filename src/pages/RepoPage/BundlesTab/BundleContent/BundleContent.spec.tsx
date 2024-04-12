@@ -135,6 +135,7 @@ const wrapper =
           <Route
             path={[
               '/:provider/:owner/:repo/bundles/:branch/:bundle',
+              '/:provider/:owner/:repo/bundles/:branch',
               '/:provider/:owner/:repo/bundles',
             ]}
           >
@@ -209,23 +210,55 @@ describe('BundleContent', () => {
 
   describe('rendering content section', () => {
     describe('when the bundle type is BundleAnalysisReport', () => {
-      it('renders the bundle table', async () => {
-        setup({})
-        render(<BundleContent />, {
-          wrapper: wrapper('/gh/codecov/test-repo/bundles/main/test-bundle'),
+      describe('when branch and bundle are set', () => {
+        it('renders the bundle table', async () => {
+          setup({})
+          render(<BundleContent />, {
+            wrapper: wrapper('/gh/codecov/test-repo/bundles/main/test-bundle'),
+          })
+
+          const bundleName = await screen.findByText(/asset-1/)
+          expect(bundleName).toBeInTheDocument()
+
+          const [type] = await screen.findAllByText('js')
+          expect(type).toBeInTheDocument()
+
+          const [bundleSize] = await screen.findAllByText(/3kB/)
+          expect(bundleSize).toBeInTheDocument()
+
+          const [bundleLoadTime] = await screen.findAllByText(/2s/)
+          expect(bundleLoadTime).toBeInTheDocument()
         })
+      })
 
-        const bundleName = await screen.findByText(/asset-1/)
-        expect(bundleName).toBeInTheDocument()
+      describe('when only the branch is set', () => {
+        it('renders no bundle selected banner and empty table', async () => {
+          setup({})
+          render(<BundleContent />, {
+            wrapper: wrapper('/gh/codecov/test-repo/bundles/main'),
+          })
 
-        const [type] = await screen.findAllByText('js')
-        expect(type).toBeInTheDocument()
+          const banner = await screen.findByText(/No Bundle Selected/)
+          expect(banner).toBeInTheDocument()
 
-        const [bundleSize] = await screen.findAllByText(/3kB/)
-        expect(bundleSize).toBeInTheDocument()
+          const dashes = await screen.findAllByText('-')
+          expect(dashes).toHaveLength(4)
+        })
+      })
 
-        const [bundleLoadTime] = await screen.findAllByText(/2s/)
-        expect(bundleLoadTime).toBeInTheDocument()
+      describe('when bundle and branch are not set', () => {
+        it('renders no branch selected banner and empty table', async () => {
+          setup({})
+          render(<BundleContent />, {
+            wrapper: wrapper('/gh/codecov/test-repo/bundles'),
+          })
+
+          const banner = await screen.findByText(/No Branch Selected/)
+          expect(banner).toBeInTheDocument()
+
+          const dashes = await screen.findAllByText('-')
+          expect(dashes).toHaveLength(4)
+        })
       })
     })
 

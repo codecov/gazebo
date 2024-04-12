@@ -34,7 +34,7 @@ export default defineConfig({
   ],
 });`
 
-const commitString = `git add -A && git commit -m "Added Codecov bundler plugin"`
+const commitString = `git add -A && git commit -m "Add Codecov bundler plugin" && git push`
 
 const npmBuild = `npm run build`
 const yarnBuild = `yarn run build`
@@ -110,7 +110,7 @@ const StepTwo: React.FC<{ uploadToken: string }> = ({ uploadToken }) => {
         <pre className="flex basis-2/3 items-center justify-between gap-2 rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
           <div className="w-0 flex-1 overflow-hidden">{uploadToken}</div>
           <CopyClipboard
-            string={uploadToken ?? ''}
+            string={uploadToken}
             testIdExtension="-upload-token"
             onClick={() => {
               copiedTokenMetric('vite')
@@ -155,8 +155,8 @@ const StepFour: React.FC = () => {
   return (
     <div>
       <h2 className="pb-2 text-base">
-        <span className="font-semibold">Step 4:</span> Commit your latest
-        changes
+        <span className="font-semibold">Step 4:</span> Commit and push your
+        latest changes
       </h2>
       <p className="pb-2 text-sm">
         The plugin requires at least one commit to be made to properly upload
@@ -233,10 +233,7 @@ const ViteOnboarding: React.FC = () => {
   const { data: repoData } = useRepo({ provider, owner, repo })
   const { data: orgUploadToken } = useOrgUploadToken({ provider, owner })
 
-  let uploadToken = repoData?.repository?.uploadToken
-  if (orgUploadToken) {
-    uploadToken = orgUploadToken
-  }
+  const uploadToken = orgUploadToken ?? repoData?.repository?.uploadToken ?? ''
 
   useEffect(() => {
     visitedOnboardingMetric('vite')
@@ -245,7 +242,7 @@ const ViteOnboarding: React.FC = () => {
   return (
     <div className="flex flex-col gap-6">
       <StepOne />
-      <StepTwo uploadToken={uploadToken || ''} />
+      <StepTwo uploadToken={uploadToken} />
       <StepThree />
       <StepFour />
       <StepFive />

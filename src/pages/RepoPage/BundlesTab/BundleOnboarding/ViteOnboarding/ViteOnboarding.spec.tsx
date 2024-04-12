@@ -355,7 +355,9 @@ describe('ViteOnboarding', () => {
       const stepText = await screen.findByText('Step 4:')
       expect(stepText).toBeInTheDocument()
 
-      const headerText = await screen.findByText('Commit your latest changes')
+      const headerText = await screen.findByText(
+        'Commit and push your latest changes'
+      )
       expect(headerText).toBeInTheDocument()
     })
 
@@ -374,7 +376,7 @@ describe('ViteOnboarding', () => {
       render(<ViteOnboarding />, { wrapper })
 
       const gitCommit = await screen.findByText(
-        'git add -A && git commit -m "Added Codecov bundler plugin"'
+        'git add -A && git commit -m "Add Codecov bundler plugin" && git push'
       )
       expect(gitCommit).toBeInTheDocument()
     })
