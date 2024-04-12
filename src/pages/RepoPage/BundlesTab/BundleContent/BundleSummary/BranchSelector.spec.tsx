@@ -126,13 +126,19 @@ afterAll(() => {
 interface SetupArgs {
   hasNextPage?: boolean
   nullOverview?: boolean
+  branch?: string
 }
 
 describe('BranchSelector', () => {
   function setup(
-    { hasNextPage = false, nullOverview = false }: SetupArgs = {
+    {
+      hasNextPage = false,
+      nullOverview = false,
+      branch = 'main',
+    }: SetupArgs = {
       hasNextPage: false,
       nullOverview: false,
+      branch: 'main',
     }
   ) {
     const user = userEvent.setup()
@@ -161,7 +167,6 @@ describe('BranchSelector', () => {
         )
       }),
       graphql.query('GetBranch', (req, res, ctx) => {
-        let branch = 'main'
         if (req.variables?.branch) {
           branch = req.variables?.branch
         }
@@ -251,6 +256,19 @@ describe('BranchSelector', () => {
           expect(testLocation.pathname).toBe(
             '/gh/codecov/test-repo/bundles/main'
           )
+        )
+      })
+
+      it('does not redirect on Select branch', async () => {
+        const { queryClient, mockResetBundleSelect } = setup({
+          branch: 'Select branch',
+        })
+        render(<BranchSelector resetBundleSelect={mockResetBundleSelect} />, {
+          wrapper: wrapper(queryClient),
+        })
+
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe('/gh/codecov/test-repo/bundles')
         )
       })
     })
