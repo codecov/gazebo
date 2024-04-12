@@ -23,6 +23,7 @@ const wrapper =
 const server = setupServer()
 
 const invalidateQueriesSpy = jest.spyOn(queryClient, 'invalidateQueries')
+const getQueriesDataSpy = jest.spyOn(queryClient, 'getQueriesData')
 
 beforeAll(() => {
   server.listen()
@@ -122,13 +123,26 @@ describe('useResyncUser', () => {
 
       await waitFor(() => expect(invalidateQueriesSpy).toHaveBeenCalledTimes(2))
 
+      // For some reason number of called times is doubling; but when console logging within the queryFn we see
+      // that the loop is being entered the correct number of times. This may be some jest weirdness
       jest.advanceTimersByTime(POLLING_INTERVAL)
 
       await waitFor(() => expect(invalidateQueriesSpy).toHaveBeenCalledTimes(4))
 
+      // Mock returning the data returned being as large as the page size
+      getQueriesDataSpy.mockReturnValue([
+        0,
+        { pages: { repos: Array.from({ length: 20 }) } },
+      ])
+
       jest.advanceTimersByTime(POLLING_INTERVAL)
 
-      await waitFor(() => expect(invalidateQueriesSpy).toHaveBeenCalledTimes(6))
+      await waitFor(() => expect(invalidateQueriesSpy).toHaveBeenCalledTimes(5))
+
+      // Confirm that we don't call the query anymore after we've reached the page size
+      jest.advanceTimersByTime(POLLING_INTERVAL)
+
+      await waitFor(() => expect(invalidateQueriesSpy).toHaveBeenCalledTimes(5))
 
       // sync on server finishes
       syncStatus = false
@@ -142,9 +156,8 @@ describe('useResyncUser', () => {
 
       await waitFor(() => expect(result.current.isSyncing).toBeFalsy())
 
-      // For some reason number of called times is doubling; but when console logging within the queryFn we see
-      // that the loop is being entered the correct number of times. This may be some jest weirdness
-      await waitFor(() => expect(invalidateQueriesSpy).toHaveBeenCalledTimes(8))
+      // Call one extra time on success
+      await waitFor(() => expect(invalidateQueriesSpy).toHaveBeenCalledTimes(6))
       jest.useRealTimers()
     })
   })
@@ -192,7 +205,7 @@ describe('useResyncUser', () => {
 
       await waitFor(() =>
         expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-          queryKey: ['repos'],
+          queryKey: ['repos', 'gh', undefined],
         })
       )
     })
