@@ -40,6 +40,7 @@ const mockBranchContentData = {
                 name: 'file.ts',
                 path: 'src/file.ts',
                 percentCovered: 100.0,
+                isCriticalFile: false,
                 __typename: 'PathContentFile',
               },
             ],

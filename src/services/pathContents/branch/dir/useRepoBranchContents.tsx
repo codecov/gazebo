@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
+import { UnknownFlagsSchema } from 'services/impactedFiles/schemas'
 import { RepoConfig } from 'services/repo/useRepoConfig'
 import Api from 'shared/api'
 
@@ -28,16 +29,17 @@ const BasePathContentSchema = z.object({
 
 const PathContentFileSchema = BasePathContentSchema.extend({
   __typename: z.literal('PathContentFile'),
-  isCriticalFile: z.boolean().nullish(),
+  isCriticalFile: z.boolean(),
 })
 
 const PathContentDirSchema = BasePathContentSchema.extend({
   __typename: z.literal('PathContentDir'),
 })
 
-const PathContentsResultSchema = z
-  .union([PathContentFileSchema, PathContentDirSchema])
-  .nullable()
+const PathContentsResultSchema = z.discriminatedUnion('__typename', [
+  PathContentFileSchema,
+  PathContentDirSchema,
+])
 
 export const PathContentsSchema = z.object({
   __typename: z.literal('PathContents'),
@@ -66,6 +68,7 @@ const PathContentsUnionSchema = z.discriminatedUnion('__typename', [
   UnknownPathSchema,
   MissingCoverageSchema,
   MissingHeadReportSchema,
+  UnknownFlagsSchema,
 ])
 
 export type PathContentResultType = z.infer<typeof PathContentsResultSchema>
