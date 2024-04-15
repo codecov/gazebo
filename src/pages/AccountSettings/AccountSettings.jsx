@@ -75,5 +75,4 @@ function AccountSettings() {
     </div>
   )
 }
-
 export default AccountSettings
