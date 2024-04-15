@@ -12,8 +12,8 @@ Failing.args = {
   ciPassed: false,
 }
 
-export const Processing = Template.bind({})
-Processing.args = {
+export const NoStatus = Template.bind({})
+NoStatus.args = {
   ciPassed: null,
 }
 
