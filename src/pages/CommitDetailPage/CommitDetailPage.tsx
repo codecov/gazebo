@@ -125,5 +125,4 @@ const CommitDetailPage: React.FC = () => {
     </div>
   )
 }
-
 export default CommitDetailPage
