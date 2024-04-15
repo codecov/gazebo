@@ -159,7 +159,6 @@ const MainAppRoutes = () => (
 
 function App() {
   useUTM()
-
   return (
     <>
       <ToastNotificationProvider>
