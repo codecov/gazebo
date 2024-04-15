@@ -1,5 +1,6 @@
 import ToggleHeader from 'pages/PullRequestPage/Header/ToggleHeader/ToggleHeader'
 import { useLocationParams } from 'services/navigation'
+import ContentsTableHeader from 'shared/ContentsTable/ContentsTableHeader'
 import DisplayTypeButton from 'shared/ContentsTable/DisplayTypeButton'
 import { usePullTreePaths } from 'shared/treePaths'
 import Breadcrumb from 'ui/Breadcrumb'
@@ -22,8 +23,8 @@ function FileExplorer() {
   const { treePaths } = usePullTreePaths()
 
   return (
-    <div className="mt-2 flex flex-col">
-      <div className="flex flex-wrap justify-between border-b pb-2">
+    <div className="mt-2 flex flex-col gap-2">
+      <ContentsTableHeader>
         <div className="flex items-center gap-4">
           <DisplayTypeButton />
           <Breadcrumb paths={treePaths} />
@@ -37,9 +38,11 @@ function FileExplorer() {
             setSearchValue={(search: string) => updateParams({ search })}
           />
         </div>
+      </ContentsTableHeader>
+      <div className="border-t border-ds-gray-tertiary">
+        <ToggleHeader noBottomBorder showHitCount />
+        <FileExplorerTable />
       </div>
-      <ToggleHeader noBottomBorder showHitCount />
-      <FileExplorerTable />
     </div>
   )
 }
