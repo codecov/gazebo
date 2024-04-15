@@ -13,11 +13,22 @@ import { usePullHeadDataTeam } from './hooks'
 
 import { pullStateToColor } from '../constants'
 
+interface URLParams {
+  provider: string
+  owner: string
+  repo: string
+  pullId: string
+}
+
 function HeaderTeam() {
-  const { provider, owner, repo, pullId } = useParams()
+  const { provider, owner, repo, pullId } = useParams<URLParams>()
   const { data } = usePullHeadDataTeam({ provider, owner, repo, pullId })
 
   const pull = data?.pull
+  let percentCovered = null
+  if (pull?.compareWithBase?.__typename === 'Comparison') {
+    percentCovered = pull?.compareWithBase?.patchTotals?.percentCovered
+  }
 
   return (
     <div className="flex flex-col justify-between gap-2 border-b border-ds-gray-secondary pb-2 text-xs md:flex-row">
@@ -25,20 +36,23 @@ function HeaderTeam() {
         <div>
           <h1 className="flex items-center gap-2 text-xl font-semibold">
             {pull?.title}
-            <span
-              className={cs(
-                'text-white font-bold px-3 py-0.5 text-xs rounded',
-                pullStateToColor[pull?.state]
-              )}
-            >
-              {capitalize(pull?.state)}
-            </span>
+            {pull?.state ? (
+              <span
+                className={cs(
+                  'text-white font-bold px-3 py-0.5 text-xs rounded',
+                  pullStateToColor[pull?.state]
+                )}
+              >
+                {capitalize(pull?.state)}
+              </span>
+            ) : null}
           </h1>
           <p className="flex flex-row items-center gap-2">
             <span>
               {pull?.updatestamp && formatTimeToNow(pull?.updatestamp)}{' '}
               <span className="bold">{pull?.author?.username}</span> authored{' '}
               {pull?.pullId && (
+                // @ts-expect-error - A needs to be updated to TS
                 <A
                   href={getProviderPullURL({
                     provider,
@@ -64,11 +78,7 @@ function HeaderTeam() {
           <h4 className="gap-2 font-mono text-xs text-ds-gray-quinary">
             Patch Coverage
           </h4>
-          <TotalsNumber
-            value={pull?.compareWithBase?.patchTotals?.percentCovered}
-            plain
-            large
-          />
+          <TotalsNumber value={percentCovered} plain large />
         </div>
       </div>
     </div>
