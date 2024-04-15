@@ -17,8 +17,11 @@ interface URLParams {
   repo: string
 }
 
-function ToggleHeader({ showHitCount = false }) {
+function ToggleHeader({ showHitCount = false, noBottomBorder = false }) {
   const { provider, owner, repo } = useParams<URLParams>()
+  const noBottomBorderStyle = noBottomBorder
+    ? 'border-b-0 pb-1'
+    : 'border-b pb-2'
 
   const { data: overview } = useRepoOverview({ provider, owner, repo })
   const { multipleTiers } = useFlags({
@@ -31,9 +34,7 @@ function ToggleHeader({ showHitCount = false }) {
 
   return (
     <div
-      className={
-        'flex w-full flex-1 flex-wrap items-start gap-2 border-b border-ds-gray-tertiary bg-white pb-2 sm:flex-row sm:items-center md:mb-1 lg:w-auto lg:flex-none'
-      }
+      className={`flex w-full flex-1 flex-wrap items-start gap-2 bg-white sm:flex-row sm:items-center md:mb-1 lg:w-auto lg:flex-none ${noBottomBorderStyle} border-ds-gray-tertiary`}
     >
       <div className="flex gap-2 pt-2">
         <TitleCoverage coverage={LINE_STATE.UNCOVERED} />
