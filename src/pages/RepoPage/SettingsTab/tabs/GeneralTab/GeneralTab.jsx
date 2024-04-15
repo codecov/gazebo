@@ -20,7 +20,7 @@ function GeneralTab() {
   const showTokensTeam = isPrivate && tierData === TierNames.TEAM
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 lg:w-3/4">
       {defaultBranch && <DefaultBranch defaultBranch={defaultBranch} />}
       {showTokensTeam ? <TokensTeam /> : <Tokens />}
       <DangerZone />

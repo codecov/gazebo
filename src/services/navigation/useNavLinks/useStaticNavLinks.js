@@ -196,6 +196,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    statusBadges: {
+      text: 'Status Badges',
+      path: () => 'https://docs.codecov.com/docs/status-badges',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     graphsSunburst: {
       text: 'Graphs Sunburst',
       path: () => 'https://docs.codecov.com/docs/graphs#sunburst',
