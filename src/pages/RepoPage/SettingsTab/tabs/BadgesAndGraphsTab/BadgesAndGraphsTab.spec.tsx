@@ -5,12 +5,7 @@ import { setupServer } from 'msw/node'
 import { PropsWithChildren } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useBranches } from 'services/branches'
-
 import BadgesAndGraphsTab from './BadgesAndGraphsTab'
-
-jest.mock('services/branches')
-const mockedUseBranches = useBranches as jest.Mock
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -40,6 +35,20 @@ afterAll(() => server.close())
 describe('BadgesAndGraphsTab', () => {
   function setup({ graphToken }: { graphToken: string | null }) {
     server.use(
+      graphql.query('GetBranches', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              repository: {
+                branches: {
+                  edges: [],
+                },
+              },
+            },
+          })
+        )
+      }),
       graphql.query('GetRepoSettings', (req, res, ctx) => {
         return res(
           ctx.status(200),
@@ -53,14 +62,6 @@ describe('BadgesAndGraphsTab', () => {
         )
       })
     )
-    mockedUseBranches.mockReturnValue({
-      data: {
-        branches: [],
-      },
-      isFetching: false,
-      hasNextPage: false,
-      fetchNextPage: () => {},
-    })
   }
 
   describe('when rendered with graphToken', () => {

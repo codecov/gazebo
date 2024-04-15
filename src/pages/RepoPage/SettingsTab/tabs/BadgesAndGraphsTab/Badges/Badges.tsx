@@ -10,7 +10,7 @@ import Select from 'ui/Select'
 import SettingsDescriptor from 'ui/SettingsDescriptor'
 import TokenWrapper from 'ui/TokenWrapper'
 
-type UseBadgesProps = {
+type UseBadgesArgs = {
   graphToken: string
   provider: string
   owner: string
@@ -18,25 +18,25 @@ type UseBadgesProps = {
   branch: Branch
 }
 
-const useBadges = ({
+const createBadges = ({
   graphToken,
   provider,
   owner,
   repo,
   branch,
-}: UseBadgesProps) => {
+}: UseBadgesArgs) => {
   const repoPath = `${config.BASE_URL}/${provider}/${owner}/${repo}`
-  let branchPath =
+  const branchPath =
     branch.name === 'Default branch'
       ? ''
       : `/branch/${encodeURIComponent(branch.name)}`
   const fullPath = `${repoPath}${branchPath}/graph/badge.svg?token=${graphToken}`
 
-  const BadgesEnum = Object.freeze({
+  const BadgesEnum = {
     MARKDOWN: `[![codecov](${fullPath})](${repoPath})`,
     HTML: `<a href="${repoPath}" > \n <img src="${fullPath}"/> \n </a>`,
     RST: `.. image:: ${fullPath} \n :target: ${repoPath}`,
-  })
+  } as const
 
   return BadgesEnum
 }
@@ -81,7 +81,7 @@ function Badges({ graphToken }: BadgesProps) {
     return [defaultBranch]
   }, [branchList])
 
-  const BadgesEnum = useBadges({
+  const BadgesEnum = createBadges({
     graphToken,
     provider,
     owner,

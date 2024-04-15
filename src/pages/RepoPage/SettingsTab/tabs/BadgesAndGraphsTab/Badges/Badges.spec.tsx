@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
   render,
   screen,
@@ -5,60 +6,135 @@ import {
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { useIntersection } from 'react-use'
 
 import config from 'config'
 
-import { useBranches } from 'services/branches'
-
 import Badges from './Badges'
 
 jest.mock('config')
-jest.mock('services/branches')
 jest.mock('react-use/lib/useIntersection')
-const mockedUseBranches = useBranches as jest.Mock
 const mockedUseIntersection = useIntersection as jest.Mock
 
+const mockNoBranches = {
+  __typename: 'Repository',
+  branches: {
+    edges: [],
+    pageInfo: {
+      hasNextPage: false,
+      endCursor: null,
+    },
+  },
+}
+
+const mockBranches = (hasNextPage = false) => ({
+  __typename: 'Repository',
+  branches: {
+    edges: [
+      {
+        node: {
+          name: 'branch-1',
+          head: {
+            commitid: 'asdf123',
+          },
+        },
+      },
+      {
+        node: {
+          name: 'branch-2',
+          head: {
+            commitid: 'asdf123',
+          },
+        },
+      },
+      {
+        node: {
+          name: 'branch-3',
+          head: {
+            commitid: 'asdf123',
+          },
+        },
+      },
+    ],
+    pageInfo: {
+      hasNextPage: hasNextPage,
+      endCursor: 'end-cursor',
+    },
+  },
+})
+
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings/badge']}>
-    <Route path="/:provider/:owner/:repo/settings/badge">{children}</Route>
-  </MemoryRouter>
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter
+      initialEntries={['/gh/codecov/codecov-client/settings/badge']}
+    >
+      <Route path="/:provider/:owner/:repo/settings/badge">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
 )
 
-beforeEach(() => jest.clearAllMocks())
+const server = setupServer()
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+
+beforeAll(() => {
+  jest.clearAllMocks()
+  server.listen()
+})
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => {
+  server.close()
+})
+
+type SetupArgs = {
+  noBranches?: boolean
+  hasNextPage?: boolean
+  fetchNextPage?: () => void
+  mockSearching?: (value: string) => void
+}
 
 describe('Badges', () => {
   function setup({
     noBranches = false,
-    isFetching = false,
     hasNextPage = false,
     fetchNextPage = () => {},
-  }) {
+    mockSearching = (value: string) => {},
+  }: SetupArgs) {
     config.BASE_URL = 'https://stage-web.codecov.dev'
-    mockedUseBranches.mockReturnValue({
-      data: {
-        branches: noBranches
-          ? undefined
-          : [
-              {
-                name: 'branch-1',
-                head: null,
-              },
-              {
-                name: 'branch-2',
-                head: null,
-              },
-              {
-                name: 'branch-3',
-                head: null,
-              },
-            ],
-      },
-      isFetching,
-      hasNextPage,
-      fetchNextPage,
-    })
+    server.use(
+      graphql.query('GetBranches', (req, res, ctx) => {
+        if (req.variables?.after) {
+          fetchNextPage()
+        }
+
+        if (req.variables?.filters?.searchValue) {
+          mockSearching(req.variables?.filters?.searchValue)
+        }
+
+        if (noBranches) {
+          return res(
+            ctx.status(200),
+            ctx.data({
+              owner: { repository: mockNoBranches },
+            })
+          )
+        }
+
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: { repository: mockBranches(hasNextPage) },
+          })
+        )
+      })
+    )
 
     return userEvent.setup()
   }
@@ -145,7 +221,7 @@ describe('Badges', () => {
     })
 
     it('renders loading state', async () => {
-      const user = setup({ noBranches: true, isFetching: true })
+      const user = setup({ noBranches: true })
       render(<Badges graphToken="WIO9JXFGE" />, {
         wrapper,
       })
@@ -168,17 +244,15 @@ describe('Badges', () => {
       expect(button).toBeInTheDocument()
       user.click(button)
 
-      await waitFor(() => expect(mockedUseBranches).toHaveBeenCalled())
-      expect(await screen.findByText('Search')).toBeInTheDocument()
-
-      const loading = screen.queryAllByText('Default branch')
-      expect(loading).toHaveLength(2)
+      await waitFor(() =>
+        expect(screen.queryAllByText('Default branch')).toHaveLength(2)
+      )
     })
 
     it('tries to load more', async () => {
       mockedUseIntersection.mockReturnValue({ isIntersecting: true })
       const fetchNextPage = jest.fn()
-      const user = setup({ hasNextPage: true, fetchNextPage, isFetching: true })
+      const user = setup({ hasNextPage: true, fetchNextPage })
       render(<Badges graphToken="WIO9JXFGE" />, {
         wrapper,
       })
@@ -194,7 +268,8 @@ describe('Badges', () => {
 
     it('handles searching', async () => {
       const fetchNextPage = jest.fn()
-      const user = setup({ hasNextPage: true, fetchNextPage, isFetching: true })
+      const mockSearching = jest.fn()
+      const user = setup({ hasNextPage: true, fetchNextPage, mockSearching })
       render(<Badges graphToken="WIO9JXFGE" />, {
         wrapper,
       })
@@ -209,11 +284,7 @@ describe('Badges', () => {
       await user.type(searchField, 'branch-3')
 
       await waitFor(() =>
-        expect(mockedUseBranches).toHaveBeenCalledWith(
-          expect.objectContaining({
-            filters: { searchValue: 'branch-3' },
-          })
-        )
+        expect(mockSearching).toHaveBeenCalledWith('branch-3')
       )
     })
   })
