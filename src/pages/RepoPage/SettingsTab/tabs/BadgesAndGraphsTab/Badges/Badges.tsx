@@ -10,7 +10,7 @@ import Select from 'ui/Select'
 import SettingsDescriptor from 'ui/SettingsDescriptor'
 import TokenWrapper from 'ui/TokenWrapper'
 
-type UseBadgesArgs = {
+type createBadgesArgs = {
   graphToken: string
   provider: string
   owner: string
@@ -24,7 +24,7 @@ const createBadges = ({
   owner,
   repo,
   branch,
-}: UseBadgesArgs) => {
+}: createBadgesArgs) => {
   const repoPath = `${config.BASE_URL}/${provider}/${owner}/${repo}`
   const branchPath =
     branch.name === 'Default branch'
