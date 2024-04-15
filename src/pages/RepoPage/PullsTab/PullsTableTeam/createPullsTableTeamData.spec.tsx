@@ -33,7 +33,7 @@ describe('createPullsTableTeamData', () => {
 
   describe('pages has valid pulls', () => {
     describe('compareWithBase __typename is not Comparison', () => {
-      it('returns no report uploaded', () => {
+      it('returns dash', () => {
         const pullData = {
           author: null,
           pullId: 123,
@@ -55,9 +55,7 @@ describe('createPullsTableTeamData', () => {
           pages: [{ pulls: [pullData] }],
         })
 
-        expect(result[0]?.patch).toStrictEqual(
-          <p className="text-right">No report uploaded</p>
-        )
+        expect(result[0]?.patch).toStrictEqual(<p className="text-right">-</p>)
       })
     })
 
@@ -136,7 +134,7 @@ describe('createPullsTableTeamData', () => {
     })
 
     describe('bundleAnalysisReport __typename is not BundleAnalysisReport', () => {
-      it('returns no report uploaded', () => {
+      it('returns x emoji', () => {
         const pullData = {
           author: null,
           pullId: 123,
@@ -165,7 +163,7 @@ describe('createPullsTableTeamData', () => {
     })
 
     describe('bundleAnalysisReport __typename is BundleAnalysisReport', () => {
-      it('returns successful upload', () => {
+      it('returns checkmark emoji', () => {
         const pullData = {
           author: null,
           pullId: 123,

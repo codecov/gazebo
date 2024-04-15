@@ -163,7 +163,7 @@ export default function PullsTableTeam() {
         <table>
           <colgroup>
             <col className="w-full @sm/table:w-6/12" />
-            <col className="@sm/table:w-2/12" />
+            <col className="@sm/table:w-1/12" />
             <col className="@sm/table:w-1/12" />
             <col className="@sm/table:w-1/12" />
             {overview?.bundleAnalysisEnabled ? (
