@@ -96,17 +96,12 @@ afterAll(() => {
 type SetupArgs = {
   noBranches?: boolean
   hasNextPage?: boolean
-  fetchNextPage?: () => void
-  mockSearching?: (value: string) => void
 }
 
 describe('Badges', () => {
-  function setup({
-    noBranches = false,
-    hasNextPage = false,
-    fetchNextPage = () => {},
-    mockSearching = (value: string) => {},
-  }: SetupArgs) {
+  function setup({ noBranches = false, hasNextPage = false }: SetupArgs) {
+    const fetchNextPage = jest.fn()
+    const mockSearching = jest.fn()
     config.BASE_URL = 'https://stage-web.codecov.dev'
     server.use(
       graphql.query('GetBranches', (req, res, ctx) => {
@@ -136,7 +131,7 @@ describe('Badges', () => {
       })
     )
 
-    return userEvent.setup()
+    return { user: userEvent.setup(), fetchNextPage, mockSearching }
   }
 
   describe('renders', () => {
@@ -180,9 +175,12 @@ describe('Badges', () => {
         wrapper,
       })
 
-      expect(screen.getByText('Markdown')).toBeInTheDocument()
-      expect(screen.getByText('HTML')).toBeInTheDocument()
-      expect(screen.getByText('RST')).toBeInTheDocument()
+      const markdown = screen.getByText('Markdown')
+      const html = screen.getByText('HTML')
+      const rst = screen.getByText('RST')
+      expect(markdown).toBeInTheDocument()
+      expect(html).toBeInTheDocument()
+      expect(rst).toBeInTheDocument()
     })
   })
 
@@ -200,7 +198,7 @@ describe('Badges', () => {
     })
 
     it('renders proper url with non-default branch selected', async () => {
-      const user = setup({})
+      const { user } = setup({})
       render(<Badges graphToken="WIO9JXFGE" />, {
         wrapper,
       })
@@ -221,7 +219,7 @@ describe('Badges', () => {
     })
 
     it('renders loading state', async () => {
-      const user = setup({ noBranches: true })
+      const { user } = setup({ noBranches: true })
       render(<Badges graphToken="WIO9JXFGE" />, {
         wrapper,
       })
@@ -235,7 +233,7 @@ describe('Badges', () => {
     })
 
     it('renders Default branch as option even if no branches present', async () => {
-      const user = setup({ noBranches: true })
+      const { user } = setup({ noBranches: true })
       render(<Badges graphToken="WIO9JXFGE" />, {
         wrapper,
       })
@@ -251,8 +249,7 @@ describe('Badges', () => {
 
     it('tries to load more', async () => {
       mockedUseIntersection.mockReturnValue({ isIntersecting: true })
-      const fetchNextPage = jest.fn()
-      const user = setup({ hasNextPage: true, fetchNextPage })
+      const { user, fetchNextPage } = setup({ hasNextPage: true })
       render(<Badges graphToken="WIO9JXFGE" />, {
         wrapper,
       })
@@ -267,9 +264,7 @@ describe('Badges', () => {
     })
 
     it('handles searching', async () => {
-      const fetchNextPage = jest.fn()
-      const mockSearching = jest.fn()
-      const user = setup({ hasNextPage: true, fetchNextPage, mockSearching })
+      const { user, mockSearching } = setup({ hasNextPage: true })
       render(<Badges graphToken="WIO9JXFGE" />, {
         wrapper,
       })

@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -51,7 +50,7 @@ type URLParams = {
   repo: string
 }
 
-function Badges({ graphToken }: BadgesProps) {
+export default function Badges({ graphToken }: BadgesProps) {
   const { provider, owner, repo } = useParams<URLParams>()
   const [branchSearchTerm, setBranchSearchTerm] = useState<string>()
   const [selection, setSelection] = useState<Branch>({
@@ -142,9 +141,3 @@ function Badges({ graphToken }: BadgesProps) {
     />
   )
 }
-
-Badges.propTypes = {
-  graphToken: PropTypes.string.isRequired,
-}
-
-export default Badges
