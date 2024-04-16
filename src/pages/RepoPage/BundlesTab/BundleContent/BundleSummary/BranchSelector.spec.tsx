@@ -44,12 +44,13 @@ const mockMainBranchSearch = {
   },
 }
 
-const mockBranch = (name: string) => ({
+const mockBranch = (
+  name: string,
+  head: null | { commitid: string } = { commitid: '321fdsa' }
+) => ({
   branch: {
     name: name,
-    head: {
-      commitid: '321fdsa',
-    },
+    head: head,
   },
 })
 
@@ -126,13 +127,19 @@ afterAll(() => {
 interface SetupArgs {
   hasNextPage?: boolean
   nullOverview?: boolean
+  nullHead?: boolean
 }
 
 describe('BranchSelector', () => {
   function setup(
-    { hasNextPage = false, nullOverview = false }: SetupArgs = {
+    {
+      hasNextPage = false,
+      nullOverview = false,
+      nullHead = false,
+    }: SetupArgs = {
       hasNextPage: false,
       nullOverview: false,
+      nullHead: false,
     }
   ) {
     const user = userEvent.setup()
@@ -166,11 +173,16 @@ describe('BranchSelector', () => {
           branch = req.variables?.branch
         }
 
+        let mockedBranch = mockBranch(branch)
+        if (nullHead) {
+          mockedBranch = mockBranch(branch, null)
+        }
+
         return res(
           ctx.status(200),
           ctx.data({
             owner: {
-              repository: { __typename: 'Repository', ...mockBranch(branch) },
+              repository: { __typename: 'Repository', ...mockedBranch },
             },
           })
         )
@@ -251,6 +263,19 @@ describe('BranchSelector', () => {
           expect(testLocation.pathname).toBe(
             '/gh/codecov/test-repo/bundles/main'
           )
+        )
+      })
+
+      it('does not redirect on Select branch', async () => {
+        const { queryClient, mockResetBundleSelect } = setup({
+          nullHead: true,
+        })
+        render(<BranchSelector resetBundleSelect={mockResetBundleSelect} />, {
+          wrapper: wrapper(queryClient),
+        })
+
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe('/gh/codecov/test-repo/bundles')
         )
       })
     })

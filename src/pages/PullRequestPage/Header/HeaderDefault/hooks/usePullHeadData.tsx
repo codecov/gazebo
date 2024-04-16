@@ -14,9 +14,11 @@ const RepositorySchema = z.object({
     .object({
       pullId: z.number(),
       title: z.string().nullable(),
-      state: z
-        .union([z.literal('OPEN'), z.literal('CLOSED'), z.literal('MERGED')])
-        .nullable(),
+      state: z.union([
+        z.literal('OPEN'),
+        z.literal('CLOSED'),
+        z.literal('MERGED'),
+      ]),
       author: z
         .object({
           username: z.string().nullable(),

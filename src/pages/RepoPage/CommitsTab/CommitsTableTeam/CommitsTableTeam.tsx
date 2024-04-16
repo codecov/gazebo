@@ -149,6 +149,14 @@ const CommitsTableTeam: React.FC<CommitsTableTeamProps> = ({
     <>
       <div className="tableui">
         <table>
+          <colgroup>
+            <col className="w-full @sm/table:w-5/12" />
+            <col className="@sm/table:w-1/12" />
+            <col className="@sm/table:w-1/12" />
+            {overview?.bundleAnalysisEnabled ? (
+              <col className="@sm/table:w-1/12" />
+            ) : null}
+          </colgroup>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>

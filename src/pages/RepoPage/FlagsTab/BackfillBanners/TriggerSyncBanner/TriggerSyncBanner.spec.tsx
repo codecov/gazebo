@@ -5,13 +5,13 @@ import userEvent from '@testing-library/user-event'
 import { PropsWithChildren } from 'react'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
-import { useActivateFlagMeasurements } from 'services/repo'
+import { useActivateMeasurements } from 'services/repo'
 
 import TriggerSyncBanner from './TriggerSyncBanner'
 
 jest.mock('services/user')
 
-jest.mock('services/repo/useActivateFlagMeasurements')
+jest.mock('services/repo/useActivateMeasurements')
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
   useParams: jest.fn(() => {}),
@@ -42,7 +42,7 @@ describe('TriggerSyncBanner', () => {
 
     const mockedUseParams = useParams as jest.Mock
     const mockedUseActivateFlagMeasurements =
-      useActivateFlagMeasurements as jest.Mock
+      useActivateMeasurements as jest.Mock
 
     mockedUseParams.mockReturnValue({
       owner: 'codecov',

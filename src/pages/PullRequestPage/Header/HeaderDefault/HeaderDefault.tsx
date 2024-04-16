@@ -12,8 +12,15 @@ import { usePullHeadData } from './hooks'
 
 import { pullStateToColor } from '../constants'
 
+interface URLParams {
+  provider: string
+  owner: string
+  repo: string
+  pullId: string
+}
+
 function HeaderDefault() {
-  const { provider, owner, repo, pullId } = useParams()
+  const { provider, owner, repo, pullId } = useParams<URLParams>()
   const { data } = usePullHeadData({ provider, owner, repo, pullId })
 
   const pull = data?.pull
@@ -23,20 +30,23 @@ function HeaderDefault() {
       <div>
         <h1 className="flex items-center gap-2 text-xl font-semibold">
           {pull?.title}
-          <span
-            className={cs(
-              'text-white font-bold px-3 py-0.5 text-xs rounded',
-              pullStateToColor[pull?.state]
-            )}
-          >
-            {capitalize(pull?.state)}
-          </span>
+          {pull?.state ? (
+            <span
+              className={cs(
+                'text-white font-bold px-3 py-0.5 text-xs rounded',
+                pullStateToColor[pull?.state]
+              )}
+            >
+              {capitalize(pull?.state)}
+            </span>
+          ) : null}
         </h1>
         <p className="flex items-center gap-2">
           <span>
             {pull?.updatestamp && formatTimeToNow(pull?.updatestamp)}{' '}
             <span className="bold">{pull?.author?.username}</span> authored{' '}
             {pull?.pullId && (
+              // @ts-expect-error - A needs to be updated to TS
               <A
                 href={getProviderPullURL({
                   provider,

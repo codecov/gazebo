@@ -73,10 +73,26 @@ const mockImpactedFile = {
   },
 }
 
+const mockOverview = (bundleAnalysisEnabled = false) => {
+  return {
+    owner: {
+      repository: {
+        __typename: 'Repository',
+        private: false,
+        defaultBranch: 'main',
+        oldestCommitAt: '2022-10-10T11:59:59',
+        coverageEnabled: true,
+        bundleAnalysisEnabled,
+        languages: ['javascript'],
+      },
+    },
+  }
+}
+
+const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const server = setupServer()
 
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>
@@ -98,7 +114,12 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('CommitFileDiff', () => {
-  function setup({ impactedFile } = { impactedFile: mockImpactedFile }) {
+  function setup(
+    { impactedFile = mockImpactedFile, bundleAnalysisEnabled = false } = {
+      impactedFile: mockImpactedFile,
+      bundleAnalysisEnabled: false,
+    }
+  ) {
     useScrollToLine.mockImplementation(() => ({
       lineRef: () => {},
       handleClick: jest.fn(),
@@ -108,16 +129,19 @@ describe('CommitFileDiff', () => {
     server.use(
       graphql.query('ImpactedFileComparedWithParent', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(baseMock(impactedFile)))
-      )
+      ),
+      graphql.query('GetRepoOverview', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data(mockOverview(bundleAnalysisEnabled))
+        )
+      })
     )
   }
 
   describe('when rendered', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('renders the line changes header', async () => {
+      setup()
       render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
 
       const changeHeader = await screen.findByText('-0,0 +1,45')
@@ -125,6 +149,7 @@ describe('CommitFileDiff', () => {
     })
 
     it('renders the lines of a segment', async () => {
+      setup()
       render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
 
       const calculator = await screen.findByText(/Calculator/)
@@ -140,6 +165,7 @@ describe('CommitFileDiff', () => {
     describe('rendering hit icon', () => {
       describe('there are no ignored ids', () => {
         it('renders hit count icon', async () => {
+          setup()
           render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
 
           const hitCount = await screen.findByText('5')
@@ -153,6 +179,7 @@ describe('CommitFileDiff', () => {
         })
 
         it('renders hit count icon', async () => {
+          setup()
           render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
 
           const hitCount = await screen.findByText('4')
@@ -161,15 +188,32 @@ describe('CommitFileDiff', () => {
       })
     })
 
-    it('renders the commit redirect url', async () => {
-      render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
+    describe('when only coverage is enabled', () => {
+      it('renders the commit redirect url', async () => {
+        setup()
+        render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
 
-      const viewFullFileText = await screen.findByText(/View full file/)
-      expect(viewFullFileText).toBeInTheDocument()
-      expect(viewFullFileText).toHaveAttribute(
-        'href',
-        '/gh/codecov/gazebo/commit/123sha/blob/flag1/file.js'
-      )
+        const viewFullFileText = await screen.findByText(/View full file/)
+        expect(viewFullFileText).toBeInTheDocument()
+        expect(viewFullFileText).toHaveAttribute(
+          'href',
+          '/gh/codecov/gazebo/commit/123sha/blob/flag1/file.js'
+        )
+      })
+    })
+
+    describe('when both coverage and bundle are enabled', () => {
+      it('renders the commit redirect url with query string', async () => {
+        setup({ bundleAnalysisEnabled: true })
+        render(<CommitFileDiff path={'flag1/file.js'} />, { wrapper })
+
+        const viewFullFileText = await screen.findByText(/View full file/)
+        expect(viewFullFileText).toBeInTheDocument()
+        expect(viewFullFileText).toHaveAttribute(
+          'href',
+          '/gh/codecov/gazebo/commit/123sha/blob/flag1/file.js?dropdown=coverage'
+        )
+      })
     })
   })
 
