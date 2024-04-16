@@ -1,4 +1,5 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
 import { z } from 'zod'
 
 import Api from 'shared/api'
@@ -31,11 +32,12 @@ export interface InfiniteUsersQuery {
   provider: string
   owner: string
   query: {
+    activated?: boolean
+    isAdmin?: boolean
     ordering?: string
-    params?: {
-      isAdmin?: boolean
-      activated?: boolean
-    }
+    search?: string
+    page?: number
+    pageSize?: number
   }
 }
 
@@ -45,8 +47,8 @@ export const useInfiniteUsers = (
     suspense?: boolean
     retry?: boolean
   }
-) =>
-  useInfiniteQuery({
+) => {
+  const { data, ...rest } = useInfiniteQuery({
     queryKey: ['users', provider, owner, query],
     queryFn: ({ pageParam = 1, signal }) =>
       Api.get({
@@ -54,9 +56,9 @@ export const useInfiniteUsers = (
         provider,
         signal,
         query: {
-          ...query,
           pageSize: 25,
           page: pageParam,
+          ...query,
         },
       }).then((res) => {
         const parsedRes = MemberListSchema.safeParse(res)
@@ -87,3 +89,9 @@ export const useInfiniteUsers = (
     },
     ...opts,
   })
+
+  return {
+    data: useMemo(() => data?.pages.flatMap((page) => page.results), [data]),
+    ...rest,
+  }
+}
