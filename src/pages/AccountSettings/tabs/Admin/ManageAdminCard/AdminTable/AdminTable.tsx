@@ -107,13 +107,18 @@ export default function AdminTable() {
             username: (
               <div className="flex items-center gap-2">
                 <Avatar
-                  user={{
-                    username: user.username ?? DefaultAuthor.USERNAME,
-                    avatarUrl:
-                      getOwnerImg(provider, user.username) ??
-                      DefaultAuthor.AVATAR_URL,
-                  }}
-                  ariaLabel={`${user.username}-avatar`}
+                  user={
+                    user.username
+                      ? {
+                          username: user.username,
+                          avatarUrl: getOwnerImg(provider, user.username),
+                        }
+                      : {
+                          username: DefaultAuthor.USERNAME,
+                          avatarUrl: DefaultAuthor.AVATAR_URL,
+                        }
+                  }
+                  ariaLabel={`${user.username ?? user.name}-avatar`}
                 />
                 <p>{user.username ?? user.name}</p>
               </div>
