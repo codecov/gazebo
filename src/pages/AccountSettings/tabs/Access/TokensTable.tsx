@@ -91,7 +91,7 @@ function TokensTable({ tokens }: TokensTableProps) {
   }
 
   return (
-    <div className="tableui mt-4 max-w-screen-md">
+    <div className="tableui mt-4">
       <table>
         <colgroup>
           <col className="@sm/table:w-4/6" />

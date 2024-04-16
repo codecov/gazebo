@@ -44,56 +44,58 @@ function YAML({ owner }) {
   })
 
   return (
-    <form onSubmit={onSubmit}>
-      <SuccessModal
-        isOpen={formState.isSubmitSuccessful}
-        closeModal={() => reset({}, { keepValues: true })}
-        owner={owner}
-      />
-      <div className="mb-4 border-b border-ds-gray-secondary pb-4">
-        <p className="text-lg font-semibold">Global YAML</p>
-        <p>
-          Changes made to the Global YAML are applied to all repositories in the
-          org if they do not have a repo level YAML.{' '}
-          <a
-            className="text-ds-blue hover:underline"
-            href="https://docs.codecov.io/docs/codecov-yaml"
-            target="_blank"
-            rel="noreferrer"
-          >
-            learn more
-          </a>
-        </p>
-      </div>
-      <div className="lg:w-3/4">
-        {formState.errors.editor && (
-          <div className="my-4 rounded border border-ds-primary-red bg-ds-coverage-uncovered p-2 text-ds-primary-red">
-            <p>{formState.errors.editor.message}</p>
-          </div>
-        )}
-        <Controller
-          control={control}
-          name="editor"
-          render={({ field: { onChange, value } }) => (
-            <YamlEditor
-              value={value}
-              onChange={onChange}
-              placeholder={`All ${owner} repos will inherit this configuration`}
-            />
-          )}
+    <div className="lg:w-3/4">
+      <form onSubmit={onSubmit}>
+        <SuccessModal
+          isOpen={formState.isSubmitSuccessful}
+          closeModal={() => reset({}, { keepValues: true })}
+          owner={owner}
         />
-        <div className="float-right mt-4">
-          <Button
-            hook="save-yaml"
-            disabled={!formState.isDirty}
-            isLoading={formState.isSubmitting}
-            variant="primary"
-          >
-            Save Changes
-          </Button>
+        <div className="mb-4 border-b border-ds-gray-secondary pb-4">
+          <p className="text-lg font-semibold">Global YAML</p>
+          <p>
+            Changes made to the Global YAML are applied to all repositories in
+            the org if they do not have a repo level YAML.{' '}
+            <a
+              className="text-ds-blue hover:underline"
+              href="https://docs.codecov.io/docs/codecov-yaml"
+              target="_blank"
+              rel="noreferrer"
+            >
+              learn more
+            </a>
+          </p>
         </div>
-      </div>
-    </form>
+        <div>
+          {formState.errors.editor && (
+            <div className="my-4 rounded border border-ds-primary-red bg-ds-coverage-uncovered p-2 text-ds-primary-red">
+              <p>{formState.errors.editor.message}</p>
+            </div>
+          )}
+          <Controller
+            control={control}
+            name="editor"
+            render={({ field: { onChange, value } }) => (
+              <YamlEditor
+                value={value}
+                onChange={onChange}
+                placeholder={`All ${owner} repos will inherit this configuration`}
+              />
+            )}
+          />
+          <div className="float-right mt-4">
+            <Button
+              hook="save-yaml"
+              disabled={!formState.isDirty}
+              isLoading={formState.isSubmitting}
+              variant="primary"
+            >
+              Save Changes
+            </Button>
+          </div>
+        </div>
+      </form>
+    </div>
   )
 }
 
