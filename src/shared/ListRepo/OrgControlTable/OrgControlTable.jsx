@@ -60,5 +60,4 @@ OrgControlTable.propTypes = {
   searchValue: PropTypes.string.isRequired,
   canRefetch: PropTypes.bool.isRequired,
 }
-
 export default OrgControlTable
