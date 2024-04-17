@@ -43,7 +43,7 @@ export function useUpdateDefaultOrganization() {
         queryClient.invalidateQueries(['DetailOwner'])
       }
     },
-    onError: (e) => {
+    onError: (e: any) => {
       return addToast({
         type: 'error',
         text: e.message,
