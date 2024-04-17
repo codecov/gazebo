@@ -24,5 +24,4 @@ function FlagsNotConfigured() {
     </div>
   )
 }
-
 export default FlagsNotConfigured
