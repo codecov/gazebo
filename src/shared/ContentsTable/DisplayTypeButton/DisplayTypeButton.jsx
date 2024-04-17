@@ -52,5 +52,4 @@ DisplayTypeButton.propTypes = {
   dataLength: PropTypes.number,
   isLoading: PropTypes.bool,
 }
-
 export default DisplayTypeButton
