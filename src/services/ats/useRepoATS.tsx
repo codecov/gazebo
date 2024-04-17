@@ -113,5 +113,3 @@ export const useRepoATS = ({ provider, owner, repo }: RepoATSInfoArgs) =>
       }),
   })
 
-
-
