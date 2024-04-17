@@ -78,7 +78,6 @@ export function useResyncUser() {
         data?.length > 0 ? data[data.length - 1]?.pages?.repos?.length : 0
 
       if (numRepos < PAGE_SIZE) {
-        console.log(data, numRepos)
         queryClient.invalidateQueries({
           queryKey: ['repos', provider, owner],
         })
