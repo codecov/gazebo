@@ -112,4 +112,3 @@ export const useRepoATS = ({ provider, owner, repo }: RepoATSInfoArgs) =>
         return data?.owner?.repository ?? null
       }),
   })
-
