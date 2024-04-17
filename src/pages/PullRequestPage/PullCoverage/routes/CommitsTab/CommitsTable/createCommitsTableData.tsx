@@ -4,8 +4,6 @@ import isEmpty from 'lodash/isEmpty'
 import { Commit } from 'services/commits/useCommits'
 import TotalsNumber from 'ui/TotalsNumber'
 
-import Coverage from './Coverage'
-
 import CIStatus from '../shared/CIStatus'
 import Title from '../shared/Title'
 
@@ -26,7 +24,7 @@ export const createCommitsTableData = ({
 
   return commits.filter(Boolean).map((commit) => {
     let patchPercentage = NaN
-    let patch = <p className="text-right">No report uploaded</p>
+    let patch = <p className="text-right">-</p>
     if (commit?.compareWithParent?.__typename === 'Comparison') {
       patchPercentage =
         commit?.compareWithParent?.patchTotals?.percentCovered ?? 0
@@ -42,6 +40,10 @@ export const createCommitsTableData = ({
     }
 
     const totals = commit?.totals
+    let coverage = <p className="text-right">-</p>
+    if (typeof totals?.coverage === 'number') {
+      coverage = <TotalsNumber value={totals?.coverage} plain />
+    }
 
     let change = null
     if (commit?.parent?.totals?.coverage != null && totals?.coverage != null) {
@@ -66,7 +68,7 @@ export const createCommitsTableData = ({
           createdAt={commit?.createdAt}
         />
       ),
-      coverage: <Coverage totals={totals} />,
+      coverage,
       ciStatus: (
         <CIStatus
           ciPassed={commit?.ciPassed}

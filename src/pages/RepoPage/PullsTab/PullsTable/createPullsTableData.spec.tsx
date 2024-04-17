@@ -322,7 +322,7 @@ describe('createPullsTableData', () => {
     })
 
     describe('bundleAnalysisReport __typename is not BundleAnalysisReport', () => {
-      it('returns no report uploaded', () => {
+      it('returns x emoji', () => {
         const pullData = {
           author: null,
           pullId: 123,

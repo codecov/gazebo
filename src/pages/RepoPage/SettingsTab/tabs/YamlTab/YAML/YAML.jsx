@@ -5,7 +5,7 @@ import YamlEditor from 'pages/AccountSettings/tabs/YAML/YamlEditor'
 function YAML({ yaml }) {
   return (
     <div className="flex flex-col gap-4">
-      <div className="mx-4 flex flex-col gap-2 sm:mx-0 xl:w-3/4">
+      <div className="mx-4 flex flex-col gap-2 sm:mx-0">
         <h1 className="text-lg font-semibold">Repository YAML</h1>
         <p>
           This is the default YAML for the current repository, after validation.
@@ -14,13 +14,7 @@ function YAML({ yaml }) {
         </p>
       </div>
       <hr />
-      <div className="lg:w-3/4">
-        <YamlEditor
-          value={yaml}
-          readOnly
-          placeholder="Repo YAML Configuration"
-        />
-      </div>
+      <YamlEditor value={yaml} readOnly placeholder="Repo YAML Configuration" />
     </div>
   )
 }

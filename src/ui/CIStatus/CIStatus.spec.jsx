@@ -18,9 +18,9 @@ describe('CIStatus', () => {
       expect(screen.getByText(/Failed/)).toBeInTheDocument()
     })
 
-    it('shows ci failed if no status is given', () => {
+    it('shows no status if no status is given', () => {
       setup({})
-      expect(screen.getByText(/Processing/)).toBeInTheDocument()
+      expect(screen.getByText(/No Status/)).toBeInTheDocument()
     })
   })
 })

@@ -463,7 +463,12 @@ describe('CodeTreeTable', () => {
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
           expect(await screen.findByText('Tracked lines')).toBeTruthy()
-          const trackedLines = screen.getByText('Tracked lines')
+          let trackedLines = screen.getByText('Tracked lines')
+          await user.click(trackedLines)
+
+          await waitFor(() => !queryClient.isFetching())
+
+          trackedLines = screen.getByText('Tracked lines')
           await user.click(trackedLines)
 
           await waitFor(() =>
@@ -507,7 +512,12 @@ describe('CodeTreeTable', () => {
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
           expect(await screen.findByText('Covered')).toBeTruthy()
-          const covered = screen.getByText('Covered')
+          let covered = screen.getByText('Covered')
+          await user.click(covered)
+
+          await waitFor(() => !queryClient.isFetching())
+
+          covered = screen.getByText('Covered')
           await user.click(covered)
 
           await waitFor(() =>
@@ -551,7 +561,12 @@ describe('CodeTreeTable', () => {
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
           expect(await screen.findByText('Partial')).toBeTruthy()
-          const partial = screen.getByText('Partial')
+          let partial = screen.getByText('Partial')
+          await user.click(partial)
+
+          await waitFor(() => !queryClient.isFetching())
+
+          partial = screen.getByText('Partial')
           await user.click(partial)
 
           await waitFor(() =>
@@ -595,7 +610,12 @@ describe('CodeTreeTable', () => {
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
           expect(await screen.findByText('Missed')).toBeTruthy()
-          const missed = screen.getByText('Missed')
+          let missed = screen.getByText('Missed')
+          await user.click(missed)
+
+          await waitFor(() => !queryClient.isFetching())
+
+          missed = screen.getByText('Missed')
           await user.click(missed)
 
           expect(requestFilters).toHaveBeenCalledWith(

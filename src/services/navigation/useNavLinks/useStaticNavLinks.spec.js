@@ -53,6 +53,7 @@ describe('useStaticNavLinks', () => {
       ${links.teamBot}                       | ${'https://docs.codecov.com/docs/team-bot'}
       ${links.runtimeInsights}               | ${'https://docs.codecov.com/docs/runtime-insights'}
       ${links.graphAuthorization}            | ${'https://docs.codecov.com/reference/authorization#about-graphs'}
+      ${links.statusBadges}                  | ${'https://docs.codecov.com/docs/status-badges'}
       ${links.graphsSunburst}                | ${'https://docs.codecov.com/docs/graphs#sunburst'}
       ${links.ciProviderWorkflow}            | ${'https://circleci.com/blog/what-is-continuous-integration'}
       ${links.exampleRepos}                  | ${'https://docs.codecov.com/docs/supported-languages'}
