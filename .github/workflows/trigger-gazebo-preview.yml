@@ -1,0 +1,10 @@
+name: Trigger gazebo preview deploy
+
+on: pull_request
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Succeed
+        run: exit 0
