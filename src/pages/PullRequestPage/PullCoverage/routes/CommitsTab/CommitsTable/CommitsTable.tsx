@@ -150,8 +150,8 @@ const CommitsTable = () => {
           <colgroup>
             <col className="w-full @sm/table:w-5/12" />
             <col className="@sm/table:w-1/12" />
-            <col className="@sm/table:w-2/12" />
-            <col className="@sm/table:w-2/12" />
+            <col className="@sm/table:w-1/12" />
+            <col className="@sm/table:w-1/12" />
             <col className="@sm/table:w-1/12" />
             {overview?.bundleAnalysisEnabled ? (
               <col className="@sm/table:w-1/12" />

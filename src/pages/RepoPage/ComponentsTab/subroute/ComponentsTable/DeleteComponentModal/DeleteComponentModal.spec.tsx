@@ -44,7 +44,7 @@ afterAll(() => {
 describe('DeleteComponentModal', () => {
   function setup() {
     server.use(
-      graphql.mutation('deleteFlag', (req, res, ctx) =>
+      graphql.mutation('deleteComponentMeasurements', (req, res, ctx) =>
         res(ctx.status(200), ctx.data({}))
       )
     )
@@ -60,7 +60,7 @@ describe('DeleteComponentModal', () => {
     it('renders the modal message', async () => {
       render(
         <DeleteComponentModal
-          componentName="flag-123"
+          componentId="component-123"
           closeModal={jest.fn()}
           isOpen
         />,
@@ -75,14 +75,14 @@ describe('DeleteComponentModal', () => {
       )
       expect(messagePartTwo).toBeInTheDocument()
 
-      const componentName = await screen.findByText(/flag-123/)
-      expect(componentName).toBeInTheDocument()
+      const componentId = await screen.findByText(/component-123/)
+      expect(componentId).toBeInTheDocument()
     })
 
     it('renders delete and cancel buttons', async () => {
       render(
         <DeleteComponentModal
-          componentName="flag-123"
+          componentId="component-123"
           closeModal={jest.fn()}
           isOpen
         />,
@@ -101,7 +101,7 @@ describe('DeleteComponentModal', () => {
     it('renders appropriate title', async () => {
       render(
         <DeleteComponentModal
-          componentName="flag-123"
+          componentId="component-123"
           closeModal={jest.fn()}
           isOpen
         />,
@@ -120,7 +120,7 @@ describe('DeleteComponentModal', () => {
       const closeModal = jest.fn()
       render(
         <DeleteComponentModal
-          componentName="flag-123"
+          componentId="component-123"
           closeModal={closeModal}
           isOpen
         />,
@@ -143,7 +143,7 @@ describe('DeleteComponentModal', () => {
       const closeModal = jest.fn()
       render(
         <DeleteComponentModal
-          componentName="flag-123"
+          componentId="component-123"
           closeModal={closeModal}
           isOpen
         />,

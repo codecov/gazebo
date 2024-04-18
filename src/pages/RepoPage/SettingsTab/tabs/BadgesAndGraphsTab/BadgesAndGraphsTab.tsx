@@ -8,7 +8,7 @@ function BadgesAndGraphsTab() {
   const graphToken = data?.repository?.graphToken
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 lg:w-3/4">
       {graphToken && <Badges graphToken={graphToken} />}
       {graphToken && <Graphs graphToken={graphToken} />}
     </div>

@@ -83,8 +83,9 @@ const backfillDataCompleted = {
   },
   owner: {
     repository: {
-      flagsMeasurementsActive: true,
-      flagsMeasurementsBackfilled: true,
+      __typename: 'Repository',
+      componentsMeasurementsActive: true,
+      componentsMeasurementsBackfilled: true,
     },
   },
 }
@@ -95,8 +96,9 @@ const backfillDataNotStarted = {
   },
   owner: {
     repository: {
-      flagsMeasurementsActive: false,
-      flagsMeasurementsBackfilled: false,
+      __typename: 'Repository',
+      componentsMeasurementsActive: false,
+      componentsMeasurementsBackfilled: false,
     },
   },
 }
@@ -107,8 +109,9 @@ const backfillDataInProgress = {
   },
   owner: {
     repository: {
-      flagsMeasurementsActive: true,
-      flagsMeasurementsBackfilled: false,
+      __typename: 'Repository',
+      componentsMeasurementsActive: true,
+      componentsMeasurementsBackfilled: false,
     },
   },
 }
@@ -119,8 +122,9 @@ const backfillDataTimeseriesNotEnabled = {
   },
   owner: {
     repository: {
-      flagsMeasurementsActive: false,
-      flagsMeasurementsBackfilled: false,
+      __typename: 'Repository',
+      componentsMeasurementsActive: false,
+      componentsMeasurementsBackfilled: false,
     },
   },
 }
@@ -164,7 +168,7 @@ describe('Components Tab', () => {
       graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
       }),
-      graphql.query('BackfillFlagMemberships', (req, res, ctx) =>
+      graphql.query('BackfillComponentMemberships', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(data))
       ),
       graphql.query('FlagsSelect', (req, res, ctx) => {
@@ -238,14 +242,6 @@ describe('Components Tab', () => {
       const syncingBanner = screen.queryByText(/Syncing Banner/)
       expect(syncingBanner).not.toBeInTheDocument()
     })
-
-    it('renders a blurred image of the table', async () => {
-      render(<ComponentsTab />, { wrapper })
-      const blurredComponentsTableImage = await screen.findByRole('img', {
-        name: /Blurred components table/,
-      })
-      expect(blurredComponentsTableImage).toBeInTheDocument()
-    })
   })
 
   describe('when rendered while ongoing syncing', () => {
@@ -272,14 +268,6 @@ describe('Components Tab', () => {
 
       const syncingBanner = await screen.findByText(/Syncing Banner/)
       expect(syncingBanner).toBeInTheDocument()
-    })
-
-    it('renders a blurred image of the table', async () => {
-      render(<ComponentsTab />, { wrapper })
-      const blurredComponentsTableImage = await screen.findByRole('img', {
-        name: /Blurred components table/,
-      })
-      expect(blurredComponentsTableImage).toBeInTheDocument()
     })
   })
 

@@ -16,11 +16,11 @@
 }
 
 .filelistui .filelistui-thead > div {
-  @apply font-sans text-sm font-semibold text-ds-gray-quinary py-2 px-3.5;
+  @apply font-sans text-sm font-semibold text-ds-gray-quinary py-2 px-5;
 }
 
 .filelistui .filelistui-row > div {
-  @apply py-3 @sm/filelist:px-4;
+  @apply py-3 @sm/filelist:px-5;
 }
 
 .filelistui .filelistui-row {

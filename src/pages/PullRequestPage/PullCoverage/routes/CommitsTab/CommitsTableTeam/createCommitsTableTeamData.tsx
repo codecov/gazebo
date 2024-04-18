@@ -24,7 +24,7 @@ export const createCommitsTableTeamData = ({
 
   return commits.filter(Boolean).map((commit) => {
     let patchPercentage = NaN
-    let patch = <p className="text-right">No report uploaded</p>
+    let patch = <p className="text-right">-</p>
     if (commit?.compareWithParent?.__typename === 'Comparison') {
       patchPercentage =
         commit?.compareWithParent?.patchTotals?.percentCovered ?? 0

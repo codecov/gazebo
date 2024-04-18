@@ -8,10 +8,10 @@ export default function CIStatusLabel({ ciPassed }) {
   if (isNil(ciPassed)) {
     return (
       <span className="flex flex-none items-center gap-1 text-xs">
-        <span>
-          <Icon size="sm" name="statusRunning" variant="developer" />
+        <span className="text-ds-gray-senary">
+          <Icon size="sm" name="ban" />
         </span>
-        Processing
+        No Status
       </span>
     )
   }
