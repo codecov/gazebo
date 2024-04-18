@@ -56,6 +56,11 @@ const BundleContent: React.FC = () => {
               <AssetEmptyTable />
             </Route>
           </Switch>
+        ) : bundleType === undefined && !branch ? (
+          <>
+            <InfoBanner branch={branch} bundle={bundle} />
+            <AssetEmptyTable />
+          </>
         ) : (
           <>
             <ErrorBanner errorType={bundleType} />

@@ -50,6 +50,21 @@ const enterprisePlan = {
   },
 }
 
+const usesInvoiceTeamPlan = {
+  plan: {
+    marketingName: 'blah',
+    value: 'users-teamm',
+    billingRate: null,
+    baseUnitPrice: 0,
+    benefits: [
+      'Unlimited users',
+      'Unlimited public repositories',
+      'Unlimited private repositories',
+    ],
+  },
+  usesInvoice: true,
+}
+
 const trialPlanDetails = {
   plan: {
     marketingName: 'Pro Trial Team',
@@ -140,6 +155,19 @@ describe('CurrentPlanCard', () => {
 
       const enterpriseCard = await screen.findByText(/Enterprise plan card/)
       expect(enterpriseCard).toBeInTheDocument()
+    })
+
+    it('renders enterprise plan card when usesInvoice True', async () => {
+      setup(usesInvoiceTeamPlan)
+
+      render(<CurrentPlanCard />, {
+        wrapper,
+      })
+
+      const usesInvoiceEnterprise = await screen.findByText(
+        /Enterprise plan card/
+      )
+      expect(usesInvoiceEnterprise).toBeInTheDocument()
     })
   })
 })

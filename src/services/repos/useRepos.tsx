@@ -128,7 +128,7 @@ export function useRepos({
   }
 
   return useInfiniteQuery({
-    queryKey: ['repos', provider, variables, owner],
+    queryKey: ['repos', provider, owner, variables],
     queryFn: ({ pageParam, signal }) => {
       return Api.graphql({
         provider,

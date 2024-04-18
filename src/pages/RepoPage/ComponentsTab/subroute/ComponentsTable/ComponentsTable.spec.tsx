@@ -1,16 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import {
-  act,
-  render,
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { PropsWithChildren, Suspense } from 'react'
-import { mockIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import ComponentsTable from './ComponentsTable'
@@ -44,81 +37,51 @@ const mockGetRepo = {
   },
 }
 
-const mockComponentMeasurements = (after: boolean) => {
-  return {
-    owner: {
-      repository: {
-        __typename: 'Repository',
-        flags: {
-          edges: after
-            ? [
-                {
-                  node: {
-                    name: 'flagD',
-                    percentCovered: 10,
-                    percentChange: -1,
-                    measurements: [{ avg: 20 }, { avg: 30 }],
-                  },
-                },
-              ]
-            : [
-                {
-                  node: {
-                    name: 'flagA',
-                    percentCovered: 93.26,
-                    percentChange: -1.56,
-                    measurements: [{ avg: 51.78 }, { avg: 93.356 }],
-                  },
-                },
-                {
-                  node: {
-                    name: 'flagB',
-                    percentCovered: 91.74,
-                    percentChange: null,
-                    measurements: [{ avg: null }, { avg: null }],
-                  },
-                },
-                {
-                  node: {
-                    name: 'testtest',
-                    percentCovered: 1.0,
-                    percentChange: 1.0,
-                    measurements: [{ avg: 51.78 }, { avg: 93.356 }],
-                  },
-                },
-              ],
-          pageInfo: {
-            hasNextPage: after ? false : true,
-            endCursor: after
-              ? 'aa'
-              : 'MjAyMC0wOC0xMSAxNzozMDowMiswMDowMHwxMDA=',
-          },
+const mockedComponentMeasurements = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      components: [
+        {
+          name: 'components1',
+          percentCovered: 93.26,
+          percentChange: -1.56,
+          lastUploaded: '2021-09-30T00:00:00Z',
+          measurements: [{ avg: 51.78 }, { avg: 93.356 }],
         },
-      },
+        {
+          name: 'component2',
+          percentCovered: 91.74,
+          percentChange: null,
+          lastUploaded: null,
+          measurements: [{ avg: null }, { avg: null }],
+        },
+
+        {
+          name: 'testtest',
+          percentCovered: 1.0,
+          percentChange: 1.0,
+          lastUploaded: null,
+          measurements: [{ avg: 51.78 }, { avg: 93.356 }],
+        },
+      ],
     },
-  }
+  },
 }
 
 const mockNoReportsUploadedMeasurements = {
   owner: {
     repository: {
       __typename: 'Repository',
-      flags: {
-        edges: [
-          {
-            node: {
-              name: 'flagA',
-              percentCovered: null,
-              percentChange: null,
-              measurements: [],
-            },
-          },
-        ],
-        pageInfo: {
-          hasNextPage: true,
-          endCursor: 'end-cursor',
+      components: [
+        {
+          name: 'components1',
+          percentCovered: null,
+          percentChange: null,
+          lastUploaded: null,
+          measurements: [],
         },
-      },
+      ],
     },
   },
 }
@@ -127,13 +90,7 @@ const mockEmptyComponentMeasurements = {
   owner: {
     repository: {
       __typename: 'Repository',
-      flags: {
-        edges: [],
-        pageInfo: {
-          hasNextPage: false,
-          endCursor: null,
-        },
-      },
+      components: [],
     },
   },
 }
@@ -189,11 +146,7 @@ describe('ComponentsTable', () => {
     const fetchNextPage = jest.fn()
 
     server.use(
-      graphql.query('FlagMeasurements', (req, res, ctx) => {
-        if (req?.variables?.after) {
-          return res(ctx.status(200), ctx.data(mockComponentMeasurements(true)))
-        }
-
+      graphql.query('ComponentMeasurements', (req, res, ctx) => {
         if (noData) {
           return res(ctx.status(200), ctx.data(mockEmptyComponentMeasurements))
         }
@@ -205,7 +158,7 @@ describe('ComponentsTable', () => {
           )
         }
 
-        return res(ctx.status(200), ctx.data(mockComponentMeasurements(false)))
+        return res(ctx.status(200), ctx.data(mockedComponentMeasurements))
       }),
       graphql.query('GetRepo', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockGetRepo))
@@ -232,25 +185,30 @@ describe('ComponentsTable', () => {
       const coverage = await screen.findByText('Coverage %')
       expect(coverage).toBeInTheDocument()
 
-      const trend = await screen.findByText('Trend')
+      const trend = await screen.findByText('Historical Trend')
       expect(trend).toBeInTheDocument()
+
+      const lastUploaded = await screen.findByText('Last Uploaded')
+      expect(lastUploaded).toBeInTheDocument()
     })
 
     it('renders repo components', async () => {
       render(<ComponentsTable />, { wrapper: wrapper() })
 
-      const flagA = await screen.findByRole('link', { name: 'flagA' })
-      expect(flagA).toBeInTheDocument()
-      expect(flagA).toHaveAttribute(
+      const components1 = await screen.findByRole('link', {
+        name: 'components1',
+      })
+      expect(components1).toBeInTheDocument()
+      expect(components1).toHaveAttribute(
         'href',
-        '/gh/codecov/gazebo?flags%5B0%5D=flagA'
+        '/gh/codecov/gazebo?components%5B0%5D=components1'
       )
 
-      const flagB = await screen.findByRole('link', { name: 'flagB' })
-      expect(flagB).toBeInTheDocument()
-      expect(flagB).toHaveAttribute(
+      const component2 = await screen.findByRole('link', { name: 'component2' })
+      expect(component2).toBeInTheDocument()
+      expect(component2).toHaveAttribute(
         'href',
-        '/gh/codecov/gazebo?flags%5B0%5D=flagB'
+        '/gh/codecov/gazebo?components%5B0%5D=component2'
       )
     })
 
@@ -268,7 +226,7 @@ describe('ComponentsTable', () => {
       render(<ComponentsTable />, { wrapper: wrapper() })
 
       const componentaSparkLine = await screen.findByText(
-        /Component flagA trend sparkline/
+        /Component components1 trend sparkline/
       )
       expect(componentaSparkLine).toBeInTheDocument()
 
@@ -276,12 +234,19 @@ describe('ComponentsTable', () => {
       expect(minusOne).toBeInTheDocument()
 
       const component2SparkLine = await screen.findByText(
-        /Component flagB trend sparkline/
+        /Component component2 trend sparkline/
       )
       expect(component2SparkLine).toBeInTheDocument()
 
       const noData = await screen.findByText('No Data')
       expect(noData).toBeInTheDocument()
+    })
+
+    it('renders last uploaded date', async () => {
+      render(<ComponentsTable />, { wrapper: wrapper() })
+
+      const lastUploaded = await screen.findByText('over 2 years ago')
+      expect(lastUploaded).toBeInTheDocument()
     })
   })
 
@@ -291,14 +256,16 @@ describe('ComponentsTable', () => {
 
       render(<ComponentsTable />, { wrapper: wrapper() })
 
-      const flagA = await screen.findByRole('link', { name: 'flagA' })
-      expect(flagA).toBeInTheDocument()
-      expect(flagA).toHaveAttribute(
+      const components1 = await screen.findByRole('link', {
+        name: 'components1',
+      })
+      expect(components1).toBeInTheDocument()
+      expect(components1).toHaveAttribute(
         'href',
-        '/gh/codecov/gazebo?flags%5B0%5D=flagA'
+        '/gh/codecov/gazebo?components%5B0%5D=components1'
       )
 
-      user.click(flagA)
+      user.click(components1)
       expect(testLocation.pathname).toBe('/gh/codecov/gazebo/components')
     })
   })
@@ -341,13 +308,11 @@ describe('ComponentsTable', () => {
         setup({ noData: true })
       })
 
-      it('renders expected empty state message', async () => {
+      it('renders expected no data message', async () => {
         render(<ComponentsTable />, { wrapper: wrapper() })
 
-        const errorMessage = await screen.findByText(
-          /There was a problem getting components data/
-        )
-        expect(errorMessage).toBeInTheDocument()
+        const noData = await screen.findByText(/No data to display/)
+        expect(noData).toBeInTheDocument()
       })
     })
 
@@ -358,26 +323,12 @@ describe('ComponentsTable', () => {
 
       it('renders expected empty state message', async () => {
         render(<ComponentsTable />, {
-          wrapper: wrapper('/gh/codecov/gazebo/components?search=blah'),
+          wrapper: wrapper('/gh/codecov/gazebo/components?components=blah'),
         })
 
         const noResultsFound = await screen.findByText(/No results found/)
         expect(noResultsFound).toBeInTheDocument()
       })
-    })
-  })
-
-  describe('when hasNextPage is true', () => {
-    it('infinite scroll for loading next page', async () => {
-      setup({})
-      render(<ComponentsTable />, { wrapper: wrapper() })
-
-      const loading = await screen.findByText('Loading')
-      mockIsIntersecting(loading, true)
-      await waitForElementToBeRemoved(loading)
-
-      const flagD = screen.getByRole('link', { name: 'flagD' })
-      expect(flagD).toBeInTheDocument()
     })
   })
 
@@ -390,15 +341,19 @@ describe('ComponentsTable', () => {
 
       await user.click(components)
 
-      const flagA = await screen.findByTestId('row-0')
-      const flagARole = await screen.findByRole('link', { name: 'flagA' })
-      const flagB = await screen.findByTestId('row-1')
-      const flagBRole = await screen.findByRole('link', { name: 'flagB' })
+      const components1 = await screen.findByTestId('row-0')
+      const components1Role = await screen.findByRole('link', {
+        name: 'components1',
+      })
+      const component2 = await screen.findByTestId('row-1')
+      const component2Role = await screen.findByRole('link', {
+        name: 'component2',
+      })
       const testFlag = await screen.findByTestId('row-2')
       const testFlagRole = await screen.findByRole('link', { name: 'testtest' })
 
-      expect(flagA).toContainElement(flagARole)
-      expect(flagB).toContainElement(flagBRole)
+      expect(components1).toContainElement(components1Role)
+      expect(component2).toContainElement(component2Role)
       expect(testFlag).toContainElement(testFlagRole)
     })
   })

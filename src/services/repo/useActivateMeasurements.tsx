@@ -53,7 +53,7 @@ const query = `
   }
 `
 
-export function useActivateFlagMeasurements({
+export function useActivateMeasurements({
   provider,
   owner,
   repo,
@@ -83,7 +83,7 @@ export function useActivateFlagMeasurements({
         return Promise.reject({
           status: 404,
           data: {},
-          dev: 'useActivateFlagMeasurements - 404 failed to parse',
+          dev: 'useActivateMeasurements - 404 failed to parse',
         } satisfies NetworkErrorObject)
       }
 
@@ -94,6 +94,7 @@ export function useActivateFlagMeasurements({
 
       queryClient.invalidateQueries([
         'BackfillFlagMemberships',
+        'BackfillComponentMemberships',
         provider,
         owner,
         repo,

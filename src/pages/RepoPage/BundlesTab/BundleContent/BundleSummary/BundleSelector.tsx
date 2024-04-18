@@ -1,4 +1,4 @@
-import { forwardRef, useState } from 'react'
+import { forwardRef, useMemo, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
 import { useBranchBundlesNames } from 'services/bundleAnalysis'
@@ -24,6 +24,7 @@ export const BundleSelectorSkeleton: React.FC = () => {
           isLoading={false}
           items={[]}
           value={'Select bundle'}
+          onChange={() => {}}
         />
       </span>
     </div>
@@ -50,6 +51,7 @@ const BundleSelector = forwardRef(({}, ref) => {
     branch: branchParam,
     bundle,
   } = useParams<URLParams>()
+
   const [selectedBundle, setSelectedBundle] = useState<string | undefined>(
     () => {
       if (bundle) {
@@ -77,8 +79,11 @@ const BundleSelector = forwardRef(({}, ref) => {
 
   // Note: There's no real way to test this as the data is resolved during
   // suspense and the component is not rendered until the data is resolved.
-  const bundles = bundleData?.bundles ?? []
-  const [bundlesState, setBundlesState] = useState<Array<string>>(() => bundles)
+  const bundles = useMemo(
+    () => bundleData?.bundles ?? [],
+    [bundleData?.bundles]
+  )
+  const [filteredBundles, setFilteredBundles] = useState<Array<string>>([])
 
   return (
     <div className="md:w-[16rem]">
@@ -97,7 +102,7 @@ const BundleSelector = forwardRef(({}, ref) => {
           ariaName="bundle tab bundle selector"
           variant="gray"
           isLoading={bundlesIsLoading}
-          items={bundlesState}
+          items={search !== '' ? filteredBundles : bundles}
           value={selectedBundle ?? 'Select bundle'}
           onChange={(name: string) => {
             setSelectedBundle(name)
@@ -115,13 +120,13 @@ const BundleSelector = forwardRef(({}, ref) => {
           onSearch={(term: string) => {
             setSearch(term)
             if (term !== '') {
-              setBundlesState(
+              setFilteredBundles(
                 bundles.filter((bundle) =>
                   bundle.toLowerCase().includes(term.toLowerCase())
                 )
               )
             } else {
-              setBundlesState(bundles)
+              setFilteredBundles([])
             }
           }}
           searchValue={search}

@@ -1,25 +1,24 @@
-import componentManagement from 'assets/flagManagement.svg'
-import A from 'ui/A'
+import Button from 'ui/Button'
 
 function ComponentsNotConfigured() {
   return (
-    <div className="mt-8 flex flex-col items-center justify-center gap-2 text-base text-ds-gray-octonary">
-      <div className="flex min-w-[60%] flex-col justify-center gap-2 text-center">
-        <img
-          alt="Components feature not configured"
-          className="mx-auto mb-8 w-screen"
-          src={componentManagement}
-        />
-        <span className="font-semibold">
-          The Components feature is not yet configured{' '}
-        </span>
-        <span>
-          Learn how components can{' '}
-          <A hook="components" to={{ pageName: 'components' }} isExternal>
-            help your team today
-          </A>
-          .
-        </span>
+    <div className="mt-12 grid gap-4">
+      <div className="flex flex-col items-center gap-1">
+        <p>No data to display</p>
+        <p>
+          You will need to configure components in your yaml file to view the
+          list of your components here.
+        </p>
+      </div>
+      <div className="flex flex-col items-center">
+        <Button
+          hook="configure-components"
+          variant="primary"
+          disabled={false}
+          to={{ pageName: 'components' }}
+        >
+          Get started with components
+        </Button>
       </div>
     </div>
   )

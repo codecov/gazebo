@@ -14,14 +14,15 @@ const query = `
 query RepoComponentsSelector(
   $owner: String!
   $repo: String!
-  $filters: ComponentsFilters
+  $termId: String!
 ) {
   owner(username: $owner) {
     repository(name: $repo) {
       __typename
       ... on Repository {
-        components(filters: $filters) {
+        componentsYaml(termId: $termId) {
           name
+          id
         }
       }
       ... on NotFoundError {
@@ -37,10 +38,11 @@ query RepoComponentsSelector(
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
-  components: z
+  componentsYaml: z
     .array(
       z.object({
         name: z.string(),
+        id: z.string(),
       })
     )
     .nullable(),
@@ -61,16 +63,14 @@ const RequestSchema = z.object({
 })
 
 interface UseRepoComponentsSelectArgs {
-  filters?: {
-    components?: string[]
-  }
+  termId?: string
   opts?: {
     suspense?: boolean
   }
 }
 
 export function useRepoComponentsSelect({
-  filters = undefined,
+  termId = '',
   opts = {},
 }: UseRepoComponentsSelectArgs = {}) {
   const { provider, owner, repo } = useParams<{
@@ -80,7 +80,7 @@ export function useRepoComponentsSelect({
   }>()
 
   return useQuery({
-    queryKey: ['RepoComponentsSelector', provider, owner, repo, query, filters],
+    queryKey: ['RepoComponentsSelector', provider, owner, repo, query, termId],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
@@ -89,7 +89,7 @@ export function useRepoComponentsSelect({
         variables: {
           owner,
           repo,
-          filters,
+          termId,
         },
       }).then((res) => {
         const parsedData = RequestSchema.safeParse(res?.data)
@@ -134,7 +134,7 @@ export function useRepoComponentsSelect({
           } satisfies NetworkErrorObject)
         }
 
-        return { components: data?.owner?.repository?.components || [] }
+        return { components: data?.owner?.repository?.componentsYaml || [] }
       }),
     ...opts,
   })

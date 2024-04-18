@@ -11,8 +11,9 @@ import {
 } from '@tanstack/react-table'
 import cs from 'classnames'
 import isEmpty from 'lodash/isEmpty'
-import { Fragment, lazy, Suspense, useMemo, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import qs from 'qs'
+import { Fragment, lazy, Suspense, useEffect, useMemo, useState } from 'react'
+import { useLocation , useParams } from 'react-router-dom'
 
 import {
   ImpactedFile,
@@ -174,6 +175,12 @@ export default function FilesChangedTableTeam() {
     mostRecentCompare = pullData?.pull?.compareWithBase
   }
 
+  const location = useLocation()
+  const params = qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+  })
+  const currentlySelectedFile = params.filepath
+
   const data = useMemo(() => {
     if (
       pullData?.pull?.compareWithBase?.__typename === 'Comparison' &&
@@ -184,6 +191,19 @@ export default function FilesChangedTableTeam() {
     }
     return []
   }, [pullData?.pull?.compareWithBase])
+
+  useEffect(() => {
+    if (data.length > 0 && currentlySelectedFile) {
+      const fileToExpandIndex = data.findIndex(
+        (file) => file && file.headName === currentlySelectedFile
+      )
+      if (fileToExpandIndex !== -1) {
+        setExpanded({
+          [fileToExpandIndex]: true,
+        })
+      }
+    }
+  }, [data, currentlySelectedFile])
 
   const table = useReactTable({
     columns: getColumns({ pullId }),

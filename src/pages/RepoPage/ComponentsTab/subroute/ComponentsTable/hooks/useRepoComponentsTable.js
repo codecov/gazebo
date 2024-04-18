@@ -8,8 +8,7 @@ import {
   MEASUREMENT_TIME_INTERVALS,
 } from 'pages/RepoPage/shared/constants'
 import { useLocationParams } from 'services/navigation'
-import { useRepo } from 'services/repo'
-import { useRepoFlags } from 'services/repo/useRepoFlags'
+import { useRepo, useRepoComponents } from 'services/repo'
 
 const getSortByDirection = (isDesc) =>
   isDesc ? SortingDirection.DESC : SortingDirection.ASC
@@ -19,19 +18,19 @@ const createMeasurementVariables = (historicalTrend, oldestCommitAt) => {
   const selectedDate = isAllTime
     ? new Date(oldestCommitAt)
     : sub(new Date(), { ...AFTER_DATE_FORMAT_OPTIONS[historicalTrend] })
-  const afterDate = format(selectedDate, 'yyyy-MM-dd')
+  const after = format(selectedDate, 'yyyy-MM-dd')
   const interval = isAllTime
     ? MEASUREMENT_TIME_INTERVALS.ALL_TIME
     : MEASUREMENT_TIME_INTERVALS[historicalTrend]
 
-  return { afterDate, interval }
+  return { after, interval }
 }
 
 function useRepoComponentsTable(isDesc) {
   const { params } = useLocationParams({
     search: '',
     historicalTrend: '',
-    flags: [],
+    components: [],
   })
   const { provider, owner, repo } = useParams()
   const { data: repoData } = useRepo({
@@ -40,22 +39,24 @@ function useRepoComponentsTable(isDesc) {
     repo,
   })
   const isAdmin = repoData?.isAdmin
-  const isSearching = Boolean(params?.search)
+  const isSearching = Boolean(params?.components?.length)
   const [sortBy, setSortBy] = useState(SortingDirection.ASC)
-  const { afterDate, interval } = createMeasurementVariables(
+  const { after, interval } = createMeasurementVariables(
     params?.historicalTrend,
     repoData?.repository?.oldestCommitAt
   )
 
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useRepoFlags({
-      filters: { term: params?.search, flagsNames: params?.flags },
-      orderingDirection: sortBy,
-      beforeDate: format(new Date(), 'yyyy-MM-dd'),
-      interval,
-      afterDate,
-      suspense: false,
-    })
+  const { data, isLoading } = useRepoComponents({
+    filters: Boolean(params?.components?.length)
+      ? { components: params?.components }
+      : {},
+    orderingDirection: sortBy,
+    before: format(new Date(), 'yyyy-MM-dd'),
+    interval,
+    after,
+    branch: params?.branch,
+    opts: { suspense: false },
+  })
 
   const handleSort = useCallback(() => {
     const tableSortByDirection = getSortByDirection(isDesc)
@@ -65,14 +66,11 @@ function useRepoComponentsTable(isDesc) {
   }, [isDesc, sortBy])
 
   return {
-    data,
+    data: data?.components || [],
     isAdmin,
     isLoading,
     handleSort,
     isSearching,
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
   }
 }
 

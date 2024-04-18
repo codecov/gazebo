@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import z from 'zod'
 
@@ -8,19 +8,18 @@ import {
 } from 'services/repo/schemas'
 import Api from 'shared/api'
 import { type NetworkErrorObject } from 'shared/api/helpers'
-import { mapEdges } from 'shared/utils/graphql'
 import A from 'ui/A'
 
 const query = `
 query ComponentMeasurements(
   $name: String!
   $repo: String!
-  $filters: ComponentSetFilters
+  $filters: ComponentMeasurementsSetFilters
   $orderingDirection: OrderingDirection!
   $interval: MeasurementInterval!
-  $afterDate: DateTime!
-  $beforeDate: DateTime!
-  $after: String
+  $before: DateTime!
+  $after: DateTime!
+  $branch: String
 ) {
   owner(username: $name) {
     repository(name: $repo) {
@@ -30,25 +29,16 @@ query ComponentMeasurements(
           filters: $filters
           orderingDirection: $orderingDirection
           after: $after
-          first: 15
+          interval: $interval
+          before: $before
+          branch: $branch
         ) {
-          pageInfo {
-            hasNextPage
-            endCursor
-          }
-          edges {
-            node {
-              name
-              percentCovered
-              percentChange
-              measurements(
-                interval: $interval
-                after: $afterDate
-                before: $beforeDate
-              ) {
-                avg
-              }
-            }
+          name
+          percentCovered
+          percentChange
+          lastUploaded
+          measurements {
+            avg
           }
         }
       }
@@ -61,6 +51,7 @@ export const ComponentEdgeSchema = z.object({
   name: z.string(),
   percentCovered: z.number().nullable(),
   percentChange: z.number().nullable(),
+  lastUploaded: z.string().nullable(),
   measurements: z.array(
     z.object({
       avg: z.number().nullable(),
@@ -70,17 +61,7 @@ export const ComponentEdgeSchema = z.object({
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
-  components: z.object({
-    pageInfo: z.object({
-      hasNextPage: z.boolean(),
-      endCursor: z.string().nullable(),
-    }),
-    edges: z.array(
-      z.object({
-        node: ComponentEdgeSchema,
-      })
-    ),
-  }),
+  components: z.array(ComponentEdgeSchema),
 })
 
 const RequestSchema = z.object({
@@ -105,9 +86,8 @@ interface FetchRepoComponentsArgs {
   branch?: string
   orderingDirection: 'ASC' | 'DESC'
   interval: 'INTERVAL_30_DAY' | 'INTERVAL_7_DAY' | 'INTERVAL_1_DAY'
-  afterDate: string
-  beforeDate: string
   after: string
+  before: string
   signal?: AbortSignal
 }
 
@@ -118,10 +98,9 @@ function fetchRepoComponents({
   filters,
   orderingDirection,
   interval,
-  afterDate,
-  beforeDate,
-  branch,
   after,
+  before,
+  branch,
   signal,
 }: FetchRepoComponentsArgs) {
   return Api.graphql({
@@ -134,9 +113,8 @@ function fetchRepoComponents({
       filters,
       orderingDirection,
       interval,
-      afterDate,
-      beforeDate,
       after,
+      before,
       branch,
     },
   }).then((res) => {
@@ -182,10 +160,8 @@ function fetchRepoComponents({
       } satisfies NetworkErrorObject)
     }
 
-    const components = data?.owner?.repository?.components
     return {
-      components: mapEdges(components),
-      pageInfo: components?.pageInfo,
+      components: data?.owner?.repository?.components,
     }
   })
 }
@@ -193,12 +169,12 @@ function fetchRepoComponents({
 interface useRepoComponentsArgs {
   filters?: {
     components?: string[]
-    branch?: string
   }
   orderingDirection?: 'ASC' | 'DESC'
   interval: 'INTERVAL_30_DAY' | 'INTERVAL_7_DAY' | 'INTERVAL_1_DAY'
-  afterDate: string
-  beforeDate: string
+  after: string
+  before: string
+  branch?: string
   opts?: {
     suspense?: boolean
   }
@@ -208,8 +184,9 @@ export function useRepoComponents({
   filters = {},
   orderingDirection = 'DESC',
   interval,
-  afterDate,
-  beforeDate,
+  after,
+  before,
+  branch,
   opts = {},
 }: useRepoComponentsArgs) {
   const { provider, owner, repo } = useParams<{
@@ -218,7 +195,7 @@ export function useRepoComponents({
     repo: string
   }>()
 
-  const { data, ...rest } = useInfiniteQuery({
+  return useQuery({
     queryKey: [
       'ComponentMeasurements',
       provider,
@@ -227,10 +204,11 @@ export function useRepoComponents({
       filters,
       orderingDirection,
       interval,
-      afterDate,
-      beforeDate,
+      after,
+      before,
+      branch,
     ],
-    queryFn: ({ pageParam: after, signal }) =>
+    queryFn: ({ signal }) =>
       fetchRepoComponents({
         provider,
         owner,
@@ -238,18 +216,11 @@ export function useRepoComponents({
         filters: filters,
         orderingDirection,
         interval,
-        afterDate,
-        beforeDate,
         after,
+        before,
+        branch,
         signal,
       }),
-    getNextPageParam: (data) =>
-      data?.pageInfo?.hasNextPage ? data.pageInfo.endCursor : undefined,
     ...opts,
   })
-
-  return {
-    data: data?.pages.map((page) => page?.components).flat() ?? null,
-    ...rest,
-  }
 }

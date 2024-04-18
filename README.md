@@ -30,6 +30,8 @@ To run the project in development mode
 > npm run start
 ```
 
+Note: The first run of `npm run start` may take 5-10 minutes to finish building.
+
 The page will reload when you make edits. There is a local proxy to the staging API so you can develop against it. You can overwrite it by creating a `.env.local` file with it with the following:
 
 ```
@@ -166,5 +168,4 @@ Read more at the [official documentation.](https://mswjs.io/docs/getting-started
 
 ## Contributing
 
-This repository, like all of Codecov's repositories, strives to follow our general [Contributing guidlines](https://github.com/codecov/contributing). If you're considering making a contribution to this repository, we encourage review of our Contributing guidelines first. 
-
+This repository, like all of Codecov's repositories, strives to follow our general [Contributing guidelines](https://github.com/codecov/contributing). If you're considering making a contribution to this repository, we encourage review of our Contributing guidelines first.

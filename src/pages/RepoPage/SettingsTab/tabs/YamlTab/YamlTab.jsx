@@ -10,9 +10,9 @@ function YamlTab() {
   const repository = data?.repository
 
   return (
-    <div className="mt-4 flex flex-col gap-8">
+    <div className="mt-4 flex flex-col gap-8 lg:w-3/4">
       <YAML yaml={repository?.yaml} />
-      <div className="flex flex-col gap-4 border-2 border-ds-gray-primary p-4 lg:w-3/4">
+      <div className="flex flex-col gap-4 border-2 border-ds-gray-primary p-4">
         <CurrentRepoSettings
           botUsername={repository?.bot?.username}
           defaultBranch={repository?.defaultBranch}

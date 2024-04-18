@@ -3,11 +3,8 @@ import { Redirect, useParams } from 'react-router-dom'
 import { SentryRoute } from 'sentry'
 
 import { useRepoSettingsTeam } from 'services/repo'
-import { useRepoFlagsSelect } from 'services/repo/useRepoFlagsSelect'
 import { TierNames, useTier } from 'services/tier'
-import ComponentsNotConfigured from 'shared/ComponentsNotConfigured'
 
-import blurredTable from './assets/blurredTable.png'
 import BackfillBanners from './BackfillBanners/BackfillBanners'
 import { useRepoBackfillingStatus } from './BackfillBanners/hooks'
 import Header from './Header'
@@ -24,12 +21,7 @@ const showComponentsTable = ({
   return componentsMeasurementsActive && componentsMeasurementsBackfilled
 }
 
-const showComponentsData = ({ componentsData }) => {
-  return componentsData && componentsData?.length > 0
-}
-
 function ComponentsTab() {
-  const { data: componentsData } = useRepoFlagsSelect()
   const { provider, owner, repo } = useParams()
   const { data: tierData } = useTier({ owner, provider })
   const { data: repoSettings } = useRepoSettingsTeam()
@@ -49,10 +41,6 @@ function ComponentsTab() {
     return <TimescaleDisabled />
   }
 
-  if (!showComponentsData({ componentsData })) {
-    return <ComponentsNotConfigured />
-  }
-
   return (
     <div className="mx-4 flex flex-col gap-4 md:mx-0">
       <Header
@@ -67,16 +55,10 @@ function ComponentsTab() {
         {showComponentsTable({
           componentsMeasurementsActive,
           componentsMeasurementsBackfilled,
-        }) ? (
+        }) && (
           <SentryRoute path="/:provider/:owner/:repo/components" exact>
             <ComponentsTable />
           </SentryRoute>
-        ) : (
-          <img
-            alt="Blurred components table"
-            src={blurredTable}
-            className="h-auto max-w-full"
-          />
         )}
       </div>
     </div>
