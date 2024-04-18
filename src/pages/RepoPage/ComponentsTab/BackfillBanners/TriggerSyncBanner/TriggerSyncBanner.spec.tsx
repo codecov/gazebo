@@ -63,14 +63,10 @@ describe('TriggerSyncBanner', () => {
       render(<TriggerSyncBanner />, { wrapper })
 
       const enableAnalyticsText = screen.getByText(
-        'You need to enable Component analytics to see coverage data'
+        'You will need to enable components to see related coverage data.'
       )
       expect(enableAnalyticsText).toBeInTheDocument()
-      expect(
-        screen.getByText(
-          'Component analytics is disabled by default. Enable this feature below to see all your historical coverage data and coverage trend for each component.'
-        )
-      ).toBeInTheDocument()
+      expect(screen.getByText('No data to display')).toBeInTheDocument()
       expect(screen.getByText('Enable component analytics')).toBeInTheDocument()
     })
 
