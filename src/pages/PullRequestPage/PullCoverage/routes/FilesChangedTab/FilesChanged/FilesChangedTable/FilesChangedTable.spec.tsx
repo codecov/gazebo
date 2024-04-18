@@ -116,11 +116,14 @@ const mockPull = ({
 const server = setupServer()
 
 const wrapper =
-  (queryClient: QueryClient): React.FC<React.PropsWithChildren> =>
+  (
+    queryClient: QueryClient,
+    initialEntries = ['/gh/codecov/test-repo/pull/s2h5a6']
+  ): React.FC<React.PropsWithChildren> =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={['/gh/codecov/test-repo/pull/s2h5a6']}>
+        <MemoryRouter initialEntries={initialEntries}>
           <Route path="/:provider/:owner/:repo/pull/:pull">{children}</Route>
         </MemoryRouter>
       </QueryClientProvider>
@@ -370,6 +373,18 @@ describe('FilesChangedTable', () => {
       const expander = screen.getByTestId('file-diff-expand')
       expect(expander).toBeInTheDocument()
       await user.click(expander)
+
+      const pullFileDiff = await screen.findByText('FileDiff')
+      expect(pullFileDiff).toBeInTheDocument()
+    })
+
+    it('auto expands if param is passed in url', async () => {
+      const { queryClient } = setup()
+      render(<FilesChangedTable />, {
+        wrapper: wrapper(queryClient, [
+          '/gh/codecov/test-repo/pull/s2h5a6?filepath=flag1/mafs.js',
+        ]),
+      })
 
       const pullFileDiff = await screen.findByText('FileDiff')
       expect(pullFileDiff).toBeInTheDocument()
