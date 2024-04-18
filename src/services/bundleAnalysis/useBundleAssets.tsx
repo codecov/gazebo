@@ -28,7 +28,6 @@ const BundleAssetSchema = z.object({
   extension: z.string(),
   bundleData: BundleDataSchema,
 })
-
 type BundleAsset = z.infer<typeof BundleAssetSchema>
 
 const BundleAnalysisReportSchema = z.object({

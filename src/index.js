@@ -43,7 +43,6 @@ const queryClient = new QueryClient({
     },
   },
 })
-
 const domNode = document.getElementById('root')
 const root = createRoot(domNode)
 

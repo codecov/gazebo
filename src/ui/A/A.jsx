@@ -56,7 +56,6 @@ function A({ to, hook, variant = 'default', children, isExternal, ...props }) {
     variantClasses[variant],
     'inline-flex items-center gap-1'
   )
-
   const completeProps = {
     ...props,
     className,
