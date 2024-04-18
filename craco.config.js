@@ -40,10 +40,10 @@ module.exports = {
       sentry: resolve(__dirname, 'src/sentry'),
     },
     plugins: [
-      new WebpackBar({ color: '#FF6600' }),
       ...(process.env.SENTRY_AUTH_TOKEN ? [SentryPlugin] : []),
       ...(process.env.NODE_ENV === 'development'
         ? [
+            new WebpackBar({ color: '#FF6600' }),
             new WebpackHookPlugin({
               onBuildStart: ['npx @spotlightjs/spotlight'],
             }),
