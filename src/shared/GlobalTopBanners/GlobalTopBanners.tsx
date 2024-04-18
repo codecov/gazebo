@@ -15,5 +15,4 @@ const GlobalTopBanners: React.FC = () => {
     </SilentNetworkErrorWrapper>
   )
 }
-
 export default GlobalTopBanners
