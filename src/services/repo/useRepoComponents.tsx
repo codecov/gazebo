@@ -218,6 +218,7 @@ export function useRepoComponents({
         interval,
         after,
         before,
+        branch,
         signal,
       }),
     ...opts,
