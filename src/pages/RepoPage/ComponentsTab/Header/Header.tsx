@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 import {
   TIME_OPTION_VALUES,
+  TimeOption,
   TimeOptions,
 } from 'pages/RepoPage/shared/constants'
 import { useLocationParams } from 'services/navigation'
@@ -78,7 +79,7 @@ const Header = ({
             ariaName="Select Historical Trend"
             items={TimeOptions}
             value={value ?? defaultValue}
-            onChange={(historicalTrend: any) =>
+            onChange={(historicalTrend: TimeOption) =>
               updateParams({ historicalTrend: historicalTrend.value })
             }
             renderItem={({ label }: { label: string }) => label}
