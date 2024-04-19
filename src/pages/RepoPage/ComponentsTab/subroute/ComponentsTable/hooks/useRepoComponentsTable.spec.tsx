@@ -1,11 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { format, subDays, subMonths } from 'date-fns'
+import { format, sub, subDays, subMonths } from 'date-fns'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { Suspense } from 'react'
+import React, { PropsWithChildren, Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { TIME_OPTION_VALUES } from 'pages/RepoPage/shared/constants'
 import { useLocationParams } from 'services/navigation'
 
 import useRepoComponentsTable from './useRepoComponentsTable'
@@ -15,7 +16,7 @@ const queryClient = new QueryClient({
 })
 
 const wrapper =
-  (initialEntries = '/gh/codecov/test') =>
+  (initialEntries = '/gh/codecov/test'): React.FC<PropsWithChildren> =>
   ({ children }) =>
     (
       <MemoryRouter initialEntries={[initialEntries]}>
@@ -128,9 +129,22 @@ describe('useRepoComponentsTable', () => {
   function setup({
     repoData = mockGetRepo,
     noData = false,
-    useParamsValue = { search: '', historicalTrend: '', components: [] },
+    useParamsValue = {
+      search: '',
+      historicalTrend: TIME_OPTION_VALUES.LAST_3_MONTHS,
+      components: [],
+    },
+  }: {
+    repoData?: any
+    noData?: boolean
+    useParamsValue?: {
+      search?: string
+      historicalTrend?: string
+      components: string[]
+    }
   }) {
-    useLocationParams.mockReturnValue({
+    const mockedUseLocationParams = useLocationParams as jest.Mock
+    mockedUseLocationParams.mockReturnValue({
       params: useParamsValue,
     })
 
@@ -175,7 +189,11 @@ describe('useRepoComponentsTable', () => {
       const { requestFilters } = setup({
         repoData: mockGetRepo,
         noData: true,
-        useParamsValue: { components: ['component1'] },
+        useParamsValue: {
+          search: '',
+          historicalTrend: TIME_OPTION_VALUES.LAST_3_MONTHS,
+          components: ['component1'],
+        },
       })
 
       const { result } = renderHook(() => useRepoComponentsTable(true), {
@@ -185,13 +203,13 @@ describe('useRepoComponentsTable', () => {
       await waitFor(() => expect(result.current.isSearching).toEqual(true))
       await waitFor(() =>
         expect(requestFilters).toHaveBeenCalledWith({
-          after: '2022-10-10',
+          after: format(sub(new Date(), { months: 3 }), 'yyyy-MM-dd'),
           before: format(new Date(), 'yyyy-MM-dd'),
           filters: {
             components: ['component1'],
           },
-          interval: 'INTERVAL_30_DAY',
-          orderingDirection: 'ASC',
+          interval: 'INTERVAL_7_DAY',
+          orderingDirection: 'DESC',
           name: 'codecov',
           repo: 'test',
         })
@@ -200,10 +218,39 @@ describe('useRepoComponentsTable', () => {
   })
 
   describe('historical trend', () => {
-    describe('when historical trend param is empty or all time is selected', () => {
+    describe('when historical trend param is empty', () => {
       it('calls useRepoComponentsTable with correct query params', async () => {
         const { requestFilters } = setup({
           repoData: mockGetRepo,
+        })
+
+        renderHook(() => useRepoComponentsTable(true), {
+          wrapper: wrapper(),
+        })
+
+        await waitFor(() =>
+          expect(requestFilters).toHaveBeenCalledWith({
+            after: format(sub(new Date(), { months: 3 }), 'yyyy-MM-dd'),
+            before: format(new Date(), 'yyyy-MM-dd'),
+            filters: {},
+            interval: 'INTERVAL_7_DAY',
+            orderingDirection: 'DESC',
+            name: 'codecov',
+            repo: 'test',
+          })
+        )
+      })
+    })
+
+    describe('when historical trend param is all time', () => {
+      it('calls useRepoComponentsTable with correct query params', async () => {
+        const { requestFilters } = setup({
+          repoData: mockGetRepo,
+          useParamsValue: {
+            historicalTrend: 'ALL_TIME',
+            search: '',
+            components: [],
+          },
         })
 
         renderHook(() => useRepoComponentsTable(true), {
@@ -216,7 +263,7 @@ describe('useRepoComponentsTable', () => {
             before: format(new Date(), 'yyyy-MM-dd'),
             filters: {},
             interval: 'INTERVAL_30_DAY',
-            orderingDirection: 'ASC',
+            orderingDirection: 'DESC',
             name: 'codecov',
             repo: 'test',
           })
@@ -228,7 +275,11 @@ describe('useRepoComponentsTable', () => {
       it('calls useRepoComponentsTable with correct query params', async () => {
         const { requestFilters } = setup({
           repoData: mockGetRepo,
-          useParamsValue: { historicalTrend: 'LAST_6_MONTHS', search: '' },
+          useParamsValue: {
+            historicalTrend: 'LAST_6_MONTHS',
+            search: '',
+            components: [],
+          },
         })
         renderHook(() => useRepoComponentsTable(true), {
           wrapper: wrapper(),
@@ -241,7 +292,7 @@ describe('useRepoComponentsTable', () => {
             before: format(new Date(), 'yyyy-MM-dd'),
             filters: {},
             interval: 'INTERVAL_7_DAY',
-            orderingDirection: 'ASC',
+            orderingDirection: 'DESC',
             name: 'codecov',
             repo: 'test',
           })
@@ -253,7 +304,11 @@ describe('useRepoComponentsTable', () => {
       it('calls useRepoComponentsTable with correct query params', async () => {
         const { requestFilters } = setup({
           repoData: mockGetRepo,
-          useParamsValue: { historicalTrend: 'LAST_7_DAYS', search: '' },
+          useParamsValue: {
+            historicalTrend: 'LAST_7_DAYS',
+            search: '',
+            components: [],
+          },
         })
         renderHook(() => useRepoComponentsTable(true), {
           wrapper: wrapper(),
@@ -266,7 +321,7 @@ describe('useRepoComponentsTable', () => {
             before: format(new Date(), 'yyyy-MM-dd'),
             filters: {},
             interval: 'INTERVAL_1_DAY',
-            orderingDirection: 'ASC',
+            orderingDirection: 'DESC',
             name: 'codecov',
             repo: 'test',
           })
@@ -288,11 +343,11 @@ describe('useRepoComponentsTable', () => {
 
       await waitFor(() =>
         expect(requestFilters).toHaveBeenCalledWith({
-          after: '2022-10-10',
+          after: format(sub(new Date(), { months: 3 }), 'yyyy-MM-dd'),
           before: format(new Date(), 'yyyy-MM-dd'),
           filters: { components: ['component1'] },
-          interval: 'INTERVAL_30_DAY',
-          orderingDirection: 'ASC',
+          interval: 'INTERVAL_7_DAY',
+          orderingDirection: 'DESC',
           name: 'codecov',
           repo: 'test',
         })

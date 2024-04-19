@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import { PropsWithChildren } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useRepoBackfillingStatus } from './hooks'
@@ -11,7 +12,7 @@ const queryClient = new QueryClient({
 })
 
 const wrapper =
-  (initialEntries = '/gh/codecov/test') =>
+  (initialEntries = '/gh/codecov/test'): React.FC<PropsWithChildren> =>
   ({ children }) =>
     (
       <MemoryRouter initialEntries={[initialEntries]}>
