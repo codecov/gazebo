@@ -33,8 +33,15 @@ const HomePageRedirect = () => {
   const { data: currentUser } = useUser()
   const { params } = useLocationParams()
 
+  // TODO: Remove after enterprise infinite redirect fixed
+  console.log('enterprise redirect log', provider, currentUser)
+
   if (!provider || !currentUser) {
-    return <Redirect to="/login" />
+    return config.IS_SELF_HOSTED ? (
+      <Redirect to="/" />
+    ) : (
+      <Redirect to="/login" />
+    )
   }
 
   const defaultOrg =
