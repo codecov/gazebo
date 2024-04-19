@@ -12,8 +12,9 @@ import {
 import cs from 'classnames'
 import isEmpty from 'lodash/isEmpty'
 import isNumber from 'lodash/isNumber'
-import { Fragment, lazy, Suspense, useMemo, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import qs from 'qs'
+import { Fragment, lazy, Suspense, useEffect, useMemo, useState } from 'react'
+import { useLocation , useParams } from 'react-router-dom'
 
 import {
   ImpactedFile,
@@ -246,6 +247,11 @@ export default function FilesChangedTable() {
     { id: 'missedLines', desc: true },
   ])
   const { provider, owner, repo, pullId } = useParams<URLParams>()
+  const location = useLocation()
+  const params = qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+  })
+  const currentlySelectedFile = params.filepath
 
   const { data: pullData, isLoading } = usePull({
     provider,
@@ -273,6 +279,19 @@ export default function FilesChangedTable() {
     }
     return []
   }, [pullData?.pull?.compareWithBase])
+
+  useEffect(() => {
+    if (data.length > 0 && currentlySelectedFile) {
+      const fileToExpandIndex = data.findIndex(
+        (file) => file && file.headName === currentlySelectedFile
+      )
+      if (fileToExpandIndex !== -1) {
+        setExpanded({
+          [fileToExpandIndex]: true,
+        })
+      }
+    }
+  }, [data, currentlySelectedFile])
 
   const table = useReactTable({
     columns: getColumns({ pullId }),

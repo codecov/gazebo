@@ -32,9 +32,7 @@ function ManageAdminCard() {
       <div className="my-4">
         <AddAdmins setAdminStatus={setAdminStatus} />
       </div>
-      <div className="max-h-56 overflow-y-auto">
-        <AdminTable />
-      </div>
+      <AdminTable />
     </div>
   )
 }
