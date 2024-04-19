@@ -137,7 +137,18 @@ describe('ManageAdminCard', () => {
 
   describe('when rendered with admins', () => {
     it('renders the admins', async () => {
-      setup([{ username: 'spookyfun', email: 'c3@cr.io', name: 'laudna' }])
+      setup([
+        {
+          activated: true,
+          is_admin: true,
+          username: 'spookyfun',
+          email: 'c3@cr.io',
+          ownerid: 3,
+          student: false,
+          name: 'laudna',
+          last_pull_timestamp: null,
+        },
+      ])
       render(<ManageAdminCard />, { wrapper })
 
       expect(await screen.findByText('spookyfun')).toBeTruthy()
@@ -154,10 +165,14 @@ describe('ManageAdminCard', () => {
     it('calls the mutation with the user and is_admin=false', async () => {
       const { mutate, user } = setup([
         {
-          username: 'laudna',
+          activated: true,
+          is_admin: true,
+          username: 'spookyfun',
           email: 'c3@cr.io',
+          ownerid: 3,
+          student: false,
           name: 'laudna',
-          ownerid: 'someid',
+          last_pull_timestamp: null,
         },
       ])
 
