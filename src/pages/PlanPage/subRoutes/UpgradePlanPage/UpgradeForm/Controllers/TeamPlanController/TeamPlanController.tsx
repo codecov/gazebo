@@ -1,24 +1,14 @@
 import { UseFormRegister, UseFormSetValue } from 'react-hook-form'
-import { useParams } from 'react-router-dom'
 
-import {
-  IndividualPlan,
-  useAccountDetails,
-  useAvailablePlans,
-} from 'services/account'
-import {
-  canApplySentryUpgrade,
-  findProPlans,
-  findSentryPlans,
-} from 'shared/utils/billing'
+import { IndividualPlan } from 'services/account'
 import {
   MIN_NB_SEATS_PRO,
   TEAM_PLAN_MAX_ACTIVE_USERS,
-  UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE,
 } from 'shared/utils/upgradeForm'
 import TextInput from 'ui/TextInput'
 
 import BillingOptions from './BillingOptions'
+import ErrorBanner from './ErrorBanner'
 import PriceCallout from './PriceCallout'
 import UserCount from './UserCount'
 
@@ -29,56 +19,6 @@ interface Errors {
   seats?: {
     message?: string
   }
-}
-
-interface ErrorBannerProps {
-  errors?: Errors
-  setFormValue: UseFormSetValue<UpgradeFormFields>
-  setSelectedPlan: (plan: IndividualPlan) => void
-}
-
-function ErrorBanner({
-  errors,
-  setFormValue,
-  setSelectedPlan,
-}: ErrorBannerProps) {
-  const { provider, owner } = useParams<{ provider: string; owner: string }>()
-  const { data: plans } = useAvailablePlans({ provider, owner })
-  const { data: accountDetails } = useAccountDetails({ provider, owner })
-  const { proPlanYear } = findProPlans({ plans })
-  const { sentryPlanYear } = findSentryPlans({ plans })
-  const plan = accountDetails?.rootOrganization?.plan ?? accountDetails?.plan
-  const isSentryUpgrade = canApplySentryUpgrade({ plan, plans })
-  const yearlyProPlan = isSentryUpgrade ? sentryPlanYear : proPlanYear
-
-  if (!errors?.seats?.message) {
-    return null
-  }
-
-  if (errors.seats.message === UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE) {
-    return (
-      <div className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
-        &#128161; {errors.seats.message}{' '}
-        <button
-          className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
-          onClick={() => {
-            setSelectedPlan(yearlyProPlan)
-            setFormValue('newPlan', yearlyProPlan.value, {
-              shouldValidate: true,
-            })
-          }}
-        >
-          Upgrade to Pro
-        </button>
-      </div>
-    )
-  }
-
-  return (
-    <p className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
-      {errors.seats.message}
-    </p>
-  )
 }
 
 interface PlanControllerProps {
@@ -124,11 +64,13 @@ const PlanController: React.FC<PlanControllerProps> = ({
         newPlan={newPlan}
         setFormValue={setFormValue}
       />
-      <ErrorBanner
-        errors={errors}
-        setFormValue={setFormValue}
-        setSelectedPlan={setSelectedPlan}
-      />
+      {errors?.seats?.message ? (
+        <ErrorBanner
+          errors={errors}
+          setFormValue={setFormValue}
+          setSelectedPlan={setSelectedPlan}
+        />
+      ) : null}
     </>
   )
 }
