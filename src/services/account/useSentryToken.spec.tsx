@@ -2,7 +2,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { PropsWithChildren } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useAddNotification } from 'services/toastNotification'
@@ -28,7 +27,7 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper: React.FC<PropsWithChildren> = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh']}>
       <Route path="/:provider">{children}</Route>

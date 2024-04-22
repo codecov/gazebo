@@ -1,20 +1,27 @@
 import { format, sub } from 'date-fns'
-import { useCallback, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { SortingDirection } from 'old_ui/Table/constants'
 import {
   AFTER_DATE_FORMAT_OPTIONS,
   MEASUREMENT_TIME_INTERVALS,
+  TIME_OPTION_KEY,
+  TIME_OPTION_VALUES,
 } from 'pages/RepoPage/shared/constants'
 import { useLocationParams } from 'services/navigation'
 import { useRepo, useRepoComponents } from 'services/repo'
 
-const getSortByDirection = (isDesc) =>
+const getSortByDirection = (isDesc: boolean) =>
   isDesc ? SortingDirection.DESC : SortingDirection.ASC
 
-const createMeasurementVariables = (historicalTrend, oldestCommitAt) => {
-  const isAllTime = !Boolean(historicalTrend) || historicalTrend === 'ALL_TIME'
+const createMeasurementVariables = (
+  historicalTrend: TIME_OPTION_KEY,
+  oldestCommitAt = format(
+    sub(new Date(), { ...AFTER_DATE_FORMAT_OPTIONS.LAST_6_MONTHS }),
+    'yyyy-MM-dd'
+  )
+) => {
+  const isAllTime = historicalTrend === TIME_OPTION_VALUES.ALL_TIME
   const selectedDate = isAllTime
     ? new Date(oldestCommitAt)
     : sub(new Date(), { ...AFTER_DATE_FORMAT_OPTIONS[historicalTrend] })
@@ -26,50 +33,52 @@ const createMeasurementVariables = (historicalTrend, oldestCommitAt) => {
   return { after, interval }
 }
 
-function useRepoComponentsTable(isDesc) {
+type URLParams = {
+  provider: string
+  owner: string
+  repo: string
+}
+
+function useRepoComponentsTable(isDesc = false) {
   const { params } = useLocationParams({
     search: '',
-    historicalTrend: '',
+    historicalTrend: TIME_OPTION_VALUES.LAST_3_MONTHS,
     components: [],
   })
-  const { provider, owner, repo } = useParams()
+  const { provider, owner, repo } = useParams<URLParams>()
   const { data: repoData } = useRepo({
     provider,
     owner,
     repo,
   })
   const isAdmin = repoData?.isAdmin
+  // @ts-expect-error Need to type useLocationParams
   const isSearching = Boolean(params?.components?.length)
-  const [sortBy, setSortBy] = useState(SortingDirection.ASC)
   const { after, interval } = createMeasurementVariables(
-    params?.historicalTrend,
-    repoData?.repository?.oldestCommitAt
+    // @ts-expect-error Need to type useLocationParams
+    params?.historicalTrend ?? TIME_OPTION_VALUES.LAST_3_MONTHS,
+    repoData?.repository?.oldestCommitAt ?? undefined
   )
 
   const { data, isLoading } = useRepoComponents({
+    // @ts-expect-error Need to type useLocationParams
     filters: Boolean(params?.components?.length)
-      ? { components: params?.components }
+      ? // @ts-expect-error Need to type useLocationParams
+        { components: params?.components }
       : {},
-    orderingDirection: sortBy,
+    orderingDirection: getSortByDirection(isDesc),
     before: format(new Date(), 'yyyy-MM-dd'),
     interval,
     after,
+    // @ts-expect-error Need to type useLocationParams
     branch: params?.branch,
     opts: { suspense: false },
   })
-
-  const handleSort = useCallback(() => {
-    const tableSortByDirection = getSortByDirection(isDesc)
-    if (sortBy !== tableSortByDirection) {
-      setSortBy(tableSortByDirection)
-    }
-  }, [isDesc, sortBy])
 
   return {
     data: data?.components || [],
     isAdmin,
     isLoading,
-    handleSort,
     isSearching,
   }
 }
