@@ -34,7 +34,7 @@ ignore:
   - ./src/setupProxy.js
   - ./src/reportWebVitals.js
   - ./scripts/*
-  - ./src/index.js
+  - ./src/index.ts
   - ./src/sentry.ts
   - ./src/mocks/*.js
   - ./src/**/flags/**/*.js

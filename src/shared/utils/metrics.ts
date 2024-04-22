@@ -13,8 +13,11 @@ type DistributionKeys = {
 }
 
 type GaugeKeys = {
-  // TODO: Remove this key when adding in non-test keys
-  testKey: string
+  billing_change: {
+    user: {
+      seats_change: string
+    }
+  }
 }
 
 type IncrementKeys = {
@@ -77,6 +80,19 @@ type IncrementKeys = {
       not_found_error: string
     }
   }
+  request_install: {
+    user: {
+      shared: {
+        request: string
+      }
+    }
+  }
+  billing_change: {
+    user: {
+      visited_page: string
+      checkout_from_page: string
+    }
+  }
 }
 
 type SetKeys = {
@@ -113,7 +129,7 @@ export const metrics = {
   },
   increment: (
     name: MetricKeyNameUnion<IncrementKeys>,
-    value: IncrementValue,
+    value?: IncrementValue,
     data?: IncrementData
   ) => {
     sentryMetrics.increment(name, value, data)
