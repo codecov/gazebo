@@ -5,7 +5,7 @@ function SyncingBanner() {
     <div className="mt-12 grid gap-4">
       <div className="flex flex-col items-center gap-1">
         <Spinner />
-        <p>It might take up to 24 hr to view your data.</p>
+        <p>It might take up to 24 hours to view your data.</p>
       </div>
     </div>
   )
