@@ -61,8 +61,11 @@ function Routes({
   })
 
   const productEnabled = coverageEnabled || bundleAnalysisEnabled
-  const showUnauthorizedMessage =
-    productEnabled && isRepoPrivate && !isCurrentUserActivated
+  const showUnauthorizedMessageCoverage =
+    coverageEnabled && isRepoPrivate && !isCurrentUserActivated
+  const showUnauthorizedMessageBundles =
+    bundleAnalysisEnabled && isRepoPrivate && !isCurrentUserActivated
+
   if (isRepoActive && isRepoActivated) {
     return (
       <Switch>
@@ -76,7 +79,7 @@ function Routes({
             ]}
             exact
           >
-            {showUnauthorizedMessage ? (
+            {showUnauthorizedMessageCoverage ? (
               <UnauthorizedRepoDisplay />
             ) : (
               <CoverageTab />
@@ -103,7 +106,7 @@ function Routes({
             ]}
             exact
           >
-            {showUnauthorizedMessage ? (
+            {showUnauthorizedMessageBundles ? (
               <UnauthorizedRepoDisplay />
             ) : (
               <BundlesTab />
@@ -230,8 +233,8 @@ function RepoPage() {
   const isCurrentUserActivated = repoData?.isCurrentUserActivated
   const isRepoActive = repoData?.repository?.active
   const isRepoActivated = repoData?.repository?.activated
-  const isRepoPrivate = !!repoData?.repository?.private
-
+  const isRepoPrivate =
+    !!repoData?.repository?.private ?? repoData?.isRepoPrivate
   if (!refetchEnabled && !isRepoActivated) {
     setRefetchEnabled(true)
   }

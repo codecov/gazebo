@@ -3,7 +3,6 @@ import { z } from 'zod'
 
 import Api from 'shared/api'
 import { NetworkErrorObject } from 'shared/api/helpers'
-import A from 'ui/A'
 
 import {
   RepoNotFoundErrorSchema,
@@ -109,20 +108,12 @@ export function useRepo({ provider, owner, repo, opts = {} }: UseRepoArgs) {
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
-            status: 403,
-            data: {
-              detail: (
-                <p>
-                  Activation is required to view this repo, please{' '}
-                  {/* @ts-expect-error */}
-                  <A to={{ pageName: 'membersTab' }}>click here </A> to activate
-                  your account.
-                </p>
-              ),
-            },
-            dev: 'useRepo - 403 OwnerNotActivatedError',
-          } satisfies NetworkErrorObject)
+          return {
+            isCurrentUserActivated: data?.owner?.isCurrentUserActivated,
+            repository: null,
+            // OwnerNotActivated can only be returned if a repo is private
+            isRepoPrivate: true,
+          }
         }
 
         return (
