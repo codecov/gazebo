@@ -1,26 +1,5 @@
-import { metrics } from '@sentry/react'
-
 import { isProPlan, isTeamPlan } from 'shared/utils/billing'
-
-const TEAM_SEATS_ADDED_AND_REMOVED_METRIC_KEY =
-  'billing_change.user.team.seats.change'
-const PRO_SEATS_ADDED_AND_REMOVED_METRIC_KEY =
-  'billing_change.user.pro.seats.change'
-const BILLING_PAGE_VISIT_METRIC_KEY = 'billing_change.user.visited.page'
-const BILLING_PAGE_CHECKOUT_METRIC_KEY =
-  'billing_change.user.checkout.from.page'
-
-const updateGaugeMetric = (
-  planTypeKey: string,
-  value: number,
-  ownerId: string
-) => {
-  metrics.gauge(planTypeKey, value, {
-    tags: {
-      ownerId,
-    },
-  })
-}
+import { metrics } from 'shared/utils/metrics'
 
 // Updates metrics on the checkout page, which consists of plan + seat selection
 export const updateBillingMetrics = (
@@ -28,47 +7,48 @@ export const updateBillingMetrics = (
   seats: number,
   currentPlanValue: string,
   newPlan: String,
-  currentPlanQuantity: number,
-  ownerId: string
+  currentPlanQuantity: number
 ) => {
   const seatDelta = seats - currentPlanQuantity
   if (isTeamPlan(currentPlanValue) && isProPlan(newPlan)) {
-    updateGaugeMetric(
-      TEAM_SEATS_ADDED_AND_REMOVED_METRIC_KEY,
+    metrics.gauge(
+      'billing_change.user.seats_change',
       currentPlanQuantity * -1,
-      ownerId
+      { tags: { plan: 'team' } }
     )
-    updateGaugeMetric(PRO_SEATS_ADDED_AND_REMOVED_METRIC_KEY, seats, ownerId)
+
+    metrics.gauge('billing_change.user.seats_change', seats, {
+      tags: { plan: 'pro' },
+    })
   }
 
   if (isProPlan(currentPlanValue) && isTeamPlan(newPlan)) {
-    updateGaugeMetric(TEAM_SEATS_ADDED_AND_REMOVED_METRIC_KEY, seats, ownerId)
-    updateGaugeMetric(
-      PRO_SEATS_ADDED_AND_REMOVED_METRIC_KEY,
+    metrics.gauge(
+      'billing_change.user.seats_change',
       currentPlanQuantity * -1,
-      ownerId
+      { tags: { plan: 'pro' } }
     )
+
+    metrics.gauge('billing_change.user.seats_change', seats, {
+      tags: { plan: 'team' },
+    })
   }
 
   if (isSamePlan && isTeamPlan(newPlan)) {
-    updateGaugeMetric(
-      TEAM_SEATS_ADDED_AND_REMOVED_METRIC_KEY,
-      seatDelta,
-      ownerId
-    )
+    metrics.gauge('billing_change.user.seats_change', seatDelta, {
+      tags: { plan: 'team' },
+    })
   }
 
   if (isSamePlan && isProPlan(newPlan)) {
-    updateGaugeMetric(
-      PRO_SEATS_ADDED_AND_REMOVED_METRIC_KEY,
-      seatDelta,
-      ownerId
-    )
+    metrics.gauge('billing_change.user.seats_change', seatDelta, {
+      tags: { plan: 'pro' },
+    })
   }
 
-  metrics.increment(BILLING_PAGE_CHECKOUT_METRIC_KEY)
+  metrics.increment('billing_change.user.checkout_from_page')
 }
 
 export const incrementBillingPageVisitCounter = () => {
-  metrics.increment(BILLING_PAGE_VISIT_METRIC_KEY)
+  metrics.increment('bundles_tab.bundle_details.visited_page')
 }
