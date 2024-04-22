@@ -1,8 +1,8 @@
-import PropTypes from 'prop-types'
 import { useState } from 'react'
 
 import {
   TIME_OPTION_VALUES,
+  TimeOption,
   TimeOptions,
 } from 'pages/RepoPage/shared/constants'
 import { useLocationParams } from 'services/navigation'
@@ -15,14 +15,26 @@ import Select from 'ui/Select'
 
 import BranchSelector from './BranchSelector'
 
-const Header = ({ controlsDisabled, children }) => {
-  const [search, setSearch] = useState()
+type Component = {
+  name: string
+  id: string
+}
+
+const Header = ({
+  controlsDisabled,
+  children,
+}: {
+  controlsDisabled?: boolean
+  children?: React.ReactNode
+}) => {
+  const [search, setSearch] = useState('')
 
   const { params, updateParams } = useLocationParams({
     historicalTrend: '',
-    components: [],
+    components: [] as Component[],
   })
-  const [selectedComponents, setSelectedComponents] = useState(
+  const [selectedComponents, setSelectedComponents] = useState<Component[]>(
+    // @ts-expect-error need to type out useLocationParams
     params?.components
   )
 
@@ -37,6 +49,7 @@ const Header = ({ controlsDisabled, children }) => {
   )
 
   const value = TimeOptions.find(
+    // @ts-expect-error need to type out useLocationParams
     (item) => item.value === params.historicalTrend
   )
 
@@ -64,16 +77,17 @@ const Header = ({ controlsDisabled, children }) => {
             Historical trend
           </h3>
           <Select
+            // @ts-expect-error Select is not typed
             dataMarketing="select-historical-trend"
             disabled={controlsDisabled}
             ariaName="Select Historical Trend"
             items={TimeOptions}
             value={value ?? defaultValue}
-            onChange={(historicalTrend) =>
+            onChange={(historicalTrend: TimeOption) =>
               updateParams({ historicalTrend: historicalTrend.value })
             }
-            renderItem={({ label }) => label}
-            renderSelected={({ label }) => label}
+            renderItem={({ label }: { label: string }) => label}
+            renderSelected={({ label }: { label: string }) => label}
           />
         </div>
         <div className="md:w-[16rem]">
@@ -81,6 +95,7 @@ const Header = ({ controlsDisabled, children }) => {
             Show by
           </h3>
           <MultiSelect
+            // @ts-expect-error something funky with this component
             disabled={controlsDisabled}
             dataMarketing="components-tab-multi-select"
             hook="components-tab-multi-select"
@@ -89,14 +104,14 @@ const Header = ({ controlsDisabled, children }) => {
             selectedItemsOverride={selectedComponents}
             resourceName="Component"
             isLoading={isLoading}
-            onChange={(components) => {
+            onChange={(components: Component[]): void => {
               setSelectedComponents(components)
               updateParams({ components })
             }}
-            onSearch={(termId) => setSearch(termId)}
-            renderSelected={(selectedItems) => (
+            onSearch={(termId: string) => setSearch(termId)}
+            renderSelected={(selectedItems: Component[]) => (
               <span className="flex items-center gap-2">
-                <Icon variant="solid" name="component" />
+                <Icon variant="solid" name="database" />
                 {selectedItems.length === 0 ? (
                   'All Components'
                 ) : (
@@ -110,10 +125,6 @@ const Header = ({ controlsDisabled, children }) => {
       {children}
     </div>
   )
-}
-
-Header.propTypes = {
-  controlsDisabled: PropTypes.bool,
 }
 
 export default Header

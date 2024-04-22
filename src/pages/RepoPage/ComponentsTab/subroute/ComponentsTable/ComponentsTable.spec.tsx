@@ -3,7 +3,7 @@ import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { PropsWithChildren, Suspense } from 'react'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import ComponentsTable from './ComponentsTable'
@@ -108,7 +108,7 @@ let testLocation: any
 const wrapper =
   (
     initialEntries = '/gh/codecov/gazebo/components'
-  ): React.FC<PropsWithChildren> =>
+  ): React.FC<React.PropsWithChildren> =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>

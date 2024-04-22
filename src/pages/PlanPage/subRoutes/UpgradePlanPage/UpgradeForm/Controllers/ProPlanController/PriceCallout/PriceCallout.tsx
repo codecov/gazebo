@@ -1,4 +1,5 @@
 import { Fragment } from 'react'
+import { UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
 import { useAccountDetails, useAvailablePlans } from 'services/account'
@@ -9,15 +10,19 @@ import {
   isAnnualPlan,
   Plans,
 } from 'shared/utils/billing'
-import { calculatePriceProPlan } from 'shared/utils/upgradeForm'
+import {
+  calculatePriceProPlan,
+  MIN_NB_SEATS_PRO,
+} from 'shared/utils/upgradeForm'
 import Icon from 'ui/Icon'
 
 import { NewPlanType } from '../../../constants'
+import { UpgradeFormFields } from '../../../UpgradeForm'
 
 interface PriceCalloutProps {
   newPlan: NewPlanType
   seats: number
-  setFormValue: (x: string, y: string) => void
+  setFormValue: UseFormSetValue<UpgradeFormFields>
 }
 
 const PriceCallout: React.FC<PriceCalloutProps> = ({
@@ -40,6 +45,10 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
 
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const nextBillingDate = getNextBillingDate(accountDetails)
+
+  if (seats < MIN_NB_SEATS_PRO) {
+    return null
+  }
 
   if (isPerYear) {
     return (

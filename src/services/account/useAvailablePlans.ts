@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 import Api from 'shared/api'
 
-export const IndividualPlanSchema = z
+const IndividualPlanSchema = z
   .object({
     baseUnitPrice: z.number(),
     benefits: z.array(z.string()),
@@ -13,6 +13,8 @@ export const IndividualPlanSchema = z
     value: z.string(),
   })
   .nullable()
+
+export type IndividualPlan = z.infer<typeof IndividualPlanSchema>
 
 const PlansSchema = z
   .object({

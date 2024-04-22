@@ -2,7 +2,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { PropsWithChildren } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import BadgesAndGraphsTab from './BadgesAndGraphsTab'
@@ -13,7 +12,7 @@ const queryClient = new QueryClient({
 
 const server = setupServer()
 
-const wrapper: React.FC<PropsWithChildren> = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings']}>
     <QueryClientProvider client={queryClient}>
       <Route path="/:provider/:owner/:repo/settings">{children}</Route>
