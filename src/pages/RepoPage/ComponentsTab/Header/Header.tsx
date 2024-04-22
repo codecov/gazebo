@@ -8,6 +8,7 @@ import {
 import { useLocationParams } from 'services/navigation'
 import { useComponentsBackfilled } from 'services/repo'
 import { useRepoComponentsSelect } from 'services/repo/useRepoComponentsSelect'
+import A from 'ui/A'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'
 import Select from 'ui/Select'
@@ -60,15 +61,19 @@ const Header = ({
     <div className="flex flex-col justify-end divide-y divide-solid divide-ds-gray-secondary">
       <div className="grid w-2/3 divide-y divide-solid divide-ds-gray-secondary sm:w-full sm:grid-cols-2 sm:divide-x sm:divide-y-0 md:grid-cols-4">
         <BranchSelector />
-        <div className="mr-4 flex flex-col justify-between gap-2 p-4 sm:border-l sm:border-ds-gray-secondary sm:py-0 md:border-l-0">
+        <div className="md:w-[16rem]">
           <h3 className="text-sm font-semibold text-ds-gray-octonary">
             Configured components
           </h3>
           <p className="flex flex-1 text-xl font-light text-ds-gray-octonary">
             {data?.componentsCount}
           </p>
+          <p className="text-xs">
+            {/* @ts-expect-error */}
+            <A to={{ pageName: 'components' }}>Learn more</A>
+          </p>
         </div>
-        <div className="flex flex-col justify-between gap-2 p-4 sm:py-0">
+        <div className="md:w-[16rem]">
           <h3 className="text-sm font-semibold text-ds-gray-octonary">
             Historical trend
           </h3>
@@ -86,7 +91,7 @@ const Header = ({
             renderSelected={({ label }: { label: string }) => label}
           />
         </div>
-        <div className="flex flex-col justify-between gap-2 border-ds-gray-secondary p-4 sm:py-0">
+        <div className="md:w-[16rem]">
           <h3 className="text-sm font-semibold text-ds-gray-octonary">
             Show by
           </h3>
