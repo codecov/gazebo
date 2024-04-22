@@ -1,4 +1,5 @@
 import { Fragment } from 'react'
+import { UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
 import { useAccountDetails, useAvailablePlans } from 'services/account'
@@ -12,15 +13,17 @@ import {
 import {
   calculatePriceSentryPlan,
   calculateSentryNonBundledCost,
+  MIN_SENTRY_SEATS,
 } from 'shared/utils/upgradeForm'
 import Icon from 'ui/Icon'
 
 import { NewPlanType } from '../../../constants'
+import { UpgradeFormFields } from '../../../UpgradeForm'
 
 interface PriceCalloutProps {
   newPlan: NewPlanType
   seats: number
-  setFormValue: (x: string, y: string) => void
+  setFormValue: UseFormSetValue<UpgradeFormFields>
 }
 
 const PriceCallout: React.FC<PriceCalloutProps> = ({
@@ -42,6 +45,10 @@ const PriceCallout: React.FC<PriceCalloutProps> = ({
   const isPerYear = isAnnualPlan(newPlan)
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const nextBillingDate = getNextBillingDate(accountDetails)
+
+  if (seats < MIN_SENTRY_SEATS) {
+    return null
+  }
 
   if (isPerYear) {
     const nonBundledCost = calculateSentryNonBundledCost({

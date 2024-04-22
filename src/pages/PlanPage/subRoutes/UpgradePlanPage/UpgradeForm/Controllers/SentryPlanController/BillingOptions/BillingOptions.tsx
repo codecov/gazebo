@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
 import { useAvailablePlans, usePlanData } from 'services/account'
@@ -11,10 +12,11 @@ import {
 import OptionButton from 'ui/OptionButton'
 
 import { NewPlanType, OptionPeriod, TimePeriods } from '../../../constants'
+import { UpgradeFormFields } from '../../../UpgradeForm'
 
 interface BillingControlsProps {
   newPlan: NewPlanType
-  setFormValue: (x: string, y: string) => void
+  setFormValue: UseFormSetValue<UpgradeFormFields>
 }
 
 const BillingControls: React.FC<BillingControlsProps> = ({

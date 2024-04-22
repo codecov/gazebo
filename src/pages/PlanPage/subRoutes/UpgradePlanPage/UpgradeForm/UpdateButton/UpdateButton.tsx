@@ -6,7 +6,6 @@ import {
   updateBillingMetrics,
 } from 'pages/PlanPage/PlanMetrics/planMetrics'
 import { useAccountDetails } from 'services/account'
-import { useUser } from 'services/user'
 import { isFreePlan } from 'shared/utils/billing'
 import Button from 'ui/Button'
 
@@ -32,8 +31,6 @@ const UpdateButton: React.FC<BillingControlsProps> = ({
   const isSamePlan = newPlan === currentPlanValue
   const noChangeInSeats = seats === currentPlanQuantity
   const disabled = !isValid || (isSamePlan && noChangeInSeats)
-  const { data: currentUser } = useUser()
-  const ownerId = currentUser?.trackingMetadata?.ownerid ?? 'No owner id'
 
   useEffect(() => {
     incrementBillingPageVisitCounter()
@@ -45,8 +42,7 @@ const UpdateButton: React.FC<BillingControlsProps> = ({
       seats,
       currentPlanValue,
       newPlan,
-      currentPlanQuantity,
-      ownerId
+      currentPlanQuantity
     )
   }
 

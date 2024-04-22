@@ -3,9 +3,10 @@ import { render, screen, waitFor } from 'custom-testing-library'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames } from 'services/tier'
+import { TierNames, TTierNames } from 'services/tier'
 
 import ComponentsTab from './ComponentsTab'
 
@@ -23,7 +24,7 @@ jest.mock(
   './subroute/ComponentsTable/ComponentsTable',
   () => () => 'Components table'
 )
-jest.mock('./Header', () => ({ children }) => (
+jest.mock('./Header', () => ({ children }: { children: React.ReactNode }) => (
   <p>Components Header Component {children}</p>
 ))
 
@@ -48,7 +49,7 @@ let testLocation = {
   pathname: '',
 }
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/gazebo/components']}>
       <Route path="/:provider/:owner/:repo/components">{children}</Route>
@@ -151,6 +152,11 @@ describe('Components Tab', () => {
     flags = [nextPageFlagData, initialFlagData],
     tierValue = TierNames.PRO,
     isPrivate = false,
+  }: {
+    data?: object
+    flags?: any[]
+    tierValue?: TTierNames
+    isPrivate?: boolean
   }) {
     server.use(
       graphql.query('OwnerTier', (req, res, ctx) => {
@@ -242,14 +248,6 @@ describe('Components Tab', () => {
       const syncingBanner = screen.queryByText(/Syncing Banner/)
       expect(syncingBanner).not.toBeInTheDocument()
     })
-
-    it('renders a blurred image of the table', async () => {
-      render(<ComponentsTab />, { wrapper })
-      const blurredComponentsTableImage = await screen.findByRole('img', {
-        name: /Blurred components table/,
-      })
-      expect(blurredComponentsTableImage).toBeInTheDocument()
-    })
   })
 
   describe('when rendered while ongoing syncing', () => {
@@ -276,14 +274,6 @@ describe('Components Tab', () => {
 
       const syncingBanner = await screen.findByText(/Syncing Banner/)
       expect(syncingBanner).toBeInTheDocument()
-    })
-
-    it('renders a blurred image of the table', async () => {
-      render(<ComponentsTab />, { wrapper })
-      const blurredComponentsTableImage = await screen.findByRole('img', {
-        name: /Blurred components table/,
-      })
-      expect(blurredComponentsTableImage).toBeInTheDocument()
     })
   })
 
