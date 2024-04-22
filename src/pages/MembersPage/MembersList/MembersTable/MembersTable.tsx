@@ -6,8 +6,7 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table'
-import isEmpty from 'lodash/isEmpty'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
 
@@ -146,8 +145,8 @@ function getOrderingDirection(sorting: Array<{ id: string; desc: boolean }>) {
 interface MembersTableProps {
   handleActivate: (user: any) => void
   params?: {
-    activated?: boolean | null
-    isAdmin?: string | null
+    activated?: boolean
+    isAdmin?: boolean
     ordering?: string[]
     search?: string
     page: number
@@ -189,17 +188,9 @@ export default function MembersTable({
     }
   }, [inView, hasNextPage, fetchNextPage])
 
-  const tableData = useMemo(() => {
-    if (isEmpty(data?.pages)) {
-      return []
-    }
-
-    return data?.pages.flatMap((page) => page.results)
-  }, [data])
-
   const table = useReactTable({
     columns: getColumns({ handleActivate }),
-    data: tableData || [],
+    data: data || [],
     state: {
       sorting,
     },

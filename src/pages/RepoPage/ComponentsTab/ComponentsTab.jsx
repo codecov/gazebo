@@ -5,7 +5,6 @@ import { SentryRoute } from 'sentry'
 import { useRepoSettingsTeam } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 
-import blurredTable from './assets/blurredTable.png'
 import BackfillBanners from './BackfillBanners/BackfillBanners'
 import { useRepoBackfillingStatus } from './BackfillBanners/hooks'
 import Header from './Header'
@@ -56,16 +55,10 @@ function ComponentsTab() {
         {showComponentsTable({
           componentsMeasurementsActive,
           componentsMeasurementsBackfilled,
-        }) ? (
+        }) && (
           <SentryRoute path="/:provider/:owner/:repo/components" exact>
             <ComponentsTable />
           </SentryRoute>
-        ) : (
-          <img
-            alt="Blurred components table"
-            src={blurredTable}
-            className="h-auto max-w-full"
-          />
         )}
       </div>
     </div>

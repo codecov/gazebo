@@ -242,14 +242,6 @@ describe('Components Tab', () => {
       const syncingBanner = screen.queryByText(/Syncing Banner/)
       expect(syncingBanner).not.toBeInTheDocument()
     })
-
-    it('renders a blurred image of the table', async () => {
-      render(<ComponentsTab />, { wrapper })
-      const blurredComponentsTableImage = await screen.findByRole('img', {
-        name: /Blurred components table/,
-      })
-      expect(blurredComponentsTableImage).toBeInTheDocument()
-    })
   })
 
   describe('when rendered while ongoing syncing', () => {
@@ -276,14 +268,6 @@ describe('Components Tab', () => {
 
       const syncingBanner = await screen.findByText(/Syncing Banner/)
       expect(syncingBanner).toBeInTheDocument()
-    })
-
-    it('renders a blurred image of the table', async () => {
-      render(<ComponentsTab />, { wrapper })
-      const blurredComponentsTableImage = await screen.findByRole('img', {
-        name: /Blurred components table/,
-      })
-      expect(blurredComponentsTableImage).toBeInTheDocument()
     })
   })
 

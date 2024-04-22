@@ -30,7 +30,8 @@ function CurrentPlanCard() {
 
   if (
     isEnterprisePlan(plan?.value) ||
-    collectionMethod === CollectionMethods.INVOICED_CUSTOMER_METHOD
+    collectionMethod === CollectionMethods.INVOICED_CUSTOMER_METHOD ||
+    accountDetails?.usesInvoice
   ) {
     return <EnterprisePlanCard plan={plan} />
   }
