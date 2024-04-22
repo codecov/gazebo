@@ -35,6 +35,7 @@ const HomePageRedirect = () => {
 
   // TODO: Remove after enterprise infinite redirect fixed
   console.log('enterprise redirect log', provider, currentUser)
+  console.log('config.IS_SELF_HOSTED', config.IS_SELF_HOSTED)
 
   if (!provider || !currentUser) {
     return config.IS_SELF_HOSTED ? (
