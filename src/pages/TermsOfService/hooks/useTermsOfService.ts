@@ -73,7 +73,6 @@ export function useSaveTermsAgreement(options: SaveTermsAgreementOptions = {}) {
         mutationPath: 'saveTermsAgreement',
         query: querySignAgreement,
         variables,
-        supportsServiceless: true,
       })
     },
     onSuccess: (data) => {
