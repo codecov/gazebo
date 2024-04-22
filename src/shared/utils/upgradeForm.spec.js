@@ -317,7 +317,7 @@ describe('getSchema', () => {
       const [issue] = response.error.issues
       expect(issue).toEqual(
         expect.objectContaining({
-          message: 'Team plan is only available for 10 or less users',
+          message: 'Team plan is only available for 10 seats or fewer.',
         })
       )
     })

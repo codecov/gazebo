@@ -15,7 +15,7 @@ function Admin() {
     currentUser?.user?.username?.toLowerCase() === owner.toLowerCase()
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 lg:w-3/4">
       {isPersonalSettings ? (
         <>
           <DetailsSection

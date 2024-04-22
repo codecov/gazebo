@@ -17,6 +17,7 @@ describe('Controller', () => {
           selectedPlan: Plans.USERS_PR_INAPPY,
           register: jest.fn(),
           setFormValue: jest.fn(),
+          setSelectedPlan: jest.fn(),
           newPlan: Plans.USERS_TEAMM,
           errors: { seats: { message: '' } },
         }
@@ -40,6 +41,7 @@ describe('Controller', () => {
           selectedPlan: Plans.USERS_PR_INAPPM,
           register: jest.fn(),
           setFormValue: jest.fn(),
+          setSelectedPlan: jest.fn(),
           newPlan: Plans.USERS_TEAMM,
           errors: { seats: { message: '' } },
         }
@@ -65,6 +67,7 @@ describe('Controller', () => {
           selectedPlan: Plans.USERS_SENTRYY,
           register: jest.fn(),
           setFormValue: jest.fn(),
+          setSelectedPlan: jest.fn(),
           newPlan: Plans.USERS_TEAMM,
           errors: { seats: { message: '' } },
         }
@@ -88,6 +91,7 @@ describe('Controller', () => {
           selectedPlan: Plans.USERS_SENTRYM,
           register: jest.fn(),
           setFormValue: jest.fn(),
+          setSelectedPlan: jest.fn(),
           newPlan: Plans.USERS_TEAMM,
           errors: { seats: { message: '' } },
         }
@@ -113,6 +117,7 @@ describe('Controller', () => {
           selectedPlan: Plans.USERS_TEAMY,
           register: jest.fn(),
           setFormValue: jest.fn(),
+          setSelectedPlan: jest.fn(),
           newPlan: Plans.USERS_TEAMM,
           errors: { seats: { message: '' } },
         }
@@ -138,6 +143,7 @@ describe('Controller', () => {
           selectedPlan: Plans.USERS_TEAMM,
           register: jest.fn(),
           setFormValue: jest.fn(),
+          setSelectedPlan: jest.fn(),
           newPlan: Plans.USERS_TEAMM,
           errors: { seats: { message: '' } },
         }

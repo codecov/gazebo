@@ -21,7 +21,7 @@ module.exports = {
   webpack: {
     devtool: 'source-map',
     configure: {
-      entry: './src/index.js',
+      entry: './src/index.tsx',
     },
     alias: {
       layouts: resolve(__dirname, 'src/layouts'),

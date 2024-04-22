@@ -27,7 +27,7 @@ function Access() {
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col lg:w-3/4">
       <h2 className="text-lg font-semibold">API Tokens</h2>
       <div className="flex items-center justify-between">
         <p>
