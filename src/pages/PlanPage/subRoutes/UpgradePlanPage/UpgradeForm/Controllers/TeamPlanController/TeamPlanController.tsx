@@ -1,30 +1,40 @@
-import { FieldValues, UseFormRegister } from 'react-hook-form'
+import { UseFormRegister, UseFormSetValue } from 'react-hook-form'
 
-import { MIN_NB_SEATS_PRO } from 'shared/utils/upgradeForm'
+import { IndividualPlan } from 'services/account'
+import {
+  MIN_NB_SEATS_PRO,
+  TEAM_PLAN_MAX_ACTIVE_USERS,
+} from 'shared/utils/upgradeForm'
 import TextInput from 'ui/TextInput'
 
 import BillingOptions from './BillingOptions'
+import ErrorBanner from './ErrorBanner'
 import PriceCallout from './PriceCallout'
 import UserCount from './UserCount'
 
 import { NewPlanType } from '../../constants'
+import { UpgradeFormFields } from '../../UpgradeForm'
+
+interface Errors {
+  seats?: {
+    message?: string
+  }
+}
 
 interface PlanControllerProps {
   seats: number
   newPlan: NewPlanType
-  register: UseFormRegister<FieldValues>
-  setFormValue: (x: string, y: string) => void
-  errors?: {
-    seats?: {
-      message?: string
-    }
-  }
+  register: UseFormRegister<UpgradeFormFields>
+  setFormValue: UseFormSetValue<UpgradeFormFields>
+  setSelectedPlan: (plan: IndividualPlan) => void
+  errors?: Errors
 }
 
 const PlanController: React.FC<PlanControllerProps> = ({
   newPlan,
   seats,
   setFormValue,
+  setSelectedPlan,
   register,
   errors,
 }) => {
@@ -44,6 +54,7 @@ const PlanController: React.FC<PlanControllerProps> = ({
             type="number"
             label="Enter seat count"
             min={MIN_NB_SEATS_PRO}
+            max={TEAM_PLAN_MAX_ACTIVE_USERS}
           />
         </div>
         <UserCount />
@@ -53,11 +64,13 @@ const PlanController: React.FC<PlanControllerProps> = ({
         newPlan={newPlan}
         setFormValue={setFormValue}
       />
-      {errors?.seats && (
-        <p className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
-          {errors?.seats?.message}
-        </p>
-      )}
+      {errors?.seats?.message ? (
+        <ErrorBanner
+          errors={errors}
+          setFormValue={setFormValue}
+          setSelectedPlan={setSelectedPlan}
+        />
+      ) : null}
     </>
   )
 }
