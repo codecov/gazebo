@@ -13,7 +13,7 @@ import {
 } from 'shared/utils/billing'
 import { UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE } from 'shared/utils/upgradeForm'
 
-import { UpgradeFormFields } from '../../UpgradeForm'
+import { UpgradeFormFields } from '../../../UpgradeForm'
 
 interface Errors {
   seats?: {
@@ -47,7 +47,10 @@ export default function ErrorBanner({
 
   if (errors.seats.message === UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE) {
     return (
-      <div className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
+      <div
+        className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary"
+        data-testid="team-plan-upgrade-error-banner"
+      >
         &#128161; {errors.seats.message}{' '}
         <button
           className="cursor-pointer font-semibold text-ds-blue-darker hover:underline"
@@ -65,7 +68,10 @@ export default function ErrorBanner({
   }
 
   return (
-    <p className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
+    <p
+      className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary"
+      data-testid="team-plan-upgrade-error-banner"
+    >
       {errors.seats.message}
     </p>
   )
