@@ -10,9 +10,21 @@ interface URLParams {
   repo: string
 }
 
-interface StarTrialMutationArgs {
+interface DeleteComponentMeasurementMutationArgs {
   componentId: string
 }
+
+const query = `
+mutation deleteComponentMeasurements(
+  $input: DeleteComponentMeasurementsInput!
+) {
+  deleteComponentMeasurements(input: $input) {
+    error {
+      __typename
+    }
+  }
+}
+`
 
 export function useDeleteComponentMeasurements() {
   const { provider, owner, repo } = useParams<URLParams>()
@@ -20,18 +32,7 @@ export function useDeleteComponentMeasurements() {
   const addToast = useAddNotification()
 
   return useMutation({
-    mutationFn: ({ componentId }: StarTrialMutationArgs) => {
-      const query = `
-        mutation deleteComponentMeasurements(
-          $input: DeleteComponentMeasurementsInput!
-        ) {
-          deleteComponentMeasurements(input: $input) {
-            error {
-              __typename
-            }
-          }
-        }
-      `
+    mutationFn: ({ componentId }: DeleteComponentMeasurementMutationArgs) => {
       const variables = {
         input: { ownerUsername: owner, repoName: repo, componentId },
       }

@@ -2,7 +2,6 @@ import { render, screen } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
-import { PropsWithChildren } from 'react'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
 import { useActivateMeasurements } from 'services/repo'
@@ -25,7 +24,7 @@ const queryClient = new QueryClient({
   },
 })
 
-const wrapper: React.FC<PropsWithChildren> = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov/gazebo/flags']}>
     <Route path="/:provider/:owner/:repo/flags" exact={true}>
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>

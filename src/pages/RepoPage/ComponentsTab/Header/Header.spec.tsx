@@ -16,7 +16,7 @@ let testLocation = {
   pathname: '',
 }
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/gazebo/components']}>
       <Route path="/:provider/:owner/:repo/components" exact={true}>
