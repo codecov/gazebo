@@ -42,7 +42,7 @@ interface Params {
   provider: string
 }
 
-interface StarTrialMutationArgs {
+interface StartTrialMutationArgs {
   owner: string
 }
 
@@ -54,7 +54,7 @@ export const useStartTrial = () => {
   const { hardRedirect } = useRedirect({ href: `/${provider}` })
 
   const mutation = useMutation({
-    mutationFn: ({ owner }: StarTrialMutationArgs) => {
+    mutationFn: ({ owner }: StartTrialMutationArgs) => {
       const variables = {
         input: { orgUsername: owner },
       }
