@@ -22,7 +22,7 @@ interface Errors {
 }
 
 interface ErrorBannerProps {
-  errors?: Errors
+  errors: Errors
   setFormValue: UseFormSetValue<UpgradeFormFields>
   setSelectedPlan: (plan: IndividualPlan) => void
 }
@@ -41,11 +41,7 @@ export default function ErrorBanner({
   const isSentryUpgrade = canApplySentryUpgrade({ plan, plans })
   const yearlyProPlan = isSentryUpgrade ? sentryPlanYear : proPlanYear
 
-  if (!errors?.seats?.message) {
-    return null
-  }
-
-  if (errors.seats.message === UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE) {
+  if (errors?.seats?.message === UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE) {
     return (
       <div
         className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary"
@@ -72,7 +68,7 @@ export default function ErrorBanner({
       className="rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary"
       data-testid="team-plan-upgrade-error-banner"
     >
-      {errors.seats.message}
+      {errors?.seats?.message}
     </p>
   )
 }

@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
@@ -217,24 +217,6 @@ describe('ErrorBanner', () => {
   }
 
   describe('when rendered', () => {
-    describe('with no errors', () => {
-      const props = {
-        errors: undefined,
-        setFormValue: jest.fn(),
-        setSelectedPlan: jest.fn(),
-      }
-
-      it('returns null', async () => {
-        setup({ planValue: Plans.USERS_TEAMM })
-        render(<ErrorBanner {...props} />, { wrapper: wrapper() })
-
-        await waitFor(() => !queryClient.isFetching())
-
-        const error = screen.queryByTestId('team-plan-upgrade-error-banner')
-        expect(error).not.toBeInTheDocument()
-      })
-    })
-
     describe('with too many seats error message', () => {
       const props = {
         errors: {
