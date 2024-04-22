@@ -69,6 +69,7 @@ const Header = ({
             {data?.componentsCount}
           </p>
           <p className="text-xs">
+            {/* @ts-expect-error */}
             <A to={{ pageName: 'components' }}>Learn more</A>
           </p>
         </div>
