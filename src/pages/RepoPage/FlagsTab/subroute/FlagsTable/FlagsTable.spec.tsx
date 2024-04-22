@@ -9,7 +9,7 @@ import {
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { PropsWithChildren, Suspense } from 'react'
+import { Suspense } from 'react'
 import { mockIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -154,7 +154,9 @@ const queryClient = new QueryClient({
 const server = setupServer()
 let testLocation: any
 const wrapper =
-  (initialEntries = '/gh/codecov/gazebo/flags'): React.FC<PropsWithChildren> =>
+  (
+    initialEntries = '/gh/codecov/gazebo/flags'
+  ): React.FC<React.PropsWithChildren> =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>

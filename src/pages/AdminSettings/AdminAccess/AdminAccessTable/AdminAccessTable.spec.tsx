@@ -2,7 +2,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { PropsWithChildren } from 'react'
 import {
   mockAllIsIntersecting,
   mockIsIntersecting,
@@ -63,7 +62,7 @@ const queryClient = new QueryClient({
   },
 })
 
-const wrapper: React.FC<PropsWithChildren> = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh']}>
       <Route path="/:provider">{children}</Route>

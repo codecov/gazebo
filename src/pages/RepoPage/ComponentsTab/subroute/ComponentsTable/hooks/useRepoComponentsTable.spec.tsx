@@ -3,7 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { format, sub, subDays, subMonths } from 'date-fns'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import React, { PropsWithChildren, Suspense } from 'react'
+import React, { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { TIME_OPTION_VALUES } from 'pages/RepoPage/shared/constants'
@@ -16,7 +16,7 @@ const queryClient = new QueryClient({
 })
 
 const wrapper =
-  (initialEntries = '/gh/codecov/test'): React.FC<PropsWithChildren> =>
+  (initialEntries = '/gh/codecov/test'): React.FC<React.PropsWithChildren> =>
   ({ children }) =>
     (
       <MemoryRouter initialEntries={[initialEntries]}>
@@ -125,6 +125,12 @@ const componentsData = [
   },
 ]
 
+interface useParamsValueType {
+  search?: string
+  historicalTrend?: string
+  components: string[]
+}
+
 describe('useRepoComponentsTable', () => {
   function setup({
     repoData = mockGetRepo,
@@ -137,11 +143,7 @@ describe('useRepoComponentsTable', () => {
   }: {
     repoData?: any
     noData?: boolean
-    useParamsValue?: {
-      search?: string
-      historicalTrend?: string
-      components: string[]
-    }
+    useParamsValue?: useParamsValueType
   }) {
     const mockedUseLocationParams = useLocationParams as jest.Mock
     mockedUseLocationParams.mockReturnValue({
