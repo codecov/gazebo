@@ -38,6 +38,7 @@ const PathContentsUnionSchema = z.discriminatedUnion('__typename', [
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
+  username: z.string().nullable(),
   repositoryConfig: RepositoryConfigSchema,
   commit: z.object({
     pathContents: PathContentsUnionSchema.nullish(),
@@ -102,9 +103,8 @@ export const useRepoCommitContents = ({
         },
       }).then((res) => {
         const parsedRes = RequestSchema.safeParse(res?.data)
-        console.log(res, 'res')
         if (!parsedRes.success) {
-          console.log('failed')
+          console.log('fail', parsedRes.error)
           return Promise.reject({
             status: 404,
             data: {},
