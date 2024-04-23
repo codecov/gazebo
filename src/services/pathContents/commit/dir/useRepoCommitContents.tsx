@@ -9,13 +9,8 @@ import {
   UnknownPathSchema,
 } from 'services/pathContents/branch/dir'
 import { PathContentsFilters } from 'services/pathContents/constants'
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo'
 import Api from 'shared/api'
 import { NetworkErrorObject } from 'shared/api/helpers'
-import A from 'ui/A'
 
 import { query } from './constants'
 
@@ -40,19 +35,17 @@ const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   username: z.string().nullable(),
   repositoryConfig: RepositoryConfigSchema,
-  commit: z.object({
-    pathContents: PathContentsUnionSchema.nullish(),
-  }),
+  commit: z
+    .object({
+      pathContents: PathContentsUnionSchema.nullish(),
+    })
+    .nullable(),
 })
 
 const RequestSchema = z.object({
   owner: z
     .object({
-      repository: z.discriminatedUnion('__typename', [
-        RepositorySchema,
-        RepoNotFoundErrorSchema,
-        RepoOwnerNotActivatedErrorSchema,
-      ]),
+      repository: RepositorySchema,
     })
     .nullable(),
 })
@@ -112,31 +105,6 @@ export const useRepoCommitContents = ({
           } satisfies NetworkErrorObject)
         }
         const data = parsedRes.data
-
-        if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          return Promise.reject({
-            status: 404,
-            data: {},
-            dev: 'useRepoCommitContents - 404 NotFoundError',
-          } satisfies NetworkErrorObject)
-        }
-
-        if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
-            status: 403,
-            data: {
-              detail: (
-                <p>
-                  Activation is required to view this repo, please{' '}
-                  {/* @ts-expect-error */}
-                  <A to={{ pageName: 'membersTab' }}>click here </A> to activate
-                  your account.
-                </p>
-              ),
-            },
-            dev: 'useRepoCommitContents - 403 OwnerNotActivatedError',
-          } satisfies NetworkErrorObject)
-        }
 
         let results
         const pathContentsType =
