@@ -14,6 +14,7 @@ const server = setupServer()
 const mockData = {
   owner: {
     repository: {
+      __typename: 'Repository',
       repositoryConfig: {
         indicationRange: {
           upperRange: 80,
@@ -26,9 +27,15 @@ const mockData = {
           results: [
             {
               name: 'file.ts',
-              filePath: null,
+              path: null,
+              __typename: 'PathContentFile',
+              hits: 24,
+              misses: 24,
               percentCovered: 50.0,
+              partials: 22,
+              lines: 22,
               type: 'file',
+              isCriticalFile: false,
             },
           ],
         },
@@ -41,6 +48,7 @@ const mockDataMissingCoverage = {
   owner: {
     username: 'codecov',
     repository: {
+      __typename: 'Repository',
       repositoryConfig: {
         indicationRange: {
           upperRange: 80,
@@ -61,6 +69,7 @@ const mockDataUnknownPath = {
   owner: {
     username: 'codecov',
     repository: {
+      __typename: 'Repository',
       repositoryConfig: {
         indicationRange: {
           upperRange: 80,
@@ -77,7 +86,7 @@ const mockDataUnknownPath = {
   },
 }
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/test']}>
       <Route path="/:provider/:owner/:repo">{children}</Route>
@@ -151,10 +160,15 @@ describe('useRepoCommitContents', () => {
       const expectedData = {
         results: [
           {
-            filePath: null,
             name: 'file.ts',
             percentCovered: 50,
-            type: 'file',
+            __typename: 'PathContentFile',
+            hits: 24,
+            isCriticalFile: false,
+            lines: 22,
+            misses: 24,
+            path: null,
+            partials: 22,
           },
         ],
         indicationRange: {
@@ -168,6 +182,7 @@ describe('useRepoCommitContents', () => {
         expect(result.current.data).toStrictEqual(expectedData)
       )
     })
+
     describe('on missing coverage', () => {
       it('returns no results', async () => {
         setup(true)

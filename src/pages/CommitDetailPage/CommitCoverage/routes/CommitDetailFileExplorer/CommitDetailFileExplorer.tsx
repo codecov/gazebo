@@ -13,7 +13,13 @@ const defaultQueryParams = {
 }
 
 function CommitDetailFileExplorer() {
-  const { params, updateParams } = useLocationParams(defaultQueryParams)
+  const {
+    params,
+    updateParams,
+  }: {
+    params: { search?: string }
+    updateParams: (params: Record<string, string>) => void
+  } = useLocationParams(defaultQueryParams)
   const { treePaths } = useCommitTreePaths()
 
   return (
@@ -25,10 +31,11 @@ function CommitDetailFileExplorer() {
         </div>
         <div className="flex gap-2">
           <SearchField
+            //@ts-expect-error
             dataMarketing="commit-files-search"
             placeholder="Search for files"
             searchValue={params?.search}
-            setSearchValue={(search) => updateParams({ search })}
+            setSearchValue={(search: string) => updateParams({ search })}
           />
         </div>
       </ContentsTableHeader>

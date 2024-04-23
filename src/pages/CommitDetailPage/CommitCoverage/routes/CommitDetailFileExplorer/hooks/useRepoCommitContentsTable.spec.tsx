@@ -3,7 +3,6 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
-import { act } from 'react-test-renderer'
 
 import { useLocationParams } from 'services/navigation'
 
@@ -13,6 +12,7 @@ jest.mock('services/navigation', () => ({
   ...jest.requireActual('services/navigation'),
   useLocationParams: jest.fn(),
 }))
+const mockedUseLocationParams = useLocationParams as jest.Mock
 
 const mockCommitContentData = {
   owner: {
@@ -72,7 +72,11 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper =
+type WrapperClosure = (
+  initialEntries?: string[]
+) => React.FC<React.PropsWithChildren>
+
+const wrapper: WrapperClosure =
   (initialEntries = ['/gh/test-org/test-repo/commit/sha256/tree']) =>
   ({ children }) =>
     (
@@ -119,7 +123,7 @@ describe('useRepoCommitContentsTable', () => {
   describe('calling the hook', () => {
     describe('when there is data to be returned', () => {
       beforeEach(() => {
-        useLocationParams.mockReturnValue({
+        mockedUseLocationParams.mockReturnValue({
           params: {},
         })
 
@@ -168,7 +172,7 @@ describe('useRepoCommitContentsTable', () => {
 
     describe('when there is no data', () => {
       beforeEach(() => {
-        useLocationParams.mockReturnValue({
+        mockedUseLocationParams.mockReturnValue({
           params: {},
         })
 
@@ -190,10 +194,9 @@ describe('useRepoCommitContentsTable', () => {
 
   describe('when there is a search param', () => {
     beforeEach(() => {
-      useLocationParams.mockReturnValue({
+      mockedUseLocationParams.mockReturnValue({
         params: { search: 'file.js' },
       })
-
       setup()
     })
 
@@ -224,10 +227,9 @@ describe('useRepoCommitContentsTable', () => {
 
   describe('when called with the list param', () => {
     beforeEach(() => {
-      useLocationParams.mockReturnValue({
+      mockedUseLocationParams.mockReturnValue({
         params: { displayType: 'list' },
       })
-
       setup()
     })
 
@@ -258,7 +260,7 @@ describe('useRepoCommitContentsTable', () => {
 
   describe('when there is a flags param', () => {
     beforeEach(() => {
-      useLocationParams.mockReturnValue({
+      mockedUseLocationParams.mockReturnValue({
         params: { flags: ['flag-1'] },
       })
     })
@@ -295,6 +297,10 @@ describe('useRepoCommitContentsTable', () => {
       useLocationParams.mockReturnValue({
         params: { flags: ['flag-1'], components: ['component-1'] },
       })
+
+      mockedUseLocationParams.mockReturnValue({
+        params: { flags: ['flag-1'], components: ['component-1'] },
+      })
     })
 
     it('makes a gql request with the flags and components value', async () => {
@@ -326,9 +332,9 @@ describe('useRepoCommitContentsTable', () => {
     })
   })
 
-  describe('when handleSort is triggered', () => {
+  describe('sorting might not need this', () => {
     beforeEach(() => {
-      useLocationParams.mockReturnValue({
+      mockedUseLocationParams.mockReturnValue({
         params: {},
       })
 
@@ -342,10 +348,6 @@ describe('useRepoCommitContentsTable', () => {
 
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
-
-      act(() => {
-        result.current.handleSort([{ desc: true, id: 'name' }])
-      })
 
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)

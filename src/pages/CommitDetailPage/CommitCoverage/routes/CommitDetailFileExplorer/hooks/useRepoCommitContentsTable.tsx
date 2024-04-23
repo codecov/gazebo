@@ -104,13 +104,11 @@ export function useRepoCommitContentsTable() {
         suspense: false,
       },
     })
-  console.log('commit data', commitData)
 
   const data = useMemo(() => {
     const tableData = commitData?.results
 
     if (!tableData?.length) {
-      console.log('no results')
       return []
     }
 
