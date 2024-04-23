@@ -1,53 +1,20 @@
-import Table from 'old_ui/Table'
 import ToggleHeader from 'pages/CommitDetailPage/Header/ToggleHeader/ToggleHeader'
 import { useLocationParams } from 'services/navigation'
 import ContentsTableHeader from 'shared/ContentsTable/ContentsTableHeader'
 import DisplayTypeButton from 'shared/ContentsTable/DisplayTypeButton'
-import MissingFileData from 'shared/ContentsTable/MissingFileData'
 import { useCommitTreePaths } from 'shared/treePaths'
 import Breadcrumb from 'ui/Breadcrumb'
 import SearchField from 'ui/SearchField'
-import Spinner from 'ui/Spinner'
 
-import { useRepoCommitContentsTable } from './hooks'
-
-const Loader = () => (
-  <div className="flex flex-1 justify-center">
-    <Spinner size={60} />
-  </div>
-)
+import CommitDetailFileExplorerTable from './CommitDetailFileExplorerTable'
 
 const defaultQueryParams = {
   search: '',
 }
 
 function CommitDetailFileExplorer() {
-  const {
-    data,
-    headers,
-    handleSort,
-    isSearching,
-    isLoading,
-    pathContentsType,
-  } = useRepoCommitContentsTable()
-
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const { treePaths } = useCommitTreePaths()
-
-  const hasFlagsSelected = params?.flags?.length > 0
-  const hasComponentsSelected = params?.components?.length > 0
-  if (pathContentsType === 'UnknownPath') {
-    return (
-      <p className="m-4">
-        Unknown filepath. Please ensure that files/directories exist and are not
-        empty.
-      </p>
-    )
-  }
-
-  if (pathContentsType === 'MissingCoverage') {
-    return <p className="m-4">No coverage data available.</p>
-  }
 
   return (
     <div className="mt-2 flex flex-col gap-2">
@@ -67,21 +34,8 @@ function CommitDetailFileExplorer() {
       </ContentsTableHeader>
       <div className="border-t border-ds-gray-tertiary">
         <ToggleHeader noBottomBorder />
-        <Table
-          data={data}
-          columns={headers}
-          onSort={handleSort}
-          enableHover={true}
-        />
+        <CommitDetailFileExplorerTable />
       </div>
-      {isLoading && <Loader />}
-      {data?.length === 0 && !isLoading && (
-        <MissingFileData
-          isSearching={isSearching}
-          hasFlagsSelected={hasFlagsSelected}
-          hasComponentsSelected={hasComponentsSelected}
-        />
-      )}
     </div>
   )
 }

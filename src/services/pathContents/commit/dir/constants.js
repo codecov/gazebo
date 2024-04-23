@@ -40,6 +40,12 @@ export const query = `
             ... on MissingCoverage {
               message
             }
+            ... on MissingHeadReport {
+              message
+            }
+            ... on UnknownFlags {
+              message
+            }
           }
         }
       }
