@@ -1,13 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from './Card'
+import Card from './Card'
 
 describe('Card', () => {
   it('renders arbitrary child', async () => {
@@ -16,11 +9,11 @@ describe('Card', () => {
     expect(hello).toBeInTheDocument()
   })
 
-  describe('CardHeader', () => {
+  describe('Card.Header', () => {
     it('renders', async () => {
       render(
         <Card>
-          <CardHeader>Header</CardHeader>
+          <Card.Header>Header</Card.Header>
         </Card>
       )
       const header = await screen.findByText('Header')
@@ -28,13 +21,13 @@ describe('Card', () => {
     })
   })
 
-  describe('CardTitle', () => {
+  describe('Card.Title', () => {
     it('renders', async () => {
       render(
         <Card>
-          <CardHeader>
-            <CardTitle>Title</CardTitle>
-          </CardHeader>
+          <Card.Header>
+            <Card.Title>Title</Card.Title>
+          </Card.Header>
         </Card>
       )
       const title = await screen.findByText('Title')
@@ -42,13 +35,13 @@ describe('Card', () => {
     })
   })
 
-  describe('CardDescription', () => {
+  describe('Card.Description', () => {
     it('renders', async () => {
       render(
         <Card>
-          <CardHeader>
-            <CardDescription>Description</CardDescription>
-          </CardHeader>
+          <Card.Header>
+            <Card.Description>Description</Card.Description>
+          </Card.Header>
         </Card>
       )
       const description = await screen.findByText('Description')
@@ -56,11 +49,11 @@ describe('Card', () => {
     })
   })
 
-  describe('CardContent', () => {
+  describe('Card.Content', () => {
     it('renders', async () => {
       render(
         <Card>
-          <CardContent>Content</CardContent>
+          <Card.Content>Content</Card.Content>
         </Card>
       )
       const content = await screen.findByText('Content')
@@ -68,11 +61,11 @@ describe('Card', () => {
     })
   })
 
-  describe('CardFooter', () => {
+  describe('Card.Footer', () => {
     it('renders', async () => {
       render(
         <Card>
-          <CardFooter>Footer</CardFooter>
+          <Card.Footer>Footer</Card.Footer>
         </Card>
       )
       const footer = await screen.findByText('Footer')

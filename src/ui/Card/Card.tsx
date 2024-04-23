@@ -13,67 +13,72 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
 )
 Card.displayName = 'Card'
 
-const cardHeader = cva(['border-b', 'border-ds-gray-secondary', 'p-5'])
-interface CardHeaderProps
+const header = cva(['border-b', 'border-ds-gray-secondary', 'p-5'])
+interface HeaderProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof cardHeader> {}
+    VariantProps<typeof header> {}
 
-const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
+const Header = React.forwardRef<HTMLDivElement, HeaderProps>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cardHeader({ className })} {...props} />
+    <div ref={ref} className={header({ className })} {...props} />
   )
 )
-CardHeader.displayName = 'CardHeader'
+Header.displayName = 'Header'
 
-const cardTitle = cva(['text-lg', 'font-semibold'])
-interface CardTitleProps
+const title = cva(['text-lg', 'font-semibold'])
+interface TitleProps
   extends React.HTMLAttributes<HTMLHeadingElement>,
-    VariantProps<typeof cardTitle> {}
+    VariantProps<typeof title> {}
 
-const CardTitle = React.forwardRef<HTMLParagraphElement, CardTitleProps>(
+const Title = React.forwardRef<HTMLParagraphElement, TitleProps>(
   ({ className, children, ...props }, ref) => (
-    <h3 ref={ref} className={cardTitle({ className })} {...props}>
+    <h3 ref={ref} className={title({ className })} {...props}>
       {children}
     </h3>
   )
 )
-CardTitle.displayName = 'CardTitle'
+Title.displayName = 'title'
 
-const cardDescription = cva()
-interface CardDescriptionProps
+const description = cva()
+interface DescriptionProps
   extends React.HTMLAttributes<HTMLParagraphElement>,
-    VariantProps<typeof cardDescription> {}
+    VariantProps<typeof description> {}
 
-const CardDescription = React.forwardRef<
-  HTMLParagraphElement,
-  CardDescriptionProps
->(({ className, ...props }, ref) => (
-  <p ref={ref} className={cardDescription({ className })} {...props} />
-))
-CardDescription.displayName = 'CardDescription'
-
-const cardContent = cva(['m-5'])
-interface CardContentProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof cardContent> {}
-
-const CardContent = React.forwardRef<HTMLDivElement, CardContentProps>(
+const Description = React.forwardRef<HTMLParagraphElement, DescriptionProps>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cardContent({ className })} {...props} />
+    <p ref={ref} className={description({ className })} {...props} />
   )
 )
-CardContent.displayName = 'CardContent'
+Description.displayName = 'description'
 
-const cardFooter = cva(['border-t', 'border-ds-gray-secondary', 'p-5'])
-interface CardFooterProps
+const content = cva(['m-5'])
+interface ContentProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof cardFooter> {}
+    VariantProps<typeof content> {}
 
-const CardFooter = React.forwardRef<HTMLDivElement, CardFooterProps>(
+const Content = React.forwardRef<HTMLDivElement, ContentProps>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cardFooter({ className })} {...props} />
+    <div ref={ref} className={content({ className })} {...props} />
   )
 )
-CardFooter.displayName = 'CardFooter'
+Content.displayName = 'content'
 
-export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
+const footer = cva(['border-t', 'border-ds-gray-secondary', 'p-5'])
+interface FooterProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof footer> {}
+
+const Footer = React.forwardRef<HTMLDivElement, FooterProps>(
+  ({ className, ...props }, ref) => (
+    <div ref={ref} className={footer({ className })} {...props} />
+  )
+)
+Footer.displayName = 'footer'
+
+export default Object.assign(Card, {
+  Header,
+  Title,
+  Description,
+  Content,
+  Footer,
+})
