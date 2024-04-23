@@ -102,8 +102,9 @@ export const useRepoCommitContents = ({
         },
       }).then((res) => {
         const parsedRes = RequestSchema.safeParse(res?.data)
-
+        console.log(res, 'res')
         if (!parsedRes.success) {
+          console.log('failed')
           return Promise.reject({
             status: 404,
             data: {},
@@ -143,7 +144,7 @@ export const useRepoCommitContents = ({
         if (pathContentsType === 'PathContents') {
           results = data?.owner?.repository?.commit?.pathContents?.results
         }
-
+        console.log(results, 'results')
         return {
           results: results ?? null,
           indicationRange:
