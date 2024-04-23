@@ -19,7 +19,6 @@ import { useCommitTreePaths } from 'shared/treePaths'
 import { determineProgressColor } from 'shared/utils/determineProgressColor'
 import CoverageProgress from 'ui/CoverageProgress'
 
-
 interface URLParams {
   provider: string
   owner: string
@@ -171,7 +170,7 @@ export function useRepoCommitContentsTable() {
     pathContentsType: commitData?.pathContentsType,
     isLoading: commitIsLoading,
     // @ts-ignore
-    isSearching: !!params?.search,
+    isSearching: !!search,
     sortBy,
     setSortBy,
     hasComponentsSelected: !!components && components.length > 0,
