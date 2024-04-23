@@ -38,7 +38,6 @@ const PathContentsUnionSchema = z.discriminatedUnion('__typename', [
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
-  username: z.string().nullable(),
   repositoryConfig: RepositoryConfigSchema,
   commit: z.object({
     pathContents: PathContentsUnionSchema.nullish(),

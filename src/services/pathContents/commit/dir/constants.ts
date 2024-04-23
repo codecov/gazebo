@@ -7,7 +7,6 @@ export const query = `
     $filters: PathContentsFilters!
   ) {
     owner(username: $name) {
-      username
       repository(name: $repo) {
         __typename
         ... on Repository {
