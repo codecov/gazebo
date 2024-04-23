@@ -36,7 +36,6 @@ export interface InfiniteUsersQuery {
     isAdmin?: boolean
     ordering?: string
     search?: string
-    page?: number
     pageSize?: number
   }
 }
@@ -57,8 +56,8 @@ export const useInfiniteUsers = (
         signal,
         query: {
           pageSize: 25,
-          page: pageParam,
           ...query,
+          page: pageParam,
         },
       }).then((res) => {
         const parsedRes = MemberListSchema.safeParse(res)

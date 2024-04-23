@@ -59,7 +59,6 @@ function MembersList() {
     isAdmin: ApiFilterEnum.none, // Default to no filter on isAdmin
     ordering: '-name', // Default sort is A-Z Name
     search: '', // Default to no search on initial load
-    page: 1, // Default to first page
     pageSize: 50, // Default page size
   })
 

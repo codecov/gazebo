@@ -149,7 +149,6 @@ interface MembersTableProps {
     isAdmin?: boolean
     ordering?: string[]
     search?: string
-    page: number
     pageSize: number
   }
 }
