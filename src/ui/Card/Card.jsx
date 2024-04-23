@@ -1,3 +1,4 @@
+import cs from 'classnames'
 import PropTypes from 'prop-types'
 
 const baseStyles = {
@@ -11,12 +12,19 @@ const variantClasses = {
   large: 'border border-ds-gray-secondary rounded p-12',
   upgradeForm: 'border border-ds-gray-secondary rounded p-12',
   cancel: 'border border-codecov-red px-12 py-10',
+  old: 'border border-ds-gray-secondary bg-white rounded-md',
 }
 
 // TODO: enhance as per https://github.com/codecov/gazebo/pull/1433#discussion_r918864691
-function Card({ children, header, footer, variant = 'default' }) {
+function Card({
+  children,
+  header,
+  footer,
+  variant = 'default',
+  className = '',
+}) {
   return (
-    <article className={variantClasses[variant]}>
+    <article className={cs(variantClasses[variant], className)}>
       {header && <div className={baseStyles.header}>{header}</div>}
       {children}
       {footer && <div className={baseStyles.footer}>{footer}</div>}
@@ -28,6 +36,7 @@ Card.propTypes = {
   header: PropTypes.node,
   footer: PropTypes.node,
   variant: PropTypes.oneOf(['default', 'large', 'cancel', 'upgradeForm']),
+  className: PropTypes.string,
 }
 
 export default Card
