@@ -38,7 +38,7 @@ const PathContentsUnionSchema = z.discriminatedUnion('__typename', [
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
-  repositoryConfig: RepositoryConfigSchema,
+  repositoryConfig: RepositoryConfigSchema.nullish(),
   commit: z.object({
     pathContents: PathContentsUnionSchema.nullish(),
   }),
@@ -142,7 +142,6 @@ export const useRepoCommitContents = ({
         if (pathContentsType === 'PathContents') {
           results = data?.owner?.repository?.commit?.pathContents?.results
         }
-        console.log(results)
         return {
           results: results ?? null,
           indicationRange:

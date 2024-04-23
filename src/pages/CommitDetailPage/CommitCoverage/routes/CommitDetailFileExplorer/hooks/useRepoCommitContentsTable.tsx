@@ -104,7 +104,6 @@ export function useRepoCommitContentsTable() {
         suspense: false,
       },
     })
-
   const data = useMemo(() => {
     const tableData = commitData?.results
 
