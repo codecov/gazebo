@@ -457,14 +457,10 @@ describe('ContextSwitcher', () => {
   })
 
   describe('when not on gh provider', () => {
-    beforeEach(() => {
-      useIntersection.mockReturnValue({ isIntersecting: true })
-    })
     afterEach(() => jest.restoreAllMocks())
 
     it('does not render the add github org text', async () => {
       setup()
-      const onLoadMoreFunc = jest.fn()
       render(
         <ContextSwitcher
           activeContext={{
@@ -486,10 +482,9 @@ describe('ContextSwitcher', () => {
           src="imageUrl"
           isLoading={false}
           error={null}
-          onLoadMore={onLoadMoreFunc}
         />,
         {
-          wrapper: wrapper(['/bb']),
+          wrapper: wrapper('/bb'),
         }
       )
 
