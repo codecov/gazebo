@@ -1,28 +1,40 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useFlags } from 'shared/featureFlags'
+
 import GitHubActions from './GitHubActions'
+
+jest.mock('shared/featureFlags')
+const mockedUseFlags = useFlags as jest.Mock<{
+  newRepoFlag: boolean
+}>
 
 const mockGetRepo = {
   owner: {
-    isCurrentUserPartOfOrg: true,
-    orgUploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629290',
     isAdmin: null,
+    isCurrentUserPartOfOrg: true,
     isCurrentUserActivated: null,
     repository: {
       __typename: 'Repository',
       private: false,
-      uploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629295',
+      uploadToken: 'repo-token-jkl;-7890',
       defaultBranch: 'main',
       yaml: '',
       activated: false,
       oldestCommitAt: '',
       active: true,
     },
+  },
+}
+
+const mockGetOrgUploadToken = {
+  owner: {
+    orgUploadToken: 'org-token-asdf-1234',
   },
 }
 
@@ -61,17 +73,27 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 
+interface SetupArgs {
+  hasOrgUploadToken?: boolean
+}
+
 describe('GitHubActions', () => {
-  function setup() {
+  function setup({ hasOrgUploadToken = false }: SetupArgs) {
+    mockedUseFlags.mockReturnValue({
+      newRepoFlag: hasOrgUploadToken,
+    })
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockGetRepo))
-      )
+      ),
+      graphql.query('GetOrgUploadToken', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockGetOrgUploadToken))
+      })
     )
   }
 
   describe('intro blurb', () => {
-    beforeEach(() => setup())
+    beforeEach(() => setup({}))
 
     it('renders intro blurb', async () => {
       render(<GitHubActions />, { wrapper })
@@ -82,54 +104,110 @@ describe('GitHubActions', () => {
   })
 
   describe('step one', () => {
-    beforeEach(() => setup())
+    describe('when org upload token exists', () => {
+      beforeEach(() => setup({ hasOrgUploadToken: true }))
 
-    it('renders header', async () => {
-      render(<GitHubActions />, { wrapper })
+      it('renders header', async () => {
+        render(<GitHubActions />, { wrapper })
 
-      const header = await screen.findByRole('heading', { name: /Step 1/ })
-      expect(header).toBeInTheDocument()
+        const header = await screen.findByRole('heading', { name: /Step 1/ })
+        expect(header).toBeInTheDocument()
 
-      const repositorySecretLink = await screen.findByRole('link', {
-        name: /repository secret/,
+        const repositorySecretLink = await screen.findByRole('link', {
+          name: /repository secret/,
+        })
+        expect(repositorySecretLink).toBeInTheDocument()
+        expect(repositorySecretLink).toHaveAttribute(
+          'href',
+          'https://github.com/codecov/cool-repo/settings/secrets/actions/new'
+        )
       })
-      expect(repositorySecretLink).toBeInTheDocument()
-      expect(repositorySecretLink).toHaveAttribute(
-        'href',
-        'https://github.com/codecov/cool-repo/settings/secrets/actions/new'
-      )
+
+      it('renders body', async () => {
+        render(<GitHubActions />, { wrapper })
+
+        const body = await screen.findByText(
+          /Admin required to access repo settings > secrets and variable > actions/
+        )
+        expect(body).toBeInTheDocument()
+      })
+
+      it('renders token key box', async () => {
+        render(<GitHubActions />, { wrapper })
+
+        const tokenKey = await screen.findByTestId('token-key')
+        expect(tokenKey).toBeInTheDocument()
+      })
+
+      it('renders token box', async () => {
+        render(<GitHubActions />, { wrapper })
+
+        const tokenValue = await screen.findByText('org-token-asdf-1234')
+        expect(tokenValue).toBeInTheDocument()
+      })
+
+      it('renders global token copy', async () => {
+        render(<GitHubActions />, { wrapper })
+
+        const globalToken = await screen.findByText(/global token/)
+        expect(globalToken).toBeInTheDocument()
+      })
     })
 
-    it('renders body', async () => {
-      render(<GitHubActions />, { wrapper })
+    describe('when org upload token does not exist', () => {
+      beforeEach(() => setup({}))
 
-      const body = await screen.findByText(
-        /Admin required to access repo settings > secrets and variable > actions/
-      )
-      expect(body).toBeInTheDocument()
-    })
+      it('renders header', async () => {
+        render(<GitHubActions />, { wrapper })
 
-    it('renders token key box', async () => {
-      render(<GitHubActions />, { wrapper })
+        const header = await screen.findByRole('heading', { name: /Step 1/ })
+        expect(header).toBeInTheDocument()
 
-      const tokenKey = await screen.findByTestId('token-key')
-      expect(tokenKey).toBeInTheDocument()
-    })
+        const repositorySecretLink = await screen.findByRole('link', {
+          name: /repository secret/,
+        })
+        expect(repositorySecretLink).toBeInTheDocument()
+        expect(repositorySecretLink).toHaveAttribute(
+          'href',
+          'https://github.com/codecov/cool-repo/settings/secrets/actions/new'
+        )
+      })
 
-    it('renders token box', async () => {
-      render(<GitHubActions />, { wrapper })
+      it('renders body', async () => {
+        render(<GitHubActions />, { wrapper })
 
-      const tokenValue = await screen.findByText(
-        /9e6a6189-20f1-482d-ab62-ecfaa2629295/
-      )
-      expect(tokenValue).toBeInTheDocument()
+        const body = await screen.findByText(
+          /Admin required to access repo settings > secrets and variable > actions/
+        )
+        expect(body).toBeInTheDocument()
+      })
+
+      it('renders token key box', async () => {
+        render(<GitHubActions />, { wrapper })
+
+        const tokenKey = await screen.findByTestId('token-key')
+        expect(tokenKey).toBeInTheDocument()
+      })
+
+      it('renders token box', async () => {
+        render(<GitHubActions />, { wrapper })
+
+        const tokenValue = await screen.findByText('repo-token-jkl;-7890')
+        expect(tokenValue).toBeInTheDocument()
+      })
+
+      it('renders repo token copy', async () => {
+        render(<GitHubActions />, { wrapper })
+
+        const globalToken = await screen.findByText(/repository token/)
+        expect(globalToken).toBeInTheDocument()
+      })
     })
   })
 
   describe('step two', () => {
-    beforeEach(() => setup())
-
     it('renders header', async () => {
+      setup({})
       render(<GitHubActions />, { wrapper })
 
       const header = await screen.findByRole('heading', { name: /Step 2/ })
@@ -146,6 +224,7 @@ describe('GitHubActions', () => {
     })
 
     it('renders yaml section', async () => {
+      setup({})
       render(<GitHubActions />, { wrapper })
 
       const yamlBox = await screen.findByText(
@@ -154,7 +233,39 @@ describe('GitHubActions', () => {
       expect(yamlBox).toBeInTheDocument()
     })
 
+    it('renders the correct ci version', async () => {
+      setup({})
+      render(<GitHubActions />, { wrapper })
+
+      const version = await screen.findByText(/v4.0.1/)
+      expect(version).toBeInTheDocument()
+    })
+
+    describe('if using repo token', () => {
+      it('does not show repo slug in yaml', async () => {
+        setup({ hasOrgUploadToken: true })
+        render(<GitHubActions />, { wrapper })
+
+        await waitFor(() => queryClient.isFetching)
+        await waitFor(() => !queryClient.isFetching)
+
+        const slug = screen.queryByText(/slug: codecov\/cool-repo/)
+        expect(slug).not.toBeInTheDocument()
+      })
+    })
+
+    describe('if using org token', () => {
+      it('shows repo slug in yaml', async () => {
+        setup({ hasOrgUploadToken: true })
+        render(<GitHubActions />, { wrapper })
+
+        const slug = await screen.findByText(/slug: codecov\/cool-repo/)
+        expect(slug).toBeInTheDocument()
+      })
+    })
+
     it('renders example blurb', async () => {
+      setup({})
       render(<GitHubActions />, { wrapper })
 
       const blurb = await screen.findByTestId('example-blurb')
@@ -163,7 +274,7 @@ describe('GitHubActions', () => {
   })
 
   describe('step three', () => {
-    beforeEach(() => setup())
+    beforeEach(() => setup({}))
     it('renders first body', async () => {
       render(<GitHubActions />, { wrapper })
 
@@ -189,7 +300,17 @@ describe('GitHubActions', () => {
   })
 
   describe('ending', () => {
-    beforeEach(() => setup())
+    beforeEach(() => setup({}))
+    it('renders quick start link', async () => {
+      render(<GitHubActions />, { wrapper })
+
+      const link = await screen.findByRole('link', { name: /learn more/ })
+      expect(link).toHaveAttribute(
+        'href',
+        'https://docs.codecov.com/docs/quick-start'
+      )
+    })
+
     it('renders body', async () => {
       render(<GitHubActions />, { wrapper })
 
