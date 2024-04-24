@@ -1,5 +1,6 @@
 import dropRight from 'lodash/dropRight'
-import QueryString from 'qs'
+import qs from 'qs'
+import { useMemo } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import { getFilePathParts } from 'shared/utils/url'
@@ -11,10 +12,13 @@ function getTreeLocation(paths, location, index) {
 export function useCommitTreePaths() {
   const { repo, path, commit } = useParams()
   const location = useLocation()
-  const params = QueryString.parse(location.search, {
-    ignoreQueryPrefix: true,
-    depth: 1,
-  })
+
+  const params = useMemo(() => {
+    return qs.parse(location.search, {
+      ignoreQueryPrefix: true,
+      depth: 1,
+    })
+  }, [location.search])
 
   const filePaths = getFilePathParts(path)
 
@@ -23,21 +27,23 @@ export function useCommitTreePaths() {
     queryParams = params
   }
 
-  const paths = filePaths?.map((location, index) => ({
-    pageName: 'commitTreeView',
-    text: location,
-    options: {
-      tree: getTreeLocation(filePaths, location, index),
-      commit,
-      queryParams,
-    },
-  }))
+  const treePaths = useMemo(() => {
+    const paths = filePaths?.map((location, index) => ({
+      pageName: 'commitTreeView',
+      text: location,
+      options: {
+        tree: getTreeLocation(filePaths, location, index),
+        commit,
+        queryParams,
+      },
+    }))
 
-  const repoPath = {
-    pageName: 'commitTreeView',
-    text: repo,
-    options: { commit, queryParams },
-  }
-  const treePaths = [repoPath, ...paths]
+    const repoPath = {
+      pageName: 'commitTreeView',
+      text: repo,
+      options: { commit, queryParams },
+    }
+    return [repoPath, ...paths]
+  }, [commit, filePaths, queryParams, repo])
   return { treePaths }
 }
