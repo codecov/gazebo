@@ -5,6 +5,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import CommitDetailFileExplorer from './CommitDetailFileExplorer'
 import CommitDetailFileExplorerTable from './CommitDetailFileExplorerTable'
 
 const queryClient = new QueryClient({
@@ -588,6 +589,33 @@ describe('CommitDetailFileExplorerTable', () => {
             })
           })
         })
+      })
+    })
+
+    describe('testing search functionality', () => {
+      it('sets the correct search param', async () => {
+        const { user, requestFilters } = setup()
+        // search box exists in parent component
+        render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
+
+        expect(
+          await screen.findByRole('textbox', {
+            name: 'Search for files',
+          })
+        ).toBeTruthy()
+
+        const search = screen.getByRole('textbox', {
+          name: 'Search for files',
+        })
+
+        await user.type(search, 'file.js')
+        await waitFor(() =>
+          expect(requestFilters).toHaveBeenCalledWith({
+            displayType: 'TREE',
+            searchValue: 'file.js',
+            ordering: { direction: 'ASC', parameter: 'NAME' },
+          })
+        )
       })
     })
   })
