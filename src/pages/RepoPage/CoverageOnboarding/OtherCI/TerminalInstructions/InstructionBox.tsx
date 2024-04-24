@@ -34,7 +34,7 @@ const systems = [
   systemsEnum.WINDOWS,
 ]
 
-export function InstructionBoxOrgToken() {
+export function InstructionBox() {
   const [curSystem, setCurSystem] = useState<string>(systemsEnum.LINUX)
 
   const handleInstructionClick = (e: MouseEvent<HTMLButtonElement>) => {
