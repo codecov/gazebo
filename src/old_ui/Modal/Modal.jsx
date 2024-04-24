@@ -15,7 +15,7 @@ function Modal({ isOpen, onClose, children, title, ...rest }) {
       overlayClassName="fixed inset-0 bg-gray-900 bg-opacity-75"
       {...rest}
     >
-      <Card className="w-1/2 p-8">
+      <Card variant="old" className="w-1/2 p-8">
         <header className="mb-4 flex items-center justify-between">
           <h2 className="text-2xl">{title}</h2>
           <Button variant="text" onClick={onClose} aria-label="Close">
