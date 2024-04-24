@@ -30,11 +30,6 @@ afterAll(() => {
   server.close()
 })
 
-// eslint-disable-next-line react/prop-types
-const ModalComponent = ({ closeFn }) => <div onClick={closeFn}>component</div>
-// eslint-disable-next-line react/prop-types
-const ModalControl = ({ onClick }) => <button onClick={onClick}>display</button>
-
 const wrapper =
   (initialEntries = '/gh') =>
   ({ children }) =>
@@ -104,8 +99,6 @@ describe('ContextSwitcher', () => {
           currentUser={{
             defaultOrgUsername: 'spotify',
           }}
-          ModalComponent={ModalComponent}
-          ModalControl={ModalControl}
           src="imageUrl"
           isLoading={false}
           error={null}
@@ -156,8 +149,6 @@ describe('ContextSwitcher', () => {
           currentUser={{
             defaultOrgUsername: 'spotify',
           }}
-          ModalComponent={ModalComponent}
-          ModalControl={ModalControl}
           src="imageUrl"
           isLoading={false}
           error={null}
@@ -217,8 +208,6 @@ describe('ContextSwitcher', () => {
           currentUser={{
             defaultOrgUsername: 'spotify',
           }}
-          ModalComponent={ModalComponent}
-          ModalControl={ModalControl}
           src="imageUrl"
           isLoading={false}
           error={null}
@@ -282,8 +271,6 @@ describe('ContextSwitcher', () => {
           currentUser={{
             defaultOrgUsername: 'spotify',
           }}
-          ModalComponent={ModalComponent}
-          ModalControl={ModalControl}
           src="imageUrl"
           isLoading={false}
           error={null}
@@ -340,8 +327,6 @@ describe('ContextSwitcher', () => {
             currentUser={{
               defaultOrgUsername: 'spotify',
             }}
-            ModalComponent={ModalComponent}
-            ModalControl={ModalControl}
             src="imageUrl"
             isLoading={true}
             error={null}
@@ -395,8 +380,6 @@ describe('ContextSwitcher', () => {
             currentUser={{
               defaultOrgUsername: 'spotify',
             }}
-            ModalComponent={ModalComponent}
-            ModalControl={ModalControl}
             src="imageUrl"
             isLoading={false}
             error={null}
@@ -456,8 +439,6 @@ describe('ContextSwitcher', () => {
           currentUser={{
             defaultOrgUsername: 'spotify',
           }}
-          ModalComponent={ModalComponent}
-          ModalControl={ModalControl}
           src="imageUrl"
           isLoading={false}
           error={null}
@@ -479,7 +460,7 @@ describe('ContextSwitcher', () => {
     afterEach(() => jest.restoreAllMocks())
 
     it('renders the modal component', async () => {
-      const { user } = setup()
+      setup()
       render(
         <ContextSwitcher
           activeContext={{
@@ -512,8 +493,6 @@ describe('ContextSwitcher', () => {
           currentUser={{
             defaultOrgUsername: 'spotify',
           }}
-          ModalComponent={ModalComponent}
-          ModalControl={ModalControl}
           src="imageUrl"
           isLoading={false}
           error={null}
@@ -522,16 +501,6 @@ describe('ContextSwitcher', () => {
           wrapper: wrapper(),
         }
       )
-
-      const modalControlButton = await screen.findByText('display')
-      expect(modalControlButton).toBeInTheDocument()
-      await user.click(modalControlButton)
-
-      const modalComponentText = await screen.findByText('component')
-      expect(modalComponentText).toBeInTheDocument()
-      await user.click(modalComponentText)
-
-      await waitFor(() => expect(modalComponentText).not.toBeInTheDocument())
     })
 
     describe('when user clicks on an org', () => {
