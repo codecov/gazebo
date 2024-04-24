@@ -17,9 +17,13 @@ describe('metrics wrapper', () => {
 
   describe('gauge', () => {
     it('calls sentry gauge', () => {
-      metrics.gauge('testKey', 1)
+      metrics.gauge('billing_change.user.seats_change', 1)
 
-      expect(Sentry.metrics.gauge).toHaveBeenCalledWith('testKey', 1, undefined)
+      expect(Sentry.metrics.gauge).toHaveBeenCalledWith(
+        'billing_change.user.seats_change',
+        1,
+        undefined
+      )
     })
   })
 

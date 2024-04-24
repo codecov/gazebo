@@ -1,27 +1,40 @@
-import PropTypes from 'prop-types'
 import { useState } from 'react'
 
 import {
   TIME_OPTION_VALUES,
+  TimeOption,
   TimeOptions,
 } from 'pages/RepoPage/shared/constants'
 import { useLocationParams } from 'services/navigation'
 import { useComponentsBackfilled } from 'services/repo'
 import { useRepoComponentsSelect } from 'services/repo/useRepoComponentsSelect'
+import A from 'ui/A'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'
 import Select from 'ui/Select'
 
 import BranchSelector from './BranchSelector'
 
-const Header = ({ controlsDisabled, children }) => {
-  const [search, setSearch] = useState()
+type Component = {
+  name: string
+  id: string
+}
+
+const Header = ({
+  controlsDisabled,
+  children,
+}: {
+  controlsDisabled?: boolean
+  children?: React.ReactNode
+}) => {
+  const [search, setSearch] = useState('')
 
   const { params, updateParams } = useLocationParams({
     historicalTrend: '',
-    components: [],
+    components: [] as Component[],
   })
-  const [selectedComponents, setSelectedComponents] = useState(
+  const [selectedComponents, setSelectedComponents] = useState<Component[]>(
+    // @ts-expect-error need to type out useLocationParams
     params?.components
   )
 
@@ -36,6 +49,7 @@ const Header = ({ controlsDisabled, children }) => {
   )
 
   const value = TimeOptions.find(
+    // @ts-expect-error need to type out useLocationParams
     (item) => item.value === params.historicalTrend
   )
 
@@ -47,36 +61,42 @@ const Header = ({ controlsDisabled, children }) => {
     <div className="flex flex-col justify-end divide-y divide-solid divide-ds-gray-secondary">
       <div className="grid w-2/3 divide-y divide-solid divide-ds-gray-secondary sm:w-full sm:grid-cols-2 sm:divide-x sm:divide-y-0 md:grid-cols-4">
         <BranchSelector />
-        <div className="mr-4 flex flex-col justify-between gap-2 p-4 sm:border-l sm:border-ds-gray-secondary sm:py-0 md:border-l-0">
+        <div className="md:w-[16rem]">
           <h3 className="text-sm font-semibold text-ds-gray-octonary">
             Configured components
           </h3>
           <p className="flex flex-1 text-xl font-light text-ds-gray-octonary">
             {data?.componentsCount}
           </p>
+          <p className="text-xs">
+            {/* @ts-expect-error */}
+            <A to={{ pageName: 'components' }}>Learn more</A>
+          </p>
         </div>
-        <div className="flex flex-col justify-between gap-2 p-4 sm:py-0">
+        <div className="md:w-[16rem]">
           <h3 className="text-sm font-semibold text-ds-gray-octonary">
             Historical trend
           </h3>
           <Select
+            // @ts-expect-error Select is not typed
             dataMarketing="select-historical-trend"
             disabled={controlsDisabled}
             ariaName="Select Historical Trend"
             items={TimeOptions}
             value={value ?? defaultValue}
-            onChange={(historicalTrend) =>
+            onChange={(historicalTrend: TimeOption) =>
               updateParams({ historicalTrend: historicalTrend.value })
             }
-            renderItem={({ label }) => label}
-            renderSelected={({ label }) => label}
+            renderItem={({ label }: { label: string }) => label}
+            renderSelected={({ label }: { label: string }) => label}
           />
         </div>
-        <div className="flex flex-col justify-between gap-2 border-ds-gray-secondary p-4 sm:py-0">
+        <div className="md:w-[16rem]">
           <h3 className="text-sm font-semibold text-ds-gray-octonary">
             Show by
           </h3>
           <MultiSelect
+            // @ts-expect-error something funky with this component
             disabled={controlsDisabled}
             dataMarketing="components-tab-multi-select"
             hook="components-tab-multi-select"
@@ -85,14 +105,14 @@ const Header = ({ controlsDisabled, children }) => {
             selectedItemsOverride={selectedComponents}
             resourceName="Component"
             isLoading={isLoading}
-            onChange={(components) => {
+            onChange={(components: Component[]): void => {
               setSelectedComponents(components)
               updateParams({ components })
             }}
-            onSearch={(termId) => setSearch(termId)}
-            renderSelected={(selectedItems) => (
+            onSearch={(termId: string) => setSearch(termId)}
+            renderSelected={(selectedItems: Component[]) => (
               <span className="flex items-center gap-2">
-                <Icon variant="solid" name="component" />
+                <Icon variant="solid" name="database" />
                 {selectedItems.length === 0 ? (
                   'All Components'
                 ) : (
@@ -106,10 +126,6 @@ const Header = ({ controlsDisabled, children }) => {
       {children}
     </div>
   )
-}
-
-Header.propTypes = {
-  controlsDisabled: PropTypes.bool,
 }
 
 export default Header

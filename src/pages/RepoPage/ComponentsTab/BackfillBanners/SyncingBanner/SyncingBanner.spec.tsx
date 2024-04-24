@@ -25,10 +25,8 @@ describe('SyncingBanner', () => {
   describe('when rendered', () => {
     it('renders heading and content components', () => {
       render(<SyncingBanner />, { wrapper })
-      const historicalDataText = screen.getByText('Pulling historical data')
-      expect(historicalDataText).toBeInTheDocument()
       const historicalDataTextLong = screen.getByText(
-        'We are pulling in all of your historical components data, this will sometimes take a while. This page will update once data has been backfilled, feel free to navigate away in the meantime. For older data, it may take longer to populate.'
+        'It might take up to 24 hours to view your data.'
       )
       expect(historicalDataTextLong).toBeInTheDocument()
     })

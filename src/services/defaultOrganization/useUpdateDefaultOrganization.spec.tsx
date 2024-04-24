@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import React, { PropsWithChildren } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useUpdateDefaultOrganization } from './useUpdateDefaultOrganization'
@@ -20,7 +21,7 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov']}>
     <Route path="/:provider/:owner/">
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>

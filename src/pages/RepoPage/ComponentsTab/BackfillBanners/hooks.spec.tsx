@@ -11,7 +11,7 @@ const queryClient = new QueryClient({
 })
 
 const wrapper =
-  (initialEntries = '/gh/codecov/test') =>
+  (initialEntries = '/gh/codecov/test'): React.FC<React.PropsWithChildren> =>
   ({ children }) =>
     (
       <MemoryRouter initialEntries={[initialEntries]}>
