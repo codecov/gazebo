@@ -1,4 +1,5 @@
-import { useParams } from 'react-router-dom'
+import qs from 'qs'
+import { useLocation , useParams } from 'react-router-dom'
 
 import { useSunburstCoverage } from 'services/charts'
 import { useRepoOverview } from 'services/repo'
@@ -11,12 +12,26 @@ const useSunburstChart = () => {
     owner,
   })
 
+  const location = useLocation()
+  const queryParams = qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+    depth: 1,
+  })
+
+  const flags = queryParams?.flags
+  const components = queryParams?.components
+
   const currentBranch = branch
     ? decodeURIComponent(branch)
     : overview?.defaultBranch
 
   return useSunburstCoverage(
-    { provider, owner, repo, query: { branch: currentBranch } },
+    {
+      provider,
+      owner,
+      repo,
+      query: { branch: currentBranch, flags, components },
+    },
     {
       enabled: !!currentBranch,
       suspense: false,
