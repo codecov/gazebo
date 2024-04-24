@@ -4,15 +4,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useLocationParams } from 'services/navigation'
-
 import { useRepoCommitContentsTable } from './useRepoCommitContentsTable'
-
-jest.mock('services/navigation', () => ({
-  ...jest.requireActual('services/navigation'),
-  useLocationParams: jest.fn(),
-}))
-const mockedUseLocationParams = useLocationParams as jest.Mock
 
 const mockCommitContentData = {
   owner: {
@@ -136,10 +128,6 @@ describe('useRepoCommitContentsTable', () => {
   describe('calling the hook', () => {
     describe('when there is data to be returned', () => {
       beforeEach(() => {
-        mockedUseLocationParams.mockReturnValue({
-          params: {},
-        })
-
         setup()
       })
 
@@ -174,10 +162,6 @@ describe('useRepoCommitContentsTable', () => {
 
     describe('when there is no data', () => {
       beforeEach(() => {
-        mockedUseLocationParams.mockReturnValue({
-          params: {},
-        })
-
         setup(true)
       })
 
@@ -196,9 +180,6 @@ describe('useRepoCommitContentsTable', () => {
 
   describe('when called with the list param', () => {
     beforeEach(() => {
-      mockedUseLocationParams.mockReturnValue({
-        search: { displayType: 'list' },
-      })
       setup()
     })
 
@@ -219,8 +200,8 @@ describe('useRepoCommitContentsTable', () => {
           searchValue: '',
           displayType: 'LIST',
           ordering: {
-            direction: 'ASC',
-            parameter: 'NAME',
+            direction: 'DESC',
+            parameter: 'MISSES',
           },
         },
         name: 'test-org',
@@ -230,20 +211,16 @@ describe('useRepoCommitContentsTable', () => {
     })
   })
 
-  // Resume here
-  // Add search tests in the big file, then update hook
   describe('when there is a flags param', () => {
-    beforeEach(() => {
-      mockedUseLocationParams.mockReturnValue({
-        params: { flags: ['flag-1'] },
-      })
-    })
+    beforeEach(() => {})
 
     it('makes a gql request with the flags value', async () => {
       setup()
 
       const { result } = renderHook(() => useRepoCommitContentsTable(), {
-        wrapper: wrapper(),
+        wrapper: wrapper([
+          '/gh/test-org/test-repo/commit/sha256/tree?flags%5B0%5D=flag-1',
+        ]),
       })
 
       await waitFor(() => result.current.isLoading)
@@ -253,6 +230,8 @@ describe('useRepoCommitContentsTable', () => {
       expect(calledCommitContents).toHaveBeenCalledWith({
         commit: 'sha256',
         filters: {
+          displayType: 'TREE',
+          searchValue: '',
           flags: ['flag-1'],
           ordering: {
             direction: 'ASC',
@@ -267,17 +246,13 @@ describe('useRepoCommitContentsTable', () => {
   })
 
   describe('when there is a flags and components param', () => {
-    beforeEach(() => {
-      mockedUseLocationParams.mockReturnValue({
-        params: { flags: ['flag-1'], components: ['component-1'] },
-      })
-    })
-
     it('makes a gql request with the flags and components value', async () => {
       setup()
 
       const { result } = renderHook(() => useRepoCommitContentsTable(), {
-        wrapper: wrapper(),
+        wrapper: wrapper([
+          '/gh/test-org/test-repo/commit/sha256/tree?flags%5B0%5D=flag-1&components%5B0%5D=component-1',
+        ]),
       })
 
       await waitFor(() => result.current.isLoading)
@@ -289,45 +264,10 @@ describe('useRepoCommitContentsTable', () => {
         filters: {
           flags: ['flag-1'],
           components: ['component-1'],
-
+          displayType: 'TREE',
+          searchValue: '',
           ordering: {
             direction: 'ASC',
-            parameter: 'NAME',
-          },
-        },
-        name: 'test-org',
-        repo: 'test-repo',
-        path: '',
-      })
-    })
-  })
-
-  describe('sorting might not need this', () => {
-    beforeEach(() => {
-      mockedUseLocationParams.mockReturnValue({
-        params: {},
-      })
-
-      setup()
-    })
-
-    it('makes a gql request with the updated params', async () => {
-      const { result } = renderHook(() => useRepoCommitContentsTable(), {
-        wrapper: wrapper(),
-      })
-
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
-
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
-
-      expect(calledCommitContents).toHaveBeenCalledTimes(2)
-      expect(calledCommitContents).toHaveBeenNthCalledWith(2, {
-        commit: 'sha256',
-        filters: {
-          ordering: {
-            direction: 'DESC',
             parameter: 'NAME',
           },
         },
