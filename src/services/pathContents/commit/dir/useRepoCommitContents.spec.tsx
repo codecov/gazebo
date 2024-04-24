@@ -86,6 +86,28 @@ const mockDataUnknownPath = {
   },
 }
 
+const mockOwnerNotActivatedError = {
+  owner: {
+    isCurrentUserPartOfOrg: false,
+    repository: {
+      __typename: 'OwnerNotActivatedError',
+      message: 'owner not activated',
+    },
+  },
+}
+
+const mockNotFoundError = {
+  owner: {
+    isCurrentUserPartOfOrg: false,
+    repository: {
+      __typename: 'NotFoundError',
+      message: 'commit not found',
+    },
+  },
+}
+
+const mockUnsuccessfulParseError = {}
+
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/test']}>
@@ -105,15 +127,34 @@ afterAll(() => {
   server.close()
 })
 
+interface SetupArgs {
+  isMissingCoverage?: boolean
+  isUnknownPath?: boolean
+  isNotFoundError?: boolean
+  isOwnerNotActivatedError?: boolean
+  isUnsuccessfulParseError?: boolean
+}
+
 describe('useRepoCommitContents', () => {
-  function setup(isMissingCoverage = false, isUnknownPath = false) {
+  function setup({
+    isMissingCoverage = false,
+    isUnknownPath = false,
+    isNotFoundError = false,
+    isOwnerNotActivatedError = false,
+    isUnsuccessfulParseError = false,
+  }: SetupArgs) {
     server.use(
       graphql.query('CommitPathContents', (req, res, ctx) => {
         if (isMissingCoverage) {
           return res(ctx.status(200), ctx.data(mockDataMissingCoverage))
-        }
-        if (isUnknownPath) {
+        } else if (isUnknownPath) {
           return res(ctx.status(200), ctx.data(mockDataUnknownPath))
+        } else if (isNotFoundError) {
+          return res(ctx.status(200), ctx.data(mockNotFoundError))
+        } else if (isOwnerNotActivatedError) {
+          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
+        } else if (isUnsuccessfulParseError) {
+          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
         }
         return res(ctx.status(200), ctx.data(mockData))
       })
@@ -122,7 +163,7 @@ describe('useRepoCommitContents', () => {
 
   describe('when called', () => {
     beforeEach(() => {
-      setup()
+      setup({})
     })
 
     it('sets isLoading to true', () => {
@@ -185,7 +226,7 @@ describe('useRepoCommitContents', () => {
 
     describe('on missing coverage', () => {
       it('returns no results', async () => {
-        setup(true)
+        setup({ isMissingCoverage: true })
         const { result } = renderHook(
           () =>
             useRepoCommitContents({
@@ -216,7 +257,7 @@ describe('useRepoCommitContents', () => {
 
     describe('on unknown path', () => {
       it('returns no results', async () => {
-        setup(false, true)
+        setup({ isUnknownPath: true })
         const { result } = renderHook(
           () =>
             useRepoCommitContents({
@@ -241,6 +282,121 @@ describe('useRepoCommitContents', () => {
             },
             results: null,
           })
+        )
+      })
+    })
+
+    describe('owner not activated', () => {
+      let oldConsoleError = console.error
+
+      beforeEach(() => {
+        console.error = () => null
+      })
+
+      afterEach(() => {
+        console.error = oldConsoleError
+      })
+
+      it('throws an error', async () => {
+        setup({ isOwnerNotActivatedError: true })
+
+        const { result } = renderHook(
+          () =>
+            useRepoCommitContents({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'test',
+              commit: 'commit-1234',
+              path: '',
+            }),
+          { wrapper }
+        )
+
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+        await waitFor(() => expect(result.current.isError).toBeTruthy())
+        await waitFor(() =>
+          expect(result.current.error).toEqual(
+            expect.objectContaining({
+              status: 403,
+            })
+          )
+        )
+      })
+    })
+
+    describe('failed to parse schema', () => {
+      let oldConsoleError = console.error
+      beforeEach(() => {
+        console.error = () => null
+      })
+
+      afterEach(() => {
+        console.error = oldConsoleError
+      })
+
+      it('throws an error', async () => {
+        setup({ isUnsuccessfulParseError: true })
+
+        const { result } = renderHook(
+          () =>
+            useRepoCommitContents({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'test',
+              commit: 'commit-1234',
+              path: '',
+            }),
+          { wrapper }
+        )
+
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+        await waitFor(() => expect(result.current.isError).toBeTruthy())
+        await waitFor(() =>
+          expect(result.current.error).toEqual(
+            expect.objectContaining({
+              status: 404,
+            })
+          )
+        )
+      })
+    })
+
+    describe('not found error', () => {
+      let oldConsoleError = console.error
+
+      beforeEach(() => {
+        console.error = () => null
+      })
+
+      afterEach(() => {
+        console.error = oldConsoleError
+      })
+
+      it('throws an error', async () => {
+        setup({ isNotFoundError: true })
+        const { result } = renderHook(
+          () =>
+            useRepoCommitContents({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'test',
+              commit: 'commit-1234',
+              path: '',
+            }),
+          { wrapper }
+        )
+
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+        await waitFor(() => expect(result.current.isError).toBeTruthy())
+        await waitFor(() =>
+          expect(result.current.error).toEqual(
+            expect.objectContaining({
+              status: 404,
+            })
+          )
         )
       })
     })

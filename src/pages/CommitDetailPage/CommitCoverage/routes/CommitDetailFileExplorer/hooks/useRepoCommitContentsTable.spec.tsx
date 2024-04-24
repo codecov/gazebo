@@ -277,4 +277,35 @@ describe('useRepoCommitContentsTable', () => {
       })
     })
   })
+
+  describe('when there is a search param', () => {
+    it('makes a gql request with the search value', async () => {
+      setup()
+
+      const { result } = renderHook(() => useRepoCommitContentsTable(), {
+        wrapper: wrapper([
+          '/gh/test-org/test-repo/commit/sha256/tree?search=search-val',
+        ]),
+      })
+
+      await waitFor(() => result.current.isLoading)
+      await waitFor(() => !result.current.isLoading)
+
+      expect(calledCommitContents).toHaveBeenCalled()
+      expect(calledCommitContents).toHaveBeenCalledWith({
+        commit: 'sha256',
+        filters: {
+          displayType: 'TREE',
+          searchValue: 'search-val',
+          ordering: {
+            direction: 'ASC',
+            parameter: 'NAME',
+          },
+        },
+        name: 'test-org',
+        repo: 'test-repo',
+        path: '',
+      })
+    })
+  })
 })

@@ -590,57 +590,5 @@ describe('CommitDetailFileExplorerTable', () => {
         })
       })
     })
-
-    // describe('searching on the table', () => {
-    //   describe('api variables are being set', () => {
-    //     it('sets the correct api variables', async () => {
-    //       const { user, requestFilters } = setup()
-    //       render(<CommitDetailFileExplorerTable />, { wrapper: wrapper() })
-
-    //       expect(
-    //         await screen.findByRole('textbox', {
-    //           name: 'Search for files',
-    //         })
-    //       ).toBeTruthy()
-    //       const search = screen.getByRole('textbox', {
-    //         name: 'Search for files',
-    //       })
-    //       await user.type(search, 'cool-file.rs')
-
-    //       await waitFor(() => {
-    //         expect(requestFilters).toHaveBeenCalledWith({
-    //           searchValue: 'cool-file.rs',
-    //           ordering: { direction: 'ASC', parameter: 'NAME' },
-    //         })
-    //       })
-    //     })
-    //   })
-
-    //   describe('there are no files to be found', () => {
-    //     beforeEach(() => setup())
-    //     it('displays no items found message', async () => {
-    //       const { user } = setup()
-    //       render(<CommitDetailFileExplorerTable />, { wrapper: wrapper() })
-
-    //       expect(await screen.findByText('src')).toBeTruthy()
-    //       const dir = screen.getByText('src')
-    //       expect(dir).toBeInTheDocument()
-
-    //       expect(
-    //         await screen.findByRole('textbox', {
-    //           name: 'Search for files',
-    //         })
-    //       ).toBeTruthy()
-    //       const search = screen.getByRole('textbox', {
-    //         name: 'Search for files',
-    //       })
-    //       await user.type(search, 'cool-file.rs')
-
-    //       expect(await screen.findByText(/no results found/i)).toBeTruthy()
-    //       const noResults = screen.getByText(/no results found/i)
-    //       expect(noResults).toBeInTheDocument()
-    //     })
-    //   })
-    // })
   })
 })
