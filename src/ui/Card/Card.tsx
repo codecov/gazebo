@@ -6,12 +6,12 @@ interface CardProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof card> {}
 
-const Card = React.forwardRef<HTMLDivElement, CardProps>(
+const CardRoot = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, ...props }, ref) => (
     <div ref={ref} className={card({ className })} {...props} />
   )
 )
-Card.displayName = 'Card'
+CardRoot.displayName = 'Card'
 
 const header = cva(['border-b', 'border-ds-gray-secondary', 'p-5'])
 interface HeaderProps
@@ -75,7 +75,7 @@ const Footer = React.forwardRef<HTMLDivElement, FooterProps>(
 )
 Footer.displayName = 'footer'
 
-export default Object.assign(Card, {
+export const Card = Object.assign(CardRoot, {
   Header,
   Title,
   Description,
