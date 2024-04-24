@@ -456,6 +456,48 @@ describe('ContextSwitcher', () => {
     })
   })
 
+  describe('when not on gh provider', () => {
+    beforeEach(() => {
+      useIntersection.mockReturnValue({ isIntersecting: true })
+    })
+    afterEach(() => jest.restoreAllMocks())
+
+    it('does not render the add github org text', async () => {
+      setup()
+      const onLoadMoreFunc = jest.fn()
+      render(
+        <ContextSwitcher
+          activeContext={{
+            username: 'laudna',
+            avatarUrl: 'http://127.0.0.1/avatar-url',
+          }}
+          contexts={[
+            {
+              owner: {
+                username: 'laudna',
+                avatarUrl: 'https://bitbucket.com/laudna.png?size=40',
+              },
+              pageName: 'provider',
+            },
+          ]}
+          currentUser={{
+            defaultOrgUsername: 'spotify',
+          }}
+          src="imageUrl"
+          isLoading={false}
+          error={null}
+          onLoadMore={onLoadMoreFunc}
+        />,
+        {
+          wrapper: wrapper(['/bb']),
+        }
+      )
+
+      const addGhOrgText = screen.queryByText(/Add GitHub organization/)
+      expect(addGhOrgText).not.toBeInTheDocument()
+    })
+  })
+
   describe('when custom modal component is passed', () => {
     afterEach(() => jest.restoreAllMocks())
 
