@@ -33,11 +33,9 @@ function DeletionCard({ isPersonalSettings }) {
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-lg font-semibold">Delete account</h2>
-      <div className="md:w-3/4">
-        <Card>
-          <EraseSection isPersonalSettings={isPersonalSettings} />
-        </Card>
-      </div>
+      <Card>
+        <EraseSection isPersonalSettings={isPersonalSettings} />
+      </Card>
     </div>
   )
 }

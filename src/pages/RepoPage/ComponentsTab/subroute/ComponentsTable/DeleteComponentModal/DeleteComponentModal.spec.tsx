@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { PropsWithChildren } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import DeleteComponentModal from './DeleteComponentModal'
@@ -19,7 +18,7 @@ const server = setupServer()
 const ownerUsername = 'vox-machina'
 const repoName = 'vestiges'
 
-const wrapper: React.FC<PropsWithChildren> = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter
       initialEntries={[`/gh/${ownerUsername}/${repoName}/components`]}
@@ -44,7 +43,7 @@ afterAll(() => {
 describe('DeleteComponentModal', () => {
   function setup() {
     server.use(
-      graphql.mutation('deleteFlag', (req, res, ctx) =>
+      graphql.mutation('deleteComponentMeasurements', (req, res, ctx) =>
         res(ctx.status(200), ctx.data({}))
       )
     )
@@ -60,7 +59,7 @@ describe('DeleteComponentModal', () => {
     it('renders the modal message', async () => {
       render(
         <DeleteComponentModal
-          componentName="flag-123"
+          componentId="component-123"
           closeModal={jest.fn()}
           isOpen
         />,
@@ -75,14 +74,14 @@ describe('DeleteComponentModal', () => {
       )
       expect(messagePartTwo).toBeInTheDocument()
 
-      const componentName = await screen.findByText(/flag-123/)
-      expect(componentName).toBeInTheDocument()
+      const componentId = await screen.findByText(/component-123/)
+      expect(componentId).toBeInTheDocument()
     })
 
     it('renders delete and cancel buttons', async () => {
       render(
         <DeleteComponentModal
-          componentName="flag-123"
+          componentId="component-123"
           closeModal={jest.fn()}
           isOpen
         />,
@@ -101,7 +100,7 @@ describe('DeleteComponentModal', () => {
     it('renders appropriate title', async () => {
       render(
         <DeleteComponentModal
-          componentName="flag-123"
+          componentId="component-123"
           closeModal={jest.fn()}
           isOpen
         />,
@@ -120,7 +119,7 @@ describe('DeleteComponentModal', () => {
       const closeModal = jest.fn()
       render(
         <DeleteComponentModal
-          componentName="flag-123"
+          componentId="component-123"
           closeModal={closeModal}
           isOpen
         />,
@@ -143,7 +142,7 @@ describe('DeleteComponentModal', () => {
       const closeModal = jest.fn()
       render(
         <DeleteComponentModal
-          componentName="flag-123"
+          componentId="component-123"
           closeModal={closeModal}
           isOpen
         />,

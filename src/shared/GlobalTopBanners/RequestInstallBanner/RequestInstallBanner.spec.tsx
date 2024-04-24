@@ -112,7 +112,9 @@ describe('RequestInstallBanner', () => {
           await user.click(btn)
 
           expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-            'request_install.user.shared.request'
+            'request_install.user.shared.request',
+            undefined,
+            undefined
           )
         })
       })

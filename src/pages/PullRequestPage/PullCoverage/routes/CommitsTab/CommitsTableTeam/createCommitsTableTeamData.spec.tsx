@@ -34,7 +34,7 @@ describe('createCommitsTableTeamData', () => {
 
   describe('pages has valid commits', () => {
     describe('compareWithParent __typename is not Comparison', () => {
-      it('returns no report uploaded', () => {
+      it('returns a dash', () => {
         const commitData = {
           ciPassed: null,
           message: null,
@@ -54,9 +54,7 @@ describe('createCommitsTableTeamData', () => {
           pages: [{ commits: [commitData] }],
         })
 
-        expect(result[0]?.patch).toStrictEqual(
-          <p className="text-right">No report uploaded</p>
-        )
+        expect(result[0]?.patch).toStrictEqual(<p className="text-right">-</p>)
       })
     })
 
@@ -201,7 +199,7 @@ describe('createCommitsTableTeamData', () => {
     })
 
     describe('bundleAnalysisReport __typename is not BundleAnalysisReport', () => {
-      it('returns no report uploaded', () => {
+      it('returns an x emoji', () => {
         const commitData = {
           ciPassed: null,
           message: null,

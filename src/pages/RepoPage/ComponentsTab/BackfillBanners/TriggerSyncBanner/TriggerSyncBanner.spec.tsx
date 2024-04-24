@@ -5,9 +5,7 @@ import { waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { PropsWithChildren } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
-
 
 import TriggerSyncBanner from './TriggerSyncBanner'
 
@@ -19,7 +17,7 @@ const queryClient = new QueryClient({
   },
 })
 
-const wrapper: React.FC<PropsWithChildren> = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov/gazebo/components']}>
     <Route path="/:provider/:owner/:repo/components" exact={true}>
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -64,14 +62,10 @@ describe('TriggerSyncBanner', () => {
       render(<TriggerSyncBanner />, { wrapper })
 
       const enableAnalyticsText = screen.getByText(
-        'You need to enable Component analytics to see coverage data'
+        'You will need to enable components to see related coverage data.'
       )
       expect(enableAnalyticsText).toBeInTheDocument()
-      expect(
-        screen.getByText(
-          'Component analytics is disabled by default. Enable this feature below to see all your historical coverage data and coverage trend for each component.'
-        )
-      ).toBeInTheDocument()
+      expect(screen.getByText('No data to display')).toBeInTheDocument()
       expect(screen.getByText('Enable component analytics')).toBeInTheDocument()
     })
 
@@ -86,7 +80,7 @@ describe('TriggerSyncBanner', () => {
         await waitFor(() =>
           expect(mutate).toHaveBeenCalledWith({
             input: {
-              measurementType: 'FLAG_COVERAGE',
+              measurementType: 'COMPONENT_COVERAGE',
               owner: 'codecov',
               repoName: 'gazebo',
             },

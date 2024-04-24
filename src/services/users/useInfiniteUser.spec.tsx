@@ -93,41 +93,18 @@ describe('useInfiniteUser', () => {
       await waitFor(() => !result.current.isFetching)
 
       await waitFor(() =>
-        expect(result.current.data).toStrictEqual({
-          pageParams: [undefined],
-          pages: [
-            {
-              count: 2,
-              next: 'http://localhost/internal/gh/codecov/users?page=2',
-              previous: null,
-              results: [
-                {
-                  activated: true,
-                  email: 'user1@codecov.io',
-                  isAdmin: true,
-                  lastPullTimestamp: '2021-08-25T00:00:00Z',
-                  name: 'User 1',
-                  ownerid: 1,
-                  student: false,
-                  username: 'user1-codecov',
-                },
-              ],
-              totalPages: 2,
-            },
-          ],
-          results: [
-            {
-              activated: true,
-              email: 'user1@codecov.io',
-              isAdmin: true,
-              lastPullTimestamp: '2021-08-25T00:00:00Z',
-              name: 'User 1',
-              ownerid: 1,
-              student: false,
-              username: 'user1-codecov',
-            },
-          ],
-        })
+        expect(result.current.data).toStrictEqual([
+          {
+            activated: true,
+            email: 'user1@codecov.io',
+            isAdmin: true,
+            lastPullTimestamp: '2021-08-25T00:00:00Z',
+            name: 'User 1',
+            ownerid: 1,
+            student: false,
+            username: 'user1-codecov',
+          },
+        ])
       )
     })
   })
@@ -154,69 +131,28 @@ describe('useInfiniteUser', () => {
       await waitFor(() => !result.current.isFetching)
 
       await waitFor(() =>
-        expect(result.current.data).toStrictEqual({
-          pageParams: [undefined, '2'],
-          pages: [
-            {
-              count: 2,
-              next: 'http://localhost/internal/gh/codecov/users?page=2',
-              previous: null,
-              results: [
-                {
-                  activated: true,
-                  email: 'user1@codecov.io',
-                  isAdmin: true,
-                  lastPullTimestamp: '2021-08-25T00:00:00Z',
-                  name: 'User 1',
-                  ownerid: 1,
-                  student: false,
-                  username: 'user1-codecov',
-                },
-              ],
-              totalPages: 2,
-            },
-            {
-              count: 2,
-              next: null,
-              previous: null,
-              results: [
-                {
-                  activated: true,
-                  email: 'user2@codecov.io',
-                  isAdmin: true,
-                  lastPullTimestamp: '2021-08-25T00:00:00Z',
-                  name: 'User 2',
-                  ownerid: 2,
-                  student: false,
-                  username: 'user2-codecov',
-                },
-              ],
-              totalPages: 2,
-            },
-          ],
-          results: [
-            {
-              activated: true,
-              email: 'user1@codecov.io',
-              isAdmin: true,
-              lastPullTimestamp: '2021-08-25T00:00:00Z',
-              name: 'User 1',
-              ownerid: 1,
-              student: false,
-              username: 'user1-codecov',
-            },
-            {
-              activated: true,
-              email: 'user2@codecov.io',
-              isAdmin: true,
-              lastPullTimestamp: '2021-08-25T00:00:00Z',
-              name: 'User 2',
-              ownerid: 2,
-              student: false,
-              username: 'user2-codecov',
-            },
-          ],
-        })
+        expect(result.current.data).toStrictEqual([
+          {
+            activated: true,
+            email: 'user1@codecov.io',
+            isAdmin: true,
+            lastPullTimestamp: '2021-08-25T00:00:00Z',
+            name: 'User 1',
+            ownerid: 1,
+            student: false,
+            username: 'user1-codecov',
+          },
+          {
+            activated: true,
+            email: 'user2@codecov.io',
+            isAdmin: true,
+            lastPullTimestamp: '2021-08-25T00:00:00Z',
+            name: 'User 2',
+            ownerid: 2,
+            student: false,
+            username: 'user2-codecov',
+          },
+        ])
       )
     })
   })

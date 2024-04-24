@@ -15,7 +15,7 @@ interface URLParams {
 }
 
 const defaultQueryParams = {
-  branch: 'main',
+  branch: '',
 }
 
 const getDecodedBranch = (branch?: string) =>
@@ -84,7 +84,7 @@ const BranchSelector: React.FC = () => {
           ariaName="components branch selector"
           items={branchList?.branches ?? []}
           // @ts-expect-error - params is not typed
-          value={searchBranchValue ? { name: params.branch } : selection}
+          value={params?.branch ? { name: params.branch } : selection}
           onChange={(item: Branch) => {
             updateParams({ branch: item.name })
           }}

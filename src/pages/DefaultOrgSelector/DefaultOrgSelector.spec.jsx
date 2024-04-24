@@ -75,6 +75,7 @@ describe('DefaultOrgSelector', () => {
     isValidUser = true,
     trialStatus = 'NOT_STARTED',
     value = 'users-basic',
+    privateRepos = true,
   } = {}) {
     const mockMutationVariables = jest.fn()
     const mockTrialMutationVariables = jest.fn()
@@ -101,7 +102,7 @@ describe('DefaultOrgSelector', () => {
           ctx.status(200),
           ctx.data({
             owner: {
-              hasPrivateRepos: true,
+              hasPrivateRepos: privateRepos,
               plan: {
                 ...mockTrialData,
                 trialStatus,
@@ -555,7 +556,7 @@ describe('DefaultOrgSelector', () => {
       expect(testLocation.pathname).toBe('/gh/chetney')
     })
 
-    it('fires start trial mutation', async () => {
+    it('does not fire start trial mutation', async () => {
       const { user, mockTrialMutationVariables } = setup({
         useUserData: {
           me: {
@@ -595,7 +596,9 @@ describe('DefaultOrgSelector', () => {
 
       await user.click(submit)
 
-      expect(mockTrialMutationVariables).not.toHaveBeenCalled()
+      await waitFor(() =>
+        expect(mockTrialMutationVariables).not.toHaveBeenCalled()
+      )
     })
   })
 
@@ -661,7 +664,9 @@ describe('DefaultOrgSelector', () => {
 
       await user.click(submit)
 
-      expect(mockTrialMutationVariables).not.toHaveBeenCalled()
+      await waitFor(() =>
+        expect(mockTrialMutationVariables).not.toHaveBeenCalled()
+      )
     })
   })
 
@@ -728,7 +733,9 @@ describe('DefaultOrgSelector', () => {
 
       await user.click(submit)
 
-      expect(mockTrialMutationVariables).not.toHaveBeenCalled()
+      await waitFor(() =>
+        expect(mockTrialMutationVariables).not.toHaveBeenCalled()
+      )
     })
   })
 
@@ -990,6 +997,76 @@ describe('DefaultOrgSelector', () => {
             orgUsername: 'criticalRole',
           },
         })
+      )
+    })
+
+    it('does not fire trial mutation with no private repos', async () => {
+      const { user, mockTrialMutationVariables } = setup({
+        useUserData: {
+          me: {
+            email: 'personal@cr.com',
+            trackingMetadata: {
+              ownerid: '1234',
+            },
+            user: {
+              username: 'chetney',
+            },
+          },
+        },
+        myOrganizationsData: {
+          me: {
+            myOrganizations: {
+              edges: [
+                {
+                  node: {
+                    avatarUrl:
+                      'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+                    username: 'chetney',
+                    ownerid: 1,
+                  },
+                },
+                {
+                  node: {
+                    avatarUrl:
+                      'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+                    username: 'criticalRole',
+                    ownerid: 1,
+                  },
+                },
+              ],
+              pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
+            },
+          },
+        },
+        value: 'users-basic',
+        privateRepos: false,
+      })
+
+      render(<DefaultOrgSelector />, { wrapper: wrapper() })
+
+      const selectLabel = await screen.findByText(
+        /Which organization are you using today?/
+      )
+      expect(selectLabel).toBeInTheDocument()
+
+      const selectOrg = screen.getByRole('button', {
+        name: 'Select an organization',
+      })
+      await user.click(selectOrg)
+
+      const orgInList = await screen.findByRole('option', {
+        name: 'criticalRole',
+      })
+      await user.click(orgInList)
+
+      const submit = await screen.findByRole('button', {
+        name: /Continue/,
+      })
+
+      await user.click(submit)
+
+      await waitFor(() =>
+        expect(mockTrialMutationVariables).not.toHaveBeenCalled()
       )
     })
 

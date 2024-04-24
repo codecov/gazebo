@@ -61,6 +61,20 @@ const mockCompareData = {
   },
 }
 
+const mockOverview = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      private: false,
+      defaultBranch: 'main',
+      oldestCommitAt: '2022-10-10T11:59:59',
+      coverageEnabled: true,
+      bundleAnalysisEnabled: false,
+      languages: ['javascript'],
+    },
+  },
+}
+
 const server = setupServer()
 const queryClient = new QueryClient()
 
@@ -115,7 +129,10 @@ describe('FilesChangedTab', () => {
             owner: { repository: { private: privateRepo } },
           })
         )
-      )
+      ),
+      graphql.query('GetRepoOverview', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockOverview))
+      })
     )
   }
 
