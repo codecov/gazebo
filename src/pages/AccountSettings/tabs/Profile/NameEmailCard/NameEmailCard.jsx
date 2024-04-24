@@ -55,7 +55,7 @@ function NameEmailCard({ currentUser, provider }) {
   }
 
   return (
-    <Card className="p-10">
+    <Card variant="old" className="p-10">
       {/* Define the field first and the submit/title after so the TAB order makes sense for accessibility but we reverse the two so it looks like the correct UI */}
       <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-8">
         <div className="flex items-center justify-between">
