@@ -20,9 +20,14 @@ const query = `query GetOrgUploadToken ($owner: String!) {
 interface UseOrgUploadTokenArgs {
   provider: string
   owner: string
+  enabled?: boolean
 }
 
-export const useOrgUploadToken = ({ provider, owner }: UseOrgUploadTokenArgs) =>
+export const useOrgUploadToken = ({
+  provider,
+  owner,
+  enabled = true,
+}: UseOrgUploadTokenArgs) =>
   useQuery({
     queryKey: ['GetOrgUploadToken', provider, owner],
     queryFn: ({ signal }) =>
@@ -46,4 +51,5 @@ export const useOrgUploadToken = ({ provider, owner }: UseOrgUploadTokenArgs) =>
 
         return parsedRes?.data?.owner?.orgUploadToken ?? null
       }),
+    enabled,
   })

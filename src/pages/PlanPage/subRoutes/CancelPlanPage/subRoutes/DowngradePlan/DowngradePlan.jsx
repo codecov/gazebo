@@ -1,8 +1,8 @@
 import { useLayoutEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
+import Card from 'old_ui/Card'
 import { useAccountDetails } from 'services/account'
-import Card from 'ui/Card'
 import Icon from 'ui/Icon'
 
 import CancelButton from './CancelButton'

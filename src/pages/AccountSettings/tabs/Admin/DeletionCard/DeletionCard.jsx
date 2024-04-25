@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 
+import Card from 'old_ui/Card'
 import A from 'ui/A'
-import Card from 'ui/Card'
 
 import ErasePersonalAccountButton from './ErasePersonalAccountButton'
 

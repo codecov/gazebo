@@ -34,7 +34,7 @@ const isNumericColumn = (cellId: string) =>
   cellId === 'missedLines' || cellId === 'patchPercentage'
 
 export function getFilter(sorting: Array<{ id: string; desc: boolean }>) {
-  const state = sorting.at(0)
+  const state = sorting[0]
 
   if (state) {
     const direction = state?.desc
