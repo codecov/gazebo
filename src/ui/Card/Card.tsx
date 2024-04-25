@@ -29,11 +29,11 @@ const title = cva(['font-semibold'], {
   variants: {
     size: {
       base: ['text-base'],
-      large: ['text-lg'],
+      lg: ['text-lg'],
     },
   },
   defaultVariants: {
-    size: 'large',
+    size: 'lg',
   },
 })
 interface TitleProps
