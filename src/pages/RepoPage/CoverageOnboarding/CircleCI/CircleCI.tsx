@@ -117,8 +117,8 @@ function CircleCI() {
         </Card.Header>
         <Card.Content className="flex flex-col gap-4">
           <p>
-            Once you&apos;ve committed your changes and ran your CI/CD pipeline,
-            you should see status checks and comments in your pull request.
+            Once you commit your changes and run your CI/CD pipeline, you should
+            see status checks and comments in your pull request.
           </p>
           <img
             alt="codecov patch and project"
@@ -129,7 +129,7 @@ function CircleCI() {
           <p>
             Once merged to your default branch, subsequent pull requests will
             have status checks and report comments. Additionally, you&apos;ll
-            find your repo coverage dashboard here.
+            find your repo coverage dashboard on this page.
           </p>
           <p>
             Visit our guide to{' '}

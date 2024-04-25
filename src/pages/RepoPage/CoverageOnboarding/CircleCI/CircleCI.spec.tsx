@@ -204,7 +204,7 @@ describe('CircleCI', () => {
     it('renders first body', async () => {
       render(<CircleCI />, { wrapper })
 
-      const body = await screen.findByText(/Once you've committed your changes/)
+      const body = await screen.findByText(/Once you commit your changes/)
       expect(body).toBeInTheDocument()
     })
 

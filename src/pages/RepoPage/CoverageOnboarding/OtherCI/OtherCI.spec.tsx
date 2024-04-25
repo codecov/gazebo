@@ -237,17 +237,9 @@ describe('OtherCI', () => {
     it('renders body', async () => {
       render(<OtherCI />, { wrapper })
 
-      const title = await screen.findByText(/Once merged to the default branch/)
-      expect(title).toBeInTheDocument()
-    })
-  })
-
-  describe('ending', () => {
-    beforeEach(() => setup({}))
-    it('renders wrap-up', async () => {
-      render(<OtherCI />, { wrapper })
-
-      const title = await screen.findByText(/Once merged to the default branch/)
+      const title = await screen.findByText(
+        /Once merged to your default branch/
+      )
       expect(title).toBeInTheDocument()
     })
 
@@ -260,8 +252,11 @@ describe('OtherCI', () => {
         'https://docs.codecov.com/docs/quick-start'
       )
     })
+  })
 
+  describe('ending', () => {
     it('renders feedback link', async () => {
+      setup({})
       render(<OtherCI />, { wrapper })
 
       const body = await screen.findByText(/How was your setup experience/)

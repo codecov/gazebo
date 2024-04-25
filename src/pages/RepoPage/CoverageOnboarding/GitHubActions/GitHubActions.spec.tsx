@@ -238,7 +238,7 @@ describe('GitHubActions', () => {
     it('renders first body', async () => {
       render(<GitHubActions />, { wrapper })
 
-      const body = await screen.findByText(/Once you've committed your changes/)
+      const body = await screen.findByText(/Once you commit your changes/)
       expect(body).toBeInTheDocument()
     })
 
