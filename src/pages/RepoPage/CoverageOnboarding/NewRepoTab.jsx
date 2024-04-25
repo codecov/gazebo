@@ -80,7 +80,7 @@ function NewRepoTab() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="mx-auto w-4/5 pt-4 md:w-3/5 lg:w-3/6">
+      <div className="pt-4 lg:w-3/5">
         <IntroBlurb />
         <Content provider={provider} />
       </div>
