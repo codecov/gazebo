@@ -238,14 +238,14 @@ describe('GitHubActions', () => {
     it('renders first body', async () => {
       render(<GitHubActions />, { wrapper })
 
-      const body = await screen.findByText(/After you committed your changes/)
+      const body = await screen.findByText(/Once you've committed your changes/)
       expect(body).toBeInTheDocument()
     })
 
     it('renders second body', async () => {
       render(<GitHubActions />, { wrapper })
 
-      const body = await screen.findByText(/Once merged to the/)
+      const body = await screen.findByText(/Once merged to your/)
       expect(body).toBeInTheDocument()
     })
 
@@ -257,10 +257,7 @@ describe('GitHubActions', () => {
       })
       expect(img).toBeInTheDocument()
     })
-  })
 
-  describe('ending', () => {
-    beforeEach(() => setup({}))
     it('renders quick start link', async () => {
       render(<GitHubActions />, { wrapper })
 
@@ -270,7 +267,10 @@ describe('GitHubActions', () => {
         'https://docs.codecov.com/docs/quick-start'
       )
     })
+  })
 
+  describe('ending', () => {
+    beforeEach(() => setup({}))
     it('renders body', async () => {
       render(<GitHubActions />, { wrapper })
 

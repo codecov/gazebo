@@ -204,14 +204,14 @@ describe('CircleCI', () => {
     it('renders first body', async () => {
       render(<CircleCI />, { wrapper })
 
-      const body = await screen.findByText(/After you committed your changes/)
+      const body = await screen.findByText(/Once you've committed your changes/)
       expect(body).toBeInTheDocument()
     })
 
     it('renders second body', async () => {
       render(<CircleCI />, { wrapper })
 
-      const body = await screen.findByText(/Once merged to the/)
+      const body = await screen.findByText(/Once merged to your/)
       expect(body).toBeInTheDocument()
     })
 
@@ -223,10 +223,7 @@ describe('CircleCI', () => {
       })
       expect(img).toBeInTheDocument()
     })
-  })
 
-  describe('ending', () => {
-    beforeEach(() => setup({}))
     it('renders quick start link', async () => {
       render(<CircleCI />, { wrapper })
 
@@ -236,6 +233,10 @@ describe('CircleCI', () => {
         'https://docs.codecov.com/docs/quick-start'
       )
     })
+  })
+
+  describe('ending', () => {
+    beforeEach(() => setup({}))
     it('renders body', async () => {
       render(<CircleCI />, { wrapper })
 
