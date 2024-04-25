@@ -10,13 +10,6 @@ type CardStory = React.ComponentProps<typeof Card> & {
 const meta: Meta<CardStory> = {
   title: 'Components/Card',
   component: Card,
-  subcomponents: {
-    Header: Card.Header,
-    Title: Card.Title,
-    Description: Card.Description,
-    Content: Card.Content,
-    Footer: Card.Footer,
-  },
   argTypes: {
     titleSize: {
       description: 'Controls the font size of Card.Title',
