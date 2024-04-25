@@ -106,11 +106,11 @@ export function useActivateMeasurements({
       ])
     },
     onError: () => {
-      const measurement =
+      const measurementString =
         measurementType === 'FLAG_COVERAGE' ? 'flag' : 'component'
       renderToast({
         type: 'error',
-        title: 'Error activating ' + measurement + ' measurements',
+        title: `Error activating ${measurementString} measurements`,
         content:
           'Please try again. If the error persists please contact support',
         options: {
