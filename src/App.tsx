@@ -13,7 +13,8 @@ import LoginLayout from 'layouts/LoginLayout'
 import { useLocationParams } from 'services/navigation'
 import { ToastNotificationProvider } from 'services/toastNotification'
 import { useUTM } from 'services/tracking/utm'
-import { useUser } from 'services/user'
+import { useInternalUser, useUser } from 'services/user'
+import { isProvider } from 'shared/api/helpers'
 
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
 const AdminSettings = lazy(() => import('./pages/AdminSettings'))
@@ -28,21 +29,34 @@ const PullRequestPage = lazy(() => import('./pages/PullRequestPage'))
 const RepoPage = lazy(() => import('./pages/RepoPage'))
 const SyncProviderPage = lazy(() => import('./pages/SyncProviderPage'))
 
+interface URLParams {
+  provider: string
+}
+
 const HomePageRedirect = () => {
-  const { provider } = useParams()
+  const { provider } = useParams<URLParams>()
   const { data: currentUser } = useUser()
+  const { data: internalUser } = useInternalUser({})
   const { params } = useLocationParams()
 
-  if (!provider || !currentUser) {
-    return <Redirect to="/login" />
+  let redirectURL = '/login'
+
+  if (internalUser) {
+    redirectURL = `/${internalUser.owners![0]?.service}/${
+      internalUser.owners![0]?.username
+    }`
   }
 
-  const defaultOrg =
-    currentUser.owner?.defaultOrgUsername ?? currentUser.user?.username
-  let redirectURL = `/${provider}/${defaultOrg}`
-  const { setup_action: setupAction } = params
-  if (setupAction) {
-    redirectURL += `?setup_action=${setupAction}`
+  if (provider && isProvider(provider) && currentUser) {
+    const defaultOrg =
+      currentUser.owner?.defaultOrgUsername ?? currentUser.user?.username
+    redirectURL = `/${provider}/${defaultOrg}`
+
+    // @ts-expect-error useLocationParams needs to be typed
+    const { setup_action: setupAction } = params
+    if (setupAction) {
+      redirectURL += `?setup_action=${setupAction}`
+    }
   }
 
   return <Redirect to={redirectURL} />
@@ -148,7 +162,7 @@ const MainAppRoutes = () => (
           <EnterpriseLandingPage />
         </EnterpriseLoginLayout>
       ) : (
-        <Redirect to="/login" />
+        <HomePageRedirect />
       )}
     </SentryRoute>
     <SentryRoute path="*">
