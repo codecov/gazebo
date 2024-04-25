@@ -111,6 +111,16 @@ describe('NewRepoTab', () => {
     return { hardRedirect, user }
   }
 
+  describe('intro blurb', () => {
+    it('renders', async () => {
+      setup()
+      render(<NewRepoTab />, { wrapper: wrapper() })
+
+      const intro = await screen.findByTestId('intro-blurb')
+      expect(intro).toBeInTheDocument()
+    })
+  })
+
   describe('rendering component', () => {
     beforeEach(() => setup())
 

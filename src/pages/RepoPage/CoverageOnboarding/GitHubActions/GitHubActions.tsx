@@ -8,7 +8,6 @@ import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
 
 import ExampleBlurb from '../ExampleBlurb'
-import IntroBlurb from '../IntroBlurb/IntroBlurb'
 
 interface URLParams {
   provider: string
@@ -42,7 +41,6 @@ function GitHubActions() {
 
   return (
     <div className="flex flex-col gap-6">
-      <IntroBlurb />
       <div className="flex flex-col gap-4">
         <div>
           <h2 className="text-base font-semibold">
