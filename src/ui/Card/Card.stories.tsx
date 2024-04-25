@@ -2,13 +2,32 @@ import { Meta, StoryObj } from '@storybook/react'
 
 import { Card } from './Card'
 
-const meta: Meta<typeof Card> = {
+// Hack to allow us to specify args that do not exist on Card
+type CardStory = React.ComponentProps<typeof Card> & {
+  titleSize?: 'lg' | 'base'
+}
+
+const meta: Meta<CardStory> = {
   title: 'Components/Card',
   component: Card,
+  subcomponents: {
+    Header: Card.Header,
+    Title: Card.Title,
+    Description: Card.Description,
+    Content: Card.Content,
+    Footer: Card.Footer,
+  },
+  argTypes: {
+    titleSize: {
+      description: 'Controls the font size of Card.Title',
+      control: 'radio',
+      options: ['lg', 'base'],
+    },
+  },
 } as Meta
 export default meta
 
-type Story = StoryObj<typeof Card>
+type Story = StoryObj<CardStory>
 
 export const Default: Story = {
   render: () => (
@@ -22,30 +41,19 @@ export const Default: Story = {
 }
 
 export const CardWithHeader: Story = {
-  render: () => (
+  args: {
+    titleSize: 'lg',
+  },
+  render: (args) => (
     <Card>
       <Card.Header>
-        <Card.Title>A header can have a title.</Card.Title>
+        <Card.Title size={args.titleSize}>
+          A header can have a title.
+        </Card.Title>
         <Card.Description>And it can have a description.</Card.Description>
       </Card.Header>
       <Card.Content>
         The header will place a border between it and the main Card content.
-      </Card.Content>
-    </Card>
-  ),
-}
-
-export const CardWithHeaderVariant: Story = {
-  render: () => (
-    <Card>
-      <Card.Header>
-        <Card.Title>A Title</Card.Title>
-        <Card.Title size="base">A Smaller Title</Card.Title>
-      </Card.Header>
-      <Card.Content>
-        A smaller title can be used by setting the{' '}
-        <code className="bg-ds-gray-secondary">size</code> variant of{' '}
-        <code className="bg-ds-gray-secondary">Card.Title</code>.
       </Card.Content>
     </Card>
   ),
