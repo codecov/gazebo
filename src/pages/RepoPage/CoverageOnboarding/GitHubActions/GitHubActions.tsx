@@ -5,6 +5,7 @@ import { useOrgUploadToken } from 'services/orgUploadToken'
 import { useRepo } from 'services/repo'
 import { useFlags } from 'shared/featureFlags'
 import A from 'ui/A'
+import { Card } from 'ui/Card'
 import CopyClipboard from 'ui/CopyClipboard'
 
 import ExampleBlurb from '../ExampleBlurb'
@@ -41,9 +42,9 @@ function GitHubActions() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-4">
-        <div>
-          <h2 className="text-base font-semibold">
+      <Card>
+        <Card.Header>
+          <Card.Title size="base">
             Step 1: add {tokenCopy} token as{' '}
             <A
               to={{ pageName: 'githubRepoSecrets' }}
@@ -52,28 +53,33 @@ function GitHubActions() {
             >
               repository secret
             </A>
-          </h2>
+          </Card.Title>
+        </Card.Header>
+        <Card.Content>
           <p className="text-base">
             Admin required to access repo settings &gt; secrets and variable
             &gt; actions
           </p>
-        </div>
-        <div className="flex gap-4">
-          <pre className="flex basis-1/3 items-center justify-between gap-2 rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-            <div className="w-0 flex-1 overflow-hidden" data-testid="token-key">
-              CODECOV_TOKEN
-            </div>
-            <CopyClipboard string="CODECOV_TOKEN" />
-          </pre>
-          <pre className="flex basis-2/3 items-center justify-between gap-2 rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-            <div className="w-0 flex-1 overflow-hidden">{uploadToken}</div>
-            <CopyClipboard string={uploadToken ?? ''} />
-          </pre>
-        </div>
-      </div>
-      <div className="flex flex-col gap-4">
-        <div className="text-base">
-          <h2 className="font-semibold">
+          <div className="mt-4 flex gap-4">
+            <pre className="flex basis-1/3 items-center justify-between gap-2 rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
+              <div
+                className="w-0 flex-1 overflow-hidden"
+                data-testid="token-key"
+              >
+                CODECOV_TOKEN
+              </div>
+              <CopyClipboard string="CODECOV_TOKEN" />
+            </pre>
+            <pre className="flex basis-2/3 items-center justify-between gap-2 rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
+              <div className="w-0 flex-1 overflow-hidden">{uploadToken}</div>
+              <CopyClipboard string={uploadToken ?? ''} />
+            </pre>
+          </div>
+        </Card.Content>
+      </Card>
+      <Card>
+        <Card.Header>
+          <Card.Title size="base">
             Step 2: add Codecov to your{' '}
             <A
               to={{
@@ -85,17 +91,20 @@ function GitHubActions() {
             >
               GitHub Actions workflow yaml file
             </A>
-          </h2>
-          <p>
+          </Card.Title>
+        </Card.Header>
+        <Card.Content className="flex flex-col gap-4">
+          <p className="text-base">
             After tests run, this will upload your coverage report to Codecov:
           </p>
-        </div>
-        <div className="flex items-start justify-between overflow-auto rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          <pre className="whitespace-pre">{actionString}</pre>
-          <CopyClipboard string={actionString} />
-        </div>
-      </div>
-      <ExampleBlurb />
+
+          <div className="flex items-start justify-between overflow-auto rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
+            <pre className="whitespace-pre">{actionString}</pre>
+            <CopyClipboard string={actionString} />
+          </div>
+          <ExampleBlurb />
+        </Card.Content>
+      </Card>
       <div>
         <p>
           After you committed your changes and ran the repo&apos;s CI/CD
