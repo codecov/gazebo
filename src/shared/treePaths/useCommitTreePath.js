@@ -20,14 +20,13 @@ export function useCommitTreePaths() {
     })
   }, [location.search])
 
-  const filePaths = getFilePathParts(path)
-
-  let queryParams = undefined
-  if (Object.keys(params).length > 0) {
-    queryParams = params
-  }
-
   const treePaths = useMemo(() => {
+    let queryParams = undefined
+    if (Object.keys(params).length > 0) {
+      queryParams = params
+    }
+
+    const filePaths = getFilePathParts(path)
     const paths = filePaths?.map((location, index) => ({
       pageName: 'commitTreeView',
       text: location,
@@ -44,6 +43,6 @@ export function useCommitTreePaths() {
       options: { commit, queryParams },
     }
     return [repoPath, ...paths]
-  }, [commit, filePaths, queryParams, repo])
+  }, [commit, repo, params, path])
   return { treePaths }
 }

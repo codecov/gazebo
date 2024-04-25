@@ -36,7 +36,6 @@ export function useRepoCommitContentsTable() {
     commit,
   } = useParams<URLParams>()
   const location = useLocation()
-  const { treePaths } = useCommitTreePaths()
   const [sortBy, setSortBy] = useTableDefaultSort()
 
   const { components, flags, search, displayType } = useMemo(() => {
@@ -104,6 +103,9 @@ export function useRepoCommitContentsTable() {
         suspense: false,
       },
     })
+
+  const { treePaths } = useCommitTreePaths()
+
   const data = useMemo(() => {
     const tableData = commitData?.results
 
