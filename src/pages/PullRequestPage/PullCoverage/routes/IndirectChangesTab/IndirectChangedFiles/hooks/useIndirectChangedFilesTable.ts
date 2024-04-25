@@ -29,7 +29,7 @@ function getFilters({
   flags?: ParsedQs[] | string[]
   components?: ParsedQs[] | string[]
 }) {
-  const state = sorting.at(0)
+  const state = sorting[0]
   const direction = state?.desc ? orderingDirection.desc : orderingDirection.asc
 
   let parameter = undefined
