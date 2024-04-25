@@ -41,10 +41,8 @@ const HomePageRedirect = () => {
 
   let redirectURL = '/login'
 
-  if (internalUser) {
-    redirectURL = `/${internalUser.owners![0]?.service}/${
-      internalUser.owners![0]?.username
-    }`
+  if (internalUser && internalUser.owners) {
+    redirectURL = `/${internalUser.owners[0]?.service}/${internalUser.owners[0]?.username}`
   }
 
   if (provider && isProvider(provider) && currentUser) {
