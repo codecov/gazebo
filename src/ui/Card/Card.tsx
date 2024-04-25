@@ -23,7 +23,7 @@ const Header = React.forwardRef<HTMLDivElement, HeaderProps>(
     <div ref={ref} className={header({ className })} {...props} />
   )
 )
-Header.displayName = 'Header'
+Header.displayName = 'Card.Header'
 
 const title = cva(['font-semibold'], {
   variants: {
@@ -47,7 +47,7 @@ const Title = React.forwardRef<HTMLParagraphElement, TitleProps>(
     </h3>
   )
 )
-Title.displayName = 'title'
+Title.displayName = 'Card.Title'
 
 const description = cva()
 interface DescriptionProps
@@ -59,7 +59,7 @@ const Description = React.forwardRef<HTMLParagraphElement, DescriptionProps>(
     <p ref={ref} className={description({ className })} {...props} />
   )
 )
-Description.displayName = 'description'
+Description.displayName = 'Card.Description'
 
 const content = cva(['m-5'])
 interface ContentProps
@@ -71,7 +71,7 @@ const Content = React.forwardRef<HTMLDivElement, ContentProps>(
     <div ref={ref} className={content({ className })} {...props} />
   )
 )
-Content.displayName = 'content'
+Content.displayName = 'Card.Content'
 
 const footer = cva(['border-t', 'border-ds-gray-secondary', 'p-5'])
 interface FooterProps
@@ -83,7 +83,7 @@ const Footer = React.forwardRef<HTMLDivElement, FooterProps>(
     <div ref={ref} className={footer({ className })} {...props} />
   )
 )
-Footer.displayName = 'footer'
+Footer.displayName = 'Card.Footer'
 
 export const Card = Object.assign(CardRoot, {
   Header,
