@@ -26,9 +26,12 @@ afterAll(() => {
 })
 
 describe('useInternalUser', () => {
-  function setup() {
+  function setup(hasError = false) {
     server.use(
       rest.get('/internal/user', (req, res, ctx) => {
+        if (hasError) {
+          return res(ctx.status(400), ctx.json({}))
+        }
         return res(
           ctx.status(200),
           ctx.json({
@@ -58,6 +61,16 @@ describe('useInternalUser', () => {
           termsAgreement: false,
         })
       )
+    })
+  })
+
+  describe('when hook call errors', () => {
+    it('returns empty object', async () => {
+      setup(true)
+
+      const { result } = renderHook(() => useInternalUser({}), { wrapper })
+
+      await waitFor(() => expect(result.current.data).toStrictEqual({}))
     })
   })
 })
