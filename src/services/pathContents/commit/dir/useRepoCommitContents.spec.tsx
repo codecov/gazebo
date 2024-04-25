@@ -374,7 +374,7 @@ describe('useRepoCommitContents', () => {
         console.error = oldConsoleError
       })
 
-      it('throws an error', async () => {
+      it('throws a 404 error', async () => {
         setup({ isNotFoundError: true })
         const { result } = renderHook(
           () =>
