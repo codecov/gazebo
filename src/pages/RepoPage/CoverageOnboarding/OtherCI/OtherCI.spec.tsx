@@ -108,17 +108,25 @@ describe('OtherCI', () => {
   })
 
   describe('step one', () => {
-    describe('when org has upload token', () => {
-      beforeEach(() => setup({ hasOrgUploadToken: true }))
+    it('renders header', async () => {
+      setup({})
+      render(<OtherCI />, { wrapper })
 
-      it('renders header', async () => {
+      const header = await screen.findByText(/Step 1/)
+      expect(header).toBeInTheDocument()
+    })
+
+    describe('when org has upload token', () => {
+      it('renders global token copy', async () => {
+        setup({ hasOrgUploadToken: true })
         render(<OtherCI />, { wrapper })
 
-        const header = await screen.findByText(/Step 1/)
-        expect(header).toBeInTheDocument()
+        const repoToken = await screen.findByText(/global token/)
+        expect(repoToken).toBeInTheDocument()
       })
 
       it('renders token box', async () => {
+        setup({ hasOrgUploadToken: true })
         render(<OtherCI />, { wrapper })
 
         const codecovToken = await screen.findByText(/CODECOV_TOKEN/)
@@ -127,40 +135,26 @@ describe('OtherCI', () => {
         const tokenValue = await screen.findAllByText(/org-token-asdf-1234/)
         expect(tokenValue).toHaveLength(2)
       })
+    })
 
-      it('renders global token copy', async () => {
+    describe('when org does not have global upload token', () => {
+      it('renders repository token copy', async () => {
+        setup({})
         render(<OtherCI />, { wrapper })
 
-        const repoToken = await screen.findByText(/global token/)
+        const repoToken = await screen.findByText(/repository token/)
         expect(repoToken).toBeInTheDocument()
       })
 
-      describe('when org does not have global upload token', () => {
-        beforeEach(() => setup({}))
+      it('renders token box', async () => {
+        setup({})
+        render(<OtherCI />, { wrapper })
 
-        it('renders header', async () => {
-          render(<OtherCI />, { wrapper })
+        const codecovToken = await screen.findByText(/CODECOV_TOKEN/)
+        expect(codecovToken).toBeInTheDocument()
 
-          const header = await screen.findByText(/Step 1/)
-          expect(header).toBeInTheDocument()
-        })
-
-        it('renders token box', async () => {
-          render(<OtherCI />, { wrapper })
-
-          const codecovToken = await screen.findByText(/CODECOV_TOKEN/)
-          expect(codecovToken).toBeInTheDocument()
-
-          const tokenValue = await screen.findAllByText(/repo-token-jkl;-7890/)
-          expect(tokenValue).toHaveLength(2)
-        })
-
-        it('renders repository token copy', async () => {
-          render(<OtherCI />, { wrapper })
-
-          const repoToken = await screen.findByText(/repository token/)
-          expect(repoToken).toBeInTheDocument()
-        })
+        const tokenValue = await screen.findAllByText(/repo-token-jkl;-7890/)
+        expect(tokenValue).toHaveLength(2)
       })
     })
   })
@@ -199,30 +193,33 @@ describe('OtherCI', () => {
   })
 
   describe('step three', () => {
+    it('renders header', async () => {
+      setup({})
+      render(<OtherCI />, { wrapper })
+
+      const header = await screen.findByText(/Step 3/)
+      expect(header).toBeInTheDocument()
+    })
+
+    it('renders body', async () => {
+      setup({})
+      render(<OtherCI />, { wrapper })
+
+      const body = await screen.findByText(/upload coverage to Codecov via /)
+      expect(body).toBeInTheDocument()
+    })
+
+    it('renders command box', async () => {
+      setup({})
+      render(<OtherCI />, { wrapper })
+
+      const box = await screen.findByText(/codecovcli upload-process/)
+      expect(box).toBeInTheDocument()
+    })
+
     describe('when org has upload token', () => {
-      beforeEach(() => setup({ hasOrgUploadToken: true }))
-      it('renders header', async () => {
-        render(<OtherCI />, { wrapper })
-
-        const header = await screen.findByText(/Step 3/)
-        expect(header).toBeInTheDocument()
-      })
-
-      it('renders body', async () => {
-        render(<OtherCI />, { wrapper })
-
-        const body = await screen.findByText(/upload coverage to Codecov via /)
-        expect(body).toBeInTheDocument()
-      })
-
-      it('renders command box', async () => {
-        render(<OtherCI />, { wrapper })
-
-        const box = await screen.findByText(/codecovcli upload-process/)
-        expect(box).toBeInTheDocument()
-      })
-
-      it('renders -r flag when org upload token exists', async () => {
+      it('renders -r flag', async () => {
+        setup({ hasOrgUploadToken: true })
         render(<OtherCI />, { wrapper })
 
         const box = await screen.findByText(/-r cool-repo/)
@@ -231,30 +228,8 @@ describe('OtherCI', () => {
     })
 
     describe('when org does not have org upload token', () => {
-      beforeEach(() => setup({}))
-
-      it('renders header', async () => {
-        render(<OtherCI />, { wrapper })
-
-        const header = await screen.findByText(/Step 3/)
-        expect(header).toBeInTheDocument()
-      })
-
-      it('renders body', async () => {
-        render(<OtherCI />, { wrapper })
-
-        const body = await screen.findByText(/upload coverage to Codecov via /)
-        expect(body).toBeInTheDocument()
-      })
-
-      it('renders command box', async () => {
-        render(<OtherCI />, { wrapper })
-
-        const box = await screen.findByText(/codecovcli upload-process/)
-        expect(box).toBeInTheDocument()
-      })
-
-      it('does not render -r flag when org upload token does not exist', async () => {
+      it('does not render -r flag', async () => {
+        setup({})
         render(<OtherCI />, { wrapper })
 
         const box = screen.queryByText(/-r cool-repo/)
