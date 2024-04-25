@@ -2,7 +2,7 @@ import Button from 'ui/Button'
 
 function ComponentsNotConfigured() {
   return (
-    <div className="mt-12 grid gap-4">
+    <div className="grid gap-4 pt-4">
       <div className="flex flex-col items-center gap-1">
         <p>No data to display</p>
         <p>
