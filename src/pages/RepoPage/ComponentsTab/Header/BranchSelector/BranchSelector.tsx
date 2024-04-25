@@ -54,8 +54,8 @@ const BranchSelector: React.FC<BranchSelectorProps> = ({ isDisabled }) => {
 
   const decodedBranch = getDecodedBranch(branch)
 
-  // @ts-expect-error
   const selectedBranch =
+    // @ts-expect-error
     decodedBranch || params.branch || overview?.defaultBranch || ''
 
   const { data: searchBranchValue } = useBranch({
