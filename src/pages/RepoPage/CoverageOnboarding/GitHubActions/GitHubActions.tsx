@@ -56,12 +56,13 @@ function GitHubActions() {
           </Card.Title>
         </Card.Header>
         <Card.Content className="flex flex-col gap-4">
-          <p className="text-base">
+          <p>
             Admin required to access repo settings &gt; secrets and variable
             &gt; actions
           </p>
           <div className="flex gap-4">
-            <pre className="flex basis-1/3 items-center justify-between gap-2 rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
+            {/* We have plans to make this a component. Too much copy pasta */}
+            <pre className="flex basis-1/3 items-center justify-between gap-2 rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
               <div
                 className="w-0 flex-1 overflow-hidden"
                 data-testid="token-key"
@@ -70,7 +71,7 @@ function GitHubActions() {
               </div>
               <CopyClipboard string="CODECOV_TOKEN" />
             </pre>
-            <pre className="flex basis-2/3 items-center justify-between gap-2 rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
+            <pre className="flex basis-2/3 items-center justify-between gap-2 rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
               <div className="w-0 flex-1 overflow-hidden">{uploadToken}</div>
               <CopyClipboard string={uploadToken ?? ''} />
             </pre>
@@ -94,53 +95,69 @@ function GitHubActions() {
           </Card.Title>
         </Card.Header>
         <Card.Content className="flex flex-col gap-4">
-          <p className="text-base">
+          <p>
             After tests run, this will upload your coverage report to Codecov:
           </p>
 
-          <div className="flex items-start justify-between overflow-auto rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
+          <div className="flex items-start justify-between overflow-auto rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
             <pre className="whitespace-pre">{actionString}</pre>
             <CopyClipboard string={actionString} />
           </div>
           <ExampleBlurb />
         </Card.Content>
       </Card>
-      <div>
-        <p>
-          After you committed your changes and ran the repo&apos;s CI/CD
-          pipeline. In your pull request, you should see two status checks and
-          PR comment.
-        </p>
-        <img
-          alt="codecov patch and project"
-          src={patchAndProject.toString()}
-          className="my-3 md:px-5"
-          loading="lazy"
-        />
-        <p>
-          Once merged to the default branch, subsequent pull requests will have
-          checks and report comments. Additionally, you&apos;ll find your repo
-          coverage dashboard here.
-        </p>
-        <p className="mt-6">
-          Visit our guide to{' '}
-          <A to={{ pageName: 'quickStart' }} isExternal hook="quick-start-link">
-            learn more
-          </A>{' '}
-          about integrating Codecov into your CI/CD workflow.
-        </p>
-        <p className="mt-6 border-l-2 border-ds-gray-secondary pl-4">
-          <span className="font-semibold">How was your setup experience?</span>{' '}
-          Let us know in{' '}
-          <A
-            to={{ pageName: 'repoConfigFeedback' }}
-            isExternal
-            hook="repo-config-feedback"
-          >
-            this issue
-          </A>
-        </p>
-      </div>
+      <Card>
+        <Card.Header>
+          <Card.Title size="base">
+            Step 3: merge to main or your preferred feature branch
+          </Card.Title>
+        </Card.Header>
+        <Card.Content className="flex flex-col gap-4">
+          <p>
+            Once you&apos;ve committed your changes and ran your CI/CD pipeline,
+            you should see status checks and comments in your pull request.
+          </p>
+          <img
+            alt="codecov patch and project"
+            src={patchAndProject.toString()}
+            className="my-3 md:px-5"
+            loading="lazy"
+          />
+          <p>
+            Once merged to your default branch, subsequent pull requests will
+            have status checks and report comments. Additionally, you&apos;ll
+            find your repo coverage dashboard here.
+          </p>
+          <p>
+            Visit our guide to{' '}
+            <A
+              to={{ pageName: 'quickStart' }}
+              isExternal
+              hook="quick-start-link"
+            >
+              learn more
+            </A>{' '}
+            about integrating Codecov into your CI/CD workflow.
+          </p>
+        </Card.Content>
+      </Card>
+      <Card>
+        <Card.Content>
+          <p>
+            <span className="font-semibold">
+              How was your setup experience?
+            </span>{' '}
+            Let us know in{' '}
+            <A
+              to={{ pageName: 'repoConfigFeedback' }}
+              isExternal
+              hook="repo-config-feedback"
+            >
+              this issue
+            </A>
+          </p>
+        </Card.Content>
+      </Card>
     </div>
   )
 }
