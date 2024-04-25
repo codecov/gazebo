@@ -35,6 +35,22 @@ export const CardWithHeader: Story = {
   ),
 }
 
+export const CardWithHeaderVariant: Story = {
+  render: () => (
+    <Card>
+      <Card.Header>
+        <Card.Title>A Title</Card.Title>
+        <Card.Title size="base">A Smaller Title</Card.Title>
+      </Card.Header>
+      <Card.Content>
+        A smaller title can be used by setting the{' '}
+        <code className="bg-ds-gray-secondary">size</code> variant of{' '}
+        <code className="bg-ds-gray-secondary">Card.Title</code>.
+      </Card.Content>
+    </Card>
+  ),
+}
+
 export const CardWithFooter: Story = {
   render: () => (
     <Card>

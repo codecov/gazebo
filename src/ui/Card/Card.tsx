@@ -25,14 +25,24 @@ const Header = React.forwardRef<HTMLDivElement, HeaderProps>(
 )
 Header.displayName = 'Header'
 
-const title = cva(['text-lg', 'font-semibold'])
+const title = cva(['font-semibold'], {
+  variants: {
+    size: {
+      base: ['text-base'],
+      large: ['text-lg'],
+    },
+  },
+  defaultVariants: {
+    size: 'large',
+  },
+})
 interface TitleProps
   extends React.HTMLAttributes<HTMLHeadingElement>,
     VariantProps<typeof title> {}
 
 const Title = React.forwardRef<HTMLParagraphElement, TitleProps>(
-  ({ className, children, ...props }, ref) => (
-    <h3 ref={ref} className={title({ className })} {...props}>
+  ({ className, size, children, ...props }, ref) => (
+    <h3 ref={ref} className={title({ className, size })} {...props}>
       {children}
     </h3>
   )
