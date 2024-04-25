@@ -14,7 +14,7 @@ import isEmpty from 'lodash/isEmpty'
 import isNumber from 'lodash/isNumber'
 import qs from 'qs'
 import { Fragment, lazy, Suspense, useEffect, useMemo, useState } from 'react'
-import { useLocation , useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 
 import {
   ImpactedFile,
@@ -40,7 +40,7 @@ const isNumericValue = (value: string) =>
   value === 'change'
 
 export function getFilter(sorting: Array<{ id: string; desc: boolean }>) {
-  const state = sorting.at(0)
+  const state = sorting[0]
 
   if (state) {
     const direction = state?.desc
