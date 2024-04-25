@@ -114,15 +114,19 @@ describe('OtherCI', () => {
         expect(repoToken).toBeInTheDocument()
       })
 
+      it('renders token key box', async () => {
+        render(<OtherCI />, { wrapper })
+
+        const tokenKey = await screen.findByTestId('token-key')
+        expect(tokenKey).toBeInTheDocument()
+      })
+
       it('renders token box', async () => {
         setup({ hasOrgUploadToken: true })
         render(<OtherCI />, { wrapper })
 
-        const codecovToken = await screen.findByText(/CODECOV_TOKEN/)
-        expect(codecovToken).toBeInTheDocument()
-
-        const tokenValue = await screen.findAllByText(/org-token-asdf-1234/)
-        expect(tokenValue).toHaveLength(2)
+        const tokenValue = await screen.findByText('org-token-asdf-1234')
+        expect(tokenValue).toBeInTheDocument()
       })
     })
 
@@ -164,13 +168,6 @@ describe('OtherCI', () => {
         'href',
         'https://docs.codecov.com/docs/codecov-uploader'
       )
-    })
-
-    it('renders instruction box', async () => {
-      render(<OtherCI />, { wrapper })
-
-      const box = await screen.findByTestId('instruction-box')
-      expect(box).toBeInTheDocument()
     })
 
     it('renders example blurb', async () => {
@@ -225,6 +222,14 @@ describe('OtherCI', () => {
         expect(box).not.toBeInTheDocument()
       })
     })
+
+    it('renders instruction box', async () => {
+      setup({})
+      render(<OtherCI />, { wrapper })
+
+      const box = await screen.findByTestId('instruction-box')
+      expect(box).toBeInTheDocument()
+    })
   })
 
   describe('step four', () => {
@@ -239,6 +244,13 @@ describe('OtherCI', () => {
 
   describe('ending', () => {
     beforeEach(() => setup({}))
+    it('renders wrap-up', async () => {
+      render(<OtherCI />, { wrapper })
+
+      const title = await screen.findByText(/Once merged to the default branch/)
+      expect(title).toBeInTheDocument()
+    })
+
     it('renders quick start link', async () => {
       render(<OtherCI />, { wrapper })
 
@@ -248,7 +260,8 @@ describe('OtherCI', () => {
         'https://docs.codecov.com/docs/quick-start'
       )
     })
-    it('renders body', async () => {
+
+    it('renders feedback link', async () => {
       render(<OtherCI />, { wrapper })
 
       const body = await screen.findByText(/How was your setup experience/)
