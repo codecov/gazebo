@@ -55,12 +55,12 @@ function GitHubActions() {
             </A>
           </Card.Title>
         </Card.Header>
-        <Card.Content>
+        <Card.Content className="flex flex-col gap-4">
           <p className="text-base">
             Admin required to access repo settings &gt; secrets and variable
             &gt; actions
           </p>
-          <div className="mt-4 flex gap-4">
+          <div className="flex gap-4">
             <pre className="flex basis-1/3 items-center justify-between gap-2 rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
               <div
                 className="w-0 flex-1 overflow-hidden"

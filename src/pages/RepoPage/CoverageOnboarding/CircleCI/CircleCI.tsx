@@ -6,6 +6,7 @@ import { useRepo } from 'services/repo'
 import { useFlags } from 'shared/featureFlags'
 import { providerToInternalProvider } from 'shared/utils/provider'
 import A from 'ui/A'
+import { Card } from 'ui/Card'
 import CopyClipboard from 'ui/CopyClipboard'
 
 import ExampleBlurb from '../ExampleBlurb'
@@ -43,9 +44,9 @@ function CircleCI() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-3">
-        <div>
-          <h2 className="text-base font-semibold">
+      <Card>
+        <Card.Header>
+          <Card.Title size="base">
             Step 1: add {tokenCopy} token to{' '}
             <A
               hook="circleCIEnvVarsLink"
@@ -57,20 +58,32 @@ function CircleCI() {
             >
               environment variables
             </A>
-          </h2>
+          </Card.Title>
+        </Card.Header>
+        <Card.Content className="flex flex-col gap-4">
           <p className="text-base">
-            Environment variables in CircleCI can be found in project&apos;s
-            settings.
+            Environment variables in CircleCI can be found in project settings.
           </p>
-        </div>
-        <pre className="flex items-center gap-2 overflow-auto rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          CODECOV_TOKEN={uploadToken}
-          <CopyClipboard string={uploadToken ?? ''} />
-        </pre>
-      </div>
-      <div className="flex flex-col gap-3">
-        <div className="text-base">
-          <h2 className="font-semibold">
+          <div className="flex gap-4">
+            <pre className="flex basis-1/3 items-center justify-between gap-2 rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
+              <div
+                className="w-0 flex-1 overflow-hidden"
+                data-testid="token-key"
+              >
+                CODECOV_TOKEN
+              </div>
+              <CopyClipboard string="CODECOV_TOKEN" />
+            </pre>
+            <pre className="flex basis-2/3 items-center justify-between gap-2 rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
+              <div className="w-0 flex-1 overflow-hidden">{uploadToken}</div>
+              <CopyClipboard string={uploadToken ?? ''} />
+            </pre>
+          </div>
+        </Card.Content>
+      </Card>
+      <Card>
+        <Card.Header>
+          <Card.Title size="base">
             Step 2: add Codecov orb to CircleCI{' '}
             <A
               hook="circleCIyamlLink"
@@ -82,28 +95,20 @@ function CircleCI() {
             >
               config.yml
             </A>
-          </h2>
-          <p>
+          </Card.Title>
+        </Card.Header>
+        <Card.Content className="flex flex-col gap-4">
+          <p className="text-base">
             Add the following to your .circleci/config.yaml and push changes to
             repository.
           </p>
-        </div>
-        <div className="flex items-start justify-between overflow-auto whitespace-pre-line rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          <pre className="whitespace-pre">{orbsString}</pre>
-          <CopyClipboard string={orbsString} />
-        </div>
-        <small>
-          For more, see Codecov specific{' '}
-          <A
-            to={{ pageName: 'circleCIOrbs' }}
-            isExternal
-            hook="circleCIOrbsLink"
-          >
-            CircleCI Documentation
-          </A>
-        </small>
-      </div>
-      <ExampleBlurb />
+          <div className="flex items-start justify-between overflow-auto whitespace-pre-line rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
+            <pre className="whitespace-pre">{orbsString}</pre>
+            <CopyClipboard string={orbsString} />
+          </div>
+          <ExampleBlurb />
+        </Card.Content>
+      </Card>
       <div>
         <p>
           After you committed your changes and ran the repo&apos;s CI/CD

@@ -132,9 +132,7 @@ describe('CircleCI', () => {
         setup({ hasOrgUploadToken: true })
         render(<CircleCI />, { wrapper })
 
-        const token = await screen.findByText(
-          /CODECOV_TOKEN=org-token-asdf-1234/
-        )
+        const token = await screen.findByText('org-token-asdf-1234')
         expect(token).toBeInTheDocument()
       })
     })
@@ -152,9 +150,7 @@ describe('CircleCI', () => {
         setup({})
         render(<CircleCI />, { wrapper })
 
-        const token = await screen.findByText(
-          /CODECOV_TOKEN=repo-token-jkl;-7890/
-        )
+        const token = await screen.findByText('repo-token-jkl;-7890')
         expect(token).toBeInTheDocument()
       })
     })
