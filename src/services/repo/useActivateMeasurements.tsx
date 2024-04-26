@@ -94,6 +94,11 @@ export function useActivateMeasurements({
 
       queryClient.invalidateQueries([
         'BackfillFlagMemberships',
+        provider,
+        owner,
+        repo,
+      ])
+      queryClient.invalidateQueries([
         'BackfillComponentMemberships',
         provider,
         owner,
@@ -101,9 +106,11 @@ export function useActivateMeasurements({
       ])
     },
     onError: () => {
+      const measurementString =
+        measurementType === 'FLAG_COVERAGE' ? 'flag' : 'component'
       renderToast({
         type: 'error',
-        title: 'Error activating flag measurements',
+        title: `Error activating ${measurementString} measurements`,
         content:
           'Please try again. If the error persists please contact support',
         options: {

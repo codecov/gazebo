@@ -159,6 +159,12 @@ export function useStaticNavLinks() {
       text: 'Codecov Github App',
       openNewTab: true,
     },
+    codecovGithubAppSelectTarget: {
+      path: () => 'https://github.com/apps/codecov/installations/select_target',
+      isExternalLink: true,
+      text: 'Codecov Github App',
+      openNewTab: true,
+    },
     teamBot: {
       path: () => 'https://docs.codecov.com/docs/team-bot',
       isExternalLink: true,
