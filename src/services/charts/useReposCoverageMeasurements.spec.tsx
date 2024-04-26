@@ -10,19 +10,19 @@ const mockReposMeasurements = {
     measurements: [
       {
         timestamp: '2023-01-01T00:00:00+00:00',
-        max: 85,
+        avg: 85,
       },
       {
         timestamp: '2023-01-02T00:00:00+00:00',
-        max: 80,
+        avg: 80,
       },
       {
         timestamp: '2023-01-03T00:00:00+00:00',
-        max: 90,
+        avg: 90,
       },
       {
         timestamp: '2023-01-04T00:00:00+00:00',
-        max: 100,
+        avg: 100,
       },
     ],
   },
@@ -78,19 +78,19 @@ describe('useReposCoverageMeasurements', () => {
         measurements: [
           {
             timestamp: '2023-01-01T00:00:00+00:00',
-            max: 85,
+            avg: 85,
           },
           {
             timestamp: '2023-01-02T00:00:00+00:00',
-            max: 80,
+            avg: 80,
           },
           {
             timestamp: '2023-01-03T00:00:00+00:00',
-            max: 90,
+            avg: 90,
           },
           {
             timestamp: '2023-01-04T00:00:00+00:00',
-            max: 100,
+            avg: 100,
           },
         ],
       }
