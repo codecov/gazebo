@@ -74,6 +74,9 @@ export const LoadingTable = () => {
             </tr>
           ))}
         </thead>
+        <tbody>
+          <br />
+        </tbody>
       </table>
     </div>
   )
@@ -266,7 +269,6 @@ const ComponentTable = memo(function Table({
             </tr>
           ))}
         </thead>
-
         <tbody data-testid="body-row">
           {isLoading ? (
             <tr>
@@ -285,6 +287,10 @@ const ComponentTable = memo(function Table({
               </tr>
             ))
           )}
+          {
+            /* Adds an extra line beneath the header row for the special case that the table is empty  */
+            !tableData.length ? <br /> : null
+          }
         </tbody>
       </table>
     </div>
