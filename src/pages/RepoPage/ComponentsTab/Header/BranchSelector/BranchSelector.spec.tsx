@@ -203,7 +203,7 @@ describe('BranchSelector', () => {
   describe('with populated data', () => {
     it('renders the branch selector', async () => {
       const { queryClient } = setup()
-      render(<BranchSelector />, {
+      render(<BranchSelector isDisabled={false} />, {
         wrapper: wrapper(queryClient),
       })
 
@@ -213,7 +213,7 @@ describe('BranchSelector', () => {
 
     it('renders default branch as selected branch', async () => {
       const { queryClient } = setup()
-      render(<BranchSelector />, {
+      render(<BranchSelector isDisabled={false} />, {
         wrapper: wrapper(queryClient),
       })
 
@@ -226,7 +226,7 @@ describe('BranchSelector', () => {
     describe('user selects a branch', () => {
       it('updates params with selected branch', async () => {
         const { user, queryClient } = setup()
-        render(<BranchSelector />, {
+        render(<BranchSelector isDisabled={false} />, {
           wrapper: wrapper(queryClient),
         })
 
@@ -258,7 +258,7 @@ describe('BranchSelector', () => {
           isIntersecting: true,
         })
 
-        render(<BranchSelector />, {
+        render(<BranchSelector isDisabled={false} />, {
           wrapper: wrapper(queryClient),
         })
 
@@ -281,7 +281,7 @@ describe('BranchSelector', () => {
           isIntersecting: true,
         })
 
-        render(<BranchSelector />, {
+        render(<BranchSelector isDisabled={false} />, {
           wrapper: wrapper(queryClient),
         })
 
@@ -298,7 +298,7 @@ describe('BranchSelector', () => {
   describe('user searches for branch', () => {
     it('calls the api with the search value', async () => {
       const { mockSearching, user, queryClient } = setup()
-      render(<BranchSelector />, {
+      render(<BranchSelector isDisabled={false} />, {
         wrapper: wrapper(queryClient),
       })
 
@@ -319,7 +319,7 @@ describe('BranchSelector', () => {
       const { queryClient } = setup({
         nullOverview: true,
       })
-      render(<BranchSelector />, {
+      render(<BranchSelector isDisabled={false} />, {
         wrapper: wrapper(queryClient),
       })
 

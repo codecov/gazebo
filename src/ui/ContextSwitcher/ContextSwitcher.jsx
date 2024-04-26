@@ -33,27 +33,6 @@ LoadMoreTrigger.propTypes = {
   intersectionRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
 }
 
-function ModalSection({ ModalControl, ModalComponent }) {
-  const [showComponent, setShowComponent] = useState(false)
-  if (ModalControl && ModalComponent) {
-    return (
-      <>
-        <ModalControl onClick={() => setShowComponent(true)} />
-        {showComponent && (
-          <ModalComponent closeFn={() => setShowComponent(false)} />
-        )}
-      </>
-    )
-  }
-
-  return null
-}
-
-ModalSection.propTypes = {
-  ModalComponent: PropTypes.func,
-  ModalControl: PropTypes.func,
-}
-
 function ContextItem({ context, defaultOrgUsername, setToggle, owner }) {
   const { owner: contextOwner, pageName } = context
   const orgUsername = contextOwner?.username
@@ -141,8 +120,6 @@ function ContextSwitcher({
   currentUser,
   isLoading,
   onLoadMore,
-  ModalControl,
-  ModalComponent,
   activeContext,
 }) {
   const { provider } = useParams()
@@ -190,13 +167,18 @@ function ContextSwitcher({
         role="listbox"
         aria-labelledby="listbox-label"
       >
-        <li className="flex justify-between border-b border-ds-gray-secondary px-4 py-3 text-xs font-semibold">
-          <span>Switch context</span>
-          <ModalSection
-            ModalControl={ModalControl}
-            ModalComponent={ModalComponent}
-          />
-        </li>
+        {isGh ? (
+          <li className="flex justify-between border-b border-ds-gray-secondary px-4 py-3">
+            <A to={{ pageName: 'codecovAppInstallation' }}>
+              <Icon name="plus-circle" />
+              Add GitHub organization
+            </A>
+          </li>
+        ) : (
+          <li className="flex justify-between border-b border-ds-gray-secondary px-4 py-3 text-xs font-semibold">
+            <span>Switch context</span>
+          </li>
+        )}
         {contexts.map((context) => (
           <ContextItem
             defaultOrgUsername={defaultOrgUsername}
@@ -212,14 +194,6 @@ function ContextSwitcher({
           intersectionRef={intersectionRef}
           onLoadMore={onLoadMore}
         />
-        {isGh && (
-          <li className="px-4 py-2 text-ds-blue-darker">
-            <A to={{ pageName: 'codecovAppInstallation' }}>
-              <Icon name="plus-circle" />
-              Add GitHub organization
-            </A>
-          </li>
-        )}
       </ul>
     </div>
   )
@@ -239,14 +213,12 @@ ContextSwitcher.propTypes = {
   currentUser: PropTypes.shape({
     defaultOrgUsername: PropTypes.string,
   }),
-  onLoadMore: PropTypes.func,
-  isLoading: PropTypes.bool,
-  ModalComponent: PropTypes.func,
-  ModalControl: PropTypes.func,
   activeContext: PropTypes.shape({
     avatarUrl: PropTypes.string.isRequired,
     username: PropTypes.string.isRequired,
   }),
+  onLoadMore: PropTypes.func,
+  isLoading: PropTypes.bool,
 }
 
 export default ContextSwitcher

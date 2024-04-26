@@ -35,6 +35,50 @@ interface ComponentsTableHelper {
   delete: React.ReactElement | null
 }
 
+export const LoadingTable = () => {
+  const data = useMemo(() => [], [])
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  })
+
+  return (
+    <div className="tableui">
+      <table>
+        <colgroup>
+          <col className="@sm/table:w-4/12" />
+          <col className="@sm/table:w-3/12" />
+          <col className="@sm/table:w-3/12" />
+          <col className="@sm/table:w-2/12" />
+          <col className="@sm/table:w-3/12" />
+        </colgroup>
+        <thead data-testid="header-row">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <th key={header.id}>
+                  <div
+                    className={cs('flex flex-row', {
+                      'justify-end':
+                        header.id !== 'name' && header.id !== 'lastUploaded',
+                    })}
+                  >
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+                  </div>
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+      </table>
+    </div>
+  )
+}
+
 const columnHelper = createColumnHelper<ComponentsTableHelper>()
 
 const columns = [
@@ -125,7 +169,7 @@ function createTableData({
         />
       ),
       lastUploaded: (
-        <span className="flex justify-end">
+        <span className="flex justify-start">
           {lastUploaded ? formatTimeToNow(lastUploaded) : ''}
         </span>
       ),
@@ -135,6 +179,7 @@ function createTableData({
             data-testid="delete-component"
             onClick={() => setModalInfo({ componentId: name, showModal: true })}
             className="text-ds-gray-tertiary hover:text-ds-gray-senary"
+            aria-label={'delete ' + name}
           >
             <Icon size="md" name="trash" variant="outline" />
           </button>
@@ -199,7 +244,8 @@ const ComponentTable = memo(function Table({
                 >
                   <div
                     className={cs('flex flex-row', {
-                      'justify-end': header.id !== 'name',
+                      'justify-end':
+                        header.id !== 'name' && header.id !== 'lastUploaded',
                     })}
                   >
                     {flexRender(
