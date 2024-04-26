@@ -58,7 +58,7 @@ const Header = ({
   )
 
   return (
-    <div className="flex flex-col justify-end divide-y divide-solid divide-ds-gray-secondary">
+    <div className="flex flex-col justify-end">
       <div className="grid w-2/3 divide-y divide-solid divide-ds-gray-secondary sm:w-full sm:grid-cols-2 sm:divide-x sm:divide-y-0 md:grid-cols-4">
         <BranchSelector isDisabled={controlsDisabled} />
         <div className="flex flex-col justify-between gap-2 p-4 sm:py-0">
