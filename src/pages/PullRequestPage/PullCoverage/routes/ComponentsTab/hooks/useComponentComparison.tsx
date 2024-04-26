@@ -51,6 +51,11 @@ const RepositorySchema = z.object({
         MissingHeadCommitSchema,
         MissingHeadReportSchema,
       ]),
+      head: z
+        .object({
+          branchName: z.string().nullable(),
+        })
+        .nullable(),
     })
     .nullable(),
 })

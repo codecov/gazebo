@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom'
 import { Branch, useBranch, useBranches } from 'services/branches'
 import { useLocationParams } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
+import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Select from 'ui/Select'
 
@@ -21,7 +22,13 @@ const defaultQueryParams = {
 const getDecodedBranch = (branch?: string) =>
   !!branch ? decodeURIComponent(branch) : undefined
 
-const BranchSelector: React.FC = () => {
+interface BranchSelectorProps {
+  isDisabled: boolean | undefined
+}
+
+const BranchSelector: React.FC<BranchSelectorProps> = ({
+  isDisabled = false,
+}) => {
   const { provider, owner, repo, branch } = useParams<URLParams>()
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const [branchSearchTerm, setBranchSearchTerm] = useState<string>('')
@@ -48,7 +55,10 @@ const BranchSelector: React.FC = () => {
   })
 
   const decodedBranch = getDecodedBranch(branch)
-  const selectedBranch = decodedBranch ?? overview?.defaultBranch ?? ''
+
+  const selectedBranch =
+    // @ts-expect-error
+    decodedBranch || params.branch || overview?.defaultBranch || ''
 
   const { data: searchBranchValue } = useBranch({
     provider,
@@ -70,7 +80,7 @@ const BranchSelector: React.FC = () => {
   }
 
   return (
-    <div className="md:w-[16rem]">
+    <div className="flex flex-col justify-between gap-2 p-4 sm:py-0 md:w-[16rem]">
       <h3 className="flex items-center gap-1 text-sm font-semibold text-ds-gray-octonary">
         <span className="text-ds-gray-quinary">
           <Icon name="branch" size="sm" variant="developer" />
@@ -97,8 +107,24 @@ const BranchSelector: React.FC = () => {
             }
           }}
           onSearch={(term: string) => setBranchSearchTerm(term)}
+          disabled={isDisabled}
         />
       </span>
+      {selection?.head?.commitid && (
+        <p className="text-xs">
+          <span className="font-bold">Source:</span> latest commit{' '}
+          <A
+            to={{
+              pageName: 'commit',
+              options: { commit: selection?.head?.commitid },
+            }}
+            isExternal={false}
+            hook="components-latest-commit"
+          >
+            {selection?.head?.commitid.slice(0, 7)}
+          </A>
+        </p>
+      )}
     </div>
   )
 }

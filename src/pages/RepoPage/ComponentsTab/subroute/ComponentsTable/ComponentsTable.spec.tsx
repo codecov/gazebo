@@ -275,9 +275,7 @@ describe('ComponentsTable', () => {
       const { user } = setup({})
       render(<ComponentsTable />, { wrapper: wrapper() })
 
-      const trashIconButtons = await screen.findAllByRole('button', {
-        name: /trash/,
-      })
+      const trashIconButtons = await screen.findAllByTestId('delete-component')
       expect(trashIconButtons).toHaveLength(3)
 
       const [firstIcon] = trashIconButtons
@@ -287,8 +285,8 @@ describe('ComponentsTable', () => {
         }
       })
 
-      const deleteComponentModalText = await screen.findByText(
-        'Delete Component'
+      const deleteComponentModalText = await screen.findByTestId(
+        'delete-component-modal'
       )
       expect(deleteComponentModalText).toBeInTheDocument()
 
