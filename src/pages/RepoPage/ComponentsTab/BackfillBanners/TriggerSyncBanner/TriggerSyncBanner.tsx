@@ -22,7 +22,7 @@ function TriggerSyncBanner() {
 
   return (
     <div className="grid gap-4 pt-4">
-      <LoadingTable></LoadingTable>
+      <LoadingTable />
       <div className="flex flex-col items-center gap-1">
         <p>No data to display</p>
         <p>You will need to enable components to see related coverage data.</p>

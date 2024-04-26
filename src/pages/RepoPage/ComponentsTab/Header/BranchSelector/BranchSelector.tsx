@@ -26,7 +26,9 @@ interface BranchSelectorProps {
   isDisabled: boolean | undefined
 }
 
-const BranchSelector: React.FC<BranchSelectorProps> = ({ isDisabled }) => {
+const BranchSelector: React.FC<BranchSelectorProps> = ({
+  isDisabled = false,
+}) => {
   const { provider, owner, repo, branch } = useParams<URLParams>()
   const { params, updateParams } = useLocationParams(defaultQueryParams)
   const [branchSearchTerm, setBranchSearchTerm] = useState<string>('')
