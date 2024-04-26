@@ -32,7 +32,7 @@ describe('Analytics coverage chart', () => {
       measurements: [
         {
           timestamp: '2020-01-01T00:00:00Z',
-          max: 91.11,
+          avg: 91.11,
         },
       ],
     },
@@ -43,11 +43,11 @@ describe('Analytics coverage chart', () => {
       measurements: [
         {
           timestamp: '2020-01-01T00:00:00Z',
-          max: 90.0,
+          avg: 90.0,
         },
         {
           timestamp: '2021-01-01T00:00:00Z',
-          max: 91.11,
+          avg: 91.11,
         },
       ],
     },
@@ -65,7 +65,10 @@ describe('Analytics coverage chart', () => {
         }
 
         return res(ctx.status(200), ctx.data(mockDataPoints))
-      })
+      }),
+      graphql.query('OwnerTier', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({ owner: { tier: 'pro' } }))
+      )
     )
   }
 
@@ -88,12 +91,29 @@ describe('Analytics coverage chart', () => {
       const message = await screen.findByTitle('coverage chart')
       expect(message).toBeInTheDocument()
     })
+
+    it('renders data label', async () => {
+      setup({ hasNoData: true })
+      render(
+        <Chart
+          params={{
+            startDate: '2020-01-15',
+            endDate: '2020-01-19',
+          }}
+        />,
+        {
+          wrapper,
+        }
+      )
+
+      const label = await screen.findByText(/Data is average of selected repos/)
+      expect(label).toBeInTheDocument()
+    })
   })
 
   describe('One data point', () => {
     it('Not enough data to render', async () => {
       setup({ hasSingleData: true })
-
       render(
         <Chart
           params={{
@@ -109,6 +129,25 @@ describe('Analytics coverage chart', () => {
 
       const message = await screen.findByText(/Not enough data to render/)
       expect(message).toBeInTheDocument()
+    })
+
+    it('renders data label', async () => {
+      setup({ hasSingleData: true })
+      render(
+        <Chart
+          params={{
+            startDate: '2020-01-15',
+            endDate: '2020-01-19',
+            repositories: [],
+          }}
+        />,
+        {
+          wrapper,
+        }
+      )
+
+      const label = await screen.findByText(/Data is average of selected repos/)
+      expect(label).toBeInTheDocument()
     })
   })
 
@@ -153,6 +192,25 @@ describe('Analytics coverage chart', () => {
         'api, frontend coverage chart from Jan 01, 2020 to Jan 01, 2021, coverage change is +90%'
       )
       expect(message).toBeInTheDocument()
+    })
+
+    it('renders data label', async () => {
+      setup({ hasNoData: false, hasSingleData: false })
+      render(
+        <Chart
+          params={{
+            startDate: '2020-01-15',
+            endDate: '2020-01-19',
+            repositories: ['api', 'frontend'],
+          }}
+        />,
+        {
+          wrapper,
+        }
+      )
+
+      const label = await screen.findByText(/Data is average of selected repos/)
+      expect(label).toBeInTheDocument()
     })
   })
 })
