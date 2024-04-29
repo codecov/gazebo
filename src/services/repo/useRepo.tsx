@@ -111,8 +111,11 @@ export function useRepo({ provider, owner, repo, opts = {} }: UseRepoArgs) {
           return {
             isCurrentUserActivated: data?.owner?.isCurrentUserActivated,
             repository: null,
-            // OwnerNotActivated can only be returned if a repo is private
+            // OwnerNotActivated can only be returned if a repo is private and both
+            // coverage and BA is enabled
             isRepoPrivate: true,
+            isBundleAnalysisEnabled: true,
+            isCoverageEnabled: true,
           }
         }
 

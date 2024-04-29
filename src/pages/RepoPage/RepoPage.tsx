@@ -227,8 +227,10 @@ function RepoPage() {
     },
   })
 
-  const coverageEnabled = repoOverview?.coverageEnabled
-  const bundleAnalysisEnabled = repoOverview?.bundleAnalysisEnabled
+  const coverageEnabled =
+    repoOverview?.coverageEnabled ?? repoData?.isCoverageEnabled
+  const bundleAnalysisEnabled =
+    repoOverview?.bundleAnalysisEnabled ?? repoData?.isBundleAnalysisEnabled
   const jsOrTsPresent = repoOverview?.jsOrTsPresent
   const isCurrentUserActivated = repoData?.isCurrentUserActivated
   const isRepoActive = repoData?.repository?.active
