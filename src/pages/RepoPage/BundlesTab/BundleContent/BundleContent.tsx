@@ -1,5 +1,7 @@
 import { lazy, Suspense, useEffect } from 'react'
-import { Route, Switch, useParams } from 'react-router-dom'
+import { Switch, useParams } from 'react-router-dom'
+
+import { SentryRoute } from 'sentry'
 
 import { useBranchBundleSummary } from 'services/bundleAnalysis'
 import { metrics } from 'shared/utils/metrics'
@@ -43,10 +45,10 @@ const BundleContent: React.FC = () => {
       <Suspense fallback={<Loader />}>
         {bundleType === 'BundleAnalysisReport' ? (
           <Switch>
-            <Route path="/:provider/:owner/:repo/bundles/:branch/:bundle">
+            <SentryRoute path="/:provider/:owner/:repo/bundles/:branch/:bundle">
               <AssetsTable />
-            </Route>
-            <Route
+            </SentryRoute>
+            <SentryRoute
               path={[
                 '/:provider/:owner/:repo/bundles/:branch',
                 '/:provider/:owner/:repo/bundles/',
@@ -54,7 +56,7 @@ const BundleContent: React.FC = () => {
             >
               <InfoBanner branch={branch} bundle={bundle} />
               <AssetEmptyTable />
-            </Route>
+            </SentryRoute>
           </Switch>
         ) : bundleType === undefined && !branch ? (
           <>
