@@ -60,7 +60,9 @@ function Routes({
     bundleAnalysisPrAndCommitPages: false,
   })
 
-  const productEnabled = coverageEnabled || bundleAnalysisEnabled
+  const productEnabled =
+    (coverageEnabled || bundleAnalysisEnabled) && isCurrentUserActivated
+  console.log(productEnabled)
   const showUnauthorizedMessageCoverage =
     coverageEnabled && isRepoPrivate && !isCurrentUserActivated
   const showUnauthorizedMessageBundles =
@@ -124,12 +126,12 @@ function Routes({
             <BundlesTab />
           </SentryRoute>
         ) : null}
-        {coverageEnabled ? (
+        {coverageEnabled && isCurrentUserActivated ? (
           <SentryRoute path={`${path}/flags`} exact>
             <FlagsTab />
           </SentryRoute>
         ) : null}
-        {coverageEnabled && componentTab ? (
+        {coverageEnabled && componentTab && isCurrentUserActivated ? (
           <SentryRoute path={`${path}/components`} exact>
             <ComponentsTab />
           </SentryRoute>
