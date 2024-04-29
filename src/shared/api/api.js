@@ -55,10 +55,16 @@ function prefillMethod(method) {
     })
 }
 
-function graphql({ provider, query, variables = {}, signal }) {
+function graphql({
+  provider,
+  query,
+  variables = {},
+  signal,
+  supportsServiceless = false,
+}) {
   let uri = `${config.API_URL}/graphql/`
 
-  if (provider && isProvider(provider)) {
+  if (provider && isProvider(provider) && !supportsServiceless) {
     uri = `${config.API_URL}/graphql/${provider}`
   }
 
