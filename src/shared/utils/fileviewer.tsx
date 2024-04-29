@@ -7,12 +7,16 @@ export const LINE_TYPE = {
   PARTIAL: 'P',
 } as const
 
+export type LineType = (typeof LINE_TYPE)[keyof typeof LINE_TYPE]
+
 export const LINE_STATE = {
   COVERED: 'COVERED',
   UNCOVERED: 'UNCOVERED',
   BLANK: 'BLANK',
   PARTIAL: 'PARTIAL',
 } as const
+
+export type LineState = (typeof LINE_STATE)[keyof typeof LINE_STATE]
 
 const baseBorder = 'relative border-ds-gray-tertiary border-r'
 const afterBorder = 'after:absolute after:inset-y-0 after:right-0'
@@ -75,7 +79,7 @@ export const lineStateToLabel = {
   [LINE_STATE.UNCOVERED]: 'uncovered line of code',
   [LINE_STATE.BLANK]: 'line of code',
   [LINE_STATE.PARTIAL]: 'partial line of code',
-}
+} as const
 
 export const CODE_RENDERER_TYPE = {
   DIFF: 'DIFF',
@@ -88,12 +92,21 @@ export const CODE_RENDERER_INFO = {
 } as const
 
 // Enum from https://github.com/codecov/shared/blob/master/shared/utils/merge.py#L275-L279
-export function getLineState({ coverage }: { coverage: string }) {
-  return coverage
-    ? {
-        [LINE_TYPE.HIT]: LINE_STATE.COVERED,
-        [LINE_TYPE.MISS]: LINE_STATE.UNCOVERED,
-        [LINE_TYPE.PARTIAL]: LINE_STATE.PARTIAL,
-      }[coverage]
-    : LINE_STATE.BLANK
+export function getLineState({ coverage }: { coverage: string | null }) {
+  if (coverage === 'H' || coverage === 'M' || coverage === 'P') {
+    return {
+      [LINE_TYPE.HIT]: LINE_STATE.COVERED,
+      [LINE_TYPE.MISS]: LINE_STATE.UNCOVERED,
+      [LINE_TYPE.PARTIAL]: LINE_STATE.PARTIAL,
+    }[coverage]
+  }
+
+  return LINE_STATE.BLANK
 }
+
+export const STICKY_PADDING_SIZES = {
+  DIFF_LINE_DROPDOWN_PADDING: 356,
+  REPO_PAGE_FILE_VIEWER: 222,
+  PULL_PAGE_FILE_VIEWER: 408,
+  COMMIT_PAGE_FILE_VIEWER: 408,
+} as const

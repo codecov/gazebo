@@ -8,6 +8,8 @@ import { useScrollToLine } from '../hooks/useScrollToLine'
 
 jest.mock('../hooks/useScrollToLine')
 
+const mockedScrollToLine = useScrollToLine as jest.Mock
+
 const content = [
   { types: ['plain'], content: '      ' },
   { types: ['punctuation'], content: '...' },
@@ -16,9 +18,10 @@ const content = [
   { types: ['plain'], content: '' },
 ]
 
-const createIdString = ({ path, number }) => `#${path}-L${number}`
+const createIdString = ({ path, number }: { path: string; number: number }) =>
+  `#${path}-L${number}`
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter
     initialEntries={[
       `/gh/codecov/cool-repo/src/file.js${createIdString({
@@ -38,7 +41,7 @@ const wrapper = ({ children }) => (
 describe('DiffLine', () => {
   function setup(targeted = false) {
     const mockHandleClick = jest.fn()
-    useScrollToLine.mockImplementation(() => ({
+    mockedScrollToLine.mockImplementation(() => ({
       lineRef: () => {},
       handleClick: mockHandleClick,
       targeted,
@@ -53,22 +56,15 @@ describe('DiffLine', () => {
     })
 
     it('when coverage is null', () => {
-      const props = {
-        edgeOfFile: false,
-        headNumber: '1',
-        baseNumber: '1',
-        headCoverage: null,
-        baseCoverage: null,
-        hitCount: null,
-        hitUploadIds: null,
-      }
-
       render(
         <DiffLine
-          {...props}
+          headNumber="1"
+          baseNumber="1"
+          headCoverage={null}
+          baseCoverage={null}
+          hitCount={null}
           lineContent={content}
-          getTokenProps={() => {}}
-          getLineProps={() => {}}
+          getTokenProps={({ token, key }) => ({})}
         />,
         { wrapper }
       )
@@ -84,22 +80,15 @@ describe('DiffLine', () => {
     })
 
     it('render covered lines if there is coverage and showCoverage is true', () => {
-      const props = {
-        edgeOfFile: false,
-        headNumber: '1',
-        baseNumber: '1',
-        headCoverage: 'H',
-        baseCoverage: 'H',
-        hitCount: null,
-        hitUploadIds: null,
-      }
-
       render(
         <DiffLine
-          {...props}
+          headNumber="1"
+          baseNumber="1"
+          headCoverage="H"
+          baseCoverage="H"
+          hitCount={null}
           lineContent={content}
-          getTokenProps={() => {}}
-          getLineProps={() => {}}
+          getTokenProps={({ token, key }) => ({})}
         />,
         { wrapper }
       )
@@ -111,22 +100,15 @@ describe('DiffLine', () => {
     })
 
     it('renders hit counter when hit count is passed', () => {
-      const props = {
-        edgeOfFile: false,
-        headNumber: '1',
-        baseNumber: '1',
-        headCoverage: 'H',
-        baseCoverage: 'H',
-        hitCount: 18,
-        hitUploadIds: [0],
-      }
-
       render(
         <DiffLine
-          {...props}
+          headNumber="1"
+          baseNumber="1"
+          headCoverage="H"
+          baseCoverage="H"
+          hitCount={18}
           lineContent={content}
-          getTokenProps={() => {}}
-          getLineProps={() => {}}
+          getTokenProps={({ token, key }) => ({})}
         />,
         { wrapper }
       )
@@ -142,22 +124,15 @@ describe('DiffLine', () => {
     })
 
     it('renders covered lines if there is coverage and showCoverage is true', () => {
-      const props = {
-        edgeOfFile: false,
-        headNumber: '1',
-        baseNumber: '1',
-        headCoverage: 'H',
-        baseCoverage: null,
-        hitCount: null,
-        hitUploadIds: null,
-      }
-
       render(
         <DiffLine
-          {...props}
+          headNumber="1"
+          baseNumber="1"
+          headCoverage="H"
+          baseCoverage={null}
+          hitCount={null}
           lineContent={content}
-          getTokenProps={() => {}}
-          getLineProps={() => {}}
+          getTokenProps={({ token, key }) => ({})}
         />,
         { wrapper }
       )
@@ -169,22 +144,15 @@ describe('DiffLine', () => {
     })
 
     it('renders hit counter when hit count is passed', () => {
-      const props = {
-        edgeOfFile: false,
-        headNumber: '1',
-        baseNumber: '1',
-        headCoverage: 'H',
-        baseCoverage: null,
-        hitCount: 18,
-        hitUploadIds: [0],
-      }
-
       render(
         <DiffLine
-          {...props}
+          headNumber="1"
+          baseNumber="1"
+          headCoverage="H"
+          baseCoverage={null}
+          hitCount={18}
           lineContent={content}
-          getTokenProps={() => {}}
-          getLineProps={() => {}}
+          getTokenProps={({ token, key }) => ({})}
         />,
         { wrapper }
       )
@@ -200,22 +168,15 @@ describe('DiffLine', () => {
     })
 
     it('render uncovered line', () => {
-      const props = {
-        edgeOfFile: false,
-        headNumber: '1',
-        baseNumber: '1',
-        headCoverage: 'M',
-        baseCoverage: 'M',
-        hitCount: null,
-        hitUploadIds: null,
-      }
-
       render(
         <DiffLine
-          {...props}
+          headNumber="1"
+          baseNumber="1"
+          headCoverage="M"
+          baseCoverage="M"
+          hitCount={null}
           lineContent={content}
-          getTokenProps={() => {}}
-          getLineProps={() => {}}
+          getTokenProps={({ token, key }) => ({})}
         />,
         { wrapper }
       )
@@ -225,22 +186,15 @@ describe('DiffLine', () => {
     })
 
     it('render uncovered select icon', () => {
-      const props = {
-        edgeOfFile: false,
-        headNumber: '1',
-        baseNumber: '1',
-        headCoverage: 'M',
-        baseCoverage: 'M',
-        hitCount: null,
-        hitUploadIds: null,
-      }
-
       render(
         <DiffLine
-          {...props}
+          headNumber="1"
+          baseNumber="1"
+          headCoverage="M"
+          baseCoverage="M"
+          hitCount={null}
           lineContent={content}
-          getTokenProps={() => {}}
-          getLineProps={() => {}}
+          getTokenProps={({ token, key }) => ({})}
         />,
         { wrapper }
       )
@@ -250,22 +204,15 @@ describe('DiffLine', () => {
     })
 
     it('renders hit counter when hit count is passed', () => {
-      const props = {
-        edgeOfFile: false,
-        headNumber: '1',
-        baseNumber: '1',
-        headCoverage: 'M',
-        baseCoverage: 'M',
-        hitCount: 18,
-        hitUploadIds: [0],
-      }
-
       render(
         <DiffLine
-          {...props}
+          headNumber="1"
+          baseNumber="1"
+          headCoverage="M"
+          baseCoverage="M"
+          hitCount={18}
           lineContent={content}
-          getTokenProps={() => {}}
-          getLineProps={() => {}}
+          getTokenProps={({ token, key }) => ({})}
         />,
         { wrapper }
       )
@@ -281,22 +228,15 @@ describe('DiffLine', () => {
     })
 
     it('renders uncovered line', () => {
-      const props = {
-        edgeOfFile: false,
-        headNumber: '1',
-        baseNumber: '1',
-        headCoverage: null,
-        baseCoverage: 'M',
-        hitCount: null,
-        hitUploadIds: null,
-      }
-
       render(
         <DiffLine
-          {...props}
+          headNumber="1"
+          baseNumber="1"
+          headCoverage={null}
+          baseCoverage="M"
+          hitCount={null}
           lineContent={content}
-          getTokenProps={() => {}}
-          getLineProps={() => {}}
+          getTokenProps={({ token, key }) => ({})}
         />,
         { wrapper }
       )
@@ -305,22 +245,15 @@ describe('DiffLine', () => {
     })
 
     it('does not render hit counter when hit count is passed', () => {
-      const props = {
-        edgeOfFile: false,
-        headNumber: '1',
-        baseNumber: '1',
-        headCoverage: null,
-        baseCoverage: 'M',
-        hitCount: 18,
-        hitUploadIds: [0],
-      }
-
       render(
         <DiffLine
-          {...props}
+          headNumber="1"
+          baseNumber="1"
+          headCoverage={null}
+          baseCoverage="M"
+          hitCount={18}
           lineContent={content}
-          getTokenProps={() => {}}
-          getLineProps={() => {}}
+          getTokenProps={({ token, key }) => ({})}
         />,
         { wrapper }
       )
@@ -336,22 +269,15 @@ describe('DiffLine', () => {
     })
 
     it('render partial lines', () => {
-      const props = {
-        edgeOfFile: false,
-        headNumber: '1',
-        baseNumber: '1',
-        headCoverage: 'P',
-        baseCoverage: 'P',
-        hitCount: null,
-        hitUploadIds: null,
-      }
-
       render(
         <DiffLine
-          {...props}
+          headNumber="1"
+          baseNumber="1"
+          headCoverage="P"
+          baseCoverage="P"
+          hitCount={null}
           lineContent={content}
-          getTokenProps={() => {}}
-          getLineProps={() => {}}
+          getTokenProps={({ token, key }) => ({})}
         />,
         { wrapper }
       )
@@ -360,22 +286,15 @@ describe('DiffLine', () => {
     })
 
     it('render partial select icon', () => {
-      const props = {
-        edgeOfFile: false,
-        headNumber: '1',
-        baseNumber: '1',
-        headCoverage: 'P',
-        baseCoverage: 'P',
-        hitCount: null,
-        hitUploadIds: null,
-      }
-
       render(
         <DiffLine
-          {...props}
+          headNumber="1"
+          baseNumber="1"
+          headCoverage="P"
+          baseCoverage="P"
+          hitCount={null}
           lineContent={content}
-          getTokenProps={() => {}}
-          getLineProps={() => {}}
+          getTokenProps={({ token, key }) => ({})}
         />,
         { wrapper }
       )
@@ -384,22 +303,15 @@ describe('DiffLine', () => {
     })
 
     it('renders hit counter when hit count is passed', () => {
-      const props = {
-        edgeOfFile: false,
-        headNumber: '1',
-        baseNumber: '1',
-        headCoverage: 'P',
-        baseCoverage: 'P',
-        hitCount: 18,
-        hitUploadIds: [0],
-      }
-
       render(
         <DiffLine
-          {...props}
+          headNumber="1"
+          baseNumber="1"
+          headCoverage="P"
+          baseCoverage="P"
+          hitCount={18}
           lineContent={content}
-          getTokenProps={() => {}}
-          getLineProps={() => {}}
+          getTokenProps={({ token, key }) => ({})}
         />,
         { wrapper }
       )
@@ -415,15 +327,6 @@ describe('DiffLine', () => {
     })
 
     it('render partial line', () => {
-      const props = {
-        headNumber: '1',
-        baseNumber: '1',
-        headCoverage: 'P',
-        baseCoverage: null,
-        hitCount: null,
-        hitUploadIds: null,
-      }
-
       const content = [
         { types: ['plain'], content: '' },
         { types: ['punctuation'], content: '+' },
@@ -434,10 +337,13 @@ describe('DiffLine', () => {
 
       render(
         <DiffLine
-          {...props}
+          headNumber="1"
+          baseNumber="1"
+          headCoverage="P"
+          baseCoverage={null}
+          hitCount={null}
           lineContent={content}
-          getTokenProps={() => {}}
-          getLineProps={() => {}}
+          getTokenProps={({ token, key }) => ({})}
         />,
         { wrapper }
       )
@@ -452,22 +358,16 @@ describe('DiffLine', () => {
     it('calls handle click function', async () => {
       const { mockHandleClick } = setup(true)
       const user = userEvent.setup()
-      const props = {
-        edgeOfFile: false,
-        headNumber: '1',
-        baseNumber: '2',
-        headCoverage: null,
-        baseCoverage: null,
-        hitCount: null,
-        hitUploadIds: null,
-      }
 
       render(
         <DiffLine
-          {...props}
+          headNumber="1"
+          baseNumber="2"
+          headCoverage={null}
+          baseCoverage={null}
+          hitCount={null}
           lineContent={content}
-          getTokenProps={() => {}}
-          getLineProps={() => {}}
+          getTokenProps={({ token, key }) => ({})}
         />,
         { wrapper }
       )
@@ -485,22 +385,15 @@ describe('DiffLine', () => {
     })
 
     it('changes the font to bold', () => {
-      const props = {
-        edgeOfFile: false,
-        headNumber: '1',
-        baseNumber: '2',
-        headCoverage: null,
-        baseCoverage: null,
-        hitCount: null,
-        hitUploadIds: null,
-      }
-
       render(
         <DiffLine
-          {...props}
+          headNumber="1"
+          baseNumber="2"
+          headCoverage={null}
+          baseCoverage={null}
+          hitCount={null}
           lineContent={content}
-          getTokenProps={() => {}}
-          getLineProps={() => {}}
+          getTokenProps={({ token, key }) => ({})}
         />,
         { wrapper }
       )
