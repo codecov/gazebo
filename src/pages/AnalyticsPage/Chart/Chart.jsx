@@ -2,6 +2,7 @@ import { format } from 'date-fns'
 import PropTypes from 'prop-types'
 
 import CoverageAreaChart from 'ui/CoverageAreaChart'
+import Icon from 'ui/Icon'
 
 import { useCoverage } from './useCoverage'
 
@@ -36,15 +37,21 @@ function Chart({ params }) {
   })
 
   return (
-    <CoverageAreaChart
-      axisLabelFunc={data?.coverageAxisLabel}
-      data={data?.coverage}
-      title={`${repos?.join(', ')} coverage chart`}
-      desc={desc}
-      renderAreaChart={isPreviousData || isSuccess}
-      aproxWidth={260.5}
-      aproxHeight={47.5}
-    />
+    <>
+      <p className="flex items-center gap-1 self-end text-sm text-ds-gray-senary">
+        <Icon name="informationCircle" size="sm" />
+        Data is average of selected repos
+      </p>
+      <CoverageAreaChart
+        axisLabelFunc={data?.coverageAxisLabel}
+        data={data?.coverage}
+        title={`${repos?.join(', ')} coverage chart`}
+        desc={desc}
+        renderAreaChart={isPreviousData || isSuccess}
+        aproxWidth={260.5}
+        aproxHeight={47.5}
+      />
+    </>
   )
 }
 

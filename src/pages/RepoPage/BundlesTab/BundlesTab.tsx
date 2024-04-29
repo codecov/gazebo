@@ -1,5 +1,7 @@
 import { lazy, Suspense } from 'react'
-import { Route, Switch, useParams } from 'react-router-dom'
+import { Switch, useParams } from 'react-router-dom'
+
+import { SentryRoute } from 'sentry'
 
 import { useRepoOverview } from 'services/repo'
 import Spinner from 'ui/Spinner'
@@ -37,13 +39,13 @@ const BundlesTab: React.FC = () => {
     return (
       <>
         <Switch>
-          <Route
+          <SentryRoute
             path={[`${path}/new`, `${path}/new/rollup`, `${path}/new/webpack`]}
           >
             <Suspense fallback={<Loader />}>
               <BundleOnboarding />
             </Suspense>
-          </Route>
+          </SentryRoute>
         </Switch>
       </>
     )
