@@ -56,7 +56,10 @@ function useRepoComponentsTable(isDesc = false) {
   const isSearching = Boolean(params?.components?.length)
   const { after, interval } = createMeasurementVariables(
     // @ts-expect-error Need to type useLocationParams
-    params?.historicalTrend ?? TIME_OPTION_VALUES.LAST_3_MONTHS,
+    params?.historicalTrend
+      ? // @ts-expect-error
+        params.historicalTrend
+      : TIME_OPTION_VALUES.LAST_3_MONTHS,
     repoData?.repository?.oldestCommitAt ?? undefined
   )
 
