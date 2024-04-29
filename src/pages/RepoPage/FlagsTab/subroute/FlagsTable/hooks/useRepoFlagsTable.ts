@@ -56,7 +56,8 @@ function useRepoFlagsTable(isDesc: boolean) {
   const { afterDate, interval } = createMeasurementVariables(
     // @ts-expect-errors, useLocation params needs to be updated to have full types
     params?.historicalTrend
-      ? params.historicalTrend
+      ? // @ts-expect-errors
+        params.historicalTrend
       : TIME_OPTION_VALUES.LAST_3_MONTHS,
     repoData?.repository?.oldestCommitAt ?? undefined
   )
