@@ -1,13 +1,11 @@
-import { useState } from 'react'
+import { UseFormSetValue } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
-import { z } from 'zod'
 
 import {
-  IndividualPlanSchema,
+  IndividualPlan,
   useAccountDetails,
   useAvailablePlans,
 } from 'services/account'
-import { TierNames } from 'services/tier'
 import {
   canApplySentryUpgrade,
   findProPlans,
@@ -20,13 +18,13 @@ import {
 import { TEAM_PLAN_MAX_ACTIVE_USERS } from 'shared/utils/upgradeForm'
 import OptionButton from 'ui/OptionButton'
 
-import { PlanTiers, TierName } from '../constants'
-import { usePlanParams } from '../hooks/usePlanParams'
+import { TierName } from '../constants'
+import { UpgradeFormFields } from '../UpgradeForm'
 
 interface PlanTypeOptionsProps {
   multipleTiers: boolean
-  setFormValue: (x: string, y: string) => void
-  setSelectedPlan: (x: z.infer<typeof IndividualPlanSchema>) => void
+  setFormValue: UseFormSetValue<UpgradeFormFields>
+  setSelectedPlan: (x: IndividualPlan) => void
   newPlan: string
 }
 
@@ -40,7 +38,6 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { proPlanYear, proPlanMonth } = findProPlans({ plans })
-  const planParam = usePlanParams()
 
   const { sentryPlanYear, sentryPlanMonth } = findSentryPlans({ plans })
   const { teamPlanYear, teamPlanMonth } = findTeamPlans({
@@ -54,18 +51,14 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   const yearlyProPlan = isSentryUpgrade ? sentryPlanYear : proPlanYear
   const monthlyProPlan = isSentryUpgrade ? sentryPlanMonth : proPlanMonth
 
+  const currentFormValue = newPlan
   let planOption = null
-  if (
-    (hasTeamPlans && planParam === TierNames.TEAM) ||
-    isTeamPlan(plan?.value)
-  ) {
+  if (isTeamPlan(currentFormValue)) {
     planOption = TierName.TEAM
   } else {
     planOption = TierName.PRO
   }
 
-  const [option, setOption] = useState<PlanTiers>(planOption)
-  const currentFormValue = newPlan
   const monthlyPlan = isMonthlyPlan(currentFormValue)
   if (hasTeamPlans && multipleTiers) {
     return (
@@ -74,7 +67,7 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
         <div className="inline-flex items-center gap-2">
           <OptionButton
             type="button"
-            active={option}
+            active={planOption}
             onChange={({ text }) => {
               if (text === TierName.PRO) {
                 if (monthlyPlan) {
@@ -93,7 +86,6 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
                   setFormValue('newPlan', teamPlanYear?.value)
                 }
               }
-              setOption(text)
             }}
             options={[
               {
@@ -104,7 +96,7 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
               },
             ]}
           />
-          {option === TierName.TEAM && (
+          {planOption === TierName.TEAM && (
             <p>Up to {TEAM_PLAN_MAX_ACTIVE_USERS} users</p>
           )}
         </div>

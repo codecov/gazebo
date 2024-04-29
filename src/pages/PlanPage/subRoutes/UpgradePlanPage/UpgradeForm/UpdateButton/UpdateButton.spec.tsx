@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { graphql, rest } from 'msw'
+import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -88,18 +88,6 @@ describe('UpdateButton', () => {
         } else {
           return res(ctx.status(200), ctx.json(mockAccountDetailsProMonthly))
         }
-      }),
-      graphql.query('CurrentUser', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
-            me: {
-              trackingMetadata: {
-                ownerid: 12345,
-              },
-            },
-          })
-        )
       })
     )
 
@@ -208,11 +196,15 @@ describe('UpdateButton', () => {
         expect(button).toBeInTheDocument()
 
         expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-          'billing_change.user.visited.page'
+          'bundles_tab.bundle_details.visited_page',
+          undefined,
+          undefined
         )
         await user.click(button)
         expect(Sentry.metrics.increment).toHaveBeenCalledWith(
-          'billing_change.user.checkout.from.page'
+          'billing_change.user.checkout_from_page',
+          undefined,
+          undefined
         )
       })
 
@@ -233,17 +225,17 @@ describe('UpdateButton', () => {
         expect(button).toBeInTheDocument()
         await user.click(button)
         expect(Sentry.metrics.gauge).toHaveBeenCalledWith(
-          'billing_change.user.team.seats.change',
+          'billing_change.user.seats_change',
           -3,
           {
-            tags: { ownerId: 12345 },
+            tags: { plan: 'team' },
           }
         )
         expect(Sentry.metrics.gauge).toHaveBeenCalledWith(
-          'billing_change.user.pro.seats.change',
+          'billing_change.user.seats_change',
           4,
           {
-            tags: { ownerId: 12345 },
+            tags: { plan: 'pro' },
           }
         )
       })
@@ -265,17 +257,17 @@ describe('UpdateButton', () => {
         expect(button).toBeInTheDocument()
         await user.click(button)
         expect(Sentry.metrics.gauge).toHaveBeenCalledWith(
-          'billing_change.user.team.seats.change',
+          'billing_change.user.seats_change',
           2,
           {
-            tags: { ownerId: 12345 },
+            tags: { plan: 'team' },
           }
         )
         expect(Sentry.metrics.gauge).toHaveBeenCalledWith(
-          'billing_change.user.pro.seats.change',
+          'billing_change.user.seats_change',
           -4,
           {
-            tags: { ownerId: 12345 },
+            tags: { plan: 'pro' },
           }
         )
       })
@@ -297,10 +289,10 @@ describe('UpdateButton', () => {
         expect(button).toBeInTheDocument()
         await user.click(button)
         expect(Sentry.metrics.gauge).toHaveBeenCalledWith(
-          'billing_change.user.team.seats.change',
+          'billing_change.user.seats_change',
           2,
           {
-            tags: { ownerId: 12345 },
+            tags: { plan: 'team' },
           }
         )
       })
@@ -322,10 +314,10 @@ describe('UpdateButton', () => {
         expect(button).toBeInTheDocument()
         await user.click(button)
         expect(Sentry.metrics.gauge).toHaveBeenCalledWith(
-          'billing_change.user.pro.seats.change',
+          'billing_change.user.seats_change',
           -3,
           {
-            tags: { ownerId: 12345 },
+            tags: { plan: 'pro' },
           }
         )
       })

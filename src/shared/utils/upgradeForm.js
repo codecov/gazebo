@@ -20,6 +20,8 @@ export const MIN_SENTRY_SEATS = 5
 export const SENTRY_PRICE = 29
 export const TEAM_PLAN_MAX_ACTIVE_USERS = 10
 
+export const UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE = `Team plan is only available for ${TEAM_PLAN_MAX_ACTIVE_USERS} seats or fewer.`
+
 export function extractSeats({
   quantity,
   value,
@@ -65,7 +67,7 @@ export const getSchema = ({
         ) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: `Team plan is only available for ${TEAM_PLAN_MAX_ACTIVE_USERS} or less users`,
+            message: UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE,
           })
         }
 

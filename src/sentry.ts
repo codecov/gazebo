@@ -72,12 +72,11 @@ export const setupSentry = ({
 
   // configure sentry product integrations
   const replay = Sentry.replayIntegration()
-  const metrics = Sentry.metrics.metricsAggregatorIntegration()
   const tracing = Sentry.reactRouterV5BrowserTracingIntegration({
     history,
   })
 
-  const integrations = [metrics, replay, tracing]
+  const integrations = [replay, tracing]
 
   // Only show feedback button in production
   // spotlight takes the place of the feedback widget in dev mode
