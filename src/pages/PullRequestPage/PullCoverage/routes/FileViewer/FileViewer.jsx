@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import ToggleHeader from 'pages/PullRequestPage/Header/ToggleHeader/ToggleHeader'
 import RawFileviewer from 'shared/RawFileviewer'
 import { usePullTreePaths } from 'shared/treePaths'
+import { STICKY_PADDING_SIZES } from 'shared/utils/fileviewer'
 import Breadcrumb from 'ui/Breadcrumb'
 
 import { usePullPageData } from '../../../hooks'
@@ -23,7 +24,7 @@ function FileViewer() {
         }
         commit={data?.pull?.head?.commitid}
         withKey={false}
-        stickyPadding={410}
+        stickyPadding={STICKY_PADDING_SIZES.PULL_PAGE_FILE_VIEWER}
       />
     </>
   )
