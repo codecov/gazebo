@@ -240,7 +240,7 @@ function RepoPage() {
   if (!refetchEnabled && !isRepoActivated) {
     setRefetchEnabled(true)
   }
-  if (!repoData?.repository) return <NotFound />
+  if (!repoData) return <NotFound />
 
   return (
     <RepoBreadcrumbProvider>
