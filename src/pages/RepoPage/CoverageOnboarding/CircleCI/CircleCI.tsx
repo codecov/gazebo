@@ -116,9 +116,10 @@ function CircleCI() {
         </Card.Header>
         <Card.Content className="flex flex-col gap-4">
           <p>
-            Once merged to you default branch, subsequent checks and PR comment
-            will have coverage reports. Additionally, you’ll find your repo
-            coverage dashboard here. If you have merged try reloading the page.
+            Once merged to your default branch, subsequent pull requests will
+            have Codecov checks and comments. Additionally, you’ll find your
+            repo coverage dashboard here. If you have merged try reloading the
+            page.
           </p>
         </Card.Content>
       </Card>

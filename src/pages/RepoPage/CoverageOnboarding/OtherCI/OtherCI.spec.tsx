@@ -237,7 +237,9 @@ describe('OtherCI', () => {
     it('renders body', async () => {
       render(<OtherCI />, { wrapper })
 
-      const body = await screen.findByText(/Once merged to you default branch,/)
+      const body = await screen.findByText(
+        /Once merged to your default branch,/
+      )
       expect(body).toBeInTheDocument()
     })
   })
