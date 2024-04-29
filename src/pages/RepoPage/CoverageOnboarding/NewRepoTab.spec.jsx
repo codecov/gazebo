@@ -13,6 +13,7 @@ import NewRepoTab from './NewRepoTab'
 jest.mock('shared/useRedirect')
 jest.mock('./GitHubActions', () => () => 'GitHubActions')
 jest.mock('./OtherCI', () => () => 'OtherCI')
+jest.mock('./ActivationBanner', () => () => 'ActivationBanner')
 
 const mockCurrentUser = {
   me: {
@@ -121,6 +122,13 @@ describe('NewRepoTab', () => {
         name: /Let's get your repo covered/,
       })
       expect(header).toBeInTheDocument()
+    })
+
+    it('renders ActivationBanner', async () => {
+      render(<NewRepoTab />, { wrapper: wrapper() })
+
+      const banner = await screen.findByText('ActivationBanner')
+      expect(banner).toBeInTheDocument()
     })
 
     describe('users provider is github', () => {
