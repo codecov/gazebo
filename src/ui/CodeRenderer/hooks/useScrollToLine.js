@@ -38,7 +38,7 @@ const useTarget = ({ location, idString }) => {
     }
   }, [location, idString, targeted])
 
-  return [targeted, setTargeted]
+  return { targeted, setTargeted }
 }
 
 export const useScrollToLine = ({
@@ -51,7 +51,7 @@ export const useScrollToLine = ({
   const location = useLocation()
   const history = useHistory()
   const idString = generateIdString({ number, path, base, head })
-  const [targeted] = useTarget({ location, idString })
+  const { targeted } = useTarget({ location, idString })
   const lineRef = useRef(null)
   const hasDoneInitialDrawRef = useRef(false)
 
