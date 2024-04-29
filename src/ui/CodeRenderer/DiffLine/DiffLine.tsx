@@ -14,14 +14,14 @@ import { useScrollToLine } from '../hooks'
 type LineContent = { types: Array<string>; content: string }
 
 export interface DiffLineProps {
-  lineContent?: Array<LineContent>
-  headNumber?: string
-  baseNumber?: string
   baseCoverage: LineType | null
-  headCoverage: LineType | null
+  baseNumber?: string
   getTokenProps: ({ token, key }: { token: LineContent; key: number }) => {}
-  path?: string
+  headCoverage: LineType | null
+  headNumber?: string
   hitCount: number | null
+  lineContent: Array<LineContent>
+  path?: string
   stickyPadding?: number
 }
 
