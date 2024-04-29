@@ -4,6 +4,7 @@ import { useRepoSettingsTeam } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import RawFileviewer from 'shared/RawFileviewer'
 import { useTreePaths } from 'shared/treePaths'
+import { STICKY_PADDING_SIZES } from 'shared/utils/fileviewer'
 import Breadcrumb from 'ui/Breadcrumb'
 
 function FileView() {
@@ -27,7 +28,7 @@ function FileView() {
         }
         commit={commit}
         sticky
-        stickyPadding={215}
+        stickyPadding={STICKY_PADDING_SIZES.REPO_PAGE_FILE_VIEWER}
         showFlagsSelect={showFlagSelector}
         showComponentsSelect
       />
