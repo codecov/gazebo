@@ -3,7 +3,7 @@ import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { PropsWithChildren, Suspense } from 'react'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import ComponentsTable from './ComponentsTable'
@@ -108,7 +108,7 @@ let testLocation: any
 const wrapper =
   (
     initialEntries = '/gh/codecov/gazebo/components'
-  ): React.FC<PropsWithChildren> =>
+  ): React.FC<React.PropsWithChildren> =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
@@ -275,9 +275,7 @@ describe('ComponentsTable', () => {
       const { user } = setup({})
       render(<ComponentsTable />, { wrapper: wrapper() })
 
-      const trashIconButtons = await screen.findAllByRole('button', {
-        name: /trash/,
-      })
+      const trashIconButtons = await screen.findAllByTestId('delete-component')
       expect(trashIconButtons).toHaveLength(3)
 
       const [firstIcon] = trashIconButtons
@@ -287,8 +285,8 @@ describe('ComponentsTable', () => {
         }
       })
 
-      const deleteComponentModalText = await screen.findByText(
-        'Delete Component'
+      const deleteComponentModalText = await screen.findByTestId(
+        'delete-component-modal'
       )
       expect(deleteComponentModalText).toBeInTheDocument()
 

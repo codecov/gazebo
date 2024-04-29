@@ -36,3 +36,5 @@ export const TimeOptions = [
   { label: 'Last 30 days', value: TIME_OPTION_VALUES.LAST_30_DAYS },
   { label: 'Last 7 days', value: TIME_OPTION_VALUES.LAST_7_DAYS },
 ] as const
+
+export type TimeOption = (typeof TimeOptions)[number]

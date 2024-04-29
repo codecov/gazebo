@@ -273,6 +273,9 @@ describe('AdminTable', () => {
 
         await user.click(button)
 
+        await waitFor(() => queryClient.isFetching())
+        await waitFor(() => !queryClient.isFetching())
+
         const { userId, body } = patchRequest
         expect(userId).toBe('1')
         expect(await body).toMatchObject({ is_admin: false })

@@ -17,14 +17,29 @@ const DeleteComponentModal = ({ isOpen, closeModal, componentId }: Props) => {
       onClose={closeModal}
       hasCloseButton={true}
       size="small"
-      title={<span className="text-lg">Delete Component</span>}
+      title={
+        <span data-testid={`remove-${componentId}`} className="text-lg">
+          Remove <span className="italic">{componentId}</span>
+        </span>
+      }
       body={
-        <p>
-          This will remove the{' '}
-          <span className="font-semibold">{componentId}</span> component from
-          the reports in app. You will also need to remove this component in
-          your CI and codecov.yaml to stop uploads.
-        </p>
+        <div>
+          <p>
+            This will remove the historical data of{' '}
+            <span className="font-semibold italic">{componentId}</span>{' '}
+            component in the app and we can’t retrieve the data.
+          </p>
+          <br></br>
+          <p>
+            <span className="font-semibold">Action required:</span> You’ll need
+            to remove{' '}
+            <span className="font-semibold italic">{componentId}</span>{' '}
+            component in your yaml file otherwise you’ll still see it in this
+            table.
+          </p>
+          <br></br>
+          <p>It will take some time to reflect this deletion.</p>
+        </div>
       }
       footer={
         <div className="flex gap-2">
@@ -38,7 +53,7 @@ const DeleteComponentModal = ({ isOpen, closeModal, componentId }: Props) => {
           </button>
           <div>
             <Button
-              hook="update-default-org"
+              hook="delete-component-modal"
               variant="danger"
               to={undefined}
               disabled={false}
@@ -48,8 +63,9 @@ const DeleteComponentModal = ({ isOpen, closeModal, componentId }: Props) => {
                 mutate({ componentId })
                 closeModal()
               }}
+              data-testid="delete-component-modal"
             >
-              Delete component
+              Remove
             </Button>
           </div>
         </div>

@@ -104,7 +104,8 @@ function DefaultOrgSelector() {
     if (
       isBasicPlan(planData?.plan?.value) &&
       selectedOrg !== currentUser?.user?.username &&
-      isNewTrial
+      isNewTrial &&
+      planData?.hasPrivateRepos
     ) {
       fireTrial({ owner: selectedOrg })
     }

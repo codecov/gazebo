@@ -62,7 +62,7 @@ function YAML({ owner }) {
               target="_blank"
               rel="noreferrer"
             >
-              learn more
+              Learn more
             </a>
           </p>
         </div>

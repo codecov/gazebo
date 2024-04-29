@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { PropsWithChildren } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import DeleteComponentModal from './DeleteComponentModal'
@@ -19,7 +18,7 @@ const server = setupServer()
 const ownerUsername = 'vox-machina'
 const repoName = 'vestiges'
 
-const wrapper: React.FC<PropsWithChildren> = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter
       initialEntries={[`/gh/${ownerUsername}/${repoName}/components`]}
@@ -71,12 +70,12 @@ describe('DeleteComponentModal', () => {
       const messagePartOne = await screen.findByText(/This will remove the/)
       expect(messagePartOne).toBeInTheDocument()
       const messagePartTwo = await screen.findByText(
-        /component from the reports in app. You will also need to remove this component in your CI and codecov.yaml to stop uploads./
+        /It will take some time to reflect this deletion./
       )
       expect(messagePartTwo).toBeInTheDocument()
 
-      const componentId = await screen.findByText(/component-123/)
-      expect(componentId).toBeInTheDocument()
+      const componentId = await screen.findAllByText(/component-123/)
+      expect(componentId).toHaveLength(3)
     })
 
     it('renders delete and cancel buttons', async () => {
@@ -91,7 +90,7 @@ describe('DeleteComponentModal', () => {
         }
       )
       const deleteButton = await screen.findByRole('button', {
-        name: /Delete component/,
+        name: /Remove/,
       })
       expect(deleteButton).toBeInTheDocument()
       const cancelButton = await screen.findByRole('button', { name: /Cancel/ })
@@ -109,7 +108,7 @@ describe('DeleteComponentModal', () => {
           wrapper,
         }
       )
-      const title = await screen.findByText(/Delete Component/)
+      const title = await screen.findByTestId(/remove-component-123/)
       expect(title).toBeInTheDocument()
     })
   })
@@ -130,7 +129,7 @@ describe('DeleteComponentModal', () => {
       )
 
       const deleteButton = await screen.findByRole('button', {
-        name: /Delete component/,
+        name: /Remove/,
       })
       await user.click(deleteButton)
       await waitFor(() => expect(closeModal).toHaveBeenCalled())
