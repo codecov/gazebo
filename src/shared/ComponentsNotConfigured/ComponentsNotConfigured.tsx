@@ -1,4 +1,5 @@
 import Button from 'ui/Button'
+import Icon from 'ui/Icon'
 
 function ComponentsNotConfigured() {
   return (
@@ -16,8 +17,10 @@ function ComponentsNotConfigured() {
           variant="primary"
           disabled={false}
           to={{ pageName: 'components' }}
+          showExternalIcon={false}
         >
           Get started with components
+          <Icon name="externalLink" variant="solid" size="sm" />
         </Button>
       </div>
     </div>
