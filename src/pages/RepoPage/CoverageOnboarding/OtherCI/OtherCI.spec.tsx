@@ -237,20 +237,8 @@ describe('OtherCI', () => {
     it('renders body', async () => {
       render(<OtherCI />, { wrapper })
 
-      const title = await screen.findByText(
-        /Once merged to your default branch/
-      )
-      expect(title).toBeInTheDocument()
-    })
-
-    it('renders quick start link', async () => {
-      render(<OtherCI />, { wrapper })
-
-      const link = await screen.findByRole('link', { name: /learn more/ })
-      expect(link).toHaveAttribute(
-        'href',
-        'https://docs.codecov.com/docs/quick-start'
-      )
+      const body = await screen.findByText(/Once merged to you default branch,/)
+      expect(body).toBeInTheDocument()
     })
   })
 

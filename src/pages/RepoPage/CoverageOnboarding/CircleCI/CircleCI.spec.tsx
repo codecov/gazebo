@@ -201,37 +201,11 @@ describe('CircleCI', () => {
 
   describe('step three', () => {
     beforeEach(() => setup({}))
-    it('renders first body', async () => {
+    it('renders body', async () => {
       render(<CircleCI />, { wrapper })
 
-      const body = await screen.findByText(/Once you commit your changes/)
+      const body = await screen.findByText(/Once merged to you default branch,/)
       expect(body).toBeInTheDocument()
-    })
-
-    it('renders second body', async () => {
-      render(<CircleCI />, { wrapper })
-
-      const body = await screen.findByText(/Once merged to your/)
-      expect(body).toBeInTheDocument()
-    })
-
-    it('renders status check image', async () => {
-      render(<CircleCI />, { wrapper })
-
-      const img = await screen.findByRole('img', {
-        name: 'codecov patch and project',
-      })
-      expect(img).toBeInTheDocument()
-    })
-
-    it('renders quick start link', async () => {
-      render(<CircleCI />, { wrapper })
-
-      const link = await screen.findByRole('link', { name: /learn more/ })
-      expect(link).toHaveAttribute(
-        'href',
-        'https://docs.codecov.com/docs/quick-start'
-      )
     })
   })
 

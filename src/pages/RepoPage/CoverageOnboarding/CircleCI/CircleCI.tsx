@@ -1,6 +1,5 @@
 import { useParams } from 'react-router-dom'
 
-import patchAndProject from 'assets/repoConfig/patch-and-project.svg'
 import { useOrgUploadToken } from 'services/orgUploadToken'
 import { useRepo } from 'services/repo'
 import { useFlags } from 'shared/featureFlags'
@@ -117,30 +116,9 @@ function CircleCI() {
         </Card.Header>
         <Card.Content className="flex flex-col gap-4">
           <p>
-            Once you commit your changes and run your CI/CD pipeline, you should
-            see status checks and comments in your pull request.
-          </p>
-          <img
-            alt="codecov patch and project"
-            src={patchAndProject.toString()}
-            className="my-3 md:px-5"
-            loading="lazy"
-          />
-          <p>
-            Once merged to your default branch, subsequent pull requests will
-            have status checks and report comments. Additionally, you&apos;ll
-            find your repo coverage dashboard on this page.
-          </p>
-          <p>
-            Visit our guide to{' '}
-            <A
-              to={{ pageName: 'quickStart' }}
-              isExternal
-              hook="quick-start-link"
-            >
-              learn more
-            </A>{' '}
-            about integrating Codecov into your CI/CD workflow.
+            Once merged to you default branch, subsequent checks and PR comment
+            will have coverage reports. Additionally, you’ll find your repo
+            coverage dashboard here. If you have merged try reloading the page.
           </p>
         </Card.Content>
       </Card>
