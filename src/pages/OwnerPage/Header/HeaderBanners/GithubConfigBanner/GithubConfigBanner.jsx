@@ -20,14 +20,17 @@ const GithubConfigBanner = () => {
             Configure{' '}
             <A
               data-testid="codecovGithubApp-link"
-              to={{ pageName: 'codecovGithubApp' }}
+              to={{ pageName: 'codecovGithubAppSelectTarget' }}
             >
               Codecov&apos;s GitHub app
             </A>
           </h2>
         </BannerHeading>
         <BannerContent>
-          <p>Codecov will use the integration to post statuses and comments.</p>
+          <p>
+            Enable status posts, comments, improved rate limit handling, and
+            private repo management.
+          </p>
         </BannerContent>
       </Banner>
     </div>
