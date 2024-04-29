@@ -26,7 +26,7 @@ describe('SyncingBanner', () => {
     it('renders heading and content components', () => {
       render(<SyncingBanner />, { wrapper })
       const historicalDataTextLong = screen.getByText(
-        'It might take up to 24 hours to view your data.'
+        'It might take up to 1 hour to view your data.'
       )
       expect(historicalDataTextLong).toBeInTheDocument()
     })

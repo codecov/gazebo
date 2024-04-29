@@ -40,6 +40,9 @@ export const query = `
                 message
               }
             }
+            head {
+              branchName
+            }
           }
         }
         ... on NotFoundError {
