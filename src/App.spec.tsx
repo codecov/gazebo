@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
+import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
@@ -43,9 +44,9 @@ const internalUser = {
       integrationId: null,
       name: null,
       ownerid: 123,
-      service: 'github',
+      service: 'cool-service',
       stats: null,
-      username: 'codecov',
+      username: 'cool-guy',
     },
   ],
   termsAgreement: true,
@@ -73,9 +74,9 @@ const queryClient = new QueryClient({
 })
 
 const server = setupServer()
-let testLocation
+let testLocation: any
 const wrapper =
-  (initialEntries = []) =>
+  (initialEntries = ['']): React.FC<React.PropsWithChildren> =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
@@ -94,9 +95,10 @@ const wrapper =
 
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })
+  console.error = () => {}
 })
 
-afterEach(() => {
+beforeEach(() => {
   config.IS_SELF_HOSTED = false
   queryClient.clear()
   server.resetHandlers()
@@ -107,10 +109,20 @@ afterAll(() => {
 })
 
 describe('App', () => {
-  function setup(hasLoggedInUser = true) {
+  function setup({
+    hasLoggedInUser,
+    hasSession,
+  }: {
+    hasLoggedInUser?: boolean
+    hasSession?: boolean
+  }) {
     server.use(
       rest.get('/internal/user', (_, res, ctx) => {
-        return res(ctx.status(200), ctx.json(internalUser))
+        if (hasSession) {
+          return res(ctx.status(200), ctx.json(internalUser))
+        } else {
+          return res(ctx.status(200), ctx.json({}))
+        }
       }),
       graphql.query('DetailOwner', (_, res, ctx) =>
         res(ctx.status(200), ctx.data({ owner: 'codecov' }))
@@ -319,16 +331,17 @@ describe('App', () => {
     ({ testLabel, pathname, expected }) => {
       beforeEach(() => {
         config.IS_SELF_HOSTED = false
-        setup()
+        setup({ hasLoggedInUser: true, hasSession: true })
       })
 
       it(`renders the ${testLabel} page`, async () => {
         render(<App />, { wrapper: wrapper([pathname]) })
 
-        await waitFor(
-          () => expect(testLocation.pathname).toBe(expected.location),
-          expect(testLocation.search).toBe(expected.search)
+        await waitFor(() =>
+          expect(testLocation.pathname).toBe(expected.location)
         )
+
+        await waitFor(() => expect(testLocation.search).toBe(expected.search))
 
         const page = await screen.findByText(expected.page)
         expect(page).toBeInTheDocument()
@@ -504,7 +517,7 @@ describe('App', () => {
     ({ testLabel, pathname, expected }) => {
       beforeEach(() => {
         config.IS_SELF_HOSTED = true
-        setup()
+        setup({ hasLoggedInUser: true, hasSession: true })
       })
 
       it(`renders the ${testLabel} page`, async () => {
@@ -521,9 +534,19 @@ describe('App', () => {
 
   describe('user not logged in', () => {
     it('redirects to login', async () => {
-      setup(false)
+      setup({ hasLoggedInUser: true, hasSession: false })
       render(<App />, { wrapper: wrapper(['*']) })
       await waitFor(() => expect(testLocation.pathname).toBe('/login'))
+    })
+  })
+  describe('user has session, not logged in', () => {
+    it('redirects to session default', async () => {
+      setup({ hasLoggedInUser: false, hasSession: true })
+
+      render(<App />, { wrapper: wrapper(['/blah']) })
+      await waitFor(() =>
+        expect(testLocation.pathname).toBe('/cool-service/cool-guy')
+      )
     })
   })
 })
