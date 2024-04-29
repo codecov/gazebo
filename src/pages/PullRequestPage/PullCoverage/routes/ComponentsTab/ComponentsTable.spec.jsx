@@ -57,6 +57,9 @@ const mockPull = {
             },
           ],
         },
+        head: {
+          branchName: 'abc',
+        },
       },
     },
   },

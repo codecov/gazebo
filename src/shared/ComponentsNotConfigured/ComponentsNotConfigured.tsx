@@ -1,8 +1,9 @@
 import Button from 'ui/Button'
+import Icon from 'ui/Icon'
 
 function ComponentsNotConfigured() {
   return (
-    <div className="mt-12 grid gap-4">
+    <div className="grid gap-4 pt-4">
       <div className="flex flex-col items-center gap-1">
         <p>No data to display</p>
         <p>
@@ -16,8 +17,10 @@ function ComponentsNotConfigured() {
           variant="primary"
           disabled={false}
           to={{ pageName: 'components' }}
+          showExternalIcon={false}
         >
           Get started with components
+          <Icon name="externalLink" variant="solid" size="sm" />
         </Button>
       </div>
     </div>

@@ -28,14 +28,14 @@ export const useCoverage = ({ params, options = {} }) => {
     isPublic: shouldDisplayPublicReposOnly,
     opts: {
       select: (data) => {
-        if (data?.measurements?.[0]?.max === null) {
-          data.measurements[0].max = 0
+        if (data?.measurements?.[0]?.avg === null) {
+          data.measurements[0].avg = 0
         }
 
         // set prevPercent so we can reuse value if next value is null
         let prevPercent = data?.measurements?.[0]
         const coverage = data?.measurements?.map((measurement) => {
-          let coverage = measurement?.max ?? prevPercent
+          let coverage = measurement?.avg ?? prevPercent
 
           // can save on a few reassignments
           if (prevPercent !== coverage) {

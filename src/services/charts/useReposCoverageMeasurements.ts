@@ -9,7 +9,7 @@ export const ReposCoverageMeasurementsConfig = z
     measurements: z.array(
       z.object({
         timestamp: z.string(),
-        max: z.number().nullish(),
+        avg: z.number().nullish(),
       })
     ),
   })
@@ -48,7 +48,7 @@ const query = `
         isPublic: $isPublic
       ) {
         timestamp
-        max
+        avg
       }
     }
   }

@@ -20,7 +20,10 @@ function InvoiceCard({ invoice }) {
   const { invoiceDetailsPage } = useNavLinks()
 
   return (
-    <Card className="mt-4 flex items-center justify-between px-4 py-6 text-sm">
+    <Card
+      variant="old"
+      className="mt-4 flex items-center justify-between px-4 py-6 text-sm"
+    >
       <div>
         Invoice on {format(fromUnixTime(invoice.created), 'MMMM do yyyy')}
       </div>

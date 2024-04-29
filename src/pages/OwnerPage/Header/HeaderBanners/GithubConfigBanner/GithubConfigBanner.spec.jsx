@@ -30,7 +30,7 @@ describe('GithubConfigBanner', () => {
       })
 
       const body = screen.queryByText(
-        /Codecov will use the integration to post statuses and comments./
+        /Enable status posts, comments, improved rate limit handling, and private repo management./
       )
       expect(body).toBeInTheDocument()
     })
@@ -50,7 +50,7 @@ describe('GithubConfigBanner', () => {
       })
 
       const body = screen.queryByText(
-        /Codecov will use the integration to post statuses and comments./
+        /Enable status posts, comments, improved rate limit handling, and private repo management./
       )
       expect(body).not.toBeInTheDocument()
     })

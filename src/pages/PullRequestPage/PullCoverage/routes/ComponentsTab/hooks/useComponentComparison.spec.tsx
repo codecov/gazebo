@@ -28,6 +28,9 @@ const mockResponse = {
             },
           ],
         },
+        head: {
+          branchName: 'abc',
+        },
       },
     },
   },
@@ -138,6 +141,9 @@ describe('useComponentComparison', () => {
                     },
                   },
                 ],
+              },
+              head: {
+                branchName: 'abc',
               },
             },
           })

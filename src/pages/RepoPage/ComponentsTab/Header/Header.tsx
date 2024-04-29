@@ -58,10 +58,10 @@ const Header = ({
   )
 
   return (
-    <div className="flex flex-col justify-end divide-y divide-solid divide-ds-gray-secondary">
+    <div className="flex flex-col justify-end">
       <div className="grid w-2/3 divide-y divide-solid divide-ds-gray-secondary sm:w-full sm:grid-cols-2 sm:divide-x sm:divide-y-0 md:grid-cols-4">
-        <BranchSelector />
-        <div className="md:w-[16rem]">
+        <BranchSelector isDisabled={controlsDisabled} />
+        <div className="flex flex-col justify-between gap-2 p-4 sm:py-0">
           <h3 className="text-sm font-semibold text-ds-gray-octonary">
             Configured components
           </h3>
@@ -73,7 +73,7 @@ const Header = ({
             <A to={{ pageName: 'components' }}>Learn more</A>
           </p>
         </div>
-        <div className="md:w-[16rem]">
+        <div className="flex flex-col gap-2 p-4 sm:py-0">
           <h3 className="text-sm font-semibold text-ds-gray-octonary">
             Historical trend
           </h3>
@@ -91,7 +91,7 @@ const Header = ({
             renderSelected={({ label }: { label: string }) => label}
           />
         </div>
-        <div className="md:w-[16rem]">
+        <div className="flex flex-col gap-2 p-4 sm:py-0">
           <h3 className="text-sm font-semibold text-ds-gray-octonary">
             Show by
           </h3>
