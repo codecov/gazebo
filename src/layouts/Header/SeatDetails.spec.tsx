@@ -17,6 +17,23 @@ const mockUndefinedSeats = {
   config: {},
 }
 
+const wrapper: ({
+  initialEntries,
+}: {
+  initialEntries?: string
+}) => React.FC<React.PropsWithChildren> =
+  ({ initialEntries = '/gh' }) =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path="/:provider" exact>
+            {children}
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
@@ -30,23 +47,11 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('SeatDetails', () => {
-  let renderData
-
-  function setup({ data = mockData }) {
+  function setup({ data = mockData }: { data?: any }) {
     server.use(
       graphql.query('Seats', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(data))
       )
-    )
-
-    renderData = render(
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={['/gh']}>
-          <Route path={'/:provider'}>
-            <SeatDetails />
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
     )
   }
 
@@ -57,6 +62,7 @@ describe('SeatDetails', () => {
       })
 
       it('displays the number of active seats', async () => {
+        render(<SeatDetails />, { wrapper: wrapper({}) })
         const number = await screen.findByText('5')
         expect(number).toBeInTheDocument()
 
@@ -65,6 +71,8 @@ describe('SeatDetails', () => {
       })
 
       it('displays the number of total seats', async () => {
+        render(<SeatDetails />, { wrapper: wrapper({}) })
+
         const number = await screen.findByText('10')
         expect(number).toBeInTheDocument()
 
@@ -78,8 +86,10 @@ describe('SeatDetails', () => {
         setup({ data: mockUndefinedSeats })
       })
 
+      const { container } = render(<SeatDetails />, { wrapper: wrapper({}) })
+
       it('renders nothing', () => {
-        expect(renderData.container).toBeEmptyDOMElement()
+        expect(container).toBeEmptyDOMElement()
       })
     })
   })
