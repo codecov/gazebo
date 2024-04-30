@@ -19,7 +19,7 @@ export const decorators = [
 const preview: Preview = {
   parameters: {
     docs: {
-      theme: themes.dark,
+      theme: themes.light,
     },
   },
 }

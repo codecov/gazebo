@@ -58,7 +58,7 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter
       initialEntries={['/gh/codecov/test-repo/coolCommitSha/blob/file.js']}
@@ -277,14 +277,13 @@ describe('CommitFileEntry', () => {
       )
 
       await user.hover(screen.getByText('file.js'))
-
-      await waitFor(() => queryClient.getQueryState().isFetching)
-      await waitFor(() => !queryClient.getQueryState().isFetching)
-
-      const queryKey = queryClient.getQueriesData({}).at(0).at(0)
+      const queryKey = queryClient
+        .getQueriesData({})
+        ?.at(0)
+        ?.at(0) as Array<string>
 
       await waitFor(() =>
-        expect(queryClient.getQueryState(queryKey).data).toStrictEqual({
+        expect(queryClient.getQueryState(queryKey)?.data).toStrictEqual({
           content:
             'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n',
           coverage: {
@@ -324,9 +323,6 @@ describe('CommitFileEntry', () => {
           const file = await screen.findByText('file.js')
           await user.hover(file)
 
-          await waitFor(() => queryClient.getQueryState().isFetching)
-          await waitFor(() => !queryClient.getQueryState().isFetching)
-
           await waitFor(() => expect(mockVars).toHaveBeenCalled())
           await waitFor(() =>
             expect(mockVars).toHaveBeenCalledWith(
@@ -355,9 +351,6 @@ describe('CommitFileEntry', () => {
 
           const file = await screen.findByText('file.js')
           await user.hover(file)
-
-          await waitFor(() => queryClient.getQueryState().isFetching)
-          await waitFor(() => !queryClient.getQueryState().isFetching)
 
           await waitFor(() => expect(mockVars).toHaveBeenCalled())
           await waitFor(() =>

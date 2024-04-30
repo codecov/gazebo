@@ -1,4 +1,5 @@
 import { type QueryOptions, useQueryClient } from '@tanstack/react-query'
+import { ParsedQs } from 'qs'
 import { useParams } from 'react-router-dom'
 
 import { extractCoverageFromResponse } from 'services/file/utils'
@@ -20,8 +21,8 @@ interface URLParams {
 interface UsePrefetchCommitFileEntryArgs {
   commitSha: string
   path: string
-  flags?: Array<string>
-  components?: Array<string>
+  flags?: Array<string> | Array<ParsedQs>
+  components?: Array<string> | Array<ParsedQs>
   options?: QueryOptions
 }
 

@@ -1,18 +1,31 @@
 import cs from 'classnames'
-import PropTypes from 'prop-types'
 
 import {
   classNamePerLineContent,
   classNamePerLineState,
   getLineState,
-  LINE_TYPE,
   lineStateToLabel,
+  type LineType,
 } from 'shared/utils/fileviewer'
 import CoverageLineIndicator from 'ui/CodeRenderer/CoverageLineIndicator'
 
 import { useScrollToLine } from '../hooks'
 
-function DiffLine({
+type LineContent = { types: Array<string>; content: string }
+
+export interface DiffLineProps {
+  baseCoverage: LineType | null
+  baseNumber?: string
+  getTokenProps: ({ token, key }: { token: LineContent; key: number }) => {}
+  headCoverage: LineType | null
+  headNumber?: string
+  hitCount: number | null
+  lineContent: Array<LineContent>
+  path?: string
+  stickyPadding?: number
+}
+
+const DiffLine: React.FC<DiffLineProps> = ({
   getTokenProps,
   lineContent,
   headNumber,
@@ -21,7 +34,8 @@ function DiffLine({
   baseCoverage,
   path,
   hitCount,
-}) {
+  stickyPadding,
+}) => {
   const baseLineState = getLineState({ coverage: baseCoverage })
   const headLineState = getLineState({ coverage: headCoverage })
 
@@ -33,6 +47,7 @@ function DiffLine({
     number: baseNumber,
     path,
     base: true,
+    stickyPadding,
   })
 
   const {
@@ -43,6 +58,7 @@ function DiffLine({
     number: headNumber,
     path,
     head: true,
+    stickyPadding,
   })
 
   return (
@@ -92,27 +108,15 @@ function DiffLine({
       >
         <div className="flex items-center justify-between">
           <div>
-            {lineContent?.map((token, key) => (
-              <span key={key} {...getTokenProps({ token, key })} />
-            ))}
+            {lineContent?.map((token, key) => {
+              return <span key={key} {...getTokenProps({ token, key })} />
+            })}
           </div>
           <CoverageLineIndicator coverage={headLineState} hitCount={hitCount} />
         </div>
       </td>
     </tr>
   )
-}
-
-DiffLine.propTypes = {
-  edgeOfFile: PropTypes.bool,
-  lineContent: PropTypes.array.isRequired,
-  headNumber: PropTypes.string,
-  baseNumber: PropTypes.string,
-  baseCoverage: PropTypes.oneOf(Object.values(LINE_TYPE)),
-  headCoverage: PropTypes.oneOf(Object.values(LINE_TYPE)),
-  getTokenProps: PropTypes.func,
-  path: PropTypes.string,
-  hitCount: PropTypes.number,
 }
 
 export default DiffLine

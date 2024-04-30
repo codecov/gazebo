@@ -187,7 +187,11 @@ describe('useRepoFlagsTable', () => {
   describe('historical trend', () => {
     describe('when historical trend param is empty', () => {
       beforeEach(() => {
-        setup({})
+        setup({
+          useParamsValue: {
+            historicalTrend: '',
+          },
+        })
       })
 
       it('calls useRepoFlagsTable with correct query params', () => {
