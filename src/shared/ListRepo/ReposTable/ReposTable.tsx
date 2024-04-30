@@ -105,7 +105,10 @@ const ReposTable = ({
   })
   const isCurrentUserPartOfOrg = ownerData?.isCurrentUserPartOfOrg
 
-  const { data: tierName } = useTier({ provider, owner })
+  const { data: tierName } = useTier({
+    provider,
+    owner: owner || userData?.user?.username,
+  })
   const shouldDisplayPublicReposOnly = tierName === TierNames.TEAM ? true : null
 
   const repoDisplay = useContext(ActiveContext)
