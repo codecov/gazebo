@@ -7,8 +7,12 @@ import BannerContent from 'ui/Banner/BannerContent'
 import BannerHeading from 'ui/Banner/BannerHeading'
 import Button from 'ui/Button'
 
+interface URLParams {
+  owner: string
+}
+
 function TrialEligibleBanner() {
-  const { owner } = useParams<{ owner: string }>()
+  const { owner } = useParams<URLParams>()
   const { mutate: fireTrial, isLoading } = useStartTrial()
 
   return (

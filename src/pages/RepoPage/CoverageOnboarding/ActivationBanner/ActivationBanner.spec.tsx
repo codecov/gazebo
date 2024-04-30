@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -10,7 +10,7 @@ jest.mock('./TrialEligibleBanner', () => () => 'TrialEligibleBanner')
 
 const queryClient = new QueryClient()
 
-const wrapper = ({ children }: { children: React.ReactNode }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/gazebo/new']}>
       <Route path="/:provider/:owner/:repo/new">{children}</Route>
@@ -87,11 +87,13 @@ describe('ActivationBanner', () => {
     expect(trialEligibleBanner).toBeInTheDocument()
   })
 
-  it('does not render trial eligible banner if user is not eligible to trial', () => {
+  it('does not render trial eligible banner if user is not eligible to trial', async () => {
     setup(false)
-    render(<ActivationBanner />, { wrapper })
+    const { container } = render(<ActivationBanner />, { wrapper })
 
-    const trialEligibleBanner = screen.queryByText(/TrialEligibleBanner/)
-    expect(trialEligibleBanner).not.toBeInTheDocument()
+    await waitFor(() => queryClient.isFetching)
+    await waitFor(() => !queryClient.isFetching)
+
+    expect(container).toBeEmptyDOMElement()
   })
 })

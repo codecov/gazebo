@@ -9,7 +9,7 @@ import TrialEligibleBanner from './TrialEligibleBanner'
 
 const queryClient = new QueryClient()
 
-const wrapper = ({ children }: { children: React.ReactNode }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/gazebo/new']}>
       <Route path="/:provider/:owner/:repo/new">{children}</Route>
@@ -56,6 +56,19 @@ describe('TrialEligibleBanner', () => {
 
     const list = screen.getByText(/Unlimited members/i)
     expect(list).toBeInTheDocument()
+  })
+
+  it('renders correct links', () => {
+    setup()
+    render(<TrialEligibleBanner />, { wrapper })
+
+    const upgradeLink = screen.getByRole('link', { name: /upgrade/ })
+    expect(upgradeLink).toBeInTheDocument()
+
+    const manageMembersLink = screen.getByRole('link', {
+      name: /manage members/,
+    })
+    expect(manageMembersLink).toBeInTheDocument()
   })
 
   it('calls the start trial function when the "Start Trial" button is clicked', async () => {

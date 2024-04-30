@@ -5,8 +5,13 @@ import { isBasicPlan } from 'shared/utils/billing'
 
 import TrialEligibleBanner from './TrialEligibleBanner'
 
+interface URLParams {
+  provider: string
+  owner: string
+}
+
 function ActivationBanner() {
-  const { owner, provider } = useParams<{ owner: string; provider: string }>()
+  const { owner, provider } = useParams<URLParams>()
   const { data: planData } = usePlanData({
     owner,
     provider,
