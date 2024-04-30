@@ -25,18 +25,32 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 )
 
 describe('IntroBlurb', () => {
-  describe('prologue', () => {
-    it('renders quick start box', async () => {
-      render(<IntroBlurb />, { wrapper })
+  it('renders header', async () => {
+    render(<IntroBlurb />, { wrapper })
 
-      const docsLink = await screen.findByRole('link', {
-        name: /Read our documentation/,
-      })
-      expect(docsLink).toBeInTheDocument()
-      expect(docsLink).toHaveAttribute(
-        'href',
-        'https://docs.codecov.com/docs/quick-start'
-      )
+    const header = await screen.findByText("Let's get your repo covered")
+    expect(header).toBeInTheDocument()
+  })
+
+  it('renders paragraph', async () => {
+    render(<IntroBlurb />, { wrapper })
+
+    const paragraph = await screen.findByText(
+      /Before integrating with Codecov, ensure/
+    )
+    expect(paragraph).toBeInTheDocument()
+  })
+
+  it('renders docs bnox', async () => {
+    render(<IntroBlurb />, { wrapper })
+
+    const docsLink = await screen.findByRole('link', {
+      name: /Read our documentation/,
     })
+    expect(docsLink).toBeInTheDocument()
+    expect(docsLink).toHaveAttribute(
+      'href',
+      'https://docs.codecov.com/docs/quick-start'
+    )
   })
 })

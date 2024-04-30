@@ -9,7 +9,6 @@ import A from 'ui/A'
 import CopyClipboard from 'ui/CopyClipboard'
 
 import ExampleBlurb from '../ExampleBlurb'
-import IntroBlurb from '../IntroBlurb/IntroBlurb'
 
 const orbsString = `orbs:
   codecov: codecov/codecov@4.0.1
@@ -44,7 +43,6 @@ function CircleCI() {
 
   return (
     <div className="flex flex-col gap-6">
-      <IntroBlurb />
       <div className="flex flex-col gap-3">
         <div>
           <h2 className="text-base font-semibold">
