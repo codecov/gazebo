@@ -4,6 +4,7 @@ import { setupServer } from 'msw/node'
 import config from 'config'
 
 import Api from './api'
+import { AllProvidersArray } from './helpers'
 
 const rawUserData = {
   profile: {
@@ -221,6 +222,53 @@ describe('when using a graphql request', () => {
         },
       })
     })
+  })
+
+  describe('when different strings entered as provider', () => {
+    let fetchMock
+    afterEach(() => {
+      global.fetch.mockRestore()
+    })
+
+    it('does not have the provider in the url for non-provider', async () => {
+      fetchMock = jest.fn((url, options) => {
+        expect(url).toBe(`${config.API_URL}/graphql/`)
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ data: { example: 'dummy data' } }),
+        })
+      })
+
+      jest.spyOn(global, 'fetch').mockImplementation(fetchMock)
+
+      await Api.graphql({
+        provider: 'random hacks and stuff',
+        query: 'query MyInfo { me }',
+      })
+
+      expect(fetchMock).toHaveBeenCalled()
+    })
+    test.each(AllProvidersArray)(
+      'has the provider in the url for %s',
+      async (provider) => {
+        fetchMock = jest.fn((url, options) => {
+          expect(url).toBe(`${config.API_URL}/graphql/${provider}`)
+          return Promise.resolve({
+            ok: true,
+            json: async () => ({ data: { example: 'dummy data' } }),
+          })
+        })
+
+        jest.spyOn(global, 'fetch').mockImplementation(fetchMock)
+
+        await Api.graphql({
+          provider: provider,
+          query: 'query MyInfo { me }',
+        })
+
+        expect(fetchMock).toHaveBeenCalled()
+      }
+    )
   })
 
   describe('the request is unsuccessful', () => {

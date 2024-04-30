@@ -5,7 +5,7 @@ import config from 'config'
 import { camelizeKeys } from 'shared/utils/camelizeKeys'
 import { snakeifyKeys } from 'shared/utils/snakeifyKeys'
 
-import { generatePath, getHeaders } from './helpers'
+import { generatePath, getHeaders, isProvider } from './helpers'
 
 function _fetch({
   path,
@@ -62,10 +62,10 @@ function graphql({
   signal,
   supportsServiceless = false,
 }) {
-  let uri = `${config.API_URL}/graphql/${provider}`
+  let uri = `${config.API_URL}/graphql/`
 
-  if (supportsServiceless && !provider) {
-    uri = `${config.API_URL}/graphql/`
+  if (provider && isProvider(provider) && !supportsServiceless) {
+    uri = `${config.API_URL}/graphql/${provider}`
   }
 
   const headers = {
