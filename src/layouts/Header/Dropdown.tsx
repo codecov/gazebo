@@ -1,6 +1,5 @@
 import cs from 'classnames'
 import { useSelect } from 'downshift'
-import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
 import config from 'config'
@@ -14,15 +13,6 @@ const LOCAL_STORAGE_SESSION_TRACKING_KEY = 'tracking-session-expiry'
 
 interface URLParams {
   provider: string
-}
-
-Dropdown.propTypes = {
-  currentUser: PropTypes.shape({
-    user: PropTypes.shape({
-      avatarUrl: PropTypes.string.isRequired,
-      username: PropTypes.string.isRequired,
-    }).isRequired,
-  }),
 }
 
 type CurrentUser = {
