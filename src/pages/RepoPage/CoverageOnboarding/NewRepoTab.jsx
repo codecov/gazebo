@@ -14,6 +14,7 @@ import TabNavigation from 'ui/TabNavigation'
 import ActivationBanner from './ActivationBanner'
 import CircleCI from './CircleCI'
 import GitHubActions from './GitHubActions'
+import IntroBlurb from './IntroBlurb'
 
 const OtherCI = lazy(() => import('./OtherCI'))
 
@@ -81,10 +82,8 @@ function NewRepoTab() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="mx-auto w-4/5 pt-4 md:w-3/5 lg:w-3/6">
-        <h1 className="pb-4 text-3xl font-semibold">
-          Let&apos;s get your repo covered
-        </h1>
+      <div className="flex flex-col gap-4 pt-4 lg:w-3/5">
+        <IntroBlurb />
         <Content provider={provider} />
       </div>
     </div>

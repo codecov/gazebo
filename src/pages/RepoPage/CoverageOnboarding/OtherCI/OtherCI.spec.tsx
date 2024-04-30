@@ -96,17 +96,6 @@ describe('OtherCI', () => {
     return { user }
   }
 
-  describe('intro blurb', () => {
-    beforeEach(() => setup({}))
-
-    it('renders intro blurb', async () => {
-      render(<OtherCI />, { wrapper })
-
-      const blurb = await screen.findByTestId('intro-blurb')
-      expect(blurb).toBeInTheDocument()
-    })
-  })
-
   describe('step one', () => {
     it('renders header', async () => {
       setup({})
