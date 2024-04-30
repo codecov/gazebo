@@ -91,17 +91,6 @@ describe('CircleCI', () => {
     )
   }
 
-  describe('intro blurb', () => {
-    beforeEach(() => setup({}))
-
-    it('renders intro blurb', async () => {
-      render(<CircleCI />, { wrapper })
-
-      const blurb = await screen.findByTestId('intro-blurb')
-      expect(blurb).toBeInTheDocument()
-    })
-  })
-
   describe('step one', () => {
     it('renders header', async () => {
       setup({})
