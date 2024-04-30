@@ -114,7 +114,7 @@ describe('CircleCI', () => {
       render(<CircleCI />, { wrapper })
 
       const body = await screen.findByText(
-        "Environment variables in CircleCI can be found in project's settings."
+        'Environment variables in CircleCI can be found in project settings.'
       )
       expect(body).toBeInTheDocument()
     })

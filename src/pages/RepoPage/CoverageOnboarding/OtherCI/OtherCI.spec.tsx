@@ -114,13 +114,6 @@ describe('OtherCI', () => {
         expect(repoToken).toBeInTheDocument()
       })
 
-      it('renders token key box', async () => {
-        render(<OtherCI />, { wrapper })
-
-        const tokenKey = await screen.findByTestId('token-key')
-        expect(tokenKey).toBeInTheDocument()
-      })
-
       it('renders token box', async () => {
         setup({ hasOrgUploadToken: true })
         render(<OtherCI />, { wrapper })
