@@ -258,7 +258,6 @@ function Example() {
                     <DiffLine
                       key={i + 1}
                       lineContent={line}
-                      edgeOfFile={i <= 2 || i >= 6}
                       path={row.original.path}
                       hitCount={
                         Math.random() > 0.5
@@ -267,8 +266,13 @@ function Example() {
                       }
                       headNumber={i + 1}
                       baseNumber={i}
-                      headCoverage={coverage[Math.floor(Math.random() * 3) % 3]}
-                      baseCoverage={coverage[Math.floor(Math.random() * 3) % 3]}
+                      headCoverage={
+                        coverage[Math.floor(Math.random() * 3) % 3] ?? null
+                      }
+                      baseCoverage={
+                        coverage[Math.floor(Math.random() * 3) % 3] ?? null
+                      }
+                      getTokenProps={({ token, key }) => ({})}
                       {...props}
                     />
                   )}

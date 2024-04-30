@@ -42,7 +42,7 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/test-repo/commit/1234/tree']}>
       <Route path="/:provider/:owner/:repo/commit/:commit/:path+">
@@ -181,8 +181,13 @@ describe('CommitDirEntry', () => {
     const dir = screen.getByText('dir')
     await user.hover(dir)
 
+    const queryKey = queryClient
+      .getQueriesData({})
+      ?.at(0)
+      ?.at(0) as Array<string>
+
     await waitFor(() =>
-      expect(queryClient.getQueryState().data).toStrictEqual({
+      expect(queryClient.getQueryState(queryKey)?.data).toStrictEqual({
         indicationRange: {
           upperRange: 80,
           lowerRange: 60,

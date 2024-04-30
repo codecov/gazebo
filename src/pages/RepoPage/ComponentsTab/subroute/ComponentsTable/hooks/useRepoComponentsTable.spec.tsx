@@ -224,6 +224,10 @@ describe('useRepoComponentsTable', () => {
       it('calls useRepoComponentsTable with correct query params', async () => {
         const { requestFilters } = setup({
           repoData: mockGetRepo,
+          useParamsValue: {
+            components: [],
+            historicalTrend: '',
+          },
         })
 
         renderHook(() => useRepoComponentsTable(true), {
