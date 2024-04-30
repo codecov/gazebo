@@ -12,8 +12,12 @@ import AdminLink from './AdminLink'
 import Dropdown from './Dropdown'
 import SeatDetails from './SeatDetails'
 
+interface URLParams {
+  provider: string
+}
+
 export function LoginPrompt() {
-  const { provider } = useParams()
+  const { provider } = useParams<URLParams>()
 
   const to = window.location.href
   const { pathname } = useLocation()
@@ -25,7 +29,12 @@ export function LoginPrompt() {
     return (
       <div className="text-ds-gray-tertiary">
         New to Codecov?{' '}
-        <A to={{ pageName: 'root' }} variant="header">
+        <A
+          to={{ pageName: 'root' }}
+          variant="header"
+          isExternal={true}
+          hook="desktop-menu-learn-more"
+        >
           Learn more
         </A>
       </div>
@@ -36,17 +45,27 @@ export function LoginPrompt() {
       data-testid="login-prompt"
       className="mx-2 flex items-center justify-between gap-4 md:mx-0"
     >
-      <A to={{ pageName: 'signIn', options: { to } }} variant="header">
+      <A
+        to={{ pageName: 'signIn', options: { to } }}
+        variant="header"
+        isExternal={false}
+        hook="desktop-menu-login-link"
+      >
         Log in
       </A>
-      <Button to={{ pageName: 'signUp' }} variant="primary">
+      <Button
+        to={{ pageName: 'signUp' }}
+        variant="primary"
+        disabled={false}
+        hook="desktop-menu-login-button"
+      >
         Sign up
       </Button>
     </div>
   )
 }
 
-const LogoButton = ({ defaultOrg }) => {
+const LogoButton = ({ defaultOrg }: { defaultOrg: string }) => {
   let pageName = 'root'
   if (defaultOrg) {
     pageName = 'owner'
@@ -60,6 +79,8 @@ const LogoButton = ({ defaultOrg }) => {
       }}
       variant="header"
       data-testid="homepage-link"
+      isExternal={pageName === 'root' ? true : false}
+      hook="desktop-menu-homepage-link"
     >
       <span className="sr-only">Link to Homepage</span>
       <CodecovIcon />
@@ -82,17 +103,31 @@ function DesktopMenu() {
     <>
       <div data-testid="desktop-menu" className="flex items-center gap-4">
         <LogoButton defaultOrg={defaultOrg} />
-        <A to={{ pageName: 'docs' }} variant="header" showExternalIcon={false}>
+        <A
+          to={{ pageName: 'docs' }}
+          variant="header"
+          isExternal={false}
+          showExternalIcon={false}
+          hook="desktop-menu-docs-link"
+        >
           Docs
         </A>
         <A
           to={{ pageName: 'support' }}
           variant="header"
+          isExternal={false}
           showExternalIcon={false}
+          hook="desktop-menu-support-link"
         >
           Support
         </A>
-        <A to={{ pageName: 'blog' }} variant="header" showExternalIcon={false}>
+        <A
+          to={{ pageName: 'blog' }}
+          variant="header"
+          isExternal={false}
+          showExternalIcon={false}
+          hook="desktop-menu-blog-link"
+        >
           Blog
         </A>
       </div>

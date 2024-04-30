@@ -10,7 +10,12 @@ function AdminLink() {
   }
 
   return (
-    <A variant="header" to={{ pageName: 'access' }}>
+    <A
+      variant="header"
+      to={{ pageName: 'access' }}
+      isExternal={false}
+      hook="header-admin-link"
+    >
       <Icon size="md" name="cog" variant="solid" /> Admin
     </A>
   )
