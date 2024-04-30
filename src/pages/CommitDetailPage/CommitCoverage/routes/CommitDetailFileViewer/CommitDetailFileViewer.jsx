@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import ToggleHeader from 'pages/CommitDetailPage/Header/ToggleHeader/ToggleHeader'
 import RawFileviewer from 'shared/RawFileviewer'
 import { useCommitTreePaths } from 'shared/treePaths'
+import { STICKY_PADDING_SIZES } from 'shared/utils/fileviewer'
 import Breadcrumb from 'ui/Breadcrumb'
 
 function CommitDetailFileViewer() {
@@ -20,7 +21,7 @@ function CommitDetailFileViewer() {
         }
         commit={commit}
         withKey={false}
-        stickyPadding={450}
+        stickyPadding={STICKY_PADDING_SIZES.COMMIT_PAGE_FILE_VIEWER}
       />
     </>
   )

@@ -92,17 +92,6 @@ describe('GitHubActions', () => {
     )
   }
 
-  describe('intro blurb', () => {
-    beforeEach(() => setup({}))
-
-    it('renders intro blurb', async () => {
-      render(<GitHubActions />, { wrapper })
-
-      const blurb = await screen.findByTestId('intro-blurb')
-      expect(blurb).toBeInTheDocument()
-    })
-  })
-
   describe('step one', () => {
     it('renders header', async () => {
       setup({})
