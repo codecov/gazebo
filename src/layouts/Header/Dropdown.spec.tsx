@@ -20,11 +20,11 @@ const currentUser = {
 jest.mock('services/image')
 jest.mock('config')
 
-const Wrapper =
-  ({ provider }) =>
+const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
+  (initialEntries = '/gh') =>
   ({ children }) =>
     (
-      <MemoryRouter initialEntries={[`/${provider}`]}>
+      <MemoryRouter initialEntries={[initialEntries]}>
         <Switch>
           <Route path="/:provider" exact>
             {children}
@@ -35,7 +35,12 @@ const Wrapper =
 
 describe('Dropdown', () => {
   function setup({ selfHosted } = { selfHosted: false }) {
-    useImage.mockReturnValue({ src: 'imageUrl', isLoading: false, error: null })
+    const mockUseImage = useImage as jest.Mock
+    mockUseImage.mockReturnValue({
+      src: 'imageUrl',
+      isLoading: false,
+      error: null,
+    })
     config.IS_SELF_HOSTED = selfHosted
     const mockRemoveItem = jest.spyOn(
       window.localStorage.__proto__,
@@ -53,7 +58,7 @@ describe('Dropdown', () => {
 
     it('renders the users avatar', () => {
       render(<Dropdown currentUser={currentUser} />, {
-        wrapper: Wrapper({ provider: 'gh' }),
+        wrapper: wrapper(),
       })
 
       const img = screen.getByRole('img')
@@ -69,7 +74,7 @@ describe('Dropdown', () => {
       it('shows settings link', async () => {
         const { user } = setup()
         render(<Dropdown currentUser={currentUser} />, {
-          wrapper: Wrapper({ provider: 'gh' }),
+          wrapper: wrapper(),
         })
 
         expect(screen.queryByText('Settings')).not.toBeInTheDocument()
@@ -85,7 +90,7 @@ describe('Dropdown', () => {
       it('shows sign out link', async () => {
         const { user } = setup()
         render(<Dropdown currentUser={currentUser} />, {
-          wrapper: Wrapper({ provider: 'gh' }),
+          wrapper: wrapper(),
         })
 
         expect(screen.queryByText('Sign Out')).not.toBeInTheDocument()
@@ -103,7 +108,7 @@ describe('Dropdown', () => {
 
         jest.spyOn(console, 'error').mockImplementation()
         render(<Dropdown currentUser={currentUser} />, {
-          wrapper: Wrapper({ provider: 'gh' }),
+          wrapper: wrapper(),
         })
 
         const openSelect = screen.getByRole('combobox')
@@ -121,7 +126,7 @@ describe('Dropdown', () => {
       it('shows manage app access link', async () => {
         const { user } = setup()
         render(<Dropdown currentUser={currentUser} />, {
-          wrapper: Wrapper({ provider: 'gh' }),
+          wrapper: wrapper(),
         })
 
         expect(
@@ -145,7 +150,7 @@ describe('Dropdown', () => {
       it('shows settings link', async () => {
         const { user } = setup()
         render(<Dropdown currentUser={currentUser} />, {
-          wrapper: Wrapper({ provider: 'gl' }),
+          wrapper: wrapper('/gl'),
         })
 
         expect(screen.queryByText('Settings')).not.toBeInTheDocument()
@@ -161,7 +166,7 @@ describe('Dropdown', () => {
       it('shows sign out link', async () => {
         const { user } = setup()
         render(<Dropdown currentUser={currentUser} />, {
-          wrapper: Wrapper({ provider: 'gl' }),
+          wrapper: wrapper('/gl'),
         })
 
         expect(screen.queryByText('Sign Out')).not.toBeInTheDocument()
@@ -177,7 +182,7 @@ describe('Dropdown', () => {
       it('does not show manage app access link', async () => {
         const { user } = setup()
         render(<Dropdown currentUser={currentUser} />, {
-          wrapper: Wrapper({ provider: 'gl' }),
+          wrapper: wrapper('/gl'),
         })
 
         expect(
