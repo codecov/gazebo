@@ -4,7 +4,7 @@ import Icon from 'ui/Icon'
 const IntroBlurb = () => {
   return (
     <div
-      className="mb-4 flex flex-col gap-2 overflow-auto border-l-4 border-ds-blue bg-ds-gray-primary p-4"
+      className="flex flex-col gap-2 overflow-auto border-l-4 border-ds-blue bg-ds-gray-primary p-4"
       data-testid="intro-blurb"
     >
       <h2 className="text-base font-semibold">
