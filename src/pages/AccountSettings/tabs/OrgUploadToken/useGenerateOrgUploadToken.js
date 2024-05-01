@@ -19,7 +19,7 @@ export default function useGenerateOrgUploadToken() {
       } else {
         addToast({
           type: 'success',
-          text: 'Global repository upload token generated.',
+          text: 'Global upload token generated.',
         })
       }
     },

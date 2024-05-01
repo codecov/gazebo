@@ -6,6 +6,23 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import AdminLink from './AdminLink'
 
+const wrapper: ({
+  initialEntries,
+}: {
+  initialEntries?: string
+}) => React.FC<React.PropsWithChildren> =
+  ({ initialEntries = '/gh' }) =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path="/:provider" exact>
+            {children}
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
@@ -19,23 +36,11 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('AdminLink', () => {
-  let renderData
-
   function setup(data = {}) {
     server.use(
       rest.get('/internal/users/current', (req, res, ctx) =>
         res(ctx.status(200), ctx.json(data))
       )
-    )
-
-    renderData = render(
-      <MemoryRouter initialEntries={['/gh']}>
-        <Route path="/:provider">
-          <QueryClientProvider client={queryClient}>
-            <AdminLink />
-          </QueryClientProvider>
-        </Route>
-      </MemoryRouter>
     )
   }
 
@@ -52,6 +57,7 @@ describe('AdminLink', () => {
     })
 
     it('renders link to access page', async () => {
+      render(<AdminLink />, { wrapper: wrapper({}) })
       const link = await screen.findByText(/Admin/)
 
       expect(link).toBeInTheDocument()
@@ -71,8 +77,10 @@ describe('AdminLink', () => {
       })
     })
 
+    const { container } = render(<AdminLink />, { wrapper: wrapper({}) })
+
     it('renders nothing', () => {
-      expect(renderData.container).toBeEmptyDOMElement()
+      expect(container).toBeEmptyDOMElement()
     })
   })
 })

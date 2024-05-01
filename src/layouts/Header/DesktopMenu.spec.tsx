@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
+import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
@@ -13,7 +14,7 @@ jest.mock('config')
 const loggedInUser = {
   me: {
     owner: {
-      defaultOrgUsername: 'codecov',
+      defaultOrgUsername: 'codecov' as string | null,
     },
     user: {
       username: 'p',
@@ -46,7 +47,13 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper =
+const wrapper: ({
+  initialEntries,
+  path,
+}: {
+  initialEntries?: string
+  path?: string
+}) => React.FC<React.PropsWithChildren> =
   (
     { initialEntries = '/gh', path = '/:provider' } = {
       initialEntries: '/gh',
@@ -72,12 +79,7 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('DesktopMenu', () => {
-  function setup(
-    { hasLoggedInUser = true, user = loggedInUser } = {
-      hasLoggedInUser: true,
-      user: loggedInUser,
-    }
-  ) {
+  function setup({ hasLoggedInUser = true, user = loggedInUser }) {
     server.use(
       graphql.query('Seats', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockSeatData))
@@ -97,7 +99,7 @@ describe('DesktopMenu', () => {
   describe('rendering logo button', () => {
     describe('when default org does not exist', () => {
       it('directs user to about codecov io', async () => {
-        setup()
+        setup({})
 
         render(<DesktopMenu />, {
           wrapper: wrapper({
@@ -184,7 +186,7 @@ describe('DesktopMenu', () => {
   })
 
   it('renders static links', async () => {
-    setup()
+    setup({})
 
     render(<DesktopMenu />, {
       wrapper: wrapper({
@@ -218,7 +220,7 @@ describe('DesktopMenu', () => {
   })
 
   it('renders the dropdown when user is logged in', async () => {
-    setup()
+    setup({})
 
     render(<DesktopMenu />, {
       wrapper: wrapper({
@@ -268,7 +270,7 @@ describe('DesktopMenu', () => {
   describe('when running in self hosted mode', () => {
     it('renders the seat count when user is logged in', async () => {
       config.IS_SELF_HOSTED = true
-      setup()
+      setup({})
 
       render(<DesktopMenu />, {
         wrapper: wrapper({
@@ -283,7 +285,7 @@ describe('DesktopMenu', () => {
 
     it('renders the admin link when user is logged in', async () => {
       config.IS_SELF_HOSTED = true
-      setup()
+      setup({})
 
       render(<DesktopMenu />, {
         wrapper: wrapper({
@@ -301,7 +303,7 @@ describe('DesktopMenu', () => {
 describe('LoginPrompt', () => {
   describe('with a provider available', () => {
     it('renders a login button and a sign up button', () => {
-      render(<LoginPrompt />, { wrapper: wrapper() })
+      render(<LoginPrompt />, { wrapper: wrapper({}) })
 
       const loginPrompt = screen.getByTestId('login-prompt')
 
