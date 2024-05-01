@@ -68,7 +68,7 @@ const Item = React.forwardRef<
           <p className="text-left text-ds-gray-quinary">{description}</p>
         ) : null}
       </div>
-      <RadioGroupPrimitive.Indicator className="absolute right-0 top-0 flex h-full w-full justify-end">
+      <RadioGroupPrimitive.Indicator className="absolute right-0 top-0 h-full w-full">
         <div className="absolute h-full w-full rounded-md border-2 border-ds-blue-darker" />
         <div className="h-full w-full rounded-md border border-ds-blue-darker p-4">
           <div className="flex h-5 w-full items-center justify-end">
