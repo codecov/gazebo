@@ -24,7 +24,7 @@ const Loader = () => (
   </div>
 )
 
-function Content({ provider }) {
+function Content({ provider }: { provider: string }) {
   if (providerToName(provider) !== 'Github') {
     return (
       <div className="mt-6">
@@ -68,8 +68,14 @@ Content.propTypes = {
   provider: PropTypes.string,
 }
 
+interface URLParams {
+  provider: string
+  owner: string
+  repo: string
+}
+
 function NewRepoTab() {
-  const { provider, owner, repo } = useParams()
+  const { provider, owner, repo } = useParams<URLParams>()
   const { data } = useRepo({ provider, owner, repo })
   const { hardRedirect } = useRedirect({ href: `/${provider}` })
 

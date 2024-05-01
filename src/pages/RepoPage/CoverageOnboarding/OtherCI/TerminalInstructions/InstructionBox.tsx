@@ -49,10 +49,10 @@ export function InstructionBox() {
 
   return (
     <div
-      className="w-auto rounded bg-ds-gray-primary"
+      className="w-auto rounded border border-ds-gray-secondary bg-ds-gray-primary"
       data-testid="instruction-box"
     >
-      <div className="flex h-auto flex-row overflow-auto bg-ds-gray-secondary">
+      <div className="flex w-full flex-row overflow-auto rounded-t bg-ds-gray-secondary">
         {systems.map((system, idx) => (
           <button
             className={cs('self-center py-2 px-4 outline-none', {
@@ -67,11 +67,13 @@ export function InstructionBox() {
           </button>
         ))}
       </div>
-      <div className="flex flex-row overflow-auto p-4">
-        <pre>{systemContent}</pre>
-        <span className="md:ml-auto">
+      <div className="flex justify-end">
+        <div className="overflow-auto p-4">
+          <pre>{systemContent}</pre>
+        </div>
+        <div className="absolute m-4">
           <CopyClipboard string={systemContent} />
-        </span>
+        </div>
       </div>
     </div>
   )
