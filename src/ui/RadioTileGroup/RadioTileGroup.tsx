@@ -69,8 +69,8 @@ const Item = React.forwardRef<
         ) : null}
       </div>
       <RadioGroupPrimitive.Indicator className="absolute right-0 top-0 flex h-full w-full justify-end">
-        <div className="absolute h-full w-full rounded-md border-2 border-ds-blue" />
-        <div className="h-full w-full rounded-md border border-ds-blue p-4">
+        <div className="absolute h-full w-full rounded-md border-2 border-ds-blue-darker" />
+        <div className="h-full w-full rounded-md border border-ds-blue-darker p-4">
           <div className="flex h-5 w-full items-center justify-end">
             <RadioButtonCircle selected />
           </div>
@@ -87,7 +87,7 @@ export const RadioTileGroup = Object.assign(Group, {
 
 function RadioButtonCircle({ selected = false }: { selected?: boolean }) {
   return selected ? (
-    <div className="flex h-4 w-4 items-center justify-center rounded-full bg-ds-blue">
+    <div className="flex h-4 w-4 items-center justify-center rounded-full bg-ds-blue-darker">
       <div
         className="h-1 w-1 rounded-full bg-white "
         data-testid="radio-button-circle-selected"
