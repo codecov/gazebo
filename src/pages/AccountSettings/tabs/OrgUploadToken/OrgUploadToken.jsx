@@ -14,9 +14,7 @@ function OrgUploadToken() {
   return (
     <div className="flex flex-col gap-4 lg:w-3/4">
       <div className="flex gap-1">
-        <h1 className="text-lg font-semibold">
-          Global repository upload token
-        </h1>
+        <h1 className="text-lg font-semibold">Global upload token</h1>
         <div className="mt-2 text-xs">
           <A to={{ pageName: 'orgUploadTokenDoc' }}>learn more</A>
         </div>
