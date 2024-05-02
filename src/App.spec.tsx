@@ -7,6 +7,8 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
+import { useLocationParams } from 'services/navigation'
+
 import App from './App'
 
 jest.mock('./pages/AccountSettings', () => () => 'AccountSettings')
@@ -546,6 +548,25 @@ describe('App', () => {
       render(<App />, { wrapper: wrapper(['/blah']) })
       await waitFor(() =>
         expect(testLocation.pathname).toBe('/cool-service/cool-guy')
+      )
+    })
+
+    it.only('redirects to plan page if to param === plan', async () => {
+      jest.mock('services/navigation', () => ({
+        ...jest.requireActual('services/navigation'),
+        useLocationParams: jest.fn(),
+      }))
+
+      const mockedUseLocationParams = useLocationParams as jest.Mock
+      mockedUseLocationParams.mockReturnValue({
+        params: { to: 'plan' },
+      })
+
+      setup({ hasLoggedInUser: false, hasSession: true })
+
+      render(<App />, { wrapper: wrapper(['/blah']) })
+      await waitFor(() =>
+        expect(testLocation.pathname).toBe('/plan/cool-service/cool-guy')
       )
     })
   })
