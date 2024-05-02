@@ -64,11 +64,13 @@ describe('TrialEligibleBanner', () => {
 
     const upgradeLink = screen.getByRole('link', { name: /upgrade/ })
     expect(upgradeLink).toBeInTheDocument()
+    expect(upgradeLink).toHaveAttribute('href', '/plan/gh/codecov/upgrade')
 
     const manageMembersLink = screen.getByRole('link', {
       name: /manage members/,
     })
     expect(manageMembersLink).toBeInTheDocument()
+    expect(manageMembersLink).toHaveAttribute('href', '/members/gh/codecov')
   })
 
   it('calls the start trial function when the "Start Trial" button is clicked', async () => {
