@@ -1,4 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react'
+import { useState } from 'react'
 
 import { RadioTileGroup } from './RadioTileGroup'
 
@@ -64,4 +65,37 @@ export const WithDescription: Story = {
       </RadioTileGroup.Item>
     </RadioTileGroup>
   ),
+}
+
+export const WithControlledInput: Story = {
+  args: {
+    direction: 'row',
+    flex: 1,
+  },
+  render: (args) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [value, setValue] = useState<string | undefined>(undefined)
+
+    return (
+      <RadioTileGroup
+        className="w-full"
+        direction={args.direction}
+        value={value}
+        onValueChange={(value) => {
+          setValue(value)
+          // controlled input state isn't always required, you can also do things here ... like navigation etc.
+        }}
+      >
+        <RadioTileGroup.Item value="radio" flex={args.flex}>
+          <RadioTileGroup.Label>Radio</RadioTileGroup.Label>
+        </RadioTileGroup.Item>
+        <RadioTileGroup.Item value="tile" flex={args.flex}>
+          <RadioTileGroup.Label>Tile</RadioTileGroup.Label>
+        </RadioTileGroup.Item>
+        <RadioTileGroup.Item value="group" flex={args.flex}>
+          <RadioTileGroup.Label>Group</RadioTileGroup.Label>
+        </RadioTileGroup.Item>
+      </RadioTileGroup>
+    )
+  },
 }
