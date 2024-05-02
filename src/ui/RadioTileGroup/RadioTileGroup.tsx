@@ -29,7 +29,42 @@ const Group = React.forwardRef<
     />
   )
 })
-Group.displayName = RadioGroupPrimitive.Root.displayName
+Group.displayName = 'RadioTileGroup'
+
+const label = cva(['font-medium'])
+interface LabelProps
+  extends React.HTMLAttributes<HTMLParagraphElement>,
+    VariantProps<typeof label> {}
+
+const Label = React.forwardRef<HTMLParagraphElement, LabelProps>(
+  ({ children, className, ...props }, ref) => {
+    return (
+      <div className="flex items-center justify-between gap-4">
+        <p ref={ref} className={label({ className })} {...props}>
+          {children}
+        </p>
+        <RadioButtonCircle />
+      </div>
+    )
+  }
+)
+Label.displayName = 'RadioTileGroup.Label'
+
+const description = cva(['text-left text-ds-gray-quinary'])
+interface DescriptionProps
+  extends React.HTMLAttributes<HTMLParagraphElement>,
+    VariantProps<typeof description> {}
+
+const Description = React.forwardRef<HTMLParagraphElement, DescriptionProps>(
+  ({ children, className, ...props }, ref) => {
+    return (
+      <p ref={ref} className={description({ className })} {...props}>
+        {children}
+      </p>
+    )
+  }
+)
+Description.displayName = 'RadioTileGroup.Description'
 
 const item = cva(['relative'], {
   variants: {
@@ -44,15 +79,12 @@ const item = cva(['relative'], {
 })
 interface ItemProps
   extends React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item>,
-    VariantProps<typeof item> {
-  label: string
-  description?: string
-}
+    VariantProps<typeof item> {}
 
 const Item = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Item>,
   ItemProps
->(({ className, label, description, flex, ...props }, ref) => {
+>(({ children, className, flex, ...props }, ref) => {
   return (
     <RadioGroupPrimitive.Item
       ref={ref}
@@ -60,13 +92,7 @@ const Item = React.forwardRef<
       {...props}
     >
       <div className="flex h-full flex-col gap-2 rounded-md border border-ds-gray-quaternary p-4">
-        <div className="flex items-center justify-between gap-4">
-          <p className="font-medium">{label}</p>
-          <RadioButtonCircle />
-        </div>
-        {description ? (
-          <p className="text-left text-ds-gray-quinary">{description}</p>
-        ) : null}
+        {children}
       </div>
       <RadioGroupPrimitive.Indicator className="absolute right-0 top-0 h-full w-full">
         <div className="absolute h-full w-full rounded-md border-2 border-ds-blue-darker" />
@@ -79,11 +105,7 @@ const Item = React.forwardRef<
     </RadioGroupPrimitive.Item>
   )
 })
-Item.displayName = RadioGroupPrimitive.Item.displayName
-
-export const RadioTileGroup = Object.assign(Group, {
-  Item,
-})
+Item.displayName = 'RadioTileGroup.Item'
 
 function RadioButtonCircle({ selected = false }: { selected?: boolean }) {
   return selected ? (
@@ -100,3 +122,9 @@ function RadioButtonCircle({ selected = false }: { selected?: boolean }) {
     />
   )
 }
+
+export const RadioTileGroup = Object.assign(Group, {
+  Item,
+  Label,
+  Description,
+})

@@ -33,9 +33,15 @@ export const Default: Story = {
   },
   render: (args) => (
     <RadioTileGroup className="w-full" direction={args.direction}>
-      <RadioTileGroup.Item value="radio" label="Radio" flex={args.flex} />
-      <RadioTileGroup.Item value="tile" label="Tile" flex={args.flex} />
-      <RadioTileGroup.Item value="group" label="Group" flex={args.flex} />
+      <RadioTileGroup.Item value="radio" flex={args.flex}>
+        <RadioTileGroup.Label>Radio</RadioTileGroup.Label>
+      </RadioTileGroup.Item>
+      <RadioTileGroup.Item value="tile" flex={args.flex}>
+        <RadioTileGroup.Label>Tile</RadioTileGroup.Label>
+      </RadioTileGroup.Item>
+      <RadioTileGroup.Item value="group" flex={args.flex}>
+        <RadioTileGroup.Label>Group</RadioTileGroup.Label>
+      </RadioTileGroup.Item>
     </RadioTileGroup>
   ),
 }
@@ -47,12 +53,15 @@ export const WithDescription: Story = {
   },
   render: (args) => (
     <RadioTileGroup className="w-full" direction={args.direction}>
-      <RadioTileGroup.Item
-        value="description"
-        label="Description"
-        description="A RadioTileGroup Item can optionally have a description"
-      />
-      <RadioTileGroup.Item value="noDescription" label="No Description" />
+      <RadioTileGroup.Item value="description" flex={args.flex}>
+        <RadioTileGroup.Label>Description</RadioTileGroup.Label>
+        <RadioTileGroup.Description>
+          A RadioTileGroup Item can optionally have a description
+        </RadioTileGroup.Description>
+      </RadioTileGroup.Item>
+      <RadioTileGroup.Item value="noDescription" flex={args.flex}>
+        <RadioTileGroup.Label>No Description</RadioTileGroup.Label>
+      </RadioTileGroup.Item>
     </RadioTileGroup>
   ),
 }
