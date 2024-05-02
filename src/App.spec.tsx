@@ -25,17 +25,6 @@ jest.mock('./pages/TermsOfService', () => () => 'TermsOfService')
 jest.mock('./pages/EnterpriseLandingPage', () => () => 'EnterpriseLandingPage')
 jest.mock('./pages/SyncProviderPage', () => () => 'SyncProviderPage')
 
-jest.mock('./shared/GlobalBanners', () => () => '')
-jest.mock('./shared/GlobalTopBanners', () => () => '')
-jest.mock('./layouts/Header', () => () => '')
-jest.mock('./layouts/Footer', () => () => '')
-
-jest.mock('@tanstack/react-query-devtools', () => ({
-  ReactQueryDevtools: () => 'ReactQueryDevtools',
-}))
-
-jest.mock('config')
-
 const internalUser = {
   email: 'internal@user.com',
   name: 'Internal User',
@@ -551,7 +540,7 @@ describe('App', () => {
       )
     })
 
-    it.only('redirects to plan page if to param === plan', async () => {
+    it('redirects to plan page if to param === plan', async () => {
       jest.mock('services/navigation', () => ({
         ...jest.requireActual('services/navigation'),
         useLocationParams: jest.fn(),
