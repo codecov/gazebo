@@ -66,10 +66,12 @@ describe('SeatsLimitReachedBanner', () => {
 
     const upgradeLink = screen.getByRole('link', { name: /Upgrade/ })
     expect(upgradeLink).toBeInTheDocument()
+    expect(upgradeLink).toHaveAttribute('href', '/plan/gh/codecov/upgrade')
 
     const manageMembersLink = screen.getByRole('link', {
       name: /manage members/,
     })
     expect(manageMembersLink).toBeInTheDocument()
+    expect(manageMembersLink).toHaveAttribute('href', '/members/gh/codecov')
   })
 })

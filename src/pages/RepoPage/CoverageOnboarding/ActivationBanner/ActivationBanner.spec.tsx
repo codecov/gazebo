@@ -7,6 +7,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import ActivationBanner from './ActivationBanner'
 
 jest.mock('./TrialEligibleBanner', () => () => 'TrialEligibleBanner')
+jest.mock('./SeatsLimitReachedBanner', () => () => 'SeatsLimitReachedBanner')
 
 const queryClient = new QueryClient()
 
@@ -44,13 +45,15 @@ const mockTrialData = {
   trialTotalDays: 0,
   pretrialUsersCount: 0,
   planUserCount: 1,
+  hasSeatsLeft: true,
 }
 
 describe('ActivationBanner', () => {
   function setup(
     privateRepos = true,
     trialStatus = 'NOT_STARTED',
-    value = 'users-basic'
+    value = 'users-basic',
+    hasSeatsLeft = true
   ) {
     server.use(
       graphql.query('GetPlanData', (req, res, ctx) => {
@@ -63,6 +66,7 @@ describe('ActivationBanner', () => {
                 ...mockTrialData,
                 trialStatus,
                 value,
+                hasSeatsLeft,
               },
               pretrialPlan: {
                 baseUnitPrice: 10,
@@ -88,12 +92,22 @@ describe('ActivationBanner', () => {
   })
 
   it('does not render trial eligible banner if user is not eligible to trial', async () => {
-    setup(false)
+    setup(false, 'ONGOING', 'users-basic', true)
     const { container } = render(<ActivationBanner />, { wrapper })
 
     await waitFor(() => queryClient.isFetching)
     await waitFor(() => !queryClient.isFetching)
 
     expect(container).toBeEmptyDOMElement()
+  })
+
+  it('renders seats limit reached banner if user has no seats left', async () => {
+    setup(true, 'ONGOING', 'users-basic', false)
+    render(<ActivationBanner />, { wrapper })
+
+    const seatsLimitReachedBanner = await screen.findByText(
+      /SeatsLimitReachedBanner/
+    )
+    expect(seatsLimitReachedBanner).toBeInTheDocument()
   })
 })
