@@ -19,17 +19,6 @@ const ExampleBlurb = () => {
       >
         our CLI.
       </A>
-      <br />
-      <br />
-      &#128161; Check out our{' '}
-      <A
-        to={{ pageName: 'codecovYamlValidator' }}
-        isExternal
-        hook="codecov-yaml-extension-intro"
-      >
-        YAML validator
-      </A>{' '}
-      VSCode extension
     </div>
   )
 }
