@@ -7,7 +7,7 @@ import { userEvent } from '@testing-library/user-event'
 
 import { RadioTileGroup } from './RadioTileGroup'
 
-describe('Card', () => {
+describe('RadioTileGroup', () => {
   function setup() {
     return {
       user: userEvent.setup(),
@@ -17,8 +17,12 @@ describe('Card', () => {
   it('renders', async () => {
     render(
       <RadioTileGroup>
-        <RadioTileGroup.Item value="asdf" label="Asdf" />
-        <RadioTileGroup.Item value="jkl;" label="Jkl;" />
+        <RadioTileGroup.Item value="asdf">
+          <RadioTileGroup.Label>Asdf</RadioTileGroup.Label>
+        </RadioTileGroup.Item>
+        <RadioTileGroup.Item value="jkl;">
+          <RadioTileGroup.Label>Jkl;</RadioTileGroup.Label>
+        </RadioTileGroup.Item>
       </RadioTileGroup>
     )
     const item1 = await screen.findByText('Asdf')
@@ -27,15 +31,16 @@ describe('Card', () => {
     expect(item2).toBeInTheDocument()
   })
 
-  describe('Item description', () => {
+  describe('with item description', () => {
     it('renders', async () => {
       render(
         <RadioTileGroup>
-          <RadioTileGroup.Item
-            value="asdf"
-            label="Asdf"
-            description="This is a description."
-          />
+          <RadioTileGroup.Item value="asdf">
+            <RadioTileGroup.Label>Asdf</RadioTileGroup.Label>
+            <RadioTileGroup.Description>
+              This is a description.
+            </RadioTileGroup.Description>
+          </RadioTileGroup.Item>
         </RadioTileGroup>
       )
       const description = await screen.findByText('This is a description.')
@@ -48,8 +53,12 @@ describe('Card', () => {
       const { user } = setup()
       render(
         <RadioTileGroup>
-          <RadioTileGroup.Item value="asdf" label="Asdf" />
-          <RadioTileGroup.Item value="jkl;" label="Jkl;" />
+          <RadioTileGroup.Item value="asdf">
+            <RadioTileGroup.Label>Asdf</RadioTileGroup.Label>
+          </RadioTileGroup.Item>
+          <RadioTileGroup.Item value="jkl;">
+            <RadioTileGroup.Label>Jkl;</RadioTileGroup.Label>
+          </RadioTileGroup.Item>
         </RadioTileGroup>
       )
       const tile = await screen.findByText('Asdf')
