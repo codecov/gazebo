@@ -1,8 +1,4 @@
-import {
-  render,
-  screen,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { RadioTileGroup } from './RadioTileGroup'
@@ -69,9 +65,7 @@ describe('RadioTileGroup', () => {
       const selected = await screen.findByTestId('radio-button-circle-selected')
       expect(selected).toBeInTheDocument()
 
-      await user.click(tile2)
-
-      await waitForElementToBeRemoved(selected)
+      await user.click(tile2) //asdf
 
       expect(selected).not.toBeInTheDocument()
 
