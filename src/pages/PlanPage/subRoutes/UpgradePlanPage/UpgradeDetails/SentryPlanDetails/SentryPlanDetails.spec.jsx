@@ -125,6 +125,7 @@ const mockPlanData = {
   trialTotalDays: 0,
   pretrialUsersCount: 0,
   planUserCount: 1,
+  hasSeatsLeft: true,
 }
 
 const server = setupServer()
