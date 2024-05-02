@@ -83,6 +83,7 @@
     "react-router-dom": "^5.2.1",
     "react-router-dom-v5-compat": "^6.15.0",
     "react-use": "^17.2.4",
+    "tailwind-merge": "^2.3.0",
     "victory": "^36.6.11",
     "yup": "^0.32.11",
     "zod": "^3.21.4"
