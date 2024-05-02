@@ -11,6 +11,7 @@ import { providerToName } from 'shared/utils'
 import Spinner from 'ui/Spinner'
 import TabNavigation from 'ui/TabNavigation'
 
+import ActivationBanner from './ActivationBanner'
 import CircleCI from './CircleCI'
 import GitHubActions from './GitHubActions'
 import IntroBlurb from './IntroBlurb'
@@ -43,6 +44,7 @@ function Content({ provider }: { provider: string }) {
           { pageName: 'newOtherCI' },
         ]}
       />
+      <ActivationBanner />
       <div className="mt-6">
         <Switch>
           <SentryRoute path="/:provider/:owner/:repo/new" exact>
