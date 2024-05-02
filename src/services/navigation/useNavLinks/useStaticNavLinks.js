@@ -391,7 +391,7 @@ export function useStaticNavLinks() {
       path: () => {
         return `/login`
       },
-      isExternalLink: true,
+      isExternalLink: false,
     },
   }
 }
