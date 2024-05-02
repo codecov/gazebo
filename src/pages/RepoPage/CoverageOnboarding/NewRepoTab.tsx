@@ -11,6 +11,7 @@ import { providerToName } from 'shared/utils'
 import Spinner from 'ui/Spinner'
 import TabNavigation from 'ui/TabNavigation'
 
+import ActivationBanner from './ActivationBanner'
 import CircleCI from './CircleCI'
 import GitHubActions from './GitHubActions'
 import IntroBlurb from './IntroBlurb'
@@ -23,7 +24,7 @@ const Loader = () => (
   </div>
 )
 
-function Content({ provider }) {
+function Content({ provider }: { provider: string }) {
   if (providerToName(provider) !== 'Github') {
     return (
       <div className="mt-6">
@@ -43,6 +44,7 @@ function Content({ provider }) {
           { pageName: 'newOtherCI' },
         ]}
       />
+      <ActivationBanner />
       <div className="mt-6">
         <Switch>
           <SentryRoute path="/:provider/:owner/:repo/new" exact>
@@ -66,8 +68,14 @@ Content.propTypes = {
   provider: PropTypes.string,
 }
 
+interface URLParams {
+  provider: string
+  owner: string
+  repo: string
+}
+
 function NewRepoTab() {
-  const { provider, owner, repo } = useParams()
+  const { provider, owner, repo } = useParams<URLParams>()
   const { data } = useRepo({ provider, owner, repo })
   const { hardRedirect } = useRedirect({ href: `/${provider}` })
 
