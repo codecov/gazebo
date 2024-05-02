@@ -175,7 +175,7 @@ describe('useRepo', () => {
         )
       )
     })
-    it('can return an owner not activated error', async () => {
+    it('returns a subset of data when owner not activated', async () => {
       setup({ isOwnerNotActivatedError: true })
       const { result } = renderHook(
         () =>
@@ -187,13 +187,12 @@ describe('useRepo', () => {
         { wrapper }
       )
 
-      await waitFor(() => expect(result.current.isError).toBeTruthy())
-
       await waitFor(() =>
-        expect(result.current.error).toEqual(
+        expect(result.current.data).toEqual(
           expect.objectContaining({
-            status: 403,
-            dev: 'useRepo - 403 OwnerNotActivatedError',
+            isCurrentUserActivated: false,
+            repository: null,
+            isRepoPrivate: true,
           })
         )
       )
