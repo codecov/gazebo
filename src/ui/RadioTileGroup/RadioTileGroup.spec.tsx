@@ -27,7 +27,29 @@ describe('RadioTileGroup', () => {
     expect(item2).toBeInTheDocument()
   })
 
-  describe('with item description', () => {
+  describe('item title', () => {
+    it('has htmlFor attribute when used inside Item', async () => {
+      render(
+        <RadioTileGroup>
+          <RadioTileGroup.Item value="test">
+            <RadioTileGroup.Label>Label</RadioTileGroup.Label>
+          </RadioTileGroup.Item>
+        </RadioTileGroup>
+      )
+      const label = await screen.findByText('Label')
+      expect(label).toBeInTheDocument()
+      expect(label.hasAttribute('for')).toBeTruthy()
+    })
+
+    it('does not have htmlFor attribute when used outside of Item', async () => {
+      render(<RadioTileGroup.Label>Label</RadioTileGroup.Label>)
+      const label = await screen.findByText('Label')
+      expect(label).toBeInTheDocument()
+      expect(label.hasAttribute('for')).toBeFalsy()
+    })
+  })
+
+  describe('item description', () => {
     it('renders', async () => {
       render(
         <RadioTileGroup>
@@ -65,7 +87,7 @@ describe('RadioTileGroup', () => {
       const selected = await screen.findByTestId('radio-button-circle-selected')
       expect(selected).toBeInTheDocument()
 
-      await user.click(tile2) //asdf
+      await user.click(tile2)
 
       expect(selected).not.toBeInTheDocument()
 

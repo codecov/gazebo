@@ -1,6 +1,7 @@
+import * as LabelPrimitive from '@radix-ui/react-label'
 import * as RadioGroupPrimitive from '@radix-ui/react-radio-group'
 import { cva, VariantProps } from 'cva'
-import React from 'react'
+import React, { createContext, useContext, useId } from 'react'
 
 const group = cva(['flex', 'gap-4'], {
   variants: {
@@ -31,23 +32,74 @@ const Group = React.forwardRef<
 })
 Group.displayName = 'RadioTileGroup'
 
+const item = cva(['relative'], {
+  variants: {
+    flex: {
+      1: 'flex-1',
+      none: 'flex-none',
+    },
+  },
+  defaultVariants: {
+    flex: 1,
+  },
+})
+interface ItemProps
+  extends React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item>,
+    VariantProps<typeof item> {}
+const ItemContext = createContext<string | null>(null)
+
+const Item = React.forwardRef<
+  React.ElementRef<typeof RadioGroupPrimitive.Item>,
+  ItemProps
+>(({ children, className, flex, ...props }, ref) => {
+  const itemId = useId()
+  return (
+    <RadioGroupPrimitive.Item
+      id={itemId}
+      ref={ref}
+      className={item({ className, flex })}
+      {...props}
+    >
+      <ItemContext.Provider value={itemId}>
+        <div className="flex h-full flex-col gap-2 rounded-md border border-ds-gray-quaternary p-4">
+          {children}
+        </div>
+        <RadioGroupPrimitive.Indicator className="absolute right-0 top-0 h-full w-full">
+          <div className="absolute h-full w-full rounded-md border-2 border-ds-blue-darker" />
+          <div className="h-full w-full rounded-md border border-ds-blue-darker p-4">
+            <div className="flex h-5 w-full items-center justify-end">
+              <RadioButtonCircle selected />
+            </div>
+          </div>
+        </RadioGroupPrimitive.Indicator>
+      </ItemContext.Provider>
+    </RadioGroupPrimitive.Item>
+  )
+})
+Item.displayName = 'RadioTileGroup.Item'
+
 const label = cva(['font-medium'])
 interface LabelProps
-  extends React.HTMLAttributes<HTMLParagraphElement>,
+  extends React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>,
     VariantProps<typeof label> {}
 
-const Label = React.forwardRef<HTMLParagraphElement, LabelProps>(
-  ({ children, className, ...props }, ref) => {
-    return (
-      <div className="flex items-center justify-between gap-4">
-        <p ref={ref} className={label({ className })} {...props}>
-          {children}
-        </p>
-        <RadioButtonCircle />
-      </div>
-    )
-  }
-)
+const Label = React.forwardRef<
+  React.ElementRef<typeof LabelPrimitive.Root>,
+  LabelProps
+>(({ className, ...props }, ref) => {
+  const itemId = useContext(ItemContext)
+  return (
+    <div className="flex items-center justify-between gap-4">
+      <LabelPrimitive.Root
+        {...{ htmlFor: itemId ?? undefined }}
+        ref={ref}
+        className={label({ className })}
+        {...props}
+      />
+      <RadioButtonCircle />
+    </div>
+  )
+})
 Label.displayName = 'RadioTileGroup.Label'
 
 const description = cva(['text-left text-ds-gray-quinary'])
@@ -65,47 +117,6 @@ const Description = React.forwardRef<HTMLParagraphElement, DescriptionProps>(
   }
 )
 Description.displayName = 'RadioTileGroup.Description'
-
-const item = cva(['relative'], {
-  variants: {
-    flex: {
-      1: 'flex-1',
-      none: 'flex-none',
-    },
-  },
-  defaultVariants: {
-    flex: 1,
-  },
-})
-interface ItemProps
-  extends React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item>,
-    VariantProps<typeof item> {}
-
-const Item = React.forwardRef<
-  React.ElementRef<typeof RadioGroupPrimitive.Item>,
-  ItemProps
->(({ children, className, flex, ...props }, ref) => {
-  return (
-    <RadioGroupPrimitive.Item
-      ref={ref}
-      className={item({ className, flex })}
-      {...props}
-    >
-      <div className="flex h-full flex-col gap-2 rounded-md border border-ds-gray-quaternary p-4">
-        {children}
-      </div>
-      <RadioGroupPrimitive.Indicator className="absolute right-0 top-0 h-full w-full">
-        <div className="absolute h-full w-full rounded-md border-2 border-ds-blue-darker" />
-        <div className="h-full w-full rounded-md border border-ds-blue-darker p-4">
-          <div className="flex h-5 w-full items-center justify-end">
-            <RadioButtonCircle selected />
-          </div>
-        </div>
-      </RadioGroupPrimitive.Indicator>
-    </RadioGroupPrimitive.Item>
-  )
-})
-Item.displayName = 'RadioTileGroup.Item'
 
 function RadioButtonCircle({ selected = false }: { selected?: boolean }) {
   return selected ? (
