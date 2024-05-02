@@ -101,7 +101,7 @@ describe('ActivationBanner', () => {
     expect(container).toBeEmptyDOMElement()
   })
 
-  it('renders seats limit reached banner if user has no seats left', async () => {
+  it('renders seats limit reached banner if user has no seats left and on free plan', async () => {
     setup(true, 'ONGOING', 'users-basic', false)
     render(<ActivationBanner />, { wrapper })
 
