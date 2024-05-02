@@ -31,6 +31,7 @@ const SyncProviderPage = lazy(() => import('./pages/SyncProviderPage'))
 
 interface URLParams {
   provider: string
+  to: string
 }
 
 const HomePageRedirect = () => {
@@ -38,11 +39,16 @@ const HomePageRedirect = () => {
   const { data: currentUser } = useUser()
   const { data: internalUser } = useInternalUser({})
   const { params } = useLocationParams()
+  // @ts-expect-error useLocationParams needs to be typed
+  const { setup_action: setupAction, to } = params
 
   let redirectURL = '/login'
 
   if (internalUser && internalUser.owners) {
     redirectURL = `/${internalUser.owners[0]?.service}/${internalUser.owners[0]?.username}`
+    if (to === 'plan') {
+      redirectURL = '/plan' + redirectURL
+    }
   }
 
   if (provider && isProvider(provider) && currentUser) {
@@ -50,8 +56,6 @@ const HomePageRedirect = () => {
       currentUser.owner?.defaultOrgUsername ?? currentUser.user?.username
     redirectURL = `/${provider}/${defaultOrg}`
 
-    // @ts-expect-error useLocationParams needs to be typed
-    const { setup_action: setupAction } = params
     if (setupAction) {
       redirectURL += `?setup_action=${setupAction}`
     }
