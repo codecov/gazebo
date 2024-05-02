@@ -12,7 +12,6 @@ import Spinner from 'ui/Spinner'
 import TabNavigation from 'ui/TabNavigation'
 
 import ActivationBanner from './ActivationBanner'
-
 import CircleCI from './CircleCI'
 import GitHubActions from './GitHubActions'
 import IntroBlurb from './IntroBlurb'
