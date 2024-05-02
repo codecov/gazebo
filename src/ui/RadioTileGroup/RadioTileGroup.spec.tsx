@@ -64,12 +64,12 @@ describe('RadioTileGroup', () => {
       const tile = await screen.findByText('Asdf')
       const tile2 = await screen.findByText('Jkl;')
 
-      user.click(tile)
+      await user.click(tile)
 
       const selected = await screen.findByTestId('radio-button-circle-selected')
       expect(selected).toBeInTheDocument()
 
-      user.click(tile2)
+      await user.click(tile2)
 
       await waitForElementToBeRemoved(selected)
 
