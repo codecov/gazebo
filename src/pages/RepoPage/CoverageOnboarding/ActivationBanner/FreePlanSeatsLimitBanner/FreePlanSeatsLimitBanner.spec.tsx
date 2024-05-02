@@ -5,7 +5,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import SeatsLimitReachedBanner from './SeatsLimitReachedBanner'
+import SeatsLimitReachedBanner from './FreePlanSeatsLimitBanner'
 
 const queryClient = new QueryClient()
 

@@ -1,9 +1,9 @@
 import { useParams } from 'react-router-dom'
 
 import { TrialStatuses, usePlanData } from 'services/account'
-import { isBasicPlan } from 'shared/utils/billing'
+import { isBasicPlan, isFreePlan } from 'shared/utils/billing'
 
-import SeatsLimitReachedBanner from './SeatsLimitReachedBanner'
+import FreePlanSeatsLimitBanner from './FreePlanSeatsLimitBanner'
 import TrialEligibleBanner from './TrialEligibleBanner'
 
 interface URLParams {
@@ -28,8 +28,8 @@ function ActivationBanner() {
     return <TrialEligibleBanner />
   }
 
-  if (seatsLimitReached) {
-    return <SeatsLimitReachedBanner />
+  if (seatsLimitReached && isFreePlan(planData?.plan?.value)) {
+    return <FreePlanSeatsLimitBanner />
   }
 
   return null

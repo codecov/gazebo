@@ -7,7 +7,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import ActivationBanner from './ActivationBanner'
 
 jest.mock('./TrialEligibleBanner', () => () => 'TrialEligibleBanner')
-jest.mock('./SeatsLimitReachedBanner', () => () => 'SeatsLimitReachedBanner')
+jest.mock('./FreePlanSeatsLimitBanner', () => () => 'FreePlanSeatsLimitBanner')
 
 
 const queryClient = new QueryClient()
@@ -107,9 +107,9 @@ describe('ActivationBanner', () => {
     setup(true, 'ONGOING', 'users-basic', false)
     render(<ActivationBanner />, { wrapper })
 
-    const seatsLimitReachedBanner = await screen.findByText(
-      /SeatsLimitReachedBanner/
+    const FreePlanSeatsLimitBanner = await screen.findByText(
+      /FreePlanSeatsLimitBanner/
     )
-    expect(seatsLimitReachedBanner).toBeInTheDocument()
+    expect(FreePlanSeatsLimitBanner).toBeInTheDocument()
   })
 })
