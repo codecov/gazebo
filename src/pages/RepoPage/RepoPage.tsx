@@ -62,7 +62,6 @@ function Routes({
 
   const productEnabled =
     (coverageEnabled || bundleAnalysisEnabled) && isCurrentUserActivated
-  console.log(productEnabled)
   const showUnauthorizedMessageCoverage =
     coverageEnabled && isRepoPrivate && !isCurrentUserActivated
   const showUnauthorizedMessageBundles =

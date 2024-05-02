@@ -104,8 +104,8 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
   }
 
   if (
-    repoOverview?.bundleAnalysisEnabled ||
-    (repoOverview?.coverageEnabled && repoData?.isCurrentUserActivated)
+    (repoOverview?.bundleAnalysisEnabled || repoOverview?.coverageEnabled) &&
+    repoData?.isCurrentUserActivated
   ) {
     tabs.push({ pageName: 'commits' }, { pageName: 'pulls' })
   }

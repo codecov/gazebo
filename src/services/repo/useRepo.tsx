@@ -109,7 +109,7 @@ export function useRepo({ provider, owner, repo, opts = {} }: UseRepoArgs) {
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
           return {
-            isCurrentUserActivated: data?.owner?.isCurrentUserActivated,
+            isCurrentUserActivated: false,
             repository: null,
             // OwnerNotActivated can only be returned if a repo is private and both
             // coverage and BA is enabled
