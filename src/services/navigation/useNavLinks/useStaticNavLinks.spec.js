@@ -28,13 +28,16 @@ describe('useStaticNavLinks', () => {
       ${links.security}                      | ${`${config.MARKETING_BASE_URL}/security`}
       ${links.gdpr}                          | ${`${config.MARKETING_BASE_URL}/gdpr`}
       ${links.pricing}                       | ${`${config.MARKETING_BASE_URL}/pricing`}
-      ${links.support}                       | ${`https://codecovpro.zendesk.com/hc/en-us`}
-      ${links.docs}                          | ${`https://docs.codecov.io/`}
       ${links.enterprise}                    | ${`${config.MARKETING_BASE_URL}/self-hosted`}
-      ${links.githubMarketplace}             | ${`https://github.com/marketplace/codecov`}
       ${links.freeTrial}                     | ${`${config.MARKETING_BASE_URL}/codecov-free-trial`}
       ${links.whyTestCode}                   | ${`${config.MARKETING_BASE_URL}/resource/what-is-code-coverage`}
       ${links.demo}                          | ${`${config.MARKETING_BASE_URL}/demo`}
+      ${links.blog}                          | ${`${config.MARKETING_BASE_URL}/blog`}
+      ${links.sales}                         | ${`${config.MARKETING_BASE_URL}/sales`}
+      ${links.termsOfService}                | ${`${config.MARKETING_BASE_URL}/terms-of-service`}
+      ${links.githubMarketplace}             | ${`https://github.com/marketplace/codecov`}
+      ${links.support}                       | ${`https://codecovpro.zendesk.com/hc/en-us`}
+      ${links.docs}                          | ${`https://docs.codecov.io/`}
       ${links.oauthTroubleshoot}             | ${'https://docs.codecov.com/docs/github-oauth-application-authorization#troubleshooting'}
       ${links.teamPlanAbout}                 | ${'https://about.codecov.io/team-plan-compare'}
       ${links.flags}                         | ${'https://docs.codecov.com/docs/flags'}
@@ -44,8 +47,6 @@ describe('useStaticNavLinks', () => {
       ${links.codecovAppInstallation}        | ${`https://github.com/apps/${config.GH_APP}/installations/new`}
       ${links.deployingFlagsSupport}         | ${'https://docs.codecov.com/docs/implementing-flags-with-timescaledb'}
       ${links.deployingComponentsSupport}    | ${'https://docs.codecov.com/docs/components'}
-      ${links.blog}                          | ${`${config.MARKETING_BASE_URL}/blog`}
-      ${links.sales}                         | ${`${config.MARKETING_BASE_URL}/sales`}
       ${links.dedicatedEnterpriseCloudGuide} | ${`https://docs.codecov.com/docs/codecov-dedicated-enterprise-cloud-install-steps`}
       ${links.generateSelfHostedLicense}     | ${`https://github.com/codecov/self-hosted/tree/main#license-generation`}
       ${links.uploader}                      | ${'https://docs.codecov.com/docs/codecov-uploader'}
@@ -77,9 +78,9 @@ describe('useStaticNavLinks', () => {
       ${links.feedback}                      | ${'https://github.com/codecov/feedback/discussions'}
       ${links.nextJSCustomConfig}            | ${'https://nextjs.org/docs/app/api-reference/next-config-js/webpack'}
       ${links.bundleConfigFeedback}          | ${'https://github.com/codecov/feedback/issues/270'}
-      ${links.termsOfService}                | ${`${config.MARKETING_BASE_URL}/terms-of-service`}
       ${links.quickStart}                    | ${'https://docs.codecov.com/docs/quick-start'}
       ${links.installSelfHosted}             | ${'https://docs.codecov.com/docs/installing-codecov-self-hosted'}
+      ${links.login}                         | ${`/login`}
     `('static links return path', ({ link, outcome }) => {
       it(`${link.text}: Returns the correct link`, () => {
         expect(link.path()).toBe(outcome)

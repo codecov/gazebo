@@ -386,5 +386,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    login: {
+      text: 'Login',
+      path: () => {
+        return `/login`
+      },
+      isExternalLink: true,
+    },
   }
 }

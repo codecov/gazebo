@@ -1,11 +1,12 @@
+import config from 'config'
+
 import A from 'ui/A'
 import Button from 'ui/Button'
 
 import { LogoButton } from './DesktopMenu'
 
 function GuestHeader() {
-  const to = window.location.href
-
+  console.log({ url: config.REACT_APP_BASE_URL })
   return (
     <>
       <div data-testid="guest-header" className="flex items-center gap-4">
@@ -47,11 +48,11 @@ function GuestHeader() {
           className="mx-2 flex items-center justify-between gap-4 md:mx-0"
         >
           <A
-            to={{ pageName: 'signIn', options: { to } }}
+            to={{ pageName: 'login' }}
             variant="guestHeader"
             isExternal={false}
-            data-testid="sign-in-link"
-            hook="guest-header-sign-in-link"
+            data-testid="login-link"
+            hook="guest-header-login-link"
           >
             Login
           </A>

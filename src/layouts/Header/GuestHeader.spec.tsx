@@ -81,12 +81,9 @@ describe('GuestHeader', () => {
           wrapper,
         })
 
-        const link = await screen.findByTestId('sign-in-link')
+        const link = await screen.findByTestId('login-link')
         expect(link).toBeInTheDocument()
-        expect(link).toHaveAttribute(
-          'href',
-          '/login/gh?to=http%3A%2F%2Flocalhost%2F'
-        )
+        expect(link).toHaveAttribute('href', '/login')
       })
     })
     describe('start trial link', () => {
