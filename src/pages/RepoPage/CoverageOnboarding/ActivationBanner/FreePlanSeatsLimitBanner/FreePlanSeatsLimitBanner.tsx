@@ -12,7 +12,7 @@ function FreePlanSeatsLimitBanner() {
           <h2 className="font-semibold">&#8505; All Seats Taken</h2>
         </BannerHeading>
         <div className="flex justify-between">
-          <p>
+          <p className="pr-2">
             Your organization is on the Developer free plan, limited to one
             seat, which is currently occupied. You can add any amount of seats
             by upgrading for more flexibility.{' '}
