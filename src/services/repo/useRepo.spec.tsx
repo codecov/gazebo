@@ -190,7 +190,7 @@ describe('useRepo', () => {
       await waitFor(() =>
         expect(result.current.data).toEqual(
           expect.objectContaining({
-            isCurrentUserActivated: null,
+            isCurrentUserActivated: false,
             repository: null,
             isRepoPrivate: true,
           })
