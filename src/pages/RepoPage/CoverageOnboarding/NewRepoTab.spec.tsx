@@ -14,6 +14,7 @@ jest.mock('shared/useRedirect')
 const mockedUseRedirect = useRedirect as jest.Mock
 jest.mock('./GitHubActions', () => () => 'GitHubActions')
 jest.mock('./OtherCI', () => () => 'OtherCI')
+jest.mock('./ActivationBanner', () => () => 'ActivationBanner')
 
 const mockCurrentUser = {
   me: {
@@ -23,11 +24,15 @@ const mockCurrentUser = {
   },
 }
 
-const mockGetRepo = (noUploadToken = false, hasCommits = false) => ({
+const mockGetRepo = (
+  noUploadToken = false,
+  hasCommits = false,
+  isCurrentUserActivated = false
+) => ({
   owner: {
     isCurrentUserPartOfOrg: true,
     isAdmin: null,
-    isCurrentUserActivated: null,
+    isCurrentUserActivated,
     repository: {
       __typename: 'Repository',
       private: false,
@@ -93,10 +98,15 @@ afterAll(() => server.close())
 interface SetupArgs {
   hasCommits?: boolean
   noUploadToken?: boolean
+  isCurrentUserActivated?: boolean
 }
 
 describe('NewRepoTab', () => {
-  function setup({ hasCommits = false, noUploadToken = false }: SetupArgs) {
+  function setup({
+    hasCommits = false,
+    noUploadToken = false,
+    isCurrentUserActivated = false,
+  }: SetupArgs) {
     const user = userEvent.setup()
     const hardRedirect = jest.fn()
     mockedUseRedirect.mockImplementation((data) => ({
@@ -105,7 +115,12 @@ describe('NewRepoTab', () => {
 
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockGetRepo(noUploadToken, hasCommits)))
+        res(
+          ctx.status(200),
+          ctx.data(
+            mockGetRepo(noUploadToken, hasCommits, isCurrentUserActivated)
+          )
+        )
       ),
       graphql.query('CurrentUser', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockCurrentUser))
@@ -135,6 +150,13 @@ describe('NewRepoTab', () => {
         name: /Let's get your repo covered/,
       })
       expect(header).toBeInTheDocument()
+    })
+
+    it('renders ActivationBanner', async () => {
+      render(<NewRepoTab />, { wrapper: wrapper() })
+
+      const banner = await screen.findByText('ActivationBanner')
+      expect(banner).toBeInTheDocument()
     })
 
     describe('users provider is github', () => {
@@ -256,6 +278,21 @@ describe('NewRepoTab', () => {
           expect(content).toBeInTheDocument()
         })
       })
+    })
+  })
+
+  describe('user is activated', () => {
+    it('does not render ActivationBanner', async () => {
+      setup({
+        isCurrentUserActivated: true,
+      })
+      render(<NewRepoTab />, { wrapper: wrapper() })
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+
+      const banner = screen.queryByText('ActivationBanner')
+      expect(banner).not.toBeInTheDocument()
     })
   })
 })

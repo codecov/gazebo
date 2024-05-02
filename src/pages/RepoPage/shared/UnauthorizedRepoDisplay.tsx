@@ -5,7 +5,7 @@ import Button from 'ui/Button'
 
 export const UnauthorizedRepoDisplay = () => {
   return (
-    <div className="flex h-full flex-col items-center justify-center text-center">
+    <div className="flex h-full flex-col items-center justify-center pb-16 text-center">
       <img src={img403} alt="Forbidden" className="w-1/6" />
       <h1 className="mt-6 text-2xl">Unauthorized</h1>
       <p className="mt-6">
