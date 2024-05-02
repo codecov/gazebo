@@ -12,7 +12,7 @@ function PaidPlanSeatsLimitBanner() {
           <h2 className="font-semibold">&#8505; Seats Limit Reached</h2>
         </BannerHeading>
         <div className="flex justify-between">
-          <p>
+          <p className="pr-2">
             Your organization has utilized all available seats on this plan. To
             add more members, please increase your seat count.{' '}
             <A
