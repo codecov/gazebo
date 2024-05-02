@@ -16,6 +16,7 @@ jest.mock('./GitHubActions', () => () => 'GitHubActions')
 jest.mock('./OtherCI', () => () => 'OtherCI')
 jest.mock('./ActivationBanner', () => () => 'ActivationBanner')
 
+
 const mockCurrentUser = {
   me: {
     trackingMetadata: {
