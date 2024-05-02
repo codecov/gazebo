@@ -5,7 +5,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import PaidPlanBanner from './PaidPlanBanner'
+import SeatsLimitReachedBanner from './SeatsLimitReachedBanner'
 
 const queryClient = new QueryClient()
 
@@ -30,7 +30,7 @@ afterAll(() => {
   server.close()
 })
 
-describe('PaidPlanBanner', () => {
+describe('SeatsLimitReachedBanner', () => {
   function setup() {
     const mockTrialMutationVariables = jest.fn()
     const user = userEvent.setup()
@@ -47,7 +47,7 @@ describe('PaidPlanBanner', () => {
 
   it('renders the banner with correct content', () => {
     setup()
-    render(<PaidPlanBanner />, { wrapper })
+    render(<SeatsLimitReachedBanner />, { wrapper })
 
     const bannerHeading = screen.getByRole('heading', {
       name: /All Seats Taken/,
@@ -62,7 +62,7 @@ describe('PaidPlanBanner', () => {
 
   it('renders correct links', () => {
     setup()
-    render(<PaidPlanBanner />, { wrapper })
+    render(<SeatsLimitReachedBanner />, { wrapper })
 
     const upgradeLink = screen.getByRole('link', { name: /Upgrade/ })
     expect(upgradeLink).toBeInTheDocument()

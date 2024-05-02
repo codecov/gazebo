@@ -4,7 +4,7 @@ import BannerContent from 'ui/Banner/BannerContent'
 import BannerHeading from 'ui/Banner/BannerHeading'
 import Button from 'ui/Button'
 
-function PaidPlanBanner() {
+function SeatsLimitReachedBanner() {
   return (
     <Banner variant="plain">
       <BannerContent>
@@ -42,4 +42,4 @@ function PaidPlanBanner() {
   )
 }
 
-export default PaidPlanBanner
+export default SeatsLimitReachedBanner
