@@ -149,6 +149,7 @@ describe('TrialBanner', () => {
                 trialTotalDays: plan.trialTotalDays,
                 pretrialUsersCount: plan.pretrialUsersCount,
                 planUserCount: plan.planUserCount,
+                hasSeatsLeft: true,
               },
             },
           })

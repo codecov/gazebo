@@ -23,6 +23,7 @@ const PlanSchema = z.object({
   trialStartDate: z.string().nullable(),
   trialTotalDays: z.number().nullable(),
   planUserCount: z.number().nullable(),
+  hasSeatsLeft: z.boolean(),
 })
 
 export type Plan = z.infer<typeof PlanSchema>
@@ -75,6 +76,7 @@ export const query = `
         trialStartDate
         trialTotalDays
         planUserCount
+        hasSeatsLeft
       }
       pretrialPlan {
         baseUnitPrice
