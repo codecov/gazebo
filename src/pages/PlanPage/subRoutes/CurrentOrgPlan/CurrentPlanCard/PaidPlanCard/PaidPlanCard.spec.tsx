@@ -33,6 +33,7 @@ const mockProPlan = {
   trialEndDate: '',
   trialTotalDays: 0,
   pretrialUsersCount: 0,
+  hasSeatsLeft: true,
 }
 
 const mockTeamPlan = {
@@ -48,6 +49,7 @@ const mockTeamPlan = {
   trialEndDate: '',
   trialTotalDays: 0,
   pretrialUsersCount: 0,
+  hasSeatsLeft: true,
 }
 
 const mockScheduleDetail = {
