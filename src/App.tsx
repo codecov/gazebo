@@ -31,7 +31,6 @@ const SyncProviderPage = lazy(() => import('./pages/SyncProviderPage'))
 
 interface URLParams {
   provider: string
-  to: string
 }
 
 const HomePageRedirect = () => {
