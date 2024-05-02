@@ -92,17 +92,6 @@ describe('GitHubActions', () => {
     )
   }
 
-  describe('intro blurb', () => {
-    beforeEach(() => setup({}))
-
-    it('renders intro blurb', async () => {
-      render(<GitHubActions />, { wrapper })
-
-      const blurb = await screen.findByTestId('intro-blurb')
-      expect(blurb).toBeInTheDocument()
-    })
-  })
-
   describe('step one', () => {
     it('renders header', async () => {
       setup({})
@@ -246,42 +235,18 @@ describe('GitHubActions', () => {
 
   describe('step three', () => {
     beforeEach(() => setup({}))
-    it('renders first body', async () => {
+    it('renders body', async () => {
       render(<GitHubActions />, { wrapper })
 
-      const body = await screen.findByText(/After you committed your changes/)
+      const body = await screen.findByText(
+        /Once merged to your default branch,/
+      )
       expect(body).toBeInTheDocument()
-    })
-
-    it('renders second body', async () => {
-      render(<GitHubActions />, { wrapper })
-
-      const body = await screen.findByText(/Once merged to the/)
-      expect(body).toBeInTheDocument()
-    })
-
-    it('renders status check image', async () => {
-      render(<GitHubActions />, { wrapper })
-
-      const img = await screen.findByRole('img', {
-        name: 'codecov patch and project',
-      })
-      expect(img).toBeInTheDocument()
     })
   })
 
   describe('ending', () => {
     beforeEach(() => setup({}))
-    it('renders quick start link', async () => {
-      render(<GitHubActions />, { wrapper })
-
-      const link = await screen.findByRole('link', { name: /learn more/ })
-      expect(link).toHaveAttribute(
-        'href',
-        'https://docs.codecov.com/docs/quick-start'
-      )
-    })
-
     it('renders body', async () => {
       render(<GitHubActions />, { wrapper })
 

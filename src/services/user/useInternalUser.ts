@@ -40,22 +40,27 @@ export interface UseInternalUserArgs {
 export const useInternalUser = (opts: UseInternalUserArgs) =>
   useQuery({
     queryKey: ['InternalUser'],
-    queryFn: ({ signal }) => {
-      return Api.get({
-        path: '/user',
-        signal,
-      }).then((res) => {
-        const parsedData = InternalUserSchema.safeParse(res)
+    queryFn: async ({ signal }) => {
+      let response
+      try {
+        response = await Api.get({
+          path: '/user',
+          signal,
+        })
+      } catch (e) {
+        return {} as InternalUserData
+      }
 
-        if (!parsedData.success) {
-          return Promise.reject({
-            status: 404,
-            data: null,
-          })
-        }
+      const parsedData = InternalUserSchema.safeParse(response)
 
-        return parsedData.data
-      })
+      if (!parsedData.success) {
+        return Promise.reject({
+          status: 404,
+          data: null,
+        })
+      }
+
+      return parsedData.data
     },
     ...(!!opts && opts),
   })

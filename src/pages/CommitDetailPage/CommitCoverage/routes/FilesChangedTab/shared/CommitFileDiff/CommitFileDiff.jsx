@@ -8,7 +8,10 @@ import { useComparisonForCommitAndParent } from 'services/comparison/useComparis
 import { transformImpactedFileData } from 'services/comparison/utils'
 import { useNavLinks } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
-import { CODE_RENDERER_TYPE } from 'shared/utils/fileviewer'
+import {
+  CODE_RENDERER_TYPE,
+  STICKY_PADDING_SIZES,
+} from 'shared/utils/fileviewer'
 import A from 'ui/A'
 import CodeRenderer from 'ui/CodeRenderer'
 import CodeRendererInfoRow from 'ui/CodeRenderer/CodeRendererInfoRow'
@@ -63,11 +66,13 @@ function CommitFileDiff({ path }) {
 
   const { fileLabel, headName, isCriticalFile, segments } = comparisonData
 
+  let stickyPadding = undefined
   let fullFilePath = commitFileDiff.path({
     commit,
     tree: path,
   })
   if (overview?.coverageEnabled && overview?.bundleAnalysisEnabled) {
+    stickyPadding = STICKY_PADDING_SIZES.DIFF_LINE_DROPDOWN_PADDING
     fullFilePath = `${fullFilePath}?dropdown=coverage`
   }
 
@@ -108,6 +113,7 @@ function CommitFileDiff({ path }) {
                       ...ignoredUploadIds
                     ).length
                   }
+                  stickyPadding={stickyPadding}
                   {...props}
                   {...segment.lines[i]}
                 />
