@@ -9,7 +9,6 @@ import ActivationBanner from './ActivationBanner'
 jest.mock('./TrialEligibleBanner', () => () => 'TrialEligibleBanner')
 jest.mock('./FreePlanSeatsLimitBanner', () => () => 'FreePlanSeatsLimitBanner')
 
-
 const queryClient = new QueryClient()
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
@@ -55,7 +54,6 @@ describe('ActivationBanner', () => {
     trialStatus = 'NOT_STARTED',
     value = 'users-basic',
     hasSeatsLeft = true
-    value = 'users-basic'
   ) {
     server.use(
       graphql.query('GetPlanData', (req, res, ctx) => {
