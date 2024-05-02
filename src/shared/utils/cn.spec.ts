@@ -25,6 +25,13 @@ describe('cn utility', () => {
 
       expect(className).toEqual('text-white text-base bg-ds-pink-tertiary asdf')
     })
+
+    it('should flatten arrays', () => {
+      const arr = ['b', { c: true, d: false }]
+      const className = cn('a', arr)
+
+      expect(className).toEqual('a b c')
+    })
   })
 
   describe('tailwind-merge functionality', () => {
