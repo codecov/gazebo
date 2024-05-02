@@ -78,7 +78,7 @@ describe('TrialEligibleBanner', () => {
     render(<TrialEligibleBanner />, { wrapper })
 
     const startTrialButton = screen.getByRole('button', {
-      name: /start trial/i,
+      name: /Start Trial/,
     })
     await user.click(startTrialButton)
 
