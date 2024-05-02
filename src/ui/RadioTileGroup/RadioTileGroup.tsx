@@ -3,6 +3,8 @@ import * as RadioGroupPrimitive from '@radix-ui/react-radio-group'
 import { cva, VariantProps } from 'cva'
 import React, { createContext, useContext, useId } from 'react'
 
+import { cn } from 'shared/utils/cn'
+
 const group = cva(['flex', 'gap-4'], {
   variants: {
     direction: {
@@ -24,7 +26,7 @@ const Group = React.forwardRef<
 >(({ className, direction, ...props }, ref) => {
   return (
     <RadioGroupPrimitive.Root
-      className={group({ className, direction })}
+      className={cn(group({ className, direction }))}
       {...props}
       ref={ref}
     />
@@ -57,7 +59,7 @@ const Item = React.forwardRef<
     <RadioGroupPrimitive.Item
       id={itemId}
       ref={ref}
-      className={item({ className, flex })}
+      className={cn(item({ className, flex }))}
       {...props}
     >
       <ItemContext.Provider value={itemId}>
@@ -93,7 +95,7 @@ const Label = React.forwardRef<
       <LabelPrimitive.Root
         {...{ htmlFor: itemId ?? undefined }}
         ref={ref}
-        className={label({ className })}
+        className={cn(label({ className }))}
         {...props}
       />
       <RadioButtonCircle />
@@ -110,7 +112,7 @@ interface DescriptionProps
 const Description = React.forwardRef<HTMLParagraphElement, DescriptionProps>(
   ({ children, className, ...props }, ref) => {
     return (
-      <p ref={ref} className={description({ className })} {...props}>
+      <p ref={ref} className={cn(description({ className }))} {...props}>
         {children}
       </p>
     )
