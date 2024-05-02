@@ -28,17 +28,26 @@ const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
     )
 
 describe('Header', () => {
-  function setup() {
+  function setup(isLoggedIn = false) {
     const mockedUseUser = useUser as jest.Mock
 
-    mockedUseUser.mockReturnValue({ data: loggedInUser })
+    mockedUseUser.mockReturnValue({
+      data: isLoggedIn ? loggedInUser : undefined,
+    })
   }
 
   it('renders the DesktopMenu', () => {
-    setup()
+    setup(true)
 
     render(<Header />, { wrapper: wrapper() })
     const menu = screen.getByTestId('desktop-menu')
+    expect(menu).toBeInTheDocument()
+  })
+  it('renders the GuestHeader', () => {
+    setup()
+
+    render(<Header />, { wrapper: wrapper() })
+    const menu = screen.getByTestId('guest-header')
     expect(menu).toBeInTheDocument()
   })
 })

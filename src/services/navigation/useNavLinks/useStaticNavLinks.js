@@ -11,8 +11,8 @@ export function useStaticNavLinks() {
       openNewTab: true,
     },
     freeTrial: {
-      text: 'Trial',
-      path: () => `${config.MARKETING_BASE_URL}/trial`,
+      text: 'Free Trial',
+      path: () => `${config.MARKETING_BASE_URL}/codecov-free-trial`,
       isExternalLink: true,
       openNewTab: true,
     },
@@ -43,6 +43,42 @@ export function useStaticNavLinks() {
     pricing: {
       text: 'Pricing',
       path: () => `${config.MARKETING_BASE_URL}/pricing`,
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    termsOfService: {
+      text: 'Terms of Service',
+      path: () => `${config.MARKETING_BASE_URL}/terms-of-service`,
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    blog: {
+      text: 'Blog',
+      path: () => `${config.MARKETING_BASE_URL}/blog`,
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    sales: {
+      text: 'Sales Contact',
+      path: () => `${config.MARKETING_BASE_URL}/sales`,
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    enterprise: {
+      text: 'Self Hosted',
+      path: () => `${config.MARKETING_BASE_URL}/self-hosted`,
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    teamPlanAbout: {
+      text: 'Team plan',
+      path: () => `${config.MARKETING_BASE_URL}/team-plan-compare`,
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    whyTestCode: {
+      text: 'What is Code Coverage',
+      path: () => `${config.MARKETING_BASE_URL}/resource/what-is-code-coverage`,
       isExternalLink: true,
       openNewTab: true,
     },
@@ -92,12 +128,6 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
-    enterprise: {
-      text: 'Self Hosted',
-      path: () => `${config.MARKETING_BASE_URL}/self-hosted`,
-      isExternalLink: true,
-      openNewTab: true,
-    },
     github: {
       path: () => 'https://github.com/marketplace/codecov',
       isExternalLink: true,
@@ -116,28 +146,10 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
-    termsOfService: {
-      text: 'Terms of Service',
-      path: () => `${config.MARKETING_BASE_URL}/terms-of-service`,
-      isExternalLink: true,
-      openNewTab: true,
-    },
-    blog: {
-      path: () => `${config.MARKETING_BASE_URL}/blog`,
-      isExternalLink: true,
-      text: 'Blog',
-      openNewTab: true,
-    },
     legacyUI: {
       path: ({ pathname }) => config.BASE_URL + pathname,
       isExternalLink: true,
       text: 'Legacy User Interface',
-      openNewTab: true,
-    },
-    sales: {
-      path: () => `${config.MARKETING_BASE_URL}/sales`,
-      isExternalLink: true,
-      text: 'Sales Contact',
       openNewTab: true,
     },
     uploader: {
@@ -235,12 +247,6 @@ export function useStaticNavLinks() {
     exampleRepos: {
       text: 'Codecov uploader and supported languages',
       path: () => 'https://docs.codecov.com/docs/supported-languages',
-      isExternalLink: true,
-      openNewTab: true,
-    },
-    teamPlanAbout: {
-      text: 'Team plan',
-      path: () => 'https://about.codecov.io/team-plan-compare',
       isExternalLink: true,
       openNewTab: true,
     },

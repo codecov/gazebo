@@ -32,7 +32,8 @@ describe('useStaticNavLinks', () => {
       ${links.docs}                          | ${`https://docs.codecov.io/`}
       ${links.enterprise}                    | ${`${config.MARKETING_BASE_URL}/self-hosted`}
       ${links.githubMarketplace}             | ${`https://github.com/marketplace/codecov`}
-      ${links.freeTrial}                     | ${`${config.MARKETING_BASE_URL}/trial`}
+      ${links.freeTrial}                     | ${`${config.MARKETING_BASE_URL}/codecov-free-trial`}
+      ${links.whyTestCode}                   | ${`${config.MARKETING_BASE_URL}/resource/what-is-code-coverage`}
       ${links.demo}                          | ${`${config.MARKETING_BASE_URL}/demo`}
       ${links.oauthTroubleshoot}             | ${'https://docs.codecov.com/docs/github-oauth-application-authorization#troubleshooting'}
       ${links.teamPlanAbout}                 | ${'https://about.codecov.io/team-plan-compare'}

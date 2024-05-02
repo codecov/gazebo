@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 
-import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
+import { CodecovIcon } from 'assets/svg/codecov'
 import Footer from 'layouts/Footer'
 import SessionExpiredBanner from 'pages/LoginPage/SessionExpiredBanner'
 import A from 'ui/A'
