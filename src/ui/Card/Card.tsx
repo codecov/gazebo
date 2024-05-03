@@ -1,6 +1,8 @@
 import { cva, VariantProps } from 'cva'
 import React from 'react'
 
+import { cn } from 'shared/utils/cn'
+
 const card = cva(['border border-ds-gray-secondary'])
 interface CardProps
   extends React.HTMLAttributes<HTMLDivElement>,
@@ -8,7 +10,7 @@ interface CardProps
 
 const CardRoot = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={card({ className })} {...props} />
+    <div ref={ref} className={cn(card({ className }))} {...props} />
   )
 )
 CardRoot.displayName = 'Card'
@@ -20,7 +22,7 @@ interface HeaderProps
 
 const Header = React.forwardRef<HTMLDivElement, HeaderProps>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={header({ className })} {...props} />
+    <div ref={ref} className={cn(header({ className }))} {...props} />
   )
 )
 Header.displayName = 'Card.Header'
@@ -42,7 +44,7 @@ interface TitleProps
 
 const Title = React.forwardRef<HTMLParagraphElement, TitleProps>(
   ({ className, size, children, ...props }, ref) => (
-    <h3 ref={ref} className={title({ className, size })} {...props}>
+    <h3 ref={ref} className={cn(title({ className, size }))} {...props}>
       {children}
     </h3>
   )
@@ -56,7 +58,7 @@ interface DescriptionProps
 
 const Description = React.forwardRef<HTMLParagraphElement, DescriptionProps>(
   ({ className, ...props }, ref) => (
-    <p ref={ref} className={description({ className })} {...props} />
+    <p ref={ref} className={cn(description({ className }))} {...props} />
   )
 )
 Description.displayName = 'Card.Description'
@@ -68,7 +70,7 @@ interface ContentProps
 
 const Content = React.forwardRef<HTMLDivElement, ContentProps>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={content({ className })} {...props} />
+    <div ref={ref} className={cn(content({ className }))} {...props} />
   )
 )
 Content.displayName = 'Card.Content'
@@ -80,7 +82,7 @@ interface FooterProps
 
 const Footer = React.forwardRef<HTMLDivElement, FooterProps>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={footer({ className })} {...props} />
+    <div ref={ref} className={cn(footer({ className }))} {...props} />
   )
 )
 Footer.displayName = 'Card.Footer'
