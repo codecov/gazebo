@@ -174,12 +174,12 @@ function CommitCoverage() {
 
   return (
     <div className="flex flex-col gap-4 px-3 sm:px-0">
+      {showFirstPullBanner ? <FirstPullBanner /> : null}
       {showCommitSummary ? (
         <Suspense fallback={<CommitCoverageSummarySkeleton />}>
           <CommitCoverageSummary />
         </Suspense>
       ) : null}
-      {showFirstPullBanner ? <FirstPullBanner /> : null}
       {/**we are currently capturing a single error*/}
       <CommitErrorBanners />
       <div className="flex flex-col gap-8 md:flex-row-reverse">
