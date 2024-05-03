@@ -1,12 +1,9 @@
-import config from 'config'
-
 import A from 'ui/A'
 import Button from 'ui/Button'
 
 import { LogoButton } from './DesktopMenu'
 
 function GuestHeader() {
-  console.log({ url: config.REACT_APP_BASE_URL })
   return (
     <>
       <div data-testid="guest-header" className="flex items-center gap-4">
