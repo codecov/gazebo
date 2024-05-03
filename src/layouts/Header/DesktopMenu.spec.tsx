@@ -321,53 +321,5 @@ describe('LoginPrompt', () => {
         'https://about.codecov.io/sign-up/'
       )
     })
-
-    it('renders link to marketing if url starts with /login', () => {
-      render(<LoginPrompt />, {
-        wrapper: wrapper({
-          initialEntries: '/login/gh',
-          path: '/login/:provider',
-        }),
-      })
-
-      const newToCodecov = screen.getByText(/new to codecov\?/i)
-      expect(newToCodecov).toBeInTheDocument()
-
-      const learnMore = screen.getByRole('link', {
-        name: /learn more/i,
-      })
-      expect(learnMore).toBeInTheDocument()
-    })
-  })
-
-  describe('without a provider', () => {
-    it('does not render a login button and a sign up button', () => {
-      render(<LoginPrompt />, {
-        wrapper: wrapper({
-          initialEntries: '/login',
-          path: '/login',
-        }),
-      })
-
-      const loginPrompt = screen.queryByTestId('login-prompt')
-      expect(loginPrompt).not.toBeInTheDocument()
-    })
-
-    it('does not render a link to marketing if url starts with /login', () => {
-      render(<LoginPrompt />, {
-        wrapper: wrapper({
-          initialEntries: '/login',
-          path: '/login',
-        }),
-      })
-
-      const newToCodecov = screen.queryByText(/new to codecov\?/i)
-      expect(newToCodecov).not.toBeInTheDocument()
-
-      const learnMoreLink = screen.queryByRole('link', {
-        name: /learn more/i,
-      })
-      expect(learnMoreLink).not.toBeInTheDocument()
-    })
   })
 })

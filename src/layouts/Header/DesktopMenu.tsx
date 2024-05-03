@@ -1,9 +1,6 @@
-import PropTypes from 'prop-types'
-import { useLocation, useParams } from 'react-router-dom'
-
 import config from 'config'
 
-import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
+import { CodecovIcon } from 'assets/svg/codecov'
 import { useUser } from 'services/user'
 import A from 'ui/A'
 import Button from 'ui/Button'
@@ -12,34 +9,8 @@ import AdminLink from './AdminLink'
 import Dropdown from './Dropdown'
 import SeatDetails from './SeatDetails'
 
-interface URLParams {
-  provider: string
-}
-
 export function LoginPrompt() {
-  const { provider } = useParams<URLParams>()
-
   const to = window.location.href
-  const { pathname } = useLocation()
-
-  if (!provider) return null
-
-  // different page if login
-  if (pathname.startsWith('/login')) {
-    return (
-      <div className="text-ds-gray-tertiary">
-        New to Codecov?{' '}
-        <A
-          to={{ pageName: 'root' }}
-          variant="header"
-          isExternal={true}
-          hook="desktop-menu-learn-more"
-        >
-          Learn more
-        </A>
-      </div>
-    )
-  }
   return (
     <div
       data-testid="login-prompt"
@@ -65,7 +36,13 @@ export function LoginPrompt() {
   )
 }
 
-const LogoButton = ({ defaultOrg }: { defaultOrg: string }) => {
+export const LogoButton = ({
+  defaultOrg,
+  fillColor,
+}: {
+  defaultOrg: string
+  fillColor?: string
+}) => {
   let pageName = 'root'
   if (defaultOrg) {
     pageName = 'owner'
@@ -83,13 +60,9 @@ const LogoButton = ({ defaultOrg }: { defaultOrg: string }) => {
       hook="desktop-menu-homepage-link"
     >
       <span className="sr-only">Link to Homepage</span>
-      <CodecovIcon />
+      <CodecovIcon fillColor={fillColor} />
     </A>
   )
-}
-
-LogoButton.propTypes = {
-  defaultOrg: PropTypes.string.isRequired,
 }
 
 function DesktopMenu() {
