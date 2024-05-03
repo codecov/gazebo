@@ -60,8 +60,9 @@ function Routes({
     bundleAnalysisPrAndCommitPages: false,
   })
 
-  const productEnabled =
-    (coverageEnabled || bundleAnalysisEnabled) && isCurrentUserActivated
+  const productEnabled = coverageEnabled || bundleAnalysisEnabled
+  const userAuthorizedtoViewRepo =
+    (isRepoPrivate && isCurrentUserActivated) || !isRepoPrivate
   const showUnauthorizedMessageCoverage =
     coverageEnabled && isRepoPrivate && !isCurrentUserActivated
   const showUnauthorizedMessageBundles =
@@ -125,27 +126,27 @@ function Routes({
             <BundlesTab />
           </SentryRoute>
         ) : null}
-        {coverageEnabled && isCurrentUserActivated ? (
+        {coverageEnabled && userAuthorizedtoViewRepo ? (
           <SentryRoute path={`${path}/flags`} exact>
             <FlagsTab />
           </SentryRoute>
         ) : null}
-        {coverageEnabled && componentTab && isCurrentUserActivated ? (
+        {coverageEnabled && componentTab && userAuthorizedtoViewRepo ? (
           <SentryRoute path={`${path}/components`} exact>
             <ComponentsTab />
           </SentryRoute>
         ) : null}
-        {productEnabled ? (
+        {productEnabled && userAuthorizedtoViewRepo ? (
           <SentryRoute path={`${path}/commits`} exact>
             <CommitsTab />
           </SentryRoute>
         ) : null}
-        {productEnabled ? (
+        {productEnabled && userAuthorizedtoViewRepo ? (
           <SentryRoute path={`${path}/pulls`} exact>
             <PullsTab />
           </SentryRoute>
         ) : null}
-        {productEnabled ? (
+        {productEnabled && userAuthorizedtoViewRepo ? (
           <Redirect from={`${path}/compare`} to={`${path}/pulls`} />
         ) : null}
         <SentryRoute path={`${path}/settings`}>
