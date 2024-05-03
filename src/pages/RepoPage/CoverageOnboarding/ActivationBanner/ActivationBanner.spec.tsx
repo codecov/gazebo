@@ -7,7 +7,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import ActivationBanner from './ActivationBanner'
 
 jest.mock('./TrialEligibleBanner', () => () => 'TrialEligibleBanner')
-jest.mock('./FreePlanSeatsLimitBanner', () => () => 'FreePlanSeatsLimitBanner')
 jest.mock('./ActivationRequiredBanner', () => () => 'ActivationRequiredBanner')
 
 const queryClient = new QueryClient()
@@ -100,16 +99,6 @@ describe('ActivationBanner', () => {
     await waitFor(() => !queryClient.isFetching)
 
     expect(container).toBeEmptyDOMElement()
-  })
-
-  it('renders seats limit reached banner if user has no seats left', async () => {
-    setup(true, 'ONGOING', 'users-basic', false)
-    render(<ActivationBanner />, { wrapper })
-
-    const FreePlanSeatsLimitBanner = await screen.findByText(
-      /FreePlanSeatsLimitBanner/
-    )
-    expect(FreePlanSeatsLimitBanner).toBeInTheDocument()
   })
 
   it('renders activation required banner if user is not on free plan and has seats left', async () => {
