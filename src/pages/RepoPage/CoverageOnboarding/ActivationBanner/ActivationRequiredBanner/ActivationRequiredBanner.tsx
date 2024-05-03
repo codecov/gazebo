@@ -9,22 +9,18 @@ function ActivationRequiredBanner() {
       <BannerContent>
         <BannerHeading>
           <h2 className="font-semibold">&#8505; Activation Required</h2>
+          <Button
+            hook="trial-eligible-banner-start-trial"
+            to={{
+              pageName: 'membersTab',
+            }}
+            disabled={false}
+            variant="primary"
+          >
+            Manage Members
+          </Button>
         </BannerHeading>
-        <div className="flex justify-between">
-          <p>You have available seats, but activation is needed.</p>
-          <div className="mt-[-9px]">
-            <Button
-              hook="trial-eligible-banner-start-trial"
-              to={{
-                pageName: 'membersTab',
-              }}
-              disabled={false}
-              variant="primary"
-            >
-              Manage Members
-            </Button>
-          </div>
-        </div>
+        <p>You have available seats, but activation is needed.</p>
       </BannerContent>
     </Banner>
   )
