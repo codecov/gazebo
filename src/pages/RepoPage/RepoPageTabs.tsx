@@ -84,10 +84,13 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
   }
 
   const hideFlagsTab = !!repoOverview?.private && tierData === TierNames.TEAM
+  const userAuthorizedtoViewRepo =
+    (repoData?.isCurrentUserActivated && repoOverview?.private) ||
+    !repoOverview?.private
   if (
     repoOverview?.coverageEnabled &&
     !hideFlagsTab &&
-    repoData?.isCurrentUserActivated
+    userAuthorizedtoViewRepo
   ) {
     tabs.push({ pageName: 'flagsTab' })
   }
@@ -98,14 +101,14 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
     repoOverview?.coverageEnabled &&
     componentTab &&
     !hideComponentsTab &&
-    repoData?.isCurrentUserActivated
+    userAuthorizedtoViewRepo
   ) {
     tabs.push({ pageName: 'componentsTab' })
   }
 
   if (
     (repoOverview?.bundleAnalysisEnabled || repoOverview?.coverageEnabled) &&
-    repoData?.isCurrentUserActivated
+    userAuthorizedtoViewRepo
   ) {
     tabs.push({ pageName: 'commits' }, { pageName: 'pulls' })
   }
