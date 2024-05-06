@@ -116,16 +116,7 @@ export function useRepoBranchContents({
   options,
 }: RepoBranchContentsArgs) {
   return useQuery({
-    queryKey: [
-      'BranchContents',
-      provider,
-      owner,
-      repo,
-      branch,
-      path,
-      filters,
-      query,
-    ],
+    queryKey: ['BranchContents', provider, owner, repo, branch, path, filters],
     queryFn: ({ signal }) => {
       return Api.graphql({
         provider,

@@ -126,7 +126,6 @@ export function usePrefetchBranchDirEntry({
         branch,
         path,
         filters,
-        query,
       ],
       queryFn: ({ signal }) =>
         Api.graphql({
