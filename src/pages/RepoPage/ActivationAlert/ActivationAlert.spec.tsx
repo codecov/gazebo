@@ -7,6 +7,8 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import ActivationAlert from './ActivationAlert'
 
 jest.mock('./FreePlanSeatsTakenAlert', () => () => 'FreePlanSeatsTakenAlert')
+jest.mock('./PaidPlanSeatsTakenAlert', () => () => 'PaidPlanSeatsTakenAlert')
+jest.mock('./ActivationRequiredAlert', () => () => 'ActivationRequiredAlert')
 jest.mock('./UnauthorizedRepoDisplay', () => () => 'UnauthorizedRepoDisplay')
 
 const queryClient = new QueryClient()
@@ -99,5 +101,25 @@ describe('ActivationAlert', () => {
       /FreePlanSeatsTakenAlert/
     )
     expect(freePlanSeatsTakenAlert).toBeInTheDocument()
+  })
+
+  it('renders PaidPlanSeatsTakenAlert when on paid plan and no seats left', async () => {
+    setup(false, 'users-pro', false)
+    render(<ActivationAlert />, { wrapper })
+
+    const paidPlanSeatsTakenAlert = await screen.findByText(
+      /PaidPlanSeatsTakenAlert/
+    )
+    expect(paidPlanSeatsTakenAlert).toBeInTheDocument()
+  })
+
+  it('renders ActivationRequiredAlert when on paid plan and some seats left', async () => {
+    setup(false, 'users-pro', true)
+    render(<ActivationAlert />, { wrapper })
+
+    const activationRequiredAlert = await screen.findByText(
+      /ActivationRequiredAlert/
+    )
+    expect(activationRequiredAlert).toBeInTheDocument()
   })
 })
