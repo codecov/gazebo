@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { Suspense } from 'react'
+import { PropsWithChildren, Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useRedirect } from 'shared/useRedirect'
@@ -11,8 +11,10 @@ import { useRedirect } from 'shared/useRedirect'
 import NewRepoTab from './NewRepoTab'
 
 jest.mock('shared/useRedirect')
+const mockedUseRedirect = useRedirect as jest.Mock
 jest.mock('./GitHubActions', () => () => 'GitHubActions')
 jest.mock('./OtherCI', () => () => 'OtherCI')
+jest.mock('./ActivationBanner', () => () => 'ActivationBanner')
 
 const mockCurrentUser = {
   me: {
@@ -22,11 +24,15 @@ const mockCurrentUser = {
   },
 }
 
-const mockGetRepo = (noUploadToken = false, hasCommits = false) => ({
+const mockGetRepo = (
+  noUploadToken = false,
+  hasCommits = false,
+  isCurrentUserActivated = false
+) => ({
   owner: {
     isCurrentUserPartOfOrg: true,
     isAdmin: null,
-    isCurrentUserActivated: null,
+    isCurrentUserActivated,
     repository: {
       __typename: 'Repository',
       private: false,
@@ -51,9 +57,9 @@ const queryClient = new QueryClient({
   },
 })
 const server = setupServer()
-let testLocation
+let testLocation: any
 
-const wrapper =
+const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
   (initialEntries = '/gh/codecov/cool-repo/new') =>
   ({ children }) =>
     (
@@ -89,19 +95,32 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 
+interface SetupArgs {
+  hasCommits?: boolean
+  noUploadToken?: boolean
+  isCurrentUserActivated?: boolean
+}
+
 describe('NewRepoTab', () => {
-  function setup(
-    { hasCommits, noUploadToken } = { hasCommits: false, noUploadToken: false }
-  ) {
+  function setup({
+    hasCommits = false,
+    noUploadToken = false,
+    isCurrentUserActivated = false,
+  }: SetupArgs) {
     const user = userEvent.setup()
     const hardRedirect = jest.fn()
-    useRedirect.mockImplementation((data) => ({
+    mockedUseRedirect.mockImplementation((data) => ({
       hardRedirect: () => hardRedirect(data),
     }))
 
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockGetRepo(noUploadToken, hasCommits)))
+        res(
+          ctx.status(200),
+          ctx.data(
+            mockGetRepo(noUploadToken, hasCommits, isCurrentUserActivated)
+          )
+        )
       ),
       graphql.query('CurrentUser', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockCurrentUser))
@@ -113,7 +132,7 @@ describe('NewRepoTab', () => {
 
   describe('intro blurb', () => {
     it('renders', async () => {
-      setup()
+      setup({})
       render(<NewRepoTab />, { wrapper: wrapper() })
 
       const intro = await screen.findByTestId('intro-blurb')
@@ -122,7 +141,7 @@ describe('NewRepoTab', () => {
   })
 
   describe('rendering component', () => {
-    beforeEach(() => setup())
+    beforeEach(() => setup({}))
 
     it('renders header', async () => {
       render(<NewRepoTab />, { wrapper: wrapper() })
@@ -131,6 +150,13 @@ describe('NewRepoTab', () => {
         name: /Let's get your repo covered/,
       })
       expect(header).toBeInTheDocument()
+    })
+
+    it('renders ActivationBanner', async () => {
+      render(<NewRepoTab />, { wrapper: wrapper() })
+
+      const banner = await screen.findByText('ActivationBanner')
+      expect(banner).toBeInTheDocument()
     })
 
     describe('users provider is github', () => {
@@ -210,7 +236,7 @@ describe('NewRepoTab', () => {
     describe('testing tab navigation', () => {
       describe('clicking on other ci', () => {
         it('navigates to /other-ci', async () => {
-          const { user } = setup()
+          const { user } = setup({})
           render(<NewRepoTab />, { wrapper: wrapper() })
 
           const tab = await screen.findByRole('link', { name: 'Other CI' })
@@ -233,7 +259,7 @@ describe('NewRepoTab', () => {
 
       describe('clicking on github actions', () => {
         it('navigates to /new', async () => {
-          const { user } = setup()
+          const { user } = setup({})
           render(<NewRepoTab />, {
             wrapper: wrapper('/gh/codecov/cool-repo/new/other-ci'),
           })
@@ -252,6 +278,21 @@ describe('NewRepoTab', () => {
           expect(content).toBeInTheDocument()
         })
       })
+    })
+  })
+
+  describe('user is activated', () => {
+    it('does not render ActivationBanner', async () => {
+      setup({
+        isCurrentUserActivated: true,
+      })
+      render(<NewRepoTab />, { wrapper: wrapper() })
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+
+      const banner = screen.queryByText('ActivationBanner')
+      expect(banner).not.toBeInTheDocument()
     })
   })
 })

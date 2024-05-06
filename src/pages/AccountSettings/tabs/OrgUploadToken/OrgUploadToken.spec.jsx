@@ -113,7 +113,7 @@ describe('OrgUploadToken', () => {
     it('renders title', async () => {
       render(<OrgUploadToken />, { wrapper })
 
-      const title = await screen.findByText(/Global repository upload token/)
+      const title = await screen.findByText(/Global upload token/)
       expect(title).toBeInTheDocument()
     })
 
@@ -237,7 +237,7 @@ describe('OrgUploadToken', () => {
       await waitFor(() =>
         expect(addNotification).toHaveBeenCalledWith({
           type: 'success',
-          text: 'Global repository upload token generated.',
+          text: 'Global upload token generated.',
         })
       )
     })

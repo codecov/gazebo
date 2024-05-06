@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import { lazy, Suspense } from 'react'
 import { Switch, useParams } from 'react-router-dom'
 
@@ -11,6 +10,7 @@ import { providerToName } from 'shared/utils'
 import Spinner from 'ui/Spinner'
 import TabNavigation from 'ui/TabNavigation'
 
+import ActivationBanner from './ActivationBanner'
 import CircleCI from './CircleCI'
 import GitHubActions from './GitHubActions'
 import IntroBlurb from './IntroBlurb'
@@ -23,7 +23,13 @@ const Loader = () => (
   </div>
 )
 
-function Content({ provider }) {
+function Content({
+  provider,
+  isCurrentUserActivated,
+}: {
+  provider: string
+  isCurrentUserActivated: boolean
+}) {
   if (providerToName(provider) !== 'Github') {
     return (
       <div className="mt-6">
@@ -43,6 +49,7 @@ function Content({ provider }) {
           { pageName: 'newOtherCI' },
         ]}
       />
+      {!isCurrentUserActivated ? <ActivationBanner /> : null}
       <div className="mt-6">
         <Switch>
           <SentryRoute path="/:provider/:owner/:repo/new" exact>
@@ -62,12 +69,14 @@ function Content({ provider }) {
   )
 }
 
-Content.propTypes = {
-  provider: PropTypes.string,
+interface URLParams {
+  provider: string
+  owner: string
+  repo: string
 }
 
 function NewRepoTab() {
-  const { provider, owner, repo } = useParams()
+  const { provider, owner, repo } = useParams<URLParams>()
   const { data } = useRepo({ provider, owner, repo })
   const { hardRedirect } = useRedirect({ href: `/${provider}` })
 
@@ -82,7 +91,10 @@ function NewRepoTab() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4 pt-4 lg:w-3/5">
         <IntroBlurb />
-        <Content provider={provider} />
+        <Content
+          provider={provider}
+          isCurrentUserActivated={data?.isCurrentUserActivated ?? false}
+        />
       </div>
     </div>
   )

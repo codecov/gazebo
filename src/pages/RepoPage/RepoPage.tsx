@@ -61,8 +61,13 @@ function Routes({
   })
 
   const productEnabled = coverageEnabled || bundleAnalysisEnabled
-  const showUnauthorizedMessage =
-    productEnabled && isRepoPrivate && !isCurrentUserActivated
+  const userAuthorizedtoViewRepo =
+    (isRepoPrivate && isCurrentUserActivated) || !isRepoPrivate
+  const showUnauthorizedMessageCoverage =
+    coverageEnabled && isRepoPrivate && !isCurrentUserActivated
+  const showUnauthorizedMessageBundles =
+    bundleAnalysisEnabled && isRepoPrivate && !isCurrentUserActivated
+
   if (isRepoActive && isRepoActivated) {
     return (
       <Switch>
@@ -76,7 +81,7 @@ function Routes({
             ]}
             exact
           >
-            {showUnauthorizedMessage ? (
+            {showUnauthorizedMessageCoverage ? (
               <UnauthorizedRepoDisplay />
             ) : (
               <CoverageTab />
@@ -103,7 +108,7 @@ function Routes({
             ]}
             exact
           >
-            {showUnauthorizedMessage ? (
+            {showUnauthorizedMessageBundles ? (
               <UnauthorizedRepoDisplay />
             ) : (
               <BundlesTab />
@@ -121,27 +126,27 @@ function Routes({
             <BundlesTab />
           </SentryRoute>
         ) : null}
-        {coverageEnabled ? (
+        {coverageEnabled && userAuthorizedtoViewRepo ? (
           <SentryRoute path={`${path}/flags`} exact>
             <FlagsTab />
           </SentryRoute>
         ) : null}
-        {coverageEnabled && componentTab ? (
+        {coverageEnabled && componentTab && userAuthorizedtoViewRepo ? (
           <SentryRoute path={`${path}/components`} exact>
             <ComponentsTab />
           </SentryRoute>
         ) : null}
-        {productEnabled ? (
+        {productEnabled && userAuthorizedtoViewRepo ? (
           <SentryRoute path={`${path}/commits`} exact>
             <CommitsTab />
           </SentryRoute>
         ) : null}
-        {productEnabled ? (
+        {productEnabled && userAuthorizedtoViewRepo ? (
           <SentryRoute path={`${path}/pulls`} exact>
             <PullsTab />
           </SentryRoute>
         ) : null}
-        {productEnabled ? (
+        {productEnabled && userAuthorizedtoViewRepo ? (
           <Redirect from={`${path}/compare`} to={`${path}/pulls`} />
         ) : null}
         <SentryRoute path={`${path}/settings`}>
@@ -224,18 +229,20 @@ function RepoPage() {
     },
   })
 
-  const coverageEnabled = repoOverview?.coverageEnabled
-  const bundleAnalysisEnabled = repoOverview?.bundleAnalysisEnabled
+  const coverageEnabled =
+    repoOverview?.coverageEnabled ?? repoData?.isCoverageEnabled
+  const bundleAnalysisEnabled =
+    repoOverview?.bundleAnalysisEnabled ?? repoData?.isBundleAnalysisEnabled
   const jsOrTsPresent = repoOverview?.jsOrTsPresent
   const isCurrentUserActivated = repoData?.isCurrentUserActivated
   const isRepoActive = repoData?.repository?.active
   const isRepoActivated = repoData?.repository?.activated
-  const isRepoPrivate = !!repoData?.repository?.private
-
+  const isRepoPrivate =
+    !!repoData?.repository?.private ?? repoData?.isRepoPrivate
   if (!refetchEnabled && !isRepoActivated) {
     setRefetchEnabled(true)
   }
-  if (!repoData?.repository) return <NotFound />
+  if (!repoData) return <NotFound />
 
   return (
     <RepoBreadcrumbProvider>

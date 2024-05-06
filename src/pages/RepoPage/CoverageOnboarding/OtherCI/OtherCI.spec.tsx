@@ -118,11 +118,8 @@ describe('OtherCI', () => {
         setup({ hasOrgUploadToken: true })
         render(<OtherCI />, { wrapper })
 
-        const codecovToken = await screen.findByText(/CODECOV_TOKEN/)
-        expect(codecovToken).toBeInTheDocument()
-
-        const tokenValue = await screen.findAllByText(/org-token-asdf-1234/)
-        expect(tokenValue).toHaveLength(2)
+        const tokenValue = await screen.findByText('org-token-asdf-1234')
+        expect(tokenValue).toBeInTheDocument()
       })
     })
 
@@ -164,13 +161,6 @@ describe('OtherCI', () => {
         'href',
         'https://docs.codecov.com/docs/codecov-uploader'
       )
-    })
-
-    it('renders instruction box', async () => {
-      render(<OtherCI />, { wrapper })
-
-      const box = await screen.findByTestId('instruction-box')
-      expect(box).toBeInTheDocument()
     })
 
     it('renders example blurb', async () => {
@@ -225,6 +215,14 @@ describe('OtherCI', () => {
         expect(box).not.toBeInTheDocument()
       })
     })
+
+    it('renders instruction box', async () => {
+      setup({})
+      render(<OtherCI />, { wrapper })
+
+      const box = await screen.findByTestId('instruction-box')
+      expect(box).toBeInTheDocument()
+    })
   })
 
   describe('step four', () => {
@@ -232,23 +230,16 @@ describe('OtherCI', () => {
     it('renders body', async () => {
       render(<OtherCI />, { wrapper })
 
-      const title = await screen.findByText(/Once merged to the default branch/)
-      expect(title).toBeInTheDocument()
+      const body = await screen.findByText(
+        /Once merged to your default branch,/
+      )
+      expect(body).toBeInTheDocument()
     })
   })
 
   describe('ending', () => {
-    beforeEach(() => setup({}))
-    it('renders quick start link', async () => {
-      render(<OtherCI />, { wrapper })
-
-      const link = await screen.findByRole('link', { name: /learn more/ })
-      expect(link).toHaveAttribute(
-        'href',
-        'https://docs.codecov.com/docs/quick-start'
-      )
-    })
-    it('renders body', async () => {
+    it('renders feedback link', async () => {
+      setup({})
       render(<OtherCI />, { wrapper })
 
       const body = await screen.findByText(/How was your setup experience/)
