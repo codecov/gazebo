@@ -90,7 +90,6 @@ function fetchRepoFlags({
               edges {
                 node {
                   name
-                  percentCovered
                 }
               }
             }
@@ -245,7 +244,6 @@ function fetchRepoFlagsForPull({
               ... on Comparison {
                 flagComparisons(filters: $filters) {
                   name
-
                 }
               }
               ... on FirstPullRequest {
