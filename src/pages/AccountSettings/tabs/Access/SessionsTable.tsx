@@ -61,7 +61,7 @@ function SessionsTable({ sessions }: SessionsTableProps) {
       return []
     }
 
-    return sessions.flatMap((s) => {
+    return sessions.flatMap<SessionColumn>((s) => {
       if (isNull(s)) {
         return []
       }

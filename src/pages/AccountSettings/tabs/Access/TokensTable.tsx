@@ -59,7 +59,7 @@ function TokensTable({ tokens }: TokensTableProps) {
       return []
     }
 
-    return tokens.flatMap((t) => {
+    return tokens.flatMap<TokenColumn>((t) => {
       if (isNull(t)) {
         return []
       }
