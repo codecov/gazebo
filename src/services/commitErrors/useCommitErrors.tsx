@@ -7,6 +7,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
+import { NetworkErrorObject } from 'shared/api/helpers'
 import { mapEdges } from 'shared/utils/graphql'
 import A from 'ui/A'
 
@@ -109,7 +110,8 @@ export function useCommitErrors() {
           return Promise.reject({
             status: 404,
             data: {},
-          })
+            dev: 'useCommitErrors - 404 Failed to parse data',
+          } satisfies NetworkErrorObject)
         }
 
         const data = parsedData.data
@@ -118,7 +120,8 @@ export function useCommitErrors() {
           return Promise.reject({
             status: 404,
             data: {},
-          })
+            dev: 'useCommitErrors - 404 Not Found Error',
+          } satisfies NetworkErrorObject)
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
@@ -134,7 +137,8 @@ export function useCommitErrors() {
                 </p>
               ),
             },
-          })
+            dev: 'useCommitErrors - 403 Owner Not Activated Error',
+          } satisfies NetworkErrorObject)
         }
 
         return {
