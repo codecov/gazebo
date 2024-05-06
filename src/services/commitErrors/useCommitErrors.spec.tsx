@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useCommitErrors } from './useCommitErrors'
@@ -13,7 +14,7 @@ const queryClient = new QueryClient({
     },
   },
 })
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov/codecov-exe/commit/9']}>
     <Route path="/:provider/:owner/:repo/commit/:commit">
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -24,6 +25,7 @@ const wrapper = ({ children }) => (
 const dataReturned = {
   owner: {
     repository: {
+      __typename: 'Repository',
       commit: {
         yamlErrors: {
           edges: [{ node: { errorCode: 'invalid_yaml' } }],

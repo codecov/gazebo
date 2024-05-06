@@ -92,7 +92,7 @@ export function useCommitErrors() {
 
   return useQuery({
     queryKey: ['CommitErrors', provider, owner, repo, commitid],
-    queryFn: ({ signal }) => {
+    queryFn: ({ signal }) =>
       Api.graphql({
         provider,
         query,
@@ -142,7 +142,6 @@ export function useCommitErrors() {
             mapEdges(data?.owner?.repository?.commit?.yamlErrors) || [],
           botErrors: mapEdges(data?.owner?.repository?.commit?.botErrors) || [],
         }
-      })
-    },
+      }),
   })
 }
