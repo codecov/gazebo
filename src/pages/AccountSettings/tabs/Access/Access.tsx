@@ -47,8 +47,12 @@ function Access() {
           </a>
           .
         </p>
-        {/* @ts-ignore */}
-        <Button hook="generate-token" onClick={() => setShowModal(true)}>
+        <Button
+          hook="generate-token"
+          onClick={() => setShowModal(true)}
+          to={undefined}
+          disabled={false}
+        >
           Generate Token
         </Button>
         {showModal && (
@@ -60,9 +64,7 @@ function Access() {
       </div>
       <TokensTable tokens={sessionData?.tokens} />
       <h2 className="mb-4 mt-8 text-lg font-semibold">Login Sessions</h2>
-      <div className="max-w-screen-md">
-        <SessionsTable sessions={sessionData?.sessions} />
-      </div>
+      <SessionsTable sessions={sessionData?.sessions} />
     </div>
   )
 }
