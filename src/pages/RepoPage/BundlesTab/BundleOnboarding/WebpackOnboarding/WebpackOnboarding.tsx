@@ -56,7 +56,7 @@ const StepOne: React.FC = () => {
         to your project, use one of the following commands.
       </p>
       <div className="flex flex-col gap-4">
-        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
+        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
           {npmInstall}{' '}
           <CopyClipboard
             string={npmInstall}
@@ -66,7 +66,7 @@ const StepOne: React.FC = () => {
             }}
           />
         </pre>
-        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
+        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
           {yarnInstall}{' '}
           <CopyClipboard
             string={yarnInstall}
@@ -76,7 +76,7 @@ const StepOne: React.FC = () => {
             }}
           />
         </pre>
-        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
+        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
           {pnpmInstall}{' '}
           <CopyClipboard
             string={pnpmInstall}
@@ -102,13 +102,13 @@ const StepTwo: React.FC<{ uploadToken: string }> = ({ uploadToken }) => {
         upload token.
       </p>
       <div className="flex gap-4">
-        <pre className="flex basis-1/3 items-center justify-between gap-2 rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
+        <pre className="flex basis-1/3 items-center justify-between gap-2 rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
           <div className="w-0 flex-1 overflow-hidden" data-testid="token-key">
             CODECOV_TOKEN
           </div>
           <CopyClipboard string="CODECOV_TOKEN" />
         </pre>
-        <pre className="flex basis-2/3 items-center justify-between gap-2 rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
+        <pre className="flex basis-2/3 items-center justify-between gap-2 rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
           <div className="w-0 flex-1 overflow-hidden">{uploadToken}</div>
           <CopyClipboard
             string={uploadToken}
@@ -153,7 +153,7 @@ const StepThree: React.FC = () => {
           here.
         </A>
       </p>
-      <pre className="flex items-start justify-between overflow-auto whitespace-pre rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
+      <pre className="flex items-start justify-between overflow-auto whitespace-pre rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
         {pluginConfig}
         <CopyClipboard
           string={pluginConfig}
@@ -178,7 +178,7 @@ const StepFour: React.FC = () => {
         The plugin requires at least one commit to be made to properly upload
         bundle analysis information up to Codecov.
       </p>
-      <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
+      <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
         {commitString}{' '}
         <CopyClipboard
           string={commitString}
@@ -203,7 +203,7 @@ const StepFive: React.FC = () => {
         stats information to Codecov.
       </p>
       <div className="flex flex-col gap-4">
-        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
+        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
           {npmBuild}{' '}
           <CopyClipboard
             string={npmBuild}
@@ -213,7 +213,7 @@ const StepFive: React.FC = () => {
             }}
           />
         </pre>
-        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
+        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
           {yarnBuild}{' '}
           <CopyClipboard
             string={yarnBuild}
@@ -223,7 +223,7 @@ const StepFive: React.FC = () => {
             }}
           />
         </pre>
-        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
+        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
           {pnpmBuild}{' '}
           <CopyClipboard
             string={pnpmBuild}
