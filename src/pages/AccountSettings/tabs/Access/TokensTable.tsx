@@ -4,6 +4,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import isNull from 'lodash/isNull'
 import { useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -58,27 +59,29 @@ function TokensTable({ tokens }: TokensTableProps) {
       return []
     }
 
-    return tokens.flatMap((t) =>
-      t === null
-        ? []
-        : {
-            name: t.name,
-            token: (
-              <p className="w-fit bg-ds-gray-secondary font-mono font-bold text-ds-gray-octonary">{`xxxx ${t.lastFour}`}</p>
-            ),
-            revokeBtn: (
-              <Button
-                disabled={false}
-                to={undefined}
-                hook="revoke-token"
-                onClick={() => handleRevoke(t.id)}
-                variant="danger"
-              >
-                Revoke
-              </Button>
-            ),
-          }
-    )
+    return tokens.flatMap((t) => {
+      if (isNull(t)) {
+        return []
+      }
+
+      return {
+        name: t.name,
+        token: (
+          <p className="w-fit bg-ds-gray-secondary font-mono font-bold text-ds-gray-octonary">{`xxxx ${t.lastFour}`}</p>
+        ),
+        revokeBtn: (
+          <Button
+            disabled={false}
+            to={undefined}
+            hook="revoke-token"
+            onClick={() => handleRevoke(t.id)}
+            variant="danger"
+          >
+            Revoke
+          </Button>
+        ),
+      }
+    })
   }, [handleRevoke, tokens])
 
   const table = useReactTable({

@@ -197,6 +197,31 @@ describe('SessionsTable', () => {
     })
   })
 
+  describe('when useragent is null', () => {
+    it('renders a dash', async () => {
+      setup()
+      render(
+        <SessionsTable
+          sessions={[
+            {
+              sessionid: 0,
+              ip: '0.0.0.0',
+              lastseen: '2024-04-06T14:29:40.551485+00:00',
+              useragent: null,
+              type: 'login',
+              name: null,
+              lastFour: '1234',
+            },
+          ]}
+        />,
+        { wrapper }
+      )
+
+      const dash = await screen.findByText('-')
+      expect(dash).toBeInTheDocument()
+    })
+  })
+
   describe('when revoke is clicked', () => {
     it('calls the deleteSession mutation', async () => {
       const { mutation, user } = setup()

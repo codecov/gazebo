@@ -4,6 +4,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import isNull from 'lodash/isNull'
 import { useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -55,35 +56,37 @@ function SessionsTable({ sessions }: SessionsTableProps) {
     [mutate]
   )
 
-  const data = useMemo(() => {
+  const data: SessionColumn[] = useMemo(() => {
     if (!sessions) {
       return []
     }
 
-    return sessions.flatMap((s) =>
-      s === null
-        ? []
-        : ({
-            ip: (
-              <p className="w-fit bg-ds-gray-secondary font-mono font-bold text-ds-gray-octonary">
-                {s.ip}
-              </p>
-            ),
-            lastSeen: s.lastseen ? formatTimeToNow(s.lastseen) : '-',
-            userAgent: s.useragent,
-            revokeBtn: (
-              <Button
-                disabled={false}
-                to={undefined}
-                hook="revoke-session"
-                onClick={() => handleRevoke(s.sessionid)}
-                variant="danger"
-              >
-                Revoke
-              </Button>
-            ),
-          } as SessionColumn)
-    )
+    return sessions.flatMap((s) => {
+      if (isNull(s)) {
+        return []
+      }
+
+      return {
+        ip: (
+          <p className="w-fit bg-ds-gray-secondary font-mono font-bold text-ds-gray-octonary">
+            {s.ip}
+          </p>
+        ),
+        lastSeen: s.lastseen ? formatTimeToNow(s.lastseen) ?? '-' : '-',
+        userAgent: s.useragent ?? '-',
+        revokeBtn: (
+          <Button
+            disabled={false}
+            to={undefined}
+            hook="revoke-session"
+            onClick={() => handleRevoke(s.sessionid)}
+            variant="danger"
+          >
+            Revoke
+          </Button>
+        ),
+      }
+    })
   }, [sessions, handleRevoke])
 
   const table = useReactTable({
