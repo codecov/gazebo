@@ -104,7 +104,7 @@ const queryClient = new QueryClient({
   },
 })
 const server = setupServer()
-let testLocation: any
+let testLocation: ReturnType<typeof useLocation>
 const wrapper =
   (
     initialEntries = '/gh/codecov/gazebo/components'

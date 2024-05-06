@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import React from 'react'
-import { MemoryRouter, Route } from 'react-router-dom'
+import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import config from 'config'
 
@@ -74,7 +74,7 @@ const queryClient = new QueryClient({
 })
 
 const server = setupServer()
-let testLocation: any
+let testLocation: ReturnType<typeof useLocation>
 const wrapper =
   (initialEntries = ['']): React.FC<React.PropsWithChildren> =>
   ({ children }) =>

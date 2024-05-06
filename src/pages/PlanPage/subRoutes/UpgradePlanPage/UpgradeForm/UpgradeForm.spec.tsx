@@ -241,7 +241,7 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 
-let testLocation: any
+let testLocation: ReturnType<typeof useLocation>
 
 const wrapper: (
   initialEntries?: string[]

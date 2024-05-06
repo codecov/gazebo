@@ -5,7 +5,7 @@ import { subDays } from 'date-fns'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
-import { MemoryRouter, Route } from 'react-router-dom'
+import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import Access from './Access'
 
@@ -55,7 +55,7 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-let testLocation: any
+let testLocation: ReturnType<typeof useLocation>
 const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
   (initialEntries = '/account/gh/codecov-user/access') =>
   ({ children }) =>
