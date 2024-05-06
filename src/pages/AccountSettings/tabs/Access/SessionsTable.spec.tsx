@@ -122,7 +122,20 @@ describe('SessionsTable', () => {
     })
   })
 
-  describe('when null sessions', () => {
+  describe('when sessions is undefined', () => {
+    it('renders headers but no data', async () => {
+      setup()
+      render(<SessionsTable sessions={undefined} />, { wrapper })
+
+      const ipHeader = await screen.findByText('IP')
+      expect(ipHeader).toBeInTheDocument()
+
+      const rows = screen.queryAllByRole('row')
+      expect(rows).toHaveLength(1)
+    })
+  })
+
+  describe('when there are null sessions', () => {
     it('removes them from the sessions list prior to render', async () => {
       setup()
       render(<SessionsTable sessions={[null, ...mockSessions, null]} />, {

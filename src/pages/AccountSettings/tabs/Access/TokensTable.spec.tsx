@@ -173,7 +173,7 @@ describe('TokensTable', () => {
     describe('when tokens is undefined', () => {
       it('renders empty status', async () => {
         const { user } = setup()
-        render(<TokensTable tokens={[]} />, {
+        render(<TokensTable tokens={undefined} />, {
           wrapper,
         })
 
