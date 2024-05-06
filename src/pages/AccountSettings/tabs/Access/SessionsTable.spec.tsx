@@ -117,8 +117,8 @@ describe('SessionsTable', () => {
       const ipHeader = await screen.findByText('IP')
       expect(ipHeader).toBeInTheDocument()
 
-      const data = screen.queryAllByRole('row')
-      expect(data).toHaveLength(1)
+      const rows = screen.queryAllByRole('row')
+      expect(rows).toHaveLength(1)
     })
   })
 
@@ -132,8 +132,8 @@ describe('SessionsTable', () => {
       const ipAddress = await screen.findByText('0.0.0.0')
       expect(ipAddress).toBeInTheDocument()
 
-      const data = screen.queryAllByRole('row')
-      expect(data).toHaveLength(2)
+      const rows = screen.queryAllByRole('row')
+      expect(rows).toHaveLength(2)
     })
   })
 
