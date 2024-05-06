@@ -55,8 +55,8 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-let testLocation
-const wrapper =
+let testLocation: any
+const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
   (initialEntries = '/account/gh/codecov-user/access') =>
   ({ children }) =>
     (
@@ -167,7 +167,7 @@ describe('AccessTab', () => {
 
         const revokeButtons = await screen.findAllByText(/Revoke/)
 
-        await user.click(revokeButtons[0])
+        await user.click(revokeButtons[0]!)
 
         await waitFor(() => expect(window.confirm).toHaveBeenCalled())
       })

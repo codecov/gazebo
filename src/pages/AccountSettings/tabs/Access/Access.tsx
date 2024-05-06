@@ -9,8 +9,13 @@ import CreateTokenModal from './CreateTokenModal'
 import SessionsTable from './SessionsTable'
 import TokensTable from './TokensTable'
 
+interface URLParams {
+  provider: string
+  owner: string
+}
+
 function Access() {
-  const { provider, owner } = useParams()
+  const { provider, owner } = useParams<URLParams>()
   const [showModal, setShowModal] = useState(false)
 
   const { data: sessionData } = useSessions({
@@ -42,6 +47,7 @@ function Access() {
           </a>
           .
         </p>
+        {/* @ts-ignore */}
         <Button hook="generate-token" onClick={() => setShowModal(true)}>
           Generate Token
         </Button>
@@ -52,7 +58,7 @@ function Access() {
           />
         )}
       </div>
-      <TokensTable tokens={sessionData?.tokens} />
+      <TokensTable tokens={sessionData?.tokens ?? []} />
       <h2 className="mb-4 mt-8 text-lg font-semibold">Login Sessions</h2>
       <div className="max-w-screen-md">
         <SessionsTable sessions={sessionData?.sessions} />
