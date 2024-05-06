@@ -5,7 +5,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
-import { ReactNode, useCallback, useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useRevokeUserToken, UserToken } from 'services/access'
@@ -19,8 +19,8 @@ interface URLParams {
 
 interface TokenColumn {
   name: string
-  token: ReactNode
-  revokeBtn: ReactNode
+  token: React.ReactNode
+  revokeBtn: React.ReactNode
 }
 
 const columnHelper = createColumnHelper<TokenColumn>()
