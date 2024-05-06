@@ -38,6 +38,24 @@ const dataReturned = {
   },
 }
 
+const mockNotFoundError = {
+  owner: {
+    repository: {
+      __typename: 'NotFoundError',
+      message: 'commit not found',
+    },
+  },
+}
+
+const mockOwnerNotActivatedError = {
+  owner: {
+    repository: {
+      __typename: 'OwnerNotActivatedError',
+      message: 'owner not activated',
+    },
+  },
+}
+
 const server = setupServer()
 
 beforeAll(() => server.listen())
@@ -48,17 +66,26 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('useCommitErrors', () => {
-  function setup() {
+  function setup({
+    isNotFoundError = false,
+    isOwnerNotActivatedError = false,
+  }) {
     server.use(
       graphql.query(`CommitErrors`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(dataReturned))
+        if (isNotFoundError) {
+          return res(ctx.status(200), ctx.data(mockNotFoundError))
+        } else if (isOwnerNotActivatedError) {
+          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
+        } else {
+          return res(ctx.status(200), ctx.data(dataReturned))
+        }
       })
     )
   }
 
   describe('when called and user is authenticated', () => {
     beforeEach(() => {
-      setup()
+      setup({})
     })
 
     it('returns commit info', async () => {
@@ -73,6 +100,38 @@ describe('useCommitErrors', () => {
           botErrors: [{ errorCode: 'repo_bot_invalid' }],
           yamlErrors: [{ errorCode: 'invalid_yaml' }],
         })
+      )
+    })
+  })
+  describe('when called but repository errors', () => {
+    it('can return not found error', async () => {
+      setup({ isNotFoundError: true })
+      const { result } = renderHook(() => useCommitErrors(), {
+        wrapper,
+      })
+
+      await waitFor(() => expect(result.current.isError).toBeTruthy())
+      await waitFor(() =>
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            status: 404,
+          })
+        )
+      )
+    })
+    it('can return owner not activated error', async () => {
+      setup({ isOwnerNotActivatedError: true })
+      const { result } = renderHook(() => useCommitErrors(), {
+        wrapper,
+      })
+
+      await waitFor(() => expect(result.current.isError).toBeTruthy())
+      await waitFor(() =>
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            status: 403,
+          })
+        )
       )
     })
   })
