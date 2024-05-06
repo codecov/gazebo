@@ -1,17 +1,17 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { Session, useDeleteSession } from 'services/access'
+import { Session } from 'services/access'
 import { formatTimeToNow } from 'shared/utils/dates'
 
 import SessionsTable from './SessionsTable'
 
 jest.mock('shared/utils/dates')
 const mockedFormatTimeToNow = formatTimeToNow as jest.Mock
-
-jest.mock('services/access')
-const mockedUseDeleteSession = useDeleteSession as jest.Mock
 
 window.confirm = () => true
 
@@ -27,20 +27,42 @@ const mockSessions: Session[] = [
   },
 ]
 
+const server = setupServer()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      suspense: true,
+      retry: false,
+    },
+  },
+})
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <MemoryRouter initialEntries={['/bb/critical-role/bells-hells']}>
-    <Route path="/:provider/:owner/:repo">{children}</Route>
-  </MemoryRouter>
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/bb/critical-role/bells-hells']}>
+      <Route path="/:provider/:owner/:repo">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
 )
+
+beforeAll(() => server.listen())
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => server.close())
 
 describe('SessionsTable', () => {
   function setup() {
     const user = userEvent.setup()
-    const mutate = jest.fn()
-    mockedUseDeleteSession.mockReturnValue({ mutate })
     mockedFormatTimeToNow.mockReturnValue('18 minutes ago')
-
-    return { mutate, user }
+    const mutation = jest.fn()
+    server.use(
+      graphql.mutation('DeleteSession', async (req, res, ctx) => {
+        mutation((await req.json()).variables.input)
+        return res(ctx.status(200), ctx.data({ owner: null }))
+      })
+    )
+    return { mutation, user }
   }
 
   afterEach(() => {
@@ -177,7 +199,7 @@ describe('SessionsTable', () => {
 
   describe('when revoke is clicked', () => {
     it('calls the deleteSession mutation', async () => {
-      const { user, mutate } = setup()
+      const { mutation, user } = setup()
       render(<SessionsTable sessions={mockSessions} />, { wrapper })
 
       const revokeButton = await screen.findByText('Revoke')
@@ -185,9 +207,7 @@ describe('SessionsTable', () => {
 
       await user.click(revokeButton)
 
-      expect(mutate).toHaveBeenCalledWith({
-        sessionid: 0,
-      })
+      expect(mutation).toHaveBeenCalledWith({ sessionid: 0 })
     })
   })
 })
