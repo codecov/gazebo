@@ -65,7 +65,7 @@ export const FetchRepoFlagsSchema = z.object({
 
 function fetchRepoFlags({
   provider,
-  owner: name,
+  owner,
   repo,
   filters,
   after,
@@ -73,7 +73,7 @@ function fetchRepoFlags({
 }: FetchRepoFlagsArgs) {
   const query = `
     query FlagsSelect(
-      $name: String!
+      $owner: String!
       $repo: String!
       $filters: FlagSetFilters!
       $after: String
@@ -82,8 +82,18 @@ function fetchRepoFlags({
         repository(name: $repo) {
           __typename
           ... on Repository {
-            defaultBranch
-            private
+            flags(filters: $filters, after: $after) {
+              pageInfo {
+                hasNextPage
+                endCursor
+              }
+              edges {
+                node {
+                  name
+                  percentCovered
+                }
+              }
+            }
           }
           ... on NotFoundError {
             message
@@ -100,7 +110,7 @@ function fetchRepoFlags({
     query,
     signal,
     variables: {
-      name,
+      owner,
       repo,
       filters,
       after,
@@ -109,7 +119,7 @@ function fetchRepoFlags({
     const parsedRes = FetchRepoFlagsSchema.safeParse(res?.data)
 
     if (!parsedRes.success) {
-      console.log('failed parse 1', res?.data)
+      console.log('FAILED', res?.data)
       console.log(parsedRes.error, res.data.owner.repository.__typename)
       return Promise.reject({
         status: 404,
@@ -234,7 +244,8 @@ function fetchRepoFlagsForPull({
               __typename
               ... on Comparison {
                 flagComparisons(filters: $filters) {
-                  name             
+                  name
+
                 }
               }
               ... on FirstPullRequest {
@@ -282,10 +293,10 @@ function fetchRepoFlagsForPull({
     },
   }).then((res) => {
     const parsedRes = FetchRepoFlagsForPullSchema.safeParse(res?.data)
-    console.log('w')
+    console.log('WORK ALL DAY')
 
     if (!parsedRes.success) {
-      console.log('failed parse 2', parsedRes.error)
+      console.log('FAILED 2', parsedRes.error)
       return Promise.reject({
         status: 404,
         data: null,
