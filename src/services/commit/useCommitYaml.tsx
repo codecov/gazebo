@@ -68,7 +68,7 @@ export function useCommitYaml({
   commitid,
 }: UseCommitYamlArgs) {
   return useQuery({
-    queryKey: ['commit-yaml', provider, owner, repo, commitid],
+    queryKey: ['CommitYaml', provider, owner, repo, commitid],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
