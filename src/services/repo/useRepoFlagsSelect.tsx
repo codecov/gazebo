@@ -78,29 +78,20 @@ function fetchRepoFlags({
       $filters: FlagSetFilters!
       $after: String
     ) {
-      owner(username: $name) {
+      owner(username: $owner) {
         repository(name: $repo) {
           __typename
           ... on Repository {
-            flags(filters: $filters, after: $after) {
-              pageInfo {
-                hasNextPage
-                endCursor
-              }
-              edges {
-                node {
-                  name
-                }
-              }
-            }
+            defaultBranch
+            private
           }
-        ... on NotFoundError {
-          message
+          ... on NotFoundError {
+            message
+          }
+          ... on OwnerNotActivatedError {
+            message
+          }
         }
-        ... on OwnerNotActivatedError {
-          message
-        }
-      }
       }
     }
    `
@@ -118,6 +109,8 @@ function fetchRepoFlags({
     const parsedRes = FetchRepoFlagsSchema.safeParse(res?.data)
 
     if (!parsedRes.success) {
+      console.log('failed parse 1', res?.data)
+      console.log(parsedRes.error, res.data.owner.repository.__typename)
       return Promise.reject({
         status: 404,
         data: {},
@@ -289,8 +282,10 @@ function fetchRepoFlagsForPull({
     },
   }).then((res) => {
     const parsedRes = FetchRepoFlagsForPullSchema.safeParse(res?.data)
+    console.log('w')
 
     if (!parsedRes.success) {
+      console.log('failed parse 2', parsedRes.error)
       return Promise.reject({
         status: 404,
         data: null,
@@ -298,7 +293,7 @@ function fetchRepoFlagsForPull({
     }
 
     const data = parsedRes.data
-
+    console.log('@222', data)
     if (data?.owner?.repository?.__typename === 'NotFoundError') {
       return Promise.reject({
         status: 404,
