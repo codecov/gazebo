@@ -58,7 +58,7 @@ function Access() {
           />
         )}
       </div>
-      <TokensTable tokens={sessionData?.tokens ?? []} />
+      <TokensTable tokens={sessionData?.tokens} />
       <h2 className="mb-4 mt-8 text-lg font-semibold">Login Sessions</h2>
       <div className="max-w-screen-md">
         <SessionsTable sessions={sessionData?.sessions} />

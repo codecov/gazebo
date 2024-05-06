@@ -37,7 +37,7 @@ const columns = [
 ]
 
 interface TokensTableProps {
-  tokens: UserToken[]
+  tokens?: (UserToken | null)[]
 }
 
 function TokensTable({ tokens }: TokensTableProps) {
@@ -53,27 +53,33 @@ function TokensTable({ tokens }: TokensTableProps) {
     [mutate]
   )
 
-  const data = useMemo(
-    () =>
-      tokens.map((t) => ({
-        name: t.name,
-        token: (
-          <p className="w-fit bg-ds-gray-secondary font-mono font-bold text-ds-gray-octonary">{`xxxx ${t.lastFour}`}</p>
-        ),
-        revokeBtn: (
-          <Button
-            disabled={false}
-            to={undefined}
-            hook="revoke-session"
-            onClick={() => handleRevoke(t.id)}
-            variant="danger"
-          >
-            Revoke
-          </Button>
-        ),
-      })),
-    [handleRevoke, tokens]
-  )
+  const data = useMemo(() => {
+    if (!tokens) {
+      return []
+    }
+
+    return tokens.flatMap((t) =>
+      t === null
+        ? []
+        : {
+            name: t.name,
+            token: (
+              <p className="w-fit bg-ds-gray-secondary font-mono font-bold text-ds-gray-octonary">{`xxxx ${t.lastFour}`}</p>
+            ),
+            revokeBtn: (
+              <Button
+                disabled={false}
+                to={undefined}
+                hook="revoke-session"
+                onClick={() => handleRevoke(t.id)}
+                variant="danger"
+              >
+                Revoke
+              </Button>
+            ),
+          }
+    )
+  }, [handleRevoke, tokens])
 
   const table = useReactTable({
     data,
@@ -81,7 +87,7 @@ function TokensTable({ tokens }: TokensTableProps) {
     getCoreRowModel: getCoreRowModel(),
   })
 
-  if (!tokens.length) {
+  if (!tokens?.length) {
     return (
       <div>
         <hr className="my-4 border-ds-gray-secondary" />
