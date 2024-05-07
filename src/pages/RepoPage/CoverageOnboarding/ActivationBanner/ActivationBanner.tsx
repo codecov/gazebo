@@ -4,6 +4,8 @@ import { TrialStatuses, usePlanData } from 'services/account'
 import { isBasicPlan, isFreePlan } from 'shared/utils/billing'
 
 import ActivationRequiredBanner from './ActivationRequiredBanner'
+import FreePlanSeatsLimitBanner from './FreePlanSeatsLimitBanner'
+import PaidPlanSeatsLimitBanner from './PaidPlanSeatsLimitBanner'
 import TrialEligibleBanner from './TrialEligibleBanner'
 
 interface URLParams {
@@ -23,13 +25,21 @@ function ActivationBanner() {
     planData?.hasPrivateRepos &&
     isNewTrial
   const seatsLimitReached = !planData?.plan?.hasSeatsLeft
+  const isFreePlanValue = isFreePlan(planData?.plan?.value)
 
   if (isTrialEligible) {
     return <TrialEligibleBanner />
   }
 
-  if (!seatsLimitReached && !isFreePlan(planData?.plan?.value)) {
+  if (!seatsLimitReached && !isFreePlanValue) {
     return <ActivationRequiredBanner />
+
+  if (seatsLimitReached && isFreePlanValue) {
+    return <FreePlanSeatsLimitBanner />
+  }
+
+  if (seatsLimitReached && !isFreePlanValue) {
+    return <PaidPlanSeatsLimitBanner />
   }
 
   return null

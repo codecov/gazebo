@@ -8,6 +8,8 @@ import ActivationBanner from './ActivationBanner'
 
 jest.mock('./TrialEligibleBanner', () => () => 'TrialEligibleBanner')
 jest.mock('./ActivationRequiredBanner', () => () => 'ActivationRequiredBanner')
+jest.mock('./FreePlanSeatsLimitBanner', () => () => 'FreePlanSeatsLimitBanner')
+jest.mock('./PaidPlanSeatsLimitBanner', () => () => 'PaidPlanSeatsLimitBanner')
 
 const queryClient = new QueryClient()
 
@@ -109,5 +111,24 @@ describe('ActivationBanner', () => {
       /ActivationRequiredBanner/
     )
     expect(ActivationRequiredBanner).toBeInTheDocument()
+
+  it('renders seats limit reached banner if user has no seats left and on free plan', async () => {
+    setup(true, 'ONGOING', 'users-basic', false)
+    render(<ActivationBanner />, { wrapper })
+
+    const FreePlanSeatsLimitBanner = await screen.findByText(
+      /FreePlanSeatsLimitBanner/
+    )
+    expect(FreePlanSeatsLimitBanner).toBeInTheDocument()
+  })
+
+  it('renders seats limit reached banner if user has no seats left and on paid plan', async () => {
+    setup(true, 'ONGOING', 'users-inappy', false)
+    render(<ActivationBanner />, { wrapper })
+
+    const PaidPlanSeatsLimitBanner = await screen.findByText(
+      /PaidPlanSeatsLimitBanner/
+    )
+    expect(PaidPlanSeatsLimitBanner).toBeInTheDocument()
   })
 })
