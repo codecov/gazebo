@@ -55,14 +55,23 @@ function fetchRepoSettingsDetails({
     query GetRepoSettingsTeam($name: String!, $repo: String!) {
       owner(username:$name) {
         repository(name:$repo) {
-          private
-          activated
-          uploadToken
-          defaultBranch
-          graphToken
-          yaml
-          bot {
-            username
+          __typename
+          ... on Repository {
+            private
+            activated
+            uploadToken
+            defaultBranch
+            graphToken
+            yaml
+            bot {
+              username
+            }
+          }
+          ... on NotFoundError {
+            message
+          }
+          ... on OwnerNotActivatedError {
+            message
           }
         }
       }
