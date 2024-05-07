@@ -25,6 +25,13 @@ jest.mock('./pages/TermsOfService', () => () => 'TermsOfService')
 jest.mock('./pages/EnterpriseLandingPage', () => () => 'EnterpriseLandingPage')
 jest.mock('./pages/SyncProviderPage', () => () => 'SyncProviderPage')
 
+jest.mock('services/navigation', () => ({
+  ...jest.requireActual('services/navigation'),
+  useLocationParams: jest.fn(),
+}))
+
+const mockedUseLocationParams = useLocationParams as jest.Mock
+
 const internalUser = {
   email: 'internal@user.com',
   name: 'Internal User',
@@ -93,6 +100,7 @@ beforeEach(() => {
   config.IS_SELF_HOSTED = false
   queryClient.clear()
   server.resetHandlers()
+  mockedUseLocationParams.mockReturnValue({ params: {} })
 })
 
 afterAll(() => {
@@ -115,6 +123,9 @@ describe('App', () => {
           return res(ctx.status(200), ctx.json({}))
         }
       }),
+      rest.get('/internal/users/current', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.json({}))
+      }),
       graphql.query('DetailOwner', (_, res, ctx) =>
         res(ctx.status(200), ctx.data({ owner: 'codecov' }))
       ),
@@ -122,6 +133,18 @@ describe('App', () => {
         if (hasLoggedInUser) {
           return res(ctx.status(200), ctx.data(user))
         }
+        return res(ctx.status(200), ctx.data({}))
+      }),
+      graphql.query('GetPlanData', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({}))
+      }),
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({}))
+      }),
+      graphql.query('Seats', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({}))
+      }),
+      graphql.query('HasAdmins', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data({}))
       })
     )
@@ -301,17 +324,6 @@ describe('App', () => {
           page: /SyncProviderPage/i,
           location: '/sync',
           search: '',
-        },
-      },
-    ],
-    [
-      {
-        testLabel: 'SetupActionRedirect',
-        pathname: '/gh?setup_action=install',
-        expected: {
-          page: /OwnerPage/i,
-          location: '/gh/codecov',
-          search: '?setup_action=install',
         },
       },
     ],
@@ -530,6 +542,20 @@ describe('App', () => {
       await waitFor(() => expect(testLocation.pathname).toBe('/login'))
     })
   })
+
+  describe('user has setup action', () => {
+    it(`renders the setup action redirect page`, async () => {
+      mockedUseLocationParams.mockReturnValue({
+        params: { setup_action: 'install' },
+      })
+      setup({ hasLoggedInUser: true, hasSession: true })
+      render(<App />, { wrapper: wrapper(['/gh?setup_action=install']) })
+
+      await waitFor(() => expect(testLocation.pathname).toBe('/gh/codecov'))
+      const page = await screen.findByText(/OwnerPage/i)
+      expect(page).toBeInTheDocument()
+    })
+  })
   describe('user has session, not logged in', () => {
     it('redirects to session default', async () => {
       setup({ hasLoggedInUser: false, hasSession: true })
@@ -541,16 +567,9 @@ describe('App', () => {
     })
 
     it('redirects to plan page if to param === plan', async () => {
-      jest.mock('services/navigation', () => ({
-        ...jest.requireActual('services/navigation'),
-        useLocationParams: jest.fn(),
-      }))
-
-      const mockedUseLocationParams = useLocationParams as jest.Mock
       mockedUseLocationParams.mockReturnValue({
         params: { to: 'plan' },
       })
-
       setup({ hasLoggedInUser: false, hasSession: true })
 
       render(<App />, { wrapper: wrapper(['/blah']) })
