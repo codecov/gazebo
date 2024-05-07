@@ -560,7 +560,7 @@ describe('FileListTable', () => {
           const { requestFilters, user } = setup({})
           render(<FileListTable />, { wrapper: wrapper() })
 
-          const coverage = screen.getByText('Coverage %')
+          const coverage = await screen.findByText('Coverage %')
           await user.click(coverage)
           await user.click(coverage)
           expect(requestFilters).toHaveBeenCalledWith(
