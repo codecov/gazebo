@@ -98,16 +98,16 @@ function CommitRoutes() {
 function CommitErrorBanners() {
   const { owner } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
-  const { data: commitErrorData } = useCommitErrors()
+  const { data } = useCommitErrors()
 
-  const invalidYaml = commitErrorData?.yamlErrors?.find(
+  const invalidYaml = data?.yamlErrors?.find(
     (err) => err?.errorCode === 'invalid_yaml'
   )
 
   return (
     <>
       {ownerData?.isCurrentUserPartOfOrg && (
-        <BotErrorBanner botErrorsCount={commitErrorData?.botErrors?.length} />
+        <BotErrorBanner botErrorsCount={data?.botErrors?.length} />
       )}
       {invalidYaml && <YamlErrorBanner />}
     </>
