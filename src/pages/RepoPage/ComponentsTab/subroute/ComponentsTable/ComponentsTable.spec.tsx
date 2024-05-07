@@ -43,6 +43,7 @@ const mockedComponentMeasurements = {
       __typename: 'Repository',
       components: [
         {
+          componentId: 'components1_id',
           name: 'components1',
           percentCovered: 93.26,
           percentChange: -1.56,
@@ -50,6 +51,7 @@ const mockedComponentMeasurements = {
           measurements: [{ avg: 51.78 }, { avg: 93.356 }],
         },
         {
+          componentId: 'components2_id',
           name: 'component2',
           percentCovered: 91.74,
           percentChange: null,
@@ -58,6 +60,7 @@ const mockedComponentMeasurements = {
         },
 
         {
+          componentId: 'testtest_id',
           name: 'testtest',
           percentCovered: 1.0,
           percentChange: 1.0,
@@ -76,6 +79,7 @@ const mockNoReportsUploadedMeasurements = {
       components: [
         {
           name: 'components1',
+          componentId: 'components1_id',
           percentCovered: null,
           percentChange: null,
           lastUploaded: null,
