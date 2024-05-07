@@ -33,6 +33,7 @@ function ActivationBanner() {
 
   if (!seatsLimitReached && !isFreePlanValue) {
     return <ActivationRequiredBanner />
+  }
 
   if (seatsLimitReached && isFreePlanValue) {
     return <FreePlanSeatsLimitBanner />
