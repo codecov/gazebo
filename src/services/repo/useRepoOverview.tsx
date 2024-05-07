@@ -2,7 +2,6 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
-import A from 'ui/A'
 
 import {
   RepoNotFoundErrorSchema,
@@ -104,19 +103,7 @@ export function useRepoOverview({
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
-          return Promise.reject({
-            status: 403,
-            data: {
-              detail: (
-                <p>
-                  Activation is required to view this repo, please{' '}
-                  {/* @ts-expect-error */}
-                  <A to={{ pageName: 'membersTab' }}>click here </A> to activate
-                  your account.
-                </p>
-              ),
-            },
-          })
+          return null
         }
 
         if (!data?.owner?.repository) {

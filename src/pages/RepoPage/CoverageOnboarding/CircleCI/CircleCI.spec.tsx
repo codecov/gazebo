@@ -114,7 +114,7 @@ describe('CircleCI', () => {
       render(<CircleCI />, { wrapper })
 
       const body = await screen.findByText(
-        "Environment variables in CircleCI can be found in project's settings."
+        'Environment variables in CircleCI can be found in project settings.'
       )
       expect(body).toBeInTheDocument()
     })
@@ -132,9 +132,7 @@ describe('CircleCI', () => {
         setup({ hasOrgUploadToken: true })
         render(<CircleCI />, { wrapper })
 
-        const token = await screen.findByText(
-          /CODECOV_TOKEN=org-token-asdf-1234/
-        )
+        const token = await screen.findByText('org-token-asdf-1234')
         expect(token).toBeInTheDocument()
       })
     })
@@ -152,9 +150,7 @@ describe('CircleCI', () => {
         setup({})
         render(<CircleCI />, { wrapper })
 
-        const token = await screen.findByText(
-          /CODECOV_TOKEN=repo-token-jkl;-7890/
-        )
+        const token = await screen.findByText('repo-token-jkl;-7890')
         expect(token).toBeInTheDocument()
       })
     })
@@ -205,41 +201,18 @@ describe('CircleCI', () => {
 
   describe('step three', () => {
     beforeEach(() => setup({}))
-    it('renders first body', async () => {
+    it('renders body', async () => {
       render(<CircleCI />, { wrapper })
 
-      const body = await screen.findByText(/After you committed your changes/)
+      const body = await screen.findByText(
+        /Once merged to your default branch,/
+      )
       expect(body).toBeInTheDocument()
-    })
-
-    it('renders second body', async () => {
-      render(<CircleCI />, { wrapper })
-
-      const body = await screen.findByText(/Once merged to the/)
-      expect(body).toBeInTheDocument()
-    })
-
-    it('renders status check image', async () => {
-      render(<CircleCI />, { wrapper })
-
-      const img = await screen.findByRole('img', {
-        name: 'codecov patch and project',
-      })
-      expect(img).toBeInTheDocument()
     })
   })
 
   describe('ending', () => {
     beforeEach(() => setup({}))
-    it('renders quick start link', async () => {
-      render(<CircleCI />, { wrapper })
-
-      const link = await screen.findByRole('link', { name: /learn more/ })
-      expect(link).toHaveAttribute(
-        'href',
-        'https://docs.codecov.com/docs/quick-start'
-      )
-    })
     it('renders body', async () => {
       render(<CircleCI />, { wrapper })
 
