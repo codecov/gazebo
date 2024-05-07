@@ -7,6 +7,8 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import ActivationBanner from './ActivationBanner'
 
 jest.mock('./TrialEligibleBanner', () => () => 'TrialEligibleBanner')
+jest.mock('./FreePlanSeatsLimitBanner', () => () => 'FreePlanSeatsLimitBanner')
+jest.mock('./PaidPlanSeatsLimitBanner', () => () => 'PaidPlanSeatsLimitBanner')
 
 const queryClient = new QueryClient()
 
@@ -51,7 +53,8 @@ describe('ActivationBanner', () => {
   function setup(
     privateRepos = true,
     trialStatus = 'NOT_STARTED',
-    value = 'users-basic'
+    value = 'users-basic',
+    hasSeatsLeft = true
   ) {
     server.use(
       graphql.query('GetPlanData', (req, res, ctx) => {
@@ -64,6 +67,7 @@ describe('ActivationBanner', () => {
                 ...mockTrialData,
                 trialStatus,
                 value,
+                hasSeatsLeft,
               },
               pretrialPlan: {
                 baseUnitPrice: 10,
@@ -89,12 +93,32 @@ describe('ActivationBanner', () => {
   })
 
   it('does not render trial eligible banner if user is not eligible to trial', async () => {
-    setup(false)
+    setup(false, 'ONGOING', 'users-basic', true)
     const { container } = render(<ActivationBanner />, { wrapper })
 
     await waitFor(() => queryClient.isFetching)
     await waitFor(() => !queryClient.isFetching)
 
     expect(container).toBeEmptyDOMElement()
+  })
+
+  it('renders seats limit reached banner if user has no seats left and on free plan', async () => {
+    setup(true, 'ONGOING', 'users-basic', false)
+    render(<ActivationBanner />, { wrapper })
+
+    const FreePlanSeatsLimitBanner = await screen.findByText(
+      /FreePlanSeatsLimitBanner/
+    )
+    expect(FreePlanSeatsLimitBanner).toBeInTheDocument()
+  })
+
+  it('renders seats limit reached banner if user has no seats left and on paid plan', async () => {
+    setup(true, 'ONGOING', 'users-inappy', false)
+    render(<ActivationBanner />, { wrapper })
+
+    const PaidPlanSeatsLimitBanner = await screen.findByText(
+      /PaidPlanSeatsLimitBanner/
+    )
+    expect(PaidPlanSeatsLimitBanner).toBeInTheDocument()
   })
 })
