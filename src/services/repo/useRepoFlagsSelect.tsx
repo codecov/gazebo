@@ -345,14 +345,13 @@ interface URLParams {
   provider: string
   owner: string
   repo: string
-  pullId: string
+  pullId?: string
 }
 
 export function useRepoFlagsSelect(
   { filters, options } = { filters: {}, options: {} }
 ) {
   const { provider, owner, repo, pullId } = useParams<URLParams>()
-
   const { data, ...rest } = useInfiniteQuery({
     queryKey: ['flags', provider, owner, repo, pullId, filters],
     queryFn: ({ pageParam: after, signal }) => {

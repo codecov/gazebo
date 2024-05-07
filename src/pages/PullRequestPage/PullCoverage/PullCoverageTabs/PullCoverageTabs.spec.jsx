@@ -107,6 +107,7 @@ const mockPullData = {
 const mockFlagsResponse = {
   owner: {
     repository: {
+      __typename: 'Repository',
       flags: {
         edges: [
           {

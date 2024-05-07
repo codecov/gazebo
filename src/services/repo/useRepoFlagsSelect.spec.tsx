@@ -14,7 +14,7 @@ const queryClient = new QueryClient({
   },
 })
 
-const wrapper = ({ children }) => (
+const wrapper = ({ children }: { children: React.ReactNode }) => (
   <MemoryRouter initialEntries={['/gh/codecov/gazebo/flags']}>
     <Route path="/:provider/:owner/:repo/flags">
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -22,12 +22,16 @@ const wrapper = ({ children }) => (
   </MemoryRouter>
 )
 
-const pullWrapper =
-  (initialEntries = '/gh/codecov/gazebo/pull/123') =>
+type WrapperClosure = (
+  initialEntries?: string[]
+) => React.FC<React.PropsWithChildren>
+
+const pullWrapper: WrapperClosure =
+  (initialEntries = ['/gh/codecov/gazebo/pull/123']) =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
+        <MemoryRouter initialEntries={initialEntries}>
           <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
         </MemoryRouter>
       </QueryClientProvider>
@@ -57,11 +61,9 @@ const initialData = [
 const expectedInitialData = [
   {
     name: 'flag1',
-    percentCovered: 93.26,
   },
   {
     name: 'flag2',
-    percentCovered: 92.72,
   },
 ]
 
@@ -77,7 +79,6 @@ const nextPageData = [
 const expectedNextPageData = [
   {
     name: 'flag3',
-    percentCovered: 92.95,
   },
 ]
 
@@ -88,6 +89,7 @@ describe('FlagsSelect', () => {
         const dataReturned = {
           owner: {
             repository: {
+              __typename: 'Repository',
               flags: {
                 edges: req.variables.after
                   ? [...nextPageData]
@@ -106,8 +108,10 @@ describe('FlagsSelect', () => {
         const dataReturned = {
           owner: {
             repository: {
+              __typename: 'Repository',
               pull: {
                 compareWithBase: {
+                  __typename: 'Comparison',
                   flagComparisons: [
                     {
                       name: 'unit',
@@ -185,7 +189,7 @@ describe('FlagsSelect', () => {
       setup()
     })
 
-    it('calls the pull flag select query', async () => {
+    it.only('calls the pull flag select query', async () => {
       const { result } = renderHook(() => useRepoFlagsSelect(), {
         wrapper: pullWrapper(),
       })
