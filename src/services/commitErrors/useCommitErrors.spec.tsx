@@ -56,6 +56,8 @@ const mockOwnerNotActivatedError = {
   },
 }
 
+const mockUnsuccessfulParseError = {}
+
 const server = setupServer()
 
 beforeAll(() => server.listen())
@@ -69,6 +71,7 @@ describe('useCommitErrors', () => {
   function setup({
     isNotFoundError = false,
     isOwnerNotActivatedError = false,
+    isUnsuccessfulParseError = false,
   }) {
     server.use(
       graphql.query(`CommitErrors`, (req, res, ctx) => {
@@ -76,6 +79,8 @@ describe('useCommitErrors', () => {
           return res(ctx.status(200), ctx.data(mockNotFoundError))
         } else if (isOwnerNotActivatedError) {
           return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
+        } else if (isUnsuccessfulParseError) {
+          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
         } else {
           return res(ctx.status(200), ctx.data(dataReturned))
         }
@@ -104,6 +109,21 @@ describe('useCommitErrors', () => {
     })
   })
   describe('when called but repository errors', () => {
+    it('can return unsuccessful parse error', async () => {
+      setup({ isUnsuccessfulParseError: true })
+      const { result } = renderHook(() => useCommitErrors(), {
+        wrapper,
+      })
+
+      await waitFor(() => expect(result.current.isError).toBeTruthy())
+      await waitFor(() =>
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            status: 404,
+          })
+        )
+      )
+    })
     it('can return not found error', async () => {
       setup({ isNotFoundError: true })
       const { result } = renderHook(() => useCommitErrors(), {

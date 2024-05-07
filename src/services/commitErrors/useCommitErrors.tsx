@@ -120,7 +120,7 @@ export function useCommitErrors() {
           return Promise.reject({
             status: 404,
             data: {},
-            dev: 'useCommitErrors - 404 Not Found Error',
+            dev: 'useCommitErrors - 404 NotFoundError',
           } satisfies NetworkErrorObject)
         }
 
@@ -137,7 +137,7 @@ export function useCommitErrors() {
                 </p>
               ),
             },
-            dev: 'useCommitErrors - 403 Owner Not Activated Error',
+            dev: 'useCommitErrors - 403 OwnerNotActivated Error',
           } satisfies NetworkErrorObject)
         }
 
