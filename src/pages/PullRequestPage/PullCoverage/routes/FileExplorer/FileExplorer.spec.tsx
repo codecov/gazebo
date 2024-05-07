@@ -160,6 +160,8 @@ const mockTreeData = {
 const mockRepoSettings = {
   owner: {
     repository: {
+      __typename: 'Repository',
+      activated: true,
       defaultBranch: 'main',
       private: false,
       uploadToken: 'token',

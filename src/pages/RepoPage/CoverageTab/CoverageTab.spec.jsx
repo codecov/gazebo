@@ -26,6 +26,8 @@ const server = setupServer()
 const mockRepoSettings = (isPrivate = false) => ({
   owner: {
     repository: {
+      __typename: 'Repository',
+      activated: true,
       defaultBranch: 'master',
       private: isPrivate,
       uploadToken: 'token',
