@@ -213,6 +213,7 @@ const mockCommitErrors = (hasErrors = false) => {
   return {
     owner: {
       repository: {
+        __typename: 'Repository',
         commit: {
           yamlErrors: {
             edges: yamlErrors,
