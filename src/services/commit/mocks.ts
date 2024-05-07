@@ -68,7 +68,6 @@ export const commitOneCarriedForward = graphql.query(
           repository: {
             __typename: 'Repository',
             commit: {
-              branchName: null,
               ...commitDataError,
               uploads: {
                 edges: [
