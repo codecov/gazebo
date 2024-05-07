@@ -24,16 +24,17 @@ function ActivationBanner() {
     planData?.hasPrivateRepos &&
     isNewTrial
   const seatsLimitReached = !planData?.plan?.hasSeatsLeft
+  const isFreePlanValue = isFreePlan(planData?.plan?.value)
 
   if (isTrialEligible) {
     return <TrialEligibleBanner />
   }
 
-  if (seatsLimitReached && isFreePlan(planData?.plan?.value)) {
+  if (seatsLimitReached && isFreePlanValue) {
     return <FreePlanSeatsLimitBanner />
   }
 
-  if (seatsLimitReached && !isFreePlan(planData?.plan?.value)) {
+  if (seatsLimitReached && !isFreePlanValue) {
     return <PaidPlanSeatsLimitBanner />
   }
 
