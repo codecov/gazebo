@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useMemo } from 'react'
+import { lazy, Suspense, useMemo } from 'react'
 import { Switch, useHistory, useLocation, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
@@ -31,6 +31,21 @@ const CI_PROVIDERS = {
   OtherCI: 'OtherCI',
 } as const
 type CIProviderValue = (typeof CI_PROVIDERS)[keyof typeof CI_PROVIDERS]
+type CIUrls = Record<keyof typeof CI_PROVIDERS, string>
+
+const getInitialProvider = (provider: string, path: string, urls: CIUrls) => {
+  const defaultProvider =
+    providerToName(provider) !== 'Github'
+      ? CI_PROVIDERS.OtherCI
+      : CI_PROVIDERS.GitHubActions
+  if (path === urls.CircleCI) {
+    return CI_PROVIDERS.CircleCI
+  }
+  if (path === urls.OtherCI) {
+    return CI_PROVIDERS.OtherCI
+  }
+  return defaultProvider
+}
 
 interface CISelectorProps {
   provider: string
@@ -51,20 +66,6 @@ function CISelector({ provider, owner, repo }: CISelectorProps) {
     [githubActions, circleCI, newOtherCI, provider, owner, repo]
   )
 
-  const getInitialProvider = useCallback(() => {
-    const defaultProvider =
-      providerToName(provider) !== 'Github'
-        ? CI_PROVIDERS.OtherCI
-        : CI_PROVIDERS.GitHubActions
-    if (location.pathname === urls.CircleCI) {
-      return CI_PROVIDERS.CircleCI
-    }
-    if (location.pathname === urls.OtherCI) {
-      return CI_PROVIDERS.OtherCI
-    }
-    return defaultProvider
-  }, [location, urls, provider])
-
   return (
     <Card>
       <Card.Header>
@@ -72,7 +73,7 @@ function CISelector({ provider, owner, repo }: CISelectorProps) {
       </Card.Header>
       <Card.Content>
         <RadioTileGroup
-          defaultValue={getInitialProvider()}
+          defaultValue={getInitialProvider(provider, location.pathname, urls)}
           onValueChange={(value: CIProviderValue) => {
             history.replace(urls[value])
           }}
