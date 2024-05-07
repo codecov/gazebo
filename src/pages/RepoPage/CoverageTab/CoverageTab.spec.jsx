@@ -384,26 +384,20 @@ describe('Coverage Tab', () => {
     jest.resetAllMocks()
   })
 
-  describe('file count is under 10_000', () => {
+  describe('file count is under 100_000', () => {
     it('renders the sunburst chart', async () => {
       setup({ fileCount: 100 })
       render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/repoName']) })
 
-      expect(await screen.findByText(/Hide Chart/)).toBeTruthy()
-      const hideChart = screen.getByText(/Hide Chart/)
+      const hideChart = await screen.findByText(/Hide Chart/)
       expect(hideChart).toBeInTheDocument()
 
-      expect(await screen.findByTestId('sunburst')).toBeTruthy()
-      const sunburst = screen.getByTestId('sunburst')
+      const sunburst = await screen.findByTestId('sunburst')
       expect(sunburst).toBeInTheDocument()
-
-      expect(await screen.findByTestId('coverage-area-chart')).toBeTruthy()
-      const coverageAreaChart = screen.getByTestId('coverage-area-chart')
-      expect(coverageAreaChart).toBeInTheDocument()
     }, 60000)
   })
 
-  describe('file count is above 10_000', () => {
+  describe('file count is above 100_000', () => {
     it('does not render the sunburst chart', async () => {
       setup({ fileCount: 100_000 })
       render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/repoName']) })
@@ -413,9 +407,6 @@ describe('Coverage Tab', () => {
 
       const sunburst = screen.queryByTestId('sunburst')
       expect(sunburst).not.toBeInTheDocument()
-
-      const coverageAreaChart = await screen.findByTestId('coverage-area-chart')
-      expect(coverageAreaChart).toBeInTheDocument()
     })
   })
 
@@ -426,6 +417,14 @@ describe('Coverage Tab', () => {
 
     const summary = screen.getByText(/Summary/)
     expect(summary).toBeInTheDocument()
+  })
+
+  it('renders the coverage area chart', async () => {
+    setup({ fileCount: 100 })
+    render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/repoName']) })
+
+    const coverageAreaChart = await screen.findByTestId('coverage-area-chart')
+    expect(coverageAreaChart).toBeInTheDocument()
   })
 
   describe('when the repo is private and org is on team plan', () => {

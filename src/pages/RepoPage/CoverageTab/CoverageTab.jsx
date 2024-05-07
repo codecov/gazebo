@@ -49,7 +49,7 @@ function CoverageTab() {
 
   let displaySunburst = false
   const fileCount = data?.branch?.head?.totals?.fileCount
-  if (typeof fileCount === 'number' && fileCount <= 10_000) {
+  if (typeof fileCount === 'number' && fileCount <= 100_000) {
     displaySunburst = true
   }
 
