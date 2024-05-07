@@ -111,7 +111,6 @@ describe('useRepoSettingsTeam', () => {
           expect(result.current.data).toEqual({
             repository: {
               __typename: 'Repository',
-
               defaultBranch: 'master',
               private: true,
               uploadToken: 'token',
