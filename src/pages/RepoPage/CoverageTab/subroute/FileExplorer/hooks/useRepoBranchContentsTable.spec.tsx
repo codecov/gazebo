@@ -11,6 +11,7 @@ import { useRepoBranchContentsTable } from './useRepoBranchContentsTable'
 const mockBranchContentData = {
   owner: {
     repository: {
+      __typename: 'Repository',
       repositoryConfig: {
         indicationRange: {
           upperRange: 80,
@@ -54,6 +55,7 @@ const mockBranchContentData = {
 const mockCommitNoContentData = {
   owner: {
     repository: {
+      __typename: 'Repository',
       repositoryConfig: {
         indicationRange: {
           upperRange: 80,

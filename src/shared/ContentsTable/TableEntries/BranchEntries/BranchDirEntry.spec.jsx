@@ -11,6 +11,7 @@ const mockData = {
   owner: {
     username: 'codecov',
     repository: {
+      __typename: 'Repository',
       repositoryConfig: {
         indicationRange: {
           upperRange: 80,
@@ -173,7 +174,7 @@ describe('BranchDirEntry', () => {
 
     await waitFor(() =>
       expect(queryClient.getQueryState().data).toStrictEqual({
-        __typename: undefined,
+        __typename: 'PathContents',
         indicationRange: {
           upperRange: 80,
           lowerRange: 60,

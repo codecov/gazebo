@@ -1,6 +1,6 @@
 import config from 'config'
 
-import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
+import { CodecovIcon } from 'assets/svg/codecov'
 import A from 'ui/A'
 
 import { FooterItem } from './FooterItem'
