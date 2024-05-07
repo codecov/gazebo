@@ -9,7 +9,6 @@ import A from 'ui/A'
 import { RepoNotFoundErrorSchema } from './schemas/RepoNotFoundError'
 import { RepoOwnerNotActivatedErrorSchema } from './schemas/RepoOwnerNotActivatedError'
 
-
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   private: z.boolean().nullable(),
@@ -53,9 +52,9 @@ function fetchRepoSettingsDetails({
   signal,
 }: FetchRepoSettingsTeamArgs) {
   const query = `
-    query GetRepoSettingsTeam($name: String!, $repo: String!){
-      owner(username:$name){
-        repository: repositoryDeprecated(name:$repo){
+    query GetRepoSettingsTeam($name: String!, $repo: String!) {
+      owner(username:$name) {
+        repository(name:$repo) {
           private
           activated
           uploadToken
