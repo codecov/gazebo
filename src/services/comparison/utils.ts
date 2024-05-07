@@ -1,13 +1,26 @@
 import isEmpty from 'lodash/isEmpty'
+import { z } from 'zod'
 
-function _setFileLabel({ isNewFile, isRenamedFile, isDeletedFile }) {
+import { ImpactedFileSchema } from './useComparisonForCommitAndParent'
+
+function _setFileLabel({
+  isNewFile,
+  isRenamedFile,
+  isDeletedFile,
+}: {
+  isNewFile: boolean
+  isRenamedFile: boolean
+  isDeletedFile: boolean
+}): string | null {
   if (isNewFile) return 'New'
   if (isRenamedFile) return 'Renamed'
   if (isDeletedFile) return 'Deleted'
   return null
 }
 
-export function transformImpactedFileData(impactedFile) {
+export function transformImpactedFileData(
+  impactedFile: z.infer<typeof ImpactedFileSchema>
+) {
   if (isEmpty(impactedFile)) {
     return null
   }
