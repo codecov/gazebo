@@ -40,7 +40,10 @@ function Footer() {
           ))}
         </ul>
         <A to={{ pageName: 'owner' }}>
-          <CodecovIcon className="mr-2 cursor-pointer text-ds-gray-quinary" />
+          <CodecovIcon
+            className="mr-2 cursor-pointer text-ds-gray-quinary"
+            fillColor="#808080"
+          />
         </A>
         <ul className="flex flex-1 items-center justify-center gap-4 lg:justify-end">
           {rightMenu.map((props, i) => (
