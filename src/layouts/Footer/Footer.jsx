@@ -42,7 +42,7 @@ function Footer() {
         <A to={{ pageName: 'owner' }}>
           <CodecovIcon
             className="mr-2 cursor-pointer text-ds-gray-quinary"
-            fillColor="#808080"
+            fillColor="#68737e"
           />
         </A>
         <ul className="flex flex-1 items-center justify-center gap-4 lg:justify-end">
