@@ -54,7 +54,17 @@ describe('UploadsCard', () => {
       graphql.query('CommitYaml', (req, res, ctx) => {
         return res(
           ctx.status(200),
-          ctx.data({ owner: { repository: { commit: { yaml: 'yada yada' } } } })
+          ctx.data({
+            owner: {
+              repository: {
+                __typename: 'Repository',
+                commit: {
+                  commitid: 'asdf',
+                  yaml: 'yada yada',
+                },
+              },
+            },
+          })
         )
       })
     )

@@ -26,10 +26,14 @@ const Loader = () => (
 function Content({
   provider,
   isCurrentUserActivated,
+  isRepoPrivate,
 }: {
   provider: string
   isCurrentUserActivated: boolean
+  isRepoPrivate?: boolean
 }) {
+  const renderActivationBanner = !isCurrentUserActivated && isRepoPrivate
+
   if (providerToName(provider) !== 'Github') {
     return (
       <div className="mt-6">
@@ -49,7 +53,7 @@ function Content({
           { pageName: 'newOtherCI' },
         ]}
       />
-      {!isCurrentUserActivated ? <ActivationBanner /> : null}
+      {renderActivationBanner ? <ActivationBanner /> : null}
       <div className="mt-6">
         <Switch>
           <SentryRoute path="/:provider/:owner/:repo/new" exact>
@@ -94,6 +98,7 @@ function NewRepoTab() {
         <Content
           provider={provider}
           isCurrentUserActivated={data?.isCurrentUserActivated ?? false}
+          isRepoPrivate={data?.repository.private ?? false}
         />
       </div>
     </div>
