@@ -18,15 +18,18 @@ query BackfillFlagMemberships($name: String!, $repo: String!) {
   }
   owner(username:$name) {
     repository(name:$repo) {
+      __typename
+      ... on Repository {
       flagsMeasurementsActive
       flagsMeasurementsBackfilled
       flagsCount
-    }
-    ... on NotFoundError {
-      message
-    }
-    ... on OwnerNotActivatedError {
-      message
+      }
+      ... on NotFoundError {
+        message
+      }
+      ... on OwnerNotActivatedError {
+        message
+      }
     }
   }
 }

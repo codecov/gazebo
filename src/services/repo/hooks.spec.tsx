@@ -32,7 +32,10 @@ const wrapper =
 const server = setupServer()
 
 beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
 afterAll(() => server.close())
 
 console.error = () => {}
