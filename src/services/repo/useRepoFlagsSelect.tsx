@@ -52,13 +52,11 @@ const RepositorySchema = z.object({
 export const FetchRepoFlagsSchema = z.object({
   owner: z
     .object({
-      repository: z
-        .discriminatedUnion('__typename', [
-          RepositorySchema,
-          RepoNotFoundErrorSchema,
-          RepoOwnerNotActivatedErrorSchema,
-        ])
-        .nullable(),
+      repository: z.discriminatedUnion('__typename', [
+        RepositorySchema,
+        RepoNotFoundErrorSchema,
+        RepoOwnerNotActivatedErrorSchema,
+      ]),
     })
     .nullable(),
 })
@@ -345,7 +343,7 @@ interface URLParams {
   provider: string
   owner: string
   repo: string
-  pullId?: string
+  pullId: string
 }
 
 export function useRepoFlagsSelect(
@@ -356,6 +354,7 @@ export function useRepoFlagsSelect(
     queryKey: ['flags', provider, owner, repo, pullId, filters],
     queryFn: ({ pageParam: after, signal }) => {
       if (pullId) {
+        console.log('pull id found')
         return fetchRepoFlagsForPull({
           provider,
           owner,
@@ -366,6 +365,8 @@ export function useRepoFlagsSelect(
           after,
         })
       }
+      console.log('pull id not found')
+
       return fetchRepoFlags({
         provider,
         owner,
