@@ -229,24 +229,23 @@ describe('useIndirectChangedFilesTable', () => {
         { addQueryPrefix: true }
       )}`
 
-      const { result } = renderHook(() => useIndirectChangedFilesTable(), {
+      renderHook(() => useIndirectChangedFilesTable(), {
         wrapper: wrapper(path),
       })
 
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
-
-      expect(variablesPassed).toHaveBeenCalledWith({
-        filters: {
-          ordering: { direction: 'DESC', parameter: 'MISSES_COUNT' },
-          hasUnintendedChanges: true,
-          components: ['component-1'],
-          flags: ['flag-1'],
-        },
-        owner: 'test-org',
-        pullId: 5,
-        repo: 'test-repo',
-      })
+      await waitFor(() =>
+        expect(variablesPassed).toHaveBeenCalledWith({
+          filters: {
+            ordering: { direction: 'DESC', parameter: 'MISSES_COUNT' },
+            hasUnintendedChanges: true,
+            components: ['component-1'],
+            flags: ['flag-1'],
+          },
+          owner: 'test-org',
+          pullId: 5,
+          repo: 'test-repo',
+        })
+      )
     })
   })
 })
