@@ -9,7 +9,6 @@ import A from 'ui/A'
 import { RepoNotFoundErrorSchema } from './schemas/RepoNotFoundError'
 import { RepoOwnerNotActivatedErrorSchema } from './schemas/RepoOwnerNotActivatedError'
 
-
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   private: z.boolean().nullable(),
@@ -48,40 +47,40 @@ const RequestSchema = z.object({
     .nullable(),
 })
 
+const query = `
+query GetRepoSettings($name: String!, $repo: String!) {
+  owner(username:$name){
+    repository(name:$repo) {
+      __typename
+      ... on Repository {
+        private
+        activated
+        uploadToken
+        defaultBranch
+        profilingToken
+        staticAnalysisToken
+        graphToken
+        yaml
+        bot {
+          username
+        }
+      }
+      ... on NotFoundError {
+        message
+      }
+      ... on OwnerNotActivatedError {
+        message
+      }
+    }
+  }
+}`
+
 function fetchRepoSettingsDetails({
   provider,
   owner,
   repo,
   signal,
 }: FetchRepoSettingsArgs) {
-  const query = `
-    query GetRepoSettings($name: String!, $repo: String!) {
-      owner(username:$name){
-        repository(name:$repo) {
-          __typename
-          ... on Repository {
-            private
-            activated
-            uploadToken
-            defaultBranch
-            profilingToken
-            staticAnalysisToken
-            graphToken
-            yaml
-            bot {
-              username
-            }
-          }
-          ... on NotFoundError {
-            message
-          }
-          ... on OwnerNotActivatedError {
-            message
-          }
-        }
-      }
-    }
-`
   return Api.graphql({
     provider,
     query,
@@ -107,6 +106,7 @@ function fetchRepoSettingsDetails({
       return Promise.reject({
         status: 404,
         data: {},
+        dev: 'useRepoSettings - 404 not found error',
       })
     }
 
@@ -123,6 +123,7 @@ function fetchRepoSettingsDetails({
             </p>
           ),
         },
+        dev: 'useRepoSettings - 403 owner not activated error',
       })
     }
 

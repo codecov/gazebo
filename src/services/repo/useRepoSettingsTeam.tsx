@@ -45,38 +45,38 @@ const RequestSchema = z.object({
     .nullable(),
 })
 
+const query = `
+query GetRepoSettingsTeam($name: String!, $repo: String!) {
+  owner(username:$name) {
+    repository(name:$repo) {
+      __typename
+      ... on Repository {
+        private
+        activated
+        uploadToken
+        defaultBranch
+        graphToken
+        yaml
+        bot {
+          username
+        }
+      }
+      ... on NotFoundError {
+        message
+      }
+      ... on OwnerNotActivatedError {
+        message
+      }
+    }
+  }
+}`
+
 function fetchRepoSettingsDetails({
   provider,
   owner,
   repo,
   signal,
 }: FetchRepoSettingsTeamArgs) {
-  const query = `
-    query GetRepoSettingsTeam($name: String!, $repo: String!) {
-      owner(username:$name) {
-        repository(name:$repo) {
-          __typename
-          ... on Repository {
-            private
-            activated
-            uploadToken
-            defaultBranch
-            graphToken
-            yaml
-            bot {
-              username
-            }
-          }
-          ... on NotFoundError {
-            message
-          }
-          ... on OwnerNotActivatedError {
-            message
-          }
-        }
-      }
-    }
-`
   return Api.graphql({
     provider,
     query,
@@ -102,6 +102,7 @@ function fetchRepoSettingsDetails({
       return Promise.reject({
         status: 404,
         data: {},
+        dev: 'useRepoSettingsTeam - 404 not found error',
       })
     }
 
@@ -118,6 +119,7 @@ function fetchRepoSettingsDetails({
             </p>
           ),
         },
+        dev: 'useRepoSettingsTeam - 403 owner not activated error',
       })
     }
 
