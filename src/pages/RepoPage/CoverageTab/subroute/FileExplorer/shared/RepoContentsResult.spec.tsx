@@ -1,6 +1,4 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
 import RepoContentsResult from './RepoContentsResult'
 
@@ -56,51 +54,6 @@ describe('RepoContentsResult', () => {
       /No coverage report uploaded for the selected flags in this branch's head commit/
     )
     expect(noCoverageForFlags).toBeInTheDocument()
-  })
-
-  it('renders no coverage for default if there is no coverage on the branch', async () => {
-    const props = {
-      isSearching: false,
-      isMissingHeadReport: false,
-      hasFlagsSelected: false,
-      hasComponentsSelected: false,
-    }
-
-    const queryClient = new QueryClient({
-      defaultOptions: {
-        queries: {
-          retry: false,
-        },
-      },
-    })
-
-    const mockedUseParams = useParams as jest.Mock
-    mockedUseParams.mockReturnValue({
-      owner: 'codecov',
-      provider: 'gh',
-      repo: 'cool-repo',
-    })
-
-    render(
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter
-          initialEntries={['/gh/codecov/cool-repo/tree/main/a/b/c']}
-        >
-          <Route path="/:provider/:owner/:repo/tree/:branch/:path+">
-            <RepoContentsResult {...props} />
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
-
-    const noCoverageForFlags = await screen.findByText(
-      /Once merged to your default branch, Codecov will show your report results on this dashboard./
-    )
-    expect(noCoverageForFlags).toBeInTheDocument()
-
-    const link = await screen.findByTestId('settings-page')
-    expect(link).toBeInTheDocument()
-    expect(link).toHaveAttribute('href', '/gh/codecov/cool-repo/settings')
   })
 
   it('renders no coverage for components if user has components selected', async () => {

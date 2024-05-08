@@ -46,6 +46,7 @@ const mockGetRepo = (
       activated: false,
       oldestCommitAt: '',
       active: hasCommits,
+      isFirstPullRequest: false,
     },
   },
 })

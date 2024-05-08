@@ -1,4 +1,3 @@
-import A from 'ui/A'
 import Banner from 'ui/Banner'
 import BannerContent from 'ui/Banner/BannerContent'
 
@@ -16,6 +15,15 @@ const RepoContentsResult: React.FC<RepoContentsProps> = ({
   hasComponentsSelected,
 }) => {
   let copy: JSX.Element | string = ''
+
+  if (
+    !isSearching &&
+    !isMissingHeadReport &&
+    !hasFlagsSelected &&
+    !hasComponentsSelected
+  ) {
+    return null
+  }
 
   if (isSearching) {
     copy = 'No results found'
@@ -36,22 +44,6 @@ const RepoContentsResult: React.FC<RepoContentsProps> = ({
         No coverage report uploaded for the selected flags in this branch's
         head commit
       `
-  } else {
-    copy = (
-      <p>
-        Once merged to your default branch, Codecov will show your report
-        results on this dashboard.{' '}
-        <A
-          to={{ pageName: 'settings' }}
-          hook={'repo-to-edit-branch'}
-          variant="semibold"
-          isExternal={false}
-          data-testid="settings-page"
-        >
-          edit default branch
-        </A>
-      </p>
-    )
   }
 
   return (

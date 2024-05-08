@@ -34,6 +34,7 @@ const mockGetRepo = {
       activated: true,
       oldestCommitAt: '2020-01-01T12:00:00',
       active: true,
+      isFirstPullRequest: false,
     },
   },
 }

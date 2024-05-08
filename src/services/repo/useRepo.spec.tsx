@@ -20,6 +20,7 @@ const mockRepo = {
       activated: false,
       oldestCommitAt: '',
       active: true,
+      isFirstPullRequest: false,
     },
   },
 }
@@ -124,6 +125,7 @@ describe('useRepo', () => {
             activated: false,
             oldestCommitAt: '',
             active: true,
+            isFirstPullRequest: false,
           },
         })
       )

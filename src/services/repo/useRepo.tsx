@@ -18,6 +18,7 @@ const RepositorySchema = z.object({
   activated: z.boolean(),
   oldestCommitAt: z.string().nullable(),
   active: z.boolean(),
+  isFirstPullRequest: z.boolean(),
 })
 
 export const RepoSchema = z.object({
@@ -53,6 +54,7 @@ const query = `
             activated
             oldestCommitAt
             active
+            isFirstPullRequest
           }
           ... on NotFoundError {
             message

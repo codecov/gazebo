@@ -4,11 +4,12 @@ import { Switch, useParams } from 'react-router-dom'
 import { SentryRoute } from 'sentry'
 
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
-import { useRepoSettingsTeam } from 'services/repo'
+import { useRepo } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 import Spinner from 'ui/Spinner'
 
+import FirstPullRequestBanner from './FirstPullRequestBanner'
 import Summary from './Summary'
 import SummaryTeamPlan from './SummaryTeamPlan'
 import ToggleElement from './ToggleElement'
@@ -25,11 +26,16 @@ const Loader = () => (
 )
 
 function CoverageTab() {
-  const { data: repoData } = useRepoSettingsTeam()
+  const { provider, owner, repo } = useParams()
+  const { data: repoData } = useRepo({
+    provider,
+    owner,
+    repo,
+  })
+
   const { multipleTiers } = useFlags({
     multipleTiers: false,
   })
-  const { provider, owner } = useParams()
   const { data: tierName } = useTier({ provider, owner })
 
   const showTeamSummary =
@@ -39,6 +45,9 @@ function CoverageTab() {
 
   return (
     <div className="mx-4 flex flex-col gap-2 divide-y border-solid border-ds-gray-secondary sm:mx-0">
+      {repoData?.repository?.isFirstPullRequest ? (
+        <FirstPullRequestBanner />
+      ) : null}
       {showTeamSummary ? <SummaryTeamPlan /> : <Summary />}
       {!showTeamSummary && (
         <SentryRoute
