@@ -57,6 +57,7 @@ const mockBackfillHasFlagsAndActive = {
   },
   owner: {
     repository: {
+      __typename: 'Repository',
       flagsMeasurementsActive: true,
       flagsMeasurementsBackfilled: true,
       flagsCount: 4,
@@ -70,6 +71,7 @@ const mockBackfillTimeScaleDisabled = {
   },
   owner: {
     repository: {
+      __typename: 'Repository',
       flagsMeasurementsActive: true,
       flagsMeasurementsBackfilled: true,
       flagsCount: 4,
@@ -83,6 +85,7 @@ const mockBackfillNoFlagsPresent = {
   },
   owner: {
     repository: {
+      __typename: 'Repository',
       flagsMeasurementsActive: true,
       flagsMeasurementsBackfilled: true,
       flagsCount: 0,
@@ -96,6 +99,7 @@ const mockBackfillFlagMeasureNotActive = {
   },
   owner: {
     repository: {
+      __typename: 'Repository',
       flagsMeasurementsActive: false,
       flagsMeasurementsBackfilled: true,
       flagsCount: 4,

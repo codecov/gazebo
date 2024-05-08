@@ -180,6 +180,7 @@ const mockBackfillData = {
   },
   owner: {
     repository: {
+      __typename: 'Repository',
       flagsMeasurementsActive: true,
       flagsMeasurementsBackfilled: true,
       flagsCount: 4,
@@ -313,6 +314,9 @@ describe('FileExplorer', () => {
       }),
       graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockRepoSettings))
+      }),
+      graphql.query('GetRepoOverview', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({}))
       })
     )
 
