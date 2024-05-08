@@ -62,10 +62,8 @@ function A({ to, hook, variant = 'default', children, isExternal, ...props }) {
   const handleClick = () => {
     if (to) {
       metrics.increment(`link.click.${to.pageName}`)
-      console.log(`link.click.${to.pageName}`)
     } else {
       metrics.increment(`link.click.${hook}`)
-      console.log(`link.click.${hook}`)
     }
   }
 

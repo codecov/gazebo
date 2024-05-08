@@ -118,10 +118,8 @@ function Button({
   const handleClick = () => {
     if (to) {
       metrics.increment(`button.click.${to.pageName}`)
-      console.log(`button.click.${to.pageName}`)
     } else {
       metrics.increment(`button.click.${hook}`)
-      console.log(`button.click.${hook}`)
     }
   }
 
