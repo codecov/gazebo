@@ -350,8 +350,8 @@ describe('NewRepoTab', () => {
         })
         render(<NewRepoTab />, { wrapper: wrapper() })
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        // Wait for full render
+        expect(await screen.findByText(/GitHubActions/)).toBeInTheDocument()
 
         const banner = screen.queryByText(/ActivationBanner/)
         expect(banner).not.toBeInTheDocument()
@@ -366,12 +366,13 @@ describe('NewRepoTab', () => {
         })
         render(<NewRepoTab />, { wrapper: wrapper() })
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+        // Wait for full render
+        expect(await screen.findByText(/GitHubActions/)).toBeInTheDocument()
 
         const banner = screen.queryByText(/ActivationBanner/)
         expect(banner).not.toBeInTheDocument()
       })
+    })
 
     describe('when user is not activated and is private repo', () => {
       it('renders ActivationBanner', async () => {
@@ -381,13 +382,9 @@ describe('NewRepoTab', () => {
         })
         render(<NewRepoTab />, { wrapper: wrapper() })
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
-
-        const banner = screen.queryByText(/ActivationBanner/)
+        const banner = await screen.findByText(/ActivationBanner/)
         expect(banner).toBeInTheDocument()
       })
-    })
     })
   })
 })
