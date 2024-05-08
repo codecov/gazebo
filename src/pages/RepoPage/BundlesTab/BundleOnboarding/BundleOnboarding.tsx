@@ -66,13 +66,8 @@ const BundleOnboarding: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="mx-auto pt-6 lg:w-3/5">
-        <h1 className="mb-2 text-3xl font-semibold">
-          Configure bundle analysis
-        </h1>
-        <Content />
-      </div>
+    <div className="pt-2 lg:w-3/5">
+      <Content />
     </div>
   )
 }
