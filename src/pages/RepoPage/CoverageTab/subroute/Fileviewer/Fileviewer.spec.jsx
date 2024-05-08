@@ -100,6 +100,7 @@ const mockCoverage = {
 const mockFlagResponse = {
   owner: {
     repository: {
+      __typename: 'Repository',
       flags: {
         edges: [
           {

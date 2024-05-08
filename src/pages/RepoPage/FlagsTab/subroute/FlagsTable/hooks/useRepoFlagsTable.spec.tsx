@@ -10,7 +10,6 @@ import { useRepoFlags } from 'services/repo/useRepoFlags'
 import useRepoFlagsTable from './useRepoFlagsTable'
 
 jest.mock('services/repo/useRepoFlags')
-jest.mock('services/repo/useRepoFlagsSelect')
 jest.mock('services/repo')
 
 jest.mock('services/navigation', () => ({

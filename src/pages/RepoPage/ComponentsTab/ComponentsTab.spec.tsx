@@ -181,6 +181,7 @@ describe('Components Tab', () => {
         const dataReturned = {
           owner: {
             repository: {
+              __typename: 'Repository',
               flags: {
                 edges: req.variables.after ? [...flags[0]] : [...flags[1]],
                 pageInfo: {

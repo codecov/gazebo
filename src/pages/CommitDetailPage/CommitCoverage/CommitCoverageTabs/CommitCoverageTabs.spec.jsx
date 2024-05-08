@@ -28,6 +28,7 @@ const mockRepoSettings = (isPrivate) => ({
 const mockFlagsResponse = {
   owner: {
     repository: {
+      __typename: 'Repository',
       flags: {
         edges: [
           {
