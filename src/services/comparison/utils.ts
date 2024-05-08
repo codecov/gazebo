@@ -1,13 +1,23 @@
 import isEmpty from 'lodash/isEmpty'
 
-function _setFileLabel({ isNewFile, isRenamedFile, isDeletedFile }) {
+import { ImpactedFileType } from './useComparisonForCommitAndParent'
+
+function _setFileLabel({
+  isNewFile,
+  isRenamedFile,
+  isDeletedFile,
+}: {
+  isNewFile: boolean
+  isRenamedFile: boolean
+  isDeletedFile: boolean
+}): string | null {
   if (isNewFile) return 'New'
   if (isRenamedFile) return 'Renamed'
   if (isDeletedFile) return 'Deleted'
   return null
 }
 
-export function transformImpactedFileData(impactedFile) {
+export function transformImpactedFileData(impactedFile: ImpactedFileType) {
   if (isEmpty(impactedFile)) {
     return null
   }
