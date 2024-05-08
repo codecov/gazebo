@@ -138,16 +138,15 @@ function NewRepoTab() {
     return <NotFound />
   }
 
-  const renderActivationBanner = !data?.isCurrentUserActivated && data?.repository.private
+  const renderActivationBanner =
+    !data?.isCurrentUserActivated && data?.repository.private
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-6 pt-4 lg:w-3/5">
-        <IntroBlurb />
-        {renderActivationBanner ? <ActivationBanner /> : null}
-        <CISelector provider={provider} owner={owner} repo={repo} />
-        <Content />
-      </div>
+    <div className="flex flex-col gap-6 pt-4 lg:w-3/5">
+      <IntroBlurb />
+      {renderActivationBanner ? <ActivationBanner /> : null}
+      <CISelector provider={provider} owner={owner} repo={repo} />
+      <Content />
     </div>
   )
 }
