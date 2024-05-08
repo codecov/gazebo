@@ -81,6 +81,7 @@ describe('Table', () => {
               header: 'Header 1',
               accessorKey: 'col1',
               cell: (info) => info.getValue(),
+              justifyStart: true,
             },
             {
               header: 'Header 2',

@@ -54,7 +54,18 @@ describe('BadgesAndGraphsTab', () => {
           ctx.data({
             owner: {
               repository: {
-                graphToken: graphToken,
+                __typename: 'Repository',
+                activated: true,
+                defaultBranch: 'master',
+                private: true,
+                uploadToken: 'token',
+                graphToken,
+                yaml: 'yaml',
+                bot: {
+                  username: 'test',
+                },
+                profilingToken: null,
+                staticAnalysisToken: null,
               },
             },
           })

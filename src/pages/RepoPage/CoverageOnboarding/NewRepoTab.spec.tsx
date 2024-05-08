@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { PropsWithChildren, Suspense } from 'react'
-import { MemoryRouter, Route } from 'react-router-dom'
+import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import { useRedirect } from 'shared/useRedirect'
 
@@ -27,7 +27,8 @@ const mockCurrentUser = {
 const mockGetRepo = (
   noUploadToken = false,
   hasCommits = false,
-  isCurrentUserActivated = false
+  isCurrentUserActivated = false,
+  isPrivate = false
 ) => ({
   owner: {
     isCurrentUserPartOfOrg: true,
@@ -35,7 +36,7 @@ const mockGetRepo = (
     isCurrentUserActivated,
     repository: {
       __typename: 'Repository',
-      private: false,
+      private: isPrivate,
       uploadToken: noUploadToken
         ? null
         : '9e6a6189-20f1-482d-ab62-ecfaa2629295',
@@ -57,7 +58,7 @@ const queryClient = new QueryClient({
   },
 })
 const server = setupServer()
-let testLocation: any
+let testLocation: ReturnType<typeof useLocation>
 
 const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
   (initialEntries = '/gh/codecov/cool-repo/new') =>
@@ -99,6 +100,7 @@ interface SetupArgs {
   hasCommits?: boolean
   noUploadToken?: boolean
   isCurrentUserActivated?: boolean
+  isPrivate?: boolean
 }
 
 describe('NewRepoTab', () => {
@@ -106,6 +108,7 @@ describe('NewRepoTab', () => {
     hasCommits = false,
     noUploadToken = false,
     isCurrentUserActivated = false,
+    isPrivate = false,
   }: SetupArgs) {
     const user = userEvent.setup()
     const hardRedirect = jest.fn()
@@ -118,7 +121,12 @@ describe('NewRepoTab', () => {
         res(
           ctx.status(200),
           ctx.data(
-            mockGetRepo(noUploadToken, hasCommits, isCurrentUserActivated)
+            mockGetRepo(
+              noUploadToken,
+              hasCommits,
+              isCurrentUserActivated,
+              isPrivate
+            )
           )
         )
       ),
@@ -141,7 +149,11 @@ describe('NewRepoTab', () => {
   })
 
   describe('rendering component', () => {
-    beforeEach(() => setup({}))
+    beforeEach(() =>
+      setup({
+        isPrivate: true,
+      })
+    )
 
     it('renders header', async () => {
       render(<NewRepoTab />, { wrapper: wrapper() })
@@ -236,7 +248,9 @@ describe('NewRepoTab', () => {
     describe('testing tab navigation', () => {
       describe('clicking on other ci', () => {
         it('navigates to /other-ci', async () => {
-          const { user } = setup({})
+          const { user } = setup({
+            isPrivate: true,
+          })
           render(<NewRepoTab />, { wrapper: wrapper() })
 
           const tab = await screen.findByRole('link', { name: 'Other CI' })

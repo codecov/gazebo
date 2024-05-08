@@ -35,19 +35,21 @@ const Content: React.FC = () => {
           { pageName: 'bundleWebpackOnboarding' },
         ]}
       />
-      <Suspense fallback={<Loader />}>
-        <Switch>
-          <SentryRoute path="/:provider/:owner/:repo/bundles/new" exact>
-            <ViteOnboarding />
-          </SentryRoute>
-          <SentryRoute path="/:provider/:owner/:repo/bundles/new/rollup">
-            <RollupOnboarding />
-          </SentryRoute>
-          <SentryRoute path="/:provider/:owner/:repo/bundles/new/webpack">
-            <WebpackOnboarding />
-          </SentryRoute>
-        </Switch>
-      </Suspense>
+      <div className="pt-6">
+        <Suspense fallback={<Loader />}>
+          <Switch>
+            <SentryRoute path="/:provider/:owner/:repo/bundles/new" exact>
+              <ViteOnboarding />
+            </SentryRoute>
+            <SentryRoute path="/:provider/:owner/:repo/bundles/new/rollup">
+              <RollupOnboarding />
+            </SentryRoute>
+            <SentryRoute path="/:provider/:owner/:repo/bundles/new/webpack">
+              <WebpackOnboarding />
+            </SentryRoute>
+          </Switch>
+        </Suspense>
+      </div>
     </>
   )
 }
@@ -65,7 +67,7 @@ const BundleOnboarding: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="mx-auto w-4/5 pt-6 md:w-3/5 lg:w-3/6">
+      <div className="mx-auto pt-6 lg:w-3/5">
         <h1 className="mb-2 text-3xl font-semibold">
           Configure bundle analysis
         </h1>
