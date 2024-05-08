@@ -1,7 +1,6 @@
 import isEmpty from 'lodash/isEmpty'
-import { z } from 'zod'
 
-import { ImpactedFileSchema } from './useComparisonForCommitAndParent'
+import { ImpactedFileType } from './useComparisonForCommitAndParent'
 
 function _setFileLabel({
   isNewFile,
@@ -18,9 +17,7 @@ function _setFileLabel({
   return null
 }
 
-export function transformImpactedFileData(
-  impactedFile: z.infer<typeof ImpactedFileSchema>
-) {
+export function transformImpactedFileData(impactedFile: ImpactedFileType) {
   if (isEmpty(impactedFile)) {
     return null
   }
