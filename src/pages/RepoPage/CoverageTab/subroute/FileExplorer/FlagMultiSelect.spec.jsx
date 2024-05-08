@@ -15,6 +15,8 @@ jest.mock('react-use/lib/useIntersection')
 const mockRepoSettings = (isPrivate) => ({
   owner: {
     repository: {
+      __typename: 'Repository',
+      activated: true,
       defaultBranch: 'main',
       private: isPrivate,
       uploadToken: 'token',

@@ -38,10 +38,18 @@ describe('TokensTeam', () => {
           ctx.data({
             owner: {
               repository: {
+                __typename: 'Repository',
+                activated: true,
+                defaultBranch: 'master',
+                private: true,
                 uploadToken: 'upload token',
                 profilingToken: 'profiling token',
                 staticAnalysisToken: 'static analysis token',
                 graphToken: 'graph token',
+                yaml: 'yaml',
+                bot: {
+                  username: 'test',
+                },
               },
             },
           })

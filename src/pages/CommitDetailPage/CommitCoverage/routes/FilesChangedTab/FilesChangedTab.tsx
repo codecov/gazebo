@@ -33,7 +33,7 @@ function FilesChanged() {
 
   if (
     tierData === TierNames.TEAM &&
-    !!repoSettings?.repository.private &&
+    !!repoSettings?.repository?.private &&
     multipleTiers
   ) {
     return (
