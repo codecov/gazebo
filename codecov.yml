@@ -23,7 +23,7 @@ comment:
   require_changes: no
   require_base: no
   require_head: yes
-  after_n_builds: 6
+  after_n_builds: 8 # number of test files / 80. See ci.yml for more details.
 
 ignore:
   - ./src/**/*.stories.js
