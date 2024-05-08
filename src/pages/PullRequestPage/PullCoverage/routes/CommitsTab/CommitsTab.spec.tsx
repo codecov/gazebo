@@ -48,14 +48,18 @@ const mockCommitTeamResponse = {
 const mockRepoSettings = (isPrivate = false) => ({
   owner: {
     repository: {
+      __typename: 'Repository',
       defaultBranch: 'master',
       private: isPrivate,
       uploadToken: 'token',
+      profilingToken: 'token',
+      staticAnalysisToken: 'static analysis token',
       graphToken: 'token',
       yaml: 'yaml',
       bot: {
         username: 'test',
       },
+      activated: true,
     },
   },
 })
