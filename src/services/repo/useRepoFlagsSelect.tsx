@@ -13,7 +13,7 @@ import {
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo'
+} from 'services/repo/schemas'
 import Api from 'shared/api'
 import { NetworkErrorObject } from 'shared/api/helpers'
 import A from 'ui/A'
@@ -49,7 +49,7 @@ const RepositorySchema = z.object({
   }),
 })
 
-export const FetchRepoFlagsSchema = z.object({
+const FetchRepoFlagsSchema = z.object({
   owner: z
     .object({
       repository: z.discriminatedUnion('__typename', [
