@@ -75,9 +75,11 @@ const mockBranch = (branchName) => ({
 })
 
 const mockRepoCoverage = {
+  __typename: 'Repository',
   branch: {
     name: 'main',
     head: {
+      yamlState: 'DEFAULT',
       totals: {
         percentCovered: 95.0,
         lineCount: 100,
@@ -171,6 +173,7 @@ describe('useSummary', () => {
         expect(result.current.data).toEqual({
           name: 'main',
           head: {
+            yamlState: 'DEFAULT',
             totals: {
               percentCovered: 95.0,
               lineCount: 100,

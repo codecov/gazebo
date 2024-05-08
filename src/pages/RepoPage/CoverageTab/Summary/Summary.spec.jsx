@@ -83,6 +83,7 @@ const mockBranches = (hasNextPage = false) => ({
 })
 
 const mockRepoCoverage = {
+  __typename: 'Repository',
   branch: {
     name: 'main',
     head: {
