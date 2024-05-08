@@ -61,10 +61,13 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 
 const server = setupServer()
 
-console.log = () => {}
+console.error = () => {}
 
 beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
+afterEach(() => {
+  server.resetHandlers()
+  queryClient.clear()
+})
 afterAll(() => server.close())
 
 interface SetupArgs {
