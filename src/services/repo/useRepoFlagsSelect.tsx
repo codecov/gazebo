@@ -61,6 +61,39 @@ export const FetchRepoFlagsSchema = z.object({
     .nullable(),
 })
 
+const flagsSelectQuery = `
+  query FlagsSelect(
+    $owner: String!
+    $repo: String!
+    $filters: FlagSetFilters!
+    $after: String
+  ) {
+    owner(username: $owner) {
+      repository(name: $repo) {
+        __typename
+        ... on Repository {
+          flags(filters: $filters, after: $after) {
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+            edges {
+              node {
+                name
+              }
+            }
+          }
+        }
+        ... on NotFoundError {
+          message
+        }
+        ... on OwnerNotActivatedError {
+          message
+        }
+      }
+    }
+  }`
+
 function fetchRepoFlags({
   provider,
   owner,
@@ -69,42 +102,9 @@ function fetchRepoFlags({
   after,
   signal,
 }: FetchRepoFlagsArgs) {
-  const query = `
-    query FlagsSelect(
-      $owner: String!
-      $repo: String!
-      $filters: FlagSetFilters!
-      $after: String
-    ) {
-      owner(username: $owner) {
-        repository(name: $repo) {
-          __typename
-          ... on Repository {
-            flags(filters: $filters, after: $after) {
-              pageInfo {
-                hasNextPage
-                endCursor
-              }
-              edges {
-                node {
-                  name
-                }
-              }
-            }
-          }
-          ... on NotFoundError {
-            message
-          }
-          ... on OwnerNotActivatedError {
-            message
-          }
-        }
-      }
-    }
-   `
   return Api.graphql({
     provider,
-    query,
+    query: flagsSelectQuery,
     signal,
     variables: {
       owner,
@@ -116,8 +116,6 @@ function fetchRepoFlags({
     const parsedRes = FetchRepoFlagsSchema.safeParse(res?.data)
 
     if (!parsedRes.success) {
-      console.log('FAILED', res?.data)
-      console.log(parsedRes.error, res.data.owner.repository.__typename)
       return Promise.reject({
         status: 404,
         data: {},
@@ -131,7 +129,7 @@ function fetchRepoFlags({
       return Promise.reject({
         status: 404,
         data: {},
-        dev: `useRepoFlags - 404 NotFoundError`,
+        dev: `useRepoFlagsSelect - 404 NotFoundError`,
       } satisfies NetworkErrorObject)
     }
 
@@ -153,7 +151,7 @@ function fetchRepoFlags({
             </p>
           ),
         },
-        dev: `useRepoFlags - 403 OwnerNotActivatedError`,
+        dev: `useRepoFlagsSelect - 403 OwnerNotActivatedError`,
       } satisfies NetworkErrorObject)
     }
 
@@ -221,16 +219,7 @@ const FetchRepoFlagsForPullSchema = z.object({
     .nullable(),
 })
 
-function fetchRepoFlagsForPull({
-  provider,
-  owner,
-  repo,
-  filters,
-  after,
-  pullId,
-  signal,
-}: FetchRepoFlagsForPullArgs) {
-  const query = `
+const pullFlagSelectQuery = `
   query PullFlagsSelect($owner: String!, $repo: String!, $pullId: Int!, $filters: FlagComparisonFilters) {
     owner(username: $owner) {
       repository(name: $repo) {
@@ -273,11 +262,20 @@ function fetchRepoFlagsForPull({
         }
       }
     }
-  }
-`
+  }`
+
+function fetchRepoFlagsForPull({
+  provider,
+  owner,
+  repo,
+  filters,
+  after,
+  pullId,
+  signal,
+}: FetchRepoFlagsForPullArgs) {
   return Api.graphql({
     provider,
-    query,
+    query: pullFlagSelectQuery,
     signal,
     variables: {
       provider,
@@ -289,22 +287,21 @@ function fetchRepoFlagsForPull({
     },
   }).then((res) => {
     const parsedRes = FetchRepoFlagsForPullSchema.safeParse(res?.data)
-    console.log('WORK ALL DAY')
 
     if (!parsedRes.success) {
-      console.log('FAILED 2', parsedRes.error)
       return Promise.reject({
         status: 404,
-        data: null,
-      })
+        data: {},
+        dev: `useRepoFlagsSelect - 404 failed to parse`,
+      } satisfies NetworkErrorObject)
     }
 
     const data = parsedRes.data
-    console.log('@222', data)
     if (data?.owner?.repository?.__typename === 'NotFoundError') {
       return Promise.reject({
         status: 404,
         data: {},
+        dev: `useRepoFlagsSelect - 404 NotFoundError`,
       })
     }
 
@@ -321,6 +318,7 @@ function fetchRepoFlagsForPull({
             </p>
           ),
         },
+        dev: `useRepoFlagsSelect - 403 OwnerNotActivatedError`,
       })
     }
 
@@ -354,7 +352,6 @@ export function useRepoFlagsSelect(
     queryKey: ['flags', provider, owner, repo, pullId, filters],
     queryFn: ({ pageParam: after, signal }) => {
       if (pullId) {
-        console.log('pull id found')
         return fetchRepoFlagsForPull({
           provider,
           owner,
@@ -365,7 +362,6 @@ export function useRepoFlagsSelect(
           after,
         })
       }
-      console.log('pull id not found')
 
       return fetchRepoFlags({
         provider,

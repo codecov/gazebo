@@ -39,7 +39,11 @@ const pullWrapper: WrapperClosure =
 
 const server = setupServer()
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+  console.error = () => {}
+})
+
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
@@ -57,6 +61,32 @@ const initialData = [
     },
   },
 ]
+
+const invalidData = [
+  {
+    node: {
+      defaultBranch: 'main',
+    },
+  },
+]
+
+const mockNotFoundError = {
+  owner: {
+    repository: {
+      __typename: 'NotFoundError',
+      message: 'repo not found',
+    },
+  },
+}
+
+const mockOwnerNotActivatedError = {
+  owner: {
+    repository: {
+      __typename: 'OwnerNotActivatedError',
+      message: 'owner not activated',
+    },
+  },
+}
 
 const expectedInitialData = [
   {
@@ -83,9 +113,21 @@ const expectedNextPageData = [
 ]
 
 describe('FlagsSelect', () => {
-  function setup() {
+  function setup({
+    isUnsuccessfulParseError = false,
+    isOwnerNotActivatedError = false,
+    isNotFoundError = false,
+  }) {
     server.use(
       graphql.query('FlagsSelect', (req, res, ctx) => {
+        if (isUnsuccessfulParseError) {
+          return res(ctx.status(200), ctx.data(invalidData))
+        } else if (isOwnerNotActivatedError) {
+          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
+        } else if (isNotFoundError) {
+          return res(ctx.status(200), ctx.data(mockNotFoundError))
+        }
+
         const dataReturned = {
           owner: {
             repository: {
@@ -105,6 +147,14 @@ describe('FlagsSelect', () => {
         return res(ctx.status(200), ctx.data(dataReturned))
       }),
       graphql.query('PullFlagsSelect', (req, res, ctx) => {
+        if (isUnsuccessfulParseError) {
+          return res(ctx.status(200), ctx.data(invalidData))
+        } else if (isOwnerNotActivatedError) {
+          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
+        } else if (isNotFoundError) {
+          return res(ctx.status(200), ctx.data(mockNotFoundError))
+        }
+
         const dataReturned = {
           owner: {
             repository: {
@@ -132,7 +182,7 @@ describe('FlagsSelect', () => {
 
   describe('when called', () => {
     beforeEach(() => {
-      setup()
+      setup({})
     })
 
     it('renders isLoading true', () => {
@@ -141,6 +191,66 @@ describe('FlagsSelect', () => {
       })
 
       expect(result.current.isLoading).toBeTruthy()
+    })
+
+    describe('when unsuccessful response', () => {
+      it('checks the parsed response', async () => {
+        setup({ isUnsuccessfulParseError: true })
+        const { result } = renderHook(() => useRepoFlagsSelect(), {
+          wrapper,
+        })
+
+        await waitFor(() => result.current.isFetching)
+        await waitFor(() => !result.current.isFetching)
+
+        await waitFor(() => expect(result.current.isError).toBeTruthy())
+        await waitFor(() =>
+          expect(result.current.error).toEqual(
+            expect.objectContaining({
+              status: 404,
+            })
+          )
+        )
+      })
+
+      it('throws a not found error', async () => {
+        setup({ isNotFoundError: true })
+        const { result } = renderHook(() => useRepoFlagsSelect(), {
+          wrapper,
+        })
+
+        await waitFor(() => result.current.isFetching)
+        await waitFor(() => !result.current.isFetching)
+
+        await waitFor(() =>
+          expect(result.current.error).toEqual(
+            expect.objectContaining({
+              status: 404,
+              data: {},
+              dev: 'useRepoFlagsSelect - 404 NotFoundError',
+            })
+          )
+        )
+      })
+
+      it('throws an owner not activated error', async () => {
+        setup({ isOwnerNotActivatedError: true })
+        const { result } = renderHook(() => useRepoFlagsSelect(), {
+          wrapper,
+        })
+
+        await waitFor(() => result.current.isFetching)
+        await waitFor(() => !result.current.isFetching)
+
+        await waitFor(() =>
+          expect(result.current.error).toEqual(
+            expect.objectContaining({
+              status: 403,
+              dev: 'useRepoFlagsSelect - 403 OwnerNotActivatedError',
+            })
+          )
+        )
+      })
     })
 
     describe('when data is loaded', () => {
@@ -159,7 +269,7 @@ describe('FlagsSelect', () => {
 
   describe('when fetchNextPage is called', () => {
     beforeEach(() => {
-      setup()
+      setup({})
     })
 
     it('returns prev and next page flags data', async () => {
@@ -186,10 +296,10 @@ describe('FlagsSelect', () => {
 
   describe('when pull in params', () => {
     beforeEach(() => {
-      setup()
+      setup({})
     })
 
-    it.only('calls the pull flag select query', async () => {
+    it('calls the pull flag select query', async () => {
       const { result } = renderHook(() => useRepoFlagsSelect(), {
         wrapper: pullWrapper(),
       })
@@ -207,6 +317,66 @@ describe('FlagsSelect', () => {
           },
         ])
       )
+    })
+
+    describe('when unsuccessful response', () => {
+      it('checks the parsed response', async () => {
+        setup({ isUnsuccessfulParseError: true })
+        const { result } = renderHook(() => useRepoFlagsSelect(), {
+          wrapper: pullWrapper(),
+        })
+
+        await waitFor(() => result.current.isFetching)
+        await waitFor(() => !result.current.isFetching)
+
+        await waitFor(() => expect(result.current.isError).toBeTruthy())
+        await waitFor(() =>
+          expect(result.current.error).toEqual(
+            expect.objectContaining({
+              status: 404,
+            })
+          )
+        )
+      })
+
+      it('throws a not found error', async () => {
+        setup({ isNotFoundError: true })
+        const { result } = renderHook(() => useRepoFlagsSelect(), {
+          wrapper: pullWrapper(),
+        })
+
+        await waitFor(() => result.current.isFetching)
+        await waitFor(() => !result.current.isFetching)
+
+        await waitFor(() =>
+          expect(result.current.error).toEqual(
+            expect.objectContaining({
+              status: 404,
+              data: {},
+              dev: 'useRepoFlagsSelect - 404 NotFoundError',
+            })
+          )
+        )
+      })
+
+      it('throws an owner not activated error', async () => {
+        setup({ isOwnerNotActivatedError: true })
+        const { result } = renderHook(() => useRepoFlagsSelect(), {
+          wrapper: pullWrapper(),
+        })
+
+        await waitFor(() => result.current.isFetching)
+        await waitFor(() => !result.current.isFetching)
+
+        await waitFor(() =>
+          expect(result.current.error).toEqual(
+            expect.objectContaining({
+              status: 403,
+              dev: 'useRepoFlagsSelect - 403 OwnerNotActivatedError',
+            })
+          )
+        )
+      })
     })
   })
 })
