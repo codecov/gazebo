@@ -97,10 +97,12 @@ const mockRepoCoverage = {
 }
 
 const mockRepoConfig = {
-  repositoryConfig: {
-    indicationRange: {
-      upperRange: 80,
-      lowerRange: 60,
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: { upperRange: 80, lowerRange: 60 },
+      },
     },
   },
 }
@@ -210,10 +212,7 @@ describe('Summary', () => {
         )
       ),
       graphql.query('RepoConfig', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({ owner: { repository: mockRepoConfig } })
-        )
+        res(ctx.status(200), ctx.data(mockRepoConfig))
       )
     )
 

@@ -6,7 +6,7 @@ import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
-import { RepoConfig } from 'services/repo/useRepoConfig'
+import { RepositoryConfigSchema } from 'services/repo/useRepoConfig'
 import Api from 'shared/api'
 import { NetworkErrorObject } from 'shared/api/helpers'
 import A from 'ui/A'
@@ -71,7 +71,7 @@ export type PathContentResultType = z.infer<typeof PathContentsResultSchema>
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
-  repositoryConfig: RepoConfig,
+  repositoryConfig: RepositoryConfigSchema,
   branch: z.object({
     head: z
       .object({
