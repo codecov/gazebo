@@ -2,6 +2,7 @@ import cs from 'classnames'
 import PropTypes from 'prop-types'
 
 import AppLink from 'shared/AppLink'
+import { metrics } from 'shared/utils/metrics'
 import Icon from 'ui/Icon'
 
 const baseClass = `
@@ -58,13 +59,23 @@ function A({ to, hook, variant = 'default', children, isExternal, ...props }) {
     'inline-flex items-center gap-1'
   )
 
+  const handleClick = () => {
+    if (to) {
+      metrics.increment(`link.click.${to.pageName}`)
+      console.log(`link.click.${to.pageName}`)
+    } else {
+      metrics.increment(`link.click.${hook}`)
+      console.log(`link.click.${hook}`)
+    }
+  }
+
   const completeProps = {
     ...props,
     className,
   }
 
   return to ? (
-    <AppLink {...to} {...completeProps}>
+    <AppLink {...to} {...completeProps} onClick={handleClick}>
       {children}
     </AppLink>
   ) : (
@@ -78,6 +89,7 @@ function A({ to, hook, variant = 'default', children, isExternal, ...props }) {
       data-marketing={hook}
       data-testid={hook}
       target={isExternal && 'blank'}
+      onClick={handleClick}
     >
       {children}
       {isExternal && (

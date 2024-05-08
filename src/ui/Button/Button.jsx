@@ -2,6 +2,7 @@ import cs from 'classnames'
 import PropTypes from 'prop-types'
 
 import AppLink from 'shared/AppLink'
+import { metrics } from 'shared/utils/metrics'
 import Spinner from 'ui/Spinner'
 
 /*  
@@ -114,6 +115,16 @@ function Button({
     pickVariant(variant, isLoading)
   )
 
+  const handleClick = () => {
+    if (to) {
+      metrics.increment(`button.click.${to.pageName}`)
+      console.log(`button.click.${to.pageName}`)
+    } else {
+      metrics.increment(`button.click.${hook}`)
+      console.log(`button.click.${hook}`)
+    }
+  }
+
   const content = (
     <>
       {isLoading && (
@@ -133,7 +144,7 @@ function Button({
   }
 
   return to ? (
-    <AppLink {...to} {...completeProps}>
+    <AppLink {...to} {...completeProps} onClick={handleClick}>
       {content}
     </AppLink>
   ) : (
