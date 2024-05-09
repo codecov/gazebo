@@ -162,7 +162,7 @@ function fetchRepoComponents({
       } satisfies NetworkErrorObject)
     }
 
-    // This returns something
+    // This returns something else
     return {
       components: data?.owner?.repository?.components,
     }
