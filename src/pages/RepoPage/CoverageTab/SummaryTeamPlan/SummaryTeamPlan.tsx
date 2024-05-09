@@ -50,9 +50,9 @@ const SummaryTeamPlan = () => {
 
   return (
     <>
-      {redirectState?.isRedirectionEnabled && (
-        <Redirect to={redirectState?.newPath} />
-      )}
+      {redirectState?.isRedirectionEnabled && redirectState?.newPath ? (
+        <Redirect to={redirectState.newPath} />
+      ) : null}
       <SummaryRoot>
         <SummaryField>
           <div className="flex flex-row items-center gap-2">

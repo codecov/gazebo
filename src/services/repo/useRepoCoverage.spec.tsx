@@ -133,7 +133,7 @@ describe('useRepoCoverage', () => {
   })
 
   describe('when branch is null', () => {
-    it('returns an empty object', async () => {
+    it('returns null', async () => {
       setup({ nullBranch: true })
       const { result } = renderHook(
         () =>
@@ -149,7 +149,7 @@ describe('useRepoCoverage', () => {
       )
 
       await waitFor(() => {
-        expect(result.current.data).toEqual({})
+        expect(result.current.data).toEqual(null)
       })
     })
   })

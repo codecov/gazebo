@@ -1,20 +1,31 @@
-import { act, renderHook } from '@testing-library/react'
+import { act, renderHook, RenderHookResult } from '@testing-library/react'
 import { useLocation, useParams } from 'react-router-dom'
 
-import { useCoverageRedirect } from './useCoverageRedirect'
+import {
+  useCoverageRedirect,
+  UseCoverageRedirectState,
+} from './useCoverageRedirect'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: jest.fn(),
   useLocation: jest.fn(),
 }))
+const mockedUseParams = useParams as jest.Mock
+const mockedUseLocation = useLocation as jest.Mock
 
 describe('useCoverageRedirect', () => {
-  let hookData
+  let hookData: RenderHookResult<
+    {
+      setNewPath: (path: string) => void
+      redirectState: UseCoverageRedirectState
+    },
+    unknown
+  >
 
   function setup({ useParamsValue = {}, startingLocation = 'some/path' }) {
-    useParams.mockReturnValue(useParamsValue)
-    useLocation.mockReturnValue({ pathname: startingLocation })
+    mockedUseParams.mockReturnValue(useParamsValue)
+    mockedUseLocation.mockReturnValue({ pathname: startingLocation })
 
     hookData = renderHook(() => useCoverageRedirect())
   }

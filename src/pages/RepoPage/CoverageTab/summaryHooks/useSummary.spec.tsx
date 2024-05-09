@@ -64,7 +64,7 @@ const mockBranches = {
   },
 }
 
-const mockBranch = (branchName) => ({
+const mockBranch = (branchName: string) => ({
   __typename: 'Repository',
   branch: {
     name: branchName,
@@ -99,7 +99,7 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/caleb/mighty-nein']}>
       <Route path="/:provider/:owner/:repo">
@@ -121,7 +121,7 @@ afterAll(() => {
 })
 
 describe('useSummary', () => {
-  function setup({ hasNoBranches } = { hasBranches: false }) {
+  function setup({ hasNoBranches } = { hasNoBranches: false }) {
     server.use(
       graphql.query('GetRepoOverview', (req, res, ctx) =>
         res(

@@ -44,8 +44,8 @@ const ResponseSchema = z.object({
 })
 
 const query = `
-  query GetRepoCoverage($name: String!, $repo: String!, $branch: String!) {
-    owner(username: $name) {
+  query GetRepoCoverage($owner: String!, $repo: String!, $branch: String!) {
+    owner(username: $owner) {
       repository: repository(name: $repo) {
         __typename
         ... on Repository {
@@ -139,7 +139,7 @@ export function useRepoCoverage({
           } satisfies NetworkErrorObject)
         }
 
-        return data?.owner?.repository?.branch || {}
+        return data?.owner?.repository?.branch
       }),
     ...options,
   })
