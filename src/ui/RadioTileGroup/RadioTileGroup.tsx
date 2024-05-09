@@ -73,7 +73,7 @@ const Item = React.forwardRef<
 })
 Item.displayName = 'RadioTileGroup.Item'
 
-const label = cva(['font-medium'])
+const label = cva(['text-left font-medium'])
 interface LabelProps
   extends React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>,
     VariantProps<typeof label> {}
