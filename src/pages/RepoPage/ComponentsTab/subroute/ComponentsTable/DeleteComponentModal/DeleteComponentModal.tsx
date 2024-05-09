@@ -5,10 +5,16 @@ import Modal from 'ui/Modal'
 type Props = {
   isOpen: boolean
   componentId?: string
+  name?: string
   closeModal: () => void
 }
 
-const DeleteComponentModal = ({ isOpen, closeModal, componentId }: Props) => {
+const DeleteComponentModal = ({
+  isOpen,
+  closeModal,
+  componentId,
+  name,
+}: Props) => {
   const { mutate } = useDeleteComponentMeasurements()
 
   return (
@@ -18,22 +24,21 @@ const DeleteComponentModal = ({ isOpen, closeModal, componentId }: Props) => {
       hasCloseButton={true}
       size="small"
       title={
-        <span data-testid={`remove-${componentId}`} className="text-lg">
-          Remove <span className="italic">{componentId}</span>
+        <span data-testid={`remove-${name}`} className="text-lg">
+          Remove <span className="italic">{name}</span>
         </span>
       }
       body={
         <div>
           <p>
             This will remove the historical data of{' '}
-            <span className="font-semibold italic">{componentId}</span>{' '}
-            component in the app and we can’t retrieve the data.
+            <span className="font-semibold italic">{name}</span> component in
+            the app and we can’t retrieve the data.
           </p>
           <br></br>
           <p>
             <span className="font-semibold">Action required:</span> You’ll need
-            to remove{' '}
-            <span className="font-semibold italic">{componentId}</span>{' '}
+            to remove <span className="font-semibold italic">{name}</span>{' '}
             component in your yaml file otherwise you’ll still see it in this
             table.
           </p>
