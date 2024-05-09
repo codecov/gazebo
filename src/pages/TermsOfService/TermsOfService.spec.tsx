@@ -680,17 +680,11 @@ async function expectRendersServerFailureResult(
   user: UserEvent,
   expectedError = {}
 ) {
-  expect(await screen.findByRole('button', { name: /Continue/ })).toBeTruthy()
-  const submit = screen.getByRole('button', { name: /Continue/ })
+  const submit = await screen.findByRole('button', { name: /Continue/ })
 
   await user.click(submit)
 
-  expect(
-    await screen.findByText(
-      /There was an error with our servers. Please try again later or/i
-    )
-  ).toBeTruthy()
-  const error = screen.getByText(
+  const error = await screen.findByText(
     /There was an error with our servers. Please try again later or/i
   )
   expect(error).toBeInTheDocument()
