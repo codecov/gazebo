@@ -9,7 +9,7 @@ import { useDeleteSession } from './useDeleteSession'
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/gh']}>
     <Route path="/:provider">
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -29,35 +29,27 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('useDeleteSession', () => {
-  function setup(dataReturned) {
+  function setup() {
     server.use(
       rest.post(`/graphql/gh`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({ data: dataReturned }))
+        return res(ctx.status(200), ctx.json({ data: { me: null } }))
       })
     )
   }
 
-  describe('when called', () => {
-    beforeEach(() => {
-      setup({
-        me: null,
-      })
-    })
-
-    describe('when calling the mutation', () => {
+  describe('when calling the mutation', () => {
+    it('returns success', async () => {
+      setup()
       const data = {
         sessionid: 1,
       }
-
-      it('returns success', async () => {
-        const { result } = renderHook(() => useDeleteSession({ provider }), {
-          wrapper,
-        })
-
-        result.current.mutate(data)
-
-        await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
+      const { result } = renderHook(() => useDeleteSession({ provider }), {
+        wrapper,
       })
+
+      result.current.mutate(data)
+
+      await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
     })
   })
 })

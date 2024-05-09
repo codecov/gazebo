@@ -8,73 +8,78 @@ import isNull from 'lodash/isNull'
 import { useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useRevokeUserToken, UserToken } from 'services/access'
+import { Session, useDeleteSession } from 'services/access'
 import { cn } from 'shared/utils/cn'
+import { formatTimeToNow } from 'shared/utils/dates'
 import Button from 'ui/Button'
 
 import 'ui/Table/Table.css'
 
-interface URLParams {
-  provider: string
-}
-
-interface TokenColumn {
-  name: string
-  token: React.ReactNode
+interface SessionColumn {
+  ip: React.ReactNode
+  lastSeen: string
+  userAgent: string
   revokeBtn: React.ReactNode
 }
 
-const columnHelper = createColumnHelper<TokenColumn>()
+const columnHelper = createColumnHelper<SessionColumn>()
 const columns = [
-  columnHelper.accessor('name', { header: 'Name' }),
-  columnHelper.accessor('token', {
-    header: 'Token',
+  columnHelper.accessor('ip', {
+    header: 'IP',
     cell: (data) => data.renderValue(),
   }),
+  columnHelper.accessor('lastSeen', { header: 'Last seen' }),
+  columnHelper.accessor('userAgent', { header: 'User agent' }),
   columnHelper.accessor('revokeBtn', {
     header: '',
     cell: (data) => data.renderValue(),
   }),
 ]
 
-interface TokensTableProps {
-  tokens?: (UserToken | null)[]
+interface URLParams {
+  provider: string
 }
 
-function TokensTable({ tokens }: TokensTableProps) {
-  const { provider } = useParams<URLParams>()
-  const { mutate } = useRevokeUserToken({ provider })
+interface SessionsTableProps {
+  sessions?: (Session | null)[]
+}
 
+function SessionsTable({ sessions }: SessionsTableProps) {
+  const { provider } = useParams<URLParams>()
+  const { mutate } = useDeleteSession({ provider })
   const handleRevoke = useCallback(
-    (id: string) => {
-      if (window.confirm('Are you sure you want to revoke this token?')) {
-        mutate({ tokenid: id })
+    (sessionid: number) => {
+      if (window.confirm('Are you sure you want to revoke this session?')) {
+        mutate({ sessionid })
       }
     },
     [mutate]
   )
 
-  const data = useMemo(() => {
-    if (!tokens) {
+  const data: SessionColumn[] = useMemo(() => {
+    if (!sessions) {
       return []
     }
 
-    return tokens.flatMap<TokenColumn>((t) => {
-      if (isNull(t)) {
+    return sessions.flatMap<SessionColumn>((s) => {
+      if (isNull(s)) {
         return []
       }
 
       return {
-        name: t.name,
-        token: (
-          <p className="w-fit bg-ds-gray-secondary font-mono font-bold text-ds-gray-octonary">{`xxxx ${t.lastFour}`}</p>
+        ip: (
+          <p className="w-fit bg-ds-gray-secondary font-mono font-bold text-ds-gray-octonary">
+            {s.ip}
+          </p>
         ),
+        lastSeen: s.lastseen ? formatTimeToNow(s.lastseen) ?? '-' : '-',
+        userAgent: s.useragent ?? '-',
         revokeBtn: (
           <Button
             disabled={false}
             to={undefined}
-            hook="revoke-token"
-            onClick={() => handleRevoke(t.id)}
+            hook="revoke-session"
+            onClick={() => handleRevoke(s.sessionid)}
             variant="danger"
           >
             Revoke
@@ -82,7 +87,7 @@ function TokensTable({ tokens }: TokensTableProps) {
         ),
       }
     })
-  }, [handleRevoke, tokens])
+  }, [sessions, handleRevoke])
 
   const table = useReactTable({
     data,
@@ -90,22 +95,14 @@ function TokensTable({ tokens }: TokensTableProps) {
     getCoreRowModel: getCoreRowModel(),
   })
 
-  if (!tokens?.length) {
-    return (
-      <div>
-        <hr className="my-4 border-ds-gray-secondary" />
-        <span className="text-sm">No tokens created yet</span>
-      </div>
-    )
-  }
-
   return (
-    <div className="tableui mt-4">
+    <div className="tableui">
       <table>
         <colgroup>
-          <col className="@sm/table:w-4/6" />
-          <col className="@sm/table:w-1/6" />
-          <col className="@sm/table:w-1/6" />
+          <col className="@sm/table:w-2/12" />
+          <col className="@sm/table:w-3/12" />
+          <col className="@sm/table:w-5/12" />
+          <col className="@sm/table:w-2/12" />
         </colgroup>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -142,4 +139,4 @@ function TokensTable({ tokens }: TokensTableProps) {
   )
 }
 
-export default TokensTable
+export default SessionsTable
