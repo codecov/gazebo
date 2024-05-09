@@ -1,3 +1,4 @@
+import * as RadioGroupPrimitive from '@radix-ui/react-radio-group'
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
@@ -41,8 +42,14 @@ describe('RadioTileGroup', () => {
       expect(label.hasAttribute('for')).toBeTruthy()
     })
 
-    it('does not have htmlFor attribute when used outside of Item', async () => {
-      render(<RadioTileGroup.Label>Label</RadioTileGroup.Label>)
+    it('does not have htmlFor attribute when Context is null', async () => {
+      render(
+        <RadioGroupPrimitive.Root>
+          <RadioGroupPrimitive.Item value="asdf">
+            <RadioTileGroup.Label>Label</RadioTileGroup.Label>
+          </RadioGroupPrimitive.Item>
+        </RadioGroupPrimitive.Root>
+      )
       const label = await screen.findByText('Label')
       expect(label).toBeInTheDocument()
       expect(label.hasAttribute('for')).toBeFalsy()
