@@ -33,6 +33,7 @@ query ComponentMeasurements(
           before: $before
           branch: $branch
         ) {
+          componentId
           name
           percentCovered
           percentChange
@@ -48,6 +49,7 @@ query ComponentMeasurements(
 `
 
 export const ComponentEdgeSchema = z.object({
+  componentId: z.string(),
   name: z.string(),
   percentCovered: z.number().nullable(),
   percentChange: z.number().nullable(),
@@ -160,6 +162,7 @@ function fetchRepoComponents({
       } satisfies NetworkErrorObject)
     }
 
+    // This returns something else 2
     return {
       components: data?.owner?.repository?.components,
     }

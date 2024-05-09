@@ -82,6 +82,7 @@ const mockedComponentMeasurements = {
       components: [
         {
           name: 'component1',
+          componentId: 'component1Id',
           percentCovered: 93.26,
           percentChange: 1.65,
           lastUploaded: null,
@@ -89,6 +90,7 @@ const mockedComponentMeasurements = {
         },
         {
           name: 'component2',
+          componentId: 'component2Id',
           percentCovered: 91.74,
           percentChange: 2.65,
           lastUploaded: null,
@@ -111,6 +113,7 @@ const mockEmptyComponentMeasurements = {
 const componentsData = [
   {
     name: 'component1',
+    componentId: 'component1Id',
     percentCovered: 93.26,
     percentChange: 1.65,
     measurements: [],
@@ -118,6 +121,7 @@ const componentsData = [
   },
   {
     name: 'component2',
+    componentId: 'component2Id',
     percentCovered: 91.74,
     percentChange: 2.65,
     measurements: [],
