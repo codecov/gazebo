@@ -57,8 +57,10 @@ describe('ActivationBanner', () => {
     value = 'users-basic',
     hasSeatsLeft = true
   ) {
+    const getPlanData = jest.fn()
     server.use(
       graphql.query('GetPlanData', (req, res, ctx) => {
+        getPlanData()
         return res(
           ctx.status(200),
           ctx.data({
@@ -83,6 +85,7 @@ describe('ActivationBanner', () => {
         )
       })
     )
+    return { getPlanData }
   }
 
   it('renders trial eligible banner if user is eligible to trial', async () => {
@@ -94,11 +97,10 @@ describe('ActivationBanner', () => {
   })
 
   it('does not render trial eligible banner if user is not eligible to trial', async () => {
-    setup(false, 'ONGOING', 'users-basic', true)
+    const { getPlanData } = setup(false, 'ONGOING', 'users-basic', true)
     const { container } = render(<ActivationBanner />, { wrapper })
 
-    await waitFor(() => queryClient.isFetching)
-    await waitFor(() => !queryClient.isFetching)
+    await waitFor(() => expect(getPlanData).toHaveBeenCalled())
 
     await waitFor(() => expect(container).toBeEmptyDOMElement())
   })
