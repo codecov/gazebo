@@ -100,7 +100,7 @@ describe('ActivationBanner', () => {
     await waitFor(() => queryClient.isFetching)
     await waitFor(() => !queryClient.isFetching)
 
-    expect(container).toBeEmptyDOMElement()
+    await waitFor(() => expect(container).toBeEmptyDOMElement())
   })
 
   it('renders activation required banner if user is not on free plan and has seats left', async () => {
