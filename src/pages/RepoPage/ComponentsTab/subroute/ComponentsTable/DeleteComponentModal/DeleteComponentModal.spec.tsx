@@ -60,6 +60,7 @@ describe('DeleteComponentModal', () => {
       render(
         <DeleteComponentModal
           componentId="component-123"
+          name="componentName"
           closeModal={jest.fn()}
           isOpen
         />,
@@ -74,7 +75,7 @@ describe('DeleteComponentModal', () => {
       )
       expect(messagePartTwo).toBeInTheDocument()
 
-      const componentId = await screen.findAllByText(/component-123/)
+      const componentId = await screen.findAllByText(/componentName/)
       expect(componentId).toHaveLength(3)
     })
 
@@ -82,6 +83,7 @@ describe('DeleteComponentModal', () => {
       render(
         <DeleteComponentModal
           componentId="component-123"
+          name="componentName"
           closeModal={jest.fn()}
           isOpen
         />,
@@ -101,6 +103,7 @@ describe('DeleteComponentModal', () => {
       render(
         <DeleteComponentModal
           componentId="component-123"
+          name="componentName"
           closeModal={jest.fn()}
           isOpen
         />,
@@ -108,7 +111,7 @@ describe('DeleteComponentModal', () => {
           wrapper,
         }
       )
-      const title = await screen.findByTestId(/remove-component-123/)
+      const title = await screen.findByTestId(/remove-componentName/)
       expect(title).toBeInTheDocument()
     })
   })
@@ -120,6 +123,7 @@ describe('DeleteComponentModal', () => {
       render(
         <DeleteComponentModal
           componentId="component-123"
+          name="componentName"
           closeModal={closeModal}
           isOpen
         />,
@@ -143,6 +147,7 @@ describe('DeleteComponentModal', () => {
       render(
         <DeleteComponentModal
           componentId="component-123"
+          name="componentName"
           closeModal={closeModal}
           isOpen
         />,
