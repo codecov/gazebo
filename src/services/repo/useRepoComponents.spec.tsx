@@ -33,6 +33,7 @@ afterAll(() => server.close())
 const expectedData = [
   {
     name: 'component1',
+    componentId: 'component1Id',
     percentCovered: 93.26,
     percentChange: 1.65,
     lastUploaded: '2021-09-30T00:00:00Z',
@@ -45,6 +46,7 @@ const expectedData = [
   },
   {
     name: 'component2',
+    componentId: 'component2Id',
     percentCovered: 92.72,
     percentChange: 1.58,
     lastUploaded: null,
