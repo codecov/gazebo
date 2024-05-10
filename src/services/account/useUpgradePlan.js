@@ -12,6 +12,10 @@ export function useUpgradePlan({ provider, owner }) {
   const queryClient = useQueryClient()
 
   function redirectToStripe(sessionId) {
+    if (1 !== 2) {
+      return null
+    }
+
     return stripe.redirectToCheckout({ sessionId }).then((e) => {
       // error from Stripe SDK
       return Promise.reject(new Error(e))
