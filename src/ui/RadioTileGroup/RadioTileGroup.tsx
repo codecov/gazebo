@@ -63,24 +63,17 @@ const Item = React.forwardRef<
       {...props}
     >
       <ItemContext.Provider value={itemId}>
-        <div className="flex h-full flex-col gap-2 rounded-md border border-ds-gray-quaternary p-4">
+        <div className="flex h-full flex-col justify-center gap-2 rounded-md border border-ds-gray-quaternary p-4">
           {children}
         </div>
-        <RadioGroupPrimitive.Indicator className="absolute right-0 top-0 h-full w-full">
-          <div className="absolute h-full w-full rounded-md border-2 border-ds-blue-darker" />
-          <div className="h-full w-full rounded-md border border-ds-blue-darker p-4">
-            <div className="flex h-5 w-full items-center justify-end">
-              <RadioButtonCircle selected />
-            </div>
-          </div>
-        </RadioGroupPrimitive.Indicator>
+        <RadioGroupPrimitive.Indicator className="absolute right-0 top-0 h-full w-full rounded-md border-2 border-ds-blue-darker" />
       </ItemContext.Provider>
     </RadioGroupPrimitive.Item>
   )
 })
 Item.displayName = 'RadioTileGroup.Item'
 
-const label = cva(['font-medium'])
+const label = cva(['text-left font-medium'])
 interface LabelProps
   extends React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>,
     VariantProps<typeof label> {}
@@ -91,7 +84,7 @@ const Label = React.forwardRef<
 >(({ className, ...props }, ref) => {
   const itemId = useContext(ItemContext)
   return (
-    <div className="flex items-center justify-between gap-4">
+    <div className="relative flex items-center justify-between gap-4">
       <LabelPrimitive.Root
         {...{ htmlFor: itemId ?? undefined }}
         ref={ref}
@@ -99,6 +92,9 @@ const Label = React.forwardRef<
         {...props}
       />
       <RadioButtonCircle />
+      <RadioGroupPrimitive.Indicator className="absolute right-0">
+        <RadioButtonCircle selected />
+      </RadioGroupPrimitive.Indicator>
     </div>
   )
 })
@@ -130,7 +126,7 @@ function RadioButtonCircle({ selected = false }: { selected?: boolean }) {
     </div>
   ) : (
     <div
-      className="h-4 w-4 rounded-full border border-ds-gray-quaternary"
+      className="h-4 w-4 flex-none rounded-full border border-ds-gray-quaternary"
       data-testid="radio-button-circle-unselected"
     />
   )
