@@ -302,8 +302,7 @@ describe('CodeTreeTable', () => {
           setup({})
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('src')).toBeTruthy()
-          const dir = screen.getByText('src')
+          const dir = await screen.findByText('src')
           expect(dir).toBeInTheDocument()
 
           const table = await screen.findByRole('table')
@@ -322,8 +321,7 @@ describe('CodeTreeTable', () => {
             wrapper: wrapper('/gh/codecov/cool-repo/tree/main/a/b/c/'),
           })
 
-          expect(await screen.findByText('file.js')).toBeTruthy()
-          const file = screen.getByText('file.js')
+          const file = await screen.findByText('file.js')
           expect(file).toBeInTheDocument()
 
           const table = await screen.findByRole('table')
@@ -363,12 +361,7 @@ describe('CodeTreeTable', () => {
         setup({ noFiles: true })
         render(<CodeTreeTable />, { wrapper: wrapper() })
 
-        expect(
-          await screen.findByText(
-            'Once merged to your default branch, Codecov will show your report results on this dashboard.'
-          )
-        ).toBeTruthy()
-        const message = screen.getByText(
+        const message = await screen.findByText(
           'Once merged to your default branch, Codecov will show your report results on this dashboard.'
         )
         expect(message).toBeInTheDocument()
@@ -384,12 +377,7 @@ describe('CodeTreeTable', () => {
         setup({ noHeadReport: true })
         render(<CodeTreeTable />, { wrapper: wrapper() })
 
-        expect(
-          await screen.findByText(
-            'No coverage report uploaded for this branch head commit'
-          )
-        ).toBeTruthy()
-        const message = screen.getByText(
+        const message = await screen.findByText(
           'No coverage report uploaded for this branch head commit'
         )
         expect(message).toBeInTheDocument()
@@ -424,8 +412,7 @@ describe('CodeTreeTable', () => {
 
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('Files')).toBeTruthy()
-          const files = screen.getByText('Files')
+          const files = await screen.findByText('Files')
           await user.click(files)
 
           await waitFor(() =>
@@ -443,12 +430,8 @@ describe('CodeTreeTable', () => {
           const { requestFilters, user } = setup({})
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('Files')).toBeTruthy()
-          let files = screen.getByText('Files')
+          const files = await screen.findByText('Files')
           await user.click(files)
-
-          expect(await screen.findByText('Files')).toBeTruthy()
-          files = screen.getByText('Files')
           await user.click(files)
 
           await waitFor(() => {
@@ -468,13 +451,8 @@ describe('CodeTreeTable', () => {
           const { requestFilters, user } = setup({})
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('Tracked lines')).toBeTruthy()
-          let trackedLines = screen.getByText('Tracked lines')
+          const trackedLines = await screen.findByText('Tracked lines')
           await user.click(trackedLines)
-
-          await waitFor(() => !queryClient.isFetching())
-
-          trackedLines = screen.getByText('Tracked lines')
           await user.click(trackedLines)
 
           await waitFor(() =>
@@ -492,12 +470,8 @@ describe('CodeTreeTable', () => {
           const { requestFilters, user } = setup({})
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('Tracked lines')).toBeTruthy()
-          let trackedLines = screen.getByText('Tracked lines')
+          const trackedLines = await screen.findByText('Tracked lines')
           await user.click(trackedLines)
-
-          expect(await screen.findByText('Tracked lines')).toBeTruthy()
-          trackedLines = screen.getByText('Tracked lines')
           await user.click(trackedLines)
 
           await waitFor(() => {
@@ -517,13 +491,8 @@ describe('CodeTreeTable', () => {
           const { requestFilters, user } = setup({})
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('Covered')).toBeTruthy()
-          let covered = screen.getByText('Covered')
+          const covered = await screen.findByText('Covered')
           await user.click(covered)
-
-          await waitFor(() => !queryClient.isFetching())
-
-          covered = screen.getByText('Covered')
           await user.click(covered)
 
           await waitFor(() =>
@@ -541,12 +510,8 @@ describe('CodeTreeTable', () => {
           const { requestFilters, user } = setup({})
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('Covered')).toBeTruthy()
-          let covered = screen.getByText('Covered')
+          const covered = await screen.findByText('Covered')
           await user.click(covered)
-
-          expect(await screen.findByText('Covered')).toBeTruthy()
-          covered = screen.getByText('Covered')
           await user.click(covered)
 
           await waitFor(() => {
@@ -566,13 +531,8 @@ describe('CodeTreeTable', () => {
           const { requestFilters, user } = setup({})
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('Partial')).toBeTruthy()
-          let partial = screen.getByText('Partial')
+          const partial = await screen.findByText('Partial')
           await user.click(partial)
-
-          await waitFor(() => !queryClient.isFetching())
-
-          partial = screen.getByText('Partial')
           await user.click(partial)
 
           await waitFor(() =>
@@ -590,12 +550,8 @@ describe('CodeTreeTable', () => {
           const { requestFilters, user } = setup({})
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('Partial')).toBeTruthy()
-          let partial = screen.getByText('Partial')
+          const partial = await screen.findByText('Partial')
           await user.click(partial)
-
-          expect(await screen.findByText('Partial')).toBeTruthy()
-          partial = screen.getByText('Partial')
           await user.click(partial)
 
           await waitFor(() => {
@@ -615,13 +571,8 @@ describe('CodeTreeTable', () => {
           const { requestFilters, user } = setup({})
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('Missed')).toBeTruthy()
-          let missed = screen.getByText('Missed')
+          const missed = await screen.findByText('Missed')
           await user.click(missed)
-
-          await waitFor(() => !queryClient.isFetching())
-
-          missed = screen.getByText('Missed')
           await user.click(missed)
 
           expect(requestFilters).toHaveBeenCalledWith(
@@ -637,8 +588,7 @@ describe('CodeTreeTable', () => {
           const { requestFilters, user } = setup({})
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('Missed')).toBeTruthy()
-          let missed = screen.getByText('Missed')
+          const missed = await screen.findByText('Missed')
           await user.click(missed)
           await user.click(missed)
 
@@ -659,8 +609,7 @@ describe('CodeTreeTable', () => {
           const { requestFilters, user } = setup({})
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('Coverage %')).toBeTruthy()
-          const coverage = screen.getByText('Coverage %')
+          const coverage = await screen.findByText('Coverage %')
           await user.click(coverage)
 
           expect(requestFilters).toHaveBeenCalledWith(
@@ -676,8 +625,7 @@ describe('CodeTreeTable', () => {
           const { requestFilters, user } = setup({})
           render(<CodeTreeTable />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('Coverage %')).toBeTruthy()
-          let coverage = screen.getByText('Coverage %')
+          const coverage = await screen.findByText('Coverage %')
           await user.click(coverage)
           await user.click(coverage)
 
