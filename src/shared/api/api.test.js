@@ -64,6 +64,7 @@ const server = setupServer(
       ctx.data({
         owner: {
           repository: {
+            __typename: 'Repository',
             commit: {
               commitid: ref,
             },
@@ -290,9 +291,12 @@ describe('when using a graphql request', () => {
       const query = `
         query CoverageForFile($owner: String!, $repo: String!, $ref: String!) {
           owner(username: $owner) {
-            repository: repositoryDeprecated(name: $repo){
-              commit(id: $ref) {
-                commitid
+            repository(name: $repo) {
+              __typename
+              ... on Repository {
+                commit(id: $ref) {
+                  commitid
+                }
               }
             }
           }
