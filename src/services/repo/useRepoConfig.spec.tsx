@@ -42,9 +42,6 @@ afterAll(() => {
   server.close()
 })
 
-// silence console errors
-console.error = () => {}
-
 interface SetupArgs {
   isNotFoundError?: boolean
   isOwnerNotActivatedError?: boolean
@@ -144,6 +141,12 @@ describe('useRepoConfig', () => {
   })
 
   describe('hook errors', () => {
+    beforeAll(() => {
+      console.error = () => {}
+    })
+    afterAll(() => {
+      jest.resetAllMocks()
+    })
     it('can return unsuccessful parse error', async () => {
       setup({ isUnsuccessfulParseError: true })
 
