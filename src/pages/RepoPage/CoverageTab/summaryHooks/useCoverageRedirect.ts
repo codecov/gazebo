@@ -28,24 +28,20 @@ const initState: UseCoverageRedirectState = {
 }
 
 const reducer = (state: UseCoverageRedirectState, action: Action) => {
-  if (!action.payload) {
+  if (!action.payload || action.type === 'init') {
     return initState
   }
 
-  if (action.type === 'redirect') {
-    const { path, ...payload } = action.payload
-    const pathname = formatPathPrefix(path)
-    const newPath = createPath({ pathname, ...payload })
+  const { path, ...payload } = action.payload
+  const pathname = formatPathPrefix(path)
+  const newPath = createPath({ pathname, ...payload })
 
-    const newState: UseCoverageRedirectState = {
-      isRedirectionEnabled: !!newPath,
-      newPath,
-    }
-
-    return newState
+  const newState: UseCoverageRedirectState = {
+    isRedirectionEnabled: !!newPath,
+    newPath,
   }
 
-  return initState
+  return newState
 }
 
 interface URLParams {
