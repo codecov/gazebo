@@ -7,6 +7,16 @@ import { snakeifyKeys } from 'shared/utils/snakeifyKeys'
 
 import { generatePath, getHeaders, isProvider } from './helpers'
 
+interface _FetchArgs {
+  path: string
+  query: Record<string, unknown>
+  method?: string
+  body: {}
+  provider?: string
+  extraHeaders?: {}
+  signal?: AbortSignal
+}
+
 function _fetch({
   path,
   query,
@@ -15,11 +25,9 @@ function _fetch({
   provider = 'gh',
   extraHeaders = {},
   signal,
-}) {
+}: _FetchArgs) {
   const uri = generatePath({ path, query })
   const headers = {
-    Accept: 'application/json',
-    'Content-Type': 'application/json; charset=utf-8',
     ...getHeaders(provider),
     ...extraHeaders,
   }
@@ -47,13 +55,31 @@ function _fetch({
   })
 }
 
-function prefillMethod(method) {
-  return (config) =>
+function prefillMethod(method: string) {
+  return (config: any) =>
     _fetch({
       ...config,
       method,
     })
 }
+
+interface GraphQLArgsNoServiceless {
+  provider: string
+  query: string
+  variables?: Record<string, any>
+  signal?: AbortSignal
+  supportsServiceless?: false
+}
+
+interface GraphQLArgsServiceless {
+  provider?: string
+  query: string
+  variables?: Record<string, any>
+  signal?: AbortSignal
+  supportsServiceless: true
+}
+
+type GraphQLArgs = GraphQLArgsNoServiceless | GraphQLArgsServiceless
 
 function graphql({
   provider,
@@ -61,7 +87,7 @@ function graphql({
   variables = {},
   signal,
   supportsServiceless = false,
-}) {
+}: GraphQLArgs) {
   let uri = `${config.API_URL}/graphql/`
 
   if (provider && isProvider(provider) && !supportsServiceless) {
@@ -69,8 +95,6 @@ function graphql({
   }
 
   const headers = {
-    Accept: 'application/json',
-    'Content-Type': 'application/json; charset=utf-8',
     ...getHeaders(provider),
   }
 
@@ -116,7 +140,14 @@ function graphql({
     })
 }
 
-function graphqlMutation({ mutationPath, ...graphqlParams }) {
+type GraphQLMutationArgs = {
+  mutationPath: string
+} & GraphQLArgs
+
+function graphqlMutation({
+  mutationPath,
+  ...graphqlParams
+}: GraphQLMutationArgs) {
   return graphql(graphqlParams).then((res) => {
     const mutationData = get(res.data, mutationPath)
     // only throw if we encounter these errors to get a full page error via NetworkErrorBoundary
