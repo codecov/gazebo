@@ -6,7 +6,7 @@ import { formatPathPrefix } from 'shared/utils/url'
 import { createPath } from '../Summary/utils/paths'
 
 interface Action {
-  type: string
+  type: 'redirect' | 'init'
   payload?: {
     path: string
     owner: string
@@ -32,22 +32,20 @@ const reducer = (state: UseCoverageRedirectState, action: Action) => {
     return initState
   }
 
-  switch (action.type) {
-    case 'redirect':
-      const { path, ...payload } = action.payload
-      const pathname = formatPathPrefix(path)
-      const newPath = createPath({ pathname, ...payload })
+  if (action.type === 'redirect') {
+    const { path, ...payload } = action.payload
+    const pathname = formatPathPrefix(path)
+    const newPath = createPath({ pathname, ...payload })
 
-      const newState: UseCoverageRedirectState = {
-        isRedirectionEnabled: !!newPath,
-        newPath,
-      }
+    const newState: UseCoverageRedirectState = {
+      isRedirectionEnabled: !!newPath,
+      newPath,
+    }
 
-      return newState
-
-    default:
-      return initState
+    return newState
   }
+
+  return initState
 }
 
 interface URLParams {

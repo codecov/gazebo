@@ -1,4 +1,9 @@
-import { act, renderHook, RenderHookResult } from '@testing-library/react'
+import {
+  act,
+  renderHook,
+  RenderHookResult,
+  waitFor,
+} from '@testing-library/react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import {
@@ -70,6 +75,20 @@ describe('useCoverageRedirect', () => {
         it('starts with no new path', () => {
           expect(hookData.result.current.redirectState.newPath).toEqual(
             undefined
+          )
+        })
+
+        it('resets state on layout change', async () => {
+          hookData.rerender()
+          await waitFor(() =>
+            expect(
+              hookData.result.current.redirectState.newPath
+            ).toBeUndefined()
+          )
+          await waitFor(() =>
+            expect(
+              hookData.result.current.redirectState.isRedirectionEnabled
+            ).toBeFalsy()
           )
         })
 
