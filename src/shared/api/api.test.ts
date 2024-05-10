@@ -1,3 +1,4 @@
+import { waitFor } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 
@@ -41,7 +42,7 @@ const server = setupServer(
     return res(ctx.status(200), ctx.json(req.body))
   }),
   rest.delete('/internal/test', (req, res, ctx) => {
-    return res(ctx.status(204), null)
+    return res(ctx.status(204), ctx.json(null))
   }),
   graphql.query('MyInfo', (req, res, ctx) => {
     return res(
@@ -109,12 +110,20 @@ const server = setupServer(
   })
 )
 
-beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
-afterAll(() => server.close())
+beforeAll(() => {
+  server.listen()
+})
 
-let result, error
-function callApi(provider = null) {
+afterEach(() => {
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
+
+let result: any, error: any
+function callApi(provider: string | null = null) {
   result = null
   error = null
   return Api.get({
@@ -226,13 +235,14 @@ describe('when using a graphql request', () => {
   })
 
   describe('when different strings entered as provider', () => {
-    let fetchMock
-    afterEach(() => {
-      global.fetch.mockRestore()
+    let fetchSpy: jest.SpyInstance
+
+    afterAll(() => {
+      fetchSpy.mockRestore()
     })
 
     it('does not have the provider in the url for non-provider', async () => {
-      fetchMock = jest.fn((url, options) => {
+      const fetchMock = jest.fn((url, options) => {
         expect(url).toBe(`${config.API_URL}/graphql/`)
         return Promise.resolve({
           ok: true,
@@ -240,7 +250,8 @@ describe('when using a graphql request', () => {
         })
       })
 
-      jest.spyOn(global, 'fetch').mockImplementation(fetchMock)
+      // @ts-expect-error - jest spy
+      fetchSpy = jest.spyOn(global, 'fetch').mockImplementation(fetchMock)
 
       await Api.graphql({
         provider: 'random hacks and stuff',
@@ -249,10 +260,11 @@ describe('when using a graphql request', () => {
 
       expect(fetchMock).toHaveBeenCalled()
     })
+
     test.each(AllProvidersArray)(
       'has the provider in the url for %s',
       async (provider) => {
-        fetchMock = jest.fn((url, options) => {
+        const fetchMock = jest.fn((url, options) => {
           expect(url).toBe(`${config.API_URL}/graphql/${provider}`)
           return Promise.resolve({
             ok: true,
@@ -260,7 +272,8 @@ describe('when using a graphql request', () => {
           })
         })
 
-        jest.spyOn(global, 'fetch').mockImplementation(fetchMock)
+        // @ts-expect-error - jest spy
+        fetchSpy = jest.spyOn(global, 'fetch').mockImplementation(fetchMock)
 
         await Api.graphql({
           provider: provider,
@@ -274,12 +287,17 @@ describe('when using a graphql request', () => {
 
   describe('the request is unsuccessful', () => {
     it('returns the error status code', async () => {
-      const data = Api.graphql({
-        provider: 'gh',
-        query: 'query ErrorQuery { me }',
-      })
+      let error: any
+      try {
+        await Api.graphql({
+          provider: 'gh',
+          query: 'query ErrorQuery { me }',
+        })
+      } catch (err) {
+        error = err
+      }
 
-      await expect(data).rejects.toStrictEqual({
+      expect(error).toStrictEqual({
         data: { data: { me: 'Codecov' } },
         status: 400,
       })
@@ -287,7 +305,7 @@ describe('when using a graphql request', () => {
   })
 
   describe('when sending an encoded string', () => {
-    beforeEach(() => {
+    it('returns a decoded string', async () => {
       const query = `
         query CoverageForFile($owner: String!, $repo: String!, $ref: String!) {
           owner(username: $owner) {
@@ -300,9 +318,9 @@ describe('when using a graphql request', () => {
               }
             }
           }
-        }
-      `
-      result = Api.graphql({
+        }`
+
+      const result = await Api.graphql({
         provider: 'gh',
         query,
         variables: {
@@ -311,54 +329,59 @@ describe('when using a graphql request', () => {
           ref: 'encoded%2Fstring',
         },
       })
-      return result
-    })
 
-    it('returns a decoded string', () => {
-      return expect(result).resolves.toEqual({
-        data: {
-          owner: {
-            repository: {
-              commit: {
-                commitid: 'encoded/string',
+      await waitFor(() =>
+        expect(result).toStrictEqual({
+          data: {
+            owner: {
+              repository: {
+                __typename: 'Repository',
+                commit: { commitid: 'encoded/string' },
               },
             },
           },
-        },
-      })
+        })
+      )
     })
   })
 })
 
 describe('when using a graphql mutation', () => {
   describe('when the mutation has unauthenticated error', () => {
-    const mutation = `
-      mutation CreateTokenUnauthorized {
-        createApiToken {
-          error {
-            __typename
+    it('throws an exception', async () => {
+      const mutation = `
+        mutation CreateTokenUnauthorized {
+          createApiToken {
+            error {
+              __typename
+            }
+            token
           }
-          token
         }
-      }
-    `
-    beforeEach(() => {
-      result = Api.graphqlMutation({
-        provider: 'gh',
-        query: mutation,
-        mutationPath: 'createApiToken',
-      })
-    })
+      `
 
-    it('throws an expection retuns', () => {
-      return expect(result).rejects.toEqual({
-        __typename: 'UnauthorizedError',
-      })
+      let error: any
+      try {
+        await Api.graphqlMutation({
+          provider: 'gh',
+          query: mutation,
+          mutationPath: 'createApiToken',
+        })
+      } catch (err) {
+        error = err
+      }
+
+      await waitFor(() =>
+        expect(error).toEqual({
+          __typename: 'UnauthorizedError',
+        })
+      )
     })
   })
 
   describe('when the mutation has no error', () => {
-    const mutation = `
+    it('resolves with the data', async () => {
+      const mutation = `
       mutation CreateToken {
         createApiToken {
           error {
@@ -366,43 +389,42 @@ describe('when using a graphql mutation', () => {
           }
           token
         }
-      }
-    `
-    beforeEach(() => {
-      result = Api.graphqlMutation({
+      }`
+
+      const result = await Api.graphqlMutation({
         provider: 'gh',
         query: mutation,
         mutationPath: 'createApiToken',
       })
-    })
 
-    it('resolves with the data', () => {
-      return expect(result).resolves.toEqual({
-        data: {
-          createApiToken: {
-            token: 123,
-            error: null,
+      await waitFor(() =>
+        expect(result).toEqual({
+          data: {
+            createApiToken: {
+              token: 123,
+              error: null,
+            },
           },
-        },
-      })
+        })
+      )
     })
   })
 
   describe('when the mutation supports serviceless', () => {
-    beforeAll(() => {
-      result = Api.graphqlMutation({
+    it('resolves with the data', async () => {
+      const result = await Api.graphqlMutation({
         query: 'query MyInfo { me }',
         mutationPath: 'me',
         supportsServiceless: true,
       })
-    })
 
-    it('resolves with the data', async () => {
-      return expect(result).resolves.toEqual({
-        data: {
-          me: 'Codecov',
-        },
-      })
+      await waitFor(() =>
+        expect(result).toEqual({
+          data: {
+            me: 'Codecov',
+          },
+        })
+      )
     })
   })
 
@@ -411,6 +433,7 @@ describe('when using a graphql mutation', () => {
 
     beforeAll(() => {
       const location = window.location
+      // @ts-expect-error - test magic
       delete global.window.location
       global.window.location = Object.assign({}, location)
     })
@@ -426,6 +449,8 @@ describe('when using a graphql mutation', () => {
       } catch (err) {
         error = err
       }
+
+      // @ts-expect-error - test magic
       expect(error.status).toBe(403)
       expect(window.location.href).toBe('/login')
     })
