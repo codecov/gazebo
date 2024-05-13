@@ -1,13 +1,15 @@
-import { Suspense } from 'react'
-import { Switch, useParams } from 'react-router-dom'
+import { Suspense, useMemo } from 'react'
+import { Switch, useHistory, useLocation, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
 import NotFound from 'pages/NotFound'
+import { useNavLinks } from 'services/navigation'
 import { useRepo } from 'services/repo'
 import { useRedirect } from 'shared/useRedirect'
+import { Card } from 'ui/Card'
+import { RadioTileGroup } from 'ui/RadioTileGroup'
 import Spinner from 'ui/Spinner'
-import TabNavigation from 'ui/TabNavigation'
 
 import IntroBlurb from './IntroBlurb'
 import RollupOnboarding from './RollupOnboarding'
@@ -26,30 +28,102 @@ const Loader = () => (
   </div>
 )
 
+const BUNDLER_OPTIONS = {
+  Vite: 'Vite',
+  Rollup: 'Rollup',
+  Webpack: 'Webpack',
+} as const
+type BundlerOption = keyof typeof BUNDLER_OPTIONS
+type BundlerOptionUrls = Record<BundlerOption, string>
+
+const getInitialBundler = (path: string, urls: BundlerOptionUrls) => {
+  if (path === urls.Vite) {
+    return BUNDLER_OPTIONS.Vite
+  } else if (path === urls.Rollup) {
+    return BUNDLER_OPTIONS.Rollup
+  } else if (path === urls.Webpack) {
+    return BUNDLER_OPTIONS.Webpack
+  }
+}
+
+interface BundlerSelectorProps {
+  provider: string
+  owner: string
+  repo: string
+}
+
+function BundlerSelector({ provider, owner, repo }: BundlerSelectorProps) {
+  const location = useLocation()
+  const history = useHistory()
+  const { bundleOnboarding, bundleWebpackOnboarding, bundleRollupOnboarding } =
+    useNavLinks()
+  const urls = useMemo(
+    () => ({
+      Vite: bundleOnboarding.path({ provider, owner, repo }),
+      Rollup: bundleRollupOnboarding.path({ provider, owner, repo }),
+      Webpack: bundleWebpackOnboarding.path({ provider, owner, repo }),
+    }),
+    [
+      bundleOnboarding,
+      bundleWebpackOnboarding,
+      bundleRollupOnboarding,
+      provider,
+      owner,
+      repo,
+    ]
+  )
+
+  return (
+    <Card>
+      <Card.Header>
+        <Card.Title size="base">Select your bundler</Card.Title>
+      </Card.Header>
+      <Card.Content>
+        <RadioTileGroup
+          defaultValue={getInitialBundler(location.pathname, urls)}
+          onValueChange={(value: BundlerOption) => {
+            history.replace(urls[value])
+          }}
+        >
+          <RadioTileGroup.Item
+            value={BUNDLER_OPTIONS.Vite}
+            data-testid="vite-radio"
+          >
+            <RadioTileGroup.Label>Using Vite</RadioTileGroup.Label>
+          </RadioTileGroup.Item>
+          <RadioTileGroup.Item
+            value={BUNDLER_OPTIONS.Rollup}
+            data-testid="rollup-radio"
+          >
+            <RadioTileGroup.Label>Using Rollup</RadioTileGroup.Label>
+          </RadioTileGroup.Item>
+          <RadioTileGroup.Item
+            value={BUNDLER_OPTIONS.Webpack}
+            data-testid="webpack-radio"
+          >
+            <RadioTileGroup.Label>Using Webpack</RadioTileGroup.Label>
+          </RadioTileGroup.Item>
+        </RadioTileGroup>
+      </Card.Content>
+    </Card>
+  )
+}
+
 const Content: React.FC = () => {
   return (
-    <>
-      <TabNavigation
-        tabs={[
-          { pageName: 'bundleOnboarding', exact: true },
-          { pageName: 'bundleRollupOnboarding' },
-          { pageName: 'bundleWebpackOnboarding' },
-        ]}
-      />
-      <Suspense fallback={<Loader />}>
-        <Switch>
-          <SentryRoute path="/:provider/:owner/:repo/bundles/new" exact>
-            <ViteOnboarding />
-          </SentryRoute>
-          <SentryRoute path="/:provider/:owner/:repo/bundles/new/rollup">
-            <RollupOnboarding />
-          </SentryRoute>
-          <SentryRoute path="/:provider/:owner/:repo/bundles/new/webpack">
-            <WebpackOnboarding />
-          </SentryRoute>
-        </Switch>
-      </Suspense>
-    </>
+    <Suspense fallback={<Loader />}>
+      <Switch>
+        <SentryRoute path="/:provider/:owner/:repo/bundles/new" exact>
+          <ViteOnboarding />
+        </SentryRoute>
+        <SentryRoute path="/:provider/:owner/:repo/bundles/new/rollup">
+          <RollupOnboarding />
+        </SentryRoute>
+        <SentryRoute path="/:provider/:owner/:repo/bundles/new/webpack">
+          <WebpackOnboarding />
+        </SentryRoute>
+      </Switch>
+    </Suspense>
   )
 }
 
@@ -67,6 +141,7 @@ const BundleOnboarding: React.FC = () => {
   return (
     <div className="flex flex-col gap-6 pt-4 lg:w-3/5">
       <IntroBlurb />
+      <BundlerSelector provider={provider} owner={owner} repo={repo} />
       <Content />
     </div>
   )
