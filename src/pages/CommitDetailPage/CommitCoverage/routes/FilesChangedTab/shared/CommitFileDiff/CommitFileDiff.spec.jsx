@@ -13,8 +13,10 @@ jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
 const baseMock = (impactedFile) => ({
   owner: {
     repository: {
+      __typename: 'Repository',
       commit: {
         compareWithParent: {
+          __typename: 'Comparison',
           impactedFile: {
             ...impactedFile,
           },
@@ -28,6 +30,19 @@ const mockImpactedFile = {
   isCriticalFile: false,
   headName: 'flag1/file.js',
   hashedPath: 'hashedFilePath',
+  isNewFile: false,
+  isRenamedFile: false,
+  isDeletedFile: false,
+  baseCoverage: {
+    coverage: 100,
+  },
+  headCoverage: {
+    coverage: 100,
+  },
+  patchCoverage: {
+    coverage: 100,
+  },
+  changeCoverage: 0,
   segments: {
     results: [
       {
@@ -213,6 +228,7 @@ describe('CommitFileDiff', () => {
   describe('when segment is an empty array', () => {
     beforeEach(() => {
       const impactedFile = {
+        ...mockImpactedFile,
         isCriticalFile: false,
         headName: 'flag1/file.js',
         segments: [],
@@ -237,12 +253,9 @@ describe('CommitFileDiff', () => {
   describe('a new file', () => {
     beforeEach(() => {
       const impactedFile = {
+        ...mockImpactedFile,
         isCriticalFile: false,
         isNewFile: true,
-        headName: 'flag1/file.js',
-        segments: {
-          results: [{ lines: [{ content: 'abc' }, { content: 'def' }] }],
-        },
       }
       setup({ impactedFile })
     })
@@ -258,12 +271,8 @@ describe('CommitFileDiff', () => {
   describe('a renamed file', () => {
     beforeEach(() => {
       const impactedFile = {
-        isCriticalFile: false,
+        ...mockImpactedFile,
         isRenamedFile: true,
-        headName: 'flag1/file.js',
-        segments: {
-          results: [{ lines: [{ content: 'abc' }, { content: 'def' }] }],
-        },
       }
       setup({ impactedFile })
     })
@@ -278,12 +287,8 @@ describe('CommitFileDiff', () => {
   describe('a deleted file', () => {
     beforeEach(() => {
       const impactedFile = {
-        isCriticalFile: false,
+        ...mockImpactedFile,
         isDeletedFile: true,
-        headName: 'flag1/file.js',
-        segments: {
-          results: [{ lines: [{ content: 'abc' }, { content: 'def' }] }],
-        },
       }
       setup({ impactedFile })
     })
@@ -298,12 +303,8 @@ describe('CommitFileDiff', () => {
   describe('a critical file', () => {
     beforeEach(() => {
       const impactedFile = {
+        ...mockImpactedFile,
         isCriticalFile: true,
-        fileLabel: null,
-        headName: 'flag1/file.js',
-        segments: {
-          results: [{ lines: [{ content: 'abc' }, { content: 'def' }] }],
-        },
       }
       setup({ impactedFile })
     })

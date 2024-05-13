@@ -316,7 +316,22 @@ describe('FileExplorer', () => {
         return res(ctx.status(200), ctx.data(mockRepoSettings))
       }),
       graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({}))
+        return res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              repository: {
+                __typename: 'Repository',
+                private: false,
+                defaultBranch: 'main',
+                oldestCommitAt: '2022-10-10T11:59:59',
+                coverageEnabled: true,
+                bundleAnalysisEnabled: true,
+                languages: [],
+              },
+            },
+          })
+        )
       })
     )
 
@@ -409,8 +424,7 @@ describe('FileExplorer', () => {
           setup()
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('src')).toBeTruthy()
-          const dir = screen.getByText('src')
+          const dir = await screen.findByText('src')
           expect(dir).toBeInTheDocument()
 
           const table = await screen.findByRole('table')
@@ -427,8 +441,7 @@ describe('FileExplorer', () => {
           setup()
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('file.js')).toBeTruthy()
-          const file = screen.getByText('file.js')
+          const file = await screen.findByText('file.js')
           expect(file).toBeInTheDocument()
 
           const table = await screen.findByRole('table')
@@ -492,8 +505,7 @@ describe('FileExplorer', () => {
             ]),
           })
 
-          expect(await screen.findByText('a/b/c/file.js')).toBeTruthy()
-          const file = screen.getByText('a/b/c/file.js')
+          const file = await screen.findByText('a/b/c/file.js')
           expect(file).toBeInTheDocument()
 
           const table = await screen.findByRole('table')
@@ -530,8 +542,9 @@ describe('FileExplorer', () => {
 
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('Files')).toBeTruthy()
-          let files = screen.getByText('Files')
+          const files = await screen.findByText('Files')
+          expect(files).toBeInTheDocument()
+
           await user.click(files)
 
           await waitFor(() =>
@@ -550,12 +563,8 @@ describe('FileExplorer', () => {
 
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('Files')).toBeTruthy()
-          let files = screen.getByText('Files')
+          const files = await screen.findByText('Files')
           await user.click(files)
-
-          expect(await screen.findByText('Files')).toBeTruthy()
-          files = screen.getByText('Files')
           await user.click(files)
 
           await waitFor(() =>
@@ -576,8 +585,7 @@ describe('FileExplorer', () => {
 
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('Tracked lines')).toBeTruthy()
-          const trackedLines = screen.getByText('Tracked lines')
+          const trackedLines = await screen.findByText('Tracked lines')
           await user.click(trackedLines)
 
           await waitFor(() =>
@@ -596,12 +604,8 @@ describe('FileExplorer', () => {
 
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('Tracked lines')).toBeTruthy()
-          let trackedLines = screen.getByText('Tracked lines')
+          const trackedLines = await screen.findByText('Tracked lines')
           await user.click(trackedLines)
-
-          expect(await screen.findByText('Tracked lines')).toBeTruthy()
-          trackedLines = screen.getByText('Tracked lines')
           await user.click(trackedLines)
 
           await waitFor(() =>
@@ -622,8 +626,7 @@ describe('FileExplorer', () => {
 
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('Covered')).toBeTruthy()
-          const covered = screen.getByText('Covered')
+          const covered = await screen.findByText('Covered')
           await user.click(covered)
 
           await waitFor(() =>
@@ -642,12 +645,8 @@ describe('FileExplorer', () => {
 
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('Covered')).toBeTruthy()
-          let covered = screen.getByText('Covered')
+          const covered = await screen.findByText('Covered')
           await user.click(covered)
-
-          expect(await screen.findByText('Covered')).toBeTruthy()
-          covered = screen.getByText('Covered')
           await user.click(covered)
 
           await waitFor(() =>
@@ -668,8 +667,7 @@ describe('FileExplorer', () => {
 
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('Partial')).toBeTruthy()
-          const partial = screen.getByText('Partial')
+          const partial = await screen.findByText('Partial')
           await user.click(partial)
 
           await waitFor(() =>
@@ -688,12 +686,8 @@ describe('FileExplorer', () => {
 
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('Partial')).toBeTruthy()
-          let partial = screen.getByText('Partial')
+          const partial = await screen.findByText('Partial')
           await user.click(partial)
-
-          expect(await screen.findByText('Partial')).toBeTruthy()
-          partial = screen.getByText('Partial')
           await user.click(partial)
 
           await waitFor(() =>
@@ -714,8 +708,7 @@ describe('FileExplorer', () => {
 
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('Missed')).toBeTruthy()
-          const missed = screen.getByText('Missed')
+          const missed = await screen.findByText('Missed')
           await user.click(missed)
 
           await waitFor(() =>
@@ -734,12 +727,8 @@ describe('FileExplorer', () => {
 
           render(<FileExplorer />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('Missed')).toBeTruthy()
-          let missed = screen.getByText('Missed')
+          const missed = await screen.findByText('Missed')
           await user.click(missed)
-
-          expect(await screen.findByText('Missed')).toBeTruthy()
-          missed = screen.getByText('Missed')
           await user.click(missed)
 
           await waitFor(() =>
@@ -785,8 +774,7 @@ describe('FileExplorer', () => {
         const { user } = setup()
         render(<FileExplorer />, { wrapper: wrapper() })
 
-        expect(await screen.findByText('src')).toBeTruthy()
-        const dir = screen.getByText('src')
+        const dir = await screen.findByText('src')
         expect(dir).toBeInTheDocument()
 
         expect(
@@ -813,12 +801,10 @@ describe('FileExplorer', () => {
 
         render(<FileExplorer />, { wrapper: wrapper() })
 
-        expect(await screen.findByText('All components')).toBeTruthy()
-        const components = screen.getByText('All components')
+        const components = await screen.findByText('All components')
         await user.click(components)
 
-        expect(await screen.findByText('component-1')).toBeTruthy()
-        const component1 = screen.getByText('component-1')
+        const component1 = await screen.findByText('component-1')
         await user.click(component1)
 
         await waitFor(() => queryClient.isFetching)

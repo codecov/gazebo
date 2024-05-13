@@ -8,11 +8,11 @@ import { useRepo, useRepoOverview } from 'services/repo'
 import { useFlags } from 'shared/featureFlags'
 import LoadingLogo from 'ui/LoadingLogo'
 
+import ActivationAlert from './ActivationAlert'
 import { RepoBreadcrumbProvider } from './context'
 import DeactivatedRepo from './DeactivatedRepo'
 import RepoBreadcrumb from './RepoBreadcrumb'
 import RepoPageTabs from './RepoPageTabs'
-import { UnauthorizedRepoDisplay } from './shared/UnauthorizedRepoDisplay'
 
 const BundlesTab = lazy(() => import('./BundlesTab'))
 const CommitsTab = lazy(() => import('./CommitsTab'))
@@ -82,7 +82,7 @@ function Routes({
             exact
           >
             {showUnauthorizedMessageCoverage ? (
-              <UnauthorizedRepoDisplay />
+              <ActivationAlert />
             ) : (
               <CoverageTab />
             )}
@@ -109,7 +109,7 @@ function Routes({
             exact
           >
             {showUnauthorizedMessageBundles ? (
-              <UnauthorizedRepoDisplay />
+              <ActivationAlert />
             ) : (
               <BundlesTab />
             )}

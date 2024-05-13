@@ -115,6 +115,72 @@ const mockTreeData = {
   },
 }
 
+const mockFlagBackfillData = {
+  config: {
+    isTimescaleEnabled: true,
+  },
+  owner: {
+    repository: {
+      flagsMeasurementsActive: true,
+      flagsMeasurementsBackfilled: true,
+      flagsCount: 4,
+    },
+  },
+}
+
+const mockCommitComponentData = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      commit: {
+        components: [{ name: 'component-1' }, { name: 'component-2' }],
+      },
+    },
+  },
+}
+
+const mockOverview = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      private: true,
+      defaultBranch: 'main',
+      oldestCommitAt: '2022-10-10T11:59:59',
+      coverageEnabled: true,
+      bundleAnalysisEnabled: true,
+      languages: ['typescript'],
+    },
+  },
+}
+
+const mockOwnerTier = {
+  owner: {
+    plan: {
+      tierName: 'pro',
+    },
+  },
+}
+
+const mockFlagsResponse = {
+  owner: {
+    repository: {
+      flags: {
+        edges: [
+          {
+            node: {
+              name: 'flag-1',
+            },
+          },
+        ],
+        pageInfo: {
+          hasNextPage: true,
+          endCursor: '1-flag-1',
+        },
+      },
+    },
+  },
+}
+
 type WrapperClosure = (
   initialEntries?: string[]
 ) => React.FC<React.PropsWithChildren>
@@ -132,6 +198,8 @@ const wrapper: WrapperClosure =
       </QueryClientProvider>
     )
   }
+
+console.error = () => {}
 
 beforeAll(() => {
   server.listen()
@@ -177,6 +245,21 @@ describe('CommitDetailFileExplorerTable', () => {
         }
 
         return res(ctx.status(200), ctx.data(mockTreeData))
+      }),
+      graphql.query('BackfillFlagMemberships', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockFlagBackfillData))
+      }),
+      graphql.query('CommitComponents', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockCommitComponentData))
+      }),
+      graphql.query('GetRepoOverview', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockOverview))
+      }),
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockOwnerTier))
+      }),
+      graphql.query('FlagsSelect', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockFlagsResponse))
       })
     )
 
@@ -251,8 +334,7 @@ describe('CommitDetailFileExplorerTable', () => {
           setup()
           render(<CommitDetailFileExplorerTable />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('src')).toBeTruthy()
-          const dir = screen.getByText('src')
+          const dir = await screen.findByText('src')
           expect(dir).toBeInTheDocument()
 
           const table = await screen.findByRole('table')
@@ -270,8 +352,7 @@ describe('CommitDetailFileExplorerTable', () => {
           setup()
           render(<CommitDetailFileExplorerTable />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('file.js')).toBeTruthy()
-          const file = screen.getByText('file.js')
+          const file = await screen.findByText('file.js')
           expect(file).toBeInTheDocument()
 
           const table = await screen.findByRole('table')
@@ -313,8 +394,7 @@ describe('CommitDetailFileExplorerTable', () => {
             ]),
           })
 
-          expect(await screen.findByText('a/b/c/file.js')).toBeTruthy()
-          const file = screen.getByText('a/b/c/file.js')
+          const file = await screen.findByText('a/b/c/file.js')
           expect(file).toBeInTheDocument()
 
           const links = await within(
@@ -377,8 +457,7 @@ describe('CommitDetailFileExplorerTable', () => {
             const { user, requestFilters } = setup()
             render(<CommitDetailFileExplorerTable />, { wrapper: wrapper() })
 
-            expect(await screen.findByText('Files')).toBeTruthy()
-            const files = screen.getByText('Files')
+            const files = await screen.findByText('Files')
             await user.click(files)
 
             await waitFor(() => {
@@ -396,12 +475,8 @@ describe('CommitDetailFileExplorerTable', () => {
             const { user, requestFilters } = setup()
             render(<CommitDetailFileExplorerTable />, { wrapper: wrapper() })
 
-            expect(await screen.findByText('Files')).toBeTruthy()
-            let files = screen.getByText('Files')
+            const files = await screen.findByText('Files')
             await user.click(files)
-
-            expect(await screen.findByText('Files')).toBeTruthy()
-            files = screen.getByText('Files')
             await user.click(files)
 
             await waitFor(() => {
@@ -421,8 +496,7 @@ describe('CommitDetailFileExplorerTable', () => {
             const { user, requestFilters } = setup()
             render(<CommitDetailFileExplorerTable />, { wrapper: wrapper() })
 
-            expect(await screen.findByText('Tracked lines')).toBeTruthy()
-            const trackedLines = screen.getByText('Tracked lines')
+            const trackedLines = await screen.findByText('Tracked lines')
             await user.click(trackedLines)
 
             await waitFor(() => {
@@ -440,12 +514,8 @@ describe('CommitDetailFileExplorerTable', () => {
             const { user, requestFilters } = setup()
             render(<CommitDetailFileExplorerTable />, { wrapper: wrapper() })
 
-            expect(await screen.findByText('Tracked lines')).toBeTruthy()
-            let trackedLines = screen.getByText('Tracked lines')
+            const trackedLines = await screen.findByText('Tracked lines')
             await user.click(trackedLines)
-
-            expect(await screen.findByText('Tracked lines')).toBeTruthy()
-            trackedLines = screen.getByText('Tracked lines')
             await user.click(trackedLines)
 
             await waitFor(() => {
@@ -465,8 +535,7 @@ describe('CommitDetailFileExplorerTable', () => {
             const { user, requestFilters } = setup()
             render(<CommitDetailFileExplorerTable />, { wrapper: wrapper() })
 
-            expect(await screen.findByText('Covered')).toBeTruthy()
-            const covered = screen.getByText('Covered')
+            const covered = await screen.findByText('Covered')
             await user.click(covered)
 
             await waitFor(() => {
@@ -484,12 +553,8 @@ describe('CommitDetailFileExplorerTable', () => {
             const { user, requestFilters } = setup()
             render(<CommitDetailFileExplorerTable />, { wrapper: wrapper() })
 
-            expect(await screen.findByText('Covered')).toBeTruthy()
-            let covered = screen.getByText('Covered')
+            const covered = await screen.findByText('Covered')
             await user.click(covered)
-
-            expect(await screen.findByText('Covered')).toBeTruthy()
-            covered = screen.getByText('Covered')
             await user.click(covered)
 
             await waitFor(() => {
@@ -509,8 +574,7 @@ describe('CommitDetailFileExplorerTable', () => {
             const { user, requestFilters } = setup()
             render(<CommitDetailFileExplorerTable />, { wrapper: wrapper() })
 
-            expect(await screen.findByText('Partial')).toBeTruthy()
-            const partial = screen.getByText('Partial')
+            const partial = await screen.findByText('Partial')
             await user.click(partial)
 
             await waitFor(() => {
@@ -528,12 +592,8 @@ describe('CommitDetailFileExplorerTable', () => {
             const { user, requestFilters } = setup()
             render(<CommitDetailFileExplorerTable />, { wrapper: wrapper() })
 
-            expect(await screen.findByText('Partial')).toBeTruthy()
-            let partial = screen.getByText('Partial')
+            const partial = await screen.findByText('Partial')
             await user.click(partial)
-
-            expect(await screen.findByText('Partial')).toBeTruthy()
-            partial = screen.getByText('Partial')
             await user.click(partial)
 
             await waitFor(() => {
@@ -553,8 +613,7 @@ describe('CommitDetailFileExplorerTable', () => {
             const { user, requestFilters } = setup()
             render(<CommitDetailFileExplorerTable />, { wrapper: wrapper() })
 
-            expect(await screen.findByText('Missed')).toBeTruthy()
-            const missed = screen.getByText('Missed')
+            const missed = await screen.findByText('Missed')
             await user.click(missed)
 
             await waitFor(() => {
@@ -572,12 +631,8 @@ describe('CommitDetailFileExplorerTable', () => {
             const { user, requestFilters } = setup()
             render(<CommitDetailFileExplorerTable />, { wrapper: wrapper() })
 
-            expect(await screen.findByText('Missed')).toBeTruthy()
-            let missed = screen.getByText('Missed')
+            const missed = await screen.findByText('Missed')
             await user.click(missed)
-
-            expect(await screen.findByText('Missed')).toBeTruthy()
-            missed = screen.getByText('Missed')
             await user.click(missed)
 
             await waitFor(() => {
@@ -598,13 +653,7 @@ describe('CommitDetailFileExplorerTable', () => {
         // search box exists in parent component
         render(<CommitDetailFileExplorer />, { wrapper: wrapper() })
 
-        expect(
-          await screen.findByRole('textbox', {
-            name: 'Search for files',
-          })
-        ).toBeTruthy()
-
-        const search = screen.getByRole('textbox', {
+        const search = await screen.findByRole('textbox', {
           name: 'Search for files',
         })
 

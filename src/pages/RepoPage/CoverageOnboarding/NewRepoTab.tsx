@@ -1,14 +1,16 @@
-import { lazy, Suspense } from 'react'
-import { Switch, useParams } from 'react-router-dom'
+import { lazy, Suspense, useMemo } from 'react'
+import { Switch, useHistory, useLocation, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
 import NotFound from 'pages/NotFound'
+import { useNavLinks } from 'services/navigation'
 import { useRepo } from 'services/repo'
 import { useRedirect } from 'shared/useRedirect'
 import { providerToName } from 'shared/utils'
+import { Card } from 'ui/Card'
+import { RadioTileGroup } from 'ui/RadioTileGroup'
 import Spinner from 'ui/Spinner'
-import TabNavigation from 'ui/TabNavigation'
 
 import ActivationBanner from './ActivationBanner'
 import CircleCI from './CircleCI'
@@ -23,53 +25,98 @@ const Loader = () => (
   </div>
 )
 
-function Content({
-  provider,
-  isCurrentUserActivated,
-  isRepoPrivate,
-}: {
-  provider: string
-  isCurrentUserActivated: boolean
-  isRepoPrivate?: boolean
-}) {
-  const renderActivationBanner = !isCurrentUserActivated && isRepoPrivate
+const CI_PROVIDERS = {
+  GitHubActions: 'GitHubActions',
+  CircleCI: 'CircleCI',
+  OtherCI: 'OtherCI',
+} as const
+type CIProviderValue = (typeof CI_PROVIDERS)[keyof typeof CI_PROVIDERS]
+type CIUrls = Record<keyof typeof CI_PROVIDERS, string>
 
-  if (providerToName(provider) !== 'Github') {
-    return (
-      <div className="mt-6">
+const getInitialProvider = (provider: string, path: string, urls: CIUrls) => {
+  const defaultProvider =
+    providerToName(provider) !== 'Github'
+      ? CI_PROVIDERS.OtherCI
+      : CI_PROVIDERS.GitHubActions
+  if (path === urls.CircleCI) {
+    return CI_PROVIDERS.CircleCI
+  }
+  if (path === urls.OtherCI) {
+    return CI_PROVIDERS.OtherCI
+  }
+  return defaultProvider
+}
+
+interface CISelectorProps {
+  provider: string
+  owner: string
+  repo: string
+}
+
+function CISelector({ provider, owner, repo }: CISelectorProps) {
+  const location = useLocation()
+  const history = useHistory()
+  const { new: githubActions, circleCI, newOtherCI } = useNavLinks()
+  const urls = useMemo(
+    () => ({
+      GitHubActions: githubActions.path({ provider, owner, repo }),
+      CircleCI: circleCI.path({ provider, owner, repo }),
+      OtherCI: newOtherCI.path({ provider, owner, repo }),
+    }),
+    [githubActions, circleCI, newOtherCI, provider, owner, repo]
+  )
+
+  return (
+    <Card>
+      <Card.Header>
+        <Card.Title size="base">Select your CI</Card.Title>
+      </Card.Header>
+      <Card.Content>
+        <RadioTileGroup
+          defaultValue={getInitialProvider(provider, location.pathname, urls)}
+          onValueChange={(value: CIProviderValue) => {
+            history.replace(urls[value])
+          }}
+        >
+          <RadioTileGroup.Item
+            value={CI_PROVIDERS.GitHubActions}
+            data-testid="github-actions-radio"
+          >
+            <RadioTileGroup.Label>Using GitHub Actions</RadioTileGroup.Label>
+          </RadioTileGroup.Item>
+          <RadioTileGroup.Item
+            value={CI_PROVIDERS.CircleCI}
+            data-testid="circle-ci-radio"
+          >
+            <RadioTileGroup.Label>Using Circle CI</RadioTileGroup.Label>
+          </RadioTileGroup.Item>
+          <RadioTileGroup.Item
+            value={CI_PROVIDERS.OtherCI}
+            data-testid="other-ci-radio"
+          >
+            <RadioTileGroup.Label>Other</RadioTileGroup.Label>
+          </RadioTileGroup.Item>
+        </RadioTileGroup>
+      </Card.Content>
+    </Card>
+  )
+}
+
+function Content() {
+  return (
+    <Switch>
+      <SentryRoute path="/:provider/:owner/:repo/new" exact>
+        <GitHubActions />
+      </SentryRoute>
+      <SentryRoute path="/:provider/:owner/:repo/new/circle-ci" exact>
+        <CircleCI />
+      </SentryRoute>
+      <SentryRoute path="/:provider/:owner/:repo/new/other-ci" exact>
         <Suspense fallback={<Loader />}>
           <OtherCI />
         </Suspense>
-      </div>
-    )
-  }
-
-  return (
-    <>
-      <TabNavigation
-        tabs={[
-          { pageName: 'new', children: 'GitHub Actions', exact: true },
-          { pageName: 'circleCI' },
-          { pageName: 'newOtherCI' },
-        ]}
-      />
-      {renderActivationBanner ? <ActivationBanner /> : null}
-      <div className="mt-6">
-        <Switch>
-          <SentryRoute path="/:provider/:owner/:repo/new" exact>
-            <GitHubActions />
-          </SentryRoute>
-          <SentryRoute path="/:provider/:owner/:repo/new/circle-ci" exact>
-            <CircleCI />
-          </SentryRoute>
-          <SentryRoute path="/:provider/:owner/:repo/new/other-ci" exact>
-            <Suspense fallback={<Loader />}>
-              <OtherCI />
-            </Suspense>
-          </SentryRoute>
-        </Switch>
-      </div>
-    </>
+      </SentryRoute>
+    </Switch>
   )
 }
 
@@ -91,16 +138,15 @@ function NewRepoTab() {
     return <NotFound />
   }
 
+  const renderActivationBanner =
+    !data?.isCurrentUserActivated && data?.repository.private
+
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-4 pt-4 lg:w-3/5">
-        <IntroBlurb />
-        <Content
-          provider={provider}
-          isCurrentUserActivated={data?.isCurrentUserActivated ?? false}
-          isRepoPrivate={data?.repository.private ?? false}
-        />
-      </div>
+    <div className="flex flex-col gap-6 pt-4 lg:w-3/5">
+      <IntroBlurb />
+      {renderActivationBanner ? <ActivationBanner /> : null}
+      <CISelector provider={provider} owner={owner} repo={repo} />
+      <Content />
     </div>
   )
 }
