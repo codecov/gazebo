@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import FreePlanSeatsTakenAlert from './FreePlanSeatsTakenAlert'
+import ActivationRequiredAlert from './ActivationRequiredAlert'
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/gh/codecov/gazebo/new']}>
@@ -9,37 +9,37 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   </MemoryRouter>
 )
 
-describe('FreePlanSeatsTakenAlert', () => {
+describe('ActivationRequiredAlert', () => {
   it('renders the banner with correct heading', () => {
-    render(<FreePlanSeatsTakenAlert />, { wrapper })
+    render(<ActivationRequiredAlert />, { wrapper })
 
     const bannerHeading = screen.getByRole('heading', {
-      name: /Coverage Alert: All Seats Taken/,
+      name: /Activation Required/,
     })
     expect(bannerHeading).toBeInTheDocument()
   })
 
   it('renders the banner with correct description', () => {
-    render(<FreePlanSeatsTakenAlert />, { wrapper })
+    render(<ActivationRequiredAlert />, { wrapper })
 
     const description = screen.getByText(
-      /Your organization is on the Developer free plan/
+      /You have available seats, but activation is needed./
     )
     expect(description).toBeInTheDocument()
   })
 
   it('renders the banner with correct link', () => {
-    render(<FreePlanSeatsTakenAlert />, { wrapper })
+    render(<ActivationRequiredAlert />, { wrapper })
 
     const link = screen.getByRole('link', {
-      name: /View plan options/,
+      name: /Manage members/,
     })
     expect(link).toBeInTheDocument()
-    expect(link).toHaveAttribute('href', '/plan/gh/codecov')
+    expect(link).toHaveAttribute('href', '/members/gh/codecov')
   })
 
   it('renders the correct img', () => {
-    render(<FreePlanSeatsTakenAlert />, { wrapper })
+    render(<ActivationRequiredAlert />, { wrapper })
 
     const img = screen.getByAltText('Forbidden')
     expect(img).toBeInTheDocument()

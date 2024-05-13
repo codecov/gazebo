@@ -2,16 +2,15 @@ import img403 from 'layouts/shared/NetworkErrorBoundary/assets/error-403.svg'
 import A from 'ui/A'
 import Button from 'ui/Button'
 
-const FreePlanSeatsTakenAlert = () => {
+const PaidPlanSeatsTakenAlert = () => {
   return (
     <div className="flex flex-col items-center justify-center gap-8 bg-ds-gray-primary pb-28 pt-12 text-center">
       <img src={img403} alt="Forbidden" className="w-36" />
-      <div className="flex w-3/5 flex-col gap-1">
-        <h1 className="text-2xl">Coverage Alert: All Seats Taken</h1>
+      <div className="flex w-2/5 flex-col gap-1">
+        <h1 className="text-2xl">Seats Limit Reached</h1>
         <p>
-          Your organization is on the Developer free plan, limited to one seat,
-          which is currently occupied. You can add any amount of seats by
-          upgrading for more flexibility.{' '}
+          Your organization has utilized all available seats on this plan. To
+          add more members, please increase your seat count.{' '}
           <A
             to={{ pageName: 'membersTab' }}
             isExternal={false}
@@ -23,15 +22,15 @@ const FreePlanSeatsTakenAlert = () => {
         </p>
       </div>
       <Button
-        to={{ pageName: 'planTab' }}
+        to={{ pageName: 'upgradeOrgPlan' }}
         disabled={undefined}
         hook={undefined}
         variant="primary"
       >
-        View plan options
+        Increase seat count
       </Button>
     </div>
   )
 }
 
-export default FreePlanSeatsTakenAlert
+export default PaidPlanSeatsTakenAlert
