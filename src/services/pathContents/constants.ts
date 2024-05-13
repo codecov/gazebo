@@ -57,6 +57,7 @@ const CoverageSchema = z.array(
 const CoverageForFileSchema = z.object({
   commitid: z.string().nullish(),
   flagNames: z.array(z.string().nullish()).nullish(),
+  components: z.array(z.object({ id: z.string(), name: z.string() })),
   coverageFile: z
     .object({
       hashedPath: z.string(),
@@ -65,7 +66,7 @@ const CoverageForFileSchema = z.object({
       coverage: CoverageSchema.nullish(),
       totals: z
         .object({
-          coverage: z.number().nullish(),
+          percentCovered: z.number().nullish(),
         })
         .nullish(),
     })
@@ -106,11 +107,12 @@ query CoverageForFile(
   $ref: String!
   $path: String!
   $flags: [String]
+  $components: [String]
 ) {
   owner(username: $owner) {
     repository(name: $repo) {
+      __typename
       ... on Repository {
-        __typename
         commit(id: $ref) {
           ...CoverageForFile
         }
@@ -122,11 +124,9 @@ query CoverageForFile(
         }
       }
       ... on NotFoundError {
-        __typename
         message
       }
       ... on OwnerNotActivatedError {
-        __typename
         message
       }
     }
@@ -136,7 +136,11 @@ query CoverageForFile(
 fragment CoverageForFile on Commit {
   commitid
   flagNames
-  coverageFile(path: $path, flags: $flags) {
+  components {
+    id
+    name
+  }
+  coverageFile(path: $path, flags: $flags, components: $components) {
     hashedPath
     isCriticalFile
     content
@@ -145,7 +149,7 @@ fragment CoverageForFile on Commit {
       coverage
     }
     totals {
-      coverage: percentCovered # Absolute coverage of the commit
+      percentCovered # Absolute coverage of the commit
     }
   }
 }`
