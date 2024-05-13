@@ -2,7 +2,7 @@ import { type QueryOptions, useQueryClient } from '@tanstack/react-query'
 import { ParsedQs } from 'qs'
 import { useParams } from 'react-router-dom'
 
-import { extractCoverageFromResponse } from 'services/file/utils'
+import { extractCoverageFromResponse } from 'services/pathContents/utils'
 import Api from 'shared/api'
 import { NetworkErrorObject } from 'shared/api/helpers'
 import A from 'ui/A'
