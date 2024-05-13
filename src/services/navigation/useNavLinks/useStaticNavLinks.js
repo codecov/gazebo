@@ -276,6 +276,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    bundleAnalysisDocs: {
+      text: 'Bundle analysis set up documentation',
+      path: () => 'https://docs.codecov.com/docs/javascript-bundle-analysis',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     bundleConfigFeedback: {
       text: 'New bundle analysis set up feedback',
       path: () => 'https://github.com/codecov/feedback/issues/270',

@@ -9,6 +9,7 @@ import { useRedirect } from 'shared/useRedirect'
 import Spinner from 'ui/Spinner'
 import TabNavigation from 'ui/TabNavigation'
 
+import IntroBlurb from './IntroBlurb'
 import RollupOnboarding from './RollupOnboarding'
 import ViteOnboarding from './ViteOnboarding'
 import WebpackOnboarding from './WebpackOnboarding'
@@ -35,21 +36,19 @@ const Content: React.FC = () => {
           { pageName: 'bundleWebpackOnboarding' },
         ]}
       />
-      <div className="pt-6">
-        <Suspense fallback={<Loader />}>
-          <Switch>
-            <SentryRoute path="/:provider/:owner/:repo/bundles/new" exact>
-              <ViteOnboarding />
-            </SentryRoute>
-            <SentryRoute path="/:provider/:owner/:repo/bundles/new/rollup">
-              <RollupOnboarding />
-            </SentryRoute>
-            <SentryRoute path="/:provider/:owner/:repo/bundles/new/webpack">
-              <WebpackOnboarding />
-            </SentryRoute>
-          </Switch>
-        </Suspense>
-      </div>
+      <Suspense fallback={<Loader />}>
+        <Switch>
+          <SentryRoute path="/:provider/:owner/:repo/bundles/new" exact>
+            <ViteOnboarding />
+          </SentryRoute>
+          <SentryRoute path="/:provider/:owner/:repo/bundles/new/rollup">
+            <RollupOnboarding />
+          </SentryRoute>
+          <SentryRoute path="/:provider/:owner/:repo/bundles/new/webpack">
+            <WebpackOnboarding />
+          </SentryRoute>
+        </Switch>
+      </Suspense>
     </>
   )
 }
@@ -66,7 +65,8 @@ const BundleOnboarding: React.FC = () => {
   }
 
   return (
-    <div className="pt-2 lg:w-3/5">
+    <div className="flex flex-col gap-6 pt-4 lg:w-3/5">
+      <IntroBlurb />
       <Content />
     </div>
   )
