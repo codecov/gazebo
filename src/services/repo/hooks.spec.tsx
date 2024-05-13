@@ -38,8 +38,6 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 
-console.error = () => {}
-
 const provider = 'gh'
 const owner = 'cool-guy'
 const repo = 'cool-repo'
@@ -63,12 +61,17 @@ describe('useRepo', () => {
       },
     }
 
-    beforeEach(() => {
-      setup(badData)
+    beforeAll(() => {
+      console.error = () => {}
+    })
+
+    afterAll(() => {
+      jest.resetAllMocks()
     })
 
     describe('when incorrect data is loaded', () => {
       it('throws an error', async () => {
+        setup(badData)
         const { result } = renderHook(
           () => useRepo({ provider, owner, repo }),
           {
@@ -304,6 +307,13 @@ describe('useRepoBackfilled', () => {
     })
 
     describe('can throw errors', () => {
+      beforeAll(() => {
+        console.error = () => {}
+      })
+
+      afterAll(() => {
+        jest.resetAllMocks()
+      })
       it('can return unsuccessful parse error', async () => {
         setup({ isUnsuccessfulParseError: true })
         const { result } = renderHook(() => useRepoBackfilled(), {
