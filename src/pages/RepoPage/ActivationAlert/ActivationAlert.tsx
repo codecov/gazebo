@@ -6,7 +6,6 @@ import { isFreePlan } from 'shared/utils/billing'
 import ActivationRequiredAlert from './ActivationRequiredAlert'
 import FreePlanSeatsTakenAlert from './FreePlanSeatsTakenAlert'
 import PaidPlanSeatsTakenAlert from './PaidPlanSeatsTakenAlert'
-import FreePlanSeatsTakenAlert from './FreePlanSeatsTakenAlert'
 import UnauthorizedRepoDisplay from './UnauthorizedRepoDisplay'
 
 interface URLParams {
@@ -29,7 +28,6 @@ function ActivationAlert() {
 
   const renderActivationRequiredAlert =
     !isFreePlan(planData?.plan?.value) && planData?.plan?.hasSeatsLeft
-
 
   if (renderFreePlanSeatsTakenAlert) {
     return <FreePlanSeatsTakenAlert />
