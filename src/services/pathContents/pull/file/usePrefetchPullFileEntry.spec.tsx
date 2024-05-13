@@ -45,37 +45,23 @@ const mockData = {
       commit: {
         commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
         flagNames: ['a', 'b'],
+        components: [],
         coverageFile: {
           hashedPath: 'afsd',
           isCriticalFile: true,
           content:
             'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
           coverage: [
-            {
-              line: 1,
-              coverage: 'H',
-            },
-            {
-              line: 2,
-              coverage: 'H',
-            },
-            {
-              line: 4,
-              coverage: 'H',
-            },
-            {
-              line: 5,
-              coverage: 'H',
-            },
-            {
-              line: 7,
-              coverage: 'H',
-            },
-            {
-              line: 8,
-              coverage: 'H',
-            },
+            { line: 1, coverage: 'H' },
+            { line: 2, coverage: 'H' },
+            { line: 4, coverage: 'H' },
+            { line: 5, coverage: 'H' },
+            { line: 7, coverage: 'H' },
+            { line: 8, coverage: 'H' },
           ],
+          totals: {
+            percentCovered: 100,
+          },
         },
       },
       branch: null,
@@ -181,8 +167,9 @@ describe('usePrefetchPullFileEntry', () => {
         8: 'H',
       },
       flagNames: ['a', 'b'],
+      componentNames: [],
       isCriticalFile: true,
-      totals: 0,
+      totals: 100,
     })
   })
 
