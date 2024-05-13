@@ -115,6 +115,14 @@ describe('BundleOnboarding', () => {
     return { hardRedirect }
   }
 
+  it('renders IntroBlurb', async () => {
+    setup({ hasCommits: true, hasUploadToken: true })
+    render(<BundleOnboarding />, { wrapper: wrapper() })
+
+    const introBlurb = await screen.findByTestId('ba-intro-blurb')
+    expect(introBlurb).toBeInTheDocument()
+  })
+
   describe('on /new route', () => {
     describe('rendering tabs', () => {
       it('renders selected vite tab', async () => {
