@@ -15,10 +15,13 @@ const server = setupServer()
 const mockSingularImpactedFilesData = {
   owner: {
     repository: {
+      __typename: 'Repository',
       pull: {
         compareWithBase: {
+          __typename: 'Comparison',
           impactedFile: {
             headName: 'file A',
+            hashedPath: 'hashed-path',
             isNewFile: true,
             isRenamedFile: false,
             isDeletedFile: false,
@@ -37,6 +40,7 @@ const mockSingularImpactedFilesData = {
               results: [
                 {
                   header: '@@ -0,0 1,45 @@',
+                  hasUnintendedChanges: false,
                   lines: [
                     {
                       baseNumber: null,
@@ -44,6 +48,10 @@ const mockSingularImpactedFilesData = {
                       baseCoverage: null,
                       headCoverage: 'H',
                       content: 'export default class Calculator {',
+                      coverageInfo: {
+                        hitCount: null,
+                        hitUploadIds: [],
+                      },
                     },
                   ],
                 },
@@ -135,10 +143,12 @@ describe('NameColumn', () => {
         expect(queryClient.getQueryData()).toStrictEqual({
           fileLabel: 'New',
           headName: 'file A',
+          hashedPath: 'hashed-path',
           isCriticalFile: false,
           segments: [
             {
               header: '@@ -0,0 1,45 @@',
+              hasUnintendedChanges: false,
               lines: [
                 {
                   baseCoverage: null,
@@ -146,6 +156,10 @@ describe('NameColumn', () => {
                   content: 'export default class Calculator {',
                   headCoverage: 'H',
                   headNumber: '1',
+                  coverageInfo: {
+                    hitCount: null,
+                    hitUploadIds: [],
+                  },
                 },
               ],
             },
