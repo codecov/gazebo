@@ -32,7 +32,7 @@ describe('FreePlanSeatsTakenAlert', () => {
     render(<FreePlanSeatsTakenAlert />, { wrapper })
 
     const link = screen.getByRole('link', {
-      name: /view plan options/,
+      name: /View plan options/,
     })
     expect(link).toBeInTheDocument()
     expect(link).toHaveAttribute('href', '/plan/gh/codecov')

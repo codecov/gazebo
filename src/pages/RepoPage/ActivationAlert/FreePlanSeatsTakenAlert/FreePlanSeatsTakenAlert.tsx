@@ -28,7 +28,7 @@ const FreePlanSeatsTakenAlert = () => {
         hook={undefined}
         variant="primary"
       >
-        view plan options
+        View plan options
       </Button>
     </div>
   )
