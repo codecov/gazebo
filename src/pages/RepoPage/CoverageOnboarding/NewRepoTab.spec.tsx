@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { PropsWithChildren, Suspense } from 'react'
-import { MemoryRouter, Route } from 'react-router-dom'
+import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import { useRedirect } from 'shared/useRedirect'
 
@@ -13,6 +13,7 @@ import NewRepoTab from './NewRepoTab'
 jest.mock('shared/useRedirect')
 const mockedUseRedirect = useRedirect as jest.Mock
 jest.mock('./GitHubActions', () => () => 'GitHubActions')
+jest.mock('./CircleCI', () => () => 'CircleCI')
 jest.mock('./OtherCI', () => () => 'OtherCI')
 jest.mock('./ActivationBanner', () => () => 'ActivationBanner')
 
@@ -27,7 +28,8 @@ const mockCurrentUser = {
 const mockGetRepo = (
   noUploadToken = false,
   hasCommits = false,
-  isCurrentUserActivated = false
+  isCurrentUserActivated = false,
+  isPrivate = false
 ) => ({
   owner: {
     isCurrentUserPartOfOrg: true,
@@ -35,7 +37,7 @@ const mockGetRepo = (
     isCurrentUserActivated,
     repository: {
       __typename: 'Repository',
-      private: false,
+      private: isPrivate,
       uploadToken: noUploadToken
         ? null
         : '9e6a6189-20f1-482d-ab62-ecfaa2629295',
@@ -57,7 +59,7 @@ const queryClient = new QueryClient({
   },
 })
 const server = setupServer()
-let testLocation: any
+let testLocation: ReturnType<typeof useLocation>
 
 const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
   (initialEntries = '/gh/codecov/cool-repo/new') =>
@@ -68,12 +70,12 @@ const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
           <Route
             path={[
               '/:provider/:owner/:repo/new',
+              '/:provider/:owner/:repo/new/circle-ci',
               '/:provider/:owner/:repo/new/other-ci',
             ]}
           >
             <Suspense fallback={null}>{children}</Suspense>
           </Route>
-
           <Route
             path="*"
             render={({ location }) => {
@@ -86,7 +88,7 @@ const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
     )
 
 beforeAll(() => {
-  // console.error = () => {}
+  console.error = () => {}
   server.listen()
 })
 afterEach(() => {
@@ -99,6 +101,7 @@ interface SetupArgs {
   hasCommits?: boolean
   noUploadToken?: boolean
   isCurrentUserActivated?: boolean
+  isPrivate?: boolean
 }
 
 describe('NewRepoTab', () => {
@@ -106,6 +109,7 @@ describe('NewRepoTab', () => {
     hasCommits = false,
     noUploadToken = false,
     isCurrentUserActivated = false,
+    isPrivate = false,
   }: SetupArgs) {
     const user = userEvent.setup()
     const hardRedirect = jest.fn()
@@ -118,7 +122,12 @@ describe('NewRepoTab', () => {
         res(
           ctx.status(200),
           ctx.data(
-            mockGetRepo(noUploadToken, hasCommits, isCurrentUserActivated)
+            mockGetRepo(
+              noUploadToken,
+              hasCommits,
+              isCurrentUserActivated,
+              isPrivate
+            )
           )
         )
       ),
@@ -130,86 +139,186 @@ describe('NewRepoTab', () => {
     return { hardRedirect, user }
   }
 
-  describe('intro blurb', () => {
+  it('renders intro blurb', async () => {
+    setup({})
+    render(<NewRepoTab />, { wrapper: wrapper() })
+
+    const intro = await screen.findByTestId('intro-blurb')
+    expect(intro).toBeInTheDocument()
+  })
+
+  describe('CISelector', () => {
     it('renders', async () => {
       setup({})
       render(<NewRepoTab />, { wrapper: wrapper() })
 
-      const intro = await screen.findByTestId('intro-blurb')
-      expect(intro).toBeInTheDocument()
+      const selectorHeader = await screen.findByText('Select your CI')
+      expect(selectorHeader).toBeInTheDocument()
+
+      const githubActions = await screen.findByText('Using GitHub Actions')
+      const circleCI = await screen.findByText('Using Circle CI')
+      const otherCI = await screen.findByText('Other')
+      expect(githubActions).toBeInTheDocument()
+      expect(circleCI).toBeInTheDocument()
+      expect(otherCI).toBeInTheDocument()
+    })
+
+    describe('initial selection', () => {
+      describe('when on GH provider and /new path', () => {
+        it('selects GitHub Actions as default', async () => {
+          setup({})
+          render(<NewRepoTab />, { wrapper: wrapper() })
+
+          const githubActions = await screen.findByTestId(
+            'github-actions-radio'
+          )
+          expect(githubActions).toBeInTheDocument()
+          expect(githubActions.hasAttribute('data-state')).toBeTruthy()
+          expect(githubActions.getAttribute('data-state')).toBe('checked')
+        })
+      })
+
+      describe('when on non GH provider and /new path', () => {
+        it('selects Other CI as default', async () => {
+          setup({})
+          render(<NewRepoTab />, {
+            wrapper: wrapper('/gl/codecov/cool-repo/new'),
+          })
+
+          const otherCI = await screen.findByTestId('other-ci-radio')
+          expect(otherCI).toBeInTheDocument()
+          expect(otherCI.hasAttribute('data-state')).toBeTruthy()
+          expect(otherCI.getAttribute('data-state')).toBe('checked')
+        })
+      })
+
+      describe('when on /new/circle-ci', () => {
+        it('selects Circle CI as default', async () => {
+          setup({})
+          render(<NewRepoTab />, {
+            wrapper: wrapper('/gl/codecov/cool-repo/new/circle-ci'),
+          })
+
+          const circleCI = await screen.findByTestId('circle-ci-radio')
+          expect(circleCI).toBeInTheDocument()
+          expect(circleCI.hasAttribute('data-state')).toBeTruthy()
+          expect(circleCI.getAttribute('data-state')).toBe('checked')
+        })
+      })
+
+      describe('when on /new/other-ci', () => {
+        it('selects Other CI as default', async () => {
+          setup({})
+          render(<NewRepoTab />, {
+            wrapper: wrapper('/gl/codecov/cool-repo/new/other-ci'),
+          })
+
+          const otherCI = await screen.findByTestId('other-ci-radio')
+          expect(otherCI).toBeInTheDocument()
+          expect(otherCI.hasAttribute('data-state')).toBeTruthy()
+          expect(otherCI.getAttribute('data-state')).toBe('checked')
+        })
+      })
+    })
+
+    describe('navigation', () => {
+      describe('when GitHub Actions is selected', () => {
+        it('should navigate to /new', async () => {
+          const { user } = setup({})
+          render(<NewRepoTab />, {
+            wrapper: wrapper('/gh/codecov/cool-repo/new/other-ci'),
+          })
+
+          const githubActions = await screen.findByTestId(
+            'github-actions-radio'
+          )
+          expect(githubActions).toBeInTheDocument()
+          expect(githubActions.hasAttribute('data-state')).toBeTruthy()
+          expect(githubActions.getAttribute('data-state')).toBe('unchecked')
+
+          await user.click(githubActions)
+
+          expect(githubActions).toBeInTheDocument()
+          expect(githubActions.hasAttribute('data-state')).toBeTruthy()
+          expect(githubActions.getAttribute('data-state')).toBe('checked')
+
+          expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/new')
+        })
+      })
+
+      describe('when Circle CI is selected', () => {
+        it('should navigate to /new/circle-ci', async () => {
+          const { user } = setup({})
+          render(<NewRepoTab />, { wrapper: wrapper() })
+
+          const circleCI = await screen.findByTestId('circle-ci-radio')
+          expect(circleCI).toBeInTheDocument()
+          expect(circleCI.hasAttribute('data-state')).toBeTruthy()
+          expect(circleCI.getAttribute('data-state')).toBe('unchecked')
+
+          await user.click(circleCI)
+
+          expect(circleCI).toBeInTheDocument()
+          expect(circleCI.hasAttribute('data-state')).toBeTruthy()
+          expect(circleCI.getAttribute('data-state')).toBe('checked')
+
+          expect(testLocation.pathname).toBe(
+            '/gh/codecov/cool-repo/new/circle-ci'
+          )
+        })
+      })
+
+      describe('when Other CI is selected', () => {
+        it('should navigate to /new/other-ci', async () => {
+          const { user } = setup({})
+          render(<NewRepoTab />, { wrapper: wrapper() })
+
+          const otherCI = await screen.findByTestId('other-ci-radio')
+          expect(otherCI).toBeInTheDocument()
+          expect(otherCI.hasAttribute('data-state')).toBeTruthy()
+          expect(otherCI.getAttribute('data-state')).toBe('unchecked')
+
+          await user.click(otherCI)
+
+          expect(otherCI).toBeInTheDocument()
+          expect(otherCI.hasAttribute('data-state')).toBeTruthy()
+          expect(otherCI.getAttribute('data-state')).toBe('checked')
+
+          expect(testLocation.pathname).toBe(
+            '/gh/codecov/cool-repo/new/other-ci'
+          )
+        })
+      })
     })
   })
 
   describe('rendering component', () => {
-    beforeEach(() => setup({}))
+    beforeEach(() =>
+      setup({
+        isPrivate: true,
+      })
+    )
 
-    it('renders header', async () => {
+    it('renders github actions', async () => {
       render(<NewRepoTab />, { wrapper: wrapper() })
-
-      const header = await screen.findByRole('heading', {
-        name: /Let's get your repo covered/,
-      })
-      expect(header).toBeInTheDocument()
+      const content = await screen.findByText(/GitHubActions/)
+      expect(content).toBeInTheDocument()
     })
 
-    it('renders ActivationBanner', async () => {
-      render(<NewRepoTab />, { wrapper: wrapper() })
-
-      const banner = await screen.findByText('ActivationBanner')
-      expect(banner).toBeInTheDocument()
+    it('renders circle ci', async () => {
+      render(<NewRepoTab />, {
+        wrapper: wrapper('/gh/codecov/cool-repo/new/circle-ci'),
+      })
+      const content = await screen.findByText(/CircleCI/)
+      expect(content).toBeInTheDocument()
     })
 
-    describe('users provider is github', () => {
-      it('renders github actions tab', async () => {
-        render(<NewRepoTab />, { wrapper: wrapper() })
-
-        const content = await screen.findByText('GitHubActions')
-        expect(content).toBeInTheDocument()
-
-        const tab = await screen.findByRole('link', { name: 'GitHub Actions' })
-        expect(tab).toBeInTheDocument()
-        expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/new')
+    it('renders other ci', async () => {
+      render(<NewRepoTab />, {
+        wrapper: wrapper('/gh/codecov/cool-repo/new/other-ci'),
       })
-
-      it('renders other ci tab', async () => {
-        render(<NewRepoTab />, { wrapper: wrapper() })
-
-        const content = await screen.findByText('GitHubActions')
-        expect(content).toBeInTheDocument()
-
-        const tab = await screen.findByRole('link', { name: 'Other CI' })
-        expect(tab).toBeInTheDocument()
-        expect(tab).toHaveAttribute(
-          'href',
-          '/gh/codecov/cool-repo/new/other-ci'
-        )
-      })
-    })
-
-    describe('users provider is not github', () => {
-      it('does not render github actions tab', async () => {
-        render(<NewRepoTab />, {
-          wrapper: wrapper('/gl/codecov/cool-repo/new'),
-        })
-
-        const content = await screen.findByText('OtherCI')
-        expect(content).toBeInTheDocument()
-
-        const tab = screen.queryByRole('link', { name: 'GitHub Actions' })
-        expect(tab).not.toBeInTheDocument()
-      })
-
-      it('does not render other ci tab', async () => {
-        render(<NewRepoTab />, {
-          wrapper: wrapper('/gl/codecov/cool-repo/new'),
-        })
-
-        const content = await screen.findByText('OtherCI')
-        expect(content).toBeInTheDocument()
-
-        const tab = screen.queryByRole('link', { name: 'Other CI' })
-        expect(tab).not.toBeInTheDocument()
-      })
+      const content = await screen.findByText(/OtherCI/)
+      expect(content).toBeInTheDocument()
     })
   })
 
@@ -232,67 +341,50 @@ describe('NewRepoTab', () => {
     })
   })
 
-  describe('users provider is github', () => {
-    describe('testing tab navigation', () => {
-      describe('clicking on other ci', () => {
-        it('navigates to /other-ci', async () => {
-          const { user } = setup({})
-          render(<NewRepoTab />, { wrapper: wrapper() })
-
-          const tab = await screen.findByRole('link', { name: 'Other CI' })
-          expect(tab).toBeInTheDocument()
-          expect(tab).toHaveAttribute(
-            'href',
-            '/gh/codecov/cool-repo/new/other-ci'
-          )
-
-          await user.click(tab)
-
-          expect(testLocation.pathname).toBe(
-            '/gh/codecov/cool-repo/new/other-ci'
-          )
-
-          const content = await screen.findByText('OtherCI')
-          expect(content).toBeInTheDocument()
+  describe('ActivationBanner', () => {
+    describe('when user is activated', () => {
+      it('does not render ActivationBanner', async () => {
+        setup({
+          isCurrentUserActivated: true,
+          isPrivate: true,
         })
-      })
+        render(<NewRepoTab />, { wrapper: wrapper() })
 
-      describe('clicking on github actions', () => {
-        it('navigates to /new', async () => {
-          const { user } = setup({})
-          render(<NewRepoTab />, {
-            wrapper: wrapper('/gh/codecov/cool-repo/new/other-ci'),
-          })
+        // Wait for full render
+        expect(await screen.findByText(/GitHubActions/)).toBeInTheDocument()
 
-          const tab = await screen.findByRole('link', {
-            name: 'GitHub Actions',
-          })
-          expect(tab).toBeInTheDocument()
-          expect(tab).toHaveAttribute('href', '/gh/codecov/cool-repo/new')
-
-          await user.click(tab)
-
-          expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/new')
-
-          const content = await screen.findByText('GitHubActions')
-          expect(content).toBeInTheDocument()
-        })
+        const banner = screen.queryByText(/ActivationBanner/)
+        expect(banner).not.toBeInTheDocument()
       })
     })
-  })
 
-  describe('user is activated', () => {
-    it('does not render ActivationBanner', async () => {
-      setup({
-        isCurrentUserActivated: true,
+    describe('when user is not activated but public repo', () => {
+      it('does not render ActivationBanner', async () => {
+        setup({
+          isCurrentUserActivated: false,
+          isPrivate: false,
+        })
+        render(<NewRepoTab />, { wrapper: wrapper() })
+
+        // Wait for full render
+        expect(await screen.findByText(/GitHubActions/)).toBeInTheDocument()
+
+        const banner = screen.queryByText(/ActivationBanner/)
+        expect(banner).not.toBeInTheDocument()
       })
-      render(<NewRepoTab />, { wrapper: wrapper() })
+    })
 
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
+    describe('when user is not activated and is private repo', () => {
+      it('renders ActivationBanner', async () => {
+        setup({
+          isCurrentUserActivated: false,
+          isPrivate: true,
+        })
+        render(<NewRepoTab />, { wrapper: wrapper() })
 
-      const banner = screen.queryByText('ActivationBanner')
-      expect(banner).not.toBeInTheDocument()
+        const banner = await screen.findByText(/ActivationBanner/)
+        expect(banner).toBeInTheDocument()
+      })
     })
   })
 })

@@ -7,6 +7,9 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import ActivationBanner from './ActivationBanner'
 
 jest.mock('./TrialEligibleBanner', () => () => 'TrialEligibleBanner')
+jest.mock('./ActivationRequiredBanner', () => () => 'ActivationRequiredBanner')
+jest.mock('./FreePlanSeatsLimitBanner', () => () => 'FreePlanSeatsLimitBanner')
+jest.mock('./PaidPlanSeatsLimitBanner', () => () => 'PaidPlanSeatsLimitBanner')
 
 const queryClient = new QueryClient()
 
@@ -51,7 +54,8 @@ describe('ActivationBanner', () => {
   function setup(
     privateRepos = true,
     trialStatus = 'NOT_STARTED',
-    value = 'users-basic'
+    value = 'users-basic',
+    hasSeatsLeft = true
   ) {
     server.use(
       graphql.query('GetPlanData', (req, res, ctx) => {
@@ -64,6 +68,7 @@ describe('ActivationBanner', () => {
                 ...mockTrialData,
                 trialStatus,
                 value,
+                hasSeatsLeft,
               },
               pretrialPlan: {
                 baseUnitPrice: 10,
@@ -89,12 +94,42 @@ describe('ActivationBanner', () => {
   })
 
   it('does not render trial eligible banner if user is not eligible to trial', async () => {
-    setup(false)
+    setup(false, 'ONGOING', 'users-basic', true)
     const { container } = render(<ActivationBanner />, { wrapper })
 
     await waitFor(() => queryClient.isFetching)
     await waitFor(() => !queryClient.isFetching)
 
-    expect(container).toBeEmptyDOMElement()
+    await waitFor(() => expect(container).toBeEmptyDOMElement())
+  })
+
+  it('renders activation required banner if user is not on free plan and has seats left', async () => {
+    setup(true, 'ONGOING', 'users-pro', true)
+    render(<ActivationBanner />, { wrapper })
+
+    const ActivationRequiredBanner = await screen.findByText(
+      /ActivationRequiredBanner/
+    )
+    expect(ActivationRequiredBanner).toBeInTheDocument()
+  })
+
+  it('renders seats limit reached banner if user has no seats left and on free plan', async () => {
+    setup(true, 'ONGOING', 'users-basic', false)
+    render(<ActivationBanner />, { wrapper })
+
+    const FreePlanSeatsLimitBanner = await screen.findByText(
+      /FreePlanSeatsLimitBanner/
+    )
+    expect(FreePlanSeatsLimitBanner).toBeInTheDocument()
+  })
+
+  it('renders seats limit reached banner if user has no seats left and on paid plan', async () => {
+    setup(true, 'ONGOING', 'users-inappy', false)
+    render(<ActivationBanner />, { wrapper })
+
+    const PaidPlanSeatsLimitBanner = await screen.findByText(
+      /PaidPlanSeatsLimitBanner/
+    )
+    expect(PaidPlanSeatsLimitBanner).toBeInTheDocument()
   })
 })

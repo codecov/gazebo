@@ -6,6 +6,7 @@ import {
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
 import Api from 'shared/api'
+import { NetworkErrorObject } from 'shared/api/helpers'
 import A from 'ui/A'
 
 const MEASUREMENT_INTERVALS = {
@@ -45,18 +46,18 @@ const GetBranchCoverageMeasurementsSchema = z.object({
     .nullable(),
 })
 
-const query = `
-  query GetBranchCoverageMeasurements(
-    $owner: String!
-    $repo: String!
-    $branch: String
-    $after: DateTime!
-    $before: DateTime!
-    $interval: MeasurementInterval!
-  ) {
-    owner(username: $owner) {
-      repository: repositoryDeprecated(name: $repo) {
-        __typename
+const query = `query GetBranchCoverageMeasurements(
+  $owner: String!
+  $repo: String!
+  $branch: String
+  $after: DateTime!
+  $before: DateTime!
+  $interval: MeasurementInterval!
+) {
+  owner(username: $owner) {
+    repository: repository(name: $repo) {
+      __typename
+      ... on Repository {
         measurements(
           interval: $interval
           after: $after
@@ -67,8 +68,15 @@ const query = `
           max
         }
       }
+      ... on NotFoundError {
+        message
+      }
+      ... on OwnerNotActivatedError {
+        message
+      }
     }
-  }`
+  }
+}`
 
 interface UseBranchCoverageMeasurementsArgs {
   provider: string
@@ -126,7 +134,8 @@ export const useBranchCoverageMeasurements = ({
           return Promise.reject({
             status: 404,
             data: {},
-          })
+            dev: 'useBranchCoverageMeasurements - 404 Failed to parse data',
+          } satisfies NetworkErrorObject)
         }
 
         const data = parsedData.data
@@ -135,7 +144,8 @@ export const useBranchCoverageMeasurements = ({
           return Promise.reject({
             status: 404,
             data: {},
-          })
+            dev: 'useBranchCoverageMeasurements - 404 Not found error',
+          } satisfies NetworkErrorObject)
         }
 
         if (data?.owner?.repository?.__typename === 'OwnerNotActivatedError') {
@@ -151,7 +161,8 @@ export const useBranchCoverageMeasurements = ({
                 </p>
               ),
             },
-          })
+            dev: 'useBranchCoverageMeasurements - 403 Owner not activated',
+          } satisfies NetworkErrorObject)
         }
 
         return {

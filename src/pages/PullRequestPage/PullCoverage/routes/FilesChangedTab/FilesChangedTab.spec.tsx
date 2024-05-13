@@ -126,7 +126,20 @@ describe('FilesChangedTab', () => {
         res(
           ctx.status(200),
           ctx.data({
-            owner: { repository: { private: privateRepo } },
+            owner: {
+              repository: {
+                __typename: 'Repository',
+                activated: true,
+                defaultBranch: 'master',
+                private: privateRepo,
+                uploadToken: 'upload token',
+                graphToken: 'graph token',
+                yaml: 'yaml',
+                bot: {
+                  username: 'test',
+                },
+              },
+            },
           })
         )
       ),

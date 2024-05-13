@@ -47,10 +47,7 @@ const Title: React.FC<TitleProps> = ({
           <h2 className="text-sm font-semibold text-black">{title}</h2>
         </A>
         <p className="text-xs">
-          {/* @ts-expect-error - disable because of non-ts component and type mismatch */}
-          <A to={{ pageName: 'owner' }}>
-            <span className="text-black">{author?.username}</span>
-          </A>
+          <span className="text-black">{author?.username}</span>
           {updatestamp && (
             <span className="text-ds-gray-quinary">
               {' '}

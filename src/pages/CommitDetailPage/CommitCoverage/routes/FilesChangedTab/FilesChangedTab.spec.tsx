@@ -34,6 +34,7 @@ const mockProTier = {
 const mockRepoSettings = (isPrivate: boolean) => ({
   owner: {
     repository: {
+      __typename: 'Repository',
       defaultBranch: 'master',
       private: isPrivate,
       uploadToken: 'token',
@@ -42,6 +43,7 @@ const mockRepoSettings = (isPrivate: boolean) => ({
       bot: {
         username: 'test',
       },
+      activated: true,
     },
   },
 })

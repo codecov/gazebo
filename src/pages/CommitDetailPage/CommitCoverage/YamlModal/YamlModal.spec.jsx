@@ -25,6 +25,7 @@ const wrapper = ({ children }) => (
 const mockCommitNoYamlErrors = {
   owner: {
     repository: {
+      __typename: 'Repository',
       commit: {
         yamlErrors: {
           edges: [],
@@ -40,6 +41,7 @@ const mockCommitNoYamlErrors = {
 const mockCommitYamlErrors = {
   owner: {
     repository: {
+      __typename: 'Repository',
       commit: {
         yamlErrors: {
           edges: [{ node: { errorCode: 'invalid_yaml' } }],
