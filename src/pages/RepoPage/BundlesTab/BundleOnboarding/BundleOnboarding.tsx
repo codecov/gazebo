@@ -1,4 +1,4 @@
-import { Suspense, useMemo } from 'react'
+import { Suspense } from 'react'
 import { Switch, useHistory, useLocation, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
@@ -57,21 +57,11 @@ function BundlerSelector({ provider, owner, repo }: BundlerSelectorProps) {
   const history = useHistory()
   const { bundleOnboarding, bundleWebpackOnboarding, bundleRollupOnboarding } =
     useNavLinks()
-  const urls = useMemo(
-    () => ({
-      Vite: bundleOnboarding.path({ provider, owner, repo }),
-      Rollup: bundleRollupOnboarding.path({ provider, owner, repo }),
-      Webpack: bundleWebpackOnboarding.path({ provider, owner, repo }),
-    }),
-    [
-      bundleOnboarding,
-      bundleWebpackOnboarding,
-      bundleRollupOnboarding,
-      provider,
-      owner,
-      repo,
-    ]
-  )
+  const urls = {
+    Vite: bundleOnboarding.path({ provider, owner, repo }),
+    Rollup: bundleRollupOnboarding.path({ provider, owner, repo }),
+    Webpack: bundleWebpackOnboarding.path({ provider, owner, repo }),
+  }
 
   return (
     <Card>
