@@ -1,9 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
-import { MemoryRouter, Route } from 'react-router-dom'
+import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import { useRedirect } from 'shared/useRedirect'
 
@@ -50,6 +51,7 @@ const queryClient = new QueryClient({
     },
   },
 })
+let testLocation: ReturnType<typeof useLocation>
 
 const wrapper =
   (
@@ -69,6 +71,13 @@ const wrapper =
           >
             <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
           </Route>
+          <Route
+            path="*"
+            render={({ location }) => {
+              testLocation = location
+              return null
+            }}
+          />
         </MemoryRouter>
       </QueryClientProvider>
     )
@@ -93,11 +102,12 @@ interface SetupArgs {
 
 describe('BundleOnboarding', () => {
   function setup(
-    { hasCommits = false, hasUploadToken = false }: SetupArgs = {
-      hasCommits: false,
-      hasUploadToken: false,
+    { hasCommits = true, hasUploadToken = true }: SetupArgs = {
+      hasCommits: true,
+      hasUploadToken: true,
     }
   ) {
+    const user = userEvent.setup()
     const hardRedirect = jest.fn()
     mockedUseRedirect.mockImplementation((data) => ({
       hardRedirect: () => hardRedirect(data),
@@ -112,21 +122,83 @@ describe('BundleOnboarding', () => {
       })
     )
 
-    return { hardRedirect }
+    return { hardRedirect, user }
   }
 
   it('renders IntroBlurb', async () => {
-    setup({ hasCommits: true, hasUploadToken: true })
+    setup({})
     render(<BundleOnboarding />, { wrapper: wrapper() })
 
     const introBlurb = await screen.findByTestId('ba-intro-blurb')
     expect(introBlurb).toBeInTheDocument()
   })
 
+  describe('navigation', () => {
+    describe('when Vite is selected', () => {
+      it('should navigate to /new', async () => {
+        const { user } = setup({})
+        render(<BundleOnboarding />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/new/rollup'),
+        })
+
+        const vite = await screen.findByTestId('vite-radio')
+        expect(vite).toBeInTheDocument()
+        expect(vite).toHaveAttribute('data-state', 'unchecked')
+
+        await user.click(vite)
+
+        expect(vite).toBeInTheDocument()
+        expect(vite).toHaveAttribute('data-state', 'checked')
+
+        expect(testLocation.pathname).toBe('/gh/codecov/test-repo/bundles/new')
+      })
+    })
+
+    describe('when Rollup is selected', () => {
+      it('should navigate to /new/rollup', async () => {
+        const { user } = setup({})
+        render(<BundleOnboarding />, { wrapper: wrapper() })
+
+        const rollup = await screen.findByTestId('rollup-radio')
+        expect(rollup).toBeInTheDocument()
+        expect(rollup).toHaveAttribute('data-state', 'unchecked')
+
+        await user.click(rollup)
+
+        expect(rollup).toBeInTheDocument()
+        expect(rollup).toHaveAttribute('data-state', 'checked')
+
+        expect(testLocation.pathname).toBe(
+          '/gh/codecov/test-repo/bundles/new/rollup'
+        )
+      })
+    })
+
+    describe('when Webpack is selected', () => {
+      it('should navigate to /new/webpack', async () => {
+        const { user } = setup({})
+        render(<BundleOnboarding />, { wrapper: wrapper() })
+
+        const webpack = await screen.findByTestId('webpack-radio')
+        expect(webpack).toBeInTheDocument()
+        expect(webpack).toHaveAttribute('data-state', 'unchecked')
+
+        await user.click(webpack)
+
+        expect(webpack).toBeInTheDocument()
+        expect(webpack).toHaveAttribute('data-state', 'checked')
+
+        expect(testLocation.pathname).toBe(
+          '/gh/codecov/test-repo/bundles/new/webpack'
+        )
+      })
+    })
+  })
+
   describe('on /new route', () => {
     describe('rendering tabs', () => {
       it('renders selected vite tab', async () => {
-        setup({ hasCommits: true, hasUploadToken: true })
+        setup({})
         render(<BundleOnboarding />, { wrapper: wrapper() })
 
         const viteTab = await screen.findByTestId('vite-radio')
@@ -135,7 +207,7 @@ describe('BundleOnboarding', () => {
       })
 
       it('renders rollup tab', async () => {
-        setup({ hasCommits: true, hasUploadToken: true })
+        setup({})
         render(<BundleOnboarding />, { wrapper: wrapper() })
 
         const rollupTab = await screen.findByTestId('rollup-radio')
@@ -144,7 +216,7 @@ describe('BundleOnboarding', () => {
       })
 
       it('renders webpack tab', async () => {
-        setup({ hasCommits: true, hasUploadToken: true })
+        setup({})
         render(<BundleOnboarding />, { wrapper: wrapper() })
 
         const webpackTab = await screen.findByTestId('webpack-radio')
@@ -155,7 +227,7 @@ describe('BundleOnboarding', () => {
 
     describe('rendering body', () => {
       it('renders vite onboarding', async () => {
-        setup({ hasCommits: true, hasUploadToken: true })
+        setup({})
         render(<BundleOnboarding />, { wrapper: wrapper() })
 
         const viteOnboarding = await screen.findByText(
@@ -169,7 +241,7 @@ describe('BundleOnboarding', () => {
   describe('on /new/rollup route', () => {
     describe('rendering tabs', () => {
       it('renders vite tab', async () => {
-        setup({ hasCommits: true, hasUploadToken: true })
+        setup({})
         render(<BundleOnboarding />, {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/rollup'),
         })
@@ -180,7 +252,7 @@ describe('BundleOnboarding', () => {
       })
 
       it('renders selected rollup tab', async () => {
-        setup({ hasCommits: true, hasUploadToken: true })
+        setup({})
         render(<BundleOnboarding />, {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/rollup'),
         })
@@ -191,7 +263,7 @@ describe('BundleOnboarding', () => {
       })
 
       it('renders webpack tab', async () => {
-        setup({ hasCommits: true, hasUploadToken: true })
+        setup({})
         render(<BundleOnboarding />, {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/rollup'),
         })
@@ -204,7 +276,7 @@ describe('BundleOnboarding', () => {
 
     describe('rendering body', () => {
       it('renders rollup onboarding', async () => {
-        setup({ hasCommits: true, hasUploadToken: true })
+        setup({})
         render(<BundleOnboarding />, {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/rollup'),
         })
@@ -220,7 +292,7 @@ describe('BundleOnboarding', () => {
   describe('on /new/webpack route', () => {
     describe('rendering tabs', () => {
       it('renders vite tab', async () => {
-        setup({ hasCommits: true, hasUploadToken: true })
+        setup({})
         render(<BundleOnboarding />, {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/webpack'),
         })
@@ -231,7 +303,7 @@ describe('BundleOnboarding', () => {
       })
 
       it('renders rollup tab', async () => {
-        setup({ hasCommits: true, hasUploadToken: true })
+        setup({})
         render(<BundleOnboarding />, {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/webpack'),
         })
@@ -242,7 +314,7 @@ describe('BundleOnboarding', () => {
       })
 
       it('renders selected webpack tab', async () => {
-        setup({ hasCommits: true, hasUploadToken: true })
+        setup({})
         render(<BundleOnboarding />, {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/webpack'),
         })
@@ -255,7 +327,7 @@ describe('BundleOnboarding', () => {
 
     describe('rendering body', () => {
       it('renders webpack onboarding', async () => {
-        setup({ hasCommits: true, hasUploadToken: true })
+        setup({})
         render(<BundleOnboarding />, {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/webpack'),
         })
@@ -270,14 +342,17 @@ describe('BundleOnboarding', () => {
 
   describe('upload token is not present', () => {
     it('redirects to provider', async () => {
-      const { hardRedirect } = setup({ hasUploadToken: false })
+      const { hardRedirect } = setup({
+        hasCommits: false,
+        hasUploadToken: false,
+      })
       render(<BundleOnboarding />, { wrapper: wrapper() })
 
       await waitFor(() => expect(hardRedirect).toHaveBeenCalled())
     })
 
     it('displays 404', async () => {
-      setup({ hasUploadToken: false })
+      setup({ hasCommits: false, hasUploadToken: false })
       render(<BundleOnboarding />, { wrapper: wrapper() })
 
       const fourOhFour = await screen.findByText('Not found')
