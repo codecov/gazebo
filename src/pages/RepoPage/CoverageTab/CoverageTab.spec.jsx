@@ -36,7 +36,7 @@ const wrapper =
       </QueryClientProvider>
     )
 
-const mockRepo = (isPrivate = false) => ({
+const mockRepo = (isPrivate = false, isFirstPullRequest = false) => ({
   owner: {
     isCurrentUserPartOfOrg: true,
     isAdmin: null,
@@ -50,7 +50,7 @@ const mockRepo = (isPrivate = false) => ({
       activated: false,
       oldestCommitAt: '',
       active: true,
-      isFirstPullRequest: false,
+      isFirstPullRequest,
     },
   },
 })
@@ -202,9 +202,14 @@ afterAll(() => {
 
 describe('Coverage Tab', () => {
   function setup(
-    { isPrivate = false, tierValue = TierNames.PRO } = {
+    {
+      isPrivate = false,
+      tierValue = TierNames.PRO,
+      isFirstPullRequest = false,
+    } = {
       isPrivate: false,
       tierValue: TierNames.PRO,
+      isFirstPullRequest: false,
     }
   ) {
     useFlags.mockReturnValue({
@@ -213,7 +218,7 @@ describe('Coverage Tab', () => {
 
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockRepo(isPrivate)))
+        res(ctx.status(200), ctx.data(mockRepo(isPrivate, isFirstPullRequest)))
       ),
       graphql.query('GetBranches', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(branchesMock))
@@ -317,5 +322,16 @@ describe('Coverage Tab', () => {
       const coverageChart = screen.queryByTestId('coverage-area-chart')
       expect(coverageChart).not.toBeInTheDocument()
     })
+  })
+
+  it('renders first pull request banner', async () => {
+    setup({ isFirstPullRequest: true })
+
+    render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/repoName']) })
+
+    const firstPullRequestBanner = await screen.findByText(
+      /Once merged to your default branch, Codecov will show your report results on this dashboard./
+    )
+    expect(firstPullRequestBanner).toBeInTheDocument()
   })
 })
