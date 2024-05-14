@@ -61,8 +61,6 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 
 const server = setupServer()
 
-console.error = () => {}
-
 beforeAll(() => server.listen())
 afterEach(() => {
   server.resetHandlers()
@@ -157,6 +155,9 @@ describe('useRepoCoverage', () => {
   describe('when invalid response returned', () => {
     it('rejects with 404', async () => {
       setup({ badResponse: true })
+      const consoleError = console.error
+      console.error = () => {}
+
       const { result } = renderHook(
         () =>
           useRepoCoverage({
@@ -180,12 +181,16 @@ describe('useRepoCoverage', () => {
           })
         )
       )
+      console.error = consoleError
     })
   })
 
   describe('when NotFoundError returned', () => {
     it('rejects with 404', async () => {
       setup({ isRepoNotFound: true })
+      const consoleError = console.error
+      console.error = () => {}
+
       const { result } = renderHook(
         () =>
           useRepoCoverage({
@@ -209,12 +214,16 @@ describe('useRepoCoverage', () => {
           })
         )
       )
+      console.error = consoleError
     })
   })
 
   describe('when OwnerNotActivated returned', () => {
     it('rejects with 403', async () => {
       setup({ isOwnerNotActivated: true })
+      const consoleError = console.error
+      console.error = () => {}
+
       const { result } = renderHook(
         () =>
           useRepoCoverage({
@@ -238,6 +247,7 @@ describe('useRepoCoverage', () => {
           })
         )
       )
+      console.error = consoleError
     })
   })
 })

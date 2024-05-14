@@ -32,6 +32,7 @@ describe('useCoverageRedirect', () => {
     mockedUseParams.mockReturnValue(useParamsValue)
     mockedUseLocation.mockReturnValue({ pathname: startingLocation })
 
+    // TODO: move this into the it() blocks rather than in setup function per RTL best practices.
     hookData = renderHook(() => useCoverageRedirect())
   }
 
