@@ -129,27 +129,27 @@ describe('BundleOnboarding', () => {
         setup({ hasCommits: true, hasUploadToken: true })
         render(<BundleOnboarding />, { wrapper: wrapper() })
 
-        const viteTab = await screen.findByText('Vite')
+        const viteTab = await screen.findByTestId('vite-radio')
         expect(viteTab).toBeInTheDocument()
-        expect(viteTab).toHaveAttribute('aria-current', 'page')
+        expect(viteTab).toHaveAttribute('data-state', 'checked')
       })
 
       it('renders rollup tab', async () => {
         setup({ hasCommits: true, hasUploadToken: true })
         render(<BundleOnboarding />, { wrapper: wrapper() })
 
-        const rollupTab = await screen.findByText('Rollup')
+        const rollupTab = await screen.findByTestId('rollup-radio')
         expect(rollupTab).toBeInTheDocument()
-        expect(rollupTab).not.toHaveAttribute('aria-current', 'page')
+        expect(rollupTab).toHaveAttribute('data-state', 'unchecked')
       })
 
       it('renders webpack tab', async () => {
         setup({ hasCommits: true, hasUploadToken: true })
         render(<BundleOnboarding />, { wrapper: wrapper() })
 
-        const webpackTab = await screen.findByText('Webpack')
+        const webpackTab = await screen.findByTestId('webpack-radio')
         expect(webpackTab).toBeInTheDocument()
-        expect(webpackTab).not.toHaveAttribute('aria-current', 'page')
+        expect(webpackTab).toHaveAttribute('data-state', 'unchecked')
       })
     })
 
@@ -174,9 +174,9 @@ describe('BundleOnboarding', () => {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/rollup'),
         })
 
-        const viteTab = await screen.findByText('Vite')
+        const viteTab = await screen.findByTestId('vite-radio')
         expect(viteTab).toBeInTheDocument()
-        expect(viteTab).not.toHaveAttribute('aria-current', 'page')
+        expect(viteTab).toHaveAttribute('data-state', 'unchecked')
       })
 
       it('renders selected rollup tab', async () => {
@@ -185,9 +185,9 @@ describe('BundleOnboarding', () => {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/rollup'),
         })
 
-        const rollupTab = await screen.findByText('Rollup')
+        const rollupTab = await screen.findByTestId('rollup-radio')
         expect(rollupTab).toBeInTheDocument()
-        expect(rollupTab).toHaveAttribute('aria-current', 'page')
+        expect(rollupTab).toHaveAttribute('data-state', 'checked')
       })
 
       it('renders webpack tab', async () => {
@@ -196,9 +196,9 @@ describe('BundleOnboarding', () => {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/rollup'),
         })
 
-        const webpackTab = await screen.findByText('Webpack')
+        const webpackTab = await screen.findByTestId('webpack-radio')
         expect(webpackTab).toBeInTheDocument()
-        expect(webpackTab).not.toHaveAttribute('aria-current', 'page')
+        expect(webpackTab).toHaveAttribute('data-state', 'unchecked')
       })
     })
 
@@ -225,9 +225,9 @@ describe('BundleOnboarding', () => {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/webpack'),
         })
 
-        const viteTab = await screen.findByText('Vite')
+        const viteTab = await screen.findByTestId('vite-radio')
         expect(viteTab).toBeInTheDocument()
-        expect(viteTab).not.toHaveAttribute('aria-current', 'page')
+        expect(viteTab).toHaveAttribute('data-state', 'unchecked')
       })
 
       it('renders rollup tab', async () => {
@@ -236,9 +236,9 @@ describe('BundleOnboarding', () => {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/webpack'),
         })
 
-        const rollupTab = await screen.findByText('Rollup')
+        const rollupTab = await screen.findByTestId('rollup-radio')
         expect(rollupTab).toBeInTheDocument()
-        expect(rollupTab).not.toHaveAttribute('aria-current', 'page')
+        expect(rollupTab).toHaveAttribute('data-state', 'unchecked')
       })
 
       it('renders selected webpack tab', async () => {
@@ -247,9 +247,9 @@ describe('BundleOnboarding', () => {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/webpack'),
         })
 
-        const webpackTab = await screen.findByText('Webpack')
+        const webpackTab = await screen.findByTestId('webpack-radio')
         expect(webpackTab).toBeInTheDocument()
-        expect(webpackTab).toHaveAttribute('aria-current', 'page')
+        expect(webpackTab).toHaveAttribute('data-state', 'checked')
       })
     })
 

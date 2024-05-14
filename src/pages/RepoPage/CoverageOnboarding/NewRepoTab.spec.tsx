@@ -173,8 +173,7 @@ describe('NewRepoTab', () => {
             'github-actions-radio'
           )
           expect(githubActions).toBeInTheDocument()
-          expect(githubActions.hasAttribute('data-state')).toBeTruthy()
-          expect(githubActions.getAttribute('data-state')).toBe('checked')
+          expect(githubActions).toHaveAttribute('data-state', 'checked')
         })
       })
 
@@ -187,8 +186,7 @@ describe('NewRepoTab', () => {
 
           const otherCI = await screen.findByTestId('other-ci-radio')
           expect(otherCI).toBeInTheDocument()
-          expect(otherCI.hasAttribute('data-state')).toBeTruthy()
-          expect(otherCI.getAttribute('data-state')).toBe('checked')
+          expect(otherCI).toHaveAttribute('data-state', 'checked')
         })
       })
 
@@ -201,8 +199,7 @@ describe('NewRepoTab', () => {
 
           const circleCI = await screen.findByTestId('circle-ci-radio')
           expect(circleCI).toBeInTheDocument()
-          expect(circleCI.hasAttribute('data-state')).toBeTruthy()
-          expect(circleCI.getAttribute('data-state')).toBe('checked')
+          expect(circleCI).toHaveAttribute('data-state', 'checked')
         })
       })
 
@@ -215,8 +212,7 @@ describe('NewRepoTab', () => {
 
           const otherCI = await screen.findByTestId('other-ci-radio')
           expect(otherCI).toBeInTheDocument()
-          expect(otherCI.hasAttribute('data-state')).toBeTruthy()
-          expect(otherCI.getAttribute('data-state')).toBe('checked')
+          expect(otherCI).toHaveAttribute('data-state', 'checked')
         })
       })
     })
@@ -233,14 +229,12 @@ describe('NewRepoTab', () => {
             'github-actions-radio'
           )
           expect(githubActions).toBeInTheDocument()
-          expect(githubActions.hasAttribute('data-state')).toBeTruthy()
-          expect(githubActions.getAttribute('data-state')).toBe('unchecked')
+          expect(githubActions).toHaveAttribute('data-state', 'unchecked')
 
           await user.click(githubActions)
 
           expect(githubActions).toBeInTheDocument()
-          expect(githubActions.hasAttribute('data-state')).toBeTruthy()
-          expect(githubActions.getAttribute('data-state')).toBe('checked')
+          expect(githubActions).toHaveAttribute('data-state', 'checked')
 
           expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/new')
         })
@@ -253,14 +247,12 @@ describe('NewRepoTab', () => {
 
           const circleCI = await screen.findByTestId('circle-ci-radio')
           expect(circleCI).toBeInTheDocument()
-          expect(circleCI.hasAttribute('data-state')).toBeTruthy()
-          expect(circleCI.getAttribute('data-state')).toBe('unchecked')
+          expect(circleCI).toHaveAttribute('data-state', 'unchecked')
 
           await user.click(circleCI)
 
           expect(circleCI).toBeInTheDocument()
-          expect(circleCI.hasAttribute('data-state')).toBeTruthy()
-          expect(circleCI.getAttribute('data-state')).toBe('checked')
+          expect(circleCI).toHaveAttribute('data-state', 'checked')
 
           expect(testLocation.pathname).toBe(
             '/gh/codecov/cool-repo/new/circle-ci'
@@ -275,14 +267,12 @@ describe('NewRepoTab', () => {
 
           const otherCI = await screen.findByTestId('other-ci-radio')
           expect(otherCI).toBeInTheDocument()
-          expect(otherCI.hasAttribute('data-state')).toBeTruthy()
-          expect(otherCI.getAttribute('data-state')).toBe('unchecked')
+          expect(otherCI).toHaveAttribute('data-state', 'unchecked')
 
           await user.click(otherCI)
 
           expect(otherCI).toBeInTheDocument()
-          expect(otherCI.hasAttribute('data-state')).toBeTruthy()
-          expect(otherCI.getAttribute('data-state')).toBe('checked')
+          expect(otherCI).toHaveAttribute('data-state', 'checked')
 
           expect(testLocation.pathname).toBe(
             '/gh/codecov/cool-repo/new/other-ci'
