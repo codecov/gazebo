@@ -15,14 +15,18 @@ const server = setupServer()
 const mockSingularImpactedFilesData = {
   owner: {
     repository: {
+      __typename: 'Repository',
       pull: {
         compareWithBase: {
+          __typename: 'Comparison',
           impactedFile: {
             headName: 'file A',
+            hashedPath: 'hashed-path',
             isNewFile: true,
             isRenamedFile: false,
             isDeletedFile: false,
             isCriticalFile: false,
+            changeCoverage: 58.333333333333336,
             headCoverage: {
               percentCovered: 90.23,
             },
@@ -32,11 +36,11 @@ const mockSingularImpactedFilesData = {
             patchCoverage: {
               percentCovered: 27.43,
             },
-            changeCoverage: 58.333333333333336,
             segments: {
               results: [
                 {
                   header: '@@ -0,0 1,45 @@',
+                  hasUnintendedChanges: false,
                   lines: [
                     {
                       baseNumber: null,
@@ -44,6 +48,10 @@ const mockSingularImpactedFilesData = {
                       baseCoverage: null,
                       headCoverage: 'H',
                       content: 'export default class Calculator {',
+                      coverageInfo: {
+                        hitCount: null,
+                        hitUploadIds: [],
+                      },
                     },
                   ],
                 },
@@ -136,10 +144,12 @@ describe('NameColumn', () => {
         expect(queryClient.getQueryData()).toStrictEqual({
           fileLabel: 'New',
           headName: 'file A',
+          hashedPath: 'hashed-path',
           isCriticalFile: false,
           segments: [
             {
               header: '@@ -0,0 1,45 @@',
+              hasUnintendedChanges: false,
               lines: [
                 {
                   baseCoverage: null,
@@ -147,6 +157,10 @@ describe('NameColumn', () => {
                   content: 'export default class Calculator {',
                   headCoverage: 'H',
                   headNumber: '1',
+                  coverageInfo: {
+                    hitCount: null,
+                    hitUploadIds: [],
+                  },
                 },
               ],
             },

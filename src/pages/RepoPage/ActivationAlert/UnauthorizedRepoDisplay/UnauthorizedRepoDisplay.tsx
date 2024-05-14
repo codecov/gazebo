@@ -3,7 +3,7 @@ import { NetworkErrorMessage } from 'layouts/shared/NetworkErrorBoundary/Network
 import A from 'ui/A'
 import Button from 'ui/Button'
 
-export const UnauthorizedRepoDisplay = () => {
+const UnauthorizedRepoDisplay = () => {
   return (
     <div className="flex h-full flex-col items-center justify-center pb-16 text-center">
       <img src={img403} alt="Forbidden" className="w-1/6" />
@@ -27,3 +27,5 @@ export const UnauthorizedRepoDisplay = () => {
     </div>
   )
 }
+
+export default UnauthorizedRepoDisplay
