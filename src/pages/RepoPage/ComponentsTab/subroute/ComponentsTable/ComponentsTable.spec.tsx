@@ -11,6 +11,7 @@ import ComponentsTable from './ComponentsTable'
 const mockRepoConfig = {
   owner: {
     repository: {
+      __typename: 'Repository',
       repositoryConfig: {
         indicationRange: { upperRange: 80, lowerRange: 60 },
       },

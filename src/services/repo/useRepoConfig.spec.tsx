@@ -9,6 +9,7 @@ import { useRepoConfig } from './useRepoConfig'
 const mockRepoConfig = {
   owner: {
     repository: {
+      __typename: 'Repository',
       repositoryConfig: {
         indicationRange: {
           lowerRange: 60,
@@ -41,20 +42,57 @@ afterAll(() => {
   server.close()
 })
 
+interface SetupArgs {
+  isNotFoundError?: boolean
+  isOwnerNotActivatedError?: boolean
+  isUnsuccessfulParseError?: boolean
+}
+
+const mockNotFoundError = {
+  owner: {
+    repository: {
+      __typename: 'NotFoundError',
+      message: 'commit not found',
+    },
+  },
+}
+
+const mockOwnerNotActivatedError = {
+  owner: {
+    repository: {
+      __typename: 'OwnerNotActivatedError',
+      message: 'owner not activated',
+    },
+  },
+}
+
+const mockUnsuccessfulParseError = {}
+
 describe('useRepoConfig', () => {
-  function setup() {
+  function setup({
+    isNotFoundError = false,
+    isOwnerNotActivatedError = false,
+    isUnsuccessfulParseError = false,
+  }: SetupArgs) {
     server.use(
       graphql.query('RepoConfig', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockRepoConfig))
+        if (isNotFoundError) {
+          return res(ctx.status(200), ctx.data(mockNotFoundError))
+        } else if (isOwnerNotActivatedError) {
+          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
+        } else if (isUnsuccessfulParseError) {
+          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+        } else {
+          return res(ctx.status(200), ctx.data(mockRepoConfig))
+        }
       })
     )
   }
 
   describe('calling hook', () => {
-    beforeEach(() => setup())
-
     describe('no options are passed', () => {
       it('returns the repository config', async () => {
+        setup({})
         const { result } = renderHook(
           () =>
             useRepoConfig({
@@ -77,6 +115,7 @@ describe('useRepoConfig', () => {
 
     describe('options are passed', () => {
       it('returns the repository config', async () => {
+        setup({})
         const { result } = renderHook(
           () =>
             useRepoConfig({
@@ -98,6 +137,90 @@ describe('useRepoConfig', () => {
           })
         )
       })
+    })
+  })
+
+  describe('hook errors', () => {
+    beforeAll(() => {
+      console.error = () => {}
+    })
+    afterAll(() => {
+      jest.resetAllMocks()
+    })
+    it('can return unsuccessful parse error', async () => {
+      setup({ isUnsuccessfulParseError: true })
+
+      const { result } = renderHook(
+        () =>
+          useRepoConfig({
+            provider: 'gh',
+            owner: 'codecov',
+            repo: 'cool-repo',
+            opts: {
+              onSuccess: () => {},
+            },
+          }),
+        { wrapper }
+      )
+
+      await waitFor(() => expect(result.current.isError).toBeTruthy())
+      await waitFor(() =>
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            status: 404,
+          })
+        )
+      )
+    })
+    it('can return owner not activated error', async () => {
+      setup({ isOwnerNotActivatedError: true })
+
+      const { result } = renderHook(
+        () =>
+          useRepoConfig({
+            provider: 'gh',
+            owner: 'codecov',
+            repo: 'cool-repo',
+            opts: {
+              onSuccess: () => {},
+            },
+          }),
+        { wrapper }
+      )
+
+      await waitFor(() => expect(result.current.isError).toBeTruthy())
+      await waitFor(() =>
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            status: 403,
+          })
+        )
+      )
+    })
+    it('can return not found error', async () => {
+      setup({ isNotFoundError: true })
+
+      const { result } = renderHook(
+        () =>
+          useRepoConfig({
+            provider: 'gh',
+            owner: 'codecov',
+            repo: 'cool-repo',
+            opts: {
+              onSuccess: () => {},
+            },
+          }),
+        { wrapper }
+      )
+
+      await waitFor(() => expect(result.current.isError).toBeTruthy())
+      await waitFor(() =>
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            status: 404,
+          })
+        )
+      )
     })
   })
 })

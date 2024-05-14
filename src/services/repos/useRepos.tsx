@@ -1,7 +1,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
-import { RepoConfig } from 'services/repo/useRepoConfig'
+import { RepositoryConfigSchema } from 'services/repo/useRepoConfig'
 import Api from 'shared/api'
 import { mapEdges } from 'shared/utils/graphql'
 
@@ -19,7 +19,7 @@ const RepositorySchema = z
     author: z.object({
       username: z.string().nullable(),
     }),
-    repositoryConfig: RepoConfig,
+    repositoryConfig: RepositoryConfigSchema,
     updatedAt: z.string().nullable(),
     coverageEnabled: z.boolean().nullable(),
     bundleAnalysisEnabled: z.boolean().nullable(),
