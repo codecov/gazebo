@@ -107,11 +107,11 @@ describe('WebpackOnboarding', () => {
       setup(null)
       render(<WebpackOnboarding />, { wrapper })
 
-      const stepText = await screen.findByText('Step 1:')
+      const stepText = await screen.findByText(/Step 1:/)
       expect(stepText).toBeInTheDocument()
 
       const headerText = await screen.findByText(
-        'Install the Codecov Webpack Plugin'
+        /Install the Codecov Webpack Plugin/
       )
       expect(headerText).toBeInTheDocument()
     })
@@ -231,10 +231,10 @@ describe('WebpackOnboarding', () => {
       setup(null)
       render(<WebpackOnboarding />, { wrapper })
 
-      const stepText = await screen.findByText('Step 2:')
+      const stepText = await screen.findByText(/Step 2:/)
       expect(stepText).toBeInTheDocument()
 
-      const headerText = await screen.findByText('Copy Codecov token')
+      const headerText = await screen.findByText(/Copy Codecov token/)
       expect(headerText).toBeInTheDocument()
     })
 
@@ -298,10 +298,10 @@ describe('WebpackOnboarding', () => {
       setup(null)
       render(<WebpackOnboarding />, { wrapper })
 
-      const stepText = await screen.findByText('Step 3:')
+      const stepText = await screen.findByText(/Step 3:/)
       expect(stepText).toBeInTheDocument()
 
-      const headerText = await screen.findByText('Configure the bundler plugin')
+      const headerText = await screen.findByText(/Configure the bundler plugin/)
       expect(headerText).toBeInTheDocument()
     })
 
@@ -352,11 +352,11 @@ describe('WebpackOnboarding', () => {
       setup(null)
       render(<WebpackOnboarding />, { wrapper })
 
-      const stepText = await screen.findByText('Step 4:')
+      const stepText = await screen.findByText(/Step 4:/)
       expect(stepText).toBeInTheDocument()
 
       const headerText = await screen.findByText(
-        'Commit and push your latest changes'
+        /Commit and push your latest changes/
       )
       expect(headerText).toBeInTheDocument()
     })
@@ -407,10 +407,10 @@ describe('WebpackOnboarding', () => {
       setup(null)
       render(<WebpackOnboarding />, { wrapper })
 
-      const stepText = await screen.findByText('Step 5:')
+      const stepText = await screen.findByText(/Step 5:/)
       expect(stepText).toBeInTheDocument()
 
-      const headerText = await screen.findByText('Build the application')
+      const headerText = await screen.findByText(/Build the application/)
       expect(headerText).toBeInTheDocument()
     })
 

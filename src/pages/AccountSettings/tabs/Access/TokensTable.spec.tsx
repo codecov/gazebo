@@ -158,17 +158,53 @@ describe('TokensTable', () => {
       })
     })
 
-    describe('render empty table', () => {
-      describe('renders triggers a revoke event', () => {
-        it('triggers revoke on click', async () => {
-          const { user } = setup()
-          render(<TokensTable tokens={[]} />, {
-            wrapper,
-          })
-
-          await user.click(screen.getByText(/No tokens created yet/))
-          expect(screen.getByText(/No tokens created yet/)).toBeInTheDocument()
+    describe('when no tokens', () => {
+      it('renders empty status', async () => {
+        const { user } = setup()
+        render(<TokensTable tokens={[]} />, {
+          wrapper,
         })
+
+        await user.click(screen.getByText(/No tokens created yet/))
+        expect(screen.getByText(/No tokens created yet/)).toBeInTheDocument()
+      })
+    })
+
+    describe('when tokens is undefined', () => {
+      it('renders empty status', async () => {
+        const { user } = setup()
+        render(<TokensTable tokens={undefined} />, {
+          wrapper,
+        })
+
+        await user.click(screen.getByText(/No tokens created yet/))
+        expect(screen.getByText(/No tokens created yet/)).toBeInTheDocument()
+      })
+    })
+
+    describe('when there are null sessions', () => {
+      it('removes them prior to render', async () => {
+        setup()
+        render(
+          <TokensTable
+            tokens={[
+              null,
+              {
+                id: '32',
+                type: 'api',
+                name: 'token name 1',
+                lastFour: 'aaaa',
+              },
+              null,
+            ]}
+          />,
+          {
+            wrapper,
+          }
+        )
+
+        const rows = screen.queryAllByRole('row')
+        expect(rows).toHaveLength(2)
       })
     })
   })
