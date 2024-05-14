@@ -8,7 +8,7 @@ import { displayTypeParameter } from '../constants'
 type TreePath = {
   pageName: string
   text: string
-  options: {
+  options?: {
     tree?: string
     ref?: string
     queryParams?: qs.ParsedQs

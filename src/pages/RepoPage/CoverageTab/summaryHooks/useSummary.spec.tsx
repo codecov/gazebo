@@ -64,7 +64,7 @@ const mockBranches = {
   },
 }
 
-const mockBranch = (branchName) => ({
+const mockBranch = (branchName: string) => ({
   __typename: 'Repository',
   branch: {
     name: branchName,
@@ -75,9 +75,11 @@ const mockBranch = (branchName) => ({
 })
 
 const mockRepoCoverage = {
+  __typename: 'Repository',
   branch: {
     name: 'main',
     head: {
+      yamlState: 'DEFAULT',
       totals: {
         percentCovered: 95.0,
         lineCount: 100,
@@ -97,7 +99,7 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/caleb/mighty-nein']}>
       <Route path="/:provider/:owner/:repo">
@@ -119,7 +121,7 @@ afterAll(() => {
 })
 
 describe('useSummary', () => {
-  function setup({ hasNoBranches } = { hasBranches: false }) {
+  function setup({ hasNoBranches } = { hasNoBranches: false }) {
     server.use(
       graphql.query('GetRepoOverview', (req, res, ctx) =>
         res(
@@ -171,6 +173,7 @@ describe('useSummary', () => {
         expect(result.current.data).toEqual({
           name: 'main',
           head: {
+            yamlState: 'DEFAULT',
             totals: {
               percentCovered: 95.0,
               lineCount: 100,

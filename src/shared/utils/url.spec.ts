@@ -36,7 +36,7 @@ describe('getFilesNamesFromFilePath', () => {
   })
 
   it('returns an empty array if path is not present', () => {
-    expect(getFilePathParts()).toStrictEqual([])
+    expect(getFilePathParts('')).toStrictEqual([])
   })
 })
 
@@ -47,7 +47,7 @@ describe('getFileExtension', () => {
   })
 
   it('returns an null if fileName is not present', () => {
-    expect(getFileExtension()).toStrictEqual(null)
+    expect(getFileExtension('')).toStrictEqual(null)
   })
 })
 
@@ -57,7 +57,7 @@ describe('getFilenameFromPath', () => {
     expect(getFilenameFromPath(path)).toStrictEqual('file.py')
   })
 
-  it('returns an null if filename doesnt have an extension', () => {
-    expect(getFilenameFromPath()).toStrictEqual(null)
+  it('returns an null if filename is undefined', () => {
+    expect(getFilenameFromPath(undefined)).toStrictEqual(null)
   })
 })

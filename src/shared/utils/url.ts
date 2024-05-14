@@ -2,12 +2,12 @@ import isString from 'lodash/isString'
 import pick from 'lodash/pick'
 import qs from 'qs'
 
-export const formatPathPrefix = (pathname) =>
+export const formatPathPrefix = (pathname: string) =>
   pathname.charAt(pathname.length - 1) === '/'
     ? pathname.slice(0, pathname.length - 1)
     : pathname
 
-export function forwardMarketingTag(search) {
+export function forwardMarketingTag(search: string) {
   const queryParams = qs.parse(search, {
     ignoreQueryPrefix: true,
   })
@@ -21,22 +21,25 @@ export function forwardMarketingTag(search) {
   ])
 }
 
-export function getFilenameFromFilePath(path) {
+export function getFilenameFromFilePath(path: string) {
   return path.split('/').pop()
 }
 
-export function getFilePathParts(path) {
+export function getFilePathParts(path: string) {
+  if (path === '') {
+    return []
+  }
   return path?.split('/') ?? []
 }
 
-export function getFilenameFromPath(path) {
+export function getFilenameFromPath(path?: string) {
   if (!isString(path)) {
     return null
   }
   return path.split('/').at(-1)
 }
 
-export function getFileExtension(fileName) {
+export function getFileExtension(fileName: string) {
   if (!fileName?.includes('.')) {
     return null
   }

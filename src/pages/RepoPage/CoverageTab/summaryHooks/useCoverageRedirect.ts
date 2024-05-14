@@ -5,34 +5,59 @@ import { formatPathPrefix } from 'shared/utils/url'
 
 import { createPath } from '../Summary/utils/paths'
 
-const initState = {
+interface Action {
+  type: 'redirect' | 'init'
+  payload?: {
+    path: string
+    owner: string
+    repo: string
+    ref: string
+    branch: string
+    name?: string
+  }
+}
+
+export interface UseCoverageRedirectState {
+  newPath?: string | null
+  isRedirectionEnabled: boolean
+}
+
+const initState: UseCoverageRedirectState = {
   newPath: undefined,
   isRedirectionEnabled: false,
 }
 
-const reducer = (state, action) => {
-  switch (action.type) {
-    case 'redirect':
-      const { path, ...payload } = action.payload
-      const pathname = formatPathPrefix(path)
-      const newPath = createPath({ pathname, ...payload })
-
-      return {
-        isRedirectionEnabled: !!newPath,
-        newPath,
-      }
-    default:
-      return initState
+const reducer = (state: UseCoverageRedirectState, action: Action) => {
+  if (!action.payload || action.type === 'init') {
+    return initState
   }
+
+  const { path, ...payload } = action.payload
+  const pathname = formatPathPrefix(path)
+  const newPath = createPath({ pathname, ...payload })
+
+  const newState: UseCoverageRedirectState = {
+    isRedirectionEnabled: !!newPath,
+    newPath,
+  }
+
+  return newState
+}
+
+interface URLParams {
+  repo: string
+  branch: string
+  ref: string
+  owner: string
 }
 
 export function useCoverageRedirect() {
   const location = useLocation()
-  const { repo, branch, ref, owner } = useParams()
+  const { repo, branch, ref, owner } = useParams<URLParams>()
   const [state, dispatch] = useReducer(reducer, initState)
 
   const setNewPath = useCallback(
-    (newBranch) => {
+    (newBranch: string) => {
       dispatch({
         type: 'redirect',
         payload: {
