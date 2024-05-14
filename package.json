@@ -92,7 +92,7 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@codecov/webpack-plugin": "^0.0.1-beta.6",
     "@craco/craco": "^7.1.0",
-    "@sentry/webpack-plugin": "^2.16.0",
+    "@sentry/webpack-plugin": "^2.16.1",
     "@spotlightjs/spotlight": "^1.2.7",
     "@storybook/addon-a11y": "^7.6.17",
     "@storybook/addon-actions": "^7.6.17",
