@@ -1,4 +1,4 @@
-import { lazy, Suspense, useMemo } from 'react'
+import { lazy, Suspense } from 'react'
 import { Switch, useHistory, useLocation, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
@@ -57,14 +57,11 @@ function CISelector({ provider, owner, repo }: CISelectorProps) {
   const location = useLocation()
   const history = useHistory()
   const { new: githubActions, circleCI, newOtherCI } = useNavLinks()
-  const urls = useMemo(
-    () => ({
-      GitHubActions: githubActions.path({ provider, owner, repo }),
-      CircleCI: circleCI.path({ provider, owner, repo }),
-      OtherCI: newOtherCI.path({ provider, owner, repo }),
-    }),
-    [githubActions, circleCI, newOtherCI, provider, owner, repo]
-  )
+  const urls = {
+    GitHubActions: githubActions.path({ provider, owner, repo }),
+    CircleCI: circleCI.path({ provider, owner, repo }),
+    OtherCI: newOtherCI.path({ provider, owner, repo }),
+  }
 
   return (
     <Card>
