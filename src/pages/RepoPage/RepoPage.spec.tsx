@@ -22,6 +22,7 @@ jest.mock('./FlagsTab', () => () => 'FlagsTab')
 jest.mock('./ComponentsTab', () => () => 'ComponentsTab')
 jest.mock('./SettingsTab', () => () => 'SettingsTab')
 jest.mock('shared/featureFlags')
+jest.mock('./ActivationAlert', () => () => 'ActivationAlert')
 
 jest.mock('shared/featureFlags')
 const mockedUseFlags = useFlags as jest.Mock<{
@@ -778,13 +779,13 @@ describe('RepoPage', () => {
         expect(repoCrumb).toBeInTheDocument()
         const coverageOnboarding = await screen.findByText('CoverageOnboarding')
         expect(coverageOnboarding).toBeInTheDocument()
-        const error = screen.queryByText(/Unauthorized/)
+        const error = screen.queryByText(/ActivationAlert/)
         expect(error).not.toBeInTheDocument()
       })
     })
 
     describe('user has coverage enabled', () => {
-      it('renders unauthorized access error', async () => {
+      it('renders ActivationAlert access error', async () => {
         const { queryClient } = setup({
           hasRepoData: true,
           isCurrentUserActivated: false,
@@ -794,7 +795,7 @@ describe('RepoPage', () => {
         const repoCrumb = await screen.findByText('cool-repo')
         expect(repoCrumb).toBeInTheDocument()
 
-        const error = await screen.findByText('Unauthorized')
+        const error = await screen.findByText('ActivationAlert')
         expect(error).toBeInTheDocument()
       })
     })
@@ -815,13 +816,13 @@ describe('RepoPage', () => {
         const bundlesTab = await screen.findByText('Bundles')
         expect(bundlesTab).toBeInTheDocument()
         await user.click(bundlesTab)
-        const error = screen.queryByText(/Unauthorized/)
+        const error = screen.queryByText(/ActivationAlert/)
         expect(error).not.toBeInTheDocument()
       })
     })
 
     describe('user has bundles enabled', () => {
-      it('renders unauthorized access error', async () => {
+      it('renders ActivationAlert access error', async () => {
         const { queryClient, user } = setup({
           hasRepoData: true,
           isCurrentUserActivated: false,
@@ -835,7 +836,7 @@ describe('RepoPage', () => {
         const bundlesTab = await screen.findByText('Bundles')
         expect(bundlesTab).toBeInTheDocument()
         await user.click(bundlesTab)
-        const error = await screen.findByText('Unauthorized')
+        const error = await screen.findByText('ActivationAlert')
         expect(error).toBeInTheDocument()
       })
     })
