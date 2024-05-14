@@ -90,7 +90,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@codecov/webpack-plugin": "^0.0.1-beta.5",
+    "@codecov/webpack-plugin": "^0.0.1-beta.6",
     "@craco/craco": "^7.1.0",
     "@sentry/webpack-plugin": "^2.16.0",
     "@spotlightjs/spotlight": "^1.2.7",
