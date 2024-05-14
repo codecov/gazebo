@@ -180,6 +180,7 @@ const mockBackfillData = {
   },
   owner: {
     repository: {
+      __typename: 'Repository',
       flagsMeasurementsActive: true,
       flagsMeasurementsBackfilled: true,
       flagsCount: 4,
