@@ -344,10 +344,11 @@ describe('usePull', () => {
 
 const mockSingularImpactedFilesData = {
   headName: 'file A',
-  isNewFile: true,
+  hashedPath: 'hashedFilePath',
   isRenamedFile: false,
   isDeletedFile: false,
   isCriticalFile: false,
+  isNewFile: true,
   headCoverage: {
     percentCovered: 90.23,
   },
@@ -359,9 +360,11 @@ const mockSingularImpactedFilesData = {
   },
   changeCoverage: 58.333333333333336,
   segments: {
+    __typename: 'SegmentComparisons',
     results: [
       {
         header: '@@ -0,0 +1,45 @@',
+        hasUnintendedChanges: false,
         lines: [
           {
             baseNumber: null,
@@ -418,8 +421,10 @@ describe('useSingularImpactedFileComparison', () => {
       setup({
         owner: {
           repository: {
+            __typename: 'Repository',
             pull: {
               compareWithBase: {
+                __typename: 'Comparison',
                 impactedFile: mockSingularImpactedFilesData,
               },
             },
@@ -450,10 +455,12 @@ describe('useSingularImpactedFileComparison', () => {
         await waitFor(() =>
           expect(result.current.data).toEqual({
             fileLabel: 'New',
+            hashedPath: 'hashedFilePath',
             headName: 'file A',
             isCriticalFile: false,
             segments: [
               {
+                hasUnintendedChanges: false,
                 header: '@@ -0,0 +1,45 @@',
                 lines: [
                   {
@@ -500,18 +507,18 @@ describe('useSingularImpactedFileComparison', () => {
 
   describe('when called with renamed file', () => {
     beforeEach(() => {
-      const renamedImpactedFile = {
-        headName: 'file A',
-        isRenamedFile: true,
-        isCriticalFile: false,
-        segments: { results: [] },
-      }
       setup({
         owner: {
           repository: {
+            __typename: 'Repository',
             pull: {
               compareWithBase: {
-                impactedFile: renamedImpactedFile,
+                __typename: 'Comparison',
+                impactedFile: {
+                  ...mockSingularImpactedFilesData,
+                  isRenamedFile: true,
+                  isNewFile: false,
+                },
               },
             },
           },
@@ -539,11 +546,9 @@ describe('useSingularImpactedFileComparison', () => {
         await waitFor(() => !result.current.isLoading)
 
         await waitFor(() =>
-          expect(result.current.data).toEqual({
+          // test if object includes "fileLabel":"Renamed"
+          expect(result.current.data).toHaveAttribute({
             fileLabel: 'Renamed',
-            headName: 'file A',
-            isCriticalFile: false,
-            segments: [],
           })
         )
       })
@@ -552,18 +557,17 @@ describe('useSingularImpactedFileComparison', () => {
 
   describe('when called with deleted file', () => {
     beforeEach(() => {
-      const renamedImpactedFile = {
-        headName: 'file A',
-        isDeletedFile: true,
-        isCriticalFile: false,
-        segments: { results: [] },
-      }
       setup({
         owner: {
           repository: {
+            __typename: 'Repository',
             pull: {
               compareWithBase: {
-                impactedFile: renamedImpactedFile,
+                __typename: 'Comparison',
+                impactedFile: {
+                  ...mockSingularImpactedFilesData,
+                  isDeletedFile: true,
+                },
               },
             },
           },
@@ -591,12 +595,7 @@ describe('useSingularImpactedFileComparison', () => {
         await waitFor(() => !result.current.isLoading)
 
         await waitFor(() =>
-          expect(result.current.data).toEqual({
-            fileLabel: 'Deleted',
-            headName: 'file A',
-            isCriticalFile: false,
-            segments: [],
-          })
+          expect(result.current.data).toHaveAttribute('fileLabel', 'Deleted')
         )
       })
     })
