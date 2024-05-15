@@ -32,6 +32,7 @@ const mockRepoSettings = (isPrivate) => ({
 const mockFirstResponse = {
   owner: {
     repository: {
+      __typename: 'Repository',
       flags: {
         edges: [
           {
@@ -52,6 +53,7 @@ const mockFirstResponse = {
 const mockSecondResponse = {
   owner: {
     repository: {
+      __typename: 'Repository',
       flags: {
         edges: [
           {
@@ -298,7 +300,7 @@ describe('FlagMultiSelect', () => {
 
       await waitFor(() =>
         expect(mockApiVars).toHaveBeenCalledWith({
-          name: 'codecov',
+          owner: 'codecov',
           repo: 'cool-repo',
           filters: { term: 'flag2' },
         })
