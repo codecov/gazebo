@@ -5,7 +5,6 @@ dockerhub_image := codecov/self-hosted-frontend
 ENV ?= ENTERPRISE
 export DOCKER_BUILDKIT := 1
 
-
 build.local:
 	docker build -f docker/Dockerfile . -t ${dockerhub_image}:latest --build-arg REACT_APP_STAGE=development --build-arg REACT_APP_CODECOV_VERSION=${release_version} --build-arg REACT_APP_ENV_ARG=development
 
