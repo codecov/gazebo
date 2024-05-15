@@ -21,7 +21,9 @@ const InvoicesPage = lazy(() => import('./subRoutes/InvoicesPage'))
 const InvoiceDetailsPage = lazy(() => import('./subRoutes/InvoiceDetailsPage'))
 const UpgradePlanPage = lazy(() => import('./subRoutes/UpgradePlanPage'))
 
-const stripePromise = loadStripe(config.STRIPE_KEY)
+const stripePromise = loadStripe(config.STRIPE_KEY, {
+  apiVersion: '2023-10-16',
+})
 const path = '/plan/:provider/:owner'
 
 const Loader = () => (
