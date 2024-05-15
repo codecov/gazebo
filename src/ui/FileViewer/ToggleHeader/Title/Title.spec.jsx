@@ -14,6 +14,7 @@ jest.mock('react-use/lib/useIntersection')
 const mockFirstResponse = {
   owner: {
     repository: {
+      __typename: 'Repository',
       flags: {
         edges: [
           {
@@ -34,6 +35,7 @@ const mockFirstResponse = {
 const mockSecondResponse = {
   owner: {
     repository: {
+      __typename: 'Repository',
       flags: {
         edges: [
           {
@@ -304,7 +306,7 @@ describe('TitleFlags', () => {
 
         await waitFor(() =>
           expect(mockApiVars).toHaveBeenCalledWith({
-            name: 'codecov',
+            owner: 'codecov',
             repo: 'cool-repo',
             filters: { term: 'flag2' },
           })
