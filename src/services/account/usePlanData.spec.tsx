@@ -20,6 +20,7 @@ const mockTrialData = {
     trialTotalDays: 0,
     pretrialUsersCount: 0,
     planUserCount: 1,
+    hasSeatsLeft: true,
   },
   pretrialPlan: {
     baseUnitPrice: 10,
@@ -92,6 +93,7 @@ describe('usePlanData', () => {
               trialTotalDays: 0,
               pretrialUsersCount: 0,
               planUserCount: 1,
+              hasSeatsLeft: true,
             },
             pretrialPlan: {
               baseUnitPrice: 10,

@@ -13,7 +13,7 @@ export interface NetworkErrorObject {
   dev: `${string} - ${number} ${string}`
 }
 
-const AllProvidersArray = [
+export const AllProvidersArray = [
   'gh',
   'gl',
   'bb',

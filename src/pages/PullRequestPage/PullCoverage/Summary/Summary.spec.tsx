@@ -81,7 +81,20 @@ describe('Summary', () => {
         res(
           ctx.status(200),
           ctx.data({
-            owner: { repository: { private: privateRepo } },
+            owner: {
+              repository: {
+                __typename: 'Repository',
+                defaultBranch: 'master',
+                private: privateRepo,
+                uploadToken: 'token',
+                graphToken: 'token',
+                yaml: 'yaml',
+                bot: {
+                  username: 'test',
+                },
+                activated: true,
+              },
+            },
           })
         )
       )

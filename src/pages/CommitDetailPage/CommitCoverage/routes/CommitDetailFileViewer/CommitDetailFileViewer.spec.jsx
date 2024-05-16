@@ -16,38 +16,27 @@ const mockOwner = {
 }
 
 const mockCoverage = {
+  __typename: 'Repository',
   commit: {
     commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
     flagNames: ['a', 'b'],
+    components: [],
     coverageFile: {
+      hashedPath: 'hashed-path',
+      isCriticalFile: false,
       content:
         'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n\n\n\n',
       coverage: [
-        {
-          line: 1,
-          coverage: 'H',
-        },
-        {
-          line: 2,
-          coverage: 'H',
-        },
-        {
-          line: 4,
-          coverage: 'H',
-        },
-        {
-          line: 5,
-          coverage: 'H',
-        },
-        {
-          line: 7,
-          coverage: 'H',
-        },
-        {
-          line: 8,
-          coverage: 'H',
-        },
+        { line: 1, coverage: 'H' },
+        { line: 2, coverage: 'H' },
+        { line: 4, coverage: 'H' },
+        { line: 5, coverage: 'H' },
+        { line: 7, coverage: 'H' },
+        { line: 8, coverage: 'H' },
       ],
+      totals: {
+        percentCovered: 100,
+      },
     },
   },
   branch: null,
@@ -100,6 +89,15 @@ describe('CommitDetailFileViewer', () => {
       ),
       graphql.query('CoverageForFile', (req, res, ctx) =>
         res(ctx.status(200), ctx.data({ owner: { repository: mockCoverage } }))
+      ),
+      graphql.query('OwnerTier', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({ owner: null }))
+      ),
+      graphql.query('BackfillFlagMemberships', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({ owner: null }))
+      ),
+      graphql.query('GetRepoOverview', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({ owner: null }))
       )
     )
   }

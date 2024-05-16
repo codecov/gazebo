@@ -14,6 +14,7 @@ jest.mock('react-use/lib/useIntersection')
 const mockFirstResponse = {
   owner: {
     repository: {
+      __typename: 'Repository',
       flags: {
         edges: [
           {
@@ -34,6 +35,7 @@ const mockFirstResponse = {
 const mockSecondResponse = {
   owner: {
     repository: {
+      __typename: 'Repository',
       flags: {
         edges: [
           {
@@ -57,6 +59,7 @@ const mockBackfillHasFlagsAndActive = {
   },
   owner: {
     repository: {
+      __typename: 'Repository',
       flagsMeasurementsActive: true,
       flagsMeasurementsBackfilled: true,
       flagsCount: 4,
@@ -70,6 +73,7 @@ const mockBackfillTimeScaleDisabled = {
   },
   owner: {
     repository: {
+      __typename: 'Repository',
       flagsMeasurementsActive: true,
       flagsMeasurementsBackfilled: true,
       flagsCount: 4,
@@ -83,6 +87,7 @@ const mockBackfillNoFlagsPresent = {
   },
   owner: {
     repository: {
+      __typename: 'Repository',
       flagsMeasurementsActive: true,
       flagsMeasurementsBackfilled: true,
       flagsCount: 0,
@@ -96,6 +101,7 @@ const mockBackfillFlagMeasureNotActive = {
   },
   owner: {
     repository: {
+      __typename: 'Repository',
       flagsMeasurementsActive: false,
       flagsMeasurementsBackfilled: true,
       flagsCount: 4,
@@ -300,7 +306,7 @@ describe('TitleFlags', () => {
 
         await waitFor(() =>
           expect(mockApiVars).toHaveBeenCalledWith({
-            name: 'codecov',
+            owner: 'codecov',
             repo: 'cool-repo',
             filters: { term: 'flag2' },
           })

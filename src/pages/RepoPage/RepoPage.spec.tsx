@@ -22,6 +22,7 @@ jest.mock('./FlagsTab', () => () => 'FlagsTab')
 jest.mock('./ComponentsTab', () => () => 'ComponentsTab')
 jest.mock('./SettingsTab', () => () => 'SettingsTab')
 jest.mock('shared/featureFlags')
+jest.mock('./ActivationAlert', () => () => 'ActivationAlert')
 
 jest.mock('shared/featureFlags')
 const mockedUseFlags = useFlags as jest.Mock<{
@@ -763,14 +764,14 @@ describe('RepoPage', () => {
   })
 
   describe('user is not activated and repo is private', () => {
-    describe('user does not have product enabled', () => {
-      it('renders setup tabs', async () => {
+    describe('user does not have coverage enabled', () => {
+      it('renders coverage setup tabs', async () => {
         const { queryClient } = setup({
           hasRepoData: true,
           isCurrentUserActivated: false,
           isRepoPrivate: true,
           coverageEnabled: false,
-          bundleAnalysisEnabled: false,
+          bundleAnalysisEnabled: true,
           language: 'javascript',
         })
         render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
@@ -778,13 +779,13 @@ describe('RepoPage', () => {
         expect(repoCrumb).toBeInTheDocument()
         const coverageOnboarding = await screen.findByText('CoverageOnboarding')
         expect(coverageOnboarding).toBeInTheDocument()
-        const bundlesTab = await screen.findByText('Bundles')
-        expect(bundlesTab).toBeInTheDocument()
+        const error = screen.queryByText(/ActivationAlert/)
+        expect(error).not.toBeInTheDocument()
       })
     })
 
-    describe('user has product enabled', () => {
-      it('renders unauthorized access error', async () => {
+    describe('user has coverage enabled', () => {
+      it('renders ActivationAlert access error', async () => {
         const { queryClient } = setup({
           hasRepoData: true,
           isCurrentUserActivated: false,
@@ -794,7 +795,48 @@ describe('RepoPage', () => {
         const repoCrumb = await screen.findByText('cool-repo')
         expect(repoCrumb).toBeInTheDocument()
 
-        const error = await screen.findByText('Unauthorized')
+        const error = await screen.findByText('ActivationAlert')
+        expect(error).toBeInTheDocument()
+      })
+    })
+
+    describe('user does not have bundles enabled', () => {
+      it('renders bundle setup tabs', async () => {
+        const { queryClient, user } = setup({
+          hasRepoData: true,
+          isCurrentUserActivated: false,
+          isRepoPrivate: true,
+          coverageEnabled: true,
+          bundleAnalysisEnabled: false,
+          language: 'javascript',
+        })
+        render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+        const repoCrumb = await screen.findByText('cool-repo')
+        expect(repoCrumb).toBeInTheDocument()
+        const bundlesTab = await screen.findByText('Bundles')
+        expect(bundlesTab).toBeInTheDocument()
+        await user.click(bundlesTab)
+        const error = screen.queryByText(/ActivationAlert/)
+        expect(error).not.toBeInTheDocument()
+      })
+    })
+
+    describe('user has bundles enabled', () => {
+      it('renders ActivationAlert access error', async () => {
+        const { queryClient, user } = setup({
+          hasRepoData: true,
+          isCurrentUserActivated: false,
+          coverageEnabled: false,
+          bundleAnalysisEnabled: true,
+          isRepoPrivate: true,
+        })
+        render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+        const repoCrumb = await screen.findByText('cool-repo')
+        expect(repoCrumb).toBeInTheDocument()
+        const bundlesTab = await screen.findByText('Bundles')
+        expect(bundlesTab).toBeInTheDocument()
+        await user.click(bundlesTab)
+        const error = await screen.findByText('ActivationAlert')
         expect(error).toBeInTheDocument()
       })
     })

@@ -20,6 +20,7 @@ const server = setupServer()
 const mockNoFiles = {
   username: 'nicholas-codecov',
   repository: {
+    __typename: 'Repository',
     branch: {
       head: {
         pathContents: {
@@ -34,6 +35,7 @@ const mockNoFiles = {
 const mockUnknownPath = {
   username: 'nicholas-codecov',
   repository: {
+    __typename: 'Repository',
     branch: {
       head: {
         pathContents: {
@@ -48,6 +50,7 @@ const mockUnknownPath = {
 const mockMissingCoverage = {
   username: 'nicholas-codecov',
   repository: {
+    __typename: 'Repository',
     branch: {
       head: {
         pathContents: {
@@ -62,6 +65,7 @@ const mockMissingCoverage = {
 const mockListData = {
   username: 'nicholas-codecov',
   repository: {
+    __typename: 'Repository',
     branch: {
       head: {
         pathContents: {
@@ -88,6 +92,7 @@ const mockListData = {
 const mockNoHeadReport = {
   username: 'nicholas-codecov',
   repository: {
+    __typename: 'Repository',
     branch: {
       head: {
         pathContents: {
@@ -381,7 +386,7 @@ describe('FileListTable', () => {
 
           render(<FileListTable />, { wrapper: wrapper() })
 
-          let files = await screen.findByText('Files')
+          const files = await screen.findByText('Files')
           await user.click(files)
           await user.click(files)
 
@@ -398,9 +403,8 @@ describe('FileListTable', () => {
           const { requestFilters, user } = setup({})
           render(<FileListTable />, { wrapper: wrapper() })
 
-          let files = await screen.findByText('Files')
+          const files = await screen.findByText('Files')
           await user.click(files)
-          files = await screen.findByText('Files')
           await user.click(files)
 
           await waitFor(() => {
@@ -420,10 +424,8 @@ describe('FileListTable', () => {
           const { requestFilters, user } = setup({})
           render(<FileListTable />, { wrapper: wrapper() })
 
-          let trackedLines = await screen.findByText('Tracked lines')
+          const trackedLines = await screen.findByText('Tracked lines')
           await user.click(trackedLines)
-
-          trackedLines = await screen.findByText('Tracked lines')
           await user.click(trackedLines)
 
           expect(requestFilters).toHaveBeenCalledWith(
@@ -439,10 +441,8 @@ describe('FileListTable', () => {
           const { requestFilters, user } = setup({})
           render(<FileListTable />, { wrapper: wrapper() })
 
-          let trackedLines = await screen.findByText('Tracked lines')
+          const trackedLines = await screen.findByText('Tracked lines')
           await user.click(trackedLines)
-
-          trackedLines = await screen.findByText('Tracked lines')
           await user.click(trackedLines)
 
           await waitFor(() => {
@@ -480,10 +480,8 @@ describe('FileListTable', () => {
           const { requestFilters, user } = setup({})
           render(<FileListTable />, { wrapper: wrapper() })
 
-          let covered = await screen.findByText('Covered')
+          const covered = await screen.findByText('Covered')
           await user.click(covered)
-
-          covered = await screen.findByText('Covered')
           await user.click(covered)
 
           await waitFor(() => {
@@ -503,10 +501,8 @@ describe('FileListTable', () => {
           const { requestFilters, user } = setup({})
           render(<FileListTable />, { wrapper: wrapper() })
 
-          let partial = await screen.findByText('Partial')
+          const partial = await screen.findByText('Partial')
           await user.click(partial)
-
-          partial = await screen.findByText('Partial')
           await user.click(partial)
 
           expect(requestFilters).toHaveBeenCalledWith(
@@ -522,10 +518,8 @@ describe('FileListTable', () => {
           const { requestFilters, user } = setup({})
           render(<FileListTable />, { wrapper: wrapper() })
 
-          let partial = await screen.findByText('Partial')
+          const partial = await screen.findByText('Partial')
           await user.click(partial)
-
-          partial = await screen.findByText('Partial')
           await user.click(partial)
 
           await waitFor(() => {
@@ -545,7 +539,7 @@ describe('FileListTable', () => {
           const { requestFilters, user } = setup({})
           render(<FileListTable />, { wrapper: wrapper() })
 
-          let missed = await screen.findByText('Missed')
+          const missed = await screen.findByText('Missed')
           await user.click(missed)
           await user.click(missed)
 
@@ -566,8 +560,7 @@ describe('FileListTable', () => {
           const { requestFilters, user } = setup({})
           render(<FileListTable />, { wrapper: wrapper() })
 
-          expect(await screen.findByText('Coverage %')).toBeTruthy()
-          const coverage = screen.getByText('Coverage %')
+          const coverage = await screen.findByText('Coverage %')
           await user.click(coverage)
           await user.click(coverage)
           expect(requestFilters).toHaveBeenCalledWith(
@@ -582,8 +575,7 @@ describe('FileListTable', () => {
         it('sets the correct api variables', async () => {
           const { requestFilters, user } = setup({})
           render(<FileListTable />, { wrapper: wrapper() })
-          expect(await screen.findByText('Coverage %')).toBeTruthy()
-          let coverage = screen.getByText('Coverage %')
+          const coverage = await screen.findByText('Coverage %')
           await user.click(coverage)
           await waitFor(() => {
             expect(requestFilters).toHaveBeenCalledWith(

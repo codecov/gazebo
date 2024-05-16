@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { MemoryRouter, Route } from 'react-router-dom'
+import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import { useSaveTermsAgreement } from './useTermsOfService'
 
@@ -14,34 +14,46 @@ const queryClient = new QueryClient({
   },
 })
 
-type WrapperClosure = (
-  initialEntries?: string[]
-) => React.FC<React.PropsWithChildren>
-const wrapper: WrapperClosure =
-  (initialEntries = ['/gh']) =>
+let testLocation: ReturnType<typeof useLocation>
+const wrapper =
+  (initialEntries = ['/gh']): React.FC<React.PropsWithChildren> =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={initialEntries}>
           <Route path="/:provider">{children}</Route>
+          <Route
+            path="*"
+            render={({ location }) => {
+              testLocation = location
+              return null
+            }}
+          />
         </MemoryRouter>
       </QueryClientProvider>
     )
 
 const server = setupServer()
 
-beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }))
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: 'warn' })
+})
+
 beforeEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
+
+interface SetupArgs {
+  apiError?: boolean
+}
 
 describe('useSaveTermsAgreement', () => {
-  interface Setup {
-    apiError?: boolean
-  }
-  function setup({ apiError = false }: Setup = { apiError: false }) {
+  function setup({ apiError = false }: SetupArgs = { apiError: false }) {
     server.use(
       graphql.mutation('SigningTermsAgreement', (req, res, ctx) => {
         if (apiError) {
@@ -62,7 +74,9 @@ describe('useSaveTermsAgreement', () => {
     )
   }
 
-  afterEach(() => jest.resetAllMocks())
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
 
   describe('when query resolves', () => {
     describe('basic sign', () => {
@@ -93,6 +107,21 @@ describe('useSaveTermsAgreement', () => {
         expect(invalidateQueries).toHaveBeenCalledWith({
           queryKey: ['InternalUser'],
         })
+      })
+
+      it('redirects to /', async () => {
+        setup()
+        const { result } = renderHook(() => useSaveTermsAgreement({}), {
+          wrapper: wrapper(),
+        })
+
+        result.current.mutate({
+          businessEmail: 'test@test.com',
+          termsAgreement: true,
+          customerIntent: 'PERSONAL',
+        })
+
+        await waitFor(() => expect(testLocation.pathname).toEqual('/'))
       })
     })
 
@@ -125,9 +154,24 @@ describe('useSaveTermsAgreement', () => {
           queryKey: ['InternalUser'],
         })
       })
+
+      it('redirects to /', async () => {
+        setup()
+        const { result } = renderHook(() => useSaveTermsAgreement({}), {
+          wrapper: wrapper(),
+        })
+
+        result.current.mutate({
+          businessEmail: 'test@test.com',
+          termsAgreement: true,
+          customerIntent: 'PERSONAL',
+        })
+
+        await waitFor(() => expect(testLocation.pathname).toEqual('/'))
+      })
     })
 
-    it('proceed with mutation on missing email', async () => {
+    it('proceeds with mutation on missing email', async () => {
       setup()
       const invalidateQueries = jest.spyOn(queryClient, 'invalidateQueries')
       const successFn = jest.fn()
@@ -188,6 +232,33 @@ describe('useSaveTermsAgreement', () => {
         )
 
         expect(errorFn).toHaveBeenCalledWith('error')
+      })
+
+      it('does not redirect to /', async () => {
+        setup({ apiError: true })
+        const spy = jest.spyOn(console, 'error')
+        const spyErrorMock = jest.fn()
+        spy.mockImplementation(spyErrorMock)
+        const errorFn = jest.fn()
+        const { result } = renderHook(
+          () =>
+            useSaveTermsAgreement({
+              onError: () => {
+                errorFn('error')
+              },
+            }),
+          {
+            wrapper: wrapper(),
+          }
+        )
+
+        result.current.mutate({
+          businessEmail: 'test@test.com',
+          termsAgreement: true,
+          customerIntent: 'PERSONAL',
+        })
+
+        await waitFor(() => expect(testLocation.pathname).toEqual('/gh'))
       })
     })
   })

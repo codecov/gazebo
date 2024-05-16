@@ -84,17 +84,32 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
   }
 
   const hideFlagsTab = !!repoOverview?.private && tierData === TierNames.TEAM
-  if (repoOverview?.coverageEnabled && !hideFlagsTab) {
+  const userAuthorizedtoViewRepo =
+    (repoData?.isCurrentUserActivated && repoOverview?.private) ||
+    !repoOverview?.private
+  if (
+    repoOverview?.coverageEnabled &&
+    !hideFlagsTab &&
+    userAuthorizedtoViewRepo
+  ) {
     tabs.push({ pageName: 'flagsTab' })
   }
 
   const hideComponentsTab =
     !!repoOverview?.private && tierData === TierNames.TEAM
-  if (repoOverview?.coverageEnabled && componentTab && !hideComponentsTab) {
+  if (
+    repoOverview?.coverageEnabled &&
+    componentTab &&
+    !hideComponentsTab &&
+    userAuthorizedtoViewRepo
+  ) {
     tabs.push({ pageName: 'componentsTab' })
   }
 
-  if (repoOverview?.bundleAnalysisEnabled || repoOverview?.coverageEnabled) {
+  if (
+    (repoOverview?.bundleAnalysisEnabled || repoOverview?.coverageEnabled) &&
+    userAuthorizedtoViewRepo
+  ) {
     tabs.push({ pageName: 'commits' }, { pageName: 'pulls' })
   }
 

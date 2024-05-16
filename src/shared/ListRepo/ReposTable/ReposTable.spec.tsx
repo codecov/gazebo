@@ -90,6 +90,17 @@ const mockRepositories = (
   },
 ]
 
+const mockRepoConfig = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: { upperRange: 80, lowerRange: 60 },
+      },
+    },
+  },
+}
+
 beforeAll(() => {
   server.listen()
   console.error = () => {}
@@ -211,6 +222,9 @@ describe('ReposTable', () => {
           ctx.status(200),
           ctx.data({ owner: { plan: { tierName: tierValue } } })
         )
+      }),
+      graphql.query('RepoConfig', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoConfig))
       })
     )
     return { myReposMock, reposForOwnerMock }

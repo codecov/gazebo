@@ -4,33 +4,13 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useRepoBranchContents } from './index'
+import { useRepoBranchContents } from './useRepoBranchContents'
 
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
-})
-
-const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <MemoryRouter initialEntries={['/gh/codecov/test']}>
-    <Route path="/:provider/:owner/:repo">
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </Route>
-  </MemoryRouter>
-)
-
-const server = setupServer()
-
-beforeAll(() => server.listen())
-afterEach(() => {
-  queryClient.clear()
-  server.resetHandlers()
-})
-afterAll(() => server.close())
-
-const dataReturned = {
+const mockData = {
   owner: {
-    username: 'Rabee-AbuBaker',
+    username: 'cool-user',
     repository: {
+      __typename: 'Repository',
       repositoryConfig: {
         indicationRange: {
           upperRange: 80,
@@ -64,6 +44,7 @@ const mockDataUnknownPath = {
   owner: {
     username: 'codecov',
     repository: {
+      __typename: 'Repository',
       repositoryConfig: {
         indicationRange: {
           upperRange: 80,
@@ -86,6 +67,7 @@ const mockDataMissingCoverage = {
   owner: {
     username: 'codecov',
     repository: {
+      __typename: 'Repository',
       repositoryConfig: {
         indicationRange: {
           upperRange: 80,
@@ -104,51 +86,97 @@ const mockDataMissingCoverage = {
   },
 }
 
+const mockDataRepositoryNotFound = {
+  owner: {
+    repository: {
+      __typename: 'NotFoundError',
+      message: 'repository not found',
+    },
+  },
+}
+
+const mockDataOwnerNotActivated = {
+  owner: {
+    repository: {
+      __typename: 'OwnerNotActivatedError',
+      message: 'owner not activated',
+    },
+  },
+}
+
+const mockUnsuccessfulParseError = {}
+
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
+  <MemoryRouter initialEntries={['/gh/codecov/test']}>
+    <Route path="/:provider/:owner/:repo">
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </Route>
+  </MemoryRouter>
+)
+
+const server = setupServer()
+
+beforeAll(() => {
+  server.listen()
+})
+
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
+
+interface SetupArgs {
+  isMissingCoverage?: boolean
+  isUnknownPath?: boolean
+  isRepositoryNotFoundError?: boolean
+  isOwnerNotActivatedError?: boolean
+  isUnsuccessfulParseError?: boolean
+}
+
 describe('useRepoBranchContents', () => {
-  function setup(isMissingCoverage = false, isUnknownPath = false) {
+  function setup({
+    isMissingCoverage = false,
+    isUnknownPath = false,
+    isOwnerNotActivatedError = false,
+    isRepositoryNotFoundError = false,
+    isUnsuccessfulParseError = false,
+  }: SetupArgs) {
     server.use(
       graphql.query('BranchContents', (req, res, ctx) => {
         if (isMissingCoverage) {
           return res(ctx.status(200), ctx.data(mockDataMissingCoverage))
-        }
-        if (isUnknownPath) {
+        } else if (isUnknownPath) {
           return res(ctx.status(200), ctx.data(mockDataUnknownPath))
+        } else if (isRepositoryNotFoundError) {
+          return res(ctx.status(200), ctx.data(mockDataRepositoryNotFound))
+        } else if (isOwnerNotActivatedError) {
+          return res(ctx.status(200), ctx.data(mockDataOwnerNotActivated))
+        } else if (isUnsuccessfulParseError) {
+          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
         }
-        return res(ctx.status(200), ctx.data(dataReturned))
+
+        return res(ctx.status(200), ctx.data(mockData))
       })
     )
   }
 
   describe('when called', () => {
-    beforeEach(() => {
-      setup()
-    })
-
-    it('renders isLoading true', () => {
-      const { result } = renderHook(
-        () =>
-          useRepoBranchContents({
-            provider: 'gh',
-            owner: 'Rabee-AbuBaker',
-            repo: 'another-test',
-            branch: 'main',
-            path: '',
-          }),
-        {
-          wrapper,
-        }
-      )
-
-      expect(result.current.isLoading).toBeTruthy()
-    })
-
     describe('when data is loaded', () => {
       it('returns the data', async () => {
+        setup({})
         const { result } = renderHook(
           () =>
             useRepoBranchContents({
               provider: 'gh',
-              owner: 'Rabee-AbuBaker',
+              owner: 'cool-user',
               repo: 'another-test',
               branch: 'main',
               path: '',
@@ -158,40 +186,39 @@ describe('useRepoBranchContents', () => {
           }
         )
 
-        await waitFor(() => result.current.isLoading)
-        await waitFor(() => !result.current.isLoading)
-        await waitFor(() => result.current.isSuccess)
-        expect(result.current.data).toEqual(
-          expect.objectContaining({
-            results: [
-              {
-                __typename: 'PathContentDir',
-                hits: 9,
-                misses: 0,
-                partials: 0,
-                lines: 10,
-                name: 'src',
-                path: 'src',
-                percentCovered: 100.0,
+        await waitFor(() =>
+          expect(result.current.data).toEqual(
+            expect.objectContaining({
+              results: [
+                {
+                  __typename: 'PathContentDir',
+                  hits: 9,
+                  misses: 0,
+                  partials: 0,
+                  lines: 10,
+                  name: 'src',
+                  path: 'src',
+                  percentCovered: 100.0,
+                },
+              ],
+              indicationRange: {
+                upperRange: 80,
+                lowerRange: 60,
               },
-            ],
-            indicationRange: {
-              upperRange: 80,
-              lowerRange: 60,
-            },
-          })
+            })
+          )
         )
       })
     })
 
     describe('on missing coverage', () => {
       it('returns no results', async () => {
-        setup(true)
+        setup({ isMissingCoverage: true })
         const { result } = renderHook(
           () =>
             useRepoBranchContents({
               provider: 'gh',
-              owner: 'Rabee-AbuBaker',
+              owner: 'cool-user',
               repo: 'another-test',
               branch: 'main',
               path: '',
@@ -201,31 +228,29 @@ describe('useRepoBranchContents', () => {
           }
         )
 
-        await waitFor(() => result.current.isLoading)
-        await waitFor(() => !result.current.isLoading)
-        await waitFor(() => result.current.isSuccess)
-
-        expect(result.current.data).toEqual(
-          expect.objectContaining({
-            indicationRange: {
-              upperRange: 80,
-              lowerRange: 60,
-            },
-            results: null,
-            pathContentsType: 'MissingCoverage',
-          })
+        await waitFor(() =>
+          expect(result.current.data).toEqual(
+            expect.objectContaining({
+              indicationRange: {
+                upperRange: 80,
+                lowerRange: 60,
+              },
+              results: null,
+              pathContentsType: 'MissingCoverage',
+            })
+          )
         )
       })
     })
 
     describe('on unknown path', () => {
       it('returns no results', async () => {
-        setup(false, true)
+        setup({ isUnknownPath: true })
         const { result } = renderHook(
           () =>
             useRepoBranchContents({
               provider: 'gh',
-              owner: 'Rabee-AbuBaker',
+              owner: 'cool-user',
               repo: 'another-test',
               branch: 'main',
               path: '',
@@ -235,20 +260,114 @@ describe('useRepoBranchContents', () => {
           }
         )
 
-        await waitFor(() => result.current.isLoading)
-        await waitFor(() => !result.current.isLoading)
-        await waitFor(() => result.current.isSuccess)
-
-        expect(result.current.data).toEqual(
-          expect.objectContaining({
-            indicationRange: {
-              upperRange: 80,
-              lowerRange: 60,
-            },
-            results: null,
-            pathContentsType: 'UnknownPath',
-          })
+        await waitFor(() =>
+          expect(result.current.data).toEqual(
+            expect.objectContaining({
+              indicationRange: {
+                upperRange: 80,
+                lowerRange: 60,
+              },
+              results: null,
+              pathContentsType: 'UnknownPath',
+            })
+          )
         )
+      })
+    })
+
+    describe('request rejects', () => {
+      let oldConsoleError = console.error
+
+      beforeEach(() => {
+        console.error = () => null
+      })
+
+      afterEach(() => {
+        console.error = oldConsoleError
+      })
+
+      describe('on repository not found', () => {
+        it('rejects to repository not found error', async () => {
+          setup({ isUnsuccessfulParseError: true })
+          const { result } = renderHook(
+            () =>
+              useRepoBranchContents({
+                provider: 'gh',
+                owner: 'cool-user',
+                repo: 'another-test',
+                branch: 'main',
+                path: '',
+              }),
+            {
+              wrapper,
+            }
+          )
+
+          await waitFor(() =>
+            expect(result.current.error).toEqual(
+              expect.objectContaining({
+                status: 404,
+                dev: 'useRepoBranchContents - 404 schema parsing failed',
+              })
+            )
+          )
+        })
+      })
+
+      describe('on owner not activated', () => {
+        it('rejects to owner not activated error', async () => {
+          setup({ isRepositoryNotFoundError: true })
+          const { result } = renderHook(
+            () =>
+              useRepoBranchContents({
+                provider: 'gh',
+                owner: 'cool-user',
+                repo: 'another-test',
+                branch: 'main',
+                path: '',
+              }),
+            {
+              wrapper,
+            }
+          )
+
+          await waitFor(() =>
+            expect(result.current.error).toEqual(
+              expect.objectContaining({
+                status: 404,
+                dev: 'useRepoBranchContents - 404 NotFoundError',
+              })
+            )
+          )
+        })
+      })
+
+      describe('failing to parse schema', () => {
+        it('rejects to unknown error', async () => {
+          setup({ isOwnerNotActivatedError: true })
+          const { result } = renderHook(
+            () =>
+              useRepoBranchContents({
+                provider: 'gh',
+                owner: 'cool-user',
+                repo: 'another-test',
+                branch: 'main',
+                path: '',
+              }),
+            {
+              wrapper,
+            }
+          )
+
+          await waitFor(() =>
+            expect(result.current.error).toEqual(
+              expect.objectContaining({
+                status: 403,
+                dev: 'useRepoBranchContents - 403 OwnerNotActivatedError',
+              })
+            )
+          )
+        })
       })
     })
   })

@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
-import { MemoryRouter, Route } from 'react-router-dom'
+import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import { IndividualPlan, TrialStatuses } from 'services/account'
 import { accountDetailsParsedObj } from 'services/account/mocks'
@@ -200,6 +200,7 @@ const mockPlanDataResponseMonthly = {
   trialTotalDays: 0,
   pretrialUsersCount: 0,
   planUserCount: 1,
+  hasSeatsLeft: true,
 }
 
 const mockPlanDataResponseYearly = {
@@ -215,6 +216,7 @@ const mockPlanDataResponseYearly = {
   trialTotalDays: 0,
   pretrialUsersCount: 0,
   planUserCount: 1,
+  hasSeatsLeft: true,
 }
 
 const queryClient = new QueryClient({
@@ -239,7 +241,7 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 
-let testLocation: any
+let testLocation: ReturnType<typeof useLocation>
 
 const wrapper: (
   initialEntries?: string[]

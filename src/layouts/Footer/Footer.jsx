@@ -1,6 +1,6 @@
 import config from 'config'
 
-import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
+import { CodecovIcon } from 'assets/svg/codecov'
 import A from 'ui/A'
 
 import { FooterItem } from './FooterItem'
@@ -40,7 +40,10 @@ function Footer() {
           ))}
         </ul>
         <A to={{ pageName: 'owner' }}>
-          <CodecovIcon className="mr-2 cursor-pointer text-ds-gray-quinary" />
+          <CodecovIcon
+            className="mr-2 cursor-pointer text-ds-gray-quinary"
+            fillColor="#68737e"
+          />
         </A>
         <ul className="flex flex-1 items-center justify-center gap-4 lg:justify-end">
           {rightMenu.map((props, i) => (
