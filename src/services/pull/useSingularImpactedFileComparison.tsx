@@ -169,7 +169,6 @@ export function useSingularImpactedFileComparison({
         },
       }).then((res) => {
         const parsedRes = RepoSchema.safeParse(res?.data)
-        // console.log(parsedRes.error, 'log')
 
         if (!parsedRes.success) {
           return Promise.reject({
