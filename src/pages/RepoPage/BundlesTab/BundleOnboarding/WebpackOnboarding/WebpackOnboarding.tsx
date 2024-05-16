@@ -5,7 +5,7 @@ import { useOrgUploadToken } from 'services/orgUploadToken'
 import { useRepo } from 'services/repo'
 import A from 'ui/A'
 import { Card } from 'ui/Card'
-import CopyClipboard from 'ui/CopyClipboard'
+import { CopyClipboard } from 'ui/CopyClipboard'
 
 import {
   copiedBuildCommandMetric,
@@ -61,8 +61,8 @@ const StepOne: React.FC = () => {
         <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
           {npmInstall}{' '}
           <CopyClipboard
-            string={npmInstall}
-            testIdExtension="-npm-install"
+            value={npmInstall}
+            data-testid="clipboard-npm-install"
             onClick={() => {
               copiedInstallCommandMetric('npm', 'webpack')
             }}
@@ -71,8 +71,8 @@ const StepOne: React.FC = () => {
         <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
           {yarnInstall}{' '}
           <CopyClipboard
-            string={yarnInstall}
-            testIdExtension="-yarn-install"
+            value={yarnInstall}
+            data-testid="clipboard-yarn-install"
             onClick={() => {
               copiedInstallCommandMetric('yarn', 'webpack')
             }}
@@ -81,8 +81,8 @@ const StepOne: React.FC = () => {
         <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
           {pnpmInstall}{' '}
           <CopyClipboard
-            string={pnpmInstall}
-            testIdExtension="-pnpm-install"
+            value={pnpmInstall}
+            data-testid="clipboard-pnpm-install"
             onClick={() => {
               copiedInstallCommandMetric('pnpm', 'webpack')
             }}
@@ -109,13 +109,13 @@ const StepTwo: React.FC<{ uploadToken: string }> = ({ uploadToken }) => {
             <div className="w-0 flex-1 overflow-hidden" data-testid="token-key">
               CODECOV_TOKEN
             </div>
-            <CopyClipboard string="CODECOV_TOKEN" />
+            <CopyClipboard value="CODECOV_TOKEN" />
           </pre>
           <pre className="flex basis-2/3 items-center justify-between gap-2 rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
             <div className="w-0 flex-1 overflow-hidden">{uploadToken}</div>
             <CopyClipboard
-              string={uploadToken}
-              testIdExtension="-upload-token"
+              value={uploadToken}
+              data-testid="clipboard-upload-token"
               onClick={() => {
                 copiedTokenMetric('webpack')
               }}
@@ -162,8 +162,8 @@ const StepThree: React.FC = () => {
         <pre className="flex items-start justify-between overflow-auto whitespace-pre rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
           {pluginConfig}
           <CopyClipboard
-            string={pluginConfig}
-            testIdExtension="-plugin-config"
+            value={pluginConfig}
+            data-testid="clipboard-plugin-config"
             onClick={() => {
               copiedConfigMetric('webpack')
             }}
@@ -190,8 +190,8 @@ const StepFour: React.FC = () => {
         <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
           {commitString}{' '}
           <CopyClipboard
-            string={commitString}
-            testIdExtension="-commit-command"
+            value={commitString}
+            data-testid="clipboard-commit-command"
             onClick={() => {
               copiedCommitMetric('webpack')
             }}
@@ -216,8 +216,8 @@ const StepFive: React.FC = () => {
         <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
           {npmBuild}{' '}
           <CopyClipboard
-            string={npmBuild}
-            testIdExtension="-npm-build"
+            value={npmBuild}
+            data-testid="clipboard-npm-build"
             onClick={() => {
               copiedBuildCommandMetric('npm', 'webpack')
             }}
@@ -226,8 +226,8 @@ const StepFive: React.FC = () => {
         <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
           {yarnBuild}{' '}
           <CopyClipboard
-            string={yarnBuild}
-            testIdExtension="-yarn-build"
+            value={yarnBuild}
+            data-testid="clipboard-yarn-build"
             onClick={() => {
               copiedBuildCommandMetric('yarn', 'webpack')
             }}
@@ -236,8 +236,8 @@ const StepFive: React.FC = () => {
         <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
           {pnpmBuild}{' '}
           <CopyClipboard
-            string={pnpmBuild}
-            testIdExtension="-pnpm-build"
+            value={pnpmBuild}
+            data-testid="clipboard-pnpm-build"
             onClick={() => {
               copiedBuildCommandMetric('pnpm', 'webpack')
             }}

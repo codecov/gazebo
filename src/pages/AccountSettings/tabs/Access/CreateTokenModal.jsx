@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 
 import { useGenerateUserToken } from 'services/access'
 import Button from 'ui/Button'
-import CopyClipboard from 'ui/CopyClipboard'
+import { CopyClipboard } from 'ui/CopyClipboard'
 import Modal from 'ui/Modal'
 import TextInput from 'ui/TextInput/TextInput'
 
@@ -79,7 +79,7 @@ function CreateTokenModal({ closeModal, provider }) {
             <span className="mr-2 bg-ds-gray-secondary font-mono text-ds-gray-octonary">
               {token}
             </span>
-            <CopyClipboard string={token} />
+            <CopyClipboard value={token} />
           </div>
           <span className="mt-4 text-xs">
             Make sure to copy your token now. you won`t be able to see it again.

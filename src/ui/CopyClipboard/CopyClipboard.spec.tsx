@@ -18,7 +18,7 @@ describe('CopyClipboard', () => {
 
   describe('when the component is mounted', () => {
     it('renders the button with clipboard icon', () => {
-      render(<CopyClipboard string="to be copied" />)
+      render(<CopyClipboard value="to be copied" />)
 
       const clipboard = screen.getByText(/clipboard-copy/, { exact: true })
       expect(clipboard).toBeInTheDocument()
@@ -28,7 +28,7 @@ describe('CopyClipboard', () => {
   describe('when the user clicks on the button to copy', () => {
     it('renders the success icon', async () => {
       const { user } = setup()
-      render(<CopyClipboard string="to be copied" />)
+      render(<CopyClipboard value="to be copied" />)
 
       const button = screen.getByRole('button', {
         name: /copy/i,
@@ -42,7 +42,7 @@ describe('CopyClipboard', () => {
     describe('renders clipboard after delay', () => {
       it('goes back to original state', async () => {
         const { user } = setup()
-        render(<CopyClipboard string="to be copied" />)
+        render(<CopyClipboard value="to be copied" />)
 
         const button = screen.getByRole('button', {
           name: /copy/i,

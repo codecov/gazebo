@@ -3,7 +3,7 @@ import { type MouseEvent, useState } from 'react'
 
 import config from 'config'
 
-import CopyClipboard from 'ui/CopyClipboard'
+import { CopyClipboard } from 'ui/CopyClipboard'
 
 import {
   aplineLinuxSystemInstructions,
@@ -72,7 +72,7 @@ export function InstructionBox() {
           <pre>{systemContent}</pre>
         </div>
         <div className="absolute m-4">
-          <CopyClipboard string={systemContent} />
+          <CopyClipboard value={systemContent} />
         </div>
       </div>
     </div>

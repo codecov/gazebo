@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-import CopyClipboard from 'ui/CopyClipboard'
+import { CopyClipboard } from 'ui/CopyClipboard'
 import Label from 'ui/Label'
 
 import Coverage from './Coverage'
@@ -26,9 +26,7 @@ function CodeRendererCoverageHeader({ header, headName, coverage, fileLabel }) {
       <div className="flex items-center gap-1 text-ds-gray-quinary">
         <span>{header}</span>
         <span className="font-semibold">{headName}</span>
-        {headName && (
-          <CopyClipboard string={headName} showLabel={false} variant="muted" />
-        )}
+        {headName && <CopyClipboard value={headName} variant="muted" />}
         {fileLabel && <Label variant="subtle">{fileLabel}</Label>}
       </div>
       <Coverage coverageData={coverage} />

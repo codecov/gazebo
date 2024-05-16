@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import { unsupportedExtensionsMapper } from 'shared/utils/unsupportedExtensionsMapper'
 import A from 'ui/A'
-import CopyClipboard from 'ui/CopyClipboard'
+import { CopyClipboard } from 'ui/CopyClipboard'
 import Progress from 'ui/Progress'
 import TotalsNumber from 'ui/TotalsNumber'
 
@@ -30,9 +30,7 @@ function CodeRendererProgressHeader({ path, fileCoverage, change }) {
         <A href={`#${path}`} hook="file-viewer" variant="greyOctinary">
           {path}
         </A>
-        {path && (
-          <CopyClipboard string={path} showLabel={false} variant="muted" />
-        )}
+        {path && <CopyClipboard value={path} variant="muted" />}
       </div>
       <div className="flex max-w-xs items-center justify-end gap-2 sm:flex-1">
         {!isUnsupportedFileType && <Progress amount={fileCoverage} label />}
