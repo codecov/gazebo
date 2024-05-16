@@ -1,5 +1,7 @@
 import camelCase from 'lodash/camelCase'
 
+import { cn } from 'shared/utils/cn'
+
 import * as svgDeveloper from './svg/developer'
 import * as svgOutline from './svg/outline'
 import * as svgSolid from './svg/solid'
@@ -51,6 +53,7 @@ const iconClasses = {
 type CommonProps = {
   size?: 'sm' | 'md' | 'lg' | 'flex'
   label?: string
+  className?: string
 }
 
 type OutlineIconProps = {
@@ -75,6 +78,7 @@ function Icon({
   variant = 'outline',
   size = 'md',
   label = '',
+  className,
 }: IconProps) {
   const IconSvg = get(iconComponentCollection, variant, name)
   if (!IconSvg || !isValidKey(iconClasses, size)) return null
@@ -83,7 +87,7 @@ function Icon({
     <IconSvg
       data-testid={label}
       data-icon={label}
-      className={iconClasses[size]}
+      className={cn(className, iconClasses[size])}
     />
   )
 }
