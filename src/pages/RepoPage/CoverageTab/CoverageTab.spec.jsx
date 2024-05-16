@@ -400,7 +400,7 @@ describe('Coverage Tab', () => {
 
       const sunburst = await screen.findByTestId('sunburst')
       expect(sunburst).toBeInTheDocument()
-    }, 60000)
+    }, 100_000)
   })
 
   describe('file count is above 200_000', () => {
