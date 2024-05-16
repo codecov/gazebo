@@ -1,30 +1,44 @@
 import { useFileWithMainCoverage } from 'services/pathContents'
 
-import { useCoverageWithFilters } from './index'
+interface UseCommitBasedCoverageForFileViewerArgs {
+  provider: string
+  owner: string
+  repo: string
+  commit: string
+  path: string
+  selectedFlags: Array<string>
+  selectedComponents: Array<string>
+  opts?: {
+    enabled?: boolean
+  }
+}
 
 export function useCommitBasedCoverageForFileViewer({
+  provider,
   owner,
   repo,
-  provider,
   commit,
   path,
   selectedFlags,
   selectedComponents,
   opts,
-}) {
+}: UseCommitBasedCoverageForFileViewerArgs) {
   const { data } = useFileWithMainCoverage({
     provider,
     owner,
     repo,
     ref: commit,
     path,
-    opts,
+    opts: {
+      enabled: opts?.enabled,
+      suspense: true,
+    },
   })
 
   const coverageForAllFlags = selectedFlags.length === 0
   const coverageForAllComponents = selectedComponents.length === 0
 
-  const filteredQuery = useCoverageWithFilters({
+  const filteredQuery = useFileWithMainCoverage({
     provider,
     owner,
     repo,
