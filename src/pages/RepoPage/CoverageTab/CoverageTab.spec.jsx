@@ -58,7 +58,28 @@ const repoConfigMock = {
   },
 }
 
-const treeMock = [{ name: 'repoName', children: [] }]
+const treeMock = [
+  {
+    name: 'src',
+    full_path: 'src',
+    coverage: 98.0,
+    lines: 13026,
+    hits: 12828,
+    partials: 4,
+    misses: 194,
+    children: [
+      {
+        name: 'App.tsx',
+        full_path: 'src/App.tsx',
+        coverage: 100.0,
+        lines: 47,
+        hits: 47,
+        partials: 0,
+        misses: 0,
+      },
+    ],
+  },
+]
 
 const overviewMock = {
   owner: {
