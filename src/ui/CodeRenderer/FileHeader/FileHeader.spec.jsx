@@ -82,4 +82,13 @@ describe('FileHeader', () => {
       expect(screen.queryByText(/New/)).not.toBeInTheDocument()
     })
   })
+
+  describe('without a headName', () => {
+    it('does not render the CopyClipboard component', async () => {
+      setup({
+        header: '-16,7, +16,7',
+      })
+      expect(screen.queryByText('Copy Clipboard')).not.toBeInTheDocument()
+    })
+  })
 })
