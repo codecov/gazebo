@@ -79,7 +79,7 @@ function CreateTokenModal({ closeModal, provider }) {
             <span className="mr-2 bg-ds-gray-secondary font-mono text-ds-gray-octonary">
               {token}
             </span>
-            <CopyClipboard value={token} />
+            <CopyClipboard value={token} data-testid="clipboard-copy-token" />
           </div>
           <span className="mt-4 text-xs">
             Make sure to copy your token now. you won`t be able to see it again.

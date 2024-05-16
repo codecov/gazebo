@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 
 import FileHeader from './FileHeader'
 
-jest.mock('ui/CopyClipboard', () => () => 'Copy Clipboard')
+jest.mock('ui/CopyClipboard', () => ({ CopyClipboard: () => 'Copy Clipboard' }))
 
 describe('FileHeader', () => {
   function setup(props) {
