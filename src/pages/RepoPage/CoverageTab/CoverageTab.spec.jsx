@@ -384,7 +384,7 @@ describe('Coverage Tab', () => {
     jest.resetAllMocks()
   })
 
-  describe('file count is under 100_000', () => {
+  describe('file count is under 200_000', () => {
     it('renders the sunburst chart', async () => {
       setup({ fileCount: 100 })
       render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/repoName']) })
@@ -397,9 +397,9 @@ describe('Coverage Tab', () => {
     }, 60000)
   })
 
-  describe('file count is above 100_000', () => {
+  describe('file count is above 200_000', () => {
     it('does not render the sunburst chart', async () => {
-      setup({ fileCount: 100_000 })
+      setup({ fileCount: 200_000 })
       render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/repoName']) })
 
       const hideChart = await screen.findByText(/Hide Chart/)
