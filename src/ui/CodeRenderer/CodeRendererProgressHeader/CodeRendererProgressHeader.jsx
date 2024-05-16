@@ -30,7 +30,7 @@ function CodeRendererProgressHeader({ path, fileCoverage, change }) {
         <A href={`#${path}`} hook="file-viewer" variant="greyOctinary">
           {path}
         </A>
-        {path && <CopyClipboard value={path} />}
+        {path ? <CopyClipboard value={path} /> : null}
       </div>
       <div className="flex max-w-xs items-center justify-end gap-2 sm:flex-1">
         {!isUnsupportedFileType && <Progress amount={fileCoverage} label />}

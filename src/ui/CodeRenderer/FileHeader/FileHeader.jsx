@@ -26,7 +26,7 @@ function CodeRendererCoverageHeader({ header, headName, coverage, fileLabel }) {
       <div className="flex items-center gap-1 text-ds-gray-quinary">
         <span>{header}</span>
         <span className="font-semibold">{headName}</span>
-        {headName && <CopyClipboard value={headName} />}
+        {headName ? <CopyClipboard value={headName} /> : null}
         {fileLabel && <Label variant="subtle">{fileLabel}</Label>}
       </div>
       <Coverage coverageData={coverage} />
