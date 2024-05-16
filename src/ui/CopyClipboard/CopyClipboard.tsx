@@ -1,76 +1,54 @@
 import copy from 'copy-to-clipboard'
-import { useEffect, useState } from 'react'
+import { cva, type VariantProps } from 'cva'
+import React, { useState } from 'react'
 
 import { cn } from 'shared/utils/cn'
 import Icon from 'ui/Icon'
 
-const copyIconClasses = {
-  default: `text-ds-blue-darker`,
-  muted: `text-ds-grey-octonary`,
-}
-
-interface CopyClipboardProps {
-  string: string
-  showLabel?: boolean
-  variant?: keyof typeof copyIconClasses
+const copyClipboard = cva([], {
+  variants: {
+    variant: {
+      default: 'text-ds-blue-darker',
+      muted: 'text-ds-grey-octonary',
+    },
+  },
+  defaultVariants: {
+    variant: 'default',
+  },
+})
+interface CopyClipboardProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof copyClipboard> {
+  value: string
   onClick?: () => void
-  testIdExtension?: string
 }
 
-function CopyClipboard({
-  string,
-  showLabel = false,
-  variant = 'default',
-  onClick = () => {},
-  testIdExtension,
-}: CopyClipboardProps) {
-  const [showSuccess, setShowSuccess] = useState(false)
+const CopyClipboard = React.forwardRef<HTMLButtonElement, CopyClipboardProps>(
+  ({ value, onClick = () => {}, variant, className, ...props }, ref) => {
+    const [showSuccess, setShowSuccess] = useState(false)
 
-  const copyIconClass = copyIconClasses[variant]
+    const handleCopy = () => {
+      copy(value)
+      setShowSuccess(true)
+      setTimeout(() => setShowSuccess(false), 1500)
+      onClick()
+    }
 
-  function handleCopy() {
-    setShowSuccess(copy(string))
-    onClick()
+    return (
+      <button onClick={handleCopy} ref={ref} {...props}>
+        {showSuccess ? (
+          <div className="text-ds-primary-green">
+            <Icon name="check" />
+          </div>
+        ) : (
+          <div className={cn(copyClipboard({ className, variant }))}>
+            <Icon name="clipboardCopy" />
+          </div>
+        )}
+      </button>
+    )
   }
+)
+CopyClipboard.displayName = 'CopyClipboard'
 
-  useEffect(() => {
-    let timer: NodeJS.Timeout
-    if (showSuccess) {
-      timer = setTimeout(() => setShowSuccess(false), 1500)
-    }
-
-    return () => {
-      clearTimeout(timer)
-    }
-  }, [showSuccess])
-
-  return (
-    <button
-      onClick={handleCopy}
-      className="flex items-center outline-none focus:outline-none"
-    >
-      {showSuccess ? (
-        <div className="text-ds-primary-green">
-          <Icon name="check" />
-        </div>
-      ) : (
-        <div className={copyIconClass}>
-          <Icon name="clipboardCopy" />
-        </div>
-      )}
-
-      <span
-        data-testid={`clipboard${testIdExtension}`}
-        className={cn('cursor-pointer text-xs font-semibold', {
-          [copyIconClass]: variant === 'muted',
-          'sr-only': !showLabel,
-          'text-ds-blue-darker': variant === 'default',
-        })}
-      >
-        copy
-      </span>
-    </button>
-  )
-}
-
-export default CopyClipboard
+export { CopyClipboard }

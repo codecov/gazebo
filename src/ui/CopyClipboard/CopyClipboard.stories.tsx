@@ -1,15 +1,14 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import CopyClipboard from './CopyClipboard'
+import { CopyClipboard } from './CopyClipboard'
 
 const meta: Meta<typeof CopyClipboard> = {
   title: 'Components/CopyClipboard',
   component: CopyClipboard,
   argTypes: {
-    string: {
+    value: {
       description: "The value to be copied to the clicker's clipboard",
       control: 'text',
-      defaultValue: 'asdf',
     },
   },
 }
@@ -18,6 +17,9 @@ export default meta
 type Story = StoryObj<typeof CopyClipboard>
 
 export const Default: Story = {
+  args: {
+    value: 'asdf',
+  },
   render: (args) => (
     <div className="flex items-center gap-8">
       <CopyClipboard {...args} />
