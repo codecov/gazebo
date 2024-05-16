@@ -16,13 +16,11 @@ describe('CopyClipboard', () => {
     return { user }
   }
 
-  describe('when the component is mounted', () => {
-    it('renders the button with clipboard icon', () => {
-      render(<CopyClipboard value="to be copied" />)
+  it('renders the button with clipboard icon', () => {
+    render(<CopyClipboard value="to be copied" />)
 
-      const clipboard = screen.getByText(/clipboard-copy/, { exact: true })
-      expect(clipboard).toBeInTheDocument()
-    })
+    const clipboard = screen.getByText(/clipboard-copy/, { exact: true })
+    expect(clipboard).toBeInTheDocument()
   })
 
   describe('when the user clicks on the button to copy', () => {
