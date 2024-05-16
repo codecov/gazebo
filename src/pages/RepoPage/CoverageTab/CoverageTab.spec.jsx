@@ -138,12 +138,17 @@ const branchesContentsMock = {
       branch: {
         head: {
           pathContents: {
+            __typename: 'PathContents',
             results: [
               {
+                __typename: 'PathContentDir',
+                hits: 9,
+                misses: 0,
+                partials: 0,
+                lines: 10,
                 name: 'src',
                 path: 'src',
                 percentCovered: 100.0,
-                __typename: 'PathContentDir',
               },
             ],
           },
@@ -255,6 +260,7 @@ const mockFlagSelect = {
 const mockBackfillFlag = {
   owner: {
     repository: {
+      __typename: 'Repository',
       flagsMeasurementsActive: true,
       flagsMeasurementsBackfilled: true,
     },
@@ -336,7 +342,7 @@ describe('Coverage Tab', () => {
         res(ctx.status(200), ctx.data(overviewMock))
       ),
       graphql.query('GetRepoCoverage', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({}))
+        res(ctx.status(200), ctx.data({ owner: null }))
       ),
       graphql.query('GetBranchCoverageMeasurements', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockBranchMeasurements))
