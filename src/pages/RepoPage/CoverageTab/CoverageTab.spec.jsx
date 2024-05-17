@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -261,6 +261,7 @@ const mockBranchComponents = {
 const mockFlagSelect = {
   owner: {
     repository: {
+      __typename: 'Repository',
       flags: {
         edges: [
           {
@@ -416,6 +417,9 @@ describe('Coverage Tab', () => {
       setup({ fileCount: 100 })
       render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/repoName']) })
 
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+
       const hideChart = await screen.findByText(/Hide Chart/)
       expect(hideChart).toBeInTheDocument()
 
@@ -439,7 +443,6 @@ describe('Coverage Tab', () => {
 
   it('renders default summary', async () => {
     setup()
-
     render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/repoName']) })
 
     const summary = screen.getByText(/Summary/)
