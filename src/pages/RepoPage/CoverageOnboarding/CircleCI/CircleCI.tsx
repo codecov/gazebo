@@ -131,7 +131,10 @@ function Step2({ defaultBranch }: Step2Props) {
         </p>
         <div className="flex items-start justify-between overflow-auto whitespace-pre-line rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
           <pre className="whitespace-pre">{orbsString}</pre>
-          <CopyClipboard value={orbsString} />
+          <CopyClipboard
+            value={orbsString}
+            label="Copy Codecov orb configuration"
+          />
         </div>
         <ExampleBlurb />
       </Card.Content>

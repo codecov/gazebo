@@ -118,7 +118,10 @@ function Step3({ uploadCommand }: Step3Props) {
       <Card.Content className="flex flex-col gap-4">
         <pre className="flex basis-2/3 items-center justify-between gap-2 rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
           <div className="w-0 flex-1 overflow-hidden">{uploadCommand}</div>
-          <CopyClipboard value={uploadCommand} />
+          <CopyClipboard
+            value={uploadCommand}
+            label="Copy Codecov CLI's upload command"
+          />
         </pre>
         <ExampleBlurb />
       </Card.Content>

@@ -163,6 +163,7 @@ const StepThree: React.FC = () => {
           {pluginConfig}
           <CopyClipboard
             value={pluginConfig}
+            label="Copy bundler plugin configuration"
             data-testid="clipboard-plugin-config"
             onClick={() => {
               copiedConfigMetric('webpack')
@@ -191,6 +192,7 @@ const StepFour: React.FC = () => {
           {commitString}{' '}
           <CopyClipboard
             value={commitString}
+            label="Copy git commit and push commands"
             data-testid="clipboard-commit-command"
             onClick={() => {
               copiedCommitMetric('webpack')

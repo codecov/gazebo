@@ -16,7 +16,7 @@ const TokenWrapper = ({ token, onClick, truncate = false, encodedToken }) => {
       >
         {encodedToken ? encodedToken : token}
       </pre>
-      <CopyClipboard value={token} onClick={onClick} />
+      <CopyClipboard value={token} onClick={onClick} label="Copy token" />
     </div>
   )
 }

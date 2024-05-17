@@ -125,7 +125,10 @@ function Step2({ defaultBranch, actionString }: Step2Props) {
 
         <div className="flex items-start justify-between overflow-auto rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
           <pre className="whitespace-pre">{actionString}</pre>
-          <CopyClipboard value={actionString} />
+          <CopyClipboard
+            value={actionString}
+            label="Copy Codecov Action configuration"
+          />
         </div>
         <ExampleBlurb />
       </Card.Content>
