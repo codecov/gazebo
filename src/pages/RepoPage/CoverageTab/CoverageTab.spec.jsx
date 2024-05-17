@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -12,6 +12,8 @@ import CoverageTab from './CoverageTab'
 jest.mock('shared/featureFlags')
 jest.mock('./Summary', () => () => 'Summary')
 jest.mock('./SummaryTeamPlan', () => () => 'SummaryTeamPlan')
+jest.mock('./subroute/Sunburst', () => () => 'Sunburst')
+jest.mock('./subroute/Fileviewer', () => () => 'FileViewer')
 
 const mockRepoSettings = (isPrivate = false) => ({
   owner: {
@@ -300,7 +302,13 @@ const wrapper =
     (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={initialEntries}>
-          <Route path="/:provider/:owner/:repo" exact={true}>
+          <Route
+            path={[
+              '/:provider/:owner/:repo/blob/:ref/:path+',
+              '/:provider/:owner/:repo',
+            ]}
+            exact={true}
+          >
             {children}
           </Route>
         </MemoryRouter>
@@ -412,18 +420,23 @@ describe('Coverage Tab', () => {
     jest.resetAllMocks()
   })
 
+  it('renders default summary', async () => {
+    setup()
+    render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/repoName']) })
+
+    const summary = screen.getByText(/Summary/)
+    expect(summary).toBeInTheDocument()
+  })
+
   describe('file count is under 200_000', () => {
     it('renders the sunburst chart', async () => {
       setup({ fileCount: 100 })
       render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/repoName']) })
 
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
-
       const hideChart = await screen.findByText(/Hide Chart/)
       expect(hideChart).toBeInTheDocument()
 
-      const sunburst = await screen.findByTestId('sunburst')
+      const sunburst = await screen.findByText('Sunburst')
       expect(sunburst).toBeInTheDocument()
     }, 100_000)
   })
@@ -436,17 +449,9 @@ describe('Coverage Tab', () => {
       const hideChart = await screen.findByText(/Hide Chart/)
       expect(hideChart).toBeInTheDocument()
 
-      const sunburst = screen.queryByTestId('sunburst')
+      const sunburst = screen.queryByText('Sunburst')
       expect(sunburst).not.toBeInTheDocument()
     })
-  })
-
-  it('renders default summary', async () => {
-    setup()
-    render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/repoName']) })
-
-    const summary = screen.getByText(/Summary/)
-    expect(summary).toBeInTheDocument()
   })
 
   it('renders the coverage area chart', async () => {
@@ -486,5 +491,17 @@ describe('Coverage Tab', () => {
       /Once merged to your default branch, Codecov will show your report results on this dashboard./
     )
     expect(firstPullRequestBanner).toBeInTheDocument()
+  })
+
+  describe('on file route', () => {
+    it('renders FileViewer', async () => {
+      setup({ fileCount: 100 })
+      render(<CoverageTab />, {
+        wrapper: wrapper(['/gh/test-org/repoName/blob/main/src/file.tsx']),
+      })
+
+      const fileViewer = await screen.findByText(/FileViewer/)
+      expect(fileViewer).toBeInTheDocument()
+    })
   })
 })
