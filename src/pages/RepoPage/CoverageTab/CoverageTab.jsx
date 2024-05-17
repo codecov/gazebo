@@ -64,7 +64,7 @@ function CoverageTab() {
         <FirstPullRequestBanner />
       ) : null}
       {showTeamSummary ? <SummaryTeamPlan /> : <Summary />}
-      {!showTeamSummary && (
+      {!showTeamSummary ? (
         <SentryRoute
           path={[
             '/:provider/:owner/:repo/tree/:branch/:path+',
@@ -97,7 +97,7 @@ function CoverageTab() {
             </ToggleElement>
           </Suspense>
         </SentryRoute>
-      )}
+      ) : null}
       <Switch>
         <SentryRoute path="/:provider/:owner/:repo/blob/:ref/:path+" exact>
           <Suspense fallback={<Loader />}>
