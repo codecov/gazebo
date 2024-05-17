@@ -1,7 +1,7 @@
 import keyBy from 'lodash/keyBy'
 import mapValues from 'lodash/mapValues'
 
-import { PathContentsRepositorySchema } from 'services/pathContents/constants'
+import { PathContentsRepositorySchema } from './constants'
 
 export function extractCoverageFromResponse(
   repository: PathContentsRepositorySchema | undefined | null
@@ -14,7 +14,7 @@ export function extractCoverageFromResponse(
   if (!coverageFile) return null
   const lineWithCoverage = keyBy(coverageFile?.coverage, 'line')
   const fileCoverage = mapValues(lineWithCoverage, 'coverage')
-  const coverageTotal = coverageFile?.totals?.coverage
+  const coverageTotal = coverageFile?.totals?.percentCovered
   const hashedPath = coverageFile?.hashedPath
 
   return {
@@ -25,6 +25,7 @@ export function extractCoverageFromResponse(
         ? 0
         : coverageTotal,
     flagNames: coverageSource?.flagNames ?? [],
+    componentNames: coverageSource?.components?.map(({ name }) => name) ?? [],
     isCriticalFile: !!coverageFile?.isCriticalFile,
     ...(hashedPath && { hashedPath }),
   }
