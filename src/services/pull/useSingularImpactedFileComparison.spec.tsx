@@ -105,11 +105,26 @@ const mockResponse = {
   },
 }
 
+const mockMissingBaseCommitResponse = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      pull: {
+        compareWithBase: {
+          __typename: 'MissingBaseCommit',
+          message: 'missing base commit',
+        },
+      },
+    },
+  },
+}
+
 describe('useSingularImpactedFileComparison', () => {
   function setup({
     isNotFoundError = false,
     isOwnerNotActivatedError = false,
     isUnsuccessfulParseError = false,
+    isMissingBaseCommit = false,
   }) {
     server.use(
       graphql.query('ImpactedFileComparison', (req, res, ctx) => {
@@ -119,6 +134,8 @@ describe('useSingularImpactedFileComparison', () => {
           return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
         } else if (isUnsuccessfulParseError) {
           return res(ctx.status(200), ctx.data(mockIncorrectResponse))
+        } else if (isMissingBaseCommit) {
+          return res(ctx.status(200), ctx.data(mockMissingBaseCommitResponse))
         }
         return res(ctx.status(200), ctx.data(mockResponse))
       })
@@ -238,6 +255,33 @@ describe('useSingularImpactedFileComparison', () => {
         expect(result.current.error).toEqual(
           expect.objectContaining({
             status: 403,
+          })
+        )
+      )
+    })
+  })
+
+  describe('when comparison is of other type', () => {
+    it('returns error rejected', async () => {
+      setup({ isMissingBaseCommit: true })
+      const { result } = renderHook(
+        () =>
+          useSingularImpactedFileComparison({
+            provider: 'gh',
+            owner: 'codecov',
+            repo: 'gazebo',
+            pullId: '1',
+            path: 'path',
+          }),
+        {
+          wrapper,
+        }
+      )
+      await waitFor(() => expect(result.current.isError).toBeTruthy())
+      await waitFor(() =>
+        expect(result.current.error).toEqual(
+          expect.objectContaining({
+            status: 404,
           })
         )
       )

@@ -213,7 +213,12 @@ export function useSingularImpactedFileComparison({
             data?.owner?.repository?.pull?.compareWithBase?.impactedFile
           )
         }
-        return null
+
+        return Promise.reject({
+          status: 404,
+          data: {},
+          dev: 'useSingularImpactedFileComparison - 404 missing data',
+        } satisfies NetworkErrorObject)
       }),
     suspense: false,
   })
