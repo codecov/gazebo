@@ -20,11 +20,12 @@ interface CopyClipboardProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof copyClipboard> {
   value: string
+  label?: string
   onClick?: () => void
 }
 
 const CopyClipboard = React.forwardRef<HTMLButtonElement, CopyClipboardProps>(
-  ({ value, onClick = () => {}, variant, className, ...props }, ref) => {
+  ({ value, label, onClick = () => {}, variant, className, ...props }, ref) => {
     const [showSuccess, setShowSuccess] = useState(false)
 
     const handleCopy = () => {
@@ -35,7 +36,12 @@ const CopyClipboard = React.forwardRef<HTMLButtonElement, CopyClipboardProps>(
     }
 
     return (
-      <button onClick={handleCopy} ref={ref} {...props}>
+      <button
+        onClick={handleCopy}
+        aria-label={label ?? `Copy ${value}`}
+        ref={ref}
+        {...props}
+      >
         {showSuccess ? (
           <div className="text-ds-primary-green">
             <Icon name="check" />

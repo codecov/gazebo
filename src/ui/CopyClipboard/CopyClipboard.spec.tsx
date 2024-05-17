@@ -59,5 +59,23 @@ describe('CopyClipboard', () => {
         expect(clipboard).toBeInTheDocument()
       })
     })
+
+    describe('when no label prop is passed', () => {
+      it('uses value in aria-label', async () => {
+        render(<CopyClipboard value="asdf" />)
+
+        const clipboard = await screen.findByLabelText('Copy asdf')
+        expect(clipboard).toBeInTheDocument()
+      })
+    })
+
+    describe('when label prop is passed', () => {
+      it('uses label as the aria-label attribute on the button', async () => {
+        render(<CopyClipboard value="asdf" label="Aria label copy" />)
+
+        const clipboard = await screen.findByLabelText('Aria label copy')
+        expect(clipboard).toBeInTheDocument()
+      })
+    })
   })
 })
