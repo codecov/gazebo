@@ -1,14 +1,16 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import Cookies from 'js-cookie'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 
-import config from 'config'
+import config, {
+  COOKIE_SESSION_EXPIRY,
+  LOCAL_STORAGE_SESSION_TRACKING_KEY,
+} from 'config'
 
 import { useImage } from 'services/image'
 
 import Dropdown from './Dropdown'
-
-const LOCAL_STORAGE_SESSION_TRACKING_KEY = 'tracking-session-expiry'
 
 const currentUser = {
   user: {
@@ -19,6 +21,8 @@ const currentUser = {
 
 jest.mock('services/image')
 jest.mock('config')
+
+jest.mock('js-cookie')
 
 const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
   (initialEntries = '/gh') =>
@@ -103,10 +107,11 @@ describe('Dropdown', () => {
         expect(link).toHaveAttribute('href', '/logout/gh')
       })
 
-      it('removes session expiry tracking key on sign out', async () => {
+      it('removes session expiry tracking key and session_expiry cookie on sign out', async () => {
         const { user, mockRemoveItem } = setup()
 
         jest.spyOn(console, 'error').mockImplementation()
+        const removeSpy = jest.spyOn(Cookies, 'remove').mockReturnValue()
         render(<Dropdown currentUser={currentUser} />, {
           wrapper: wrapper(),
         })
@@ -121,6 +126,7 @@ describe('Dropdown', () => {
         expect(mockRemoveItem).toHaveBeenCalledWith(
           LOCAL_STORAGE_SESSION_TRACKING_KEY
         )
+        expect(removeSpy).toHaveBeenCalledWith(COOKIE_SESSION_EXPIRY)
       })
 
       it('shows manage app access link', async () => {

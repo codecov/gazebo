@@ -9,7 +9,7 @@ import SessionExpiryTracker from './SessionExpiryTracker'
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/gh']}>
     <Route path="/:provider">{children}</Route>
-    <Route path="/logout" render={() => <SessionExpiredBanner />} />
+    <Route path="/login" render={() => <SessionExpiredBanner />} />
   </MemoryRouter>
 )
 

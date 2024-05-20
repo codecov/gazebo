@@ -2,6 +2,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { LOCAL_STORAGE_SESSION_EXPIRED_KEY } from 'config'
+
 import EnterpriseLoginLayout from './EnterpriseLoginLayout'
 
 jest.mock('./Header', () => () => 'Header')
@@ -64,19 +66,19 @@ describe('EnterpriseLoginLayout', () => {
     expect(ToastNotifications).toBeInTheDocument()
   })
 
-  it('renders the session expiry tracker if no tracking session found', () => {
+  it('does not render the session expired banner if session not expired', () => {
     render(<>children</>, { wrapper })
 
-    const session = screen.getByText(/SessionExpiryTracker/)
-    expect(session).toBeInTheDocument()
+    const session = screen.queryByText(/Your session has expired/)
+    expect(session).not.toBeInTheDocument()
   })
 
-  it('does not render the session expiry tracker if tracking session found', () => {
-    localStorage.setItem('tracking-session-expiry', 'true')
+  it('renders the session expired banner if session is expired', () => {
+    localStorage.setItem(LOCAL_STORAGE_SESSION_EXPIRED_KEY, 'true')
 
     render(<>children</>, { wrapper })
 
-    const session = screen.queryByText(/SessionExpiryTracker/)
-    expect(session).not.toBeInTheDocument()
+    const session = screen.getByText(/Your session has expired/)
+    expect(session).toBeInTheDocument()
   })
 })
