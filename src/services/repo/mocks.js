@@ -8,6 +8,7 @@ export const flagsSelectHandler = graphql.query(
       ctx.data({
         owner: {
           repository: {
+            __typename: 'Repository',
             flags: {
               pageInfo: {
                 hasNextPage: false,

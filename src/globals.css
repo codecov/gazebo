@@ -79,6 +79,7 @@
 }
 
 #sentry-feedback {
-  --submit-background: rgb(var(--color-ds-blue-darker));
-  --submit-background-hover: rgb(var(--color-ds-blue-quinary));
+  --accent-background: rgb(var(--color-ds-blue-darker));
+  --accent-background-hover: rgb(var(--color-ds-blue-quinary));
+  --font-family: 'Poppins', sans-serif;
 }

@@ -124,12 +124,14 @@ function createTableData({
 
   const data = tableData?.map(
     ({
+      componentId,
       name,
       percentCovered,
       percentChange,
       measurements,
       lastUploaded,
     }: {
+      componentId: string
       name: string
       percentCovered: number | null
       percentChange: number | null
@@ -180,7 +182,13 @@ function createTableData({
         <div className="flex items-center justify-center">
           <button
             data-testid="delete-component"
-            onClick={() => setModalInfo({ componentId: name, showModal: true })}
+            onClick={() =>
+              setModalInfo({
+                componentId: componentId,
+                name: name,
+                showModal: true,
+              })
+            }
             className="text-ds-gray-tertiary hover:text-ds-gray-senary"
             aria-label={'delete ' + name}
           >
@@ -308,6 +316,7 @@ function ComponentsTable() {
   const { data: repoConfigData } = useRepoConfig({ provider, owner, repo })
   const [modalInfo, setModalInfo] = useState({
     componentId: null,
+    name: null,
     showModal: false,
   })
   const [sorting, setSorting] = useState<SortingState>([
@@ -332,8 +341,9 @@ function ComponentsTable() {
     <>
       <DeleteComponentModal
         componentId={modalInfo?.componentId || ''}
+        name={modalInfo?.name || ''}
         closeModal={() => {
-          setModalInfo({ componentId: null, showModal: false })
+          setModalInfo({ componentId: null, name: null, showModal: false })
         }}
         isOpen={modalInfo?.showModal}
       />

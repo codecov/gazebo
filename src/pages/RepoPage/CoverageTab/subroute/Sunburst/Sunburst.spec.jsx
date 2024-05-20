@@ -51,9 +51,13 @@ const overviewMock = {
   },
 }
 const repoConfigMock = {
-  indicationRange: {
-    lowerRange: 60,
-    upperRange: 80,
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: { upperRange: 80, lowerRange: 60 },
+      },
+    },
   },
 }
 

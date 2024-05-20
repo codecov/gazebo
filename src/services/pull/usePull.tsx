@@ -67,7 +67,7 @@ const ImpactedFilesSchema = z.discriminatedUnion('__typename', [
   }),
 ])
 
-const flagsComparisonsSchema = z
+export const FlagsComparisonsSchema = z
   .object({
     name: z.string().nullable(),
     patchTotals: percentCoveredSchema.nullable(),
@@ -76,7 +76,7 @@ const flagsComparisonsSchema = z
   })
   .nullable()
 
-export type FlagsComparison = z.infer<typeof flagsComparisonsSchema>
+export type FlagsComparison = z.infer<typeof FlagsComparisonsSchema>
 
 const ComparisonSchema = z.object({
   __typename: z.literal('Comparison'),
@@ -85,12 +85,12 @@ const ComparisonSchema = z.object({
   baseTotals: percentCoveredSchema.nullable(),
   headTotals: percentCoveredSchema.nullable(),
   impactedFiles: ImpactedFilesSchema,
-  flagComparisons: z.array(flagsComparisonsSchema).nullable(),
+  flagComparisons: z.array(FlagsComparisonsSchema).nullable(),
   changeCoverage: z.number().nullable(),
   hasDifferentNumberOfHeadAndBaseReports: z.boolean(),
 })
 
-const CompareWithBaseSchema = z.discriminatedUnion('__typename', [
+export const CompareWithBaseSchema = z.discriminatedUnion('__typename', [
   ComparisonSchema,
   FirstPullRequestSchema,
   MissingBaseCommitSchema,

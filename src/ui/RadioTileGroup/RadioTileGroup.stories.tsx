@@ -57,7 +57,8 @@ export const WithDescription: Story = {
       <RadioTileGroup.Item value="description" flex={args.flex}>
         <RadioTileGroup.Label>Description</RadioTileGroup.Label>
         <RadioTileGroup.Description>
-          A RadioTileGroup Item can optionally have a description
+          A RadioTileGroup Item can optionally have a description, which is a
+          great way to elaborate on the value of the option.
         </RadioTileGroup.Description>
       </RadioTileGroup.Item>
       <RadioTileGroup.Item value="noDescription" flex={args.flex}>

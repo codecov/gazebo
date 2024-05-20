@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useHistory } from 'react-router-dom'
 import { z } from 'zod'
 
 import Api from 'shared/api'
@@ -36,7 +37,9 @@ interface SaveTermsAgreementOptions {
 }
 export function useSaveTermsAgreement(options: SaveTermsAgreementOptions = {}) {
   const queryClient = useQueryClient()
+  const history = useHistory()
   const { onSuccess, ...rest } = options
+
   return useMutation({
     mutationFn: (input: SaveTermsAgreementInput) => {
       const parsedInput = SaveTermsAgreementInputConfig.parse(input)
@@ -79,6 +82,10 @@ export function useSaveTermsAgreement(options: SaveTermsAgreementOptions = {}) {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['InternalUser'] })
       onSuccess && onSuccess(data)
+
+      if (!data?.data?.saveTermsAgreement?.error) {
+        history.replace('/')
+      }
     },
     ...rest,
   })
