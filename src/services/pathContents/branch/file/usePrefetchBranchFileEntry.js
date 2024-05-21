@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 
-import { extractCoverageFromResponse } from 'services/file/utils'
+import { extractCoverageFromResponse } from 'services/pathContents/utils'
 import Api from 'shared/api'
 
 import { queryForCommitFile as query } from '../../constants'
@@ -17,17 +17,7 @@ export function usePrefetchBranchFileEntry({
 
   const runPrefetch = async () =>
     await queryClient.prefetchQuery({
-      queryKey: [
-        'commit',
-        provider,
-        branch,
-        owner,
-        repo,
-        path,
-        query,
-        extractCoverageFromResponse,
-        flags,
-      ],
+      queryKey: ['commit', provider, branch, owner, repo, path, query, flags],
       queryFn: () =>
         Api.graphql({
           provider,

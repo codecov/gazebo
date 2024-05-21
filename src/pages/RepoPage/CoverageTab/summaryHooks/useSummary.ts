@@ -6,9 +6,15 @@ import { useRepoCoverage, useRepoOverview } from 'services/repo'
 
 import { useBranchSelector } from '../hooks'
 
+interface URLParams {
+  repo: string
+  owner: string
+  provider: string
+}
+
 export function useSummary() {
   const [branchSearchTerm, setBranchSearchTerm] = useState()
-  const { repo, owner, provider } = useParams()
+  const { repo, owner, provider } = useParams<URLParams>()
   const { data: overview, isLoading } = useRepoOverview({
     provider,
     repo,
@@ -34,8 +40,8 @@ export function useSummary() {
     useBranches({ repo, owner, provider })
 
   const { selection, branchSelectorProps } = useBranchSelector({
-    branches: branchesData?.branches,
-    defaultBranch: overview?.defaultBranch,
+    branches: branchesData?.branches ?? [],
+    defaultBranch: overview?.defaultBranch ?? '',
   })
 
   const { data, isLoading: isLoadingRepoCoverage } = useRepoCoverage({

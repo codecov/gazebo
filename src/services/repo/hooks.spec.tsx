@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
+import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import {
@@ -16,7 +17,7 @@ const queryClient = new QueryClient({
 })
 
 const wrapper =
-  (initialEntries = '/gh/codecov/test') =>
+  (initialEntries = '/gh/codecov/test'): React.FC<React.PropsWithChildren> =>
   ({ children }) =>
     (
       <MemoryRouter initialEntries={[initialEntries]}>
@@ -31,15 +32,18 @@ const wrapper =
 const server = setupServer()
 
 beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
 afterAll(() => server.close())
 
 const provider = 'gh'
-const owner = 'RulaKhaled'
-const repo = 'test'
+const owner = 'cool-guy'
+const repo = 'cool-repo'
 
 describe('useRepo', () => {
-  function setup(apiData) {
+  function setup(apiData: any) {
     server.use(
       graphql.query('GetRepo', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(apiData))
@@ -57,12 +61,17 @@ describe('useRepo', () => {
       },
     }
 
-    beforeEach(() => {
-      setup(badData)
+    beforeAll(() => {
+      console.error = () => {}
+    })
+
+    afterAll(() => {
+      jest.resetAllMocks()
     })
 
     describe('when incorrect data is loaded', () => {
       it('throws an error', async () => {
+        setup(badData)
         const { result } = renderHook(
           () => useRepo({ provider, owner, repo }),
           {
@@ -137,7 +146,7 @@ describe('useEraseRepoContent', () => {
       rest.patch(
         `internal/github/codecov/repos/test/erase/`,
         (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json())
+          return res(ctx.status(200), ctx.json({}))
         }
       )
     )
@@ -154,7 +163,7 @@ describe('useEraseRepoContent', () => {
           wrapper: wrapper(),
         })
 
-        result.current.mutate(null)
+        result.current.mutate()
 
         await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
       })
@@ -212,6 +221,7 @@ describe('useUpdateRepo', () => {
           wrapper: wrapper(),
         })
 
+        // @ts-expect-error
         result.current.mutate({})
 
         await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
@@ -224,45 +234,129 @@ describe('useRepoBackfilled', () => {
   const dataReturned = {
     owner: {
       repository: {
+        __typename: 'Repository',
         flagsMeasurementsActive: true,
         flagsMeasurementsBackfilled: true,
       },
     },
   }
 
-  function setup() {
+  const mockUnsuccessfulParseError = {}
+
+  const mockRepoNotFound = {
+    owner: {
+      repository: {
+        __typename: 'NotFoundError',
+        message: 'Repository not found',
+      },
+    },
+  }
+
+  const mockOwnerNotActivated = {
+    owner: {
+      repository: {
+        __typename: 'OwnerNotActivatedError',
+        message: 'Owner not activated',
+      },
+    },
+  }
+
+  interface SetupArgs {
+    isNotFoundError?: boolean
+    isOwnerNotActivatedError?: boolean
+    isUnsuccessfulParseError?: boolean
+  }
+
+  function setup({
+    isNotFoundError = false,
+    isOwnerNotActivatedError = false,
+    isUnsuccessfulParseError = false,
+  }: SetupArgs) {
     server.use(
       graphql.query('BackfillFlagMemberships', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(dataReturned))
+        if (isNotFoundError) {
+          return res(ctx.status(200), ctx.data(mockRepoNotFound))
+        } else if (isOwnerNotActivatedError) {
+          return res(ctx.status(200), ctx.data(mockOwnerNotActivated))
+        } else if (isUnsuccessfulParseError) {
+          return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
+        } else {
+          return res(ctx.status(200), ctx.data(dataReturned))
+        }
       })
     )
   }
 
   describe('when called', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     describe('when data is loaded', () => {
       it('returns the data', async () => {
-        const { result } = renderHook(
-          () =>
-            useRepoBackfilled({
-              provider: 'gh',
-              owner: 'owner',
-              repo: 'another-test',
-            }),
-          {
-            wrapper: wrapper(),
-          }
-        )
+        setup({})
+        const { result } = renderHook(() => useRepoBackfilled(), {
+          wrapper: wrapper(),
+        })
 
         const expectedResponse = {
+          __typename: 'Repository',
           flagsMeasurementsActive: true,
           flagsMeasurementsBackfilled: true,
         }
         await waitFor(() =>
           expect(result.current.data).toEqual(expectedResponse)
+        )
+      })
+    })
+
+    describe('can throw errors', () => {
+      beforeAll(() => {
+        console.error = () => {}
+      })
+
+      afterAll(() => {
+        jest.resetAllMocks()
+      })
+      it('can return unsuccessful parse error', async () => {
+        setup({ isUnsuccessfulParseError: true })
+        const { result } = renderHook(() => useRepoBackfilled(), {
+          wrapper: wrapper(),
+        })
+
+        await waitFor(() => expect(result.current.isError).toBeTruthy())
+        await waitFor(() =>
+          expect(result.current.error).toEqual(
+            expect.objectContaining({
+              status: 404,
+            })
+          )
+        )
+      })
+      it('can return not found error', async () => {
+        setup({ isNotFoundError: true })
+        const { result } = renderHook(() => useRepoBackfilled(), {
+          wrapper: wrapper(),
+        })
+
+        await waitFor(() => expect(result.current.isError).toBeTruthy())
+        await waitFor(() =>
+          expect(result.current.error).toEqual(
+            expect.objectContaining({
+              status: 404,
+            })
+          )
+        )
+      })
+      it('can return owner not activated error', async () => {
+        setup({ isOwnerNotActivatedError: true })
+        const { result } = renderHook(() => useRepoBackfilled(), {
+          wrapper: wrapper(),
+        })
+
+        await waitFor(() => expect(result.current.isError).toBeTruthy())
+        await waitFor(() =>
+          expect(result.current.error).toEqual(
+            expect.objectContaining({
+              status: 403,
+            })
+          )
         )
       })
     })

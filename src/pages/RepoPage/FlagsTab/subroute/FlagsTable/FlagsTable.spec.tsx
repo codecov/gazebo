@@ -18,6 +18,7 @@ import FlagsTable, { FlagTable } from './FlagsTable'
 const mockRepoConfig = {
   owner: {
     repository: {
+      __typename: 'Repository',
       repositoryConfig: {
         indicationRange: { upperRange: 80, lowerRange: 60 },
       },

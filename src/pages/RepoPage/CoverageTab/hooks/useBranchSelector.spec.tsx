@@ -17,7 +17,7 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const mockBranches = (branchName) => ({
+const mockBranches = (branchName: string) => ({
   owner: {
     repository: {
       __typename: 'Repository',
@@ -36,7 +36,7 @@ const branches = [
   { name: 'imogen', head: { commitid: 'commit-123' } },
 ]
 
-const wrapper =
+const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
   (initialEntries = '/gh/codecov/cool-repo') =>
   ({ children }) =>
     (
@@ -67,7 +67,7 @@ afterAll(() => {
 })
 
 describe('useBranchSelector', () => {
-  function setup(branchName, returnBranches = true) {
+  function setup(branchName: string, returnBranches: boolean = true) {
     server.use(
       graphql.query('GetBranch', (req, res, ctx) => {
         if (returnBranches) {
@@ -271,17 +271,17 @@ describe('useBranchSelector', () => {
   describe('branches is undefined', () => {
     beforeEach(() => setup('branchName', false))
 
-    it('returns undefined selection', async () => {
+    it('returns null selection', async () => {
       const defaultBranch = 'fcg'
       const { result } = renderHook(
-        () => useBranchSelector({ defaultBranch }),
+        () => useBranchSelector({ branches: [], defaultBranch }),
         { wrapper: wrapper('/gh/codecov/cool-repo/blob/fcg/file.js') }
       )
 
       await waitFor(() =>
         expect(result.current.selection).toStrictEqual({
           name: 'Select branch',
-          head: {},
+          head: null,
         })
       )
     })

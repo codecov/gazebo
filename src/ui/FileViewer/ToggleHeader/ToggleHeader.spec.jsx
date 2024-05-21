@@ -11,6 +11,7 @@ jest.mock('react-use/lib/useIntersection')
 const mockFlagResponse = {
   owner: {
     repository: {
+      __typename: 'Repository',
       flags: {
         edges: [
           {

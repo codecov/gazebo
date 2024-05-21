@@ -1,14 +1,30 @@
 import { useParams } from 'react-router-dom'
 
-import { useBranch } from 'services/branches'
+import { Branch, useBranch } from 'services/branches'
 
-const getDecodedBranch = (branch) =>
+const getDecodedBranch = (branch?: string) =>
   !!branch ? decodeURIComponent(branch) : branch
 
-const getDecodedRef = (ref) => (!!ref ? decodeURIComponent(ref) : ref)
+const getDecodedRef = (ref?: string) => (!!ref ? decodeURIComponent(ref) : ref)
 
-export function useBranchSelector({ branches, defaultBranch }) {
-  const { provider, owner, repo, branch, ref } = useParams()
+interface URLParams {
+  provider: string
+  owner: string
+  repo: string
+  branch: string
+  ref: string
+}
+
+interface UseBranchSelectorArgs {
+  branches: Branch[]
+  defaultBranch: string
+}
+
+export function useBranchSelector({
+  branches,
+  defaultBranch,
+}: UseBranchSelectorArgs) {
+  const { provider, owner, repo, branch, ref } = useParams<URLParams>()
   // Decoding the value when it is undefined returns "undefined" as a string, which breaks the selector
   const decodedBranch = getDecodedBranch(branch)
   const decodedRef = getDecodedRef(ref)
@@ -29,7 +45,7 @@ export function useBranchSelector({ branches, defaultBranch }) {
   if (!selection) {
     selection = {
       name: 'Select branch',
-      head: {},
+      head: null,
     }
   }
 

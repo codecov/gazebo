@@ -13,39 +13,22 @@ const mockData = {
       commit: {
         commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
         flagNames: ['a', 'b'],
+        components: [],
         coverageFile: {
           isCriticalFile: true,
           hashedPath: 'hashed-path',
           content:
             'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n',
           coverage: [
-            {
-              line: 1,
-              coverage: 'H',
-            },
-            {
-              line: 2,
-              coverage: 'P',
-            },
-            {
-              line: 3,
-              coverage: 'H',
-            },
-            {
-              line: 4,
-              coverage: 'M',
-            },
-            {
-              line: 5,
-              coverage: 'H',
-            },
-            {
-              line: 6,
-              coverage: 'H',
-            },
+            { line: 1, coverage: 'H' },
+            { line: 2, coverage: 'P' },
+            { line: 3, coverage: 'H' },
+            { line: 4, coverage: 'M' },
+            { line: 5, coverage: 'H' },
+            { line: 6, coverage: 'H' },
           ],
           totals: {
-            coverage: 66.67,
+            percentCovered: 66.67,
           },
         },
       },
@@ -198,6 +181,7 @@ describe('usePrefetchCommitFileEntry', () => {
           '6': 'H',
         },
         flagNames: ['a', 'b'],
+        componentNames: [],
         hashedPath: 'hashed-path',
         isCriticalFile: true,
         totals: 66.67,
