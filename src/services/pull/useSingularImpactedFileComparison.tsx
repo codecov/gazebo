@@ -17,7 +17,7 @@ import Api from 'shared/api'
 import { NetworkErrorObject } from 'shared/api/helpers'
 import A from 'ui/A'
 
-import { FileComparisonWithBase } from './fragments'
+import { ComparisonSchema, FileComparisonWithBase } from './fragments'
 import { transformImpactedFileData } from './utils'
 
 const query = `
@@ -42,73 +42,21 @@ const query = `
     ${FileComparisonWithBase}
 `
 
-const ImpactedFileSchema = z.object({
-  headName: z.string().nullable(),
-  hashedPath: z.string(),
-  isNewFile: z.boolean(),
-  isRenamedFile: z.boolean(),
-  isDeletedFile: z.boolean(),
-  isCriticalFile: z.boolean(),
-  baseCoverage: z
-    .object({
-      percentCovered: z.number().nullable(),
-    })
-    .nullable(),
-  headCoverage: z
-    .object({
-      percentCovered: z.number().nullable(),
-    })
-    .nullable(),
-  patchCoverage: z
-    .object({
-      percentCovered: z.number().nullable(),
-    })
-    .nullable(),
-  changeCoverage: z.number().nullable(),
-  segments: z.discriminatedUnion('__typename', [
-    z.object({
-      __typename: z.literal('SegmentComparisons'),
-      results: z.array(
-        z.object({
-          header: z.string(),
-          hasUnintendedChanges: z.boolean(),
-          lines: z.array(
-            z.object({
-              baseNumber: z.string().nullable(),
-              headNumber: z.string().nullable(),
-              baseCoverage: z.string().nullable(),
-              headCoverage: z.string().nullable(),
-              content: z.string().nullable(),
-              coverageInfo: z.object({
-                hitCount: z.number().nullable(),
-                hitUploadIds: z.array(z.number()).nullable(),
-              }),
-            })
-          ),
-        })
-      ),
-    }),
-  ]),
-})
-
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
-  pull: z
-    .object({
-      compareWithBase: z.discriminatedUnion('__typename', [
-        z.object({
-          __typename: z.literal('Comparison'),
-          impactedFile: ImpactedFileSchema,
-        }),
+  pull: z.object({
+    compareWithBase: z
+      .discriminatedUnion('__typename', [
+        ComparisonSchema,
         FirstPullRequestSchema,
         MissingBaseCommitSchema,
-        MissingBaseReportSchema,
-        MissingComparisonSchema,
         MissingHeadCommitSchema,
+        MissingComparisonSchema,
+        MissingBaseReportSchema,
         MissingHeadReportSchema,
-      ]),
-    })
-    .nullable(),
+      ])
+      .nullable(),
+  }),
 })
 
 export const RepoSchema = z.object({
