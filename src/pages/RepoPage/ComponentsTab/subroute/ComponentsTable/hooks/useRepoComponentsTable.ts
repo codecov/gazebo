@@ -1,7 +1,6 @@
 import { format, sub } from 'date-fns'
 import { useParams } from 'react-router-dom'
 
-import { SortingDirection } from 'old_ui/Table/constants'
 import {
   AFTER_DATE_FORMAT_OPTIONS,
   MEASUREMENT_TIME_INTERVALS,
@@ -11,8 +10,7 @@ import {
 import { useLocationParams } from 'services/navigation'
 import { useRepo, useRepoComponents } from 'services/repo'
 
-const getSortByDirection = (isDesc: boolean) =>
-  isDesc ? SortingDirection.DESC : SortingDirection.ASC
+const getSortByDirection = (isDesc: boolean) => (isDesc ? 'DESC' : 'ASC')
 
 const createMeasurementVariables = (
   historicalTrend: TIME_OPTION_KEY,
