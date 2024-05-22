@@ -10,6 +10,12 @@ const defaultConfig = {
   GH_APP: 'codecov',
 }
 
+export const LOCAL_STORAGE_SESSION_EXPIRED_KEY = 'expired-session'
+export const LOCAL_STORAGE_SESSION_TRACKING_KEY = 'tracking-session-expiry'
+
+export const COOKIE_SESSION_EXPIRY = 'session_expiry'
+export const COOKIE_SESSION_ID = 'sessionid'
+
 export function removeReactAppPrefix(obj) {
   // in .env file, the variable must start with REACT_APP_
   // to be injected in the application, so we remove that

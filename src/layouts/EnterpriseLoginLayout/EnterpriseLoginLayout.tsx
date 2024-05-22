@@ -1,16 +1,16 @@
 import { Suspense } from 'react'
 
+import { LOCAL_STORAGE_SESSION_EXPIRED_KEY } from 'config'
+
 import Footer from 'layouts/Footer'
 import ErrorBoundary from 'layouts/shared/ErrorBoundary'
 import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
 import ToastNotifications from 'layouts/ToastNotifications'
+import SessionExpiredBanner from 'pages/LoginPage/SessionExpiredBanner'
 import GlobalBanners from 'shared/GlobalBanners'
 import LoadingLogo from 'ui/LoadingLogo'
-import SessionExpiryTracker from 'ui/SessionExpiryTracker'
 
 import Header from './Header'
-
-const LOCAL_STORAGE_SESSION_TRACKING_KEY = 'tracking-session-expiry'
 
 const FullPageLoader = () => (
   <div className="mt-16 flex flex-1 items-center justify-center">
@@ -19,13 +19,13 @@ const FullPageLoader = () => (
 )
 
 function EnterpriseLoginLayout({ children }: { children: React.ReactNode }) {
-  const isTrackingSession = localStorage.getItem(
-    LOCAL_STORAGE_SESSION_TRACKING_KEY
+  const showExpiryBanner = localStorage.getItem(
+    LOCAL_STORAGE_SESSION_EXPIRED_KEY
   )
   return (
     <>
       <Header />
-      {!isTrackingSession && <SessionExpiryTracker />}
+      {showExpiryBanner && <SessionExpiredBanner />}
       <Suspense fallback={<FullPageLoader />}>
         <ErrorBoundary sentryScopes={[['layout', 'base']]}>
           <NetworkErrorBoundary>
