@@ -7,9 +7,11 @@ import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import { useRepo } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
+import { cn } from 'shared/utils/cn'
 import Spinner from 'ui/Spinner'
 
 import FirstPullRequestBanner from './FirstPullRequestBanner'
+import { useCoverageTabData } from './hooks/useCoverageTabData'
 import Summary from './Summary'
 import SummaryTeamPlan from './SummaryTeamPlan'
 import ToggleElement from './ToggleElement'
@@ -26,7 +28,7 @@ const Loader = () => (
 )
 
 function CoverageTab() {
-  const { provider, owner, repo } = useParams()
+  const { provider, owner, repo, branch } = useParams()
   const { data: repoData } = useRepo({
     provider,
     owner,
@@ -37,6 +39,19 @@ function CoverageTab() {
     multipleTiers: false,
   })
   const { data: tierName } = useTier({ provider, owner })
+
+  const { data } = useCoverageTabData({
+    provider,
+    owner,
+    repo,
+    branch: branch,
+  })
+
+  let displaySunburst = false
+  const fileCount = data?.branch?.head?.totals?.fileCount
+  if (typeof fileCount === 'number' && fileCount <= 200_000) {
+    displaySunburst = true
+  }
 
   const showTeamSummary =
     tierName === TierNames.TEAM &&
@@ -49,7 +64,7 @@ function CoverageTab() {
         <FirstPullRequestBanner />
       ) : null}
       {showTeamSummary ? <SummaryTeamPlan /> : <Summary />}
-      {!showTeamSummary && (
+      {!showTeamSummary ? (
         <SentryRoute
           path={[
             '/:provider/:owner/:repo/tree/:branch/:path+',
@@ -64,18 +79,25 @@ function CoverageTab() {
               hideElement="Hide Chart"
               localStorageKey="is-chart-hidden"
             >
-              <div className="col-span-9 inline-table">
+              <div
+                className={cn('inline-table', {
+                  'col-span-9': displaySunburst,
+                  'col-span-12 h-[21rem]': !displaySunburst,
+                })}
+              >
                 <SilentNetworkErrorWrapper>
-                  <CoverageChart />
+                  <CoverageChart extendedChart={!displaySunburst} />
                 </SilentNetworkErrorWrapper>
               </div>
-              <div className="sticky top-[8rem] col-span-3 flex aspect-square flex-col justify-center gap-4 px-8 py-4">
-                <Sunburst />
-              </div>
+              {displaySunburst ? (
+                <div className="sticky top-[8rem] col-span-3 flex aspect-square flex-col justify-center gap-4 px-8 py-4">
+                  <Sunburst />
+                </div>
+              ) : null}
             </ToggleElement>
           </Suspense>
         </SentryRoute>
-      )}
+      ) : null}
       <Switch>
         <SentryRoute path="/:provider/:owner/:repo/blob/:ref/:path+" exact>
           <Suspense fallback={<Loader />}>

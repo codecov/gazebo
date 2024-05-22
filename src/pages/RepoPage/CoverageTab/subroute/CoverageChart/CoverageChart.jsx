@@ -1,4 +1,5 @@
 import { format } from 'date-fns'
+import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
 import { useBranches } from 'services/branches'
@@ -46,7 +47,7 @@ const useCoverageChart = () => {
   )
 }
 
-function CoverageChart() {
+function CoverageChart({ extendedChart }) {
   const { repo } = useParams()
   const { data, isPreviousData, isSuccess, isError } = useCoverageChart()
 
@@ -65,6 +66,13 @@ function CoverageChart() {
     return <Placeholder />
   }
 
+  let appoxHeight = 91
+  let approxhWidth = 282.1
+  if (extendedChart) {
+    appoxHeight = 80
+    approxhWidth = 340
+  }
+
   return (
     <CoverageAreaChart
       axisLabelFunc={data?.coverageAxisLabel}
@@ -75,10 +83,14 @@ function CoverageChart() {
       // These aprox heights let us adjust the ratio and size of the chart.
       // I get these numbers by using the root container space and reducing
       // w/h to something that renders close to the DOM text sizes.
-      aproxHeight={91}
-      aproxWidth={282.1}
+      aproxHeight={appoxHeight}
+      aproxWidth={approxhWidth}
     />
   )
+}
+
+CoverageChart.propTypes = {
+  extendedChart: PropTypes.bool,
 }
 
 export default CoverageChart
