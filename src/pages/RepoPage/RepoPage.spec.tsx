@@ -14,6 +14,7 @@ import { RepoBreadcrumbProvider } from './context'
 import RepoPage from './RepoPage'
 
 jest.mock('./BundlesTab', () => () => 'BundlesTab')
+jest.mock('./BundlesTab/BundleOnboarding', () => () => 'BundleOnboarding')
 jest.mock('./CommitsTab', () => () => 'CommitsTab')
 jest.mock('./CoverageTab', () => () => 'CoverageTab')
 jest.mock('./CoverageOnboarding', () => () => 'CoverageOnboarding')
@@ -351,7 +352,7 @@ describe('RepoPage', () => {
         })
 
         describe('bundles are disabled', () => {
-          it('renders bundles tab', async () => {
+          it('renders bundle onboarding', async () => {
             const { queryClient } = setup({
               bundleAnalysisEnabled: false,
               language: 'javascript',
@@ -364,8 +365,8 @@ describe('RepoPage', () => {
               }),
             })
 
-            const bundlesTab = await screen.findByText('BundlesTab')
-            expect(bundlesTab).toBeInTheDocument()
+            const bundleOnboarding = await screen.findByText('BundleOnboarding')
+            expect(bundleOnboarding).toBeInTheDocument()
           })
 
           describe('there is no js or ts present', () => {
@@ -408,7 +409,7 @@ describe('RepoPage', () => {
         })
 
         describe('bundles are disabled', () => {
-          it('renders bundles tab', async () => {
+          it('renders bundle onboarding tab', async () => {
             const { queryClient } = setup({
               bundleAnalysisEnabled: false,
               language: 'javascript',
@@ -420,8 +421,8 @@ describe('RepoPage', () => {
               }),
             })
 
-            const bundlesTab = await screen.findByText('BundlesTab')
-            expect(bundlesTab).toBeInTheDocument()
+            const bundleOnboarding = await screen.findByText('BundleOnboarding')
+            expect(bundleOnboarding).toBeInTheDocument()
           })
 
           describe('there is no js or ts present', () => {
@@ -463,7 +464,7 @@ describe('RepoPage', () => {
         })
 
         describe('bundles are disabled', () => {
-          it('renders bundles tab', async () => {
+          it('renders bundle onboarding tab', async () => {
             const { queryClient } = setup({
               bundleAnalysisEnabled: false,
               language: 'javascript',
@@ -475,8 +476,8 @@ describe('RepoPage', () => {
               }),
             })
 
-            const bundlesTab = await screen.findByText('BundlesTab')
-            expect(bundlesTab).toBeInTheDocument()
+            const bundleOnboarding = await screen.findByText('BundleOnboarding')
+            expect(bundleOnboarding).toBeInTheDocument()
           })
 
           describe('there is no js or ts present', () => {
@@ -691,7 +692,7 @@ describe('RepoPage', () => {
       })
 
       describe('testing bundles path', () => {
-        it('renders bundles tab', async () => {
+        it('renders bundle onboarding tab', async () => {
           const { queryClient } = setup({
             isRepoActive: false,
             hasRepoData: true,
@@ -705,8 +706,8 @@ describe('RepoPage', () => {
             }),
           })
 
-          const bundlesTab = await screen.findByText('BundlesTab')
-          expect(bundlesTab).toBeInTheDocument()
+          const bundleOnboarding = await screen.findByText('BundleOnboarding')
+          expect(bundleOnboarding).toBeInTheDocument()
         })
       })
 
