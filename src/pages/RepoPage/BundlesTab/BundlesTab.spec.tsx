@@ -2,12 +2,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
   render,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
-import { MemoryRouter, Route } from 'react-router-dom'
+import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import BundlesTab from './BundlesTab'
 
@@ -48,6 +49,7 @@ const queryClient = new QueryClient({
     },
   },
 })
+let testLocation: ReturnType<typeof useLocation>
 const wrapper =
   (
     initialEntries = '/gh/test-owner/test-repo/bundles'
@@ -56,16 +58,16 @@ const wrapper =
     (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={[initialEntries]}>
-          <Route
-            path={[
-              '/:provider/:owner/:repo/bundles',
-              '/:provider/:owner/:repo/bundles/new',
-              '/:provider/:owner/:repo/bundles/new/rollup',
-              '/:provider/:owner/:repo/bundles/new/webpack',
-            ]}
-          >
+          <Route path="/:provider/:owner/:repo/bundles">
             <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
           </Route>
+          <Route
+            path="*"
+            render={({ location }) => {
+              testLocation = location
+              return null
+            }}
+          />
         </MemoryRouter>
       </QueryClientProvider>
     )
@@ -123,55 +125,19 @@ describe('BundlesTab', () => {
     })
   })
 
-  describe('onboarding routes', () => {
-    describe('root onboarding route', () => {
-      it('renders BundleOnboarding', async () => {
-        setup({ bundleAnalysisEnabled: false, language: 'javascript' })
-        render(<BundlesTab />, {
-          wrapper: wrapper('/gh/test-owner/test-owner/bundles/new'),
-        })
-
-        const bundleOnboarding = await screen.findByText('BundleOnboarding')
-        expect(bundleOnboarding).toBeInTheDocument()
-      })
-    })
-
-    describe('rollup onboarding route', () => {
-      it('renders BundleOnboarding', async () => {
-        setup({ bundleAnalysisEnabled: false, language: 'javascript' })
-        render(<BundlesTab />, {
-          wrapper: wrapper('/gh/test-owner/test-owner/bundles/new/rollup'),
-        })
-
-        const bundleOnboarding = await screen.findByText('BundleOnboarding')
-        expect(bundleOnboarding).toBeInTheDocument()
-      })
-    })
-
-    describe('webpack onboarding route', () => {
-      it('renders BundleOnboarding', async () => {
-        setup({ bundleAnalysisEnabled: false, language: 'javascript' })
-        render(<BundlesTab />, {
-          wrapper: wrapper('/gh/test-owner/test-owner/bundles/new/webpack'),
-        })
-
-        const bundleOnboarding = await screen.findByText('BundleOnboarding')
-        expect(bundleOnboarding).toBeInTheDocument()
-      })
-    })
-  })
-
   describe('no bundle analysis or js/ts present', () => {
-    it('renders null', async () => {
+    it('redirects to coverage tab', async () => {
       setup({ bundleAnalysisEnabled: false, language: 'python' })
-      const { container } = render(<BundlesTab />, {
+      render(<BundlesTab />, {
         wrapper: wrapper(),
       })
 
       const loader = await screen.findByText('Loading')
       await waitForElementToBeRemoved(loader)
 
-      expect(container).toBeEmptyDOMElement()
+      await waitFor(() =>
+        expect(testLocation.pathname).toBe('/gh/test-owner/test-repo')
+      )
     })
   })
 })
