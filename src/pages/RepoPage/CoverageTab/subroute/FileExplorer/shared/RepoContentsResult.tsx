@@ -37,8 +37,8 @@ const RepoContentsResult: React.FC<RepoContentsProps> = ({
         head commit
       `
   } else {
-    copy = (
-      <p>
+    return (
+      <p className="mt-4">
         Once merged to your default branch, Codecov will show your report
         results on this dashboard.{' '}
         <A

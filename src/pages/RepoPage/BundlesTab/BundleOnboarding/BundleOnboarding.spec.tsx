@@ -32,6 +32,7 @@ const mockGetRepo = (hasUploadToken: boolean, isActive: boolean) => ({
       activated: false,
       oldestCommitAt: '',
       active: isActive,
+      isFirstPullRequest: false,
     },
   },
 })

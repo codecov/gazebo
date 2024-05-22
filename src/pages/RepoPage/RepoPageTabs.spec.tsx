@@ -61,6 +61,7 @@ const mockRepo = ({ isCurrentUserPartOfOrg = true }) => ({
       activated: true,
       oldestCommitAt: '2022-10-10T11:59:59',
       active: true,
+      isFirstPullRequest: false,
     },
   },
 })
@@ -839,7 +840,7 @@ describe('useRepoTabs', () => {
         )
       })
     })
-        
+
     describe('repo is private and tier is team', () => {
       it('does not add the components link to the array', async () => {
         setup({ isRepoPrivate: true, tierName: TierNames.TEAM })
@@ -865,7 +866,7 @@ describe('useRepoTabs', () => {
         )
       })
     })
-        
+
     describe('feature flag is off', () => {
       it('does not add the components link to the array', async () => {
         mockedUseFlags.mockReturnValueOnce({
@@ -896,7 +897,6 @@ describe('useRepoTabs', () => {
       })
     })
   })
-          
 
   describe('commits and pulls tab', () => {
     describe('bundle analysis is enabled', () => {

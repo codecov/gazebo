@@ -71,6 +71,7 @@ const mockGetRepo = ({
       activated: isRepoActivated,
       oldestCommitAt: '2022-10-10T11:59:59',
       active: isRepoActive,
+      isFirstPullRequest: false,
     },
   },
 })

@@ -23,23 +23,6 @@ const queryClient = new QueryClient({
 
 const server = setupServer()
 
-const mockRepoSettings = (isPrivate = false) => ({
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      activated: true,
-      defaultBranch: 'master',
-      private: isPrivate,
-      uploadToken: 'token',
-      graphToken: 'token',
-      yaml: 'yaml',
-      bot: {
-        username: 'test',
-      },
-    },
-  },
-})
-
 const wrapper =
   (initialEntries = ['/gh/codecov/cool-repo/tree/main']) =>
   ({ children }) =>
@@ -53,13 +36,24 @@ const wrapper =
       </QueryClientProvider>
     )
 
-const mockRepo = {
+const mockRepo = (isPrivate = false, isFirstPullRequest = false) => ({
   owner: {
+    isCurrentUserPartOfOrg: true,
+    isAdmin: null,
+    isCurrentUserActivated: null,
     repository: {
+      __typename: 'Repository',
+      private: isPrivate,
+      uploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629295',
       defaultBranch: 'main',
+      yaml: '',
+      activated: false,
+      oldestCommitAt: '',
+      active: true,
+      isFirstPullRequest,
     },
   },
-}
+})
 
 const repoConfigMock = {
   owner: {
@@ -208,10 +202,14 @@ afterAll(() => {
 
 describe('Coverage Tab', () => {
   function setup(
-    { repoData = mockRepo, isPrivate = false, tierValue = TierNames.PRO } = {
-      repoData: mockRepo,
+    {
+      isPrivate = false,
+      tierValue = TierNames.PRO,
+      isFirstPullRequest = false,
+    } = {
       isPrivate: false,
       tierValue: TierNames.PRO,
+      isFirstPullRequest: false,
     }
   ) {
     useFlags.mockReturnValue({
@@ -220,7 +218,7 @@ describe('Coverage Tab', () => {
 
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(repoData))
+        res(ctx.status(200), ctx.data(mockRepo(isPrivate, isFirstPullRequest)))
       ),
       graphql.query('GetBranches', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(branchesMock))
@@ -268,10 +266,7 @@ describe('Coverage Tab', () => {
         (req, res, ctx) => {
           return res(ctx.status(200), ctx.json({ data: {} }))
         }
-      ),
-      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
-      })
+      )
     )
   }
 
@@ -327,5 +322,16 @@ describe('Coverage Tab', () => {
       const coverageChart = screen.queryByTestId('coverage-area-chart')
       expect(coverageChart).not.toBeInTheDocument()
     })
+  })
+
+  it('renders first pull request banner', async () => {
+    setup({ isFirstPullRequest: true })
+
+    render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/repoName']) })
+
+    const firstPullRequestBanner = await screen.findByText(
+      /Once merged to your default branch, Codecov will show your report results on this dashboard./
+    )
+    expect(firstPullRequestBanner).toBeInTheDocument()
   })
 })
