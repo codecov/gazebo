@@ -1,4 +1,4 @@
-import { act, render, screen } from 'custom-testing-library'
+import { act, render, screen, waitFor } from 'custom-testing-library'
 
 import userEvent from '@testing-library/user-event'
 
@@ -75,6 +75,21 @@ describe('CopyClipboard', () => {
 
         const clipboard = await screen.findByLabelText('Aria label copy')
         expect(clipboard).toBeInTheDocument()
+      })
+    })
+
+    describe('when onClick prop is set', () => {
+      it('calls the function when button is clicked', async () => {
+        const { user } = setup()
+        const callback = jest.fn()
+        render(<CopyClipboard value="asdf" onClick={callback} />)
+
+        const button = screen.getByRole('button', {
+          name: /copy/i,
+        })
+        await user.click(button)
+
+        await waitFor(() => expect(callback).toHaveBeenCalledWith('asdf'))
       })
     })
   })

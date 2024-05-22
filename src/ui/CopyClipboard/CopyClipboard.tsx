@@ -17,11 +17,11 @@ const copyClipboard = cva([], {
   },
 })
 interface CopyClipboardProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'>,
     VariantProps<typeof copyClipboard> {
   value: string
   label?: string
-  onClick?: () => void
+  onClick?: (value: string) => void
 }
 
 const CopyClipboard = React.forwardRef<HTMLButtonElement, CopyClipboardProps>(
@@ -32,7 +32,7 @@ const CopyClipboard = React.forwardRef<HTMLButtonElement, CopyClipboardProps>(
       copy(value)
       setShowSuccess(true)
       setTimeout(() => setShowSuccess(false), 1500)
-      onClick()
+      onClick(value)
     }
 
     return (
