@@ -12,7 +12,6 @@ import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'
 import Select from 'ui/Select'
 
-
 const Header = ({ controlsDisabled, children }) => {
   const [selectedFlags, setSelectedFlags] = useState([])
   const [search, setSearch] = useState()
