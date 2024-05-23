@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
@@ -145,9 +145,11 @@ describe('WebpackOnboarding', () => {
             const { user } = setup(null)
             render(<WebpackOnboarding />, { wrapper })
 
-            const npmInstallCopy = await screen.findByTestId(
-              'clipboard-npm-install'
+            const npmInstall = await screen.findByTestId('webpack-npm-install')
+            const npmInstallCopy = await within(npmInstall).findByTestId(
+              'clipboard-code-snippet'
             )
+
             await user.click(npmInstallCopy)
 
             await waitFor(() =>
@@ -177,9 +179,13 @@ describe('WebpackOnboarding', () => {
             const { user } = setup(null)
             render(<WebpackOnboarding />, { wrapper })
 
-            const yarnInstallCopy = await screen.findByTestId(
-              'clipboard-yarn-install'
+            const yarnInstall = await screen.findByTestId(
+              'webpack-yarn-install'
             )
+            const yarnInstallCopy = await within(yarnInstall).findByTestId(
+              'clipboard-code-snippet'
+            )
+
             await user.click(yarnInstallCopy)
 
             await waitFor(() =>
@@ -209,9 +215,13 @@ describe('WebpackOnboarding', () => {
             const { user } = setup(null)
             render(<WebpackOnboarding />, { wrapper })
 
-            const pnpmInstallCopy = await screen.findByTestId(
-              'clipboard-pnpm-install'
+            const pnpmInstall = await screen.findByTestId(
+              'webpack-pnpm-install'
             )
+            const pnpmInstallCopy = await within(pnpmInstall).findByTestId(
+              'clipboard-code-snippet'
+            )
+
             await user.click(pnpmInstallCopy)
 
             await waitFor(() =>
@@ -278,9 +288,11 @@ describe('WebpackOnboarding', () => {
         const { user } = setup(true)
         render(<WebpackOnboarding />, { wrapper })
 
-        const uploadTokenCopy = await screen.findByTestId(
-          'clipboard-upload-token'
+        const uploadToken = await screen.findByTestId('webpack-upload-token')
+        const uploadTokenCopy = await within(uploadToken).findByTestId(
+          'clipboard-code-snippet'
         )
+
         await user.click(uploadTokenCopy)
 
         await waitFor(() =>
@@ -332,9 +344,11 @@ describe('WebpackOnboarding', () => {
         const { user } = setup(true)
         render(<WebpackOnboarding />, { wrapper })
 
-        const pluginConfigCopy = await screen.findByTestId(
-          'clipboard-plugin-config'
+        const pluginConfig = await screen.findByTestId('webpack-plugin-config')
+        const pluginConfigCopy = await within(pluginConfig).findByTestId(
+          'clipboard-code-snippet'
         )
+
         await user.click(pluginConfigCopy)
 
         await waitFor(() =>
@@ -388,9 +402,13 @@ describe('WebpackOnboarding', () => {
         render(<WebpackOnboarding />, { wrapper })
 
         const commitCommand = await screen.findByTestId(
-          'clipboard-commit-command'
+          'webpack-commit-command'
         )
-        await user.click(commitCommand)
+        const commitCommandCopy = await within(commitCommand).findByTestId(
+          'clipboard-code-snippet'
+        )
+
+        await user.click(commitCommandCopy)
 
         await waitFor(() =>
           expect(Sentry.metrics.increment).toHaveBeenCalledWith(
@@ -440,10 +458,12 @@ describe('WebpackOnboarding', () => {
             const { user } = setup(true)
             render(<WebpackOnboarding />, { wrapper })
 
-            const npmBuildCommand = await screen.findByTestId(
-              'clipboard-npm-build'
+            const buildCommand = await screen.findByTestId('webpack-npm-build')
+            const buildCommandCopy = await within(buildCommand).findByTestId(
+              'clipboard-code-snippet'
             )
-            await user.click(npmBuildCommand)
+
+            await user.click(buildCommandCopy)
 
             await waitFor(() =>
               expect(Sentry.metrics.increment).toHaveBeenCalledWith(
@@ -470,10 +490,12 @@ describe('WebpackOnboarding', () => {
             const { user } = setup(true)
             render(<WebpackOnboarding />, { wrapper })
 
-            const yarnBuildCommand = await screen.findByTestId(
-              'clipboard-yarn-build'
+            const buildCommand = await screen.findByTestId('webpack-yarn-build')
+            const buildCommandCopy = await within(buildCommand).findByTestId(
+              'clipboard-code-snippet'
             )
-            await user.click(yarnBuildCommand)
+
+            await user.click(buildCommandCopy)
 
             await waitFor(() =>
               expect(Sentry.metrics.increment).toHaveBeenCalledWith(
@@ -500,10 +522,12 @@ describe('WebpackOnboarding', () => {
             const { user } = setup(true)
             render(<WebpackOnboarding />, { wrapper })
 
-            const pnpmBuildCommand = await screen.findByTestId(
-              'clipboard-pnpm-build'
+            const buildCommand = await screen.findByTestId('webpack-pnpm-build')
+            const buildCommandCopy = await within(buildCommand).findByTestId(
+              'clipboard-code-snippet'
             )
-            await user.click(pnpmBuildCommand)
+
+            await user.click(buildCommandCopy)
 
             await waitFor(() =>
               expect(Sentry.metrics.increment).toHaveBeenCalledWith(

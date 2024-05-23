@@ -62,6 +62,7 @@ const StepOne: React.FC = () => {
           clipboardOnClick={() => {
             copiedInstallCommandMetric('npm', 'vite')
           }}
+          data-testid="vite-npm-install"
         >
           {npmInstall}
         </CodeSnippet>
@@ -70,6 +71,7 @@ const StepOne: React.FC = () => {
           clipboardOnClick={() => {
             copiedInstallCommandMetric('yarn', 'vite')
           }}
+          data-testid="vite-yarn-install"
         >
           {yarnInstall}
         </CodeSnippet>
@@ -78,6 +80,7 @@ const StepOne: React.FC = () => {
           clipboardOnClick={() => {
             copiedInstallCommandMetric('pnpm', 'vite')
           }}
+          data-testid="vite-pnpm-install"
         >
           {pnpmInstall}
         </CodeSnippet>
@@ -107,6 +110,7 @@ const StepTwo: React.FC<{ uploadToken: string }> = ({ uploadToken }) => {
             clipboardOnClick={() => {
               copiedTokenMetric('vite')
             }}
+            data-testid="vite-upload-token"
           >
             {uploadToken}
           </CodeSnippet>
@@ -138,6 +142,7 @@ const StepThree: React.FC = () => {
           clipboardOnClick={() => {
             copiedConfigMetric('vite')
           }}
+          data-testid="vite-plugin-config"
         >
           {pluginConfig}
         </CodeSnippet>
@@ -164,6 +169,7 @@ const StepFour: React.FC = () => {
           clipboardOnClick={() => {
             copiedCommitMetric('vite')
           }}
+          data-testid="vite-commit-command"
         >
           {commitString}
         </CodeSnippet>
@@ -189,6 +195,7 @@ const StepFive: React.FC = () => {
             clipboardOnClick={() => {
               copiedBuildCommandMetric('npm', 'vite')
             }}
+            data-testid="vite-npm-build"
           >
             {npmBuild}
           </CodeSnippet>
@@ -197,6 +204,7 @@ const StepFive: React.FC = () => {
             clipboardOnClick={() => {
               copiedBuildCommandMetric('yarn', 'vite')
             }}
+            data-testid="vite-yarn-build"
           >
             {yarnBuild}
           </CodeSnippet>
@@ -205,6 +213,7 @@ const StepFive: React.FC = () => {
             clipboardOnClick={() => {
               copiedBuildCommandMetric('pnpm', 'vite')
             }}
+            data-testid="vite-pnpm-build"
           >
             {pnpmBuild}
           </CodeSnippet>

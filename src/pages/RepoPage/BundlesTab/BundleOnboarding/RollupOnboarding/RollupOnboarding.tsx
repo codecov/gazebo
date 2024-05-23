@@ -60,24 +60,27 @@ const StepOne: React.FC = () => {
         <CodeSnippet
           clipboard={npmInstall}
           clipboardOnClick={() => {
-            copiedInstallCommandMetric('npm', 'vite')
+            copiedInstallCommandMetric('npm', 'rollup')
           }}
+          data-testid="rollup-npm-install"
         >
           {npmInstall}
         </CodeSnippet>
         <CodeSnippet
           clipboard={yarnInstall}
           clipboardOnClick={() => {
-            copiedInstallCommandMetric('yarn', 'vite')
+            copiedInstallCommandMetric('yarn', 'rollup')
           }}
+          data-testid="rollup-yarn-install"
         >
           {yarnInstall}
         </CodeSnippet>
         <CodeSnippet
           clipboard={pnpmInstall}
           clipboardOnClick={() => {
-            copiedInstallCommandMetric('pnpm', 'vite')
+            copiedInstallCommandMetric('pnpm', 'rollup')
           }}
+          data-testid="rollup-pnpm-install"
         >
           {pnpmInstall}
         </CodeSnippet>
@@ -105,8 +108,9 @@ const StepTwo: React.FC<{ uploadToken: string }> = ({ uploadToken }) => {
             className="basis-2/3"
             clipboard={uploadToken}
             clipboardOnClick={() => {
-              copiedTokenMetric('vite')
+              copiedTokenMetric('rollup')
             }}
+            data-testid="rollup-upload-token"
           >
             {uploadToken}
           </CodeSnippet>
@@ -136,8 +140,9 @@ const StepThree: React.FC = () => {
         <CodeSnippet
           clipboard={pluginConfig}
           clipboardOnClick={() => {
-            copiedConfigMetric('vite')
+            copiedConfigMetric('rollup')
           }}
+          data-testid="rollup-plugin-config"
         >
           {pluginConfig}
         </CodeSnippet>
@@ -162,8 +167,9 @@ const StepFour: React.FC = () => {
         <CodeSnippet
           clipboard={commitString}
           clipboardOnClick={() => {
-            copiedCommitMetric('vite')
+            copiedCommitMetric('rollup')
           }}
+          data-testid="rollup-commit-command"
         >
           {commitString}
         </CodeSnippet>
@@ -186,24 +192,27 @@ const StepFive: React.FC = () => {
         <CodeSnippet
           clipboard={npmBuild}
           clipboardOnClick={() => {
-            copiedBuildCommandMetric('npm', 'vite')
+            copiedBuildCommandMetric('npm', 'rollup')
           }}
+          data-testid="rollup-npm-build"
         >
           {npmBuild}
         </CodeSnippet>
         <CodeSnippet
           clipboard={yarnBuild}
           clipboardOnClick={() => {
-            copiedBuildCommandMetric('yarn', 'vite')
+            copiedBuildCommandMetric('yarn', 'rollup')
           }}
+          data-testid="rollup-yarn-build"
         >
           {yarnBuild}
         </CodeSnippet>
         <CodeSnippet
           clipboard={pnpmBuild}
           clipboardOnClick={() => {
-            copiedBuildCommandMetric('pnpm', 'vite')
+            copiedBuildCommandMetric('pnpm', 'rollup')
           }}
+          data-testid="rollup-pnpm-build"
         >
           {pnpmBuild}
         </CodeSnippet>

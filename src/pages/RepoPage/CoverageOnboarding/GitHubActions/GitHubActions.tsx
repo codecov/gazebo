@@ -78,7 +78,11 @@ function Step1({ tokenCopy, uploadToken }: Step1Props) {
           actions
         </p>
         <div className="flex gap-4">
-          <CodeSnippet className="basis-1/3" clipboard="CODECOV_TOKEN">
+          <CodeSnippet
+            className="basis-1/3"
+            clipboard="CODECOV_TOKEN"
+            data-testid="token-key"
+          >
             CODECOV_TOKEN
           </CodeSnippet>
           <CodeSnippet className="basis-2/3" clipboard={uploadToken}>

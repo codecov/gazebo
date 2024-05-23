@@ -63,6 +63,7 @@ const StepOne: React.FC = () => {
           clipboardOnClick={() => {
             copiedInstallCommandMetric('npm', 'webpack')
           }}
+          data-testid="webpack-npm-install"
         >
           {npmInstall}
         </CodeSnippet>
@@ -71,6 +72,7 @@ const StepOne: React.FC = () => {
           clipboardOnClick={() => {
             copiedInstallCommandMetric('yarn', 'webpack')
           }}
+          data-testid="webpack-yarn-install"
         >
           {yarnInstall}
         </CodeSnippet>
@@ -79,6 +81,7 @@ const StepOne: React.FC = () => {
           clipboardOnClick={() => {
             copiedInstallCommandMetric('pnpm', 'webpack')
           }}
+          data-testid="webpack-pnpm-install"
         >
           {pnpmInstall}
         </CodeSnippet>
@@ -108,6 +111,7 @@ const StepTwo: React.FC<{ uploadToken: string }> = ({ uploadToken }) => {
             clipboardOnClick={() => {
               copiedTokenMetric('webpack')
             }}
+            data-testid="webpack-upload-token"
           >
             {uploadToken}
           </CodeSnippet>
@@ -154,6 +158,7 @@ const StepThree: React.FC = () => {
           clipboardOnClick={() => {
             copiedConfigMetric('webpack')
           }}
+          data-testid="webpack-plugin-config"
         >
           {pluginConfig}
         </CodeSnippet>
@@ -180,6 +185,7 @@ const StepFour: React.FC = () => {
           clipboardOnClick={() => {
             copiedCommitMetric('webpack')
           }}
+          data-testid="webpack-commit-command"
         >
           {commitString}
         </CodeSnippet>
@@ -204,6 +210,7 @@ const StepFive: React.FC = () => {
           clipboardOnClick={() => {
             copiedBuildCommandMetric('npm', 'webpack')
           }}
+          data-testid="webpack-npm-build"
         >
           {npmBuild}
         </CodeSnippet>
@@ -212,6 +219,7 @@ const StepFive: React.FC = () => {
           clipboardOnClick={() => {
             copiedBuildCommandMetric('yarn', 'webpack')
           }}
+          data-testid="webpack-yarn-build"
         >
           {yarnBuild}
         </CodeSnippet>
@@ -220,6 +228,7 @@ const StepFive: React.FC = () => {
           clipboardOnClick={() => {
             copiedBuildCommandMetric('pnpm', 'webpack')
           }}
+          data-testid="webpack-pnpm-build"
         >
           {pnpmBuild}
         </CodeSnippet>
