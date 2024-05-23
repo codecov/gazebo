@@ -16,10 +16,14 @@ interface CodeSnippetProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof codeSnippet> {
   clipboard?: string
+  clipboardOnClick?: (value: string) => void
 }
 
 export const CodeSnippet = React.forwardRef<HTMLDivElement, CodeSnippetProps>(
-  ({ children, clipboard, className, ...props }, ref) => (
+  (
+    { children, clipboard, clipboardOnClick = () => {}, className, ...props },
+    ref
+  ) => (
     <div ref={ref} className={cn(codeSnippet({ className }))} {...props}>
       <div className="overflow-auto p-4">
         <pre className="whitespace-pre font-mono">{children}</pre>
@@ -29,6 +33,7 @@ export const CodeSnippet = React.forwardRef<HTMLDivElement, CodeSnippetProps>(
           <div className="flex h-5 items-center rounded-md bg-ds-gray-primary">
             <CopyClipboard
               value={clipboard}
+              onClick={clipboardOnClick}
               data-testid="clipboard-code-snippet"
             />
           </div>
