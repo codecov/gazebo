@@ -13,16 +13,16 @@ describe('CodeSnippet', () => {
   it('renders CopyClipboard', async () => {
     render(<CodeSnippet clipboard="asdf">asdf</CodeSnippet>)
 
-    const code = await screen.findByTestId('clipboard-code-snippet')
-    expect(code).toBeInTheDocument()
+    const clipboard = await screen.findByTestId('clipboard-code-snippet')
+    expect(clipboard).toBeInTheDocument()
   })
 
   describe('when clipboard prop is undefined', () => {
     it('does not render CopyClipboard', async () => {
       render(<CodeSnippet>asdf</CodeSnippet>)
 
-      const code = screen.queryByTestId('clipboard-code-snippet')
-      expect(code).not.toBeInTheDocument()
+      const clipboard = screen.queryByTestId('clipboard-code-snippet')
+      expect(clipboard).not.toBeInTheDocument()
     })
   })
 
