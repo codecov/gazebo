@@ -16,6 +16,8 @@ function AutoActivateMembers() {
   const { provider } = useParams()
   const queryClient = useQueryClient()
   const { data, isLoading } = useSelfHostedSettings()
+
+  // use api mutation here!
   const mutation = useMutation({
     mutationFn: (body) => {
       return Api.patch({ path: '/settings', provider, body })

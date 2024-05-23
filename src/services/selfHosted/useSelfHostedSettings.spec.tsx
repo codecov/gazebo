@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { rest } from 'msw'
+import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -12,15 +12,20 @@ const queryClient = new QueryClient({
 const server = setupServer()
 
 const mockResponse = {
-  planAutoActivate: true,
-  seatsUsed: 1,
-  seatsLimit: 10,
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      planAutoActivate: true,
+      seatsUsed: 1,
+      seatsLimit: 10,
+    },
+  },
 }
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh']}>
-      <Route path="/:provider">{children}</Route>
+    <MemoryRouter initialEntries={['/gh/codecov/gazebo']}>
+      <Route path="/:provider/:owner/:repo">{children}</Route>
     </MemoryRouter>
   </QueryClientProvider>
 )
@@ -38,15 +43,40 @@ afterAll(() => {
   server.close()
 })
 
-describe('useSelfHostedSettings', () => {
-  function setup({ invalidResponse = false }) {
-    server.use(
-      rest.get('/internal/settings', (req, res, ctx) => {
-        if (invalidResponse) {
-          return res(ctx.status(200), ctx.json({}))
-        }
+const mockNotFoundError = {
+  owner: {
+    repository: {
+      __typename: 'NotFoundError',
+      message: 'repo not found',
+    },
+  },
+}
 
-        return res(ctx.status(200), ctx.json(mockResponse))
+const mockOwnerNotActivatedError = {
+  owner: {
+    repository: {
+      __typename: 'OwnerNotActivatedError',
+      message: 'owner not activated',
+    },
+  },
+}
+
+describe('useSelfHostedSettings', () => {
+  function setup({
+    invalidResponse = false,
+    ownerNotActivated = false,
+    notFoundResponse = false,
+  }) {
+    server.use(
+      graphql.query('SelfHostedSettings', (req, res, ctx) => {
+        if (invalidResponse) {
+          return res(ctx.status(200), ctx.data({}))
+        } else if (ownerNotActivated) {
+          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
+        } else if (notFoundResponse) {
+          return res(ctx.status(200), ctx.data(mockNotFoundError))
+        }
+        return res(ctx.status(200), ctx.data(mockResponse))
       })
     )
   }
@@ -61,6 +91,7 @@ describe('useSelfHostedSettings', () => {
 
       await waitFor(() =>
         expect(result.current.data).toStrictEqual({
+          __typename: 'Repository',
           planAutoActivate: true,
           seatsUsed: 1,
           seatsLimit: 10,
@@ -85,6 +116,48 @@ describe('useSelfHostedSettings', () => {
         expect.objectContaining({
           status: 404,
           dev: 'useSelfHostedSettings - 404 schema parsing failed',
+        })
+      )
+    })
+  })
+
+  describe('owner not activated', () => {
+    beforeAll(() => {
+      console.error = () => {}
+    })
+
+    it('rejects with 403', async () => {
+      setup({ ownerNotActivated: true })
+      const { result } = renderHook(() => useSelfHostedSettings(), {
+        wrapper,
+      })
+
+      await waitFor(() => expect(result.current.isError).toBeTruthy())
+      expect(result.current.error).toEqual(
+        expect.objectContaining({
+          status: 403,
+          dev: 'useSelfHostedSettings - 403 OwnerNotActivatedError',
+        })
+      )
+    })
+  })
+
+  describe('not found error', () => {
+    beforeAll(() => {
+      console.error = () => {}
+    })
+
+    it('rejects with 404', async () => {
+      setup({ notFoundResponse: true })
+      const { result } = renderHook(() => useSelfHostedSettings(), {
+        wrapper,
+      })
+
+      await waitFor(() => expect(result.current.isError).toBeTruthy())
+      expect(result.current.error).toEqual(
+        expect.objectContaining({
+          status: 404,
+          dev: 'useSelfHostedSettings - 404 NotFoundError',
         })
       )
     })
