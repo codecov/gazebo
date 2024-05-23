@@ -6,7 +6,7 @@ import { useFlags } from 'shared/featureFlags'
 import { providerToInternalProvider } from 'shared/utils/provider'
 import A from 'ui/A'
 import { Card } from 'ui/Card'
-import CopyClipboard from 'ui/CopyClipboard'
+import { CopyClipboard } from 'ui/CopyClipboard'
 
 import ExampleBlurb from '../ExampleBlurb'
 
@@ -90,11 +90,11 @@ function Step1({ tokenCopy, uploadToken, providerName }: Step1Props) {
             <div className="w-0 flex-1 overflow-hidden" data-testid="token-key">
               CODECOV_TOKEN
             </div>
-            <CopyClipboard string="CODECOV_TOKEN" />
+            <CopyClipboard value="CODECOV_TOKEN" />
           </pre>
           <pre className="flex basis-2/3 items-center justify-between gap-2 rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
             <div className="w-0 flex-1 overflow-hidden">{uploadToken}</div>
-            <CopyClipboard string={uploadToken ?? ''} />
+            <CopyClipboard value={uploadToken ?? ''} />
           </pre>
         </div>
       </Card.Content>
@@ -131,7 +131,10 @@ function Step2({ defaultBranch }: Step2Props) {
         </p>
         <div className="flex items-start justify-between overflow-auto whitespace-pre-line rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
           <pre className="whitespace-pre">{orbsString}</pre>
-          <CopyClipboard string={orbsString} />
+          <CopyClipboard
+            value={orbsString}
+            label="Copy Codecov orb configuration"
+          />
         </div>
         <ExampleBlurb />
       </Card.Content>

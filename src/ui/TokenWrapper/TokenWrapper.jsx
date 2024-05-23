@@ -1,7 +1,7 @@
 import cs from 'classnames'
 import PropTypes from 'prop-types'
 
-import CopyClipboard from 'ui/CopyClipboard'
+import { CopyClipboard } from 'ui/CopyClipboard'
 
 const TokenWrapper = ({ token, onClick, truncate = false, encodedToken }) => {
   return (
@@ -16,7 +16,7 @@ const TokenWrapper = ({ token, onClick, truncate = false, encodedToken }) => {
       >
         {encodedToken ? encodedToken : token}
       </pre>
-      <CopyClipboard string={token} onClick={onClick} showLabel />
+      <CopyClipboard value={token} onClick={onClick} label="Copy token" />
     </div>
   )
 }
