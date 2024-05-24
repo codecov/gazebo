@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { rest } from 'msw'
+import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { mockAllIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -48,15 +48,25 @@ const mockSecondResponse = {
 }
 
 const mockAllSeatsTaken = {
-  planAutoActivate: true,
-  seatsUsed: 10,
-  seatsLimit: 10,
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      planAutoActivate: true,
+      seatsUsed: 10,
+      seatsLimit: 10,
+    },
+  },
 }
 
 const mockOpenSeatsTaken = {
-  planAutoActivate: true,
-  seatsUsed: 5,
-  seatsLimit: 10,
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      planAutoActivate: true,
+      seatsUsed: 5,
+      seatsLimit: 10,
+    },
+  },
 }
 
 const wrapper = ({ children }) => (
@@ -136,11 +146,11 @@ describe('MemberTable', () => {
 
         return res(ctx.status(200))
       }),
-      rest.get('/internal/settings', (req, res, ctx) => {
+      graphql.query('SelfHostedSettings', (req, res, ctx) => {
         if (seatsOpen) {
-          return res(ctx.status(200), ctx.json(mockOpenSeatsTaken))
+          return res(ctx.status(200), ctx.data(mockOpenSeatsTaken))
         }
-        return res(ctx.status(200), ctx.json(mockAllSeatsTaken))
+        return res(ctx.status(200), ctx.data(mockAllSeatsTaken))
       })
     )
 

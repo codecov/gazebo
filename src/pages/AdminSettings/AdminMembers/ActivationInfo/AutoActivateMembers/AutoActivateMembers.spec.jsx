@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { rest } from 'msw'
+import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -11,10 +11,16 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 const server = setupServer()
+
 const mockResponse = {
-  planAutoActivate: true,
-  seatsUsed: 1,
-  seatsLimit: 10,
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      planAutoActivate: true,
+      seatsUsed: 1,
+      seatsLimit: 10,
+    },
+  },
 }
 
 beforeAll(() => server.listen())
@@ -35,13 +41,14 @@ const wrapper = ({ children }) => (
 describe('AutoActivateMembers', () => {
   function setup() {
     server.use(
-      rest.get('/internal/settings', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json(mockResponse))
-      ),
-      rest.patch('/internal/settings', (req, res, ctx) => {
-        const { plan_auto_activate } = req.body
+      graphql.query('SelfHostedSettings', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockResponse))
+      }),
 
-        mockResponse.planAutoActivate = plan_auto_activate
+      graphql.mutation('UpdateSelfHostedSettings', (req, res, ctx) => {
+        const plan_auto_activate =
+          req.variables.shouldAutoActivate.planAutoActivate
+        mockResponse.owner.repository.planAutoActivate = plan_auto_activate
 
         return res(ctx.status(200), ctx.json({}))
       })
