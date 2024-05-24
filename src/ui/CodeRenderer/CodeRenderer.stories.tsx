@@ -29,7 +29,10 @@ const coverage = ['M', 'P', 'H'][Math.floor(Math.random() * 3)] as
   | 'P'
   | 'H'
   | null
-  | undefined
+
+const hitCount = [null, 1, 10, 100, 1000][Math.floor(Math.random() * 5)] as
+  | number
+  | null
 
 export const SingleLineCodeRenderer: Story = {
   args: {
@@ -81,16 +84,13 @@ export const DiffCodeRenderer: Story = {
             return (
               <DiffLine
                 key={i + 1}
+                {...props}
                 headNumber={`${i + 1}`}
                 baseNumber={`${i}`}
                 lineContent={line}
                 headCoverage={coverage}
                 baseCoverage={coverage}
-                hitCount={
-                  [null, 1, 10, 100, 1000][Math.floor(Math.random() * 5)]
-                }
-                edgeOfFile={i <= 2}
-                {...props}
+                hitCount={hitCount}
               />
             )
           }}
