@@ -41,7 +41,7 @@ const columns = [
     header: 'Asset',
     cell: ({ getValue, row }) => {
       return (
-        <p className="flex flex-row break-all">
+        <p className="flex flex-row items-center break-all">
           <span
             data-action="clickable"
             data-testid="modules-expand"
