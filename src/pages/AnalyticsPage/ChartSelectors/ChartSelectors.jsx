@@ -6,6 +6,7 @@ import { useRepos } from 'services/repos'
 import { TierNames, useTier } from 'services/tier'
 import A from 'ui/A'
 import DateRangePicker from 'ui/DateRangePicker'
+import FormLabel from 'ui/FormLabel/FormLabel'
 import MultiSelect from 'ui/MultiSelect'
 
 function formatDataForMultiselect(repos) {
@@ -14,8 +15,8 @@ function formatDataForMultiselect(repos) {
 
 function DateSelector({ startDate, endDate, updateParams }) {
   return (
-    <div className="flex flex-col gap-2">
-      <span className="font-semibold">Dates</span>
+    <div className="flex flex-col gap-1">
+      <FormLabel label="Dates" />
       <DateRangePicker
         startDate={startDate}
         endDate={endDate}
@@ -77,8 +78,8 @@ function RepoSelector({
   }, [reposData?.pages])
 
   return (
-    <div className="flex w-52 flex-col gap-2">
-      <span className="font-semibold">Repositories</span>
+    <div className="flex w-52 flex-col gap-1">
+      <FormLabel label="Repositories" />
       <MultiSelect
         hook="repo-chart-selector"
         ariaName="Select repos to choose"
@@ -130,7 +131,7 @@ function ChartSelectors({ params, updateParams, active, sortItem }) {
   }
 
   return (
-    <div className="flex flex-wrap justify-center gap-4 border-b border-ds-gray-tertiary pb-4 sm:flex-nowrap sm:justify-start">
+    <div className="flex flex-wrap items-center justify-center gap-4 border-b border-ds-gray-tertiary pb-4 sm:flex-nowrap sm:justify-start">
       <DateSelector
         startDate={startDate}
         endDate={endDate}
@@ -145,7 +146,7 @@ function ChartSelectors({ params, updateParams, active, sortItem }) {
         resetRef={resetRef}
       />
       <button
-        className="self-end text-ds-blue-darker md:mr-auto"
+        className="self-end pb-2 text-ds-blue-darker md:mr-auto"
         onClick={clearFiltersHandler}
       >
         Clear filters

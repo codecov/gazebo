@@ -4,14 +4,13 @@ import { useHistory, useParams } from 'react-router-dom'
 import { useBranchBundlesNames } from 'services/bundleAnalysis'
 import { useNavLinks } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
+import FormLabel from 'ui/FormLabel/FormLabel'
 import Select from 'ui/Select'
 
 export const BundleSelectorSkeleton: React.FC = () => {
   return (
-    <div className="md:w-[16rem]">
-      <h3 className="flex items-center gap-1 text-sm font-semibold text-ds-gray-octonary">
-        Bundle
-      </h3>
+    <div className="flex flex-col gap-1 md:w-[16rem]">
+      <FormLabel label="Bundle" />
       <span className="max-w-[16rem] text-sm">
         <Select
           // @ts-expect-error
@@ -86,10 +85,8 @@ const BundleSelector = forwardRef(({}, ref) => {
   const [filteredBundles, setFilteredBundles] = useState<Array<string>>([])
 
   return (
-    <div className="md:w-[16rem]">
-      <h3 className="flex items-center gap-1 text-sm font-semibold text-ds-gray-octonary">
-        Bundle
-      </h3>
+    <div className="flex flex-col gap-1 md:w-[16rem]">
+      <FormLabel label="Bundle" />
       <span className="max-w-[16rem] text-sm">
         <Select
           ref={ref}

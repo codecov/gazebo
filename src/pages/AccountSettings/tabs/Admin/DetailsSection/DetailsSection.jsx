@@ -56,7 +56,7 @@ function DetailsSection({ email, name }) {
   }
 
   return (
-    <form onSubmit={handleSubmit(submit)} className="mt-2 flex flex-col gap-4">
+    <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-4">
       <h3 className="text-lg font-semibold">Your details</h3>
       <hr />
       <div className="flex flex-col gap-1 md:w-1/2">

@@ -12,6 +12,7 @@ import { useBranchHasCommits } from 'services/branches'
 import { useLocationParams } from 'services/navigation'
 import { useRepoOverview, useRepoSettingsTeam } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
+import FormLabel from 'ui/FormLabel/FormLabel'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'
 import SearchField from 'ui/SearchField'
@@ -158,12 +159,10 @@ function CommitsTab() {
       <div className="grid grid-cols-1 justify-between gap-4 md:grid-cols-2 md:items-end md:gap-0">
         <div className="flex flex-col gap-2 px-2 sm:px-0 md:flex-row">
           <div className="flex flex-col gap-1">
-            <h2 className="flex flex-initial items-center gap-1 font-semibold">
-              <span className="text-ds-gray-quinary">
-                <Icon name="branch" variant="developer" size="sm" />
-              </span>
-              Branch Context
-            </h2>
+            <FormLabel
+              label="Branch Context"
+              icon={<Icon name="branch" size="sm" variant="developer" />}
+            />
             <div className="min-w-[13rem] lg:min-w-[16rem]">
               <Select
                 {...branchSelectorProps}
@@ -187,7 +186,7 @@ function CommitsTab() {
             </div>
           </div>
           <div className="flex flex-col gap-1">
-            <h2 className="font-semibold">CI status</h2>
+            <FormLabel label="CI status" />
             <div className="min-w-[13rem] lg:min-w-[16rem]">
               <MultiSelect
                 dataMarketing="commits-filter-by-status"

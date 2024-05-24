@@ -5,6 +5,7 @@ import { Branch, useBranch, useBranches } from 'services/branches'
 import { useNavLinks } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import A from 'ui/A'
+import FormLabel from 'ui/FormLabel/FormLabel'
 import Icon from 'ui/Icon'
 import Select from 'ui/Select'
 
@@ -87,13 +88,11 @@ const BranchSelector: React.FC<BranchSelectorProps> = ({
   }
 
   return (
-    <div className="md:w-[16rem]">
-      <h3 className="flex items-center gap-1 text-sm font-semibold text-ds-gray-octonary">
-        <span className="text-ds-gray-quinary">
-          <Icon name="branch" size="sm" variant="developer" />
-        </span>
-        Branch Context
-      </h3>
+    <div className="flex flex-col gap-1 md:w-[16rem]">
+      <FormLabel
+        label="Branch Context"
+        icon={<Icon name="branch" size="sm" variant="developer" />}
+      />
       <span className="min-w-[16rem] text-sm">
         <Select
           // @ts-expect-error - Select has some TS issues because it's still written in JS

@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom'
 import { useBranches } from 'services/branches'
 import { useUpdateRepo } from 'services/repo'
 import { useAddNotification } from 'services/toastNotification'
+import FormLabel from 'ui/FormLabel/FormLabel'
 import Icon from 'ui/Icon'
 import Select from 'ui/Select'
 import SettingsDescriptor from 'ui/SettingsDescriptor'
@@ -58,10 +59,10 @@ function DefaultBranch({ defaultBranch }) {
       description="Selection for branch context of data in coverage dashboard"
       content={
         <>
-          <h2 className="flex gap-1 font-semibold">
-            <Icon name="branch" variant="developer" size="sm" />
-            Branch Context
-          </h2>
+          <FormLabel
+            label="Branch Context"
+            icon={<Icon name="branch" size="sm" variant="developer" />}
+          />
           <div className="grid grid-cols-2">
             <Select
               dataMarketing="branch-selector-settings-tab"
