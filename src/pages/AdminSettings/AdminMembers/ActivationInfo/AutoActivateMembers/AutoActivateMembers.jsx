@@ -1,8 +1,7 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 
+import { useUpdateSelfHostedSettings } from 'services/account/useUpdateSelfHostedSettings'
 import { useSelfHostedSettings } from 'services/selfHosted'
-import Api from 'shared/api'
 import Spinner from 'ui/Spinner'
 import Toggle from 'ui/Toggle'
 
@@ -14,18 +13,10 @@ const Loader = () => (
 
 function AutoActivateMembers() {
   const { provider } = useParams()
-  const queryClient = useQueryClient()
   const { data, isLoading } = useSelfHostedSettings()
 
-  // use api mutation here!
-  const mutation = useMutation({
-    mutationFn: (body) => {
-      return Api.patch({ path: '/settings', provider, body })
-    },
-    useErrorBoundary: true,
-    onSuccess: () => {
-      queryClient.invalidateQueries(['SelfHostedSettings'])
-    },
+  const { mutate, isLoading: isMutating } = useUpdateSelfHostedSettings({
+    provider,
   })
 
   if (isLoading) {
@@ -40,9 +31,8 @@ function AutoActivateMembers() {
           dataMarketing="auto-acitvate-members"
           label={data?.planAutoActivate ? 'On' : 'Off'}
           value={data?.planAutoActivate}
-          onClick={() =>
-            mutation.mutate({ planAutoActivate: !data?.planAutoActivate })
-          }
+          disabled={isMutating}
+          onClick={() => mutate({ planAutoActivate: !data?.planAutoActivate })}
         />
       </div>
       <p>
