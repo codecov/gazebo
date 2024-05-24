@@ -10,7 +10,7 @@ const SentryPlugin = sentryWebpackPlugin({
   project: process.env.REACT_APP_SENTRY_PROJECT || 'gazebo',
   authToken: process.env.SENTRY_AUTH_TOKEN,
   release: {
-    name: process.env.GAZEBO_SHA || Date.now().toString(),
+    name: process.env.GAZEBO_SHA,
     deploy: {
       env: process.env.REACT_APP_SENTRY_ENVIRONMENT || process.env.NODE_ENV,
     },
