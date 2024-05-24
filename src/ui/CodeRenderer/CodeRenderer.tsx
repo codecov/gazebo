@@ -38,10 +38,20 @@ function CodeRenderer({
 
   useLayoutEffect(() => {
     const onScroll = (_event: Event) => {
+      /**
+       * We want to disable pointer events on the table while scrolling because
+       * as the user is scrolling the page, the browser needs to also check to
+       * see if the user if the pointer is over any interactive elements (like
+       * the line number indicators) during the repaint. By disabling these
+       * events, we can reduce the amount of work the browser needs to do
+       * during the repaint, as it does not need to check these events.
+       */
       if (!pointerEventsRaf.current && tableRef.current) {
         tableRef.current.style.pointerEvents = 'none'
       }
 
+      // We then re-enable pointer events after the scroll event has finished so
+      // the user can continue interacting with the line number indicators.
       if (pointerEventsRaf.current) {
         window.cancelAnimationFrame(pointerEventsRaf.current.id)
       }
