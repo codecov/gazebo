@@ -104,6 +104,7 @@ A.propTypes = {
   variant: PropTypes.oneOf([
     'default',
     'header',
+    'guestHeader',
     'link',
     'code',
     'cardLink',

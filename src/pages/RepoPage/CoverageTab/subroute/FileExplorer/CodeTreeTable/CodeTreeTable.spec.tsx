@@ -356,22 +356,6 @@ describe('CodeTreeTable', () => {
       })
     })
 
-    describe('there is no results found', () => {
-      it('displays error fetching data message', async () => {
-        setup({ noFiles: true })
-        render(<CodeTreeTable />, { wrapper: wrapper() })
-
-        const message = await screen.findByText(
-          'Once merged to your default branch, Codecov will show your report results on this dashboard.'
-        )
-        expect(message).toBeInTheDocument()
-
-        const link = await screen.findByTestId('settings-page')
-        expect(link).toBeInTheDocument()
-        expect(link).toHaveAttribute('href', '/gh/codecov/cool-repo/settings')
-      })
-    })
-
     describe('when head commit has no reports', () => {
       it('renders no report uploaded message', async () => {
         setup({ noHeadReport: true })

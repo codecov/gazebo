@@ -1,12 +1,12 @@
 import { Suspense } from 'react'
 
+import { LOCAL_STORAGE_SESSION_EXPIRED_KEY } from 'config'
+
 import { CodecovIcon } from 'assets/svg/codecov'
 import Footer from 'layouts/Footer'
 import SessionExpiredBanner from 'pages/LoginPage/SessionExpiredBanner'
 import A from 'ui/A'
 import LoadingLogo from 'ui/LoadingLogo'
-
-const LOCAL_STORAGE_SESSION_EXPIRED_KEY = 'expired-session'
 
 const LogoButton = () => {
   return (

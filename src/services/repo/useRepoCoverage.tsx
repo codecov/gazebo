@@ -139,7 +139,7 @@ export function useRepoCoverage({
           } satisfies NetworkErrorObject)
         }
 
-        return data?.owner?.repository?.branch
+        return data?.owner?.repository?.branch ?? null
       }),
     ...options,
   })

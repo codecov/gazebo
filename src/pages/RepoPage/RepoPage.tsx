@@ -15,6 +15,7 @@ import RepoBreadcrumb from './RepoBreadcrumb'
 import RepoPageTabs from './RepoPageTabs'
 
 const BundlesTab = lazy(() => import('./BundlesTab'))
+const BundleOnboarding = lazy(() => import('./BundlesTab/BundleOnboarding'))
 const CommitsTab = lazy(() => import('./CommitsTab'))
 const CoverageTab = lazy(() => import('./CoverageTab'))
 const NewRepoTab = lazy(() => import('./CoverageOnboarding'))
@@ -123,7 +124,7 @@ function Routes({
             ]}
             exact
           >
-            <BundlesTab />
+            <BundleOnboarding />
           </SentryRoute>
         ) : null}
         {coverageEnabled && userAuthorizedtoViewRepo ? (
@@ -202,7 +203,7 @@ function Routes({
           ]}
           exact
         >
-          <BundlesTab />
+          <BundleOnboarding />
         </SentryRoute>
       ) : null}
       <SentryRoute path={`${path}/settings`}>

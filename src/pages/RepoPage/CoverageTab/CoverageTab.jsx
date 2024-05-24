@@ -4,11 +4,14 @@ import { Switch, useParams } from 'react-router-dom'
 import { SentryRoute } from 'sentry'
 
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
-import { useRepoSettingsTeam } from 'services/repo'
+import { useRepo } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
+import { cn } from 'shared/utils/cn'
 import Spinner from 'ui/Spinner'
 
+import FirstPullRequestBanner from './FirstPullRequestBanner'
+import { useCoverageTabData } from './hooks/useCoverageTabData'
 import Summary from './Summary'
 import SummaryTeamPlan from './SummaryTeamPlan'
 import ToggleElement from './ToggleElement'
@@ -25,12 +28,30 @@ const Loader = () => (
 )
 
 function CoverageTab() {
-  const { data: repoData } = useRepoSettingsTeam()
+  const { provider, owner, repo, branch } = useParams()
+  const { data: repoData } = useRepo({
+    provider,
+    owner,
+    repo,
+  })
+
   const { multipleTiers } = useFlags({
     multipleTiers: false,
   })
-  const { provider, owner } = useParams()
   const { data: tierName } = useTier({ provider, owner })
+
+  const { data } = useCoverageTabData({
+    provider,
+    owner,
+    repo,
+    branch: branch,
+  })
+
+  let displaySunburst = false
+  const fileCount = data?.branch?.head?.totals?.fileCount
+  if (typeof fileCount === 'number' && fileCount <= 200_000) {
+    displaySunburst = true
+  }
 
   const showTeamSummary =
     tierName === TierNames.TEAM &&
@@ -39,8 +60,11 @@ function CoverageTab() {
 
   return (
     <div className="mx-4 flex flex-col gap-2 divide-y border-solid border-ds-gray-secondary sm:mx-0">
+      {repoData?.repository?.isFirstPullRequest ? (
+        <FirstPullRequestBanner />
+      ) : null}
       {showTeamSummary ? <SummaryTeamPlan /> : <Summary />}
-      {!showTeamSummary && (
+      {!showTeamSummary ? (
         <SentryRoute
           path={[
             '/:provider/:owner/:repo/tree/:branch/:path+',
@@ -55,18 +79,25 @@ function CoverageTab() {
               hideElement="Hide Chart"
               localStorageKey="is-chart-hidden"
             >
-              <div className="col-span-9 inline-table">
+              <div
+                className={cn('inline-table', {
+                  'col-span-9': displaySunburst,
+                  'col-span-12 h-[21rem]': !displaySunburst,
+                })}
+              >
                 <SilentNetworkErrorWrapper>
-                  <CoverageChart />
+                  <CoverageChart extendedChart={!displaySunburst} />
                 </SilentNetworkErrorWrapper>
               </div>
-              <div className="sticky top-[8rem] col-span-3 flex aspect-square flex-col justify-center gap-4 px-8 py-4">
-                <Sunburst />
-              </div>
+              {displaySunburst ? (
+                <div className="sticky top-[8rem] col-span-3 flex aspect-square flex-col justify-center gap-4 px-8 py-4">
+                  <Sunburst />
+                </div>
+              ) : null}
             </ToggleElement>
           </Suspense>
         </SentryRoute>
-      )}
+      ) : null}
       <Switch>
         <SentryRoute path="/:provider/:owner/:repo/blob/:ref/:path+" exact>
           <Suspense fallback={<Loader />}>

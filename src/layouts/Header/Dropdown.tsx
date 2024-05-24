@@ -1,15 +1,17 @@
 import cs from 'classnames'
 import { useSelect } from 'downshift'
+import Cookies from 'js-cookie'
 import { useParams } from 'react-router-dom'
 
-import config from 'config'
+import config, {
+  COOKIE_SESSION_EXPIRY,
+  LOCAL_STORAGE_SESSION_TRACKING_KEY,
+} from 'config'
 
 import { providerToName } from 'shared/utils/provider'
 import Avatar from 'ui/Avatar'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
-
-const LOCAL_STORAGE_SESSION_TRACKING_KEY = 'tracking-session-expiry'
 
 interface URLParams {
   provider: string
@@ -51,6 +53,7 @@ function Dropdown({ currentUser }: { currentUser: CurrentUser }) {
 
   const handleSignOut = () => {
     localStorage.removeItem(LOCAL_STORAGE_SESSION_TRACKING_KEY)
+    Cookies.remove(COOKIE_SESSION_EXPIRY)
   }
 
   items.push(
