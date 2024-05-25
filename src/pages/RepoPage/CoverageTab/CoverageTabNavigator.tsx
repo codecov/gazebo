@@ -25,13 +25,15 @@ function CoverageTabNavigator() {
   const urls = {
     Overview: coverage.path({ provider, owner, repo }),
     Flags: flagsTab.path({ provider, owner, repo }),
+    // will probably need to add branch here as arg when we support
+    // keeping same branch we are on another tab with
     Components: componentsTab.path({ provider, owner, repo }),
   }
 
   let value: TabsValue = TABS.Overview
   if (location.pathname === urls.Flags) {
     value = TABS.Flags
-  } else if (location.pathname === urls.Components) {
+  } else if (location.pathname.startsWith(urls.Components)) {
     value = TABS.Components
   }
 

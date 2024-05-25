@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
+import { Route } from 'react-router-dom'
 import useIntersection from 'react-use/lib/useIntersection'
 
 import { TierNames } from 'services/tier'
@@ -18,10 +19,18 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false, suspense: true } },
 })
 const server = setupServer()
+let testLocation
 
 const Wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <Suspense fallback={<p>loading</p>}>{children}</Suspense>
+    <Route
+      path="*"
+      render={({ location }) => {
+        testLocation = location
+        return null
+      }}
+    />
   </QueryClientProvider>
 )
 
@@ -397,7 +406,7 @@ describe('CommitsTab', () => {
 
     describe('user selects from the branch selector', () => {
       describe('user selects All branches', () => {
-        it('updates the button with the selected branch', async () => {
+        it.only('updates the button with the selected branch', async () => {
           const { user } = setup({ hasNextPage: false, returnBranch: 'main' })
           repoPageRender({
             renderCommits: () => (
@@ -423,6 +432,27 @@ describe('CommitsTab', () => {
 
           const selectedBranch = within(allCommitsBtn).getByText(/All branches/)
           expect(selectedBranch).toBeInTheDocument()
+
+          await waitFor(() => {
+            console.log('qwerty: ', testLocation)
+            expect(testLocation?.pathname).toStrictEqual(
+              '/gh/codecov/gazebo/commits/All branches'
+            )
+          })
+
+          await user.click(select)
+          const mainBranch = await screen.findByText('main')
+          await user.click(mainBranch)
+
+          const newSelectedBranch = within(allCommitsBtn).getByText(/main/)
+          expect(newSelectedBranch).toBeInTheDocument()
+
+          await waitFor(() => {
+            console.log('qwerty: ', testLocation)
+            expect(testLocation?.pathname).toStrictEqual(
+              '/gh/codecov/gazebo/commits/main'
+            )
+          })
         })
       })
 

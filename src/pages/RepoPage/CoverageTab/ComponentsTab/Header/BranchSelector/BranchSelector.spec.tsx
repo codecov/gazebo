@@ -243,11 +243,11 @@ describe('BranchSelector', () => {
         const branch = await screen.findByText('branch-1')
         await user.click(branch)
 
-        await waitFor(() =>
-          expect(testLocation?.state).toStrictEqual({
-            branch: 'branch-1',
-          })
-        )
+        await waitFor(() => {
+          expect(testLocation?.pathname).toStrictEqual(
+            '/gh/codecov/test-repo/components/branch-1'
+          )
+        })
       })
     })
   })

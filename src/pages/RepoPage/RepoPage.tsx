@@ -76,6 +76,7 @@ function Routes({
               path,
               `${path}/flags`,
               `${path}/components`,
+              `${path}/components/:branch`,
               `${path}/blob/:ref/:path+`,
               `${path}/tree/:branch`,
               `${path}/tree/:branch/:path+`,
@@ -143,7 +144,10 @@ function Routes({
           <FailedTestsTab />
         </SentryRoute>
         {productEnabled && userAuthorizedtoViewRepo ? (
-          <SentryRoute path={`${path}/commits`} exact>
+          <SentryRoute
+            path={[`${path}/commits`, `${path}/commits/:branch`]}
+            exact
+          >
             <CommitsTab />
           </SentryRoute>
         ) : null}
