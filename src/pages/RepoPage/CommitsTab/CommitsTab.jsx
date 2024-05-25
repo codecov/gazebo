@@ -1,15 +1,7 @@
-import {
-  lazy,
-  Suspense,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react'
-import { useParams } from 'react-router-dom'
+import { lazy, Suspense, useLayoutEffect, useState } from 'react'
+import { useHistory, useParams } from 'react-router-dom'
 
-import { useBranchHasCommits } from 'services/branches'
-import { useLocationParams } from 'services/navigation'
+import { useLocationParams, useNavLinks } from 'services/navigation'
 import { useRepoOverview, useRepoSettingsTeam } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import Icon from 'ui/Icon'
@@ -33,53 +25,20 @@ const Loader = () => (
   </div>
 )
 
-const useControlParams = ({ defaultBranch }) => {
-  const initialRenderDone = useRef(false)
-  const { provider, owner, repo } = useParams()
+const useControlParams = () => {
   const defaultParams = {
-    branch: defaultBranch,
     states: [],
     search: '',
   }
 
   const { params, updateParams } = useLocationParams(defaultParams)
-  let { branch: selectedBranch, states, search } = params
+  let { states, search } = params
 
   const paramStatesNames = states.map((filter) => statusNames[filter])
-
   const [selectedStates, setSelectedStates] = useState(paramStatesNames)
-
-  const { data: branchHasCommits } = useBranchHasCommits({
-    provider,
-    owner,
-    repo,
-    branch: selectedBranch,
-    opts: {
-      suspense: true,
-      enabled: !initialRenderDone.current,
-    },
-  })
-
-  useEffect(() => {
-    if (
-      branchHasCommits === false &&
-      selectedBranch !== ALL_BRANCHES &&
-      !initialRenderDone.current
-    ) {
-      initialRenderDone.current = true
-      updateParams({ branch: ALL_BRANCHES })
-    }
-  }, [branchHasCommits, selectedBranch, updateParams])
-
-  let branch = selectedBranch
-  if (branch === ALL_BRANCHES) {
-    branch = ''
-  }
 
   return {
     params,
-    branch,
-    selectedBranch,
     updateParams,
     selectedStates,
     setSelectedStates,
@@ -89,7 +48,10 @@ const useControlParams = ({ defaultBranch }) => {
 
 function CommitsTab() {
   const setCrumbs = useSetCrumbs()
-  const { provider, owner, repo } = useParams()
+  const history = useHistory()
+
+  const { provider, owner, repo, branch: branchParam } = useParams()
+  const { commits } = useNavLinks()
 
   const { data: repoSettings } = useRepoSettingsTeam()
   const { data: tierData } = useTier({ provider, owner })
@@ -103,14 +65,12 @@ function CommitsTab() {
     owner,
   })
 
-  const {
-    branch,
-    selectedBranch,
-    updateParams,
-    selectedStates,
-    setSelectedStates,
-    search,
-  } = useControlParams({ defaultBranch: overview?.defaultBranch })
+  const [selectedBranch, setSelectedBranch] = useState(
+    branchParam ?? overview?.defaultBranch
+  )
+
+  const { updateParams, selectedStates, setSelectedStates, search } =
+    useControlParams()
 
   const {
     branchList,
@@ -123,10 +83,14 @@ function CommitsTab() {
     setBranchSearchTerm,
     isSearching,
   } = useCommitsTabBranchSelector({
-    passedBranch: branch,
+    passedBranch: selectedBranch,
     defaultBranch: overview?.defaultBranch,
     isAllCommits: selectedBranch === ALL_BRANCHES,
   })
+
+  if (selectedBranch === overview?.defaultBranch && !branchParam) {
+    history.push(commits.path({ branch: encodeURIComponent(selectedBranch) }))
+  }
 
   useLayoutEffect(() => {
     setCrumbs([
@@ -173,7 +137,17 @@ function CommitsTab() {
                 resourceName="branch"
                 isLoading={branchListIsFetching}
                 onChange={(branch) => {
-                  updateParams({ branch: branch })
+                  setSelectedBranch(branch)
+
+                  if (branch === ALL_BRANCHES) {
+                    return history.push(commits.path())
+                  }
+
+                  history.push(
+                    commits.path({
+                      branch: encodeURIComponent(branch),
+                    })
+                  )
                 }}
                 onLoadMore={() => {
                   if (branchListHasNextPage) {
@@ -213,13 +187,13 @@ function CommitsTab() {
       <Suspense fallback={<Loader />}>
         {showTeamTable ? (
           <CommitsTableTeam
-            branch={branch}
+            branch={selectedBranch}
             states={selectedStates?.map((state) => state?.toUpperCase())}
             search={search}
           />
         ) : (
           <CommitsTable
-            branch={branch}
+            branch={selectedBranch === ALL_BRANCHES ? '' : selectedBranch}
             states={selectedStates?.map((state) => state?.toUpperCase())}
             search={search}
           />

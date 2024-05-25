@@ -109,7 +109,7 @@ const CommitsTable: React.FC<CommitsTableProps> = ({
     owner,
     repo,
     filters: {
-      branchName: branch,
+      branchName: decodeURIComponent(branch),
       states: states,
       search: search,
     },

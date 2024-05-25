@@ -73,7 +73,13 @@ function ComponentsTab() {
           componentsMeasurementsActive,
           componentsMeasurementsBackfilled,
         }) && (
-          <SentryRoute path="/:provider/:owner/:repo/components" exact>
+          <SentryRoute
+            path={[
+              '/:provider/:owner/:repo/components',
+              '/:provider/:owner/:repo/components/:branch',
+            ]}
+            exact
+          >
             <ComponentsTable />
           </SentryRoute>
         )}

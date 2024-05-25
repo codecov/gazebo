@@ -35,6 +35,7 @@ type URLParams = {
   provider: string
   owner: string
   repo: string
+  branch?: string
 }
 
 function useRepoComponentsTable(isDesc = false) {
@@ -43,7 +44,7 @@ function useRepoComponentsTable(isDesc = false) {
     historicalTrend: TIME_OPTION_VALUES.LAST_3_MONTHS,
     components: [],
   })
-  const { provider, owner, repo } = useParams<URLParams>()
+  const { provider, owner, repo, branch } = useParams<URLParams>()
   const { data: repoData } = useRepo({
     provider,
     owner,
@@ -71,8 +72,7 @@ function useRepoComponentsTable(isDesc = false) {
     before: format(new Date(), 'yyyy-MM-dd'),
     interval,
     after,
-    // @ts-expect-error Need to type useLocationParams
-    branch: params?.branch,
+    branch,
     opts: { suspense: false },
   })
 

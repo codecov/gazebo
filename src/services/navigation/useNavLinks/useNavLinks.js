@@ -164,12 +164,17 @@ export function useNavLinks() {
     },
     commits: {
       path: (
-        { provider = p, owner = o, repo = r } = {
+        { provider = p, owner = o, repo = r, branch = undefined } = {
           provider: p,
           owner: o,
           repo: r,
         }
-      ) => `/${provider}/${owner}/${repo}/commits`,
+      ) => {
+        if (branch) {
+          return `/${provider}/${owner}/${repo}/commits/${branch}`
+        }
+        return `/${provider}/${owner}/${repo}/commits`
+      },
       text: 'Commits',
     },
     commit: {
@@ -389,7 +394,7 @@ export function useNavLinks() {
         }
       ) => {
         if (branch) {
-          return `/${provider}/${owner}/${repo}/components?branch=${branch}`
+          return `/${provider}/${owner}/${repo}/components/${branch}`
         }
         return `/${provider}/${owner}/${repo}/components`
       },

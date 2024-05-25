@@ -1,9 +1,8 @@
 import { useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 
 import { Branch, useBranch, useBranches } from 'services/branches'
-import { useLocationParams } from 'services/navigation'
-import { useRepoOverview } from 'services/repo'
+import { useNavLinks } from 'services/navigation'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Select from 'ui/Select'
@@ -13,10 +12,6 @@ interface URLParams {
   owner: string
   repo: string
   branch?: string
-}
-
-const defaultQueryParams = {
-  branch: '',
 }
 
 const getDecodedBranch = (branch?: string) =>
@@ -30,14 +25,9 @@ const BranchSelector: React.FC<BranchSelectorProps> = ({
   isDisabled = false,
 }) => {
   const { provider, owner, repo, branch } = useParams<URLParams>()
-  const { params, updateParams } = useLocationParams(defaultQueryParams)
-  const [branchSearchTerm, setBranchSearchTerm] = useState<string>('')
-
-  const { data: overview } = useRepoOverview({
-    provider,
-    owner,
-    repo,
-  })
+  const [selectedBranch, setSelectedBranch] = useState<string>(branch ?? '')
+  const history = useHistory()
+  const { componentsTab } = useNavLinks()
 
   const {
     data: branchList,
@@ -48,17 +38,13 @@ const BranchSelector: React.FC<BranchSelectorProps> = ({
     repo,
     owner,
     provider,
-    filters: { searchValue: branchSearchTerm },
+    filters: { searchValue: selectedBranch },
     opts: {
       suspense: false,
     },
   })
 
   const decodedBranch = getDecodedBranch(branch)
-
-  const selectedBranch =
-    // @ts-expect-error
-    decodedBranch || params.branch || overview?.defaultBranch || ''
 
   const { data: searchBranchValue } = useBranch({
     provider,
@@ -93,10 +79,14 @@ const BranchSelector: React.FC<BranchSelectorProps> = ({
           dataMarketing="branch-selector-components-tab"
           ariaName="components branch selector"
           items={branchList?.branches ?? []}
-          // @ts-expect-error - params is not typed
-          value={params?.branch ? { name: params.branch } : selection}
-          onChange={(item: Branch) => {
-            updateParams({ branch: item.name })
+          value={decodedBranch ? { name: decodedBranch } : selection}
+          onChange={(branch: Branch) => {
+            history.push(
+              componentsTab.path({
+                // @ts-expect-error - useNavLinks needs to be typed
+                branch: encodeURIComponent(branch?.name),
+              })
+            )
           }}
           variant="gray"
           renderItem={(item: Branch) => <span>{item?.name}</span>}
@@ -106,7 +96,7 @@ const BranchSelector: React.FC<BranchSelectorProps> = ({
               branchListFetchNextPage()
             }
           }}
-          onSearch={(term: string) => setBranchSearchTerm(term)}
+          onSearch={(term: string) => setSelectedBranch(term)}
           disabled={isDisabled}
         />
       </span>

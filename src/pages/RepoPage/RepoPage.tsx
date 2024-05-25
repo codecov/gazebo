@@ -133,12 +133,18 @@ function Routes({
           </SentryRoute>
         ) : null}
         {coverageEnabled && componentTab && userAuthorizedtoViewRepo ? (
-          <SentryRoute path={`${path}/components`} exact>
+          <SentryRoute
+            path={[`${path}/components`, `${path}/components/:branch`]}
+            exact
+          >
             <ComponentsTab />
           </SentryRoute>
         ) : null}
         {productEnabled && userAuthorizedtoViewRepo ? (
-          <SentryRoute path={`${path}/commits`} exact>
+          <SentryRoute
+            path={[`${path}/commits`, `${path}/commits/:branch`]}
+            exact
+          >
             <CommitsTab />
           </SentryRoute>
         ) : null}
