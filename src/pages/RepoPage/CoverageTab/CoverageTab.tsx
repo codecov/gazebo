@@ -45,7 +45,13 @@ function CoverageTab() {
           <SentryRoute path="/:provider/:owner/:repo/flags" exact>
             <FlagsTab />
           </SentryRoute>
-          <SentryRoute path="/:provider/:owner/:repo/components" exact>
+          <SentryRoute
+            path={[
+              '/:provider/:owner/:repo/components',
+              '/:provider/:owner/:repo/components/:branch',
+            ]}
+            exact
+          >
             <ComponentsTab />
           </SentryRoute>
           <SentryRoute
