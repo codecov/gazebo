@@ -9,15 +9,15 @@ export function providerToName(provider, forRender = false) {
   return {
     gh: forRender ? 'GitHub' : 'Github',
     bb: 'BitBucket',
-    gl: 'Gitlab',
+    gl: forRender ? 'GitLab' : 'Gitlab',
     ghe: forRender ? 'GitHub Enterprise' : 'Github Enterprise',
-    gle: 'Gitlab Enterprise',
+    gle: forRender ? 'GitLab Enterprise' : 'Gitlab Enterprise',
     bbs: 'BitBucket Server',
     github: forRender ? 'GitHub' : 'Github',
     bitbucket: 'BitBucket',
-    gitlab: 'Gitlab',
+    gitlab: forRender ? 'GitLab' : 'Gitlab',
     github_enterprise: forRender ? 'GitHub Enterprise' : 'Github Enterprise',
-    gitlab_enterprise: 'Gitlab Enterprise',
+    gitlab_enterprise: forRender ? 'GitLab Enterprise' : 'Gitlab Enterprise',
     bitbucket_server: 'BitBucket Server',
   }[provider.toLowerCase()]
 }

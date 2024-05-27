@@ -30,6 +30,12 @@ describe('providerToName', () => {
     })
   })
 
+  describe('when called with gl and for render', () => {
+    it('returns GitLab', () => {
+      expect(providerToName('gl', true)).toBe('GitLab')
+    })
+  })
+
   describe('when called with bb', () => {
     it('returns BitBucket', () => {
       expect(providerToName('bb')).toBe('BitBucket')
@@ -42,9 +48,9 @@ describe('providerToName', () => {
     })
   })
 
-  describe('when called with gle', () => {
-    it('returns Gitlab Enterprise', () => {
-      expect(providerToName('gle')).toBe('Gitlab Enterprise')
+  describe('when called with gle with render', () => {
+    it('returns GitLab Enterprise', () => {
+      expect(providerToName('gle', true)).toBe('GitLab Enterprise')
     })
   })
 
@@ -60,7 +66,7 @@ describe('providerToName', () => {
     })
   })
 
-  describe('when called with Github and for Render', () => {
+  describe('when called with Github and for render', () => {
     it('returns GitHub', () => {
       expect(providerToName('github', true)).toBe('GitHub')
     })
@@ -69,6 +75,12 @@ describe('providerToName', () => {
   describe('when called with Gitlab', () => {
     it('returns Gitlab', () => {
       expect(providerToName('gitlab')).toBe('Gitlab')
+    })
+  })
+
+  describe('when called with Gitlab and for render', () => {
+    it('returns GitLab', () => {
+      expect(providerToName('gitlab', true)).toBe('GitLab')
     })
   })
 
@@ -87,6 +99,14 @@ describe('providerToName', () => {
   describe('when called with gitlab-enterprise', () => {
     it('returns Gitlab Enterprise', () => {
       expect(providerToName('gitlab_enterprise')).toBe('Gitlab Enterprise')
+    })
+  })
+
+  describe('when called with gitlab-enterprise for render', () => {
+    it('returns GitLab Enterprise', () => {
+      expect(providerToName('gitlab_enterprise', true)).toBe(
+        'GitLab Enterprise'
+      )
     })
   })
 

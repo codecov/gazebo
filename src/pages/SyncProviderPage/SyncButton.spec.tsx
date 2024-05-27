@@ -26,7 +26,7 @@ describe('SyncButton', () => {
     it('renders sync button', () => {
       render(<SyncButton provider="gl" />, { wrapper })
 
-      const link = screen.getByRole('link', { name: /Sync with Gitlab/ })
+      const link = screen.getByRole('link', { name: /Sync with GitLab/ })
 
       const expectedRedirect = encodeURIComponent('http://localhost/gl')
       expect(link).toBeInTheDocument()
@@ -65,7 +65,7 @@ describe('SyncButton', () => {
       render(<SyncButton provider="gle" />, { wrapper })
 
       const link = screen.getByRole('link', {
-        name: /Sync with Gitlab Enterprise/,
+        name: /Sync with GitLab Enterprise/,
       })
 
       const expectedRedirect = encodeURIComponent('http://localhost/gle')
