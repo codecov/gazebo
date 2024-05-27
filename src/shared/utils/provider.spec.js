@@ -42,6 +42,12 @@ describe('providerToName', () => {
     })
   })
 
+  describe('when called with bb for render', () => {
+    it('returns Bitbucket', () => {
+      expect(providerToName('bb', true)).toBe('Bitbucket')
+    })
+  })
+
   describe('when called with ghe', () => {
     it('returns Github Enterprise', () => {
       expect(providerToName('ghe')).toBe('Github Enterprise')
@@ -57,6 +63,12 @@ describe('providerToName', () => {
   describe('when called with bbs', () => {
     it('returns BitBucket Server', () => {
       expect(providerToName('bbs')).toBe('BitBucket Server')
+    })
+  })
+
+  describe('when called with bbs for render', () => {
+    it('returns Bitbucket Server', () => {
+      expect(providerToName('bbs', true)).toBe('Bitbucket Server')
     })
   })
 
@@ -90,6 +102,12 @@ describe('providerToName', () => {
     })
   })
 
+  describe('when called with BitBucket for render', () => {
+    it('returns Bitbucket', () => {
+      expect(providerToName('BitBucket', true)).toBe('Bitbucket')
+    })
+  })
+
   describe('when called with github_enterprise', () => {
     it('returns Github Enterprise', () => {
       expect(providerToName('github_enterprise')).toBe('Github Enterprise')
@@ -113,6 +131,12 @@ describe('providerToName', () => {
   describe('when called with bitbucket_server', () => {
     it('returns BitBucket Server', () => {
       expect(providerToName('bitbucket_server')).toBe('BitBucket Server')
+    })
+  })
+
+  describe('when called with bitbucket_server for render', () => {
+    it('returns Bitbucket Server', () => {
+      expect(providerToName('bitbucket_server', true)).toBe('Bitbucket Server')
     })
   })
 })

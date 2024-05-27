@@ -8,17 +8,17 @@ import gitlabLogo from 'assets/providers/gitlab-icon.svg'
 export function providerToName(provider, forRender = false) {
   return {
     gh: forRender ? 'GitHub' : 'Github',
-    bb: 'BitBucket',
+    bb: forRender ? 'Bitbucket' : 'BitBucket',
     gl: forRender ? 'GitLab' : 'Gitlab',
     ghe: forRender ? 'GitHub Enterprise' : 'Github Enterprise',
     gle: forRender ? 'GitLab Enterprise' : 'Gitlab Enterprise',
-    bbs: 'BitBucket Server',
+    bbs: forRender ? 'Bitbucket Server' : 'BitBucket Server',
     github: forRender ? 'GitHub' : 'Github',
-    bitbucket: 'BitBucket',
+    bitbucket: forRender ? 'Bitbucket' : 'BitBucket',
     gitlab: forRender ? 'GitLab' : 'Gitlab',
     github_enterprise: forRender ? 'GitHub Enterprise' : 'Github Enterprise',
     gitlab_enterprise: forRender ? 'GitLab Enterprise' : 'Gitlab Enterprise',
-    bitbucket_server: 'BitBucket Server',
+    bitbucket_server: forRender ? 'Bitbucket Server' : 'BitBucket Server',
   }[provider.toLowerCase()]
 }
 
