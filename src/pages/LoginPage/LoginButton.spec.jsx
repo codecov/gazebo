@@ -26,7 +26,7 @@ describe('LoginButton', () => {
         }),
       })
 
-      const bitbucket = screen.getByText(/Login with Bitbucket/i)
+      const bitbucket = screen.getByText(/Login with Bitbucket/)
       expect(bitbucket).toBeInTheDocument()
     })
   })
@@ -40,7 +40,7 @@ describe('LoginButton', () => {
         }),
       })
 
-      const github = screen.getByText(/Login with GitHub/i)
+      const github = screen.getByText(/Login with GitHub/)
       expect(github).toBeInTheDocument()
     })
   })
@@ -54,7 +54,7 @@ describe('LoginButton', () => {
         }),
       })
 
-      const gitlab = screen.getByText(/Login with GitLab/i)
+      const gitlab = screen.getByText(/Login with GitLab/)
       expect(gitlab).toBeInTheDocument()
     })
   })
@@ -68,7 +68,7 @@ describe('LoginButton', () => {
         }),
       })
 
-      const sentry = screen.getByText(/Login with Sentry/i)
+      const sentry = screen.getByText(/Login with Sentry/)
       expect(sentry).toBeInTheDocument()
     })
   })
