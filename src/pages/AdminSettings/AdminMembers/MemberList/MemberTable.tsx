@@ -15,6 +15,7 @@ import { useInView } from 'react-intersection-observer'
 
 import { useLocationParams } from 'services/navigation'
 import {
+  SelfHostedSettings,
   UserListOwner,
   useSelfHostedSettings,
   useSelfHostedUserList,
@@ -60,7 +61,7 @@ interface MutationArgs {
 
 interface CreateTableArgs {
   tableData: UserListOwner[]
-  seatData: any // fix this
+  seatData: SelfHostedSettings
   mutate: UseMutateFunction<any, unknown, MutationArgs, unknown>
 }
 

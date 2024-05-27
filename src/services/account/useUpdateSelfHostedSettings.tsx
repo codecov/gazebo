@@ -56,12 +56,6 @@ export const useUpdateSelfHostedSettings = () => {
             text: <UpdateSelfHostedSettingsMessage />,
             disappearAfter: 10000,
           })
-        } else if (error?.__typename === 'UnauthenticatedError') {
-          addToast({
-            type: 'error',
-            text: <UpdateSelfHostedSettingsMessage />,
-            disappearAfter: 10000,
-          })
         }
       }
     },

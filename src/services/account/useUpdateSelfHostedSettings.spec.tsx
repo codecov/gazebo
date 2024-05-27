@@ -40,15 +40,13 @@ afterAll(() => {
 })
 
 describe('updateSelfHostedSettings', () => {
-  //@ts-ignore
-
   function setup({
     isValidationError = false,
     isUnauthenticatedError = false,
   }) {
     const mockAddToast = jest.fn()
-    //@ts-ignore
 
+    //@ts-ignore
     useAddNotification.mockReturnValue(mockAddToast)
     server.use(
       graphql.mutation('UpdateSelfHostedSettings', (req, res, ctx) => {
@@ -73,7 +71,7 @@ describe('updateSelfHostedSettings', () => {
               updateSelfHostedSettings: {
                 error: {
                   __typename: 'UnauthenticatedError',
-                  message: 'unauthenticatedError error',
+                  message: 'unauthenticated error',
                 },
               },
             })
@@ -90,9 +88,8 @@ describe('updateSelfHostedSettings', () => {
   }
 
   describe('when called', () => {
-    const { mockAddToast } = setup({})
-
     it('calls with the correct body', async () => {
+      const { mockAddToast } = setup({})
       const { result } = renderHook(() => useUpdateSelfHostedSettings(), {
         wrapper: wrapper(),
       })
@@ -120,10 +117,6 @@ describe('updateSelfHostedSettings', () => {
   })
 
   describe('when there is a validation error', () => {
-    beforeEach(() => {
-      setup({})
-    })
-
     it('returns a validation error response', async () => {
       const { mockAddToast } = setup({ isValidationError: true })
 

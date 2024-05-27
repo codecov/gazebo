@@ -10,12 +10,19 @@ import Api from 'shared/api'
 import { NetworkErrorObject } from 'shared/api/helpers'
 import A from 'ui/A'
 
-const RepositorySchema = z.object({
-  __typename: z.literal('Repository'),
+const SelfHostedSettingsSchema = z.object({
   planAutoActivate: z.boolean().nullable(),
   seatsLimit: z.number().nullable(),
   seatsUsed: z.number().nullable(),
 })
+
+export type SelfHostedSettings = z.infer<typeof SelfHostedSettingsSchema>
+
+const RepositorySchema = z
+  .object({
+    __typename: z.literal('Repository'),
+  })
+  .merge(SelfHostedSettingsSchema)
 
 const RequestSchema = z.object({
   owner: z
