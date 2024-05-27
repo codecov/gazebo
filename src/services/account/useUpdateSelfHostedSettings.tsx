@@ -48,7 +48,7 @@ export const useUpdateSelfHostedSettings = () => {
       })
     },
     onSuccess: ({ data }) => {
-      const error = data?.saveSentryState?.error
+      const error = data?.updateSelfHostedSettings?.error
       if (error) {
         if (error?.__typename === 'ValidationError') {
           addToast({
