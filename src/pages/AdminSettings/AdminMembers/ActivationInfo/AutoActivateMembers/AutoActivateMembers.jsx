@@ -1,5 +1,3 @@
-import { useParams } from 'react-router-dom'
-
 import { useUpdateSelfHostedSettings } from 'services/account/useUpdateSelfHostedSettings'
 import { useSelfHostedSettings } from 'services/selfHosted'
 import Spinner from 'ui/Spinner'
@@ -12,12 +10,9 @@ const Loader = () => (
 )
 
 function AutoActivateMembers() {
-  const { provider } = useParams()
   const { data, isLoading } = useSelfHostedSettings()
 
-  const { mutate, isLoading: isMutating } = useUpdateSelfHostedSettings({
-    provider,
-  })
+  const { mutate, isLoading: isMutating } = useUpdateSelfHostedSettings()
 
   if (isLoading) {
     return <Loader />
@@ -32,7 +27,9 @@ function AutoActivateMembers() {
           label={data?.planAutoActivate ? 'On' : 'Off'}
           value={data?.planAutoActivate}
           disabled={isMutating}
-          onClick={() => mutate({ planAutoActivate: !data?.planAutoActivate })}
+          onClick={() =>
+            mutate({ shouldAutoActivate: !data?.planAutoActivate })
+          }
         />
       </div>
       <p>

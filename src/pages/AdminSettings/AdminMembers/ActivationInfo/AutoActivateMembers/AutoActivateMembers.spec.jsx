@@ -46,9 +46,8 @@ describe('AutoActivateMembers', () => {
       }),
 
       graphql.mutation('UpdateSelfHostedSettings', (req, res, ctx) => {
-        const plan_auto_activate =
-          req.variables.shouldAutoActivate.planAutoActivate
-        mockResponse.owner.repository.planAutoActivate = plan_auto_activate
+        mockResponse.owner.repository.planAutoActivate =
+          req.variables.shouldAutoActivate
 
         return res(ctx.status(200), ctx.json({}))
       })

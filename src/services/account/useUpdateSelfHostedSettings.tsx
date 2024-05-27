@@ -37,7 +37,7 @@ export const useUpdateSelfHostedSettings = () => {
   const addToast = useAddNotification()
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (shouldAutoActivate: Boolean) => {
+    mutationFn: ({ shouldAutoActivate }: { shouldAutoActivate: boolean }) => {
       return Api.graphqlMutation({
         provider,
         query,

@@ -97,7 +97,7 @@ describe('updateSelfHostedSettings', () => {
         wrapper: wrapper(),
       })
 
-      result.current.mutate(true)
+      result.current.mutate({ shouldAutoActivate: false })
 
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
@@ -111,7 +111,7 @@ describe('updateSelfHostedSettings', () => {
       const { result } = renderHook(() => useUpdateSelfHostedSettings(), {
         wrapper: wrapper(),
       })
-      result.current.mutate(true)
+      result.current.mutate({ shouldAutoActivate: false })
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
 
@@ -131,7 +131,7 @@ describe('updateSelfHostedSettings', () => {
         wrapper: wrapper(),
       })
 
-      result.current.mutate(false)
+      result.current.mutate({ shouldAutoActivate: false })
 
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
