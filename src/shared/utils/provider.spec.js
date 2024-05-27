@@ -18,6 +18,12 @@ describe('providerToName', () => {
     })
   })
 
+  describe('when called with gh and for render', () => {
+    it('returns GitHub', () => {
+      expect(providerToName('gh', true)).toBe('GitHub')
+    })
+  })
+
   describe('when called with gl', () => {
     it('returns Gitlab', () => {
       expect(providerToName('gl')).toBe('Gitlab')
@@ -51,6 +57,12 @@ describe('providerToName', () => {
   describe('when called with Github', () => {
     it('returns Github', () => {
       expect(providerToName('github')).toBe('Github')
+    })
+  })
+
+  describe('when called with Github and for Render', () => {
+    it('returns GitHub', () => {
+      expect(providerToName('github', true)).toBe('GitHub')
     })
   })
 

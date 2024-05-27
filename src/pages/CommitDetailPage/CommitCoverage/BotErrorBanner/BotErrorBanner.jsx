@@ -83,7 +83,7 @@ const BotErrorHeading = () => {
 
   if (ghWithApp) {
     return (
-      <p className="font-semibold">There was an issue with the Github app</p>
+      <p className="font-semibold">There was an issue with the GitHub app</p>
     )
   }
 

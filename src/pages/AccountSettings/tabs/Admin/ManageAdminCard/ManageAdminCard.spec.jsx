@@ -116,7 +116,7 @@ describe('ManageAdminCard', () => {
       render(<ManageAdminCard />, { wrapper })
 
       const noAdmins = await screen.findByText(
-        /No admins yet. Note that admins in your Github organization are automatically considered admins./
+        /No admins yet. Note that admins in your GitHub organization are automatically considered admins./
       )
       expect(noAdmins).toBeInTheDocument()
     })
@@ -129,7 +129,7 @@ describe('ManageAdminCard', () => {
       render(<ManageAdminCard />, { wrapper })
 
       const noAdmins = await screen.findByText(
-        /No admins yet. Note that admins in your Github organization are automatically considered admins./
+        /No admins yet. Note that admins in your GitHub organization are automatically considered admins./
       )
       expect(noAdmins).toBeInTheDocument()
     })
