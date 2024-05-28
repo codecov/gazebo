@@ -91,7 +91,7 @@ export default function FailedTestsTab() {
     <div className="flex flex-col gap-6 pt-4 lg:w-3/5">
       <img
         src={testsFailedOnboarding.toString()}
-        alt="failed-tests"
+        alt="failed-tests-onboarding"
         width="420px"
         className="m-auto"
       />

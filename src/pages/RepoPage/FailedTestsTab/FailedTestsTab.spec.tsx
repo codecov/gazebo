@@ -21,6 +21,7 @@ const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
           path={[
             '/:provider/:owner/:repo/tests',
             '/:provider/:owner/:repo/tests/codecov-cli',
+            '/:provider/:owner/:repo/tests/random-path',
           ]}
         >
           <Suspense fallback={null}>{children}</Suspense>
@@ -52,6 +53,14 @@ describe('FailedTestsTab', () => {
 
     const intro = screen.getByText('Test Analytics')
     expect(intro).toBeInTheDocument()
+  })
+
+  it('renders onboarding failed tests img', () => {
+    setup()
+    render(<FailedTestsTab />, { wrapper: wrapper() })
+
+    const img = screen.getByAltText('failed-tests-onboarding')
+    expect(img).toBeInTheDocument()
   })
 
   describe('Setup Options', () => {
@@ -90,6 +99,19 @@ describe('FailedTestsTab', () => {
           const codecovCLI = screen.getByTestId('codecov-cli-radio')
           expect(codecovCLI).toBeInTheDocument()
           expect(codecovCLI).toHaveAttribute('data-state', 'checked')
+        })
+      })
+
+      describe('when on random path', () => {
+        it('selects GitHub Actions as default', () => {
+          setup()
+          render(<FailedTestsTab />, {
+            wrapper: wrapper('/gl/codecov/cool-repo/tests/random-path'),
+          })
+
+          const githubActions = screen.getByTestId('github-actions-radio')
+          expect(githubActions).toBeInTheDocument()
+          expect(githubActions).toHaveAttribute('data-state', 'checked')
         })
       })
     })

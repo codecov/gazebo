@@ -24,10 +24,12 @@ jest.mock('./ComponentsTab', () => () => 'ComponentsTab')
 jest.mock('./SettingsTab', () => () => 'SettingsTab')
 jest.mock('shared/featureFlags')
 jest.mock('./ActivationAlert', () => () => 'ActivationAlert')
+jest.mock('./FailedTestsTab', () => () => 'FailedTestsTab')
 
 jest.mock('shared/featureFlags')
 const mockedUseFlags = useFlags as jest.Mock<{
   componentTab: boolean
+  onboardingFailedTests: boolean
 }>
 
 const mockGetRepo = ({
@@ -114,6 +116,8 @@ const wrapper =
                 '/:provider/:owner/:repo/tree/:branch',
                 '/:provider/:owner/:repo/tree/:branch/:path+',
                 '/:provider/:owner/:repo',
+                '/:provider/:owner/:repo/tests',
+                '/:provider/:owner/:repo/tests/codecov-cli',
               ]}
             >
               <Suspense fallback={null}>
@@ -184,6 +188,7 @@ describe('RepoPage', () => {
   ) {
     mockedUseFlags.mockReturnValue({
       componentTab: true,
+      onboardingFailedTests: true,
     })
 
     const user = userEvent.setup()
@@ -708,6 +713,42 @@ describe('RepoPage', () => {
 
           const bundleOnboarding = await screen.findByText('BundleOnboarding')
           expect(bundleOnboarding).toBeInTheDocument()
+        })
+      })
+
+      describe('testing tests analytics path', () => {
+        it('handles failed tests route on active repo', async () => {
+          const { queryClient } = setup({
+            isRepoActive: true,
+            hasRepoData: true,
+            isRepoActivated: true,
+          })
+          render(<RepoPage />, {
+            wrapper: wrapper({
+              queryClient,
+              initialEntries: '/gh/codecov/cool-repo/tests',
+            }),
+          })
+
+          const failedTests = await screen.findByText('FailedTestsTab')
+          expect(failedTests).toBeInTheDocument()
+        })
+
+        it('handles failed tests route on deactivated repo', async () => {
+          const { queryClient } = setup({
+            isRepoActive: false,
+            hasRepoData: true,
+            isRepoActivated: false,
+          })
+          render(<RepoPage />, {
+            wrapper: wrapper({
+              queryClient,
+              initialEntries: '/gh/codecov/cool-repo/tests/codecov-cli',
+            }),
+          })
+
+          const coverageOnboarding = await screen.findByText('FailedTestsTab')
+          expect(coverageOnboarding).toBeInTheDocument()
         })
       })
 
