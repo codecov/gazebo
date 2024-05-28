@@ -31,9 +31,16 @@ const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
       </MemoryRouter>
     )
 
+const provider = 'gh'
+const owner = 'codecov'
+const repo = 'cool-repo'
+
 describe('CoverageTabNavigator', () => {
   it('renders', async () => {
-    render(<CoverageTabNavigator />, { wrapper: wrapper() })
+    render(
+      <CoverageTabNavigator provider={provider} owner={owner} repo={repo} />,
+      { wrapper: wrapper() }
+    )
 
     const overview = await screen.findByText('Overview')
     const flags = await screen.findByText('Flags')
@@ -46,7 +53,14 @@ describe('CoverageTabNavigator', () => {
   describe('initial selection', () => {
     describe('when not on flags or components tabs', () => {
       it('selects Overview as default', async () => {
-        render(<CoverageTabNavigator />, { wrapper: wrapper() })
+        render(
+          <CoverageTabNavigator
+            provider={provider}
+            owner={owner}
+            repo={repo}
+          />,
+          { wrapper: wrapper() }
+        )
 
         const overview = await screen.findByTestId('overview-radio')
         expect(overview).toBeInTheDocument()
@@ -56,9 +70,16 @@ describe('CoverageTabNavigator', () => {
 
     describe('when loaded with flags url', () => {
       it('selects flags as default', async () => {
-        render(<CoverageTabNavigator />, {
-          wrapper: wrapper('/gh/codecov/cool-repo/flags'),
-        })
+        render(
+          <CoverageTabNavigator
+            provider={provider}
+            owner={owner}
+            repo={repo}
+          />,
+          {
+            wrapper: wrapper('/gh/codecov/cool-repo/flags'),
+          }
+        )
 
         const flags = await screen.findByTestId('flags-radio')
         expect(flags).toBeInTheDocument()
@@ -68,9 +89,16 @@ describe('CoverageTabNavigator', () => {
 
     describe('when loaded with components url', () => {
       it('selects components as default', async () => {
-        render(<CoverageTabNavigator />, {
-          wrapper: wrapper('/gh/codecov/cool-repo/components'),
-        })
+        render(
+          <CoverageTabNavigator
+            provider={provider}
+            owner={owner}
+            repo={repo}
+          />,
+          {
+            wrapper: wrapper('/gh/codecov/cool-repo/components'),
+          }
+        )
 
         const components = await screen.findByTestId('components-radio')
         expect(components).toBeInTheDocument()
@@ -83,9 +111,16 @@ describe('CoverageTabNavigator', () => {
     describe('when Overview is selected', () => {
       it('should navigate to base coverage tab', async () => {
         const user = userEvent.setup()
-        render(<CoverageTabNavigator />, {
-          wrapper: wrapper('/gh/codecov/cool-repo/flags'),
-        })
+        render(
+          <CoverageTabNavigator
+            provider={provider}
+            owner={owner}
+            repo={repo}
+          />,
+          {
+            wrapper: wrapper('/gh/codecov/cool-repo/flags'),
+          }
+        )
 
         const overview = await screen.findByTestId('overview-radio')
         expect(overview).toBeInTheDocument()
@@ -103,9 +138,16 @@ describe('CoverageTabNavigator', () => {
     describe('when Flags is selected', () => {
       it('should navigate to flags coverage tab', async () => {
         const user = userEvent.setup()
-        render(<CoverageTabNavigator />, {
-          wrapper: wrapper('/gh/codecov/cool-repo'),
-        })
+        render(
+          <CoverageTabNavigator
+            provider={provider}
+            owner={owner}
+            repo={repo}
+          />,
+          {
+            wrapper: wrapper('/gh/codecov/cool-repo'),
+          }
+        )
 
         const flags = await screen.findByTestId('flags-radio')
         expect(flags).toBeInTheDocument()
@@ -123,9 +165,16 @@ describe('CoverageTabNavigator', () => {
     describe('when Components is selected', () => {
       it('should navigate to components coverage tab', async () => {
         const user = userEvent.setup()
-        render(<CoverageTabNavigator />, {
-          wrapper: wrapper('/gh/codecov/cool-repo'),
-        })
+        render(
+          <CoverageTabNavigator
+            provider={provider}
+            owner={owner}
+            repo={repo}
+          />,
+          {
+            wrapper: wrapper('/gh/codecov/cool-repo'),
+          }
+        )
 
         const components = await screen.findByTestId('components-radio')
         expect(components).toBeInTheDocument()
