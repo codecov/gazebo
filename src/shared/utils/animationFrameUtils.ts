@@ -41,7 +41,6 @@ export function requestAnimationTimeout(
   return frame
 }
 
-// small wrapper function around cancelAnimationFrame to use with requestAnimationTimeout
 export function cancelAnimationTimeout(frame: AnimationTimeoutId) {
   window.cancelAnimationFrame(frame.id)
 }
