@@ -19,8 +19,6 @@ import Spinner from 'ui/Spinner'
 
 import { createCommitsTableTeamData } from './createCommitsTableTeamData'
 
-import 'ui/Table/Table.css'
-
 const Loader = () => (
   <div className="mb-4 flex justify-center pt-4">
     <Spinner />

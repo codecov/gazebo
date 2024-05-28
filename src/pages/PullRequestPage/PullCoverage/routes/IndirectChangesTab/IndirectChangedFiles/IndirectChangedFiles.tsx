@@ -17,8 +17,6 @@ import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 import TotalsNumber from 'ui/TotalsNumber'
 
-import 'ui/FileList/FileList.css'
-
 import { useIndirectChangedFilesTable } from './hooks'
 import NameColumn from './NameColumn/NameColumn'
 

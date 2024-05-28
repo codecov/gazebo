@@ -13,8 +13,6 @@ import { cn } from 'shared/utils/cn'
 import { formatTimeToNow } from 'shared/utils/dates'
 import Button from 'ui/Button'
 
-import 'ui/Table/Table.css'
-
 interface SessionColumn {
   ip: React.ReactNode
   lastSeen: string

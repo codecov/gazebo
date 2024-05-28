@@ -11,8 +11,6 @@ import Spinner from 'ui/Spinner'
 
 import { useAdminAccessList } from './useAdminAccessList'
 
-import 'ui/Table/Table.css'
-
 type AdminAccessTableColumn = {
   name: string
   email: string

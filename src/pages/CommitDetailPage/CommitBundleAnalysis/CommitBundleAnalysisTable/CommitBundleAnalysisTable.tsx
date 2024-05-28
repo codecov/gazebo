@@ -15,8 +15,6 @@ import { useCommitBundleList } from 'services/commit/useCommitBundleList'
 import { formatSizeToString } from 'shared/utils/bundleAnalysis'
 import Icon from 'ui/Icon'
 
-import 'ui/Table/Table.css'
-
 interface Params {
   provider: string
   owner: string
