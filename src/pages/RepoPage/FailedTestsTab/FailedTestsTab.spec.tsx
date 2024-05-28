@@ -54,12 +54,12 @@ describe('FailedTestsTab', () => {
     expect(intro).toBeInTheDocument()
   })
 
-  describe('CISelector', () => {
+  describe('Setup Options', () => {
     it('renders', () => {
       setup()
       render(<FailedTestsTab />, { wrapper: wrapper() })
 
-      const selectorHeader = screen.getByText('Select your CI')
+      const selectorHeader = screen.getByText('Select a setup option')
       expect(selectorHeader).toBeInTheDocument()
 
       const githubActions = screen.getByText('Using GitHub Actions')
@@ -81,7 +81,7 @@ describe('FailedTestsTab', () => {
       })
 
       describe('when on /tests/codecov-cli path', () => {
-        it('selects Other CI as default', () => {
+        it('selects Codecov CLI as default', () => {
           setup()
           render(<FailedTestsTab />, {
             wrapper: wrapper('/gl/codecov/cool-repo/tests/codecov-cli'),

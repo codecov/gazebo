@@ -7,13 +7,13 @@ import { useNavLinks } from 'services/navigation'
 import { Card } from 'ui/Card'
 import { RadioTileGroup } from 'ui/RadioTileGroup'
 
-const CI_PROVIDERS = {
+const SETUP_OPTIONS = {
   GitHubActions: 'GitHubActions',
   CodecovCLI: 'CodecovCLI',
 } as const
-type CIProviderValue = (typeof CI_PROVIDERS)[keyof typeof CI_PROVIDERS]
+type SetupOptionsValue = (typeof SETUP_OPTIONS)[keyof typeof SETUP_OPTIONS]
 
-function CISelector() {
+function SetupOptionSelector() {
   const location = useLocation()
   const history = useHistory()
   const { failedTestsTab: githubActions, failedTestsCodecovCLI: codecovCLI } =
@@ -23,30 +23,30 @@ function CISelector() {
     CodecovCLI: codecovCLI.path(),
   }
 
-  const getInitialProvider = () => {
+  const getInitialSetupOption = () => {
     if (location.pathname === urls.GitHubActions) {
-      return CI_PROVIDERS.GitHubActions
+      return SETUP_OPTIONS.GitHubActions
     }
     if (location.pathname === urls.CodecovCLI) {
-      return CI_PROVIDERS.CodecovCLI
+      return SETUP_OPTIONS.CodecovCLI
     }
-    return CI_PROVIDERS.GitHubActions
+    return SETUP_OPTIONS.GitHubActions
   }
 
   return (
     <Card>
       <Card.Header>
-        <Card.Title size="base">Select your CI</Card.Title>
+        <Card.Title size="base">Select a setup option</Card.Title>
       </Card.Header>
       <Card.Content>
         <RadioTileGroup
-          defaultValue={getInitialProvider()}
-          onValueChange={(value: CIProviderValue) => {
+          defaultValue={getInitialSetupOption()}
+          onValueChange={(value: SetupOptionsValue) => {
             history.replace(urls[value])
           }}
         >
           <RadioTileGroup.Item
-            value={CI_PROVIDERS.GitHubActions}
+            value={SETUP_OPTIONS.GitHubActions}
             data-testid="github-actions-radio"
           >
             <RadioTileGroup.Label>Using GitHub Actions</RadioTileGroup.Label>
@@ -56,7 +56,7 @@ function CISelector() {
             </RadioTileGroup.Description>
           </RadioTileGroup.Item>
           <RadioTileGroup.Item
-            value={CI_PROVIDERS.CodecovCLI}
+            value={SETUP_OPTIONS.CodecovCLI}
             data-testid="codecov-cli-radio"
           >
             <RadioTileGroup.Label>
@@ -103,7 +103,7 @@ export default function FailedTestsTab() {
           failures and make it easier to ship new features quickly.
         </p>
       </div>
-      <CISelector />
+      <SetupOptionSelector />
       <Content />
     </div>
   )
