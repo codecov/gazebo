@@ -229,6 +229,7 @@ function Routes({
       </SentryRoute>
       <Redirect from={`${path}/bundles`} to={`${path}/bundles/new`} />
       <Redirect from={`${path}/bundles/*`} to={`${path}/bundles/new`} />
+      <Redirect from={`${path}/tests/*`} to={`${path}/tests`} />
       <Redirect from={path} to={`${path}/new`} />
       <Redirect from={`${path}/*`} to={`${path}/new`} />
     </Switch>
