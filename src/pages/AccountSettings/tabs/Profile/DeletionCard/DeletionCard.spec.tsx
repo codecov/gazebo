@@ -17,25 +17,12 @@ describe('DeletionCard', () => {
     expect(header).toBeInTheDocument()
   })
 
-  describe('when isPersonalSettings is true', () => {
-    it('renders account deletion message', () => {
-      render(<DeletionCard />, { wrapper })
+  it('renders account deletion message', () => {
+    render(<DeletionCard />, { wrapper })
 
-      const message = screen.getByText(
-        /Erase all my personal content and projects./
-      )
-      expect(message).toBeInTheDocument()
-    })
-  })
-
-  describe('when isPersonalSettings is false', () => {
-    it('renders organization deletion message', () => {
-      render(<DeletionCard />, { wrapper })
-
-      const message = screen.getByText(
-        /Erase all my organization content and projects./
-      )
-      expect(message).toBeInTheDocument()
-    })
+    const message = screen.getByText(
+      /Erase all my personal content and projects./
+    )
+    expect(message).toBeInTheDocument()
   })
 })
