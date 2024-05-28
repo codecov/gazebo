@@ -115,7 +115,6 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
   }
 
   if (onboardingFailedTests) {
-    // Add onboarding check for failed tests
     tabs.push({
       pageName: 'failedTestsTab',
       children: (

@@ -204,6 +204,14 @@ function Routes({
       >
         <NewRepoTab />
       </SentryRoute>
+      {onboardingFailedTests ? (
+        <SentryRoute
+          path={[`${path}/tests`, `${path}/tests/codecov-cli`]}
+          exact
+        >
+          <FailedTestsTab />
+        </SentryRoute>
+      ) : null}
       {jsOrTsPresent ? (
         <SentryRoute
           path={[
