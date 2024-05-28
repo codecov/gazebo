@@ -16,6 +16,9 @@ import { useUTM } from 'services/tracking/utm'
 import { useInternalUser, useUser } from 'services/user'
 import { isProvider } from 'shared/api/helpers'
 
+import 'ui/Table/Table.css'
+import 'ui/FileList/FileList.css'
+
 const AccountSettings = lazy(() => import('./pages/AccountSettings'))
 const AdminSettings = lazy(() => import('./pages/AdminSettings'))
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
