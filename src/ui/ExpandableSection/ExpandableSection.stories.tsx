@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import ExpandableSection from './ExpandableSection'
+import { ExpandableSection } from './ExpandableSection'
 
 type ExpandableSectionStory = {
   title: string

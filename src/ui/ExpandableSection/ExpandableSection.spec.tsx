@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import ExpandableSection from 'ui/ExpandableSection'
+import { ExpandableSection } from 'ui/ExpandableSection'
 
 describe('ExpandableSection', () => {
   it('renders the title correctly', () => {
@@ -41,6 +41,7 @@ describe('ExpandableSection', () => {
     expect(contentElement).toBeInTheDocument()
 
     await userEvent.click(button)
-    expect(contentElement).not.toBeInTheDocument()
+    const contentElementAfterCollapse = screen.queryByText('Test Content')
+    expect(contentElementAfterCollapse).not.toBeInTheDocument()
   })
 })
