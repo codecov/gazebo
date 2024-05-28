@@ -23,6 +23,7 @@ const PullsTab = lazy(() => import('./PullsTab'))
 const FlagsTab = lazy(() => import('./FlagsTab'))
 const ComponentsTab = lazy(() => import('./ComponentsTab'))
 const SettingsTab = lazy(() => import('./SettingsTab'))
+const FailedTestsTab = lazy(() => import('./FailedTestsTab'))
 
 const path = '/:provider/:owner/:repo'
 
@@ -57,8 +58,9 @@ function Routes({
   isRepoPrivate,
   isCurrentUserActivated,
 }: RoutesProps) {
-  const { componentTab } = useFlags({
+  const { componentTab, onboardingFailedTests } = useFlags({
     bundleAnalysisPrAndCommitPages: false,
+    onboardingFailedTests: false,
   })
 
   const productEnabled = coverageEnabled || bundleAnalysisEnabled
@@ -125,6 +127,14 @@ function Routes({
             exact
           >
             <BundleOnboarding />
+          </SentryRoute>
+        ) : null}
+        {onboardingFailedTests ? (
+          <SentryRoute
+            path={[`${path}/tests`, `${path}/tests/codecov-cli`]}
+            exact
+          >
+            <FailedTestsTab />
           </SentryRoute>
         ) : null}
         {coverageEnabled && userAuthorizedtoViewRepo ? (

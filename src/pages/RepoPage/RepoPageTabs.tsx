@@ -42,8 +42,9 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
     },
   })
 
-  const { componentTab } = useFlags({
+  const { componentTab, onboardingFailedTests } = useFlags({
     componentTab: false,
+    onboardingFailedTests: false,
   })
 
   const matchTree = useMatchTreePath()
@@ -111,6 +112,18 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
     userAuthorizedtoViewRepo
   ) {
     tabs.push({ pageName: 'commits' }, { pageName: 'pulls' })
+  }
+
+  if (onboardingFailedTests) {
+    // Add onboarding check for failed tests
+    tabs.push({
+      pageName: 'failedTestsTab',
+      children: (
+        <>
+          Tests <Badge>beta</Badge>{' '}
+        </>
+      ),
+    })
   }
 
   if (isCurrentUserPartOfOrg) {
