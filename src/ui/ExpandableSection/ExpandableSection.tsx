@@ -1,4 +1,5 @@
-import React, { ReactNode, useState } from 'react'
+import * as Collapsible from '@radix-ui/react-collapsible'
+import React, { ReactNode } from 'react'
 
 import Icon from 'ui/Icon'
 
@@ -7,28 +8,25 @@ interface ExpandableSectionProps {
   children: ReactNode
 }
 
-const ExpandableSection: React.FC<ExpandableSectionProps> = ({
+export const ExpandableSection: React.FC<ExpandableSectionProps> = ({
   title,
   children,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [isExpanded, setIsExpanded] = React.useState(false)
 
   return (
     <div className="my-2 border border-gray-200">
-      <button
-        onClick={() => {
-          setIsExpanded(!isExpanded)
-        }}
-        className="flex w-full items-center justify-between p-4 text-left font-semibold hover:bg-gray-100"
-      >
-        <span>{title}</span>
-        <Icon name={isExpanded ? 'chevronUp' : 'chevronDown'} size="sm" />
-      </button>
-      {isExpanded && (
-        <div className="border-t border-gray-200 p-4">{children}</div>
-      )}
+      <Collapsible.Root open={isExpanded} onOpenChange={setIsExpanded}>
+        <Collapsible.Trigger asChild>
+          <button className="flex w-full items-center justify-between p-4 text-left font-semibold hover:bg-gray-100">
+            <span>{title}</span>
+            <Icon name={isExpanded ? 'chevronUp' : 'chevronDown'} size="sm" />
+          </button>
+        </Collapsible.Trigger>
+        <Collapsible.Content className="border-t border-gray-200 p-4">
+          {children}
+        </Collapsible.Content>
+      </Collapsible.Root>
     </div>
   )
 }
-
-export default ExpandableSection
