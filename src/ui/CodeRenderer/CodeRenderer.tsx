@@ -50,8 +50,10 @@ function CodeRenderer({
         tableRef.current.style.pointerEvents = 'none'
       }
 
-      // We then re-enable pointer events after the scroll event has finished so
-      // the user can continue interacting with the line number indicators.
+      /**
+       * We then re-enable pointer events after the scroll event has finished so
+       * the user can continue interacting with the line number indicators.
+       */
       if (pointerEventsRaf.current) {
         window.cancelAnimationFrame(pointerEventsRaf.current.id)
       }
