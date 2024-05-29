@@ -125,6 +125,17 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
     tabs.push({ pageName: 'commits' }, { pageName: 'pulls' })
   }
 
+  if (onboardingFailedTests) {
+    tabs.push({
+      pageName: 'failedTestsTab',
+      children: (
+        <>
+          Tests <Badge>beta</Badge>{' '}
+        </>
+      ),
+    })
+  }
+
   if (isCurrentUserPartOfOrg) {
     tabs.push({ pageName: 'settings' })
   }
