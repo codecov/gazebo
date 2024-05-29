@@ -1,50 +1,60 @@
 import { Meta, StoryObj } from '@storybook/react'
+import React, { useState } from 'react'
 
 import { ExpandableSection } from './ExpandableSection'
 
-type ExpandableSectionStory = {
-  title: string
-  children: React.ReactNode
-}
-
-const meta: Meta<ExpandableSectionStory> = {
+const meta: Meta<typeof ExpandableSection> = {
   title: 'Components/ExpandableSection',
   component: ExpandableSection,
-  argTypes: {
-    title: {
-      description: 'Title of the expandable section',
-      control: 'text',
-    },
-    children: {
-      description: 'Content of the expandable section',
-      control: 'text',
-    },
-  },
 }
 export default meta
 
-type Story = StoryObj<ExpandableSectionStory>
+type Story = StoryObj<typeof ExpandableSection>
+
+const DefaultStory: React.FC = () => {
+  const [isExpanded, setIsExpanded] = useState(false)
+  return (
+    <ExpandableSection>
+      <ExpandableSection.Trigger
+        isExpanded={isExpanded}
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        Expandable Section
+      </ExpandableSection.Trigger>
+      <ExpandableSection.Content>
+        This is the content of the expandable section.
+      </ExpandableSection.Content>
+    </ExpandableSection>
+  )
+}
+
+const WithHtmlContentStory: React.FC = () => {
+  const [isExpanded, setIsExpanded] = useState(false)
+  return (
+    <ExpandableSection>
+      <ExpandableSection.Trigger
+        isExpanded={isExpanded}
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        Expandable Section with HTML
+      </ExpandableSection.Trigger>
+      <ExpandableSection.Content>
+        <div>
+          <p>This is the content of the expandable section.</p>
+          <p>
+            It can contain HTML elements like <strong>bold text</strong> and{' '}
+            <em>italic text</em>.
+          </p>
+        </div>
+      </ExpandableSection.Content>
+    </ExpandableSection>
+  )
+}
 
 export const Default: Story = {
-  args: {
-    title: 'Expandable Section',
-    children: 'This is the content of the expandable section.',
-  },
-  render: (args) => <ExpandableSection {...args} />,
+  render: () => <DefaultStory />,
 }
 
 export const WithHtmlContent: Story = {
-  args: {
-    title: 'Expandable Section with HTML',
-    children: (
-      <div>
-        <p>This is the content of the expandable section.</p>
-        <p>
-          It can contain HTML elements like <strong>bold text</strong> and{' '}
-          <em>italic text</em>.
-        </p>
-      </div>
-    ),
-  },
-  render: (args) => <ExpandableSection {...args} />,
+  render: () => <WithHtmlContentStory />,
 }
