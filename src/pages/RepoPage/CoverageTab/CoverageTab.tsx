@@ -27,8 +27,15 @@ const Loader = () => (
   </div>
 )
 
+interface URLParams {
+  provider: string
+  owner: string
+  repo: string
+  branch: string
+}
+
 function CoverageTab() {
-  const { provider, owner, repo, branch } = useParams()
+  const { provider, owner, repo, branch } = useParams<URLParams>()
   const { data: repoData } = useRepo({
     provider,
     owner,

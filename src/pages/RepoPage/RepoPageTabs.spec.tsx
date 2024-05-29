@@ -18,7 +18,8 @@ import RepoPageTabs, { useRepoTabs } from './RepoPageTabs'
 
 jest.mock('shared/featureFlags')
 const mockedUseFlags = useFlags as jest.Mock<{
-  componentTab: boolean
+  componentTab?: boolean
+  onboardingFailedTests?: boolean
 }>
 
 const mockRepoOverview = ({
@@ -125,6 +126,8 @@ interface SetupArgs {
   bundleAnalysisEnabled?: boolean
   tierName?: TTierNames
   isCurrentUserPartOfOrg?: boolean
+  componentTab?: boolean
+  onboardingFailedTests?: boolean
 }
 
 describe('RepoPageTabs', () => {
@@ -135,9 +138,12 @@ describe('RepoPageTabs', () => {
     isRepoPrivate,
     tierName = TierNames.PRO,
     isCurrentUserPartOfOrg = true,
+    componentTab = true,
+    onboardingFailedTests = false,
   }: SetupArgs) {
     mockedUseFlags.mockReturnValue({
-      componentTab: true,
+      componentTab,
+      onboardingFailedTests,
     })
 
     server.use(
@@ -448,6 +454,36 @@ describe('RepoPageTabs', () => {
         const tab = screen.queryByText('Settings')
         expect(tab).not.toBeInTheDocument()
       })
+    })
+  })
+
+  describe('Failed tests tab', () => {
+    it('renders the failed tests copy', async () => {
+      setup({
+        coverageEnabled: false,
+        onboardingFailedTests: true,
+      })
+      render(<RepoPageTabs refetchEnabled={false} />, {
+        wrapper: wrapper('/gh/codecov/test-repo/tests'),
+      })
+
+      const tab = await screen.findByText('Tests')
+      expect(tab).toBeInTheDocument()
+      expect(tab).toHaveAttribute('aria-current', 'page')
+      expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/tests')
+    })
+
+    it('renders beta badge', async () => {
+      setup({
+        coverageEnabled: false,
+        onboardingFailedTests: true,
+      })
+      render(<RepoPageTabs refetchEnabled={false} />, {
+        wrapper: wrapper('/gh/codecov/test-repo/tests'),
+      })
+
+      const betaBadge = await screen.findByText('beta')
+      expect(betaBadge).toBeInTheDocument()
     })
   })
 })
