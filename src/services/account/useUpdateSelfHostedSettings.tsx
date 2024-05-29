@@ -5,6 +5,8 @@ import { useAddNotification } from 'services/toastNotification'
 import Api from 'shared/api'
 import A from 'ui/A'
 
+const TOAST_DURATION = 10000
+
 const query = `
   mutation UpdateSelfHostedSettings($shouldAutoActivate: Boolean!) {
     updateSelfHostedSettings(input: { shouldAutoActivate: $shouldAutoActivate }) {
@@ -54,7 +56,7 @@ export const useUpdateSelfHostedSettings = () => {
           addToast({
             type: 'error',
             text: <UpdateSelfHostedSettingsMessage />,
-            disappearAfter: 10000,
+            disappearAfter: TOAST_DURATION,
           })
         }
       }
@@ -63,7 +65,7 @@ export const useUpdateSelfHostedSettings = () => {
       addToast({
         type: 'error',
         text: <UpdateSelfHostedSettingsMessage />,
-        disappearAfter: 10000,
+        disappearAfter: TOAST_DURATION,
       })
     },
     onSettled: () => {
