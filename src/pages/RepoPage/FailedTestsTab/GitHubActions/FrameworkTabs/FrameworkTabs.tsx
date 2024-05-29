@@ -20,7 +20,7 @@ const FrameworkCopy = {
   PHPunit: './vendor/bin/phpunit --log-junit junit.xml',
 } as const
 
-export default function FrameworkNavigator() {
+export function FrameworkTabs() {
   const [selectedFramework, setSelectedFramework] = useState<FrameworkType>(
     Frameworks.PYTEST
   )

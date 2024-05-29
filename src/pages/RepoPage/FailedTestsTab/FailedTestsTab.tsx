@@ -2,10 +2,12 @@ import { Switch, useHistory, useLocation } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
-import testsFailedOnboarding from 'assets/svg/testsFailedOnboarding.svg'
+import testsFailedOnboarding from 'assets/svg/onboardingTests/testsFailedOnboarding.svg'
 import { useNavLinks } from 'services/navigation'
 import { Card } from 'ui/Card'
 import { RadioTileGroup } from 'ui/RadioTileGroup'
+
+import GitHubActions from './GitHubActions'
 
 const SETUP_OPTIONS = {
   GitHubActions: 'GitHubActions',
@@ -77,7 +79,7 @@ function Content() {
   return (
     <Switch>
       <SentryRoute path="/:provider/:owner/:repo/tests" exact>
-        <>GitHub Actions tab</>
+        <GitHubActions />
       </SentryRoute>
       <SentryRoute path="/:provider/:owner/:repo/tests/codecov-cli" exact>
         <>Codecov CLI tab</>

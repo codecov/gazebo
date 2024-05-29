@@ -1,263 +1,236 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { graphql } from 'msw'
-import { setupServer } from 'msw/node'
-import { Suspense } from 'react'
+import userEvent from '@testing-library/user-event'
+import { PropsWithChildren } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import { useFlags } from 'shared/featureFlags'
 
 import GitHubActions from './GitHubActions'
 
-jest.mock('shared/featureFlags')
-const mockedUseFlags = useFlags as jest.Mock<{
-  newRepoFlag: boolean
-}>
 
-const mockGetRepo = {
-  owner: {
-    isAdmin: null,
-    isCurrentUserPartOfOrg: true,
-    isCurrentUserActivated: null,
-    repository: {
-      __typename: 'Repository',
-      private: false,
-      uploadToken: 'repo-token-jkl;-7890',
-      defaultBranch: 'main',
-      yaml: '',
-      activated: false,
-      oldestCommitAt: '',
-      active: true,
-      isFirstPullRequest: false,
-    },
-  },
-}
+jest.mock('./FrameworkTabs', () => ({
+  __esModule: true,
+  FrameworkTabs: () => 'FrameworkTabs',
+}))
 
-const mockGetOrgUploadToken = {
-  owner: {
-    orgUploadToken: 'org-token-asdf-1234',
-  },
-}
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      suspense: true,
-      retry: false,
-    },
-  },
-})
-const server = setupServer()
-
-const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/codecov/cool-repo/new']}>
-      <Route
-        path={[
-          '/:provider/:owner/:repo/new',
-          '/:provider/:owner/:repo/new/other-ci',
-        ]}
-      >
-        <Suspense fallback={null}>{children}</Suspense>
-      </Route>
-    </MemoryRouter>
-  </QueryClientProvider>
-)
-
-beforeAll(() => {
-  console.error = () => {}
-  server.listen()
-})
-afterEach(() => {
-  queryClient.clear()
-  server.resetHandlers()
-})
-afterAll(() => server.close())
-
-interface SetupArgs {
-  hasOrgUploadToken?: boolean
-}
+const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
+  (initialEntries = '/gh/codecov/cool-repo/tests') =>
+  ({ children }) =>
+    (
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route path={['/:provider/:owner/:repo/tests']}>{children}</Route>
+      </MemoryRouter>
+    )
 
 describe('GitHubActions', () => {
-  function setup({ hasOrgUploadToken = false }: SetupArgs) {
-    mockedUseFlags.mockReturnValue({
-      newRepoFlag: hasOrgUploadToken,
-    })
-    server.use(
-      graphql.query('GetRepo', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockGetRepo))
-      ),
-      graphql.query('GetOrgUploadToken', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockGetOrgUploadToken))
-      })
-    )
+  function setup() {
+    const user = userEvent.setup()
+    return { user }
   }
 
-  describe('step one', () => {
-    it('renders header', async () => {
-      setup({})
-      render(<GitHubActions />, { wrapper })
+  describe('Step one', () => {
+    it('renders title of card', () => {
+      render(<GitHubActions />, { wrapper: wrapper() })
 
-      const header = await screen.findByRole('heading', { name: /Step 1/ })
-      expect(header).toBeInTheDocument()
-
-      const repositorySecretLink = await screen.findByRole('link', {
-        name: /repository secret/,
-      })
-      expect(repositorySecretLink).toBeInTheDocument()
-      expect(repositorySecretLink).toHaveAttribute(
-        'href',
-        'https://github.com/codecov/cool-repo/settings/secrets/actions/new'
+      const title = screen.getByText(
+        'Step 1: Output a JUnit XML file in your CI'
       )
+      expect(title).toBeInTheDocument()
     })
 
-    it('renders body', async () => {
-      setup({})
-      render(<GitHubActions />, { wrapper })
+    it('renders content of card', () => {
+      render(<GitHubActions />, { wrapper: wrapper() })
 
-      const body = await screen.findByText(
-        /Admin required to access repo settings > secrets and variable > actions/
+      const content = screen.getByText(
+        /Select the framework below to generate a JUnit XM/
       )
-      expect(body).toBeInTheDocument()
+      expect(content).toBeInTheDocument()
     })
 
-    it('renders token key box', async () => {
-      setup({})
-      render(<GitHubActions />, { wrapper })
+    it('renders framework tabs', () => {
+      render(<GitHubActions />, { wrapper: wrapper() })
 
-      const tokenKey = await screen.findByTestId('token-key')
-      expect(tokenKey).toBeInTheDocument()
+      const frameworkTabs = screen.getByText('FrameworkTabs')
+      expect(frameworkTabs).toBeInTheDocument()
+    })
+  })
+
+  describe('Step two', () => {
+    it('renders title of card', () => {
+      render(<GitHubActions />, { wrapper: wrapper() })
+
+      const title = screen.getByText(/Step 2: Add the script/)
+      expect(title).toBeInTheDocument()
     })
 
-    describe('when org upload token exists', () => {
-      it('renders global token copy', async () => {
-        setup({ hasOrgUploadToken: true })
-        render(<GitHubActions />, { wrapper })
+    it('renders content of card', () => {
+      render(<GitHubActions />, { wrapper: wrapper() })
 
-        const globalToken = await screen.findByText(/global token/)
-        expect(globalToken).toBeInTheDocument()
+      const content = screen.getByText(
+        /In your CI YAML file, add below scripts to the end of your test run./
+      )
+      expect(content).toBeInTheDocument()
+    })
+
+    it('renders script', () => {
+      render(<GitHubActions />, { wrapper: wrapper() })
+
+      const script = screen.getByText(/- name: Upload test results to Codecov/)
+      expect(script).toBeInTheDocument()
+    })
+
+    it('renders expand button', () => {
+      render(<GitHubActions />, { wrapper: wrapper() })
+
+      const button = screen.getByRole('button', {
+        name: /could look something like this:/,
       })
+      expect(button).toBeInTheDocument()
+    })
 
-      it('renders org token', async () => {
-        setup({ hasOrgUploadToken: true })
-        render(<GitHubActions />, { wrapper })
+    describe('when expand button is clicked', () => {
+      it('should expand content', async () => {
+        const { user } = setup()
+        render(<GitHubActions />, { wrapper: wrapper() })
 
-        const tokenValue = await screen.findByText('org-token-asdf-1234')
-        expect(tokenValue).toBeInTheDocument()
+        const button = screen.getByRole('button', {
+          name: /could look something like this:/,
+        })
+        expect(button).toBeInTheDocument()
+
+        await user.click(button)
+
+        const content = screen.getByText(/name: Run unit tests/)
+        expect(content).toBeInTheDocument()
       })
     })
 
-    describe('when org upload token does not exist', () => {
-      it('renders repo token copy', async () => {
-        setup({})
-        render(<GitHubActions />, { wrapper })
+    describe('when expand button is clicked again', () => {
+      it('should collapse content', async () => {
+        const { user } = setup()
+        render(<GitHubActions />, { wrapper: wrapper() })
 
-        const globalToken = await screen.findByText(/repository token/)
-        expect(globalToken).toBeInTheDocument()
+        const button = screen.getByRole('button', {
+          name: /could look something like this:/,
+        })
+        expect(button).toBeInTheDocument()
+
+        await user.click(button)
+        await user.click(button)
+
+        await waitFor(() => {
+          expect(
+            screen.queryByText(/name: Run unit tests/)
+          ).not.toBeInTheDocument()
+        })
       })
+    })
 
-      it('renders token box', async () => {
-        setup({})
-        render(<GitHubActions />, { wrapper })
+    it('renders copy button', () => {
+      render(<GitHubActions />, { wrapper: wrapper() })
 
-        const tokenValue = await screen.findByText('repo-token-jkl;-7890')
-        expect(tokenValue).toBeInTheDocument()
+      const button = screen.getByRole('button', { name: /Copy/ })
+      expect(button).toBeInTheDocument()
+    })
+  })
+
+  describe('Step three', () => {
+    it('renders title of card', () => {
+      render(<GitHubActions />, { wrapper: wrapper() })
+
+      const title = screen.getByText(/Step 3: Run your test suit/)
+      expect(title).toBeInTheDocument()
+    })
+
+    it('renders content of card', () => {
+      render(<GitHubActions />, { wrapper: wrapper() })
+
+      const content = screen.getByText(
+        /You can inspect the workflow logs to see if the call to Codecov succeeded./
+      )
+      expect(content).toBeInTheDocument()
+    })
+
+    it('renders expand button', () => {
+      render(<GitHubActions />, { wrapper: wrapper() })
+
+      const button = screen.getByRole('button', {
+        name: /Here are examples of failed test reports in PR comments./,
+      })
+      expect(button).toBeInTheDocument()
+    })
+
+    describe('when expand button is clicked', () => {
+      const { user } = setup()
+      it('should expand content', async () => {
+        render(<GitHubActions />, { wrapper: wrapper() })
+
+        const button = screen.getByRole('button', {
+          name: /Here are examples of failed test reports in PR comments./,
+        })
+        expect(button).toBeInTheDocument()
+
+        await user.click(button)
+
+        const content = screen.getByRole('img', { name: /Tests in PR comment/ })
+        expect(content).toBeInTheDocument()
+      })
+    })
+
+    describe('when expand button is clicked again', () => {
+      it('should collapse content', async () => {
+        const { user } = setup()
+        render(<GitHubActions />, { wrapper: wrapper() })
+
+        const button = screen.getByRole('button', {
+          name: /Here are examples of failed test reports in PR comments./,
+        })
+        expect(button).toBeInTheDocument()
+
+        await user.click(button)
+        await user.click(button)
+
+        await waitFor(() => {
+          expect(
+            screen.queryByRole('img', { name: /Tests in PR comment/ })
+          ).not.toBeInTheDocument()
+        })
       })
     })
   })
 
-  describe('step two', () => {
-    it('renders header', async () => {
-      setup({})
-      render(<GitHubActions />, { wrapper })
+  describe('Step four', () => {
+    it('renders title of card', () => {
+      render(<GitHubActions />, { wrapper: wrapper() })
 
-      const header = await screen.findByRole('heading', { name: /Step 2/ })
-      expect(header).toBeInTheDocument()
+      const title = screen.getByText(/Step 4: View results and insights/)
+      expect(title).toBeInTheDocument()
+    })
 
-      const GitHubActionsWorkflowLink = await screen.findByRole('link', {
-        name: /GitHub Actions workflow/,
-      })
-      expect(GitHubActionsWorkflowLink).toBeInTheDocument()
-      expect(GitHubActionsWorkflowLink).toHaveAttribute(
-        'href',
-        'https://github.com/codecov/cool-repo/tree/main/.github/workflows'
+    it('renders content of card', () => {
+      render(<GitHubActions />, { wrapper: wrapper() })
+
+      const content = screen.getByText(
+        /After the test run completion, you'll be able to see the failed tests result on the following areas:/
       )
-    })
-
-    it('renders yaml section', async () => {
-      setup({})
-      render(<GitHubActions />, { wrapper })
-
-      const yamlBox = await screen.findByText(
-        /Upload coverage reports to Codecov/
-      )
-      expect(yamlBox).toBeInTheDocument()
-    })
-
-    it('renders the correct ci version', async () => {
-      setup({})
-      render(<GitHubActions />, { wrapper })
-
-      const version = await screen.findByText(/v4.0.1/)
-      expect(version).toBeInTheDocument()
-    })
-
-    describe('if using repo token', () => {
-      it('does not show repo slug in yaml', async () => {
-        setup({ hasOrgUploadToken: true })
-        render(<GitHubActions />, { wrapper })
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
-
-        const slug = screen.queryByText(/slug: codecov\/cool-repo/)
-        expect(slug).not.toBeInTheDocument()
-      })
-    })
-
-    describe('if using org token', () => {
-      it('shows repo slug in yaml', async () => {
-        setup({ hasOrgUploadToken: true })
-        render(<GitHubActions />, { wrapper })
-
-        const slug = await screen.findByText(/slug: codecov\/cool-repo/)
-        expect(slug).toBeInTheDocument()
-      })
-    })
-
-    it('renders example blurb', async () => {
-      setup({})
-      render(<GitHubActions />, { wrapper })
-
-      const blurb = await screen.findByTestId('example-blurb')
-      expect(blurb).toBeInTheDocument()
+      expect(content).toBeInTheDocument()
     })
   })
 
-  describe('step three', () => {
-    beforeEach(() => setup({}))
-    it('renders body', async () => {
-      render(<GitHubActions />, { wrapper })
+  describe('Visit guide', () => {
+    it('renders content of card', () => {
+      render(<GitHubActions />, { wrapper: wrapper() })
 
-      const body = await screen.findByText(
-        /Once merged to your default branch,/
-      )
-      expect(body).toBeInTheDocument()
+      const content = screen.getByText(/Visit our guide/)
+      expect(content).toBeInTheDocument()
     })
-  })
 
-  describe('ending', () => {
-    beforeEach(() => setup({}))
-    it('renders body', async () => {
-      render(<GitHubActions />, { wrapper })
+    it('renders link', () => {
+      render(<GitHubActions />, { wrapper: wrapper() })
 
-      const body = await screen.findByText(/How was your setup experience/)
-      expect(body).toBeInTheDocument()
-
-      const bodyLink = await screen.findByRole('link', { name: /this issue/ })
-      expect(bodyLink).toHaveAttribute(
+      const link = screen.getByRole('link', { name: /learn more/ })
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute(
         'href',
-        'https://github.com/codecov/Codecov-user-feedback/issues/18'
+        'https://docs.codecov.com/docs/test-result-ingestion-beta#failed-test-reporting'
       )
     })
   })

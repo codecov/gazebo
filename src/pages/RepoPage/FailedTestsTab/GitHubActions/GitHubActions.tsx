@@ -1,18 +1,23 @@
+import { useState } from 'react'
+
+import ghActionsTests from 'assets/svg/onboardingTests/ghActionsTests.svg'
+import testsPRComment from 'assets/svg/onboardingTests/testsPRComment.svg'
+import A from 'ui/A'
 import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
 import { CopyClipboard } from 'ui/CopyClipboard'
 import { ExpandableSection } from 'ui/ExpandableSection/ExpandableSection'
 
-import FrameworkNavigator from './FrameworkNavigator'
+import { FrameworkTabs } from './FrameworkTabs'
 
 function GitHubActions() {
   return (
     <div className="flex flex-col gap-6">
       <Step1 />
       <Step2 />
-      {/*
       <Step3 />
-      <FeedbackCTA /> */}
+      <Step4 />
+      <VisitGuide />
     </div>
   )
 }
@@ -30,7 +35,7 @@ function Step1() {
           Select the framework below to generate a JUnit XML file that contains
           the results of your test run.
         </p>
-        <FrameworkNavigator />
+        <FrameworkTabs />
       </Card.Content>
     </Card>
   )
@@ -74,13 +79,15 @@ const JobsScript = `jobs:
           token: \${{ secrets.CODECOV_TOKEN }}`
 
 function Step2() {
+  const [isExpanded, setIsExpanded] = useState(false)
+
   return (
     <div>
       <Card>
         <Card.Header>
           <Card.Title size="base">
             Step 2: Add the script{' '}
-            <code className="rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-1">
+            <code className="rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-1 text-sm">
               codecov/test-results-action@v1
             </code>{' '}
             to your CI YAML file.
@@ -93,7 +100,9 @@ function Step2() {
           <CodeSnippet>
             <div className="flex justify-between">
               <pre>{Step2Script}</pre>
-              <CopyClipboard value={Step2Script} />
+              <div>
+                <CopyClipboard value={Step2Script} />
+              </div>
             </div>
           </CodeSnippet>
           <p>
@@ -103,14 +112,115 @@ function Step2() {
           </p>
         </Card.Content>
       </Card>
-      <div className="mt-[-9px]">
-        <ExpandableSection title="Your final ci.yaml file for a project using pytes could look something like this:">
+      <ExpandableSection className="mt-[-1px]">
+        <ExpandableSection.Trigger
+          isExpanded={isExpanded}
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          <p className="font-normal">
+            Your final <span className="text-codecov-code">ci.yaml</span> file
+            for a project using{' '}
+            <span className="text-codecov-code">pytest</span> could look
+            something like this:
+          </p>
+        </ExpandableSection.Trigger>
+        <ExpandableSection.Content>
           <CodeSnippet>
-            <pre>{JobsScript}</pre>
+            <div className="flex justify-between">
+              <pre>{JobsScript}</pre>
+              <div>
+                <CopyClipboard value={JobsScript} className="block" />
+              </div>
+            </div>
           </CodeSnippet>
-        </ExpandableSection>
-      </div>
+        </ExpandableSection.Content>
+      </ExpandableSection>
     </div>
   )
 }
+
+function Step3() {
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  return (
+    <div>
+      <Card>
+        <Card.Header>
+          <Card.Title size="base">Step 3: Run your test suit</Card.Title>
+        </Card.Header>
+        <Card.Content className="flex flex-col gap-4">
+          <p>
+            You can inspect the workflow logs to see if the call to Codecov
+            succeeded.
+          </p>
+          <img src={ghActionsTests.toString()} alt="GitHub Actions tests" />
+          <p>
+            Run your tests as usual. You need to fail some tests to view the
+            failed tests report.
+          </p>
+        </Card.Content>
+      </Card>
+      <ExpandableSection className="mt-[-1px]">
+        <ExpandableSection.Trigger
+          isExpanded={isExpanded}
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          <p className="font-normal">
+            Here are examples of failed test reports in PR comments. Comment
+            generation may take time.
+          </p>
+        </ExpandableSection.Trigger>
+        <ExpandableSection.Content>
+          <img
+            src={testsPRComment.toString()}
+            alt="Tests in PR comment"
+            className="w-full"
+          />
+        </ExpandableSection.Content>
+      </ExpandableSection>
+    </div>
+  )
+}
+
+function Step4() {
+  return (
+    <Card>
+      <Card.Header>
+        <Card.Title size="base">Step 4: View results and insights</Card.Title>
+      </Card.Header>
+      <Card.Content className="flex flex-col gap-1">
+        <p>
+          After the test run completion, you&apos;ll be able to see the failed
+          tests result on the following areas:
+        </p>
+        <ul className="list-inside list-disc">
+          <li>Github pull request comment</li>
+          <li>Failed tests dashboard here.</li>
+        </ul>
+      </Card.Content>
+    </Card>
+  )
+}
+function VisitGuide() {
+  return (
+    <Card>
+      <Card.Content>
+        <p>
+          Visit our guide to{' '}
+          <A
+            to={{
+              pageName: 'testsAnalytics',
+            }}
+            isExternal={true}
+            hook="failed-tests-onboarding"
+          >
+            learn more
+          </A>{' '}
+          about test ingestion.
+        </p>
+      </Card.Content>
+    </Card>
+  )
+}
+
 export default GitHubActions
