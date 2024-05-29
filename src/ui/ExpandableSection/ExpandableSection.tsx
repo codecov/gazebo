@@ -1,7 +1,7 @@
 import * as Collapsible from '@radix-ui/react-collapsible'
-import cs from 'classnames'
 import React, { forwardRef, ReactNode } from 'react'
 
+import { cn } from 'shared/utils/cn'
 import Icon from 'ui/Icon'
 
 const ExpandableSectionRoot = forwardRef<
@@ -9,7 +9,7 @@ const ExpandableSectionRoot = forwardRef<
   React.ComponentPropsWithoutRef<typeof Collapsible.Root>
 >(({ children, className, ...props }, ref) => (
   <Collapsible.Root
-    className={cs('my-2 border border-gray-200', className)}
+    className={cn('my-2 border border-gray-200', className)}
     {...props}
     ref={ref}
   >
@@ -31,7 +31,7 @@ const ExpandableSectionTrigger = forwardRef<
 >(({ isExpanded, className, children, ...props }, ref) => (
   <Collapsible.Trigger asChild>
     <button
-      className={cs(
+      className={cn(
         'flex w-full items-center justify-between p-4 text-left font-semibold hover:bg-gray-100',
         className
       )}
@@ -51,7 +51,7 @@ const ExpandableSectionContent = forwardRef<
   React.ComponentPropsWithoutRef<typeof Collapsible.Content>
 >(({ children, className, ...props }, ref) => (
   <Collapsible.Content
-    className={cs('border-t border-gray-200 p-4', className)}
+    className={cn('border-t border-gray-200 p-4', className)}
     {...props}
     ref={ref}
   >
