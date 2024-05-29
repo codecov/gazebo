@@ -48,17 +48,6 @@
     -->
     <title>Codecov</title>
     <% if(process.env.REACT_APP_ENV === "production") { %>
-      <script>
-        window.dataLayer = [
-          {
-            codecov: {
-              app: {
-                version: 'react-app'
-              }
-            }
-          }
-        ];
-        </script>
         <script>
           (function(apiKey){
               (function(p,e,n,d,o){var v,w,x,y,z;o=p[d]=p[d]||{};o._q=o._q||[];
