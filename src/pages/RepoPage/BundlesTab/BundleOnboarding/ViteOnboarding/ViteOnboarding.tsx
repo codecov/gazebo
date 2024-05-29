@@ -5,7 +5,7 @@ import { useOrgUploadToken } from 'services/orgUploadToken'
 import { useRepo } from 'services/repo'
 import A from 'ui/A'
 import { Card } from 'ui/Card'
-import { CopyClipboard } from 'ui/CopyClipboard'
+import { CodeSnippet } from 'ui/CodeSnippet'
 
 import {
   copiedBuildCommandMetric,
@@ -57,36 +57,33 @@ const StepOne: React.FC = () => {
           </span>{' '}
           to your project, use one of the following commands.
         </p>
-        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
-          {npmInstall}{' '}
-          <CopyClipboard
-            value={npmInstall}
-            data-testid="clipboard-npm-install"
-            onClick={() => {
-              copiedInstallCommandMetric('npm', 'vite')
-            }}
-          />
-        </pre>
-        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
-          {yarnInstall}{' '}
-          <CopyClipboard
-            value={yarnInstall}
-            data-testid="clipboard-yarn-install"
-            onClick={() => {
-              copiedInstallCommandMetric('yarn', 'vite')
-            }}
-          />
-        </pre>
-        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
-          {pnpmInstall}{' '}
-          <CopyClipboard
-            value={pnpmInstall}
-            data-testid="clipboard-pnpm-install"
-            onClick={() => {
-              copiedInstallCommandMetric('pnpm', 'vite')
-            }}
-          />
-        </pre>
+        <CodeSnippet
+          clipboard={npmInstall}
+          clipboardOnClick={() => {
+            copiedInstallCommandMetric('npm', 'vite')
+          }}
+          data-testid="vite-npm-install"
+        >
+          {npmInstall}
+        </CodeSnippet>
+        <CodeSnippet
+          clipboard={yarnInstall}
+          clipboardOnClick={() => {
+            copiedInstallCommandMetric('yarn', 'vite')
+          }}
+          data-testid="vite-yarn-install"
+        >
+          {yarnInstall}
+        </CodeSnippet>
+        <CodeSnippet
+          clipboard={pnpmInstall}
+          clipboardOnClick={() => {
+            copiedInstallCommandMetric('pnpm', 'vite')
+          }}
+          data-testid="vite-pnpm-install"
+        >
+          {pnpmInstall}
+        </CodeSnippet>
       </Card.Content>
     </Card>
   )
@@ -104,22 +101,19 @@ const StepTwo: React.FC<{ uploadToken: string }> = ({ uploadToken }) => {
           following upload token.
         </p>
         <div className="flex gap-4">
-          <pre className="flex basis-1/3 items-center justify-between gap-2 rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
-            <div className="w-0 flex-1 overflow-hidden" data-testid="token-key">
-              CODECOV_TOKEN
-            </div>
-            <CopyClipboard value="CODECOV_TOKEN" />
-          </pre>
-          <pre className="flex basis-2/3 items-center justify-between gap-2 rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
-            <div className="w-0 flex-1 overflow-hidden">{uploadToken}</div>
-            <CopyClipboard
-              value={uploadToken}
-              data-testid="clipboard-upload-token"
-              onClick={() => {
-                copiedTokenMetric('vite')
-              }}
-            />
-          </pre>
+          <CodeSnippet className="basis-1/3" clipboard="CODECOV_TOKEN">
+            CODECOV_TOKEN
+          </CodeSnippet>
+          <CodeSnippet
+            className="basis-2/3"
+            clipboard={uploadToken}
+            clipboardOnClick={() => {
+              copiedTokenMetric('vite')
+            }}
+            data-testid="vite-upload-token"
+          >
+            {uploadToken}
+          </CodeSnippet>
         </div>
       </Card.Content>
     </Card>
@@ -143,17 +137,15 @@ const StepThree: React.FC = () => {
           </span>{' '}
           file.
         </p>
-        <pre className="relative flex items-start justify-between overflow-auto whitespace-pre rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
+        <CodeSnippet
+          clipboard={pluginConfig}
+          clipboardOnClick={() => {
+            copiedConfigMetric('vite')
+          }}
+          data-testid="vite-plugin-config"
+        >
           {pluginConfig}
-          <CopyClipboard
-            value={pluginConfig}
-            label="Copy bundler plugin configuration"
-            data-testid="clipboard-plugin-config"
-            onClick={() => {
-              copiedConfigMetric('vite')
-            }}
-          />
-        </pre>
+        </CodeSnippet>
       </Card.Content>
     </Card>
   )
@@ -172,17 +164,15 @@ const StepFour: React.FC = () => {
           The plugin requires at least one commit to be made to properly upload
           bundle analysis information up to Codecov.
         </p>
-        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
-          {commitString}{' '}
-          <CopyClipboard
-            value={commitString}
-            label="Copy git commit and push commands"
-            data-testid="clipboard-commit-command"
-            onClick={() => {
-              copiedCommitMetric('vite')
-            }}
-          />
-        </pre>
+        <CodeSnippet
+          clipboard={commitString}
+          clipboardOnClick={() => {
+            copiedCommitMetric('vite')
+          }}
+          data-testid="vite-commit-command"
+        >
+          {commitString}
+        </CodeSnippet>
       </Card.Content>
     </Card>
   )
@@ -200,36 +190,33 @@ const StepFive: React.FC = () => {
           the stats information to Codecov.
         </p>
         <div className="flex flex-col gap-4">
-          <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
-            {npmBuild}{' '}
-            <CopyClipboard
-              value={npmBuild}
-              data-testid="clipboard-npm-build"
-              onClick={() => {
-                copiedBuildCommandMetric('npm', 'vite')
-              }}
-            />
-          </pre>
-          <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
-            {yarnBuild}{' '}
-            <CopyClipboard
-              value={yarnBuild}
-              data-testid="clipboard-yarn-build"
-              onClick={() => {
-                copiedBuildCommandMetric('yarn', 'vite')
-              }}
-            />
-          </pre>
-          <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
-            {pnpmBuild}{' '}
-            <CopyClipboard
-              value={pnpmBuild}
-              data-testid="clipboard-pnpm-build"
-              onClick={() => {
-                copiedBuildCommandMetric('pnpm', 'vite')
-              }}
-            />
-          </pre>
+          <CodeSnippet
+            clipboard={npmBuild}
+            clipboardOnClick={() => {
+              copiedBuildCommandMetric('npm', 'vite')
+            }}
+            data-testid="vite-npm-build"
+          >
+            {npmBuild}
+          </CodeSnippet>
+          <CodeSnippet
+            clipboard={yarnBuild}
+            clipboardOnClick={() => {
+              copiedBuildCommandMetric('yarn', 'vite')
+            }}
+            data-testid="vite-yarn-build"
+          >
+            {yarnBuild}
+          </CodeSnippet>
+          <CodeSnippet
+            clipboard={pnpmBuild}
+            clipboardOnClick={() => {
+              copiedBuildCommandMetric('pnpm', 'vite')
+            }}
+            data-testid="vite-pnpm-build"
+          >
+            {pnpmBuild}
+          </CodeSnippet>
         </div>
       </Card.Content>
     </Card>
