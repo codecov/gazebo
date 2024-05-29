@@ -1,35 +1,34 @@
-import { useHistory, useLocation } from 'react-router-dom'
+import { useHistory, useLocation, useParams } from 'react-router-dom'
 
 import { useNavLinks } from 'services/navigation'
 import { RadioTileGroup } from 'ui/RadioTileGroup'
 
 const TABS = {
-  overview: 'Overview',
-  flags: 'Flags',
-  components: 'Components',
+  Overview: 'Overview',
+  Flags: 'Flags',
+  Components: 'Components',
 } as const
 type TabsValue = (typeof TABS)[keyof typeof TABS]
+type TabsUrls = Record<keyof typeof TABS, string>
 
-function getInitialSelection(path: string) {
-  if (path.includes('/flags')) {
-    return TABS.flags
-  } else if (path.includes('/components')) {
-    return TABS.components
+function getInitialSelection(path: string, urls: TabsUrls) {
+  if (path === urls.Flags) {
+    return TABS.Flags
   }
-  return TABS.overview
+  if (path === urls.Components) {
+    return TABS.Components
+  }
+  return TABS.Overview
 }
 
-interface CoverageTabNavigatorProps {
+interface URLParams {
   provider: string
   owner: string
   repo: string
 }
 
-function CoverageTabNavigator({
-  provider,
-  owner,
-  repo,
-}: CoverageTabNavigatorProps) {
+function CoverageTabNavigator() {
+  const { provider, owner, repo } = useParams<URLParams>()
   const location = useLocation()
   const history = useHistory()
 
@@ -42,23 +41,23 @@ function CoverageTabNavigator({
 
   return (
     <RadioTileGroup
-      defaultValue={getInitialSelection(location.pathname)}
+      defaultValue={getInitialSelection(location.pathname, urls)}
       onValueChange={(value: TabsValue) => {
         history.replace(urls[value])
       }}
       className="py-2"
     >
-      <RadioTileGroup.Item value={TABS.overview} data-testid="overview-radio">
-        <RadioTileGroup.Label>{TABS.overview}</RadioTileGroup.Label>
+      <RadioTileGroup.Item value={TABS.Overview} data-testid="overview-radio">
+        <RadioTileGroup.Label>{TABS.Overview}</RadioTileGroup.Label>
       </RadioTileGroup.Item>
-      <RadioTileGroup.Item value={TABS.flags} data-testid="flags-radio">
-        <RadioTileGroup.Label>{TABS.flags}</RadioTileGroup.Label>
+      <RadioTileGroup.Item value={TABS.Flags} data-testid="flags-radio">
+        <RadioTileGroup.Label>{TABS.Flags}</RadioTileGroup.Label>
       </RadioTileGroup.Item>
       <RadioTileGroup.Item
-        value={TABS.components}
+        value={TABS.Components}
         data-testid="components-radio"
       >
-        <RadioTileGroup.Label>{TABS.components}</RadioTileGroup.Label>
+        <RadioTileGroup.Label>{TABS.Components}</RadioTileGroup.Label>
       </RadioTileGroup.Item>
     </RadioTileGroup>
   )
