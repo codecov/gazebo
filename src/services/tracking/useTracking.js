@@ -6,7 +6,6 @@ import { useTrackFeatureFlags } from './featureFlags'
 import { firePendo, pendoDefaultUser, useUpdatePendoWithOwner } from './pendo'
 import { getUserData } from './utils'
 
-//a
 const trackingInfo = [
   {
     name: 'Pendo',
