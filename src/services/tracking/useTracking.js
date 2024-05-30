@@ -3,16 +3,10 @@ import * as Sentry from '@sentry/react'
 import { useUser } from 'services/user'
 
 import { useTrackFeatureFlags } from './featureFlags'
-import { gtmUser, setDataLayer } from './gtm'
 import { firePendo, pendoDefaultUser, useUpdatePendoWithOwner } from './pendo'
 import { getUserData } from './utils'
 
 const trackingInfo = [
-  {
-    name: 'GTM',
-    callback: setDataLayer,
-    defaultUser: gtmUser,
-  },
   {
     name: 'Pendo',
     callback: firePendo,

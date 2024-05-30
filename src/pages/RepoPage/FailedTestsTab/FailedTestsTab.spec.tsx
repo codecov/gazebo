@@ -9,6 +9,8 @@ import FailedTestsTab from './FailedTestsTab'
 
 jest.mock('shared/useRedirect')
 jest.mock('./GitHubActions', () => () => 'GitHub Actions tab')
+
+
 const mockedUseRedirect = useRedirect as jest.Mock
 
 let testLocation: ReturnType<typeof useLocation>
