@@ -26,6 +26,7 @@ type CurrentUser = {
 
 type itemProps = {
   to?: toProps
+  hook?: string
   onClick?: () => void
 }
 
@@ -51,11 +52,9 @@ function Dropdown({ currentUser }: { currentUser: CurrentUser }) {
       : []
 
   const handleSignOut = async () => {
-    console.log('signing out')
-    await fetch('http://localhost:8000/logout/gh', {
+    await fetch(`${config.API_URL}/logout`, {
       method: 'POST',
       credentials: 'include',
-      redirect: 'follow',
     })
     localStorage.removeItem(LOCAL_STORAGE_SESSION_TRACKING_KEY)
     Cookies.remove(COOKIE_SESSION_EXPIRY)
@@ -75,6 +74,7 @@ function Dropdown({ currentUser }: { currentUser: CurrentUser }) {
     {
       props: {
         onClick: handleSignOut,
+        hook: 'header-dropdown-sign-out',
       },
       children: 'Sign Out',
     }
