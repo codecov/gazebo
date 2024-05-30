@@ -3,7 +3,6 @@ import { Switch, useHistory, useLocation } from 'react-router-dom'
 import { SentryRoute } from 'sentry'
 
 import testsFailedOnboarding from 'assets/svg/onboardingTests/testsFailedOnboarding.svg'
-
 import { useNavLinks } from 'services/navigation'
 import { Card } from 'ui/Card'
 import { RadioTileGroup } from 'ui/RadioTileGroup'
