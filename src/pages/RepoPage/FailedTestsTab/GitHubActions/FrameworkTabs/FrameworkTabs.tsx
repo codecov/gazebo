@@ -34,7 +34,7 @@ export function FrameworkTabs() {
               key={f}
               className={cs(
                 'px-4 py-2',
-                selectedFramework === f && 'border-b-2 border-ds-blue'
+                selectedFramework === f && 'border-b-2 border-ds-gray-octonary'
               )}
               onClick={() => setSelectedFramework(f as FrameworkType)}
             >

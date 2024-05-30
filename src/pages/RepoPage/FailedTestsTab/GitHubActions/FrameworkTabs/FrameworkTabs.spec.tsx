@@ -27,7 +27,7 @@ describe('FrameworkTabs', () => {
     const vitestButton = screen.getByText('Vitest')
     await user.click(vitestButton)
 
-    expect(vitestButton).toHaveClass('border-b-2 border-ds-blue')
+    expect(vitestButton).toHaveClass('border-b-2 border-ds-gray-octonary')
 
     const codeSnippet = screen.getByText('vitest --reporter=junit')
     expect(codeSnippet).toBeInTheDocument()
@@ -40,7 +40,7 @@ describe('FrameworkTabs', () => {
     const jestButton = screen.getByText('Jest')
     await user.click(jestButton)
 
-    expect(jestButton).toHaveClass('border-b-2 border-ds-blue')
+    expect(jestButton).toHaveClass('border-b-2 border-ds-gray-octonary')
 
     const codeSnippet = screen.getByText(/npm i --save-dev jest-junit/)
     expect(codeSnippet).toBeInTheDocument()
@@ -53,7 +53,7 @@ describe('FrameworkTabs', () => {
     const phpunitButton = screen.getByText('PHPunit')
     await user.click(phpunitButton)
 
-    expect(phpunitButton).toHaveClass('border-b-2 border-ds-blue')
+    expect(phpunitButton).toHaveClass('border-b-2 border-ds-gray-octonary')
 
     const codeSnippet = screen.getByText(
       './vendor/bin/phpunit --log-junit junit.xml'
