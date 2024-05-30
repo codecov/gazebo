@@ -11,7 +11,7 @@ const ComponentsTab = lazy(() => import('./ComponentsTab'))
 
 function CoverageTab() {
   return (
-    <div>
+    <div className="flex flex-col gap-2 divide-y">
       <CoverageTabNavigator />
       <Switch>
         <SentryRoute path="/:provider/:owner/:repo/flags" exact>
