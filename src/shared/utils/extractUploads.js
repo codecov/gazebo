@@ -14,7 +14,7 @@ function deleteDuplicateCFFUploads({ uploads }) {
   const nonCFFFlags = []
   const duplicateUploads = uploads && [...uploads]
 
-  // Get all the non cff flags
+  // Get all the flags from "uploaded" uploads
   duplicateUploads?.forEach((upload) => {
     if (
       upload?.uploadType !== UploadTypeEnum.CARRIED_FORWARD &&
@@ -25,7 +25,11 @@ function deleteDuplicateCFFUploads({ uploads }) {
   })
 
   // Filter out cff uploads with repeated flags
-  duplicateUploads?.forEach((upload, index) => {
+  // We're looping in reverse as splicing reindexes the array, making us
+  // skip the index that's removed. Indices are preserved when you
+  // loop backwards.
+  for (let index = duplicateUploads.length - 1; index >= 0; index--) {
+    const upload = duplicateUploads[index]
     if (
       upload?.uploadType === UploadTypeEnum.CARRIED_FORWARD &&
       upload?.flags
@@ -36,7 +40,7 @@ function deleteDuplicateCFFUploads({ uploads }) {
         }
       })
     }
-  })
+  }
 
   return duplicateUploads
 }
