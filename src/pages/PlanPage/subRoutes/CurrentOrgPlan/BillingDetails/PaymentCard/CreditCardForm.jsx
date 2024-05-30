@@ -28,8 +28,8 @@ function CreditCardForm({ closeForm, provider, owner }) {
 
   return (
     <form onSubmit={submit} aria-label="form">
-      <div className={cs('flex flex-col gap-5')}>
-        <div className="flex flex-col gap-2">
+      <div className={cs('flex flex-col gap-3')}>
+        <div className="mt-2 flex flex-col gap-2">
           <CardElement
             onChange={resetError}
             options={{
@@ -43,11 +43,11 @@ function CreditCardForm({ closeForm, provider, owner }) {
               },
             }}
           />
-          {error ? (
-            <p className="mt-2 rounded-md bg-ds-error-quinary p-3 text-ds-error-nonary">
-              {error?.message}
+          {
+            <p className="mt-1 text-ds-primary-red">
+              {error && error?.message}
             </p>
-          ) : null}
+          }
         </div>
         <div className="flex gap-1">
           <Button
