@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import {
   useBranchSelector,
   useRepoCoverageTimeseries,
-} from 'pages/RepoPage/CoverageTab/hooks'
+} from 'pages/RepoPage/CoverageTab/OverviewTab/hooks'
 import { useBranches } from 'services/branches'
 import { useRepoOverview } from 'services/repo'
 

@@ -20,8 +20,6 @@ const CommitsTab = lazy(() => import('./CommitsTab'))
 const CoverageTab = lazy(() => import('./CoverageTab'))
 const NewRepoTab = lazy(() => import('./CoverageOnboarding'))
 const PullsTab = lazy(() => import('./PullsTab'))
-const FlagsTab = lazy(() => import('./FlagsTab'))
-const ComponentsTab = lazy(() => import('./ComponentsTab'))
 const SettingsTab = lazy(() => import('./SettingsTab'))
 const FailedTestsTab = lazy(() => import('./FailedTestsTab'))
 
@@ -60,7 +58,7 @@ function Routes({
   isCurrentUserActivated,
   testAnalyticsEnabled,
 }: RoutesProps) {
-  const { componentTab, onboardingFailedTests } = useFlags({
+  const { onboardingFailedTests } = useFlags({
     bundleAnalysisPrAndCommitPages: false,
     onboardingFailedTests: false,
   })
@@ -80,6 +78,8 @@ function Routes({
           <SentryRoute
             path={[
               path,
+              `${path}/flags`,
+              `${path}/components`,
               `${path}/blob/:ref/:path+`,
               `${path}/tree/:branch`,
               `${path}/tree/:branch/:path+`,
@@ -137,16 +137,6 @@ function Routes({
             exact
           >
             <FailedTestsTab />
-          </SentryRoute>
-        ) : null}
-        {coverageEnabled && userAuthorizedtoViewRepo ? (
-          <SentryRoute path={`${path}/flags`} exact>
-            <FlagsTab />
-          </SentryRoute>
-        ) : null}
-        {coverageEnabled && componentTab && userAuthorizedtoViewRepo ? (
-          <SentryRoute path={`${path}/components`} exact>
-            <ComponentsTab />
           </SentryRoute>
         ) : null}
         {productEnabled && userAuthorizedtoViewRepo ? (

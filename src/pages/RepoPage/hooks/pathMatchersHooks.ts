@@ -8,6 +8,8 @@ interface URLParams {
   repo: string
 }
 
+const path = '/:provider/:owner/:repo'
+
 /* true/false matchers for the coverage tab "active" state */
 export const useMatchBlobsPath = () => {
   const location = useLocation()
@@ -26,10 +28,17 @@ export const useMatchTreePath = () => {
 }
 
 export const useMatchCoverageOnboardingPath = () => {
-  const path = '/:provider/:owner/:repo'
   const newRouteMatch = useRouteMatch(`${path}/new`)
   const circleCIRouteMatch = useRouteMatch(`${path}/new/circle-ci`)
   const otherCIRouteMatch = useRouteMatch(`${path}/new/other-ci`)
 
   return Boolean(newRouteMatch || circleCIRouteMatch || otherCIRouteMatch)
+}
+
+export const useMatchFlagsPath = () => {
+  return useRouteMatch(`${path}/flags`)
+}
+
+export const useMatchComponentsPath = () => {
+  return useRouteMatch(`${path}/components`)
 }
