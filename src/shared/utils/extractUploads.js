@@ -34,11 +34,12 @@ function deleteDuplicateCFFUploads({ uploads }) {
       upload?.uploadType === UploadTypeEnum.CARRIED_FORWARD &&
       upload?.flags
     ) {
-      upload.flags.forEach((flag) => {
+      for (const flag of upload.flags) {
         if (nonCFFFlags.includes(flag)) {
           duplicateUploads.splice(index, 1)
+          break
         }
-      })
+      }
     }
   }
 
