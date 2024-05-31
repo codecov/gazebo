@@ -10,6 +10,8 @@ import FailedTestsTab from './FailedTestsTab'
 jest.mock('shared/useRedirect')
 const mockedUseRedirect = useRedirect as jest.Mock
 
+jest.mock('./CodecovCLI', () => () => 'Codecov CLI tab')
+
 let testLocation: ReturnType<typeof useLocation>
 
 const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =

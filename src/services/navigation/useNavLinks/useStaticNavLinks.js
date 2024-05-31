@@ -158,6 +158,13 @@ export function useStaticNavLinks() {
       text: 'Codecov Uploader',
       openNewTab: true,
     },
+    uploaderCLI: {
+      path: () =>
+        'https://docs.codecov.com/docs/codecov-uploader#using-the-cli-to-upload-reports-with-codecovio-cloud',
+      isExternalLink: true,
+      text: 'Uploader CLI',
+      openNewTab: true,
+    },
     integrityCheck: {
       path: () =>
         'https://docs.codecov.com/docs/codecov-uploader#integrity-checking-the-uploader',
@@ -398,6 +405,13 @@ export function useStaticNavLinks() {
         return `/login`
       },
       isExternalLink: false,
+    },
+    testsAnalytics: {
+      text: 'Tests Analytics',
+      path: () =>
+        'https://docs.codecov.com/docs/test-result-ingestion-beta#failed-test-reporting',
+      isExternalLink: true,
+      openNewTab: true,
     },
   }
 }

@@ -50,6 +50,7 @@ describe('useStaticNavLinks', () => {
       ${links.dedicatedEnterpriseCloudGuide} | ${`https://docs.codecov.com/docs/codecov-dedicated-enterprise-cloud-install-steps`}
       ${links.generateSelfHostedLicense}     | ${`https://github.com/codecov/self-hosted/tree/main#license-generation`}
       ${links.uploader}                      | ${'https://docs.codecov.com/docs/codecov-uploader'}
+      ${links.uploaderCLI}                   | ${'https://docs.codecov.com/docs/codecov-uploader#using-the-cli-to-upload-reports-with-codecovio-cloud'}
       ${links.integrityCheck}                | ${'https://docs.codecov.com/docs/codecov-uploader#integrity-checking-the-uploader'}
       ${links.codecovGithubApp}              | ${'https://github.com/apps/codecov'}
       ${links.codecovGithubAppSelectTarget}  | ${'https://github.com/apps/codecov/installations/select_target'}
@@ -81,6 +82,7 @@ describe('useStaticNavLinks', () => {
       ${links.quickStart}                    | ${'https://docs.codecov.com/docs/quick-start'}
       ${links.installSelfHosted}             | ${'https://docs.codecov.com/docs/installing-codecov-self-hosted'}
       ${links.login}                         | ${`/login`}
+      ${links.testsAnalytics}                | ${'https://docs.codecov.com/docs/test-result-ingestion-beta#failed-test-reporting'}
     `('static links return path', ({ link, outcome }) => {
       it(`${link.text}: Returns the correct link`, () => {
         expect(link.path()).toBe(outcome)

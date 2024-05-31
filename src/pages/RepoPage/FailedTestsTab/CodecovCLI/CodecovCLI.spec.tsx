@@ -3,23 +3,20 @@ import userEvent from '@testing-library/user-event'
 import { PropsWithChildren } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import GitHubActions from './CodecovCLI'
-
-jest.mock('./FrameworkTabs', () => ({
-  __esModule: true,
-  FrameworkTabs: () => 'FrameworkTabs',
-}))
+import CodecovCLI from './CodecovCLI'
 
 const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
-  (initialEntries = '/gh/codecov/cool-repo/tests') =>
+  (initialEntries = '/gh/codecov/cool-repo/tests/codecov-cli') =>
   ({ children }) =>
     (
       <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path={['/:provider/:owner/:repo/tests']}>{children}</Route>
+        <Route path={['/:provider/:owner/:repo/tests/codecov-cli']}>
+          {children}
+        </Route>
       </MemoryRouter>
     )
 
-describe('GitHubActions', () => {
+describe('CodecovCLI', () => {
   function setup() {
     const user = userEvent.setup()
     return { user }
@@ -27,129 +24,135 @@ describe('GitHubActions', () => {
 
   describe('Step one', () => {
     it('renders title of card', () => {
-      render(<GitHubActions />, { wrapper: wrapper() })
+      render(<CodecovCLI />, { wrapper: wrapper() })
 
-      const title = screen.getByText(
-        'Step 1: Output a JUnit XML file in your CI'
-      )
+      const title = screen.getByText("Step 1: Install Codecov's CLI in your CI")
       expect(title).toBeInTheDocument()
     })
 
     it('renders content of card', () => {
-      render(<GitHubActions />, { wrapper: wrapper() })
+      render(<CodecovCLI />, { wrapper: wrapper() })
 
-      const content = screen.getByText(
-        /Select the framework below to generate a JUnit XM/
-      )
+      const content = screen.getByText(/Here's an example using pip/)
       expect(content).toBeInTheDocument()
     })
 
-    it('renders framework tabs', () => {
-      render(<GitHubActions />, { wrapper: wrapper() })
+    it('renders script', () => {
+      render(<CodecovCLI />, { wrapper: wrapper() })
 
-      const frameworkTabs = screen.getByText('FrameworkTabs')
-      expect(frameworkTabs).toBeInTheDocument()
+      const script = screen.getByText(/pip install codecov-cli/)
+      expect(script).toBeInTheDocument()
     })
   })
 
   describe('Step two', () => {
     it('renders title of card', () => {
-      render(<GitHubActions />, { wrapper: wrapper() })
+      render(<CodecovCLI />, { wrapper: wrapper() })
 
-      const title = screen.getByText(/Step 2: Add the script/)
+      const title = screen.getByText(/Step 2: Output a JUnit XML file/)
       expect(title).toBeInTheDocument()
     })
 
     it('renders content of card', () => {
-      render(<GitHubActions />, { wrapper: wrapper() })
+      render(<CodecovCLI />, { wrapper: wrapper() })
 
-      const content = screen.getByText(
-        /In your CI YAML file, add below scripts to the end of your test run./
-      )
+      const content = screen.getByText(/If you're building on Python/)
       expect(content).toBeInTheDocument()
     })
 
     it('renders script', () => {
-      render(<GitHubActions />, { wrapper: wrapper() })
+      render(<CodecovCLI />, { wrapper: wrapper() })
 
-      const script = screen.getByText(/- name: Upload test results to Codecov/)
+      const script = screen.getByText(/pytest <other_args> --junitxml/)
       expect(script).toBeInTheDocument()
-    })
-
-    it('renders expand button', () => {
-      render(<GitHubActions />, { wrapper: wrapper() })
-
-      const button = screen.getByRole('button', {
-        name: /could look something like this:/,
-      })
-      expect(button).toBeInTheDocument()
-    })
-
-    describe('when expand button is clicked', () => {
-      it('should expand content', async () => {
-        const { user } = setup()
-        render(<GitHubActions />, { wrapper: wrapper() })
-
-        const button = screen.getByRole('button', {
-          name: /could look something like this:/,
-        })
-        expect(button).toBeInTheDocument()
-
-        await user.click(button)
-
-        const content = screen.getByText(/name: Run unit tests/)
-        expect(content).toBeInTheDocument()
-      })
-    })
-
-    describe('when expand button is clicked again', () => {
-      it('should collapse content', async () => {
-        const { user } = setup()
-        render(<GitHubActions />, { wrapper: wrapper() })
-
-        const button = screen.getByRole('button', {
-          name: /could look something like this:/,
-        })
-        expect(button).toBeInTheDocument()
-
-        await user.click(button)
-        await user.click(button)
-
-        await waitFor(() => {
-          expect(
-            screen.queryByText(/name: Run unit tests/)
-          ).not.toBeInTheDocument()
-        })
-      })
-    })
-
-    it('renders copy button', () => {
-      render(<GitHubActions />, { wrapper: wrapper() })
-
-      const button = screen.getByRole('button', { name: /Copy/ })
-      expect(button).toBeInTheDocument()
     })
   })
 
   describe('Step three', () => {
     it('renders title of card', () => {
-      render(<GitHubActions />, { wrapper: wrapper() })
+      render(<CodecovCLI />, { wrapper: wrapper() })
+
+      const title = screen.getByText(/Step 3: Upload this file to Codecov/)
+      expect(title).toBeInTheDocument()
+    })
+
+    it('renders content of card', () => {
+      render(<CodecovCLI />, { wrapper: wrapper() })
+
+      const content = screen.getByText(
+        /The following snippet instructs the CLI/
+      )
+      expect(content).toBeInTheDocument()
+    })
+
+    it('renders script', () => {
+      render(<CodecovCLI />, { wrapper: wrapper() })
+
+      const script = screen.getByText(
+        /codecovcli do-upload --report-type test_results/
+      )
+      expect(script).toBeInTheDocument()
+    })
+  })
+
+  describe('Step four', () => {
+    it('renders title of card', () => {
+      render(<CodecovCLI />, { wrapper: wrapper() })
+
+      const title = screen.getByText(/Step 4: Upload coverage to Codecov/)
+      expect(title).toBeInTheDocument()
+    })
+
+    it('renders content of card', () => {
+      render(<CodecovCLI />, { wrapper: wrapper() })
+
+      const content = screen.getByText(/Codecov offers existing wrappers/)
+      expect(content).toBeInTheDocument()
+    })
+
+    it('renders script', () => {
+      render(<CodecovCLI />, { wrapper: wrapper() })
+
+      const script = screen.getByText(/codecovcli upload-process/)
+      expect(script).toBeInTheDocument()
+    })
+
+    it('renders link', () => {
+      render(<CodecovCLI />, { wrapper: wrapper() })
+
+      const link = screen.getByRole('link', { name: /here/ })
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute(
+        'href',
+        'https://docs.codecov.com/docs/codecov-uploader#using-the-cli-to-upload-reports-with-codecovio-cloud'
+      )
+    })
+  })
+
+  describe('Step five', () => {
+    it('renders title of card', () => {
+      render(<CodecovCLI />, { wrapper: wrapper() })
 
       const title = screen.getByText(/Step 3: Run your test suit/)
       expect(title).toBeInTheDocument()
     })
 
     it('renders content of card', () => {
-      render(<GitHubActions />, { wrapper: wrapper() })
+      render(<CodecovCLI />, { wrapper: wrapper() })
 
-      const content = screen.getByText(
-        /You can inspect the workflow logs to see if the call to Codecov succeeded./
-      )
+      const content = screen.getByText(/You can inspect the workflow logs/)
       expect(content).toBeInTheDocument()
     })
 
+    it('renders image', () => {
+      render(<CodecovCLI />, { wrapper: wrapper() })
+
+      const img = screen.getByAltText('CLI tests')
+      expect(img).toBeInTheDocument()
+    })
+
     it('renders expand button', () => {
-      render(<GitHubActions />, { wrapper: wrapper() })
+      render(<CodecovCLI />, { wrapper: wrapper() })
 
       const button = screen.getByRole('button', {
         name: /Here are examples of failed test reports in PR comments./,
@@ -158,9 +161,9 @@ describe('GitHubActions', () => {
     })
 
     describe('when expand button is clicked', () => {
-      const { user } = setup()
       it('should expand content', async () => {
-        render(<GitHubActions />, { wrapper: wrapper() })
+        const { user } = setup()
+        render(<CodecovCLI />, { wrapper: wrapper() })
 
         const button = screen.getByRole('button', {
           name: /Here are examples of failed test reports in PR comments./,
@@ -177,7 +180,7 @@ describe('GitHubActions', () => {
     describe('when expand button is clicked again', () => {
       it('should collapse content', async () => {
         const { user } = setup()
-        render(<GitHubActions />, { wrapper: wrapper() })
+        render(<CodecovCLI />, { wrapper: wrapper() })
 
         const button = screen.getByRole('button', {
           name: /Here are examples of failed test reports in PR comments./,
@@ -196,34 +199,32 @@ describe('GitHubActions', () => {
     })
   })
 
-  describe('Step four', () => {
+  describe('Step six', () => {
     it('renders title of card', () => {
-      render(<GitHubActions />, { wrapper: wrapper() })
+      render(<CodecovCLI />, { wrapper: wrapper() })
 
       const title = screen.getByText(/Step 4: View results and insights/)
       expect(title).toBeInTheDocument()
     })
 
     it('renders content of card', () => {
-      render(<GitHubActions />, { wrapper: wrapper() })
+      render(<CodecovCLI />, { wrapper: wrapper() })
 
-      const content = screen.getByText(
-        /After the test run completion, you'll be able to see the failed tests result on the following areas:/
-      )
+      const content = screen.getByText(/After the test run completion/)
       expect(content).toBeInTheDocument()
     })
   })
 
   describe('Visit guide', () => {
     it('renders content of card', () => {
-      render(<GitHubActions />, { wrapper: wrapper() })
+      render(<CodecovCLI />, { wrapper: wrapper() })
 
       const content = screen.getByText(/Visit our guide/)
       expect(content).toBeInTheDocument()
     })
 
     it('renders link', () => {
-      render(<GitHubActions />, { wrapper: wrapper() })
+      render(<CodecovCLI />, { wrapper: wrapper() })
 
       const link = screen.getByRole('link', { name: /learn more/ })
       expect(link).toBeInTheDocument()

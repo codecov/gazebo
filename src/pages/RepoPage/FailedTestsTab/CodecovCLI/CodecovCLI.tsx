@@ -5,7 +5,6 @@ import testsRunning from 'assets/svg/onboardingTests/testsRunning.svg'
 import A from 'ui/A'
 import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
-import { CopyClipboard } from 'ui/CopyClipboard'
 import { ExpandableSection } from 'ui/ExpandableSection/ExpandableSection'
 
 function CodecovCLI() {
@@ -15,10 +14,14 @@ function CodecovCLI() {
       <Step2 />
       <Step3 />
       <Step4 />
+      <Step5 />
+      <Step6 />
       <VisitGuide />
     </div>
   )
 }
+
+const Step1Script = 'pip install codecov-cli'
 
 function Step1() {
   return (
@@ -30,112 +33,112 @@ function Step1() {
       </Card.Header>
       <Card.Content className="flex flex-col gap-4">
         <p>Here&apos;s an example using pip</p>
-        <CodeSnippet clipboard="pip install codecov">
-          pip install codecov
-        </CodeSnippet>
+        <CodeSnippet clipboard={Step1Script}>{Step1Script}</CodeSnippet>
       </Card.Content>
     </Card>
   )
 }
 
-const Step2Script = `- name: Upload test results to Codecov
-  if: \${{ !cancelled() }}
-  uses: codecov/test-results-action@v1
-  with:
-    token: \${{ secrets.CODECOV_TOKEN }}`
+const Step2Script = `pytest  <other_args> --junitxml=<report_name>.junit.xml
 
-const JobsScript = `jobs:
-  unit-test:
-    name: Run unit tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v3
-        with:
-          python-version: 3.11
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-      - name: Test with pytest
-        run: |
-          pytest --cov --junitxml=junit.xml
-      # Copy and paste the codecov/test-results-action here
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          token: \${{ secrets.CODECOV_TOKEN }}
-      - name: Upload test results to Codecov
-        if: \${{ !cancelled() }}
-        uses: codecov/test-results-action@v1
-        with:
-          token: \${{ secrets.CODECOV_TOKEN }}`
+pytest  --cov --junitxml=<report_name>.junit.xml`
 
 function Step2() {
-  const [isExpanded, setIsExpanded] = useState(false)
-
   return (
-    <div>
-      <Card>
-        <Card.Header>
-          <Card.Title size="base">
-            Step 2: Add the script{' '}
-            <code className="rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-1 text-sm">
-              codecov/test-results-action@v1
-            </code>{' '}
-            to your CI YAML file.
-          </Card.Title>
-        </Card.Header>
-        <Card.Content className="flex flex-col gap-4">
-          <p>
-            In your CI YAML file, add below scripts to the end of your test run.
-          </p>
-          <CodeSnippet>
-            <div className="flex justify-between">
-              <pre>{Step2Script}</pre>
-              <div>
-                <CopyClipboard value={Step2Script} />
-              </div>
-            </div>
-          </CodeSnippet>
-          <p>
-            This action will download the Codecov CLI, and upload the{' '}
-            <span className="text-ds-gray">junit.xml</span> file generated in
-            the previous step to Codecov.
-          </p>
-        </Card.Content>
-      </Card>
-      <ExpandableSection className="mt-[-1px]">
-        <ExpandableSection.Trigger
-          isExpanded={isExpanded}
-          onClick={() => setIsExpanded(!isExpanded)}
-        >
-          <p className="font-normal">
-            Your final <span className="text-ds-gray">ci.yaml</span> file for a
-            project using <span className="text-ds-gray">pytest</span> could
-            look something like this:
-          </p>
-        </ExpandableSection.Trigger>
-        <ExpandableSection.Content>
-          <CodeSnippet>
-            <div className="flex justify-between">
-              <pre>{JobsScript}</pre>
-              <div>
-                <CopyClipboard value={JobsScript} className="block" />
-              </div>
-            </div>
-          </CodeSnippet>
-        </ExpandableSection.Content>
-      </ExpandableSection>
-    </div>
+    <Card>
+      <Card.Header>
+        <Card.Title size="base">Step 2: Output a JUnit XML file</Card.Title>
+      </Card.Header>
+      <Card.Content className="flex flex-col gap-4">
+        <p>
+          Codecov will need the output of your test run. If you&apos;re building
+          on Python, simply do the following when you&apos;re calling pytest in
+          your CI.
+        </p>
+        <CodeSnippet clipboard={Step2Script}>{Step2Script}</CodeSnippet>
+        <p>
+          The above snippet instructs{' '}
+          <span className="text-codecov-code">pytest</span> to collect the
+          result of all tests that are executed in this run and store as{' '}
+          <span className="text-codecov-code">
+            &lt;report_name&gt;.junit.xml
+          </span>
+          . Be sure to replace{' '}
+          <span className="text-codecov-code">&lt;report_name&gt;</span> with
+          your own filename
+        </p>
+      </Card.Content>
+    </Card>
   )
 }
 
+const Step3Script = `codecovcli do-upload --report-type test_results --file <report_name>.junit.xml`
+
 function Step3() {
+  return (
+    <Card>
+      <Card.Header>
+        <Card.Title size="base">
+          Step 3: Upload this file to Codecov using the CLI
+        </Card.Title>
+      </Card.Header>
+      <Card.Content className="flex flex-col gap-4">
+        <p>
+          The following snippet instructs the CLI to to upload this report to
+          Codecov.
+        </p>
+        <CodeSnippet clipboard={Step3Script}>{Step3Script}</CodeSnippet>
+        <p>
+          Be sure to specify{' '}
+          <span className="text-codecov-code">--report-type</span> as
+          <span className="text-codecov-code"> test_results</span> and include
+          the file you created in Step 2. This will not necessarily upload
+          coverage reports to Codecov.
+        </p>
+      </Card.Content>
+    </Card>
+  )
+}
+
+const Step4Script = `codecovcli upload-process`
+
+function Step4() {
+  return (
+    <Card>
+      <Card.Header>
+        <Card.Title size="base">
+          Step 4: Upload coverage to Codecov using the CLI
+        </Card.Title>
+      </Card.Header>
+      <Card.Content className="flex flex-col gap-4">
+        <p>
+          Codecov offers existing wrappers for the CLI (Github Actions, Circle
+          CI Orb, Bitrise Step) that makes uploading coverage to Codecov easy,
+          as described{' '}
+          <A
+            to={{ pageName: 'uploaderCLI' }}
+            isExternal={true}
+            hook="failed-tests-onboarding"
+          >
+            here
+          </A>
+          .
+        </p>
+        <p>
+          If you&apos;re running a different CI, you can upload coverage as
+          follows
+        </p>
+        <CodeSnippet clipboard={Step4Script}>{Step4Script}</CodeSnippet>
+        <p>
+          Go ahead and merge these changes in. In the next step we&apos;ll
+          verify if things are working correctly.
+        </p>
+      </Card.Content>
+    </Card>
+  )
+}
+
+function Step5() {
   const [isExpanded, setIsExpanded] = useState(false)
 
   return (
@@ -178,7 +181,7 @@ function Step3() {
   )
 }
 
-function Step4() {
+function Step6() {
   return (
     <Card>
       <Card.Header>
