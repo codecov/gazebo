@@ -5,7 +5,6 @@ import testsRunning from 'assets/svg/onboardingTests/testsRunning.svg'
 import A from 'ui/A'
 import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
-import { CopyClipboard } from 'ui/CopyClipboard'
 import { ExpandableSection } from 'ui/ExpandableSection/ExpandableSection'
 
 import { FrameworkTabs } from './FrameworkTabs'
@@ -97,14 +96,7 @@ function Step2() {
           <p>
             In your CI YAML file, add below scripts to the end of your test run.
           </p>
-          <CodeSnippet>
-            <div className="flex justify-between">
-              <pre>{Step2Script}</pre>
-              <div>
-                <CopyClipboard value={Step2Script} />
-              </div>
-            </div>
-          </CodeSnippet>
+          <CodeSnippet clipboard={Step2Script}>{Step2Script}</CodeSnippet>
           <p>
             This action will download the Codecov CLI, and upload the{' '}
             <span className="text-codecov-code">junit.xml</span> file generated
@@ -125,14 +117,7 @@ function Step2() {
           </p>
         </ExpandableSection.Trigger>
         <ExpandableSection.Content>
-          <CodeSnippet>
-            <div className="flex justify-between">
-              <pre>{JobsScript}</pre>
-              <div>
-                <CopyClipboard value={JobsScript} className="block" />
-              </div>
-            </div>
-          </CodeSnippet>
+          <CodeSnippet clipboard={JobsScript}>{JobsScript}</CodeSnippet>
         </ExpandableSection.Content>
       </ExpandableSection>
     </div>
