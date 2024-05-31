@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
-import ghActionsTests from 'assets/svg/onboardingTests/ghActionsTests.svg'
 import testsPRComment from 'assets/svg/onboardingTests/testsPRComment.svg'
+import testsRunning from 'assets/svg/onboardingTests/testsRunning.svg'
 import A from 'ui/A'
 import { Card } from 'ui/Card'
 import { CodeSnippet } from 'ui/CodeSnippet'
@@ -153,7 +153,7 @@ function Step3() {
             You can inspect the workflow logs to see if the call to Codecov
             succeeded.
           </p>
-          <img src={ghActionsTests.toString()} alt="GitHub Actions tests" />
+          <img src={testsRunning.toString()} alt="GitHub Actions Tests" />
           <p>
             Run your tests as usual. You need to fail some tests to view the
             failed tests report.
