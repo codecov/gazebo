@@ -131,7 +131,7 @@ function Step3() {
     <div>
       <Card>
         <Card.Header>
-          <Card.Title size="base">Step 3: Run your test suit</Card.Title>
+          <Card.Title size="base">Step 3: Run your test suite</Card.Title>
         </Card.Header>
         <Card.Content className="flex flex-col gap-4">
           <p>
@@ -140,8 +140,8 @@ function Step3() {
           </p>
           <img src={testsRunning.toString()} alt="GitHub Actions Tests" />
           <p>
-            Run your tests as usual. You need to fail some tests to view the
-            failed tests report.
+            Run your tests as usual. You need to have some failed tests to view
+            the failed tests report.
           </p>
         </Card.Content>
       </Card>
