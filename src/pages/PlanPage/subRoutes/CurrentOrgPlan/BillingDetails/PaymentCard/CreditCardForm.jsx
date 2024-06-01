@@ -43,11 +43,7 @@ function CreditCardForm({ closeForm, provider, owner }) {
               },
             }}
           />
-          {
-            <p className="mt-1 text-ds-primary-red">
-              {error && error?.message}
-            </p>
-          }
+          <p className="mt-1 text-ds-primary-red">{error && error.message}</p>
         </div>
         <div className="flex gap-1">
           <Button
