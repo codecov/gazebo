@@ -399,5 +399,12 @@ export function useStaticNavLinks() {
       },
       isExternalLink: false,
     },
+    testsAnalytics: {
+      text: 'Tests Analytics',
+      path: () =>
+        'https://docs.codecov.com/docs/test-result-ingestion-beta#failed-test-reporting',
+      isExternalLink: true,
+      openNewTab: true,
+    },
   }
 }

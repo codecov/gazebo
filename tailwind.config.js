@@ -77,6 +77,7 @@ module.exports = {
           red: withOpacity('--color-ds-primary-red'),
           orange: withOpacity('--color-codecov-orange'),
           footer: withOpacity('--color-codecov-footer'),
+          code: withOpacity('--color-codecov-code'),
         },
         gray: {
           100: withOpacity('--color-ds-gray-primary'),

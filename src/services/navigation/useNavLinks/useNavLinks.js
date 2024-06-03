@@ -777,5 +777,31 @@ export function useNavLinks() {
       text: 'Team plan feedback survey',
       isExternalLink: true,
     },
+    failedTestsTab: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => {
+        return `/${provider}/${owner}/${repo}/tests`
+      },
+      isExternalLink: false,
+      text: 'Tests',
+    },
+    failedTestsCodecovCLI: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => {
+        return `/${provider}/${owner}/${repo}/tests/codecov-cli`
+      },
+      text: 'Codecov CLI',
+      isExternalLink: false,
+    },
   }
 }
