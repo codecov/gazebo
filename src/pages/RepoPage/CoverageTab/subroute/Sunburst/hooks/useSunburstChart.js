@@ -1,5 +1,5 @@
 import qs from 'qs'
-import { useLocation , useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 
 import { useSunburstCoverage } from 'services/charts'
 import { useRepoOverview } from 'services/repo'

@@ -5,7 +5,7 @@ import { useRepo } from 'services/repo'
 import { useFlags } from 'shared/featureFlags'
 import A from 'ui/A'
 import { Card } from 'ui/Card'
-import CopyClipboard from 'ui/CopyClipboard'
+import { CodeSnippet } from 'ui/CodeSnippet'
 
 import ExampleBlurb from '../ExampleBlurb'
 
@@ -78,17 +78,16 @@ function Step1({ tokenCopy, uploadToken }: Step1Props) {
           actions
         </p>
         <div className="flex gap-4">
-          {/* We have plans to make this a component. Too much copy pasta */}
-          <pre className="flex basis-1/3 items-center justify-between gap-2 rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
-            <div className="w-0 flex-1 overflow-hidden" data-testid="token-key">
-              CODECOV_TOKEN
-            </div>
-            <CopyClipboard string="CODECOV_TOKEN" />
-          </pre>
-          <pre className="flex basis-2/3 items-center justify-between gap-2 rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
-            <div className="w-0 flex-1 overflow-hidden">{uploadToken}</div>
-            <CopyClipboard string={uploadToken ?? ''} />
-          </pre>
+          <CodeSnippet
+            className="basis-1/3"
+            clipboard="CODECOV_TOKEN"
+            data-testid="token-key"
+          >
+            CODECOV_TOKEN
+          </CodeSnippet>
+          <CodeSnippet className="basis-2/3" clipboard={uploadToken}>
+            {uploadToken}
+          </CodeSnippet>
         </div>
       </Card.Content>
     </Card>
@@ -123,10 +122,7 @@ function Step2({ defaultBranch, actionString }: Step2Props) {
           After tests run, this will upload your coverage report to Codecov:
         </p>
 
-        <div className="flex items-start justify-between overflow-auto rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
-          <pre className="whitespace-pre">{actionString}</pre>
-          <CopyClipboard string={actionString} />
-        </div>
+        <CodeSnippet clipboard={actionString}>{actionString}</CodeSnippet>
         <ExampleBlurb />
       </Card.Content>
     </Card>

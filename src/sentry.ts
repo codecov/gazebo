@@ -106,7 +106,6 @@ export const setupSentry = ({
   Sentry.init({
     dsn: config.SENTRY_DSN,
     debug: config.NODE_ENV !== 'production',
-    release: config.SENTRY_RELEASE,
     environment: config.SENTRY_ENVIRONMENT,
     integrations,
     tracePropagationTargets,

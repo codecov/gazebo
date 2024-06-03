@@ -1916,4 +1916,52 @@ describe('useNavLinks', () => {
       expect(path).toBe('/bb/test-owner/test-repo/bundles/new/webpack')
     })
   })
+
+  describe('Failed tests tab', () => {
+    it('returns the correct link with nothing passed', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/codecov/cool-repo'),
+      })
+
+      const path = result.current.failedTestsTab.path()
+      expect(path).toBe('/gl/codecov/cool-repo/tests')
+    })
+
+    it('can override the params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/codecov/cool-repo'),
+      })
+
+      const path = result.current.failedTestsTab.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo/tests')
+    })
+  })
+
+  describe('Failed tests tab Codecov CLI view', () => {
+    it('returns the correct link with nothing passed', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/codecov/cool-repo'),
+      })
+
+      const path = result.current.failedTestsCodecovCLI.path()
+      expect(path).toBe('/gl/codecov/cool-repo/tests/codecov-cli')
+    })
+
+    it('can override the params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/codecov/cool-repo'),
+      })
+
+      const path = result.current.failedTestsCodecovCLI.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo/tests/codecov-cli')
+    })
+  })
 })

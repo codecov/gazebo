@@ -42,8 +42,9 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
     },
   })
 
-  const { componentTab } = useFlags({
+  const { componentTab, onboardingFailedTests } = useFlags({
     componentTab: false,
+    onboardingFailedTests: false,
   })
 
   const matchTree = useMatchTreePath()
@@ -78,6 +79,17 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
       children: (
         <>
           Bundles <Badge>beta</Badge>
+        </>
+      ),
+    })
+  }
+
+  if (onboardingFailedTests) {
+    tabs.push({
+      pageName: 'failedTestsTab',
+      children: (
+        <>
+          Tests <Badge>beta</Badge>{' '}
         </>
       ),
     })

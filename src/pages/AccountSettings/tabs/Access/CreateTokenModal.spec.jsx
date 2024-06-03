@@ -127,7 +127,7 @@ describe('CreateTokenModal', () => {
 
         const label = screen.getByText(/Personal API token/)
         expect(label).toBeInTheDocument()
-        const copyElements = screen.getByText('copy', { exact: true })
+        const copyElements = screen.getByTestId('clipboard-copy-token')
         expect(copyElements).toBeInTheDocument()
         window.prompt = jest.fn()
         await user.click(copyElements)

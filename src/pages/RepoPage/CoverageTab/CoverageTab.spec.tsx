@@ -4,12 +4,14 @@ import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { TierNames } from 'services/tier'
+import { TierNames, TTierNames } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 
 import CoverageTab from './CoverageTab'
 
 jest.mock('shared/featureFlags')
+const mockedUseFlags = useFlags as jest.Mock<{ multipleTiers: boolean }>
+
 jest.mock('./Summary', () => () => 'Summary')
 jest.mock('./SummaryTeamPlan', () => () => 'SummaryTeamPlan')
 jest.mock('./subroute/Sunburst', () => () => 'Sunburst')
@@ -296,7 +298,9 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 
-const wrapper =
+const wrapper: (
+  initialEnties?: string[]
+) => React.FC<React.PropsWithChildren> =
   (initialEntries = ['/gh/codecov/cool-repo/tree/main']) =>
   ({ children }) =>
     (
@@ -328,22 +332,21 @@ afterAll(() => {
   server.close()
 })
 
+interface SetupArgs {
+  isFirstPullRequest?: boolean
+  isPrivate?: boolean
+  tierValue?: TTierNames
+  fileCount?: number
+}
+
 describe('Coverage Tab', () => {
-  function setup(
-    {
-      isPrivate = false,
-      tierValue = TierNames.PRO,
-      isFirstPullRequest = false,
-      fileCount,
-    } = {
-      repoData: mockRepo,
-      isFirstPullRequest: false,
-      isPrivate: false,
-      tierValue: TierNames.PRO,
-      fileCount: 10,
-    }
-  ) {
-    useFlags.mockReturnValue({
+  function setup({
+    isFirstPullRequest = false,
+    isPrivate = false,
+    tierValue = TierNames.PRO,
+    fileCount = 10,
+  }: SetupArgs) {
+    mockedUseFlags.mockReturnValue({
       multipleTiers: true,
     })
 
@@ -358,7 +361,7 @@ describe('Coverage Tab', () => {
         res(
           ctx.status(200),
           ctx.data({
-            owner: { repository: { __typename: 'Repository', ...branchMock } },
+            owner: { repository: { ...branchMock } },
           })
         )
       ),
@@ -421,7 +424,7 @@ describe('Coverage Tab', () => {
   })
 
   it('renders default summary', async () => {
-    setup()
+    setup({})
     render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/repoName']) })
 
     const summary = screen.getByText(/Summary/)

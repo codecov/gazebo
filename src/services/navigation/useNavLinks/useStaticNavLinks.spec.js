@@ -81,6 +81,7 @@ describe('useStaticNavLinks', () => {
       ${links.quickStart}                    | ${'https://docs.codecov.com/docs/quick-start'}
       ${links.installSelfHosted}             | ${'https://docs.codecov.com/docs/installing-codecov-self-hosted'}
       ${links.login}                         | ${`/login`}
+      ${links.testsAnalytics}                | ${'https://docs.codecov.com/docs/test-result-ingestion-beta#failed-test-reporting'}
     `('static links return path', ({ link, outcome }) => {
       it(`${link.text}: Returns the correct link`, () => {
         expect(link.path()).toBe(outcome)
