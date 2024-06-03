@@ -13,7 +13,6 @@ function AutoActivateMembers() {
   const { data, isLoading } = useSelfHostedSettings()
 
   const { mutate, isLoading: isMutating } = useUpdateSelfHostedSettings()
-
   if (isLoading) {
     return <Loader />
   }

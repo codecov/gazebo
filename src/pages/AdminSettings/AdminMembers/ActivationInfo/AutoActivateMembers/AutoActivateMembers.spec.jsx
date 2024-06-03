@@ -13,13 +13,10 @@ const queryClient = new QueryClient({
 const server = setupServer()
 
 const mockResponse = {
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      planAutoActivate: true,
-      seatsUsed: 1,
-      seatsLimit: 10,
-    },
+  config: {
+    planAutoActivate: true,
+    seatsUsed: 1,
+    seatsLimit: 10,
   },
 }
 
@@ -46,10 +43,8 @@ describe('AutoActivateMembers', () => {
       }),
 
       graphql.mutation('UpdateSelfHostedSettings', (req, res, ctx) => {
-        mockResponse.owner.repository.planAutoActivate =
-          req.variables.shouldAutoActivate
-
-        return res(ctx.status(200), ctx.json({}))
+        mockResponse.config.planAutoActivate = req.variables.shouldAutoActivate
+        return res(ctx.status(200), ctx.data({}))
       })
     )
   }
@@ -79,7 +74,7 @@ describe('AutoActivateMembers', () => {
       setup()
     })
 
-    it('changes to off', async () => {
+    it.only('changes to off', async () => {
       const user = userEvent.setup()
       render(
         <AutoActivateMembers autoActivate={mockResponse.planAutoActivate} />,

@@ -12,13 +12,10 @@ const queryClient = new QueryClient({
 const server = setupServer()
 
 const mockResponse = {
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      planAutoActivate: true,
-      seatsUsed: 1,
-      seatsLimit: 10,
-    },
+  config: {
+    planAutoActivate: true,
+    seatsUsed: 1,
+    seatsLimit: 10,
   },
 }
 
@@ -43,38 +40,12 @@ afterAll(() => {
   server.close()
 })
 
-const mockNotFoundError = {
-  owner: {
-    repository: {
-      __typename: 'NotFoundError',
-      message: 'repo not found',
-    },
-  },
-}
-
-const mockOwnerNotActivatedError = {
-  owner: {
-    repository: {
-      __typename: 'OwnerNotActivatedError',
-      message: 'owner not activated',
-    },
-  },
-}
-
 describe('useSelfHostedSettings', () => {
-  function setup({
-    invalidResponse = false,
-    ownerNotActivated = false,
-    notFoundResponse = false,
-  }) {
+  function setup({ invalidResponse = false }) {
     server.use(
       graphql.query('SelfHostedSettings', (req, res, ctx) => {
         if (invalidResponse) {
           return res(ctx.status(200), ctx.data({}))
-        } else if (ownerNotActivated) {
-          return res(ctx.status(200), ctx.data(mockOwnerNotActivatedError))
-        } else if (notFoundResponse) {
-          return res(ctx.status(200), ctx.data(mockNotFoundError))
         }
         return res(ctx.status(200), ctx.data(mockResponse))
       })
@@ -91,7 +62,6 @@ describe('useSelfHostedSettings', () => {
 
       await waitFor(() =>
         expect(result.current.data).toStrictEqual({
-          __typename: 'Repository',
           planAutoActivate: true,
           seatsUsed: 1,
           seatsLimit: 10,
@@ -116,48 +86,6 @@ describe('useSelfHostedSettings', () => {
         expect.objectContaining({
           status: 404,
           dev: 'useSelfHostedSettings - 404 schema parsing failed',
-        })
-      )
-    })
-  })
-
-  describe('owner not activated', () => {
-    beforeAll(() => {
-      console.error = () => {}
-    })
-
-    it('rejects with 403', async () => {
-      setup({ ownerNotActivated: true })
-      const { result } = renderHook(() => useSelfHostedSettings(), {
-        wrapper,
-      })
-
-      await waitFor(() => expect(result.current.isError).toBeTruthy())
-      expect(result.current.error).toEqual(
-        expect.objectContaining({
-          status: 403,
-          dev: 'useSelfHostedSettings - 403 OwnerNotActivatedError',
-        })
-      )
-    })
-  })
-
-  describe('not found error', () => {
-    beforeAll(() => {
-      console.error = () => {}
-    })
-
-    it('rejects with 404', async () => {
-      setup({ notFoundResponse: true })
-      const { result } = renderHook(() => useSelfHostedSettings(), {
-        wrapper,
-      })
-
-      await waitFor(() => expect(result.current.isError).toBeTruthy())
-      expect(result.current.error).toEqual(
-        expect.objectContaining({
-          status: 404,
-          dev: 'useSelfHostedSettings - 404 NotFoundError',
         })
       )
     })

@@ -48,24 +48,18 @@ const mockSecondResponse = {
 }
 
 const mockAllSeatsTaken = {
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      planAutoActivate: true,
-      seatsUsed: 10,
-      seatsLimit: 10,
-    },
+  config: {
+    planAutoActivate: true,
+    seatsUsed: 10,
+    seatsLimit: 10,
   },
 }
 
 const mockOpenSeatsTaken = {
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      planAutoActivate: true,
-      seatsUsed: 5,
-      seatsLimit: 10,
-    },
+  config: {
+    planAutoActivate: true,
+    seatsUsed: 5,
+    seatsLimit: 10,
   },
 }
 

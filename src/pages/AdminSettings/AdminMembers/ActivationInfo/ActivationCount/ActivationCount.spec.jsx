@@ -12,13 +12,10 @@ const queryClient = new QueryClient({
 const server = setupServer()
 
 const mockResponse = {
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      planAutoActivate: true,
-      seatsUsed: 5,
-      seatsLimit: 10,
-    },
+  config: {
+    planAutoActivate: true,
+    seatsUsed: 5,
+    seatsLimit: 10,
   },
 }
 
