@@ -17,8 +17,6 @@ import {
 } from 'shared/utils/bundleAnalysis'
 import Icon from 'ui/Icon'
 
-import 'ui/Table/Table.css'
-
 interface URLParams {
   provider: string
   owner: string

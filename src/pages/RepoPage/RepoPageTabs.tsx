@@ -84,6 +84,17 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
     })
   }
 
+  if (onboardingFailedTests) {
+    tabs.push({
+      pageName: 'failedTestsTab',
+      children: (
+        <>
+          Tests <Badge>beta</Badge>{' '}
+        </>
+      ),
+    })
+  }
+
   const hideFlagsTab = !!repoOverview?.private && tierData === TierNames.TEAM
   const userAuthorizedtoViewRepo =
     (repoData?.isCurrentUserActivated && repoOverview?.private) ||
@@ -112,17 +123,6 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
     userAuthorizedtoViewRepo
   ) {
     tabs.push({ pageName: 'commits' }, { pageName: 'pulls' })
-  }
-
-  if (onboardingFailedTests) {
-    tabs.push({
-      pageName: 'failedTestsTab',
-      children: (
-        <>
-          Tests <Badge>beta</Badge>{' '}
-        </>
-      ),
-    })
   }
 
   if (isCurrentUserPartOfOrg) {

@@ -24,8 +24,6 @@ import Api from 'shared/api'
 import Spinner from 'ui/Spinner'
 import Toggle from 'ui/Toggle'
 
-import 'ui/Table/Table.css'
-
 type MembersColumns = {
   username: React.ReactNode
   type: string

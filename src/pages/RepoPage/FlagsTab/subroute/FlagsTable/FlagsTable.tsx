@@ -24,8 +24,6 @@ import DeleteFlagModal from './DeleteFlagModal'
 import useRepoFlagsTable from './hooks'
 import TableSparkline from './TableEntries/TableSparkline'
 
-import 'ui/Table/Table.css'
-
 interface FlagsTableHelper {
   name: React.ReactElement
   coverage: React.ReactElement

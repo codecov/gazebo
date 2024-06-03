@@ -1,7 +1,7 @@
 import cs from 'classnames'
 import { useSelect } from 'downshift'
 import Cookies from 'js-cookie'
-import { useParams } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 
 import config, {
   COOKIE_SESSION_EXPIRY,
@@ -25,7 +25,8 @@ type CurrentUser = {
 }
 
 type itemProps = {
-  to: toProps
+  to?: toProps
+  hook?: string
   onClick?: () => void
 }
 
@@ -38,8 +39,7 @@ type toProps = {
 function Dropdown({ currentUser }: { currentUser: CurrentUser }) {
   const { provider } = useParams<URLParams>()
   const isGh = providerToName(provider) === 'Github'
-
-  const to = `${window.location.protocol}//${window.location.host}/login`
+  const history = useHistory()
 
   const items =
     !config.IS_SELF_HOSTED && isGh
@@ -51,9 +51,14 @@ function Dropdown({ currentUser }: { currentUser: CurrentUser }) {
         ]
       : []
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    await fetch(`${config.API_URL}/logout`, {
+      method: 'POST',
+      credentials: 'include',
+    })
     localStorage.removeItem(LOCAL_STORAGE_SESSION_TRACKING_KEY)
     Cookies.remove(COOKIE_SESSION_EXPIRY)
+    history.replace('/login')
   }
 
   items.push(
@@ -68,8 +73,8 @@ function Dropdown({ currentUser }: { currentUser: CurrentUser }) {
     },
     {
       props: {
-        to: { pageName: 'signOut', options: { to } },
         onClick: handleSignOut,
+        hook: 'header-dropdown-sign-out',
       },
       children: 'Sign Out',
     }

@@ -15,8 +15,6 @@ import {
   formatTimeToString,
 } from 'shared/utils/bundleAnalysis'
 
-import 'ui/Table/Table.css'
-
 interface URLParams {
   provider: string
   owner: string

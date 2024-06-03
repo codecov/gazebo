@@ -23,8 +23,6 @@ import { getReposColumnsHelper } from './getReposColumnsHelper'
 import { repoDisplayOptions } from '../ListRepo'
 import NoReposBlock from '../NoReposBlock'
 
-import 'ui/Table/Table.css'
-
 interface URLParams {
   provider: string
 }

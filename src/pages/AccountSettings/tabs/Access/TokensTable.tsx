@@ -12,8 +12,6 @@ import { useRevokeUserToken, UserToken } from 'services/access'
 import { cn } from 'shared/utils/cn'
 import Button from 'ui/Button'
 
-import 'ui/Table/Table.css'
-
 interface URLParams {
   provider: string
 }

@@ -7,7 +7,6 @@ import {
 import cs from 'classnames'
 import { ReactNode } from 'react'
 
-import 'ui/Table/Table.css'
 import MissingFileData from 'shared/ContentsTable/MissingFileData'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
