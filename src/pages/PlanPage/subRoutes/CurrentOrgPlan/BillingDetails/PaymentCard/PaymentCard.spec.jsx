@@ -36,9 +36,7 @@ jest.mock('@stripe/react-stripe-js', () => {
       getElement: jest.fn(),
     }),
     useStripe: () => ({}),
-    CardExpiryElement: makeFakeComponent('CardExpiryElement'),
-    CardNumberElement: makeFakeComponent('CardNumberElement'),
-    CardCvcElement: makeFakeComponent('CardCvcElement'),
+    CardElement: makeFakeComponent('CardElement'),
   }
 })
 
@@ -287,7 +285,7 @@ describe('PaymentCard', () => {
       const randomError = 'not rich enough'
       useUpdateCard.mockReturnValue({
         mutate: jest.fn(),
-        error: { data: { detail: randomError } },
+        error: { message: randomError },
       })
       render(
         <PaymentCard
