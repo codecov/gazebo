@@ -14,9 +14,6 @@ Table UI is a styles only "component" that provides the design system aspect of 
 
 Nest your table with a `div`, this lets the table start scrolling rather then breaking page layouts when a screen becomes too small for the content and there has been no custom responsiveness added.
 
-```js
-
-```
 
 ```html
 <div className="tableui">
@@ -106,7 +103,7 @@ If you have a table that needs to be non standard you can override table styles 
 
 From the responsive example, two columns are hidden on small screens and their data is moved into the "name" column. To achieve this I check the header/column id and apply `hidden @lg/table:table-cell`. This hides the `th` unless the table render space is greater then `lg`, if so render the `tr` with the default display setting `display: table-cell;`
 
-```html
+```jsx
 <tr key={headerGroup.id}>
     {headerGroup.headers.map((header) => (
     <th
