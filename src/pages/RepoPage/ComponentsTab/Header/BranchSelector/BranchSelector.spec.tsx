@@ -86,15 +86,21 @@ let testLocation: ReturnType<typeof useLocation>
 const wrapper =
   (
     queryClient: QueryClient,
-    initialEntries = '/gh/codecov/test-repo/components'
+    initialEntries = '/gh/codecov/test-repo/components/main'
   ): React.FC<React.PropsWithChildren> =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path={['/:provider/:owner/:repo/components']}>
+          <Route
+            path={[
+              '/:provider/:owner/:repo/components/:branch',
+              '/:provider/:owner/:repo/components',
+            ]}
+          >
             <Suspense fallback={<p>loading</p>}>{children}</Suspense>
           </Route>
+
           <Route
             path="*"
             render={({ location }) => {
@@ -239,9 +245,9 @@ describe('BranchSelector', () => {
         await user.click(branch)
 
         await waitFor(() =>
-          expect(testLocation?.state).toStrictEqual({
-            branch: 'branch-1',
-          })
+          expect(testLocation.pathname).toBe(
+            '/gh/codecov/test-repo/components/branch-1'
+          )
         )
       })
     })
@@ -320,7 +326,7 @@ describe('BranchSelector', () => {
         nullOverview: true,
       })
       render(<BranchSelector isDisabled={false} />, {
-        wrapper: wrapper(queryClient),
+        wrapper: wrapper(queryClient, '/gh/codecov/test-repo/components'),
       })
 
       const select = await screen.findByRole('button', {

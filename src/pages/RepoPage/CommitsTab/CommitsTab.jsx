@@ -1,4 +1,4 @@
-import { lazy, Suspense, useLayoutEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useLayoutEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
 import { useLocationParams, useNavLinks } from 'services/navigation'
@@ -59,14 +59,16 @@ function CommitsTab() {
   const showTeamTable =
     repoSettings?.repository?.private && tierData === TierNames.TEAM
 
-  const { data: overview } = useRepoOverview({
+  const { data: overview, isLoading } = useRepoOverview({
     provider,
     repo,
     owner,
   })
 
+  const defaultBranch = overview?.defaultBranch
+
   const [selectedBranch, setSelectedBranch] = useState(
-    branchParam ?? overview?.defaultBranch
+    branchParam ?? defaultBranch
   )
 
   const { updateParams, selectedStates, setSelectedStates, search } =
@@ -80,17 +82,23 @@ function CommitsTab() {
     branchListIsFetching,
     branchListHasNextPage,
     branchListFetchNextPage,
-    setBranchSearchTerm,
+    setBranchTerm,
     isSearching,
   } = useCommitsTabBranchSelector({
     passedBranch: selectedBranch,
-    defaultBranch: overview?.defaultBranch,
+    defaultBranch: defaultBranch,
     isAllCommits: selectedBranch === ALL_BRANCHES,
   })
 
-  if (selectedBranch === overview?.defaultBranch && !branchParam) {
-    history.push(commits.path({ branch: encodeURIComponent(selectedBranch) }))
-  }
+  useEffect(() => {
+    if (
+      !isLoading &&
+      selectedBranch === defaultBranch &&
+      branchParam !== defaultBranch
+    ) {
+      history.push(commits.path({ branch: encodeURIComponent(selectedBranch) }))
+    }
+  }, [defaultBranch, history, isLoading, selectedBranch, branchParam, commits])
 
   useLayoutEffect(() => {
     setCrumbs([
@@ -155,7 +163,7 @@ function CommitsTab() {
                     branchListFetchNextPage()
                   }
                 }}
-                onSearch={(term) => setBranchSearchTerm(term)}
+                onSearch={(term) => setBranchTerm(term)}
                 items={newBranches}
               />
             </div>

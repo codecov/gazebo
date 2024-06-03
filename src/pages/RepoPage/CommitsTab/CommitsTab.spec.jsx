@@ -238,10 +238,6 @@ describe('CommitsTab', () => {
           fetchNextPage(req?.variables?.after)
         }
 
-        if (!!req?.variables?.filters?.searchValue) {
-          branchSearch(req?.variables?.filters?.searchValue)
-        }
-
         if (hasBranches) {
           return res(
             ctx.status(200),
@@ -296,10 +292,6 @@ describe('CommitsTab', () => {
         )
       }),
       graphql.query('GetCommitsTeam', (req, res, ctx) => {
-        if (!!req?.variables?.filters?.branchName) {
-          branchName(req?.variables?.filters?.branchName)
-        }
-
         if (!!req?.variables?.filters?.search) {
           commitSearch(req?.variables?.filters?.search)
         }

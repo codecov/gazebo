@@ -31,6 +31,9 @@ function repoPageRender({
         <Route path="/:provider/:owner/:repo/pulls">
           <RepoBreadcrumbProvider>{renderPulls()}</RepoBreadcrumbProvider>
         </Route>
+        <Route path="/:provider/:owner/:repo/commits/:branch">
+          <RepoBreadcrumbProvider>{renderCommits()}</RepoBreadcrumbProvider>
+        </Route>
         <Route path="/:provider/:owner/:repo/commits">
           <RepoBreadcrumbProvider>{renderCommits()}</RepoBreadcrumbProvider>
         </Route>

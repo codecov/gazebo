@@ -20,7 +20,7 @@ export const useCommitsTabBranchSelector = ({
   isAllCommits?: boolean
 }) => {
   const { repo, owner, provider } = useParams<URLParams>()
-  const [branchSearchTerm, setBranchSearchTerm] = useState('')
+  const [branchTerm, setBranchTerm] = useState('')
 
   const {
     data: branchList,
@@ -31,7 +31,7 @@ export const useCommitsTabBranchSelector = ({
     repo,
     owner,
     provider,
-    filters: { searchValue: branchSearchTerm },
+    filters: { searchValue: branchTerm },
     opts: {
       suspense: false,
     },
@@ -48,7 +48,7 @@ export const useCommitsTabBranchSelector = ({
 
   const selectedBranch = passedBranch ?? defaultBranch
 
-  const { data: searchBranchValue } = useBranch({
+  const { data: branchValue } = useBranch({
     provider,
     owner,
     repo,
@@ -66,7 +66,7 @@ export const useCommitsTabBranchSelector = ({
     },
   })
 
-  let selection = searchBranchValue?.branch?.name
+  let selection = branchValue?.branch?.name
   if (isAllCommits) {
     selection = 'All branches'
   } else if (!selection) {
@@ -85,7 +85,7 @@ export const useCommitsTabBranchSelector = ({
     branchListIsFetching,
     branchListHasNextPage,
     branchListFetchNextPage,
-    setBranchSearchTerm,
-    isSearching: branchSearchTerm !== '',
+    setBranchTerm,
+    isSearching: branchTerm !== '',
   }
 }
