@@ -19,8 +19,6 @@ import { createPullsTableTeamData } from './createPullsTableTeamData'
 
 import { orderingEnum } from '../enums'
 
-import 'ui/Table/Table.css'
-
 const Loader = () => (
   <div className="mb-4 flex justify-center pt-4">
     <Spinner />

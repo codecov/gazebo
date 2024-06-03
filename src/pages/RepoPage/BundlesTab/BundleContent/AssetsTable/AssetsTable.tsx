@@ -22,8 +22,6 @@ import Spinner from 'ui/Spinner'
 import EmptyTable from './EmptyTable'
 import ModulesTable from './ModulesTable'
 
-import 'ui/FileList/FileList.css'
-
 const isNumericValue = (value: string) =>
   value === 'size' || value === 'loadTime'
 

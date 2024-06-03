@@ -16,8 +16,6 @@ import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 
-import 'ui/Table/Table.css'
-
 const Loader = () => (
   <div className="mb-4 flex justify-center pt-4">
     <Spinner />

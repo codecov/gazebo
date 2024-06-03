@@ -25,8 +25,6 @@ import DeleteComponentModal from './DeleteComponentModal'
 import useRepoComponentsTable from './hooks'
 import TableSparkline from './TableEntries/TableSparkline'
 
-import 'ui/Table/Table.css'
-
 interface ComponentsTableHelper {
   name: React.ReactElement
   coverage: React.ReactElement

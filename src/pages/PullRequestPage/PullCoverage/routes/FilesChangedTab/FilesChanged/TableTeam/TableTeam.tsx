@@ -25,8 +25,6 @@ import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 
-import 'ui/FileList/FileList.css'
-
 const PullFileDiff = lazy(() => import('../../shared/FileDiff'))
 
 const columnHelper = createColumnHelper<ImpactedFile>()

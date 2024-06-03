@@ -19,8 +19,6 @@ import { ComponentsComparison, useComponentComparison } from './hooks'
 
 import ComponentsSelector from '../ComponentsSelector'
 
-import 'ui/Table/Table.css'
-
 const Loader = () => (
   <div className="mb-4 flex justify-center pt-4">
     <Spinner />
