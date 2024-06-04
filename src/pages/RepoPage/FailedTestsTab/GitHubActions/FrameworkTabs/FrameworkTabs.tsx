@@ -14,10 +14,11 @@ const Frameworks = {
 type FrameworkType = (typeof Frameworks)[keyof typeof Frameworks]
 
 const FrameworkCopy = {
-  Pytest: 'pytest --cov --junitxml=junit.xml',
-  Vitest: 'vitest --reporter=junit',
-  Jest: 'npm i --save-dev jest-junit \njest --reporters=jest-junit',
-  PHPunit: './vendor/bin/phpunit --log-junit junit.xml',
+  [Frameworks.PYTEST]: 'pytest --cov --junitxml=junit.xml',
+  [Frameworks.VITEST]: 'vitest --reporter=junit',
+  [Frameworks.JEST]:
+    'npm i --save-dev jest-junit \njest --reporters=jest-junit',
+  [Frameworks.PHP_UNIT]: './vendor/bin/phpunit --log-junit junit.xml',
 } as const
 
 export function FrameworkTabs() {
