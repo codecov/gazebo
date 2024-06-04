@@ -27,7 +27,7 @@ export const createCommitsTableData = ({ pages }: CommitsTableData) => {
     let patch = <p className="text-right">-</p>
     if (commit?.compareWithParent?.__typename === 'Comparison') {
       patchPercentage =
-        commit?.compareWithParent?.patchTotals?.percentCovered ?? 0
+        commit?.compareWithParent?.patchTotals?.percentCovered ?? NaN
       patch = (
         <TotalsNumber
           plain={true}
