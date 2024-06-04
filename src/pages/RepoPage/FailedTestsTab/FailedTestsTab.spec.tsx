@@ -13,6 +13,8 @@ jest.mock('./GitHubActions', () => () => 'GitHub Actions tab')
 
 const mockedUseRedirect = useRedirect as jest.Mock
 
+jest.mock('./CodecovCLI', () => () => 'Codecov CLI tab')
+
 let testLocation: ReturnType<typeof useLocation>
 
 const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =

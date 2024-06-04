@@ -158,6 +158,13 @@ export function useStaticNavLinks() {
       text: 'Codecov Uploader',
       openNewTab: true,
     },
+    uploaderCLI: {
+      path: () =>
+        'https://docs.codecov.com/docs/codecov-uploader#using-the-cli-to-upload-reports-with-codecovio-cloud',
+      isExternalLink: true,
+      text: 'Uploader CLI',
+      openNewTab: true,
+    },
     integrityCheck: {
       path: () =>
         'https://docs.codecov.com/docs/codecov-uploader#integrity-checking-the-uploader',

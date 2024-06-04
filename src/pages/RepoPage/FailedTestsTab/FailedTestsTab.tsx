@@ -7,6 +7,7 @@ import { useNavLinks } from 'services/navigation'
 import { Card } from 'ui/Card'
 import { RadioTileGroup } from 'ui/RadioTileGroup'
 
+import CodecovCLI from './CodecovCLI'
 import GitHubActions from './GitHubActions'
 
 const SETUP_OPTIONS = {
@@ -82,7 +83,7 @@ function Content() {
         <GitHubActions />
       </SentryRoute>
       <SentryRoute path="/:provider/:owner/:repo/tests/codecov-cli" exact>
-        <>Codecov CLI tab</>
+        <CodecovCLI />
       </SentryRoute>
     </Switch>
   )
