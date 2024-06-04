@@ -2,7 +2,6 @@ import { useState } from 'react'
 
 import { cn } from 'shared/utils/cn'
 import { CodeSnippet } from 'ui/CodeSnippet'
-import { CopyClipboard } from 'ui/CopyClipboard'
 
 const Frameworks = {
   PYTEST: 'Pytest',
@@ -28,27 +27,22 @@ export function FrameworkTabs() {
 
   return (
     <div>
-      <div className="flex justify-between">
-        <div className="flex gap-1">
-          {Object.values(Frameworks).map((framework) => (
-            <button
-              key={framework}
-              className={cn(
-                'px-4 py-2 border-b-2 border-transparent',
-                selectedFramework === framework && 'border-ds-gray-octonary'
-              )}
-              onClick={() => setSelectedFramework(framework)}
-            >
-              {framework}
-            </button>
-          ))}
-        </div>
+      <div className="flex gap-1">
+        {Object.values(Frameworks).map((framework) => (
+          <button
+            key={framework}
+            className={cn(
+              'px-4 py-2 border-b-2 border-transparent',
+              selectedFramework === framework && 'border-ds-gray-octonary'
+            )}
+            onClick={() => setSelectedFramework(framework)}
+          >
+            {framework}
+          </button>
+        ))}
       </div>
-      <CodeSnippet>
-        <div className="flex justify-between">
-          {FrameworkCopy[selectedFramework]}
-          <CopyClipboard value={FrameworkCopy[selectedFramework]} />
-        </div>
+      <CodeSnippet clipboard={FrameworkCopy[selectedFramework]}>
+        {FrameworkCopy[selectedFramework]}
       </CodeSnippet>
     </div>
   )
