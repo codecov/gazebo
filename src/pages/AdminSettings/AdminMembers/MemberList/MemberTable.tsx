@@ -15,7 +15,6 @@ import { useInView } from 'react-intersection-observer'
 
 import { useLocationParams } from 'services/navigation'
 import {
-  SelfHostedSettings,
   UserListOwner,
   useSelfHostedSettings,
   useSelfHostedUserList,
@@ -23,6 +22,12 @@ import {
 import Api from 'shared/api'
 import Spinner from 'ui/Spinner'
 import Toggle from 'ui/Toggle'
+
+type SelfHostedSettings = {
+  planAutoActivate?: boolean | null
+  seatsUsed?: number | null
+  seatsLimit?: number | null
+}
 
 type MembersColumns = {
   username: React.ReactNode

@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { rest } from 'msw'
+import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -12,15 +12,17 @@ const queryClient = new QueryClient({
 const server = setupServer()
 
 const mockResponse = {
-  planAutoActivate: true,
-  seatsUsed: 1,
-  seatsLimit: 10,
+  config: {
+    planAutoActivate: true,
+    seatsUsed: 1,
+    seatsLimit: 10,
+  },
 }
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh']}>
-      <Route path="/:provider">{children}</Route>
+    <MemoryRouter initialEntries={['/gh/codecov/gazebo']}>
+      <Route path="/:provider/:owner/:repo">{children}</Route>
     </MemoryRouter>
   </QueryClientProvider>
 )
@@ -41,12 +43,11 @@ afterAll(() => {
 describe('useSelfHostedSettings', () => {
   function setup({ invalidResponse = false }) {
     server.use(
-      rest.get('/internal/settings', (req, res, ctx) => {
+      graphql.query('SelfHostedSettings', (req, res, ctx) => {
         if (invalidResponse) {
-          return res(ctx.status(200), ctx.json({}))
+          return res(ctx.status(200), ctx.data({}))
         }
-
-        return res(ctx.status(200), ctx.json(mockResponse))
+        return res(ctx.status(200), ctx.data(mockResponse))
       })
     )
   }

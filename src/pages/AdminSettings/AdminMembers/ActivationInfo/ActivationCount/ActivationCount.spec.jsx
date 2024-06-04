@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { rest } from 'msw'
+import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -10,10 +10,13 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 const server = setupServer()
+
 const mockResponse = {
-  planAutoActivate: true,
-  seatsUsed: 5,
-  seatsLimit: 10,
+  config: {
+    planAutoActivate: true,
+    seatsUsed: 5,
+    seatsLimit: 10,
+  },
 }
 
 const wrapper =
@@ -37,9 +40,9 @@ afterAll(() => server.close())
 describe('ActivationCount', () => {
   function setup() {
     server.use(
-      rest.get('/internal/settings', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json(mockResponse))
-      )
+      graphql.query('SelfHostedSettings', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockResponse))
+      })
     )
   }
 
