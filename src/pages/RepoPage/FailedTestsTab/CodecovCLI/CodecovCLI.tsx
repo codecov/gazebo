@@ -126,7 +126,7 @@ function Step4() {
         </p>
         <p>
           If you&apos;re running a different CI, you can upload coverage as
-          follows
+          follows:
         </p>
         <CodeSnippet clipboard={Step4Script}>{Step4Script}</CodeSnippet>
         <p>
@@ -145,7 +145,7 @@ function Step5() {
     <div>
       <Card>
         <Card.Header>
-          <Card.Title size="base">Step 3: Run your test suite</Card.Title>
+          <Card.Title size="base">Step 5: Run your test suite</Card.Title>
         </Card.Header>
         <Card.Content className="flex flex-col gap-4">
           <p>
@@ -185,7 +185,7 @@ function Step6() {
   return (
     <Card>
       <Card.Header>
-        <Card.Title size="base">Step 4: View results and insights</Card.Title>
+        <Card.Title size="base">Step 6: View results and insights</Card.Title>
       </Card.Header>
       <Card.Content className="flex flex-col gap-1">
         <p>

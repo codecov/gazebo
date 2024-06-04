@@ -133,7 +133,7 @@ describe('CodecovCLI', () => {
     it('renders title of card', () => {
       render(<CodecovCLI />, { wrapper: wrapper() })
 
-      const title = screen.getByText(/Step 3: Run your test suit/)
+      const title = screen.getByText(/Step 5: Run your test suit/)
       expect(title).toBeInTheDocument()
     })
 
@@ -203,7 +203,7 @@ describe('CodecovCLI', () => {
     it('renders title of card', () => {
       render(<CodecovCLI />, { wrapper: wrapper() })
 
-      const title = screen.getByText(/Step 4: View results and insights/)
+      const title = screen.getByText(/Step 6: View results and insights/)
       expect(title).toBeInTheDocument()
     })
 
