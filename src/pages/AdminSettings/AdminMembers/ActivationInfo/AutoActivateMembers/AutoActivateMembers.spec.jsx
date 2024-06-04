@@ -74,7 +74,7 @@ describe('AutoActivateMembers', () => {
       setup()
     })
 
-    it.only('changes to off', async () => {
+    it('changes to off', async () => {
       const user = userEvent.setup()
       render(
         <AutoActivateMembers autoActivate={mockResponse.planAutoActivate} />,

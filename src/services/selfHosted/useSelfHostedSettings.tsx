@@ -43,7 +43,6 @@ export const useSelfHostedSettings = () => {
         const parsedData = RequestSchema.safeParse(res?.data)
 
         if (!parsedData.success) {
-          console.log(parsedData.error)
           return Promise.reject({
             status: 404,
             data: {},
