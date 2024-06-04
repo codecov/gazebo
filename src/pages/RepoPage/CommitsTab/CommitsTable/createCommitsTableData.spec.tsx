@@ -109,7 +109,7 @@ describe('createCommitsTableData', () => {
       })
 
       describe('percent covered is null', () => {
-        it('returns patch total of 0', () => {
+        it('returns NAN value', () => {
           const commitData = {
             ciPassed: null,
             message: null,
@@ -145,7 +145,7 @@ describe('createCommitsTableData', () => {
               light={false}
               plain={true}
               showChange={false}
-              value={0}
+              value={NaN}
             />
           )
         })
