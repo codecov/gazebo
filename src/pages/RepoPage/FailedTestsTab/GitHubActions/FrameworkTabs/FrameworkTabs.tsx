@@ -1,6 +1,6 @@
-import cs from 'classnames'
 import { useState } from 'react'
 
+import { cn } from 'shared/utils/cn'
 import { CodeSnippet } from 'ui/CodeSnippet'
 import { CopyClipboard } from 'ui/CopyClipboard'
 
@@ -30,16 +30,16 @@ export function FrameworkTabs() {
     <div>
       <div className="flex justify-between">
         <div className="flex gap-1">
-          {Object.keys(FrameworkCopy).map((f) => (
+          {Object.values(Frameworks).map((framework) => (
             <button
-              key={f}
-              className={cs(
-                'px-4 py-2',
-                selectedFramework === f && 'border-b-2 border-ds-gray-octonary'
+              key={framework}
+              className={cn(
+                'px-4 py-2 border-b-2 border-transparent',
+                selectedFramework === framework && 'border-ds-gray-octonary'
               )}
-              onClick={() => setSelectedFramework(f as FrameworkType)}
+              onClick={() => setSelectedFramework(framework)}
             >
-              {f}
+              {framework}
             </button>
           ))}
         </div>
