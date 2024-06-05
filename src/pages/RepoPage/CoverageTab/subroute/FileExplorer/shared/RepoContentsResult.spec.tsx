@@ -18,6 +18,8 @@ describe('RepoContentsResult', () => {
       isMissingHeadReport: false,
       hasFlagsSelected: false,
       hasComponentsSelected: false,
+      isMissingCoverage: false,
+      isUnknownPath: false,
     }
 
     render(<RepoContentsResult {...props} />)
@@ -32,6 +34,8 @@ describe('RepoContentsResult', () => {
       isMissingHeadReport: true,
       hasFlagsSelected: false,
       hasComponentsSelected: false,
+      isMissingCoverage: false,
+      isUnknownPath: false,
     }
 
     render(<RepoContentsResult {...props} />)
@@ -48,6 +52,8 @@ describe('RepoContentsResult', () => {
       isMissingHeadReport: false,
       hasFlagsSelected: true,
       hasComponentsSelected: false,
+      isMissingCoverage: false,
+      isUnknownPath: false,
     }
 
     render(<RepoContentsResult {...props} />)
@@ -64,6 +70,8 @@ describe('RepoContentsResult', () => {
       isMissingHeadReport: false,
       hasFlagsSelected: false,
       hasComponentsSelected: false,
+      isMissingCoverage: false,
+      isUnknownPath: false,
     }
 
     const queryClient = new QueryClient({
@@ -109,6 +117,8 @@ describe('RepoContentsResult', () => {
       isMissingHeadReport: false,
       hasFlagsSelected: false,
       hasComponentsSelected: true,
+      isMissingCoverage: false,
+      isUnknownPath: false,
     }
 
     render(<RepoContentsResult {...props} />)
@@ -125,6 +135,8 @@ describe('RepoContentsResult', () => {
       isMissingHeadReport: false,
       hasFlagsSelected: true,
       hasComponentsSelected: true,
+      isMissingCoverage: false,
+      isUnknownPath: false,
     }
 
     render(<RepoContentsResult {...props} />)
@@ -133,5 +145,39 @@ describe('RepoContentsResult', () => {
       /No coverage reported for the selected flag\/component combination in this branch's head commit/
     )
     expect(noCoverageForFlags).toBeInTheDocument()
+  })
+
+  it('renders no coverage message if there is no coverage data', async () => {
+    const props = {
+      isSearching: false,
+      isMissingHeadReport: false,
+      hasFlagsSelected: false,
+      hasComponentsSelected: false,
+      isMissingCoverage: true,
+      isUnknownPath: false,
+    }
+
+    render(<RepoContentsResult {...props} />)
+
+    const noCoverage = await screen.findByText(/No coverage data available./)
+    expect(noCoverage).toBeInTheDocument()
+  })
+
+  it('renders unknown path message if path does not exist', async () => {
+    const props = {
+      isSearching: false,
+      isMissingHeadReport: false,
+      hasFlagsSelected: false,
+      hasComponentsSelected: false,
+      isMissingCoverage: false,
+      isUnknownPath: true,
+    }
+
+    render(<RepoContentsResult {...props} />)
+
+    const unknownPath = await screen.findByText(
+      /Unknown filepath. Please ensure that files\/directories exist and are not empty./
+    )
+    expect(unknownPath).toBeInTheDocument()
   })
 })
