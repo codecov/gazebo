@@ -137,8 +137,6 @@ export const useInvoices = ({ provider, owner }: UseInvoicesArgs) =>
       }).then((res) => {
         const parsedData = OwnerInvoiceSchema.safeParse(res?.data)
 
-        console.log(parsedData)
-
         if (!parsedData.success) {
           return Promise.reject({
             status: 404,
