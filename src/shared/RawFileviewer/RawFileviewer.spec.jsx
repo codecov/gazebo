@@ -8,17 +8,17 @@ import { useScrollToLine } from 'ui/CodeRenderer/hooks/useScrollToLine'
 
 import RawFileviewer from './RawFileviewer'
 
+jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
+window.requestAnimationFrame = (cb) => cb()
+window.cancelAnimationFrame = () => {}
 jest.mock(
   'ui/FileViewer/ToggleHeader/ToggleHeader',
   () => () => 'The FileViewer Toggle Header'
 )
-
 jest.mock(
   'ui/CodeRenderer/CodeRendererProgressHeader',
   () => () => 'The Progress Header for CodeRenderer'
 )
-
-jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
