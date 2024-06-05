@@ -47,6 +47,7 @@ interface RoutesProps {
   jsOrTsPresent?: boolean
   isRepoPrivate: boolean
   isCurrentUserActivated?: boolean | null
+  testAnalyticsEnabled?: boolean
 }
 
 function Routes({
@@ -57,6 +58,7 @@ function Routes({
   jsOrTsPresent,
   isRepoPrivate,
   isCurrentUserActivated,
+  testAnalyticsEnabled,
 }: RoutesProps) {
   const { componentTab, onboardingFailedTests } = useFlags({
     bundleAnalysisPrAndCommitPages: false,
@@ -129,7 +131,7 @@ function Routes({
             <BundleOnboarding />
           </SentryRoute>
         ) : null}
-        {onboardingFailedTests ? (
+        {onboardingFailedTests && !testAnalyticsEnabled ? (
           <SentryRoute
             path={[`${path}/tests/new`, `${path}/tests/new/codecov-cli`]}
             exact
@@ -280,6 +282,7 @@ function RepoPage() {
             jsOrTsPresent={jsOrTsPresent}
             isRepoPrivate={isRepoPrivate}
             isCurrentUserActivated={isCurrentUserActivated}
+            testAnalyticsEnabled={repoOverview?.testAnalyticsEnabled}
           />
         </Suspense>
       </div>

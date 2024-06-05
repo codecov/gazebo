@@ -63,6 +63,7 @@ const mockGetRepo = ({
 const mockRepoOverview = ({
   coverageEnabled = true,
   bundleAnalysisEnabled = true,
+  testAnalyticsEnabled = false,
   language = '',
 }) => {
   const languages = ['python']
@@ -79,6 +80,7 @@ const mockRepoOverview = ({
         oldestCommitAt: '2022-10-10T11:59:59',
         coverageEnabled,
         bundleAnalysisEnabled,
+        testAnalyticsEnabled,
         languages,
       },
     },
@@ -158,6 +160,7 @@ interface SetupArgs {
   bundleAnalysisEnabled?: boolean
   language?: string
   onboardingFailedTests?: boolean
+  testAnalyticsEnabled?: boolean
 }
 
 describe('RepoPage', () => {
@@ -175,6 +178,7 @@ describe('RepoPage', () => {
       bundleAnalysisEnabled = true,
       onboardingFailedTests = true,
       language,
+      testAnalyticsEnabled = false,
     }: SetupArgs = {
       noUploadToken: false,
       isCurrentUserPartOfOrg: true,
@@ -242,6 +246,7 @@ describe('RepoPage', () => {
             mockRepoOverview({
               coverageEnabled,
               bundleAnalysisEnabled,
+              testAnalyticsEnabled,
               language,
             })
           )
@@ -724,6 +729,7 @@ describe('RepoPage', () => {
             isRepoActive: true,
             hasRepoData: true,
             isRepoActivated: true,
+            onboardingFailedTests: true,
           })
           render(<RepoPage />, {
             wrapper: wrapper({
@@ -789,6 +795,27 @@ describe('RepoPage', () => {
             'CoverageOnboarding'
           )
           expect(coverageOnboarding).toBeInTheDocument()
+        })
+
+        it('does not render tab when feature flag is on and test analytics is already enabled', async () => {
+          const { queryClient } = setup({
+            isRepoActive: true,
+            hasRepoData: true,
+            isRepoActivated: true,
+            testAnalyticsEnabled: true,
+          })
+          render(<RepoPage />, {
+            wrapper: wrapper({
+              queryClient,
+              initialEntries: '/gh/codecov/cool-repo/tests',
+            }),
+          })
+
+          const failedTests = screen.queryByText('FailedTestsTab')
+          expect(failedTests).not.toBeInTheDocument()
+
+          const coverage = await screen.findByText('CoverageTab')
+          expect(coverage).toBeInTheDocument()
         })
       })
 
