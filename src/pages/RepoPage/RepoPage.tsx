@@ -131,7 +131,7 @@ function Routes({
         ) : null}
         {onboardingFailedTests ? (
           <SentryRoute
-            path={[`${path}/tests`, `${path}/tests/codecov-cli`]}
+            path={[`${path}/tests/new`, `${path}/tests/new/codecov-cli`]}
             exact
           >
             <FailedTestsTab />
@@ -206,7 +206,7 @@ function Routes({
       </SentryRoute>
       {onboardingFailedTests ? (
         <SentryRoute
-          path={[`${path}/tests`, `${path}/tests/codecov-cli`]}
+          path={[`${path}/tests/new`, `${path}/tests/new/codecov-cli`]}
           exact
         >
           <FailedTestsTab />
@@ -229,7 +229,9 @@ function Routes({
       </SentryRoute>
       <Redirect from={`${path}/bundles`} to={`${path}/bundles/new`} />
       <Redirect from={`${path}/bundles/*`} to={`${path}/bundles/new`} />
-      <Redirect from={`${path}/tests/*`} to={`${path}/tests`} />
+      {onboardingFailedTests ? (
+        <Redirect from={`${path}/tests`} to={`${path}/tests/new`} />
+      ) : null}
       <Redirect from={path} to={`${path}/new`} />
       <Redirect from={`${path}/*`} to={`${path}/new`} />
     </Switch>

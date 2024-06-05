@@ -10,7 +10,6 @@ import FailedTestsTab from './FailedTestsTab'
 jest.mock('shared/useRedirect')
 jest.mock('./GitHubActions', () => () => 'GitHub Actions tab')
 
-
 const mockedUseRedirect = useRedirect as jest.Mock
 
 jest.mock('./CodecovCLI', () => () => 'Codecov CLI tab')
@@ -18,14 +17,14 @@ jest.mock('./CodecovCLI', () => () => 'Codecov CLI tab')
 let testLocation: ReturnType<typeof useLocation>
 
 const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
-  (initialEntries = '/gh/codecov/cool-repo/tests') =>
+  (initialEntries = '/gh/codecov/cool-repo/tests/new') =>
   ({ children }) =>
     (
       <MemoryRouter initialEntries={[initialEntries]}>
         <Route
           path={[
-            '/:provider/:owner/:repo/tests',
-            '/:provider/:owner/:repo/tests/codecov-cli',
+            '/:provider/:owner/:repo/tests/new',
+            '/:provider/:owner/:repo/tests/new/codecov-cli',
             '/:provider/:owner/:repo/tests/random-path',
           ]}
         >
@@ -94,11 +93,11 @@ describe('FailedTestsTab', () => {
         })
       })
 
-      describe('when on /tests/codecov-cli path', () => {
+      describe('when on /tests/new/codecov-cli path', () => {
         it('selects Codecov CLI as default', () => {
           setup()
           render(<FailedTestsTab />, {
-            wrapper: wrapper('/gl/codecov/cool-repo/tests/codecov-cli'),
+            wrapper: wrapper('/gl/codecov/cool-repo/tests/new/codecov-cli'),
           })
 
           const codecovCLI = screen.getByTestId('codecov-cli-radio')
@@ -123,10 +122,10 @@ describe('FailedTestsTab', () => {
 
     describe('navigation', () => {
       describe('when GitHub Actions is selected', () => {
-        it('should navigate to /tests', async () => {
+        it('should navigate to /tests/new', async () => {
           const { user } = setup()
           render(<FailedTestsTab />, {
-            wrapper: wrapper('/gh/codecov/cool-repo/tests/codecov-cli'),
+            wrapper: wrapper('/gh/codecov/cool-repo/tests/new/codecov-cli'),
           })
 
           const githubActions = screen.getByTestId('github-actions-radio')
@@ -138,7 +137,7 @@ describe('FailedTestsTab', () => {
           expect(githubActions).toBeInTheDocument()
           expect(githubActions).toHaveAttribute('data-state', 'checked')
 
-          expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/tests')
+          expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/tests/new')
         })
       })
 
@@ -157,7 +156,7 @@ describe('FailedTestsTab', () => {
           expect(codecovCLI).toHaveAttribute('data-state', 'checked')
 
           expect(testLocation.pathname).toBe(
-            '/gh/codecov/cool-repo/tests/codecov-cli'
+            '/gh/codecov/cool-repo/tests/new/codecov-cli'
           )
         })
       })
@@ -175,7 +174,7 @@ describe('FailedTestsTab', () => {
     it('renders Codecov CLI', () => {
       setup()
       render(<FailedTestsTab />, {
-        wrapper: wrapper('/gh/codecov/cool-repo/tests/codecov-cli'),
+        wrapper: wrapper('/gh/codecov/cool-repo/tests/new/codecov-cli'),
       })
       const content = screen.getByText(/Codecov CLI tab/)
       expect(content).toBeInTheDocument()

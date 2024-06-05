@@ -464,13 +464,13 @@ describe('RepoPageTabs', () => {
         onboardingFailedTests: true,
       })
       render(<RepoPageTabs refetchEnabled={false} />, {
-        wrapper: wrapper('/gh/codecov/test-repo/tests'),
+        wrapper: wrapper('/gh/codecov/test-repo/tests/new'),
       })
 
       const tab = await screen.findByText('Tests')
       expect(tab).toBeInTheDocument()
       expect(tab).toHaveAttribute('aria-current', 'page')
-      expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/tests')
+      expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/tests/new')
     })
 
     it('renders beta badge', async () => {
@@ -479,7 +479,7 @@ describe('RepoPageTabs', () => {
         onboardingFailedTests: true,
       })
       render(<RepoPageTabs refetchEnabled={false} />, {
-        wrapper: wrapper('/gh/codecov/test-repo/tests'),
+        wrapper: wrapper('/gh/codecov/test-repo/tests/new'),
       })
 
       const betaBadge = await screen.findByText('beta')
