@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 
 import { useNavLinks } from 'services/navigation'
@@ -11,7 +12,7 @@ const TABS = {
 type TabsValue = (typeof TABS)[keyof typeof TABS]
 type TabsUrls = Record<keyof typeof TABS, string>
 
-function getInitialSelection(path: string, urls: TabsUrls) {
+function getSelection(path: string, urls: TabsUrls) {
   if (path === urls.Flags) {
     return TABS.Flags
   }
@@ -31,17 +32,25 @@ function CoverageTabNavigator() {
   const { provider, owner, repo } = useParams<URLParams>()
   const location = useLocation()
   const history = useHistory()
-
   const { coverage, flagsTab, componentsTab } = useNavLinks()
-  const urls = {
-    Overview: coverage.path({ provider, owner, repo }),
-    Flags: flagsTab.path({ provider, owner, repo }),
-    Components: componentsTab.path({ provider, owner, repo }),
-  }
+
+  const urls = useMemo(
+    () => ({
+      Overview: coverage.path({ provider, owner, repo }),
+      Flags: flagsTab.path({ provider, owner, repo }),
+      Components: componentsTab.path({ provider, owner, repo }),
+    }),
+    [coverage, flagsTab, componentsTab, owner, provider, repo]
+  )
+
+  const value = useMemo(
+    () => getSelection(location.pathname, urls),
+    [location.pathname, urls]
+  )
 
   return (
     <RadioTileGroup
-      defaultValue={getInitialSelection(location.pathname, urls)}
+      value={value}
       onValueChange={(value: TabsValue) => {
         history.replace(urls[value])
       }}

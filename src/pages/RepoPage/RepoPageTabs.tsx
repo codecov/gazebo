@@ -43,7 +43,6 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
   })
 
   const { onboardingFailedTests } = useFlags({
-    componentTab: false,
     onboardingFailedTests: false,
   })
 
