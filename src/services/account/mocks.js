@@ -10,6 +10,38 @@ export const randomAccountDetailsHandler = rest.get(
   }
 )
 
+export const invoiceObject = {
+  amountDue: 1407.0,
+  amountPaid: 1407.0,
+  created: 1634910009,
+  currency: 'usd',
+  customerAddress: null,
+  customerName: 'Accounts Payable Codecov',
+  customerEmail: 'bobSmith@bobsmith.com',
+  defaultPaymentMethod: null,
+  dueDate: 1637502009,
+  footer: 'foot',
+  id: 'in_1JnNyfGlVGuVgOrkkdkCYayW',
+  lineItems: [
+    {
+      description: 'Unused time on 21 × users-pr-inappm after 22 Oct 2021',
+      amount: -14766.0,
+      currency: 'usd',
+    },
+    {
+      description: 'Remaining time on 23 × users-pr-inappm after 22 Oct 2021',
+      amount: 16173.0,
+      currency: 'usd',
+    },
+  ],
+  number: 'BE7E6CB0-0031',
+  periodEnd: 1634910008,
+  periodStart: 1633801075,
+  status: 'paid',
+  subtotal: 1407.0,
+  total: 1407.0,
+}
+
 export const accountDetailsObject = {
   integration_id: 1271,
   activated_user_count: 19,

@@ -1,9 +1,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
-import { rest } from 'msw'
+import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { invoiceObject } from './mocks'
 import { useInvoices } from './useInvoices'
 
 jest.mock('@stripe/react-stripe-js')
@@ -13,7 +15,7 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 const wrapper =
-  (initialEntries = '/gh') =>
+  (initialEntries = '/gh'): React.FC<React.PropsWithChildren> =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
@@ -30,22 +32,19 @@ const server = setupServer()
 
 beforeAll(() => server.listen())
 afterEach(() => {
-  queryClient.clear()
   server.resetHandlers()
+  queryClient.clear()
 })
 afterAll(() => server.close())
 
 describe('useInvoices', () => {
-  const invoices = [
-    { total: 2400, number: 1, created: 1607078662, dueDate: 1607078662 },
-    { total: 2500, number: 2, created: 1604486662, dueDate: 1604486662 },
-  ]
+  const invoices = [invoiceObject, invoiceObject, invoiceObject, invoiceObject]
 
   function setup() {
     server.use(
-      rest.get(`/internal/${provider}/${owner}/invoices/`, (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json(invoices))
-      })
+      graphql.query('Invoices', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({ owner: { invoices: [...invoices] } }))
+      )
     )
   }
 
