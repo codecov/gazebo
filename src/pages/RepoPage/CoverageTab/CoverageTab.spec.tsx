@@ -110,7 +110,19 @@ describe('CoverageTab', () => {
     expect(content).toBeInTheDocument()
   })
 
-  describe('initial selection', () => {
+  it('hides navigator when on team plan and private repo', async () => {
+    setup({ tierName: TierNames.TEAM })
+    render(<CoverageTab />, { wrapper: wrapper() })
+
+    const overview = screen.queryByText('Overview')
+    const flags = screen.queryByText('Flags')
+    const components = screen.queryByText('Components')
+    expect(overview).not.toBeInTheDocument()
+    expect(flags).not.toBeInTheDocument()
+    expect(components).not.toBeInTheDocument()
+  })
+
+  describe('navigator initial selection', () => {
     describe('when not on flags or components tabs', () => {
       it('selects Overview as default', async () => {
         setup({})
