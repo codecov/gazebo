@@ -40,25 +40,42 @@ afterAll(() => server.close())
 describe('useInvoices', () => {
   const invoices = [invoiceObject, invoiceObject, invoiceObject, invoiceObject]
 
-  function setup() {
+  function setup(hasError = false) {
     server.use(
-      graphql.query('Invoices', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner: { invoices: [...invoices] } }))
-      )
+      graphql.query('Invoices', (req, res, ctx) => {
+        if (hasError) {
+          return res(ctx.status(200), ctx.data({}))
+        }
+
+        return res(
+          ctx.status(200),
+          ctx.data({ owner: { invoices: [...invoices] } })
+        )
+      })
     )
   }
 
   describe('when called', () => {
-    beforeEach(() => {
-      setup()
+    describe('on success', () => {
+      it('returns the data', async () => {
+        setup()
+        const { result } = renderHook(() => useInvoices({ provider, owner }), {
+          wrapper: wrapper(),
+        })
+
+        await waitFor(() => expect(result.current.data).toEqual(invoices))
+      })
     })
 
-    it('returns the data', async () => {
-      const { result } = renderHook(() => useInvoices({ provider, owner }), {
-        wrapper: wrapper(),
-      })
+    describe('on fail', () => {
+      it('fails to parse if bad data', async () => {
+        setup(true)
+        const { result } = renderHook(() => useInvoices({ provider, owner }), {
+          wrapper: wrapper(),
+        })
 
-      await waitFor(() => expect(result.current.data).toEqual(invoices))
+        await waitFor(() => expect(result.current.error).toBeTruthy())
+      })
     })
   })
 })
