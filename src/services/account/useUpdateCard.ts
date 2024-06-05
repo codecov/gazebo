@@ -1,19 +1,25 @@
 import { useStripe } from '@stripe/react-stripe-js'
+import { StripeCardElement } from '@stripe/stripe-js'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import Api from 'shared/api'
 
-function getPathAccountDetails({ provider, owner }) {
+interface useUpdateCardParams {
+  provider: string
+  owner: string
+}
+
+function getPathAccountDetails({ provider, owner }: useUpdateCardParams) {
   return `/${provider}/${owner}/account-details/`
 }
 
-export function useUpdateCard({ provider, owner }) {
+export function useUpdateCard({ provider, owner }: useUpdateCardParams) {
   const stripe = useStripe()
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (card) => {
-      return stripe
+    mutationFn: (card: StripeCardElement) => {
+      return stripe!
         .createPaymentMethod({
           type: 'card',
           card,
@@ -28,9 +34,8 @@ export function useUpdateCard({ provider, owner }) {
             provider,
             path,
             body: {
-              /* eslint-disable camelcase */
+              /* eslint-disable-next-line camelcase */
               payment_method: result.paymentMethod.id,
-              /* eslint-enable camelcase */
             },
           })
         })

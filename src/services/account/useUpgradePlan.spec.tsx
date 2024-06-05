@@ -13,7 +13,7 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 const wrapper =
-  (initialEntries = '/gh') =>
+  (initialEntries = '/gh'): React.FC<React.PropsWithChildren> =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
@@ -45,16 +45,17 @@ afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
 describe('useUpgradePlan', () => {
-  let redirectToCheckout
+  let redirectToCheckout: any
 
   function setupStripe() {
-    redirectToCheckout = jest.fn().mockResolvedValue()
-    useStripe.mockReturnValue({
+    redirectToCheckout = jest.fn().mockResolvedValue(undefined)
+    const mockedUseStripe = useStripe as jest.Mock
+    mockedUseStripe.mockReturnValue({
       redirectToCheckout,
     })
   }
 
-  function setup(currentUrl) {
+  function setup() {
     setupStripe()
   }
 

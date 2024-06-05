@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
+import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useUpdateCard } from './useUpdateCard'
@@ -13,7 +14,7 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 const wrapper =
-  (initialEntries = '/gh') =>
+  (initialEntries = '/gh'): React.FC<React.PropsWithChildren> =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
@@ -52,8 +53,13 @@ describe('useUpdateCard', () => {
     last4: '1234',
   }
 
-  function setupStripe({ createPaymentMethod }) {
-    useStripe.mockReturnValue({
+  function setupStripe({
+    createPaymentMethod,
+  }: {
+    createPaymentMethod: jest.Mock
+  }) {
+    const mockedUseStripe = useStripe as jest.Mock
+    mockedUseStripe.mockReturnValue({
       createPaymentMethod,
     })
   }
@@ -92,6 +98,7 @@ describe('useUpdateCard', () => {
           }
         )
 
+        // @ts-expect-error mutation mock
         result.current.mutate(card)
 
         await waitFor(() => expect(result.current.data).toEqual(accountDetails))
@@ -133,12 +140,12 @@ describe('useUpdateCard', () => {
           }
         )
 
+        // @ts-expect-error mutation mock
         result.current.mutate(card)
 
         await waitFor(() => result.current.error)
 
-        // await waitFor(() => expect(result.current.error).toEqual(error))
-        expect(result.current.error).toEqual(error)
+        await waitFor(() => expect(result.current.error).toEqual(error))
       })
     })
   })
