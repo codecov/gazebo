@@ -1,9 +1,31 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
+import { TierNames, TTierNames } from 'services/tier'
+
 import CoverageTab from './CoverageTab'
+
+const mockRepoSettingsTeam = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      defaultBranch: 'master',
+      private: true,
+      uploadToken: 'token',
+      graphToken: 'token',
+      yaml: 'yaml',
+      bot: {
+        username: 'test',
+      },
+      activated: true,
+    },
+  },
+}
 
 jest.mock('./OverviewTab', () => () => 'OverviewTab')
 jest.mock('./FlagsTab', () => () => 'FlagsTab')
@@ -11,32 +33,70 @@ jest.mock('./ComponentsTab', () => () => 'ComponentsTab')
 
 let testLocation: ReturnType<typeof useLocation>
 
+const server = setupServer()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+})
+
 const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
   (initialEntries = '/gh/codecov/cool-repo') =>
   ({ children }) =>
     (
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route
-          path={[
-            '/:provider/:owner/:repo',
-            '/:provider/:owner/:repo/flags',
-            '/:provider/:owner/:repo/components',
-          ]}
-        >
-          <Suspense fallback={null}>{children}</Suspense>
-        </Route>
-        <Route
-          path="*"
-          render={({ location }) => {
-            testLocation = location
-            return null
-          }}
-        />
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route
+            path={[
+              '/:provider/:owner/:repo',
+              '/:provider/:owner/:repo/flags',
+              '/:provider/:owner/:repo/components',
+            ]}
+          >
+            <Suspense fallback={null}>{children}</Suspense>
+          </Route>
+          <Route
+            path="*"
+            render={({ location }) => {
+              testLocation = location
+              return null
+            }}
+          />
+        </MemoryRouter>
+      </QueryClientProvider>
     )
 
+beforeAll(() => {
+  server.listen()
+})
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => {
+  server.close()
+})
+
+interface SetupArgs {
+  tierName?: TTierNames
+}
+
 describe('CoverageTab', () => {
+  function setup({ tierName = TierNames.PRO }: SetupArgs) {
+    server.use(
+      graphql.query('OwnerTier', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({ owner: { plan: { tierName } } }))
+      }),
+      graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoSettingsTeam))
+      })
+    )
+  }
+
   it('renders', async () => {
+    setup({})
     render(<CoverageTab />, { wrapper: wrapper() })
 
     const overview = await screen.findByText('Overview')
@@ -53,6 +113,7 @@ describe('CoverageTab', () => {
   describe('initial selection', () => {
     describe('when not on flags or components tabs', () => {
       it('selects Overview as default', async () => {
+        setup({})
         render(<CoverageTab />, { wrapper: wrapper() })
 
         const overview = await screen.findByTestId('overview-radio')
@@ -65,6 +126,7 @@ describe('CoverageTab', () => {
 
     describe('when loaded with flags url', () => {
       it('selects flags as default', async () => {
+        setup({})
         render(<CoverageTab />, {
           wrapper: wrapper('/gh/codecov/cool-repo/flags'),
         })
@@ -79,6 +141,7 @@ describe('CoverageTab', () => {
 
     describe('when loaded with components url', () => {
       it('selects components as default', async () => {
+        setup({})
         render(<CoverageTab />, {
           wrapper: wrapper('/gh/codecov/cool-repo/components'),
         })
@@ -92,6 +155,7 @@ describe('CoverageTab', () => {
     })
 
     it('matches path with query params', async () => {
+      setup({})
       render(<CoverageTab />, {
         wrapper: wrapper('/gh/codecov/cool-repo/components?branch=asdf'),
       })
@@ -107,6 +171,7 @@ describe('CoverageTab', () => {
   describe('navigation', () => {
     describe('when Overview is selected', () => {
       it('should navigate to base coverage tab', async () => {
+        setup({})
         const user = userEvent.setup()
         render(<CoverageTab />, {
           wrapper: wrapper('/gh/codecov/cool-repo/flags'),
@@ -131,6 +196,7 @@ describe('CoverageTab', () => {
 
     describe('when Flags is selected', () => {
       it('should navigate to flags coverage tab', async () => {
+        setup({})
         const user = userEvent.setup()
         render(<CoverageTab />, {
           wrapper: wrapper('/gh/codecov/cool-repo'),
@@ -155,6 +221,7 @@ describe('CoverageTab', () => {
 
     describe('when Components is selected', () => {
       it('should navigate to components coverage tab', async () => {
+        setup({})
         const user = userEvent.setup()
         render(<CoverageTab />, {
           wrapper: wrapper('/gh/codecov/cool-repo'),

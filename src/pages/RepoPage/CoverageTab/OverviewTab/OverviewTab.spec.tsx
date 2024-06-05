@@ -339,7 +339,7 @@ interface SetupArgs {
   fileCount?: number
 }
 
-describe('Coverage Tab', () => {
+describe('Coverage overview tab', () => {
   function setup({
     isFirstPullRequest = false,
     isPrivate = false,
@@ -440,7 +440,7 @@ describe('Coverage Tab', () => {
         wrapper: wrapper(['/gh/test-org/repoName']),
       })
 
-      const hideChart = await screen.findByText(/Hide Chart/)
+      const hideChart = await screen.findByText(/Hide charts/)
       expect(hideChart).toBeInTheDocument()
 
       const sunburst = await screen.findByText('Sunburst')
@@ -455,7 +455,7 @@ describe('Coverage Tab', () => {
         wrapper: wrapper(['/gh/test-org/repoName']),
       })
 
-      const hideChart = await screen.findByText(/Hide Chart/)
+      const hideChart = await screen.findByText(/Hide charts/)
       expect(hideChart).toBeInTheDocument()
 
       const sunburst = screen.queryByText('Sunburst')
