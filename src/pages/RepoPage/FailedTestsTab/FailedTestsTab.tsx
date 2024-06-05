@@ -19,8 +19,10 @@ type SetupOptionsValue = (typeof SETUP_OPTIONS)[keyof typeof SETUP_OPTIONS]
 function SetupOptionSelector() {
   const location = useLocation()
   const history = useHistory()
-  const { failedTestsTab: githubActions, failedTestsCodecovCLI: codecovCLI } =
-    useNavLinks()
+  const {
+    failedTestsOnboarding: githubActions,
+    failedTestsCodecovCLI: codecovCLI,
+  } = useNavLinks()
   const urls = {
     GitHubActions: githubActions.path(),
     CodecovCLI: codecovCLI.path(),
@@ -79,10 +81,10 @@ function SetupOptionSelector() {
 function Content() {
   return (
     <Switch>
-      <SentryRoute path="/:provider/:owner/:repo/tests" exact>
+      <SentryRoute path="/:provider/:owner/:repo/tests/new" exact>
         <GitHubActions />
       </SentryRoute>
-      <SentryRoute path="/:provider/:owner/:repo/tests/codecov-cli" exact>
+      <SentryRoute path="/:provider/:owner/:repo/tests/new/codecov-cli" exact>
         <CodecovCLI />
       </SentryRoute>
     </Switch>
