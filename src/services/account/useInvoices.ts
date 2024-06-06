@@ -37,23 +37,21 @@ const InvoiceSchema = z.object({
   customerEmail: z.string().nullable(),
   customerName: z.string().nullable(),
   defaultPaymentMethod: DefaultPaymentMethodSchema,
-  dueDate: z.number().nullish(),
+  dueDate: z.number().nullable(),
   footer: z.string().nullable(),
-  id: z.string().nullable(),
-  lineItems: z
-    .array(
-      z.object({
-        amount: z.number().nullable(),
-        currency: z.string().nullable(),
-        description: z.string().nullable(),
-      })
-    )
-    .nullable(),
+  id: z.string(),
+  lineItems: z.array(
+    z.object({
+      amount: z.number().nullable(),
+      currency: z.string().nullable(),
+      description: z.string().nullable(),
+    })
+  ),
   number: z.string().nullable(),
-  periodEnd: z.number().nullable(),
-  periodStart: z.number().nullable(),
+  periodEnd: z.number(),
+  periodStart: z.number(),
   status: z.string().nullable(),
-  subtotal: z.number().nullable(),
+  subtotal: z.number(),
   total: z.number(),
 })
 
