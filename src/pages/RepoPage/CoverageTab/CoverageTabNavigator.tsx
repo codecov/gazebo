@@ -54,7 +54,7 @@ function CoverageTabNavigator() {
       onValueChange={(value: TabsValue) => {
         history.replace(urls[value])
       }}
-      className="py-2"
+      className="flex-col py-2 md:flex-row"
     >
       <RadioTileGroup.Item value={TABS.Overview} data-testid="overview-radio">
         <RadioTileGroup.Label>{TABS.Overview}</RadioTileGroup.Label>
