@@ -32,7 +32,7 @@ const InvoiceSchema = z.object({
   amountDue: z.number(),
   amountPaid: z.number(),
   created: z.number(),
-  currency: z.string().nullable(),
+  currency: z.string(),
   customerAddress: z.string().nullable(),
   customerEmail: z.string().nullable(),
   customerName: z.string().nullable(),
