@@ -39,13 +39,7 @@ function CreditCardForm({ closeForm, provider, owner }: CreditCardFormProps) {
       <div className={cs('flex flex-col gap-3')}>
         <div className="mt-2 flex flex-col gap-2">
           <CardElement
-            onChange={(e) => {
-              if (e.error) {
-                setErrorState(e.error.message)
-              } else {
-                setErrorState('')
-              }
-            }}
+            onChange={(e) => setErrorState(e.error?.message || '')}
             options={{
               disableLink: true,
               hidePostalCode: true,
