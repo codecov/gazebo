@@ -81,7 +81,7 @@ const query = `
 query GetPullCompareTotalsTeam(
   $owner: String!
   $repo: String!
-  $pullId: String!
+  $pullId: Int!
   $filters: ImpactedFilesFilters
 ) {
   owner(username: $owner) {
@@ -171,7 +171,7 @@ export function usePullCompareTotalsTeam({
         variables: {
           owner,
           repo,
-          pullId,
+          pullId: parseInt(pullId, 10),
           filters,
         },
       }).then((res) => {
