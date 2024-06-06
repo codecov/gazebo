@@ -60,13 +60,19 @@ describe('TriggerSyncBanner', () => {
     it('renders heading and content components', () => {
       setup()
       render(<TriggerSyncBanner />, { wrapper })
-
+      expect(screen.getByText('No data to display')).toBeInTheDocument()
       const enableAnalyticsText = screen.getByText(
-        'You will need to enable components to see related coverage data.'
+        'To view related coverage data',
+        { exact: false }
       )
       expect(enableAnalyticsText).toBeInTheDocument()
-      expect(screen.getByText('No data to display')).toBeInTheDocument()
-      expect(screen.getByText('Enable component analytics')).toBeInTheDocument()
+      expect(enableAnalyticsText.textContent).toEqual(
+        'To view related coverage data, please click the Enable component analytics button below.'
+      )
+      const enableComponentButton = screen.getByRole('button', {
+        name: 'Enable component analytics',
+      })
+      expect(enableComponentButton).toBeInTheDocument()
     })
 
     describe('when clicking on the button to upgrade', () => {
