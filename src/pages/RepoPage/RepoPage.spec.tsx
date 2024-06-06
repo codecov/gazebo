@@ -752,44 +752,6 @@ describe('RepoPage', () => {
           const coverageOnboarding = await screen.findByText('FailedTestsTab')
           expect(coverageOnboarding).toBeInTheDocument()
         })
-
-        it('does not render failed tests tab when onboardingFailedTests is false', async () => {
-          const { queryClient } = setup({
-            isRepoActive: true,
-            hasRepoData: true,
-            isRepoActivated: true,
-            onboardingFailedTests: false,
-          })
-          render(<RepoPage />, {
-            wrapper: wrapper({
-              queryClient,
-              initialEntries: '/gh/codecov/cool-repo/tests',
-            }),
-          })
-
-          const coverage = await screen.findByText('CoverageTab')
-          expect(coverage).toBeInTheDocument()
-        })
-
-        it('does not render failed tests tab when onboardingFailedTests is false and repo is inactive', async () => {
-          const { queryClient } = setup({
-            isRepoActive: false,
-            hasRepoData: true,
-            isRepoActivated: false,
-            onboardingFailedTests: false,
-          })
-          render(<RepoPage />, {
-            wrapper: wrapper({
-              queryClient,
-              initialEntries: '/gh/codecov/cool-repo/tests/codecov-cli',
-            }),
-          })
-
-          const coverageOnboarding = await screen.findByText(
-            'CoverageOnboarding'
-          )
-          expect(coverageOnboarding).toBeInTheDocument()
-        })
       })
 
       describe('testing settings path', () => {
