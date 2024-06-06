@@ -9,29 +9,33 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import CommitDirEntry from './CommitDirEntry'
 
 const mockData = {
-  username: 'codecov',
-  repository: {
-    repositoryConfig: {
-      indicationRange: {
-        upperRange: 80,
-        lowerRange: 60,
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      repositoryConfig: {
+        indicationRange: {
+          upperRange: 80,
+          lowerRange: 60,
+        },
       },
-    },
-    commit: {
-      pathContents: {
-        __typename: 'PathContents',
-        results: [
-          {
-            __typename: 'PathContentDir',
-            name: 'src',
-            path: null,
-            percentCovered: 0.0,
-            hits: 4,
-            misses: 2,
-            lines: 7,
-            partials: 1,
-          },
-        ],
+      commit: {
+        pathContents: {
+          __typename: 'PathContents',
+          results: [
+            {
+              name: 'src',
+              path: null,
+              __typename: 'PathContentDir',
+              hits: 4,
+              misses: 2,
+              percentCovered: 50.0,
+              partials: 1,
+              lines: 7,
+              type: 'file',
+              isCriticalFile: false,
+            },
+          ],
+        },
       },
     },
   },
@@ -69,7 +73,7 @@ describe('CommitDirEntry', () => {
   function setup() {
     server.use(
       graphql.query('CommitPathContents', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner: mockData }))
+        res(ctx.status(200), ctx.data(mockData))
       )
     )
   }
@@ -197,7 +201,7 @@ describe('CommitDirEntry', () => {
             __typename: 'PathContentDir',
             name: 'src',
             path: null,
-            percentCovered: 0,
+            percentCovered: 50.0,
             hits: 4,
             misses: 2,
             lines: 7,
