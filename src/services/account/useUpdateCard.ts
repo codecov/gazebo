@@ -14,6 +14,7 @@ interface useUpdateCardReturn {
   error: null | Error
   isLoading: boolean
   mutate: (variables: any, data: any) => void
+  data: undefined | unknown
 }
 
 function getPathAccountDetails({ provider, owner }: useUpdateCardParams) {
