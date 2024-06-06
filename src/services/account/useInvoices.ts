@@ -28,7 +28,7 @@ const DefaultPaymentMethodSchema = z
   })
   .nullable()
 
-const InvoiceSchema = z.object({
+export const InvoiceSchema = z.object({
   amountDue: z.number(),
   amountPaid: z.number(),
   created: z.number(),
