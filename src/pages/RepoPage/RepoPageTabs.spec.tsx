@@ -490,6 +490,23 @@ describe('RepoPageTabs', () => {
       const betaBadge = await screen.findByText('beta')
       expect(betaBadge).toBeInTheDocument()
     })
+
+    it('does not render failed tests tab if test analytics is disabled', async () => {
+      setup({
+        coverageEnabled: false,
+        onboardingFailedTests: false,
+        testAnalyticsEnabled: false,
+      })
+      render(<RepoPageTabs refetchEnabled={false} />, {
+        wrapper: wrapper('/gh/codecov/test-repo/tests/new'),
+      })
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+
+      const tab = screen.queryByText('Tests')
+      expect(tab).not.toBeInTheDocument()
+    })
   })
 })
 

@@ -209,7 +209,7 @@ function Routes({
       >
         <NewRepoTab />
       </SentryRoute>
-      {onboardingFailedTests ? (
+      {onboardingFailedTests && !testAnalyticsEnabled ? (
         <SentryRoute
           path={[`${path}/tests/new`, `${path}/tests/new/codecov-cli`]}
           exact
