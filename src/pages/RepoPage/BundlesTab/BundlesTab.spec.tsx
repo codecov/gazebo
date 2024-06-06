@@ -35,6 +35,7 @@ const mockRepoOverview = ({
         coverageEnabled,
         bundleAnalysisEnabled,
         languages,
+        testAnalyticsEnabled: true,
       },
     },
   }

@@ -131,6 +131,7 @@ const mockRepoOverview = ({
       coverageEnabled,
       bundleAnalysisEnabled,
       languages: ['typescript'],
+      testAnalyticsEnabled: false,
     },
   },
 })

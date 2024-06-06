@@ -27,6 +27,7 @@ const mockRepoOverview = ({
   isRepoPrivate = false,
   coverageEnabled = false,
   bundleAnalysisEnabled = false,
+  testAnalyticsEnabled = false,
 }) => {
   let languages = null
   if (language !== '') {
@@ -43,6 +44,7 @@ const mockRepoOverview = ({
         coverageEnabled,
         bundleAnalysisEnabled,
         languages,
+        testAnalyticsEnabled,
       },
     },
   }
@@ -128,6 +130,7 @@ interface SetupArgs {
   isCurrentUserPartOfOrg?: boolean
   componentTab?: boolean
   onboardingFailedTests?: boolean
+  testAnalyticsEnabled?: boolean
 }
 
 describe('RepoPageTabs', () => {
@@ -140,6 +143,7 @@ describe('RepoPageTabs', () => {
     isCurrentUserPartOfOrg = true,
     componentTab = true,
     onboardingFailedTests = false,
+    testAnalyticsEnabled = false,
   }: SetupArgs) {
     mockedUseFlags.mockReturnValue({
       componentTab,
@@ -156,6 +160,7 @@ describe('RepoPageTabs', () => {
               isRepoPrivate,
               coverageEnabled,
               bundleAnalysisEnabled,
+              testAnalyticsEnabled,
             })
           )
         )
@@ -493,6 +498,7 @@ describe('useRepoTabs', () => {
     language,
     bundleAnalysisEnabled,
     coverageEnabled,
+    testAnalyticsEnabled = false,
     isRepoPrivate,
     tierName = TierNames.PRO,
     isCurrentUserPartOfOrg = true,
@@ -511,6 +517,7 @@ describe('useRepoTabs', () => {
               isRepoPrivate,
               coverageEnabled,
               bundleAnalysisEnabled,
+              testAnalyticsEnabled,
             })
           )
         )

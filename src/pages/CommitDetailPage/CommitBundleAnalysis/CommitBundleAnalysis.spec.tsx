@@ -111,6 +111,7 @@ const mockRepoOverview = ({
       oldestCommitAt: '2022-10-10T11:59:59',
       coverageEnabled,
       bundleAnalysisEnabled,
+      testAnalyticsEnabled: false,
       languages: ['javascript'],
     },
   },
