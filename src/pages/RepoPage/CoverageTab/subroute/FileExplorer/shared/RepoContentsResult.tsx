@@ -1,12 +1,11 @@
 import A from 'ui/A'
-import Banner from 'ui/Banner'
-import BannerContent from 'ui/Banner/BannerContent'
-
 interface RepoContentsProps {
   isSearching: boolean
   isMissingHeadReport: boolean
   hasFlagsSelected: boolean
   hasComponentsSelected: boolean
+  isMissingCoverage: boolean
+  isUnknownPath: boolean
 }
 
 const RepoContentsResult: React.FC<RepoContentsProps> = ({
@@ -14,6 +13,8 @@ const RepoContentsResult: React.FC<RepoContentsProps> = ({
   isMissingHeadReport,
   hasFlagsSelected,
   hasComponentsSelected,
+  isMissingCoverage,
+  isUnknownPath,
 }) => {
   let copy: JSX.Element | string = ''
 
@@ -21,6 +22,11 @@ const RepoContentsResult: React.FC<RepoContentsProps> = ({
     copy = 'No results found'
   } else if (isMissingHeadReport) {
     copy = 'No coverage report uploaded for this branch head commit'
+  } else if (isMissingCoverage) {
+    copy = 'No coverage data available.'
+  } else if (isUnknownPath) {
+    copy =
+      'Unknown filepath. Please ensure that files/directories exist and are not empty.'
   } else if (hasComponentsSelected && hasFlagsSelected) {
     copy = `
         No coverage reported for the selected flag/component combination in this
@@ -54,11 +60,7 @@ const RepoContentsResult: React.FC<RepoContentsProps> = ({
     )
   }
 
-  return (
-    <Banner>
-      <BannerContent>{copy}</BannerContent>
-    </Banner>
-  )
+  return <p className="m-4">{copy}</p>
 }
 
 export default RepoContentsResult

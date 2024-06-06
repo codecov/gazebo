@@ -86,7 +86,7 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
 
   if (onboardingFailedTests) {
     tabs.push({
-      pageName: 'failedTestsTab',
+      pageName: 'failedTestsOnboarding',
       children: (
         <>
           Tests <Badge>beta</Badge>{' '}

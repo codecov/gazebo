@@ -116,8 +116,8 @@ const wrapper =
                 '/:provider/:owner/:repo/tree/:branch',
                 '/:provider/:owner/:repo/tree/:branch/:path+',
                 '/:provider/:owner/:repo',
-                '/:provider/:owner/:repo/tests',
-                '/:provider/:owner/:repo/tests/codecov-cli',
+                '/:provider/:owner/:repo/tests/new',
+                '/:provider/:owner/:repo/tests/new/codecov-cli',
               ]}
             >
               <Suspense fallback={null}>
@@ -728,7 +728,7 @@ describe('RepoPage', () => {
           render(<RepoPage />, {
             wrapper: wrapper({
               queryClient,
-              initialEntries: '/gh/codecov/cool-repo/tests',
+              initialEntries: '/gh/codecov/cool-repo/tests/new',
             }),
           })
 
@@ -745,7 +745,7 @@ describe('RepoPage', () => {
           render(<RepoPage />, {
             wrapper: wrapper({
               queryClient,
-              initialEntries: '/gh/codecov/cool-repo/tests/codecov-cli',
+              initialEntries: '/gh/codecov/cool-repo/tests/new/codecov-cli',
             }),
           })
 
@@ -763,7 +763,7 @@ describe('RepoPage', () => {
           render(<RepoPage />, {
             wrapper: wrapper({
               queryClient,
-              initialEntries: '/gh/codecov/cool-repo/tests',
+              initialEntries: '/gh/codecov/cool-repo/tests/new',
             }),
           })
 
@@ -781,7 +781,7 @@ describe('RepoPage', () => {
           render(<RepoPage />, {
             wrapper: wrapper({
               queryClient,
-              initialEntries: '/gh/codecov/cool-repo/tests/codecov-cli',
+              initialEntries: '/gh/codecov/cool-repo/tests/new/codecov-cli',
             }),
           })
 
