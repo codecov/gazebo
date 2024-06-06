@@ -777,7 +777,7 @@ export function useNavLinks() {
       text: 'Team plan feedback survey',
       isExternalLink: true,
     },
-    failedTestsTab: {
+    failedTestsOnboarding: {
       path: (
         { provider = p, owner = o, repo = r } = {
           provider: p,
@@ -785,7 +785,7 @@ export function useNavLinks() {
           repo: r,
         }
       ) => {
-        return `/${provider}/${owner}/${repo}/tests`
+        return `/${provider}/${owner}/${repo}/tests/new`
       },
       isExternalLink: false,
       text: 'Tests',
@@ -798,7 +798,7 @@ export function useNavLinks() {
           repo: r,
         }
       ) => {
-        return `/${provider}/${owner}/${repo}/tests/codecov-cli`
+        return `/${provider}/${owner}/${repo}/tests/new/codecov-cli`
       },
       text: 'Codecov CLI',
       isExternalLink: false,

@@ -111,18 +111,6 @@ function CodeTreeTable() {
     manualSorting: true,
   })
 
-  if (pathContentsType === 'UnknownPath') {
-    return (
-      <p className="m-4">
-        Unknown filepath. Please ensure that files/directories exist and are not
-        empty.
-      </p>
-    )
-  }
-
-  if (pathContentsType === 'MissingCoverage') {
-    return <p className="m-4">No coverage data available.</p>
-  }
   return (
     <div className="flex flex-col gap-4">
       <div className="tableui">
@@ -207,6 +195,8 @@ function CodeTreeTable() {
           isMissingHeadReport={isMissingHeadReport}
           hasFlagsSelected={hasFlagsSelected}
           hasComponentsSelected={hasComponentsSelected}
+          isMissingCoverage={pathContentsType === 'MissingCoverage'}
+          isUnknownPath={pathContentsType === 'UnknownPath'}
         />
       ) : null}
     </div>
