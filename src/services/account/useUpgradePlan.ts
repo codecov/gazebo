@@ -3,23 +3,28 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import Api from 'shared/api'
 
-function getPathAccountDetails({ provider, owner }) {
+interface useUpgradePlanParams {
+  provider: string
+  owner: string
+}
+
+function getPathAccountDetails({ provider, owner }: useUpgradePlanParams) {
   return `/${provider}/${owner}/account-details/`
 }
 
-export function useUpgradePlan({ provider, owner }) {
+export function useUpgradePlan({ provider, owner }: useUpgradePlanParams) {
   const stripe = useStripe()
   const queryClient = useQueryClient()
 
-  function redirectToStripe(sessionId) {
-    return stripe.redirectToCheckout({ sessionId }).then((e) => {
+  function redirectToStripe(sessionId: string) {
+    return stripe!.redirectToCheckout({ sessionId }).then((e) => {
       // error from Stripe SDK
-      return Promise.reject(new Error(e))
+      return Promise.reject(new Error(e.error.message))
     })
   }
 
   return useMutation({
-    mutationFn: (formData) => {
+    mutationFn: (formData: { seats: number; newPlan: string }) => {
       const path = getPathAccountDetails({ provider, owner })
       const body = {
         plan: {
