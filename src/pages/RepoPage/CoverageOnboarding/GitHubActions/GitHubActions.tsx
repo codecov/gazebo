@@ -29,7 +29,9 @@ function GitHubActions() {
 
   const uploadToken = orgUploadToken ?? data?.repository?.uploadToken ?? ''
   const tokenCopy = orgUploadToken ? 'global' : 'repository'
-  const actionString = `- name: Upload coverage reports to Codecov
+  // prettier-ignore
+  const actionString =
+  `- name: Upload coverage reports to Codecov
   uses: codecov/codecov-action@v4.0.1
   with:
     token: \${{ secrets.CODECOV_TOKEN }}${
@@ -37,7 +39,7 @@ function GitHubActions() {
         ? `
     slug: ${owner}/${repo}`
         : ''
-    }`
+  }`
 
   return (
     <div className="flex flex-col gap-6">
