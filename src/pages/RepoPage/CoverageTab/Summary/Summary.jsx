@@ -6,6 +6,7 @@ import { useRepoConfig } from 'services/repo/useRepoConfig'
 import { determineProgressColor } from 'shared/utils/determineProgressColor'
 import A from 'ui/A'
 import CoverageProgress from 'ui/CoverageProgress'
+import FormLabel from 'ui/FormLabel/FormLabel'
 import Icon from 'ui/Icon'
 import Select from 'ui/Select'
 import { SummaryField, SummaryRoot } from 'ui/Summary'
@@ -62,12 +63,10 @@ const Summary = () => {
       )}
       <SummaryRoot>
         <SummaryField>
-          <h3 className="flex items-center gap-1 text-sm font-semibold text-ds-gray-octonary">
-            <span className="text-ds-gray-quinary">
-              <Icon name="branch" size="sm" variant="developer" />
-            </span>
-            Branch Context
-          </h3>
+          <FormLabel
+            label="Branch Context"
+            icon={<Icon name="branch" size="sm" variant="developer" />}
+          />
           <span className="min-w-[16rem] text-sm">
             <Select
               dataMarketing="branch-selector-repo-page"
