@@ -31,8 +31,7 @@ function CoverageTabNavigator() {
   let value: TabsValue = TABS.Overview
   if (location.pathname === urls.Flags) {
     value = TABS.Flags
-  }
-  if (location.pathname === urls.Components) {
+  } else if (location.pathname === urls.Components) {
     value = TABS.Components
   }
 

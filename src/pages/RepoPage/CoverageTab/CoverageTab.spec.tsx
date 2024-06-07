@@ -97,7 +97,7 @@ describe('CoverageTab', () => {
     )
   }
 
-  it('renders', async () => {
+  it('renders navigator and tab contents', async () => {
     setup({})
     render(<CoverageTab />, { wrapper: wrapper() })
 
