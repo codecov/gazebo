@@ -30,6 +30,7 @@ const mockRepoSettingsTeam = {
 jest.mock('./OverviewTab', () => () => 'OverviewTab')
 jest.mock('./FlagsTab', () => () => 'FlagsTab')
 jest.mock('./ComponentsTab', () => () => 'ComponentsTab')
+jest.mock('ui/LoadingLogo', () => () => 'Loader')
 
 let testLocation: ReturnType<typeof useLocation>
 
@@ -38,6 +39,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: false,
+      suspense: true,
     },
   },
 })
@@ -114,12 +116,15 @@ describe('CoverageTab', () => {
     setup({ tierName: TierNames.TEAM })
     render(<CoverageTab />, { wrapper: wrapper() })
 
-    const overview = screen.queryByText('Overview')
-    const flags = screen.queryByText('Flags')
-    const components = screen.queryByText('Components')
-    expect(overview).not.toBeInTheDocument()
-    expect(flags).not.toBeInTheDocument()
-    expect(components).not.toBeInTheDocument()
+    const overview = await screen.findByText('OverviewTab')
+    expect(overview).toBeInTheDocument()
+
+    const overviewTab = screen.queryByText('Overview')
+    const flagsTab = screen.queryByText('Flags')
+    const componentsTab = screen.queryByText('Components')
+    expect(overviewTab).not.toBeInTheDocument()
+    expect(flagsTab).not.toBeInTheDocument()
+    expect(componentsTab).not.toBeInTheDocument()
   })
 
   describe('navigator initial selection', () => {
