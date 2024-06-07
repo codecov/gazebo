@@ -9,7 +9,7 @@ import { InvoiceSchema } from './useInvoices'
 const query = `
 query Invoice($owner: String!, $id: String!) {
   owner(username: $owner) {
-    invoice(invoice_id: $id) {
+    invoice(invoiceId: $id) {
       amountDue
       amountPaid
       created
