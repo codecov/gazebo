@@ -233,7 +233,7 @@ describe('RepoPageTabs', () => {
           wrapper: wrapper('/gh/codecov/test-repo/bundles'),
         })
 
-        const tab = await screen.findByText('Bundle')
+        const tab = await screen.findByText('Bundles')
         expect(tab).toBeInTheDocument()
         expect(tab).toHaveAttribute('aria-current', 'page')
         expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/bundles')
@@ -250,7 +250,7 @@ describe('RepoPageTabs', () => {
           wrapper: wrapper('/gh/codecov/test-repo/bundles'),
         })
 
-        const tab = await screen.findByText('Bundle')
+        const tab = await screen.findByText('Bundles')
         expect(tab).toBeInTheDocument()
         expect(tab).toHaveAttribute('aria-current', 'page')
         expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/bundles')
@@ -270,7 +270,7 @@ describe('RepoPageTabs', () => {
         const loader = await screen.findByText('Loading')
         await waitForElementToBeRemoved(loader)
 
-        const tab = screen.queryByText('Bundle')
+        const tab = screen.queryByText('Bundles')
         expect(tab).not.toBeInTheDocument()
 
         const betaBadge = screen.queryByText('beta')

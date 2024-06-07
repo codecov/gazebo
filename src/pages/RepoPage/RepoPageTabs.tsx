@@ -85,7 +85,7 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
       pageName: 'bundles',
       children: (
         <>
-          Bundle <Badge>beta</Badge>
+          Bundles <Badge>beta</Badge>
         </>
       ),
     })
