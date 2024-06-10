@@ -151,6 +151,7 @@ function Button({
   ) : (
     <button
       {...completeProps}
+      onClick={handleClick}
       className={className}
       data-cy={hook}
       data-marketing={hook}

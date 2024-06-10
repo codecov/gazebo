@@ -1,17 +1,21 @@
-import { render, screen } from '@testing-library/react'
+import * as Sentry from '@sentry/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 
 import Button from '.'
 
 describe('Button', () => {
   function setup(props = {}) {
+    const user = userEvent.setup()
     render(<Button {...props} />, {
       wrapper: MemoryRouter,
     })
+    return { user }
   }
 
   describe('when rendered with the prop `to`', () => {
-    beforeEach(() => {
+    it('renders a link with the right URL', () => {
       setup({
         to: {
           pageName: 'account',
@@ -21,26 +25,50 @@ describe('Button', () => {
           },
         },
       })
-    })
 
-    it('renders a link with the right URL', () => {
       expect(screen.getByRole('link')).toHaveAttribute(
         'href',
         '/account/gh/spotify'
       )
     })
+
+    it('fires a sentry event on click', async () => {
+      const { user } = setup({
+        to: {
+          pageName: 'account',
+          options: {
+            provider: 'gh',
+            owner: 'spotify',
+          },
+        },
+      })
+
+      const link = screen.getByRole('link')
+
+      await user.click(link)
+      await waitFor(() => expect(Sentry.metrics.increment).toHaveBeenCalled())
+    })
   })
 
   describe('when rendered without `to` prop with a hook', () => {
-    beforeEach(() => {
+    it('renders a button', async () => {
       setup({
         children: 'hola',
         hook: 'hola',
       })
+      expect(screen.getByRole('button')).toHaveTextContent('hola')
     })
 
-    it('renders a button', () => {
-      expect(screen.getByRole('button')).toHaveTextContent('hola')
+    it('fires a sentry event on click', async () => {
+      const { user } = setup({
+        children: 'hola',
+        hook: 'hola',
+      })
+
+      const button = screen.getByRole('button')
+
+      await user.click(button)
+      await waitFor(() => expect(Sentry.metrics.increment).toHaveBeenCalled())
     })
   })
 
