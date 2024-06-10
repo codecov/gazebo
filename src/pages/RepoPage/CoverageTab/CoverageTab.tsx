@@ -13,6 +13,8 @@ import OverviewTab from './OverviewTab'
 const FlagsTab = lazy(() => import('./FlagsTab'))
 const ComponentsTab = lazy(() => import('./ComponentsTab'))
 
+const path = '/:provider/:owner/:repo'
+
 const Loader = () => (
   <div className="flex flex-1 items-center justify-center pt-16">
     <LoadingLogo />
@@ -46,7 +48,15 @@ function CoverageTab() {
           <SentryRoute path="/:provider/:owner/:repo/components" exact>
             <ComponentsTab />
           </SentryRoute>
-          <SentryRoute path="/:provider/:owner/:repo">
+          <SentryRoute
+            path={[
+              path,
+              `${path}/blob/:ref/:path+`,
+              `${path}/tree/:branch`,
+              `${path}/tree/:branch/:path+`,
+            ]}
+            exact
+          >
             <OverviewTab />
           </SentryRoute>
         </Switch>
