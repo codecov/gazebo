@@ -25,7 +25,7 @@ function CreditCardForm({ closeForm, provider, owner }: CreditCardFormProps) {
     owner,
   })
 
-  function submit(e: any) {
+  function submit(e: React.FormEvent) {
     e.preventDefault()
     updateCard(elements!.getElement(CardElement)!, {
       onSuccess: closeForm,
