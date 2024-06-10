@@ -1,1 +1,0 @@
-export { CoverageTabNavigator } from './Navigator'

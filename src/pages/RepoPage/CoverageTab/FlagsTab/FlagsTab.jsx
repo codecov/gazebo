@@ -54,7 +54,7 @@ function FlagsTab() {
   }
 
   return (
-    <div className="mx-4 flex flex-col gap-4 md:mx-0">
+    <div className="mx-4 flex flex-col gap-4 pt-4 md:mx-0">
       <Header
         controlsDisabled={isDisabled({
           flagsMeasurementsActive,

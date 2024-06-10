@@ -9,17 +9,6 @@ const TABS = {
   Components: 'Components',
 } as const
 type TabsValue = (typeof TABS)[keyof typeof TABS]
-type TabsUrls = Record<keyof typeof TABS, string>
-
-function getInitialSelection(path: string, urls: TabsUrls) {
-  if (path === urls.Flags) {
-    return TABS.Flags
-  }
-  if (path === urls.Components) {
-    return TABS.Components
-  }
-  return TABS.Overview
-}
 
 interface URLParams {
   provider: string
@@ -31,21 +20,28 @@ function CoverageTabNavigator() {
   const { provider, owner, repo } = useParams<URLParams>()
   const location = useLocation()
   const history = useHistory()
-
   const { coverage, flagsTab, componentsTab } = useNavLinks()
+
   const urls = {
     Overview: coverage.path({ provider, owner, repo }),
     Flags: flagsTab.path({ provider, owner, repo }),
     Components: componentsTab.path({ provider, owner, repo }),
   }
 
+  let value: TabsValue = TABS.Overview
+  if (location.pathname === urls.Flags) {
+    value = TABS.Flags
+  } else if (location.pathname === urls.Components) {
+    value = TABS.Components
+  }
+
   return (
     <RadioTileGroup
-      defaultValue={getInitialSelection(location.pathname, urls)}
+      value={value}
       onValueChange={(value: TabsValue) => {
         history.replace(urls[value])
       }}
-      className="py-2"
+      className="flex-col py-2 md:flex-row"
     >
       <RadioTileGroup.Item value={TABS.Overview} data-testid="overview-radio">
         <RadioTileGroup.Label>{TABS.Overview}</RadioTileGroup.Label>
