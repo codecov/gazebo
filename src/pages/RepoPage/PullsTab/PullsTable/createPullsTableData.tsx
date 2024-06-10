@@ -24,7 +24,7 @@ export const createPullsTableData = ({ pulls }: { pulls?: Array<Pull> }) => {
       pull?.head?.coverageStatus === 'COMPLETED' &&
       pull?.compareWithBase?.__typename === 'Comparison'
     ) {
-      const percent = pull?.compareWithBase?.patchTotals?.percentCovered ?? 0
+      const percent = pull?.compareWithBase?.patchTotals?.percentCovered ?? NaN
       patch = (
         <TotalsNumber
           plain={true}
