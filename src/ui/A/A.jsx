@@ -60,6 +60,9 @@ function A({ to, hook, variant = 'default', children, isExternal, ...props }) {
   )
 
   const handleClick = () => {
+    if (props.onClick) {
+      props.onClick()
+    }
     if (to) {
       metrics.increment(`link.click.${to.pageName}`)
     } else {
@@ -111,6 +114,7 @@ A.propTypes = {
       )
     }
   },
+  onClick: PropTypes.func,
   variant: PropTypes.oneOf([
     'default',
     'header',

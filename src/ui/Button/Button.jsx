@@ -116,6 +116,9 @@ function Button({
   )
 
   const handleClick = () => {
+    if (props.onClick) {
+      props.onClick()
+    }
     if (to) {
       metrics.increment(`button.click.${to.pageName}`)
     } else {
@@ -163,6 +166,7 @@ Button.propTypes = {
   variant: PropTypes.oneOf(Object.keys(variantClasses)),
   isLoading: PropTypes.bool,
   disabled: PropTypes.bool,
+  onClick: PropTypes.func,
   hook: function (props, propName) {
     if (
       props['to'] === undefined &&
