@@ -95,6 +95,7 @@ const overviewMock = {
       coverageEnabled: true,
       bundleAnalysisEnabled: true,
       languages: [],
+      testAnalyticsEnabled: true,
     },
   },
 }
@@ -219,6 +220,7 @@ const mockOverview = {
       coverageEnabled: true,
       bundleAnalysisEnabled: true,
       languages: ['JavaScript'],
+      testAnalyticsEnabled: true,
     },
   },
 }
@@ -445,7 +447,7 @@ describe('Coverage overview tab', () => {
 
       const sunburst = await screen.findByText('Sunburst')
       expect(sunburst).toBeInTheDocument()
-    }, 100_000)
+    })
   })
 
   describe('file count is above 200_000', () => {
