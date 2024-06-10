@@ -5,20 +5,20 @@ import bitbucketLogo from 'assets/providers/bitbucket-icon.svg'
 import githubLogo from 'assets/providers/github-icon.svg'
 import gitlabLogo from 'assets/providers/gitlab-icon.svg'
 
-export function providerToName(provider) {
+export function providerToName(provider, forRender = false) {
   return {
-    gh: 'Github',
-    bb: 'BitBucket',
-    gl: 'Gitlab',
-    ghe: 'Github Enterprise',
-    gle: 'Gitlab Enterprise',
-    bbs: 'BitBucket Server',
-    github: 'Github',
-    bitbucket: 'BitBucket',
-    gitlab: 'Gitlab',
-    github_enterprise: 'Github Enterprise',
-    gitlab_enterprise: 'Gitlab Enterprise',
-    bitbucket_server: 'BitBucket Server',
+    gh: forRender ? 'GitHub' : 'Github',
+    bb: forRender ? 'Bitbucket' : 'BitBucket',
+    gl: forRender ? 'GitLab' : 'Gitlab',
+    ghe: forRender ? 'GitHub Enterprise' : 'Github Enterprise',
+    gle: forRender ? 'GitLab Enterprise' : 'Gitlab Enterprise',
+    bbs: forRender ? 'Bitbucket Server' : 'BitBucket Server',
+    github: forRender ? 'GitHub' : 'Github',
+    bitbucket: forRender ? 'Bitbucket' : 'BitBucket',
+    gitlab: forRender ? 'GitLab' : 'Gitlab',
+    github_enterprise: forRender ? 'GitHub Enterprise' : 'Github Enterprise',
+    gitlab_enterprise: forRender ? 'GitLab Enterprise' : 'Gitlab Enterprise',
+    bitbucket_server: forRender ? 'Bitbucket Server' : 'BitBucket Server',
   }[provider.toLowerCase()]
 }
 

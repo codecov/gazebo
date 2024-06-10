@@ -175,13 +175,13 @@ export function useStaticNavLinks() {
     codecovGithubApp: {
       path: () => 'https://github.com/apps/codecov',
       isExternalLink: true,
-      text: 'Codecov Github App',
+      text: 'Codecov GitHub App',
       openNewTab: true,
     },
     codecovGithubAppSelectTarget: {
       path: () => 'https://github.com/apps/codecov/installations/select_target',
       isExternalLink: true,
-      text: 'Codecov Github App',
+      text: 'Codecov GitHub App',
       openNewTab: true,
     },
     teamBot: {
@@ -373,14 +373,14 @@ export function useStaticNavLinks() {
       openNewTab: true,
     },
     codecovExampleWorkflow: {
-      text: 'Github Codecov Example workflow',
+      text: 'GitHub Codecov Example workflow',
       path: () =>
         'https://github.com/codecov/example-python/blob/main/.github/workflows/ci.yml',
       isExternalLink: true,
       openNewTab: true,
     },
     codecovActionRepo: {
-      text: 'Github Codecov Action Repo',
+      text: 'GitHub Codecov Action Repo',
       path: () => 'https://github.com/codecov/codecov-action',
       isExternalLink: true,
       openNewTab: true,

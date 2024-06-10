@@ -8,7 +8,6 @@ import {
 
 function LoginButton({ provider }) {
   const { signIn } = useNavLinks()
-
   const to = `${window.location.protocol}//${window.location.host}/${provider}`
   const providerName = loginProviderToName(provider)
   const providerImage = loginProviderImage(provider)

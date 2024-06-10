@@ -17,11 +17,11 @@ const SyncButton: React.FC<SyncButtonProps> = ({ provider }) => {
         data-cy={'login-button'}
       >
         <img
-          alt={`Logo of ${providerToName(provider)}`}
+          alt={`Logo of ${providerToName(provider, true)}`}
           className="mx-4 block h-6 w-6"
           src={providerImage(provider)}
         />
-        Sync with {providerToName(provider)}
+        Sync with {providerToName(provider, true)}
       </a>
     </div>
   )

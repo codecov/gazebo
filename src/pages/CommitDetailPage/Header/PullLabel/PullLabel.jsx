@@ -13,7 +13,7 @@ export default function PullLabel({ pullId, provider, providerPullUrl }) {
         </span>
         <A to={{ pageName: 'pullDetail', options: { pullId } }}>#{pullId}</A> (
         <A href={providerPullUrl} hook="provider url" isExternal={true}>
-          {providerToName(provider)}
+          {providerToName(provider, true)}
         </A>
         )
       </div>

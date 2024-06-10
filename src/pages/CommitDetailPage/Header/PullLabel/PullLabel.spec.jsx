@@ -37,7 +37,7 @@ describe('PullLabel', () => {
     it('renders provider pull url', async () => {
       render(<PullLabel {...mockValidProps} />, { wrapper })
 
-      const pullUrlLink = await screen.findByRole('link', { name: /Github/ })
+      const pullUrlLink = await screen.findByRole('link', { name: /GitHub/ })
       expect(pullUrlLink).toBeInTheDocument()
       expect(pullUrlLink).toHaveAttribute(
         'href',

@@ -78,18 +78,18 @@ export function loginProviderToShortName(loginProvider?: string) {
 }
 
 export const LOGIN_PROVIDER_NAMES = {
-  gh: 'Github',
-  bb: 'BitBucket',
-  gl: 'Gitlab',
-  ghe: 'Github Enterprise',
-  gle: 'Gitlab Enterprise',
-  bbs: 'BitBucket Server',
-  github: 'Github',
-  bitbucket: 'BitBucket',
-  gitlab: 'Gitlab',
-  github_enterprise: 'Github Enterprise',
-  gitlab_enterprise: 'Gitlab Enterprise',
-  bitbucket_server: 'BitBucket Server',
+  gh: 'GitHub',
+  bb: 'Bitbucket',
+  gl: 'GitLab',
+  ghe: 'GitHub Enterprise',
+  gle: 'GitLab Enterprise',
+  bbs: 'Bitbucket Server',
+  github: 'GitHub',
+  bitbucket: 'Bitbucket',
+  gitlab: 'GitLab',
+  github_enterprise: 'GitHub Enterprise',
+  gitlab_enterprise: 'GitLab Enterprise',
+  bitbucket_server: 'Bitbucket Server',
   sentry: 'Sentry',
   okta: 'Okta',
 } as const
@@ -115,11 +115,18 @@ export function loginProviderToName(loginProvider?: string) {
 
 export const LOGIN_PROVIDER_IMAGES = {
   Github: githubLogo,
+  GitHub: githubLogo,
   Gitlab: gitlabLogo,
+  GitLab: gitlabLogo,
   BitBucket: bitbucketLogo,
+  Bitbucket: bitbucketLogo,
   'Github Enterprise': githubLogo,
+  'GitHub Enterprise': githubLogo,
   'Gitlab Enterprise': gitlabLogo,
+  'GitLab Enterprise': gitlabLogo,
   'BitBucket Server': bitbucketLogo,
+  'Bitbucket Server': bitbucketLogo,
+
   Sentry: sentryLogo,
   Okta: oktaLogo,
 } as const

@@ -128,7 +128,7 @@ describe('SyncProviderPage', () => {
         setup()
         render(<SyncProviderPage />, { wrapper })
 
-        const githubSyncButton = await screen.findByText(/Sync with Github/)
+        const githubSyncButton = await screen.findByText(/Sync with GitHub/)
         expect(githubSyncButton).toBeInTheDocument()
       })
 
@@ -138,7 +138,7 @@ describe('SyncProviderPage', () => {
         render(<SyncProviderPage />, { wrapper })
 
         const gheSyncButton = await screen.findByText(
-          /Sync with Gitlab Enterprise/
+          /Sync with GitLab Enterprise/
         )
         expect(gheSyncButton).toBeInTheDocument()
       })
