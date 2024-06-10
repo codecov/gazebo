@@ -35,22 +35,17 @@ const node1 = {
     username: 'codecov-user',
     avatarUrl: 'http://127.0.0.1/cool-user-avatar',
   },
-  totals: {
-    coverage: 89,
-  },
-  parent: {
-    totals: {
-      coverage: 77,
-    },
-  },
+  bundleStatus: 'COMPLETED',
+  coverageStatus: 'COMPLETED',
   compareWithParent: {
     __typename: 'Comparison',
     patchTotals: {
       percentCovered: 80,
     },
   },
-  bundleAnalysisReport: {
+  bundleAnalysisCompareWithParent: {
     __typename: 'MissingHeadReport',
+    message: 'Missing head report',
   },
 }
 
@@ -63,22 +58,21 @@ const node2 = {
     username: 'codecov-user',
     avatarUrl: 'http://127.0.0.1/cool-user-avatar',
   },
-  totals: {
-    coverage: 98,
-  },
-  parent: {
-    totals: {
-      coverage: 0,
-    },
-  },
+  bundleStatus: 'COMPLETED',
+  coverageStatus: 'COMPLETED',
   compareWithParent: {
     __typename: 'Comparison',
     patchTotals: {
       percentCovered: 90,
     },
   },
-  bundleAnalysisReport: {
-    __typename: 'BundleAnalysisReport',
+  bundleAnalysisCompareWithParent: {
+    __typename: 'BundleAnalysisComparison',
+    bundleChange: {
+      size: {
+        uncompress: 1000,
+      },
+    },
   },
 }
 
@@ -91,22 +85,21 @@ const node3 = {
     username: 'codecov-user',
     avatarUrl: 'http://127.0.0.1/cool-user-avatar',
   },
-  totals: {
-    coverage: 100,
-  },
-  parent: {
-    totals: {
-      coverage: 0,
-    },
-  },
+  bundleStatus: 'COMPLETED',
+  coverageStatus: 'COMPLETED',
   compareWithParent: {
     __typename: 'Comparison',
     patchTotals: {
       percentCovered: 100,
     },
   },
-  bundleAnalysisReport: {
-    __typename: 'BundleAnalysisReport',
+  bundleAnalysisCompareWithParent: {
+    __typename: 'BundleAnalysisComparison',
+    bundleChange: {
+      size: {
+        uncompress: 1001,
+      },
+    },
   },
 }
 
@@ -221,16 +214,6 @@ describe('CommitsTable', () => {
       expect(nameColumn).toBeInTheDocument()
     })
 
-    it('renders ci status column', async () => {
-      const { queryClient } = setup({})
-      render(<CommitsTable />, {
-        wrapper: wrapper(queryClient),
-      })
-
-      const ciStatusColumn = await screen.findByText('CI Status')
-      expect(ciStatusColumn).toBeInTheDocument()
-    })
-
     it('renders patch column', async () => {
       const { queryClient } = setup({})
       render(<CommitsTable />, {
@@ -239,26 +222,6 @@ describe('CommitsTable', () => {
 
       const patchColumn = await screen.findByText('Patch')
       expect(patchColumn).toBeInTheDocument()
-    })
-
-    it('renders change column', async () => {
-      const { queryClient } = setup({})
-      render(<CommitsTable />, {
-        wrapper: wrapper(queryClient),
-      })
-
-      const changeColumn = await screen.findByText('Change')
-      expect(changeColumn).toBeInTheDocument()
-    })
-
-    it('renders coverage column', async () => {
-      const { queryClient } = setup({})
-      render(<CommitsTable />, {
-        wrapper: wrapper(queryClient),
-      })
-
-      const coverageColumn = await screen.findByText('Coverage')
-      expect(coverageColumn).toBeInTheDocument()
     })
 
     describe('bundle analysis is enabled', () => {
@@ -300,19 +263,6 @@ describe('CommitsTable', () => {
       expect(nameColumn).toBeInTheDocument()
     })
 
-    it('renders ci status column', async () => {
-      const { queryClient } = setup({})
-      render(<CommitsTable />, {
-        wrapper: wrapper(queryClient),
-      })
-
-      const loading = await screen.findByText('Loading')
-      mockIsIntersecting(loading, false)
-
-      const ciStatusColumn = await screen.findByText('fdb5b182')
-      expect(ciStatusColumn).toBeInTheDocument()
-    })
-
     it('renders patch column', async () => {
       const { queryClient } = setup({})
       render(<CommitsTable />, {
@@ -326,31 +276,6 @@ describe('CommitsTable', () => {
       expect(patchColumn).toBeInTheDocument()
     })
 
-    it('renders change column', async () => {
-      const { queryClient } = setup({})
-      render(<CommitsTable />, {
-        wrapper: wrapper(queryClient),
-      })
-
-      const loading = await screen.findByText('Loading')
-      mockIsIntersecting(loading, false)
-
-      const changeColumn = await screen.findByText('12.00%')
-      expect(changeColumn).toBeInTheDocument()
-    })
-
-    it('renders coverage column', async () => {
-      const { queryClient } = setup({})
-      render(<CommitsTable />, {
-        wrapper: wrapper(queryClient),
-      })
-      const loading = await screen.findByText('Loading')
-      mockIsIntersecting(loading, false)
-
-      const coverageColumn = await screen.findByText('89.00%')
-      expect(coverageColumn).toBeInTheDocument()
-    })
-
     describe('bundle analysis is enabled', () => {
       it('renders bundle analysis column', async () => {
         const { queryClient } = setup({ bundleAnalysisEnabled: true })
@@ -358,7 +283,7 @@ describe('CommitsTable', () => {
           wrapper: wrapper(queryClient),
         })
 
-        const bundleAnalysis = await screen.findByText(/Upload: ✅/)
+        const bundleAnalysis = await screen.findByText('+1kB')
         expect(bundleAnalysis).toBeInTheDocument()
       })
     })
