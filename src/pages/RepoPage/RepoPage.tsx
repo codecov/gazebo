@@ -15,13 +15,13 @@ import RepoBreadcrumb from './RepoBreadcrumb'
 import RepoPageTabs from './RepoPageTabs'
 
 const BundlesTab = lazy(() => import('./BundlesTab'))
+const BundleOnboarding = lazy(() => import('./BundlesTab/BundleOnboarding'))
 const CommitsTab = lazy(() => import('./CommitsTab'))
 const CoverageTab = lazy(() => import('./CoverageTab'))
 const NewRepoTab = lazy(() => import('./CoverageOnboarding'))
 const PullsTab = lazy(() => import('./PullsTab'))
-const FlagsTab = lazy(() => import('./FlagsTab'))
-const ComponentsTab = lazy(() => import('./ComponentsTab'))
 const SettingsTab = lazy(() => import('./SettingsTab'))
+const FailedTestsTab = lazy(() => import('./FailedTestsTab'))
 
 const path = '/:provider/:owner/:repo'
 
@@ -45,6 +45,7 @@ interface RoutesProps {
   jsOrTsPresent?: boolean
   isRepoPrivate: boolean
   isCurrentUserActivated?: boolean | null
+  testAnalyticsEnabled?: boolean
 }
 
 function Routes({
@@ -55,9 +56,11 @@ function Routes({
   jsOrTsPresent,
   isRepoPrivate,
   isCurrentUserActivated,
+  testAnalyticsEnabled,
 }: RoutesProps) {
-  const { componentTab } = useFlags({
+  const { onboardingFailedTests } = useFlags({
     bundleAnalysisPrAndCommitPages: false,
+    onboardingFailedTests: false,
   })
 
   const productEnabled = coverageEnabled || bundleAnalysisEnabled
@@ -75,6 +78,8 @@ function Routes({
           <SentryRoute
             path={[
               path,
+              `${path}/flags`,
+              `${path}/components`,
               `${path}/blob/:ref/:path+`,
               `${path}/tree/:branch`,
               `${path}/tree/:branch/:path+`,
@@ -123,17 +128,15 @@ function Routes({
             ]}
             exact
           >
-            <BundlesTab />
+            <BundleOnboarding />
           </SentryRoute>
         ) : null}
-        {coverageEnabled && userAuthorizedtoViewRepo ? (
-          <SentryRoute path={`${path}/flags`} exact>
-            <FlagsTab />
-          </SentryRoute>
-        ) : null}
-        {coverageEnabled && componentTab && userAuthorizedtoViewRepo ? (
-          <SentryRoute path={`${path}/components`} exact>
-            <ComponentsTab />
+        {onboardingFailedTests && !testAnalyticsEnabled ? (
+          <SentryRoute
+            path={[`${path}/tests/new`, `${path}/tests/new/codecov-cli`]}
+            exact
+          >
+            <FailedTestsTab />
           </SentryRoute>
         ) : null}
         {productEnabled && userAuthorizedtoViewRepo ? (
@@ -158,6 +161,9 @@ function Routes({
         ) : null}
         {!bundleAnalysisEnabled && jsOrTsPresent ? (
           <Redirect from={`${path}/bundles/*`} to={`${path}/bundles/new`} />
+        ) : null}
+        {onboardingFailedTests && !testAnalyticsEnabled ? (
+          <Redirect from={`${path}/tests`} to={`${path}/tests/new`} />
         ) : null}
         {!coverageEnabled ? <Redirect from={path} to={`${path}/new`} /> : null}
         {!coverageEnabled ? (
@@ -193,6 +199,14 @@ function Routes({
       >
         <NewRepoTab />
       </SentryRoute>
+      {onboardingFailedTests && !testAnalyticsEnabled ? (
+        <SentryRoute
+          path={[`${path}/tests/new`, `${path}/tests/new/codecov-cli`]}
+          exact
+        >
+          <FailedTestsTab />
+        </SentryRoute>
+      ) : null}
       {jsOrTsPresent ? (
         <SentryRoute
           path={[
@@ -202,7 +216,7 @@ function Routes({
           ]}
           exact
         >
-          <BundlesTab />
+          <BundleOnboarding />
         </SentryRoute>
       ) : null}
       <SentryRoute path={`${path}/settings`}>
@@ -210,6 +224,9 @@ function Routes({
       </SentryRoute>
       <Redirect from={`${path}/bundles`} to={`${path}/bundles/new`} />
       <Redirect from={`${path}/bundles/*`} to={`${path}/bundles/new`} />
+      {onboardingFailedTests && !testAnalyticsEnabled ? (
+        <Redirect from={`${path}/tests`} to={`${path}/tests/new`} />
+      ) : null}
       <Redirect from={path} to={`${path}/new`} />
       <Redirect from={`${path}/*`} to={`${path}/new`} />
     </Switch>
@@ -258,6 +275,7 @@ function RepoPage() {
             jsOrTsPresent={jsOrTsPresent}
             isRepoPrivate={isRepoPrivate}
             isCurrentUserActivated={isCurrentUserActivated}
+            testAnalyticsEnabled={repoOverview?.testAnalyticsEnabled}
           />
         </Suspense>
       </div>

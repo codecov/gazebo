@@ -24,11 +24,7 @@ function Profile({ provider, owner }) {
       {currentUser?.isAdmin && <AdminBanner />}
       <ActivationBanner />
       <NameEmailCard currentUser={currentUser} provider={provider} />
-      <DeletionCard
-        provider={provider}
-        owner={owner}
-        isPersonalSettings={isPersonalSettings}
-      />
+      <DeletionCard />
     </div>
   )
 }

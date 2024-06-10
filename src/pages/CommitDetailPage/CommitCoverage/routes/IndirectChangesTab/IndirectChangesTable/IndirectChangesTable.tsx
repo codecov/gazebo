@@ -22,8 +22,6 @@ import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 import TotalsNumber from 'ui/TotalsNumber'
 
-import 'ui/FileList/FileList.css'
-
 const CommitFileDiff = lazy(() => import('./CommitFileDiff'))
 
 const columnHelper = createColumnHelper<ImpactedFileType>()

@@ -1,14 +1,19 @@
-import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import Cookies from 'js-cookie'
+import { rest } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 
-import config from 'config'
+import config, {
+  COOKIE_SESSION_EXPIRY,
+  LOCAL_STORAGE_SESSION_TRACKING_KEY,
+} from 'config'
 
 import { useImage } from 'services/image'
 
 import Dropdown from './Dropdown'
-
-const LOCAL_STORAGE_SESSION_TRACKING_KEY = 'tracking-session-expiry'
 
 const currentUser = {
   user: {
@@ -20,18 +25,38 @@ const currentUser = {
 jest.mock('services/image')
 jest.mock('config')
 
+jest.mock('js-cookie')
+
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+const server = setupServer()
+
 const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
   (initialEntries = '/gh') =>
   ({ children }) =>
     (
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Switch>
-          <Route path="/:provider" exact>
-            {children}
-          </Route>
-        </Switch>
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Switch>
+            <Route path="/:provider" exact>
+              {children}
+            </Route>
+          </Switch>
+        </MemoryRouter>
+      </QueryClientProvider>
     )
+
+beforeAll(() => {
+  server.listen()
+})
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => {
+  server.close()
+})
 
 describe('Dropdown', () => {
   function setup({ selfHosted } = { selfHosted: false }) {
@@ -42,10 +67,13 @@ describe('Dropdown', () => {
       error: null,
     })
     config.IS_SELF_HOSTED = selfHosted
+    config.API_URL = ''
     const mockRemoveItem = jest.spyOn(
       window.localStorage.__proto__,
       'removeItem'
     )
+
+    server.use(rest.post('/logout', (req, res, ctx) => res(ctx.status(205))))
 
     return {
       user: userEvent.setup(),
@@ -87,7 +115,7 @@ describe('Dropdown', () => {
         expect(link).toHaveAttribute('href', '/account/gh/chetney')
       })
 
-      it('shows sign out link', async () => {
+      it('shows sign out button', async () => {
         const { user } = setup()
         render(<Dropdown currentUser={currentUser} />, {
           wrapper: wrapper(),
@@ -100,13 +128,13 @@ describe('Dropdown', () => {
 
         const link = screen.getByText('Sign Out')
         expect(link).toBeVisible()
-        expect(link).toHaveAttribute('href', '/logout/gh')
       })
 
-      it('removes session expiry tracking key on sign out', async () => {
+      it('handles sign out', async () => {
         const { user, mockRemoveItem } = setup()
 
         jest.spyOn(console, 'error').mockImplementation()
+        const removeSpy = jest.spyOn(Cookies, 'remove').mockReturnValue()
         render(<Dropdown currentUser={currentUser} />, {
           wrapper: wrapper(),
         })
@@ -114,12 +142,17 @@ describe('Dropdown', () => {
         const openSelect = screen.getByRole('combobox')
         await user.click(openSelect)
 
-        const link = screen.getByText('Sign Out')
-        expect(link).toBeVisible()
-        await user.click(link)
+        const button = screen.getByText('Sign Out')
+        expect(button).toBeVisible()
+        await user.click(button)
 
-        expect(mockRemoveItem).toHaveBeenCalledWith(
-          LOCAL_STORAGE_SESSION_TRACKING_KEY
+        await waitFor(() =>
+          expect(mockRemoveItem).toHaveBeenCalledWith(
+            LOCAL_STORAGE_SESSION_TRACKING_KEY
+          )
+        )
+        await waitFor(() =>
+          expect(removeSpy).toHaveBeenCalledWith(COOKIE_SESSION_EXPIRY)
         )
       })
 
@@ -163,7 +196,7 @@ describe('Dropdown', () => {
         expect(link).toHaveAttribute('href', '/account/gl/chetney')
       })
 
-      it('shows sign out link', async () => {
+      it('shows sign out button', async () => {
         const { user } = setup()
         render(<Dropdown currentUser={currentUser} />, {
           wrapper: wrapper('/gl'),
@@ -176,7 +209,32 @@ describe('Dropdown', () => {
 
         const link = screen.getByText('Sign Out')
         expect(link).toBeVisible()
-        expect(link).toHaveAttribute('href', '/logout/gl')
+      })
+
+      it('handles sign out', async () => {
+        const { user, mockRemoveItem } = setup()
+
+        jest.spyOn(console, 'error').mockImplementation()
+        const removeSpy = jest.spyOn(Cookies, 'remove').mockReturnValue()
+        render(<Dropdown currentUser={currentUser} />, {
+          wrapper: wrapper(),
+        })
+
+        const openSelect = screen.getByRole('combobox')
+        await user.click(openSelect)
+
+        const button = screen.getByText('Sign Out')
+        expect(button).toBeVisible()
+        await user.click(button)
+
+        await waitFor(() =>
+          expect(mockRemoveItem).toHaveBeenCalledWith(
+            LOCAL_STORAGE_SESSION_TRACKING_KEY
+          )
+        )
+        await waitFor(() =>
+          expect(removeSpy).toHaveBeenCalledWith(COOKIE_SESSION_EXPIRY)
+        )
       })
 
       it('does not show manage app access link', async () => {

@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 
 import FileHeader from './FileHeader'
 
-jest.mock('ui/CopyClipboard', () => () => 'Copy Clipboard')
+jest.mock('ui/CopyClipboard', () => ({ CopyClipboard: () => 'Copy Clipboard' }))
 
 describe('FileHeader', () => {
   function setup(props) {
@@ -80,6 +80,15 @@ describe('FileHeader', () => {
 
     it('does not render a file status label if no fileLabel is passed', () => {
       expect(screen.queryByText(/New/)).not.toBeInTheDocument()
+    })
+  })
+
+  describe('without a headName', () => {
+    it('does not render the CopyClipboard component', async () => {
+      setup({
+        header: '-16,7, +16,7',
+      })
+      expect(screen.queryByText('Copy Clipboard')).not.toBeInTheDocument()
     })
   })
 })

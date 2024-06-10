@@ -5,7 +5,7 @@ import { useOrgUploadToken } from 'services/orgUploadToken'
 import { useRepo } from 'services/repo'
 import A from 'ui/A'
 import { Card } from 'ui/Card'
-import CopyClipboard from 'ui/CopyClipboard'
+import { CodeSnippet } from 'ui/CodeSnippet'
 
 import {
   copiedBuildCommandMetric,
@@ -58,36 +58,33 @@ const StepOne: React.FC = () => {
           </span>{' '}
           to your project, use one of the following commands.
         </p>
-        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
-          {npmInstall}{' '}
-          <CopyClipboard
-            string={npmInstall}
-            testIdExtension="-npm-install"
-            onClick={() => {
-              copiedInstallCommandMetric('npm', 'webpack')
-            }}
-          />
-        </pre>
-        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
-          {yarnInstall}{' '}
-          <CopyClipboard
-            string={yarnInstall}
-            testIdExtension="-yarn-install"
-            onClick={() => {
-              copiedInstallCommandMetric('yarn', 'webpack')
-            }}
-          />
-        </pre>
-        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
-          {pnpmInstall}{' '}
-          <CopyClipboard
-            string={pnpmInstall}
-            testIdExtension="-pnpm-install"
-            onClick={() => {
-              copiedInstallCommandMetric('pnpm', 'webpack')
-            }}
-          />
-        </pre>
+        <CodeSnippet
+          clipboard={npmInstall}
+          clipboardOnClick={() => {
+            copiedInstallCommandMetric('npm', 'webpack')
+          }}
+          data-testid="webpack-npm-install"
+        >
+          {npmInstall}
+        </CodeSnippet>
+        <CodeSnippet
+          clipboard={yarnInstall}
+          clipboardOnClick={() => {
+            copiedInstallCommandMetric('yarn', 'webpack')
+          }}
+          data-testid="webpack-yarn-install"
+        >
+          {yarnInstall}
+        </CodeSnippet>
+        <CodeSnippet
+          clipboard={pnpmInstall}
+          clipboardOnClick={() => {
+            copiedInstallCommandMetric('pnpm', 'webpack')
+          }}
+          data-testid="webpack-pnpm-install"
+        >
+          {pnpmInstall}
+        </CodeSnippet>
       </Card.Content>
     </Card>
   )
@@ -105,22 +102,19 @@ const StepTwo: React.FC<{ uploadToken: string }> = ({ uploadToken }) => {
           following upload token.
         </p>
         <div className="flex gap-4">
-          <pre className="flex basis-1/3 items-center justify-between gap-2 rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
-            <div className="w-0 flex-1 overflow-hidden" data-testid="token-key">
-              CODECOV_TOKEN
-            </div>
-            <CopyClipboard string="CODECOV_TOKEN" />
-          </pre>
-          <pre className="flex basis-2/3 items-center justify-between gap-2 rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
-            <div className="w-0 flex-1 overflow-hidden">{uploadToken}</div>
-            <CopyClipboard
-              string={uploadToken}
-              testIdExtension="-upload-token"
-              onClick={() => {
-                copiedTokenMetric('webpack')
-              }}
-            />
-          </pre>
+          <CodeSnippet className="basis-1/3" clipboard="CODECOV_TOKEN">
+            CODECOV_TOKEN
+          </CodeSnippet>
+          <CodeSnippet
+            className="basis-2/3"
+            clipboard={uploadToken}
+            clipboardOnClick={() => {
+              copiedTokenMetric('webpack')
+            }}
+            data-testid="webpack-upload-token"
+          >
+            {uploadToken}
+          </CodeSnippet>
         </div>
       </Card.Content>
     </Card>
@@ -159,16 +153,15 @@ const StepThree: React.FC = () => {
             here.
           </A>
         </p>
-        <pre className="flex items-start justify-between overflow-auto whitespace-pre rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
+        <CodeSnippet
+          clipboard={pluginConfig}
+          clipboardOnClick={() => {
+            copiedConfigMetric('webpack')
+          }}
+          data-testid="webpack-plugin-config"
+        >
           {pluginConfig}
-          <CopyClipboard
-            string={pluginConfig}
-            testIdExtension="-plugin-config"
-            onClick={() => {
-              copiedConfigMetric('webpack')
-            }}
-          />
-        </pre>
+        </CodeSnippet>
       </Card.Content>
     </Card>
   )
@@ -187,16 +180,15 @@ const StepFour: React.FC = () => {
           The plugin requires at least one commit to be made to properly upload
           bundle analysis information up to Codecov.
         </p>
-        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
-          {commitString}{' '}
-          <CopyClipboard
-            string={commitString}
-            testIdExtension="-commit-command"
-            onClick={() => {
-              copiedCommitMetric('webpack')
-            }}
-          />
-        </pre>
+        <CodeSnippet
+          clipboard={commitString}
+          clipboardOnClick={() => {
+            copiedCommitMetric('webpack')
+          }}
+          data-testid="webpack-commit-command"
+        >
+          {commitString}
+        </CodeSnippet>
       </Card.Content>
     </Card>
   )
@@ -213,36 +205,33 @@ const StepFive: React.FC = () => {
           When building your application the plugin will automatically upload
           the stats information to Codecov.
         </p>
-        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
-          {npmBuild}{' '}
-          <CopyClipboard
-            string={npmBuild}
-            testIdExtension="-npm-build"
-            onClick={() => {
-              copiedBuildCommandMetric('npm', 'webpack')
-            }}
-          />
-        </pre>
-        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
-          {yarnBuild}{' '}
-          <CopyClipboard
-            string={yarnBuild}
-            testIdExtension="-yarn-build"
-            onClick={() => {
-              copiedBuildCommandMetric('yarn', 'webpack')
-            }}
-          />
-        </pre>
-        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border border-ds-gray-secondary bg-ds-gray-primary p-4 font-mono">
-          {pnpmBuild}{' '}
-          <CopyClipboard
-            string={pnpmBuild}
-            testIdExtension="-pnpm-build"
-            onClick={() => {
-              copiedBuildCommandMetric('pnpm', 'webpack')
-            }}
-          />
-        </pre>
+        <CodeSnippet
+          clipboard={npmBuild}
+          clipboardOnClick={() => {
+            copiedBuildCommandMetric('npm', 'webpack')
+          }}
+          data-testid="webpack-npm-build"
+        >
+          {npmBuild}
+        </CodeSnippet>
+        <CodeSnippet
+          clipboard={yarnBuild}
+          clipboardOnClick={() => {
+            copiedBuildCommandMetric('yarn', 'webpack')
+          }}
+          data-testid="webpack-yarn-build"
+        >
+          {yarnBuild}
+        </CodeSnippet>
+        <CodeSnippet
+          clipboard={pnpmBuild}
+          clipboardOnClick={() => {
+            copiedBuildCommandMetric('pnpm', 'webpack')
+          }}
+          data-testid="webpack-pnpm-build"
+        >
+          {pnpmBuild}
+        </CodeSnippet>
       </Card.Content>
     </Card>
   )

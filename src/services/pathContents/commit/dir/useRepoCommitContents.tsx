@@ -1,60 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
-import { z } from 'zod'
 
-import { MissingHeadReportSchema } from 'services/comparison/schemas'
-import { UnknownFlagsSchema } from 'services/impactedFiles/schemas'
-import {
-  MissingCoverageSchema,
-  PathContentsSchema,
-  UnknownPathSchema,
-} from 'services/pathContents/branch/dir'
 import { PathContentsFilters } from 'services/pathContents/constants'
-import {
-  RepoNotFoundErrorSchema,
-  RepoOwnerNotActivatedErrorSchema,
-} from 'services/repo'
 import Api from 'shared/api'
 import { NetworkErrorObject } from 'shared/api/helpers'
 import A from 'ui/A'
 
-import { query } from './constants'
-
-const RepositoryConfigSchema = z.object({
-  indicationRange: z
-    .object({
-      upperRange: z.number(),
-      lowerRange: z.number(),
-    })
-    .nullable(),
-})
-
-const PathContentsUnionSchema = z.discriminatedUnion('__typename', [
-  PathContentsSchema,
-  UnknownPathSchema,
-  MissingCoverageSchema,
-  MissingHeadReportSchema,
-  UnknownFlagsSchema,
-])
-
-const RepositorySchema = z.object({
-  __typename: z.literal('Repository'),
-  repositoryConfig: RepositoryConfigSchema.nullish(),
-  commit: z.object({
-    pathContents: PathContentsUnionSchema.nullish(),
-  }),
-})
-
-const RequestSchema = z.object({
-  owner: z
-    .object({
-      repository: z.discriminatedUnion('__typename', [
-        RepositorySchema,
-        RepoNotFoundErrorSchema,
-        RepoOwnerNotActivatedErrorSchema,
-      ]),
-    })
-    .nullable(),
-})
+import { query, RequestSchema } from './constants'
 
 interface UseRepoCommitContentsArgs {
   provider: string

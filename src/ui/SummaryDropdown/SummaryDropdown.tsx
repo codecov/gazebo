@@ -1,18 +1,20 @@
 import * as AccordionPrimitive from '@radix-ui/react-accordion'
-import cs from 'classnames'
-import { forwardRef } from 'react'
+import { cva, VariantProps } from 'cva'
+import React, { forwardRef } from 'react'
 
+import { cn } from 'shared/utils/cn'
 import Icon from 'ui/Icon'
+
+const root = cva([
+  'divide-y divide-ds-gray-secondary border-y border-ds-gray-secondary',
+])
 
 const SummaryDropdownRoot = forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Root>
 >(({ children, className, ...props }, forwardedRef) => (
   <AccordionPrimitive.Root
-    className={cs(
-      'divide-y divide-ds-gray-secondary border-ds-gray-secondary border-y',
-      className
-    )}
+    className={cn(root({ className }))}
     {...props}
     ref={forwardedRef}
   >
@@ -22,12 +24,15 @@ const SummaryDropdownRoot = forwardRef<
 
 SummaryDropdownRoot.displayName = 'SummaryDropdownRoot'
 
+interface ItemProps
+  extends React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item> {}
+
 const SummaryItem = forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item>
+  ItemProps
 >(({ children, className, ...props }, forwardedRef) => (
   <AccordionPrimitive.Item
-    className={cs(className)}
+    className={cn({ className })}
     {...props}
     ref={forwardedRef}
   >
@@ -37,16 +42,21 @@ const SummaryItem = forwardRef<
 
 SummaryItem.displayName = 'SummaryItem'
 
+const trigger = cva(
+  'flex w-full items-center gap-2 bg-ds-gray-primary px-2 py-4 [&[data-state=open]>span:first-child]:rotate-90'
+)
+
+interface TriggerProps
+  extends React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>,
+    VariantProps<typeof trigger> {}
+
 const SummaryTrigger = forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
+  TriggerProps
 >(({ children, className, ...props }, forwardedRef) => (
   <AccordionPrimitive.Header className="sticky top-0 z-30">
     <AccordionPrimitive.Trigger
-      className={cs(
-        'flex w-full items-center gap-2 bg-ds-gray-primary px-2 py-4 [&[data-state=open]>span:first-child]:rotate-90',
-        className
-      )}
+      className={cn(trigger({ className }))}
       {...props}
     >
       <span className="text-ds-gray-quinary transition-transform duration-200">
@@ -59,15 +69,20 @@ const SummaryTrigger = forwardRef<
 
 SummaryTrigger.displayName = 'SummaryTrigger'
 
+const content = cva(
+  'overflow-hidden data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown'
+)
+
+interface ContentProps
+  extends React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>,
+    VariantProps<typeof content> {}
+
 const SummaryContent = forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>
+  ContentProps
 >(({ children, className, ...props }, forwardedRef) => (
   <AccordionPrimitive.Content
-    className={cs(
-      'data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp overflow-hidden',
-      className
-    )}
+    className={cn(content({ className }))}
     {...props}
     ref={forwardedRef}
   >

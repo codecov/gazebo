@@ -28,8 +28,6 @@ import { repoDisplayOptions } from '../ListRepo'
 import NoReposBlock from '../NoReposBlock'
 import RepoTitleLink from '../RepoTitleLink'
 
-import 'ui/Table/Table.css'
-
 export function getSortingOption(
   sorting: Array<{ id: string; desc: boolean }>
 ) {
@@ -252,7 +250,7 @@ const ReposTableTeam = ({ searchValue }: ReposTableTeamProps) => {
                 <td
                   key={cell.id}
                   className={cs({
-                    'flex justify-end': cell.column.id === 'lines',
+                    'text-right': cell.column.id === 'lines',
                   })}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}

@@ -52,6 +52,7 @@ describe('DeactivatedRepo', () => {
                 activated: false,
                 oldestCommitAt: '',
                 active: false,
+                isFirstPullRequest: false,
               },
             },
           })

@@ -23,8 +23,6 @@ import { getReposColumnsHelper } from './getReposColumnsHelper'
 import { repoDisplayOptions } from '../ListRepo'
 import NoReposBlock from '../NoReposBlock'
 
-import 'ui/Table/Table.css'
-
 interface URLParams {
   provider: string
 }
@@ -220,7 +218,7 @@ const ReposTable = ({
                     <td
                       key={cell.id}
                       className={cs({
-                        'flex justify-end':
+                        'text-right':
                           cell.column.id === 'coverage' ||
                           cell.column.id === 'inactiveRepo',
                       })}

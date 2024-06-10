@@ -10,14 +10,13 @@ interface TextInputProps extends HTMLProps<HTMLInputElement> {
   label?: string
   icon?: keyof OutlineIconCollection
   placeholder?: string
-  variant?: 'default' | 'topRounded' | 'billing'
+  variant?: 'default' | 'topRounded'
   dataMarketing?: string
 }
 
 const VariantClasses = {
   default: 'rounded border',
   topRounded: 'border-t border-r border-l focus:border rounded-tl rounded-tr',
-  billing: 'bg-ds-gray-primary py-3 px-4 rounded ',
 }
 
 const styles = {

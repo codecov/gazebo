@@ -14,19 +14,20 @@ import { RepoBreadcrumbProvider } from './context'
 import RepoPage from './RepoPage'
 
 jest.mock('./BundlesTab', () => () => 'BundlesTab')
+jest.mock('./BundlesTab/BundleOnboarding', () => () => 'BundleOnboarding')
 jest.mock('./CommitsTab', () => () => 'CommitsTab')
 jest.mock('./CoverageTab', () => () => 'CoverageTab')
 jest.mock('./CoverageOnboarding', () => () => 'CoverageOnboarding')
 jest.mock('./PullsTab', () => () => 'PullsTab')
-jest.mock('./FlagsTab', () => () => 'FlagsTab')
-jest.mock('./ComponentsTab', () => () => 'ComponentsTab')
 jest.mock('./SettingsTab', () => () => 'SettingsTab')
 jest.mock('shared/featureFlags')
 jest.mock('./ActivationAlert', () => () => 'ActivationAlert')
+jest.mock('./FailedTestsTab', () => () => 'FailedTestsTab')
 
 jest.mock('shared/featureFlags')
 const mockedUseFlags = useFlags as jest.Mock<{
   componentTab: boolean
+  onboardingFailedTests: boolean
 }>
 
 const mockGetRepo = ({
@@ -52,6 +53,7 @@ const mockGetRepo = ({
       activated: isRepoActivated,
       oldestCommitAt: '',
       active: isRepoActive,
+      isFirstPullRequest: false,
     },
   },
 })
@@ -59,6 +61,7 @@ const mockGetRepo = ({
 const mockRepoOverview = ({
   coverageEnabled = true,
   bundleAnalysisEnabled = true,
+  testAnalyticsEnabled = false,
   language = '',
 }) => {
   const languages = ['python']
@@ -75,6 +78,7 @@ const mockRepoOverview = ({
         oldestCommitAt: '2022-10-10T11:59:59',
         coverageEnabled,
         bundleAnalysisEnabled,
+        testAnalyticsEnabled,
         languages,
       },
     },
@@ -112,6 +116,8 @@ const wrapper =
                 '/:provider/:owner/:repo/tree/:branch',
                 '/:provider/:owner/:repo/tree/:branch/:path+',
                 '/:provider/:owner/:repo',
+                '/:provider/:owner/:repo/tests/new',
+                '/:provider/:owner/:repo/tests/new/codecov-cli',
               ]}
             >
               <Suspense fallback={null}>
@@ -151,6 +157,8 @@ interface SetupArgs {
   coverageEnabled?: boolean
   bundleAnalysisEnabled?: boolean
   language?: string
+  onboardingFailedTests?: boolean
+  testAnalyticsEnabled?: boolean
 }
 
 describe('RepoPage', () => {
@@ -166,7 +174,9 @@ describe('RepoPage', () => {
       isCurrentUserActivated = true,
       coverageEnabled = true,
       bundleAnalysisEnabled = true,
+      onboardingFailedTests = true,
       language,
+      testAnalyticsEnabled = false,
     }: SetupArgs = {
       noUploadToken: false,
       isCurrentUserPartOfOrg: true,
@@ -182,6 +192,7 @@ describe('RepoPage', () => {
   ) {
     mockedUseFlags.mockReturnValue({
       componentTab: true,
+      onboardingFailedTests,
     })
 
     const user = userEvent.setup()
@@ -233,6 +244,7 @@ describe('RepoPage', () => {
             mockRepoOverview({
               coverageEnabled,
               bundleAnalysisEnabled,
+              testAnalyticsEnabled,
               language,
             })
           )
@@ -350,7 +362,7 @@ describe('RepoPage', () => {
         })
 
         describe('bundles are disabled', () => {
-          it('renders bundles tab', async () => {
+          it('renders bundle onboarding', async () => {
             const { queryClient } = setup({
               bundleAnalysisEnabled: false,
               language: 'javascript',
@@ -363,8 +375,8 @@ describe('RepoPage', () => {
               }),
             })
 
-            const bundlesTab = await screen.findByText('BundlesTab')
-            expect(bundlesTab).toBeInTheDocument()
+            const bundleOnboarding = await screen.findByText('BundleOnboarding')
+            expect(bundleOnboarding).toBeInTheDocument()
           })
 
           describe('there is no js or ts present', () => {
@@ -407,7 +419,7 @@ describe('RepoPage', () => {
         })
 
         describe('bundles are disabled', () => {
-          it('renders bundles tab', async () => {
+          it('renders bundle onboarding tab', async () => {
             const { queryClient } = setup({
               bundleAnalysisEnabled: false,
               language: 'javascript',
@@ -419,8 +431,8 @@ describe('RepoPage', () => {
               }),
             })
 
-            const bundlesTab = await screen.findByText('BundlesTab')
-            expect(bundlesTab).toBeInTheDocument()
+            const bundleOnboarding = await screen.findByText('BundleOnboarding')
+            expect(bundleOnboarding).toBeInTheDocument()
           })
 
           describe('there is no js or ts present', () => {
@@ -462,7 +474,7 @@ describe('RepoPage', () => {
         })
 
         describe('bundles are disabled', () => {
-          it('renders bundles tab', async () => {
+          it('renders bundle onboarding tab', async () => {
             const { queryClient } = setup({
               bundleAnalysisEnabled: false,
               language: 'javascript',
@@ -474,8 +486,8 @@ describe('RepoPage', () => {
               }),
             })
 
-            const bundlesTab = await screen.findByText('BundlesTab')
-            expect(bundlesTab).toBeInTheDocument()
+            const bundleOnboarding = await screen.findByText('BundleOnboarding')
+            expect(bundleOnboarding).toBeInTheDocument()
           })
 
           describe('there is no js or ts present', () => {
@@ -495,36 +507,6 @@ describe('RepoPage', () => {
               expect(coverage).toBeInTheDocument()
             })
           })
-        })
-      })
-
-      describe('testing flags path', () => {
-        it('renders flags tab', async () => {
-          const { queryClient } = setup()
-          render(<RepoPage />, {
-            wrapper: wrapper({
-              queryClient,
-              initialEntries: '/gh/codecov/cool-repo/flags',
-            }),
-          })
-
-          const flags = await screen.findByText('FlagsTab')
-          expect(flags).toBeInTheDocument()
-        })
-      })
-
-      describe('testing components path', () => {
-        it('renders components tab', async () => {
-          const { queryClient } = setup()
-          render(<RepoPage />, {
-            wrapper: wrapper({
-              queryClient,
-              initialEntries: '/gh/codecov/cool-repo/components',
-            }),
-          })
-
-          const components = await screen.findByText('ComponentsTab')
-          expect(components).toBeInTheDocument()
         })
       })
 
@@ -690,7 +672,7 @@ describe('RepoPage', () => {
       })
 
       describe('testing bundles path', () => {
-        it('renders bundles tab', async () => {
+        it('renders bundle onboarding tab', async () => {
           const { queryClient } = setup({
             isRepoActive: false,
             hasRepoData: true,
@@ -704,8 +686,104 @@ describe('RepoPage', () => {
             }),
           })
 
-          const bundlesTab = await screen.findByText('BundlesTab')
-          expect(bundlesTab).toBeInTheDocument()
+          const bundleOnboarding = await screen.findByText('BundleOnboarding')
+          expect(bundleOnboarding).toBeInTheDocument()
+        })
+      })
+
+      describe('testing tests analytics path', () => {
+        it('handles failed tests route on active repo', async () => {
+          const { queryClient } = setup({
+            isRepoActive: true,
+            hasRepoData: true,
+            isRepoActivated: true,
+            onboardingFailedTests: true,
+          })
+          render(<RepoPage />, {
+            wrapper: wrapper({
+              queryClient,
+              initialEntries: '/gh/codecov/cool-repo/tests/new',
+            }),
+          })
+
+          const failedTests = await screen.findByText('FailedTestsTab')
+          expect(failedTests).toBeInTheDocument()
+        })
+
+        it('handles failed tests route on deactivated repo', async () => {
+          const { queryClient } = setup({
+            isRepoActive: false,
+            hasRepoData: true,
+            isRepoActivated: false,
+          })
+          render(<RepoPage />, {
+            wrapper: wrapper({
+              queryClient,
+              initialEntries: '/gh/codecov/cool-repo/tests/new/codecov-cli',
+            }),
+          })
+
+          const coverageOnboarding = await screen.findByText('FailedTestsTab')
+          expect(coverageOnboarding).toBeInTheDocument()
+        })
+
+        it('does not render failed tests tab when onboardingFailedTests is false', async () => {
+          const { queryClient } = setup({
+            isRepoActive: true,
+            hasRepoData: true,
+            isRepoActivated: true,
+            onboardingFailedTests: false,
+          })
+          render(<RepoPage />, {
+            wrapper: wrapper({
+              queryClient,
+              initialEntries: '/gh/codecov/cool-repo/tests/new',
+            }),
+          })
+
+          const coverage = await screen.findByText('CoverageTab')
+          expect(coverage).toBeInTheDocument()
+        })
+
+        it('does not render failed tests tab when onboardingFailedTests is false and repo is inactive', async () => {
+          const { queryClient } = setup({
+            isRepoActive: false,
+            hasRepoData: true,
+            isRepoActivated: false,
+            onboardingFailedTests: false,
+          })
+          render(<RepoPage />, {
+            wrapper: wrapper({
+              queryClient,
+              initialEntries: '/gh/codecov/cool-repo/tests/new/codecov-cli',
+            }),
+          })
+
+          const coverageOnboarding = await screen.findByText(
+            'CoverageOnboarding'
+          )
+          expect(coverageOnboarding).toBeInTheDocument()
+        })
+
+        it('does not render tab when feature flag is on and test analytics is already enabled', async () => {
+          const { queryClient } = setup({
+            isRepoActive: true,
+            hasRepoData: true,
+            isRepoActivated: true,
+            testAnalyticsEnabled: true,
+          })
+          render(<RepoPage />, {
+            wrapper: wrapper({
+              queryClient,
+              initialEntries: '/gh/codecov/cool-repo/tests',
+            }),
+          })
+
+          const failedTests = screen.queryByText('FailedTestsTab')
+          expect(failedTests).not.toBeInTheDocument()
+
+          const coverage = await screen.findByText('CoverageTab')
+          expect(coverage).toBeInTheDocument()
         })
       })
 

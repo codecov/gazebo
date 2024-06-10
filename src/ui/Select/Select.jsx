@@ -193,7 +193,7 @@ const Select = forwardRef(
               SelectClasses.ul,
               UlVariantClass[variant],
               {
-                'border overflow-scroll': isOpen,
+                'border overflow-y-auto': isOpen,
               },
               !!onSearch ? 'top-16' : 'top-8 rounded'
             )}

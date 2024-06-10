@@ -118,6 +118,7 @@ export const backfillFlagMembershipsHandler = graphql.query(
         },
         owner: {
           repository: {
+            __typename: 'Repository',
             flagsMeasurementsActive: true,
             flagsMeasurementsBackfilled: true,
             flagsCount: 12,

@@ -99,6 +99,7 @@ describe('useRepo', () => {
           active: true,
           activated: true,
           oldestCommitAt: '',
+          isFirstPullRequest: false,
         },
       },
     }
@@ -129,6 +130,7 @@ describe('useRepo', () => {
             active: true,
             activated: true,
             oldestCommitAt: '',
+            isFirstPullRequest: false,
           },
         }
 

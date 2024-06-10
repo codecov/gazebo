@@ -59,7 +59,7 @@ describe('LoginLayout', () => {
       expect(link).toHaveAttribute('href', 'https://about.codecov.io')
     })
 
-    it('renders new to codecov link', () => {
+    it('renders guest header', () => {
       setup()
 
       render(<LoginLayout>child content</LoginLayout>, {
@@ -69,12 +69,8 @@ describe('LoginLayout', () => {
         }),
       })
 
-      const text = screen.getByText(/New to Codecov\?/)
+      const text = screen.getByText(/Why Test Code\?/)
       expect(text).toBeInTheDocument()
-
-      const link = screen.getByRole('link', { name: /Learn more/ })
-      expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', 'https://about.codecov.io')
     })
 
     it('renders children', () => {

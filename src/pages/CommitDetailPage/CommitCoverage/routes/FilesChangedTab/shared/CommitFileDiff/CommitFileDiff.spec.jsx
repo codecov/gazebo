@@ -9,6 +9,8 @@ import { useScrollToLine } from 'ui/CodeRenderer/hooks/useScrollToLine'
 import CommitFileDiff from './CommitFileDiff'
 
 jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
+window.requestAnimationFrame = (cb) => cb()
+window.cancelAnimationFrame = () => {}
 
 const baseMock = (impactedFile) => ({
   owner: {
@@ -110,6 +112,7 @@ const mockOverview = (bundleAnalysisEnabled = false) => {
         coverageEnabled: true,
         bundleAnalysisEnabled,
         languages: ['javascript'],
+        testAnalyticsEnabled: false,
       },
     },
   }

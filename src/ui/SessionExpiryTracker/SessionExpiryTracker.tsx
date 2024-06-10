@@ -2,13 +2,15 @@ import Cookies from 'js-cookie'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Redirect } from 'react-router-dom'
 
-import { useNavLinks } from 'services/navigation'
+import config, {
+  COOKIE_SESSION_ID,
+  LOCAL_STORAGE_SESSION_EXPIRED_KEY,
+  LOCAL_STORAGE_SESSION_TRACKING_KEY,
+} from 'config'
 
 const ONE_MINUTE_MILLIS = 60 * 1000
 const TWO_MINUTES_MILLIS = 2 * ONE_MINUTE_MILLIS
 const THIRTY_MINUTES_MILLIS = 30 * ONE_MINUTE_MILLIS
-const LOCAL_STORAGE_SESSION_EXPIRED_KEY = 'expired-session'
-const LOCAL_STORAGE_SESSION_TRACKING_KEY = 'tracking-session-expiry'
 
 const SessionExpiryTracker: React.FC = () => {
   localStorage.setItem(LOCAL_STORAGE_SESSION_TRACKING_KEY, 'true')
@@ -36,10 +38,9 @@ const SessionExpiryTracker: React.FC = () => {
 
   const setupSessionIntervalCheck = useCallback(
     (sessionExpiryTime: Date) => {
-      return window.setInterval(
-        () => checkSession(sessionExpiryTime),
-        ONE_MINUTE_MILLIS
-      )
+      return window.setInterval(() => {
+        checkSession(sessionExpiryTime)
+      }, ONE_MINUTE_MILLIS)
     },
     [checkSession]
   )
@@ -63,17 +64,19 @@ const SessionExpiryTracker: React.FC = () => {
     }
   }, [sessionExpiryTimeString, checkSession, setupSessionIntervalCheck])
 
-  const { signOut } = useNavLinks()
-
   if (!sessionExpiryTimeString || !redirectToLogout) {
     return null
   }
 
+  Cookies.remove(COOKIE_SESSION_ID, { path: '' })
   localStorage.setItem(LOCAL_STORAGE_SESSION_EXPIRED_KEY, 'true')
-  const signOutRedirect = signOut.path()
   localStorage.removeItem(LOCAL_STORAGE_SESSION_TRACKING_KEY)
 
-  return <Redirect to={signOutRedirect} />
+  return config.IS_SELF_HOSTED ? (
+    <Redirect to={'/'} />
+  ) : (
+    <Redirect to={'/login'} />
+  )
 }
 
 export default SessionExpiryTracker

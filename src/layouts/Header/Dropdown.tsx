@@ -1,15 +1,17 @@
 import cs from 'classnames'
 import { useSelect } from 'downshift'
-import { useParams } from 'react-router-dom'
+import Cookies from 'js-cookie'
+import { useHistory, useParams } from 'react-router-dom'
 
-import config from 'config'
+import config, {
+  COOKIE_SESSION_EXPIRY,
+  LOCAL_STORAGE_SESSION_TRACKING_KEY,
+} from 'config'
 
 import { providerToName } from 'shared/utils/provider'
 import Avatar from 'ui/Avatar'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
-
-const LOCAL_STORAGE_SESSION_TRACKING_KEY = 'tracking-session-expiry'
 
 interface URLParams {
   provider: string
@@ -23,7 +25,8 @@ type CurrentUser = {
 }
 
 type itemProps = {
-  to: toProps
+  to?: toProps
+  hook?: string
   onClick?: () => void
 }
 
@@ -36,8 +39,7 @@ type toProps = {
 function Dropdown({ currentUser }: { currentUser: CurrentUser }) {
   const { provider } = useParams<URLParams>()
   const isGh = providerToName(provider) === 'Github'
-
-  const to = `${window.location.protocol}//${window.location.host}/login`
+  const history = useHistory()
 
   const items =
     !config.IS_SELF_HOSTED && isGh
@@ -49,8 +51,14 @@ function Dropdown({ currentUser }: { currentUser: CurrentUser }) {
         ]
       : []
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    await fetch(`${config.API_URL}/logout`, {
+      method: 'POST',
+      credentials: 'include',
+    })
     localStorage.removeItem(LOCAL_STORAGE_SESSION_TRACKING_KEY)
+    Cookies.remove(COOKIE_SESSION_EXPIRY)
+    history.replace('/login')
   }
 
   items.push(
@@ -65,8 +73,8 @@ function Dropdown({ currentUser }: { currentUser: CurrentUser }) {
     },
     {
       props: {
-        to: { pageName: 'signOut', options: { to } },
         onClick: handleSignOut,
+        hook: 'header-dropdown-sign-out',
       },
       children: 'Sign Out',
     }

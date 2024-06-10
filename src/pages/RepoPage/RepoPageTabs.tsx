@@ -1,14 +1,15 @@
 import { useParams } from 'react-router-dom'
 
 import { useRepo, useRepoOverview } from 'services/repo'
-import { TierNames, useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 import Badge from 'ui/Badge'
 import TabNavigation from 'ui/TabNavigation'
 
 import {
   useMatchBlobsPath,
+  useMatchComponentsPath,
   useMatchCoverageOnboardingPath,
+  useMatchFlagsPath,
   useMatchTreePath,
 } from './hooks'
 
@@ -32,7 +33,6 @@ interface TabArgs {
 export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
   const { provider, owner, repo } = useParams<URLParams>()
   const { data: repoOverview } = useRepoOverview({ provider, owner, repo })
-  const { data: tierData } = useTier({ owner, provider })
   const { data: repoData } = useRepo({
     provider,
     owner,
@@ -42,13 +42,15 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
     },
   })
 
-  const { componentTab } = useFlags({
-    componentTab: false,
+  const { onboardingFailedTests } = useFlags({
+    onboardingFailedTests: false,
   })
 
   const matchTree = useMatchTreePath()
   const matchBlobs = useMatchBlobsPath()
   const matchCoverageOnboarding = useMatchCoverageOnboardingPath()
+  const matchFlags = useMatchFlagsPath()
+  const matchComponents = useMatchComponentsPath()
   let location = undefined
   if (matchTree) {
     location = { pathname: `/${provider}/${owner}/${repo}/tree` }
@@ -63,7 +65,13 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
     tabs.push({
       pageName: 'overview',
       children: 'Coverage',
-      exact: !matchTree && !matchBlobs && !matchCoverageOnboarding,
+      exact: !(
+        matchTree ||
+        matchBlobs ||
+        matchCoverageOnboarding ||
+        matchFlags ||
+        matchComponents
+      ),
       location,
     })
   }
@@ -83,29 +91,20 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
     })
   }
 
-  const hideFlagsTab = !!repoOverview?.private && tierData === TierNames.TEAM
+  if (onboardingFailedTests && !repoOverview?.testAnalyticsEnabled) {
+    tabs.push({
+      pageName: 'failedTestsOnboarding',
+      children: (
+        <>
+          Tests <Badge>beta</Badge>{' '}
+        </>
+      ),
+    })
+  }
+
   const userAuthorizedtoViewRepo =
     (repoData?.isCurrentUserActivated && repoOverview?.private) ||
     !repoOverview?.private
-  if (
-    repoOverview?.coverageEnabled &&
-    !hideFlagsTab &&
-    userAuthorizedtoViewRepo
-  ) {
-    tabs.push({ pageName: 'flagsTab' })
-  }
-
-  const hideComponentsTab =
-    !!repoOverview?.private && tierData === TierNames.TEAM
-  if (
-    repoOverview?.coverageEnabled &&
-    componentTab &&
-    !hideComponentsTab &&
-    userAuthorizedtoViewRepo
-  ) {
-    tabs.push({ pageName: 'componentsTab' })
-  }
-
   if (
     (repoOverview?.bundleAnalysisEnabled || repoOverview?.coverageEnabled) &&
     userAuthorizedtoViewRepo

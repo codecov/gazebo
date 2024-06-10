@@ -15,6 +15,7 @@ const RepositorySchema = z.object({
   oldestCommitAt: z.string().nullable(),
   coverageEnabled: z.boolean().nullable(),
   bundleAnalysisEnabled: z.boolean().nullable(),
+  testAnalyticsEnabled: z.boolean().nullable(),
   languages: z.array(z.string()).nullable(),
 })
 
@@ -40,6 +41,7 @@ const query = `query GetRepoOverview($owner: String!, $repo: String!) {
         oldestCommitAt
         coverageEnabled
         bundleAnalysisEnabled
+        testAnalyticsEnabled
         languages
       }
       ... on NotFoundError {
@@ -122,12 +124,15 @@ export function useRepoOverview({
         const coverageEnabled = data.owner.repository.coverageEnabled ?? false
         const bundleAnalysisEnabled =
           data.owner.repository.bundleAnalysisEnabled ?? false
+        const testAnalyticsEnabled =
+          data.owner.repository.testAnalyticsEnabled ?? false
 
         return {
           ...data.owner.repository,
           coverageEnabled,
           bundleAnalysisEnabled,
           jsOrTsPresent,
+          testAnalyticsEnabled,
         }
       })
     },
