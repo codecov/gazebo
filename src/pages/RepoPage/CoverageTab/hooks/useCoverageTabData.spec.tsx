@@ -16,6 +16,7 @@ const mockOverview = {
       coverageEnabled: true,
       bundleAnalysisEnabled: true,
       languages: ['JavaScript'],
+      testAnalyticsEnabled: true,
     },
   },
 }

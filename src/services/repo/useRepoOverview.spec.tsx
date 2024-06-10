@@ -21,6 +21,7 @@ const mockOverview = (language?: string) => {
         coverageEnabled: true,
         bundleAnalysisEnabled: true,
         languages,
+        testAnalyticsEnabled: true,
       },
     },
   }
@@ -130,6 +131,7 @@ describe('useRepoOverview', () => {
             bundleAnalysisEnabled: true,
             languages: [],
             jsOrTsPresent: false,
+            testAnalyticsEnabled: true,
           })
         )
       })
@@ -157,6 +159,7 @@ describe('useRepoOverview', () => {
               bundleAnalysisEnabled: true,
               languages: ['javascript'],
               jsOrTsPresent: true,
+              testAnalyticsEnabled: true,
             })
           )
         })
@@ -185,6 +188,7 @@ describe('useRepoOverview', () => {
               bundleAnalysisEnabled: true,
               languages: ['typescript'],
               jsOrTsPresent: true,
+              testAnalyticsEnabled: true,
             })
           )
         })

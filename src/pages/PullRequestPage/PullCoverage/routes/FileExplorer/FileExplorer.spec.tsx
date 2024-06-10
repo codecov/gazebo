@@ -328,6 +328,7 @@ describe('FileExplorer', () => {
                 coverageEnabled: true,
                 bundleAnalysisEnabled: true,
                 languages: [],
+                testAnalyticsEnabled: true,
               },
             },
           })

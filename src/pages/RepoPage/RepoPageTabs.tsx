@@ -84,7 +84,7 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
     })
   }
 
-  if (onboardingFailedTests) {
+  if (onboardingFailedTests && !repoOverview?.testAnalyticsEnabled) {
     tabs.push({
       pageName: 'failedTestsOnboarding',
       children: (

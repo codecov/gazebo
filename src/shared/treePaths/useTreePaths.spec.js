@@ -64,6 +64,7 @@ const overviewMock = {
       coverageEnabled: true,
       bundleAnalysisEnabled: true,
       languages: [],
+      testAnalyticsEnabled: false,
     },
   },
 }
@@ -223,6 +224,7 @@ describe('useTreePaths', () => {
                 coverageEnabled: true,
                 bundleAnalysisEnabled: true,
                 languages: [],
+                testAnalyticsEnabled: false,
               },
             },
           },
