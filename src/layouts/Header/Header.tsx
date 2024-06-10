@@ -15,7 +15,7 @@ function Header() {
   return (
     <header
       className={cs('text-white', {
-        'bg-ds-default  border-b-2': !isImpersonating && !currentUser,
+        'bg-white  border-b-2': !isImpersonating && !currentUser,
         'bg-ds-primary-base': !isImpersonating && !!currentUser,
         'bg-ds-pink-tertiary': isImpersonating,
       })}
