@@ -21,6 +21,7 @@ const mockRepoOverview = (bundleAnalysisEnabled = false) => ({
       coverageEnabled: false,
       bundleAnalysisEnabled,
       languages: ['javascript'],
+      testAnalyticsEnabled: true,
     },
   },
 })

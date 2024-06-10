@@ -139,6 +139,7 @@ const mockOverview = {
       coverageEnabled: true,
       bundleAnalysisEnabled: true,
       languages: [],
+      testAnalyticsEnabled: true,
     },
   },
 }

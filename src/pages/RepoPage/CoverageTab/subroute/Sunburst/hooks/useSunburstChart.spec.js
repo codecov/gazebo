@@ -50,6 +50,7 @@ const overviewMock = {
       coverageEnabled: true,
       bundleAnalysisEnabled: true,
       languages: [],
+      testAnalyticsEnabled: false,
     },
   },
 }

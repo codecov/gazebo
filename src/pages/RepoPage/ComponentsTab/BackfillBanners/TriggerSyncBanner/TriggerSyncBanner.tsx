@@ -25,7 +25,13 @@ function TriggerSyncBanner() {
       <LoadingTable />
       <div className="flex flex-col items-center gap-1">
         <p>No data to display</p>
-        <p>You will need to enable components to see related coverage data.</p>
+        <p>
+          To view related coverage data, please click the{' '}
+          <b>
+            <i>Enable component analytics</i>
+          </b>{' '}
+          button below.
+        </p>
       </div>
       <div className="flex flex-col items-center">
         <Button

@@ -218,7 +218,7 @@ const ReposTable = ({
                     <td
                       key={cell.id}
                       className={cs({
-                        'flex justify-end':
+                        'text-right':
                           cell.column.id === 'coverage' ||
                           cell.column.id === 'inactiveRepo',
                       })}
