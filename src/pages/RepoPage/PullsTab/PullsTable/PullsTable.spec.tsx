@@ -35,19 +35,18 @@ const node1 = {
     username: 'codecov-user',
     avatarUrl: 'http://127.0.0.1/avatar-url',
   },
+  head: {
+    bundleStatus: 'PENDING',
+    coverageStatus: 'COMPLETED',
+  },
+  bundleAnalysisCompareWithBase: {
+    __typename: 'MissingHeadReport',
+    message: 'Missing head report',
+  },
   compareWithBase: {
     __typename: 'Comparison',
     patchTotals: {
       percentCovered: 75,
-    },
-    changeCoverage: 1,
-  },
-  head: {
-    totals: {
-      percentCovered: 45,
-    },
-    bundleAnalysisReport: {
-      __typename: 'MissingHeadReport',
     },
   },
 }
@@ -61,19 +60,18 @@ const node2 = {
     username: 'codecov-user',
     avatarUrl: 'http://127.0.0.1/avatar-url',
   },
+  head: {
+    bundleStatus: 'ERROR',
+    coverageStatus: 'COMPLETED',
+  },
+  bundleAnalysisCompareWithBase: {
+    __typename: 'MissingHeadReport',
+    message: 'Missing head report',
+  },
   compareWithBase: {
     __typename: 'Comparison',
     patchTotals: {
       percentCovered: 87,
-    },
-    changeCoverage: 0,
-  },
-  head: {
-    totals: {
-      percentCovered: 45,
-    },
-    bundleAnalysisReport: {
-      __typename: 'BundleAnalysisReport',
     },
   },
 }
@@ -87,19 +85,18 @@ const node3 = {
     username: 'codecov-user',
     avatarUrl: 'http://127.0.0.1/avatar-url',
   },
+  head: {
+    bundleStatus: 'ERROR',
+    coverageStatus: 'COMPLETED',
+  },
+  bundleAnalysisCompareWithBase: {
+    __typename: 'MissingHeadReport',
+    message: 'Missing head report',
+  },
   compareWithBase: {
     __typename: 'Comparison',
     patchTotals: {
       percentCovered: 92,
-    },
-    changeCoverage: 3,
-  },
-  head: {
-    totals: {
-      percentCovered: 45,
-    },
-    bundleAnalysisReport: {
-      __typename: 'MissingHeadReport',
     },
   },
 }
@@ -215,27 +212,11 @@ describe('PullsTable', () => {
       expect(nameColumn).toBeInTheDocument()
     })
 
-    it('renders coverage column', async () => {
+    it('renders patch coverage column', async () => {
       const { queryClient } = setup({})
       render(<PullsTable />, { wrapper: wrapper(queryClient) })
 
-      const patchColumn = await screen.findByText('Coverage on')
-      expect(patchColumn).toBeInTheDocument()
-    })
-
-    it('renders patch column', async () => {
-      const { queryClient } = setup({})
-      render(<PullsTable />, { wrapper: wrapper(queryClient) })
-
-      const patchColumn = await screen.findByText('Patch')
-      expect(patchColumn).toBeInTheDocument()
-    })
-
-    it('renders change column', async () => {
-      const { queryClient } = setup({})
-      render(<PullsTable />, { wrapper: wrapper(queryClient) })
-
-      const patchColumn = await screen.findByText('Change from')
+      const patchColumn = await screen.findByText('Patch Coverage')
       expect(patchColumn).toBeInTheDocument()
     })
 
@@ -244,7 +225,7 @@ describe('PullsTable', () => {
         const { queryClient } = setup({ bundleAnalysisEnabled: true })
         render(<PullsTable />, { wrapper: wrapper(queryClient) })
 
-        const bundleAnalysis = await screen.findByText('Bundle Analysis')
+        const bundleAnalysis = await screen.findByText('Bundle')
         expect(bundleAnalysis).toBeInTheDocument()
       })
     })
@@ -257,7 +238,7 @@ describe('PullsTable', () => {
         const spinner = await screen.findByTestId('spinner')
         await waitForElementToBeRemoved(spinner)
 
-        const bundleAnalysis = screen.queryByText('Bundle Analysis')
+        const bundleAnalysis = screen.queryByText('Bundle')
         expect(bundleAnalysis).not.toBeInTheDocument()
       })
     })
@@ -280,28 +261,12 @@ describe('PullsTable', () => {
       expect(patch).toBeInTheDocument()
     })
 
-    it('renders change column', async () => {
-      const { queryClient } = setup({})
-      render(<PullsTable />, { wrapper: wrapper(queryClient) })
-
-      const change = await screen.findByText('0.00%')
-      expect(change).toBeInTheDocument()
-    })
-
-    it('renders coverage column', async () => {
-      const { queryClient } = setup({})
-      render(<PullsTable />, { wrapper: wrapper(queryClient) })
-
-      const coverage = await screen.findByText('75.00%')
-      expect(coverage).toBeInTheDocument()
-    })
-
     describe('bundle analysis is enabled', () => {
       it('renders bundle analysis column', async () => {
         const { queryClient } = setup({ bundleAnalysisEnabled: true })
         render(<PullsTable />, { wrapper: wrapper(queryClient) })
 
-        const bundleAnalysis = await screen.findByText('Upload: ✅')
+        const bundleAnalysis = await screen.findByText('Upload: ⏳')
         expect(bundleAnalysis).toBeInTheDocument()
       })
     })
@@ -314,7 +279,7 @@ describe('PullsTable', () => {
         const spinner = await screen.findByTestId('spinner')
         await waitForElementToBeRemoved(spinner)
 
-        const bundleAnalysis = screen.queryByText('Upload: ✅')
+        const bundleAnalysis = screen.queryByText('Upload: ⏳')
         expect(bundleAnalysis).not.toBeInTheDocument()
       })
     })
