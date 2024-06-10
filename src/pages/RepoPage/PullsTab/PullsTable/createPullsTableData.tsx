@@ -1,34 +1,59 @@
 import isArray from 'lodash/isArray'
 
 import { Pull } from 'services/pulls/usePulls'
+import { formatSizeToString } from 'shared/utils/bundleAnalysis'
 import TotalsNumber from 'ui/TotalsNumber'
 
-import Coverage from './Coverage'
+import Title from './Title'
 
-import Title from '../shared/Title'
+export const ErroredUpload = () => <p>Upload: &#x274C;</p>
+export const PendingUpload = () => <p>Upload: &#x23F3;</p>
 
 export const createPullsTableData = ({ pulls }: { pulls?: Array<Pull> }) => {
   if (!isArray(pulls)) {
     return []
   }
+
   return pulls.filter(Boolean).map((pull: Pull) => {
-    let patch, change
-    if (pull?.compareWithBase?.__typename === 'Comparison') {
-      patch = pull?.compareWithBase?.patchTotals?.percentCovered ?? 0
-      change = pull?.compareWithBase?.changeCoverage ?? 0
+    let patch = <p>-</p>
+    if (pull?.head?.coverageStatus === 'ERROR') {
+      patch = <ErroredUpload />
+    } else if (pull?.head?.coverageStatus === 'PENDING') {
+      patch = <PendingUpload />
+    } else if (
+      pull?.head?.coverageStatus === 'COMPLETED' &&
+      pull?.compareWithBase?.__typename === 'Comparison'
+    ) {
+      const percent = pull?.compareWithBase?.patchTotals?.percentCovered ?? 0
+      patch = (
+        <TotalsNumber
+          plain={true}
+          large={false}
+          light={false}
+          value={percent}
+          showChange={false}
+        />
+      )
     }
 
     const updatestamp = pull?.updatestamp ?? undefined
     const title = pull?.title ?? 'Pull Request'
     const pullId = pull?.pullId ?? NaN
 
-    let bundleAnalysis = undefined
-    if (
-      pull?.head?.bundleAnalysisReport?.__typename === 'BundleAnalysisReport'
+    let bundleAnalysis = <p>-</p>
+    if (pull?.head?.bundleStatus === 'ERROR') {
+      bundleAnalysis = <ErroredUpload />
+    } else if (pull?.head?.bundleStatus === 'PENDING') {
+      bundleAnalysis = <PendingUpload />
+    } else if (
+      pull?.head?.bundleStatus === 'COMPLETED' &&
+      pull?.bundleAnalysisCompareWithBase?.__typename ===
+        'BundleAnalysisComparison'
     ) {
-      bundleAnalysis = <>Upload: &#x2705;</>
-    } else {
-      bundleAnalysis = <>Upload: &#x274C;</>
+      const change =
+        pull?.bundleAnalysisCompareWithBase?.bundleChange?.size.uncompress
+      const content = `${change > 0 ? '+' : ''}${formatSizeToString(change)}`
+      bundleAnalysis = <p>{content}</p>
     }
 
     return {
@@ -44,32 +69,7 @@ export const createPullsTableData = ({ pulls }: { pulls?: Array<Pull> }) => {
           compareWithBaseType={pull?.compareWithBase?.__typename}
         />
       ),
-      patch: (
-        <TotalsNumber
-          plain={true}
-          large={false}
-          light={false}
-          value={patch}
-          showChange={false}
-        />
-      ),
-      coverage: (
-        <Coverage
-          head={pull?.head}
-          state={pull?.state ?? 'OPEN'}
-          pullId={pullId}
-        />
-      ),
-      change: (
-        <TotalsNumber
-          value={change}
-          showChange
-          data-testid="change-value"
-          plain={true}
-          light={false}
-          large={false}
-        />
-      ),
+      patch,
       bundleAnalysis,
     }
   })
