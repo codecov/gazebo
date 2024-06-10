@@ -23,6 +23,7 @@ const mockRepoOverview = {
   coverageEnabled: true,
   bundleAnalysisEnabled: true,
   languages: [],
+  testAnalyticsEnabled: false,
 }
 
 const mockMainBranchSearch = {

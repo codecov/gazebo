@@ -27,6 +27,7 @@ const mockRepoOverview = ({
   isRepoPrivate = false,
   coverageEnabled = false,
   bundleAnalysisEnabled = false,
+  testAnalyticsEnabled = false,
 }) => {
   let languages = null
   if (language !== '') {
@@ -43,6 +44,7 @@ const mockRepoOverview = ({
         coverageEnabled,
         bundleAnalysisEnabled,
         languages,
+        testAnalyticsEnabled,
       },
     },
   }
@@ -128,6 +130,7 @@ interface SetupArgs {
   isCurrentUserPartOfOrg?: boolean
   componentTab?: boolean
   onboardingFailedTests?: boolean
+  testAnalyticsEnabled?: boolean
 }
 
 describe('RepoPageTabs', () => {
@@ -140,6 +143,7 @@ describe('RepoPageTabs', () => {
     isCurrentUserPartOfOrg = true,
     componentTab = true,
     onboardingFailedTests = false,
+    testAnalyticsEnabled = false,
   }: SetupArgs) {
     mockedUseFlags.mockReturnValue({
       componentTab,
@@ -156,6 +160,7 @@ describe('RepoPageTabs', () => {
               isRepoPrivate,
               coverageEnabled,
               bundleAnalysisEnabled,
+              testAnalyticsEnabled,
             })
           )
         )
@@ -485,6 +490,23 @@ describe('RepoPageTabs', () => {
       const betaBadge = await screen.findByText('beta')
       expect(betaBadge).toBeInTheDocument()
     })
+
+    it('does not render failed tests tab if test analytics is disabled', async () => {
+      setup({
+        coverageEnabled: false,
+        onboardingFailedTests: false,
+        testAnalyticsEnabled: false,
+      })
+      render(<RepoPageTabs refetchEnabled={false} />, {
+        wrapper: wrapper('/gh/codecov/test-repo/tests/new'),
+      })
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+
+      const tab = screen.queryByText('Tests')
+      expect(tab).not.toBeInTheDocument()
+    })
   })
 })
 
@@ -493,6 +515,7 @@ describe('useRepoTabs', () => {
     language,
     bundleAnalysisEnabled,
     coverageEnabled,
+    testAnalyticsEnabled = false,
     isRepoPrivate,
     tierName = TierNames.PRO,
     isCurrentUserPartOfOrg = true,
@@ -511,6 +534,7 @@ describe('useRepoTabs', () => {
               isRepoPrivate,
               coverageEnabled,
               bundleAnalysisEnabled,
+              testAnalyticsEnabled,
             })
           )
         )

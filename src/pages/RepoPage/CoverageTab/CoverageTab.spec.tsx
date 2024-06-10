@@ -95,6 +95,7 @@ const overviewMock = {
       coverageEnabled: true,
       bundleAnalysisEnabled: true,
       languages: [],
+      testAnalyticsEnabled: true,
     },
   },
 }
@@ -219,6 +220,7 @@ const mockOverview = {
       coverageEnabled: true,
       bundleAnalysisEnabled: true,
       languages: ['JavaScript'],
+      testAnalyticsEnabled: true,
     },
   },
 }

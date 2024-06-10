@@ -2,7 +2,7 @@ import Cookies from 'js-cookie'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Redirect } from 'react-router-dom'
 
-import {
+import config, {
   COOKIE_SESSION_ID,
   LOCAL_STORAGE_SESSION_EXPIRED_KEY,
   LOCAL_STORAGE_SESSION_TRACKING_KEY,
@@ -72,7 +72,11 @@ const SessionExpiryTracker: React.FC = () => {
   localStorage.setItem(LOCAL_STORAGE_SESSION_EXPIRED_KEY, 'true')
   localStorage.removeItem(LOCAL_STORAGE_SESSION_TRACKING_KEY)
 
-  return <Redirect to={'/login'} />
+  return config.IS_SELF_HOSTED ? (
+    <Redirect to={'/'} />
+  ) : (
+    <Redirect to={'/login'} />
+  )
 }
 
 export default SessionExpiryTracker

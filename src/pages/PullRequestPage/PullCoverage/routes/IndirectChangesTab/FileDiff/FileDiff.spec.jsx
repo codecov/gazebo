@@ -75,6 +75,7 @@ const mockOverview = (bundleAnalysisEnabled = false) => {
         coverageEnabled: true,
         bundleAnalysisEnabled,
         languages: ['javascript'],
+        testAnalyticsEnabled: false,
       },
     },
   }

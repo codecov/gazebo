@@ -25,7 +25,7 @@ function CommitDirEntry({
       : []
 
   const { runPrefetch } = usePrefetchCommitDirEntry({
-    commit: { commitSha },
+    commit: commitSha,
     path: name,
     filters,
   })
