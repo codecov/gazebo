@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-import ComponentsMultiSelect from 'pages/RepoPage/CoverageTab/OverviewTab/subroute/ComponentsMultiSelect'
+import ComponentsMultiSelect from 'pages/RepoPage/CoverageTab/subroute/ComponentsMultiSelect'
 import { LINE_STATE } from 'shared/utils/fileviewer'
 
 import Title, { TitleCoverage, TitleFlags, TitleHitCount } from './Title/Title'

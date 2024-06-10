@@ -233,7 +233,7 @@ describe('RepoPageTabs', () => {
           wrapper: wrapper('/gh/codecov/test-repo/bundles'),
         })
 
-        const tab = await screen.findByText('Bundles')
+        const tab = await screen.findByText(/Bundles/)
         expect(tab).toBeInTheDocument()
         expect(tab).toHaveAttribute('aria-current', 'page')
         expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/bundles')
@@ -250,7 +250,7 @@ describe('RepoPageTabs', () => {
           wrapper: wrapper('/gh/codecov/test-repo/bundles'),
         })
 
-        const tab = await screen.findByText('Bundles')
+        const tab = await screen.findByText(/Bundles/)
         expect(tab).toBeInTheDocument()
         expect(tab).toHaveAttribute('aria-current', 'page')
         expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/bundles')
@@ -270,11 +270,73 @@ describe('RepoPageTabs', () => {
         const loader = await screen.findByText('Loading')
         await waitForElementToBeRemoved(loader)
 
-        const tab = screen.queryByText('Bundles')
+        const tab = screen.queryByText(/Bundles/)
         expect(tab).not.toBeInTheDocument()
 
         const betaBadge = screen.queryByText('beta')
         expect(betaBadge).not.toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('flags tab', () => {
+    describe('rendered when coverage is enabled', () => {
+      it('renders the flags tab', async () => {
+        setup({ coverageEnabled: true })
+        render(<RepoPageTabs refetchEnabled={false} />, {
+          wrapper: wrapper('/gh/codecov/test-repo/flags'),
+        })
+
+        const tab = await screen.findByText('Flags')
+        expect(tab).toBeInTheDocument()
+        expect(tab).toHaveAttribute('aria-current', 'page')
+        expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/flags')
+      })
+    })
+
+    describe('when coverage is not enabled', () => {
+      it('does not render the flags tab', async () => {
+        setup({ coverageEnabled: false })
+        render(<RepoPageTabs refetchEnabled={false} />, {
+          wrapper: wrapper('/gh/codecov/test-repo/flags'),
+        })
+
+        const loader = await screen.findByText('Loading')
+        await waitForElementToBeRemoved(loader)
+
+        const tab = screen.queryByText('Flags')
+        expect(tab).not.toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('components tab', () => {
+    describe('rendered when coverage is enabled', () => {
+      it('renders the components tab', async () => {
+        setup({ coverageEnabled: true })
+        render(<RepoPageTabs refetchEnabled={false} />, {
+          wrapper: wrapper('/gh/codecov/test-repo/components'),
+        })
+
+        const tab = await screen.findByText('Components')
+        expect(tab).toBeInTheDocument()
+        expect(tab).toHaveAttribute('aria-current', 'page')
+        expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/components')
+      })
+    })
+
+    describe('when coverage is not enabled', () => {
+      it('does not render the components tab', async () => {
+        setup({ coverageEnabled: false })
+        render(<RepoPageTabs refetchEnabled={false} />, {
+          wrapper: wrapper('/gh/codecov/test-repo/components'),
+        })
+
+        const loader = await screen.findByText('Loading')
+        await waitForElementToBeRemoved(loader)
+
+        const tab = screen.queryByText('Components')
+        expect(tab).not.toBeInTheDocument()
       })
     })
   })
@@ -704,6 +766,188 @@ describe('useRepoTabs', () => {
           expect.objectContaining({
             pageName: 'bundles',
           }),
+        ]
+        await waitFor(() =>
+          expect(result.current).not.toEqual(
+            expect.arrayContaining(expectedTab)
+          )
+        )
+      })
+    })
+  })
+
+  describe('flags tab', () => {
+    describe('coverage is enabled', () => {
+      it('adds the flags link to the array', async () => {
+        setup({ coverageEnabled: true })
+        const { result } = renderHook(
+          () =>
+            useRepoTabs({
+              refetchEnabled: false,
+            }),
+          { wrapper: wrapper('/gh/codecov/test-repo') }
+        )
+
+        const expectedTab = [
+          {
+            pageName: 'flagsTab',
+          },
+        ]
+        await waitFor(() =>
+          expect(result.current).toEqual(expect.arrayContaining(expectedTab))
+        )
+      })
+    })
+
+    describe('coverage is disabled', () => {
+      it('does not add the flags link to the array', async () => {
+        setup({ coverageEnabled: false })
+        const { result } = renderHook(
+          () =>
+            useRepoTabs({
+              refetchEnabled: false,
+            }),
+          { wrapper: wrapper('/gh/codecov/test-repo') }
+        )
+
+        await waitForElementToBeRemoved(await screen.findByText('Loading'))
+
+        const expectedTab = [
+          {
+            pageName: 'flagsTab',
+          },
+        ]
+        await waitFor(() =>
+          expect(result.current).not.toEqual(
+            expect.arrayContaining(expectedTab)
+          )
+        )
+      })
+    })
+
+    describe('repo is private and tier is team', () => {
+      it('does not add the flags link to the array', async () => {
+        setup({ isRepoPrivate: true, tierName: TierNames.TEAM })
+        const { result } = renderHook(
+          () =>
+            useRepoTabs({
+              refetchEnabled: false,
+            }),
+          { wrapper: wrapper('/gh/codecov/test-repo') }
+        )
+
+        await waitForElementToBeRemoved(await screen.findByText('Loading'))
+
+        const expectedTab = [
+          {
+            pageName: 'flagsTab',
+          },
+        ]
+        await waitFor(() =>
+          expect(result.current).not.toEqual(
+            expect.arrayContaining(expectedTab)
+          )
+        )
+      })
+    })
+  })
+
+  describe('components tab', () => {
+    describe('coverage is enabled', () => {
+      it('adds the components link to the array', async () => {
+        setup({ coverageEnabled: true })
+        const { result } = renderHook(
+          () =>
+            useRepoTabs({
+              refetchEnabled: false,
+            }),
+          { wrapper: wrapper('/gh/codecov/test-repo') }
+        )
+
+        const expectedTab = [
+          {
+            pageName: 'componentsTab',
+          },
+        ]
+        await waitFor(() =>
+          expect(result.current).toEqual(expect.arrayContaining(expectedTab))
+        )
+      })
+    })
+
+    describe('coverage is disabled', () => {
+      it('does not add the components link to the array', async () => {
+        setup({ coverageEnabled: false })
+        const { result } = renderHook(
+          () =>
+            useRepoTabs({
+              refetchEnabled: false,
+            }),
+          { wrapper: wrapper('/gh/codecov/test-repo') }
+        )
+
+        await waitForElementToBeRemoved(await screen.findByText('Loading'))
+
+        const expectedTab = [
+          {
+            pageName: 'componentsTab',
+          },
+        ]
+        await waitFor(() =>
+          expect(result.current).not.toEqual(
+            expect.arrayContaining(expectedTab)
+          )
+        )
+      })
+    })
+
+    describe('repo is private and tier is team', () => {
+      it('does not add the components link to the array', async () => {
+        setup({ isRepoPrivate: true, tierName: TierNames.TEAM })
+        const { result } = renderHook(
+          () =>
+            useRepoTabs({
+              refetchEnabled: false,
+            }),
+          { wrapper: wrapper('/gh/codecov/test-repo') }
+        )
+
+        await waitForElementToBeRemoved(await screen.findByText('Loading'))
+
+        const expectedTab = [
+          {
+            pageName: 'componentsTab',
+          },
+        ]
+        await waitFor(() =>
+          expect(result.current).not.toEqual(
+            expect.arrayContaining(expectedTab)
+          )
+        )
+      })
+    })
+
+    describe('feature flag is off', () => {
+      it('does not add the components link to the array', async () => {
+        mockedUseFlags.mockReturnValueOnce({
+          componentTab: false,
+        })
+
+        setup({ coverageEnabled: true })
+        const { result } = renderHook(
+          () =>
+            useRepoTabs({
+              refetchEnabled: false,
+            }),
+          { wrapper: wrapper('/gh/codecov/test-repo') }
+        )
+
+        await waitForElementToBeRemoved(await screen.findByText('Loading'))
+
+        const expectedTab = [
+          {
+            pageName: 'componentsTab',
+          },
         ]
         await waitFor(() =>
           expect(result.current).not.toEqual(
