@@ -9,11 +9,22 @@ interface useUpdateCardParams {
   owner: string
 }
 
+interface useUpdateCardReturn {
+  reset: () => void
+  error: null | Error
+  isLoading: boolean
+  mutate: (variables: any, data: any) => void
+  data: undefined | unknown
+}
+
 function getPathAccountDetails({ provider, owner }: useUpdateCardParams) {
   return `/${provider}/${owner}/account-details/`
 }
 
-export function useUpdateCard({ provider, owner }: useUpdateCardParams) {
+export function useUpdateCard({
+  provider,
+  owner,
+}: useUpdateCardParams): useUpdateCardReturn {
   const stripe = useStripe()
   const queryClient = useQueryClient()
 
