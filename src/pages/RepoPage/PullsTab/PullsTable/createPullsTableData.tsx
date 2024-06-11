@@ -6,8 +6,16 @@ import TotalsNumber from 'ui/TotalsNumber'
 
 import Title from './Title'
 
-export const ErroredUpload = () => <p>Upload: &#x274C;</p>
-export const PendingUpload = () => <p>Upload: &#x23F3;</p>
+export const ErroredUpload = () => (
+  <p>
+    Upload: <span aria-label="error">&#x274C;</span>
+  </p>
+)
+export const PendingUpload = () => (
+  <p>
+    Upload: <span aria-label="pending">&#x23F3;</span>
+  </p>
+)
 
 export const createPullsTableData = ({ pulls }: { pulls?: Array<Pull> }) => {
   if (!isArray(pulls)) {
