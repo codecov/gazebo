@@ -8,12 +8,12 @@ import Title from './Title'
 
 export const ErroredUpload = () => (
   <p>
-    Upload: <span aria-label="error">&#x274C;</span>
+    Upload: <span aria-label="Errored upload">&#x274C;</span>
   </p>
 )
 export const PendingUpload = () => (
   <p>
-    Upload: <span aria-label="pending">&#x23F3;</span>
+    Upload: <span aria-label="Pending upload">&#x23F3;</span>
   </p>
 )
 
