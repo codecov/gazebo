@@ -317,7 +317,7 @@ describe('CommitsTab', () => {
       })
 
       const multiSelect = await screen.findByRole('button', {
-        name: 'Filter by CI states',
+        name: 'Filter by coverage upload status',
       })
       expect(multiSelect).toBeInTheDocument()
     })
@@ -469,17 +469,17 @@ describe('CommitsTab', () => {
         })
 
         const select = await screen.findByRole('button', {
-          name: 'Filter by CI states',
+          name: 'Filter by coverage upload status',
         })
         await user.click(select)
 
-        const completeOption = await screen.findByRole('option', {
-          name: 'Complete',
+        const completedOption = await screen.findByRole('option', {
+          name: 'Completed',
         })
-        await user.click(completeOption)
+        await user.click(completedOption)
 
         await waitFor(() =>
-          expect(completeOption).toHaveClass('border-l-black')
+          expect(completedOption).toHaveClass('border-l-black')
         )
       })
     })
@@ -646,17 +646,17 @@ describe('CommitsTab', () => {
         })
 
         const select = await screen.findByRole('button', {
-          name: 'Filter by CI states',
+          name: 'Filter by coverage upload status',
         })
         await user.click(select)
 
-        const completeOption = await screen.findByRole('option', {
-          name: 'Complete',
+        const completedOption = await screen.findByRole('option', {
+          name: 'Completed',
         })
-        await user.click(completeOption)
+        await user.click(completedOption)
 
         await waitFor(() =>
-          expect(completeOption).toHaveClass('border-l-black')
+          expect(completedOption).toHaveClass('border-l-black')
         )
       })
     })

@@ -36,14 +36,14 @@ const useControlParams = ({ defaultBranch }) => {
   const { provider, owner, repo } = useParams()
   const defaultParams = {
     branch: defaultBranch,
-    states: [],
+    coverageStatus: [],
     search: '',
   }
 
   const { params, updateParams } = useLocationParams(defaultParams)
-  let { branch: selectedBranch, states, search } = params
+  let { branch: selectedBranch, coverageStatus, search } = params
 
-  const paramStatesNames = states.map((filter) => statusNames[filter])
+  const paramStatesNames = coverageStatus.map((filter) => statusNames[filter])
 
   const [selectedStates, setSelectedStates] = useState(paramStatesNames)
 
@@ -142,7 +142,7 @@ function CommitsTab() {
       (filter) => statusEnum[filter].status
     )
     setSelectedStates(commitStates)
-    updateParams({ states: commitStates })
+    updateParams({ coverageStatus: commitStates })
   }
 
   return (
@@ -179,14 +179,14 @@ function CommitsTab() {
             </div>
           </div>
           <div className="flex flex-col gap-1">
-            <h2 className="font-semibold">CI status</h2>
+            <h2 className="font-semibold">Coverage upload status</h2>
             <div className="min-w-[13rem] lg:min-w-[16rem]">
               <MultiSelect
-                dataMarketing="commits-filter-by-status"
-                ariaName="Filter by CI states"
+                dataMarketing="commits-filter-by-coverage-status"
+                ariaName="Filter by coverage upload status"
                 value={selectedStates}
                 items={filterItems}
-                resourceName="CI States"
+                resourceName="upload"
                 onChange={handleStatusChange}
               />
             </div>
@@ -205,7 +205,7 @@ function CommitsTab() {
       <Suspense fallback={<Loader />}>
         <CommitsTable
           branch={branch}
-          states={selectedStates?.map((state) => state?.toUpperCase())}
+          coverageStatus={selectedStates?.map((state) => state?.toUpperCase())}
           search={search}
         />
       </Suspense>
