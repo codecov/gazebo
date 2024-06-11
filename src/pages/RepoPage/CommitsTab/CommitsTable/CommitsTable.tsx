@@ -52,7 +52,7 @@ const baseColumns = [
   }),
   columnHelper.accessor('patch', {
     id: 'patch',
-    header: 'Patch',
+    header: 'Patch Coverage',
     cell: ({ renderValue }) => renderValue(),
   }),
 ]
@@ -117,7 +117,7 @@ const CommitsTable: React.FC<CommitsTableProps> = ({
       return [
         ...baseColumns,
         columnHelper.accessor('bundleAnalysis', {
-          header: 'Bundle Analysis',
+          header: 'Bundle',
           id: 'bundleAnalysis',
           cell: ({ renderValue }) => renderValue(),
         }),

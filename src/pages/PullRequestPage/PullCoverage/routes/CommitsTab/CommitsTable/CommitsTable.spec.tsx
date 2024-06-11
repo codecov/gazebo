@@ -220,7 +220,7 @@ describe('CommitsTable', () => {
         wrapper: wrapper(queryClient),
       })
 
-      const patchColumn = await screen.findByText('Patch')
+      const patchColumn = await screen.findByText('Patch Coverage')
       expect(patchColumn).toBeInTheDocument()
     })
 
@@ -231,7 +231,7 @@ describe('CommitsTable', () => {
           wrapper: wrapper(queryClient),
         })
 
-        const bundleAnalysis = await screen.findByText('Bundle Analysis')
+        const bundleAnalysis = await screen.findByText('Bundle')
         expect(bundleAnalysis).toBeInTheDocument()
       })
     })
@@ -243,7 +243,7 @@ describe('CommitsTable', () => {
           wrapper: wrapper(queryClient),
         })
 
-        const bundleAnalysis = screen.queryByText('Bundle Analysis')
+        const bundleAnalysis = screen.queryByText('Bundle')
         expect(bundleAnalysis).not.toBeInTheDocument()
       })
     })
