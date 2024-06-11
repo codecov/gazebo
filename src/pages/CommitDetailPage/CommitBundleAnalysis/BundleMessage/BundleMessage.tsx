@@ -47,9 +47,9 @@ const BundleMessage: React.FC = () => {
     comparison?.__typename === 'BundleAnalysisComparison' &&
     isNumber(comparison?.bundleChange?.size?.uncompress)
   ) {
-    const sizeDelta = comparison.bundleChange.size.uncompress
-    const positiveSize = Math.abs(sizeDelta)
-    if (sizeDelta < 0) {
+    const uncompressDelta = comparison.bundleChange.size.uncompress
+    const positiveSize = Math.abs(uncompressDelta)
+    if (uncompressDelta < 0) {
       return (
         <>
           <span className="font-semibold">Bundle report: </span>
@@ -59,7 +59,7 @@ const BundleMessage: React.FC = () => {
       )
     }
 
-    if (sizeDelta > 0) {
+    if (uncompressDelta > 0) {
       return (
         <>
           <span className="font-semibold">Bundle report: </span>changes will
