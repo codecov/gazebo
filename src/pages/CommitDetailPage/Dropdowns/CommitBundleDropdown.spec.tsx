@@ -10,7 +10,7 @@ import SummaryDropdown from 'ui/SummaryDropdown'
 
 import CommitBundleDropdown from './CommitBundleDropdown'
 
-const mockSummaryData = (sizeDelta: number) => ({
+const mockSummaryData = (uncompress: number) => ({
   owner: {
     repository: {
       __typename: 'Repository',
@@ -22,7 +22,7 @@ const mockSummaryData = (sizeDelta: number) => ({
               threeG: 2,
             },
             size: {
-              uncompress: sizeDelta,
+              uncompress,
             },
           },
         },
@@ -103,7 +103,7 @@ afterAll(() => {
 interface SetupArgs {
   noData?: boolean
   firstPullRequest?: boolean
-  sizeDelta?: number
+  uncompress?: number
   comparisonError?: boolean
 }
 
@@ -111,7 +111,7 @@ describe('CommitBundleDropdown', () => {
   function setup({
     noData = false,
     firstPullRequest = false,
-    sizeDelta = 0,
+    uncompress = 0,
     comparisonError = false,
   }: SetupArgs = {}) {
     const user = userEvent.setup()
@@ -126,7 +126,7 @@ describe('CommitBundleDropdown', () => {
           return res(ctx.status(200), ctx.data(mockErrorData))
         }
 
-        return res(ctx.status(200), ctx.data(mockSummaryData(sizeDelta)))
+        return res(ctx.status(200), ctx.data(mockSummaryData(uncompress)))
       })
     )
 
@@ -136,7 +136,7 @@ describe('CommitBundleDropdown', () => {
   describe('renders summary message', () => {
     describe('there is a positive size delta', () => {
       it('renders increase summary message', async () => {
-        setup({ sizeDelta: 10000 })
+        setup({ uncompress: 10000 })
         render(
           <CommitBundleDropdown>
             <p>Passed child</p>
@@ -156,7 +156,7 @@ describe('CommitBundleDropdown', () => {
 
     describe('there is a negative size delta', () => {
       it('renders decrease summary message', async () => {
-        setup({ sizeDelta: -10000 })
+        setup({ uncompress: -10000 })
         render(
           <CommitBundleDropdown>
             <p>Passed child</p>
@@ -176,7 +176,7 @@ describe('CommitBundleDropdown', () => {
 
     describe('there is no size delta', () => {
       it('renders no change summary message', async () => {
-        setup({ sizeDelta: 0 })
+        setup({ uncompress: 0 })
         render(
           <CommitBundleDropdown>
             <p>Passed child</p>
@@ -244,7 +244,7 @@ describe('CommitBundleDropdown', () => {
 
   describe('expanding the dropdown', () => {
     it('renders the passed children', async () => {
-      const { user } = setup({ sizeDelta: 10000 })
+      const { user } = setup({ uncompress: 10000 })
       render(
         <CommitBundleDropdown>
           <p>Passed child</p>
