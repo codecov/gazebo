@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import { useState } from 'react'
 
 import { useRegenerateRepoUploadToken } from 'services/repoUploadToken'
-import { useAddNotification } from 'services/toastNotification'
 import A from 'ui/A'
 import Button from 'ui/Button'
 import TokenWrapper from 'ui/TokenWrapper'
@@ -15,25 +14,13 @@ const TokenFormatEnum = Object.freeze({
 })
 
 function useRegenerateToken() {
-  const addToast = useAddNotification()
-  const { mutate, ...rest } = useRegenerateRepoUploadToken()
-
-  async function regenerateToken() {
-    mutate(null, {
-      onError: () =>
-        addToast({
-          type: 'error',
-          text: 'Something went wrong',
-        }),
-    })
-  }
-
-  return { regenerateToken, ...rest }
+  const { mutate, isLoading } = useRegenerateRepoUploadToken()
+  return { mutate, isLoading }
 }
 
 function RepoUploadToken({ uploadToken }) {
   const [showModal, setShowModal] = useState(false)
-  const { regenerateToken, isLoading } = useRegenerateToken()
+  const { mutate, isLoading } = useRegenerateToken()
 
   if (!uploadToken) {
     return null
@@ -69,7 +56,7 @@ function RepoUploadToken({ uploadToken }) {
         <RegenerateTokenModal
           showModal={showModal}
           closeModal={() => setShowModal(false)}
-          regenerateToken={regenerateToken}
+          regenerateToken={mutate}
           isLoading={isLoading}
         />
       </div>
