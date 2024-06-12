@@ -78,22 +78,21 @@ const mockCommits = {
                 username: 'codecov-user',
                 avatarUrl: 'http://127.0.0.1/cool-user-avatar',
               },
-              totals: {
-                coverage: 100,
-              },
-              parent: {
-                totals: {
-                  coverage: 0,
-                },
-              },
+              bundleStatus: 'COMPLETED',
+              coverageStatus: 'COMPLETED',
               compareWithParent: {
                 __typename: 'Comparison',
                 patchTotals: {
                   percentCovered: 100,
                 },
               },
-              bundleAnalysisReport: {
-                __typename: 'BundleAnalysisReport',
+              bundleAnalysisCompareWithParent: {
+                __typename: 'BundleAnalysisComparison',
+                bundleChange: {
+                  size: {
+                    uncompress: 1001,
+                  },
+                },
               },
             },
           },
@@ -117,6 +116,7 @@ const mockOverview = {
       coverageEnabled: true,
       bundleAnalysisEnabled: true,
       languages: [],
+      testAnalyticsEnabled: false,
     },
   },
 }
@@ -151,43 +151,6 @@ const mockRepoSettings = (isPrivate = false) => ({
     },
   },
 })
-
-const mockCommitTeamResponse = {
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      commits: {
-        edges: [
-          {
-            node: {
-              ciPassed: true,
-              message: 'commit message 1',
-              commitid: 'fdb5b182241cfdc8d8a8dd1c6f98d1259f522b9c',
-              createdAt: '2023-10-11T00:00.000000',
-              author: {
-                username: 'codecov-user',
-                avatarUrl: 'http://127.0.0.1/avatar-url',
-              },
-              compareWithParent: {
-                __typename: 'Comparison',
-                patchTotals: {
-                  percentCovered: 80,
-                },
-              },
-              bundleAnalysisReport: {
-                __typename: 'MissingHeadReport',
-              },
-            },
-          },
-        ],
-        pageInfo: {
-          hasNextPage: false,
-          endCursor: null,
-        },
-      },
-    },
-  },
-}
 
 const mockBranchHasCommits = {
   owner: {
@@ -224,7 +187,6 @@ describe('CommitsTab', () => {
     returnBranch = '',
     branchHasCommits = true,
     isPrivate = false,
-    tierValue = TierNames.PRO,
   }) {
     const user = userEvent.setup()
     const fetchNextPage = jest.fn()
@@ -277,33 +239,6 @@ describe('CommitsTab', () => {
       ),
       graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
-      }),
-      graphql.query('OwnerTier', (req, res, ctx) => {
-        if (tierValue === TierNames.TEAM) {
-          return res(
-            ctx.status(200),
-            ctx.data({
-              owner: { plan: { tierName: TierNames.TEAM } },
-            })
-          )
-        }
-
-        return res(
-          ctx.status(200),
-          ctx.data({
-            owner: { plan: { tierName: 'pro' } },
-          })
-        )
-      }),
-      graphql.query('GetCommitsTeam', (req, res, ctx) => {
-        if (!!req?.variables?.filters?.branchName) {
-          branchName(req?.variables?.filters?.branchName)
-        }
-
-        if (!!req?.variables?.filters?.search) {
-          commitSearch(req?.variables?.filters?.search)
-        }
-        return res(ctx.status(200), ctx.data(mockCommitTeamResponse))
       }),
       graphql.query('GetBranchCommits', (req, res, ctx) => {
         if (branchHasCommits) {
@@ -401,36 +336,6 @@ describe('CommitsTab', () => {
       })
 
       const head = await screen.findByText(/Name/)
-      expect(head).toBeInTheDocument()
-    })
-
-    it('renders with table coverage heading', async () => {
-      setup({ hasNextPage: true })
-      repoPageRender({
-        renderCommits: () => (
-          <Wrapper>
-            <CommitsTab />
-          </Wrapper>
-        ),
-        initialEntries: ['/gh/codecov/gazebo/commits'],
-      })
-
-      const head = await screen.findByText(/Coverage/)
-      expect(head).toBeInTheDocument()
-    })
-
-    it('renders with table change heading', async () => {
-      setup({ hasNextPage: true })
-      repoPageRender({
-        renderCommits: () => (
-          <Wrapper>
-            <CommitsTab />
-          </Wrapper>
-        ),
-        initialEntries: ['/gh/codecov/gazebo/commits'],
-      })
-
-      const head = await screen.findByText(/Change/)
       expect(head).toBeInTheDocument()
     })
 

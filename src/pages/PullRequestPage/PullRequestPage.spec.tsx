@@ -137,6 +137,7 @@ const mockOverview = (privateRepo = false) => ({
       coverageEnabled: true,
       bundleAnalysisEnabled: true,
       languages: ['typescript'],
+      testAnalyticsEnabled: true,
     },
   },
 })

@@ -20,6 +20,7 @@ const mockOverview = (privateRepo = false) => ({
       oldestCommitAt: '2022-10-10T11:59:59',
       coverageEnabled: true,
       bundleAnalysisEnabled: true,
+      testAnalyticsEnabled: true,
       languages: ['typescript'],
     },
   },

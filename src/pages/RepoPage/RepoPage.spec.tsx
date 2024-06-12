@@ -19,8 +19,6 @@ jest.mock('./CommitsTab', () => () => 'CommitsTab')
 jest.mock('./CoverageTab', () => () => 'CoverageTab')
 jest.mock('./CoverageOnboarding', () => () => 'CoverageOnboarding')
 jest.mock('./PullsTab', () => () => 'PullsTab')
-jest.mock('./FlagsTab', () => () => 'FlagsTab')
-jest.mock('./ComponentsTab', () => () => 'ComponentsTab')
 jest.mock('./SettingsTab', () => () => 'SettingsTab')
 jest.mock('shared/featureFlags')
 jest.mock('./ActivationAlert', () => () => 'ActivationAlert')
@@ -63,6 +61,7 @@ const mockGetRepo = ({
 const mockRepoOverview = ({
   coverageEnabled = true,
   bundleAnalysisEnabled = true,
+  testAnalyticsEnabled = false,
   language = '',
 }) => {
   const languages = ['python']
@@ -79,6 +78,7 @@ const mockRepoOverview = ({
         oldestCommitAt: '2022-10-10T11:59:59',
         coverageEnabled,
         bundleAnalysisEnabled,
+        testAnalyticsEnabled,
         languages,
       },
     },
@@ -116,8 +116,8 @@ const wrapper =
                 '/:provider/:owner/:repo/tree/:branch',
                 '/:provider/:owner/:repo/tree/:branch/:path+',
                 '/:provider/:owner/:repo',
-                '/:provider/:owner/:repo/tests',
-                '/:provider/:owner/:repo/tests/codecov-cli',
+                '/:provider/:owner/:repo/tests/new',
+                '/:provider/:owner/:repo/tests/new/codecov-cli',
               ]}
             >
               <Suspense fallback={null}>
@@ -158,6 +158,7 @@ interface SetupArgs {
   bundleAnalysisEnabled?: boolean
   language?: string
   onboardingFailedTests?: boolean
+  testAnalyticsEnabled?: boolean
 }
 
 describe('RepoPage', () => {
@@ -175,6 +176,7 @@ describe('RepoPage', () => {
       bundleAnalysisEnabled = true,
       onboardingFailedTests = true,
       language,
+      testAnalyticsEnabled = false,
     }: SetupArgs = {
       noUploadToken: false,
       isCurrentUserPartOfOrg: true,
@@ -242,6 +244,7 @@ describe('RepoPage', () => {
             mockRepoOverview({
               coverageEnabled,
               bundleAnalysisEnabled,
+              testAnalyticsEnabled,
               language,
             })
           )
@@ -507,36 +510,6 @@ describe('RepoPage', () => {
         })
       })
 
-      describe('testing flags path', () => {
-        it('renders flags tab', async () => {
-          const { queryClient } = setup()
-          render(<RepoPage />, {
-            wrapper: wrapper({
-              queryClient,
-              initialEntries: '/gh/codecov/cool-repo/flags',
-            }),
-          })
-
-          const flags = await screen.findByText('FlagsTab')
-          expect(flags).toBeInTheDocument()
-        })
-      })
-
-      describe('testing components path', () => {
-        it('renders components tab', async () => {
-          const { queryClient } = setup()
-          render(<RepoPage />, {
-            wrapper: wrapper({
-              queryClient,
-              initialEntries: '/gh/codecov/cool-repo/components',
-            }),
-          })
-
-          const components = await screen.findByText('ComponentsTab')
-          expect(components).toBeInTheDocument()
-        })
-      })
-
       describe('testing commits path', () => {
         describe('products are enabled', () => {
           it('renders commits tab', async () => {
@@ -724,11 +697,12 @@ describe('RepoPage', () => {
             isRepoActive: true,
             hasRepoData: true,
             isRepoActivated: true,
+            onboardingFailedTests: true,
           })
           render(<RepoPage />, {
             wrapper: wrapper({
               queryClient,
-              initialEntries: '/gh/codecov/cool-repo/tests',
+              initialEntries: '/gh/codecov/cool-repo/tests/new',
             }),
           })
 
@@ -745,7 +719,7 @@ describe('RepoPage', () => {
           render(<RepoPage />, {
             wrapper: wrapper({
               queryClient,
-              initialEntries: '/gh/codecov/cool-repo/tests/codecov-cli',
+              initialEntries: '/gh/codecov/cool-repo/tests/new/codecov-cli',
             }),
           })
 
@@ -763,7 +737,7 @@ describe('RepoPage', () => {
           render(<RepoPage />, {
             wrapper: wrapper({
               queryClient,
-              initialEntries: '/gh/codecov/cool-repo/tests',
+              initialEntries: '/gh/codecov/cool-repo/tests/new',
             }),
           })
 
@@ -781,7 +755,7 @@ describe('RepoPage', () => {
           render(<RepoPage />, {
             wrapper: wrapper({
               queryClient,
-              initialEntries: '/gh/codecov/cool-repo/tests/codecov-cli',
+              initialEntries: '/gh/codecov/cool-repo/tests/new/codecov-cli',
             }),
           })
 
@@ -789,6 +763,27 @@ describe('RepoPage', () => {
             'CoverageOnboarding'
           )
           expect(coverageOnboarding).toBeInTheDocument()
+        })
+
+        it('does not render tab when feature flag is on and test analytics is already enabled', async () => {
+          const { queryClient } = setup({
+            isRepoActive: true,
+            hasRepoData: true,
+            isRepoActivated: true,
+            testAnalyticsEnabled: true,
+          })
+          render(<RepoPage />, {
+            wrapper: wrapper({
+              queryClient,
+              initialEntries: '/gh/codecov/cool-repo/tests',
+            }),
+          })
+
+          const failedTests = screen.queryByText('FailedTestsTab')
+          expect(failedTests).not.toBeInTheDocument()
+
+          const coverage = await screen.findByText('CoverageTab')
+          expect(coverage).toBeInTheDocument()
         })
       })
 

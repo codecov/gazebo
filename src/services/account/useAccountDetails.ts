@@ -4,7 +4,7 @@ import { z } from 'zod'
 import Api from 'shared/api'
 import { NetworkErrorObject } from 'shared/api/helpers'
 
-export const InvoiceSchema = z
+const InvoiceSchema = z
   .object({
     amountDue: z.number().nullable(),
     amountPaid: z.number().nullable(),

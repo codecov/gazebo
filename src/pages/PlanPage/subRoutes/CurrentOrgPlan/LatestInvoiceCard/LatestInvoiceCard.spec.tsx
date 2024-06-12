@@ -12,8 +12,6 @@ const invoice = {
   created: 1595270468,
   dueDate: 1600544863,
   total: 9600.0,
-  invoicePdf:
-    'https://pay.stripe.com/invoice/acct_14SJTOGlVGuVgOrk/invst_Hs2qfFwArnp6AMjWPlwtyqqszoBzO3q/pdf',
 } as z.infer<typeof InvoiceSchema>
 
 describe('LatestInvoiceCard', () => {

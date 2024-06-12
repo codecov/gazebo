@@ -7,6 +7,7 @@ import { useNavLinks } from 'services/navigation'
 import { Card } from 'ui/Card'
 import { RadioTileGroup } from 'ui/RadioTileGroup'
 
+import CodecovCLI from './CodecovCLI'
 import GitHubActions from './GitHubActions'
 
 const SETUP_OPTIONS = {
@@ -18,8 +19,10 @@ type SetupOptionsValue = (typeof SETUP_OPTIONS)[keyof typeof SETUP_OPTIONS]
 function SetupOptionSelector() {
   const location = useLocation()
   const history = useHistory()
-  const { failedTestsTab: githubActions, failedTestsCodecovCLI: codecovCLI } =
-    useNavLinks()
+  const {
+    failedTestsOnboarding: githubActions,
+    failedTestsCodecovCLI: codecovCLI,
+  } = useNavLinks()
   const urls = {
     GitHubActions: githubActions.path(),
     CodecovCLI: codecovCLI.path(),
@@ -78,11 +81,11 @@ function SetupOptionSelector() {
 function Content() {
   return (
     <Switch>
-      <SentryRoute path="/:provider/:owner/:repo/tests" exact>
+      <SentryRoute path="/:provider/:owner/:repo/tests/new" exact>
         <GitHubActions />
       </SentryRoute>
-      <SentryRoute path="/:provider/:owner/:repo/tests/codecov-cli" exact>
-        <>Codecov CLI tab</>
+      <SentryRoute path="/:provider/:owner/:repo/tests/new/codecov-cli" exact>
+        <CodecovCLI />
       </SentryRoute>
     </Switch>
   )

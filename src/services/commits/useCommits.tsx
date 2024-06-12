@@ -37,25 +37,36 @@ const AuthorSchema = z.object({
   avatarUrl: z.string(),
 })
 
+const CommitStatusSchema = z.union([
+  z.literal('COMPLETED'),
+  z.literal('ERROR'),
+  z.literal('PENDING'),
+])
+
 const CommitSchema = z.object({
   ciPassed: z.boolean().nullable(),
   message: z.string().nullable(),
   commitid: z.string(),
   createdAt: z.string(),
   author: AuthorSchema.nullable(),
-  totals: z
-    .object({
-      coverage: z.number().nullable(),
-    })
-    .nullable(),
-  parent: z
-    .object({
-      totals: z
-        .object({
-          coverage: z.number().nullable(),
-        })
-        .nullable(),
-    })
+  bundleStatus: CommitStatusSchema.nullable(),
+  coverageStatus: CommitStatusSchema.nullable(),
+  bundleAnalysisCompareWithParent: z
+    .discriminatedUnion('__typename', [
+      z.object({
+        __typename: z.literal('BundleAnalysisComparison'),
+        bundleChange: z.object({
+          size: z.object({
+            uncompress: z.number(),
+          }),
+        }),
+      }),
+      FirstPullRequestSchema,
+      MissingBaseCommitSchema,
+      MissingBaseReportSchema,
+      MissingHeadCommitSchema,
+      MissingHeadReportSchema,
+    ])
     .nullable(),
   compareWithParent: z
     .discriminatedUnion('__typename', [
@@ -73,12 +84,6 @@ const CommitSchema = z.object({
       MissingComparisonSchema,
       MissingHeadCommitSchema,
       MissingHeadReportSchema,
-    ])
-    .nullable(),
-  bundleAnalysisReport: z
-    .discriminatedUnion('__typename', [
-      z.object({ __typename: z.literal('BundleAnalysisReport') }),
-      z.object({ __typename: z.literal('MissingHeadReport') }),
     ])
     .nullable(),
 })
@@ -139,16 +144,35 @@ query GetCommits(
               message
               commitid
               createdAt
+              bundleStatus
+              coverageStatus
               author {
                 username
                 avatarUrl
               }
-              totals {
-                coverage: percentCovered
-              }
-              parent {
-                totals {
-                  coverage: percentCovered
+              bundleAnalysisCompareWithParent {
+                __typename
+                ... on BundleAnalysisComparison {
+                  bundleChange {
+                    size {
+                      uncompress
+                    }
+                  }
+                }
+                ... on FirstPullRequest {
+                  message
+                }
+                ... on MissingBaseCommit {
+                  message
+                }
+                ... on MissingHeadCommit {
+                  message
+                }
+                ... on MissingBaseReport {
+                  message
+                }
+                ... on MissingHeadReport {
+                  message
                 }
               }
               compareWithParent {
@@ -176,9 +200,6 @@ query GetCommits(
                 ... on MissingHeadReport {
                   message
                 }
-              }
-              bundleAnalysisReport {
-                __typename
               }
             }
           }
