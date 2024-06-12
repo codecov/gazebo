@@ -266,7 +266,7 @@ describe('PullsTable', () => {
         const { queryClient } = setup({ bundleAnalysisEnabled: true })
         render(<PullsTable />, { wrapper: wrapper(queryClient) })
 
-        const bundleAnalysis = await screen.findByText('Upload: ⏳')
+        const bundleAnalysis = await screen.findByLabelText('Pending upload')
         expect(bundleAnalysis).toBeInTheDocument()
       })
     })
@@ -279,7 +279,7 @@ describe('PullsTable', () => {
         const spinner = await screen.findByTestId('spinner')
         await waitForElementToBeRemoved(spinner)
 
-        const bundleAnalysis = screen.queryByText('Upload: ⏳')
+        const bundleAnalysis = screen.queryByLabelText('Pending upload')
         expect(bundleAnalysis).not.toBeInTheDocument()
       })
     })
