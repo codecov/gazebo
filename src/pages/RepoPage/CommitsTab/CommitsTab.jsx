@@ -17,7 +17,7 @@ import SearchField from 'ui/SearchField'
 import Select from 'ui/Select'
 import Spinner from 'ui/Spinner'
 
-import { filterItems, statusEnum, statusNames } from './enums'
+import { filterItems, statusEnum } from './enums'
 import { useCommitsTabBranchSelector } from './hooks'
 
 import { useSetCrumbs } from '../context'
@@ -43,7 +43,7 @@ const useControlParams = ({ defaultBranch }) => {
   const { params, updateParams } = useLocationParams(defaultParams)
   let { branch: selectedBranch, coverageStatus, search } = params
 
-  const paramStatesNames = coverageStatus.map((filter) => statusNames[filter])
+  const paramStatesNames = coverageStatus.map((filter) => statusEnum[filter])
 
   const [selectedStates, setSelectedStates] = useState(paramStatesNames)
 
@@ -138,11 +138,9 @@ function CommitsTab() {
   const newBranches = [...(isSearching ? [] : [ALL_BRANCHES]), ...branchList]
 
   const handleStatusChange = (selectStates) => {
-    const commitStates = selectStates?.map(
-      (filter) => statusEnum[filter].status
-    )
+    const commitStates = selectStates?.map(({ status }) => statusEnum[status])
     setSelectedStates(commitStates)
-    updateParams({ coverageStatus: commitStates })
+    updateParams({ coverageStatus: commitStates?.map((state) => state.status) })
   }
 
   return (
@@ -186,6 +184,7 @@ function CommitsTab() {
                 ariaName="Filter by coverage upload status"
                 value={selectedStates}
                 items={filterItems}
+                renderItem={(item) => item.option}
                 resourceName="upload"
                 onChange={handleStatusChange}
               />
@@ -205,7 +204,7 @@ function CommitsTab() {
       <Suspense fallback={<Loader />}>
         <CommitsTable
           branch={branch}
-          coverageStatus={selectedStates?.map((state) => state?.toUpperCase())}
+          coverageStatus={selectedStates?.map((state) => state?.status)}
           search={search}
         />
       </Suspense>

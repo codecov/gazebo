@@ -474,7 +474,7 @@ describe('CommitsTab', () => {
         await user.click(select)
 
         const completedOption = await screen.findByRole('option', {
-          name: 'Completed',
+          name: /Completed/,
         })
         await user.click(completedOption)
 
@@ -651,7 +651,7 @@ describe('CommitsTab', () => {
         await user.click(select)
 
         const completedOption = await screen.findByRole('option', {
-          name: 'Completed',
+          name: /Completed/,
         })
         await user.click(completedOption)
 

@@ -1,38 +1,28 @@
 export const statusEnum = {
-  Completed: {
+  COMPLETED: {
     status: 'COMPLETED',
-    name: (
-      <p>
+    option: (
+      <>
         <span aria-label="Completed uploads">&#x2705;</span> Completed
-      </p>
+      </>
     ),
   },
-  Pending: {
+  PENDING: {
     status: 'PENDING',
-    name: (
-      <p>
+    option: (
+      <>
         <span aria-label="Pending uploads">&#x23F3;</span> Pending
-      </p>
+      </>
     ),
   },
-  Error: {
+  ERROR: {
     status: 'ERROR',
-    name: (
-      <p>
+    option: (
+      <>
         <span aria-label="Errored uploads">&#x274C;</span> Error
-      </p>
+      </>
     ),
   },
 } as const
 
-export const filterItems = [
-  statusEnum.Completed.name,
-  statusEnum.Pending.name,
-  statusEnum.Error.name,
-] as const
-
-export const statusNames = {
-  COMPLETED: statusEnum.Completed.name,
-  PENDING: statusEnum.Pending.name,
-  ERROR: statusEnum.Error.name,
-} as const
+export const filterItems = Object.values(statusEnum)
