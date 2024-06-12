@@ -173,7 +173,7 @@ describe('Dropdown', () => {
         expect(link).toBeVisible()
         expect(link).toHaveAttribute(
           'href',
-          'https://github.com/apps/codecov/installations/new'
+          'https://github.com/apps/sun-codecov-self-hosted/installations/new'
         )
       })
     })

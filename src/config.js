@@ -6,8 +6,8 @@ const defaultConfig = {
   SENTRY_ENVIRONMENT: 'staging',
   SENTRY_TRACING_SAMPLE_RATE: 1.0,
   SENTRY_SESSION_SAMPLE_RATE: 0.1,
-  SENTRY_ERROR_SAMPLE_RATE: 1.0,
-  GH_APP: 'codecov',
+  SENTRY_ERROR_SAMPLE_RATE: 1,
+  GH_APP: 'sun-codecov-self-hosted',
 }
 
 export const LOCAL_STORAGE_SESSION_EXPIRED_KEY = 'expired-session'

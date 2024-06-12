@@ -353,7 +353,7 @@ describe('DefaultOrgSelector', () => {
 
       await waitFor(() =>
         expect(mockWindow).toHaveBeenCalledWith(
-          'https://github.com/apps/codecov/installations/new',
+          'https://github.com/apps/sun-codecov-self-hosted/installations/new',
           '_blank'
         )
       )

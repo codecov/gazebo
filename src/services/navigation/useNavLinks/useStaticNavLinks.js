@@ -173,13 +173,14 @@ export function useStaticNavLinks() {
       openNewTab: true,
     },
     codecovGithubApp: {
-      path: () => 'https://github.com/apps/codecov',
+      path: () => 'https://github.com/apps/sun-codecov-self-hosted',
       isExternalLink: true,
       text: 'Codecov Github App',
       openNewTab: true,
     },
     codecovGithubAppSelectTarget: {
-      path: () => 'https://github.com/apps/codecov/installations/select_target',
+      path: () =>
+        'https://github.com/apps/sun-codecov-self-hosted/installations/select_target',
       isExternalLink: true,
       text: 'Codecov Github App',
       openNewTab: true,

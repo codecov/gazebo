@@ -14,7 +14,7 @@ import TopBanner, { saveToLocalStorage } from 'ui/TopBanner'
 
 const APP_INSTALL_BANNER_KEY = 'request-install-banner'
 const COPY_APP_INSTALL_STRING =
-  "Hello, could you help approve the installation of the Codecov app on GitHub for our organization? Here's the link: https://github.com/apps/codecov/installations/select_target"
+  "Hello, could you help approve the installation of the Codecov app on GitHub for our organization? Here's the link: https://github.com/apps/sun-codecov-self-hosted/installations/select_target"
 
 interface URLParams {
   provider: string

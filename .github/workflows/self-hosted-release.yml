@@ -1,26 +1,28 @@
-name: Create Self Hosted Release
-
 on:
   pull_request:
-    branches:
-      - main
-    types: [closed]
+  push:
 
 jobs:
-  create-release:
-    name: Tag Release ${{ github.head_ref }} and Push Docker image to Docker Hub
-    if: ${{ github.event.pull_request.merged == true && startsWith(github.head_ref, 'release/') && github.repository_owner == 'codecov' }}
-    uses: codecov/gha-workflows/.github/workflows/create-release.yml@v1.2.14
-    with:
-      tag_to_prepend: self-hosted-
-    secrets: inherit
+  build-self-hosted:
+    name: Build Self Hosted App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  push-image:
-    needs: [create-release]
-    if: ${{ github.event.pull_request.merged == true && startsWith(github.head_ref, 'release/') && github.repository_owner == 'codecov' }}
-    uses: codecov/gha-workflows/.github/workflows/self-hosted.yml@v1.2.14
-    secrets: inherit
-    with:
-      push_release: true
-      repo: ${{ vars.CODECOV_IMAGE_V2 || 'codecov/self-hosted-frontend' }}
-      cache_requirements: false
+      - name: Build self hosted
+        run: |
+          make build.self-hosted
+          make save.self-hosted
+      - name: Load built image
+        run: |
+          make load.self-hosted
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1.14.1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Push Self Hosted Rolling
+        run: |
+          make tag.self-hosted-release
+          make push.self-hosted-release

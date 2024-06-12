@@ -1,7 +1,7 @@
 sha := $(shell git rev-parse --short=7 HEAD)
-release_version := `cat VERSION`
+release_version := '24.5.1-rc1'
 build_date ?= $(shell git show -s --date=iso8601-strict --pretty=format:%cd $$sha)
-dockerhub_image := codecov/self-hosted-frontend
+dockerhub_image := sunci/self-hosted-frontend
 ENV ?= ENTERPRISE
 export DOCKER_BUILDKIT := 1
 
