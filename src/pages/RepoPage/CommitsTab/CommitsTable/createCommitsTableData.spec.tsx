@@ -1,9 +1,11 @@
 import TotalsNumber from 'ui/TotalsNumber'
 
-import { createCommitsTableData } from './createCommitsTableData'
-
-import CIStatus from '../shared/CIStatus'
-import Title from '../shared/Title'
+import {
+  createCommitsTableData,
+  ErroredUpload,
+  PendingUpload,
+} from './createCommitsTableData'
+import Title from './Title'
 
 describe('createCommitsTableData', () => {
   describe('pages is undefined', () => {
@@ -33,6 +35,111 @@ describe('createCommitsTableData', () => {
   })
 
   describe('pages has valid commits', () => {
+    it('returns the name field', () => {
+      const commitData = {
+        ciPassed: true,
+        message: 'Cool commit message',
+        commitid: 'commit123',
+        createdAt: '2023-04-25T15:38:48.046832',
+        author: {
+          username: 'cool-user',
+          avatarUrl: 'http://127.0.0.1/avatar-url',
+        },
+        bundleStatus: 'COMPLETED',
+        coverageStatus: 'COMPLETED',
+        compareWithParent: {
+          __typename: 'Comparison',
+          patchTotals: {
+            percentCovered: 100,
+          },
+        },
+        bundleAnalysisCompareWithParent: {
+          __typename: 'MissingHeadReport',
+          message: 'Missing head report',
+        },
+      } as const
+
+      const result = createCommitsTableData({
+        pages: [{ commits: [commitData] }],
+      })
+
+      expect(result[0]?.name).toStrictEqual(
+        <Title
+          author={{
+            avatarUrl: 'http://127.0.0.1/avatar-url',
+            username: 'cool-user',
+          }}
+          commitid="commit123"
+          createdAt="2023-04-25T15:38:48.046832"
+          message="Cool commit message"
+        />
+      )
+    })
+
+    describe('coverage status is ERROR', () => {
+      it('returns UploadError component', () => {
+        const commitData = {
+          ciPassed: null,
+          message: null,
+          commitid: 'commit-123',
+          createdAt: '2021-11-01T19:44:10.795533+00:00',
+          author: null,
+          bundleStatus: 'ERROR',
+          coverageStatus: 'ERROR',
+          compareWithParent: {
+            __typename: 'MissingBaseCommit',
+            message: 'Missing base commit',
+          },
+          bundleAnalysisCompareWithParent: {
+            __typename: 'BundleAnalysisComparison',
+            bundleChange: {
+              size: {
+                uncompress: 100,
+              },
+            },
+          },
+        } as const
+
+        const result = createCommitsTableData({
+          pages: [{ commits: [commitData] }],
+        })
+
+        expect(result[0]?.patch).toStrictEqual(<ErroredUpload />)
+      })
+    })
+
+    describe('coverage status is PENDING', () => {
+      it('returns PendingUpload component', () => {
+        const commitData = {
+          ciPassed: null,
+          message: null,
+          commitid: 'commit-123',
+          createdAt: '2021-11-01T19:44:10.795533+00:00',
+          author: null,
+          bundleStatus: 'PENDING',
+          coverageStatus: 'PENDING',
+          compareWithParent: {
+            __typename: 'MissingBaseCommit',
+            message: 'Missing base commit',
+          },
+          bundleAnalysisCompareWithParent: {
+            __typename: 'BundleAnalysisComparison',
+            bundleChange: {
+              size: {
+                uncompress: 100,
+              },
+            },
+          },
+        } as const
+
+        const result = createCommitsTableData({
+          pages: [{ commits: [commitData] }],
+        })
+
+        expect(result[0]?.patch).toStrictEqual(<PendingUpload />)
+      })
+    })
+
     describe('compareWithParent __typename is not Comparison', () => {
       it('returns a dash', () => {
         const commitData = {
@@ -41,20 +148,15 @@ describe('createCommitsTableData', () => {
           commitid: 'commit-123',
           createdAt: '2021-11-01T19:44:10.795533+00:00',
           author: null,
-          totals: {
-            coverage: 100,
-          },
-          parent: {
-            totals: {
-              coverage: 0,
-            },
-          },
+          bundleStatus: 'COMPLETED',
+          coverageStatus: 'COMPLETED',
           compareWithParent: {
             __typename: 'MissingBaseCommit',
             message: 'Missing base commit',
           },
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
+          bundleAnalysisCompareWithParent: {
+            __typename: 'MissingHeadReport',
+            message: 'Missing head report',
           },
         } as const
 
@@ -62,7 +164,7 @@ describe('createCommitsTableData', () => {
           pages: [{ commits: [commitData] }],
         })
 
-        expect(result[0]?.patch).toStrictEqual(<p className="text-right">-</p>)
+        expect(result[0]?.patch).toStrictEqual(<p>-</p>)
       })
     })
 
@@ -74,22 +176,17 @@ describe('createCommitsTableData', () => {
           commitid: 'commit-123',
           createdAt: '2021-11-01T19:44:10.795533+00:00',
           author: null,
-          totals: {
-            coverage: 100,
-          },
-          parent: {
-            totals: {
-              coverage: 0,
-            },
-          },
+          bundleStatus: 'COMPLETED',
+          coverageStatus: 'COMPLETED',
           compareWithParent: {
             __typename: 'Comparison',
             patchTotals: {
               percentCovered: 100,
             },
           },
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
+          bundleAnalysisCompareWithParent: {
+            __typename: 'MissingHeadReport',
+            message: 'Missing head report',
           },
         } as const
 
@@ -116,22 +213,17 @@ describe('createCommitsTableData', () => {
             commitid: 'commit-123',
             createdAt: '2021-11-01T19:44:10.795533+00:00',
             author: null,
-            totals: {
-              coverage: 100,
-            },
-            parent: {
-              totals: {
-                coverage: 0,
-              },
-            },
+            bundleStatus: 'COMPLETED',
+            coverageStatus: 'COMPLETED',
             compareWithParent: {
               __typename: 'Comparison',
               patchTotals: {
                 percentCovered: null,
               },
             },
-            bundleAnalysisReport: {
-              __typename: 'BundleAnalysisReport',
+            bundleAnalysisCompareWithParent: {
+              __typename: 'MissingHeadReport',
+              message: 'Missing head report',
             },
           } as const
 
@@ -152,196 +244,27 @@ describe('createCommitsTableData', () => {
       })
     })
 
-    describe('commit details are all non-null values', () => {
-      it('returns the name component', () => {
-        const commitData = {
-          ciPassed: true,
-          message: 'Cool commit message',
-          commitid: 'commit123',
-          createdAt: '2023-04-25T15:38:48.046832',
-          author: {
-            username: 'cool-user',
-            avatarUrl: 'http://127.0.0.1/avatar-url',
-          },
-          totals: {
-            coverage: 100,
-          },
-          parent: {
-            totals: {
-              coverage: 0,
-            },
-          },
-          compareWithParent: {
-            __typename: 'Comparison',
-            patchTotals: {
-              percentCovered: 100,
-            },
-          },
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-          },
-        } as const
-
-        const result = createCommitsTableData({
-          pages: [{ commits: [commitData] }],
-        })
-
-        expect(result[0]?.name).toStrictEqual(
-          <Title
-            author={{
-              avatarUrl: 'http://127.0.0.1/avatar-url',
-              username: 'cool-user',
-            }}
-            commitid="commit123"
-            createdAt="2023-04-25T15:38:48.046832"
-            message="Cool commit message"
-          />
-        )
-      })
-
-      it('returns the ciStatus column', () => {
-        const commitData = {
-          ciPassed: true,
-          message: 'Cool commit message',
-          commitid: 'commit123',
-          createdAt: '2023-04-25T15:38:48.046832',
-          author: {
-            username: 'cool-user',
-            avatarUrl: 'http://127.0.0.1/avatar-url',
-          },
-          totals: {
-            coverage: 100,
-          },
-          parent: {
-            totals: {
-              coverage: 0,
-            },
-          },
-          compareWithParent: {
-            __typename: 'Comparison',
-            patchTotals: {
-              percentCovered: 100,
-            },
-          },
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-          },
-        } as const
-
-        const result = createCommitsTableData({
-          pages: [{ commits: [commitData] }],
-        })
-
-        expect(result[0]?.ciStatus).toStrictEqual(
-          <CIStatus ciPassed={true} commitid="commit123" coverage={100} />
-        )
-      })
-
-      it('returns coverage column', () => {
-        const commitData = {
-          ciPassed: true,
-          message: 'Cool commit message',
-          commitid: 'commit123',
-          createdAt: '2023-04-25T15:38:48.046832',
-          author: {
-            username: 'cool-user',
-            avatarUrl: 'http://127.0.0.1/avatar-url',
-          },
-          totals: {
-            coverage: 100,
-          },
-          parent: {
-            totals: {
-              coverage: 0,
-            },
-          },
-          compareWithParent: {
-            __typename: 'Comparison',
-            patchTotals: {
-              percentCovered: 100,
-            },
-          },
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-          },
-        } as const
-
-        const result = createCommitsTableData({
-          pages: [{ commits: [commitData] }],
-        })
-
-        expect(result[0]?.coverage).toStrictEqual(
-          <TotalsNumber
-            plain
-            large={false}
-            light={false}
-            value={100}
-            showChange={false}
-          />
-        )
-      })
-
-      it('returns change column', () => {
-        const commitData = {
-          ciPassed: true,
-          message: 'Cool commit message',
-          commitid: 'commit123',
-          createdAt: '2023-04-25T15:38:48.046832',
-          author: {
-            username: 'cool-user',
-            avatarUrl: 'http://127.0.0.1/avatar-url',
-          },
-          totals: {
-            coverage: 100,
-          },
-          parent: {
-            totals: {
-              coverage: null,
-            },
-          },
-          compareWithParent: {
-            __typename: 'Comparison',
-            patchTotals: {
-              percentCovered: 99,
-            },
-          },
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-          },
-        } as const
-
-        const result = createCommitsTableData({
-          pages: [{ commits: [commitData] }],
-        })
-
-        expect(result[0]?.change).toEqual(
-          <TotalsNumber large={false} light={false} showChange={true} />
-        )
-      })
-    })
-
-    describe('bundleAnalysisReport __typename is not BundleAnalysisReport', () => {
-      it('returns an x emoji', () => {
+    describe('bundle status is ERROR', () => {
+      it('returns UploadError component', () => {
         const commitData = {
           ciPassed: null,
           message: null,
           commitid: 'commit-123',
           createdAt: '2021-11-01T19:44:10.795533+00:00',
           author: null,
-          totals: {
-            coverage: 100,
-          },
-          parent: {
-            totals: {
-              coverage: 0,
-            },
-          },
+          bundleStatus: 'ERROR',
+          coverageStatus: 'COMPLETED',
           compareWithParent: {
             __typename: 'MissingBaseCommit',
             message: 'Missing base commit',
           },
-          bundleAnalysisReport: {
-            __typename: 'MissingHeadReport',
+          bundleAnalysisCompareWithParent: {
+            __typename: 'BundleAnalysisComparison',
+            bundleChange: {
+              size: {
+                uncompress: 100,
+              },
+            },
           },
         } as const
 
@@ -349,7 +272,67 @@ describe('createCommitsTableData', () => {
           pages: [{ commits: [commitData] }],
         })
 
-        expect(result[0]?.bundleAnalysis).toStrictEqual(<>Upload: ❌</>)
+        expect(result[0]?.bundleAnalysis).toStrictEqual(<ErroredUpload />)
+      })
+    })
+
+    describe('bundle status is PENDING', () => {
+      it('returns PendingUpload component', () => {
+        const commitData = {
+          ciPassed: null,
+          message: null,
+          commitid: 'commit-123',
+          createdAt: '2021-11-01T19:44:10.795533+00:00',
+          author: null,
+          bundleStatus: 'PENDING',
+          coverageStatus: 'COMPLETED',
+          compareWithParent: {
+            __typename: 'MissingBaseCommit',
+            message: 'Missing base commit',
+          },
+          bundleAnalysisCompareWithParent: {
+            __typename: 'BundleAnalysisComparison',
+            bundleChange: {
+              size: {
+                uncompress: 100,
+              },
+            },
+          },
+        } as const
+
+        const result = createCommitsTableData({
+          pages: [{ commits: [commitData] }],
+        })
+
+        expect(result[0]?.bundleAnalysis).toStrictEqual(<PendingUpload />)
+      })
+    })
+
+    describe('bundleAnalysisReport __typename is not BundleAnalysisReport', () => {
+      it('returns a -', () => {
+        const commitData = {
+          ciPassed: null,
+          message: null,
+          commitid: 'commit-123',
+          createdAt: '2021-11-01T19:44:10.795533+00:00',
+          author: null,
+          bundleStatus: 'COMPLETED',
+          coverageStatus: 'COMPLETED',
+          compareWithParent: {
+            __typename: 'MissingBaseCommit',
+            message: 'Missing base commit',
+          },
+          bundleAnalysisCompareWithParent: {
+            __typename: 'MissingHeadReport',
+            message: 'Missing head report',
+          },
+        } as const
+
+        const result = createCommitsTableData({
+          pages: [{ commits: [commitData] }],
+        })
+
+        expect(result[0]?.bundleAnalysis).toStrictEqual(<p>-</p>)
       })
     })
 
@@ -361,20 +344,19 @@ describe('createCommitsTableData', () => {
           commitid: 'commit-123',
           createdAt: '2021-11-01T19:44:10.795533+00:00',
           author: null,
-          totals: {
-            coverage: 100,
-          },
-          parent: {
-            totals: {
-              coverage: 0,
-            },
-          },
+          bundleStatus: 'COMPLETED',
+          coverageStatus: 'COMPLETED',
           compareWithParent: {
             __typename: 'MissingBaseCommit',
             message: 'Missing base commit',
           },
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
+          bundleAnalysisCompareWithParent: {
+            __typename: 'BundleAnalysisComparison',
+            bundleChange: {
+              size: {
+                uncompress: 100,
+              },
+            },
           },
         } as const
 
@@ -382,7 +364,7 @@ describe('createCommitsTableData', () => {
           pages: [{ commits: [commitData] }],
         })
 
-        expect(result[0]?.bundleAnalysis).toStrictEqual(<>Upload: ✅</>)
+        expect(result[0]?.bundleAnalysis).toStrictEqual(<p>+100B</p>)
       })
     })
   })
