@@ -19,8 +19,6 @@ jest.mock('./CommitsTab', () => () => 'CommitsTab')
 jest.mock('./CoverageTab', () => () => 'CoverageTab')
 jest.mock('./CoverageOnboarding', () => () => 'CoverageOnboarding')
 jest.mock('./PullsTab', () => () => 'PullsTab')
-jest.mock('./FlagsTab', () => () => 'FlagsTab')
-jest.mock('./ComponentsTab', () => () => 'ComponentsTab')
 jest.mock('./SettingsTab', () => () => 'SettingsTab')
 jest.mock('shared/featureFlags')
 jest.mock('./ActivationAlert', () => () => 'ActivationAlert')
@@ -509,36 +507,6 @@ describe('RepoPage', () => {
               expect(coverage).toBeInTheDocument()
             })
           })
-        })
-      })
-
-      describe('testing flags path', () => {
-        it('renders flags tab', async () => {
-          const { queryClient } = setup()
-          render(<RepoPage />, {
-            wrapper: wrapper({
-              queryClient,
-              initialEntries: '/gh/codecov/cool-repo/flags',
-            }),
-          })
-
-          const flags = await screen.findByText('FlagsTab')
-          expect(flags).toBeInTheDocument()
-        })
-      })
-
-      describe('testing components path', () => {
-        it('renders components tab', async () => {
-          const { queryClient } = setup()
-          render(<RepoPage />, {
-            wrapper: wrapper({
-              queryClient,
-              initialEntries: '/gh/codecov/cool-repo/components',
-            }),
-          })
-
-          const components = await screen.findByText('ComponentsTab')
-          expect(components).toBeInTheDocument()
         })
       })
 

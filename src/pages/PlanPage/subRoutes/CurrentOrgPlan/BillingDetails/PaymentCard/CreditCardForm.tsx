@@ -1,11 +1,19 @@
 import { CardElement, useElements } from '@stripe/react-stripe-js'
 import cs from 'classnames'
-import PropTypes from 'prop-types'
+import { useState } from 'react'
 
 import { useUpdateCard } from 'services/account'
 import Button from 'ui/Button'
 
-function CreditCardForm({ closeForm, provider, owner }) {
+interface CreditCardFormProps {
+  closeForm: () => void
+  provider: string
+  owner: string
+}
+
+function CreditCardForm({ closeForm, provider, owner }: CreditCardFormProps) {
+  const [errorState, setErrorState] = useState('')
+
   const elements = useElements()
   const {
     mutate: updateCard,
@@ -17,21 +25,26 @@ function CreditCardForm({ closeForm, provider, owner }) {
     owner,
   })
 
-  function submit(e) {
+  function submit(e: React.FormEvent) {
     e.preventDefault()
+
+    if (!elements) {
+      return null
+    }
+
     updateCard(elements.getElement(CardElement), {
       onSuccess: closeForm,
     })
   }
 
-  const resetError = error && reset
+  const showError = (error && !reset) || errorState
 
   return (
     <form onSubmit={submit} aria-label="form">
       <div className={cs('flex flex-col gap-3')}>
         <div className="mt-2 flex flex-col gap-2">
           <CardElement
-            onChange={resetError}
+            onChange={(e) => setErrorState(e.error?.message || '')}
             options={{
               disableLink: true,
               hidePostalCode: true,
@@ -43,7 +56,9 @@ function CreditCardForm({ closeForm, provider, owner }) {
               },
             }}
           />
-          <p className="mt-1 text-ds-primary-red">{error && error.message}</p>
+          <p className="mt-1 text-ds-primary-red">
+            {showError && (error?.message || errorState)}
+          </p>
         </div>
         <div className="flex gap-1">
           <Button
@@ -51,6 +66,7 @@ function CreditCardForm({ closeForm, provider, owner }) {
             type="submit"
             variant="primary"
             disabled={isLoading}
+            to=""
           >
             Update
           </Button>
@@ -60,6 +76,7 @@ function CreditCardForm({ closeForm, provider, owner }) {
             variant="plain"
             disabled={isLoading}
             onClick={closeForm}
+            to=""
           >
             Cancel
           </Button>
@@ -67,12 +84,6 @@ function CreditCardForm({ closeForm, provider, owner }) {
       </div>
     </form>
   )
-}
-
-CreditCardForm.propTypes = {
-  closeForm: PropTypes.func.isRequired,
-  provider: PropTypes.string.isRequired,
-  owner: PropTypes.string.isRequired,
 }
 
 export default CreditCardForm

@@ -43,7 +43,7 @@ const Header = ({ controlsDisabled, children }) => {
   )
 
   return (
-    <div className="flex flex-col justify-end divide-y divide-solid divide-ds-gray-secondary">
+    <div className="flex flex-col justify-end gap-4 divide-y divide-solid divide-ds-gray-secondary">
       <div className="grid w-2/3 divide-y divide-solid divide-ds-gray-secondary sm:w-full sm:grid-cols-2 sm:divide-x sm:divide-y-0 md:grid-cols-4">
         <div className="mr-4 flex flex-col justify-between gap-2 p-4 sm:border-l sm:border-ds-gray-secondary sm:py-0 md:border-l-0">
           <h3 className="text-sm font-semibold text-ds-gray-octonary">

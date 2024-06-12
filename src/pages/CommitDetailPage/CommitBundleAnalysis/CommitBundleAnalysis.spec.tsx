@@ -48,7 +48,7 @@ const mockCommitPageData = ({
   },
 })
 
-const mockSummaryData = (sizeDelta: number) => ({
+const mockSummaryData = (uncompress: number) => ({
   owner: {
     repository: {
       __typename: 'Repository',
@@ -60,7 +60,7 @@ const mockSummaryData = (sizeDelta: number) => ({
               threeG: 2,
             },
             size: {
-              uncompress: sizeDelta,
+              uncompress,
             },
           },
         },
@@ -157,7 +157,7 @@ afterAll(() => {
 interface SetupArgs {
   bundleAnalysisEnabled?: boolean
   coverageEnabled?: boolean
-  sizeDelta?: number
+  uncompress?: number
   noData?: boolean
   firstPullRequest?: boolean
   comparisonError?: boolean
@@ -168,14 +168,14 @@ describe('CommitBundleAnalysis', () => {
     {
       coverageEnabled = true,
       bundleAnalysisEnabled = true,
-      sizeDelta = 0,
+      uncompress = 0,
       noData = false,
       firstPullRequest = false,
       comparisonError = false,
     }: SetupArgs = {
       coverageEnabled: true,
       bundleAnalysisEnabled: true,
-      sizeDelta: 0,
+      uncompress: 0,
       noData: false,
       firstPullRequest: false,
       comparisonError: false,
@@ -204,7 +204,7 @@ describe('CommitBundleAnalysis', () => {
           return res(ctx.status(200), ctx.data(mockComparisonError))
         }
 
-        return res(ctx.status(200), ctx.data(mockSummaryData(sizeDelta)))
+        return res(ctx.status(200), ctx.data(mockSummaryData(uncompress)))
       }),
       graphql.query('GetRepoOverview', (req, res, ctx) => {
         return res(
@@ -342,7 +342,7 @@ describe('CommitBundleAnalysis', () => {
       describe('there is a positive size delta', () => {
         it('renders increase summary message', async () => {
           setup({
-            sizeDelta: 10000,
+            uncompress: 10000,
             coverageEnabled: false,
             bundleAnalysisEnabled: true,
           })
@@ -361,7 +361,7 @@ describe('CommitBundleAnalysis', () => {
       describe('there is a negative size delta', () => {
         it('renders decrease summary message', async () => {
           setup({
-            sizeDelta: -10000,
+            uncompress: -10000,
             coverageEnabled: false,
             bundleAnalysisEnabled: true,
           })
@@ -380,7 +380,7 @@ describe('CommitBundleAnalysis', () => {
       describe('there is no size delta', () => {
         it('renders no change summary message', async () => {
           setup({
-            sizeDelta: 0,
+            uncompress: 0,
             coverageEnabled: false,
             bundleAnalysisEnabled: true,
           })

@@ -1,512 +1,264 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { graphql, rest } from 'msw'
+import { userEvent } from '@testing-library/user-event'
+import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { MemoryRouter, Route } from 'react-router-dom'
+import { Suspense } from 'react'
+import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import { TierNames, TTierNames } from 'services/tier'
-import { useFlags } from 'shared/featureFlags'
 
 import CoverageTab from './CoverageTab'
 
-jest.mock('shared/featureFlags')
-const mockedUseFlags = useFlags as jest.Mock<{ multipleTiers: boolean }>
-
-jest.mock('./Summary', () => () => 'Summary')
-jest.mock('./SummaryTeamPlan', () => () => 'SummaryTeamPlan')
-jest.mock('./subroute/Sunburst', () => () => 'Sunburst')
-jest.mock('./subroute/Fileviewer', () => () => 'FileViewer')
-
-const mockRepoSettings = (isPrivate = false) => ({
+const mockRepoSettingsTeam = {
   owner: {
     repository: {
+      __typename: 'Repository',
       defaultBranch: 'master',
-      private: isPrivate,
+      private: true,
       uploadToken: 'token',
       graphToken: 'token',
       yaml: 'yaml',
       bot: {
         username: 'test',
       },
-    },
-  },
-})
-
-const mockRepo = (isPrivate = false, isFirstPullRequest = false) => ({
-  owner: {
-    isCurrentUserPartOfOrg: true,
-    isAdmin: null,
-    isCurrentUserActivated: null,
-    repository: {
-      __typename: 'Repository',
-      private: isPrivate,
-      uploadToken: '9e6a6189-20f1-482d-ab62-ecfaa2629295',
-      defaultBranch: 'main',
-      yaml: '',
-      activated: false,
-      oldestCommitAt: '',
-      active: true,
-      isFirstPullRequest,
-    },
-  },
-})
-
-const repoConfigMock = {
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      repositoryConfig: {
-        indicationRange: { upperRange: 80, lowerRange: 60 },
-      },
+      activated: true,
     },
   },
 }
 
-const treeMock = [
-  {
-    name: 'src',
-    full_path: 'src',
-    coverage: 98.0,
-    lines: 13026,
-    hits: 12828,
-    partials: 4,
-    misses: 194,
-    children: [
-      {
-        name: 'App.tsx',
-        full_path: 'src/App.tsx',
-        coverage: 100.0,
-        lines: 47,
-        hits: 47,
-        partials: 0,
-        misses: 0,
-      },
-    ],
-  },
-]
+jest.mock('./OverviewTab', () => () => 'OverviewTab')
+jest.mock('./FlagsTab', () => () => 'FlagsTab')
+jest.mock('./ComponentsTab', () => () => 'ComponentsTab')
+jest.mock('ui/LoadingLogo', () => () => 'Loader')
 
-const overviewMock = {
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      private: false,
-      defaultBranch: 'main',
-      oldestCommitAt: '2022-10-10T11:59:59',
-      coverageEnabled: true,
-      bundleAnalysisEnabled: true,
-      languages: [],
-      testAnalyticsEnabled: true,
-    },
-  },
-}
-
-const branchesMock = {
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      branches: {
-        edges: [
-          {
-            node: {
-              name: 'main',
-              head: {
-                commitid: '1',
-              },
-            },
-          },
-          {
-            node: {
-              name: 'dummy',
-              head: {
-                commitid: '2',
-              },
-            },
-          },
-          {
-            node: {
-              name: 'dummy2',
-              head: {
-                commitid: '3',
-              },
-            },
-          },
-        ],
-        pageInfo: {
-          hasNextPage: false,
-          endCursor: 'someEndCursor',
-        },
-      },
-    },
-  },
-}
-
-const branchMock = {
-  __typename: 'Repository',
-  branch: {
-    name: 'main',
-    head: {
-      commitid: '321fdsa',
-    },
-  },
-}
-
-const branchesContentsMock = {
-  owner: {
-    username: 'critical-role',
-    repository: {
-      __typename: 'Repository',
-      repositoryConfig: {
-        indicationRange: {
-          upperRange: 80,
-          lowerRange: 60,
-        },
-      },
-      branch: {
-        head: {
-          pathContents: {
-            __typename: 'PathContents',
-            results: [
-              {
-                __typename: 'PathContentDir',
-                hits: 9,
-                misses: 0,
-                partials: 0,
-                lines: 10,
-                name: 'src',
-                path: 'src',
-                percentCovered: 100.0,
-              },
-            ],
-          },
-        },
-      },
-    },
-  },
-}
-
-const mockBranchMeasurements = {
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      measurements: [
-        {
-          timestamp: '2023-01-01T00:00:00+00:00',
-          max: 85,
-        },
-        {
-          timestamp: '2023-01-02T00:00:00+00:00',
-          max: 80,
-        },
-        {
-          timestamp: '2023-01-03T00:00:00+00:00',
-          max: 90,
-        },
-        {
-          timestamp: '2023-01-04T00:00:00+00:00',
-          max: 100,
-        },
-      ],
-    },
-  },
-}
-
-const mockOverview = {
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      private: false,
-      defaultBranch: 'main',
-      oldestCommitAt: '2022-10-10T11:59:59',
-      coverageEnabled: true,
-      bundleAnalysisEnabled: true,
-      languages: ['JavaScript'],
-      testAnalyticsEnabled: true,
-    },
-  },
-}
-
-const mockCoverageTabData = (fileCount = 10) => ({
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      branch: {
-        head: {
-          totals: {
-            fileCount,
-          },
-        },
-      },
-    },
-  },
-})
-
-const mockBranchComponents = {
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      branch: {
-        name: 'main',
-        head: {
-          commitid: 'commit-123',
-          components: [
-            {
-              id: 'compOneId',
-              name: 'compOneName',
-            },
-            {
-              id: 'compTwoId',
-              name: 'compTwoName',
-            },
-          ],
-        },
-      },
-    },
-  },
-}
-
-const mockFlagSelect = {
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      flags: {
-        edges: [
-          {
-            node: {
-              name: 'flag-1',
-            },
-          },
-        ],
-        pageInfo: {
-          hasNextPage: true,
-          endCursor: '1-flag-1',
-        },
-      },
-    },
-  },
-}
-
-const mockBackfillFlag = {
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      flagsMeasurementsActive: true,
-      flagsMeasurementsBackfilled: true,
-    },
-  },
-}
+let testLocation: ReturnType<typeof useLocation>
 
 const server = setupServer()
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
+  defaultOptions: {
+    queries: {
+      retry: false,
+      suspense: true,
+    },
+  },
 })
 
-const wrapper: (
-  initialEnties?: string[]
-) => React.FC<React.PropsWithChildren> =
-  (initialEntries = ['/gh/codecov/cool-repo/tree/main']) =>
+const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
+  (initialEntries = '/gh/codecov/cool-repo') =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
+        <MemoryRouter initialEntries={[initialEntries]}>
           <Route
             path={[
-              '/:provider/:owner/:repo/blob/:ref/:path+',
               '/:provider/:owner/:repo',
+              '/:provider/:owner/:repo/flags',
+              '/:provider/:owner/:repo/components',
             ]}
-            exact={true}
           >
-            {children}
+            <Suspense fallback={null}>{children}</Suspense>
           </Route>
+          <Route
+            path="*"
+            render={({ location }) => {
+              testLocation = location
+              return null
+            }}
+          />
         </MemoryRouter>
       </QueryClientProvider>
     )
 
 beforeAll(() => {
-  server.listen({ onUnhandledRequest: 'warn' })
+  server.listen()
 })
-
 afterEach(() => {
   queryClient.clear()
   server.resetHandlers()
 })
-
 afterAll(() => {
   server.close()
 })
 
 interface SetupArgs {
-  isFirstPullRequest?: boolean
-  isPrivate?: boolean
-  tierValue?: TTierNames
-  fileCount?: number
+  tierName?: TTierNames
 }
 
-describe('Coverage Tab', () => {
-  function setup({
-    isFirstPullRequest = false,
-    isPrivate = false,
-    tierValue = TierNames.PRO,
-    fileCount = 10,
-  }: SetupArgs) {
-    mockedUseFlags.mockReturnValue({
-      multipleTiers: true,
-    })
-
+describe('CoverageTab', () => {
+  function setup({ tierName = TierNames.PRO }: SetupArgs) {
     server.use(
-      graphql.query('GetRepo', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockRepo(isPrivate, isFirstPullRequest)))
-      ),
-      graphql.query('GetBranches', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(branchesMock))
-      ),
-      graphql.query('GetBranch', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
-            owner: { repository: { ...branchMock } },
-          })
-        )
-      ),
-      graphql.query('BranchContents', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(branchesContentsMock))
-      ),
-      graphql.query('RepoConfig', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(repoConfigMock))
-      ),
-      graphql.query('GetRepoOverview', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(overviewMock))
-      ),
-      graphql.query('GetRepoCoverage', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data({ owner: null }))
-      ),
-      graphql.query('GetBranchCoverageMeasurements', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockBranchMeasurements))
-      ),
-      graphql.query('BackfillFlagMemberships', (req, res, ctx) =>
-        res(ctx.status(200), ctx.data(mockBackfillFlag))
-      ),
       graphql.query('OwnerTier', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({ owner: { plan: { tierName: tierValue } } })
-        )
+        return res(ctx.status(200), ctx.data({ owner: { plan: { tierName } } }))
       }),
       graphql.query('GetRepoSettingsTeam', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockRepoSettings(isPrivate)))
-      }),
-      graphql.query('CoverageTabData', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockCoverageTabData(fileCount)))
-      }),
-      graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockOverview))
-      }),
-      graphql.query('GetBranchComponents', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockBranchComponents))
-      }),
-      graphql.query('FlagsSelect', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockFlagSelect))
-      }),
-      rest.get(
-        '/internal/:provider/:owner/:repo/coverage/tree',
-        (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json(treeMock))
-        }
-      ),
-      rest.post(
-        '/internal/charts/:provider/:owner/coverage/:repo',
-        (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json({ data: {} }))
-        }
-      )
+        return res(ctx.status(200), ctx.data(mockRepoSettingsTeam))
+      })
     )
   }
 
-  afterEach(() => {
-    jest.resetAllMocks()
-  })
-
-  it('renders default summary', async () => {
+  it('renders navigator and tab contents', async () => {
     setup({})
-    render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/repoName']) })
+    render(<CoverageTab />, { wrapper: wrapper() })
 
-    const summary = screen.getByText(/Summary/)
-    expect(summary).toBeInTheDocument()
+    const overview = await screen.findByText('Overview')
+    const flags = await screen.findByText('Flags')
+    const components = await screen.findByText('Components')
+    expect(overview).toBeInTheDocument()
+    expect(flags).toBeInTheDocument()
+    expect(components).toBeInTheDocument()
+
+    const content = await screen.findByText('OverviewTab')
+    expect(content).toBeInTheDocument()
   })
 
-  describe('file count is under 200_000', () => {
-    it('renders the sunburst chart', async () => {
-      setup({ fileCount: 100 })
-      render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/repoName']) })
+  it('hides navigator when on team plan and private repo', async () => {
+    setup({ tierName: TierNames.TEAM })
+    render(<CoverageTab />, { wrapper: wrapper() })
 
-      const hideChart = await screen.findByText(/Hide Chart/)
-      expect(hideChart).toBeInTheDocument()
+    const overview = await screen.findByText('OverviewTab')
+    expect(overview).toBeInTheDocument()
 
-      const sunburst = await screen.findByText('Sunburst')
-      expect(sunburst).toBeInTheDocument()
-    }, 100_000)
+    const overviewTab = screen.queryByText('Overview')
+    const flagsTab = screen.queryByText('Flags')
+    const componentsTab = screen.queryByText('Components')
+    expect(overviewTab).not.toBeInTheDocument()
+    expect(flagsTab).not.toBeInTheDocument()
+    expect(componentsTab).not.toBeInTheDocument()
   })
 
-  describe('file count is above 200_000', () => {
-    it('does not render the sunburst chart', async () => {
-      setup({ fileCount: 200_000 })
-      render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/repoName']) })
+  describe('navigator initial selection', () => {
+    describe('when not on flags or components tabs', () => {
+      it('selects Overview as default', async () => {
+        setup({})
+        render(<CoverageTab />, { wrapper: wrapper() })
 
-      const hideChart = await screen.findByText(/Hide Chart/)
-      expect(hideChart).toBeInTheDocument()
-
-      const sunburst = screen.queryByText('Sunburst')
-      expect(sunburst).not.toBeInTheDocument()
-    })
-  })
-
-  it('renders the coverage area chart', async () => {
-    setup({ fileCount: 100 })
-    render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/repoName']) })
-
-    const coverageAreaChart = await screen.findByTestId('coverage-area-chart')
-    expect(coverageAreaChart).toBeInTheDocument()
-  })
-
-  describe('when the repo is private and org is on team plan', () => {
-    it('renders team summary', async () => {
-      setup({ isPrivate: true, tierValue: TierNames.TEAM })
-
-      render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/repoName']) })
-
-      const summary = await screen.findByText(/SummaryTeamPlan/)
-      expect(summary).toBeInTheDocument()
+        const overview = await screen.findByTestId('overview-radio')
+        expect(overview).toBeInTheDocument()
+        expect(overview).toHaveAttribute('data-state', 'checked')
+        const content = await screen.findByText('OverviewTab')
+        expect(content).toBeInTheDocument()
+      })
     })
 
-    it('does not render coverage chart', async () => {
-      setup({ isPrivate: true, tierValue: TierNames.TEAM })
+    describe('when loaded with flags url', () => {
+      it('selects flags as default', async () => {
+        setup({})
+        render(<CoverageTab />, {
+          wrapper: wrapper('/gh/codecov/cool-repo/flags'),
+        })
 
-      render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/repoName']) })
-
-      const coverageChart = screen.queryByTestId('coverage-area-chart')
-      expect(coverageChart).not.toBeInTheDocument()
+        const flags = await screen.findByTestId('flags-radio')
+        expect(flags).toBeInTheDocument()
+        expect(flags).toHaveAttribute('data-state', 'checked')
+        const content = await screen.findByText('FlagsTab')
+        expect(content).toBeInTheDocument()
+      })
     })
-  })
 
-  it('renders first pull request banner', async () => {
-    setup({ isFirstPullRequest: true })
+    describe('when loaded with components url', () => {
+      it('selects components as default', async () => {
+        setup({})
+        render(<CoverageTab />, {
+          wrapper: wrapper('/gh/codecov/cool-repo/components'),
+        })
 
-    render(<CoverageTab />, { wrapper: wrapper(['/gh/test-org/repoName']) })
+        const components = await screen.findByTestId('components-radio')
+        expect(components).toBeInTheDocument()
+        expect(components).toHaveAttribute('data-state', 'checked')
+        const content = await screen.findByText('ComponentsTab')
+        expect(content).toBeInTheDocument()
+      })
+    })
 
-    const firstPullRequestBanner = await screen.findByText(
-      /Once merged to your default branch, Codecov will show your report results on this dashboard./
-    )
-    expect(firstPullRequestBanner).toBeInTheDocument()
-  })
-
-  describe('on file route', () => {
-    it('renders FileViewer', async () => {
-      setup({ fileCount: 100 })
+    it('matches path with query params', async () => {
+      setup({})
       render(<CoverageTab />, {
-        wrapper: wrapper(['/gh/test-org/repoName/blob/main/src/file.tsx']),
+        wrapper: wrapper('/gh/codecov/cool-repo/components?branch=asdf'),
       })
 
-      const fileViewer = await screen.findByText(/FileViewer/)
-      expect(fileViewer).toBeInTheDocument()
+      const components = await screen.findByTestId('components-radio')
+      expect(components).toBeInTheDocument()
+      expect(components).toHaveAttribute('data-state', 'checked')
+      const content = await screen.findByText('ComponentsTab')
+      expect(content).toBeInTheDocument()
+    })
+  })
+
+  describe('navigation', () => {
+    describe('when Overview is selected', () => {
+      it('should navigate to base coverage tab', async () => {
+        setup({})
+        const user = userEvent.setup()
+        render(<CoverageTab />, {
+          wrapper: wrapper('/gh/codecov/cool-repo/flags'),
+        })
+
+        const overview = await screen.findByTestId('overview-radio')
+        expect(overview).toBeInTheDocument()
+        expect(overview).toHaveAttribute('data-state', 'unchecked')
+        const flagsTab = await screen.findByText('FlagsTab')
+        expect(flagsTab).toBeInTheDocument()
+
+        await user.click(overview)
+
+        expect(overview).toBeInTheDocument()
+        expect(overview).toHaveAttribute('data-state', 'checked')
+        const overviewTab = await screen.findByText('OverviewTab')
+        expect(overviewTab).toBeInTheDocument()
+
+        expect(testLocation.pathname).toBe('/gh/codecov/cool-repo')
+      })
+    })
+
+    describe('when Flags is selected', () => {
+      it('should navigate to flags coverage tab', async () => {
+        setup({})
+        const user = userEvent.setup()
+        render(<CoverageTab />, {
+          wrapper: wrapper('/gh/codecov/cool-repo'),
+        })
+
+        const flags = await screen.findByTestId('flags-radio')
+        expect(flags).toBeInTheDocument()
+        expect(flags).toHaveAttribute('data-state', 'unchecked')
+        const overviewTab = await screen.findByText('OverviewTab')
+        expect(overviewTab).toBeInTheDocument()
+
+        await user.click(flags)
+
+        expect(flags).toBeInTheDocument()
+        expect(flags).toHaveAttribute('data-state', 'checked')
+        const flagsTab = await screen.findByText('FlagsTab')
+        expect(flagsTab).toBeInTheDocument()
+
+        expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/flags')
+      })
+    })
+
+    describe('when Components is selected', () => {
+      it('should navigate to components coverage tab', async () => {
+        setup({})
+        const user = userEvent.setup()
+        render(<CoverageTab />, {
+          wrapper: wrapper('/gh/codecov/cool-repo'),
+        })
+
+        const components = await screen.findByTestId('components-radio')
+        expect(components).toBeInTheDocument()
+        expect(components).toHaveAttribute('data-state', 'unchecked')
+        const overviewTab = await screen.findByText('OverviewTab')
+        expect(overviewTab).toBeInTheDocument()
+
+        await user.click(components)
+
+        expect(components).toBeInTheDocument()
+        expect(components).toHaveAttribute('data-state', 'checked')
+        const componentsTab = await screen.findByText('ComponentsTab')
+        expect(componentsTab).toBeInTheDocument()
+
+        expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/components')
+      })
     })
   })
 })

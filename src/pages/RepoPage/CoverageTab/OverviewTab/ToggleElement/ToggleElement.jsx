@@ -34,12 +34,9 @@ function ToggleElement({
       </button>
       <div
         data-testid="toggle-element-contents"
-        className={cs(
-          'grid grid-cols-12 gap-4 border border-solid border-ds-gray-secondary p-4 mt-2',
-          {
-            hidden: isHidden,
-          }
-        )}
+        className={cs('grid grid-cols-12 gap-4 p-4 mt-2', {
+          hidden: isHidden,
+        })}
       >
         {children}
       </div>
