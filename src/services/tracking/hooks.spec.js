@@ -107,6 +107,7 @@ describe('useTracking', () => {
         expect(Sentry.setUser).toHaveBeenCalledWith({
           email: 'fake@test.com',
           username: 'eugene_onegin',
+          ip_address: '{{auto}}',
         })
       )
     })
@@ -145,11 +146,13 @@ describe('useTracking', () => {
       setup({ me: user })
     })
 
-    it('sets null user in sentry', async () => {
+    it('sets user in sentry', async () => {
       renderHook(() => useTracking(), { wrapper })
 
       await waitFor(() => expect(Sentry.setUser).toHaveBeenCalled())
-      await waitFor(() => expect(Sentry.setUser).toHaveBeenCalledWith(null))
+      await waitFor(() =>
+        expect(Sentry.setUser).toHaveBeenCalledWith({ ip_address: '{{auto}}' })
+      )
     })
   })
 
@@ -165,7 +168,9 @@ describe('useTracking', () => {
       renderHook(() => useTracking(), { wrapper })
 
       await waitFor(() => expect(Sentry.setUser).toHaveBeenCalled())
-      await waitFor(() => expect(Sentry.setUser).toHaveBeenCalledWith(null))
+      await waitFor(() =>
+        expect(Sentry.setUser).toHaveBeenCalledWith({ ip_address: '{{auto}}' })
+      )
     })
   })
 })
