@@ -33,7 +33,7 @@ EraseRepoButton.propTypes = {
 
 function EraseRepoContent() {
   const [showModal, setShowModal] = useState(false)
-  const { mutate: eraseRepoContent, isLoading } = useEraseRepoContent
+  const { mutate: eraseRepoContent, isLoading } = useEraseRepoContent()
 
   return (
     <div className="flex flex-col sm:flex-row">

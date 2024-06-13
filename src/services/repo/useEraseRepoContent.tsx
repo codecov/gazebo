@@ -5,7 +5,7 @@ import { useAddNotification } from 'services/toastNotification'
 import Api from 'shared/api'
 
 const query = `
-  mutation EraseRepoContent($repoName: String!) {
+  mutation EraseRepository($repoName: String!) {
     eraseRepository(input: { repoName: $repoName }) {
       error {
         ... on UnauthorizedError {
@@ -38,7 +38,7 @@ export const useEraseRepoContent = () => {
           owner,
           repoName: repo,
         },
-        mutationPath: 'eraseRepoContent',
+        mutationPath: 'eraseRepository',
       })
     },
     onSuccess: ({ data }) => {
@@ -55,6 +55,7 @@ export const useEraseRepoContent = () => {
         })
       }
       queryClient.invalidateQueries(['GetRepo'])
+      queryClient.invalidateQueries(['GetRepoSettings'])
     },
     retry: false,
   })

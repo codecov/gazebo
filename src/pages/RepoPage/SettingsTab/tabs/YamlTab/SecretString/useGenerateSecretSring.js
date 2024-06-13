@@ -4,7 +4,7 @@ export default function useGenerateSecretString() {
   const { mutate, ...rest } = useEncodeString()
 
   async function generateSecretString({ value }) {
-    mutate(value)
+    return mutate(value)
   }
 
   return { generateSecretString, ...rest }
