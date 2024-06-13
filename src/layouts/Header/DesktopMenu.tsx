@@ -60,7 +60,7 @@ export const LogoButton = ({
       hook="desktop-menu-homepage-link"
     >
       <span className="sr-only">Link to Homepage</span>
-      <CodecovIcon fillColor={fillColor} />
+      <CodecovIcon />
     </A>
   )
 }
@@ -75,34 +75,7 @@ function DesktopMenu() {
   return (
     <>
       <div data-testid="desktop-menu" className="flex items-center gap-4">
-        <LogoButton defaultOrg={defaultOrg} />
-        <A
-          to={{ pageName: 'docs' }}
-          variant="header"
-          isExternal={false}
-          showExternalIcon={false}
-          hook="desktop-menu-docs-link"
-        >
-          Docs
-        </A>
-        <A
-          to={{ pageName: 'support' }}
-          variant="header"
-          isExternal={false}
-          showExternalIcon={false}
-          hook="desktop-menu-support-link"
-        >
-          Support
-        </A>
-        <A
-          to={{ pageName: 'blog' }}
-          variant="header"
-          isExternal={false}
-          showExternalIcon={false}
-          hook="desktop-menu-blog-link"
-        >
-          Blog
-        </A>
+        <LogoButton defaultOrg={defaultOrg} fillColor="white" />
       </div>
       {!!currentUser ? (
         <div className="mx-2 flex items-center gap-4 md:mx-4">

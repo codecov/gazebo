@@ -4,7 +4,7 @@ import A from 'ui/A'
 
 export function FooterItem({ text, to }) {
   return (
-    <li className="flex justify-center text-ds-gray-quinary">
+    <li className="flex justify-center text-white">
       {to ? (
         <A to={to} showExternalIcon={false}>
           {text}
