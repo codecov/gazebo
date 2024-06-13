@@ -2,53 +2,71 @@ import { cva, VariantProps } from 'cva'
 import * as React from 'react'
 
 import { cn } from 'shared/utils/cn'
+import Icon from 'ui/Icon'
 
-import successImage from './assets/check-circle.svg'
-import warningImage from './assets/exclamation.svg'
-import infoImage from './assets/information-circle.svg'
-import errorImage from './assets/x-circle.svg'
-
-const alertVariants = cva(
-  '[&>svg]:text-foreground relative w-full border-l-4 p-4 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg~*]:pl-7',
-  {
-    variants: {
-      variant: {
-        error: 'border-ds-primary-red bg-error-100',
-        info: 'border-ds-blue-darker bg-ds-blue-nonary',
-        success: 'border-green-500 bg-green-100',
-        warning: 'border-orange-500 bg-orange-100',
-      },
+const alertVariants = cva('relative w-full border-l-4 p-4', {
+  variants: {
+    variant: {
+      error: 'border-ds-primary-red bg-error-100',
+      info: 'border-ds-blue-darker bg-ds-blue-nonary',
+      success: 'border-green-500 bg-green-100',
+      warning: 'border-orange-500 bg-orange-100',
     },
-    defaultVariants: {
-      variant: 'info',
-    },
-  }
-)
+  },
+  defaultVariants: {
+    variant: 'info',
+  },
+})
 
 export function variantToIcon(variant?: string | null) {
-  let alt = 'information circle'
-  let src = infoImage
+  let classname = 'float-left -mt-1 mr-2 align-middle'
   switch (variant) {
     case 'error':
-      alt = 'error'
-      src = errorImage
-      break
+      return (
+        <Icon
+          variant="outline"
+          size="md"
+          name="xCircle"
+          className={`stroke-ds-primary-red ${classname}`}
+        />
+      )
     case 'info':
-      alt = 'information circle'
-      src = infoImage
-      break
+      return (
+        <Icon
+          variant="outline"
+          size="md"
+          name="informationCircle"
+          className={`stroke-ds-blue-darker ${classname}`}
+        />
+      )
     case 'success':
-      alt = 'checkmark in circle'
-      src = successImage
-      break
+      return (
+        <Icon
+          variant="outline"
+          size="md"
+          name="checkCircle"
+          className={`stroke-green-500 ${classname}`}
+        />
+      )
     case 'warning':
-      alt = 'triangle exclamation'
-      src = warningImage
-      break
+      return (
+        <Icon
+          variant="outline"
+          size="md"
+          name="exclamationTriangle"
+          className={`stroke-orange-500 ${classname}`}
+        />
+      )
+    default:
+      return (
+        <Icon
+          variant="outline"
+          size="md"
+          name="informationCircle"
+          className={`stroke-ds-blue-darker ${classname}`}
+        />
+      )
   }
-  return (
-    <img className="float-left -mt-1 mr-2 align-middle" src={src} alt={alt} />
-  )
 }
 
 interface RootProps
