@@ -27,6 +27,7 @@ export function variantToIcon(variant?: string | null) {
           variant="outline"
           size="md"
           name="xCircle"
+          data-testid="error"
           className={`stroke-ds-primary-red ${classname}`}
         />
       )
@@ -36,6 +37,7 @@ export function variantToIcon(variant?: string | null) {
           variant="outline"
           size="md"
           name="informationCircle"
+          data-testid="info"
           className={`stroke-ds-blue-darker ${classname}`}
         />
       )
@@ -45,6 +47,7 @@ export function variantToIcon(variant?: string | null) {
           variant="outline"
           size="md"
           name="checkCircle"
+          data-testid="success"
           className={`stroke-green-500 ${classname}`}
         />
       )
@@ -54,6 +57,7 @@ export function variantToIcon(variant?: string | null) {
           variant="outline"
           size="md"
           name="exclamationTriangle"
+          data-testid="warn"
           className={`stroke-orange-500 ${classname}`}
         />
       )
@@ -63,6 +67,7 @@ export function variantToIcon(variant?: string | null) {
           variant="outline"
           size="md"
           name="informationCircle"
+          data-testid="default"
           className={`stroke-ds-blue-darker ${classname}`}
         />
       )
