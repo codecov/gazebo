@@ -38,10 +38,7 @@ function LoadMoreTrigger({
 }
 interface CommitsTableHelper {
   name: React.ReactElement
-  coverage: React.ReactElement
-  ciStatus: React.ReactElement
   patch: React.ReactElement
-  change: React.ReactElement
   bundleAnalysis: React.ReactElement
 }
 
@@ -53,24 +50,9 @@ const baseColumns = [
     header: 'Name',
     cell: ({ renderValue }) => renderValue(),
   }),
-  columnHelper.accessor('ciStatus', {
-    id: 'ciStatus',
-    header: 'CI Status',
-    cell: ({ renderValue }) => renderValue(),
-  }),
-  columnHelper.accessor('coverage', {
-    id: 'coverage',
-    header: 'Coverage',
-    cell: ({ renderValue }) => renderValue(),
-  }),
   columnHelper.accessor('patch', {
     id: 'patch',
-    header: 'Patch',
-    cell: ({ renderValue }) => renderValue(),
-  }),
-  columnHelper.accessor('change', {
-    id: 'change',
-    header: 'Change',
+    header: 'Patch Coverage',
     cell: ({ renderValue }) => renderValue(),
   }),
 ]
@@ -135,7 +117,7 @@ const CommitsTable: React.FC<CommitsTableProps> = ({
       return [
         ...baseColumns,
         columnHelper.accessor('bundleAnalysis', {
-          header: 'Bundle Analysis',
+          header: 'Bundle',
           id: 'bundleAnalysis',
           cell: ({ renderValue }) => renderValue(),
         }),
@@ -161,9 +143,6 @@ const CommitsTable: React.FC<CommitsTableProps> = ({
         <table>
           <colgroup>
             <col className="w-full @sm/table:w-5/12" />
-            <col className="@sm/table:w-1/12" />
-            <col className="@sm/table:w-1/12" />
-            <col className="@sm/table:w-1/12" />
             <col className="@sm/table:w-1/12" />
             {overview?.bundleAnalysisEnabled ? (
               <col className="@sm/table:w-1/12" />

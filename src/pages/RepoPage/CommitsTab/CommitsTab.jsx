@@ -10,8 +10,7 @@ import { useParams } from 'react-router-dom'
 
 import { useBranchHasCommits } from 'services/branches'
 import { useLocationParams } from 'services/navigation'
-import { useRepoOverview, useRepoSettingsTeam } from 'services/repo'
-import { TierNames, useTier } from 'services/tier'
+import { useRepoOverview } from 'services/repo'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'
 import SearchField from 'ui/SearchField'
@@ -25,7 +24,6 @@ import { useSetCrumbs } from '../context'
 
 const ALL_BRANCHES = 'All branches'
 const CommitsTable = lazy(() => import('./CommitsTable'))
-const CommitsTableTeam = lazy(() => import('./CommitsTableTeam'))
 
 const Loader = () => (
   <div className="flex flex-1 justify-center">
@@ -90,12 +88,6 @@ const useControlParams = ({ defaultBranch }) => {
 function CommitsTab() {
   const setCrumbs = useSetCrumbs()
   const { provider, owner, repo } = useParams()
-
-  const { data: repoSettings } = useRepoSettingsTeam()
-  const { data: tierData } = useTier({ provider, owner })
-
-  const showTeamTable =
-    repoSettings?.repository?.private && tierData === TierNames.TEAM
 
   const { data: overview } = useRepoOverview({
     provider,
@@ -211,19 +203,11 @@ function CommitsTab() {
         </div>
       </div>
       <Suspense fallback={<Loader />}>
-        {showTeamTable ? (
-          <CommitsTableTeam
-            branch={branch}
-            states={selectedStates?.map((state) => state?.toUpperCase())}
-            search={search}
-          />
-        ) : (
-          <CommitsTable
-            branch={branch}
-            states={selectedStates?.map((state) => state?.toUpperCase())}
-            search={search}
-          />
-        )}
+        <CommitsTable
+          branch={branch}
+          states={selectedStates?.map((state) => state?.toUpperCase())}
+          search={search}
+        />
       </Suspense>
     </div>
   )

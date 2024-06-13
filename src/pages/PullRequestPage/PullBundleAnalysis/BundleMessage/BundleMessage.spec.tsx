@@ -9,7 +9,7 @@ import BundleMessage from './BundleMessage'
 
 const mockNoData = { owner: null }
 
-const mockSummaryData = (sizeDelta: number) => ({
+const mockSummaryData = (uncompress: number) => ({
   owner: {
     repository: {
       __typename: 'Repository',
@@ -24,7 +24,7 @@ const mockSummaryData = (sizeDelta: number) => ({
               threeG: 0,
             },
             size: {
-              uncompress: sizeDelta,
+              uncompress,
             },
           },
         },
@@ -101,7 +101,7 @@ afterAll(() => {
 })
 
 interface SetupArgs {
-  sizeDelta?: number
+  uncompress?: number
   noData?: boolean
   firstPullRequest?: boolean
   comparisonError?: boolean
@@ -110,12 +110,12 @@ interface SetupArgs {
 describe('BundleMessage', () => {
   function setup(
     {
-      sizeDelta = 0,
+      uncompress = 0,
       noData = false,
       comparisonError = false,
       firstPullRequest = false,
     }: SetupArgs = {
-      sizeDelta: 0,
+      uncompress: 0,
       noData: false,
       comparisonError: false,
       firstPullRequest: false,
@@ -131,7 +131,7 @@ describe('BundleMessage', () => {
           return res(ctx.status(200), ctx.data(mockComparisonError))
         }
 
-        return res(ctx.status(200), ctx.data(mockSummaryData(sizeDelta)))
+        return res(ctx.status(200), ctx.data(mockSummaryData(uncompress)))
       })
     )
   }
@@ -139,7 +139,7 @@ describe('BundleMessage', () => {
   describe('there are no errors', () => {
     describe('there are negative changes', () => {
       it('renders decrease in bundle size message', async () => {
-        setup({ sizeDelta: -1000 })
+        setup({ uncompress: -1000 })
         render(<BundleMessage />, { wrapper })
 
         const title = await screen.findByText('Bundle report:')
@@ -154,7 +154,7 @@ describe('BundleMessage', () => {
 
     describe('there are positive changes', () => {
       it('renders increase in bundle size message', async () => {
-        setup({ sizeDelta: 1000 })
+        setup({ uncompress: 1000 })
         render(<BundleMessage />, { wrapper })
 
         const title = await screen.findByText('Bundle report:')
@@ -169,7 +169,7 @@ describe('BundleMessage', () => {
 
     describe('there are no changes', () => {
       it('renders no changes message', async () => {
-        setup({ sizeDelta: 0 })
+        setup({ uncompress: 0 })
         render(<BundleMessage />, { wrapper })
 
         const title = await screen.findByText('Bundle report:')

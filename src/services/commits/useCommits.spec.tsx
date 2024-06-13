@@ -41,22 +41,17 @@ const node1 = {
     username: 'codecov-user',
     avatarUrl: 'http://127.0.0.1/avatar-url',
   },
-  totals: {
-    coverage: 100,
-  },
-  parent: {
-    totals: {
-      coverage: 0,
-    },
-  },
+  bundleStatus: 'PENDING',
+  coverageStatus: 'PENDING',
   compareWithParent: {
     __typename: 'Comparison',
     patchTotals: {
       percentCovered: 100,
     },
   },
-  bundleAnalysisReport: {
-    __typename: 'BundleAnalysisReport',
+  bundleAnalysisCompareWithParent: {
+    __typename: 'MissingHeadReport',
+    message: 'Missing head report',
   },
 }
 
@@ -69,22 +64,17 @@ const node2 = {
     username: 'codecov-user',
     avatarUrl: 'http://127.0.0.1/avatar-url',
   },
-  totals: {
-    coverage: 100,
-  },
-  parent: {
-    totals: {
-      coverage: 0,
-    },
-  },
+  bundleStatus: 'PENDING',
+  coverageStatus: 'PENDING',
   compareWithParent: {
     __typename: 'Comparison',
     patchTotals: {
       percentCovered: 100,
     },
   },
-  bundleAnalysisReport: {
-    __typename: 'BundleAnalysisReport',
+  bundleAnalysisCompareWithParent: {
+    __typename: 'MissingHeadReport',
+    message: 'Missing head report',
   },
 }
 
@@ -97,22 +87,17 @@ const node3 = {
     username: 'codecov-user',
     avatarUrl: 'http://127.0.0.1/avatar-url',
   },
-  totals: {
-    coverage: 100,
-  },
-  parent: {
-    totals: {
-      coverage: 0,
-    },
-  },
+  bundleStatus: 'PENDING',
+  coverageStatus: 'PENDING',
   compareWithParent: {
     __typename: 'Comparison',
     patchTotals: {
       percentCovered: 100,
     },
   },
-  bundleAnalysisReport: {
+  bundleAnalysisCompareWithParent: {
     __typename: 'MissingHeadReport',
+    message: 'Missing head report',
   },
 }
 
