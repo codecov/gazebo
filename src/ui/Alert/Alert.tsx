@@ -70,7 +70,7 @@ const AlertRoot = React.forwardRef<HTMLDivElement, RootProps>(
 )
 AlertRoot.displayName = 'Alert'
 
-const title = cva(['mb-1 font-medium leading-none tracking-tight'])
+const title = cva(['mb-1 font-semibold leading-none tracking-tight'])
 
 interface TitleProps
   extends React.HTMLAttributes<HTMLHeadingElement>,
