@@ -100,9 +100,10 @@ interface TitleProps
     VariantProps<typeof title> {}
 
 const Title = React.forwardRef<HTMLParagraphElement, TitleProps>(
-  ({ className, ...props }, ref) => (
-    // eslint-disable-next-line jsx-a11y/heading-has-content
-    <h5 ref={ref} className={cn(title({ className }))} {...props} />
+  ({ className, children, ...props }, ref) => (
+    <h5 ref={ref} className={cn(title({ className }))} {...props}>
+      {children}
+    </h5>
   )
 )
 Title.displayName = 'Alert.Title'
