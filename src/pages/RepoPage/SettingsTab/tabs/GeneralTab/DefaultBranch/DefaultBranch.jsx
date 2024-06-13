@@ -4,18 +4,29 @@ import { useParams } from 'react-router-dom'
 
 import { useBranches } from 'services/branches'
 import { useUpdateRepo } from 'services/repo'
+import { useAddNotification } from 'services/toastNotification'
 import Icon from 'ui/Icon'
 import Select from 'ui/Select'
 import SettingsDescriptor from 'ui/SettingsDescriptor'
 
 function useUpdateDefaultBranch() {
-  const { mutate } = useUpdateRepo()
+  const addToast = useAddNotification()
+  const { mutate, ...rest } = useUpdateRepo()
 
   async function updateDefaultBranch(branch) {
-    mutate({ branch })
+    mutate(
+      { branch },
+      {
+        onError: () =>
+          addToast({
+            type: 'error',
+            text: 'We were unable to update the default branch for this repo',
+          }),
+      }
+    )
   }
 
-  return { updateDefaultBranch }
+  return { updateDefaultBranch, ...rest }
 }
 
 function DefaultBranch({ defaultBranch }) {
