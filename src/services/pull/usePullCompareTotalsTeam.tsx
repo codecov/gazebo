@@ -96,7 +96,7 @@ query GetPullCompareTotalsTeam(
               patchTotals {
                 coverage: percentCovered
               }
-              impactedFiles: impactedFilesDeprecated(filters: $filters) {
+              impactedFiles(filters: $filters) {
                 headName
                 missesCount
                 isCriticalFile
