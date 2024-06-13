@@ -1,26 +1,19 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 
 import { useAddNotification } from 'services/toastNotification'
 import Api from 'shared/api'
 
 const query = `
-  mutation UpdateRepository(
-    $repoName: String!
-    $branch: String
-    $activated: Boolean 
-) {
-    updateRepository(input: { branch: $branch, activated: $activated, repoName: $repoName }) {
+  mutation EncodeSecretString($repoName: String!, $value: String!) {
+    encodeSecretString(input: { repoName: $repoName, value: $value }) {
+      value
       error {
         ... on ValidationError {
           __typename
           message
         }
         ... on UnauthenticatedError {
-          __typename
-          message
-        }
-        ... on UnauthorizedError {
           __typename
           message
         }
@@ -35,37 +28,28 @@ interface URLParams {
   repo: string
 }
 
-interface MutationArgs {
-  activated?: boolean
-  branch?: number
-}
-
-export const useUpdateRepo = () => {
+export const useEncodeString = () => {
   const { provider, owner, repo } = useParams<URLParams>()
   const addToast = useAddNotification()
-  const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ activated, branch }: MutationArgs) => {
+    mutationFn: (value: string) => {
       return Api.graphqlMutation({
         provider,
         query,
         variables: {
           owner,
           repoName: repo,
-          activated,
-          branch,
+          value,
         },
-        mutationPath: 'UpdateRepository',
+        mutationPath: 'EncodeSecretString',
       })
     },
     onSuccess: ({ data }) => {
-      queryClient.invalidateQueries(['GetRepo'])
-      queryClient.invalidateQueries(['GetRepoSettings'])
-      const error = data?.regenerateRepositoryUploadToken?.error
+      const error = data?.encodeSecretString?.error
       if (error) {
         addToast({
           type: 'error',
-          text: `We were not able to update this repo`,
+          text: `We were unable to generate the secret string`,
         })
       }
     },

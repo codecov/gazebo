@@ -223,7 +223,6 @@ describe('useUpdateRepo', () => {
           wrapper: wrapper(),
         })
 
-        // @ts-expect-error
         result.current.mutate({})
 
         await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
