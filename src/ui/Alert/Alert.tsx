@@ -110,7 +110,7 @@ interface DescriptionProps
 
 const Description = React.forwardRef<HTMLParagraphElement, DescriptionProps>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn(description({ className }))} {...props} />
+    <p ref={ref} className={cn(description({ className }))} {...props} />
   )
 )
 Description.displayName = 'Alert.Description'
