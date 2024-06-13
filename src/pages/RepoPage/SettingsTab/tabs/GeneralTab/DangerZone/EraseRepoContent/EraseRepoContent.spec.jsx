@@ -2,7 +2,7 @@ import { render, screen, waitFor } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
-import { rest } from 'msw'
+import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -37,6 +37,22 @@ const wrapper = ({ children }) => (
     </MemoryRouter>
   </QueryClientProvider>
 )
+
+const mockErrorResponse = {
+  eraseRepository: {
+    error: {
+      __typename: 'UnauthenticatedError',
+      message: 'unauthenticated error',
+    },
+  },
+}
+
+const mockResponse = {
+  eraseRepository: {
+    data: null,
+  },
+}
+
 describe('EraseRepoContent', () => {
   function setup(
     { failedMutation = false, isLoading = false } = {
@@ -50,22 +66,19 @@ describe('EraseRepoContent', () => {
     useAddNotification.mockReturnValue(addNotification)
 
     server.use(
-      rest.patch(
-        '/internal/github/codecov/repos/codecov-client/erase/',
-        (req, res, ctx) => {
-          mutate()
-
-          if (isLoading) {
-            // https://cathalmacdonnacha.com/mocking-error-empty-and-loading-states-with-msw
-            return res(ctx.status(200), ctx.json({}), ctx.delay(100))
-          }
-
-          if (failedMutation) {
-            return res(ctx.status(500))
-          }
-          return res(ctx.status(200))
+      graphql.mutation('EraseRepository', (req, res, ctx) => {
+        console.log('ASFS')
+        mutate()
+        if (isLoading) {
+          // https://cathalmacdonnacha.com/mocking-error-empty-and-loading-states-with-msw
+          return res(ctx.status(200), ctx.data(mockResponse), ctx.delay(100))
         }
-      )
+        if (failedMutation) {
+          console.log('SAKF')
+          return res(ctx.status(200), ctx.data(mockErrorResponse))
+        }
+        return res(ctx.status(200), ctx.data(mockResponse))
+      })
     )
 
     return { user, mutate, addNotification }
