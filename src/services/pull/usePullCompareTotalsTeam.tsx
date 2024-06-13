@@ -97,11 +97,19 @@ query GetPullCompareTotalsTeam(
                 coverage: percentCovered
               }
               impactedFiles(filters: $filters) {
-                headName
-                missesCount
-                isCriticalFile
-                patchCoverage {
-                  coverage: percentCovered
+                __typename
+                ... on ImpactedFiles {
+                  results {
+                    headName
+                    missesCount
+                    isCriticalFile
+                    patchCoverage {
+                      coverage: percentCovered
+                    }
+                  }
+                }
+                ... on UnknownFlags {
+                  message
                 }
               }
             }

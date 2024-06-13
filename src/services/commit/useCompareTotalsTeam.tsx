@@ -97,9 +97,17 @@ query GetCompareTotalsTeam(
                 coverage: percentCovered
               }
               impactedFiles(filters: $filters) {
-                headName
-                patchCoverage {
-                  coverage: percentCovered
+                __typename
+                ... on ImpactedFiles {
+                  results {
+                    headName
+                    patchCoverage {
+                      coverage: percentCovered
+                    }
+                  }
+                }
+                ... on UnknownFlags {
+                  message
                 }
               }
             }
@@ -132,7 +140,8 @@ query GetCompareTotalsTeam(
       }
     }
   }
-}`
+}
+`
 
 interface UseCompareTotalsTeamArgs {
   provider: string

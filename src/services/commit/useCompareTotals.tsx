@@ -100,15 +100,23 @@ query CompareTotals(
                 coverage: percentCovered
               }
               impactedFiles(filters: $filters) {
-                headName
-                patchCoverage {
-                  coverage: percentCovered
+                __typename
+                ... on ImpactedFiles {
+                  results {
+                    headName
+                    patchCoverage {
+                      coverage: percentCovered
+                    }
+                    baseCoverage {
+                      coverage: percentCovered
+                    }
+                    headCoverage {
+                      coverage: percentCovered
+                    }
+                  }
                 }
-                baseCoverage {
-                  coverage: percentCovered
-                }
-                headCoverage {
-                  coverage: percentCovered
+                ... on UnknownFlags {
+                  message
                 }
               }
             }

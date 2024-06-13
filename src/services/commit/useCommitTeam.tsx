@@ -220,10 +220,18 @@ const query = `query GetCommitTeam(
                 coverage: percentCovered
               }
               impactedFiles(filters: $filters) {
-                headName
-                missesCount
-                patchCoverage {
-                  coverage: percentCovered
+                __typename
+                ... on ImpactedFiles {
+                  results {
+                    headName
+                    missesCount
+                    patchCoverage {
+                      coverage: percentCovered
+                    }
+                  }
+                }
+                ... on UnknownFlags {
+                  message
                 }
               }
             }
