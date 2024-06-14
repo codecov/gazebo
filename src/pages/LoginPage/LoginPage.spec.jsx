@@ -25,6 +25,30 @@ describe('LoginPage', () => {
 
   afterEach(() => jest.resetAllMocks())
 
+  describe('rendering DEC message', () => {
+    it('renders the message', () => {
+      setup()
+      render(<LoginPage />, { wrapper: wrapper('/login') })
+
+      const message = screen.getByText(/If you are using GitHub/)
+      expect(message).toBeInTheDocument()
+    })
+
+    it('renders the docs link', () => {
+      setup()
+      render(<LoginPage />, { wrapper: wrapper('/login') })
+
+      const link = screen.getByRole('link', {
+        name: /dedicated enterprise cloud/i,
+      })
+      expect(link).toBeInTheDocument()
+      expect(link).toHaveAttribute(
+        'href',
+        'https://docs.codecov.com/docs/codecov-dedicated-enterprise-cloud-install-steps'
+      )
+    })
+  })
+
   describe('when the url is /login', () => {
     it('renders github login button', () => {
       render(<LoginPage />, { wrapper: wrapper('/login') })
