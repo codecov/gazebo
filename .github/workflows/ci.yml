@@ -71,6 +71,12 @@ jobs:
           echo json=${INDEX_JSON} >> $GITHUB_OUTPUT
           echo test_list_array=$(echo ${TEST_LIST} | jq -c '[_nwise(${{ env.TEST_SPLIT_NUMBER }})]') >> $GITHUB_OUTPUT
 
+  codecovstartup:
+    name: Codecov Startup
+    needs: install
+    uses: codecov/gha-workflows/.github/workflows/codecov-startup.yml@v1.2.14
+    secrets: inherit
+
   test:
     name: 'Test Runner #${{ matrix.runner-index }}'
     needs: [install, codecovstartup, runner-indexes]
