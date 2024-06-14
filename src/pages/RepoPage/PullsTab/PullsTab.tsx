@@ -109,7 +109,7 @@ function PullsTab() {
       <div className="flex flex-row gap-3">
         <div className="flex items-center justify-center gap-3">
           <label className="text-sm font-semibold">View:</label>
-          <div>
+          <div className="w-32">
             <MultiSelect
               // @ts-expect-error - need to play around with forward refs and types
               dataMarketing="pulls-filter-by-state"
