@@ -26,7 +26,7 @@ function Pagination({ onPageChange, totalPages, pointer, next, previous }) {
         disabled={pointer === 1 || !previous}
       >
         <span className="sr-only">Previous</span>
-        <Icon name="leftChevron" color="text-current" className="h-4 w-4" />
+        <Icon name="leftChevron" color="text-current" className="size-4" />
       </button>
       <PageButton
         onClick={onPageChange}
@@ -82,7 +82,7 @@ function Pagination({ onPageChange, totalPages, pointer, next, previous }) {
         disabled={pointer === totalPages || !next}
       >
         <span className="sr-only">Next</span>
-        <Icon name="rightChevron" color="text-current" className="h-4 w-4" />
+        <Icon name="rightChevron" color="text-current" className="size-4" />
       </button>
     </nav>
   )

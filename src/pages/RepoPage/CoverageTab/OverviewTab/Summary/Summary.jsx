@@ -68,7 +68,7 @@ const Summary = () => {
             </span>
             Branch Context
           </h3>
-          <span className="min-w-[16rem] text-sm">
+          <span className="min-w-64 text-sm">
             <Select
               dataMarketing="branch-selector-repo-page"
               {...branchSelectorProps}
@@ -104,7 +104,7 @@ const Summary = () => {
         </SummaryField>
         {data?.head?.totals?.percentCovered && (
           <SummaryField>
-            <h3 className="min-w-[16rem] text-sm font-semibold  text-ds-gray-octonary">
+            <h3 className="min-w-64 text-sm font-semibold  text-ds-gray-octonary">
               Coverage on branch
             </h3>
             <CoverageProgress
@@ -125,7 +125,7 @@ const Summary = () => {
         <CoverageTrend />
         {data?.head?.yamlState === YAML_STATE.DEFAULT && (
           <SummaryField>
-            <h3 className="min-w-[8rem] text-sm font-semibold text-ds-gray-octonary">
+            <h3 className="min-w-32 text-sm font-semibold text-ds-gray-octonary">
               YAML Configuration
             </h3>
             <p className="pb-[2.0rem] text-sm">

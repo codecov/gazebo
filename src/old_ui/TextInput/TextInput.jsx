@@ -20,7 +20,7 @@ const TextInput = forwardRef(({ embedded, className = '', ...props }, ref) => {
 
   function _embedded() {
     return (
-      <span className="absolute left-0 top-0 z-10 m-3 h-4 w-4">
+      <span className="absolute left-0 top-0 z-10 m-3 size-4">
         {embedded()}
       </span>
     )

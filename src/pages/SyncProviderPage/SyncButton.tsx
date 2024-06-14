@@ -18,7 +18,7 @@ const SyncButton: React.FC<SyncButtonProps> = ({ provider }) => {
       >
         <img
           alt={`Logo of ${providerToName(provider)}`}
-          className="mx-4 block h-6 w-6"
+          className="mx-4 block size-6"
           src={providerImage(provider)}
         />
         Sync with {providerToName(provider)}

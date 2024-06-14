@@ -20,7 +20,7 @@ const Profile = lazy(() => import('./tabs/Profile'))
 const YAMLTab = lazy(() => import('./tabs/YAML'))
 
 const Loader = () => (
-  <div className="flex h-full w-full items-center justify-center">
+  <div className="flex size-full items-center justify-center">
     <LoadingLogo />
   </div>
 )

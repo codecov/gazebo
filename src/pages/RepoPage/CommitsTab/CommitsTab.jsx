@@ -154,7 +154,7 @@ function CommitsTab() {
               </span>
               Branch Context
             </h2>
-            <div className="min-w-[13rem] lg:min-w-[16rem]">
+            <div className="min-w-52 lg:min-w-64">
               <Select
                 {...branchSelectorProps}
                 dataMarketing="branch-selector-commits-page"
@@ -178,7 +178,7 @@ function CommitsTab() {
           </div>
           <div className="flex flex-col gap-1">
             <h2 className="font-semibold">Coverage upload status</h2>
-            <div className="min-w-[13rem] lg:min-w-[16rem]">
+            <div className="min-w-52 lg:min-w-64">
               <MultiSelect
                 dataMarketing="commits-filter-by-coverage-status"
                 ariaName="Filter by coverage upload status"
