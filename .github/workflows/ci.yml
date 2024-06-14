@@ -115,3 +115,35 @@ jobs:
           JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
           TEST_LIST: ${{ tojson(fromjson(needs.runner-indexes.outputs.test_list_array)[matrix.runner-index]) }}
 
+      - name: Run tests
+        run: |
+          TESTS=$(echo $TEST_LIST | jq -cr 'join(" ")')
+          npm run test:ci -- --maxWorkers=2 $TESTS
+        env:
+          JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
+          TEST_LIST: ${{ tojson(fromjson(needs.runner-indexes.outputs.test_list_array)[matrix.runner-index]) }}
+
+      - name: Run tests
+        run: |
+          TESTS=$(echo $TEST_LIST | jq -cr 'join(" ")')
+          npm run test:ci -- --maxWorkers=2 $TESTS
+        env:
+          JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
+          TEST_LIST: ${{ tojson(fromjson(needs.runner-indexes.outputs.test_list_array)[matrix.runner-index]) }}
+
+      - name: Run tests
+        run: |
+          TESTS=$(echo $TEST_LIST | jq -cr 'join(" ")')
+          npm run test:ci -- --maxWorkers=2 $TESTS
+        env:
+          JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
+          TEST_LIST: ${{ tojson(fromjson(needs.runner-indexes.outputs.test_list_array)[matrix.runner-index]) }}
+
+      - name: Run tests
+        run: |
+          TESTS=$(echo $TEST_LIST | jq -cr 'join(" ")')
+          npm run test:ci -- --maxWorkers=2 $TESTS
+        env:
+          JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
+          TEST_LIST: ${{ tojson(fromjson(needs.runner-indexes.outputs.test_list_array)[matrix.runner-index]) }}
+
