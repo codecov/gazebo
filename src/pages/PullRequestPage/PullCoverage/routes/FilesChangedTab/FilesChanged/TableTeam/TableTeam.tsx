@@ -11,8 +11,9 @@ import {
 } from '@tanstack/react-table'
 import cs from 'classnames'
 import isEmpty from 'lodash/isEmpty'
-import { Fragment, lazy, Suspense, useMemo, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import qs from 'qs'
+import { Fragment, lazy, Suspense, useEffect, useMemo, useState } from 'react'
+import { useLocation, useParams } from 'react-router-dom'
 
 import {
   ImpactedFile,
@@ -23,7 +24,6 @@ import {
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
-import 'ui/FileList/FileList.css'
 
 const PullFileDiff = lazy(() => import('../../shared/FileDiff'))
 
@@ -33,7 +33,7 @@ const isNumericColumn = (cellId: string) =>
   cellId === 'missedLines' || cellId === 'patchPercentage'
 
 export function getFilter(sorting: Array<{ id: string; desc: boolean }>) {
-  const state = sorting.at(0)
+  const state = sorting[0]
 
   if (state) {
     const direction = state?.desc
@@ -173,6 +173,12 @@ export default function FilesChangedTableTeam() {
     mostRecentCompare = pullData?.pull?.compareWithBase
   }
 
+  const location = useLocation()
+  const params = qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+  })
+  const currentlySelectedFile = params.filepath
+
   const data = useMemo(() => {
     if (
       pullData?.pull?.compareWithBase?.__typename === 'Comparison' &&
@@ -183,6 +189,19 @@ export default function FilesChangedTableTeam() {
     }
     return []
   }, [pullData?.pull?.compareWithBase])
+
+  useEffect(() => {
+    if (data.length > 0 && currentlySelectedFile) {
+      const fileToExpandIndex = data.findIndex(
+        (file) => file && file.headName === currentlySelectedFile
+      )
+      if (fileToExpandIndex !== -1) {
+        setExpanded({
+          [fileToExpandIndex]: true,
+        })
+      }
+    }
+  }, [data, currentlySelectedFile])
 
   const table = useReactTable({
     columns: getColumns({ pullId }),

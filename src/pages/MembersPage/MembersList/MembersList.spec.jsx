@@ -147,7 +147,7 @@ describe('MembersList', () => {
         expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
       )
 
-      const tableHeader = await screen.findByText('User name')
+      const tableHeader = await screen.findByText('Username')
       expect(tableHeader).toBeInTheDocument()
 
       const tableEntry = await screen.findByText('codecov')
@@ -318,7 +318,7 @@ describe('MembersList', () => {
             expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
           )
 
-          const tableHeader = await screen.findByText('User name')
+          const tableHeader = await screen.findByText('Username')
           expect(tableHeader).toBeInTheDocument()
 
           const toggle = await screen.findByLabelText('Non-Active')
@@ -344,7 +344,7 @@ describe('MembersList', () => {
             expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
           )
 
-          const tableHeader = await screen.findByText('User name')
+          const tableHeader = await screen.findByText('Username')
           expect(tableHeader).toBeInTheDocument()
 
           const toggle = await screen.findByLabelText('Non-Active')
@@ -379,7 +379,7 @@ describe('MembersList', () => {
             expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
           )
 
-          const tableHeader = await screen.findByText('User name')
+          const tableHeader = await screen.findByText('Username')
           expect(tableHeader).toBeInTheDocument()
 
           const toggle = await screen.findByLabelText('Non-Active')
@@ -402,7 +402,7 @@ describe('MembersList', () => {
             expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
           )
 
-          const tableHeader = await screen.findByText('User name')
+          const tableHeader = await screen.findByText('Username')
           expect(tableHeader).toBeInTheDocument()
 
           const toggle = await screen.findByLabelText('Non-Active')

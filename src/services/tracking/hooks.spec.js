@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
@@ -20,21 +21,25 @@ const wrapper = ({ children }) => (
 
 const server = setupServer()
 
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen()
+})
+
 afterEach(() => {
   server.resetHandlers()
   queryClient.clear()
 })
-afterAll(() => server.close())
+
+afterAll(() => {
+  server.close()
+})
 
 describe('useTracking', () => {
   let pendoCopy = window.pendo
-  let dataLayerCopy = window.dataLayer
 
   afterAll(() => {
     // Cleanup window "mocks"
     window.pendo = pendoCopy
-    window.dataLayer = dataLayerCopy
   })
 
   function setup(user) {
@@ -42,15 +47,6 @@ describe('useTracking', () => {
       initialize: jest.fn(),
       updateOptions: jest.fn(),
     }
-    window.dataLayer = [
-      {
-        codecov: {
-          app: {
-            version: 'react-app',
-          },
-        },
-      },
-    ]
 
     server.use(
       graphql.query('CurrentUser', (req, res, ctx) => {
@@ -95,52 +91,23 @@ describe('useTracking', () => {
       setup({ me: user })
     })
 
-    it('set the user data in the dataLayer', async () => {
-      const { result } = renderHook(() => useTracking(), { wrapper })
-
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
-
-      await waitFor(() =>
-        expect(window.dataLayer[0]).toEqual({
-          codecov: {
-            app: {
-              version: 'react-app',
-            },
-            user: {
-              ownerid: 1,
-              has_yaml: true,
-              avatar: 'avatar',
-              service_id: '123',
-              plan: 'plan',
-              staff: true,
-              email: 'fake@test.com',
-              name: 'Eugene Onegin',
-              username: 'eugene_onegin',
-              student: true,
-              bot: true,
-              delinquent: true,
-              did_trial: true,
-              private_access: true,
-              plan_provider: 'provider',
-              plan_user_count: 1000,
-              service: 'github',
-              created_at: new Date('2017-01-01 12:00:00').toISOString(),
-              updated_at: new Date('2018-01-01 12:00:00').toISOString(),
-              student_created_at: new Date('2019-01-01 12:00:00').toISOString(),
-              student_updated_at: new Date('2020-01-01 12:00:00').toISOString(),
-              guest: false,
-            },
-          },
-        })
-      )
-    })
-
     it('fires pendo', async () => {
       renderHook(() => useTracking(), { wrapper })
 
       await waitFor(() =>
         expect(window.pendo.initialize).toHaveBeenCalledTimes(1)
+      )
+    })
+
+    it('sets user in sentry', async () => {
+      renderHook(() => useTracking(), { wrapper })
+
+      await waitFor(() => expect(Sentry.setUser).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(Sentry.setUser).toHaveBeenCalledWith({
+          email: 'fake@test.com',
+          username: 'eugene_onegin',
+        })
       )
     })
   })
@@ -178,45 +145,11 @@ describe('useTracking', () => {
       setup({ me: user })
     })
 
-    it('set the user data in the dataLayer', async () => {
-      const { result } = renderHook(() => useTracking(), { wrapper })
+    it('sets null user in sentry', async () => {
+      renderHook(() => useTracking(), { wrapper })
 
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
-
-      await waitFor(() =>
-        expect(window.dataLayer[0]).toEqual({
-          codecov: {
-            app: {
-              version: 'react-app',
-            },
-            user: {
-              ownerid: 3,
-              has_yaml: false,
-              avatar: 'avatar',
-              service_id: '123',
-              plan: 'plan',
-              staff: false,
-              service: 'github',
-              email: 'unknown@codecov.io',
-              name: 'unknown',
-              username: 'unknown',
-              student: false,
-              bot: false,
-              delinquent: false,
-              did_trial: false,
-              private_access: false,
-              plan_provider: '',
-              plan_user_count: 5,
-              created_at: '2014-01-01T12:00:00.000Z',
-              updated_at: '2014-01-01T12:00:00.000Z',
-              student_created_at: '2014-01-01T12:00:00.000Z',
-              student_updated_at: '2014-01-01T12:00:00.000Z',
-              guest: false,
-            },
-          },
-        })
-      )
+      await waitFor(() => expect(Sentry.setUser).toHaveBeenCalled())
+      await waitFor(() => expect(Sentry.setUser).toHaveBeenCalledWith(null))
     })
   })
 
@@ -228,24 +161,11 @@ describe('useTracking', () => {
       setup({ me: null })
     })
 
-    it('set the user as guest in the dataLayer', async () => {
-      const { result } = renderHook(() => useTracking(), { wrapper })
+    it('sets null user in sentry', async () => {
+      renderHook(() => useTracking(), { wrapper })
 
-      await waitFor(() => result.current.isLoading)
-      await waitFor(() => !result.current.isLoading)
-
-      await waitFor(() =>
-        expect(window.dataLayer[0]).toEqual({
-          codecov: {
-            app: {
-              version: 'react-app',
-            },
-            user: {
-              guest: true,
-            },
-          },
-        })
-      )
+      await waitFor(() => expect(Sentry.setUser).toHaveBeenCalled())
+      await waitFor(() => expect(Sentry.setUser).toHaveBeenCalledWith(null))
     })
   })
 })

@@ -380,6 +380,22 @@ export function useNavLinks() {
       isExternalLink: false,
       text: 'Flags',
     },
+    componentsTab: {
+      path: (
+        { provider = p, owner = o, repo = r, branch = undefined } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => {
+        if (branch) {
+          return `/${provider}/${owner}/${repo}/components?branch=${branch}`
+        }
+        return `/${provider}/${owner}/${repo}/components`
+      },
+      isExternalLink: false,
+      text: 'Components',
+    },
     branches: {
       path: (
         { provider = p, owner = o, repo = r } = {
@@ -573,7 +589,7 @@ export function useNavLinks() {
       isExternalLink: false,
     },
     pullComponents: {
-      text: 'Flags',
+      text: 'Components',
       path: (
         { provider = p, owner = o, repo = r, pullId = pi, queryParams = {} } = {
           provider: p,
@@ -658,7 +674,7 @@ export function useNavLinks() {
           owner: o,
           repo: r,
         }
-      ) => `https://github.com/${owner}/${repo}/settings/secrets/actions`,
+      ) => `https://github.com/${owner}/${repo}/settings/secrets/actions/new`,
       isExternalLink: true,
       openNewTab: true,
     },
@@ -760,6 +776,32 @@ export function useNavLinks() {
         `https://docs.google.com/forms/d/e/1FAIpQLSeoMHPyECewV7X3UaT-uUxZCmYy1T6hEX_aecCD2ppPHGSvUw/viewform`,
       text: 'Team plan feedback survey',
       isExternalLink: true,
+    },
+    failedTestsOnboarding: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => {
+        return `/${provider}/${owner}/${repo}/tests/new`
+      },
+      isExternalLink: false,
+      text: 'Tests',
+    },
+    failedTestsCodecovCLI: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => {
+        return `/${provider}/${owner}/${repo}/tests/new/codecov-cli`
+      },
+      text: 'Codecov CLI',
+      isExternalLink: false,
     },
   }
 }

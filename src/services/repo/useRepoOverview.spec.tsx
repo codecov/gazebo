@@ -21,6 +21,7 @@ const mockOverview = (language?: string) => {
         coverageEnabled: true,
         bundleAnalysisEnabled: true,
         languages,
+        testAnalyticsEnabled: true,
       },
     },
   }
@@ -130,6 +131,7 @@ describe('useRepoOverview', () => {
             bundleAnalysisEnabled: true,
             languages: [],
             jsOrTsPresent: false,
+            testAnalyticsEnabled: true,
           })
         )
       })
@@ -157,6 +159,7 @@ describe('useRepoOverview', () => {
               bundleAnalysisEnabled: true,
               languages: ['javascript'],
               jsOrTsPresent: true,
+              testAnalyticsEnabled: true,
             })
           )
         })
@@ -185,6 +188,7 @@ describe('useRepoOverview', () => {
               bundleAnalysisEnabled: true,
               languages: ['typescript'],
               jsOrTsPresent: true,
+              testAnalyticsEnabled: true,
             })
           )
         })
@@ -254,7 +258,7 @@ describe('useRepoOverview', () => {
       console.error = oldConsoleError
     })
 
-    it('throws a 403', async () => {
+    it('returns null', async () => {
       setup({ isOwnerNotActivatedError: true })
       const { result } = renderHook(
         () =>
@@ -266,14 +270,7 @@ describe('useRepoOverview', () => {
         { wrapper }
       )
 
-      await waitFor(() => expect(result.current.isError).toBeTruthy())
-      await waitFor(() =>
-        expect(result.current.error).toEqual(
-          expect.objectContaining({
-            status: 403,
-          })
-        )
-      )
+      await waitFor(() => expect(result.current.data).toEqual(null))
     })
   })
 

@@ -265,40 +265,6 @@ describe('PlanTypeOptions', () => {
         expect(teamBtn).not.toHaveClass('bg-ds-primary-base')
       })
 
-      describe('plan param is set to team', () => {
-        it('renders Team button as "selected"', async () => {
-          const { mockSetFormValue, mockSetSelectedPlan, planValue } = setup({
-            planValue: Plans.USERS_BASIC,
-            hasSentryPlans: false,
-            hasTeamPlans: true,
-          })
-
-          render(
-            <PlanTypeOptions
-              multipleTiers={true}
-              setFormValue={mockSetFormValue}
-              setSelectedPlan={mockSetSelectedPlan}
-              newPlan={planValue}
-            />,
-            {
-              wrapper: wrapper('/gh/codecov?plan=team'),
-            }
-          )
-
-          const proBtn = await screen.findByRole('button', {
-            name: 'Pro',
-          })
-          expect(proBtn).toBeInTheDocument()
-          expect(proBtn).not.toHaveClass('bg-ds-primary-base')
-
-          const teamBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
-          expect(teamBtn).toBeInTheDocument()
-          expect(teamBtn).toHaveClass('bg-ds-primary-base')
-        })
-      })
-
       describe('user clicks Team button', () => {
         it('calls setValue and setSelectedPlan', async () => {
           const { user, mockSetFormValue, mockSetSelectedPlan, planValue } =
@@ -409,40 +375,6 @@ describe('PlanTypeOptions', () => {
         })
         expect(teamBtn).toBeInTheDocument()
         expect(teamBtn).not.toHaveClass('bg-ds-primary-base')
-      })
-
-      describe('plan param is set to team', () => {
-        it('renders Team button as "selected"', async () => {
-          const { mockSetFormValue, mockSetSelectedPlan, planValue } = setup({
-            planValue: Plans.USERS_SENTRYY,
-            hasSentryPlans: true,
-            hasTeamPlans: true,
-          })
-
-          render(
-            <PlanTypeOptions
-              multipleTiers={true}
-              setFormValue={mockSetFormValue}
-              setSelectedPlan={mockSetSelectedPlan}
-              newPlan={planValue}
-            />,
-            {
-              wrapper: wrapper('/gh/codecov?plan=team'),
-            }
-          )
-
-          const proBtn = await screen.findByRole('button', {
-            name: 'Pro',
-          })
-          expect(proBtn).toBeInTheDocument()
-          expect(proBtn).not.toHaveClass('bg-ds-primary-base')
-
-          const teamBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
-          expect(teamBtn).toBeInTheDocument()
-          expect(teamBtn).toHaveClass('bg-ds-primary-base')
-        })
       })
 
       describe('user clicks Team button', () => {
@@ -738,40 +670,6 @@ describe('PlanTypeOptions', () => {
         expect(teamBtn).not.toHaveClass('bg-ds-primary-base')
       })
 
-      describe('plan param is set to team', () => {
-        it('renders Team button as "selected"', async () => {
-          const { mockSetFormValue, mockSetSelectedPlan, planValue } = setup({
-            planValue: Plans.USERS_TRIAL,
-            hasSentryPlans: true,
-            hasTeamPlans: true,
-          })
-
-          render(
-            <PlanTypeOptions
-              multipleTiers={true}
-              setFormValue={mockSetFormValue}
-              setSelectedPlan={mockSetSelectedPlan}
-              newPlan={planValue}
-            />,
-            {
-              wrapper: wrapper('/gh/codecov?plan=team'),
-            }
-          )
-
-          const proBtn = await screen.findByRole('button', {
-            name: 'Pro',
-          })
-          expect(proBtn).toBeInTheDocument()
-          expect(proBtn).not.toHaveClass('bg-ds-primary-base')
-
-          const teamBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
-          expect(teamBtn).toBeInTheDocument()
-          expect(teamBtn).toHaveClass('bg-ds-primary-base')
-        })
-      })
-
       describe('user clicks Team button', () => {
         it('calls setValue and setSelectedPlan', async () => {
           const { user, mockSetFormValue, mockSetSelectedPlan, planValue } =
@@ -886,40 +784,6 @@ describe('PlanTypeOptions', () => {
         expect(teamBtn).not.toHaveClass('bg-ds-primary-base')
       })
 
-      describe('plan param is set to team', () => {
-        it('renders Team button as "selected"', async () => {
-          const { mockSetFormValue, mockSetSelectedPlan, planValue } = setup({
-            planValue: Plans.USERS_BASIC,
-            hasSentryPlans: false,
-            hasTeamPlans: true,
-          })
-
-          render(
-            <PlanTypeOptions
-              multipleTiers={true}
-              setFormValue={mockSetFormValue}
-              setSelectedPlan={mockSetSelectedPlan}
-              newPlan={planValue}
-            />,
-            {
-              wrapper: wrapper('/gh/codecov?plan=team'),
-            }
-          )
-
-          const proBtn = await screen.findByRole('button', {
-            name: 'Pro',
-          })
-          expect(proBtn).toBeInTheDocument()
-          expect(proBtn).not.toHaveClass('bg-ds-primary-base')
-
-          const teamBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
-          expect(teamBtn).toBeInTheDocument()
-          expect(teamBtn).toHaveClass('bg-ds-primary-base')
-        })
-      })
-
       describe('user clicks Team button', () => {
         it('calls setValue and setSelectedPlan', async () => {
           const { user, mockSetFormValue, mockSetSelectedPlan, planValue } =
@@ -1030,40 +894,6 @@ describe('PlanTypeOptions', () => {
         })
         expect(teamBtn).toBeInTheDocument()
         expect(teamBtn).not.toHaveClass('bg-ds-primary-base')
-      })
-
-      describe('plan param is set to team', () => {
-        it('renders Team button as "selected"', async () => {
-          const { mockSetFormValue, mockSetSelectedPlan, planValue } = setup({
-            planValue: Plans.USERS_PR_INAPPY,
-            hasSentryPlans: false,
-            hasTeamPlans: true,
-          })
-
-          render(
-            <PlanTypeOptions
-              multipleTiers={true}
-              setFormValue={mockSetFormValue}
-              setSelectedPlan={mockSetSelectedPlan}
-              newPlan={planValue}
-            />,
-            {
-              wrapper: wrapper('/gh/codecov?plan=team'),
-            }
-          )
-
-          const proBtn = await screen.findByRole('button', {
-            name: 'Pro',
-          })
-          expect(proBtn).toBeInTheDocument()
-          expect(proBtn).not.toHaveClass('bg-ds-primary-base')
-
-          const teamBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
-          expect(teamBtn).toBeInTheDocument()
-          expect(teamBtn).toHaveClass('bg-ds-primary-base')
-        })
       })
 
       describe('user clicks Team button', () => {
@@ -1322,40 +1152,6 @@ describe('PlanTypeOptions', () => {
         })
         expect(teamBtn).toBeInTheDocument()
         expect(teamBtn).not.toHaveClass('bg-ds-primary-base')
-      })
-
-      describe('plan param is set to team', () => {
-        it('renders Team button as "selected"', async () => {
-          const { mockSetFormValue, mockSetSelectedPlan, planValue } = setup({
-            planValue: Plans.USERS_TRIAL,
-            hasSentryPlans: false,
-            hasTeamPlans: true,
-          })
-
-          render(
-            <PlanTypeOptions
-              multipleTiers={true}
-              setFormValue={mockSetFormValue}
-              setSelectedPlan={mockSetSelectedPlan}
-              newPlan={planValue}
-            />,
-            {
-              wrapper: wrapper('/gh/codecov?plan=team'),
-            }
-          )
-
-          const proBtn = await screen.findByRole('button', {
-            name: 'Pro',
-          })
-          expect(proBtn).toBeInTheDocument()
-          expect(proBtn).not.toHaveClass('bg-ds-primary-base')
-
-          const teamBtn = await screen.findByRole('button', {
-            name: 'Team',
-          })
-          expect(teamBtn).toBeInTheDocument()
-          expect(teamBtn).toHaveClass('bg-ds-primary-base')
-        })
       })
 
       describe('user clicks Team button', () => {

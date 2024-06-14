@@ -1,11 +1,16 @@
 import { type QueryOptions, useQueryClient } from '@tanstack/react-query'
+import { ParsedQs } from 'qs'
 import { useParams } from 'react-router-dom'
 
-import { extractCoverageFromResponse } from 'services/file/utils'
+import { extractCoverageFromResponse } from 'services/pathContents/utils'
 import Api from 'shared/api'
+import { NetworkErrorObject } from 'shared/api/helpers'
 import A from 'ui/A'
 
-import { queryForCommitFile as query, RequestSchema } from '../../constants'
+import {
+  PathContentsRequestSchema,
+  queryForCommitFile as query,
+} from '../../constants'
 
 interface URLParams {
   provider: string
@@ -16,8 +21,8 @@ interface URLParams {
 interface UsePrefetchCommitFileEntryArgs {
   commitSha: string
   path: string
-  flags?: Array<string>
-  components?: Array<string>
+  flags?: Array<string> | Array<ParsedQs>
+  components?: Array<string> | Array<ParsedQs>
   options?: QueryOptions
 }
 
@@ -58,13 +63,14 @@ export function usePrefetchCommitFileEntry({
             components,
           },
         }).then((res) => {
-          const parsedRes = RequestSchema.safeParse(res?.data)
+          const parsedRes = PathContentsRequestSchema.safeParse(res?.data)
 
           if (!parsedRes.success) {
             return Promise.reject({
               status: 404,
-              data: null,
-            })
+              data: {},
+              dev: 'usePrefetchCommitFileEntry - 404 schema parsing failed',
+            } satisfies NetworkErrorObject)
           }
 
           const data = parsedRes.data
@@ -73,7 +79,8 @@ export function usePrefetchCommitFileEntry({
             return Promise.reject({
               status: 404,
               data: {},
-            })
+              dev: 'usePrefetchCommitFileEntry - 404 NotFoundError',
+            } satisfies NetworkErrorObject)
           }
 
           if (
@@ -91,12 +98,21 @@ export function usePrefetchCommitFileEntry({
                   </p>
                 ),
               },
-            })
+              dev: 'usePrefetchCommitFileEntry - 403 OwnerNotActivatedError',
+            } satisfies NetworkErrorObject)
           }
 
-          const extractedResults = extractCoverageFromResponse({ data })
+          const coverage = extractCoverageFromResponse(data?.owner?.repository)
 
-          return extractedResults
+          if (!coverage) {
+            return Promise.reject({
+              status: 404,
+              data: {},
+              dev: 'usePrefetchCommitFileEntry - 404 failed to find coverage file',
+            } satisfies NetworkErrorObject)
+          }
+
+          return coverage
         })
       },
       staleTime: 10000,

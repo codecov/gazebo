@@ -46,10 +46,18 @@ describe('Tokens', () => {
           ctx.data({
             owner: {
               repository: {
+                __typename: 'Repository',
+                activated: true,
+                defaultBranch: 'master',
+                private: true,
                 uploadToken: 'upload token',
+                graphToken: 'graph token',
+                yaml: 'yaml',
+                bot: {
+                  username: 'test',
+                },
                 profilingToken: 'profiling token',
                 staticAnalysisToken: 'static analysis token',
-                graphToken: 'graph token',
               },
             },
           })
@@ -74,13 +82,6 @@ describe('Tokens', () => {
       render(<Tokens />, { wrapper })
 
       const title = await screen.findByText(/Impact analysis token/)
-      expect(title).toBeInTheDocument()
-    })
-
-    it('renders graph token component', async () => {
-      render(<Tokens />, { wrapper })
-
-      const title = await screen.findByText(/Graphing token/)
       expect(title).toBeInTheDocument()
     })
 

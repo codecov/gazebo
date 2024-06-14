@@ -253,23 +253,26 @@ function Example() {
                   code={row.original.contents}
                   fileName={row.original.path}
                   rendererType={CODE_RENDERER_TYPE.DIFF}
-                  /* @ts-expect-error */
                   LineComponent={({ i, line, ...props }) => (
                     <DiffLine
+                      {...props}
                       key={i + 1}
                       lineContent={line}
-                      edgeOfFile={i <= 2 || i >= 6}
                       path={row.original.path}
                       hitCount={
                         Math.random() > 0.5
                           ? Math.floor(Math.random() * 100)
                           : null
                       }
-                      headNumber={i + 1}
-                      baseNumber={i}
-                      headCoverage={coverage[Math.floor(Math.random() * 3) % 3]}
-                      baseCoverage={coverage[Math.floor(Math.random() * 3) % 3]}
-                      {...props}
+                      headNumber={`${i + 1}`}
+                      baseNumber={`${i}`}
+                      headCoverage={
+                        coverage[Math.floor(Math.random() * 3) % 3] ?? null
+                      }
+                      baseCoverage={
+                        coverage[Math.floor(Math.random() * 3) % 3] ?? null
+                      }
+                      getTokenProps={({ token, key }) => ({})}
                     />
                   )}
                 />

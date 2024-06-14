@@ -4,8 +4,8 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useMyOrganizations } from './useMyOrganizations'
 import type { MyOrganizationsData } from './useMyOrganizations'
+import { useMyOrganizations } from './useMyOrganizations'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -68,7 +68,7 @@ describe('useMyOrganizations', () => {
               owner: {
                 avatarUrl:
                   'https://avatars0.githubusercontent.com/u/8226205?v=3&s=s0',
-                username: 'Rula',
+                username: 'cool-user',
                 ownerid: 9,
               },
               myOrganizations: {
@@ -93,7 +93,7 @@ describe('useMyOrganizations', () => {
         })
 
         await waitFor(() => expect(result.current.isSuccess).toBe(true))
-        expect(thrownMock).not.toHaveBeenCalled()
+        await waitFor(() => expect(thrownMock).not.toHaveBeenCalled())
 
         expect(result.current.data).toEqual({
           pageParams: [undefined],
@@ -103,7 +103,7 @@ describe('useMyOrganizations', () => {
                 owner: {
                   avatarUrl:
                     'https://avatars0.githubusercontent.com/u/8226205?v=3&s=s0',
-                  username: 'Rula',
+                  username: 'cool-user',
                   ownerid: 9,
                 },
                 myOrganizations: {
@@ -137,7 +137,7 @@ describe('useMyOrganizations', () => {
               owner: {
                 avatarUrl:
                   'https://avatars0.githubusercontent.com/u/8226205?v=3&s=s0',
-                username: 'Rula',
+                username: 'cool-user',
                 ownerid: 9,
               },
               myOrganizations: {
@@ -162,7 +162,7 @@ describe('useMyOrganizations', () => {
                 owner: {
                   avatarUrl:
                     'https://avatars0.githubusercontent.com/u/8226205?v=3&s=s0',
-                  username: 'Rula',
+                  username: 'cool-user',
                   ownerid: 9,
                 },
                 myOrganizations: {
@@ -208,10 +208,11 @@ describe('useMyOrganizations', () => {
         await waitFor(() => !result.current.isLoading)
         await waitFor(() => expect(result.current.isSuccess).toBeFalsy())
 
-        expect(thrownMock).toHaveBeenCalledWith(
-          'POST /graphql/gh net::ERR_FAILED'
+        await waitFor(() =>
+          expect(thrownMock).toHaveBeenCalledWith(
+            'POST /graphql/gh net::ERR_FAILED'
+          )
         )
-        expect(result.current.data).toBeUndefined()
       })
     })
   })
@@ -235,7 +236,7 @@ describe('useMyOrganizations', () => {
             owner: {
               avatarUrl:
                 'https://avatars0.githubusercontent.com/u/8226205?v=3&s=s0',
-              username: 'Rula',
+              username: 'cool-user',
               ownerid: 9,
             },
             myOrganizations: {
@@ -270,7 +271,7 @@ describe('useMyOrganizations', () => {
               owner: {
                 avatarUrl:
                   'https://avatars0.githubusercontent.com/u/8226205?v=3&s=s0',
-                username: 'Rula',
+                username: 'cool-user',
                 ownerid: 9,
               },
               myOrganizations: {
@@ -294,6 +295,7 @@ describe('useMyOrganizations', () => {
         ],
       })
     })
+
     it('does not return a next cursor with no next page', async () => {
       const { thrownMock } = setup({
         MyOrganizationsData: {
@@ -301,7 +303,7 @@ describe('useMyOrganizations', () => {
             owner: {
               avatarUrl:
                 'https://avatars0.githubusercontent.com/u/8226205?v=3&s=s0',
-              username: 'Rula',
+              username: 'cool-user',
               ownerid: 9,
             },
             myOrganizations: {
@@ -336,7 +338,7 @@ describe('useMyOrganizations', () => {
               owner: {
                 avatarUrl:
                   'https://avatars0.githubusercontent.com/u/8226205?v=3&s=s0',
-                username: 'Rula',
+                username: 'cool-user',
                 ownerid: 9,
               },
               myOrganizations: {

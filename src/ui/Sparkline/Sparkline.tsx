@@ -37,7 +37,6 @@ const Sparkline: React.FC<SparklineProps> = ({
       datum.reduce<SparklineData[]>((prev, curr, index) => {
         const nextEntry = datum[index + 1]
         const previousPoint = prev[prev.length - 1]
-
         return [
           ...prev,
           {
@@ -92,6 +91,7 @@ const Sparkline: React.FC<SparklineProps> = ({
 
   return (
     <table
+      id="sparklineTable"
       style={tableCssProperties as TableCustomCSSProperties}
       className="flex flex-1"
     >
@@ -113,7 +113,7 @@ const Sparkline: React.FC<SparklineProps> = ({
               key={uniqueId(dataTemplate + description)}
             >
               <td
-                className="line absolute inset-0 flex flex-1 p-0 before:absolute before:inset-0 before:bg-ds-pink before:content-[''] after:absolute after:inset-0 after:bg-gradient-to-b after:from-ds-pink after:to-white after:content-['']"
+                className="line absolute inset-0 flex flex-1 p-0 before:absolute before:inset-0 before:bg-ds-gray-senary before:content-[''] after:absolute after:inset-0 after:bg-gradient-to-b after:from-ds-blue-darker after:to-white after:opacity-40 after:content-['']"
                 style={properties as TableCustomCSSProperties}
                 data-mode={mode}
               >

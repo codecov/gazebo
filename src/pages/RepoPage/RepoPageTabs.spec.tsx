@@ -18,7 +18,8 @@ import RepoPageTabs, { useRepoTabs } from './RepoPageTabs'
 
 jest.mock('shared/featureFlags')
 const mockedUseFlags = useFlags as jest.Mock<{
-  bundleAnalysisPrAndCommitPages: boolean
+  componentTab?: boolean
+  onboardingFailedTests?: boolean
 }>
 
 const mockRepoOverview = ({
@@ -26,6 +27,7 @@ const mockRepoOverview = ({
   isRepoPrivate = false,
   coverageEnabled = false,
   bundleAnalysisEnabled = false,
+  testAnalyticsEnabled = false,
 }) => {
   let languages = null
   if (language !== '') {
@@ -42,6 +44,7 @@ const mockRepoOverview = ({
         coverageEnabled,
         bundleAnalysisEnabled,
         languages,
+        testAnalyticsEnabled,
       },
     },
   }
@@ -53,6 +56,7 @@ const mockRepo = ({ isCurrentUserPartOfOrg = true }) => ({
     isCurrentUserPartOfOrg,
     isCurrentUserActivated: true,
     repository: {
+      __typename: 'Repository',
       private: false,
       uploadToken: null,
       defaultBranch: 'main',
@@ -60,6 +64,7 @@ const mockRepo = ({ isCurrentUserPartOfOrg = true }) => ({
       activated: true,
       oldestCommitAt: '2022-10-10T11:59:59',
       active: true,
+      isFirstPullRequest: false,
     },
   },
 })
@@ -88,6 +93,7 @@ const wrapper =
               '/:provider/:owner/:repo/commits',
               '/:provider/:owner/:repo/compare',
               '/:provider/:owner/:repo/flags',
+              '/:provider/:owner/:repo/components',
               '/:provider/:owner/:repo/new',
               '/:provider/:owner/:repo/pulls',
               '/:provider/:owner/:repo/settings',
@@ -122,6 +128,9 @@ interface SetupArgs {
   bundleAnalysisEnabled?: boolean
   tierName?: TTierNames
   isCurrentUserPartOfOrg?: boolean
+  componentTab?: boolean
+  onboardingFailedTests?: boolean
+  testAnalyticsEnabled?: boolean
 }
 
 describe('RepoPageTabs', () => {
@@ -132,9 +141,13 @@ describe('RepoPageTabs', () => {
     isRepoPrivate,
     tierName = TierNames.PRO,
     isCurrentUserPartOfOrg = true,
+    componentTab = true,
+    onboardingFailedTests = false,
+    testAnalyticsEnabled = false,
   }: SetupArgs) {
     mockedUseFlags.mockReturnValue({
-      bundleAnalysisPrAndCommitPages: true,
+      componentTab,
+      onboardingFailedTests,
     })
 
     server.use(
@@ -147,6 +160,7 @@ describe('RepoPageTabs', () => {
               isRepoPrivate,
               coverageEnabled,
               bundleAnalysisEnabled,
+              testAnalyticsEnabled,
             })
           )
         )
@@ -219,7 +233,7 @@ describe('RepoPageTabs', () => {
           wrapper: wrapper('/gh/codecov/test-repo/bundles'),
         })
 
-        const tab = await screen.findByText(/Bundles/)
+        const tab = await screen.findByText('Bundles')
         expect(tab).toBeInTheDocument()
         expect(tab).toHaveAttribute('aria-current', 'page')
         expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/bundles')
@@ -236,7 +250,7 @@ describe('RepoPageTabs', () => {
           wrapper: wrapper('/gh/codecov/test-repo/bundles'),
         })
 
-        const tab = await screen.findByText(/Bundles/)
+        const tab = await screen.findByText('Bundles')
         expect(tab).toBeInTheDocument()
         expect(tab).toHaveAttribute('aria-current', 'page')
         expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/bundles')
@@ -256,42 +270,11 @@ describe('RepoPageTabs', () => {
         const loader = await screen.findByText('Loading')
         await waitForElementToBeRemoved(loader)
 
-        const tab = screen.queryByText(/Bundles/)
+        const tab = screen.queryByText('Bundles')
         expect(tab).not.toBeInTheDocument()
 
         const betaBadge = screen.queryByText('beta')
         expect(betaBadge).not.toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('flags tab', () => {
-    describe('rendered when coverage is enabled', () => {
-      it('renders the flags tab', async () => {
-        setup({ coverageEnabled: true })
-        render(<RepoPageTabs refetchEnabled={false} />, {
-          wrapper: wrapper('/gh/codecov/test-repo/flags'),
-        })
-
-        const tab = await screen.findByText('Flags')
-        expect(tab).toBeInTheDocument()
-        expect(tab).toHaveAttribute('aria-current', 'page')
-        expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/flags')
-      })
-    })
-
-    describe('when coverage is not enabled', () => {
-      it('does not render the flags tab', async () => {
-        setup({ coverageEnabled: false })
-        render(<RepoPageTabs refetchEnabled={false} />, {
-          wrapper: wrapper('/gh/codecov/test-repo/flags'),
-        })
-
-        const loader = await screen.findByText('Loading')
-        await waitForElementToBeRemoved(loader)
-
-        const tab = screen.queryByText('Flags')
-        expect(tab).not.toBeInTheDocument()
       })
     })
   })
@@ -416,6 +399,53 @@ describe('RepoPageTabs', () => {
       })
     })
   })
+
+  describe('Failed tests tab', () => {
+    it('renders the failed tests copy', async () => {
+      setup({
+        coverageEnabled: false,
+        onboardingFailedTests: true,
+      })
+      render(<RepoPageTabs refetchEnabled={false} />, {
+        wrapper: wrapper('/gh/codecov/test-repo/tests/new'),
+      })
+
+      const tab = await screen.findByText('Tests')
+      expect(tab).toBeInTheDocument()
+      expect(tab).toHaveAttribute('aria-current', 'page')
+      expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/tests/new')
+    })
+
+    it('renders beta badge', async () => {
+      setup({
+        coverageEnabled: false,
+        onboardingFailedTests: true,
+      })
+      render(<RepoPageTabs refetchEnabled={false} />, {
+        wrapper: wrapper('/gh/codecov/test-repo/tests/new'),
+      })
+
+      const betaBadge = await screen.findByText('beta')
+      expect(betaBadge).toBeInTheDocument()
+    })
+
+    it('does not render failed tests tab if test analytics is disabled', async () => {
+      setup({
+        coverageEnabled: false,
+        onboardingFailedTests: false,
+        testAnalyticsEnabled: false,
+      })
+      render(<RepoPageTabs refetchEnabled={false} />, {
+        wrapper: wrapper('/gh/codecov/test-repo/tests/new'),
+      })
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+
+      const tab = screen.queryByText('Tests')
+      expect(tab).not.toBeInTheDocument()
+    })
+  })
 })
 
 describe('useRepoTabs', () => {
@@ -423,12 +453,13 @@ describe('useRepoTabs', () => {
     language,
     bundleAnalysisEnabled,
     coverageEnabled,
+    testAnalyticsEnabled = false,
     isRepoPrivate,
     tierName = TierNames.PRO,
     isCurrentUserPartOfOrg = true,
   }: SetupArgs) {
     mockedUseFlags.mockReturnValue({
-      bundleAnalysisPrAndCommitPages: true,
+      componentTab: true,
     })
 
     server.use(
@@ -441,6 +472,7 @@ describe('useRepoTabs', () => {
               isRepoPrivate,
               coverageEnabled,
               bundleAnalysisEnabled,
+              testAnalyticsEnabled,
             })
           )
         )
@@ -672,82 +704,6 @@ describe('useRepoTabs', () => {
           expect.objectContaining({
             pageName: 'bundles',
           }),
-        ]
-        await waitFor(() =>
-          expect(result.current).not.toEqual(
-            expect.arrayContaining(expectedTab)
-          )
-        )
-      })
-    })
-  })
-
-  describe('flags tab', () => {
-    describe('coverage is enabled', () => {
-      it('adds the flags link to the array', async () => {
-        setup({ coverageEnabled: true })
-        const { result } = renderHook(
-          () =>
-            useRepoTabs({
-              refetchEnabled: false,
-            }),
-          { wrapper: wrapper('/gh/codecov/test-repo') }
-        )
-
-        const expectedTab = [
-          {
-            pageName: 'flagsTab',
-          },
-        ]
-        await waitFor(() =>
-          expect(result.current).toEqual(expect.arrayContaining(expectedTab))
-        )
-      })
-    })
-
-    describe('coverage is disabled', () => {
-      it('does not add the flags link to the array', async () => {
-        setup({ coverageEnabled: false })
-        const { result } = renderHook(
-          () =>
-            useRepoTabs({
-              refetchEnabled: false,
-            }),
-          { wrapper: wrapper('/gh/codecov/test-repo') }
-        )
-
-        await waitForElementToBeRemoved(await screen.findByText('Loading'))
-
-        const expectedTab = [
-          {
-            pageName: 'flagsTab',
-          },
-        ]
-        await waitFor(() =>
-          expect(result.current).not.toEqual(
-            expect.arrayContaining(expectedTab)
-          )
-        )
-      })
-    })
-
-    describe('repo is private and tier is team', () => {
-      it('does not add the flags link to the array', async () => {
-        setup({ isRepoPrivate: true, tierName: TierNames.TEAM })
-        const { result } = renderHook(
-          () =>
-            useRepoTabs({
-              refetchEnabled: false,
-            }),
-          { wrapper: wrapper('/gh/codecov/test-repo') }
-        )
-
-        await waitForElementToBeRemoved(await screen.findByText('Loading'))
-
-        const expectedTab = [
-          {
-            pageName: 'flagsTab',
-          },
         ]
         await waitFor(() =>
           expect(result.current).not.toEqual(

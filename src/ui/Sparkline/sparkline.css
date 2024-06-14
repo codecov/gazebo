@@ -1,5 +1,24 @@
-td {
+.tableui table {
+  border: unset;
+}
+
+#sparklineTable {
+  table-layout: fixed;
+  min-width: unset !important;
+}
+
+#sparklineTable tbody {
+  border: unset;
+}
+
+#sparklineTable tr {
+  border: none;
+  text-align: unset;
+}
+
+#sparklineTable td {
   --dot-size: 4px;
+  padding: 0;
 }
 
 .line::before {
@@ -18,13 +37,4 @@ td {
     100% 100%,
     0 100%
   );
-}
-
-.line[data-mode='empty']::before {
-  background: linear-gradient(
-    90deg,
-    transparent 50%,
-    theme('colors.ds.pink.DEFAULT') 50%
-  );
-  background-size: var(--dot-size) var(--dot-size);
 }

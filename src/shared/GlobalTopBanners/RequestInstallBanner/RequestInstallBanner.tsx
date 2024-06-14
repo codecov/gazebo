@@ -1,4 +1,3 @@
-import { metrics } from '@sentry/react'
 import { useState } from 'react'
 import { useParams, useRouteMatch } from 'react-router-dom'
 
@@ -6,8 +5,9 @@ import config from 'config'
 
 import { useLocationParams } from 'services/navigation'
 import { providerToName } from 'shared/utils'
+import { metrics } from 'shared/utils/metrics'
 import Button from 'ui/Button'
-import CopyClipboard from 'ui/CopyClipboard'
+import { CopyClipboard } from 'ui/CopyClipboard'
 import Icon from 'ui/Icon'
 import Modal from 'ui/Modal'
 import TopBanner, { saveToLocalStorage } from 'ui/TopBanner'
@@ -15,7 +15,6 @@ import TopBanner, { saveToLocalStorage } from 'ui/TopBanner'
 const APP_INSTALL_BANNER_KEY = 'request-install-banner'
 const COPY_APP_INSTALL_STRING =
   "Hello, could you help approve the installation of the Codecov app on GitHub for our organization? Here's the link: https://github.com/apps/codecov/installations/select_target"
-const SHARE_REQUEST_METRICS_KEY = 'request_install.user.shared.request'
 
 interface URLParams {
   provider: string
@@ -80,7 +79,7 @@ const RequestInstallBanner = () => {
             onClick={() => {
               // this has the side effect of hiding the banner
               setShowAppInstallModal(true)
-              metrics.increment(SHARE_REQUEST_METRICS_KEY)
+              metrics.increment('request_install.user.shared.request')
             }}
           >
             Share Request
@@ -104,7 +103,7 @@ const RequestInstallBanner = () => {
               <div className="grow overflow-auto whitespace-pre-wrap break-words">
                 {COPY_APP_INSTALL_STRING}
               </div>
-              <CopyClipboard string={COPY_APP_INSTALL_STRING} showLabel />
+              <CopyClipboard value={COPY_APP_INSTALL_STRING} />
             </div>
           </div>
         }

@@ -13,37 +13,23 @@ const mockData = {
       commit: {
         commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
         flagNames: ['a', 'b'],
+        components: [],
         coverageFile: {
           isCriticalFile: true,
           hashedPath: 'hashed-path',
           content:
             'import pytest\nfrom path1 import index\n\ndef test_uncovered_if():\n    assert index.uncovered_if() == False\n\ndef test_fully_covered():\n    assert index.fully_covered() == True\n\n',
           coverage: [
-            {
-              line: 1,
-              coverage: 'H',
-            },
-            {
-              line: 2,
-              coverage: 'P',
-            },
-            {
-              line: 4,
-              coverage: 'H',
-            },
-            {
-              line: 5,
-              coverage: 'M',
-            },
-            {
-              line: 7,
-              coverage: 'H',
-            },
-            {
-              line: 8,
-              coverage: 'H',
-            },
+            { line: 1, coverage: 'H' },
+            { line: 2, coverage: 'P' },
+            { line: 3, coverage: 'H' },
+            { line: 4, coverage: 'M' },
+            { line: 5, coverage: 'H' },
+            { line: 6, coverage: 'H' },
           ],
+          totals: {
+            percentCovered: 66.67,
+          },
         },
       },
       branch: null,
@@ -53,7 +39,6 @@ const mockData = {
 
 const mockNotFoundError = {
   owner: {
-    isCurrentUserPartOfOrg: true,
     repository: {
       __typename: 'NotFoundError',
       message: 'commit not found',
@@ -63,7 +48,6 @@ const mockNotFoundError = {
 
 const mockOwnerNotActivatedError = {
   owner: {
-    isCurrentUserPartOfOrg: true,
     repository: {
       __typename: 'OwnerNotActivatedError',
       message: 'owner not activated',
@@ -184,23 +168,23 @@ describe('usePrefetchCommitFileEntry', () => {
       const queryKey = queryClient
         .getQueriesData({})
         ?.at(0)
-        ?.at(0) as Array<any>
+        ?.at(0) as Array<string>
 
       const expectedResponse = {
         content: mockData.owner.repository.commit.coverageFile.content,
         coverage: {
           '1': 'H',
           '2': 'P',
-          '4': 'H',
-          '5': 'M',
-          '7': 'H',
-          '8': 'H',
+          '3': 'H',
+          '4': 'M',
+          '5': 'H',
+          '6': 'H',
         },
         flagNames: ['a', 'b'],
         componentNames: [],
         hashedPath: 'hashed-path',
         isCriticalFile: true,
-        totals: 0,
+        totals: 66.67,
       }
 
       await waitFor(() =>
@@ -211,7 +195,7 @@ describe('usePrefetchCommitFileEntry', () => {
     })
 
     describe('there is a null owner', () => {
-      it('returns a null value', async () => {
+      it('returns a 404', async () => {
         setup({ isNullOwner: true })
         const { result } = renderHook(
           () =>
@@ -227,10 +211,14 @@ describe('usePrefetchCommitFileEntry', () => {
         const queryKey = queryClient
           .getQueriesData({})
           ?.at(0)
-          ?.at(0) as Array<any>
+          ?.at(0) as Array<string>
 
         await waitFor(() =>
-          expect(queryClient?.getQueryState(queryKey)?.data).toBe(null)
+          expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
+            expect.objectContaining({
+              status: 404,
+            })
+          )
         )
       })
     })
@@ -313,7 +301,7 @@ describe('usePrefetchCommitFileEntry', () => {
       const queryKey = queryClient
         .getQueriesData({})
         ?.at(0)
-        ?.at(0) as Array<any>
+        ?.at(0) as Array<string>
 
       await waitFor(() =>
         expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
@@ -350,7 +338,7 @@ describe('usePrefetchCommitFileEntry', () => {
       const queryKey = queryClient
         .getQueriesData({})
         ?.at(0)
-        ?.at(0) as Array<any>
+        ?.at(0) as Array<string>
 
       await waitFor(() =>
         expect(queryClient?.getQueryState(queryKey)?.error).toEqual(
@@ -387,7 +375,7 @@ describe('usePrefetchCommitFileEntry', () => {
       const queryKey = queryClient
         .getQueriesData({})
         ?.at(0)
-        ?.at(0) as Array<any>
+        ?.at(0) as Array<string>
 
       await waitFor(() =>
         expect(queryClient?.getQueryState(queryKey)?.error).toEqual(

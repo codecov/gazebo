@@ -152,6 +152,21 @@ const mockSingularImpactedFilesData = {
   },
 }
 
+const mockOverview = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      private: false,
+      defaultBranch: 'main',
+      oldestCommitAt: '2022-10-10T11:59:59',
+      coverageEnabled: true,
+      bundleAnalysisEnabled: false,
+      languages: ['javascript'],
+      testAnalyticsEnabled: true,
+    },
+  },
+}
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
@@ -195,7 +210,10 @@ describe('IndirectChangedFiles', () => {
 
       graphql.query('ImpactedFileComparison', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockSingularImpactedFilesData))
-      )
+      ),
+      graphql.query('GetRepoOverview', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockOverview))
+      })
     )
 
     return { mockVars }

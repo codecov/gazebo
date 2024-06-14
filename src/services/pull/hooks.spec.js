@@ -344,10 +344,11 @@ describe('usePull', () => {
 
 const mockSingularImpactedFilesData = {
   headName: 'file A',
-  isNewFile: true,
+  hashedPath: 'hashedFilePath',
   isRenamedFile: false,
   isDeletedFile: false,
   isCriticalFile: false,
+  isNewFile: true,
   headCoverage: {
     percentCovered: 90.23,
   },
@@ -359,9 +360,11 @@ const mockSingularImpactedFilesData = {
   },
   changeCoverage: 58.333333333333336,
   segments: {
+    __typename: 'SegmentComparisons',
     results: [
       {
         header: '@@ -0,0 +1,45 @@',
+        hasUnintendedChanges: false,
         lines: [
           {
             baseNumber: null,
@@ -418,8 +421,10 @@ describe('useSingularImpactedFileComparison', () => {
       setup({
         owner: {
           repository: {
+            __typename: 'Repository',
             pull: {
               compareWithBase: {
+                __typename: 'Comparison',
                 impactedFile: mockSingularImpactedFilesData,
               },
             },
@@ -450,10 +455,12 @@ describe('useSingularImpactedFileComparison', () => {
         await waitFor(() =>
           expect(result.current.data).toEqual({
             fileLabel: 'New',
+            hashedPath: 'hashedFilePath',
             headName: 'file A',
             isCriticalFile: false,
             segments: [
               {
+                hasUnintendedChanges: false,
                 header: '@@ -0,0 +1,45 @@',
                 lines: [
                   {
@@ -500,18 +507,18 @@ describe('useSingularImpactedFileComparison', () => {
 
   describe('when called with renamed file', () => {
     beforeEach(() => {
-      const renamedImpactedFile = {
-        headName: 'file A',
-        isRenamedFile: true,
-        isCriticalFile: false,
-        segments: { results: [] },
-      }
       setup({
         owner: {
           repository: {
+            __typename: 'Repository',
             pull: {
               compareWithBase: {
-                impactedFile: renamedImpactedFile,
+                __typename: 'Comparison',
+                impactedFile: {
+                  ...mockSingularImpactedFilesData,
+                  isRenamedFile: true,
+                  isNewFile: false,
+                },
               },
             },
           },
@@ -543,7 +550,48 @@ describe('useSingularImpactedFileComparison', () => {
             fileLabel: 'Renamed',
             headName: 'file A',
             isCriticalFile: false,
-            segments: [],
+            hashedPath: 'hashedFilePath',
+            segments: [
+              {
+                hasUnintendedChanges: false,
+                header: '@@ -0,0 +1,45 @@',
+                lines: [
+                  {
+                    baseCoverage: null,
+                    baseNumber: null,
+                    content: '+export default class Calculator {',
+                    headCoverage: 'H',
+                    headNumber: '1',
+                    coverageInfo: {
+                      hitCount: null,
+                      hitUploadIds: null,
+                    },
+                  },
+                  {
+                    baseCoverage: null,
+                    baseNumber: null,
+                    content: '+  private value = 0;',
+                    headCoverage: 'H',
+                    headNumber: '2',
+                    coverageInfo: {
+                      hitCount: 18,
+                      hitUploadIds: [0],
+                    },
+                  },
+                  {
+                    baseCoverage: null,
+                    baseNumber: null,
+                    content: '+  private calcMode = ""',
+                    headCoverage: 'H',
+                    headNumber: '3',
+                    coverageInfo: {
+                      hitCount: null,
+                      hitUploadIds: null,
+                    },
+                  },
+                ],
+              },
+            ],
           })
         )
       })
@@ -552,18 +600,17 @@ describe('useSingularImpactedFileComparison', () => {
 
   describe('when called with deleted file', () => {
     beforeEach(() => {
-      const renamedImpactedFile = {
-        headName: 'file A',
-        isDeletedFile: true,
-        isCriticalFile: false,
-        segments: { results: [] },
-      }
       setup({
         owner: {
           repository: {
+            __typename: 'Repository',
             pull: {
               compareWithBase: {
-                impactedFile: renamedImpactedFile,
+                __typename: 'Comparison',
+                impactedFile: {
+                  ...mockSingularImpactedFilesData,
+                  isDeletedFile: true,
+                },
               },
             },
           },
@@ -592,10 +639,51 @@ describe('useSingularImpactedFileComparison', () => {
 
         await waitFor(() =>
           expect(result.current.data).toEqual({
-            fileLabel: 'Deleted',
+            fileLabel: 'New',
             headName: 'file A',
             isCriticalFile: false,
-            segments: [],
+            hashedPath: 'hashedFilePath',
+            segments: [
+              {
+                hasUnintendedChanges: false,
+                header: '@@ -0,0 +1,45 @@',
+                lines: [
+                  {
+                    baseCoverage: null,
+                    baseNumber: null,
+                    content: '+export default class Calculator {',
+                    headCoverage: 'H',
+                    headNumber: '1',
+                    coverageInfo: {
+                      hitCount: null,
+                      hitUploadIds: null,
+                    },
+                  },
+                  {
+                    baseCoverage: null,
+                    baseNumber: null,
+                    content: '+  private value = 0;',
+                    headCoverage: 'H',
+                    headNumber: '2',
+                    coverageInfo: {
+                      hitCount: 18,
+                      hitUploadIds: [0],
+                    },
+                  },
+                  {
+                    baseCoverage: null,
+                    baseNumber: null,
+                    content: '+  private calcMode = ""',
+                    headCoverage: 'H',
+                    headNumber: '3',
+                    coverageInfo: {
+                      hitCount: null,
+                      hitUploadIds: null,
+                    },
+                  },
+                ],
+              },
+            ],
           })
         )
       })
@@ -604,20 +692,19 @@ describe('useSingularImpactedFileComparison', () => {
 
   describe('when called with an unchanged file label', () => {
     beforeEach(() => {
-      const renamedImpactedFile = {
-        headName: 'file A',
-        isNewFile: false,
-        isRenamedFile: false,
-        isDeletedFile: false,
-        isCriticalFile: false,
-        segments: { results: [] },
-      }
       setup({
         owner: {
           repository: {
+            __typename: 'Repository',
             pull: {
               compareWithBase: {
-                impactedFile: renamedImpactedFile,
+                __typename: 'Comparison',
+                impactedFile: {
+                  ...mockSingularImpactedFilesData,
+                  isNewFile: false,
+                  isRenamedFile: false,
+                  isDeletedFile: false,
+                },
               },
             },
           },
@@ -649,7 +736,48 @@ describe('useSingularImpactedFileComparison', () => {
             fileLabel: null,
             headName: 'file A',
             isCriticalFile: false,
-            segments: [],
+            hashedPath: 'hashedFilePath',
+            segments: [
+              {
+                hasUnintendedChanges: false,
+                header: '@@ -0,0 +1,45 @@',
+                lines: [
+                  {
+                    baseCoverage: null,
+                    baseNumber: null,
+                    content: '+export default class Calculator {',
+                    headCoverage: 'H',
+                    headNumber: '1',
+                    coverageInfo: {
+                      hitCount: null,
+                      hitUploadIds: null,
+                    },
+                  },
+                  {
+                    baseCoverage: null,
+                    baseNumber: null,
+                    content: '+  private value = 0;',
+                    headCoverage: 'H',
+                    headNumber: '2',
+                    coverageInfo: {
+                      hitCount: 18,
+                      hitUploadIds: [0],
+                    },
+                  },
+                  {
+                    baseCoverage: null,
+                    baseNumber: null,
+                    content: '+  private calcMode = ""',
+                    headCoverage: 'H',
+                    headNumber: '3',
+                    coverageInfo: {
+                      hitCount: null,
+                      hitUploadIds: null,
+                    },
+                  },
+                ],
+              },
+            ],
           })
         )
       })

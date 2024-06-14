@@ -4,7 +4,8 @@ import { useParams } from 'react-router-dom'
 import { useOrgUploadToken } from 'services/orgUploadToken'
 import { useRepo } from 'services/repo'
 import A from 'ui/A'
-import CopyClipboard from 'ui/CopyClipboard'
+import { Card } from 'ui/Card'
+import { CodeSnippet } from 'ui/CodeSnippet'
 
 import {
   copiedBuildCommandMetric,
@@ -34,7 +35,7 @@ export default defineConfig({
   ],
 });`
 
-const commitString = `git add -A && git commit -m "Added Codecov bundler plugin"`
+const commitString = `git add -A && git commit -m "Add Codecov bundler plugin" && git push`
 
 const npmBuild = `npm run build`
 const yarnBuild = `yarn run build`
@@ -42,177 +43,201 @@ const pnpmBuild = `pnpm run build`
 
 const StepOne: React.FC = () => {
   return (
-    <div className="pt-4">
-      <h2 className="pb-2 text-base">
-        <span className="font-semibold">Step 1:</span> Install the Codecov
-        Rollup Plugin
-      </h2>
-      <p className="pb-2 text-sm">
-        To install the{' '}
-        <span className="bg-ds-gray-primary px-1 font-mono">
-          @codecov/rollup-plugin
-        </span>{' '}
-        to your project, use one of the following commands.
-      </p>
-      <div className="flex flex-col gap-4">
-        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          {npmInstall}{' '}
-          <CopyClipboard
-            string={npmInstall}
-            testIdExtension="-npm-install"
-            onClick={() => {
-              copiedInstallCommandMetric('npm', 'rollup')
-            }}
-          />
-        </pre>
-        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          {yarnInstall}{' '}
-          <CopyClipboard
-            string={yarnInstall}
-            testIdExtension="-yarn-install"
-            onClick={() => {
-              copiedInstallCommandMetric('yarn', 'rollup')
-            }}
-          />
-        </pre>
-        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          {pnpmInstall}{' '}
-          <CopyClipboard
-            string={pnpmInstall}
-            testIdExtension="-pnpm-install"
-            onClick={() => {
-              copiedInstallCommandMetric('pnpm', 'rollup')
-            }}
-          />
-        </pre>
-      </div>
-    </div>
+    <Card>
+      <Card.Header>
+        <Card.Title size="base">
+          Step 1: Install the Codecov Rollup Plugin
+        </Card.Title>
+      </Card.Header>
+      <Card.Content className="flex flex-col gap-4">
+        <p>
+          To install the{' '}
+          <span className="bg-ds-gray-primary px-1 font-mono">
+            @codecov/rollup-plugin
+          </span>{' '}
+          to your project, use one of the following commands.
+        </p>
+        <CodeSnippet
+          clipboard={npmInstall}
+          clipboardOnClick={() => {
+            copiedInstallCommandMetric('npm', 'rollup')
+          }}
+          data-testid="rollup-npm-install"
+        >
+          {npmInstall}
+        </CodeSnippet>
+        <CodeSnippet
+          clipboard={yarnInstall}
+          clipboardOnClick={() => {
+            copiedInstallCommandMetric('yarn', 'rollup')
+          }}
+          data-testid="rollup-yarn-install"
+        >
+          {yarnInstall}
+        </CodeSnippet>
+        <CodeSnippet
+          clipboard={pnpmInstall}
+          clipboardOnClick={() => {
+            copiedInstallCommandMetric('pnpm', 'rollup')
+          }}
+          data-testid="rollup-pnpm-install"
+        >
+          {pnpmInstall}
+        </CodeSnippet>
+      </Card.Content>
+    </Card>
   )
 }
 
 const StepTwo: React.FC<{ uploadToken: string }> = ({ uploadToken }) => {
   return (
-    <div className="pt-4">
-      <h2 className="pb-2 text-base">
-        <span className="font-semibold">Step 2:</span> Copy Codecov token
-      </h2>
-      <p className="pb-2 text-sm">
-        Set an environment variable in your build environment with the following
-        upload token.
-      </p>
-      <div className="flex flex-col gap-4">
-        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          CODECOV_TOKEN={uploadToken}{' '}
-          <CopyClipboard
-            string={uploadToken}
-            testIdExtension="-upload-token"
-            onClick={() => {
+    <Card>
+      <Card.Header>
+        <Card.Title size="base">Step 2: Copy Codecov token</Card.Title>
+      </Card.Header>
+      <Card.Content className="flex flex-col gap-4">
+        <p>
+          Set an environment variable in your build environment with the
+          following upload token.
+        </p>
+        <div className="flex gap-4">
+          <CodeSnippet className="basis-1/3" clipboard="CODECOV_TOKEN">
+            CODECOV_TOKEN
+          </CodeSnippet>
+          <CodeSnippet
+            className="basis-2/3"
+            clipboard={uploadToken}
+            clipboardOnClick={() => {
               copiedTokenMetric('rollup')
             }}
-          />
-        </pre>
-      </div>
-    </div>
+            data-testid="rollup-upload-token"
+          >
+            {uploadToken}
+          </CodeSnippet>
+        </div>
+      </Card.Content>
+    </Card>
   )
 }
 
 const StepThree: React.FC = () => {
   return (
-    <div>
-      <h2 className="pb-2 text-base">
-        <span className="font-semibold">Step 3:</span> Configure the bundler
-        plugin
-      </h2>
-      <p className="pb-2 text-sm">
-        Import the bundler plugin, and add it to the end of your plugin array
-        found inside your{' '}
-        <span className="bg-ds-gray-primary px-1 font-mono">
-          rollup.config.js
-        </span>{' '}
-        file.
-      </p>
-      <pre className="flex items-start justify-between overflow-auto whitespace-pre rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-        {pluginConfig}
-        <CopyClipboard
-          string={pluginConfig}
-          testIdExtension="-plugin-config"
-          onClick={() => {
+    <Card>
+      <Card.Header>
+        <Card.Title size="base">
+          Step 3: Configure the bundler plugin
+        </Card.Title>
+      </Card.Header>
+      <Card.Content className="flex flex-col gap-4">
+        <p>
+          Import the bundler plugin, and add it to the end of your plugin array
+          found inside your{' '}
+          <span className="bg-ds-gray-primary px-1 font-mono">
+            rollup.config.js
+          </span>{' '}
+          file.
+        </p>
+        <CodeSnippet
+          clipboard={pluginConfig}
+          clipboardOnClick={() => {
             copiedConfigMetric('rollup')
           }}
-        />
-      </pre>
-    </div>
+          data-testid="rollup-plugin-config"
+        >
+          {pluginConfig}
+        </CodeSnippet>
+      </Card.Content>
+    </Card>
   )
 }
 
 const StepFour: React.FC = () => {
   return (
-    <div>
-      <h2 className="pb-2 text-base">
-        <span className="font-semibold">Step 4:</span> Commit your latest
-        changes
-      </h2>
-      <p className="pb-2 text-sm">
-        The plugin requires at least one commit to be made to properly upload
-        bundle analysis information up to Codecov.
-      </p>
-      <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-        {commitString}{' '}
-        <CopyClipboard
-          string={commitString}
-          testIdExtension="-commit-command"
-          onClick={() => {
+    <Card>
+      <Card.Header>
+        <Card.Title size="base">
+          Step 4: Commit and push your latest changes
+        </Card.Title>
+      </Card.Header>
+      <Card.Content className="flex flex-col gap-4">
+        <p>
+          The plugin requires at least one commit to be made to properly upload
+          bundle analysis information up to Codecov.
+        </p>
+        <CodeSnippet
+          clipboard={commitString}
+          clipboardOnClick={() => {
             copiedCommitMetric('rollup')
           }}
-        />
-      </pre>
-    </div>
+          data-testid="rollup-commit-command"
+        >
+          {commitString}
+        </CodeSnippet>
+      </Card.Content>
+    </Card>
   )
 }
 
 const StepFive: React.FC = () => {
   return (
-    <div>
-      <h2 className="pb-2 text-base">
-        <span className="font-semibold">Step 5:</span> Build the application
-      </h2>
-      <p className="pb-2 text-sm">
-        When building your application the plugin will automatically upload the
-        stats information to Codecov.
-      </p>
-      <div className="flex flex-col gap-4">
-        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          {npmBuild}{' '}
-          <CopyClipboard
-            string={npmBuild}
-            testIdExtension="-npm-build"
-            onClick={() => {
-              copiedBuildCommandMetric('npm', 'rollup')
-            }}
-          />
-        </pre>
-        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          {yarnBuild}{' '}
-          <CopyClipboard
-            string={yarnBuild}
-            testIdExtension="-yarn-build"
-            onClick={() => {
-              copiedBuildCommandMetric('yarn', 'rollup')
-            }}
-          />
-        </pre>
-        <pre className="flex w-full items-center justify-between gap-2 overflow-auto whitespace-pre-wrap rounded-md border-2 border-ds-gray-secondary bg-ds-gray-primary px-4 py-2 font-mono">
-          {pnpmBuild}{' '}
-          <CopyClipboard
-            string={pnpmBuild}
-            testIdExtension="-pnpm-build"
-            onClick={() => {
-              copiedBuildCommandMetric('pnpm', 'rollup')
-            }}
-          />
-        </pre>
-      </div>
-    </div>
+    <Card>
+      <Card.Header>
+        <Card.Title size="base">Step 5: Build the application</Card.Title>
+      </Card.Header>
+      <Card.Content className="flex flex-col gap-4">
+        <p>
+          When building your application the plugin will automatically upload
+          the stats information to Codecov.
+        </p>
+        <CodeSnippet
+          clipboard={npmBuild}
+          clipboardOnClick={() => {
+            copiedBuildCommandMetric('npm', 'rollup')
+          }}
+          data-testid="rollup-npm-build"
+        >
+          {npmBuild}
+        </CodeSnippet>
+        <CodeSnippet
+          clipboard={yarnBuild}
+          clipboardOnClick={() => {
+            copiedBuildCommandMetric('yarn', 'rollup')
+          }}
+          data-testid="rollup-yarn-build"
+        >
+          {yarnBuild}
+        </CodeSnippet>
+        <CodeSnippet
+          clipboard={pnpmBuild}
+          clipboardOnClick={() => {
+            copiedBuildCommandMetric('pnpm', 'rollup')
+          }}
+          data-testid="rollup-pnpm-build"
+        >
+          {pnpmBuild}
+        </CodeSnippet>
+      </Card.Content>
+    </Card>
+  )
+}
+
+function FeedbackCTA() {
+  return (
+    <Card>
+      <Card.Content>
+        <p>
+          <span className="font-semibold">How was your setup experience?</span>{' '}
+          Let us know in{' '}
+          <A
+            to={{ pageName: 'bundleConfigFeedback' }}
+            isExternal
+            hook="repo-config-feedback"
+          >
+            this issue
+          </A>
+        </p>
+      </Card.Content>
+    </Card>
   )
 }
 
@@ -227,10 +252,7 @@ const RollupOnboarding: React.FC = () => {
   const { data: repoData } = useRepo({ provider, owner, repo })
   const { data: orgUploadToken } = useOrgUploadToken({ provider, owner })
 
-  let uploadToken = repoData?.repository?.uploadToken
-  if (orgUploadToken) {
-    uploadToken = orgUploadToken
-  }
+  const uploadToken = orgUploadToken ?? repoData?.repository?.uploadToken ?? ''
 
   useEffect(() => {
     visitedOnboardingMetric('rollup')
@@ -239,23 +261,11 @@ const RollupOnboarding: React.FC = () => {
   return (
     <div className="flex flex-col gap-6">
       <StepOne />
-      <StepTwo uploadToken={uploadToken || ''} />
+      <StepTwo uploadToken={uploadToken} />
       <StepThree />
       <StepFour />
       <StepFive />
-      <div>
-        <p className="border-l-2 border-ds-gray-secondary pl-4">
-          <span className="font-semibold">How was your setup experience?</span>{' '}
-          Let us know in{' '}
-          <A
-            to={{ pageName: 'bundleConfigFeedback' }}
-            isExternal
-            hook="repo-config-feedback"
-          >
-            this issue
-          </A>
-        </p>
-      </div>
+      <FeedbackCTA />
     </div>
   )
 }

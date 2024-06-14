@@ -4,14 +4,13 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import cs from 'classnames'
-import { ReactNode, useCallback, useMemo } from 'react'
+import isNull from 'lodash/isNull'
+import { useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { useRevokeUserToken, UserToken } from 'services/access'
+import { cn } from 'shared/utils/cn'
 import Button from 'ui/Button'
-
-import 'ui/Table/Table.css'
 
 interface URLParams {
   provider: string
@@ -19,8 +18,8 @@ interface URLParams {
 
 interface TokenColumn {
   name: string
-  token: ReactNode
-  revokeBtn: ReactNode
+  token: React.ReactNode
+  revokeBtn: React.ReactNode
 }
 
 const columnHelper = createColumnHelper<TokenColumn>()
@@ -37,7 +36,7 @@ const columns = [
 ]
 
 interface TokensTableProps {
-  tokens: UserToken[]
+  tokens?: (UserToken | null)[]
 }
 
 function TokensTable({ tokens }: TokensTableProps) {
@@ -53,9 +52,17 @@ function TokensTable({ tokens }: TokensTableProps) {
     [mutate]
   )
 
-  const data = useMemo(
-    () =>
-      tokens.map((t) => ({
+  const data = useMemo(() => {
+    if (!tokens) {
+      return []
+    }
+
+    return tokens.flatMap<TokenColumn>((t) => {
+      if (isNull(t)) {
+        return []
+      }
+
+      return {
         name: t.name,
         token: (
           <p className="w-fit bg-ds-gray-secondary font-mono font-bold text-ds-gray-octonary">{`xxxx ${t.lastFour}`}</p>
@@ -64,16 +71,16 @@ function TokensTable({ tokens }: TokensTableProps) {
           <Button
             disabled={false}
             to={undefined}
-            hook="revoke-session"
+            hook="revoke-token"
             onClick={() => handleRevoke(t.id)}
             variant="danger"
           >
             Revoke
           </Button>
         ),
-      })),
-    [handleRevoke, tokens]
-  )
+      }
+    })
+  }, [handleRevoke, tokens])
 
   const table = useReactTable({
     data,
@@ -81,7 +88,7 @@ function TokensTable({ tokens }: TokensTableProps) {
     getCoreRowModel: getCoreRowModel(),
   })
 
-  if (!tokens.length) {
+  if (!tokens?.length) {
     return (
       <div>
         <hr className="my-4 border-ds-gray-secondary" />
@@ -91,7 +98,7 @@ function TokensTable({ tokens }: TokensTableProps) {
   }
 
   return (
-    <div className="tableui mt-4 max-w-screen-md">
+    <div className="tableui mt-4">
       <table>
         <colgroup>
           <col className="@sm/table:w-4/6" />
@@ -118,7 +125,7 @@ function TokensTable({ tokens }: TokensTableProps) {
               {row.getVisibleCells().map((cell) => (
                 <td
                   key={cell.id}
-                  className={cs({
+                  className={cn({
                     'flex justify-center': cell.column.id === 'revokeBtn',
                   })}
                 >

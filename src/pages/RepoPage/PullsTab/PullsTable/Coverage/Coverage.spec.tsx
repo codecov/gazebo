@@ -77,7 +77,7 @@ describe('Coverage', () => {
         wrapper,
       })
 
-      const text = screen.getByText('No report uploaded yet')
+      const text = screen.getByText('-')
       expect(text).toBeInTheDocument()
     })
   })

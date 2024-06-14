@@ -14,7 +14,7 @@ const CoverageProgress = ({
     return <Progress amount={amount} color={color} variant={variant} label />
   }
 
-  return <p className="text-sm text-ds-gray-quinary">No report uploaded yet</p>
+  return <p className="text-sm text-ds-gray-quinary">No report uploaded</p>
 }
 
 export default CoverageProgress

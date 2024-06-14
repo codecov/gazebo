@@ -7,7 +7,11 @@ import { useIgnoredIds } from 'pages/CommitDetailPage/hooks/useIgnoredIds'
 import { useComparisonForCommitAndParent } from 'services/comparison/useComparisonForCommitAndParent'
 import { transformImpactedFileData } from 'services/comparison/utils'
 import { useNavLinks } from 'services/navigation'
-import { CODE_RENDERER_TYPE } from 'shared/utils/fileviewer'
+import { useRepoOverview } from 'services/repo'
+import {
+  CODE_RENDERER_TYPE,
+  STICKY_PADDING_SIZES,
+} from 'shared/utils/fileviewer'
 import A from 'ui/A'
 import CodeRenderer from 'ui/CodeRenderer'
 import CodeRendererInfoRow from 'ui/CodeRenderer/CodeRendererInfoRow'
@@ -31,8 +35,9 @@ const Loader = () => (
 )
 
 function CommitFileDiff({ path }) {
-  const { owner, repo, provider, commit } = useParams()
   const { commitFileDiff } = useNavLinks()
+  const { owner, repo, provider, commit } = useParams()
+  const { data: overview } = useRepoOverview({ provider, owner, repo })
 
   const { data: ignoredUploadIds } = useIgnoredIds()
 
@@ -61,6 +66,16 @@ function CommitFileDiff({ path }) {
 
   const { fileLabel, headName, isCriticalFile, segments } = comparisonData
 
+  let stickyPadding = undefined
+  let fullFilePath = commitFileDiff.path({
+    commit,
+    tree: path,
+  })
+  if (overview?.coverageEnabled && overview?.bundleAnalysisEnabled) {
+    stickyPadding = STICKY_PADDING_SIZES.DIFF_LINE_DROPDOWN_PADDING
+    fullFilePath = `${fullFilePath}?dropdown=coverage`
+  }
+
   return (
     <>
       {isCriticalFile && <CriticalFileLabel variant="borderTop" />}
@@ -76,11 +91,7 @@ function CommitFileDiff({ path }) {
                     <span className="border-l-2 pl-2">{fileLabel}</span>
                   )}
                 </div>
-                <A
-                  href={commitFileDiff.path({ commit, tree: path })}
-                  isExternal
-                  hook="commit full file"
-                >
+                <A href={fullFilePath} isExternal hook="commit full file">
                   View full file
                 </A>
               </div>
@@ -102,6 +113,7 @@ function CommitFileDiff({ path }) {
                       ...ignoredUploadIds
                     ).length
                   }
+                  stickyPadding={stickyPadding}
                   {...props}
                   {...segment.lines[i]}
                 />

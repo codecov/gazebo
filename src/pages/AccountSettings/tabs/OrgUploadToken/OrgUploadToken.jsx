@@ -12,17 +12,15 @@ function OrgUploadToken() {
   const { data: orgUploadToken } = useOrgUploadToken({ provider, owner })
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 lg:w-3/4">
       <div className="flex gap-1">
-        <h1 className="text-lg font-semibold">
-          Global repository upload token
-        </h1>
+        <h1 className="text-lg font-semibold">Global upload token</h1>
         <div className="mt-2 text-xs">
           <A to={{ pageName: 'orgUploadTokenDoc' }}>learn more</A>
         </div>
       </div>
       <hr />
-      <div className="flex flex-col gap-6 xl:w-4/5 2xl:w-3/5">
+      <div className="flex flex-col gap-6">
         <Banner>
           <h2 className="font-semibold">Sensitive credential</h2>
           <p>

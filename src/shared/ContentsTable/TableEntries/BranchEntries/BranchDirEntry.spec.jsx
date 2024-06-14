@@ -11,6 +11,7 @@ const mockData = {
   owner: {
     username: 'codecov',
     repository: {
+      __typename: 'Repository',
       repositoryConfig: {
         indicationRange: {
           upperRange: 80,
@@ -45,15 +46,18 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/codecov/test-repo/tree/main/src']}>
-      <Route path="/:provider/:owner/:repo/tree/:branch/:path+">
-        {children}
-      </Route>
-    </MemoryRouter>
-  </QueryClientProvider>
-)
+const wrapper =
+  (initialEntries = ['/gh/codecov/test-repo/tree/main/src/']) =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Route path="/:provider/:owner/:repo/tree/:branch/:path+">
+            {children}
+          </Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
 beforeAll(() => server.listen())
 afterEach(() => {
@@ -79,7 +83,7 @@ describe('BranchDirEntry', () => {
     setup()
     render(
       <BranchDirEntry branch="branch" name="dir" urlPath="path/to/directory" />,
-      { wrapper }
+      { wrapper: wrapper() }
     )
 
     const dir = await screen.findByText('dir')
@@ -90,7 +94,7 @@ describe('BranchDirEntry', () => {
     setup()
     render(
       <BranchDirEntry branch="branch" name="dir" urlPath="path/to/directory" />,
-      { wrapper }
+      { wrapper: wrapper() }
     )
 
     const a = await screen.findByRole('link')
@@ -100,7 +104,7 @@ describe('BranchDirEntry', () => {
     )
   })
 
-  describe('flags filters is passed', () => {
+  describe('flags filter is set', () => {
     it('sets the correct href', async () => {
       setup()
       render(
@@ -113,18 +117,21 @@ describe('BranchDirEntry', () => {
             components: [],
           }}
         />,
-        { wrapper }
+        {
+          wrapper: wrapper([
+            '/gh/codecov/test-repo/tree/main/src?flags=flag-1',
+          ]),
+        }
       )
-
       const a = await screen.findByRole('link')
       expect(a).toHaveAttribute(
         'href',
-        '/gh/codecov/test-repo/tree/branch/path%2Fto%2Fdirectory%2Fdir?flags%5B0%5D=flag-1'
+        '/gh/codecov/test-repo/tree/branch/path%2Fto%2Fdirectory%2Fdir?flags=flag-1'
       )
     })
   })
 
-  describe('components and flags filters is passed', () => {
+  describe('components and flags filters is set', () => {
     it('sets the correct href', async () => {
       setup()
       render(
@@ -137,13 +144,17 @@ describe('BranchDirEntry', () => {
             components: ['component-1'],
           }}
         />,
-        { wrapper }
+        {
+          wrapper: wrapper([
+            '/gh/codecov/test-repo/tree/main/src?flags=flag-1&components=component-1',
+          ]),
+        }
       )
 
       const a = await screen.findByRole('link')
       expect(a).toHaveAttribute(
         'href',
-        '/gh/codecov/test-repo/tree/branch/path%2Fto%2Fdirectory%2Fdir?flags%5B0%5D=flag-1&components%5B0%5D=component-1'
+        '/gh/codecov/test-repo/tree/branch/path%2Fto%2Fdirectory%2Fdir?flags=flag-1&components=component-1'
       )
     })
   })
@@ -153,7 +164,7 @@ describe('BranchDirEntry', () => {
 
     render(
       <BranchDirEntry branch="branch" name="dir" urlPath="path/to/directory" />,
-      { wrapper }
+      { wrapper: wrapper() }
     )
 
     await user.hover(screen.getByText('dir'))
@@ -163,7 +174,7 @@ describe('BranchDirEntry', () => {
 
     await waitFor(() =>
       expect(queryClient.getQueryState().data).toStrictEqual({
-        __typename: undefined,
+        __typename: 'PathContents',
         indicationRange: {
           upperRange: 80,
           lowerRange: 60,

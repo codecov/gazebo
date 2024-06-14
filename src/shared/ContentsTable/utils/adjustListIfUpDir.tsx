@@ -8,14 +8,14 @@ import { displayTypeParameter } from '../constants'
 type TreePath = {
   pageName: string
   text: string
-  options: {
+  options?: {
     tree?: string
     ref?: string
     queryParams?: qs.ParsedQs
   }
 }
 
-type Row = {
+export type Row = {
   name: ReactNode
   lines: string
   hits: string

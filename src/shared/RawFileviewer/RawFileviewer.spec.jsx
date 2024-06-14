@@ -8,17 +8,17 @@ import { useScrollToLine } from 'ui/CodeRenderer/hooks/useScrollToLine'
 
 import RawFileviewer from './RawFileviewer'
 
+jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
+window.requestAnimationFrame = (cb) => cb()
+window.cancelAnimationFrame = () => {}
 jest.mock(
   'ui/FileViewer/ToggleHeader/ToggleHeader',
   () => () => 'The FileViewer Toggle Header'
 )
-
 jest.mock(
   'ui/CodeRenderer/CodeRendererProgressHeader',
   () => () => 'The Progress Header for CodeRenderer'
 )
-
-jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -72,15 +72,18 @@ describe('RawFileviewer', () => {
           ctx.data({
             owner: {
               repository: {
+                __typename: 'Repository',
                 commit: {
-                  commitid: 1,
+                  commitid: '1',
                   flagNames: ['flag1', 'flag2'],
+                  components: [],
                   coverageFile: {
+                    hashedPath: 'hashed-path',
                     isCriticalFile,
                     content,
                     coverage,
                     totals: {
-                      coverage,
+                      percentCovered: 100,
                     },
                   },
                 },
@@ -100,20 +103,20 @@ describe('RawFileviewer', () => {
         username: 'criticalrole',
         isCurrentUserPartOfOrg: true,
       }
-      const coverage = {
-        1: 'H',
-        2: 'H',
-        5: 'H',
-        6: 'H',
-        9: 'H',
-        10: 'H',
-        13: 'M',
-        14: 'P',
-        15: 'M',
-        16: 'M',
-        17: 'M',
-        21: 'H',
-      }
+      const coverage = [
+        { line: 1, coverage: 'H' },
+        { line: 2, coverage: 'H' },
+        { line: 5, coverage: 'H' },
+        { line: 6, coverage: 'H' },
+        { line: 9, coverage: 'H' },
+        { line: 10, coverage: 'H' },
+        { line: 13, coverage: 'M' },
+        { line: 14, coverage: 'P' },
+        { line: 15, coverage: 'M' },
+        { line: 16, coverage: 'M' },
+        { line: 17, coverage: 'M' },
+        { line: 21, coverage: 'H' },
+      ]
       const isCriticalFile = false
       setup({ content, owner, coverage, isCriticalFile })
     })
@@ -187,20 +190,20 @@ describe('RawFileviewer', () => {
         username: 'criticalrole',
         isCurrentUserPartOfOrg: true,
       }
-      const coverage = {
-        1: 'H',
-        2: 'H',
-        5: 'H',
-        6: 'H',
-        9: 'H',
-        10: 'H',
-        13: 'M',
-        14: 'P',
-        15: 'M',
-        16: 'M',
-        17: 'M',
-        21: 'H',
-      }
+      const coverage = [
+        { line: 1, coverage: 'H' },
+        { line: 2, coverage: 'H' },
+        { line: 5, coverage: 'H' },
+        { line: 6, coverage: 'H' },
+        { line: 9, coverage: 'H' },
+        { line: 10, coverage: 'H' },
+        { line: 13, coverage: 'M' },
+        { line: 14, coverage: 'P' },
+        { line: 15, coverage: 'M' },
+        { line: 16, coverage: 'M' },
+        { line: 17, coverage: 'M' },
+        { line: 21, coverage: 'H' },
+      ]
       const isCriticalFile = true
       setup({ content, owner, coverage, isCriticalFile })
     })
@@ -283,20 +286,6 @@ describe('RawFileviewer', () => {
     beforeEach(() => {
       setup({
         owner: null,
-        coverage: {
-          1: 'H',
-          2: 'H',
-          5: 'H',
-          6: 'H',
-          9: 'H',
-          10: 'H',
-          13: 'M',
-          14: 'P',
-          15: 'M',
-          16: 'M',
-          17: 'M',
-          21: 'H',
-        },
       })
     })
 

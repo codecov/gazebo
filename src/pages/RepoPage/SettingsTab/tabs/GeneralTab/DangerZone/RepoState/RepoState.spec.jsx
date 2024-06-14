@@ -47,7 +47,18 @@ describe('RepoState', () => {
           ctx.data({
             owner: {
               repository: {
+                __typename: 'Repository',
                 activated,
+                defaultBranch: 'master',
+                private: true,
+                uploadToken: 'token',
+                graphToken: null,
+                yaml: 'yaml',
+                bot: {
+                  username: 'test',
+                },
+                profilingToken: null,
+                staticAnalysisToken: null,
               },
             },
           })

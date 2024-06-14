@@ -9,14 +9,7 @@ import { setupServer } from 'msw/node'
 import { mockIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
-
 import PullsTable from './PullsTable'
-
-jest.mock('shared/featureFlags')
-const mockedUseFlags = useFlags as jest.Mock<{
-  bundleAnalysisPrAndCommitPages: boolean
-}>
 
 const mockRepoOverview = (bundleAnalysisEnabled = false) => ({
   owner: {
@@ -28,6 +21,7 @@ const mockRepoOverview = (bundleAnalysisEnabled = false) => ({
       coverageEnabled: false,
       bundleAnalysisEnabled,
       languages: ['javascript'],
+      testAnalyticsEnabled: true,
     },
   },
 })
@@ -144,10 +138,6 @@ describe('PullsTable', () => {
     noEntries = false,
     bundleAnalysisEnabled = false,
   }: SetupArgs) {
-    mockedUseFlags.mockReturnValue({
-      bundleAnalysisPrAndCommitPages: true,
-    })
-
     const queryClient = new QueryClient()
 
     server.use(

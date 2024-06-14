@@ -14,6 +14,8 @@ jest.mock('./PullsTableTeam', () => () => 'PullsTableTeam')
 const mockRepoSettings = (isPrivate = false) => ({
   owner: {
     repository: {
+      __typename: 'Repository',
+      activated: true,
       defaultBranch: 'master',
       private: isPrivate,
       uploadToken: 'token',

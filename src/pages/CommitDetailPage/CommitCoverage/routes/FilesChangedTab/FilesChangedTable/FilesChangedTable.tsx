@@ -22,7 +22,6 @@ import { OrderingDirection, OrderingParameter } from 'services/pull/usePull'
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
-import 'ui/FileList/FileList.css'
 import TotalsNumber from 'ui/TotalsNumber'
 
 const CommitFileDiff = lazy(() => import('../shared/CommitFileDiff'))
@@ -33,7 +32,7 @@ const isNumericValue = (value: string) =>
   value === 'patchPercentage' || value === 'head' || value === 'change'
 
 function getFilter(sorting: Array<{ id: string; desc: boolean }>) {
-  const state = sorting.at(0)
+  const state = sorting[0]
 
   if (state) {
     const direction = state?.desc

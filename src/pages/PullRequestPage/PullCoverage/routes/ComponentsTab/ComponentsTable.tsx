@@ -10,6 +10,7 @@ import qs, { type ParsedQs } from 'qs'
 import { useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
 
+import A from 'ui/A'
 import Spinner from 'ui/Spinner'
 import TotalsNumber from 'ui/TotalsNumber'
 
@@ -17,8 +18,6 @@ import ComponentsNotConfigured from './ComponentsNotConfigured'
 import { ComponentsComparison, useComponentComparison } from './hooks'
 
 import ComponentsSelector from '../ComponentsSelector'
-
-import 'ui/Table/Table.css'
 
 const Loader = () => (
   <div className="mb-4 flex justify-center pt-4">
@@ -132,7 +131,17 @@ export default function ComponentsTable() {
 
   return (
     <>
-      <div className="flex justify-end bg-ds-gray-primary p-2">
+      <div className="flex w-full items-center justify-between px-5 py-2">
+        <A
+          hook="components"
+          to={{
+            pageName: 'componentsTab',
+            options: { branch: data?.pull?.head?.branchName },
+          }}
+          isExternal
+        >
+          View components over time
+        </A>
         <ComponentsSelector />
       </div>
       <div className="tableui">

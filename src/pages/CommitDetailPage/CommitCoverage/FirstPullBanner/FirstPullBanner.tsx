@@ -12,7 +12,7 @@ const FirstPullBanner: React.FC = () => {
       </BannerHeading>
       <BannerContent>
         Once merged to your default branch, Codecov will compare your coverage
-        reports and display the on pull requests and commits.
+        reports and display the results on pull requests and commits.
       </BannerContent>
     </Banner>
   )

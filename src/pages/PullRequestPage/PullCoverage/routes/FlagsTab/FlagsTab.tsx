@@ -9,7 +9,6 @@ import isEmpty from 'lodash/isEmpty'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
-import 'ui/Table/Table.css'
 import { FlagsComparison, usePull } from 'services/pull'
 import FlagsNotConfigured from 'shared/FlagsNotConfigured'
 import Spinner from 'ui/Spinner'

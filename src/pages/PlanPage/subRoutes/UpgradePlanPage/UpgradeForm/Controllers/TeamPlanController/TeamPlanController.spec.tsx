@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
@@ -9,6 +9,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import { TrialStatuses } from 'services/account'
 import { useAddNotification } from 'services/toastNotification'
 import { Plans } from 'shared/utils/billing'
+import { UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE } from 'shared/utils/upgradeForm'
 
 import TeamPlanController from './TeamPlanController'
 
@@ -47,6 +48,16 @@ const teamPlanYear = {
   marketingName: 'Users Team',
   monthlyUploadLimit: 2500,
   value: 'users-teamy',
+  quantity: 5,
+}
+
+const proPlanYear = {
+  value: Plans.USERS_PR_INAPPY,
+  baseUnitPrice: 10,
+  benefits: ['asdf'],
+  billingRate: 'annually',
+  marketingName: 'Users Pro',
+  monthlyUploadLimit: null,
   quantity: 5,
 }
 
@@ -95,6 +106,7 @@ const mockPlanDataResponseMonthly = {
   trialTotalDays: 0,
   pretrialUsersCount: 0,
   planUserCount: 1,
+  hasSeatsLeft: true,
 }
 
 const mockPlanDataResponseYearly = {
@@ -110,6 +122,7 @@ const mockPlanDataResponseYearly = {
   trialTotalDays: 0,
   pretrialUsersCount: 0,
   planUserCount: 1,
+  hasSeatsLeft: true,
 }
 
 const queryClient = new QueryClient({
@@ -188,7 +201,12 @@ describe('TeamPlanController', () => {
           ctx.status(200),
           ctx.data({
             owner: {
-              availablePlans: [basicPlan, teamPlanMonth, teamPlanYear],
+              availablePlans: [
+                basicPlan,
+                teamPlanMonth,
+                teamPlanYear,
+                proPlanYear,
+              ],
             },
           })
         )
@@ -216,6 +234,7 @@ describe('TeamPlanController', () => {
     describe('when the user has a team plan monthly', () => {
       const props = {
         setFormValue: jest.fn(),
+        setSelectedPlan: jest.fn(),
         register: jest.fn(),
         newPlan: Plans.USERS_TEAMM,
         seats: 10,
@@ -272,27 +291,69 @@ describe('TeamPlanController', () => {
     })
 
     describe('when seats are greater than 10', () => {
+      const setFormValue = jest.fn()
+      const setSelectedPlan = jest.fn()
       const props = {
-        setFormValue: jest.fn(),
+        setFormValue,
+        setSelectedPlan,
         register: jest.fn(),
         newPlan: Plans.USERS_TEAMM,
         seats: 12,
-        errors: { seats: { message: '' } },
+        errors: {
+          seats: {
+            message: UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE,
+          },
+        },
       }
 
-      it('limits the seats to 10', async () => {
+      it('shows error message', async () => {
         setup({ planValue: Plans.USERS_TEAMM })
         render(<TeamPlanController {...props} />, { wrapper: wrapper() })
 
-        await waitFor(() =>
-          expect(props.setFormValue).toHaveBeenCalledWith('seats', '10')
+        const error = await screen.findByText(
+          `💡 ${UPGRADE_FORM_TOO_MANY_SEATS_MESSAGE}`
         )
+        expect(error).toBeInTheDocument()
+      })
+
+      it('shows Upgrade to Pro button', async () => {
+        setup({ planValue: Plans.USERS_TEAMM })
+        render(<TeamPlanController {...props} />, { wrapper: wrapper() })
+
+        const button = await screen.findByRole('button', {
+          name: 'Upgrade to Pro',
+        })
+        expect(button).toBeInTheDocument()
+      })
+
+      describe('and user clicks Upgrade to Pro button', () => {
+        it('updates selected plan', async () => {
+          const { user } = setup({ planValue: Plans.USERS_TEAMM })
+          render(<TeamPlanController {...props} />, { wrapper: wrapper() })
+
+          const button = await screen.findByRole('button', {
+            name: 'Upgrade to Pro',
+          })
+          expect(button).toBeInTheDocument()
+
+          await user.click(button)
+
+          expect(setSelectedPlan).toHaveBeenCalledWith(
+            expect.objectContaining({ value: Plans.USERS_PR_INAPPY })
+          )
+          expect(setFormValue).toHaveBeenCalledWith(
+            'newPlan',
+            Plans.USERS_PR_INAPPY,
+            { shouldValidate: true }
+          )
+        })
       })
     })
 
     describe('when the user has a team plan yearly', () => {
       const props = {
         setFormValue: jest.fn(),
+        setSelectedPlan: jest.fn(),
         register: jest.fn(),
         newPlan: Plans.USERS_TEAMY,
         seats: 5,

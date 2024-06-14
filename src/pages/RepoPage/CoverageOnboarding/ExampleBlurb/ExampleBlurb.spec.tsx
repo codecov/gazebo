@@ -49,16 +49,4 @@ describe('ExampleBlurb', () => {
       'https://github.com/codecov/codecov-action'
     )
   })
-  it('renders correct extension link', async () => {
-    render(<ExampleBlurb />, { wrapper })
-
-    const docsLink = await screen.findByRole('link', {
-      name: /YAML validator/,
-    })
-    expect(docsLink).toBeInTheDocument()
-    expect(docsLink).toHaveAttribute(
-      'href',
-      `https://marketplace.visualstudio.com/items?itemName=Codecov.codecov#:~:text=Codecov's%20official%20validator%20extension%20for,and%20configuration%20of%20new%20repositories.&text=Launch%20VS%20Code%20Quick%20Open,following%20command%2C%20and%20press%20enter.&text=Create%2C%20manage%2C%20and%20validate%20the,Code%20with%20our%20latest%20extension.`
-    )
-  })
 })

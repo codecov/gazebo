@@ -20,7 +20,6 @@ import Spinner from 'ui/Spinner'
 
 import { getReposColumnsHelper } from './getReposColumnsHelper'
 
-import 'ui/Table/Table.css'
 import { repoDisplayOptions } from '../ListRepo'
 import NoReposBlock from '../NoReposBlock'
 
@@ -35,7 +34,7 @@ interface ReposTableProps {
 }
 
 function getOrderingDirection(sorting: Array<{ id: string; desc: boolean }>) {
-  const state = sorting.at(0)
+  const state = sorting[0]
 
   if (state) {
     const direction = state?.desc
@@ -104,7 +103,10 @@ const ReposTable = ({
   })
   const isCurrentUserPartOfOrg = ownerData?.isCurrentUserPartOfOrg
 
-  const { data: tierName } = useTier({ provider, owner })
+  const { data: tierName } = useTier({
+    provider,
+    owner: owner || userData?.user?.username,
+  })
   const shouldDisplayPublicReposOnly = tierName === TierNames.TEAM ? true : null
 
   const repoDisplay = useContext(ActiveContext)
@@ -216,7 +218,7 @@ const ReposTable = ({
                     <td
                       key={cell.id}
                       className={cs({
-                        'flex justify-end':
+                        'text-right':
                           cell.column.id === 'coverage' ||
                           cell.column.id === 'inactiveRepo',
                       })}

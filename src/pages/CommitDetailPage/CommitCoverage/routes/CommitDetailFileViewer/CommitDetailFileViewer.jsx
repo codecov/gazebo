@@ -1,10 +1,10 @@
 import { useParams } from 'react-router-dom'
 
+import ToggleHeader from 'pages/CommitDetailPage/Header/ToggleHeader/ToggleHeader'
 import RawFileviewer from 'shared/RawFileviewer'
 import { useCommitTreePaths } from 'shared/treePaths'
+import { STICKY_PADDING_SIZES } from 'shared/utils/fileviewer'
 import Breadcrumb from 'ui/Breadcrumb'
-
-import ComponentsSelector from '../ComponentsSelector'
 
 function CommitDetailFileViewer() {
   const { treePaths } = useCommitTreePaths()
@@ -12,9 +12,7 @@ function CommitDetailFileViewer() {
 
   return (
     <>
-      <div className="flex justify-end bg-ds-gray-primary p-2">
-        <ComponentsSelector />
-      </div>
+      <ToggleHeader />
       <RawFileviewer
         title={
           <div className="text-sm font-normal">
@@ -23,7 +21,7 @@ function CommitDetailFileViewer() {
         }
         commit={commit}
         withKey={false}
-        stickyPadding={450}
+        stickyPadding={STICKY_PADDING_SIZES.COMMIT_PAGE_FILE_VIEWER}
       />
     </>
   )

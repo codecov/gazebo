@@ -33,6 +33,7 @@ function SingleLine({
       {...getLineProps({ line, key: number })}
       data-testid="fv-single-line"
       ref={lineRef}
+      key={number}
     >
       <td
         aria-label={lineStateToLabel[lineState]}
@@ -58,7 +59,7 @@ function SingleLine({
         <div className="flex items-center justify-between">
           <div>
             {line.map((token, key) => (
-              <span key={key} {...getTokenProps({ token, key })} />
+              <span {...getTokenProps({ token, key })} key={key} />
             ))}
           </div>
           <CoverageLineIndicator coverage={lineState} />

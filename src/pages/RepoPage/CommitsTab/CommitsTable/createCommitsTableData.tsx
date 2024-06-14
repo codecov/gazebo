@@ -2,12 +2,13 @@ import isArray from 'lodash/isArray'
 import isEmpty from 'lodash/isEmpty'
 
 import { Commit } from 'services/commits/useCommits'
+import { formatSizeToString } from 'shared/utils/bundleAnalysis'
 import TotalsNumber from 'ui/TotalsNumber'
 
-import Coverage from './Coverage'
+import Title from './Title'
 
-import CIStatus from '../shared/CIStatus'
-import Title from '../shared/Title'
+export const ErroredUpload = () => <p>Upload: &#x274C;</p>
+export const PendingUpload = () => <p>Upload: &#x23F3;</p>
 
 interface CommitsTableData {
   pages?: Array<{ commits: Array<Commit | null> }>
@@ -25,36 +26,42 @@ export const createCommitsTableData = ({ pages }: CommitsTableData) => {
   }
 
   return commits.filter(Boolean).map((commit) => {
-    let patchPercentage = NaN
-    let patch = <p className="text-right">No report uploaded</p>
-    if (commit?.compareWithParent?.__typename === 'Comparison') {
-      patchPercentage =
-        commit?.compareWithParent?.patchTotals?.percentCovered ?? 0
+    let patch = <p>-</p>
+    if (commit?.coverageStatus === 'ERROR') {
+      patch = <ErroredUpload />
+    } else if (commit?.coverageStatus === 'PENDING') {
+      patch = <PendingUpload />
+    } else if (
+      commit?.coverageStatus === 'COMPLETED' &&
+      commit?.compareWithParent?.__typename === 'Comparison'
+    ) {
+      const percent =
+        commit?.compareWithParent?.patchTotals?.percentCovered ?? NaN
       patch = (
         <TotalsNumber
           plain={true}
           large={false}
           light={false}
-          value={patchPercentage}
+          value={percent}
           showChange={false}
         />
       )
     }
 
-    const totals = commit?.totals
-
-    let change = undefined
-    if (commit?.parent?.totals?.coverage != null && totals?.coverage != null) {
-      change = totals?.coverage - commit?.parent?.totals?.coverage
-    }
-
-    let bundleAnalysis = undefined
-    if (commit?.bundleAnalysisReport?.__typename === 'BundleAnalysisReport') {
-      // this hex code is for ✅
-      bundleAnalysis = <>Upload: &#x2705;</>
-    } else {
-      // this hex code is for ❌
-      bundleAnalysis = <>Upload: &#x274C;</>
+    let bundleAnalysis = <p>-</p>
+    if (commit?.bundleStatus === 'ERROR') {
+      bundleAnalysis = <ErroredUpload />
+    } else if (commit?.bundleStatus === 'PENDING') {
+      bundleAnalysis = <PendingUpload />
+    } else if (
+      commit?.bundleStatus === 'COMPLETED' &&
+      commit?.bundleAnalysisCompareWithParent?.__typename ===
+        'BundleAnalysisComparison'
+    ) {
+      const change =
+        commit?.bundleAnalysisCompareWithParent?.bundleChange?.size?.uncompress
+      const content = `${change > 0 ? '+' : ''}${formatSizeToString(change)}`
+      bundleAnalysis = <p>{content}</p>
     }
 
     return {
@@ -66,24 +73,7 @@ export const createCommitsTableData = ({ pages }: CommitsTableData) => {
           createdAt={commit?.createdAt}
         />
       ),
-      coverage: <Coverage totals={totals} />,
-      ciStatus: (
-        <CIStatus
-          ciPassed={commit?.ciPassed}
-          commitid={commit?.commitid}
-          coverage={patchPercentage}
-        />
-      ),
       patch,
-      change: (
-        <TotalsNumber
-          value={change}
-          showChange
-          plain={false}
-          light={false}
-          large={false}
-        />
-      ),
       bundleAnalysis,
     }
   })

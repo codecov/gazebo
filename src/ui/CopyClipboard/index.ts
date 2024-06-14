@@ -1,0 +1,1 @@
+export { CopyClipboard } from './CopyClipboard'

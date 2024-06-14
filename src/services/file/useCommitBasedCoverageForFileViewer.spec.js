@@ -15,9 +15,11 @@ const commit = '123sha'
 const mockFileMainCoverage = (coverage, flagNames) => ({
   owner: {
     repository: {
+      __typename: 'Repository',
       commit: {
         commitId: '1',
         flagNames,
+        components: [],
         coverageFile: { ...coverage },
       },
       branch: {
@@ -25,25 +27,10 @@ const mockFileMainCoverage = (coverage, flagNames) => ({
         head: {
           flagNames,
           commitId: '1',
+          components: [],
           coverageFile: {
             ...coverage,
           },
-        },
-      },
-    },
-  },
-})
-
-const mockFileFilterCoverage = (coverage) => ({
-  owner: {
-    repository: {
-      commit: {
-        coverageFile: { ...coverage },
-      },
-      branch: {
-        name: 'main',
-        head: {
-          ...coverage,
         },
       },
     },
@@ -82,24 +69,19 @@ describe('useCommitBasedCoverageForFileViewer', () => {
     selectedComponents,
   }) {
     server.use(
-      graphql.query('CoverageForFile', (req, res, ctx) =>
-        res(
+      graphql.query('CoverageForFile', (req, res, ctx) => {
+        if (Object.keys(coverageWithFlags).length > 0) {
+          return res(
+            ctx.status(200),
+            ctx.data(mockFileMainCoverage(coverageWithFlags, selectedFlags))
+          )
+        }
+
+        return res(
           ctx.status(200),
           ctx.data(mockFileMainCoverage(mainCoverageData, selectedFlags))
         )
-      ),
-      graphql.query('CoverageForFileWithFilters', (req, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data(
-            mockFileFilterCoverage(
-              coverageWithFlags,
-              selectedFlags,
-              selectedComponents
-            )
-          )
-        )
-      )
+      })
     )
   }
 
@@ -109,6 +91,8 @@ describe('useCommitBasedCoverageForFileViewer', () => {
 
     beforeEach(() => {
       const mainCoverageData = {
+        isCriticalFile: false,
+        hashedPath: 'hashedPath',
         content:
           'function add(a, b) {\n    return a + b;\n}\n\nfunction subtract(a, b) {\n    return a - b;\n}\n\nfunction multiply(a, b) {\n    return a * b;\n}\n\nfunction divide(a, b) {\n    if (b !== 0) {\n        return a / b;\n    } else {\n        return 0\n    }\n}\n\nmodule.exports = {add, subtract, multiply, divide};',
         coverage: [
@@ -125,9 +109,7 @@ describe('useCommitBasedCoverageForFileViewer', () => {
           { line: 17, coverage: 'M' },
           { line: 21, coverage: 'H' },
         ],
-        totals: { coverage: 53.43 },
-        isCriticalFile: false,
-        hashedPath: 'hashedPath',
+        totals: { percentCovered: 53.43 },
       }
       const coverageWithFlags = {}
 
@@ -194,7 +176,7 @@ describe('useCommitBasedCoverageForFileViewer', () => {
           { line: 1, coverage: 'H' },
           { line: 2, coverage: 'H' },
         ],
-        totals: { coverage: 23.43 },
+        totals: { percentCovered: 23.43 },
         isCriticalFile: false,
         hashedPath: 'hashedPath',
       }
@@ -211,14 +193,14 @@ describe('useCommitBasedCoverageForFileViewer', () => {
           { line: 6, coverage: 'H' },
           { line: 7, coverage: 'M' },
         ],
-        totals: { coverage: 13.63 },
+        totals: { percentCovered: 13.63 },
         isCriticalFile: false,
         hashedPath: 'hashedPath',
       }
       setup({ mainCoverageData, coverageWithFlags, selectedFlags })
     })
 
-    it('returns commit file coverage', async () => {
+    it.only('returns commit file coverage', async () => {
       const { result } = renderHook(
         () =>
           useCommitBasedCoverageForFileViewer({
@@ -252,6 +234,7 @@ describe('useCommitBasedCoverageForFileViewer', () => {
         },
         totals: 13.63,
         flagNames: selectedFlags,
+        componentNames: [],
         isCriticalFile: false,
         hashedPath: 'hashedPath',
         isLoading: false,

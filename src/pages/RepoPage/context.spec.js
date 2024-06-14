@@ -76,6 +76,7 @@ describe('Repo breadcrumb context', () => {
             owner: {
               repository: {
                 private: false,
+                isFirstPullRequest: false,
               },
             },
           })

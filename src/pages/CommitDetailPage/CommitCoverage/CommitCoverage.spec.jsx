@@ -166,6 +166,7 @@ const mockErroredUploads = {
 const mockRepoSettingsTeamData = (isPrivate = false) => ({
   owner: {
     repository: {
+      __typename: 'Repository',
       defaultBranch: 'master',
       private: isPrivate,
       uploadToken: 'token',
@@ -174,6 +175,7 @@ const mockRepoSettingsTeamData = (isPrivate = false) => ({
       bot: {
         username: 'test',
       },
+      activated: true,
     },
   },
 })
@@ -211,6 +213,7 @@ const mockCommitErrors = (hasErrors = false) => {
   return {
     owner: {
       repository: {
+        __typename: 'Repository',
         commit: {
           yamlErrors: {
             edges: yamlErrors,
@@ -302,6 +305,7 @@ const mockRepoOverview = ({
       oldestCommitAt: '2022-10-10T11:59:59',
       coverageEnabled,
       bundleAnalysisEnabled,
+      testAnalyticsEnabled: false,
       languages: ['javascript'],
     },
   },

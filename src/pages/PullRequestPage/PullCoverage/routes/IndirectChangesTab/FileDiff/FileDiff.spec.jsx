@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -9,12 +9,16 @@ import { useScrollToLine } from 'ui/CodeRenderer/hooks/useScrollToLine'
 import FileDiff from './FileDiff'
 
 jest.mock('ui/CodeRenderer/hooks/useScrollToLine')
+window.requestAnimationFrame = (cb) => cb()
+window.cancelAnimationFrame = () => {}
 
 const baseMock = (impactedFile) => ({
   owner: {
     repository: {
+      __typename: 'Repository',
       pull: {
         compareWithBase: {
+          __typename: 'Comparison',
           impactedFile: {
             ...mockImpactedFile,
             ...impactedFile,
@@ -26,45 +30,31 @@ const baseMock = (impactedFile) => ({
 })
 
 const mockImpactedFile = {
-  isCriticalFile: false,
   headName: 'flag1/file.js',
   hashedPath: 'hashedFilePath',
+  isRenamedFile: false,
+  isDeletedFile: false,
+  isCriticalFile: false,
+  isNewFile: false,
+  baseCoverage: null,
+  headCoverage: null,
+  patchCoverage: null,
+  changeCoverage: null,
   segments: {
+    __typename: 'SegmentComparisons',
     results: [
       {
         header: '-0,0 +1,45',
         hasUnintendedChanges: false,
         lines: [
           {
-            baseNumber: null,
+            baseNumber: '1',
             headNumber: '1',
-            baseCoverage: null,
+            content: 'const Calculator = ({ value, calcMode }) => {',
+            baseCoverage: 'M',
             headCoverage: 'H',
-            content: '+export default class Calculator {',
-            coverageInfo: {
-              hitCount: null,
-              hitUploadIds: null,
-            },
-          },
-          {
-            baseNumber: null,
-            headNumber: '2',
-            baseCoverage: null,
-            headCoverage: 'H',
-            content: '+  private value = 0;',
             coverageInfo: {
               hitCount: 18,
-              hitUploadIds: [0],
-            },
-          },
-          {
-            baseNumber: null,
-            headNumber: '3',
-            baseCoverage: null,
-            headCoverage: 'H',
-            content: '+  private calcMode = ""',
-            coverageInfo: {
-              hitCount: null,
               hitUploadIds: null,
             },
           },
@@ -74,10 +64,27 @@ const mockImpactedFile = {
   },
 }
 
+const mockOverview = (bundleAnalysisEnabled = false) => {
+  return {
+    owner: {
+      repository: {
+        __typename: 'Repository',
+        private: false,
+        defaultBranch: 'main',
+        oldestCommitAt: '2022-10-10T11:59:59',
+        coverageEnabled: true,
+        bundleAnalysisEnabled,
+        languages: ['javascript'],
+        testAnalyticsEnabled: false,
+      },
+    },
+  }
+}
+
+const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const server = setupServer()
 
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>
@@ -95,7 +102,12 @@ afterEach(() => {
 afterAll(() => server.close())
 
 describe('FileDiff', () => {
-  function setup({ impactedFile } = { impactedFile: mockImpactedFile }) {
+  function setup(
+    { impactedFile = mockImpactedFile, bundleAnalysisEnabled = false } = {
+      impactedFile: mockImpactedFile,
+      bundleAnalysisEnabled: false,
+    }
+  ) {
     useScrollToLine.mockImplementation(() => ({
       lineRef: () => {},
       handleClick: jest.fn(),
@@ -105,16 +117,19 @@ describe('FileDiff', () => {
     server.use(
       graphql.query('ImpactedFileComparison', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(baseMock(impactedFile)))
-      )
+      ),
+      graphql.query('GetRepoOverview', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data(mockOverview(bundleAnalysisEnabled))
+        )
+      })
     )
   }
 
   describe('when rendered', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('renders the line changes header', async () => {
+      setup()
       render(<FileDiff path={'flag1/file.js'} />, { wrapper })
 
       const changeHeader = await screen.findByText('-0,0 +1,45')
@@ -122,6 +137,7 @@ describe('FileDiff', () => {
     })
 
     it('renders the lines of a segment', async () => {
+      setup()
       render(<FileDiff path={'flag1/file.js'} />, { wrapper })
 
       const calculator = await screen.findByText(/Calculator/)
@@ -135,59 +151,45 @@ describe('FileDiff', () => {
     })
 
     it('renders hit counter', async () => {
+      setup()
       render(<FileDiff path={'flag1/file.js'} />, { wrapper })
 
       const hitCounter = await screen.findByText('18')
       expect(hitCounter).toBeInTheDocument()
     })
 
-    it('renders the commit redirect url', async () => {
-      render(<FileDiff path={'flag1/file.js'} />, { wrapper })
+    describe('when only coverage is enabled', () => {
+      it('renders the commit redirect url', async () => {
+        setup()
+        render(<FileDiff path={'flag1/file.js'} />, { wrapper })
 
-      const viewFullFileText = await screen.findByText(/View full file/)
-      expect(viewFullFileText).toBeInTheDocument()
-      expect(viewFullFileText).toHaveAttribute(
-        'href',
-        '/gh/codecov/cool-repo/pull/1/blob/flag1/file.js'
-      )
+        const viewFullFileText = await screen.findByText(/View full file/)
+        expect(viewFullFileText).toBeInTheDocument()
+        expect(viewFullFileText).toHaveAttribute(
+          'href',
+          '/gh/codecov/cool-repo/pull/1/blob/flag1/file.js'
+        )
+      })
     })
-  })
 
-  describe('when segment is an empty array', () => {
-    beforeEach(() => {
-      const impactedFile = {
-        isCriticalFile: false,
-        headName: 'flag1/file.js',
-        segments: [],
-      }
+    describe('when both coverage and bundle products are enabled', () => {
+      it('renders the commit redirect url', async () => {
+        setup({ bundleAnalysisEnabled: true })
+        render(<FileDiff path={'flag1/file.js'} />, { wrapper })
 
-      setup({ impactedFile })
-    })
-    it('does not render information on the code renderer', async () => {
-      render(<FileDiff path={'flag1/file.js'} />, { wrapper })
-
-      await waitFor(() => queryClient.isFetching)
-      await waitFor(() => !queryClient.isFetching)
-
-      const unexpectedChange = screen.queryByText(/Unexpected Changes/i)
-      expect(unexpectedChange).not.toBeInTheDocument()
-
-      const diffLine = screen.queryByText('fv-diff-line')
-      expect(diffLine).not.toBeInTheDocument()
+        const viewFullFileText = await screen.findByText(/View full file/)
+        expect(viewFullFileText).toBeInTheDocument()
+        expect(viewFullFileText).toHaveAttribute(
+          'href',
+          '/gh/codecov/cool-repo/pull/1/blob/flag1/file.js?dropdown=coverage'
+        )
+      })
     })
   })
 
   describe('a new file', () => {
     beforeEach(() => {
-      const impactedFile = {
-        isCriticalFile: false,
-        isNewFile: true,
-        headName: 'flag1/file.js',
-        segments: {
-          results: [{ lines: [{ content: 'abc' }, { content: 'def' }] }],
-        },
-      }
-      setup({ impactedFile })
+      setup({ impactedFile: { isNewFile: true } })
     })
 
     it('renders a new file label', async () => {
@@ -200,15 +202,7 @@ describe('FileDiff', () => {
 
   describe('a renamed file', () => {
     beforeEach(() => {
-      const impactedFile = {
-        isCriticalFile: false,
-        isRenamedFile: true,
-        headName: 'flag1/file.js',
-        segments: {
-          results: [{ lines: [{ content: 'abc' }, { content: 'def' }] }],
-        },
-      }
-      setup({ impactedFile })
+      setup({ impactedFile: { isRenamedFile: true } })
     })
     it('renders a renamed file label', async () => {
       render(<FileDiff path={'flag1/file.js'} />, { wrapper })
@@ -220,15 +214,7 @@ describe('FileDiff', () => {
 
   describe('a deleted file', () => {
     beforeEach(() => {
-      const impactedFile = {
-        isCriticalFile: false,
-        isDeletedFile: true,
-        headName: 'flag1/file.js',
-        segments: {
-          results: [{ lines: [{ content: 'abc' }, { content: 'def' }] }],
-        },
-      }
-      setup({ impactedFile })
+      setup({ impactedFile: { isDeletedFile: true } })
     })
     it('renders a deleted file label', async () => {
       render(<FileDiff path={'flag1/file.js'} />, { wrapper })
@@ -240,15 +226,7 @@ describe('FileDiff', () => {
 
   describe('a critical file', () => {
     beforeEach(() => {
-      const impactedFile = {
-        isCriticalFile: true,
-        fileLabel: null,
-        headName: 'flag1/file.js',
-        segments: {
-          results: [{ lines: [{ content: 'abc' }, { content: 'def' }] }],
-        },
-      }
-      setup({ impactedFile })
+      setup({ impactedFile: { isCriticalFile: true } })
     })
     it('renders a critical file label', async () => {
       render(<FileDiff path={'flag1/file.js'} />, { wrapper })

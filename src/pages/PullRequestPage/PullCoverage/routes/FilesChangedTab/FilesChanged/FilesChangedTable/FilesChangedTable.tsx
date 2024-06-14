@@ -12,8 +12,9 @@ import {
 import cs from 'classnames'
 import isEmpty from 'lodash/isEmpty'
 import isNumber from 'lodash/isNumber'
-import { Fragment, lazy, Suspense, useMemo, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import qs from 'qs'
+import { Fragment, lazy, Suspense, useEffect, useMemo, useState } from 'react'
+import { useLocation, useParams } from 'react-router-dom'
 
 import {
   ImpactedFile,
@@ -24,7 +25,6 @@ import {
 import A from 'ui/A'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
-import 'ui/FileList/FileList.css'
 import TotalsNumber from 'ui/TotalsNumber'
 
 const PullFileDiff = lazy(() => import('../../shared/FileDiff'))
@@ -38,7 +38,7 @@ const isNumericValue = (value: string) =>
   value === 'change'
 
 export function getFilter(sorting: Array<{ id: string; desc: boolean }>) {
-  const state = sorting.at(0)
+  const state = sorting[0]
 
   if (state) {
     const direction = state?.desc
@@ -245,6 +245,11 @@ export default function FilesChangedTable() {
     { id: 'missedLines', desc: true },
   ])
   const { provider, owner, repo, pullId } = useParams<URLParams>()
+  const location = useLocation()
+  const params = qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+  })
+  const currentlySelectedFile = params.filepath
 
   const { data: pullData, isLoading } = usePull({
     provider,
@@ -272,6 +277,19 @@ export default function FilesChangedTable() {
     }
     return []
   }, [pullData?.pull?.compareWithBase])
+
+  useEffect(() => {
+    if (data.length > 0 && currentlySelectedFile) {
+      const fileToExpandIndex = data.findIndex(
+        (file) => file && file.headName === currentlySelectedFile
+      )
+      if (fileToExpandIndex !== -1) {
+        setExpanded({
+          [fileToExpandIndex]: true,
+        })
+      }
+    }
+  }, [data, currentlySelectedFile])
 
   const table = useReactTable({
     columns: getColumns({ pullId }),

@@ -36,9 +36,7 @@ jest.mock('@stripe/react-stripe-js', () => {
       getElement: jest.fn(),
     }),
     useStripe: () => ({}),
-    CardExpiryElement: makeFakeComponent('CardExpiryElement'),
-    CardNumberElement: makeFakeComponent('CardNumberElement'),
-    CardCvcElement: makeFakeComponent('CardCvcElement'),
+    CardElement: makeFakeComponent('CardElement'),
   }
 })
 
@@ -50,36 +48,22 @@ describe('PaymentCard', () => {
   }
 
   describe(`when the user doesn't have any subscriptionDetail`, () => {
-    it('renders nothing', () => {
-      const { container } = render(
+    // NOTE: This test is misleading because we hide this component from a higher level in
+    // BillingDetails.tsx if there is no subscriptionDetail
+    it('renders the set card message', () => {
+      render(
         <PaymentCard subscriptionDetail={null} provider="gh" owner="codecov" />
       )
 
-      expect(container).toBeEmptyDOMElement()
+      expect(
+        screen.getByText(
+          /No credit card set. Please contact support if you think it’s an error or set it yourself./
+        )
+      ).toBeInTheDocument()
     })
   })
 
-  describe(`when the user doesn't have a card but is on a free plan`, () => {
-    it('renders nothing', () => {
-      const { container } = render(
-        <PaymentCard
-          subscriptionDetail={{
-            ...subscriptionDetail,
-            defaultPaymentMethod: null,
-            plan: {
-              value: 'users-free',
-            },
-          }}
-          provider="gh"
-          owner="codecov"
-        />
-      )
-
-      expect(container).toBeEmptyDOMElement()
-    })
-  })
-
-  describe(`when the user doesn't have any cards but has a paid plan`, () => {
+  describe(`when the user doesn't have any card`, () => {
     it('renders an error message', () => {
       render(
         <PaymentCard
@@ -287,7 +271,7 @@ describe('PaymentCard', () => {
       const randomError = 'not rich enough'
       useUpdateCard.mockReturnValue({
         mutate: jest.fn(),
-        error: { data: { detail: randomError } },
+        error: { message: randomError },
       })
       render(
         <PaymentCard

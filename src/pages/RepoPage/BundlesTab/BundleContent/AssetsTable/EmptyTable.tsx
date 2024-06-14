@@ -1,5 +1,3 @@
-import 'ui/Table/Table.css'
-
 const EmptyTable: React.FC = () => {
   return (
     <div className="tableui">

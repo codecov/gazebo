@@ -12,12 +12,9 @@ import { useParams } from 'react-router-dom'
 
 import { useCommits } from 'services/commits/useCommits'
 import { useRepoOverview } from 'services/repo'
-import { useFlags } from 'shared/featureFlags'
 import Spinner from 'ui/Spinner'
 
 import { createCommitsTableData } from './createCommitsTableData'
-
-import 'ui/Table/Table.css'
 
 const Loader = () => (
   <div className="mb-4 flex justify-center pt-4">
@@ -41,10 +38,7 @@ function LoadMoreTrigger({
 }
 interface CommitsTableHelper {
   name: React.ReactElement
-  coverage: React.ReactElement
-  ciStatus: React.ReactElement
   patch: React.ReactElement
-  change: React.ReactElement
   bundleAnalysis: React.ReactElement
 }
 
@@ -56,24 +50,9 @@ const baseColumns = [
     header: 'Name',
     cell: ({ renderValue }) => renderValue(),
   }),
-  columnHelper.accessor('ciStatus', {
-    id: 'ciStatus',
-    header: 'CI Status',
-    cell: ({ renderValue }) => renderValue(),
-  }),
-  columnHelper.accessor('coverage', {
-    id: 'coverage',
-    header: 'Coverage',
-    cell: ({ renderValue }) => renderValue(),
-  }),
   columnHelper.accessor('patch', {
     id: 'patch',
-    header: 'Patch',
-    cell: ({ renderValue }) => renderValue(),
-  }),
-  columnHelper.accessor('change', {
-    id: 'change',
-    header: 'Change',
+    header: 'Patch Coverage',
     cell: ({ renderValue }) => renderValue(),
   }),
 ]
@@ -89,9 +68,6 @@ const CommitsTable = () => {
   const { ref, inView } = useInView()
   const { provider, owner, repo, pullId } = useParams<URLParams>()
   const { data: overview } = useRepoOverview({ provider, owner, repo })
-  const { bundleAnalysisPrAndCommitPages } = useFlags({
-    bundleAnalysisPrAndCommitPages: false,
-  })
 
   const {
     data: commitsData,
@@ -122,13 +98,12 @@ const CommitsTable = () => {
   const columns = useMemo(() => {
     if (
       overview?.bundleAnalysisEnabled &&
-      !baseColumns.some((column) => column.id === 'bundleAnalysis') &&
-      bundleAnalysisPrAndCommitPages
+      !baseColumns.some((column) => column.id === 'bundleAnalysis')
     ) {
       return [
         ...baseColumns,
         columnHelper.accessor('bundleAnalysis', {
-          header: 'Bundle Analysis',
+          header: 'Bundle',
           id: 'bundleAnalysis',
           cell: ({ renderValue }) => renderValue(),
         }),
@@ -136,7 +111,7 @@ const CommitsTable = () => {
     }
 
     return baseColumns
-  }, [bundleAnalysisPrAndCommitPages, overview?.bundleAnalysisEnabled])
+  }, [overview?.bundleAnalysisEnabled])
 
   const table = useReactTable({
     columns,
@@ -154,9 +129,6 @@ const CommitsTable = () => {
         <table>
           <colgroup>
             <col className="w-full @sm/table:w-5/12" />
-            <col className="@sm/table:w-1/12" />
-            <col className="@sm/table:w-2/12" />
-            <col className="@sm/table:w-2/12" />
             <col className="@sm/table:w-1/12" />
             {overview?.bundleAnalysisEnabled ? (
               <col className="@sm/table:w-1/12" />

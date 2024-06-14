@@ -23,7 +23,6 @@ import { formatTimeToNow } from 'shared/utils/dates'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 
-import 'ui/Table/Table.css'
 import InactiveRepo from '../InactiveRepo'
 import { repoDisplayOptions } from '../ListRepo'
 import NoReposBlock from '../NoReposBlock'
@@ -32,7 +31,7 @@ import RepoTitleLink from '../RepoTitleLink'
 export function getSortingOption(
   sorting: Array<{ id: string; desc: boolean }>
 ) {
-  const state = sorting.at(0)
+  const state = sorting[0]
 
   if (state) {
     const direction = state.desc
@@ -251,7 +250,7 @@ const ReposTableTeam = ({ searchValue }: ReposTableTeamProps) => {
                 <td
                   key={cell.id}
                   className={cs({
-                    'flex justify-end': cell.column.id === 'lines',
+                    'text-right': cell.column.id === 'lines',
                   })}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}

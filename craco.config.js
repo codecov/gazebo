@@ -1,22 +1,27 @@
 /* eslint-disable camelcase */
-const SentryWebpackPlugin = require('@sentry/webpack-plugin')
+const { sentryWebpackPlugin } = require('@sentry/webpack-plugin')
 const WebpackHookPlugin = require('webpack-hook-plugin')
+const WebpackBar = require('webpackbar')
 
 const { resolve } = require('path')
 
-const SentryPlugin = new SentryWebpackPlugin({
+const SentryPlugin = sentryWebpackPlugin({
   org: process.env.SENTRY_ORG || 'codecov',
-  project: process.env.SENTRY_PROJECT || 'gazebo',
-  include: './build/static/js',
+  project: process.env.REACT_APP_SENTRY_PROJECT || 'gazebo',
   authToken: process.env.SENTRY_AUTH_TOKEN,
-  urlPrefix: '~/static/js',
+  release: {
+    name: process.env.GAZEBO_SHA,
+    deploy: {
+      env: process.env.REACT_APP_SENTRY_ENVIRONMENT || process.env.NODE_ENV,
+    },
+  },
 })
 
 module.exports = {
   webpack: {
     devtool: 'source-map',
     configure: {
-      entry: './src/index.js',
+      entry: './src/index.tsx',
     },
     alias: {
       layouts: resolve(__dirname, 'src/layouts'),
@@ -38,6 +43,7 @@ module.exports = {
       ...(process.env.SENTRY_AUTH_TOKEN ? [SentryPlugin] : []),
       ...(process.env.NODE_ENV === 'development'
         ? [
+            new WebpackBar({ color: '#FF6600' }),
             new WebpackHookPlugin({
               onBuildStart: ['npx @spotlightjs/spotlight'],
             }),

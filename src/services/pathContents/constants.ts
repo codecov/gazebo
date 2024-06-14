@@ -1,9 +1,47 @@
+import { ParsedQs } from 'qs'
 import { z } from 'zod'
 
 import {
   RepoNotFoundErrorSchema,
   RepoOwnerNotActivatedErrorSchema,
 } from 'services/repo'
+import { DisplayType } from 'shared/ContentsTable/constants'
+
+const pathContentsFiltersParam = [
+  'NAME',
+  'COVERAGE',
+  'HITS',
+  'MISSES',
+  'PARTIALS',
+  'LINES',
+] as const
+
+type PathContentsFiltersParam = (typeof pathContentsFiltersParam)[number]
+
+export type PathContentsFilters = {
+  searchValue?: string
+  displayType?: DisplayType
+  ordering?: {
+    direction: 'ASC' | 'DESC'
+    parameter: PathContentsFiltersParam
+  }
+  flags?: string[] | ParsedQs[]
+  components?: string[] | ParsedQs[]
+}
+
+export function toPathContentsFilterParameter(
+  parameter: string
+): PathContentsFiltersParam {
+  const uppercaseParam = parameter.toUpperCase()
+  // This is the only way I could find to get TS to be okay with this.
+  let match: PathContentsFiltersParam = 'NAME'
+  pathContentsFiltersParam.forEach((param) => {
+    if (uppercaseParam === param) {
+      match = uppercaseParam
+    }
+  })
+  return match
+}
 
 const CoverageSchema = z.array(
   z
@@ -19,6 +57,7 @@ const CoverageSchema = z.array(
 const CoverageForFileSchema = z.object({
   commitid: z.string().nullish(),
   flagNames: z.array(z.string().nullish()).nullish(),
+  components: z.array(z.object({ id: z.string(), name: z.string() })),
   coverageFile: z
     .object({
       hashedPath: z.string(),
@@ -27,14 +66,14 @@ const CoverageForFileSchema = z.object({
       coverage: CoverageSchema.nullish(),
       totals: z
         .object({
-          coverage: z.number().nullish(),
+          percentCovered: z.number().nullish(),
         })
         .nullish(),
     })
     .nullish(),
 })
 
-const RepositorySchema = z.object({
+export const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
   commit: CoverageForFileSchema.nullish(),
   branch: z
@@ -45,14 +84,16 @@ const RepositorySchema = z.object({
     .nullish(),
 })
 
-export const RequestSchema = z.object({
+export type PathContentsRepositorySchema = z.infer<typeof RepositorySchema>
+
+export const PathContentsRequestSchema = z.object({
   owner: z
     .object({
       repository: z
-        .union([
-          RepositorySchema.partial(),
-          RepoNotFoundErrorSchema.partial(),
-          RepoOwnerNotActivatedErrorSchema.partial(),
+        .discriminatedUnion('__typename', [
+          RepositorySchema,
+          RepoNotFoundErrorSchema,
+          RepoOwnerNotActivatedErrorSchema,
         ])
         .nullish(),
     })
@@ -66,11 +107,12 @@ query CoverageForFile(
   $ref: String!
   $path: String!
   $flags: [String]
+  $components: [String]
 ) {
   owner(username: $owner) {
     repository(name: $repo) {
+      __typename
       ... on Repository {
-        __typename
         commit(id: $ref) {
           ...CoverageForFile
         }
@@ -82,11 +124,9 @@ query CoverageForFile(
         }
       }
       ... on NotFoundError {
-        __typename
         message
       }
       ... on OwnerNotActivatedError {
-        __typename
         message
       }
     }
@@ -96,7 +136,11 @@ query CoverageForFile(
 fragment CoverageForFile on Commit {
   commitid
   flagNames
-  coverageFile(path: $path, flags: $flags) {
+  components {
+    id
+    name
+  }
+  coverageFile(path: $path, flags: $flags, components: $components) {
     hashedPath
     isCriticalFile
     content
@@ -105,7 +149,7 @@ fragment CoverageForFile on Commit {
       coverage
     }
     totals {
-      coverage: percentCovered # Absolute coverage of the commit
+      percentCovered # Absolute coverage of the commit
     }
   }
 }`

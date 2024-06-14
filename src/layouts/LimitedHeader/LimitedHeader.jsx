@@ -1,6 +1,6 @@
 import cs from 'classnames'
 
-import { ReactComponent as CodecovIcon } from 'assets/svg/codecov.svg'
+import { CodecovIcon } from 'assets/svg/codecov'
 import { useImpersonate } from 'services/impersonate'
 import { useUser } from 'services/user'
 import A from 'ui/A'

@@ -15,6 +15,7 @@ const mockRepoOverview = {
       coverageEnabled: false,
       bundleAnalysisEnabled: false,
       languages: ['javascript'],
+      testAnalyticsEnabled: true,
     },
   },
 }

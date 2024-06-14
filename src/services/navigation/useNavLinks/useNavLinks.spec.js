@@ -938,6 +938,29 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('repo components tab link', () => {
+    it('returns the correct link with nothing passed', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov/gazebo/components'),
+      })
+
+      const path = result.current.componentsTab.path()
+      expect(path).toBe('/gh/codecov/gazebo/components')
+    })
+
+    it('can override the params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/codecov/gazebo/components'),
+      })
+
+      const path = result.current.componentsTab.path({
+        provider: 'bb',
+        owner: 'test-owner',
+      })
+      expect(path).toBe('/bb/test-owner/gazebo/components')
+    })
+  })
+
   describe('repo branches link', () => {
     it('returns the correct link with nothing passed', () => {
       const { result } = renderHook(() => useNavLinks(), {
@@ -1622,7 +1645,7 @@ describe('useNavLinks', () => {
 
       const path = result.current.githubRepoSecrets.path()
       expect(path).toBe(
-        'https://github.com/codecov/cool-repo/settings/secrets/actions'
+        'https://github.com/codecov/cool-repo/settings/secrets/actions/new'
       )
     })
 
@@ -1636,7 +1659,7 @@ describe('useNavLinks', () => {
         repo: 'test-repo',
       })
       expect(path).toBe(
-        'https://github.com/test-owner/test-repo/settings/secrets/actions'
+        'https://github.com/test-owner/test-repo/settings/secrets/actions/new'
       )
     })
   })
@@ -1891,6 +1914,54 @@ describe('useNavLinks', () => {
         repo: 'test-repo',
       })
       expect(path).toBe('/bb/test-owner/test-repo/bundles/new/webpack')
+    })
+  })
+
+  describe('Failed tests tab', () => {
+    it('returns the correct link with nothing passed', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/codecov/cool-repo'),
+      })
+
+      const path = result.current.failedTestsOnboarding.path()
+      expect(path).toBe('/gl/codecov/cool-repo/tests/new')
+    })
+
+    it('can override the params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/codecov/cool-repo'),
+      })
+
+      const path = result.current.failedTestsOnboarding.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo/tests/new')
+    })
+  })
+
+  describe('Failed tests tab Codecov CLI view', () => {
+    it('returns the correct link with nothing passed', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/codecov/cool-repo'),
+      })
+
+      const path = result.current.failedTestsCodecovCLI.path()
+      expect(path).toBe('/gl/codecov/cool-repo/tests/new/codecov-cli')
+    })
+
+    it('can override the params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/codecov/cool-repo'),
+      })
+
+      const path = result.current.failedTestsCodecovCLI.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo/tests/new/codecov-cli')
     })
   })
 })

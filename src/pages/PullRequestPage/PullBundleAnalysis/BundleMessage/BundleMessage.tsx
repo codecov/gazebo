@@ -74,9 +74,9 @@ const BundleMessage: React.FC = () => {
   }
 
   if (comparison?.__typename === 'BundleAnalysisComparison') {
-    const sizeDelta = comparison?.bundleChange?.size?.uncompress
-    const positiveSize = Math.abs(sizeDelta)
-    if (sizeDelta < 0) {
+    const uncompressDelta = comparison?.bundleChange?.size?.uncompress
+    const positiveSize = Math.abs(uncompressDelta)
+    if (uncompressDelta < 0) {
       return (
         <div>
           <p className="text-base">
@@ -89,7 +89,7 @@ const BundleMessage: React.FC = () => {
       )
     }
 
-    if (sizeDelta > 0) {
+    if (uncompressDelta > 0) {
       return (
         <div>
           <p className="text-base">
