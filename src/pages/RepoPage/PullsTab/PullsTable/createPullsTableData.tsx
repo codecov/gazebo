@@ -1,6 +1,11 @@
 import isArray from 'lodash/isArray'
 
-import { Pull } from 'services/pulls/usePulls'
+import {
+  COMMIT_STATUS_COMPLETED,
+  COMMIT_STATUS_ERROR,
+  COMMIT_STATUS_PENDING,
+  Pull,
+} from 'services/pulls/usePulls'
 import { formatSizeToString } from 'shared/utils/bundleAnalysis'
 import TotalsNumber from 'ui/TotalsNumber'
 
@@ -24,12 +29,12 @@ export const createPullsTableData = ({ pulls }: { pulls?: Array<Pull> }) => {
 
   return pulls.filter(Boolean).map((pull: Pull) => {
     let patch = <p>-</p>
-    if (pull?.head?.coverageStatus === 'ERROR') {
+    if (pull?.head?.coverageStatus === COMMIT_STATUS_ERROR) {
       patch = <ErroredUpload />
-    } else if (pull?.head?.coverageStatus === 'PENDING') {
+    } else if (pull?.head?.coverageStatus === COMMIT_STATUS_PENDING) {
       patch = <PendingUpload />
     } else if (
-      pull?.head?.coverageStatus === 'COMPLETED' &&
+      pull?.head?.coverageStatus === COMMIT_STATUS_COMPLETED &&
       pull?.compareWithBase?.__typename === 'Comparison'
     ) {
       const percent = pull?.compareWithBase?.patchTotals?.percentCovered ?? NaN
@@ -49,12 +54,12 @@ export const createPullsTableData = ({ pulls }: { pulls?: Array<Pull> }) => {
     const pullId = pull?.pullId ?? NaN
 
     let bundleAnalysis = <p>-</p>
-    if (pull?.head?.bundleStatus === 'ERROR') {
+    if (pull?.head?.bundleStatus === COMMIT_STATUS_ERROR) {
       bundleAnalysis = <ErroredUpload />
-    } else if (pull?.head?.bundleStatus === 'PENDING') {
+    } else if (pull?.head?.bundleStatus === COMMIT_STATUS_PENDING) {
       bundleAnalysis = <PendingUpload />
     } else if (
-      pull?.head?.bundleStatus === 'COMPLETED' &&
+      pull?.head?.bundleStatus === COMMIT_STATUS_COMPLETED &&
       pull?.bundleAnalysisCompareWithBase?.__typename ===
         'BundleAnalysisComparison'
     ) {
