@@ -7,8 +7,16 @@ import TotalsNumber from 'ui/TotalsNumber'
 
 import Title from './Title'
 
-export const ErroredUpload = () => <p>Upload: &#x274C;</p>
-export const PendingUpload = () => <p>Upload: &#x23F3;</p>
+export const ErroredUpload = () => (
+  <p>
+    Upload: <span aria-label="Errored upload">&#x274C;</span>
+  </p>
+)
+export const PendingUpload = () => (
+  <p>
+    Upload: <span aria-label="Pending upload">&#x23F3;</span>
+  </p>
+)
 
 interface CommitsTableData {
   pages?: Array<{ commits: Array<Commit | null> }>
