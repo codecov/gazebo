@@ -10,10 +10,7 @@ import { useEffect, useMemo } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
 
-import {
-  type CommitStatusesEnum,
-  useCommits,
-} from 'services/commits/useCommits'
+import { CommitStatuses, useCommits } from 'services/commits/useCommits'
 import { useRepoOverview } from 'services/repo'
 import Spinner from 'ui/Spinner'
 
@@ -69,7 +66,7 @@ interface URLParams {
 interface CommitsTableProps {
   branch: string
   search: string
-  coverageStatus: Array<CommitStatusesEnum>
+  coverageStatus: Array<CommitStatuses>
 }
 
 const CommitsTable: React.FC<CommitsTableProps> = ({
