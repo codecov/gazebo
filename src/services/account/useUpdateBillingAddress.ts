@@ -1,19 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { z } from 'zod'
 
 import Api from 'shared/api'
+
+import { AddressSchema } from './useAccountDetails'
 
 interface useUpdateBillingAddressParams {
   provider: string
   owner: string
-}
-
-interface AddressInfo {
-  line1: string
-  line2: string
-  city: string
-  state: string
-  country: string
-  postalCode: string
 }
 
 export function useUpdateBillingAddress({
@@ -23,10 +17,11 @@ export function useUpdateBillingAddress({
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (addressInfo: AddressInfo) => {
+    mutationFn: (addressInfo: z.infer<typeof AddressSchema>) => {
       const path = `/${provider}/${owner}/account-details/update_billing_address`
 
       // NOTE: Hardcoded for now until we link up to address form
+
       const body = {
         /* eslint-disable camelcase */
         billing_address: {
@@ -41,7 +36,7 @@ export function useUpdateBillingAddress({
       return Api.patch({ path, provider, body })
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries(['accountDetails'])
+      queryClient.invalidateQueries(['accountDetails', provider, owner], data)
     },
   })
 }

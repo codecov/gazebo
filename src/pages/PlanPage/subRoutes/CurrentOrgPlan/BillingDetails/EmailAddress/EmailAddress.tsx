@@ -67,7 +67,7 @@ function EmailAddress() {
             onClick={() => setIsFormOpen(true)}
             hook="edit-email"
           >
-            Edit email <Icon name="chevronRight" size="sm" variant="solid" />
+            Edit <Icon name="chevronRight" size="sm" variant="solid" />
           </A>
         )}
       </div>
