@@ -261,6 +261,7 @@ interface SetupArgs {
   isOwnerNotActivatedError?: boolean
   isUnsuccessfulParseError?: boolean
   isNullOwner?: boolean
+  skipPolling?: boolean
 }
 
 describe('useCommit', () => {
@@ -269,6 +270,7 @@ describe('useCommit', () => {
     isOwnerNotActivatedError = false,
     isUnsuccessfulParseError = false,
     isNullOwner = false,
+    skipPolling = false,
   }: SetupArgs) {
     server.use(
       graphql.query(`Commit`, (req, res, ctx) => {
@@ -288,6 +290,9 @@ describe('useCommit', () => {
         }
       }),
       graphql.query(`CompareTotals`, (req, res, ctx) => {
+        if (skipPolling) {
+          return res(ctx.status(200), ctx.data({}))
+        }
         return res(ctx.status(200), ctx.data(compareDoneData))
       })
     )
@@ -296,7 +301,7 @@ describe('useCommit', () => {
   describe('when useCommit is called', () => {
     describe('api returns valid response', () => {
       beforeEach(() => {
-        setup({})
+        setup({ skipPolling: true })
       })
 
       it('returns commit info', async () => {
