@@ -21,15 +21,9 @@ import Api from 'shared/api'
 import { mapEdges } from 'shared/utils/graphql'
 import A from 'ui/A'
 
-const CommitStatuses = {
-  COMPLETE: 'COMPLETED',
-  PENDING: 'PENDING',
-  ERROR: 'ERROR',
-} as const
-
-const CommitStatusesEnumSchema = z.nativeEnum(CommitStatuses)
-
-export type CommitStatusesEnum = z.infer<typeof CommitStatusesEnumSchema>
+export const COMMIT_STATUS_COMPLETED = 'COMPLETED'
+export const COMMIT_STATUS_ERROR = 'ERROR'
+export const COMMIT_STATUS_PENDING = 'PENDING'
 
 const AuthorSchema = z.object({
   username: z.string().nullable(),
@@ -37,10 +31,12 @@ const AuthorSchema = z.object({
 })
 
 const CommitStatusSchema = z.union([
-  z.literal(CommitStatusesEnumSchema.enum.COMPLETE),
-  z.literal(CommitStatusesEnumSchema.enum.ERROR),
-  z.literal(CommitStatusesEnumSchema.enum.PENDING),
+  z.literal(COMMIT_STATUS_COMPLETED),
+  z.literal(COMMIT_STATUS_ERROR),
+  z.literal(COMMIT_STATUS_PENDING),
 ])
+
+export type CommitStatuses = z.infer<typeof CommitStatusSchema>
 
 const CommitSchema = z.object({
   ciPassed: z.boolean().nullable(),
@@ -233,7 +229,7 @@ interface UseCommitsArgs {
     branchName?: string
     pullId?: number
     search?: string
-    coverageStatus?: Array<CommitStatusesEnum>
+    coverageStatus?: Array<CommitStatuses>
   }
   opts?: UseInfiniteQueryOptions<GetCommitsReturn>
 }

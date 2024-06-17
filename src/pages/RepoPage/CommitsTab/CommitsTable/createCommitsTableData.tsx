@@ -1,7 +1,12 @@
 import isArray from 'lodash/isArray'
 import isEmpty from 'lodash/isEmpty'
 
-import { Commit } from 'services/commits/useCommits'
+import {
+  Commit,
+  COMMIT_STATUS_COMPLETED,
+  COMMIT_STATUS_ERROR,
+  COMMIT_STATUS_PENDING,
+} from 'services/commits/useCommits'
 import { formatSizeToString } from 'shared/utils/bundleAnalysis'
 import TotalsNumber from 'ui/TotalsNumber'
 
@@ -35,12 +40,12 @@ export const createCommitsTableData = ({ pages }: CommitsTableData) => {
 
   return commits.filter(Boolean).map((commit) => {
     let patch = <p>-</p>
-    if (commit?.coverageStatus === 'ERROR') {
+    if (commit?.coverageStatus === COMMIT_STATUS_ERROR) {
       patch = <ErroredUpload />
-    } else if (commit?.coverageStatus === 'PENDING') {
+    } else if (commit?.coverageStatus === COMMIT_STATUS_PENDING) {
       patch = <PendingUpload />
     } else if (
-      commit?.coverageStatus === 'COMPLETED' &&
+      commit?.coverageStatus === COMMIT_STATUS_COMPLETED &&
       commit?.compareWithParent?.__typename === 'Comparison'
     ) {
       const percent =
@@ -57,12 +62,12 @@ export const createCommitsTableData = ({ pages }: CommitsTableData) => {
     }
 
     let bundleAnalysis = <p>-</p>
-    if (commit?.bundleStatus === 'ERROR') {
+    if (commit?.bundleStatus === COMMIT_STATUS_ERROR) {
       bundleAnalysis = <ErroredUpload />
-    } else if (commit?.bundleStatus === 'PENDING') {
+    } else if (commit?.bundleStatus === COMMIT_STATUS_PENDING) {
       bundleAnalysis = <PendingUpload />
     } else if (
-      commit?.bundleStatus === 'COMPLETED' &&
+      commit?.bundleStatus === COMMIT_STATUS_COMPLETED &&
       commit?.bundleAnalysisCompareWithParent?.__typename ===
         'BundleAnalysisComparison'
     ) {
