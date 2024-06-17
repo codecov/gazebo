@@ -39,8 +39,6 @@ function LoadMoreTrigger({ intersectionRef }: { intersectionRef: any }) {
 const columnHelper = createColumnHelper<{
   title: React.ReactElement
   patch: React.ReactElement
-  coverage: React.ReactElement
-  change: React.ReactElement
   bundleAnalysis: React.ReactElement
 }>()
 
@@ -50,27 +48,9 @@ const baseColumns = [
     header: () => 'Name',
     cell: ({ renderValue }) => renderValue(),
   }),
-  columnHelper.accessor('coverage', {
-    id: 'coverage',
-    header: () => (
-      <>
-        Coverage on <span className="ml-1 font-light">HEAD</span>
-      </>
-    ),
-    cell: ({ renderValue }) => renderValue(),
-  }),
   columnHelper.accessor('patch', {
     id: 'patch',
-    header: () => 'Patch',
-    cell: ({ renderValue }) => renderValue(),
-  }),
-  columnHelper.accessor('change', {
-    id: 'change',
-    header: () => (
-      <>
-        Change from <span className="ml-1 font-light">BASE</span>
-      </>
-    ),
+    header: () => 'Patch Coverage',
     cell: ({ renderValue }) => renderValue(),
   }),
 ]
@@ -86,7 +66,7 @@ interface URLParams {
   repo: string
 }
 
-export default function PullsTableTeam() {
+export default function PullsTable() {
   const { provider, owner, repo } = useParams<URLParams>()
   const { ref, inView } = useInView()
   // we really need to TS'ify and generic'ify useLocationParams
@@ -135,7 +115,7 @@ export default function PullsTableTeam() {
       return [
         ...baseColumns,
         columnHelper.accessor('bundleAnalysis', {
-          header: 'Bundle Analysis',
+          header: 'Bundle',
           id: 'bundleAnalysis',
           cell: ({ renderValue }) => renderValue(),
         }),
@@ -161,8 +141,6 @@ export default function PullsTableTeam() {
         <table>
           <colgroup>
             <col className="w-full @sm/table:w-6/12" />
-            <col className="@sm/table:w-1/12" />
-            <col className="@sm/table:w-1/12" />
             <col className="@sm/table:w-1/12" />
             {overview?.bundleAnalysisEnabled ? (
               <col className="@sm/table:w-1/12" />

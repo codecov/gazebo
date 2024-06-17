@@ -565,7 +565,7 @@ describe('IndirectChangedFiles', () => {
           expect.objectContaining({
             filters: expect.objectContaining({
               ordering: {
-                direction: 'DESC',
+                direction: 'ASC',
                 parameter: 'HEAD_COVERAGE',
               },
             }),

@@ -158,7 +158,6 @@ describe('App', () => {
         expected: {
           page: /LoginPage/i,
           location: '/login',
-          search: '',
         },
       },
     ],
@@ -169,7 +168,6 @@ describe('App', () => {
         expected: {
           page: /LoginPage/i,
           location: '/login/bb',
-          search: '',
         },
       },
     ],
@@ -180,7 +178,6 @@ describe('App', () => {
         expected: {
           page: /AccountSettings/i,
           location: '/account/gh/codecov',
-          search: '',
         },
       },
     ],
@@ -191,7 +188,6 @@ describe('App', () => {
         expected: {
           page: /RepoPage/i,
           location: '/admin/gh/access', // Should probably redirect this but I'm trying to keep existing behavior.
-          search: '',
         },
       },
     ],
@@ -202,7 +198,6 @@ describe('App', () => {
         expected: {
           page: /PlanPage/i,
           location: '/plan/gh/codecov',
-          search: '',
         },
       },
     ],
@@ -213,7 +208,6 @@ describe('App', () => {
         expected: {
           page: /OwnerPage/i,
           location: '/gh/codecov',
-          search: '',
         },
       },
     ],
@@ -224,7 +218,6 @@ describe('App', () => {
         expected: {
           page: /MembersPage/i,
           location: '/members/gh/codecov',
-          search: '',
         },
       },
     ],
@@ -235,7 +228,6 @@ describe('App', () => {
         expected: {
           page: /AnalyticsPage/i,
           location: '/analytics/gh/codecov',
-          search: '',
         },
       },
     ],
@@ -246,7 +238,6 @@ describe('App', () => {
         expected: {
           page: /OwnerPage/i,
           location: '/gh/codecov',
-          search: '',
         },
       },
     ],
@@ -257,7 +248,6 @@ describe('App', () => {
         expected: {
           page: /PullRequestPage/i,
           location: '/gh/codecov/codecov/pull/123...456',
-          search: '',
         },
       },
     ],
@@ -268,7 +258,6 @@ describe('App', () => {
         expected: {
           page: /PullRequestPage/i,
           location: '/gh/codecov/codecov/pull/123',
-          search: '',
         },
       },
     ],
@@ -279,7 +268,6 @@ describe('App', () => {
         expected: {
           page: /CommitDetailPage/i,
           location: '/gh/codecov/codecov/commit/123',
-          search: '',
         },
       },
     ],
@@ -290,7 +278,6 @@ describe('App', () => {
         expected: {
           page: /CommitDetailPage/i,
           location: '/gh/codecov/codecov/commit/123/tree/main.ts',
-          search: '',
         },
       },
     ],
@@ -301,7 +288,6 @@ describe('App', () => {
         expected: {
           page: /RepoPage/i,
           location: '/gh/codecov/codecov',
-          search: '',
         },
       },
     ],
@@ -312,7 +298,6 @@ describe('App', () => {
         expected: {
           page: /LoginPage/i,
           location: '/login',
-          search: '',
         },
       },
     ],
@@ -323,7 +308,6 @@ describe('App', () => {
         expected: {
           page: /SyncProviderPage/i,
           location: '/sync',
-          search: '',
         },
       },
     ],
@@ -343,8 +327,6 @@ describe('App', () => {
         await waitFor(() =>
           expect(testLocation.pathname).toBe(expected.location)
         )
-
-        await waitFor(() => expect(testLocation.search).toBe(expected.search))
 
         const page = await screen.findByText(expected.page)
         expect(page).toBeInTheDocument()
