@@ -396,7 +396,7 @@ describe('useCommit', () => {
 
     describe('user is on team plan', () => {
       it('returns appropriate data', async () => {
-        setup({})
+        setup({ skipPolling: true })
         const { result } = renderHook(
           () =>
             useCommit({
