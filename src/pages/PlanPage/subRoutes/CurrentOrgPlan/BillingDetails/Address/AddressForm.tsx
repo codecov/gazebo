@@ -1,6 +1,5 @@
 import { AddressElement, useElements } from '@stripe/react-stripe-js'
 import cs from 'classnames'
-import { useState } from 'react'
 import { z } from 'zod'
 
 import { AddressSchema } from 'services/account'
@@ -22,11 +21,9 @@ function AddressForm({
   provider,
   owner,
 }: AddressFormProps) {
-  const [errorState, setErrorState] = useState('')
-
   const elements = useElements()
   const {
-    // mutate: updateAddress,
+    mutate: updateAddress,
     isLoading,
     error,
     reset,
@@ -35,24 +32,28 @@ function AddressForm({
     owner,
   })
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault()
 
     if (!elements) {
       return null
     }
 
-    // updateAddress(elements.getElement(AddressElement), { onSuccess: closeForm })
+    const newAddressObj = await elements.getElement('address')?.getValue()
+
+    if (newAddressObj?.complete) {
+      updateAddress(newAddressObj.value.address, { onSuccess: closeForm })
+    }
   }
 
-  const showError = (error && !reset) || errorState
+  const showError = error && !reset
 
   return (
     <form onSubmit={submit} aria-label="form">
       <div className={cs('flex flex-col gap-3')}>
         <div className="mt-2 flex flex-col gap-2">
           <AddressElement
-            onChange={(e) => setErrorState('')}
+            className={'font-semibold'}
             options={{
               mode: 'billing',
               autocomplete: { mode: 'automatic' },
@@ -71,15 +72,15 @@ function AddressForm({
               },
             }}
           />
-          <p className="mt-1 text-ds-primary-red">{showError && errorState}</p>
+          <p className="mt-1 text-ds-primary-red">{showError && error}</p>
         </div>
         <div className="flex gap-1">
           <Button
-            hook="update-address"
+            hook="submit-address-update"
             type="submit"
             variant="primary"
             disabled={isLoading}
-            to={''}
+            to={undefined}
           >
             Update
           </Button>
@@ -89,7 +90,7 @@ function AddressForm({
             variant="plain"
             disabled={isLoading}
             onClick={closeForm}
-            to={''}
+            to={undefined}
           >
             Cancel
           </Button>

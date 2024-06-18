@@ -26,18 +26,20 @@ function AddressCard({
   return (
     <div className="flex flex-col gap-2 border-t p-4">
       <div className="flex justify-between">
-        <h4 className="font-semibold">Billing address</h4>
-        {!isFormOpen && (
-          <A
-            variant="semibold"
-            onClick={() => setIsFormOpen(true)}
-            hook="edit-address"
-            isExternal={false}
-            to={''}
-          >
-            Edit <Icon name="chevronRight" size="sm" variant="solid" />
-          </A>
-        )}
+        {!isFormOpen ? (
+          <>
+            <h4 className="font-semibold">Cardholder name</h4>
+            <A
+              variant="semibold"
+              onClick={() => setIsFormOpen(true)}
+              hook="edit-address"
+              isExternal={false}
+              to={undefined}
+            >
+              Edit <Icon name="chevronRight" size="sm" variant="solid" />
+            </A>
+          </>
+        ) : null}
       </div>
       {isFormOpen ? (
         <AddressForm
@@ -49,6 +51,9 @@ function AddressCard({
         />
       ) : billingDetails ? (
         <div>
+          <p>{`${billingDetails.name}`}</p>
+          <br />
+          <h4 className="mb-2 font-semibold">Billing address</h4>
           <p>{`${billingDetails.address?.line1}`}</p>
           <p>{`${billingDetails.address?.city}, ${billingDetails.address?.state} ${billingDetails.address?.postalCode}`}</p>
         </div>
@@ -63,7 +68,7 @@ function AddressCard({
               hook="open-modal"
               variant="primary"
               onClick={() => setIsFormOpen(true)}
-              to={''}
+              to={undefined}
               disabled={false}
             >
               Set address
