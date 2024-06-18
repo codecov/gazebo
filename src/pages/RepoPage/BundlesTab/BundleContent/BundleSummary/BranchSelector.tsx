@@ -87,14 +87,14 @@ const BranchSelector: React.FC<BranchSelectorProps> = ({
   }
 
   return (
-    <div className="md:w-[16rem]">
+    <div className="md:w-64">
       <h3 className="flex items-center gap-1 text-sm font-semibold text-ds-gray-octonary">
         <span className="text-ds-gray-quinary">
           <Icon name="branch" size="sm" variant="developer" />
         </span>
         Branch Context
       </h3>
-      <span className="min-w-[16rem] text-sm">
+      <span className="min-w-64 text-sm">
         <Select
           // @ts-expect-error - Select has some TS issues because it's still written in JS
           dataMarketing="branch-selector-bundle-tab"

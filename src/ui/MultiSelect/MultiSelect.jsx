@@ -110,7 +110,9 @@ function DropdownList({
               {...getItemProps({ item, index })}
             >
               {isAllButton(item)
-                ? `All ${pluralize(resourceName)}`
+                ? selectedItems.length === 0
+                  ? `All ${pluralize(resourceName)}`
+                  : 'Clear selected'
                 : renderItem(item)}
             </li>
           ))}

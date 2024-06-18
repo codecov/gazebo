@@ -206,7 +206,7 @@ describe('CommitsTable', () => {
   describe('renders table headers', () => {
     it('renders name column', async () => {
       const { queryClient } = setup({})
-      render(<CommitsTable branch="main" states={[]} search="" />, {
+      render(<CommitsTable branch="main" coverageStatus={[]} search="" />, {
         wrapper: wrapper(queryClient),
       })
 
@@ -216,7 +216,7 @@ describe('CommitsTable', () => {
 
     it('renders patch column', async () => {
       const { queryClient } = setup({})
-      render(<CommitsTable branch="main" states={[]} search="" />, {
+      render(<CommitsTable branch="main" coverageStatus={[]} search="" />, {
         wrapper: wrapper(queryClient),
       })
 
@@ -227,7 +227,7 @@ describe('CommitsTable', () => {
     describe('bundle analysis is enabled', () => {
       it('renders bundle analysis column', async () => {
         const { queryClient } = setup({ bundleAnalysisEnabled: true })
-        render(<CommitsTable branch="main" states={[]} search="" />, {
+        render(<CommitsTable branch="main" coverageStatus={[]} search="" />, {
           wrapper: wrapper(queryClient),
         })
 
@@ -239,7 +239,7 @@ describe('CommitsTable', () => {
     describe('bundle analysis is disabled', () => {
       it('does not render bundle analysis column', async () => {
         const { queryClient } = setup({ bundleAnalysisEnabled: false })
-        render(<CommitsTable branch="main" states={[]} search="" />, {
+        render(<CommitsTable branch="main" coverageStatus={[]} search="" />, {
           wrapper: wrapper(queryClient),
         })
 
@@ -252,7 +252,7 @@ describe('CommitsTable', () => {
   describe('renders table body', () => {
     it('renders name column', async () => {
       const { queryClient } = setup({})
-      render(<CommitsTable branch="main" states={[]} search="" />, {
+      render(<CommitsTable branch="main" coverageStatus={[]} search="" />, {
         wrapper: wrapper(queryClient),
       })
 
@@ -265,7 +265,7 @@ describe('CommitsTable', () => {
 
     it('renders patch column', async () => {
       const { queryClient } = setup({})
-      render(<CommitsTable branch="main" states={[]} search="" />, {
+      render(<CommitsTable branch="main" coverageStatus={[]} search="" />, {
         wrapper: wrapper(queryClient),
       })
 
@@ -279,7 +279,7 @@ describe('CommitsTable', () => {
     describe('bundle analysis is enabled', () => {
       it('renders bundle analysis column', async () => {
         const { queryClient } = setup({ bundleAnalysisEnabled: true })
-        render(<CommitsTable branch="main" states={[]} search="" />, {
+        render(<CommitsTable branch="main" coverageStatus={[]} search="" />, {
           wrapper: wrapper(queryClient),
         })
 
@@ -291,7 +291,7 @@ describe('CommitsTable', () => {
     describe('bundle analysis is disabled', () => {
       it('does not render bundle analysis column', async () => {
         const { queryClient } = setup({ bundleAnalysisEnabled: false })
-        render(<CommitsTable branch="main" states={[]} search="" />, {
+        render(<CommitsTable branch="main" coverageStatus={[]} search="" />, {
           wrapper: wrapper(queryClient),
         })
 
@@ -304,7 +304,7 @@ describe('CommitsTable', () => {
   describe('no data is returned', () => {
     it('renders error message', async () => {
       const { queryClient } = setup({ noEntries: true })
-      render(<CommitsTable branch="main" states={[]} search="" />, {
+      render(<CommitsTable branch="main" coverageStatus={[]} search="" />, {
         wrapper: wrapper(queryClient),
       })
 
@@ -316,7 +316,7 @@ describe('CommitsTable', () => {
   describe('infinite scrolling', () => {
     it('loads next page', async () => {
       const { queryClient } = setup({})
-      render(<CommitsTable branch="main" states={[]} search="" />, {
+      render(<CommitsTable branch="main" coverageStatus={[]} search="" />, {
         wrapper: wrapper(queryClient),
       })
 

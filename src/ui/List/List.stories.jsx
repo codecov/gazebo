@@ -3,7 +3,7 @@ import List from './List'
 import Avatar from '../Avatar'
 
 const Template = (args) => (
-  <div className="m-auto h-96 w-96 items-start">
+  <div className="m-auto size-96 items-start">
     <List {...args} />
   </div>
 )

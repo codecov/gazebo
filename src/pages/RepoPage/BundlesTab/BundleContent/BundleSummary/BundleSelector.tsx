@@ -8,11 +8,11 @@ import Select from 'ui/Select'
 
 export const BundleSelectorSkeleton: React.FC = () => {
   return (
-    <div className="md:w-[16rem]">
+    <div className="md:w-64">
       <h3 className="flex items-center gap-1 text-sm font-semibold text-ds-gray-octonary">
         Bundle
       </h3>
-      <span className="max-w-[16rem] text-sm">
+      <span className="max-w-64 text-sm">
         <Select
           // @ts-expect-error
           disabled={true}
@@ -86,11 +86,11 @@ const BundleSelector = forwardRef(({}, ref) => {
   const [filteredBundles, setFilteredBundles] = useState<Array<string>>([])
 
   return (
-    <div className="md:w-[16rem]">
+    <div className="md:w-64">
       <h3 className="flex items-center gap-1 text-sm font-semibold text-ds-gray-octonary">
         Bundle
       </h3>
-      <span className="max-w-[16rem] text-sm">
+      <span className="max-w-64 text-sm">
         <Select
           ref={ref}
           // @ts-expect-error

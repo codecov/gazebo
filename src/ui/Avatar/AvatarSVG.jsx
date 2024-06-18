@@ -4,7 +4,7 @@ function AvatarSVG({ letter, ariaLabel }) {
   return (
     <svg
       data-testid="svg-avatar"
-      className="h-6 w-6 rounded-full"
+      className="size-6 rounded-full"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 40 40"
       aria-label={ariaLabel}

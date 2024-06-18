@@ -210,8 +210,10 @@ describe('MultiSelect', () => {
         const item1Click = screen.getByRole('option', { name: 'item1' })
         await user.click(item1Click)
 
-        const all = screen.getByRole('option', { name: 'All' })
-        expect(all).toBeInTheDocument()
+        const clearSelected = screen.getByRole('option', {
+          name: 'Clear selected',
+        })
+        expect(clearSelected).toBeInTheDocument()
       })
     })
 
@@ -586,8 +588,8 @@ describe('MultiSelect', () => {
       const button = screen.getByText(/3 items selected/)
       await user.click(button)
 
-      const allButton = screen.getByText(/All items/)
-      await user.click(allButton)
+      const clearSelectedButton = screen.getByText(/Clear selected/)
+      await user.click(clearSelectedButton)
 
       await waitFor(() => expect(onChange).toHaveBeenCalledWith([]))
     })

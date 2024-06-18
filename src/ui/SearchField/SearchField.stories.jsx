@@ -1,7 +1,7 @@
 import SearchField from './SearchField'
 
 const Template = (args) => (
-  <div className="mx-auto w-[50%]">
+  <div className="mx-auto w-1/2">
     <SearchField {...args} />
   </div>
 )
