@@ -103,7 +103,7 @@ jobs:
         run: |
           npm run type-check
 
-  prettier:
+  format-check:
     name: Run Prettier Check
     runs-on: ubuntu-latest
     needs: install
@@ -130,7 +130,7 @@ jobs:
 
       - name: Run Prettier
         run: |
-          npm run type-check
+          npm run format-check
 
   codecovstartup:
     name: Codecov Startup
