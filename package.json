@@ -18,7 +18,8 @@
     "postinstall": "husky install",
     "generate-icons": "node ./scripts/icons.js",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "format-check": "prettier --check 'src/**/*.{js,jsx,ts,tsx,css,md}'"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css,scss,md,json}": [
