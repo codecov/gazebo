@@ -26,7 +26,7 @@ function UploadsCard() {
           </div>
           <span className="text-ds-gray-quinary">{uploadsOverview}</span>
         </div>
-        <div className="flex max-h-64 min-w-[24rem] flex-1 flex-col divide-y divide-solid divide-ds-gray-secondary overflow-auto bg-ds-gray-primary">
+        <div className="flex max-h-64 min-w-96 flex-1 flex-col divide-y divide-solid divide-ds-gray-secondary overflow-auto bg-ds-gray-primary">
           {uploadsProviderList.map((title) => (
             <Fragment key={title}>
               {title !== NULL && (

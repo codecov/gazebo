@@ -77,7 +77,7 @@ const createTable = ({ tableData, seatData, mutate }: CreateTableArgs) => {
       return {
         username: <p>{name || username}</p>,
         type: isAdmin ? 'Admin' : 'Developer',
-        email: <p className="max-w-[11rem] break-words">{email}</p>,
+        email: <p className="max-w-44 break-words">{email}</p>,
         activationStatus: (
           <Toggle
             dataMarketing="handle-members-activation"

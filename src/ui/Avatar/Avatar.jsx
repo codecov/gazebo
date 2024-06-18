@@ -20,7 +20,7 @@ function Avatar({ user, bordered, ariaLabel }) {
 
   if (isLoading) {
     return (
-      <div className="h-6 w-6 rounded-full bg-ds-gray-tertiary motion-safe:animate-pulse" />
+      <div className="size-6 rounded-full bg-ds-gray-tertiary motion-safe:animate-pulse" />
     )
   }
 

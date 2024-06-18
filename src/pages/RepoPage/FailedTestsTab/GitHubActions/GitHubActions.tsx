@@ -104,7 +104,7 @@ function Step2() {
           </p>
         </Card.Content>
       </Card>
-      <ExpandableSection className="mt-[-1px]">
+      <ExpandableSection className="-mt-px">
         <ExpandableSection.Trigger
           isExpanded={isExpanded}
           onClick={() => setIsExpanded(!isExpanded)}
@@ -145,7 +145,7 @@ function Step3() {
           </p>
         </Card.Content>
       </Card>
-      <ExpandableSection className="mt-[-1px]">
+      <ExpandableSection className="-mt-px">
         <ExpandableSection.Trigger
           isExpanded={isExpanded}
           onClick={() => setIsExpanded(!isExpanded)}
