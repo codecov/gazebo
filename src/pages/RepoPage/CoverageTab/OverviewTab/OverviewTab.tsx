@@ -98,7 +98,7 @@ function CoverageOverviewTab() {
                   </SilentNetworkErrorWrapper>
                 </div>
                 {displaySunburst ? (
-                  <div className="sticky top-[8rem] col-span-3 flex aspect-square flex-col justify-center gap-4 px-8 py-4">
+                  <div className="sticky top-32 col-span-3 flex aspect-square flex-col justify-center gap-4 px-8 py-4">
                     <Sunburst />
                   </div>
                 ) : null}

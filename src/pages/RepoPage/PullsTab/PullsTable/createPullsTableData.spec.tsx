@@ -1,9 +1,11 @@
 import TotalsNumber from 'ui/TotalsNumber'
 
-import Coverage from './Coverage'
-import { createPullsTableData } from './createPullsTableData'
-
-import Title from '../shared/Title'
+import {
+  createPullsTableData,
+  ErroredUpload,
+  PendingUpload,
+} from './createPullsTableData'
+import Title from './Title'
 
 describe('createPullsTableData', () => {
   describe('pulls is undefined', () => {
@@ -43,241 +45,7 @@ describe('createPullsTableData', () => {
   })
 
   describe('pages has valid pulls', () => {
-    describe('compareWithBase __typename is not Comparison', () => {
-      it('returns undefined value for patch', () => {
-        const pullData = {
-          author: null,
-          pullId: 123,
-          state: 'OPEN',
-          updatestamp: null,
-          title: null,
-          compareWithBase: {
-            __typename: 'MissingBaseCommit',
-            message: 'Missing base commit',
-          },
-          head: {
-            totals: {
-              percentCovered: 0,
-            },
-            bundleAnalysisReport: {
-              __typename: 'MissingHeadReport',
-            },
-          },
-        } as const
-
-        const result = createPullsTableData({
-          pulls: [pullData],
-        })
-
-        expect(result[0]?.patch).toStrictEqual(
-          <TotalsNumber
-            large={false}
-            light={false}
-            plain={true}
-            showChange={false}
-            value={undefined}
-          />
-        )
-      })
-
-      it('returns undefined value for change', () => {
-        const pullData = {
-          author: null,
-          pullId: 123,
-          state: 'OPEN',
-          updatestamp: null,
-          title: null,
-          compareWithBase: {
-            __typename: 'MissingBaseCommit',
-            message: 'Missing base commit',
-          },
-          head: null,
-        } as const
-
-        const result = createPullsTableData({
-          pulls: [pullData],
-        })
-
-        expect(result[0]?.change).toStrictEqual(
-          <TotalsNumber
-            data-testid="change-value"
-            large={false}
-            light={false}
-            plain={true}
-            showChange={true}
-            value={undefined}
-          />
-        )
-      })
-    })
-
-    describe('compareWithBase __typename is Comparison', () => {
-      it('returns with patch value', () => {
-        const pullData = {
-          author: null,
-          pullId: 123,
-          state: 'OPEN',
-          updatestamp: null,
-          title: null,
-          compareWithBase: {
-            __typename: 'Comparison',
-            patchTotals: {
-              percentCovered: 100,
-            },
-            changeCoverage: 0,
-          },
-          head: {
-            totals: {
-              percentCovered: 9,
-            },
-            bundleAnalysisReport: {
-              __typename: 'MissingHeadReport',
-            },
-          },
-        } as const
-
-        const result = createPullsTableData({
-          pulls: [pullData],
-        })
-
-        expect(result[0]?.patch).toStrictEqual(
-          <TotalsNumber
-            large={false}
-            light={false}
-            plain={true}
-            showChange={false}
-            value={100}
-          />
-        )
-      })
-
-      it('returns with change value', () => {
-        const pullData = {
-          author: null,
-          pullId: 123,
-          state: 'OPEN',
-          updatestamp: null,
-          title: null,
-          compareWithBase: {
-            __typename: 'Comparison',
-            patchTotals: {
-              percentCovered: 100,
-            },
-            changeCoverage: 0,
-          },
-          head: {
-            totals: {
-              percentCovered: 9,
-            },
-            bundleAnalysisReport: {
-              __typename: 'MissingHeadReport',
-            },
-          },
-        } as const
-
-        const result = createPullsTableData({
-          pulls: [pullData],
-        })
-
-        expect(result[0]?.change).toStrictEqual(
-          <TotalsNumber
-            data-testid="change-value"
-            large={false}
-            light={false}
-            plain={true}
-            showChange={true}
-            value={0}
-          />
-        )
-      })
-
-      describe('percent covered is null', () => {
-        it('returns patch total of 0', () => {
-          const pullData = {
-            author: null,
-            pullId: 123,
-            state: 'OPEN',
-            updatestamp: null,
-            title: null,
-            compareWithBase: {
-              __typename: 'Comparison',
-              patchTotals: {
-                percentCovered: null,
-              },
-              changeCoverage: 9,
-            },
-            head: {
-              totals: {
-                percentCovered: 9,
-              },
-              bundleAnalysisReport: {
-                __typename: 'MissingHeadReport',
-              },
-            },
-          } as const
-
-          const result = createPullsTableData({
-            pulls: [pullData],
-          })
-
-          expect(result[0]?.patch).toStrictEqual(
-            <TotalsNumber
-              large={false}
-              light={false}
-              plain={true}
-              showChange={false}
-              value={0}
-            />
-          )
-        })
-      })
-    })
-
     describe('pull details are all non-null values', () => {
-      it('returns with coverage value', () => {
-        const pullData = {
-          author: null,
-          pullId: 123,
-          state: 'OPEN',
-          updatestamp: null,
-          title: null,
-          compareWithBase: {
-            __typename: 'Comparison',
-            patchTotals: {
-              percentCovered: 100,
-            },
-            changeCoverage: 0,
-          },
-          head: {
-            totals: {
-              percentCovered: 9,
-            },
-            bundleAnalysisReport: {
-              __typename: 'MissingHeadReport',
-            },
-          },
-        } as const
-
-        const result = createPullsTableData({
-          pulls: [pullData],
-        })
-
-        expect(result[0]?.coverage).toStrictEqual(
-          <Coverage
-            head={{
-              totals: {
-                percentCovered: 9,
-              },
-              bundleAnalysisReport: {
-                __typename: 'MissingHeadReport',
-              },
-            }}
-            pullId={123}
-            state={'OPEN'}
-          />
-        )
-      })
-
       it('returns the title component', () => {
         const pullData = {
           author: {
@@ -288,17 +56,17 @@ describe('createPullsTableData', () => {
           state: 'OPEN',
           updatestamp: '2023-04-25T15:38:48.046832',
           title: 'super cool pull request',
+          head: {
+            bundleStatus: 'COMPLETED',
+            coverageStatus: 'COMPLETED',
+          },
           compareWithBase: {
             __typename: 'MissingBaseCommit',
             message: 'Missing base commit',
           },
-          head: {
-            totals: {
-              percentCovered: 0,
-            },
-            bundleAnalysisReport: {
-              __typename: 'MissingHeadReport',
-            },
+          bundleAnalysisCompareWithBase: {
+            __typename: 'MissingBaseCommit',
+            message: 'Missing base commit',
           },
         } as const
 
@@ -321,14 +89,18 @@ describe('createPullsTableData', () => {
       })
     })
 
-    describe('bundleAnalysisReport __typename is not BundleAnalysisReport', () => {
-      it('returns x emoji', () => {
+    describe('coverage upload has had an error', () => {
+      it('displays Upload: ❌', () => {
         const pullData = {
           author: null,
           pullId: 123,
           state: 'OPEN',
           updatestamp: null,
           title: null,
+          head: {
+            bundleStatus: 'ERROR',
+            coverageStatus: 'ERROR',
+          },
           compareWithBase: {
             __typename: 'Comparison',
             patchTotals: {
@@ -336,13 +108,9 @@ describe('createPullsTableData', () => {
             },
             changeCoverage: 0,
           },
-          head: {
-            totals: {
-              percentCovered: 9,
-            },
-            bundleAnalysisReport: {
-              __typename: 'MissingHeadReport',
-            },
+          bundleAnalysisCompareWithBase: {
+            __typename: 'MissingBaseCommit',
+            message: 'Missing base commit',
           },
         } as const
 
@@ -350,11 +118,181 @@ describe('createPullsTableData', () => {
           pulls: [pullData],
         })
 
-        expect(result[0]?.bundleAnalysis).toStrictEqual(<>Upload: ❌</>)
+        expect(result[0]?.patch).toStrictEqual(<ErroredUpload />)
       })
     })
 
-    describe('bundleAnalysisReport __typename is BundleAnalysisReport', () => {
+    describe('coverage upload is pending', () => {
+      it('displays Upload: ⏳', () => {
+        const pullData = {
+          author: null,
+          pullId: 123,
+          state: 'OPEN',
+          updatestamp: null,
+          title: null,
+          head: {
+            bundleStatus: 'PENDING',
+            coverageStatus: 'PENDING',
+          },
+          compareWithBase: {
+            __typename: 'Comparison',
+            patchTotals: {
+              percentCovered: 100,
+            },
+            changeCoverage: 0,
+          },
+          bundleAnalysisCompareWithBase: {
+            __typename: 'MissingBaseCommit',
+            message: 'Missing base commit',
+          },
+        } as const
+
+        const result = createPullsTableData({
+          pulls: [pullData],
+        })
+
+        expect(result[0]?.patch).toStrictEqual(<PendingUpload />)
+      })
+    })
+
+    describe('coverage upload is completed, and compareWithBase __typename is Comparison', () => {
+      it('renders the TotalsNumber component', () => {
+        const pullData = {
+          author: null,
+          pullId: 123,
+          state: 'OPEN',
+          updatestamp: null,
+          title: null,
+          head: {
+            bundleStatus: 'COMPLETED',
+            coverageStatus: 'COMPLETED',
+          },
+          compareWithBase: {
+            __typename: 'Comparison',
+            patchTotals: {
+              percentCovered: 100,
+            },
+            changeCoverage: 0,
+          },
+          bundleAnalysisCompareWithBase: {
+            __typename: 'MissingBaseCommit',
+            message: 'Missing base commit',
+          },
+        } as const
+
+        const result = createPullsTableData({
+          pulls: [pullData],
+        })
+
+        expect(result[0]?.patch).toStrictEqual(
+          <TotalsNumber
+            large={false}
+            light={false}
+            plain={true}
+            showChange={false}
+            value={100}
+          />
+        )
+      })
+    })
+
+    describe('coverage upload does not match any conditions', () => {
+      it('displays `-`', () => {
+        const pullData = {
+          author: null,
+          pullId: 123,
+          state: 'OPEN',
+          updatestamp: null,
+          title: null,
+          head: {
+            bundleStatus: 'COMPLETED',
+            coverageStatus: 'COMPLETED',
+          },
+          compareWithBase: {
+            __typename: 'MissingBaseCommit',
+            message: 'Missing base commit',
+          },
+          bundleAnalysisCompareWithBase: {
+            __typename: 'MissingBaseCommit',
+            message: 'Missing base commit',
+          },
+        } as const
+
+        const result = createPullsTableData({
+          pulls: [pullData],
+        })
+
+        expect(result[0]?.patch).toStrictEqual(<p>-</p>)
+      })
+    })
+
+    describe('bundle upload has had an error', () => {
+      it('displays Upload: ❌', () => {
+        const pullData = {
+          author: null,
+          pullId: 123,
+          state: 'OPEN',
+          updatestamp: null,
+          title: null,
+          head: {
+            bundleStatus: 'ERROR',
+            coverageStatus: 'COMPLETED',
+          },
+          compareWithBase: {
+            __typename: 'Comparison',
+            patchTotals: {
+              percentCovered: 100,
+            },
+            changeCoverage: 0,
+          },
+          bundleAnalysisCompareWithBase: {
+            __typename: 'MissingBaseCommit',
+            message: 'Missing base commit',
+          },
+        } as const
+
+        const result = createPullsTableData({
+          pulls: [pullData],
+        })
+
+        expect(result[0]?.bundleAnalysis).toStrictEqual(<ErroredUpload />)
+      })
+    })
+
+    describe('bundle upload is pending', () => {
+      it('displays Upload: ⏳', () => {
+        const pullData = {
+          author: null,
+          pullId: 123,
+          state: 'OPEN',
+          updatestamp: null,
+          title: null,
+          head: {
+            bundleStatus: 'PENDING',
+            coverageStatus: 'COMPLETED',
+          },
+          compareWithBase: {
+            __typename: 'Comparison',
+            patchTotals: {
+              percentCovered: 100,
+            },
+            changeCoverage: 0,
+          },
+          bundleAnalysisCompareWithBase: {
+            __typename: 'MissingBaseCommit',
+            message: 'Missing base commit',
+          },
+        } as const
+
+        const result = createPullsTableData({
+          pulls: [pullData],
+        })
+
+        expect(result[0]?.bundleAnalysis).toStrictEqual(<PendingUpload />)
+      })
+    })
+
+    describe('bundleAnalysisCompareWithBase __typename is BundleAnalysisReport', () => {
       it('returns successful upload', () => {
         const pullData = {
           author: null,
@@ -362,6 +300,10 @@ describe('createPullsTableData', () => {
           state: 'OPEN',
           updatestamp: null,
           title: null,
+          head: {
+            bundleStatus: 'COMPLETED',
+            coverageStatus: 'COMPLETED',
+          },
           compareWithBase: {
             __typename: 'Comparison',
             patchTotals: {
@@ -369,12 +311,12 @@ describe('createPullsTableData', () => {
             },
             changeCoverage: 0,
           },
-          head: {
-            totals: {
-              percentCovered: 9,
-            },
-            bundleAnalysisReport: {
-              __typename: 'BundleAnalysisReport',
+          bundleAnalysisCompareWithBase: {
+            __typename: 'BundleAnalysisComparison',
+            bundleChange: {
+              size: {
+                uncompress: 1000,
+              },
             },
           },
         } as const
@@ -383,7 +325,40 @@ describe('createPullsTableData', () => {
           pulls: [pullData],
         })
 
-        expect(result[0]?.bundleAnalysis).toStrictEqual(<>Upload: ✅</>)
+        expect(result[0]?.bundleAnalysis).toStrictEqual(<p>+1kB</p>)
+      })
+    })
+
+    describe('bundle upload does not match any conditions', () => {
+      it('displays `-`', () => {
+        const pullData = {
+          author: null,
+          pullId: 123,
+          state: 'OPEN',
+          updatestamp: null,
+          title: null,
+          head: {
+            bundleStatus: 'COMPLETED',
+            coverageStatus: 'COMPLETED',
+          },
+          compareWithBase: {
+            __typename: 'Comparison',
+            patchTotals: {
+              percentCovered: 100,
+            },
+            changeCoverage: 0,
+          },
+          bundleAnalysisCompareWithBase: {
+            __typename: 'MissingBaseCommit',
+            message: 'Missing base commit',
+          },
+        } as const
+
+        const result = createPullsTableData({
+          pulls: [pullData],
+        })
+
+        expect(result[0]?.bundleAnalysis).toStrictEqual(<p>-</p>)
       })
     })
   })

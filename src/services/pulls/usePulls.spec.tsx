@@ -11,23 +11,22 @@ const node1 = {
   state: 'MERGED',
   updatestamp: '20-2-2021',
   author: {
-    username: 'Rula',
+    username: 'cool-user',
     avatarUrl: 'http://127.0.0.1/avatar-url',
   },
   head: {
-    totals: {
-      percentCovered: 90,
-    },
-    bundleAnalysisReport: {
-      __typename: 'MissingHeadReport',
-    },
+    bundleStatus: 'PENDING',
+    coverageStatus: 'PENDING',
+  },
+  bundleAnalysisCompareWithBase: {
+    __typename: 'MissingHeadReport',
+    message: 'Missing head report',
   },
   compareWithBase: {
     __typename: 'Comparison',
     patchTotals: {
       percentCovered: 87,
     },
-    changeCoverage: 20,
   },
 }
 
@@ -37,23 +36,22 @@ const node2 = {
   state: 'MERGED',
   updatestamp: '20-2-2021',
   author: {
-    username: 'Rula',
+    username: 'cool-user',
     avatarUrl: 'http://127.0.0.1/avatar-url',
   },
   head: {
-    totals: {
-      percentCovered: 90,
-    },
-    bundleAnalysisReport: {
-      __typename: 'MissingHeadReport',
-    },
+    bundleStatus: 'PENDING',
+    coverageStatus: 'PENDING',
+  },
+  bundleAnalysisCompareWithBase: {
+    __typename: 'MissingHeadReport',
+    message: 'Missing head report',
   },
   compareWithBase: {
     __typename: 'Comparison',
     patchTotals: {
       percentCovered: 87,
     },
-    changeCoverage: 20,
   },
 }
 
@@ -63,23 +61,22 @@ const node3 = {
   state: 'MERGED',
   updatestamp: '20-2-2021',
   author: {
-    username: 'Rula',
+    username: 'cool-user',
     avatarUrl: 'http://127.0.0.1/avatar-url',
   },
   head: {
-    totals: {
-      percentCovered: 90,
-    },
-    bundleAnalysisReport: {
-      __typename: 'MissingHeadReport',
-    },
+    bundleStatus: 'PENDING',
+    coverageStatus: 'PENDING',
+  },
+  bundleAnalysisCompareWithBase: {
+    __typename: 'MissingHeadReport',
+    message: 'Missing head report',
   },
   compareWithBase: {
     __typename: 'Comparison',
     patchTotals: {
       percentCovered: 87,
     },
-    changeCoverage: 20,
   },
 }
 

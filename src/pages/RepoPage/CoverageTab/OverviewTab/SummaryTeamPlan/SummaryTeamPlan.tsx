@@ -56,7 +56,7 @@ const SummaryTeamPlan = () => {
       <SummaryRoot>
         <SummaryField>
           <div className="flex flex-row items-center gap-2">
-            <span className="min-w-[16rem] text-sm">
+            <span className="min-w-64 text-sm">
               <Select
                 dataMarketing="branch-selector-repo-page"
                 {...branchSelectorProps}

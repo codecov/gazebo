@@ -15,7 +15,7 @@ const YamlTab = lazy(() => import('./tabs/YamlTab'))
 const BadgesAndGraphsTab = lazy(() => import('./tabs/BadgesAndGraphsTab'))
 
 const tabLoading = (
-  <div className="flex h-full w-full items-center justify-center">
+  <div className="flex size-full items-center justify-center">
     <LoadingLogo />
   </div>
 )
