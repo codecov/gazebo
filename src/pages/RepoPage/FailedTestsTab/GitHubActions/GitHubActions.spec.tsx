@@ -5,7 +5,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import GitHubActions from './GitHubActions'
 
-
 jest.mock('./FrameworkTabs', () => ({
   __esModule: true,
   FrameworkTabs: () => 'FrameworkTabs',
