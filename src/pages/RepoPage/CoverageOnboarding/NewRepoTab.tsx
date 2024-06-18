@@ -67,7 +67,7 @@ function CISelector({ provider, owner, repo }: CISelectorProps) {
   return (
     <Card>
       <Card.Header>
-        <Card.Title size="base">Select your CI</Card.Title>
+        <Card.Title size="base">Select a setup option</Card.Title>
       </Card.Header>
       <Card.Content>
         <RadioTileGroup
@@ -92,7 +92,9 @@ function CISelector({ provider, owner, repo }: CISelectorProps) {
             value={CI_PROVIDERS.OtherCI}
             data-testid="other-ci-radio"
           >
-            <RadioTileGroup.Label>Other</RadioTileGroup.Label>
+            <RadioTileGroup.Label>
+              Using Codecov&apos;s CLI
+            </RadioTileGroup.Label>
           </RadioTileGroup.Item>
         </RadioTileGroup>
       </Card.Content>
