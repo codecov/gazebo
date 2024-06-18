@@ -21,7 +21,7 @@ const subscriptionDetail = {
       name: 'Bob Smith',
       address: {
         line1: '123 Sesame St.',
-        line2: '',
+        line2: 'Apt A',
         city: 'San Francisco',
         country: 'US',
         state: 'CA',
@@ -51,6 +51,7 @@ jest.mock('@stripe/react-stripe-js', () => {
           },
         }),
       }),
+      update: jest.fn(),
     }),
     useStripe: () => ({}),
     AddressElement: makeFakeComponent('AddressElement'),
@@ -124,7 +125,9 @@ describe('AddressCard', () => {
         })
         await user.click(screen.getByTestId('open-modal'))
 
-        expect(screen.queryByText(/123 Sesame St./)).not.toBeInTheDocument()
+        expect(
+          screen.queryByText(/123 Sesame St. Apt A/)
+        ).not.toBeInTheDocument()
       })
 
       it('renders the address form component', async () => {
@@ -165,7 +168,7 @@ describe('AddressCard', () => {
       )
 
       expect(screen.getByText(/Billing address/)).toBeInTheDocument()
-      expect(screen.getByText(/123 Sesame St./)).toBeInTheDocument()
+      expect(screen.getByText(/123 Sesame St. Apt A/)).toBeInTheDocument()
       expect(screen.getByText(/San Francisco, CA 12345/)).toBeInTheDocument()
     })
 
@@ -204,7 +207,7 @@ describe('AddressCard', () => {
       expect(screen.queryByText(/Cardholder name/)).not.toBeInTheDocument()
       expect(screen.queryByText(/Bob Smith/)).not.toBeInTheDocument()
       expect(screen.queryByText(/Billing address/)).not.toBeInTheDocument()
-      expect(screen.queryByText(/123 Sesame St./)).not.toBeInTheDocument()
+      expect(screen.queryByText(/123 Sesame St. Apt A/)).not.toBeInTheDocument()
       expect(
         screen.queryByText(/San Francisco, CA 12345/)
       ).not.toBeInTheDocument()

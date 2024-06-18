@@ -22,6 +22,15 @@ function AddressForm({
   owner,
 }: AddressFormProps) {
   const elements = useElements()
+
+  elements?.update({
+    appearance: {
+      variables: {
+        fontFamily: 'Poppins, ui-sans-serif, system-ui, sans-serif',
+      },
+      rules: { '.Label': { fontWeight: '600', color: 'black' } },
+    },
+  })
   const {
     mutate: updateAddress,
     isLoading,
@@ -53,7 +62,7 @@ function AddressForm({
       <div className={cs('flex flex-col gap-3')}>
         <div className="mt-2 flex flex-col gap-2">
           <AddressElement
-            className={'font-semibold'}
+            className={'![&_*_.Label]:font-semibold'}
             options={{
               mode: 'billing',
               autocomplete: { mode: 'automatic' },
