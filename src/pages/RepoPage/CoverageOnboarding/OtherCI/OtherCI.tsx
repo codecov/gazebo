@@ -32,7 +32,7 @@ function OtherCI() {
   const uploadToken = orgUploadToken ?? data?.repository?.uploadToken ?? ''
   const tokenCopy = orgUploadToken ? 'global' : 'repository'
 
-  const uploadCommand = `codecovcli upload-process -t ${uploadToken}${
+  const uploadCommand = `./codecov -u https://qa.codecov.dev upload-process -t ${uploadToken}${
     orgUploadToken ? `-r ${repo}` : ''
   }`
 
@@ -81,15 +81,16 @@ function Step2() {
     <Card>
       <Card.Header>
         <Card.Title size="base">
-          Step 2: add Codecov{' '}
+          Step 2: add the{' '}
           <A
             to={{ pageName: 'uploader' }}
             data-testid="uploader"
             isExternal
             hook="uploaderLink"
           >
-            uploader to your CI workflow
-          </A>
+            Codecov CLI
+          </A>{' '}
+          to your CI environment
         </Card.Title>
       </Card.Header>
       <Card.Content className="flex flex-col gap-4">
