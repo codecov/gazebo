@@ -613,7 +613,7 @@ describe('useCommit polling', () => {
       graphql.query(`CompareTotals`, (req, res, ctx) => {
         nbCallCompare++
         // after 10 calls, the server returns that the commit is processed
-        if (nbCallCompare < 10) {
+        if (nbCallCompare < 1) {
           return res(ctx.status(200), ctx.data(dataReturned))
         }
         return res(ctx.status(200), ctx.data(compareDoneData))
@@ -621,12 +621,9 @@ describe('useCommit polling', () => {
     )
   }
 
-  describe('when useCommit is called', () => {
-    beforeEach(async () => {
-      setup()
-    })
-
+  describe('when called', () => {
     it('returns commit data merged with what polling fetched', async () => {
+      setup()
       const { result } = renderHook(
         () =>
           useCommit({
@@ -655,7 +652,7 @@ describe('useCommit polling', () => {
       })
 
       await waitFor(() =>
-        expect(result.current.data).toEqual({
+        expect(result.current.data).toStrictEqual({
           commit: {
             branchName: null,
             totals: {
@@ -672,7 +669,7 @@ describe('useCommit polling', () => {
             ciPassed: true,
             compareWithParent: {
               __typename: 'Comparison',
-              state: 'pending',
+              state: 'PROCESSED',
               directChangedFilesCount: 1,
               indirectChangedFilesCount: 1,
               impactedFiles: {
