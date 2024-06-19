@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
@@ -82,14 +83,23 @@ describe('CircleCI', () => {
     mockedUseFlags.mockReturnValue({
       newRepoFlag: hasOrgUploadToken,
     })
+    const mockMetricMutationVariables = jest.fn()
+    const mockGetItem = jest.spyOn(window.localStorage.__proto__, 'getItem')
+    mockGetItem.mockReturnValue(null)
+
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockGetRepo))
       ),
       graphql.query('GetOrgUploadToken', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockGetOrgUploadToken))
+      }),
+      graphql.mutation('storeEventMetric', (req, res, ctx) => {
+        mockMetricMutationVariables(req?.variables)
+        return res(ctx.status(200), ctx.data({ storeEventMetric: null }))
       })
     )
+    return { mockMetricMutationVariables }
   }
 
   describe('step one', () => {
@@ -224,6 +234,26 @@ describe('CircleCI', () => {
       expect(bodyLink).toHaveAttribute(
         'href',
         'https://github.com/codecov/Codecov-user-feedback/issues/18'
+      )
+    })
+  })
+
+  describe('user copies text', () => {
+    it('stores codecov metric', async () => {
+      const { mockMetricMutationVariables } = setup({})
+      const user = userEvent.setup()
+      render(<CircleCI />, { wrapper })
+
+      const copyCommands = await screen.findAllByTestId(
+        'clipboard-code-snippet'
+      )
+      expect(copyCommands.length).toEqual(3)
+
+      await user.click(copyCommands[1] as HTMLElement)
+
+      await user.click(copyCommands[2] as HTMLElement)
+      await waitFor(() =>
+        expect(mockMetricMutationVariables).toHaveBeenCalledTimes(2)
       )
     })
   })
