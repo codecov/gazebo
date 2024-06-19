@@ -45,6 +45,8 @@ const ComparisonSchema = z.object({
   state: z.string(),
   patchTotals: CoverageObjSchema.nullable(),
   impactedFiles: ImpactedFilesSchema,
+  directChangedFilesCount: z.number(),
+  indirectChangedFilesCount: z.number(),
 })
 
 const CompareWithParentSchema = z
@@ -96,6 +98,8 @@ query CompareTotals(
             __typename
             ... on Comparison {
               state
+              indirectChangedFilesCount
+              directChangedFilesCount
               patchTotals {
                 coverage: percentCovered
               }

@@ -14,6 +14,8 @@ const mockResponse = {
           __typename: 'Comparison',
           state: 'pending',
           patchTotals: null,
+          indirectChangedFilesCount: 1,
+          directChangedFilesCount: 1,
           impactedFiles: {
             __typename: 'ImpactedFiles',
             results: [],
@@ -127,6 +129,8 @@ describe('useCompareTotals', () => {
                       __typename: 'Comparison',
                       state: 'pending',
                       patchTotals: null,
+                      indirectChangedFilesCount: 1,
+                      directChangedFilesCount: 1,
                       impactedFiles: {
                         __typename: 'ImpactedFiles',
                         results: [],
