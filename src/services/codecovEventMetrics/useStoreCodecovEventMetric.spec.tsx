@@ -57,7 +57,7 @@ describe('useStoreCodecovEventMetric', () => {
     return { mockSetItem, mockGetItem }
   }
 
-  afterEach(() => jest.resetAllMocks)
+  afterEach(() => jest.resetAllMocks())
 
   describe('when called', () => {
     describe('when successful', () => {
@@ -123,6 +123,40 @@ describe('useStoreCodecovEventMetric', () => {
 
         await waitFor(() => expect(mockGetItem).toHaveBeenCalled())
         await waitFor(() => expect(mockSetItem).not.toHaveBeenCalled())
+      })
+    })
+
+    describe('when local storage has more than 30 entries', () => {
+      it('removes the oldest entry and adds the new metric', async () => {
+        const { mockSetItem, mockGetItem } = setup()
+
+        const mockMetrics = Array.from({ length: 31 }, (_, i) => `metric${i}`)
+        const stringMockMetrics = JSON.stringify(mockMetrics)
+        mockGetItem.mockReturnValue(stringMockMetrics)
+
+        const { result } = renderHook(() => useStoreCodecovEventMetric(), {
+          wrapper,
+        })
+
+        const newMetric = {
+          owner: 'codecov',
+          event: 'NEW_EVENT',
+          jsonPayload: {},
+        }
+
+        result.current.mutate(newMetric)
+
+        await waitFor(() => expect(mockGetItem).toHaveBeenCalled())
+        await waitFor(() => {
+          const updatedMetrics = [
+            ...mockMetrics.slice(1),
+            'codecov|NEW_EVENT|{}',
+          ]
+          expect(mockSetItem).toHaveBeenCalledWith(
+            'UserOnboardingMetricsStored',
+            JSON.stringify(updatedMetrics)
+          )
+        })
       })
     })
   })

@@ -1,4 +1,4 @@
-import { lazy , Suspense, useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { Switch, useHistory, useLocation, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'

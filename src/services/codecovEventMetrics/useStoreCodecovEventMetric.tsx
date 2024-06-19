@@ -33,7 +33,7 @@ interface StoreEventMetricMutationArgs {
 }
 
 const LOCAL_STORAGE_KEY = 'UserOnboardingMetricsStored'
-const MAX_ENTRIES = 50
+const MAX_ENTRIES = 30
 
 const generateMetricString = (
   owner: string,
