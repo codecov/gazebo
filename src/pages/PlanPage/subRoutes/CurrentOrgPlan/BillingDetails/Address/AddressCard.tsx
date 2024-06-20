@@ -73,7 +73,9 @@ function BillingInner({ billingDetails, setIsFormOpen }: BillingInnerProps) {
         <p>{`${billingDetails.name}`}</p>
         <br />
         <h4 className="mb-2 font-semibold">Billing address</h4>
-        <p>{`${billingDetails.address?.line1} ${billingDetails.address?.line2}`}</p>
+        <p>{`${billingDetails.address?.line1} ${
+          billingDetails.address?.line2 ?? ''
+        }`}</p>
         <p>{`${billingDetails.address?.city}, ${billingDetails.address?.state} ${billingDetails.address?.postalCode}`}</p>
       </div>
     )
