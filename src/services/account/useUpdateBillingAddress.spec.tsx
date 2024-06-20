@@ -92,14 +92,17 @@ describe('useUpdateBillingAddress', () => {
         }
       )
 
-      result.current.mutate({
-        line1: '45 Fremont St.',
-        line2: '',
-        city: 'San Francisco',
-        state: 'CA',
-        country: 'US',
-        postalCode: '94105',
-      })
+      result.current.mutate(
+        {
+          line1: '45 Fremont St.',
+          line2: '',
+          city: 'San Francisco',
+          state: 'CA',
+          country: 'US',
+          postal_code: '94105',
+        },
+        {}
+      )
 
       await waitFor(() => result.current.isLoading)
       await waitFor(() => !result.current.isLoading)
