@@ -53,12 +53,7 @@ const BundleSelector = forwardRef(({}, ref) => {
   } = useParams<URLParams>()
 
   const [selectedBundle, setSelectedBundle] = useState<string | undefined>(
-    () => {
-      if (bundle) {
-        return decodeURIComponent(bundle)
-      }
-      return undefined
-    }
+    bundle ? decodeURIComponent(bundle) : undefined
   )
 
   const { data: overviewData } = useRepoOverview({
@@ -84,6 +79,18 @@ const BundleSelector = forwardRef(({}, ref) => {
     [bundleData?.bundles]
   )
   const [filteredBundles, setFilteredBundles] = useState<Array<string>>([])
+
+  if (selectedBundle === undefined && bundles.length > 0) {
+    history.push(
+      bundlesLink.path({
+        // @ts-expect-error - useNavLinks needs to be typed
+        branch,
+        // @ts-expect-error - useNavLinks needs to be typed
+        bundle: encodeURIComponent(bundles[0]),
+      })
+    )
+    setSelectedBundle(bundles[0])
+  }
 
   return (
     <div className="md:w-64">
