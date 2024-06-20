@@ -62,7 +62,6 @@ function AddressForm({
       <div className={cs('flex flex-col gap-3')}>
         <div className="mt-2 flex flex-col gap-2">
           <AddressElement
-            className={'![&_*_.Label]:font-semibold'}
             options={{
               mode: 'billing',
               autocomplete: { mode: 'automatic' },

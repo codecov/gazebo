@@ -40,8 +40,8 @@ export function useUpdateBillingAddress({
       }
       return Api.patch({ path, provider, body })
     },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries(['accountDetails', provider, owner], data)
+    onSuccess: () => {
+      queryClient.invalidateQueries(['accountDetails', provider, owner])
     },
   })
 }
