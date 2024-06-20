@@ -62,7 +62,7 @@ function AddressCard({
 }
 
 interface BillingInnerProps {
-  billingDetails: z.infer<typeof BillingDetailsSchema>
+  billingDetails?: z.infer<typeof BillingDetailsSchema>
   setIsFormOpen: (val: boolean) => void
 }
 
