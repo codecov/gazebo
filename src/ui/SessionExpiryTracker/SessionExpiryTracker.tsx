@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { Redirect } from 'react-router-dom'
 
 import config, {
+  COOKIE_SESSION_EXPIRY,
   COOKIE_SESSION_ID,
   LOCAL_STORAGE_SESSION_EXPIRED_KEY,
   LOCAL_STORAGE_SESSION_TRACKING_KEY,
@@ -17,7 +18,7 @@ const SessionExpiryTracker: React.FC = () => {
   localStorage.removeItem(LOCAL_STORAGE_SESSION_EXPIRED_KEY)
 
   const [redirectToLogout, setRedirectToLogout] = useState(false)
-  const sessionExpiryTimeString = Cookies.get('session_expiry')
+  const sessionExpiryTimeString = Cookies.get(COOKIE_SESSION_EXPIRY)
   const getCheckDelay = (sessionExpiryTime: Date) => {
     const timeLeft = sessionExpiryTime.getTime() - new Date().getTime()
     return timeLeft > THIRTY_MINUTES_MILLIS
@@ -69,6 +70,7 @@ const SessionExpiryTracker: React.FC = () => {
   }
 
   Cookies.remove(COOKIE_SESSION_ID, { path: '' })
+  Cookies.remove(COOKIE_SESSION_EXPIRY)
   localStorage.setItem(LOCAL_STORAGE_SESSION_EXPIRED_KEY, 'true')
   localStorage.removeItem(LOCAL_STORAGE_SESSION_TRACKING_KEY)
 
