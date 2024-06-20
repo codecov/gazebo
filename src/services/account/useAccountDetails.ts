@@ -63,7 +63,7 @@ export const BillingDetailsSchema = z
     name: z.string().nullable(),
     phone: z.string().nullable(),
   })
-  .nullish()
+  .nullable()
 
 export const PaymentMethodSchema = z
   .object({
@@ -73,7 +73,7 @@ export const PaymentMethodSchema = z
       expYear: z.number(),
       last4: z.string(),
     }),
-    billingDetails: BillingDetailsSchema.nullish(),
+    billingDetails: BillingDetailsSchema.nullable(),
   })
   .nullable()
 
