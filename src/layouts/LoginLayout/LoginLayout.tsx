@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+import { useLocation } from 'react-router-dom'
 
 import { LOCAL_STORAGE_SESSION_EXPIRED_KEY } from 'config'
 
@@ -14,12 +15,16 @@ const FullPageLoader = () => (
 )
 
 const LoginLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
+  const location = useLocation()
+
   const showExpiryBanner = localStorage.getItem(
     LOCAL_STORAGE_SESSION_EXPIRED_KEY
   )
   return (
     <>
-      {showExpiryBanner && <SessionExpiredBanner />}
+      {(location.search.includes('expired') || showExpiryBanner) && (
+        <SessionExpiredBanner />
+      )}
       <Header />
       <Suspense fallback={<FullPageLoader />}>
         <main className="container mb-8 mt-2 flex grow flex-col gap-2 md:p-0">

@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { Redirect } from 'react-router-dom'
 
 import config, {
-  COOKIE_SESSION_ID,
+  COOKIE_SESSION_EXPIRY,
   LOCAL_STORAGE_SESSION_EXPIRED_KEY,
   LOCAL_STORAGE_SESSION_TRACKING_KEY,
 } from 'config'
@@ -17,7 +17,7 @@ const SessionExpiryTracker: React.FC = () => {
   localStorage.removeItem(LOCAL_STORAGE_SESSION_EXPIRED_KEY)
 
   const [redirectToLogout, setRedirectToLogout] = useState(false)
-  const sessionExpiryTimeString = Cookies.get('session_expiry')
+  const sessionExpiryTimeString = Cookies.get(COOKIE_SESSION_EXPIRY)
   const getCheckDelay = (sessionExpiryTime: Date) => {
     const timeLeft = sessionExpiryTime.getTime() - new Date().getTime()
     return timeLeft > THIRTY_MINUTES_MILLIS
@@ -64,18 +64,32 @@ const SessionExpiryTracker: React.FC = () => {
     }
   }, [sessionExpiryTimeString, checkSession, setupSessionIntervalCheck])
 
+  useEffect(() => {
+    if (!redirectToLogout) {
+      return
+    }
+
+    const handleLogout = async () => {
+      await fetch(`${config.API_URL}/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      })
+      Cookies.remove(COOKIE_SESSION_EXPIRY)
+      localStorage.setItem(LOCAL_STORAGE_SESSION_EXPIRED_KEY, 'true')
+      localStorage.removeItem(LOCAL_STORAGE_SESSION_TRACKING_KEY)
+    }
+
+    handleLogout()
+  }, [redirectToLogout])
+
   if (!sessionExpiryTimeString || !redirectToLogout) {
     return null
   }
 
-  Cookies.remove(COOKIE_SESSION_ID, { path: '' })
-  localStorage.setItem(LOCAL_STORAGE_SESSION_EXPIRED_KEY, 'true')
-  localStorage.removeItem(LOCAL_STORAGE_SESSION_TRACKING_KEY)
-
   return config.IS_SELF_HOSTED ? (
-    <Redirect to={'/'} />
+    <Redirect to={'/?session=expired'} />
   ) : (
-    <Redirect to={'/login'} />
+    <Redirect to={'/login?session=expired'} />
   )
 }
 
