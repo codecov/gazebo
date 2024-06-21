@@ -8,8 +8,8 @@ import config, {
   LOCAL_STORAGE_SESSION_TRACKING_KEY,
 } from 'config'
 
-const ONE_MINUTE_MILLIS = 6 * 1000
-const TWO_MINUTES_MILLIS = 2 * 60 * 1000 // ONE_MINUTE_MILLIS
+const ONE_MINUTE_MILLIS = 60 * 1000
+const TWO_MINUTES_MILLIS = 2 * ONE_MINUTE_MILLIS
 const THIRTY_MINUTES_MILLIS = 30 * ONE_MINUTE_MILLIS
 
 const SessionExpiryTracker: React.FC = () => {
@@ -29,7 +29,6 @@ const SessionExpiryTracker: React.FC = () => {
     (sessionExpiryTime: Date) => {
       const currentTime = new Date()
       const timeLeft = sessionExpiryTime.getTime() - currentTime.getTime()
-      console.log('CHECKING SESSION', timeLeft, sessionExpiryTime)
       if (timeLeft <= TWO_MINUTES_MILLIS && !redirectToLogout) {
         setRedirectToLogout(true)
       }
@@ -87,7 +86,11 @@ const SessionExpiryTracker: React.FC = () => {
     return null
   }
 
-  return <Redirect to={'/login'} />
+  return config.IS_SELF_HOSTED ? (
+    <Redirect to={'/?session=expired'} />
+  ) : (
+    <Redirect to={'/login?session=expired'} />
+  )
 }
 
 export default SessionExpiryTracker

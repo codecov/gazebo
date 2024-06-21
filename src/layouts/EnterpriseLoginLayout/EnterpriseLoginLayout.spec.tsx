@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter, Route } from 'react-router-dom'
+import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 import { LOCAL_STORAGE_SESSION_EXPIRED_KEY } from 'config'
 
@@ -11,6 +11,13 @@ jest.mock('layouts/Footer', () => () => 'Footer')
 jest.mock('shared/GlobalBanners', () => () => 'GlobalBanners')
 jest.mock('layouts/ToastNotifications', () => () => 'ToastNotifications')
 jest.mock('ui/SessionExpiryTracker', () => () => 'SessionExpiryTracker')
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useLocation: jest.fn(),
+}))
+
+const mockedUseLocation = useLocation as jest.Mock
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,6 +38,17 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 )
 
 describe('EnterpriseLoginLayout', () => {
+  beforeAll(() => {
+    console.error = () => {}
+  })
+  beforeEach(() => {
+    mockedUseLocation.mockReturnValue({ search: [] })
+  })
+
+  afterAll(() => {
+    jest.restoreAllMocks()
+  })
+
   it('renders children', () => {
     render(<>children</>, { wrapper })
 
@@ -75,6 +93,17 @@ describe('EnterpriseLoginLayout', () => {
 
   it('renders the session expired banner if session is expired', () => {
     localStorage.setItem(LOCAL_STORAGE_SESSION_EXPIRED_KEY, 'true')
+
+    render(<>children</>, { wrapper })
+
+    const session = screen.getByText(/Your session has expired/)
+    expect(session).toBeInTheDocument()
+  })
+
+  it('renders the session expired banner when expired query param set', () => {
+    mockedUseLocation.mockReturnValueOnce({
+      search: 'expired',
+    })
 
     render(<>children</>, { wrapper })
 
