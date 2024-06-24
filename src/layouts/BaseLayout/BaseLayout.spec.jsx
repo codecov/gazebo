@@ -8,6 +8,7 @@ import config from 'config'
 
 import { useImage } from 'services/image'
 import { useImpersonate } from 'services/impersonate'
+import { useFlags } from 'shared/featureFlags'
 
 import BaseLayout from './BaseLayout'
 
@@ -17,6 +18,8 @@ jest.mock('shared/GlobalTopBanners', () => () => 'GlobalTopBanners')
 jest.mock('./InstallationHelpBanner', () => () => 'InstallationHelpBanner')
 jest.mock('pages/TermsOfService', () => () => 'TermsOfService')
 jest.mock('pages/DefaultOrgSelector', () => () => 'DefaultOrgSelector')
+
+jest.mock('shared/featureFlags')
 
 const mockOwner = {
   owner: {
@@ -167,6 +170,9 @@ describe('BaseLayout', () => {
       currentUser: loggedInUser,
     }
   ) {
+    useFlags.mockReturnValue({
+      newHeader: false,
+    })
     useImage.mockReturnValue({
       src: 'http://photo.com/codecov.png',
       isLoading: false,
@@ -371,6 +377,33 @@ describe('BaseLayout', () => {
       expect(await screen.findByText(/InstallationHelpBanner/)).toBeTruthy()
       const selectInput = screen.getByText(/InstallationHelpBanner/)
       expect(selectInput).toBeInTheDocument()
+    })
+  })
+
+  describe('header feature flaging', () => {
+    it('renders old header when feature flag is false', async () => {
+      setup({ currentUser: userHasDefaultOrg })
+
+      render(<BaseLayout>hello</BaseLayout>, {
+        wrapper: wrapper(),
+      })
+
+      const blogLink = await screen.findByText('Blog')
+      expect(blogLink).toBeInTheDocument()
+    })
+
+    it('renders new header when feature flag is true', async () => {
+      setup({ currentUser: userHasDefaultOrg, newHeaderFlag: true })
+      useFlags.mockReturnValue({
+        newHeader: true,
+      })
+
+      render(<BaseLayout>hello</BaseLayout>, {
+        wrapper: wrapper(),
+      })
+
+      const newHeader = await screen.findByText('New header')
+      expect(newHeader).toBeInTheDocument()
     })
   })
 })
