@@ -27,7 +27,7 @@ const mockBundles = {
         head: {
           bundleAnalysisReport: {
             __typename: 'BundleAnalysisReport',
-            bundles: [{ name: 'bundle1' }],
+            bundles: [{ name: 'bundle1' }, { name: 'bundle2' }],
           },
         },
       },
@@ -162,24 +162,35 @@ describe('BundleSelector', () => {
       expect(select).not.toBeDisabled()
     })
 
-    it('renders select bundle in button', async () => {
-      setup({})
-      render(<BundleSelector />, { wrapper: wrapper() })
+    describe('selector loads first bundle', () => {
+      it('renders selected bundle in button', async () => {
+        setup({})
+        render(<BundleSelector />, { wrapper: wrapper() })
 
-      const select = await screen.findByRole('button', {
-        name: 'bundle tab bundle selector',
+        const select = await screen.findByRole('button', {
+          name: 'bundle tab bundle selector',
+        })
+        expect(select).toBeInTheDocument()
+        expect(select).toHaveTextContent('bundle1')
       })
-      expect(select).toBeInTheDocument()
-      expect(select).toHaveTextContent('Select bundle')
+
+      it('puts the bundle in the url', async () => {
+        setup({})
+        render(<BundleSelector />, { wrapper: wrapper() })
+
+        await waitFor(() => {
+          expect(testLocation.pathname).toBe(
+            '/gh/codecov/test-repo/bundles/test-branch/bundle1'
+          )
+        })
+      })
     })
 
     describe('bundle is set in the url', () => {
       it('sets the button to that bundle', async () => {
         setup({})
         render(<BundleSelector />, {
-          wrapper: wrapper(
-            '/gh/codecov/test-repo/bundles/test-branch/test-bundle'
-          ),
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/test-branch/bundle2'),
         })
 
         const select = await screen.findByRole('button', {
@@ -187,7 +198,7 @@ describe('BundleSelector', () => {
         })
         expect(select).toBeInTheDocument()
         expect(select).not.toBeDisabled()
-        expect(select).toHaveTextContent(/test-bundle/)
+        expect(select).toHaveTextContent(/bundle2/)
       })
     })
 
@@ -202,12 +213,12 @@ describe('BundleSelector', () => {
           })
           await user.click(select)
 
-          const bundle = await screen.findByText('bundle1')
+          const bundle = await screen.findByText('bundle2')
           await user.click(bundle)
 
           await waitFor(() => {
             expect(testLocation.pathname).toBe(
-              '/gh/codecov/test-repo/bundles/test-branch/bundle1'
+              '/gh/codecov/test-repo/bundles/test-branch/bundle2'
             )
           })
         })
@@ -228,9 +239,9 @@ describe('BundleSelector', () => {
           await user.click(select)
 
           const input = await screen.findByRole('combobox')
-          await user.type(input, 'bundle1')
+          await user.type(input, 'bundle2')
 
-          const foundBundle = await screen.findByText('bundle1')
+          const foundBundle = await screen.findByText('bundle2')
           expect(foundBundle).toBeInTheDocument()
         })
       })

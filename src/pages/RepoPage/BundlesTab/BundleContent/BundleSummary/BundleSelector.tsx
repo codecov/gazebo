@@ -6,31 +6,6 @@ import { useNavLinks } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import Select from 'ui/Select'
 
-export const BundleSelectorSkeleton: React.FC = () => {
-  return (
-    <div className="md:w-64">
-      <h3 className="flex items-center gap-1 text-sm font-semibold text-ds-gray-octonary">
-        Bundle
-      </h3>
-      <span className="max-w-64 text-sm">
-        <Select
-          // @ts-expect-error
-          disabled={true}
-          resourceName="bundle"
-          placeholder="Select bundle"
-          dataMarketing="bundle-selector-bundle-tab"
-          ariaName="bundle tab bundle selector"
-          variant="gray"
-          isLoading={false}
-          items={[]}
-          value={'Select bundle'}
-          onChange={() => {}}
-        />
-      </span>
-    </div>
-  )
-}
-
 interface URLParams {
   provider: string
   owner: string
@@ -53,12 +28,7 @@ const BundleSelector = forwardRef(({}, ref) => {
   } = useParams<URLParams>()
 
   const [selectedBundle, setSelectedBundle] = useState<string | undefined>(
-    () => {
-      if (bundle) {
-        return decodeURIComponent(bundle)
-      }
-      return undefined
-    }
+    bundle ? decodeURIComponent(bundle) : undefined
   )
 
   const { data: overviewData } = useRepoOverview({
@@ -84,6 +54,18 @@ const BundleSelector = forwardRef(({}, ref) => {
     [bundleData?.bundles]
   )
   const [filteredBundles, setFilteredBundles] = useState<Array<string>>([])
+
+  if (selectedBundle === undefined && bundles.length > 0) {
+    history.push(
+      bundlesLink.path({
+        // @ts-expect-error - useNavLinks needs to be typed
+        branch,
+        // @ts-expect-error - useNavLinks needs to be typed
+        bundle: encodeURIComponent(bundles[0]),
+      })
+    )
+    setSelectedBundle(bundles[0])
+  }
 
   return (
     <div className="md:w-64">
