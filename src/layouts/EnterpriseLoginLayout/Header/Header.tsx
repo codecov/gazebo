@@ -30,33 +30,6 @@ function Header() {
           <span className="sr-only">Link to Homepage</span>
           <CodecovIcon />
         </A>
-        <A
-          hook="header-enterprise"
-          to={{ pageName: 'docs' }}
-          variant="header"
-          showExternalIcon={false}
-          isExternal
-        >
-          Docs
-        </A>
-        <A
-          to={{ pageName: 'support' }}
-          variant="header"
-          showExternalIcon={false}
-          hook="support-link"
-          isExternal
-        >
-          Support
-        </A>
-        <A
-          to={{ pageName: 'blog' }}
-          variant="header"
-          showExternalIcon={false}
-          hook="blog-link"
-          isExternal
-        >
-          Blog
-        </A>
       </nav>
     </header>
   )
