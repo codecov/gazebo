@@ -803,5 +803,17 @@ export function useNavLinks() {
       text: 'Codecov CLI',
       isExternalLink: false,
     },
+    oktaAccess: {
+      path: (
+        { provider = p, owner = o } = {
+          provider: p,
+          owner: o,
+        }
+      ) => {
+        return `/account/${provider}/${owner}/okta-access`
+      },
+      text: 'Okta access',
+      isExternalLink: false,
+    },
   }
 }

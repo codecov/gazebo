@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
@@ -7,9 +7,12 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
+import { useFlags } from 'shared/featureFlags'
+
 import AccountSettings from './AccountSettings'
 
 jest.mock('config')
+jest.mock('shared/featureFlags')
 
 jest.mock('./shared/Header', () => () => 'Header')
 jest.mock('./AccountSettingsSideMenu', () => () => 'AccountSettingsSideMenu')
@@ -20,6 +23,23 @@ jest.mock('../NotFound', () => () => 'NotFound')
 jest.mock('./tabs/OrgUploadToken', () => () => 'OrgUploadToken')
 jest.mock('./tabs/Profile', () => () => 'Profile')
 jest.mock('./tabs/YAML', () => () => 'YAML')
+jest.mock('./tabs/OktaAccess', () => () => 'OktaAccess')
+
+const mockPlanData = {
+  baseUnitPrice: 10,
+  benefits: [],
+  billingRate: 'monthly',
+  marketingName: 'Pro Team',
+  monthlyUploadLimit: 250,
+  value: 'free-plan',
+  trialStatus: 'NOT_STARTED',
+  trialStartDate: '',
+  trialEndDate: '',
+  trialTotalDays: 0,
+  pretrialUsersCount: 0,
+  planUserCount: 1,
+  hasSeatsLeft: true,
+}
 
 const server = setupServer()
 const queryClient = new QueryClient({
@@ -68,16 +88,19 @@ describe('AccountSettings', () => {
       username = 'codecov',
       isAdmin = false,
       hideAccessTab = true,
+      planValue = 'free-plan',
     } = {
       isSelfHosted: false,
       owner: 'codecov',
       username: 'codecov',
       isAdmin: false,
       hideAccessTab: true,
+      planValue: 'free-plan',
     }
   ) {
     config.IS_SELF_HOSTED = isSelfHosted
     config.HIDE_ACCESS_TAB = hideAccessTab
+    useFlags.mockReturnValue({ oktaSettings: true })
 
     server.use(
       graphql.query('CurrentUser', (req, res, ctx) => {
@@ -90,6 +113,20 @@ describe('AccountSettings', () => {
       }),
       graphql.query('DetailOwner', (req, res, ctx) =>
         res(ctx.status(200), ctx.data({ owner: { username: owner, isAdmin } }))
+      ),
+      graphql.query('GetPlanData', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              hasPrivateRepos: true,
+              plan: {
+                ...mockPlanData,
+                value: planValue,
+              },
+            },
+          })
+        )
       )
     )
   }
@@ -278,6 +315,42 @@ describe('AccountSettings', () => {
         const yamlTab = await screen.findByText('YAML')
         expect(yamlTab).toBeInTheDocument()
       })
+    })
+  })
+
+  describe('on okta access route', () => {
+    it('renders okta access tab for enterprise users', async () => {
+      setup({
+        planValue: 'users-enterprisem',
+        isSelfHosted: false,
+      })
+
+      render(<AccountSettings />, {
+        wrapper: wrapper({
+          initialEntries: '/account/gh/codecov/okta-access',
+          path: '/account/:provider/:owner/okta-access',
+        }),
+      })
+
+      const oktaAccessTab = await screen.findByText('OktaAccess')
+      expect(oktaAccessTab).toBeInTheDocument()
+    })
+
+    it('does not render okta access tab for non-enterprise users', async () => {
+      setup()
+
+      render(<AccountSettings />, {
+        wrapper: wrapper({
+          initialEntries: '/account/gh/codecov/okta-access',
+          path: '/account/:provider/:owner/okta-access',
+        }),
+      })
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+
+      const oktaAccessTab = screen.queryByText('OktaAccess')
+      expect(oktaAccessTab).not.toBeInTheDocument()
     })
   })
 })
