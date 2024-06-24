@@ -34,7 +34,6 @@ const BundleSchema = z.object({
   measurements: z
     .array(
       z.object({
-        __typename: z.literal('BundleAnalysisMeasurements'),
         assetType: z.enum(BUNDLE_TREND_REPORT_TYPES),
         measurements: z.array(MeasurementSchema).nullable(),
       })
@@ -102,13 +101,10 @@ query GetBundleTrend(
                     after: $after
                     filters: $filters
                   ) {
-                    __typename
-                    ... on BundleAnalysisMeasurements {
-                      assetType
-                      measurements {
-                        timestamp
-                        avg
-                      }
+                    assetType
+                    measurements {
+                      timestamp
+                      avg
                     }
                   }
                 }

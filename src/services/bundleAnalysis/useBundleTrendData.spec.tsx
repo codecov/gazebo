@@ -16,7 +16,6 @@ const mockBundleTrendData = {
             bundle: {
               measurements: [
                 {
-                  __typename: 'BundleAnalysisMeasurements',
                   assetType: 'REPORT_SIZE',
                   measurements: [
                     {
@@ -176,7 +175,6 @@ describe('useBundleTrendData', () => {
 
       const expectedResponse = [
         {
-          __typename: 'BundleAnalysisMeasurements',
           assetType: 'REPORT_SIZE',
           measurements: [
             {
