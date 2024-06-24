@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
+import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
@@ -113,6 +113,9 @@ describe('BundleOnboarding', () => {
     mockedUseRedirect.mockImplementation((data) => ({
       hardRedirect: () => hardRedirect(data),
     }))
+    const mockMetricMutationVariables = jest.fn()
+    const mockGetItem = jest.spyOn(window.localStorage.__proto__, 'getItem')
+    mockGetItem.mockReturnValue(null)
 
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
@@ -120,10 +123,14 @@ describe('BundleOnboarding', () => {
       ),
       graphql.query('GetOrgUploadToken', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockGetOrgUploadToken))
+      }),
+      graphql.mutation('storeEventMetric', (req, res, ctx) => {
+        mockMetricMutationVariables(req?.variables)
+        return res(ctx.status(200), ctx.data({ storeEventMetric: null }))
       })
     )
 
-    return { hardRedirect, user }
+    return { hardRedirect, mockMetricMutationVariables, user }
   }
 
   it('renders IntroBlurb', async () => {
@@ -137,7 +144,7 @@ describe('BundleOnboarding', () => {
   describe('navigation', () => {
     describe('when Vite is selected', () => {
       it('should navigate to /new', async () => {
-        const { user } = setup({})
+        const { user, mockMetricMutationVariables } = setup({})
         render(<BundleOnboarding />, {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/new/rollup'),
         })
@@ -147,10 +154,10 @@ describe('BundleOnboarding', () => {
         expect(vite).toHaveAttribute('data-state', 'unchecked')
 
         await user.click(vite)
+        expect(mockMetricMutationVariables).toHaveBeenCalled()
 
         expect(vite).toBeInTheDocument()
         expect(vite).toHaveAttribute('data-state', 'checked')
-
         expect(testLocation.pathname).toBe('/gh/codecov/test-repo/bundles/new')
       })
     })

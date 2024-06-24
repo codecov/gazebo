@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom'
 
+import { useStoreCodecovEventMetric } from 'services/codecovEventMetrics'
 import { useOrgUploadToken } from 'services/orgUploadToken'
 import { useRepo } from 'services/repo'
 import { useFlags } from 'shared/featureFlags'
@@ -60,6 +61,8 @@ interface Step1Props {
 }
 
 function Step1({ tokenCopy, uploadToken }: Step1Props) {
+  const { mutate: storeEventMetric } = useStoreCodecovEventMetric()
+  const { owner } = useParams<URLParams>()
   return (
     <Card>
       <Card.Header>
@@ -87,7 +90,17 @@ function Step1({ tokenCopy, uploadToken }: Step1Props) {
           >
             CODECOV_TOKEN
           </CodeSnippet>
-          <CodeSnippet className="basis-2/3" clipboard={uploadToken}>
+          <CodeSnippet
+            className="basis-2/3"
+            clipboard={uploadToken}
+            clipboardOnClick={() =>
+              storeEventMetric({
+                owner,
+                event: 'COPIED_TEXT',
+                jsonPayload: { text: 'Step 1 GHA' },
+              })
+            }
+          >
             {uploadToken}
           </CodeSnippet>
         </div>
@@ -102,6 +115,8 @@ interface Step2Props {
 }
 
 function Step2({ defaultBranch, actionString }: Step2Props) {
+  const { mutate: storeEventMetric } = useStoreCodecovEventMetric()
+  const { owner } = useParams<URLParams>()
   return (
     <Card>
       <Card.Header>
@@ -124,7 +139,18 @@ function Step2({ defaultBranch, actionString }: Step2Props) {
           After tests run, this will upload your coverage report to Codecov:
         </p>
 
-        <CodeSnippet clipboard={actionString}>{actionString}</CodeSnippet>
+        <CodeSnippet
+          clipboard={actionString}
+          clipboardOnClick={() =>
+            storeEventMetric({
+              owner,
+              event: 'COPIED_TEXT',
+              jsonPayload: { text: 'Step 2 GHA' },
+            })
+          }
+        >
+          {actionString}
+        </CodeSnippet>
         <ExampleBlurb />
       </Card.Content>
     </Card>

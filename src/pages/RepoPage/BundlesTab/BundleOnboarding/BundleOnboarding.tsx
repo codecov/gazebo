@@ -1,9 +1,10 @@
-import { Suspense } from 'react'
+import { Suspense, useEffect } from 'react'
 import { Switch, useHistory, useLocation, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
 import NotFound from 'pages/NotFound'
+import { useStoreCodecovEventMetric } from 'services/codecovEventMetrics'
 import { useNavLinks } from 'services/navigation'
 import { useRepo } from 'services/repo'
 import { useRedirect } from 'shared/useRedirect'
@@ -121,6 +122,15 @@ const BundleOnboarding: React.FC = () => {
   const { provider, owner, repo } = useParams<URLParams>()
   const { data } = useRepo({ provider, owner, repo })
   const { hardRedirect } = useRedirect({ href: `/${provider}` })
+  const { mutate: storeEventMetric } = useStoreCodecovEventMetric()
+
+  useEffect(() => {
+    storeEventMetric({
+      owner,
+      event: 'VISITED_PAGE',
+      jsonPayload: { page: 'Bundle Onboarding' },
+    })
+  }, [storeEventMetric, owner])
 
   // if no upload token redirect
   if (!data?.repository?.uploadToken) {

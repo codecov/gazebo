@@ -117,6 +117,9 @@ describe('NewRepoTab', () => {
     mockedUseRedirect.mockImplementation((data) => ({
       hardRedirect: () => hardRedirect(data),
     }))
+    const mockMetricMutationVariables = jest.fn()
+    const mockGetItem = jest.spyOn(window.localStorage.__proto__, 'getItem')
+    mockGetItem.mockReturnValue(null)
 
     server.use(
       graphql.query('GetRepo', (req, res, ctx) =>
@@ -134,10 +137,14 @@ describe('NewRepoTab', () => {
       ),
       graphql.query('CurrentUser', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockCurrentUser))
-      )
+      ),
+      graphql.mutation('storeEventMetric', (req, res, ctx) => {
+        mockMetricMutationVariables(req?.variables)
+        return res(ctx.status(200), ctx.data({ storeEventMetric: null }))
+      })
     )
 
-    return { hardRedirect, user }
+    return { hardRedirect, mockMetricMutationVariables, user }
   }
 
   it('renders intro blurb', async () => {
@@ -221,7 +228,7 @@ describe('NewRepoTab', () => {
     describe('navigation', () => {
       describe('when GitHub Actions is selected', () => {
         it('should navigate to /new', async () => {
-          const { user } = setup({})
+          const { user, mockMetricMutationVariables } = setup({})
           render(<NewRepoTab />, {
             wrapper: wrapper('/gh/codecov/cool-repo/new/other-ci'),
           })
@@ -236,7 +243,7 @@ describe('NewRepoTab', () => {
 
           expect(githubActions).toBeInTheDocument()
           expect(githubActions).toHaveAttribute('data-state', 'checked')
-
+          expect(mockMetricMutationVariables).toHaveBeenCalled()
           expect(testLocation.pathname).toBe('/gh/codecov/cool-repo/new')
         })
       })

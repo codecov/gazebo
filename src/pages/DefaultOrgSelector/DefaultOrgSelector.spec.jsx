@@ -80,6 +80,7 @@ describe('DefaultOrgSelector', () => {
   } = {}) {
     const mockMutationVariables = jest.fn()
     const mockTrialMutationVariables = jest.fn()
+    const mockMetricMutationVariables = jest.fn()
     const mockWindow = jest.fn()
     window.open = mockWindow
     const fetchNextPage = jest.fn()
@@ -138,6 +139,10 @@ describe('DefaultOrgSelector', () => {
         mockTrialMutationVariables(req?.variables)
 
         return res(ctx.status(200))
+      }),
+      graphql.mutation('storeEventMetric', (req, res, ctx) => {
+        mockMetricMutationVariables(req?.variables)
+        return res(ctx.status(200), ctx.data({ storeEventMetric: null }))
       })
     )
 
@@ -145,6 +150,7 @@ describe('DefaultOrgSelector', () => {
       user,
       mockMutationVariables,
       mockTrialMutationVariables,
+      mockMetricMutationVariables,
       mockWindow,
       fetchNextPage,
     }
@@ -1264,6 +1270,68 @@ describe('DefaultOrgSelector', () => {
 
       await waitFor(() => expect(fetchNextPage).toHaveBeenCalled())
       await waitFor(() => expect(fetchNextPage).toHaveBeenCalledWith('MTI='))
+    })
+  })
+
+  describe('storing codecov metric', () => {
+    it('fires update metric mutation variables', async () => {
+      const mockGetItem = jest.spyOn(window.localStorage.__proto__, 'getItem')
+      mockGetItem.mockReturnValue(null)
+      const { user, mockMetricMutationVariables } = setup({
+        useUserData: {
+          me: {
+            email: 'personal@cr.com',
+            trackingMetadata: {
+              ownerid: '1234',
+            },
+            user: {
+              username: 'chetney',
+            },
+          },
+        },
+        myOrganizationsData: {
+          me: {
+            myOrganizations: {
+              edges: [
+                {
+                  node: {
+                    avatarUrl:
+                      'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+                    username: 'criticalRole',
+                    ownerid: 1,
+                  },
+                },
+              ],
+              pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
+            },
+          },
+        },
+      })
+
+      render(<DefaultOrgSelector />, { wrapper: wrapper() })
+
+      const selectLabel = await screen.findByText(
+        /Which organization are you using today?/
+      )
+      expect(selectLabel).toBeInTheDocument()
+
+      const selectOrg = screen.getByRole('button', {
+        name: 'Select an organization',
+      })
+      await user.click(selectOrg)
+
+      const orgInList = screen.getByRole('option', { name: 'criticalRole' })
+      await user.click(orgInList)
+
+      const submit = await screen.findByRole('button', {
+        name: /Continue/,
+      })
+
+      await user.click(submit)
+
+      await waitFor(() =>
+        expect(mockMetricMutationVariables).toHaveBeenCalled()
+      )
     })
   })
 })
