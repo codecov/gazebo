@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom'
 import { LOCAL_STORAGE_SESSION_EXPIRED_KEY } from 'config'
 
 import Footer from 'layouts/Footer'
-import Header from 'layouts/Header'
+import Header from 'layouts/OldHeader'
 import SessionExpiredBanner from 'pages/LoginPage/SessionExpiredBanner'
 import LoadingLogo from 'ui/LoadingLogo'
 
