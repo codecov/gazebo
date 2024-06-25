@@ -45,6 +45,26 @@ const InvoiceSchema = z
   })
   .nullable()
 
+export const AddressSchema = z
+  .object({
+    city: z.string().nullable(),
+    country: z.string().nullable(),
+    line1: z.string().nullable(),
+    line2: z.string().nullable(),
+    postalCode: z.string().nullable(),
+    state: z.string().nullable(),
+  })
+  .nullable()
+
+export const BillingDetailsSchema = z
+  .object({
+    address: AddressSchema.nullable(),
+    email: z.string().nullable(),
+    name: z.string().nullable(),
+    phone: z.string().nullable(),
+  })
+  .nullable()
+
 export const PaymentMethodSchema = z
   .object({
     card: z.object({
@@ -53,23 +73,7 @@ export const PaymentMethodSchema = z
       expYear: z.number(),
       last4: z.string(),
     }),
-    billingDetails: z
-      .object({
-        address: z
-          .object({
-            city: z.string().nullable(),
-            country: z.string().nullable(),
-            line1: z.string().nullable(),
-            line2: z.string().nullable(),
-            postalCode: z.string().nullable(),
-            state: z.string().nullable(),
-          })
-          .nullable(),
-        email: z.string().nullable(),
-        name: z.string().nullable(),
-        phone: z.string().nullable(),
-      })
-      .nullish(),
+    billingDetails: BillingDetailsSchema.nullable(),
   })
   .nullable()
 

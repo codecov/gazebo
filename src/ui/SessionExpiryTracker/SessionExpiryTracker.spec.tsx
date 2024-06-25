@@ -25,6 +25,7 @@ describe('SessionExpiryTracker', () => {
   beforeEach(() => {
     jest.useFakeTimers()
     jest.setSystemTime(new Date())
+    global.fetch = jest.fn()
   })
 
   afterEach(() => {
@@ -36,6 +37,7 @@ describe('SessionExpiryTracker', () => {
     const expiryTime = new Date()
     expiryTime.setMinutes(expiryTime.getMinutes() + 15)
     Cookies.get = jest.fn().mockImplementation(() => expiryTime.toString())
+    const removeCookieSpy = jest.spyOn(Cookies, 'remove')
     const { mockSetItem, mockRemoveItem } = setup()
     render(<SessionExpiryTracker />, { wrapper })
 
@@ -51,6 +53,9 @@ describe('SessionExpiryTracker', () => {
       expect(screen.getByText(/Your session has expired/)).toBeInTheDocument()
     })
     expect(mockSetItem).toHaveBeenCalled()
+    expect(mockRemoveItem).toHaveBeenCalled()
+    expect(removeCookieSpy).toHaveBeenCalled()
+    expect(global.fetch).toHaveBeenCalled()
   })
 
   it('using real timers', async () => {

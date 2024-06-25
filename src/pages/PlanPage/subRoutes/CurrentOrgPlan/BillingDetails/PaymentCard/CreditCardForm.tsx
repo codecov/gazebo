@@ -66,7 +66,7 @@ function CreditCardForm({ closeForm, provider, owner }: CreditCardFormProps) {
             type="submit"
             variant="primary"
             disabled={isLoading}
-            to=""
+            to={undefined}
           >
             Update
           </Button>
@@ -76,7 +76,7 @@ function CreditCardForm({ closeForm, provider, owner }: CreditCardFormProps) {
             variant="plain"
             disabled={isLoading}
             onClick={closeForm}
-            to=""
+            to={undefined}
           >
             Cancel
           </Button>

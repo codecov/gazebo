@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react'
 import { Redirect } from 'react-router-dom'
 
 import Footer from 'layouts/Footer'
-import Header from 'layouts/Header'
+import Header from 'layouts/OldHeader'
 import ErrorBoundary from 'layouts/shared/ErrorBoundary'
 import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
 import ToastNotifications from 'layouts/ToastNotifications'
