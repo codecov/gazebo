@@ -51,7 +51,7 @@ function AddressForm({
     const newAddressObj = await elements.getElement('address')?.getValue()
 
     if (newAddressObj?.complete) {
-      updateAddress(newAddressObj.value.address, { onSuccess: closeForm })
+      updateAddress(newAddressObj.value, { onSuccess: closeForm })
     }
   }
 
