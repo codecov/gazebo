@@ -1,12 +1,17 @@
 import config from 'config'
 
 import MyContextSwitcher from 'layouts/MyContextSwitcher'
+import { useFlags } from 'shared/featureFlags'
 import TabNavigation from 'ui/TabNavigation'
 
 function Header() {
+  const { newHeader } = useFlags({
+    newHeader: false,
+  })
+
   return (
     <>
-      <MyContextSwitcher pageName="accountAdmin" />
+      {newHeader ? null : <MyContextSwitcher pageName="accountAdmin" />}
       <TabNavigation
         tabs={[
           { pageName: 'owner', children: 'Repos' },
