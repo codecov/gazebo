@@ -7,6 +7,7 @@ import { useSentryToken } from 'services/account'
 import { useLocationParams } from 'services/navigation'
 import { renderToast } from 'services/toast'
 import { ActiveContext } from 'shared/context'
+import { useFlags } from 'shared/featureFlags'
 import ListRepo from 'shared/ListRepo'
 
 import Header from './Header'
@@ -41,6 +42,10 @@ function OwnerPage() {
     repoDisplay: 'All',
   })
 
+  const { newHeader } = useFlags({
+    newHeader: false,
+  })
+
   useSentryTokenRedirect({ ownerData })
   const userStartedTrial = localStorage.getItem(
     LOCAL_STORAGE_USER_STARTED_TRIAL_KEY
@@ -68,7 +73,7 @@ function OwnerPage() {
   return (
     // mt-2 temporary till we stick this header
     <div className="mt-2 flex flex-col gap-4">
-      <Header />
+      {newHeader ? null : <Header />}
       <div>
         {ownerData?.isCurrentUserPartOfOrg && (
           <Tabs owner={ownerData} provider={provider} />
