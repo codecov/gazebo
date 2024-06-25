@@ -7,6 +7,8 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
+import { useFlags } from 'shared/featureFlags'
+
 import PlanPage from './PlanPage'
 
 jest.mock('config')
@@ -18,6 +20,9 @@ jest.mock('./subRoutes/CurrentOrgPlan', () => () => 'CurrentOrgPlan')
 jest.mock('./subRoutes/InvoicesPage', () => () => 'InvoicesPage')
 jest.mock('./subRoutes/InvoiceDetailsPage', () => () => 'InvoiceDetailsPage')
 jest.mock('./subRoutes/UpgradePlanPage', () => () => 'UpgradePlanPage')
+
+// temp, for new header work
+jest.mock('shared/featureFlags')
 
 const server = setupServer()
 const queryClient = new QueryClient({
@@ -79,6 +84,9 @@ describe('PlanPage', () => {
         res(ctx.status(200), ctx.data({ owner }))
       )
     )
+    useFlags.mockReturnValue({
+      newHeader: false,
+    })
   }
 
   describe('when user is not part of the org', () => {
@@ -211,6 +219,40 @@ describe('PlanPage', () => {
           expect(testLocation.pathname).toBe('/plan/gh/codecov')
         )
       })
+    })
+  })
+
+  describe('header feature flagging', () => {
+    it('renders header when flag is false', async () => {
+      setup({
+        owner: {
+          username: 'codecov',
+          isCurrentUserPartOfOrg: true,
+          numberOfUploads: 30,
+        },
+      })
+      render(<PlanPage />, { wrapper: wrapper('/plan/gh/codecov') })
+
+      const header = await screen.findByText(/Header/)
+      expect(header).toBeInTheDocument()
+    })
+
+    it('does not render header when flag is true', async () => {
+      setup({
+        owner: {
+          username: 'codecov',
+          isCurrentUserPartOfOrg: true,
+          numberOfUploads: 30,
+        },
+      })
+
+      render(<PlanPage />, { wrapper: wrapper('/plan/gh/codecov') })
+      useFlags.mockReturnValue({
+        newHeader: true,
+      })
+
+      const header = screen.queryByText(/Header/)
+      expect(header).not.toBeInTheDocument()
     })
   })
 })
