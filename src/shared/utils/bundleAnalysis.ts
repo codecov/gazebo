@@ -57,3 +57,21 @@ export const formatTimeToString = (milliseconds: number) => {
     unit: 'millisecond',
   }).format(milliseconds)
 }
+
+export const localizeBundleSize = (bytes: number) => {
+  const positiveBytes = Math.abs(bytes)
+
+  if (positiveBytes < KILOBYTE) {
+    return bytes
+  }
+
+  if (positiveBytes >= KILOBYTE && positiveBytes < MEGABYTE) {
+    return bytes / KILOBYTE
+  }
+
+  if (positiveBytes >= MEGABYTE && positiveBytes < GIGABYTE) {
+    return bytes / MEGABYTE
+  }
+
+  return bytes / GIGABYTE
+}
