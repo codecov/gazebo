@@ -94,12 +94,15 @@ describe('useUpdateBillingAddress', () => {
 
       result.current.mutate(
         {
-          line1: '45 Fremont St.',
-          line2: '',
-          city: 'San Francisco',
-          state: 'CA',
-          country: 'US',
-          postal_code: '94105',
+          name: 'Beep Boop',
+          address: {
+            line1: '45 Fremont St.',
+            line2: '',
+            city: 'San Francisco',
+            state: 'CA',
+            country: 'US',
+            postal_code: '94105',
+          },
         },
         {}
       )
@@ -118,6 +121,7 @@ describe('useUpdateBillingAddress', () => {
             country: 'US',
             postal_code: '94105',
           },
+          name: 'Beep Boop',
         })
       )
     })
