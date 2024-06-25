@@ -13,6 +13,7 @@ import PullRequestPage from './PullRequestPage'
 jest.mock('shared/featureFlags')
 const mockedUseFlags = useFlags as jest.Mock<{
   multipleTiers: boolean
+  newHeader: boolean
 }>
 
 jest.mock('./Header', () => () => 'Header')
@@ -189,6 +190,7 @@ describe('PullRequestPage', () => {
   }: SetupArgs) {
     mockedUseFlags.mockReturnValue({
       multipleTiers: true,
+      newHeader: false,
     })
 
     server.use(
@@ -375,6 +377,28 @@ describe('PullRequestPage', () => {
         const PullBundleAnalysis = await screen.findByText(/PullBundleAnalysis/)
         expect(PullBundleAnalysis).toBeInTheDocument()
       })
+    })
+  })
+
+  describe('header feature flagging', () => {
+    it('renders breadcrumb when flag is false', async () => {
+      setup({})
+      render(<PullRequestPage />, { wrapper: wrapper() })
+
+      const breadcrumb = await screen.findByText(/test-repo/)
+      expect(breadcrumb).toBeInTheDocument()
+    })
+
+    it('does not render breadcrumb when flag is true', async () => {
+      setup({})
+      mockedUseFlags.mockReturnValue({
+        multipleTiers: false,
+        newHeader: true,
+      })
+      render(<PullRequestPage />, { wrapper: wrapper() })
+
+      const breadcrumb = screen.queryByText(/test-repo/)
+      expect(breadcrumb).not.toBeInTheDocument()
     })
   })
 })
