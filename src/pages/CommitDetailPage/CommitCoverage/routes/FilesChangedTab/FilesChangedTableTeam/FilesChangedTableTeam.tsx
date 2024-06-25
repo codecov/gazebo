@@ -165,8 +165,12 @@ export default function FilesChangedTableTeam() {
   })
 
   const filesChanged = useMemo(() => {
-    if (commitData?.commit?.compareWithParent?.__typename === 'Comparison') {
-      return commitData?.commit?.compareWithParent?.impactedFiles
+    if (
+      commitData?.commit?.compareWithParent?.__typename === 'Comparison' &&
+      commitData?.commit?.compareWithParent?.impactedFiles?.__typename ===
+        'ImpactedFiles'
+    ) {
+      return commitData?.commit?.compareWithParent?.impactedFiles?.results
     }
 
     return []

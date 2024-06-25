@@ -16,9 +16,12 @@ const mockCompareData = {
           patchTotals: {
             coverage: 100,
           },
-          impactedFiles: [
-            { headName: 'src/App.tsx', patchCoverage: { coverage: 100 } },
-          ],
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [
+              { headName: 'src/App.tsx', patchCoverage: { coverage: 100 } },
+            ],
+          },
         },
       },
     },
@@ -126,14 +129,17 @@ describe('useCompareTotalsTeam', () => {
         const expectedResult = {
           compareWithParent: {
             __typename: 'Comparison',
-            impactedFiles: [
-              {
-                headName: 'src/App.tsx',
-                patchCoverage: {
-                  coverage: 100,
+            impactedFiles: {
+              __typename: 'ImpactedFiles',
+              results: [
+                {
+                  headName: 'src/App.tsx',
+                  patchCoverage: {
+                    coverage: 100,
+                  },
                 },
-              },
-            ],
+              ],
+            },
             patchTotals: {
               coverage: 100,
             },
