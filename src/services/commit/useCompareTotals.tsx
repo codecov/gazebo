@@ -20,18 +20,33 @@ const CoverageObjSchema = z.object({
   percentCovered: z.number().nullable(),
 })
 
+const ImpactedFileSchema = z
+  .object({
+    headName: z.string().nullable(),
+    patchCoverage: CoverageObjSchema.nullable(),
+    baseCoverage: CoverageObjSchema.nullable(),
+    headCoverage: CoverageObjSchema.nullable(),
+  })
+  .nullable()
+
+const ImpactedFilesSchema = z.discriminatedUnion('__typename', [
+  z.object({
+    __typename: z.literal('ImpactedFiles'),
+    results: z.array(ImpactedFileSchema),
+  }),
+  z.object({
+    __typename: z.literal('UnknownFlags'),
+    message: z.string(),
+  }),
+])
+
 const ComparisonSchema = z.object({
   __typename: z.literal('Comparison'),
   state: z.string(),
   patchTotals: CoverageObjSchema.nullable(),
-  impactedFiles: z.array(
-    z.object({
-      headName: z.string().nullable(),
-      patchCoverage: CoverageObjSchema.nullable(),
-      baseCoverage: CoverageObjSchema.nullable(),
-      headCoverage: CoverageObjSchema.nullable(),
-    })
-  ),
+  impactedFiles: ImpactedFilesSchema,
+  directChangedFilesCount: z.number(),
+  indirectChangedFilesCount: z.number(),
 })
 
 const CompareWithParentSchema = z
@@ -83,19 +98,29 @@ query CompareTotals(
             __typename
             ... on Comparison {
               state
+              indirectChangedFilesCount
+              directChangedFilesCount
               patchTotals {
                 coverage: percentCovered
               }
-              impactedFiles: impactedFilesDeprecated(filters: $filters) {
-                headName
-                patchCoverage {
-                  coverage: percentCovered
+              impactedFiles(filters: $filters) {
+                __typename
+                ... on ImpactedFiles {
+                  results {
+                    headName
+                    patchCoverage {
+                      coverage: percentCovered
+                    }
+                    baseCoverage {
+                      coverage: percentCovered
+                    }
+                    headCoverage {
+                      coverage: percentCovered
+                    }
+                  }
                 }
-                baseCoverage {
-                  coverage: percentCovered
-                }
-                headCoverage {
-                  coverage: percentCovered
+                ... on UnknownFlags {
+                  message
                 }
               }
             }

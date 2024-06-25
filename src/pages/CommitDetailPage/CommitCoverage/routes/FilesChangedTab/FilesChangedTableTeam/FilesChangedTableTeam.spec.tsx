@@ -25,9 +25,12 @@ const mockComparisonTeamData = {
           patchTotals: {
             coverage: 100,
           },
-          impactedFiles: [
-            { headName: 'src/App.tsx', patchCoverage: { coverage: 100 } },
-          ],
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [
+              { headName: 'src/App.tsx', patchCoverage: { coverage: 100 } },
+            ],
+          },
         },
       },
     },
@@ -58,22 +61,25 @@ const mockCommitLiteData = {
           patchTotals: {
             coverage: 100,
           },
-          impactedFiles: [
-            {
-              headName: 'src/App.jsx',
-              missesCount: 0,
-              patchCoverage: {
-                coverage: 100,
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [
+              {
+                headName: 'src/App.jsx',
+                missesCount: 0,
+                patchCoverage: {
+                  coverage: 100,
+                },
               },
-            },
-            {
-              headName: 'src/File.jsx',
-              missesCount: 5,
-              patchCoverage: {
-                coverage: null,
+              {
+                headName: 'src/File.jsx',
+                missesCount: 5,
+                patchCoverage: {
+                  coverage: null,
+                },
               },
-            },
-          ],
+            ],
+          },
         },
         parent: {
           commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
@@ -110,7 +116,10 @@ const mockPendingCommit = {
           patchTotals: {
             coverage: 100,
           },
-          impactedFiles: [],
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [],
+          },
         },
         parent: {
           commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
@@ -134,7 +143,10 @@ const mockPendingComparison = {
           patchTotals: {
             coverage: 100,
           },
-          impactedFiles: [],
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [],
+          },
         },
       },
     },
@@ -165,7 +177,10 @@ const mockEmptyFilesCommit = {
           patchTotals: {
             coverage: 100,
           },
-          impactedFiles: [],
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [],
+          },
         },
         parent: {
           commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
@@ -189,7 +204,10 @@ const mockEmptyFilesComparison = {
           patchTotals: {
             coverage: 100,
           },
-          impactedFiles: [],
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [],
+          },
         },
       },
     },
