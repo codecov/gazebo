@@ -15,13 +15,18 @@ interface useUpdateBillingAddressReturn {
   data: undefined | unknown
 }
 
-interface AddressInfo {
+interface Address {
   line1: string
   line2: string | null
   city: string
   country: string
   postal_code: string
   state: string
+}
+
+interface AddressInfo {
+  name: string
+  address: Address
 }
 
 export function useUpdateBillingAddress({
@@ -36,7 +41,8 @@ export function useUpdateBillingAddress({
 
       const body = {
         /* eslint-disable camelcase */
-        billing_address: addressInfo,
+        billing_address: addressInfo.address,
+        name: addressInfo.name,
       }
       return Api.patch({ path, provider, body })
     },
