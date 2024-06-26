@@ -160,15 +160,15 @@ describe('NewRepoTab', () => {
       setup({})
       render(<NewRepoTab />, { wrapper: wrapper() })
 
-      const selectorHeader = await screen.findByText('Select your CI')
+      const selectorHeader = await screen.findByText('Select a setup option')
       expect(selectorHeader).toBeInTheDocument()
 
       const githubActions = await screen.findByText('Using GitHub Actions')
       const circleCI = await screen.findByText('Using Circle CI')
-      const otherCI = await screen.findByText('Other')
+      const codecovCLI = await screen.findByText("Using Codecov's CLI")
       expect(githubActions).toBeInTheDocument()
       expect(circleCI).toBeInTheDocument()
-      expect(otherCI).toBeInTheDocument()
+      expect(codecovCLI).toBeInTheDocument()
     })
 
     describe('initial selection', () => {

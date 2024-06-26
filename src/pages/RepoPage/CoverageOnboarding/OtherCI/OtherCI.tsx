@@ -1,5 +1,7 @@
 import { useParams } from 'react-router-dom'
 
+import config from 'config'
+
 import { useOrgUploadToken } from 'services/orgUploadToken'
 import { useRepo } from 'services/repo'
 import { useFlags } from 'shared/featureFlags'
@@ -32,9 +34,9 @@ function OtherCI() {
   const uploadToken = orgUploadToken ?? data?.repository?.uploadToken ?? ''
   const tokenCopy = orgUploadToken ? 'global' : 'repository'
 
-  const uploadCommand = `codecovcli upload-process -t ${uploadToken}${
-    orgUploadToken ? `-r ${repo}` : ''
-  }`
+  const uploadCommand = `./codecov -u ${
+    config.API_URL
+  } upload-process -t ${uploadToken}${orgUploadToken ? `-r ${repo}` : ''}`
 
   return (
     <div className="flex flex-col gap-6">
@@ -81,15 +83,16 @@ function Step2() {
     <Card>
       <Card.Header>
         <Card.Title size="base">
-          Step 2: add Codecov{' '}
+          Step 2: add the{' '}
           <A
             to={{ pageName: 'uploader' }}
             data-testid="uploader"
             isExternal
             hook="uploaderLink"
           >
-            uploader to your CI workflow
-          </A>
+            Codecov CLI
+          </A>{' '}
+          to your CI environment
         </Card.Title>
       </Card.Header>
       <Card.Content className="flex flex-col gap-4">
@@ -131,7 +134,7 @@ function Step4() {
         <p>
           Once merged to your default branch, subsequent pull requests will have
           Codecov checks and comments. Additionally, you’ll find your repo
-          coverage dashboard here. If you have merged try reloading the page.
+          coverage dashboard here. If you have merged, try reloading the page.
         </p>
       </Card.Content>
     </Card>
