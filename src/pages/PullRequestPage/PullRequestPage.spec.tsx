@@ -19,7 +19,6 @@ const mockedUseFlags = useFlags as jest.Mock<{
 jest.mock('./Header', () => () => 'Header')
 jest.mock('./PullCoverage', () => () => 'PullCoverage')
 jest.mock('./PullBundleAnalysis', () => () => 'PullBundleAnalysis')
-jest.mock('shared/featureFlags')
 
 const mockPullHeadData = {
   owner: {
