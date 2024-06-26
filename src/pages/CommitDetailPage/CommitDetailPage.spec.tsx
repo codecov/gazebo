@@ -5,12 +5,20 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useFlags } from 'shared/featureFlags'
+
 import CommitPage from './CommitDetailPage'
 
 jest.mock('ui/TruncatedMessage/hooks')
 jest.mock('./Header', () => () => 'Header')
 jest.mock('./CommitCoverage', () => () => 'CommitCoverage')
 jest.mock('./CommitBundleAnalysis', () => () => 'CommitBundleAnalysis')
+
+// temp, for new header work
+jest.mock('shared/featureFlags')
+const mockedUseFlags = useFlags as jest.Mock<{
+  newHeader: boolean
+}>
 
 const mockNotFoundCommit = {
   owner: {
@@ -139,6 +147,10 @@ describe('CommitDetailPage', () => {
       bundleAnalysisEnabled: false,
     }
   ) {
+    mockedUseFlags.mockReturnValue({
+      newHeader: false,
+    })
+
     server.use(
       graphql.query('CommitPageData', (req, res, ctx) => {
         if (notFoundCommit) {
@@ -294,6 +306,27 @@ describe('CommitDetailPage', () => {
         )
         expect(CommitBundleAnalysis).toBeInTheDocument()
       })
+    })
+  })
+
+  describe('header feature flagging', () => {
+    it('renders breadcrumb when flag is false', async () => {
+      setup({})
+      render(<CommitPage />, { wrapper: wrapper() })
+
+      const breadcrumb = await screen.findByText(/test-repo/)
+      expect(breadcrumb).toBeInTheDocument()
+    })
+
+    it('does not render breadcrumb when flag is true', async () => {
+      setup({})
+      mockedUseFlags.mockReturnValue({
+        newHeader: true,
+      })
+      render(<CommitPage />, { wrapper: wrapper() })
+
+      const breadcrumb = screen.queryByText(/test-repo/)
+      expect(breadcrumb).not.toBeInTheDocument()
     })
   })
 })
