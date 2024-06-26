@@ -1,5 +1,7 @@
 import { useParams } from 'react-router-dom'
 
+import config from 'config'
+
 import { useOrgUploadToken } from 'services/orgUploadToken'
 import { useRepo } from 'services/repo'
 import { useFlags } from 'shared/featureFlags'
@@ -32,9 +34,9 @@ function OtherCI() {
   const uploadToken = orgUploadToken ?? data?.repository?.uploadToken ?? ''
   const tokenCopy = orgUploadToken ? 'global' : 'repository'
 
-  const uploadCommand = `./codecov -u https://qa.codecov.dev upload-process -t ${uploadToken}${
-    orgUploadToken ? `-r ${repo}` : ''
-  }`
+  const uploadCommand = `./codecov -u ${
+    config.API_URL
+  } upload-process -t ${uploadToken}${orgUploadToken ? `-r ${repo}` : ''}`
 
   return (
     <div className="flex flex-col gap-6">
