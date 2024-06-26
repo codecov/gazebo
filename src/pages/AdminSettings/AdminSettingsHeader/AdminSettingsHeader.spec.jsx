@@ -4,7 +4,12 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useFlags } from 'shared/featureFlags'
+
 import AdminSettingsHeader from './AdminSettingsHeader'
+
+// temp, for new header work
+jest.mock('shared/featureFlags')
 
 const loggedInUser = {
   me: {
@@ -80,6 +85,9 @@ afterAll(() => server.close())
 
 describe('AdminSettingsHeader', () => {
   function setup() {
+    useFlags.mockReturnValue({
+      newHeader: false,
+    })
     server.use(
       graphql.query('CurrentUser', (_, res, ctx) =>
         res(ctx.status(200), ctx.data(loggedInUser))
@@ -129,6 +137,38 @@ describe('AdminSettingsHeader', () => {
 
       const admin = await screen.findByText('Admin')
       expect(admin).toBeInTheDocument()
+    })
+  })
+
+  describe('header feature flagging', () => {
+    it('renders header when flag is false', async () => {
+      setup()
+      render(<AdminSettingsHeader />, {
+        wrapper: wrapper({
+          initialEntries: ['/admin/gh/access'],
+          path: '/admin/:provider/access',
+        }),
+      })
+
+      const admin = await screen.findByText('Admin')
+      expect(admin).toBeInTheDocument()
+    })
+
+    it('does not render header when flag is true', async () => {
+      setup()
+      useFlags.mockReturnValue({
+        newHeader: true,
+      })
+
+      render(<AdminSettingsHeader />, {
+        wrapper: wrapper({
+          initialEntries: ['/admin/gh/access'],
+          path: '/admin/:provider/access',
+        }),
+      })
+
+      const admin = screen.queryByText('Admin')
+      expect(admin).not.toBeInTheDocument()
     })
   })
 })
