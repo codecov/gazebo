@@ -402,6 +402,9 @@ describe('PullRequestPage', () => {
         )
       )
 
+      const PullCoverage = await screen.findByText(/PullCoverage/)
+      expect(PullCoverage).toBeInTheDocument()
+
       const breadcrumb = screen.queryByText(/test-repo/)
       expect(breadcrumb).not.toBeInTheDocument()
     })
