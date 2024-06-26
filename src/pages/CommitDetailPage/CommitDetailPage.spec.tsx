@@ -331,6 +331,9 @@ describe('CommitDetailPage', () => {
         )
       )
 
+      const CommitCoverage = await screen.findByText(/CommitCoverage/)
+      expect(CommitCoverage).toBeInTheDocument()
+
       const breadcrumb = screen.queryByText(/test-repo/)
       expect(breadcrumb).not.toBeInTheDocument()
     })
