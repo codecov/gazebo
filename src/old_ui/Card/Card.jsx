@@ -32,6 +32,8 @@ function Card({
   )
 }
 
+//ignore this
+
 Card.propTypes = {
   header: PropTypes.node,
   footer: PropTypes.node,
