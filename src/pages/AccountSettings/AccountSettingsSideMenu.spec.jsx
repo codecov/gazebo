@@ -7,9 +7,28 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
+import { useFlags } from 'shared/featureFlags'
+
 import AccountSettingsSideMenu from './AccountSettingsSideMenu'
 
 jest.mock('config')
+jest.mock('shared/featureFlags')
+
+const mockPlanData = {
+  baseUnitPrice: 10,
+  benefits: [],
+  billingRate: 'monthly',
+  marketingName: 'Pro Team',
+  monthlyUploadLimit: 250,
+  value: 'free-plan',
+  trialStatus: 'NOT_STARTED',
+  trialStartDate: '',
+  trialEndDate: '',
+  trialTotalDays: 0,
+  pretrialUsersCount: 0,
+  planUserCount: 1,
+  hasSeatsLeft: true,
+}
 
 const server = setupServer()
 const queryClient = new QueryClient({
@@ -58,16 +77,19 @@ describe('AccountSettingsSideMenu', () => {
       owner = 'codecov',
       isSelfHosted = false,
       hideAccessTab = false,
+      planValue = 'free-plan',
     } = {
       isAdmin: false,
       username: 'codecov',
       isSelfHosted: false,
       owner: 'codecov',
       hideAccessTab: false,
+      planValue: 'free-plan',
     }
   ) {
     config.IS_SELF_HOSTED = isSelfHosted
     config.HIDE_ACCESS_TAB = hideAccessTab
+    useFlags.mockReturnValue({ oktaSettings: true })
 
     server.use(
       graphql.query('CurrentUser', (req, res, ctx) => {
@@ -80,6 +102,20 @@ describe('AccountSettingsSideMenu', () => {
       }),
       graphql.query('DetailOwner', (req, res, ctx) =>
         res(ctx.status(200), ctx.data({ owner: { username: owner, isAdmin } }))
+      ),
+      graphql.query('GetPlanData', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              hasPrivateRepos: true,
+              plan: {
+                ...mockPlanData,
+                value: planValue,
+              },
+            },
+          })
+        )
       )
     )
   }
@@ -214,6 +250,33 @@ describe('AccountSettingsSideMenu', () => {
           expect(link).toBeInTheDocument()
           expect(link).toHaveAttribute('href', '/account/gh/codecov/access')
         })
+
+        describe("okta access is displayed according to the user's plan", () => {
+          it('displays okta access tab if user is on enterprise', async () => {
+            setup({ isAdmin: true, planValue: 'users-enterprisem' })
+
+            render(<AccountSettingsSideMenu />, {
+              wrapper: wrapper(),
+            })
+
+            const oktaAccessTab = await screen.findByText('Okta access')
+            expect(oktaAccessTab).toBeInTheDocument()
+          })
+
+          it('does not display okta access tab if user is not on enterprise', async () => {
+            setup({ isAdmin: true, planValue: 'free-plan' })
+
+            render(<AccountSettingsSideMenu />, {
+              wrapper: wrapper(),
+            })
+
+            await waitFor(() => queryClient.isFetching)
+            await waitFor(() => !queryClient.isFetching)
+
+            const oktaAccessTab = screen.queryByText('Okta access')
+            expect(oktaAccessTab).not.toBeInTheDocument()
+          })
+        })
       })
 
       describe('user is not viewing personal settings', () => {
@@ -233,6 +296,41 @@ describe('AccountSettingsSideMenu', () => {
           const link = screen.queryByRole('link', { name: 'Access' })
           await waitFor(() => {
             expect(link).not.toBeInTheDocument()
+          })
+        })
+
+        describe("okta access is displayed according to the user's plan", () => {
+          it('displays okta access tab if user is on enterprise', async () => {
+            setup({
+              isAdmin: true,
+              username: 'cool-new-user',
+              planValue: 'users-enterprisem',
+            })
+
+            render(<AccountSettingsSideMenu />, {
+              wrapper: wrapper('/account/gh/cool-new-user'),
+            })
+
+            const oktaAccessTab = await screen.findByText('Okta access')
+            expect(oktaAccessTab).toBeInTheDocument()
+          })
+
+          it('does not display okta access tab if user is not on enterprise', async () => {
+            setup({
+              isAdmin: true,
+              username: 'cool-new-user',
+              planValue: 'free-plan',
+            })
+
+            render(<AccountSettingsSideMenu />, {
+              wrapper: wrapper('/account/gh/cool-new-user'),
+            })
+
+            await waitFor(() => queryClient.isFetching)
+            await waitFor(() => !queryClient.isFetching)
+
+            const oktaAccessTab = screen.queryByText('Okta access')
+            expect(oktaAccessTab).not.toBeInTheDocument()
           })
         })
       })
@@ -273,6 +371,33 @@ describe('AccountSettingsSideMenu', () => {
           const link = await screen.findByRole('link', { name: 'Access' })
           expect(link).toBeInTheDocument()
           expect(link).toHaveAttribute('href', '/account/gh/codecov/access')
+        })
+      })
+
+      describe("okta access is displayed according to the user's plan", () => {
+        it('displays okta access tab if user is on enterprise', async () => {
+          setup({ planValue: 'users-enterprisem' })
+
+          render(<AccountSettingsSideMenu />, {
+            wrapper: wrapper(),
+          })
+
+          const oktaAccessTab = await screen.findByText('Okta access')
+          expect(oktaAccessTab).toBeInTheDocument()
+        })
+
+        it('does not display okta access tab if user is not on enterprise', async () => {
+          setup()
+
+          render(<AccountSettingsSideMenu />, {
+            wrapper: wrapper(),
+          })
+
+          await waitFor(() => queryClient.isFetching)
+          await waitFor(() => !queryClient.isFetching)
+
+          const oktaAccessTab = screen.queryByText('Okta access')
+          expect(oktaAccessTab).not.toBeInTheDocument()
         })
       })
 

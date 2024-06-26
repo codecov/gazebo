@@ -1794,6 +1794,26 @@ describe('useNavLinks', () => {
     })
   })
 
+  describe('Okta access', () => {
+    it('returns the correct link with nothing passed', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/account/gh/codecov/okta-access'),
+      })
+
+      const path = result.current.oktaAccess.path()
+      expect(path).toBe('/account/gh/codecov/okta-access')
+    })
+
+    it('can override the params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/account/gh/codecov/okta-access'),
+      })
+
+      const path = result.current.oktaAccess.path({ provider: 'gl' })
+      expect(path).toBe('/account/gl/codecov/okta-access')
+    })
+  })
+
   describe('bundles tab', () => {
     it('returns the correct link with nothing passed', () => {
       const { result } = renderHook(() => useNavLinks(), {
