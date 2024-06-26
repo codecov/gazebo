@@ -28,6 +28,7 @@ jest.mock('shared/featureFlags')
 const mockedUseFlags = useFlags as jest.Mock<{
   componentTab: boolean
   onboardingFailedTests: boolean
+  newHeader: boolean
 }>
 
 const mockGetRepo = ({
@@ -193,6 +194,7 @@ describe('RepoPage', () => {
     mockedUseFlags.mockReturnValue({
       componentTab: true,
       onboardingFailedTests,
+      newHeader: false,
     })
 
     const user = userEvent.setup()
@@ -917,6 +919,29 @@ describe('RepoPage', () => {
         const error = await screen.findByText('ActivationAlert')
         expect(error).toBeInTheDocument()
       })
+    })
+  })
+
+  describe('header feature flagging', () => {
+    it('renders header when flag is false', async () => {
+      const { queryClient } = setup({ hasRepoData: true, isRepoActive: true })
+      render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+
+      const repoCrumb = await screen.findByText('cool-repo')
+      expect(repoCrumb).toBeInTheDocument()
+    })
+
+    it('does not render header when flag is true', async () => {
+      const { queryClient } = setup({ hasRepoData: true, isRepoActive: true })
+      mockedUseFlags.mockReturnValue({
+        componentTab: true,
+        onboardingFailedTests: false,
+        newHeader: false,
+      })
+      render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
+
+      const repoCrumb = screen.queryByText('cool-repo')
+      expect(repoCrumb).not.toBeInTheDocument()
     })
   })
 })
