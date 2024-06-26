@@ -1,4 +1,4 @@
-import { render, screen } from 'custom-testing-library'
+import { render, screen, waitFor } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { graphql } from 'msw'
@@ -395,6 +395,12 @@ describe('PullRequestPage', () => {
         newHeader: true,
       })
       render(<PullRequestPage />, { wrapper: wrapper() })
+
+      await waitFor(() =>
+        expect(mockedUseFlags).toHaveReturnedWith(
+          expect.objectContaining({ newHeader: true })
+        )
+      )
 
       const breadcrumb = screen.queryByText(/test-repo/)
       expect(breadcrumb).not.toBeInTheDocument()
