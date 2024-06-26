@@ -29,6 +29,11 @@ const mockBranchBundles = {
           bundleAnalysisReport: {
             __typename: 'BundleAnalysisReport',
             bundle: {
+              bundleData: {
+                size: {
+                  uncompress: 12,
+                },
+              },
               assets: [
                 {
                   name: 'asset-1',
@@ -42,6 +47,16 @@ const mockBranchBundles = {
                       uncompress: 3,
                       gzip: 4,
                     },
+                  },
+                  measurements: {
+                    change: {
+                      size: {
+                        uncompress: 5,
+                      },
+                    },
+                    measurements: [
+                      { timestamp: '2022-10-10T11:59:59', avg: 6 },
+                    ],
                   },
                 },
               ],
@@ -224,6 +239,7 @@ describe('useBundleAssets', () => {
         )
 
         const expectedResponse = {
+          bundleUncompressSize: 12,
           assets: [
             {
               name: 'asset-1',
@@ -237,6 +253,14 @@ describe('useBundleAssets', () => {
                   uncompress: 3,
                   gzip: 4,
                 },
+              },
+              measurements: {
+                change: {
+                  size: {
+                    uncompress: 5,
+                  },
+                },
+                measurements: [{ timestamp: '2022-10-10T11:59:59', avg: 6 }],
               },
             },
           ],
@@ -264,6 +288,7 @@ describe('useBundleAssets', () => {
         )
 
         const expectedResponse = {
+          bundleUncompressSize: null,
           assets: [],
         }
 
@@ -291,6 +316,7 @@ describe('useBundleAssets', () => {
 
       const expectedResponse = {
         assets: [],
+        bundleUncompressSize: null,
       }
 
       await waitFor(() =>
