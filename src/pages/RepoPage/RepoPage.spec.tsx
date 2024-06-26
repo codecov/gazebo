@@ -940,6 +940,12 @@ describe('RepoPage', () => {
       })
       render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
 
+      await waitFor(() =>
+        expect(mockedUseFlags).toHaveReturnedWith(
+          expect.objectContaining({ newHeader: true })
+        )
+      )
+
       const repoCrumb = screen.queryByText('cool-repo')
       expect(repoCrumb).not.toBeInTheDocument()
     })
