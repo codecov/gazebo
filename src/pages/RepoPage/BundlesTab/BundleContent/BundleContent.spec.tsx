@@ -89,6 +89,11 @@ const mockAssets = {
           bundleAnalysisReport: {
             __typename: 'BundleAnalysisReport',
             bundle: {
+              bundleData: {
+                size: {
+                  uncompress: 12,
+                },
+              },
               assets: [
                 {
                   name: 'asset-1',
@@ -102,6 +107,16 @@ const mockAssets = {
                       uncompress: 3000,
                       gzip: 4000,
                     },
+                  },
+                  measurements: {
+                    change: {
+                      size: {
+                        uncompress: 5,
+                      },
+                    },
+                    measurements: [
+                      { timestamp: '2022-10-10T11:59:59', avg: 6 },
+                    ],
                   },
                 },
               ],

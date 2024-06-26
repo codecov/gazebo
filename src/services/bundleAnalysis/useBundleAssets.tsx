@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
+import { sub } from 'date-fns'
 import isNull from 'lodash/isNull'
+import { useMemo } from 'react'
 import { z } from 'zod'
 
 import { MissingHeadReportSchema } from 'services/comparison'
@@ -18,15 +20,34 @@ const BundleDataSchema = z.object({
     highSpeed: z.number(),
   }),
   size: z.object({
-    uncompress: z.number(),
     gzip: z.number(),
+    uncompress: z.number(),
   }),
+})
+
+const AssetMeasurementsSchema = z.object({
+  change: z
+    .object({
+      size: z.object({
+        uncompress: z.number(),
+      }),
+    })
+    .nullable(),
+  measurements: z
+    .array(
+      z.object({
+        timestamp: z.string(),
+        avg: z.number().nullable(),
+      })
+    )
+    .nullable(),
 })
 
 const BundleAssetSchema = z.object({
   name: z.string(),
   extension: z.string(),
   bundleData: BundleDataSchema,
+  measurements: AssetMeasurementsSchema.nullable(),
 })
 
 type BundleAsset = z.infer<typeof BundleAssetSchema>
@@ -35,6 +56,11 @@ const BundleAnalysisReportSchema = z.object({
   __typename: z.literal('BundleAnalysisReport'),
   bundle: z
     .object({
+      bundleData: z.object({
+        size: z.object({
+          uncompress: z.number(),
+        }),
+      }),
       assets: z.array(BundleAssetSchema),
     })
     .nullable(),
@@ -78,6 +104,9 @@ query BundleAssets(
   $repo: String!
   $branch: String!
   $bundle: String!
+  $interval: MeasurementInterval!
+  $before: DateTime!
+  $after: DateTime!
 ) {
   owner(username: $owner) {
     repository(name: $repo) {
@@ -89,6 +118,11 @@ query BundleAssets(
               __typename
               ... on BundleAnalysisReport {
                 bundle(name: $bundle) {
+                  bundleData {
+                    size {
+                      uncompress
+                    }
+                  }
                   assets {
                     name
                     extension
@@ -100,6 +134,22 @@ query BundleAssets(
                       size {
                         uncompress
                         gzip
+                      }
+                    }
+                    measurements(
+                      interval: $interval
+                      before: $before
+                      after: $after
+                      branch: $branch
+                    ) {
+                      change {
+                        size {
+                          uncompress
+                        }
+                      }
+                     	measurements {
+                        timestamp
+                        avg
                       }
                     }
                   }
@@ -128,6 +178,9 @@ interface UseBundleAssetsArgs {
   repo: string
   branch?: string
   bundle: string
+  interval?: 'INTERVAL_1_DAY' | 'INTERVAL_7_DAY' | 'INTERVAL_30_DAY'
+  before?: string
+  after?: string
   opts?: {
     enabled?: boolean
     suspense?: boolean
@@ -140,6 +193,9 @@ export const useBundleAssets = ({
   repo,
   branch: branchArg,
   bundle,
+  interval = 'INTERVAL_7_DAY',
+  before: beforeArg,
+  after: afterArg,
   opts,
 }: UseBundleAssetsArgs) => {
   const { data: repoOverview, isSuccess } = useRepoOverview({
@@ -162,8 +218,29 @@ export const useBundleAssets = ({
 
   const branch = branchArg ?? repoOverview?.defaultBranch
 
+  const { before, after } = useMemo(() => {
+    const today = new Date()
+    const before = today.toISOString()
+    const after = sub(today, { days: 30 }).toISOString()
+
+    return {
+      before,
+      after,
+    }
+  }, [])
+
   return useQuery({
-    queryKey: ['BundleAssets', provider, owner, repo, branch, bundle],
+    queryKey: [
+      'BundleAssets',
+      provider,
+      owner,
+      repo,
+      branch,
+      bundle,
+      interval,
+      before,
+      after,
+    ],
     queryFn: ({ signal }) =>
       Api.graphql({
         provider,
@@ -174,6 +251,9 @@ export const useBundleAssets = ({
           repo,
           branch,
           bundle,
+          interval,
+          before,
+          after,
         },
       }).then((res) => {
         const parsedData = RequestSchema.safeParse(res?.data)
@@ -214,16 +294,20 @@ export const useBundleAssets = ({
         }
 
         let assets: Array<BundleAsset> = []
+        let bundleUncompressSize: number | null = null
         if (
           data?.owner?.repository?.branch?.head?.bundleAnalysisReport
             ?.__typename === 'BundleAnalysisReport' &&
           !isNull(data.owner.repository.branch.head.bundleAnalysisReport.bundle)
         ) {
+          bundleUncompressSize =
+            data.owner.repository.branch.head.bundleAnalysisReport.bundle
+              .bundleData.size.uncompress
           assets =
             data.owner.repository.branch.head.bundleAnalysisReport.bundle.assets
         }
 
-        return { assets }
+        return { assets, bundleUncompressSize }
       }),
     enabled: enabled,
     suspense: !!opts?.suspense,
