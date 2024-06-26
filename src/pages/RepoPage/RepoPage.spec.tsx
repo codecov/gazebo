@@ -936,7 +936,7 @@ describe('RepoPage', () => {
       mockedUseFlags.mockReturnValue({
         componentTab: true,
         onboardingFailedTests: false,
-        newHeader: false,
+        newHeader: true,
       })
       render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
 
