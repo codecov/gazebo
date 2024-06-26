@@ -8,12 +8,15 @@ import GenerateSecretStringModal from './GenerateSecretStringModal'
 import useGenerateSecretString from './useGenerateSecretSring'
 
 function SecretString() {
-  const { generateSecretString, data, isLoading } = useGenerateSecretString()
+  const {
+    generateSecretString,
+    data: generatedSecretString,
+    isLoading,
+  } = useGenerateSecretString()
 
   const [showGenerateModal, setShowGenerateModal] = useState(false)
   const [showCopyModal, setShowCopyModal] = useState(false)
-
-  const value = data?.value
+  const value = generatedSecretString?.data?.encodeSecretString?.value
 
   return (
     <SettingsDescriptor
