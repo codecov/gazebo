@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
@@ -324,6 +324,12 @@ describe('CommitDetailPage', () => {
         newHeader: true,
       })
       render(<CommitPage />, { wrapper: wrapper() })
+
+      await waitFor(() =>
+        expect(mockedUseFlags).toHaveReturnedWith(
+          expect.objectContaining({ newHeader: true })
+        )
+      )
 
       const breadcrumb = screen.queryByText(/test-repo/)
       expect(breadcrumb).not.toBeInTheDocument()
