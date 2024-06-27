@@ -12,14 +12,48 @@ jest.mock('./GithubIntegrationSection', () => () => 'GithubIntegrationSection')
 jest.mock('./ManageAdminCard', () => () => 'ManageAdminCard')
 jest.mock('./DeletionCard', () => () => 'DeletionCard')
 
-const me = {
-  user: {
-    username: 'rula',
+const user = {
+  me: {
+    owner: {
+      defaultOrgUsername: 'codecov',
+    },
+    email: 'jane.doe@codecov.io',
+    privateAccess: true,
+    onboardingCompleted: true,
+    businessEmail: 'jane.doe@codecov.io',
+    termsAgreement: true,
+    user: {
+      name: 'Jane Doe',
+      username: 'janedoe',
+      avatarUrl: 'http://127.0.0.1/avatar-url',
+      avatar: 'http://127.0.0.1/avatar-url',
+      student: false,
+      studentCreatedAt: null,
+      studentUpdatedAt: null,
+      customerIntent: 'PERSONAL',
+    },
+    trackingMetadata: {
+      service: 'github',
+      ownerid: 123,
+      serviceId: '123',
+      plan: 'users-basic',
+      staff: false,
+      hasYaml: false,
+      bot: null,
+      delinquent: null,
+      didTrial: null,
+      planProvider: null,
+      planUserCount: 1,
+      createdAt: 'timestamp',
+      updatedAt: 'timestamp',
+      profile: {
+        createdAt: 'timestamp',
+        otherGoal: null,
+        typeProjects: [],
+        goals: [],
+      },
+    },
   },
-  email: 'rula@codecov.io',
-  name: 'rula',
-  avatarUrl: 'http://127.0.0.1/avatar-url',
-  onboardingCompleted: false,
 }
 
 const queryClient = new QueryClient({
@@ -28,7 +62,7 @@ const queryClient = new QueryClient({
 
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/account/gh/rula']}>
+    <MemoryRouter initialEntries={['/account/gh/janedoe']}>
       <Route path="/account/:provider/:owner">{children}</Route>
     </MemoryRouter>
   </QueryClientProvider>
@@ -47,7 +81,7 @@ describe('AdminTab', () => {
   function setup() {
     server.use(
       graphql.query('CurrentUser', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data({ me }))
+        return res(ctx.status(200), ctx.data(user))
       })
     )
   }

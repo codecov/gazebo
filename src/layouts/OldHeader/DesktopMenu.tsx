@@ -40,7 +40,7 @@ export const LogoButton = ({
   defaultOrg,
   fillColor,
 }: {
-  defaultOrg: string
+  defaultOrg?: string
   fillColor?: string
 }) => {
   let pageName = 'root'

@@ -7,6 +7,8 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
+import { User } from 'services/user'
+
 import DesktopMenu, { LoginPrompt } from './DesktopMenu'
 
 jest.mock('config')
@@ -14,11 +16,43 @@ jest.mock('config')
 const loggedInUser = {
   me: {
     owner: {
-      defaultOrgUsername: 'codecov' as string | null,
+      defaultOrgUsername: 'codecov',
     },
+    email: 'jane.doe@codecov.io',
+    privateAccess: true,
+    onboardingCompleted: true,
+    businessEmail: 'jane.doe@codecov.io',
+    termsAgreement: true,
     user: {
-      username: 'p',
+      name: 'Jane Doe',
+      username: 'janedoe',
       avatarUrl: 'http://127.0.0.1/avatar-url',
+      avatar: 'http://127.0.0.1/avatar-url',
+      student: false,
+      studentCreatedAt: null,
+      studentUpdatedAt: null,
+      customerIntent: 'PERSONAL',
+    },
+    trackingMetadata: {
+      service: 'github',
+      ownerid: 123,
+      serviceId: '123',
+      plan: 'users-basic',
+      staff: false,
+      hasYaml: false,
+      bot: null,
+      delinquent: null,
+      didTrial: null,
+      planProvider: null,
+      planUserCount: 1,
+      createdAt: 'timestamp',
+      updatedAt: 'timestamp',
+      profile: {
+        createdAt: 'timestamp',
+        otherGoal: null,
+        typeProjects: [],
+        goals: [],
+      },
     },
   },
 }
@@ -79,7 +113,13 @@ beforeEach(() => {
 afterAll(() => server.close())
 
 describe('DesktopMenu', () => {
-  function setup({ hasLoggedInUser = true, user = loggedInUser }) {
+  function setup({
+    hasLoggedInUser = true,
+    user = loggedInUser,
+  }: {
+    hasLoggedInUser?: boolean
+    user?: User
+  }) {
     server.use(
       graphql.query('Seats', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockSeatData))
@@ -88,7 +128,7 @@ describe('DesktopMenu', () => {
         if (hasLoggedInUser) {
           return res(ctx.status(200), ctx.data(user))
         }
-        return res(ctx.status(200), ctx.data({}))
+        return res(ctx.status(200), ctx.data({ me: null }))
       }),
       rest.get('/internal/users/current', (req, res, ctx) =>
         res(ctx.status(200), ctx.json(mockSelfHostedUser))
@@ -119,12 +159,9 @@ describe('DesktopMenu', () => {
         setup({
           user: {
             me: {
+              ...loggedInUser.me,
               owner: {
                 defaultOrgUsername: null,
-              },
-              user: {
-                username: 'penny',
-                avatarUrl: 'http://127.0.0.1/avatar-url',
               },
             },
           },
@@ -143,7 +180,7 @@ describe('DesktopMenu', () => {
         await waitFor(async () =>
           expect(await screen.findByTestId('homepage-link')).toHaveAttribute(
             'href',
-            '/gh/penny'
+            '/gh/janedoe'
           )
         )
       })
@@ -151,19 +188,7 @@ describe('DesktopMenu', () => {
 
     describe('when default org exists for user', () => {
       it('renders owner default org as default org', async () => {
-        setup({
-          user: {
-            me: {
-              owner: {
-                defaultOrgUsername: 'penny-org',
-              },
-              user: {
-                username: 'penny',
-                avatarUrl: 'http://127.0.0.1/avatar-url',
-              },
-            },
-          },
-        })
+        setup({})
 
         render(<DesktopMenu />, {
           wrapper: wrapper({
@@ -178,7 +203,7 @@ describe('DesktopMenu', () => {
         await waitFor(async () =>
           expect(await screen.findByTestId('homepage-link')).toHaveAttribute(
             'href',
-            '/gh/penny-org'
+            '/gh/codecov'
           )
         )
       })
