@@ -1,0 +1,160 @@
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useState } from 'react'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { z } from 'zod'
+
+import Banner from 'ui/Banner'
+import BannerContent from 'ui/Banner/BannerContent'
+import Button from 'ui/Button'
+import TextInput from 'ui/TextInput'
+import Toggle from 'ui/Toggle'
+
+const FormSchema = z.object({
+  clientId: z.string().nonempty('Client ID is required'),
+  clientSecret: z.string().nonempty('Client Secret is required'),
+  redirectUri: z.string().url('Redirect URI must be a valid URL'),
+  oktaSyncEnabled: z.boolean().default(false),
+  oktaLoginEnforce: z.boolean().default(false),
+})
+
+type FormValues = z.infer<typeof FormSchema>
+
+export default function OktaConfigForm() {
+  const { register, handleSubmit, formState } = useForm<FormValues>({
+    resolver: zodResolver(FormSchema),
+    mode: 'onChange',
+  })
+
+  const [oktaEnabled, setOktaEnabled] = useState(false)
+  const [oktaLoginEnforce, setOktaLoginEnforce] = useState(false)
+
+  const onSubmit: SubmitHandler<FormValues> = (data) => {
+    console.log('Form Data: ', data)
+  }
+
+  return (
+    <div className="w-5/6 border-2 border-solid border-ds-gray-primary p-4 text-ds-gray-octonary">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <div className="flex flex-col gap-1">
+          <h2 className="text-lg font-semibold">Step 1: Enable Okta Sync</h2>
+          <p>
+            To connect Codecov with Okta, you need to enable the
+            synchronization. Please enter the necessary Okta credentials below
+            and toggle the sync option to start the synchronization process.
+          </p>
+        </div>
+        <div className="flex flex-col gap-1">
+          <label htmlFor="clientId" className="block font-semibold">
+            Client ID
+          </label>
+          <TextInput
+            {...register('clientId')}
+            type="text"
+            id="clientId"
+            placeholder="Enter Client ID"
+          />
+          {formState.errors.clientId && (
+            <p className="mt-1 text-codecov-red">
+              {formState.errors.clientId.message}
+            </p>
+          )}
+        </div>
+        <div className="flex flex-col gap-1">
+          <label htmlFor="clientSecret" className="block font-semibold">
+            Client Secret
+          </label>
+          <TextInput
+            {...register('clientSecret')}
+            type="password"
+            id="clientSecret"
+            placeholder="Enter Client Secret"
+          />
+          {formState.errors.clientSecret && (
+            <p className="mt-1 text-codecov-red">
+              {formState.errors.clientSecret.message}
+            </p>
+          )}
+        </div>
+        <div className="flex flex-col gap-1">
+          <label htmlFor="redirectUri" className="block font-semibold">
+            Redirect URI
+          </label>
+          <TextInput
+            {...register('redirectUri')}
+            type="text"
+            id="redirectUri"
+            placeholder="Enter Redirect URI"
+          />
+          {formState.errors.redirectUri && (
+            <p className="mt-1 text-codecov-red">
+              {formState.errors.redirectUri.message}
+            </p>
+          )}
+        </div>
+        <Banner>
+          <BannerContent>
+            <div className="flex flex-col gap-3">
+              <p>
+                Please note that we are unable to verify the Okta credentials.
+                After enabling sync, be sure to test the connection to ensure it
+                is functioning correctly. Additionally, you must toggle enforce
+                on to require Okta login
+              </p>
+              <div className="flex items-center gap-3">
+                <Toggle
+                  {...register('oktaSyncEnabled')}
+                  dataMarketing="okta-sync-enabled"
+                  onClick={() => setOktaEnabled(!oktaEnabled)}
+                  value={oktaEnabled}
+                />
+                <label htmlFor="oktaSyncEnabled">Okta Sync Enabled</label>
+              </div>
+            </div>
+          </BannerContent>
+        </Banner>
+        <hr />
+        <h2 className="text-lg font-semibold">Step 2: Enforce Okta Login</h2>
+        <p>
+          Once the synchronization with Okta is enabled, you can enforce Okta
+          login for all users.
+        </p>
+        <Banner>
+          <BannerContent>
+            <div className="flex flex-col gap-3">
+              <p>
+                Please note that we are unable to verify the Okta credentials.
+                After enabling sync, be sure to test the connection to ensure it
+                is functioning correctly. Additionally, you must toggle enforce
+                on to require Okta login
+              </p>
+              <div className="flex items-center gap-3">
+                <Toggle
+                  {...register('oktaLoginEnforce')}
+                  dataMarketing="okta-login-enforce"
+                  onClick={() => {
+                    setOktaLoginEnforce(!oktaLoginEnforce)
+                    if (!oktaLoginEnforce) {
+                      setOktaEnabled(true)
+                    }
+                  }}
+                  value={oktaLoginEnforce}
+                />
+                <label htmlFor="oktaSyncEnabled">Okta Login Enforced</label>
+              </div>
+            </div>
+          </BannerContent>
+        </Banner>
+        <div className="flex justify-end">
+          <Button
+            type="submit"
+            disabled={!formState.isValid}
+            to={undefined}
+            hook="save changes"
+          >
+            Save
+          </Button>
+        </div>
+      </form>
+    </div>
+  )
+}
