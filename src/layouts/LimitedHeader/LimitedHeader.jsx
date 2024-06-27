@@ -33,7 +33,7 @@ export default function LimitedHeader() {
 
         {!isLoading && (
           <div className="mx-2 flex items-center gap-4 md:mx-4">
-            <Avatar user={currentUser?.user} bordered />
+            <Avatar user={currentUser?.user} lightBordered />
           </div>
         )}
       </nav>

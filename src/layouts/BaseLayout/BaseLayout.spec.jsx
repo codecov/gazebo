@@ -399,7 +399,7 @@ describe('BaseLayout', () => {
         wrapper: wrapper(),
       })
 
-      const newHeader = await screen.findByText('New header')
+      const newHeader = await screen.findByText('Navigation')
       expect(newHeader).toBeInTheDocument()
     })
   })

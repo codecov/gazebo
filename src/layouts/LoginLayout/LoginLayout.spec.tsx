@@ -55,7 +55,9 @@ afterAll(() => {
 describe('LoginLayout', () => {
   function setup() {
     server.use(
-      graphql.query('CurrentUser', (req, res, ctx) => res(ctx.status(200)))
+      graphql.query('CurrentUser', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({ me: null }))
+      )
     )
     mockedUseLocation.mockReturnValue({ search: [] })
     mockedUseFlags.mockReturnValue({ newHeader: false })
@@ -139,7 +141,7 @@ describe('LoginLayout', () => {
 
       render(<LoginLayout>child content</LoginLayout>, { wrapper: wrapper() })
 
-      const newHeader = await screen.findByText('New header')
+      const newHeader = await screen.findByText('Guest header')
       expect(newHeader).toBeInTheDocument()
     })
   })

@@ -37,7 +37,7 @@ const Title = ({
 
   return (
     <div className="flex flex-1 flex-row items-center gap-4 lg:w-auto">
-      <Avatar user={user} bordered />
+      <Avatar user={user} lightBordered />
       <div className="flex flex-col">
         {/* @ts-ignore */}
         <A to={{ pageName: 'commit', options: { commit: commitid, flags } }}>
