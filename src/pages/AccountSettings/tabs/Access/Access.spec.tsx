@@ -16,9 +16,41 @@ const mockSignedInUser = {
     owner: {
       defaultOrgUsername: 'codecov',
     },
+    email: 'jane.doe@codecov.io',
+    privateAccess: true,
+    onboardingCompleted: true,
+    businessEmail: 'jane.doe@codecov.io',
+    termsAgreement: true,
     user: {
-      username: 'codecov-user',
-      avatarUrl: 'https://github.com/morri.png?size=40',
+      name: 'Jane Doe',
+      username: 'janedoe',
+      avatarUrl: 'http://127.0.0.1/avatar-url',
+      avatar: 'http://127.0.0.1/avatar-url',
+      student: false,
+      studentCreatedAt: null,
+      studentUpdatedAt: null,
+      customerIntent: 'PERSONAL',
+    },
+    trackingMetadata: {
+      service: 'github',
+      ownerid: 123,
+      serviceId: '123',
+      plan: 'users-basic',
+      staff: false,
+      hasYaml: false,
+      bot: null,
+      delinquent: null,
+      didTrial: null,
+      planProvider: null,
+      planUserCount: 1,
+      createdAt: 'timestamp',
+      updatedAt: 'timestamp',
+      profile: {
+        createdAt: 'timestamp',
+        otherGoal: null,
+        typeProjects: [],
+        goals: [],
+      },
     },
   },
 }
@@ -57,7 +89,7 @@ const server = setupServer()
 
 let testLocation: ReturnType<typeof useLocation>
 const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
-  (initialEntries = '/account/gh/codecov-user/access') =>
+  (initialEntries = '/account/gh/janedoe/access') =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
