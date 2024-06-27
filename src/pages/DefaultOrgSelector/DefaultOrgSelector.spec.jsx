@@ -33,6 +33,50 @@ const mockTrialData = {
   hasSeatsLeft: true,
 }
 
+const mockUserData = {
+  me: {
+    owner: {
+      defaultOrgUsername: 'codecov',
+    },
+    email: 'jane.doe@codecov.io',
+    privateAccess: true,
+    onboardingCompleted: true,
+    businessEmail: 'jane.doe@codecov.io',
+    termsAgreement: true,
+    user: {
+      name: 'Jane Doe',
+      username: 'janedoe',
+      avatarUrl: 'http://127.0.0.1/avatar-url',
+      avatar: 'http://127.0.0.1/avatar-url',
+      student: false,
+      studentCreatedAt: null,
+      studentUpdatedAt: null,
+      customerIntent: 'PERSONAL',
+    },
+    trackingMetadata: {
+      service: 'github',
+      ownerid: 123,
+      serviceId: '123',
+      plan: 'users-basic',
+      staff: false,
+      hasYaml: false,
+      bot: null,
+      delinquent: null,
+      didTrial: null,
+      planProvider: null,
+      planUserCount: 1,
+      createdAt: 'timestamp',
+      updatedAt: 'timestamp',
+      profile: {
+        createdAt: 'timestamp',
+        otherGoal: null,
+        typeProjects: [],
+        goals: [],
+      },
+    },
+  },
+}
+
 let testLocation
 const wrapper =
   (initialEntries = ['/gh/codecov/cool-repo']) =>
@@ -159,12 +203,7 @@ describe('DefaultOrgSelector', () => {
   describe('page renders', () => {
     beforeEach(() =>
       setup({
-        useUserData: {
-          me: {
-            email: 'chetney@cr.com',
-            termsAgreement: false,
-          },
-        },
+        useUserData: mockUserData,
         myOrganizationsData: {
           me: {
             myOrganizations: {
@@ -202,17 +241,7 @@ describe('DefaultOrgSelector', () => {
 
     it('renders the select input with the correct options', async () => {
       const { user } = setup({
-        useUserData: {
-          me: {
-            email: 'personal@cr.com',
-            trackingMetadata: {
-              ownerid: '1234',
-            },
-            user: {
-              username: 'chetney',
-            },
-          },
-        },
+        useUserData: mockUserData,
         myOrganizationsData: {
           me: {
             owner: {
@@ -260,17 +289,7 @@ describe('DefaultOrgSelector', () => {
 
     it('does not render add org on different providers', async () => {
       const { user } = setup({
-        useUserData: {
-          me: {
-            email: 'personal@cr.com',
-            trackingMetadata: {
-              ownerid: '1234',
-            },
-            user: {
-              username: 'chetney',
-            },
-          },
-        },
+        useUserData: mockUserData,
         myOrganizationsData: {
           me: {
             myOrganizations: {
@@ -311,17 +330,7 @@ describe('DefaultOrgSelector', () => {
 
     it('opens new page on add org select', async () => {
       const { user, mockWindow } = setup({
-        useUserData: {
-          me: {
-            email: 'personal@cr.com',
-            trackingMetadata: {
-              ownerid: '1234',
-            },
-            user: {
-              username: 'chetney',
-            },
-          },
-        },
+        useUserData: mockUserData,
         myOrganizationsData: {
           me: {
             myOrganizations: {
@@ -386,17 +395,7 @@ describe('DefaultOrgSelector', () => {
     beforeEach(() => jest.resetAllMocks())
     it('fires update default org mutation', async () => {
       const { user, mockMutationVariables } = setup({
-        useUserData: {
-          me: {
-            email: 'personal@cr.com',
-            trackingMetadata: {
-              ownerid: '1234',
-            },
-            user: {
-              username: 'chetney',
-            },
-          },
-        },
+        useUserData: mockUserData,
         myOrganizationsData: {
           me: {
             myOrganizations: {
@@ -452,17 +451,7 @@ describe('DefaultOrgSelector', () => {
 
     it('redirects to the default org page', async () => {
       const { user } = setup({
-        useUserData: {
-          me: {
-            email: 'personal@cr.com',
-            trackingMetadata: {
-              ownerid: '1234',
-            },
-            user: {
-              username: 'chetney',
-            },
-          },
-        },
+        useUserData: mockUserData,
         myOrganizationsData: {
           me: {
             myOrganizations: {
@@ -514,17 +503,7 @@ describe('DefaultOrgSelector', () => {
 
     it('redirects to self org page', async () => {
       const { user, mockMutationVariables } = setup({
-        useUserData: {
-          me: {
-            email: 'personal@cr.com',
-            trackingMetadata: {
-              ownerid: '1234',
-            },
-            user: {
-              username: 'chetney',
-            },
-          },
-        },
+        useUserData: mockUserData,
         myOrganizationsData: {
           me: {
             myOrganizations: {
@@ -555,27 +534,17 @@ describe('DefaultOrgSelector', () => {
       await waitFor(() =>
         expect(mockMutationVariables).toHaveBeenLastCalledWith({
           input: {
-            username: 'chetney',
+            username: 'janedoe',
           },
         })
       )
 
-      expect(testLocation.pathname).toBe('/gh/chetney')
+      expect(testLocation.pathname).toBe('/gh/janedoe')
     })
 
     it('does not fire start trial mutation', async () => {
       const { user, mockTrialMutationVariables } = setup({
-        useUserData: {
-          me: {
-            email: 'personal@cr.com',
-            trackingMetadata: {
-              ownerid: '1234',
-            },
-            user: {
-              username: 'chetney',
-            },
-          },
-        },
+        useUserData: mockUserData,
         myOrganizationsData: {
           me: {
             myOrganizations: {
@@ -612,17 +581,7 @@ describe('DefaultOrgSelector', () => {
   describe('on submit with a self org', () => {
     it('does not fire trial mutation', async () => {
       const { user, mockTrialMutationVariables } = setup({
-        useUserData: {
-          me: {
-            email: 'personal@cr.com',
-            trackingMetadata: {
-              ownerid: '1234',
-            },
-            user: {
-              username: 'chetney',
-            },
-          },
-        },
+        useUserData: mockUserData,
         myOrganizationsData: {
           me: {
             myOrganizations: {
@@ -631,7 +590,7 @@ describe('DefaultOrgSelector', () => {
                   node: {
                     avatarUrl:
                       'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
-                    username: 'chetney',
+                    username: 'janedoe',
                     ownerid: 1,
                   },
                 },
@@ -662,7 +621,7 @@ describe('DefaultOrgSelector', () => {
       })
       await user.click(selectOrg)
 
-      const orgInList = screen.getByRole('option', { name: 'chetney' })
+      const orgInList = screen.getByRole('option', { name: 'janedoe' })
       await user.click(orgInList)
 
       const submit = await screen.findByRole('button', {
@@ -680,17 +639,7 @@ describe('DefaultOrgSelector', () => {
   describe('on submit with a free plan', () => {
     it('does not fire trial mutation', async () => {
       const { user, mockTrialMutationVariables } = setup({
-        useUserData: {
-          me: {
-            email: 'personal@cr.com',
-            trackingMetadata: {
-              ownerid: '1234',
-            },
-            user: {
-              username: 'chetney',
-            },
-          },
-        },
+        useUserData: mockUserData,
         value: 'users-free',
         myOrganizationsData: {
           me: {
@@ -751,17 +700,7 @@ describe('DefaultOrgSelector', () => {
 
     it('fires update default org mutation', async () => {
       const { user, mockMutationVariables } = setup({
-        useUserData: {
-          me: {
-            email: 'personal@cr.com',
-            trackingMetadata: {
-              ownerid: '1234',
-            },
-            user: {
-              username: 'chetney',
-            },
-          },
-        },
+        useUserData: mockUserData,
         myOrganizationsData: {
           me: {
             owner: {
@@ -817,17 +756,7 @@ describe('DefaultOrgSelector', () => {
 
     it('redirects to self org', async () => {
       const { user } = setup({
-        useUserData: {
-          me: {
-            email: 'personal@cr.com',
-            trackingMetadata: {
-              ownerid: '1234',
-            },
-            user: {
-              username: 'chetney',
-            },
-          },
-        },
+        useUserData: mockUserData,
         myOrganizationsData: {
           me: {
             owner: {
@@ -881,17 +810,7 @@ describe('DefaultOrgSelector', () => {
 
     it('redirects to self org page', async () => {
       const { user, mockMutationVariables } = setup({
-        useUserData: {
-          me: {
-            email: 'personal@cr.com',
-            trackingMetadata: {
-              ownerid: '1234',
-            },
-            user: {
-              username: 'chetney',
-            },
-          },
-        },
+        useUserData: mockUserData,
         myOrganizationsData: {
           me: {
             myOrganizations: {
@@ -922,12 +841,12 @@ describe('DefaultOrgSelector', () => {
       await waitFor(() =>
         expect(mockMutationVariables).toHaveBeenLastCalledWith({
           input: {
-            username: 'chetney',
+            username: 'janedoe',
           },
         })
       )
 
-      expect(testLocation.pathname).toBe('/gh/chetney')
+      expect(testLocation.pathname).toBe('/gh/janedoe')
     })
   })
 
@@ -936,17 +855,7 @@ describe('DefaultOrgSelector', () => {
 
     it('fires trial mutation', async () => {
       const { user, mockTrialMutationVariables } = setup({
-        useUserData: {
-          me: {
-            email: 'personal@cr.com',
-            trackingMetadata: {
-              ownerid: '1234',
-            },
-            user: {
-              username: 'chetney',
-            },
-          },
-        },
+        useUserData: mockUserData,
         myOrganizationsData: {
           me: {
             myOrganizations: {
@@ -1009,17 +918,7 @@ describe('DefaultOrgSelector', () => {
 
     it('does not fire trial mutation with no private repos', async () => {
       const { user, mockTrialMutationVariables } = setup({
-        useUserData: {
-          me: {
-            email: 'personal@cr.com',
-            trackingMetadata: {
-              ownerid: '1234',
-            },
-            user: {
-              username: 'chetney',
-            },
-          },
-        },
+        useUserData: mockUserData,
         myOrganizationsData: {
           me: {
             myOrganizations: {
@@ -1079,17 +978,7 @@ describe('DefaultOrgSelector', () => {
 
     it('renders load more on load more trigger', async () => {
       const { user } = setup({
-        useUserData: {
-          me: {
-            email: 'personal@cr.com',
-            trackingMetadata: {
-              ownerid: '1234',
-            },
-            user: {
-              username: 'chetney',
-            },
-          },
-        },
+        useUserData: mockUserData,
         myOrganizationsData: {
           me: {
             myOrganizations: {
@@ -1133,17 +1022,7 @@ describe('DefaultOrgSelector', () => {
   describe('on submit with a different trial status', () => {
     it('does not fire trial mutation', async () => {
       const { user, mockTrialMutationVariables } = setup({
-        useUserData: {
-          me: {
-            email: 'personal@cr.com',
-            trackingMetadata: {
-              ownerid: '1234',
-            },
-            user: {
-              username: 'chetney',
-            },
-          },
-        },
+        useUserData: mockUserData,
         myOrganizationsData: {
           me: {
             myOrganizations: {
@@ -1200,9 +1079,7 @@ describe('DefaultOrgSelector', () => {
   describe('no current user', () => {
     it('redirects to login', async () => {
       setup({
-        useUserData: {
-          me: null,
-        },
+        useUserData: { me: null },
         myOrganizationsData: {
           me: {
             myOrganizations: {
@@ -1231,17 +1108,7 @@ describe('DefaultOrgSelector', () => {
   describe('on fetch next page', () => {
     it('renders next page', async () => {
       const { user, fetchNextPage } = setup({
-        useUserData: {
-          me: {
-            email: 'personal@cr.com',
-            trackingMetadata: {
-              ownerid: '1234',
-            },
-            user: {
-              username: 'chetney',
-            },
-          },
-        },
+        useUserData: mockUserData,
         myOrganizationsData: {
           me: {
             myOrganizations: {
@@ -1278,17 +1145,7 @@ describe('DefaultOrgSelector', () => {
       const mockGetItem = jest.spyOn(window.localStorage.__proto__, 'getItem')
       mockGetItem.mockReturnValue(null)
       const { user, mockMetricMutationVariables } = setup({
-        useUserData: {
-          me: {
-            email: 'personal@cr.com',
-            trackingMetadata: {
-              ownerid: '1234',
-            },
-            user: {
-              username: 'chetney',
-            },
-          },
-        },
+        useUserData: mockUserData,
         myOrganizationsData: {
           me: {
             myOrganizations: {

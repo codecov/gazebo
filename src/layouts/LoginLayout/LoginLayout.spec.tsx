@@ -5,14 +5,18 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router'
 import { useLocation } from 'react-router-dom'
 
+import { useFlags } from 'shared/featureFlags'
+
 import LoginLayout from './LoginLayout'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useLocation: jest.fn(),
 }))
+jest.mock('shared/featureFlags')
 
 const mockedUseLocation = useLocation as jest.Mock
+const mockedUseFlags = useFlags as jest.Mock
 
 const server = setupServer()
 const queryClient = new QueryClient()
@@ -51,9 +55,12 @@ afterAll(() => {
 describe('LoginLayout', () => {
   function setup() {
     server.use(
-      graphql.query('CurrentUser', (req, res, ctx) => res(ctx.status(200)))
+      graphql.query('CurrentUser', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({ me: null }))
+      )
     )
     mockedUseLocation.mockReturnValue({ search: [] })
+    mockedUseFlags.mockReturnValue({ newHeader: false })
   }
 
   describe('rendering component', () => {
@@ -115,6 +122,27 @@ describe('LoginLayout', () => {
       await waitFor(() => {
         expect(screen.getByText(/Your session has expired/)).toBeInTheDocument()
       })
+    })
+  })
+
+  describe('header feature flaging', () => {
+    it('renders old header when feature flag is false', async () => {
+      setup()
+
+      render(<LoginLayout>child content</LoginLayout>, { wrapper: wrapper() })
+
+      const blogLink = await screen.findByText('Why Test Code?')
+      expect(blogLink).toBeInTheDocument()
+    })
+
+    it('renders new header when feature flag is true', async () => {
+      setup()
+      mockedUseFlags.mockReturnValue({ newHeader: true })
+
+      render(<LoginLayout>child content</LoginLayout>, { wrapper: wrapper() })
+
+      const newHeader = await screen.findByText('Guest header')
+      expect(newHeader).toBeInTheDocument()
     })
   })
 })

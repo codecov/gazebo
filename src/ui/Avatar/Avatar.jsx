@@ -1,15 +1,20 @@
-import cs from 'classnames'
 import PropTypes from 'prop-types'
 
 import { useImage } from 'services/image'
+import { cn } from 'shared/utils/cn'
 
 import AvatarSVG from './AvatarSVG'
 
 let baseClasses = 'rounded-full h-6 w-6 flex items-center justify-center'
-let borderedClasses = 'border-ds-grey-secondary border-2'
+let lightBorderedClasses = 'border-ds-gray-secondary border-2'
+let darkBorderedClasses = 'border-ds-gray-octonary border-2'
 
-function Avatar({ user, bordered, ariaLabel }) {
-  const classes = cs(baseClasses, bordered ? borderedClasses : '')
+function Avatar({ user, lightBordered, darkBordered, ariaLabel }) {
+  const classes = cn(
+    baseClasses,
+    lightBordered ? lightBorderedClasses : '',
+    darkBordered ? darkBorderedClasses : ''
+  )
 
   const { src, error, isLoading } = useImage({
     src: user?.avatarUrl,
@@ -36,7 +41,8 @@ Avatar.propTypes = {
     username: PropTypes.string.isRequired,
     avatarUrl: PropTypes.string,
   }),
-  bordered: PropTypes.bool,
+  lightBordered: PropTypes.bool,
+  darkBordered: PropTypes.bool,
   ariaLabel: PropTypes.string,
 }
 
