@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useIsCurrentUserAnAdmin } from 'services/user'
 
 import { AdminAuthorizationBanner } from './AdminAuthorizationBanner'
-import OktaConfigForm from './OktaConfigForm/OktaConfigForm'
+import { OktaConfigForm } from './OktaConfigForm'
 
 interface URLParams {
   owner: string

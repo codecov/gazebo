@@ -10,8 +10,8 @@ import TextInput from 'ui/TextInput'
 import Toggle from 'ui/Toggle'
 
 const FormSchema = z.object({
-  clientId: z.string().nonempty('Client ID is required'),
-  clientSecret: z.string().nonempty('Client Secret is required'),
+  clientId: z.string().min(1, 'Client ID is required'),
+  clientSecret: z.string().min(1, 'Client Secret is required'),
   redirectUri: z.string().url('Redirect URI must be a valid URL'),
   oktaSyncEnabled: z.boolean().default(false),
   oktaLoginEnforce: z.boolean().default(false),
@@ -19,7 +19,7 @@ const FormSchema = z.object({
 
 type FormValues = z.infer<typeof FormSchema>
 
-export default function OktaConfigForm() {
+export function OktaConfigForm() {
   const { register, handleSubmit, formState } = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     mode: 'onChange',
@@ -36,7 +36,7 @@ export default function OktaConfigForm() {
     <div className="w-5/6 border-2 border-solid border-ds-gray-primary p-4 text-ds-gray-octonary">
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold">Step 1: Enable Okta Sync</h2>
+          <h2 className="text-base font-semibold">Step 1: Enable Okta Sync</h2>
           <p>
             To connect Codecov with Okta, you need to enable the
             synchronization. Please enter the necessary Okta credentials below
@@ -48,7 +48,9 @@ export default function OktaConfigForm() {
             Client ID
           </label>
           <TextInput
-            {...register('clientId')}
+            {...register('clientId', {
+              required: true,
+            })}
             type="text"
             id="clientId"
             placeholder="Enter Client ID"
@@ -64,7 +66,7 @@ export default function OktaConfigForm() {
             Client Secret
           </label>
           <TextInput
-            {...register('clientSecret')}
+            {...register('clientSecret', { required: true })}
             type="password"
             id="clientSecret"
             placeholder="Enter Client Secret"
@@ -80,7 +82,7 @@ export default function OktaConfigForm() {
             Redirect URI
           </label>
           <TextInput
-            {...register('redirectUri')}
+            {...register('redirectUri', { required: true })}
             type="text"
             id="redirectUri"
             placeholder="Enter Redirect URI"
@@ -100,20 +102,23 @@ export default function OktaConfigForm() {
                 is functioning correctly. Additionally, you must toggle enforce
                 on to require Okta login
               </p>
-              <div className="flex items-center gap-3">
-                <Toggle
-                  {...register('oktaSyncEnabled')}
-                  dataMarketing="okta-sync-enabled"
-                  onClick={() => setOktaEnabled(!oktaEnabled)}
-                  value={oktaEnabled}
-                />
-                <label htmlFor="oktaSyncEnabled">Okta Sync Enabled</label>
-              </div>
+              <Toggle
+                {...register('oktaSyncEnabled')}
+                dataMarketing="okta-sync-enabled"
+                onClick={() => {
+                  setOktaEnabled(!oktaEnabled)
+                  if (oktaLoginEnforce) {
+                    setOktaLoginEnforce(false)
+                  }
+                }}
+                value={oktaEnabled}
+                label="Okta Sync Enabled"
+              />
             </div>
           </BannerContent>
         </Banner>
         <hr />
-        <h2 className="text-lg font-semibold">Step 2: Enforce Okta Login</h2>
+        <h2 className="text-base font-semibold">Step 2: Enforce Okta Login</h2>
         <p>
           Once the synchronization with Okta is enabled, you can enforce Okta
           login for all users.
@@ -122,25 +127,22 @@ export default function OktaConfigForm() {
           <BannerContent>
             <div className="flex flex-col gap-3">
               <p>
-                Please note that we are unable to verify the Okta credentials.
-                After enabling sync, be sure to test the connection to ensure it
-                is functioning correctly. Additionally, you must toggle enforce
-                on to require Okta login
+                Please note that enabling this will require all users to log in
+                to Codecov via Okta. Without successful verification, only
+                public repositories will be visible.
               </p>
-              <div className="flex items-center gap-3">
-                <Toggle
-                  {...register('oktaLoginEnforce')}
-                  dataMarketing="okta-login-enforce"
-                  onClick={() => {
-                    setOktaLoginEnforce(!oktaLoginEnforce)
-                    if (!oktaLoginEnforce) {
-                      setOktaEnabled(true)
-                    }
-                  }}
-                  value={oktaLoginEnforce}
-                />
-                <label htmlFor="oktaSyncEnabled">Okta Login Enforced</label>
-              </div>
+              <Toggle
+                {...register('oktaLoginEnforce')}
+                dataMarketing="okta-login-enforce"
+                onClick={() => {
+                  setOktaLoginEnforce(!oktaLoginEnforce)
+                  if (!oktaLoginEnforce) {
+                    setOktaEnabled(true)
+                  }
+                }}
+                value={oktaLoginEnforce}
+                label="Okta Login Enforced"
+              />
             </div>
           </BannerContent>
         </Banner>
@@ -149,7 +151,7 @@ export default function OktaConfigForm() {
             type="submit"
             disabled={!formState.isValid}
             to={undefined}
-            hook="save changes"
+            hook="save okta form changes"
           >
             Save
           </Button>
