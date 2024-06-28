@@ -93,6 +93,16 @@ export function OktaConfigForm() {
             </p>
           )}
         </div>
+        <div className="flex justify-end">
+          <Button
+            type="submit"
+            disabled={!formState.isValid}
+            to={undefined}
+            hook="save okta form changes"
+          >
+            Save
+          </Button>
+        </div>
         <Banner>
           <BannerContent>
             <div className="flex flex-col gap-3">
@@ -146,16 +156,6 @@ export function OktaConfigForm() {
             </div>
           </BannerContent>
         </Banner>
-        <div className="flex justify-end">
-          <Button
-            type="submit"
-            disabled={!formState.isValid}
-            to={undefined}
-            hook="save okta form changes"
-          >
-            Save
-          </Button>
-        </div>
       </form>
     </div>
   )
