@@ -13,8 +13,6 @@ const FormSchema = z.object({
   clientId: z.string().min(1, 'Client ID is required'),
   clientSecret: z.string().min(1, 'Client Secret is required'),
   redirectUri: z.string().url('Redirect URI must be a valid URL'),
-  oktaSyncEnabled: z.boolean().default(false),
-  oktaLoginEnforce: z.boolean().default(false),
 })
 
 type FormValues = z.infer<typeof FormSchema>
@@ -34,7 +32,10 @@ export function OktaConfigForm() {
 
   return (
     <div className="w-5/6 border-2 border-solid border-ds-gray-primary p-4 text-ds-gray-octonary">
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="mb-4 flex flex-col gap-4"
+      >
         <div className="flex flex-col gap-1">
           <h2 className="text-base font-semibold">Step 1: Enable Okta Sync</h2>
           <p>
@@ -43,66 +44,70 @@ export function OktaConfigForm() {
             and toggle the sync option to start the synchronization process.
           </p>
         </div>
-        <div className="flex flex-col gap-1">
-          <label htmlFor="clientId" className="block font-semibold">
-            Client ID
-          </label>
-          <TextInput
-            {...register('clientId', {
-              required: true,
-            })}
-            type="text"
-            id="clientId"
-            placeholder="Enter Client ID"
-          />
-          {formState.errors.clientId && (
-            <p className="mt-1 text-codecov-red">
-              {formState.errors.clientId.message}
-            </p>
-          )}
+        <div className="flex flex-col gap-4 bg-ds-gray-primary p-4">
+          <div className="flex flex-col gap-1">
+            <label htmlFor="clientId" className="block font-semibold">
+              Client ID
+            </label>
+            <TextInput
+              {...register('clientId', {
+                required: true,
+              })}
+              type="text"
+              id="clientId"
+              placeholder="Enter Client ID"
+            />
+            {formState.errors.clientId && (
+              <p className="mt-1 text-codecov-red">
+                {formState.errors.clientId.message}
+              </p>
+            )}
+          </div>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="clientSecret" className="block font-semibold">
+              Client Secret
+            </label>
+            <TextInput
+              {...register('clientSecret', { required: true })}
+              type="password"
+              id="clientSecret"
+              placeholder="Enter Client Secret"
+            />
+            {formState.errors.clientSecret && (
+              <p className="mt-1 text-codecov-red">
+                {formState.errors.clientSecret.message}
+              </p>
+            )}
+          </div>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="redirectUri" className="block font-semibold">
+              Redirect URI
+            </label>
+            <TextInput
+              {...register('redirectUri', { required: true })}
+              type="text"
+              id="redirectUri"
+              placeholder="Enter Redirect URI"
+            />
+            {formState.errors.redirectUri && (
+              <p className="mt-1 text-codecov-red">
+                {formState.errors.redirectUri.message}
+              </p>
+            )}
+          </div>
+          <div>
+            <Button
+              type="submit"
+              disabled={!formState.isValid}
+              to={undefined}
+              hook="save okta form changes"
+            >
+              Save
+            </Button>
+          </div>
         </div>
-        <div className="flex flex-col gap-1">
-          <label htmlFor="clientSecret" className="block font-semibold">
-            Client Secret
-          </label>
-          <TextInput
-            {...register('clientSecret', { required: true })}
-            type="password"
-            id="clientSecret"
-            placeholder="Enter Client Secret"
-          />
-          {formState.errors.clientSecret && (
-            <p className="mt-1 text-codecov-red">
-              {formState.errors.clientSecret.message}
-            </p>
-          )}
-        </div>
-        <div className="flex flex-col gap-1">
-          <label htmlFor="redirectUri" className="block font-semibold">
-            Redirect URI
-          </label>
-          <TextInput
-            {...register('redirectUri', { required: true })}
-            type="text"
-            id="redirectUri"
-            placeholder="Enter Redirect URI"
-          />
-          {formState.errors.redirectUri && (
-            <p className="mt-1 text-codecov-red">
-              {formState.errors.redirectUri.message}
-            </p>
-          )}
-        </div>
-        <div className="flex justify-end">
-          <Button
-            type="submit"
-            disabled={!formState.isValid}
-            to={undefined}
-            hook="save okta form changes"
-          >
-            Save
-          </Button>
-        </div>
+      </form>
+      <div className="flex flex-col gap-4">
         <Banner>
           <BannerContent>
             <div className="flex flex-col gap-3">
@@ -113,7 +118,6 @@ export function OktaConfigForm() {
                 on to require Okta login
               </p>
               <Toggle
-                {...register('oktaSyncEnabled')}
                 dataMarketing="okta-sync-enabled"
                 onClick={() => {
                   setOktaEnabled(!oktaEnabled)
@@ -142,7 +146,6 @@ export function OktaConfigForm() {
                 public repositories will be visible.
               </p>
               <Toggle
-                {...register('oktaLoginEnforce')}
                 dataMarketing="okta-login-enforce"
                 onClick={() => {
                   setOktaLoginEnforce(!oktaLoginEnforce)
@@ -156,7 +159,7 @@ export function OktaConfigForm() {
             </div>
           </BannerContent>
         </Banner>
-      </form>
+      </div>
     </div>
   )
 }
