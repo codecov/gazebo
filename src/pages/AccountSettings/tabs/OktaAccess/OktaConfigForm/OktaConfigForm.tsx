@@ -6,6 +6,7 @@ import { z } from 'zod'
 import Banner from 'ui/Banner'
 import BannerContent from 'ui/Banner/BannerContent'
 import Button from 'ui/Button'
+import Icon from 'ui/Icon'
 import TextInput from 'ui/TextInput'
 import Toggle from 'ui/Toggle'
 
@@ -25,6 +26,7 @@ export function OktaConfigForm() {
 
   const [oktaEnabled, setOktaEnabled] = useState(false)
   const [oktaLoginEnforce, setOktaLoginEnforce] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     console.log('Form Data: ', data)
@@ -67,12 +69,25 @@ export function OktaConfigForm() {
             <label htmlFor="clientSecret" className="block font-semibold">
               Client Secret
             </label>
-            <TextInput
-              {...register('clientSecret', { required: true })}
-              type="password"
-              id="clientSecret"
-              placeholder="Enter Client Secret"
-            />
+            <div className="relative">
+              <TextInput
+                {...register('clientSecret', { required: true })}
+                type={showPassword ? 'text' : 'password'}
+                id="clientSecret"
+                placeholder="Enter Client Secret"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-sm leading-5"
+              >
+                <Icon
+                  name={showPassword ? 'eye' : 'eyeOff'}
+                  size="sm"
+                  variant="solid"
+                />
+              </button>
+            </div>
             {formState.errors.clientSecret && (
               <p className="mt-1 text-codecov-red">
                 {formState.errors.clientSecret.message}

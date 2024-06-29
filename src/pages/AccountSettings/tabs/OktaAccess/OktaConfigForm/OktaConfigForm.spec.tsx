@@ -75,6 +75,37 @@ describe('OktaConfigForm', () => {
     expect(clientSecretError).toBeInTheDocument()
   })
 
+  it('shows client secret when clicking on the eye icon', async () => {
+    setup()
+    render(<OktaConfigForm />, { wrapper })
+
+    const clientSecretInput = await screen.findByLabelText(/Client Secret/)
+    await userEvent.type(clientSecretInput, 'clientSecret')
+
+    const eyeIcon = await screen.findByRole('button', {
+      name: /eye/,
+    })
+    await userEvent.click(eyeIcon)
+
+    expect(clientSecretInput).toHaveAttribute('type', 'text')
+  })
+
+  it('hides client secret when clicking on the eye icon', async () => {
+    setup()
+    render(<OktaConfigForm />, { wrapper })
+
+    const clientSecretInput = await screen.findByLabelText(/Client Secret/)
+    await userEvent.type(clientSecretInput, 'clientSecret')
+
+    const eyeIcon = await screen.findByRole('button', {
+      name: /eye/,
+    })
+    await userEvent.click(eyeIcon)
+    await userEvent.click(eyeIcon)
+
+    expect(clientSecretInput).toHaveAttribute('type', 'password')
+  })
+
   it('should display Redirect URI validation error when removing redirect uri value', async () => {
     setup()
     render(<OktaConfigForm />, { wrapper })
