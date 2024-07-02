@@ -9,7 +9,9 @@ import GuestHeader from './GuestHeader'
 function Header() {
   const { isImpersonating } = useImpersonate()
   const { data: currentUser } = useUser({
-    suspense: false,
+    options: {
+      suspense: false,
+    },
   })
 
   return (

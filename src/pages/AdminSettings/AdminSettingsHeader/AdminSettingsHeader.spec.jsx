@@ -8,9 +8,44 @@ import AdminSettingsHeader from './AdminSettingsHeader'
 
 const loggedInUser = {
   me: {
+    owner: {
+      defaultOrgUsername: 'codecov',
+    },
+    email: 'jane.doe@codecov.io',
+    privateAccess: true,
+    onboardingCompleted: true,
+    businessEmail: 'jane.doe@codecov.io',
+    termsAgreement: true,
     user: {
-      username: 'Codecov',
+      name: 'Jane Doe',
+      username: 'janedoe',
       avatarUrl: 'http://127.0.0.1/avatar-url',
+      avatar: 'http://127.0.0.1/avatar-url',
+      student: false,
+      studentCreatedAt: null,
+      studentUpdatedAt: null,
+      customerIntent: 'PERSONAL',
+    },
+    trackingMetadata: {
+      service: 'github',
+      ownerid: 123,
+      serviceId: '123',
+      plan: 'users-basic',
+      staff: false,
+      hasYaml: false,
+      bot: null,
+      delinquent: null,
+      didTrial: null,
+      planProvider: null,
+      planUserCount: 1,
+      createdAt: 'timestamp',
+      updatedAt: 'timestamp',
+      profile: {
+        createdAt: 'timestamp',
+        otherGoal: null,
+        typeProjects: [],
+        goals: [],
+      },
     },
   },
 }
@@ -65,7 +100,7 @@ describe('AdminSettingsHeader', () => {
         }),
       })
       const link = await screen.findByRole('link', {
-        name: 'Codecov',
+        name: 'codecov',
       })
       expect(link).toBeInTheDocument()
     })
@@ -79,9 +114,9 @@ describe('AdminSettingsHeader', () => {
       })
 
       const link = await screen.findByRole('link', {
-        name: 'Codecov',
+        name: 'codecov',
       })
-      expect(link).toHaveAttribute('href', '/gh/Codecov')
+      expect(link).toHaveAttribute('href', '/gh/codecov')
     })
 
     it('displays admin', async () => {

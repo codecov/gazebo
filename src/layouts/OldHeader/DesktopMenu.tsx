@@ -40,7 +40,7 @@ export const LogoButton = ({
   defaultOrg,
   fillColor,
 }: {
-  defaultOrg: string
+  defaultOrg?: string
   fillColor?: string
 }) => {
   let pageName = 'root'
@@ -67,7 +67,9 @@ export const LogoButton = ({
 
 function DesktopMenu() {
   const { data: currentUser } = useUser({
-    suspense: false,
+    options: {
+      suspense: false,
+    },
   })
   const defaultOrg =
     currentUser?.owner?.defaultOrgUsername ?? currentUser?.user?.username

@@ -25,11 +25,51 @@ const mockOwner = {
   },
 }
 
-const userSignedInIdentity = {
-  username: 'CodecovUser',
-  email: 'codecov@codecov.io',
+const mockUser = {
   name: 'codecov',
+  username: 'CodecovUser',
   avatarUrl: 'http://photo.com/codecov.png',
+  avatar: 'http://photo.com/codecov.png',
+  student: false,
+  studentCreatedAt: null,
+  studentUpdatedAt: null,
+  email: 'codecov@codecov.io',
+  customerIntent: 'PERSONAL',
+}
+
+const mockTrackingMetadata = {
+  service: 'github',
+  ownerid: 123,
+  serviceId: '123',
+  plan: 'users-basic',
+  staff: false,
+  hasYaml: false,
+  bot: null,
+  delinquent: null,
+  didTrial: null,
+  planProvider: null,
+  planUserCount: 1,
+  createdAt: 'timestamp',
+  updatedAt: 'timestamp',
+  profile: {
+    createdAt: 'timestamp',
+    otherGoal: null,
+    typeProjects: [],
+    goals: [],
+  },
+}
+
+const mockMe = {
+  owner: {
+    defaultOrgUsername: null,
+  },
+  email: 'jane.doe@codecov.io',
+  privateAccess: true,
+  onboardingCompleted: true,
+  businessEmail: 'jane.doe@codecov.io',
+  termsAgreement: true,
+  user: mockUser,
+  trackingMetadata: mockTrackingMetadata,
 }
 
 const userHasDefaultOrg = {
@@ -37,23 +77,12 @@ const userHasDefaultOrg = {
     owner: {
       defaultOrgUsername: 'codecov',
     },
-    user: {
-      ...userSignedInIdentity,
-    },
-    trackingMetadata: { ownerid: 123 },
-    ...userSignedInIdentity,
+    ...mockMe,
   },
 }
 
 const loggedInUser = {
-  me: {
-    termsAgreement: false,
-    user: {
-      ...userSignedInIdentity,
-    },
-    trackingMetadata: { ownerid: 123 },
-    ...userSignedInIdentity,
-  },
+  me: mockMe,
 }
 
 const guestUser = {
@@ -61,16 +90,16 @@ const guestUser = {
 }
 
 const internalUserNoSyncedProviders = {
-  email: userSignedInIdentity.email,
-  name: userSignedInIdentity.name,
+  email: mockUser.email,
+  name: mockUser.name,
   externalId: '123',
   termsAgreement: true,
   owners: [],
 }
 
 const internalUserHasSyncedProviders = {
-  email: userSignedInIdentity.email,
-  name: userSignedInIdentity.name,
+  email: mockUser.email,
+  name: mockUser.name,
   externalId: '123',
   owners: [
     {
@@ -183,6 +212,9 @@ describe('BaseLayout', () => {
           })
         )
       ),
+      graphql.mutation('updateDefaultOrganization', (req, res, ctx) =>
+        res(ctx.status(200))
+      ),
       rest.get('/internal/users/current', (_, res, ctx) =>
         res(ctx.status(200), ctx.json({}))
       )
@@ -226,7 +258,7 @@ describe('BaseLayout', () => {
       it('renders the children', async () => {
         setup({
           isImpersonating: true,
-          internalUser: userSignedInIdentity,
+          internalUser: mockUser,
         })
         render(<BaseLayout>hello</BaseLayout>, {
           wrapper: wrapper(),
@@ -274,7 +306,7 @@ describe('BaseLayout', () => {
 
   describe('set up action param is install', () => {
     it('renders the select org page with banner', async () => {
-      setup({ currentUser: loggedInUser, internalUser: userSignedInIdentity })
+      setup({ currentUser: loggedInUser, internalUser: mockUser })
 
       render(<BaseLayout>hello</BaseLayout>, {
         wrapper: wrapper(['/bb/batman/batcave?setup_action=install']),

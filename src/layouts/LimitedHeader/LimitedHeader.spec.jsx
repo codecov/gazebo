@@ -12,12 +12,48 @@ import LimitedHeader from './LimitedHeader'
 jest.mock('services/image')
 jest.mock('services/impersonate')
 
-const user = {
-  username: 'CodecovUser',
-  email: 'codecov@codecov.io',
-  name: 'codecov',
-  avatarUrl: 'http://127.0.0.1/avatar-url',
-  onboardingCompleted: false,
+const mockUser = {
+  me: {
+    owner: {
+      defaultOrgUsername: 'codecov',
+    },
+    email: 'jane.doe@codecov.io',
+    privateAccess: true,
+    onboardingCompleted: true,
+    businessEmail: 'jane.doe@codecov.io',
+    termsAgreement: true,
+    user: {
+      name: 'Jane Doe',
+      username: 'janedoe',
+      avatarUrl: 'http://127.0.0.1/avatar-url',
+      avatar: 'http://127.0.0.1/avatar-url',
+      student: false,
+      studentCreatedAt: null,
+      studentUpdatedAt: null,
+      customerIntent: 'PERSONAL',
+    },
+    trackingMetadata: {
+      service: 'github',
+      ownerid: 123,
+      serviceId: '123',
+      plan: 'users-basic',
+      staff: false,
+      hasYaml: false,
+      bot: null,
+      delinquent: null,
+      didTrial: null,
+      planProvider: null,
+      planUserCount: 1,
+      createdAt: 'timestamp',
+      updatedAt: 'timestamp',
+      profile: {
+        createdAt: 'timestamp',
+        otherGoal: null,
+        typeProjects: [],
+        goals: [],
+      },
+    },
+  },
 }
 
 const queryClient = new QueryClient({
@@ -58,12 +94,7 @@ describe('LimitedLayout', () => {
 
     server.use(
       graphql.query('CurrentUser', (_, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.data({
-            me: { user: user, trackingMetadata: { ownerid: 123 }, ...user },
-          })
-        )
+        res(ctx.status(200), ctx.data(mockUser))
       )
     )
   }
