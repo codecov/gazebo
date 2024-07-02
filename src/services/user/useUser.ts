@@ -26,52 +26,54 @@ const GoalsSchema = z.array(
   ])
 )
 
+const MeSchema = z.object({
+  owner: z.object({
+    defaultOrgUsername: z.string().nullable(),
+  }),
+  email: z.string().nullable(),
+  privateAccess: z.boolean().nullable(),
+  onboardingCompleted: z.boolean(),
+  businessEmail: z.string().nullable(),
+  termsAgreement: z.boolean().nullable(),
+  user: z.object({
+    name: z.string().nullable(),
+    username: z.string(),
+    avatarUrl: z.string(),
+    avatar: z.string(),
+    student: z.boolean(),
+    studentCreatedAt: z.string().nullable(),
+    studentUpdatedAt: z.string().nullable(),
+    customerIntent: z.string(),
+  }),
+  trackingMetadata: z.object({
+    service: z.string(),
+    ownerid: z.number(),
+    serviceId: z.string(),
+    plan: z.string().nullable(),
+    staff: z.boolean().nullable(),
+    hasYaml: z.boolean(),
+    bot: z.string().nullable(),
+    delinquent: z.boolean().nullable(),
+    didTrial: z.boolean().nullable(),
+    planProvider: z.string().nullable(),
+    planUserCount: z.number().nullable(),
+    createdAt: z.string().nullable(),
+    updatedAt: z.string().nullable(),
+    profile: z
+      .object({
+        createdAt: z.string(),
+        otherGoal: z.string().nullable(),
+        typeProjects: TypeProjectsSchema,
+        goals: GoalsSchema,
+      })
+      .nullable(),
+  }),
+})
+
+type Me = z.infer<typeof MeSchema>
+
 const UserSchema = z.object({
-  me: z
-    .object({
-      owner: z.object({
-        defaultOrgUsername: z.string().nullable(),
-      }),
-      email: z.string().nullable(),
-      privateAccess: z.boolean().nullable(),
-      onboardingCompleted: z.boolean(),
-      businessEmail: z.string().nullable(),
-      termsAgreement: z.boolean().nullable(),
-      user: z.object({
-        name: z.string().nullable(),
-        username: z.string(),
-        avatarUrl: z.string(),
-        avatar: z.string(),
-        student: z.boolean(),
-        studentCreatedAt: z.string().nullable(),
-        studentUpdatedAt: z.string().nullable(),
-        customerIntent: z.string(),
-      }),
-      trackingMetadata: z.object({
-        service: z.string(),
-        ownerid: z.number(),
-        serviceId: z.string(),
-        plan: z.string().nullable(),
-        staff: z.boolean().nullable(),
-        hasYaml: z.boolean(),
-        bot: z.string().nullable(),
-        delinquent: z.boolean().nullable(),
-        didTrial: z.boolean().nullable(),
-        planProvider: z.string().nullable(),
-        planUserCount: z.number().nullable(),
-        createdAt: z.string().nullable(),
-        updatedAt: z.string().nullable(),
-        profile: z
-          .object({
-            createdAt: z.string(),
-            otherGoal: z.string().nullable(),
-            typeProjects: TypeProjectsSchema,
-            goals: GoalsSchema,
-          })
-          .nullable(),
-      }),
-    })
-    .nullable(),
+  me: MeSchema.nullable(),
 })
 
 export type User = z.infer<typeof UserSchema>
@@ -124,7 +126,15 @@ interface URLParams {
   provider: string
 }
 
-export function useUser(options = {}) {
+interface UseUserArgs {
+  options?: {
+    suspense?: boolean
+    enabled?: boolean
+    onSuccess?: (user: Me) => void
+  }
+}
+
+export function useUser({ options }: UseUserArgs = {}) {
   const { provider } = useParams<URLParams>()
 
   const query = `
