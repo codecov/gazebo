@@ -69,7 +69,7 @@ describe('OktaAccess', () => {
     setup({ isAdmin: true })
     render(<OktaAccess />, { wrapper })
 
-    const form = await screen.findByText(/Okta access form/)
+    const form = await screen.findByText(/Step 1: Enable Okta Sync/)
     expect(form).toBeInTheDocument()
   })
 
