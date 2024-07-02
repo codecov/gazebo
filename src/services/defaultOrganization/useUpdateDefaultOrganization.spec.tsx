@@ -68,12 +68,8 @@ describe('useUpdateDefaultOrganization', () => {
           result.current.data.data.updateDefaultOrganization.username
         await waitFor(() => expect(username).toBe('Gilmore'))
 
-        // expect(invalidateQueries).toHaveBeenLastCalledWith({
-        //   queryKey: ['currentUser'],
-        // })
         expect(invalidateQueries).toHaveBeenCalledTimes(2)
-        // equal to: expect(getUserByID.mock.calls).toEqual([[{id:0}],[{id:1}]])
-        expect(invalidateQueries).toHaveBeenNthCalledWith(1, ['DetailOwner']) // AssertionError: expected 1st "spy" call to have been called with \[ { id: +1 } \]
+        expect(invalidateQueries).toHaveBeenNthCalledWith(1, ['DetailOwner'])
         expect(invalidateQueries).toHaveBeenNthCalledWith(2, ['currentUser'])
       })
     })
