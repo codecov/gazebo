@@ -6,14 +6,12 @@ import Api from 'shared/api'
 import { NetworkErrorObject } from 'shared/api/helpers'
 
 const TypeProjectsSchema = z.array(
-  z
-    .union([
-      z.literal('PERSONAL'),
-      z.literal('YOUR_ORG'),
-      z.literal('OPEN_SOURCE'),
-      z.literal('EDUCATIONAL'),
-    ])
-    .nullable()
+  z.union([
+    z.literal('PERSONAL'),
+    z.literal('YOUR_ORG'),
+    z.literal('OPEN_SOURCE'),
+    z.literal('EDUCATIONAL'),
+  ])
 )
 
 const GoalsSchema = z.array(
@@ -43,7 +41,7 @@ const MeSchema = z.object({
     student: z.boolean(),
     studentCreatedAt: z.string().nullable(),
     studentUpdatedAt: z.string().nullable(),
-    customerIntent: z.string(),
+    customerIntent: z.string().nullable(),
   }),
   trackingMetadata: z.object({
     service: z.string(),
