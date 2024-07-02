@@ -60,12 +60,17 @@ describe('useUpdateDefaultOrganization', () => {
           wrapper,
         })
         result.current.mutate({ username: 'codecov' })
+        const invalidateQueries = jest.spyOn(queryClient, 'invalidateQueries')
 
         await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
 
         const username =
           result.current.data.data.updateDefaultOrganization.username
         await waitFor(() => expect(username).toBe('Gilmore'))
+
+        expect(invalidateQueries).toHaveBeenCalledTimes(2)
+        expect(invalidateQueries).toHaveBeenNthCalledWith(1, ['DetailOwner'])
+        expect(invalidateQueries).toHaveBeenNthCalledWith(2, ['currentUser'])
       })
     })
   })
