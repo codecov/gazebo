@@ -149,10 +149,8 @@ export function useUser({ options }: UseUserArgs = {}) {
     queryFn: ({ signal }) =>
       Api.graphql({ provider, query, signal }).then((res) => {
         const parsedRes = UserSchema.safeParse(res?.data)
-        console.log('parsedRes', parsedRes)
 
         if (!parsedRes.success) {
-          console.log('not useUser success', parsedRes.error)
           return Promise.reject({
             status: 404,
             data: {},
@@ -160,7 +158,6 @@ export function useUser({ options }: UseUserArgs = {}) {
           } satisfies NetworkErrorObject)
         }
 
-        console.log('useUser success')
         return parsedRes.data.me
       }),
     enabled: provider !== undefined,

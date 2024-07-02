@@ -39,9 +39,7 @@ interface URLParams {
 const HomePageRedirect = () => {
   const { provider } = useParams<URLParams>()
   const { data: currentUser } = useUser()
-  console.log('currentUser', currentUser)
   const { data: internalUser } = useInternalUser({})
-  console.log('internalUser', internalUser)
   const { params } = useLocationParams()
   // @ts-expect-error useLocationParams needs to be typed
   const { setup_action: setupAction, to } = params
