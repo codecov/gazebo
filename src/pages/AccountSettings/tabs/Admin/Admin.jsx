@@ -9,8 +9,8 @@ import ManageAdminCard from './ManageAdminCard'
 import StudentSection from './StudentSection'
 
 function Admin() {
-  const { provider, owner } = useParams()
-  const { data: currentUser } = useUser({ provider })
+  const { owner } = useParams()
+  const { data: currentUser } = useUser()
   const isPersonalSettings =
     currentUser?.user?.username?.toLowerCase() === owner.toLowerCase()
 

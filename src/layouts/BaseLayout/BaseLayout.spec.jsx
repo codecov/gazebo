@@ -212,6 +212,9 @@ describe('BaseLayout', () => {
           })
         )
       ),
+      graphql.mutation('updateDefaultOrganization', (req, res, ctx) =>
+        res(ctx.status(200))
+      ),
       rest.get('/internal/users/current', (_, res, ctx) =>
         res(ctx.status(200), ctx.json({}))
       )
