@@ -15,7 +15,6 @@ import SessionExpiryTracker from 'ui/SessionExpiryTracker'
 
 import { useUserAccessGate } from './hooks/useUserAccessGate'
 
-const LimitedHeader = lazy(() => import('layouts/LimitedHeader'))
 const DefaultOrgSelector = lazy(() => import('pages/DefaultOrgSelector'))
 const InstallationHelpBanner = lazy(() => import('./InstallationHelpBanner'))
 const TermsOfService = lazy(() => import('pages/TermsOfService'))
@@ -77,7 +76,6 @@ function BaseLayout({ children }) {
         </>
       ) : (
         <Suspense fallback={null}>
-          <LimitedHeader />
           {showDefaultOrgSelector && <InstallationHelpBanner />}
         </Suspense>
       )}
