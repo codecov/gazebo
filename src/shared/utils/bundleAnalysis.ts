@@ -75,3 +75,21 @@ export const localizeBundleSize = (bytes: number) => {
 
   return bytes / GIGABYTE
 }
+
+export const findBundleMultiplier = (bytes: number) => {
+  const positiveBytes = Math.abs(bytes)
+
+  if (positiveBytes < KILOBYTE) {
+    return 1
+  }
+
+  if (positiveBytes >= KILOBYTE && positiveBytes < MEGABYTE) {
+    return KILOBYTE
+  }
+
+  if (positiveBytes >= MEGABYTE && positiveBytes < GIGABYTE) {
+    return MEGABYTE
+  }
+
+  return GIGABYTE
+}
