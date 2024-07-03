@@ -13,28 +13,26 @@ describe('TextInput', () => {
   }
 
   describe('when rendered', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('renders the textbox with the name of the label', () => {
-      screen.getByRole('textbox', {
+      setup()
+      const label = screen.getByRole('textbox', {
         name: /label/i,
       })
+      expect(label).toBeInTheDocument()
     })
   })
 
-  describe('renders embbeded content', () => {
-    beforeEach(() => {
-      setup({ embedded: () => 'hello' })
-    })
-
+  describe('renders embedded content', () => {
     it('renders the textbox with the name of the label', () => {
-      screen.getByRole('textbox', {
+      setup({ embedded: () => 'hello' })
+      const textbook = screen.getByRole('textbox', {
         name: /label/i,
       })
+      expect(textbook).toBeInTheDocument()
     })
+
     it('renders embedded content', () => {
+      setup({ embedded: () => 'hello' })
       expect(screen.getByText(/hello/)).toBeInTheDocument()
     })
   })

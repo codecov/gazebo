@@ -5,6 +5,7 @@ import { Redirect, useHistory, useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import { TrialStatuses, usePlanData } from 'services/account'
+import { useStoreCodecovEventMetric } from 'services/codecovEventMetrics'
 import { useUpdateDefaultOrganization } from 'services/defaultOrganization'
 import { useStaticNavLinks } from 'services/navigation'
 import { useStartTrial } from 'services/trial'
@@ -63,6 +64,7 @@ function DefaultOrgSelector() {
 
   const { data: currentUser, isLoading: userIsLoading } = useUser()
   const { mutate: updateDefaultOrg } = useUpdateDefaultOrganization()
+  const { mutate: storeEventMetric } = useStoreCodecovEventMetric()
 
   const selectedOrg = orgValue?.org?.username ?? currentUser?.user?.username
 
@@ -100,7 +102,11 @@ function DefaultOrgSelector() {
 
   const onSubmit = () => {
     updateDefaultOrg({ username: selectedOrg })
-
+    storeEventMetric({
+      owner: selectedOrg,
+      event: 'CLICKED_BUTTON',
+      jsonPayload: { action: 'Selected Default Org' },
+    })
     if (
       isBasicPlan(planData?.plan?.value) &&
       selectedOrg !== currentUser?.user?.username &&

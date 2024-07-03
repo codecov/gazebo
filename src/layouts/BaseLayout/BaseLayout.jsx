@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react'
 import { Redirect } from 'react-router-dom'
 
 import Footer from 'layouts/Footer'
-import Header from 'layouts/Header'
+import Header from 'layouts/OldHeader'
 import ErrorBoundary from 'layouts/shared/ErrorBoundary'
 import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
 import ToastNotifications from 'layouts/ToastNotifications'
@@ -15,7 +15,6 @@ import SessionExpiryTracker from 'ui/SessionExpiryTracker'
 
 import { useUserAccessGate } from './hooks/useUserAccessGate'
 
-const LimitedHeader = lazy(() => import('layouts/LimitedHeader'))
 const DefaultOrgSelector = lazy(() => import('pages/DefaultOrgSelector'))
 const InstallationHelpBanner = lazy(() => import('./InstallationHelpBanner'))
 const TermsOfService = lazy(() => import('pages/TermsOfService'))
@@ -77,7 +76,6 @@ function BaseLayout({ children }) {
         </>
       ) : (
         <Suspense fallback={null}>
-          <LimitedHeader />
           {showDefaultOrgSelector && <InstallationHelpBanner />}
         </Suspense>
       )}

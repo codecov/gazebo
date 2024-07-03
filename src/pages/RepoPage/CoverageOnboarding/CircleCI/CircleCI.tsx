@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom'
 
+import { useStoreCodecovEventMetric } from 'services/codecovEventMetrics'
 import { useOrgUploadToken } from 'services/orgUploadToken'
 import { useRepo } from 'services/repo'
 import { useFlags } from 'shared/featureFlags'
@@ -64,6 +65,8 @@ interface Step1Props {
 }
 
 function Step1({ tokenCopy, uploadToken, providerName }: Step1Props) {
+  const { mutate: storeEventMetric } = useStoreCodecovEventMetric()
+  const { owner } = useParams<URLParams>()
   return (
     <Card>
       <Card.Header>
@@ -89,7 +92,17 @@ function Step1({ tokenCopy, uploadToken, providerName }: Step1Props) {
           <CodeSnippet className="basis-1/3" clipboard="CODECOV_TOKEN">
             CODECOV_TOKEN
           </CodeSnippet>
-          <CodeSnippet className="basis-2/3" clipboard={uploadToken}>
+          <CodeSnippet
+            className="basis-2/3"
+            clipboard={uploadToken}
+            clipboardOnClick={() =>
+              storeEventMetric({
+                owner,
+                event: 'COPIED_TEXT',
+                jsonPayload: { text: 'Step 1 CircleCI' },
+              })
+            }
+          >
             {uploadToken}
           </CodeSnippet>
         </div>
@@ -103,6 +116,8 @@ interface Step2Props {
 }
 
 function Step2({ defaultBranch }: Step2Props) {
+  const { mutate: storeEventMetric } = useStoreCodecovEventMetric()
+  const { owner } = useParams<URLParams>()
   return (
     <Card>
       <Card.Header>
@@ -125,7 +140,18 @@ function Step2({ defaultBranch }: Step2Props) {
           Add the following to your .circleci/config.yaml and push changes to
           repository.
         </p>
-        <CodeSnippet clipboard={orbsString}>{orbsString}</CodeSnippet>
+        <CodeSnippet
+          clipboard={orbsString}
+          clipboardOnClick={() =>
+            storeEventMetric({
+              owner,
+              event: 'COPIED_TEXT',
+              jsonPayload: { text: 'Step 2 CircleCI' },
+            })
+          }
+        >
+          {orbsString}
+        </CodeSnippet>
         <ExampleBlurb />
       </Card.Content>
     </Card>

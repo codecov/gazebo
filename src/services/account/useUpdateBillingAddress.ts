@@ -7,41 +7,47 @@ interface useUpdateBillingAddressParams {
   owner: string
 }
 
-interface AddressInfo {
+interface useUpdateBillingAddressReturn {
+  reset: () => void
+  error: null | Error
+  isLoading: boolean
+  mutate: (variables: any, data: any) => void
+  data: undefined | unknown
+}
+
+interface Address {
   line1: string
-  line2: string
+  line2: string | null
   city: string
-  state: string
   country: string
-  postalCode: string
+  postal_code: string
+  state: string
+}
+
+interface AddressInfo {
+  name: string
+  address: Address
 }
 
 export function useUpdateBillingAddress({
   provider,
   owner,
-}: useUpdateBillingAddressParams) {
+}: useUpdateBillingAddressParams): useUpdateBillingAddressReturn {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: (addressInfo: AddressInfo) => {
       const path = `/${provider}/${owner}/account-details/update_billing_address`
 
-      // NOTE: Hardcoded for now until we link up to address form
       const body = {
         /* eslint-disable camelcase */
-        billing_address: {
-          line1: '45 Fremont St.',
-          line2: '',
-          city: 'San Francisco',
-          state: 'CA',
-          country: 'US',
-          postal_code: '94105',
-        },
+        billing_address: addressInfo.address,
+        name: addressInfo.name,
       }
       return Api.patch({ path, provider, body })
     },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries(['accountDetails'])
+    onSuccess: () => {
+      queryClient.invalidateQueries(['accountDetails', provider, owner])
     },
   })
 }

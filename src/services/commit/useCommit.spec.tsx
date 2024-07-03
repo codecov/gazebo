@@ -261,6 +261,7 @@ interface SetupArgs {
   isOwnerNotActivatedError?: boolean
   isUnsuccessfulParseError?: boolean
   isNullOwner?: boolean
+  skipPolling?: boolean
 }
 
 describe('useCommit', () => {
@@ -269,6 +270,7 @@ describe('useCommit', () => {
     isOwnerNotActivatedError = false,
     isUnsuccessfulParseError = false,
     isNullOwner = false,
+    skipPolling = false,
   }: SetupArgs) {
     server.use(
       graphql.query(`Commit`, (req, res, ctx) => {
@@ -288,6 +290,9 @@ describe('useCommit', () => {
         }
       }),
       graphql.query(`CompareTotals`, (req, res, ctx) => {
+        if (skipPolling) {
+          return res(ctx.status(200), ctx.data({}))
+        }
         return res(ctx.status(200), ctx.data(compareDoneData))
       })
     )
@@ -296,7 +301,7 @@ describe('useCommit', () => {
   describe('when useCommit is called', () => {
     describe('api returns valid response', () => {
       beforeEach(() => {
-        setup({})
+        setup({ skipPolling: true })
       })
 
       it('returns commit info', async () => {
@@ -391,7 +396,7 @@ describe('useCommit', () => {
 
     describe('user is on team plan', () => {
       it('returns appropriate data', async () => {
-        setup({})
+        setup({ skipPolling: true })
         const { result } = renderHook(
           () =>
             useCommit({
@@ -608,7 +613,7 @@ describe('useCommit polling', () => {
       graphql.query(`CompareTotals`, (req, res, ctx) => {
         nbCallCompare++
         // after 10 calls, the server returns that the commit is processed
-        if (nbCallCompare < 10) {
+        if (nbCallCompare < 1) {
           return res(ctx.status(200), ctx.data(dataReturned))
         }
         return res(ctx.status(200), ctx.data(compareDoneData))
@@ -616,12 +621,9 @@ describe('useCommit polling', () => {
     )
   }
 
-  describe('when useCommit is called', () => {
-    beforeEach(async () => {
-      setup()
-    })
-
+  describe('when called', () => {
     it('returns commit data merged with what polling fetched', async () => {
+      setup()
       const { result } = renderHook(
         () =>
           useCommit({
@@ -650,7 +652,7 @@ describe('useCommit polling', () => {
       })
 
       await waitFor(() =>
-        expect(result.current.data).toEqual({
+        expect(result.current.data).toStrictEqual({
           commit: {
             branchName: null,
             totals: {
@@ -667,7 +669,7 @@ describe('useCommit polling', () => {
             ciPassed: true,
             compareWithParent: {
               __typename: 'Comparison',
-              state: 'pending',
+              state: 'PROCESSED',
               directChangedFilesCount: 1,
               indirectChangedFilesCount: 1,
               impactedFiles: {

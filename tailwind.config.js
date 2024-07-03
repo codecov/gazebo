@@ -44,6 +44,7 @@ module.exports = {
             septenary: withOpacity('--color-ds-blue-septenary'),
             senary: withOpacity('--color-ds-blue-senary'),
             selected: withOpacity('--color-ds-blue-selected'),
+            nonary: withOpacity('--color-ds-blue-nonary'),
           },
           gray: {
             DEFAULT: withOpacity('--color-ds-gray-default'),
@@ -105,6 +106,10 @@ module.exports = {
         orange: {
           100: withOpacity('--color-orange-100'),
           500: withOpacity('--color-orange-500'),
+        },
+        green: {
+          100: withOpacity('--color-green-100'),
+          500: withOpacity('--color-green-500'),
         },
         warning: {
           900: withOpacity('--color-warning-900'),

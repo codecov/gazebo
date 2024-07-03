@@ -180,6 +180,11 @@ describe('ComponentsTable', () => {
   describe('when rendered', () => {
     beforeEach(() => {
       setup({})
+      jest.useFakeTimers().setSystemTime(new Date('2024-02-02'))
+    })
+
+    afterAll(() => {
+      jest.useRealTimers()
     })
 
     it('renders table headers', async () => {

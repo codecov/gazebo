@@ -17,7 +17,7 @@ import SearchField from 'ui/SearchField'
 import Select from 'ui/Select'
 import Spinner from 'ui/Spinner'
 
-import { filterItems, statusEnum, statusNames } from './enums'
+import { filterItems, statusEnum } from './enums'
 import { useCommitsTabBranchSelector } from './hooks'
 
 import { useSetCrumbs } from '../context'
@@ -36,14 +36,14 @@ const useControlParams = ({ defaultBranch }) => {
   const { provider, owner, repo } = useParams()
   const defaultParams = {
     branch: defaultBranch,
-    states: [],
+    coverageStatus: [],
     search: '',
   }
 
   const { params, updateParams } = useLocationParams(defaultParams)
-  let { branch: selectedBranch, states, search } = params
+  let { branch: selectedBranch, coverageStatus, search } = params
 
-  const paramStatesNames = states.map((filter) => statusNames[filter])
+  const paramStatesNames = coverageStatus.map((filter) => statusEnum[filter])
 
   const [selectedStates, setSelectedStates] = useState(paramStatesNames)
 
@@ -138,11 +138,9 @@ function CommitsTab() {
   const newBranches = [...(isSearching ? [] : [ALL_BRANCHES]), ...branchList]
 
   const handleStatusChange = (selectStates) => {
-    const commitStates = selectStates?.map(
-      (filter) => statusEnum[filter].status
-    )
+    const commitStates = selectStates?.map(({ status }) => statusEnum[status])
     setSelectedStates(commitStates)
-    updateParams({ states: commitStates })
+    updateParams({ coverageStatus: commitStates?.map((state) => state.status) })
   }
 
   return (
@@ -156,7 +154,7 @@ function CommitsTab() {
               </span>
               Branch Context
             </h2>
-            <div className="min-w-[13rem] lg:min-w-[16rem]">
+            <div className="min-w-52 lg:min-w-64">
               <Select
                 {...branchSelectorProps}
                 dataMarketing="branch-selector-commits-page"
@@ -179,14 +177,15 @@ function CommitsTab() {
             </div>
           </div>
           <div className="flex flex-col gap-1">
-            <h2 className="font-semibold">CI status</h2>
-            <div className="min-w-[13rem] lg:min-w-[16rem]">
+            <h2 className="font-semibold">Coverage upload status</h2>
+            <div className="min-w-52 lg:min-w-64">
               <MultiSelect
-                dataMarketing="commits-filter-by-status"
-                ariaName="Filter by CI states"
+                dataMarketing="commits-filter-by-coverage-status"
+                ariaName="Filter by coverage upload status"
                 value={selectedStates}
                 items={filterItems}
-                resourceName="CI States"
+                renderItem={(item) => item.option}
+                resourceName="upload"
                 onChange={handleStatusChange}
               />
             </div>
@@ -205,7 +204,7 @@ function CommitsTab() {
       <Suspense fallback={<Loader />}>
         <CommitsTable
           branch={branch}
-          states={selectedStates?.map((state) => state?.toUpperCase())}
+          coverageStatus={selectedStates?.map((state) => state?.status)}
           search={search}
         />
       </Suspense>

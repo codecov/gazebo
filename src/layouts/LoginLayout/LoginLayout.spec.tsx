@@ -3,10 +3,16 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router'
+import { useLocation } from 'react-router-dom'
 
 import LoginLayout from './LoginLayout'
 
-console.error = () => {}
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useLocation: jest.fn(),
+}))
+
+const mockedUseLocation = useLocation as jest.Mock
 
 const server = setupServer()
 const queryClient = new QueryClient()
@@ -29,6 +35,7 @@ const wrapper =
 
 beforeAll(() => {
   server.listen()
+  console.error = () => {}
 })
 
 afterEach(() => {
@@ -38,6 +45,7 @@ afterEach(() => {
 
 afterAll(() => {
   server.close()
+  jest.restoreAllMocks()
 })
 
 describe('LoginLayout', () => {
@@ -45,7 +53,7 @@ describe('LoginLayout', () => {
     server.use(
       graphql.query('CurrentUser', (req, res, ctx) => res(ctx.status(200)))
     )
-    jest.spyOn(window.localStorage.__proto__, 'getItem').mockReturnValue('true')
+    mockedUseLocation.mockReturnValue({ search: [] })
   }
 
   describe('rendering component', () => {
@@ -84,8 +92,25 @@ describe('LoginLayout', () => {
   })
 
   describe('when session is expired', () => {
-    it('renders the expiry banner', async () => {
+    it('renders the expiry banner when local storage prop set', async () => {
       setup()
+
+      jest
+        .spyOn(window.localStorage.__proto__, 'getItem')
+        .mockReturnValue('true')
+
+      render(<LoginLayout>child content</LoginLayout>, { wrapper: wrapper() })
+      await waitFor(() => {
+        expect(screen.getByText(/Your session has expired/)).toBeInTheDocument()
+      })
+    })
+    it('renders the expiry banner when query param set', async () => {
+      setup()
+
+      mockedUseLocation.mockReturnValueOnce({
+        search: 'expired',
+      })
+
       render(<LoginLayout>child content</LoginLayout>, { wrapper: wrapper() })
       await waitFor(() => {
         expect(screen.getByText(/Your session has expired/)).toBeInTheDocument()

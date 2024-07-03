@@ -16,9 +16,12 @@ const mockCompareData = {
           patchTotals: {
             coverage: 100,
           },
-          impactedFiles: [
-            { headName: 'src/App.tsx', patchCoverage: { coverage: 100 } },
-          ],
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [
+              { headName: 'src/App.tsx', patchCoverage: { coverage: 100 } },
+            ],
+          },
         },
       },
     },
@@ -88,15 +91,18 @@ const mockCommitData = {
           patchTotals: {
             coverage: 100,
           },
-          impactedFiles: [
-            {
-              headName: 'src/App.jsx',
-              missesCount: 0,
-              patchCoverage: {
-                coverage: 100,
+          impactedFiles: {
+            __typename: 'ImpactedFiles',
+            results: [
+              {
+                headName: 'src/App.jsx',
+                missesCount: 0,
+                patchCoverage: {
+                  coverage: 100,
+                },
               },
-            },
-          ],
+            ],
+          },
         },
         parent: {
           commitid: 'd773f5bc170caec7f6e64420b0967e7bac978a8f',
@@ -227,14 +233,17 @@ describe('useCommitTeam', () => {
             commitid: 'f00162848a3cebc0728d915763c2fd9e92132408',
             compareWithParent: {
               __typename: 'Comparison',
-              impactedFiles: [
-                {
-                  headName: 'src/App.tsx',
-                  patchCoverage: {
-                    coverage: 100,
+              impactedFiles: {
+                __typename: 'ImpactedFiles',
+                results: [
+                  {
+                    headName: 'src/App.tsx',
+                    patchCoverage: {
+                      coverage: 100,
+                    },
                   },
-                },
-              ],
+                ],
+              },
               patchTotals: {
                 coverage: 100,
               },
@@ -487,14 +496,17 @@ describe('useCommitTeam polling', () => {
                 coverage: 100,
               },
               state: 'processed',
-              impactedFiles: [
-                {
-                  headName: 'src/App.tsx',
-                  patchCoverage: {
-                    coverage: 100,
+              impactedFiles: {
+                __typename: 'ImpactedFiles',
+                results: [
+                  {
+                    headName: 'src/App.tsx',
+                    patchCoverage: {
+                      coverage: 100,
+                    },
                   },
-                },
-              ],
+                ],
+              },
             },
             uploads: [
               {
