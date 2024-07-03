@@ -123,7 +123,7 @@ describe('LoginLayout', () => {
     })
   })
 
-  describe('header feature flaging', () => {
+  describe('header feature flagging', () => {
     it('renders old header when feature flag is false', async () => {
       setup()
 
