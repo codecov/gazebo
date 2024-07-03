@@ -77,10 +77,10 @@ const mockMe = {
 
 const userHasDefaultOrg = {
   me: {
+    ...mockMe,
     owner: {
       defaultOrgUsername: 'codecov',
     },
-    ...mockMe,
   },
 }
 
@@ -393,7 +393,7 @@ describe('BaseLayout', () => {
     })
 
     it('renders new header when feature flag is true', async () => {
-      setup({ currentUser: userHasDefaultOrg, newHeaderFlag: true })
+      setup({ currentUser: userHasDefaultOrg })
       useFlags.mockReturnValue({
         newHeader: true,
       })
