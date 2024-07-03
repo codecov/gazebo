@@ -42,8 +42,9 @@ const Loader = () => (
 function PullRequestPage() {
   const location = useLocation()
   const { provider, owner, repo, pullId } = useParams<URLParams>()
-  const { multipleTiers } = useFlags({
+  const { multipleTiers, newHeader } = useFlags({
     multipleTiers: false,
+    newHeader: false,
   })
 
   const { data: overview } = useRepoOverview({ provider, owner, repo })
@@ -86,19 +87,21 @@ function PullRequestPage() {
 
   return (
     <div className="mx-4 flex flex-col gap-4 md:mx-0">
-      <Breadcrumb
-        paths={[
-          { pageName: 'owner', text: owner },
-          { pageName: 'repo', text: repo },
-          { pageName: 'pulls', text: 'Pulls' },
-          {
-            pageName: 'pullDetail',
-            options: { pullId },
-            readOnly: true,
-            text: pullId,
-          },
-        ]}
-      />
+      {newHeader ? null : (
+        <Breadcrumb
+          paths={[
+            { pageName: 'owner', text: owner },
+            { pageName: 'repo', text: repo },
+            { pageName: 'pulls', text: 'Pulls' },
+            {
+              pageName: 'pullDetail',
+              options: { pullId },
+              readOnly: true,
+              text: pullId,
+            },
+          ]}
+        />
+      )}
       <Header />
       {displayMode === DISPLAY_MODE.BOTH ? (
         <SummaryDropdown type="multiple" defaultValue={defaultDropdown}>
