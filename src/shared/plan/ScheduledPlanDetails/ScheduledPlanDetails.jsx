@@ -13,8 +13,11 @@ function ScheduledPlanDetails({ scheduledPhase }) {
   return (
     <div className="flex flex-col gap-0.5 text-xs">
       <h2 className="font-semibold">Scheduled Details</h2>
+      <p className="text-base font-light text-ds-gray-senary">
+        Start date {scheduleStart}
+      </p>
       <p className="text-ds-gray-senary">
-        Start date {scheduleStart} {plan} with {quantity} seats
+        {plan} with {quantity} seats
       </p>
     </div>
   )
