@@ -37,6 +37,12 @@ const enabledIcons = [
   'cog',
   'light-bulb',
   'no-symbol',
+  'x-circle',
+  'database',
+  'trash',
+  'book-open',
+  'check-circle',
+  'question-mark-circle',
 ]
 
 console.log('Generating Icons import')
