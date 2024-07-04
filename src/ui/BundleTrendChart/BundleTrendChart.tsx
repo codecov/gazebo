@@ -1,4 +1,5 @@
 import { format } from 'date-fns'
+import { memo } from 'react'
 import {
   createContainer,
   VictoryAccessibleGroup,
@@ -9,10 +10,7 @@ import {
   VictoryTooltip,
 } from 'victory'
 
-import {
-  formatSizeToString,
-  localizeBundleSize,
-} from 'shared/utils/bundleAnalysis'
+import { formatSizeToString } from 'shared/utils/bundleAnalysis'
 
 import './chart.css'
 import NoBundleData from './NoBundleData'
@@ -82,7 +80,11 @@ interface BundleTrendChartProps {
   }
 }
 
-export function BundleTrendChart({ title, desc, data }: BundleTrendChartProps) {
+export const BundleTrendChart = memo(function ({
+  title,
+  desc,
+  data,
+}: BundleTrendChartProps) {
   return (
     <>
       <svg data-testid="bundle-trend-chart" style={{ height: 0 }}>
@@ -211,7 +213,7 @@ export function BundleTrendChart({ title, desc, data }: BundleTrendChartProps) {
           y="size"
           data={data.measurements.map(({ size, date }) => ({
             date,
-            size: localizeBundleSize(size),
+            size: size / data.multiplier,
           }))}
           style={{
             data: {
@@ -225,4 +227,6 @@ export function BundleTrendChart({ title, desc, data }: BundleTrendChartProps) {
       </VictoryChart>
     </>
   )
-}
+})
+
+BundleTrendChart.displayName = 'BundleTrendChart'
