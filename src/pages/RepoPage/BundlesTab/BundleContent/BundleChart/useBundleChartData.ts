@@ -150,14 +150,20 @@ export function useBundleChartData({
       maxSize = x.size
     }
   })
-  const multiplier = findBundleMultiplier(maxSize)
 
+  const multiplier = findBundleMultiplier(maxSize)
   // calculate the y-axis max value based on the max size
-  // basically 2 + the next 10^x number, eg maxSize = 1000, maxY = 2
+  // basically 2 + the next 10^x number
+  // examples:
+  // - maxSize = 1000, maxY = 2
+  // - maxSize = 1499, maxY = 2
+  // - maxSize = 1500, maxY = 4
   const maxY =
     2 *
-    Math.ceil(
-      (10 ** (Math.floor(maxSize).toString().length - 1) + maxSize) /
+    Math.round(
+      (10 ** (Math.floor(maxSize).toString().length - 1) +
+        maxSize +
+        multiplier / 2) /
         multiplier /
         2
     )
