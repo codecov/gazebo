@@ -31,7 +31,7 @@ export function BundleChart() {
   })
 
   return (
-    <div className="pb-4 pt-6">
+    <div className="mx-auto w-[98%] pb-4 pt-1">
       <TrendDropdown />
       {isLoading ? (
         <Placeholder />
