@@ -39,7 +39,7 @@ const getListItems = () => {
     name: org.username,
     value: (
       <div className="flex items-center py-2">
-        <Avatar user={org} lightBordered />
+        <Avatar user={org} border="light" />
         <div className="mx-2 text-base">{org.username}</div>
       </div>
     ),

@@ -104,7 +104,7 @@ function UserDropdown() {
         type="button"
         {...getToggleButtonProps()}
       >
-        <Avatar user={currentUser?.user} darkBordered />
+        <Avatar user={currentUser?.user} border="dark" />
         <span
           aria-hidden="true"
           className={cn('transition-transform', {

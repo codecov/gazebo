@@ -105,7 +105,7 @@ function Dropdown({ currentUser }: { currentUser: CurrentUser }) {
         type="button"
         {...getToggleButtonProps()}
       >
-        <Avatar user={currentUser.user} lightBordered />
+        <Avatar user={currentUser.user} border="light" />
         <span
           aria-hidden="true"
           className={cs('transition-transform', {

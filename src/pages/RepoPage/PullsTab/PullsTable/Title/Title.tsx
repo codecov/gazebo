@@ -34,7 +34,7 @@ const Title: React.FC<TitleProps> = ({
   return (
     <div className="flex w-96 flex-row lg:w-auto">
       <span className="mr-5 flex items-center">
-        <Avatar user={user} lightBordered />
+        <Avatar user={user} border="light" />
       </span>
       <div className="flex w-5/6 flex-col lg:w-auto">
         {/* @ts-expect-error - disable because of non-ts component and type mismatch */}
