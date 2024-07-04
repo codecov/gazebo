@@ -107,9 +107,9 @@ describe('HelpDropdown', () => {
         .mockImplementation(() => ({
           createForm,
           name: 'asdf',
-          attachTo: () => () => {},
-          createWidget: () => {},
-          remove: () => {},
+          attachTo: jest.fn(),
+          createWidget: jest.fn(),
+          remove: jest.fn(),
         }))
 
       render(<HelpDropdown />, { wrapper })
@@ -150,9 +150,9 @@ describe('HelpDropdown', () => {
           .mockImplementation(() => ({
             createForm,
             name: 'asdf',
-            attachTo: () => () => {},
-            createWidget: () => {},
-            remove: () => {},
+            attachTo: jest.fn(),
+            createWidget: jest.fn(),
+            remove: jest.fn(),
           }))
 
         const { unmount } = render(<HelpDropdown />, { wrapper })
