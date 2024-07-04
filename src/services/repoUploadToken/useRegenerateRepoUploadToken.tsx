@@ -53,7 +53,7 @@ export const useRegenerateRepoUploadToken = () => {
         if (error?.__typename === 'ValidationError') {
           addToast({
             type: 'error',
-            text: 'FAILED',
+            text: 'Something went wrong',
             disappearAfter: TOAST_DURATION,
           })
         }

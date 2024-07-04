@@ -67,14 +67,12 @@ describe('EraseRepoContent', () => {
 
     server.use(
       graphql.mutation('EraseRepository', (req, res, ctx) => {
-        console.log('ASFS')
         mutate()
         if (isLoading) {
           // https://cathalmacdonnacha.com/mocking-error-empty-and-loading-states-with-msw
           return res(ctx.status(200), ctx.data(mockResponse), ctx.delay(100))
         }
         if (failedMutation) {
-          console.log('SAKF')
           return res(ctx.status(200), ctx.data(mockErrorResponse))
         }
         return res(ctx.status(200), ctx.data(mockResponse))

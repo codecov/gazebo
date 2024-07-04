@@ -1,16 +1,22 @@
-import { render, screen } from 'custom-testing-library'
+import { render, screen, waitFor } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { useEncodeString } from 'services/repo'
 import { useAddNotification } from 'services/toastNotification'
 
 import SecretString from './SecretString'
 
 jest.mock('services/toastNotification')
-jest.mock('services/repo')
+
+const server = setupServer()
+
+beforeAll(() => server.listen())
+afterEach(() => server.resetHandlers())
+afterAll(() => server.close())
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -25,21 +31,39 @@ const wrapper = ({ children }) => (
 )
 
 describe('SecretString', () => {
-  function setup(value = '') {
+  function setup(value = '', isError = false) {
     const user = userEvent.setup()
-    const mutate = jest.fn()
     const addNotification = jest.fn()
+    const mutation = jest.fn()
 
     useAddNotification.mockReturnValue(addNotification)
-    useEncodeString.mockReturnValue({
-      isLoading: false,
-      mutate,
-      data: {
-        value,
-      },
-    })
+    server.use(
+      graphql.mutation('EncodeSecretString', (req, res, ctx) => {
+        mutation(req.variables)
+        if (isError) {
+          return res(
+            ctx.status(200),
+            ctx.data({
+              encodeSecretString: {
+                error: {
+                  __typename: 'ValidationError',
+                },
+              },
+            })
+          )
+        }
+        return res(
+          ctx.status(200),
+          ctx.data({
+            encodeSecretString: {
+              value,
+            },
+          })
+        )
+      })
+    )
 
-    return { mutate, addNotification, user }
+    return { mutation, addNotification, user }
   }
 
   describe('renders SecretString component', () => {
@@ -91,7 +115,7 @@ describe('SecretString', () => {
 
     describe('when user clicks on Generate button', () => {
       it('calls the mutation', async () => {
-        const { user, mutate } = setup('test')
+        const { user, mutation } = setup('test')
         render(<SecretString />, { wrapper })
 
         const createNewSecret = screen.getByRole('button', {
@@ -105,8 +129,7 @@ describe('SecretString', () => {
 
         const generate = screen.getByRole('button', { name: 'Generate' })
         await user.click(generate)
-
-        expect(mutate).toHaveBeenCalled()
+        await waitFor(() => expect(mutation).toHaveBeenCalled())
       })
 
       it('renders the new token', async () => {
@@ -159,7 +182,7 @@ describe('SecretString', () => {
 
     describe('when mutation is not successful', () => {
       it('calls the mutation', async () => {
-        const { user, mutate } = setup('test')
+        const { user, mutation } = setup('test', true)
         render(<SecretString />, { wrapper })
 
         const createNewSecret = screen.getByRole('button', {
@@ -173,13 +196,11 @@ describe('SecretString', () => {
         const generate = screen.getByRole('button', { name: 'Generate' })
         await user.click(generate)
 
-        mutate.mock.calls[0][1].onError()
-
-        expect(mutate).toHaveBeenCalled()
+        expect(mutation).toHaveBeenCalled()
       })
 
       it('adds an error notification', async () => {
-        const { user, mutate, addNotification } = setup('test')
+        const { user, addNotification } = setup('test', true)
         render(<SecretString />, { wrapper })
 
         const createNewSecret = screen.getByRole('button', {
@@ -192,8 +213,6 @@ describe('SecretString', () => {
         await user.type(secretString, 'test')
         const generate = screen.getByRole('button', { name: 'Generate' })
         await user.click(generate)
-
-        mutate.mock.calls[0][1].onError()
 
         expect(addNotification).toHaveBeenCalledWith({
           type: 'error',
