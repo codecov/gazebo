@@ -95,9 +95,11 @@ describe('HelpDropdown', () => {
       const { user } = setup()
       const open = jest.fn()
       const appendToDom = jest.fn()
+      const removeFromDom = jest.fn()
       const createForm = jest.fn().mockReturnValue({
         open,
         appendToDom,
+        removeFromDom,
       })
 
       const mockedFeedbackIntegration = jest
@@ -126,6 +128,54 @@ describe('HelpDropdown', () => {
       expect(createForm).toHaveBeenCalled()
       expect(appendToDom).toHaveBeenCalled()
       expect(open).toHaveBeenCalled()
+    })
+  })
+
+  describe('if Sentry form has been loaded', () => {
+    describe('and component unmounts', () => {
+      it('removes the form from the DOM', async () => {
+        console.error = () => {}
+        const { user } = setup()
+        const open = jest.fn()
+        const appendToDom = jest.fn()
+        const removeFromDom = jest.fn()
+        const createForm = jest.fn().mockReturnValue({
+          open,
+          appendToDom,
+          removeFromDom,
+        })
+
+        const mockedFeedbackIntegration = jest
+          .spyOn(Sentry, 'feedbackIntegration')
+          .mockImplementation(() => ({
+            createForm,
+            name: 'asdf',
+            attachTo: () => () => {},
+            createWidget: () => {},
+            remove: () => {},
+          }))
+
+        const { unmount } = render(<HelpDropdown />, { wrapper })
+
+        const dropdown = await screen.findByRole('combobox')
+        expect(dropdown).toBeInTheDocument()
+
+        await user.click(dropdown)
+
+        const feedback = await screen.findByText('Share feedback')
+        expect(feedback).toBeInTheDocument()
+
+        await user.click(feedback)
+
+        expect(mockedFeedbackIntegration).toHaveBeenCalled()
+        expect(createForm).toHaveBeenCalled()
+        expect(appendToDom).toHaveBeenCalled()
+        expect(open).toHaveBeenCalled()
+
+        unmount()
+
+        expect(removeFromDom).toHaveBeenCalled()
+      })
     })
   })
 })
