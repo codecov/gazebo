@@ -31,7 +31,9 @@ type toProps = {
 
 function UserDropdown() {
   const { data: currentUser } = useUser({
-    suspense: false,
+    options: {
+      suspense: false,
+    },
   })
 
   const { provider } = useParams<URLParams>()
