@@ -1,0 +1,131 @@
+import Sentry from '@sentry/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { setupServer } from 'msw/node'
+import { MemoryRouter, Route, Switch } from 'react-router-dom'
+
+import HelpDropdown from './HelpDropdown'
+
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+const server = setupServer()
+
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/gh/codecov']}>
+      <Switch>
+        <Route path="/:provider/:repo" exact>
+          {children}
+        </Route>
+      </Switch>
+    </MemoryRouter>
+  </QueryClientProvider>
+)
+
+beforeAll(() => {
+  server.listen()
+})
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+afterAll(() => {
+  server.close()
+})
+
+describe('HelpDropdown', () => {
+  beforeEach(() => jest.resetModules())
+
+  function setup() {
+    return {
+      user: userEvent.setup(),
+    }
+  }
+
+  it('renders dropdown button', async () => {
+    setup()
+    render(<HelpDropdown />, { wrapper })
+
+    const dropdown = await screen.findByTestId('help-dropdown')
+    expect(dropdown).toBeInTheDocument()
+  })
+
+  describe('when not clicked', () => {
+    it('does not render dropdown', async () => {
+      setup()
+      render(<HelpDropdown />, { wrapper })
+
+      const dropdown = await screen.findByRole('combobox')
+      expect(dropdown).toBeInTheDocument()
+
+      const docs = screen.queryByText('Developer docs')
+      expect(docs).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when clicked', () => {
+    it('renders dropdown', async () => {
+      const { user } = setup()
+      render(<HelpDropdown />, { wrapper })
+
+      const dropdown = await screen.findByRole('combobox')
+      expect(dropdown).toBeInTheDocument()
+
+      await user.click(dropdown)
+
+      const docs = await screen.findByText('Developer docs')
+      expect(docs).toBeInTheDocument()
+
+      const support = await screen.findByText('Support center')
+      expect(support).toBeInTheDocument()
+
+      const feedback = await screen.findByText('Share feedback')
+      expect(feedback).toBeInTheDocument()
+
+      const discussions = await screen.findByText('Join GitHub discussions')
+      expect(discussions).toBeInTheDocument()
+    })
+  })
+
+  describe('when Share feedback item is selected', () => {
+    it('opens the sentry user feedback modal', async () => {
+      console.error = () => {}
+      const { user } = setup()
+      const open = jest.fn()
+      const appendToDom = jest.fn()
+      const createForm = jest.fn().mockReturnValue({
+        open,
+        appendToDom,
+      })
+
+      const mockedFeedbackIntegration = jest
+        .spyOn(Sentry, 'feedbackIntegration')
+        .mockImplementation(() => ({
+          createForm,
+          name: 'asdf',
+          attachTo: () => () => {},
+          createWidget: () => {},
+          remove: () => {},
+        }))
+
+      render(<HelpDropdown />, { wrapper })
+
+      const dropdown = await screen.findByRole('combobox')
+      expect(dropdown).toBeInTheDocument()
+
+      await user.click(dropdown)
+
+      const feedback = await screen.findByText('Share feedback')
+      expect(feedback).toBeInTheDocument()
+
+      await user.click(feedback)
+
+      expect(mockedFeedbackIntegration).toHaveBeenCalled()
+      expect(createForm).toHaveBeenCalled()
+      expect(appendToDom).toHaveBeenCalled()
+      expect(open).toHaveBeenCalled()
+    })
+  })
+})
