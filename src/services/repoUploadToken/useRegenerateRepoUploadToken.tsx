@@ -57,6 +57,12 @@ export const useRegenerateRepoUploadToken = () => {
             disappearAfter: TOAST_DURATION,
           })
         }
+      } else {
+        addToast({
+          type: 'success',
+          text: 'Repo upload token regenerated successfully',
+          disappearAfter: TOAST_DURATION,
+        })
       }
       return data?.regenerateRepositoryUploadToken?.token
     },
