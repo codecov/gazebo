@@ -41,8 +41,17 @@ const wrapper = ({ children }) => (
 const mockErrorResponse = {
   eraseRepository: {
     error: {
-      __typename: 'UnauthenticatedError',
-      message: 'unauthenticated error',
+      __typename: 'ValidationError',
+      message: 'error',
+    },
+  },
+}
+
+const mockUnauthorized = {
+  eraseRepository: {
+    error: {
+      __typename: 'UnauthorizedError',
+      message: 'UnauthorizedError error',
     },
   },
 }
@@ -55,7 +64,7 @@ const mockResponse = {
 
 describe('EraseRepoContent', () => {
   function setup(
-    { failedMutation = false, isLoading = false } = {
+    { failedMutation = false, isLoading = false, unauthorized = false } = {
       failedMutation: false,
       isLoading: false,
     }
@@ -74,6 +83,9 @@ describe('EraseRepoContent', () => {
         }
         if (failedMutation) {
           return res(ctx.status(200), ctx.data(mockErrorResponse))
+        }
+        if (unauthorized) {
+          return res(ctx.status(200), ctx.data(mockUnauthorized))
         }
         return res(ctx.status(200), ctx.data(mockResponse))
       })
@@ -258,6 +270,31 @@ describe('EraseRepoContent', () => {
   describe('when mutation is not successful', () => {
     it('adds an error notification', async () => {
       const { user, mutate, addNotification } = setup({ failedMutation: true })
+      render(<EraseRepoContent />, { wrapper })
+
+      const eraseButton = await screen.findByRole('button', {
+        name: /Erase Content/,
+      })
+      await user.click(eraseButton)
+
+      const modalEraseButton = await screen.findByRole('button', {
+        name: /Erase Content/,
+      })
+      await user.click(modalEraseButton)
+
+      await waitFor(() => expect(mutate).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(addNotification).toHaveBeenCalledWith({
+          type: 'error',
+          text: "We were unable to erase this repo's content",
+        })
+      )
+    })
+  })
+
+  describe('when user is unauthorized', () => {
+    it('adds an error notification', async () => {
+      const { user, mutate, addNotification } = setup({ unauthorized: true })
       render(<EraseRepoContent />, { wrapper })
 
       const eraseButton = await screen.findByRole('button', {

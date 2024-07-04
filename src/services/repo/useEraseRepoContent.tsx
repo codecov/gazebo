@@ -14,6 +14,9 @@ const query = `
         ... on ValidationError {
           message
         }
+        ... on UnauthenticatedError {
+          message
+        }
       }
     }
   }
@@ -57,7 +60,7 @@ export const useEraseRepoContent = () => {
       queryClient.invalidateQueries(['GetRepo'])
       queryClient.invalidateQueries(['GetRepoSettings'])
     },
-    onError: (error) => {
+    onError: () => {
       addToast({
         type: 'error',
         text: "We were unable to erase this repo's content",
