@@ -1,4 +1,5 @@
 import {
+  findBundleMultiplier,
   formatSizeToString,
   formatTimeToString,
   localizeBundleSize,
@@ -163,6 +164,72 @@ describe('localizeBundleSize', () => {
       it('returns size in gigabytes', () => {
         const result = localizeBundleSize(-1000000000)
         expect(result).toBe(-1)
+      })
+    })
+  })
+})
+
+describe('findBundleMultiplier', () => {
+  describe('size is less then one kilobyte', () => {
+    describe('size is a positive number', () => {
+      it('returns size in bytes', () => {
+        const result = findBundleMultiplier(900)
+        expect(result).toBe(1)
+      })
+    })
+
+    describe('size is a negative number', () => {
+      it('returns size in bytes', () => {
+        const result = findBundleMultiplier(-900)
+        expect(result).toBe(1)
+      })
+    })
+  })
+
+  describe('size is greater then one kilobyte and smaller then one megabyte', () => {
+    describe('size is a positive number', () => {
+      it('returns size in kilobytes', () => {
+        const result = findBundleMultiplier(10_000)
+        expect(result).toBe(1_000)
+      })
+    })
+
+    describe('size is a negative number', () => {
+      it('returns size in kilobytes', () => {
+        const result = findBundleMultiplier(-10_000)
+        expect(result).toBe(1_000)
+      })
+    })
+  })
+
+  describe('size is greater then one megabyte and smaller then gigabyte', () => {
+    describe('size is a positive number', () => {
+      it('returns size in kilobytes', () => {
+        const result = findBundleMultiplier(1_000_000)
+        expect(result).toBe(1_000_000)
+      })
+    })
+
+    describe('size is a negative number', () => {
+      it('returns size in kilobytes', () => {
+        const result = findBundleMultiplier(-1_000_000)
+        expect(result).toBe(1_000_000)
+      })
+    })
+  })
+
+  describe('size is greater then gigabyte', () => {
+    describe('size is a positive number', () => {
+      it('returns size in kilobytes', () => {
+        const result = findBundleMultiplier(1_000_000_000)
+        expect(result).toBe(1_000_000_000)
+      })
+    })
+
+    describe('size is a negative number', () => {
+      it('returns size in kilobytes', () => {
+        const result = findBundleMultiplier(-1_000_000_000)
+        expect(result).toBe(1_000_000_000)
       })
     })
   })
