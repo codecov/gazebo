@@ -8,6 +8,7 @@ import { metrics } from 'shared/utils/metrics'
 import Spinner from 'ui/Spinner'
 
 import AssetsTable from './AssetsTable'
+import { BundleChart } from './BundleChart'
 import BundleSummary from './BundleSummary'
 import InfoBanner from './InfoBanner'
 
@@ -46,7 +47,10 @@ const BundleContent: React.FC = () => {
         {bundleType === 'BundleAnalysisReport' ? (
           <Switch>
             <SentryRoute path="/:provider/:owner/:repo/bundles/:branch/:bundle">
-              <AssetsTable />
+              <BundleChart />
+              <Suspense fallback={<Loader />}>
+                <AssetsTable />
+              </Suspense>
             </SentryRoute>
             <SentryRoute
               path={[
