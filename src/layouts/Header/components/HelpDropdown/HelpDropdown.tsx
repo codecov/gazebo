@@ -1,38 +1,64 @@
+// Copying UserDropdown implementation for now until we get a proper
+// component made up.
+
+import { feedbackIntegration } from '@sentry/react'
 import { useSelect } from 'downshift'
 
 import { cn } from 'shared/utils/cn'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 
-// Copying UserDropdown implementation for now until we get a proper
-// component made up.
+import './sentryFeedback.css'
+
 type toProps = {
   pageName: string
   options?: object
 }
 
-type itemProps = {
+type ItemProps = {
   to?: toProps
   hook?: string
   onClick?: () => void
 }
 
+type Item = {
+  props: ItemProps
+  children: string
+}
+
 function HelpDropdown() {
-  const items = [
+  const items: Item[] = [
     {
-      props: { to: { pageName: 'docs' } } as itemProps,
+      props: { to: { pageName: 'docs' } },
       children: 'Developer docs',
     },
     {
-      props: { to: { pageName: 'support' } } as itemProps,
+      props: { to: { pageName: 'support' } },
       children: 'Support center',
     },
     {
-      props: { onClick: () => {} } as itemProps,
+      props: {
+        onClick: async () => {
+          const feedback = feedbackIntegration({
+            colorScheme: 'light',
+            showBranding: false,
+            formTitle: 'Give Feedback',
+            buttonLabel: 'Give Feedback',
+            submitButtonLabel: 'Send Feedback',
+            nameLabel: 'Username',
+            isEmailRequired: true,
+            autoInject: false,
+          })
+          const form = await feedback.createForm()
+          form.appendToDom()
+          form.open()
+        },
+        hook: 'open-modal',
+      },
       children: 'Share feedback',
     },
     {
-      props: { to: { pageName: 'feedback' } } as itemProps,
+      props: { to: { pageName: 'feedback' } },
       children: 'Join GitHub discussions',
     },
   ]
@@ -50,7 +76,7 @@ function HelpDropdown() {
   return (
     <div
       className="relative"
-      data-testid="dropdown"
+      data-testid="help-dropdown"
       data-cy="auth-help-dropdown"
     >
       <label className="sr-only" {...getLabelProps()}>
