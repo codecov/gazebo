@@ -147,7 +147,7 @@ describe('SecretString', () => {
         const generate = screen.getByRole('button', { name: 'Generate' })
         await user.click(generate)
 
-        const newSecret = screen.getByText('New secret string')
+        const newSecret = await screen.findByText('New secret string')
         expect(newSecret).toBeInTheDocument()
       })
 
@@ -169,7 +169,7 @@ describe('SecretString', () => {
           const generate = screen.getByRole('button', { name: 'Generate' })
           await user.click(generate)
 
-          const close = screen.getByRole('button', { name: 'Close' })
+          const close = await screen.findByRole('button', { name: 'Close' })
           await user.click(close)
 
           createNewSecret = screen.getByRole('button', {
