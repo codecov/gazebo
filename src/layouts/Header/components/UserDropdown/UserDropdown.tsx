@@ -1,4 +1,3 @@
-import cs from 'classnames'
 import { useSelect } from 'downshift'
 import Cookies from 'js-cookie'
 import { useHistory, useParams } from 'react-router-dom'
@@ -8,6 +7,8 @@ import config, {
   LOCAL_STORAGE_SESSION_TRACKING_KEY,
 } from 'config'
 
+import { useUser } from 'services/user'
+import { cn } from 'shared/utils/cn'
 import { providerToName } from 'shared/utils/provider'
 import Avatar from 'ui/Avatar'
 import Button from 'ui/Button'
@@ -15,13 +16,6 @@ import Icon from 'ui/Icon'
 
 interface URLParams {
   provider: string
-}
-
-type CurrentUser = {
-  user: {
-    avatarUrl: string
-    username: string
-  }
 }
 
 type itemProps = {
@@ -35,8 +29,13 @@ type toProps = {
   options?: object
 }
 
-// TODO: get types for free after converting useUser hook
-function Dropdown({ currentUser }: { currentUser: CurrentUser }) {
+function UserDropdown() {
+  const { data: currentUser } = useUser({
+    options: {
+      suspense: false,
+    },
+  })
+
   const { provider } = useParams<URLParams>()
   const isGh = providerToName(provider) === 'Github'
   const history = useHistory()
@@ -66,7 +65,7 @@ function Dropdown({ currentUser }: { currentUser: CurrentUser }) {
       props: {
         to: {
           pageName: 'account',
-          options: { owner: currentUser.user.username },
+          options: { owner: currentUser?.user?.username },
         },
       },
       children: 'Settings',
@@ -100,24 +99,24 @@ function Dropdown({ currentUser }: { currentUser: CurrentUser }) {
         Logged in user sub navigation
       </label>
       <button
-        className="flex flex-1 items-center justify-between whitespace-nowrap text-left focus:outline-1"
+        className="flex flex-1 items-center gap-1 whitespace-nowrap text-left focus:outline-1"
         data-marketing="user profile menu"
         type="button"
         {...getToggleButtonProps()}
       >
-        <Avatar user={currentUser.user} border="light" />
+        <Avatar user={currentUser?.user} border="dark" />
         <span
           aria-hidden="true"
-          className={cs('transition-transform', {
+          className={cn('transition-transform', {
             'rotate-180': isOpen,
             'rotate-0': !isOpen,
           })}
         >
-          <Icon variant="solid" name="chevronDown" />
+          <Icon variant="solid" name="chevronDown" size="sm" />
         </span>
       </button>
       <ul
-        className={cs(
+        className={cn(
           'z-50 w-[15.5rem] border border-gray-ds-tertiary overflow-hidden rounded bg-white text-gray-900 border-ds-gray-tertiary absolute right-0 top-8 min-w-fit',
           { hidden: !isOpen }
         )}
@@ -142,4 +141,4 @@ function Dropdown({ currentUser }: { currentUser: CurrentUser }) {
   )
 }
 
-export default Dropdown
+export default UserDropdown
