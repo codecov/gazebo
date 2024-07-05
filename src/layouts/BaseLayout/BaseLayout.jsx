@@ -13,7 +13,6 @@ import { useFlags } from 'shared/featureFlags'
 import GlobalBanners from 'shared/GlobalBanners'
 import GlobalTopBanners from 'shared/GlobalTopBanners'
 import LoadingLogo from 'ui/LoadingLogo'
-import SessionExpiryTracker from 'ui/SessionExpiryTracker'
 
 import { useUserAccessGate } from './hooks/useUserAccessGate'
 
@@ -74,7 +73,6 @@ function BaseLayout({ children }) {
 
   return (
     <>
-      <SessionExpiryTracker />
       {isFullExperience ? (
         <>
           {newHeader ? <Header /> : <OldHeader />}

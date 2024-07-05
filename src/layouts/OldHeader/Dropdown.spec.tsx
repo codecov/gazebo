@@ -1,15 +1,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import Cookies from 'js-cookie'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { MemoryRouter, Route, Switch } from 'react-router-dom'
+import { MemoryRouter, Route, Switch, useLocation } from 'react-router-dom'
 
-import config, {
-  COOKIE_SESSION_EXPIRY,
-  LOCAL_STORAGE_SESSION_TRACKING_KEY,
-} from 'config'
+import config from 'config'
 
 import { useImage } from 'services/image'
 
@@ -31,6 +27,7 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
 const server = setupServer()
+let testLocation: ReturnType<typeof useLocation>
 
 const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
   (initialEntries = '/gh') =>
@@ -41,6 +38,13 @@ const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
           <Switch>
             <Route path="/:provider" exact>
               {children}
+              <Route
+                path="*"
+                render={({ location }) => {
+                  testLocation = location
+                  return null
+                }}
+              />
             </Route>
           </Switch>
         </MemoryRouter>
@@ -68,16 +72,11 @@ describe('Dropdown', () => {
     })
     config.IS_SELF_HOSTED = selfHosted
     config.API_URL = ''
-    const mockRemoveItem = jest.spyOn(
-      window.localStorage.__proto__,
-      'removeItem'
-    )
 
     server.use(rest.post('/logout', (req, res, ctx) => res(ctx.status(205))))
 
     return {
       user: userEvent.setup(),
-      mockRemoveItem,
     }
   }
 
@@ -131,10 +130,9 @@ describe('Dropdown', () => {
       })
 
       it('handles sign out', async () => {
-        const { user, mockRemoveItem } = setup()
+        const { user } = setup()
 
         jest.spyOn(console, 'error').mockImplementation()
-        const removeSpy = jest.spyOn(Cookies, 'remove').mockReturnValue()
         render(<Dropdown currentUser={currentUser} />, {
           wrapper: wrapper(),
         })
@@ -146,14 +144,7 @@ describe('Dropdown', () => {
         expect(button).toBeVisible()
         await user.click(button)
 
-        await waitFor(() =>
-          expect(mockRemoveItem).toHaveBeenCalledWith(
-            LOCAL_STORAGE_SESSION_TRACKING_KEY
-          )
-        )
-        await waitFor(() =>
-          expect(removeSpy).toHaveBeenCalledWith(COOKIE_SESSION_EXPIRY)
-        )
+        await waitFor(() => expect(testLocation.pathname).toBe('/login'))
       })
 
       it('shows manage app access link', async () => {
@@ -212,10 +203,9 @@ describe('Dropdown', () => {
       })
 
       it('handles sign out', async () => {
-        const { user, mockRemoveItem } = setup()
+        const { user } = setup()
 
         jest.spyOn(console, 'error').mockImplementation()
-        const removeSpy = jest.spyOn(Cookies, 'remove').mockReturnValue()
         render(<Dropdown currentUser={currentUser} />, {
           wrapper: wrapper(),
         })
@@ -227,14 +217,7 @@ describe('Dropdown', () => {
         expect(button).toBeVisible()
         await user.click(button)
 
-        await waitFor(() =>
-          expect(mockRemoveItem).toHaveBeenCalledWith(
-            LOCAL_STORAGE_SESSION_TRACKING_KEY
-          )
-        )
-        await waitFor(() =>
-          expect(removeSpy).toHaveBeenCalledWith(COOKIE_SESSION_EXPIRY)
-        )
+        await waitFor(() => expect(testLocation.pathname).toBe('/login'))
       })
 
       it('does not show manage app access link', async () => {

@@ -1,8 +1,6 @@
 import { Suspense } from 'react'
 import { useLocation } from 'react-router-dom'
 
-import { LOCAL_STORAGE_SESSION_EXPIRED_KEY } from 'config'
-
 import Footer from 'layouts/Footer'
 import ErrorBoundary from 'layouts/shared/ErrorBoundary'
 import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
@@ -22,15 +20,10 @@ const FullPageLoader = () => (
 function EnterpriseLoginLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation()
 
-  const showExpiryBanner = localStorage.getItem(
-    LOCAL_STORAGE_SESSION_EXPIRED_KEY
-  )
   return (
     <>
       <Header />
-      {(location.search.includes('expired') || showExpiryBanner) && (
-        <SessionExpiredBanner />
-      )}
+      {location.search.includes('expired') && <SessionExpiredBanner />}
       <Suspense fallback={<FullPageLoader />}>
         <ErrorBoundary sentryScopes={[['layout', 'base']]}>
           <NetworkErrorBoundary>
