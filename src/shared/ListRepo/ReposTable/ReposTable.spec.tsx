@@ -137,20 +137,11 @@ describe('ReposTable', () => {
   function setup({
     edges = [],
     isCurrentUserPartOfOrg = true,
-    privateAccess = true,
     tierValue = TierNames.PRO,
   }: SetupArgs) {
     const reposForOwnerMock = jest.fn()
     const myReposMock = jest.fn()
     server.use(
-      graphql.query('CurrentUser', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.data({
-            me: { user: { userName: 'codecov-user' }, privateAccess },
-          })
-        )
-      }),
       graphql.query('DetailOwner', (req, res, ctx) => {
         return res(
           ctx.status(200),
@@ -719,6 +710,7 @@ describe('ReposTable', () => {
   describe('when rendered with all repos', () => {
     beforeEach(() => {
       setup({
+        isCurrentUserPartOfOrg: false,
         edges: [
           {
             node: {

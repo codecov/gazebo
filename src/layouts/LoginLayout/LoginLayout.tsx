@@ -4,8 +4,10 @@ import { useLocation } from 'react-router-dom'
 import { LOCAL_STORAGE_SESSION_EXPIRED_KEY } from 'config'
 
 import Footer from 'layouts/Footer'
-import Header from 'layouts/OldHeader'
+import Header from 'layouts/Header'
+import OldHeader from 'layouts/OldHeader'
 import SessionExpiredBanner from 'pages/LoginPage/SessionExpiredBanner'
+import { useFlags } from 'shared/featureFlags'
 import LoadingLogo from 'ui/LoadingLogo'
 
 const FullPageLoader = () => (
@@ -17,6 +19,10 @@ const FullPageLoader = () => (
 const LoginLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
   const location = useLocation()
 
+  const { newHeader } = useFlags({
+    newHeader: false,
+  })
+
   const showExpiryBanner = localStorage.getItem(
     LOCAL_STORAGE_SESSION_EXPIRED_KEY
   )
@@ -25,7 +31,7 @@ const LoginLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
       {(location.search.includes('expired') || showExpiryBanner) && (
         <SessionExpiredBanner />
       )}
-      <Header />
+      {newHeader ? <Header /> : <OldHeader />}
       <Suspense fallback={<FullPageLoader />}>
         <main className="container mb-8 mt-2 flex grow flex-col gap-2 md:p-0">
           {children}

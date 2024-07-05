@@ -14,6 +14,7 @@ export const formatSizeToString = (bytes: number) => {
   if (positiveBytes < KILOBYTE) {
     return Intl.NumberFormat('en-US', {
       ...formatSettings,
+      maximumFractionDigits: 0,
       unit: 'byte',
     }).format(bytes)
   }
@@ -58,20 +59,20 @@ export const formatTimeToString = (milliseconds: number) => {
   }).format(milliseconds)
 }
 
-export const localizeBundleSize = (bytes: number) => {
+export const findBundleMultiplier = (bytes: number) => {
   const positiveBytes = Math.abs(bytes)
 
   if (positiveBytes < KILOBYTE) {
-    return bytes
+    return 1
   }
 
   if (positiveBytes >= KILOBYTE && positiveBytes < MEGABYTE) {
-    return bytes / KILOBYTE
+    return KILOBYTE
   }
 
   if (positiveBytes >= MEGABYTE && positiveBytes < GIGABYTE) {
-    return bytes / MEGABYTE
+    return MEGABYTE
   }
 
-  return bytes / GIGABYTE
+  return GIGABYTE
 }

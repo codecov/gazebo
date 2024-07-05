@@ -30,13 +30,15 @@ function handleOnError(guest) {
 
 export function useTracking() {
   const { data: user, ...all } = useUser({
-    onSuccess: (user) => {
-      if (!user) {
-        return handleOnError({ guest: true })
-      }
-      return handleOnSuccess(user)
+    options: {
+      onSuccess: (user) => {
+        if (!user) {
+          return handleOnError({ guest: true })
+        }
+        return handleOnSuccess(user)
+      },
+      suspense: false,
     },
-    suspense: false,
   })
 
   useTrackFeatureFlags(user) // TODO: Can probably delete

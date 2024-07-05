@@ -75,3 +75,6 @@ component_management:
       name: UI
       paths:
         - src/ui/**
+
+test_analytics:
+  flake_detection: true

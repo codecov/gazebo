@@ -6,6 +6,8 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
+import { User } from 'services/user'
+
 import { useUserAccessGate } from './useUserAccessGate'
 
 jest.spyOn(console, 'error')
@@ -56,93 +58,90 @@ const wrapper: WrapperClosure =
       </QueryClientProvider>
     )
 
-interface UserPartial {
-  me: {
-    owner: {
-      defaultOrgUsername?: string
-    }
-    user: {
-      username: string
-      email: string
-      name: string
-      avatarUrl: string
-      termsAgreement?: boolean
-      customerIntent?: 'PERSONAL' | 'BUSINESS'
-    }
-    trackingMetadata: {
-      ownerid: number
-    }
-    username: string
-    email: string
-    name: string
-    avatarUrl: string
-    termsAgreement?: boolean
-  } | null
-}
-
-const userSignedInIdentity = {
-  username: 'CodecovUser',
-  email: 'codecov@codecov.io',
+const mockUser = {
   name: 'codecov',
-  avatarUrl: 'http://127.0.0.1/avatar-url',
-  termsAgreement: false,
-  owners: [],
+  username: 'CodecovUser',
+  avatarUrl: 'http://photo.com/codecov.png',
+  avatar: 'http://photo.com/codecov.png',
+  student: false,
+  studentCreatedAt: null,
+  studentUpdatedAt: null,
+  email: 'codecov@codecov.io',
+  customerIntent: 'PERSONAL',
 }
 
-const loggedInLegacyUser = {
-  me: {
-    owner: {
-      defaultOrgUsername: 'codecov',
-    },
-    user: {
-      ...userSignedInIdentity,
-    },
-    trackingMetadata: { ownerid: 123 },
-    ...userSignedInIdentity,
+const mockTrackingMetadata = {
+  service: 'github',
+  ownerid: 123,
+  serviceId: '123',
+  plan: 'users-basic',
+  staff: false,
+  hasYaml: false,
+  bot: null,
+  delinquent: null,
+  didTrial: null,
+  planProvider: null,
+  planUserCount: 1,
+  createdAt: 'timestamp',
+  updatedAt: 'timestamp',
+  profile: {
+    createdAt: 'timestamp',
+    otherGoal: null,
+    typeProjects: [],
+    goals: [],
   },
+}
+
+const mockMe = {
+  owner: {
+    defaultOrgUsername: null,
+  },
+  email: 'jane.doe@codecov.io',
+  privateAccess: true,
+  onboardingCompleted: true,
+  businessEmail: 'jane.doe@codecov.io',
+  termsAgreement: true,
+  user: mockUser,
+  trackingMetadata: mockTrackingMetadata,
 }
 
 const userHasDefaultOrg = {
   me: {
+    ...mockMe,
     owner: {
       defaultOrgUsername: 'codecov',
     },
-    user: {
-      ...userSignedInIdentity,
-      termsAgreement: true,
-    },
-    trackingMetadata: { ownerid: 123 },
-    ...userSignedInIdentity,
-    termsAgreement: true,
   },
 }
 
 const loggedInUser = {
+  me: mockMe,
+}
+
+const loggedInLegacyUser = {
   me: {
+    ...mockMe,
     owner: {
-      defaultOrgUsername: '',
+      defaultOrgUsername: 'codecov',
     },
     user: {
-      ...userSignedInIdentity,
-      termsAgreement: true,
+      ...mockUser,
+      termsAgreement: null,
     },
-    trackingMetadata: { ownerid: 123 },
-    ...userSignedInIdentity,
-    termsAgreement: true,
+    termsAgreement: null,
   },
 }
 
 const loggedInUnsignedUser = {
   me: {
+    ...mockMe,
     owner: {
       defaultOrgUsername: 'codecov',
     },
     user: {
-      ...userSignedInIdentity,
+      ...mockUser,
       termsAgreement: false,
     },
-    trackingMetadata: { ownerid: 123 },
-    ...userSignedInIdentity,
     termsAgreement: false,
   },
 }
@@ -152,16 +151,16 @@ const guestUser = {
 }
 
 const internalUserNoSyncedProviders = {
-  email: userSignedInIdentity.email,
-  name: userSignedInIdentity.name,
+  email: mockUser.email,
+  name: mockUser.name,
   externalId: '123',
   termsAgreement: null,
   owners: [],
 }
 
 const internalUserHasSyncedProviders = {
-  email: userSignedInIdentity.email,
-  name: userSignedInIdentity.name,
+  email: mockUser.email,
+  name: mockUser.name,
   externalId: '123',
   termsAgreement: true,
   owners: [
@@ -178,8 +177,8 @@ const internalUserHasSyncedProviders = {
 }
 
 const internalUserWithSignedTOS = {
-  email: userSignedInIdentity.email,
-  name: userSignedInIdentity.name,
+  email: mockUser.email,
+  name: mockUser.name,
   externalId: '123',
   owners: [
     {
@@ -196,8 +195,8 @@ const internalUserWithSignedTOS = {
 }
 
 const internalUserWithUnsignedTOS = {
-  email: userSignedInIdentity.email,
-  name: userSignedInIdentity.name,
+  email: mockUser.email,
+  name: mockUser.name,
   externalId: '123',
   owners: [
     {
@@ -237,8 +236,8 @@ afterAll(() => {
 })
 
 type SetupArgs = {
-  user: UserPartial
-  internalUser: InternalUser
+  user?: User
+  internalUser?: InternalUser
   delayMutation?: boolean
 }
 
@@ -753,7 +752,6 @@ describe('useUserAccessGate', () => {
 
     it('renders children', async () => {
       setup({
-        user: loggedInUser,
         internalUser: internalUserHasSyncedProviders,
       })
 
@@ -773,7 +771,6 @@ describe('useUserAccessGate', () => {
 
     it('fires update default org mutation', async () => {
       const { mockMutationVariables } = setup({
-        user: loggedInUser,
         internalUser: internalUserHasSyncedProviders,
       })
 
@@ -797,24 +794,7 @@ describe('useUserAccessGate', () => {
   describe('customer intent functionality', () => {
     describe('when customer intent is set to PERSONAL', () => {
       it('fires update default org mutation', async () => {
-        const username = 'chetney'
         const { mockMutationVariables } = setup({
-          user: {
-            me: {
-              owner: {
-                defaultOrgUsername: '',
-              },
-              user: {
-                ...userSignedInIdentity,
-                username,
-                termsAgreement: false,
-                customerIntent: 'PERSONAL',
-              },
-              trackingMetadata: { ownerid: 123 },
-              ...userSignedInIdentity,
-              termsAgreement: true,
-            },
-          },
           internalUser: internalUserHasSyncedProviders,
         })
 
@@ -828,7 +808,7 @@ describe('useUserAccessGate', () => {
         await waitFor(() =>
           expect(mockMutationVariables).toHaveBeenLastCalledWith({
             input: {
-              username,
+              username: 'CodecovUser',
             },
           })
         )
@@ -837,23 +817,14 @@ describe('useUserAccessGate', () => {
 
     describe('when customer intent is set to BUSINESS', () => {
       it('does not fire update default org mutation', async () => {
-        const username = 'chetney'
-
         const { mockMutationVariables } = setup({
           user: {
             me: {
-              owner: {
-                defaultOrgUsername: '',
-              },
+              ...mockMe,
               user: {
-                ...userSignedInIdentity,
-                username,
-                termsAgreement: false,
+                ...mockUser,
                 customerIntent: 'BUSINESS',
               },
-              trackingMetadata: { ownerid: 123 },
-              ...userSignedInIdentity,
-              termsAgreement: true,
             },
           },
           internalUser: internalUserHasSyncedProviders,
@@ -874,25 +845,7 @@ describe('useUserAccessGate', () => {
 
     describe('when default org mutation is loading', () => {
       it('does not set default org selector', async () => {
-        const username = 'chetney'
-
         const { mockMutationVariables } = setup({
-          user: {
-            me: {
-              owner: {
-                defaultOrgUsername: '',
-              },
-              user: {
-                ...userSignedInIdentity,
-                username,
-                termsAgreement: false,
-                customerIntent: 'PERSONAL',
-              },
-              trackingMetadata: { ownerid: 123 },
-              ...userSignedInIdentity,
-              termsAgreement: true,
-            },
-          },
           internalUser: internalUserHasSyncedProviders,
           delayMutation: true,
         })

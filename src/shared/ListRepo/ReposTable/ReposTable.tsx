@@ -13,7 +13,7 @@ import { useParams } from 'react-router-dom'
 
 import { OrderingDirection, useRepos } from 'services/repos'
 import { TierNames, useTier } from 'services/tier'
-import { useOwner, useUser } from 'services/user'
+import { useOwner } from 'services/user'
 import { ActiveContext } from 'shared/context'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
@@ -97,15 +97,14 @@ const ReposTable = ({
 
   const { provider } = useParams<URLParams>()
 
-  const { data: userData } = useUser()
   const { data: ownerData } = useOwner({
-    username: owner || userData?.user?.username,
+    username: owner,
   })
   const isCurrentUserPartOfOrg = ownerData?.isCurrentUserPartOfOrg
 
   const { data: tierName } = useTier({
     provider,
-    owner: owner || userData?.user?.username,
+    owner,
   })
   const shouldDisplayPublicReposOnly = tierName === TierNames.TEAM ? true : null
 
