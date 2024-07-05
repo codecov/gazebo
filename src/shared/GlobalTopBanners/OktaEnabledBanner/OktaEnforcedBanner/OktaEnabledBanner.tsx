@@ -5,11 +5,12 @@ import Icon from 'ui/Icon'
 import TopBanner from 'ui/TopBanner'
 
 interface URLParams {
-  owner: string
+  owner?: string
 }
 
 const OktaEnabledBanner = () => {
   const { owner } = useParams<URLParams>()
+  if (!owner) return null
 
   return (
     <TopBanner>

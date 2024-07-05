@@ -3,15 +3,29 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import OktaEnabledBanner from './OktaEnabledBanner'
 
-const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <MemoryRouter initialEntries={['/gh/codecov']}>
-    <Route path="/:provider/:owner">{children}</Route>
-  </MemoryRouter>
-)
+const wrapper =
+  (
+    initialEntries = ['/gh/codecov'],
+    path = '/:provider/:owner'
+  ): React.FC<React.PropsWithChildren> =>
+  ({ children }) =>
+    (
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route path={path}>{children}</Route>
+      </MemoryRouter>
+    )
 
 describe('OktaEnabledBanner', () => {
+  it('should return null if owner is not provided', () => {
+    const { container } = render(<OktaEnabledBanner />, {
+      wrapper: wrapper(['/gh/'], '/:provider'),
+    })
+
+    expect(container).toBeEmptyDOMElement()
+  })
+
   it('should reflect current organization', () => {
-    render(<OktaEnabledBanner />, { wrapper })
+    render(<OktaEnabledBanner />, { wrapper: wrapper() })
 
     const content = screen.getByText(
       /Single sign-on has been enabled for codecov./
@@ -20,7 +34,7 @@ describe('OktaEnabledBanner', () => {
   })
 
   it('should render content', () => {
-    render(<OktaEnabledBanner />, { wrapper })
+    render(<OktaEnabledBanner />, { wrapper: wrapper() })
 
     const content = screen.getByText(
       / this will be the only way to access private repositories for this organization./
@@ -29,7 +43,7 @@ describe('OktaEnabledBanner', () => {
   })
 
   it('should render link', () => {
-    render(<OktaEnabledBanner />, { wrapper })
+    render(<OktaEnabledBanner />, { wrapper: wrapper() })
 
     const link = screen.getByRole('link', { name: /Authenticate/ })
     expect(link).toBeInTheDocument()
