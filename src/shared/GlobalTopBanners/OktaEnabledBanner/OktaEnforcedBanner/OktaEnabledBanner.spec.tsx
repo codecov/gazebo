@@ -10,6 +10,15 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 )
 
 describe('OktaEnabledBanner', () => {
+  it('should reflect current organization', () => {
+    render(<OktaEnabledBanner />, { wrapper })
+
+    const content = screen.getByText(
+      /Single sign-on has been enabled for codecov./
+    )
+    expect(content).toBeInTheDocument()
+  })
+
   it('should render content', () => {
     render(<OktaEnabledBanner />, { wrapper })
 
