@@ -1,43 +1,21 @@
 import Sentry from '@sentry/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { setupServer } from 'msw/node'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 
 import HelpDropdown from './HelpDropdown'
 
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
-})
-const server = setupServer()
-
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/codecov']}>
-      <Switch>
-        <Route path="/:provider/:repo" exact>
-          {children}
-        </Route>
-      </Switch>
-    </MemoryRouter>
-  </QueryClientProvider>
+  <MemoryRouter initialEntries={['/gh/codecov']}>
+    <Switch>
+      <Route path="/:provider/:repo" exact>
+        {children}
+      </Route>
+    </Switch>
+  </MemoryRouter>
 )
 
-beforeAll(() => {
-  server.listen()
-})
-afterEach(() => {
-  queryClient.clear()
-  server.resetHandlers()
-})
-afterAll(() => {
-  server.close()
-})
-
 describe('HelpDropdown', () => {
-  beforeEach(() => jest.resetModules())
-
   function setup() {
     return {
       user: userEvent.setup(),
