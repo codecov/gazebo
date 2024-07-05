@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 
+import { useEraseRepoContent } from 'services/repo'
 import Button from 'ui/Button'
 
 import EraseRepoContentModal from './EraseRepoContentModal'
-import useEraseContent from './useEraseContent'
 
 function EraseRepoButton({ isLoading, setShowModal }) {
   if (isLoading) {
@@ -33,7 +33,7 @@ EraseRepoButton.propTypes = {
 
 function EraseRepoContent() {
   const [showModal, setShowModal] = useState(false)
-  const { eraseRepoContent, isLoading } = useEraseContent()
+  const { mutate: eraseRepoContent, isLoading } = useEraseRepoContent()
 
   return (
     <div className="flex flex-col sm:flex-row">

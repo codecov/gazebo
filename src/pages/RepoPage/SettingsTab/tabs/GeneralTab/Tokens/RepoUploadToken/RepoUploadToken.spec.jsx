@@ -2,7 +2,7 @@ import { render, screen, waitFor } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import userEvent from '@testing-library/user-event'
-import { rest } from 'msw'
+import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
@@ -54,22 +54,30 @@ describe('RepoUploadToken', () => {
     useAddNotification.mockReturnValue(addNotification)
 
     server.use(
-      rest.patch(
-        `/internal/github/codecov/repos/codecov-client/regenerate-upload-token/`,
-        (req, res, ctx) => {
-          mutate(req)
-          if (triggerError) {
-            return res(ctx.status(500))
-          } else {
-            return res(
-              ctx.status(200),
-              ctx.json({
-                data: { uploadToken },
-              })
-            )
-          }
+      graphql.mutation('RegenerateRepositoryUploadToken', (req, res, ctx) => {
+        mutate(req.variables)
+        if (triggerError) {
+          return res(
+            ctx.status(200),
+            ctx.data({
+              regenerateRepositoryUploadToken: {
+                error: {
+                  __typename: 'ValidationError',
+                },
+              },
+            })
+          )
         }
-      )
+
+        return res(
+          ctx.status(200),
+          ctx.data({
+            regenerateRepositoryUploadToken: {
+              value: 'test',
+            },
+          })
+        )
+      })
     )
 
     return { mutate, addNotification, user }
@@ -226,6 +234,7 @@ describe('RepoUploadToken', () => {
         expect(addNotification).toHaveBeenCalledWith({
           type: 'error',
           text: 'Something went wrong',
+          disappearAfter: 10000,
         })
       )
     })
