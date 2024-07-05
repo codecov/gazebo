@@ -43,9 +43,11 @@ function HelpDropdown() {
     []
   )
 
-  // On unmount, remove the Sentry form from the DOM.
-  const [removeSentryForm, setRemoveSentryForm] = useState<() => void>(() => {})
-  useEffect(() => removeSentryForm)
+  // Remove the Sentry form from the DOM on unmount.
+  const [removeSentryForm, setRemoveSentryForm] = useState<() => void>(
+    () => () => {}
+  )
+  useEffect(() => removeSentryForm, [removeSentryForm])
 
   const items: Item[] = [
     {
@@ -62,7 +64,7 @@ function HelpDropdown() {
           const form = await sentryFeedback.createForm()
           form.appendToDom()
           form.open()
-          setRemoveSentryForm(form.removeFromDom)
+          setRemoveSentryForm(() => form.removeFromDom)
         },
         hook: 'open-modal',
       },
