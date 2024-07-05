@@ -5,6 +5,7 @@ import NotFound from 'pages/NotFound'
 import { useLocationParams } from 'services/navigation'
 import { orderingOptions } from 'services/repos'
 import { useOwner } from 'services/user'
+import { useFlags } from 'shared/featureFlags'
 import ReposTable from 'shared/ListRepo/ReposTable'
 import LoadingLogo from 'ui/LoadingLogo'
 
@@ -37,6 +38,10 @@ function AnalyticsPage() {
   const { owner } = useParams()
   const { data: ownerData } = useOwner({ username: owner })
 
+  const { newHeader } = useFlags({
+    newHeader: false,
+  })
+
   const orderOptions = orderingOptions
 
   const sortItem =
@@ -52,7 +57,7 @@ function AnalyticsPage() {
 
   return (
     <div className="mt-2 flex flex-col gap-4">
-      <Header />
+      {newHeader ? null : <Header />}
       <div>{ownerData?.isCurrentUserPartOfOrg && <Tabs />}</div>
       <ChartSelectors
         params={params}

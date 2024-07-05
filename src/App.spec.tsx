@@ -55,11 +55,42 @@ const user = {
     owner: {
       defaultOrgUsername: 'codecov',
     },
-    user: {
-      termsAgreement: true,
-    },
-    trackingMetadata: { ownerid: 123 },
+    email: 'jane.doe@codecov.io',
+    privateAccess: true,
+    onboardingCompleted: true,
+    businessEmail: 'jane.doe@codecov.io',
     termsAgreement: true,
+    user: {
+      name: 'Jane Doe',
+      username: 'janedoe',
+      avatarUrl: 'http://127.0.0.1/avatar-url',
+      avatar: 'http://127.0.0.1/avatar-url',
+      student: false,
+      studentCreatedAt: null,
+      studentUpdatedAt: null,
+      customerIntent: 'PERSONAL',
+    },
+    trackingMetadata: {
+      service: 'github',
+      ownerid: 123,
+      serviceId: '123',
+      plan: 'users-basic',
+      staff: false,
+      hasYaml: false,
+      bot: null,
+      delinquent: null,
+      didTrial: null,
+      planProvider: null,
+      planUserCount: 1,
+      createdAt: 'timestamp',
+      updatedAt: 'timestamp',
+      profile: {
+        createdAt: 'timestamp',
+        otherGoal: null,
+        typeProjects: [],
+        goals: [],
+      },
+    },
   },
 }
 
@@ -145,6 +176,9 @@ describe('App', () => {
         return res(ctx.status(200), ctx.data({}))
       }),
       graphql.query('HasAdmins', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data({}))
+      }),
+      graphql.mutation('updateDefaultOrganization', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data({}))
       })
     )

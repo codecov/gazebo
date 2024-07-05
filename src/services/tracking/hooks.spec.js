@@ -60,31 +60,45 @@ describe('useTracking', () => {
 
   describe('when the user is logged-in and has all data', () => {
     const user = {
+      owner: {
+        defaultOrgUsername: 'codecov',
+      },
+      email: 'fake@test.com',
+      privateAccess: true,
+      onboardingCompleted: true,
+      businessEmail: 'fake@test.com',
+      termsAgreement: true,
+      user: {
+        name: 'Eugene Onegin',
+        username: 'eugene_onegin',
+        avatarUrl: 'avatar',
+        avatar: 'avatar',
+        student: true,
+        studentCreatedAt: new Date('2019-01-01 12:00:00').toISOString(),
+        studentUpdatedAt: new Date('2020-01-01 12:00:00').toISOString(),
+        customerIntent: 'PERSONAL',
+      },
       trackingMetadata: {
+        service: 'github',
         ownerid: 1,
-        hasYaml: true,
         serviceId: '123',
         plan: 'plan',
         staff: true,
-        bot: true,
+        hasYaml: true,
+        bot: null,
         delinquent: true,
         didTrial: true,
         planProvider: 'provider',
         planUserCount: 1000,
-        service: 'github',
         createdAt: new Date('2017-01-01 12:00:00').toISOString(),
         updatedAt: new Date('2018-01-01 12:00:00').toISOString(),
+        profile: {
+          createdAt: new Date('2017-01-01 12:00:00').toISOString(),
+          otherGoal: null,
+          typeProjects: [],
+          goals: [],
+        },
       },
-      user: {
-        avatar: 'avatar',
-        name: 'Eugene Onegin',
-        username: 'eugene_onegin',
-        student: true,
-        studentCreatedAt: new Date('2019-01-01 12:00:00').toISOString(),
-        studentUpdatedAt: new Date('2020-01-01 12:00:00').toISOString(),
-      },
-      privateAccess: true,
-      email: 'fake@test.com',
     }
 
     beforeEach(() => {
@@ -114,13 +128,31 @@ describe('useTracking', () => {
 
   describe('when the user is logged-in but missing data', () => {
     const user = {
+      owner: {
+        defaultOrgUsername: 'codecov',
+      },
+      email: null,
+      privateAccess: null,
+      onboardingCompleted: true,
+      businessEmail: null,
+      termsAgreement: null,
+      user: {
+        name: null,
+        username: 'eugene_onegin',
+        avatarUrl: 'avatar',
+        avatar: 'avatar',
+        student: true,
+        studentCreatedAt: null,
+        studentUpdatedAt: null,
+        customerIntent: 'PERSONAL',
+      },
       trackingMetadata: {
-        ownerid: 3,
-        hasYaml: false,
-        serviceId: '123',
         service: 'github',
+        ownerid: 1,
+        serviceId: '123',
         plan: 'plan',
         staff: false,
+        hasYaml: false,
         bot: null,
         delinquent: null,
         didTrial: null,
@@ -128,17 +160,13 @@ describe('useTracking', () => {
         planUserCount: null,
         createdAt: null,
         updatedAt: null,
+        profile: {
+          createdAt: new Date('2017-01-01 12:00:00').toISOString(),
+          otherGoal: null,
+          typeProjects: [],
+          goals: [],
+        },
       },
-      user: {
-        avatar: 'avatar',
-        name: null,
-        username: null,
-        student: null,
-        studentCreatedAt: null,
-        studentUpdatedAt: null,
-      },
-      email: null,
-      privateAccess: null,
     }
 
     beforeEach(() => {

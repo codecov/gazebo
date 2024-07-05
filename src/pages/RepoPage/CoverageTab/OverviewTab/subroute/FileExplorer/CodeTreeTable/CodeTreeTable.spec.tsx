@@ -88,6 +88,42 @@ const mockTreeData = {
   },
 }
 
+const mockDataMultipleRows = {
+  username: 'codecov-tree',
+  repository: {
+    __typename: 'Repository',
+    branch: {
+      head: {
+        pathContents: {
+          results: [
+            {
+              __typename: 'PathContentDir',
+              hits: 9,
+              misses: 0,
+              partials: 0,
+              lines: 10,
+              name: 'src',
+              path: 'src',
+              percentCovered: 100.0,
+            },
+            {
+              __typename: 'PathContentDir',
+              hits: 9,
+              misses: 2,
+              partials: 1,
+              lines: 999,
+              name: 'tests',
+              path: 'tests',
+              percentCovered: 100.0,
+            },
+          ],
+          __typename: 'PathContents',
+        },
+      },
+    },
+  },
+}
+
 const mockTreeDataNested = {
   username: 'codecov-tree',
   repository: {
@@ -181,6 +217,7 @@ describe('CodeTreeTable', () => {
     missingCoverage = false,
     unknownPath = false,
     isNestedTreeData = false,
+    hasMultipleRows = false,
   }) {
     const user = userEvent.setup()
     const requestFilters = jest.fn()
@@ -209,6 +246,10 @@ describe('CodeTreeTable', () => {
 
         if (noFlagCoverage) {
           return res(ctx.status(200), ctx.data({ owner: mockNoFiles }))
+        }
+
+        if (hasMultipleRows) {
+          return res(ctx.status(200), ctx.data({ owner: mockDataMultipleRows }))
         }
 
         if (isNestedTreeData) {
@@ -386,6 +427,26 @@ describe('CodeTreeTable', () => {
         )
         expect(message).toBeInTheDocument()
       })
+    })
+  })
+
+  describe('rendering subtotals row', () => {
+    it('renders the correct subtotals', async () => {
+      setup({ hasMultipleRows: true })
+      render(<CodeTreeTable />, { wrapper: wrapper() })
+      const subtotal = await screen.findByText('Subtotal')
+      expect(subtotal).toBeInTheDocument()
+      const bigSum = await screen.findByText('1009')
+      expect(bigSum).toBeInTheDocument()
+    })
+
+    it('does not render subtotals if there is only one row', async () => {
+      setup({})
+      render(<CodeTreeTable />, { wrapper: wrapper() })
+
+      const subtotal = screen.queryByText(/Subtotal/)
+
+      expect(subtotal).not.toBeInTheDocument()
     })
   })
 

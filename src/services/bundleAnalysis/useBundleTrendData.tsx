@@ -133,11 +133,13 @@ interface UseBundleTrendDataArgs {
   branch: string
   bundle: string
   interval: (typeof BUNDLE_TREND_INTERVALS)[number]
-  before: string
-  after: string
+  before: Date
+  after: Date
   filters: {
     assetTypes: Array<(typeof BUNDLE_TREND_REPORT_TYPES)[number]>
   }
+  enabled?: boolean
+  suspense?: boolean
 }
 
 export const useBundleTrendData = ({
@@ -150,8 +152,12 @@ export const useBundleTrendData = ({
   before,
   after,
   filters,
+  enabled = true,
+  suspense = false,
 }: UseBundleTrendDataArgs) => {
   return useQuery({
+    enabled: enabled,
+    suspense: suspense,
     queryKey: [
       'GetBundleTrend',
       provider,
