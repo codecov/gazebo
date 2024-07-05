@@ -11,6 +11,7 @@ import AssetsTable from './AssetsTable'
 import { BundleChart } from './BundleChart'
 import BundleSummary from './BundleSummary'
 import InfoBanner from './InfoBanner'
+import { ToggleElement } from './ToggleElement'
 
 const AssetEmptyTable = lazy(() => import('./AssetsTable/EmptyTable'))
 const ErrorBanner = lazy(() => import('./ErrorBanner'))
@@ -47,7 +48,13 @@ const BundleContent: React.FC = () => {
         {bundleType === 'BundleAnalysisReport' ? (
           <Switch>
             <SentryRoute path="/:provider/:owner/:repo/bundles/:branch/:bundle">
-              <BundleChart />
+              <ToggleElement
+                showElement="Show chart"
+                hideElement="Hide chart"
+                localStorageKey="is-bundle-chart-hidden"
+              >
+                <BundleChart />
+              </ToggleElement>
               <Suspense fallback={<Loader />}>
                 <AssetsTable />
               </Suspense>
