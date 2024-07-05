@@ -9,8 +9,6 @@ import { cn } from 'shared/utils/cn'
 import Button from 'ui/Button'
 import Icon from 'ui/Icon'
 
-import './sentryFeedback.css'
-
 type toProps = {
   pageName: string
   options?: object
@@ -39,6 +37,7 @@ function HelpDropdown() {
         nameLabel: 'Username',
         isEmailRequired: true,
         autoInject: false,
+        id: 'help-dropdown-widget',
       }),
     []
   )
