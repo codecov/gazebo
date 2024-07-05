@@ -1,0 +1,189 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { renderHook, waitFor } from '@testing-library/react'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
+import { MemoryRouter, Route } from 'react-router-dom'
+
+import qs from 'querystring'
+
+import { Trend } from 'shared/utils/timeseriesCharts'
+
+import { useBundleAssetsTable } from './useBundleAssetsTable'
+
+const mockRepoOverview = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      private: false,
+      defaultBranch: 'main',
+      oldestCommitAt: '2022-10-10T11:59:59',
+      coverageEnabled: false,
+      bundleAnalysisEnabled: false,
+      languages: ['javascript'],
+      testAnalyticsEnabled: true,
+    },
+  },
+}
+
+const mockBranchBundles = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      branch: {
+        head: {
+          bundleAnalysisReport: {
+            __typename: 'BundleAnalysisReport',
+            bundle: {
+              bundleData: {
+                size: {
+                  uncompress: 12,
+                },
+              },
+              assets: [
+                {
+                  name: 'asset-1',
+                  extension: 'js',
+                  bundleData: {
+                    loadTime: {
+                      threeG: 1,
+                      highSpeed: 2,
+                    },
+                    size: {
+                      uncompress: 3,
+                      gzip: 4,
+                    },
+                  },
+                  measurements: {
+                    change: {
+                      size: {
+                        uncompress: 5,
+                      },
+                    },
+                    measurements: [
+                      { timestamp: '2022-10-10T11:59:59', avg: 6 },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+const initialEntry = '/gh/codecov/test-repo/bundles/test-branch/test-bundle'
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      suspense: true,
+    },
+  },
+})
+const wrapper =
+  (initialEntries = initialEntry): React.FC<React.PropsWithChildren> =>
+  ({ children }) =>
+    (
+      <QueryClientProvider client={queryClient}>
+        <Suspense>
+          <MemoryRouter initialEntries={[initialEntries]}>
+            <Route path={'/:provider/:owner/:repo/bundles/:branch/:bundle'}>
+              {children}
+            </Route>
+          </MemoryRouter>
+        </Suspense>
+      </QueryClientProvider>
+    )
+
+const server = setupServer()
+
+beforeAll(() => {
+  server.listen()
+})
+
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
+
+describe('useBundleAssetsTable', () => {
+  function setup() {
+    const queryVarMock = jest.fn()
+
+    server.use(
+      graphql.query('BundleAssets', (req, res, ctx) => {
+        queryVarMock(req.variables)
+        return res(ctx.status(200), ctx.data(mockBranchBundles))
+      }),
+      graphql.query('GetRepoOverview', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoOverview))
+      })
+    )
+
+    return { queryVarMock }
+  }
+
+  it('returns the bundle assets', async () => {
+    setup()
+  })
+
+  describe('no search params are set', () => {
+    it('uses the default trend of three months', async () => {
+      const { queryVarMock } = setup()
+
+      renderHook(
+        () =>
+          useBundleAssetsTable({
+            provider: 'gh',
+            owner: 'codecov',
+            repo: 'test-repo',
+            branch: 'test-branch',
+            bundle: 'test-bundle',
+          }),
+        { wrapper: wrapper() }
+      )
+
+      await waitFor(() =>
+        expect(queryVarMock).toHaveBeenCalledWith(
+          expect.objectContaining({
+            interval: 'INTERVAL_7_DAY',
+          })
+        )
+      )
+    })
+  })
+
+  describe('search params are set', () => {
+    it('uses the trend from the search params', async () => {
+      const { queryVarMock } = setup()
+
+      const url = `${initialEntry}?${qs.encode({ trend: Trend.SEVEN_DAYS })}`
+      renderHook(
+        () =>
+          useBundleAssetsTable({
+            provider: 'gh',
+            owner: 'codecov',
+            repo: 'test-repo',
+            branch: 'test-branch',
+            bundle: 'test-bundle',
+          }),
+        { wrapper: wrapper(url) }
+      )
+
+      await waitFor(() =>
+        expect(queryVarMock).toHaveBeenCalledWith(
+          expect.objectContaining({
+            interval: 'INTERVAL_1_DAY',
+          })
+        )
+      )
+    })
+  })
+})
