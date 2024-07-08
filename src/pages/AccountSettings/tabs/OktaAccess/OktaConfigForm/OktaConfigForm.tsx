@@ -34,15 +34,14 @@ export function OktaConfigForm() {
 
   const { provider, owner } = useParams<URLParams>()
 
-  const [oktaEnabled, setOktaEnabled] = useState(false)
-  const [oktaLoginEnforce, setOktaLoginEnforce] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
-
   const { data } = useOktaConfig({
     provider,
     username: owner,
   })
   const oktaConfig = data?.owner?.account?.oktaConfig
+  const [oktaEnabled, setOktaEnabled] = useState(oktaConfig?.enabled)
+  const [oktaLoginEnforce, setOktaLoginEnforce] = useState(oktaConfig?.enforced)
+  const [showPassword, setShowPassword] = useState(false)
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     console.log('Form Data: ', data)
@@ -91,6 +90,7 @@ export function OktaConfigForm() {
               </label>
               <div className="relative">
                 <TextInput
+                  defaultValue={oktaConfig?.clientSecret}
                   {...register('clientSecret', { required: true })}
                   type={showPassword ? 'text' : 'password'}
                   id="clientSecret"
@@ -119,6 +119,7 @@ export function OktaConfigForm() {
                 Redirect URI
               </label>
               <TextInput
+                defaultValue={oktaConfig?.url}
                 {...register('redirectUri', { required: true })}
                 type="text"
                 id="redirectUri"
@@ -133,7 +134,7 @@ export function OktaConfigForm() {
             <div>
               <Button
                 type="submit"
-                disabled={!formState.isValid}
+                disabled={!formState.isValid || !formState.isDirty}
                 to={undefined}
                 hook="save okta form changes"
               >
