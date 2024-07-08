@@ -1,0 +1,1 @@
+export { useOktaConfig } from './useOktaConfig'

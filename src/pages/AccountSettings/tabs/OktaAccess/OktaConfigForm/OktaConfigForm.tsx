@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
+import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import Banner from 'ui/Banner'
@@ -11,6 +12,8 @@ import Icon from 'ui/Icon'
 import TextInput from 'ui/TextInput'
 import Toggle from 'ui/Toggle'
 
+import { useOktaConfig } from '../hooks'
+
 const FormSchema = z.object({
   clientId: z.string().min(1, 'Client ID is required'),
   clientSecret: z.string().min(1, 'Client Secret is required'),
@@ -18,6 +21,10 @@ const FormSchema = z.object({
 })
 
 type FormValues = z.infer<typeof FormSchema>
+interface URLParams {
+  provider: string
+  owner: string
+}
 
 export function OktaConfigForm() {
   const { register, handleSubmit, formState } = useForm<FormValues>({
@@ -25,9 +32,17 @@ export function OktaConfigForm() {
     mode: 'onChange',
   })
 
+  const { provider, owner } = useParams<URLParams>()
+
   const [oktaEnabled, setOktaEnabled] = useState(false)
   const [oktaLoginEnforce, setOktaLoginEnforce] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+
+  const { data } = useOktaConfig({
+    provider,
+    username: owner,
+  })
+  const oktaConfig = data?.owner?.account?.oktaConfig
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     console.log('Form Data: ', data)
@@ -56,6 +71,7 @@ export function OktaConfigForm() {
                 Client ID
               </label>
               <TextInput
+                defaultValue={oktaConfig?.clientId}
                 {...register('clientId', {
                   required: true,
                 })}
