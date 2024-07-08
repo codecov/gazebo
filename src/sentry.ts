@@ -1,5 +1,4 @@
 import * as Sentry from '@sentry/react'
-import * as Spotlight from '@spotlightjs/spotlight'
 import { createBrowserHistory } from 'history'
 import { Route } from 'react-router-dom'
 
@@ -130,11 +129,4 @@ export const setupSentry = ({
     },
     ...deClutterConfig,
   })
-
-  if (config.NODE_ENV === 'development') {
-    Spotlight.init({
-      injectImmediately: true,
-      integrations: [Spotlight.sentry()],
-    })
-  }
 }

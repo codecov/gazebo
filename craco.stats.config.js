@@ -1,6 +1,5 @@
 /* eslint-disable camelcase */
 const { codecovWebpackPlugin } = require('@codecov/webpack-plugin')
-const WebpackHookPlugin = require('webpack-hook-plugin')
 
 const { resolve } = require('path')
 
@@ -27,13 +26,6 @@ module.exports = {
       sentry: resolve(__dirname, 'src/sentry'),
     },
     plugins: [
-      ...(process.env.NODE_ENV === 'development'
-        ? [
-            new WebpackHookPlugin({
-              onBuildStart: ['npx @spotlightjs/spotlight'],
-            }),
-          ]
-        : []),
       ...(process.env.CODECOV_ORG_TOKEN && process.env.CODECOV_API_URL
         ? [
             codecovWebpackPlugin({

@@ -1,6 +1,5 @@
 /* eslint-disable camelcase */
 const { sentryWebpackPlugin } = require('@sentry/webpack-plugin')
-const WebpackHookPlugin = require('webpack-hook-plugin')
 const WebpackBar = require('webpackbar')
 
 const { resolve } = require('path')
@@ -42,12 +41,7 @@ module.exports = {
     plugins: [
       ...(process.env.SENTRY_AUTH_TOKEN ? [SentryPlugin] : []),
       ...(process.env.NODE_ENV === 'development'
-        ? [
-            new WebpackBar({ color: '#FF6600' }),
-            new WebpackHookPlugin({
-              onBuildStart: ['npx @spotlightjs/spotlight'],
-            }),
-          ]
+        ? [new WebpackBar({ color: '#FF6600' })]
         : []),
     ],
   },
