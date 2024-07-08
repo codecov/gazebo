@@ -1,5 +1,6 @@
 import {
   findBundleMultiplier,
+  formatBundlePercentage,
   formatSizeToString,
   formatTimeToString,
 } from './bundleAnalysis'
@@ -172,5 +173,12 @@ describe('findBundleMultiplier', () => {
         expect(result).toBe(1_000_000_000)
       })
     })
+  })
+})
+
+describe('formatBundlePercentage', () => {
+  it('returns percentage with two decimal places', () => {
+    const result = formatBundlePercentage(0.123456)
+    expect(result).toBe('12.35%')
   })
 })
