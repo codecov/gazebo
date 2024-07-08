@@ -5,7 +5,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import AssetsTable from './AssetsTable'
+import { AssetsTable, genSizeColumn } from './AssetsTable'
 
 jest.mock('./EmptyTable', () => () => <div>EmptyTable</div>)
 
@@ -20,7 +20,7 @@ const mockAssets = {
             bundle: {
               bundleData: {
                 size: {
-                  uncompress: 12,
+                  uncompress: 4000,
                 },
               },
               assets: [
@@ -33,8 +33,8 @@ const mockAssets = {
                       highSpeed: 2000,
                     },
                     size: {
-                      uncompress: 3000,
-                      gzip: 4000,
+                      uncompress: 4000,
+                      gzip: 400,
                     },
                   },
                   measurements: {
@@ -261,7 +261,7 @@ describe('AssetsTable', () => {
         setup({})
         render(<AssetsTable />, { wrapper })
 
-        const [size] = await screen.findAllByText('3kB')
+        const [size] = await screen.findAllByText('100% (4kB)')
         expect(size).toBeInTheDocument()
       })
 
@@ -287,6 +287,29 @@ describe('AssetsTable', () => {
           expect(modulesTable).toBeInTheDocument()
         })
       })
+    })
+  })
+})
+
+describe('genSizeColumn', () => {
+  describe('totalBundleSize is undefined', () => {
+    it('returns just the size', () => {
+      const val = genSizeColumn({ size: 4000, totalBundleSize: undefined })
+      expect(val).toBe('4kB')
+    })
+  })
+
+  describe('totalBundleSize is null', () => {
+    it('returns just the size', () => {
+      const val = genSizeColumn({ size: 4000, totalBundleSize: undefined })
+      expect(val).toBe('4kB')
+    })
+  })
+
+  describe('totalBundleSize is defined', () => {
+    it('returns the size and percentage', () => {
+      const val = genSizeColumn({ size: 4000, totalBundleSize: 4000 })
+      expect(val).toBe('100% (4kB)')
     })
   })
 })

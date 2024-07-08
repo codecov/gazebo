@@ -13,6 +13,7 @@ import { useParams } from 'react-router-dom'
 
 import { useBundleAssets } from 'services/bundleAnalysis'
 import {
+  formatBundlePercentage,
   formatSizeToString,
   formatTimeToString,
 } from 'shared/utils/bundleAnalysis'
@@ -32,9 +33,25 @@ interface Column {
   loadTime: number
 }
 
+export const genSizeColumn = ({
+  size,
+  totalBundleSize,
+}: {
+  size: number
+  totalBundleSize: number | null | undefined
+}) => {
+  const formattedSize = formatSizeToString(size)
+  if (!totalBundleSize || totalBundleSize === null) {
+    return formattedSize
+  }
+
+  const percentage = formatBundlePercentage(size / totalBundleSize)
+  return `${percentage} (${formattedSize})`
+}
+
 const columnHelper = createColumnHelper<Column>()
 
-const columns = [
+const createColumns = (totalBundleSize: number | null) => [
   columnHelper.accessor('name', {
     header: 'Asset',
     cell: ({ getValue, row }) => {
@@ -68,7 +85,8 @@ const columns = [
   }),
   columnHelper.accessor('size', {
     header: 'Size',
-    cell: ({ getValue }) => formatSizeToString(getValue()),
+    cell: ({ getValue }) =>
+      genSizeColumn({ size: getValue(), totalBundleSize }),
   }),
   columnHelper.accessor('loadTime', {
     header: 'Estimated load time (3G)',
@@ -94,7 +112,7 @@ const Loader = ({ className }: LoaderProps) => (
   </div>
 )
 
-const AssetsTable: React.FC = () => {
+export const AssetsTable: React.FC = () => {
   const tableRef = useRef<HTMLDivElement | null>(null)
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const [sorting, setSorting] = useState([{ id: 'size', desc: true }])
@@ -121,6 +139,11 @@ const AssetsTable: React.FC = () => {
 
     return []
   }, [data])
+
+  const columns = useMemo(
+    () => createColumns(data?.bundleUncompressSize ?? null),
+    [data?.bundleUncompressSize]
+  )
 
   const table = useReactTable({
     columns,
@@ -154,7 +177,8 @@ const AssetsTable: React.FC = () => {
                   className={cs({
                     'w-full @4xl/filelist:w-8/12': header.column.id === 'name',
                     'w-2/12 hidden @4xl/filelist:block text-right':
-                      header.column.id === 'loadTime',
+                      header.column.id === 'loadTime' ||
+                      header.column.id === 'size',
                     'w-1/12 hidden @4xl/filelist:block text-right':
                       header.column.id !== 'name' &&
                       header.column.id !== 'loadTime',
@@ -212,7 +236,8 @@ const AssetsTable: React.FC = () => {
                           'w-full @4xl/filelist:w-8/12':
                             cell.column.id === 'name',
                           'w-2/12 hidden @4xl/filelist:block text-right':
-                            cell.column.id === 'loadTime',
+                            cell.column.id === 'loadTime' ||
+                            cell.column.id === 'size',
                           'w-1/12 hidden @4xl/filelist:block text-right':
                             cell.column.id !== 'name' &&
                             cell.column.id !== 'loadTime',
@@ -223,7 +248,10 @@ const AssetsTable: React.FC = () => {
                           <div>
                             Size:{' '}
                             <span className="font-mono">
-                              {formatSizeToString(row.original.size)}
+                              {genSizeColumn({
+                                size: row.original.size,
+                                totalBundleSize: data?.bundleUncompressSize,
+                              })}
                             </span>
                           </div>
                           <div>
@@ -259,5 +287,3 @@ const AssetsTable: React.FC = () => {
     </div>
   )
 }
-
-export default AssetsTable
