@@ -53,7 +53,7 @@ const ResponseSchema = z.object({
     .nullable(),
 })
 
-const SaveOktaConfigMessage = () => (
+export const SaveOktaConfigMessage = () => (
   <p>
     Error saving Okta config.{' '}
     <A to={{ pageName: 'support' }} hook="support-link" isExternal={true}>

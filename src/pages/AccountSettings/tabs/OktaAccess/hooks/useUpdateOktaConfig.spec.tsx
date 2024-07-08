@@ -6,7 +6,10 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useAddNotification } from 'services/toastNotification'
 
-import { useUpdateOktaConfig } from './useUpdateOktaConfig'
+import {
+  SaveOktaConfigMessage,
+  useUpdateOktaConfig,
+} from './useUpdateOktaConfig'
 
 jest.mock('services/toastNotification')
 const mockedToastNotification = useAddNotification as jest.Mock
@@ -110,7 +113,7 @@ describe('useUpdateOktaConfig', () => {
       )
     })
 
-    it('shows an error toast notification on error response', async () => {
+    it('shows an error toast notification on validation error response', async () => {
       setup({
         saveOktaConfig: {
           error: {
@@ -132,7 +135,63 @@ describe('useUpdateOktaConfig', () => {
       await waitFor(() =>
         expect(addToast).toHaveBeenCalledWith({
           type: 'error',
-          text: expect.anything(),
+          text: <SaveOktaConfigMessage />,
+          disappearAfter: 10000,
+        })
+      )
+    })
+
+    it('shows an error toast notification on unauthorized error response', async () => {
+      setup({
+        saveOktaConfig: {
+          error: {
+            __typename: 'UnauthorizedError',
+            message: 'Unauthorized',
+          },
+        },
+      })
+
+      const { result } = renderHook(
+        () => useUpdateOktaConfig({ provider, owner }),
+        {
+          wrapper: wrapper(),
+        }
+      )
+
+      result.current.mutate(oktaConfigDetails)
+
+      await waitFor(() =>
+        expect(addToast).toHaveBeenCalledWith({
+          type: 'error',
+          text: <SaveOktaConfigMessage />,
+          disappearAfter: 10000,
+        })
+      )
+    })
+
+    it('shows an error toast notification on unauthenticated error response', async () => {
+      setup({
+        saveOktaConfig: {
+          error: {
+            __typename: 'UnauthenticatedError',
+            message: 'Unauthenticated',
+          },
+        },
+      })
+
+      const { result } = renderHook(
+        () => useUpdateOktaConfig({ provider, owner }),
+        {
+          wrapper: wrapper(),
+        }
+      )
+
+      result.current.mutate(oktaConfigDetails)
+
+      await waitFor(() =>
+        expect(addToast).toHaveBeenCalledWith({
+          type: 'error',
+          text: <SaveOktaConfigMessage />,
           disappearAfter: 10000,
         })
       )
