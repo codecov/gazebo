@@ -1,12 +1,8 @@
 import cs from 'classnames'
 import { useSelect } from 'downshift'
-import Cookies from 'js-cookie'
 import { useHistory, useParams } from 'react-router-dom'
 
-import config, {
-  COOKIE_SESSION_EXPIRY,
-  LOCAL_STORAGE_SESSION_TRACKING_KEY,
-} from 'config'
+import config from 'config'
 
 import { providerToName } from 'shared/utils/provider'
 import Avatar from 'ui/Avatar'
@@ -56,8 +52,6 @@ function Dropdown({ currentUser }: { currentUser: CurrentUser }) {
       method: 'POST',
       credentials: 'include',
     })
-    localStorage.removeItem(LOCAL_STORAGE_SESSION_TRACKING_KEY)
-    Cookies.remove(COOKIE_SESSION_EXPIRY)
     history.replace('/login')
   }
 
