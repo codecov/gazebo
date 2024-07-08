@@ -49,6 +49,24 @@ export const genSizeColumn = ({
   return `${percentage} (${formattedSize})`
 }
 
+export const sortSizeColumn = ({
+  rowA,
+  rowB,
+  totalBundleSize,
+}: {
+  rowA: number
+  rowB: number
+  totalBundleSize: number | null | undefined
+}) => {
+  if (!totalBundleSize || totalBundleSize === null) {
+    return rowA - rowB
+  }
+
+  const percentageA = rowA / totalBundleSize
+  const percentageB = rowB / totalBundleSize
+  return percentageA - percentageB
+}
+
 const columnHelper = createColumnHelper<Column>()
 
 const createColumns = (totalBundleSize: number | null) => [
@@ -85,8 +103,16 @@ const createColumns = (totalBundleSize: number | null) => [
   }),
   columnHelper.accessor('size', {
     header: 'Size',
-    cell: ({ getValue }) =>
-      genSizeColumn({ size: getValue(), totalBundleSize }),
+    cell: ({ getValue }) => {
+      return genSizeColumn({ size: getValue(), totalBundleSize })
+    },
+    sortingFn: (rowA, rowB) => {
+      return sortSizeColumn({
+        rowA: rowA.original.size,
+        rowB: rowB.original.size,
+        totalBundleSize,
+      })
+    },
   }),
   columnHelper.accessor('loadTime', {
     header: 'Estimated load time (3G)',
