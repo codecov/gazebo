@@ -47,6 +47,7 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
 describe('OktaConfigForm', () => {
   function setup() {
     const user = userEvent.setup()
+    const mutate = jest.fn()
 
     server.use(
       graphql.query('GetOktaConfig', (req, res, ctx) =>
@@ -60,9 +61,21 @@ describe('OktaConfigForm', () => {
             },
           })
         )
-      )
+      ),
+      graphql.mutation('SaveOktaConfig', (req, res, ctx) => {
+        mutate(req.variables)
+
+        return res(
+          ctx.status(200),
+          ctx.data({
+            saveOktaConfig: {
+              error: null,
+            },
+          })
+        )
+      })
     )
-    return { user }
+    return { user, mutate }
   }
 
   it('should render Okta Config form header', async () => {
@@ -308,5 +321,58 @@ describe('OktaConfigForm', () => {
         expect(oktaLoginEnforceToggle).toHaveClass('bg-ds-gray-quinary')
       })
     })
+  })
+
+  it('should submit form with valid data', async () => {
+    const { user, mutate } = setup()
+    render(<OktaConfigForm />, { wrapper })
+
+    const clientIdInput = await screen.findByLabelText(/Client ID/)
+    const clientSecretInput = await screen.findByLabelText(/Client Secret/)
+    const redirectUriInput = await screen.findByLabelText(/Redirect URI/)
+
+    await user.clear(clientIdInput)
+    await user.clear(clientSecretInput)
+    await user.clear(redirectUriInput)
+
+    await user.type(clientIdInput, 'New client ID')
+    await user.type(clientSecretInput, 'New client secret')
+    await user.type(redirectUriInput, 'http://localhost:3000')
+
+    const saveButton = await screen.findByRole('button', { name: /Save/ })
+    await user.click(saveButton)
+
+    await waitFor(() => {
+      expect(mutate).toHaveBeenCalledWith({
+        input: {
+          clientId: 'New client ID',
+          clientSecret: 'New client secret',
+          url: 'http://localhost:3000',
+          orgUsername: 'codecov',
+        },
+      })
+    })
+  })
+
+  it('should disable button after submitting form', async () => {
+    setup()
+    render(<OktaConfigForm />, { wrapper })
+
+    const clientIdInput = await screen.findByLabelText(/Client ID/)
+    const clientSecretInput = await screen.findByLabelText(/Client Secret/)
+    const redirectUriInput = await screen.findByLabelText(/Redirect URI/)
+
+    await userEvent.clear(clientIdInput)
+    await userEvent.clear(clientSecretInput)
+    await userEvent.clear(redirectUriInput)
+
+    await userEvent.type(clientIdInput, 'New client ID')
+    await userEvent.type(clientSecretInput, 'New client secret')
+    await userEvent.type(redirectUriInput, 'http://localhost:3000')
+
+    const saveButton = await screen.findByRole('button', { name: /Save/ })
+    await userEvent.click(saveButton)
+
+    expect(saveButton).toBeDisabled()
   })
 })

@@ -12,7 +12,7 @@ import Icon from 'ui/Icon'
 import TextInput from 'ui/TextInput'
 import Toggle from 'ui/Toggle'
 
-import { useOktaConfig } from '../hooks'
+import { useOktaConfig, useUpdateOktaConfig } from '../hooks'
 
 const FormSchema = z.object({
   clientId: z.string().min(1, 'Client ID is required'),
@@ -27,7 +27,7 @@ interface URLParams {
 }
 
 export function OktaConfigForm() {
-  const { register, handleSubmit, formState } = useForm<FormValues>({
+  const { register, handleSubmit, formState, reset } = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     mode: 'onChange',
   })
@@ -39,12 +39,28 @@ export function OktaConfigForm() {
     username: owner,
   })
   const oktaConfig = data?.owner?.account?.oktaConfig
+  const { mutate } = useUpdateOktaConfig({ provider, owner })
+
   const [oktaEnabled, setOktaEnabled] = useState(oktaConfig?.enabled)
   const [oktaLoginEnforce, setOktaLoginEnforce] = useState(oktaConfig?.enforced)
   const [showPassword, setShowPassword] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log('Form Data: ', data)
+    setIsSubmitting(true)
+    mutate(
+      {
+        clientId: data.clientId,
+        clientSecret: data.clientSecret,
+        url: data.redirectUri,
+      },
+      {
+        onSettled: () => {
+          setIsSubmitting(false)
+          reset(data)
+        },
+      }
+    )
   }
 
   return (
@@ -134,11 +150,13 @@ export function OktaConfigForm() {
             <div>
               <Button
                 type="submit"
-                disabled={!formState.isValid || !formState.isDirty}
+                disabled={
+                  !formState.isValid || !formState.isDirty || isSubmitting
+                }
                 to={undefined}
                 hook="save okta form changes"
               >
-                Save
+                {isSubmitting ? 'Saving...' : 'Save'}
               </Button>
             </div>
           </div>
@@ -160,6 +178,11 @@ export function OktaConfigForm() {
                     if (oktaLoginEnforce) {
                       setOktaLoginEnforce(false)
                     }
+
+                    mutate({
+                      enabled: !oktaEnabled,
+                      enforced: oktaLoginEnforce ? false : oktaLoginEnforce,
+                    })
                   }}
                   value={oktaEnabled}
                   label="Okta Sync Enabled"
@@ -190,6 +213,11 @@ export function OktaConfigForm() {
                     if (!oktaLoginEnforce) {
                       setOktaEnabled(true)
                     }
+
+                    mutate({
+                      enforced: !oktaLoginEnforce,
+                      enabled: !oktaLoginEnforce ? true : oktaEnabled,
+                    })
                   }}
                   value={oktaLoginEnforce}
                   label="Okta Login Enforced"
