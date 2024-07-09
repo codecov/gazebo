@@ -82,7 +82,7 @@ query GetBundleTrend(
   $bundle: String!
   $interval: MeasurementInterval!
   $before: DateTime!
-  $after: DateTime!
+  $after: DateTime
   $filters: BundleAnalysisMeasurementsSetFilters
 ) {
   owner(username: $owner) {
