@@ -13,6 +13,7 @@ const baseClass = `
 `
 const variantClasses = {
   default: `text-ds-blue`,
+  newHeader: `font-semibold`, // clean up when old header gets removed
   header: `font-semibold text-ds-gray-secondary`,
   guestHeader: `font-semibold text-ds-gray-senary`,
   link: `text-ds-blue-darker`,

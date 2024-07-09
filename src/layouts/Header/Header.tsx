@@ -1,5 +1,8 @@
+import config from 'config'
+
 import { useUser } from 'services/user'
 
+import AdminLink from './components/AdminLink'
 import HelpDropdown from './components/HelpDropdown'
 import UserDropdown from './components/UserDropdown'
 
@@ -14,7 +17,12 @@ function Header() {
     <div className="container flex h-14 w-full items-center">
       <div className="flex-1">Navigation</div>
       <div className="flex items-center gap-4">
-        <div>Self hosted stuff</div>
+        {config.IS_SELF_HOSTED ? (
+          <>
+            <div>Self hosted seats</div>
+            <AdminLink />
+          </>
+        ) : null}
         <HelpDropdown />
         <UserDropdown />
       </div>
