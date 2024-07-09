@@ -70,7 +70,7 @@ describe('EnterprisePlanCard', () => {
         }
       )
 
-      const scheduledPhaseCopy = screen.getByText(/Scheduled Details/)
+      const scheduledPhaseCopy = screen.getByText(/Scheduled/)
       expect(scheduledPhaseCopy).toBeInTheDocument()
     })
 

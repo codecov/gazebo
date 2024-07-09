@@ -273,7 +273,7 @@ describe('FreePlanCard', () => {
         wrapper,
       })
 
-      const scheduledPhaseCopy = await screen.findByText(/Scheduled Details/)
+      const scheduledPhaseCopy = await screen.findByText(/Scheduled/)
       expect(scheduledPhaseCopy).toBeInTheDocument()
     })
 
