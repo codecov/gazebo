@@ -60,10 +60,6 @@ describe('BillingDetails', () => {
     server.use(
       rest.get('/internal/gh/:owner/account-details/', (req, res, ctx) => {
         if (hasSubscription) {
-          const sub = hasTax
-            ? { ...mockSubscription, taxIds: ['lol', 'nice'] }
-            : mockSubscription
-          console.log(hasTax, sub.taxIds.length > 0)
           return res(
             ctx.status(200),
             ctx.json({
