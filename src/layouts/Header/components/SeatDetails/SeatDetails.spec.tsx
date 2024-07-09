@@ -81,15 +81,15 @@ describe('SeatDetails', () => {
       })
     })
 
-    describe('values are undefined', () => {
-      beforeEach(() => {
+    describe('when values are undefined', () => {
+      it('renders error message', async () => {
         setup({ data: mockUndefinedSeats })
-      })
+        render(<SeatDetails />, { wrapper: wrapper({}) })
 
-      const { container } = render(<SeatDetails />, { wrapper: wrapper({}) })
-
-      it('renders nothing', () => {
-        expect(container).toBeEmptyDOMElement()
+        const message = await screen.findByText(
+          'Unable to get seat usage information'
+        )
+        expect(message).toBeInTheDocument()
       })
     })
   })

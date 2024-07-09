@@ -5,8 +5,8 @@ function SeatDetails() {
     suspense: false,
   })
 
-  if (!selfHostedSeats?.seatsUsed && !selfHostedSeats?.seatsLimit) {
-    return null
+  if (!selfHostedSeats?.seatsUsed || !selfHostedSeats?.seatsLimit) {
+    return <p>Unable to get seat usage information</p>
   }
 
   return (
