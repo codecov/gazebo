@@ -4,6 +4,8 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import config from 'config'
+
 import { User } from 'services/user'
 
 import Header from './Header'
@@ -11,6 +13,15 @@ import Header from './Header'
 jest.mock(
   'src/layouts/Header/components/UserDropdown',
   () => () => 'User Dropdown'
+)
+jest.mock(
+  'src/layouts/Header/components/HelpDropdown',
+  () => () => 'Help Dropdown'
+)
+jest.mock('src/layouts/Header/components/AdminLink', () => () => 'Admin Link')
+jest.mock(
+  'src/layouts/Header/components/SeatDetails',
+  () => () => 'Seat Details'
 )
 
 const mockUser = {
@@ -109,6 +120,26 @@ describe('Header', () => {
 
       const link = await screen.findByText('Guest header')
       expect(link).toBeInTheDocument()
+    })
+  })
+
+  describe('when on self-hosted', () => {
+    it('shows seat details', async () => {
+      config.IS_SELF_HOSTED = true
+      setup({})
+      render(<Header />, { wrapper })
+
+      const text = await screen.findByText(/Seat Details/)
+      expect(text).toBeInTheDocument()
+    })
+
+    it('shows Admin link', async () => {
+      config.IS_SELF_HOSTED = true
+      setup({})
+      render(<Header />, { wrapper })
+
+      const text = await screen.findByText(/Admin Link/)
+      expect(text).toBeInTheDocument()
     })
   })
 })
