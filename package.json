@@ -95,7 +95,6 @@
     "@codecov/webpack-plugin": "^0.0.1-beta.6",
     "@craco/craco": "^7.1.0",
     "@sentry/webpack-plugin": "^2.17.0",
-    "@spotlightjs/spotlight": "^1.2.7",
     "@storybook/addon-a11y": "^7.6.17",
     "@storybook/addon-actions": "^7.6.17",
     "@storybook/addon-essentials": "^7.6.17",
@@ -146,7 +145,6 @@
     "tailwindcss": "^3.4.4",
     "typescript": "^4.9.5",
     "webpack": "^5.84.1",
-    "webpack-hook-plugin": "^1.0.7",
     "webpackbar": "^6.0.1"
   },
   "engines": {

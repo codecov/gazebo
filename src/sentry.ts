@@ -1,5 +1,4 @@
 import * as Sentry from '@sentry/react'
-import * as Spotlight from '@spotlightjs/spotlight'
 import { createBrowserHistory } from 'history'
 import { Route } from 'react-router-dom'
 
@@ -79,7 +78,6 @@ export const setupSentry = ({
   const integrations = [replay, tracing]
 
   // Only show feedback button in production
-  // spotlight takes the place of the feedback widget in dev mode
   if (config.NODE_ENV === 'production') {
     const feedback = Sentry.feedbackIntegration({
       colorScheme: 'light',
@@ -130,11 +128,4 @@ export const setupSentry = ({
     },
     ...deClutterConfig,
   })
-
-  if (config.NODE_ENV === 'development') {
-    Spotlight.init({
-      injectImmediately: true,
-      integrations: [Spotlight.sentry()],
-    })
-  }
 }
