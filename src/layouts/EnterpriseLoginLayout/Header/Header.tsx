@@ -22,7 +22,7 @@ function Header() {
           to={{
             pageName: 'root',
           }}
-          variant="header"
+          variant="headerDeprecated"
           data-testid="homepage-link"
           hook="homepage-link"
           isExternal
@@ -33,7 +33,7 @@ function Header() {
         <A
           hook="header-enterprise"
           to={{ pageName: 'docs' }}
-          variant="header"
+          variant="headerDeprecated"
           showExternalIcon={false}
           isExternal
         >
@@ -41,7 +41,7 @@ function Header() {
         </A>
         <A
           to={{ pageName: 'support' }}
-          variant="header"
+          variant="headerDeprecated"
           showExternalIcon={false}
           hook="support-link"
           isExternal
@@ -50,7 +50,7 @@ function Header() {
         </A>
         <A
           to={{ pageName: 'blog' }}
-          variant="header"
+          variant="headerDeprecated"
           showExternalIcon={false}
           hook="blog-link"
           isExternal
