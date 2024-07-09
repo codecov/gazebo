@@ -1,6 +1,9 @@
 import { useParams } from 'react-router-dom'
 
+import { usePlanUpdatedNotification } from 'pages/PlanPage/context'
 import { useAccountDetails } from 'services/account'
+import { getScheduleStart } from 'shared/plan/ScheduledPlanDetails/ScheduledPlanDetails'
+import { Alert } from 'ui/Alert'
 
 import BillingDetails from './BillingDetails'
 import CurrentPlanCard from './CurrentPlanCard'
@@ -20,10 +23,17 @@ function CurrentOrgPlan() {
     owner,
   })
 
+  const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
+  const scheduleStart = scheduledPhase
+    ? getScheduleStart(scheduledPhase)
+    : undefined
+
   const shouldRenderBillingDetails =
     (accountDetails?.planProvider !== 'github' &&
       !accountDetails?.rootOrganization) ||
     accountDetails?.usesInvoice
+
+  const planUpdatedNotification = usePlanUpdatedNotification()
 
   return (
     <div className="w-full lg:w-4/5">
@@ -35,6 +45,20 @@ function CurrentOrgPlan() {
       <InfoMessageStripeCallback />
       {accountDetails?.plan ? (
         <div className="flex flex-col gap-4 sm:mr-4 sm:flex-initial md:w-2/3 lg:w-3/4">
+          {!!planUpdatedNotification?.variant && (
+            <Alert variant={planUpdatedNotification.variant}>
+              {scheduleStart && scheduledPhase?.quantity && (
+                <Alert.Title>Plan successfully updated.</Alert.Title>
+              )}
+              {!!planUpdatedNotification?.variant && (
+                <Alert.Description>
+                  {scheduleStart && scheduledPhase?.quantity
+                    ? `The start date is ${scheduleStart} with a monthly subscription for ${scheduledPhase.quantity} seats.`
+                    : 'Plan successfully updated.'}
+                </Alert.Description>
+              )}
+            </Alert>
+          )}
           <CurrentPlanCard />
           {shouldRenderBillingDetails && (
             <>
