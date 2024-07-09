@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook, waitFor } from '@testing-library/react'
+import { render, renderHook, screen, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -196,5 +196,25 @@ describe('useUpdateOktaConfig', () => {
         })
       )
     })
+  })
+})
+
+describe('When okta config message is rendered', () => {
+  it('renders the correct message', () => {
+    render(<SaveOktaConfigMessage />, { wrapper: wrapper() })
+
+    const message = screen.getByText(/Error saving Okta config./)
+    expect(message).toBeInTheDocument()
+  })
+
+  it('renders the correct link', () => {
+    render(<SaveOktaConfigMessage />, { wrapper: wrapper() })
+
+    const link = screen.getByText(/Contact us/)
+    expect(link).toBeInTheDocument()
+    expect(link).toHaveAttribute(
+      'href',
+      'https://codecovpro.zendesk.com/hc/en-us'
+    )
   })
 })
