@@ -78,7 +78,6 @@ export const setupSentry = ({
   const integrations = [replay, tracing]
 
   // Only show feedback button in production
-  // spotlight takes the place of the feedback widget in dev mode
   if (config.NODE_ENV === 'production') {
     const feedback = Sentry.feedbackIntegration({
       colorScheme: 'light',
