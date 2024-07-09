@@ -1,3 +1,5 @@
+import { Suspense } from 'react'
+
 import config from 'config'
 
 import { useUser } from 'services/user'
@@ -19,10 +21,10 @@ function Header() {
       <div className="flex-1">Navigation</div>
       <div className="flex items-center gap-4">
         {config.IS_SELF_HOSTED ? (
-          <>
+          <Suspense fallback={null}>
             <SeatDetails />
             <AdminLink />
-          </>
+          </Suspense>
         ) : null}
         <HelpDropdown />
         <UserDropdown />

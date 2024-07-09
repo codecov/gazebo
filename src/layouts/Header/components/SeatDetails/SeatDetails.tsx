@@ -1,9 +1,7 @@
 import { useSelfHostedSeatsConfig } from 'services/selfHosted'
 
 function SeatDetails() {
-  const { data: selfHostedSeats } = useSelfHostedSeatsConfig({
-    suspense: false,
-  })
+  const { data: selfHostedSeats } = useSelfHostedSeatsConfig()
 
   if (!selfHostedSeats?.seatsUsed || !selfHostedSeats?.seatsLimit) {
     return <p>Unable to get seat usage information</p>
