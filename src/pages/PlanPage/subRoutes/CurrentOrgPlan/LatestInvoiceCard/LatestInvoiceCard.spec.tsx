@@ -40,8 +40,8 @@ describe('LatestInvoiceCard', () => {
       expect(tab).toBeInTheDocument()
     })
 
-    it('renders the link to See All invoices', () => {
-      const tab = screen.getByText(/See all invoices/)
+    it('renders the link to View all invoices', () => {
+      const tab = screen.getByText(/View/)
       expect(tab).toBeInTheDocument()
     })
   })

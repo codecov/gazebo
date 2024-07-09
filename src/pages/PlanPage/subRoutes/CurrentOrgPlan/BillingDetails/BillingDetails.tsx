@@ -38,6 +38,14 @@ function BillingDetails() {
         provider={provider}
         owner={owner}
       />
+      {subscriptionDetail.taxIds.length > 0 ? (
+        <div className="flex flex-col gap-2 p-4">
+          <h4 className="font-semibold">Tax ID</h4>
+          {subscriptionDetail.taxIds.map((val, index) => (
+            <p key={index}>{val}</p>
+          ))}
+        </div>
+      ) : null}
     </div>
   )
 }

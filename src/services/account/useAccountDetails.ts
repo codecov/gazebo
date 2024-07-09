@@ -98,7 +98,8 @@ export const SubscriptionDetailSchema = z
       .nullable(),
     defaultPaymentMethod: PaymentMethodSchema.nullable(),
     latestInvoice: InvoiceSchema,
-    trialEnd: z.number().nullish(),
+    taxIds: z.array(z.string()),
+    trialEnd: z.number().nullable(),
   })
   .nullable()
 

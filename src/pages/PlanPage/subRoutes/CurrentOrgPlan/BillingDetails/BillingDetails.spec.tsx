@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -7,6 +7,8 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import BillingDetails from './BillingDetails'
 
 jest.mock('./PaymentCard/PaymentCard', () => () => 'Payment Card')
+jest.mock('./EmailAddress/EmailAddress', () => () => 'Email Address')
+jest.mock('./Address/AddressCard', () => () => 'Address Card')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -28,7 +30,8 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 interface SetupArgs {
-  hasSubscription: boolean
+  hasSubscription?: boolean
+  hasTax?: boolean
 }
 
 const mockSubscription = {
@@ -45,20 +48,29 @@ const mockSubscription = {
   },
   currentPeriodEnd: 1606851492,
   cancelAtPeriodEnd: false,
+  taxIds: [],
 }
 
 describe('BillingDetails', () => {
   function setup(
-    { hasSubscription = true }: SetupArgs = {
+    { hasSubscription = true, hasTax = false }: SetupArgs = {
       hasSubscription: true,
     }
   ) {
     server.use(
       rest.get('/internal/gh/:owner/account-details/', (req, res, ctx) => {
         if (hasSubscription) {
+          const sub = hasTax
+            ? { ...mockSubscription, taxIds: ['lol', 'nice'] }
+            : mockSubscription
+          console.log(hasTax, sub.taxIds.length > 0)
           return res(
             ctx.status(200),
-            ctx.json({ subscriptionDetail: mockSubscription })
+            ctx.json({
+              subscriptionDetail: hasTax
+                ? { ...mockSubscription, taxIds: ['lol', 'nice'] }
+                : mockSubscription,
+            })
           )
         } else {
           return res(ctx.status(200), ctx.json({ subscriptionDetail: null }))
@@ -68,15 +80,45 @@ describe('BillingDetails', () => {
   }
 
   describe('when there is a subscription', () => {
-    beforeEach(() => {
-      setup({ hasSubscription: true })
-    })
-
     it('renders the payment card', async () => {
+      setup({ hasSubscription: true })
       render(<BillingDetails />, { wrapper })
 
       const paymentCard = await screen.findByText(/Payment Card/)
       expect(paymentCard).toBeInTheDocument()
+    })
+
+    it('renders the email address component', async () => {
+      setup({ hasSubscription: true })
+      render(<BillingDetails />, { wrapper })
+
+      const emailCard = await screen.findByText(/Email Address/)
+      expect(emailCard).toBeInTheDocument()
+    })
+
+    it('renders the address card', async () => {
+      setup({ hasSubscription: true })
+      render(<BillingDetails />, { wrapper })
+
+      const addressCard = await screen.findByText(/Address Card/)
+      expect(addressCard).toBeInTheDocument()
+    })
+
+    it('renders the tax information if exists', async () => {
+      setup({ hasSubscription: true, hasTax: true })
+      render(<BillingDetails />, { wrapper })
+
+      const taxSection = await screen.findByText(/Tax ID/)
+      expect(taxSection).toBeInTheDocument()
+    })
+
+    it('does not render tax info if does not exist', async () => {
+      setup({ hasSubscription: true, hasTax: false })
+      render(<BillingDetails />, { wrapper })
+
+      await waitFor(() => {
+        expect(screen.queryByText(/Tax ID/)).not.toBeInTheDocument()
+      })
     })
   })
 
