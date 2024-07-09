@@ -4,6 +4,7 @@ import { useUser } from 'services/user'
 
 import AdminLink from './components/AdminLink'
 import HelpDropdown from './components/HelpDropdown'
+import SeatDetails from './components/SeatDetails'
 import UserDropdown from './components/UserDropdown'
 
 function Header() {
@@ -19,7 +20,7 @@ function Header() {
       <div className="flex items-center gap-4">
         {config.IS_SELF_HOSTED ? (
           <>
-            <div>Self hosted seats</div>
+            <SeatDetails />
             <AdminLink />
           </>
         ) : null}
