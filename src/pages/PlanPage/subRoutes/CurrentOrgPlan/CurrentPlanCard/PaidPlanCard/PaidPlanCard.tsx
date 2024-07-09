@@ -35,12 +35,15 @@ function PaidPlanCard() {
 
   return (
     <div className="flex flex-col border">
-      <div className="p-4">
-        <h2 className="font-semibold">{marketingName} plan</h2>
-        <span className="text-gray-500">Current plan</span>
+      <div className="flex justify-between p-4">
+        <div>
+          <h2 className="font-semibold">{marketingName} plan</h2>
+          <span className="text-gray-500">Current plan</span>
+        </div>
+        <ActionsBilling />
       </div>
       <hr />
-      <div className="grid gap-4 p-4 sm:grid-cols-2 sm:gap-0">
+      <div className="grid gap-4 p-4 sm:grid-cols-2 sm:gap-0 sm:gap-y-5">
         <div className="flex flex-col gap-2">
           <p className="text-xs font-semibold">Includes</p>
           <BenefitList
@@ -49,9 +52,9 @@ function PaidPlanCard() {
             iconColor="text-ds-pink-quinary"
           />
         </div>
-        <div className="flex flex-col gap-3 border-t pt-2 sm:border-0 sm:p-0">
-          <p className="text-xs font-semibold">Pricing</p>
-          <div>
+        <div className="flex flex-col border-t pt-2 sm:border-0 sm:p-0">
+          <p className="mb-2 text-xs font-semibold">Pricing</p>
+          <div className="mb-4">
             {value && baseUnitPrice ? (
               <PlanPricing value={value} baseUnitPrice={baseUnitPrice} />
             ) : null}
@@ -61,17 +64,19 @@ function PaidPlanCard() {
               </p>
             ) : null}
           </div>
-          <ActionsBilling />
           {scheduledPhase ? (
             <ScheduledPlanDetails scheduledPhase={scheduledPhase} />
           ) : null}
-          {isNumber(numberOfUploads) && isTeamPlan(plan?.value) ? (
+        </div>
+        {isNumber(numberOfUploads) && isTeamPlan(plan?.value) ? (
+          <div>
+            <p className="mb-2 text-xs font-semibold">Private repo uploads</p>
             <p className="text-xs text-ds-gray-senary">
               {numberOfUploads} of {planData?.plan?.monthlyUploadLimit} uploads
               in the last 30 days
             </p>
-          ) : null}
-        </div>
+          </div>
+        ) : null}
       </div>
     </div>
   )

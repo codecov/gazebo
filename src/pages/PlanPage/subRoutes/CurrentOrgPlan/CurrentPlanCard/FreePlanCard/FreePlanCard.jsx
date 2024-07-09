@@ -74,9 +74,11 @@ function FreePlanCard({ plan, scheduledPhase }) {
               iconColor="text-ds-pink-quinary"
             />
           </div>
-          <div className="flex flex-col gap-3 border-t pt-2 sm:border-0 sm:p-0">
-            <p className="text-xs font-semibold">Pricing</p>
-            <PlanPricing value={planValue} baseUnitPrice={baseUnitPrice} />
+          <div className="flex flex-col border-t pt-2 sm:border-0 sm:p-0">
+            <p className="mb-2 text-xs font-semibold">Pricing</p>
+            <div className="mb-4">
+              <PlanPricing value={planValue} baseUnitPrice={baseUnitPrice} />
+            </div>
             <div>
               {isNumber(uploadsNumber) && (
                 <p className="mt-4 text-xs text-ds-gray-senary">
