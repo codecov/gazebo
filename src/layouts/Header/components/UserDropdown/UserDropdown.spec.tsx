@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { rest } from 'msw'
+import { graphql, rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route, Switch, useLocation } from 'react-router-dom'
 
@@ -9,18 +9,54 @@ import config from 'config'
 
 import { useImage } from 'services/image'
 
-import Dropdown from './Dropdown'
+import UserDropdown from './UserDropdown'
 
-const currentUser = {
-  user: {
-    username: 'chetney',
-    avatarUrl: 'http://127.0.0.1/avatar-url',
+const mockUser = {
+  me: {
+    owner: {
+      defaultOrgUsername: 'codecov',
+    },
+    email: 'jane.doe@codecov.io',
+    privateAccess: true,
+    onboardingCompleted: true,
+    businessEmail: 'jane.doe@codecov.io',
+    termsAgreement: true,
+    user: {
+      name: 'Jane Doe',
+      username: 'janedoe',
+      avatarUrl: 'http://127.0.0.1/avatar-url',
+      avatar: 'http://127.0.0.1/avatar-url',
+      student: false,
+      studentCreatedAt: null,
+      studentUpdatedAt: null,
+      customerIntent: 'PERSONAL',
+    },
+    trackingMetadata: {
+      service: 'github',
+      ownerid: 123,
+      serviceId: '123',
+      plan: 'users-basic',
+      staff: false,
+      hasYaml: false,
+      bot: null,
+      delinquent: null,
+      didTrial: null,
+      planProvider: null,
+      planUserCount: 1,
+      createdAt: 'timestamp',
+      updatedAt: 'timestamp',
+      profile: {
+        createdAt: 'timestamp',
+        otherGoal: null,
+        typeProjects: [],
+        goals: [],
+      },
+    },
   },
 }
 
 jest.mock('services/image')
 jest.mock('config')
-
 jest.mock('js-cookie')
 
 const queryClient = new QueryClient({
@@ -62,7 +98,7 @@ afterAll(() => {
   server.close()
 })
 
-describe('Dropdown', () => {
+describe('UserDropdown', () => {
   function setup({ selfHosted } = { selfHosted: false }) {
     const mockUseImage = useImage as jest.Mock
     mockUseImage.mockReturnValue({
@@ -73,7 +109,12 @@ describe('Dropdown', () => {
     config.IS_SELF_HOSTED = selfHosted
     config.API_URL = ''
 
-    server.use(rest.post('/logout', (req, res, ctx) => res(ctx.status(205))))
+    server.use(
+      rest.post('/logout', (req, res, ctx) => res(ctx.status(205))),
+      graphql.query('CurrentUser', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data(mockUser))
+      )
+    )
 
     return {
       user: userEvent.setup(),
@@ -84,7 +125,7 @@ describe('Dropdown', () => {
     beforeEach(() => setup())
 
     it('renders the users avatar', () => {
-      render(<Dropdown currentUser={currentUser} />, {
+      render(<UserDropdown />, {
         wrapper: wrapper(),
       })
 
@@ -100,7 +141,7 @@ describe('Dropdown', () => {
     describe('when the avatar is clicked', () => {
       it('shows settings link', async () => {
         const { user } = setup()
-        render(<Dropdown currentUser={currentUser} />, {
+        render(<UserDropdown />, {
           wrapper: wrapper(),
         })
 
@@ -111,12 +152,12 @@ describe('Dropdown', () => {
 
         const link = screen.getByText('Settings')
         expect(link).toBeVisible()
-        expect(link).toHaveAttribute('href', '/account/gh/chetney')
+        expect(link).toHaveAttribute('href', '/account/gh/janedoe')
       })
 
       it('shows sign out button', async () => {
         const { user } = setup()
-        render(<Dropdown currentUser={currentUser} />, {
+        render(<UserDropdown />, {
           wrapper: wrapper(),
         })
 
@@ -133,7 +174,7 @@ describe('Dropdown', () => {
         const { user } = setup()
 
         jest.spyOn(console, 'error').mockImplementation()
-        render(<Dropdown currentUser={currentUser} />, {
+        render(<UserDropdown />, {
           wrapper: wrapper(),
         })
 
@@ -149,7 +190,7 @@ describe('Dropdown', () => {
 
       it('shows manage app access link', async () => {
         const { user } = setup()
-        render(<Dropdown currentUser={currentUser} />, {
+        render(<UserDropdown />, {
           wrapper: wrapper(),
         })
 
@@ -173,7 +214,7 @@ describe('Dropdown', () => {
     describe('when the avatar is clicked', () => {
       it('shows settings link', async () => {
         const { user } = setup()
-        render(<Dropdown currentUser={currentUser} />, {
+        render(<UserDropdown />, {
           wrapper: wrapper('/gl'),
         })
 
@@ -184,12 +225,12 @@ describe('Dropdown', () => {
 
         const link = screen.getByText('Settings')
         expect(link).toBeVisible()
-        expect(link).toHaveAttribute('href', '/account/gl/chetney')
+        expect(link).toHaveAttribute('href', '/account/gl/janedoe')
       })
 
       it('shows sign out button', async () => {
         const { user } = setup()
-        render(<Dropdown currentUser={currentUser} />, {
+        render(<UserDropdown />, {
           wrapper: wrapper('/gl'),
         })
 
@@ -206,7 +247,7 @@ describe('Dropdown', () => {
         const { user } = setup()
 
         jest.spyOn(console, 'error').mockImplementation()
-        render(<Dropdown currentUser={currentUser} />, {
+        render(<UserDropdown />, {
           wrapper: wrapper(),
         })
 
@@ -222,7 +263,7 @@ describe('Dropdown', () => {
 
       it('does not show manage app access link', async () => {
         const { user } = setup()
-        render(<Dropdown currentUser={currentUser} />, {
+        render(<UserDropdown />, {
           wrapper: wrapper('/gl'),
         })
 

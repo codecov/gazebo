@@ -93,6 +93,9 @@ type IncrementKeys = {
       checkout_from_page: string
     }
   }
+  old_session_expiry: {
+    cleanup: string
+  }
 }
 
 type SetKeys = {

@@ -106,7 +106,7 @@ query BundleAssets(
   $bundle: String!
   $interval: MeasurementInterval!
   $before: DateTime!
-  $after: DateTime!
+  $after: DateTime
 ) {
   owner(username: $owner) {
     repository(name: $repo) {

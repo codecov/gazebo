@@ -21,7 +21,7 @@ function Header() {
 
   return (
     <div className="flex items-center">
-      <Avatar user={ownerData} bordered />
+      <Avatar user={ownerData} border="light" />
       <h2 className="mx-2 text-xl font-semibold">{ownerData?.username}</h2>
     </div>
   )

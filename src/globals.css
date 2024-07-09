@@ -80,11 +80,49 @@
     --color-bitbucket: 0, 82, 204;
     /* --color-okta: 0, 41, 122; */
     --color-okta: 25, 25, 25;
+
+    /* Sentry User Feedback widget styles */
+    --widget-accent-background: rgb(var(--color-ds-blue-darker));
+    --widget-background-hover: rgb(var(--color-ds-blue-quinary));
+    --widget-font-family: 'Poppins', sans-serif;
   }
 }
 
 #sentry-feedback {
-  --accent-background: rgb(var(--color-ds-blue-darker));
-  --accent-background-hover: rgb(var(--color-ds-blue-quinary));
-  --font-family: 'Poppins', sans-serif;
+  --accent-background: var(--widget-accent-background);
+  --accent-background-hover: var(--widget-background-hover);
+  --font-family: var(--widget-font-family);
+}
+
+@layer components {
+  .widget {
+    --inset: 32px 44px auto auto;
+  }
+
+  .sm-widget {
+    --inset: 32px calc(50% - 276px) auto auto;
+  }
+
+  .md-widget {
+    --inset: 32px calc(50% - 340px) auto auto;
+  }
+
+  .lg-widget {
+    --inset: 32px calc(50% - 468px) auto auto;
+  }
+
+  .xl-widget {
+    --inset: 32px calc(50% - 596px) auto auto;
+  }
+
+  .twoxl-widget {
+    --inset: 32px calc(50% - 724px) auto auto;
+  }
+}
+
+#help-dropdown-widget {
+  --accent-background: var(--widget-accent-background);
+  --accent-background-hover: var(--widget-background-hover);
+  --font-family: var(--widget-font-family);
+  @apply widget sm:sm-widget md:md-widget lg:lg-widget xl:xl-widget 2xl:twoxl-widget;
 }

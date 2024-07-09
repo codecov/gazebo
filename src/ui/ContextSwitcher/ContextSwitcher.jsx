@@ -53,7 +53,7 @@ function ContextItem({ context, defaultOrgUsername, setToggle, owner }) {
           mutate({ username: orgUsername })
         }}
       >
-        <Avatar user={contextOwner} bordered />
+        <Avatar user={contextOwner} border="light" />
         <div className={cs('mx-1', { 'font-semibold': owner === orgUsername })}>
           {orgUsername}
         </div>
@@ -146,7 +146,7 @@ function ContextSwitcher({
         aria-expanded={toggle}
         onClick={() => setToggle((toggle) => !toggle)}
       >
-        <Avatar user={activeContext} bordered />
+        <Avatar user={activeContext} border="light" />
         <p className="ml-1">{activeContext?.username}</p>
         <span
           aria-hidden="true"

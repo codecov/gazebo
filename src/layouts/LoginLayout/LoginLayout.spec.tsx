@@ -55,7 +55,9 @@ afterAll(() => {
 describe('LoginLayout', () => {
   function setup() {
     server.use(
-      graphql.query('CurrentUser', (req, res, ctx) => res(ctx.status(200)))
+      graphql.query('CurrentUser', (req, res, ctx) =>
+        res(ctx.status(200), ctx.data({ me: null }))
+      )
     )
     mockedUseLocation.mockReturnValue({ search: [] })
     mockedUseFlags.mockReturnValue({ newHeader: false })
@@ -97,18 +99,6 @@ describe('LoginLayout', () => {
   })
 
   describe('when session is expired', () => {
-    it('renders the expiry banner when local storage prop set', async () => {
-      setup()
-
-      jest
-        .spyOn(window.localStorage.__proto__, 'getItem')
-        .mockReturnValue('true')
-
-      render(<LoginLayout>child content</LoginLayout>, { wrapper: wrapper() })
-      await waitFor(() => {
-        expect(screen.getByText(/Your session has expired/)).toBeInTheDocument()
-      })
-    })
     it('renders the expiry banner when query param set', async () => {
       setup()
 
@@ -139,7 +129,7 @@ describe('LoginLayout', () => {
 
       render(<LoginLayout>child content</LoginLayout>, { wrapper: wrapper() })
 
-      const newHeader = await screen.findByText('New header')
+      const newHeader = await screen.findByText('Guest header')
       expect(newHeader).toBeInTheDocument()
     })
   })

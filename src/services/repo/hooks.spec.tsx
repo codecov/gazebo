@@ -145,12 +145,16 @@ describe('useRepo', () => {
 describe('useEraseRepoContent', () => {
   function setup() {
     server.use(
-      rest.patch(
-        `internal/github/codecov/repos/test/erase/`,
-        (req, res, ctx) => {
-          return res(ctx.status(200), ctx.json({}))
-        }
-      )
+      graphql.mutation('EraseRepository', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({
+            eraseRepository: {
+              data: null,
+            },
+          })
+        )
+      })
     )
   }
 
