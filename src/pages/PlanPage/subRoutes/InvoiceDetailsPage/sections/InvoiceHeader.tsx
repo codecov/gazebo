@@ -22,12 +22,6 @@ function InvoiceHeader({ invoice, accountDetails }: InvoiceHeaderProps) {
     CollectionMethods.INVOICED_CUSTOMER_METHOD
   const dueDate = isInvoicedCustomer ? invoice.dueDate : invoice.created
 
-  invoice.taxIds = [
-    { value: 'CA BN 123456789' },
-    { value: 'CA GST/HST 123456789RT0002' },
-    { value: 'CA PST-BC PST-1234-5678' },
-  ]
-
   return (
     <div className="flex flex-col gap-6 text-lg">
       <div className="flex justify-between">
