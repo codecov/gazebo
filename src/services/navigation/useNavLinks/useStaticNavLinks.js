@@ -413,5 +413,19 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    expiredReports: {
+      text: 'Expired Reports',
+      path: () =>
+        'https://docs.codecov.com/docs/codecov-yaml#section-expired-reports',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    unusableReports: {
+      text: 'Unusable Reports',
+      path: () =>
+        'https://docs.codecov.com/docs/error-reference#unusable-reports',
+      isExternalLink: true,
+      openNewTab: true,
+    },
   }
 }

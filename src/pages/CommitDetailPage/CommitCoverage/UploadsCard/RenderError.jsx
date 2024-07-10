@@ -2,12 +2,34 @@ import PropTypes from 'prop-types'
 import { useMemo } from 'react'
 
 import { ErrorCodeEnum, UploadStateEnum } from 'shared/utils/commit'
+import A from 'ui/A'
 import Icon from 'ui/Icon'
 
 const UploadErrorMessage = Object.freeze({
-  [ErrorCodeEnum.fileNotFoundInStorage]: 'processing failed',
-  [ErrorCodeEnum.reportExpired]: 'upload expired',
-  [ErrorCodeEnum.reportEmpty]: 'unusable report',
+  [ErrorCodeEnum.fileNotFoundInStorage]:
+    'Upload failed. Please rerun the upload.',
+  [ErrorCodeEnum.reportExpired]: (
+    <span>
+      Upload exceeds the max age of 12h. Please download and review your report
+      or turn off the age check by visiting{' '}
+      <A
+        to={{
+          pageName: 'expiredReports',
+        }}
+      >
+        expired reports
+      </A>
+      .
+    </span>
+  ),
+  [ErrorCodeEnum.reportEmpty]: (
+    <span>
+      Unusable report due to issues such as source code unavailability, path
+      mismatch, empty report, or incorrect data format. Please visit our{' '}
+      <A to={{ pageName: 'unusableReports' }}>troubleshooting document</A> for
+      assistance.
+    </span>
+  ),
   noMatch: 'unknown error',
 })
 
@@ -20,8 +42,15 @@ function humanReadableError(errorCode) {
   return UploadErrorMessage.noMatch
 }
 
-const generateText = (count, string) => ({
-  readableError: count > 1 ? `${string} (${count})` : string,
+const GenerateText = (count, string) => ({
+  readableError:
+    count > 1 ? (
+      <>
+        {string} ({count})
+      </>
+    ) : (
+      <>{string}</>
+    ),
 })
 
 const generateFinalErrors = ({
@@ -34,7 +63,7 @@ const generateFinalErrors = ({
 
   if (processingFailedErrors > 0) {
     newErrors.push(
-      generateText(
+      GenerateText(
         processingFailedErrors,
         UploadErrorMessage.FILE_NOT_IN_STORAGE
       )
@@ -43,7 +72,7 @@ const generateFinalErrors = ({
 
   if (uploadExpiredErrors > 0) {
     newErrors.push(
-      generateText(uploadExpiredErrors, UploadErrorMessage.REPORT_EXPIRED)
+      GenerateText(uploadExpiredErrors, UploadErrorMessage.REPORT_EXPIRED)
     )
   }
 
@@ -61,12 +90,12 @@ const generateFinalErrors = ({
 
   if (uploadIsEmptyErrors > 0) {
     newErrors.push(
-      generateText(uploadIsEmptyErrors, UploadErrorMessage.REPORT_EMPTY)
+      GenerateText(uploadIsEmptyErrors, UploadErrorMessage.REPORT_EMPTY)
     )
   }
 
   if (unknownErrors > 0) {
-    newErrors.push(generateText(unknownErrors, UploadErrorMessage.noMatch))
+    newErrors.push(GenerateText(unknownErrors, UploadErrorMessage.noMatch))
   }
 
   return newErrors
@@ -115,16 +144,16 @@ const RenderError = ({ errors = [], state }) => {
       {filteredErrors.map(({ errorCode, readableError }, i) => (
         <span
           key={`errorCode-${errorCode}-${i}`}
-          className="flex items-center gap-1 text-ds-primary-red"
+          className="mt-3 flex items-start gap-1 text-ds-primary-red"
         >
           <Icon size="sm" name="exclamation" variant="solid" />
-          {readableError}
+          <p className="w-11/12">{readableError}</p>
         </span>
       ))}
       {filteredErrors.length === 0 &&
         typeof state === 'string' &&
         state?.toUpperCase() === UploadStateEnum.error && (
-          <span className="flex items-center gap-1 text-ds-primary-red">
+          <span className="mt-3 flex items-center gap-1 text-ds-primary-red">
             <Icon size="sm" name="exclamation" variant="solid" />
             {humanReadableError()}
           </span>
