@@ -18,7 +18,7 @@ export function LoginPrompt() {
     >
       <A
         to={{ pageName: 'signIn', options: { to } }}
-        variant="header"
+        variant="headerDeprecated"
         isExternal={false}
         hook="desktop-menu-login-link"
       >
@@ -54,7 +54,7 @@ export const LogoButton = ({
         pageName: pageName,
         options: { owner: defaultOrg },
       }}
-      variant="header"
+      variant="headerDeprecated"
       data-testid="homepage-link"
       isExternal={pageName === 'root' ? true : false}
       hook="desktop-menu-homepage-link"
@@ -80,7 +80,7 @@ function DesktopMenu() {
         <LogoButton defaultOrg={defaultOrg} />
         <A
           to={{ pageName: 'docs' }}
-          variant="header"
+          variant="headerDeprecated"
           isExternal={false}
           showExternalIcon={false}
           hook="desktop-menu-docs-link"
@@ -89,7 +89,7 @@ function DesktopMenu() {
         </A>
         <A
           to={{ pageName: 'support' }}
-          variant="header"
+          variant="headerDeprecated"
           isExternal={false}
           showExternalIcon={false}
           hook="desktop-menu-support-link"
@@ -98,7 +98,7 @@ function DesktopMenu() {
         </A>
         <A
           to={{ pageName: 'blog' }}
-          variant="header"
+          variant="headerDeprecated"
           isExternal={false}
           showExternalIcon={false}
           hook="desktop-menu-blog-link"

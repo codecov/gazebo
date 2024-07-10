@@ -3,7 +3,7 @@ import A from 'ui/A'
 import Icon from 'ui/Icon'
 
 function AdminLink() {
-  const { data: user } = useSelfHostedCurrentUser({ suspense: false })
+  const { data: user } = useSelfHostedCurrentUser()
 
   if (!user?.isAdmin) {
     return null
@@ -11,7 +11,7 @@ function AdminLink() {
 
   return (
     <A
-      variant="headerDeprecated"
+      variant="header"
       to={{ pageName: 'access' }}
       isExternal={false}
       hook="header-admin-link"
