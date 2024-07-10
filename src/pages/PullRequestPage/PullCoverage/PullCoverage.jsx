@@ -7,6 +7,7 @@ import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
 import { useRepoOverview } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
+import GitHubRateLimitExceededBanner from 'shared/GlobalBanners/GitHubRateLimitExceeded/GitHubRateLimitExceededBanner'
 import { ComparisonReturnType } from 'shared/utils/comparison'
 import { metrics } from 'shared/utils/metrics'
 import Spinner from 'ui/Spinner'
@@ -168,6 +169,7 @@ function PullCoverage() {
       </Suspense>
       <div className="grid grid-cols-1 gap-4 space-y-2 lg:grid-cols-2">
         <article className="col-span-2 flex flex-col gap-3 md:gap-0">
+          <GitHubRateLimitExceededBanner />
           <PullCoverageTabs />
           <PullCoverageContent />
         </article>

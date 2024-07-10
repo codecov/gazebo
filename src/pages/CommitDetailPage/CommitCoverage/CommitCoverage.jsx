@@ -9,6 +9,7 @@ import { useCommitErrors } from 'services/commitErrors'
 import { useRepoOverview } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { useOwner } from 'services/user'
+import GitHubRateLimitExceededBanner from 'shared/GlobalBanners/GitHubRateLimitExceeded/GitHubRateLimitExceededBanner'
 import { extractUploads } from 'shared/utils/extractUploads'
 import { metrics } from 'shared/utils/metrics'
 import Spinner from 'ui/Spinner'
@@ -182,6 +183,7 @@ function CommitCoverage() {
       {showFirstPullBanner ? <FirstPullBanner /> : null}
       {/**we are currently capturing a single error*/}
       <CommitErrorBanners />
+      <GitHubRateLimitExceededBanner />
       <div className="flex flex-col gap-8 md:flex-row-reverse">
         <aside className="flex flex-1 flex-col gap-6 self-start md:sticky md:top-1.5 md:max-w-sm">
           <Suspense fallback={<Loader />}>

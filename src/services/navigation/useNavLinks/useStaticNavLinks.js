@@ -184,6 +184,13 @@ export function useStaticNavLinks() {
       text: 'Codecov Github App',
       openNewTab: true,
     },
+    githubRateLimitExceeded: {
+      path: () =>
+        'https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api',
+      isExternalLink: true,
+      text: 'Github documentation',
+      openNewTab: true,
+    },
     teamBot: {
       path: () => 'https://docs.codecov.com/docs/team-bot',
       isExternalLink: true,
