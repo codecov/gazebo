@@ -40,7 +40,7 @@ function InvoiceHeader({ invoice, accountDetails }: InvoiceHeaderProps) {
           <address className="not-italic text-gray-800">
             Functional Software, dba Sentry
             <br />
-            45 Fremont St.
+            45 Fremont St. 8th Floor
             <br />
             San Francisco, CA 94105
             <br />

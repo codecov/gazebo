@@ -1,9 +1,8 @@
 import { fromUnixTime } from 'date-fns'
 import { format, utcToZonedTime } from 'date-fns-tz'
-import PropType from 'prop-types'
 import { z } from 'zod'
 
-import { invoicePropType, InvoiceSchema } from 'services/account'
+import { InvoiceSchema } from 'services/account'
 
 interface InvoiceOverviewProps {
   isPaid: boolean
@@ -40,16 +39,17 @@ const InvoiceOverview = ({
           </tr>
           <tr>
             <td className="pr-2">Date due</td>
-            <td>
-              {dueDate &&
-                format(
+            {dueDate ? (
+              <td>
+                {format(
                   utcToZonedTime(fromUnixTime(dueDate), 'UTC'),
                   'MMMM do, yyyy',
                   { timeZone: 'UTC' }
                 )}
-            </td>
+              </td>
+            ) : null}
           </tr>
-          {card && (
+          {card ? (
             <tr>
               <td className="pr-2">Payment method</td>
               <td>Ending in: {`${card.last4}`}</td>
@@ -58,17 +58,11 @@ const InvoiceOverview = ({
                 {` ${card.expMonth}/${card.expYear}`}
               </td>
             </tr>
-          )}
+          ) : null}
         </tbody>
       </table>
     </div>
   )
-}
-
-InvoiceOverview.propTypes = {
-  invoice: invoicePropType,
-  isPaid: PropType.bool.isRequired,
-  dueDate: PropType.number.isRequired,
 }
 
 export default InvoiceOverview
