@@ -42,9 +42,9 @@ const TestComponent = () => {
       <button onClick={() => setCrumbs()}>clear crumbs</button>
       <Link to="/plan/gh/codecov">base path</Link>
       <Link to=".">refresh</Link>
-      {planUpdatedNotification?.alertOption && (
+      {planUpdatedNotification?.alertOption ? (
         <div>Alert option is {planUpdatedNotification.alertOption}</div>
-      )}
+      ) : null}
       <button
         onClick={() => setPlanUpdatedNotification({ alertOption: 'success' })}
       >

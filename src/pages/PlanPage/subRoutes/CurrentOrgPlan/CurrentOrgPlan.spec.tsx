@@ -6,7 +6,7 @@ import { z } from 'zod'
 
 import { PlanUpdatedPlanNotificationContext } from 'pages/PlanPage/context'
 import { AccountDetailsSchema, useAccountDetails } from 'services/account'
-import { AlertOptions } from 'ui/Alert'
+import { AlertOptions, type AlertOptionsType } from 'ui/Alert'
 
 import CurrentOrgPlan from './CurrentOrgPlan'
 
@@ -32,24 +32,9 @@ const mockedAccountDetails = {
   usesInvoice: false,
 } as z.infer<typeof AccountDetailsSchema>
 
-// const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-//   <MemoryRouter initialEntries={['/billing/gh/codecov']}>
-//     <Route path="/billing/:provider/:owner">
-//       <QueryClientProvider client={queryClient}>
-//         <PlanUpdatedPlanNotificationContext.Provider
-//           value={{
-//             updatedNotification: { alertOption: 'success' },
-//             setUpdatedNotification: noop,
-//           }}
-//         >
-//           {children}
-//         </PlanUpdatedPlanNotificationContext.Provider>
-//       </QueryClientProvider>
-//     </Route>
-//   </MemoryRouter>
-// )
-
-const alertOptionWrapperCreator = (alertOptionString: string) => {
+const alertOptionWrapperCreator = (
+  alertOptionString: AlertOptionsType | ''
+) => {
   const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
     <MemoryRouter initialEntries={['/billing/gh/codecov']}>
       <Route path="/billing/:provider/:owner">
@@ -71,27 +56,6 @@ const alertOptionWrapperCreator = (alertOptionString: string) => {
 
 const wrapper = alertOptionWrapperCreator(AlertOptions.SUCCESS)
 const noUpdatedPlanWrapper = alertOptionWrapperCreator('')
-const nonAlertOptionUpdatedPlanWrapper =
-  alertOptionWrapperCreator('random string')
-
-// const noAlertOptionWrapper: React.FC<React.PropsWithChildren> = ({
-//   children,
-// }) => (
-//   <MemoryRouter initialEntries={['/billing/gh/codecov']}>
-//     <Route path="/billing/:provider/:owner">
-//       <QueryClientProvider client={queryClient}>
-//         <PlanUpdatedPlanNotificationContext.Provider
-//           value={{
-//             updatedNotification: { alertOption: '' },
-//             setUpdatedNotification: noop,
-//           }}
-//         >
-//           {children}
-//         </PlanUpdatedPlanNotificationContext.Provider>
-//       </QueryClientProvider>
-//     </Route>
-//   </MemoryRouter>
-// )
 
 describe('CurrentOrgPlan', () => {
   function setup({
@@ -127,26 +91,6 @@ describe('CurrentOrgPlan', () => {
   })
 
   describe('when plan update success banner should be shown', () => {
-    // beforeEach(() => {
-    //   setup({
-    //     accountDetails: {
-    //       plan: {
-    //         baseUnitPrice: 12,
-    //         billingRate: 'monthly',
-    //         marketingName: 'Pro',
-    //         quantity: 39,
-    //         value: 'users-pr-inappm',
-    //       },
-    //       scheduleDetail: {
-    //         scheduledPhase: {
-    //           quantity: 34,
-    //           plan: 'monthly',
-    //           startDate: 1722631954,
-    //         },
-    //       },
-    //     } as z.infer<typeof AccountDetailsSchema>,
-    //   })
-    // })
     it('renders banner for plan successfully updated', () => {
       setup({
         accountDetails: {
@@ -206,23 +150,6 @@ describe('CurrentOrgPlan', () => {
       expect(
         screen.queryByText('Plan successfully updated.')
       ).not.toBeInTheDocument()
-    })
-
-    it('renders a banner even if the alert option does not match the preset Alert variant options', () => {
-      setup({
-        accountDetails: {
-          plan: {
-            baseUnitPrice: 12,
-            billingRate: 'monthly',
-            marketingName: 'Pro',
-            quantity: 39,
-            value: 'users-pr-inappm',
-          },
-        } as z.infer<typeof AccountDetailsSchema>,
-      })
-
-      render(<CurrentOrgPlan />, { wrapper: nonAlertOptionUpdatedPlanWrapper })
-      expect(screen.getByText('Plan successfully updated.')).toBeInTheDocument()
     })
   })
 

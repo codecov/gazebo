@@ -2,6 +2,7 @@ import isEqual from 'lodash/isEqual'
 import noop from 'lodash/noop'
 import {
   createContext,
+  ReactNode,
   useCallback,
   useContext,
   useMemo,
@@ -10,20 +11,45 @@ import {
 import { useLocation } from 'react-router-dom'
 
 import { useNavLinks } from 'services/navigation'
+import { AlertOptionsType } from 'ui/Alert'
 
-const base = [{ pageName: 'planTab' }]
-const PlanBreadcrumbContext = createContext([])
-const PlanBreadcrumbSettersContext = createContext({
+interface Breadcrumb {
+  pageName: string
+}
+interface BreadcrumbSetters {
+  addBreadcrumb: (crumbs?: Breadcrumb[]) => void
+}
+
+const base: Breadcrumb[] = [{ pageName: 'planTab' }]
+
+const PlanBreadcrumbContext = createContext<Breadcrumb[]>([])
+const PlanBreadcrumbSettersContext = createContext<BreadcrumbSetters>({
   addBreadcrumb: noop,
 })
 PlanBreadcrumbContext.displayName = 'PlanBreadcrumbContext'
 
-export const PlanUpdatedPlanNotificationContext = createContext({
-  setUpdatedNotification: noop,
-  updatedNotification: { alertOption: '' },
-})
+interface UpdatedNotificationSetters {
+  setUpdatedNotification: React.Dispatch<
+    React.SetStateAction<UpdatedNotification>
+  >
+  updatedNotification: UpdatedNotification
+}
 
-export function PlanProvider({ children }) {
+interface UpdatedNotification {
+  alertOption: AlertOptionsType | ''
+}
+
+export const PlanUpdatedPlanNotificationContext =
+  createContext<UpdatedNotificationSetters>({
+    setUpdatedNotification: noop,
+    updatedNotification: { alertOption: '' },
+  })
+
+interface PlanProviderProps {
+  children: ReactNode
+}
+
+export function PlanProvider({ children }: PlanProviderProps) {
   const location = useLocation()
   const [breadcrumbs, setBreadcrumbs] = useState(base)
 
@@ -34,15 +60,16 @@ export function PlanProvider({ children }) {
     setBreadcrumbs(base)
   }
 
-  const addBreadcrumb = useCallback((crumbs = []) => {
+  const addBreadcrumb = useCallback((crumbs: Breadcrumb[] = []) => {
     setBreadcrumbs(() => [...base, ...crumbs])
   }, [])
 
   const breadcrumbSetters = useMemo(() => ({ addBreadcrumb }), [addBreadcrumb])
 
-  const [updatedNotification, setUpdatedNotification] = useState({
-    alertOption: '',
-  })
+  const [updatedNotification, setUpdatedNotification] =
+    useState<UpdatedNotification>({
+      alertOption: '',
+    })
   const updatedContextValue = { updatedNotification, setUpdatedNotification }
 
   return (

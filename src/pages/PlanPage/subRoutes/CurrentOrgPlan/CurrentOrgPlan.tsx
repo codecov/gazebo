@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { usePlanUpdatedNotification } from 'pages/PlanPage/context'
 import { useAccountDetails } from 'services/account'
 import { getScheduleStart } from 'shared/plan/ScheduledPlanDetails/ScheduledPlanDetails'
-import { Alert, AlertOptions } from 'ui/Alert'
+import { Alert } from 'ui/Alert'
 
 import BillingDetails from './BillingDetails'
 import CurrentPlanCard from './CurrentPlanCard'
@@ -46,15 +46,7 @@ function CurrentOrgPlan() {
       {accountDetails?.plan ? (
         <div className="flex flex-col gap-4 sm:mr-4 sm:flex-initial md:w-2/3 lg:w-3/4">
           {planUpdatedNotification.alertOption ? (
-            <Alert
-              variant={
-                Object.values(AlertOptions).includes(
-                  planUpdatedNotification.alertOption as AlertOptions
-                )
-                  ? (planUpdatedNotification.alertOption as AlertOptions)
-                  : AlertOptions.INFO
-              }
-            >
+            <Alert variant={planUpdatedNotification.alertOption}>
               {scheduleStart && scheduledPhase?.quantity ? (
                 <>
                   <Alert.Title>Plan successfully updated.</Alert.Title>

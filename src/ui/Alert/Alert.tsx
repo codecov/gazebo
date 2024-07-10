@@ -4,12 +4,18 @@ import * as React from 'react'
 import { cn } from 'shared/utils/cn'
 import Icon from 'ui/Icon'
 
-export enum AlertOptions {
-  ERROR = 'error',
-  INFO = 'info',
-  SUCCESS = 'success',
-  WARNING = 'warning',
-}
+export const AlertOptions = {
+  ERROR: 'error',
+  INFO: 'info',
+  SUCCESS: 'success',
+  WARNING: 'warning',
+} as const
+
+export type AlertOptionsType =
+  | typeof AlertOptions.ERROR
+  | typeof AlertOptions.INFO
+  | typeof AlertOptions.SUCCESS
+  | typeof AlertOptions.WARNING
 
 const alertVariants = cva('relative w-full border-l-4 p-4', {
   variants: {
