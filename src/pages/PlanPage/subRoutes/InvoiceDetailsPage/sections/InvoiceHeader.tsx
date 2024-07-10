@@ -1,13 +1,19 @@
 import { fromUnixTime } from 'date-fns'
 import { format } from 'date-fns-tz'
+import { z } from 'zod'
 
-import { accountDetailsPropType, invoicePropType } from 'services/account'
+import { AccountDetailsSchema, InvoiceSchema } from 'services/account'
 import { CollectionMethods } from 'shared/utils/billing'
 
 import { generateAddressInfo } from './generateAddressInfo'
 import InvoiceOverview from './InvoiceOverview'
 
-function InvoiceHeader({ invoice, accountDetails }) {
+interface InvoiceHeaderProps {
+  invoice: z.infer<typeof InvoiceSchema>
+  accountDetails: z.infer<typeof AccountDetailsSchema>
+}
+
+function InvoiceHeader({ invoice, accountDetails }: InvoiceHeaderProps) {
   const addressInfo = generateAddressInfo(accountDetails)
   const isPaid = invoice.status === 'paid'
 
@@ -23,7 +29,7 @@ function InvoiceHeader({ invoice, accountDetails }) {
         <div>
           <img
             alt="Codecov Logo"
-            src={`${process.env.PUBLIC_URL}/logo.png`}
+            src={`${process.env.PUBLIC_URL}/logo.svg`}
             width={200}
           />
         </div>
@@ -32,20 +38,23 @@ function InvoiceHeader({ invoice, accountDetails }) {
         <div>
           <p className="font-semibold">Codecov</p>
           <address className="not-italic text-gray-800">
-            Codecov LLC
+            Functional Software, dba Sentry
             <br />
-            9450 SW Gemini Drive
+            45 Fremont St. 8th Floor
             <br />
-            #32076
-            <br />
-            Beaverton, OR 97008-7105
+            San Francisco, CA 94105
             <br />
             United States
           </address>
+          <p>support@codecov.io</p>
+
+          <p className="mt-2 font-semibold">
+            ${(invoice.total / 100).toFixed(2)} {isPaid ? 'paid on' : 'due'}{' '}
+            {dueDate && format(fromUnixTime(dueDate), 'MMMM do yyyy')}
+          </p>
         </div>
         <div>
           <p className="font-semibold">Bill to</p>
-          <p>{invoice.customerName}</p>
           <address className="not-italic text-gray-800">
             {addressInfo.map((addressItem, i) => (
               <span key={`${addressItem}-${i}`}>
@@ -55,19 +64,19 @@ function InvoiceHeader({ invoice, accountDetails }) {
             ))}
           </address>
           <p>{invoice.customerEmail}</p>
+
+          {invoice.taxIds.length > 0 ? (
+            <div className="mt-2">
+              <p className="font-semibold">Tax Information</p>
+              {invoice.taxIds.map((val, index) => (
+                <p key={index}>{val?.value}</p>
+              ))}
+            </div>
+          ) : null}
         </div>
       </div>
-      <p className="font-semibold">
-        ${(invoice.total / 100).toFixed(2)} {isPaid ? 'paid on' : 'due'}{' '}
-        {format(fromUnixTime(dueDate), 'MMMM do yyyy')}
-      </p>
     </div>
   )
-}
-
-InvoiceHeader.propTypes = {
-  invoice: invoicePropType,
-  accountDetails: accountDetailsPropType.isRequired,
 }
 
 export default InvoiceHeader

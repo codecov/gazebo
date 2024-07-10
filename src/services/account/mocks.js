@@ -39,6 +39,7 @@ export const invoiceObject = {
   periodStart: 1633801075,
   status: 'paid',
   subtotal: 1407.0,
+  taxIds: [],
   total: 1407.0,
 }
 
