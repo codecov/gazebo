@@ -173,7 +173,7 @@ describe('InvoiceDetail', () => {
     })
 
     it('does not render the tax information for customer if does not exist', async () => {
-      setup({ taxId: [] })
+      setup({ taxIds: [] })
 
       await waitFor(() => {
         expect(screen.queryByText(/Tax information/)).not.toBeInTheDocument()
