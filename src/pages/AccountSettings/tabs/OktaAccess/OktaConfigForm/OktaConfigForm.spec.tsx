@@ -1,22 +1,81 @@
-import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { OktaConfigForm } from './OktaConfigForm'
 
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+})
+const server = setupServer()
+
+beforeAll(() => {
+  server.listen()
+})
+
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
+
+const oktaConfigMock = {
+  enabled: true,
+  enforced: true,
+  url: 'https://okta.com',
+  clientId: 'clientId',
+  clientSecret: 'clientSecret',
+}
+
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <MemoryRouter initialEntries={['/account/gh/codecov/okta-access/']}>
-    <Route path="/account/:provider/:owner/okta-access/">
-      <Suspense fallback={null}>{children}</Suspense>
-    </Route>
-  </MemoryRouter>
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter initialEntries={['/account/gh/codecov/okta-access/']}>
+      <Route path="/account/:provider/:owner/okta-access/">
+        <Suspense fallback={null}>{children}</Suspense>
+      </Route>
+    </MemoryRouter>
+  </QueryClientProvider>
 )
 
 describe('OktaConfigForm', () => {
   function setup() {
     const user = userEvent.setup()
-    return { user }
+    const mutate = jest.fn()
+
+    server.use(
+      graphql.query('GetOktaConfig', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              account: {
+                oktaConfig: oktaConfigMock,
+              },
+            },
+          })
+        )
+      ),
+      graphql.mutation('SaveOktaConfig', (req, res, ctx) => {
+        mutate(req.variables)
+
+        return res(
+          ctx.status(200),
+          ctx.data({
+            saveOktaConfig: {
+              error: null,
+            },
+          })
+        )
+      })
+    )
+    return { user, mutate }
   }
 
   it('should render Okta Config form header', async () => {
@@ -205,6 +264,115 @@ describe('OktaConfigForm', () => {
     })
 
     expect(saveButton).toBeInTheDocument()
+    expect(saveButton).toBeDisabled()
+  })
+
+  describe('form should render default values for Okta Config', () => {
+    it('renders default values for client id', async () => {
+      setup()
+      render(<OktaConfigForm />, { wrapper })
+
+      const clientIdInput = await screen.findByLabelText(/Client ID/)
+      await waitFor(() => {
+        expect(clientIdInput).toHaveValue('clientId')
+      })
+    })
+
+    it('renders default values for client secret', async () => {
+      setup()
+      render(<OktaConfigForm />, { wrapper })
+
+      const clientSecretInput = await screen.findByLabelText(/Client Secret/)
+      await waitFor(() => {
+        expect(clientSecretInput).toHaveValue('clientSecret')
+      })
+    })
+
+    it('renders default values for redirect uri', async () => {
+      setup()
+      render(<OktaConfigForm />, { wrapper })
+
+      const redirectUriInput = await screen.findByLabelText(/Redirect URI/)
+      await waitFor(() => {
+        expect(redirectUriInput).toHaveValue('https://okta.com')
+      })
+    })
+
+    it('renders default values for Okta Sync Enabled toggle', async () => {
+      setup()
+      render(<OktaConfigForm />, { wrapper })
+
+      const oktaSyncEnabledToggle = await screen.findByRole('button', {
+        name: /Okta Sync Enabled/,
+      })
+      await waitFor(() => {
+        expect(oktaSyncEnabledToggle).toHaveClass('bg-ds-gray-quinary')
+      })
+    })
+
+    it('renders default values for Okta Login Enforce toggle', async () => {
+      setup()
+      render(<OktaConfigForm />, { wrapper })
+
+      const oktaLoginEnforceToggle = await screen.findByRole('button', {
+        name: /Okta Login Enforced/,
+      })
+      await waitFor(() => {
+        expect(oktaLoginEnforceToggle).toHaveClass('bg-ds-gray-quinary')
+      })
+    })
+  })
+
+  it('should submit form with valid data', async () => {
+    const { user, mutate } = setup()
+    render(<OktaConfigForm />, { wrapper })
+
+    const clientIdInput = await screen.findByLabelText(/Client ID/)
+    const clientSecretInput = await screen.findByLabelText(/Client Secret/)
+    const redirectUriInput = await screen.findByLabelText(/Redirect URI/)
+
+    await user.clear(clientIdInput)
+    await user.clear(clientSecretInput)
+    await user.clear(redirectUriInput)
+
+    await user.type(clientIdInput, 'New client ID')
+    await user.type(clientSecretInput, 'New client secret')
+    await user.type(redirectUriInput, 'http://localhost:3000')
+
+    const saveButton = await screen.findByRole('button', { name: /Save/ })
+    await user.click(saveButton)
+
+    await waitFor(() => {
+      expect(mutate).toHaveBeenCalledWith({
+        input: {
+          clientId: 'New client ID',
+          clientSecret: 'New client secret',
+          url: 'http://localhost:3000',
+          orgUsername: 'codecov',
+        },
+      })
+    })
+  })
+
+  it('should disable button after submitting form', async () => {
+    setup()
+    render(<OktaConfigForm />, { wrapper })
+
+    const clientIdInput = await screen.findByLabelText(/Client ID/)
+    const clientSecretInput = await screen.findByLabelText(/Client Secret/)
+    const redirectUriInput = await screen.findByLabelText(/Redirect URI/)
+
+    await userEvent.clear(clientIdInput)
+    await userEvent.clear(clientSecretInput)
+    await userEvent.clear(redirectUriInput)
+
+    await userEvent.type(clientIdInput, 'New client ID')
+    await userEvent.type(clientSecretInput, 'New client secret')
+    await userEvent.type(redirectUriInput, 'http://localhost:3000')
+
+    const saveButton = await screen.findByRole('button', { name: /Save/ })
+    await userEvent.click(saveButton)
+
     expect(saveButton).toBeDisabled()
   })
 })
