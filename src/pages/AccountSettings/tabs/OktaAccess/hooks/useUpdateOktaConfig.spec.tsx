@@ -85,7 +85,7 @@ describe('useUpdateOktaConfig', () => {
       )
     })
 
-    it('failes on invalid response schema', async () => {
+    it('fails on invalid response schema', async () => {
       setup({
         saveOktaConfig: {
           error: {

@@ -181,7 +181,7 @@ export function OktaConfigForm() {
 
                     mutate({
                       enabled: !oktaEnabled,
-                      enforced: oktaLoginEnforce ? false : oktaLoginEnforce,
+                      enforced: false,
                     })
                   }}
                   value={oktaEnabled}
