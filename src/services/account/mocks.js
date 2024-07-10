@@ -126,6 +126,7 @@ export const accountDetailsObject = {
         phone: null,
       },
     },
+    tax_ids: [],
     trial_end: null,
     cancel_at_period_end: false,
     current_period_end: 1636479475,
@@ -239,6 +240,7 @@ export const accountDetailsParsedObj = {
       },
     },
     trialEnd: null,
+    taxIds: [],
     cancelAtPeriodEnd: false,
     currentPeriodEnd: 1636479475,
     customer: {
