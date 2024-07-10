@@ -42,11 +42,11 @@ const TestComponent = () => {
       <button onClick={() => setCrumbs()}>clear crumbs</button>
       <Link to="/plan/gh/codecov">base path</Link>
       <Link to=".">refresh</Link>
-      {planUpdatedNotification?.variant && (
-        <div>Variant is {planUpdatedNotification.variant}</div>
+      {planUpdatedNotification?.alertOption && (
+        <div>Alert option is {planUpdatedNotification.alertOption}</div>
       )}
       <button
-        onClick={() => setPlanUpdatedNotification({ variant: 'success' })}
+        onClick={() => setPlanUpdatedNotification({ alertOption: 'success' })}
       >
         set plan updated notification
       </button>
@@ -160,7 +160,7 @@ describe('Plan breadcrumb context', () => {
       })
       await user.click(button)
 
-      const newNotificationTitle = screen.getByText('Variant is success')
+      const newNotificationTitle = screen.getByText('Alert option is success')
       expect(newNotificationTitle).toBeInTheDocument()
     })
     it('clears out notification on page refresh', async () => {
@@ -183,8 +183,9 @@ describe('Plan breadcrumb context', () => {
       const link = screen.getByRole('link', { name: 'refresh' })
       await user.click(link)
 
-      const newNotificationDescription =
-        screen.queryByText('Variant is success')
+      const newNotificationDescription = screen.queryByText(
+        'Alert option is success'
+      )
       expect(newNotificationDescription).not.toBeInTheDocument()
     })
   })

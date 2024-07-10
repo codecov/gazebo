@@ -28,7 +28,7 @@ const alertVariants = cva('relative w-full border-l-4 p-4', {
 export function variantToIcon(variant?: string | null) {
   let classname = 'float-left -mt-1 mr-2 align-middle'
   switch (variant) {
-    case 'error':
+    case AlertOptions.ERROR:
       return (
         <Icon
           variant="outline"
@@ -38,7 +38,7 @@ export function variantToIcon(variant?: string | null) {
           className={`stroke-ds-primary-red ${classname}`}
         />
       )
-    case 'info':
+    case AlertOptions.INFO:
       return (
         <Icon
           variant="outline"
@@ -48,7 +48,7 @@ export function variantToIcon(variant?: string | null) {
           className={`stroke-ds-blue-darker ${classname}`}
         />
       )
-    case 'success':
+    case AlertOptions.SUCCESS:
       return (
         <Icon
           variant="outline"
@@ -58,7 +58,7 @@ export function variantToIcon(variant?: string | null) {
           className={`stroke-green-500 ${classname}`}
         />
       )
-    case 'warning':
+    case AlertOptions.WARNING:
       return (
         <Icon
           variant="outline"

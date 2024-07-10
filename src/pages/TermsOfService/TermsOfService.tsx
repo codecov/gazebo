@@ -238,6 +238,7 @@ export default function TermsOfService() {
           </p>
         )}
         <div className="mt-3 flex justify-end">
+          <Button variant="secondary">Back</Button>
           <Button
             disabled={isDisabled({
               isValid: formState.isValid,

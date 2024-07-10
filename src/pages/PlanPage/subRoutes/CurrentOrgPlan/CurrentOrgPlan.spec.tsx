@@ -48,6 +48,25 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   </MemoryRouter>
 )
 
+const noAlertOptionWrapper: React.FC<React.PropsWithChildren> = ({
+  children,
+}) => (
+  <MemoryRouter initialEntries={['/billing/gh/codecov']}>
+    <Route path="/billing/:provider/:owner">
+      <QueryClientProvider client={queryClient}>
+        <PlanUpdatedPlanNotificationContext.Provider
+          value={{
+            updatedNotification: { alertOption: '' },
+            setUpdatedNotification: noop,
+          }}
+        >
+          {children}
+        </PlanUpdatedPlanNotificationContext.Provider>
+      </QueryClientProvider>
+    </Route>
+  </MemoryRouter>
+)
+
 describe('CurrentOrgPlan', () => {
   function setup({
     accountDetails = mockedAccountDetails,
@@ -82,24 +101,7 @@ describe('CurrentOrgPlan', () => {
   })
 
   describe('when plan update success banner should be shown', () => {
-    it('renders banner for plan successfully updated', () => {
-      setup({
-        accountDetails: {
-          plan: {
-            baseUnitPrice: 12,
-            billingRate: 'monthly',
-            marketingName: 'Pro',
-            quantity: 39,
-            value: 'users-pr-inappm',
-          },
-        } as z.infer<typeof AccountDetailsSchema>,
-      })
-      render(<CurrentOrgPlan />, { wrapper })
-      expect(
-        screen.getByText(/Plan successfully updated./i)
-      ).toBeInTheDocument()
-    })
-    it('renders banner for plan successfully updated with scheduled details', () => {
+    beforeEach(() => {
       setup({
         accountDetails: {
           plan: {
@@ -118,10 +120,22 @@ describe('CurrentOrgPlan', () => {
           },
         } as z.infer<typeof AccountDetailsSchema>,
       })
+    })
+    it('renders banner for plan successfully updated', () => {
+      render(<CurrentOrgPlan />, { wrapper })
+      expect(screen.getByText('Plan successfully updated.')).toBeInTheDocument()
+    })
+    it('renders banner for plan successfully updated with scheduled details', () => {
       render(<CurrentOrgPlan />, { wrapper })
       expect(
         screen.getByText(/with a monthly subscription for 34 seats/i)
       ).toBeInTheDocument()
+    })
+    it('does not render banner when no recent update made', () => {
+      render(<CurrentOrgPlan />, { wrapper: noAlertOptionWrapper })
+      expect(
+        screen.queryByText('Plan successfully updated.')
+      ).not.toBeInTheDocument()
     })
   })
 
