@@ -113,6 +113,7 @@ const mockRepoOverview = ({
       bundleAnalysisEnabled,
       testAnalyticsEnabled: false,
       languages: ['javascript'],
+      isGithubRateLimited: false,
     },
   },
 })
