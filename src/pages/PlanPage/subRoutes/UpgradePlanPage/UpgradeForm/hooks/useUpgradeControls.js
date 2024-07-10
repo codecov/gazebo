@@ -25,7 +25,7 @@ export const useUpgradeControls = () => {
         onSuccess: () => {
           queryClient.invalidateQueries(['accountDetails'])
           setPlanUpdatedNotification({
-            variant: 'success',
+            alertOption: 'success',
           })
           history.push(`/plan/${provider}/${owner}`)
         },

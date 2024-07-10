@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { usePlanUpdatedNotification } from 'pages/PlanPage/context'
 import { useAccountDetails } from 'services/account'
 import { getScheduleStart } from 'shared/plan/ScheduledPlanDetails/ScheduledPlanDetails'
-import { Alert } from 'ui/Alert'
+import { Alert, AlertOptions } from 'ui/Alert'
 
 import BillingDetails from './BillingDetails'
 import CurrentPlanCard from './CurrentPlanCard'
@@ -45,27 +45,38 @@ function CurrentOrgPlan() {
       <InfoMessageStripeCallback />
       {accountDetails?.plan ? (
         <div className="flex flex-col gap-4 sm:mr-4 sm:flex-initial md:w-2/3 lg:w-3/4">
-          {!!planUpdatedNotification?.variant && (
-            <Alert variant={planUpdatedNotification.variant}>
-              {scheduleStart && scheduledPhase?.quantity && (
-                <Alert.Title>Plan successfully updated.</Alert.Title>
-              )}
-              {!!planUpdatedNotification?.variant && (
+          {planUpdatedNotification.alertOption ? (
+            <Alert
+              variant={
+                Object.values(AlertOptions).includes(
+                  planUpdatedNotification.alertOption as AlertOptions
+                )
+                  ? (planUpdatedNotification.alertOption as AlertOptions)
+                  : AlertOptions.INFO
+              }
+            >
+              {scheduleStart && scheduledPhase?.quantity ? (
+                <>
+                  <Alert.Title>Plan successfully updated.</Alert.Title>
+                  <Alert.Description>
+                    The start date is {scheduleStart} with a monthly
+                    subscription for {scheduledPhase.quantity} seats.
+                  </Alert.Description>
+                </>
+              ) : (
                 <Alert.Description>
-                  {scheduleStart && scheduledPhase?.quantity
-                    ? `The start date is ${scheduleStart} with a monthly subscription for ${scheduledPhase.quantity} seats.`
-                    : 'Plan successfully updated.'}
+                  Plan successfully updated.
                 </Alert.Description>
               )}
             </Alert>
-          )}
+          ) : null}
           <CurrentPlanCard />
-          {shouldRenderBillingDetails && (
+          {shouldRenderBillingDetails ? (
             <>
               <BillingDetails />
               <LatestInvoiceCard />
             </>
-          )}
+          ) : null}
         </div>
       ) : null}
     </div>

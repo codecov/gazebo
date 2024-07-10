@@ -4,17 +4,24 @@ import * as React from 'react'
 import { cn } from 'shared/utils/cn'
 import Icon from 'ui/Icon'
 
+export enum AlertOptions {
+  ERROR = 'error',
+  INFO = 'info',
+  SUCCESS = 'success',
+  WARNING = 'warning',
+}
+
 const alertVariants = cva('relative w-full border-l-4 p-4', {
   variants: {
     variant: {
-      error: 'border-ds-primary-red bg-error-100',
-      info: 'border-ds-blue-darker bg-ds-blue-nonary',
-      success: 'border-green-500 bg-green-100',
-      warning: 'border-orange-500 bg-orange-100',
+      [AlertOptions.ERROR]: 'border-ds-primary-red bg-error-100',
+      [AlertOptions.INFO]: 'border-ds-blue-darker bg-ds-blue-nonary',
+      [AlertOptions.SUCCESS]: 'border-green-500 bg-green-100',
+      [AlertOptions.WARNING]: 'border-orange-500 bg-orange-100',
     },
   },
   defaultVariants: {
-    variant: 'info',
+    variant: AlertOptions.INFO,
   },
 })
 

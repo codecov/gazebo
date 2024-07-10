@@ -1,8 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
+import noop from 'lodash/noop'
 import { MemoryRouter, Route } from 'react-router-dom'
 import { z } from 'zod'
 
+import { PlanUpdatedPlanNotificationContext } from 'pages/PlanPage/context'
 import { AccountDetailsSchema, useAccountDetails } from 'services/account'
 
 import CurrentOrgPlan from './CurrentOrgPlan'
@@ -32,7 +34,16 @@ const mockedAccountDetails = {
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/billing/gh/codecov']}>
     <Route path="/billing/:provider/:owner">
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <PlanUpdatedPlanNotificationContext.Provider
+          value={{
+            updatedNotification: { alertOption: 'success' },
+            setUpdatedNotification: noop,
+          }}
+        >
+          {children}
+        </PlanUpdatedPlanNotificationContext.Provider>
+      </QueryClientProvider>
     </Route>
   </MemoryRouter>
 )
@@ -67,6 +78,75 @@ describe('CurrentOrgPlan', () => {
     it('does not render BillingDetails', () => {
       render(<CurrentOrgPlan />, { wrapper })
       expect(screen.queryByText(/BillingDetails/i)).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when plan update success banner should be shown', () => {
+    it('renders banner for plan successfully updated', () => {
+      setup({
+        accountDetails: {
+          plan: {
+            baseUnitPrice: 12,
+            billingRate: 'monthly',
+            marketingName: 'Pro',
+            quantity: 39,
+            value: 'users-pr-inappm',
+          },
+        } as z.infer<typeof AccountDetailsSchema>,
+      })
+      render(<CurrentOrgPlan />, { wrapper })
+      expect(
+        screen.getByText(/Plan successfully updated./i)
+      ).toBeInTheDocument()
+    })
+    it('renders banner for plan successfully updated with scheduled details', () => {
+      setup({
+        accountDetails: {
+          plan: {
+            baseUnitPrice: 12,
+            billingRate: 'monthly',
+            marketingName: 'Pro',
+            quantity: 39,
+            value: 'users-pr-inappm',
+          },
+          scheduleDetail: {
+            scheduledPhase: {
+              quantity: 34,
+              plan: 'monthly',
+              startDate: 1722631954,
+            },
+          },
+        } as z.infer<typeof AccountDetailsSchema>,
+      })
+      render(<CurrentOrgPlan />, { wrapper })
+      expect(
+        screen.getByText(/with a monthly subscription for 34 seats/i)
+      ).toBeInTheDocument()
+    })
+  })
+
+  describe('when info message cancellation should be shown', () => {
+    it('renders when subscription detail data is available', () => {
+      setup({
+        accountDetails: {
+          plan: {
+            baseUnitPrice: 12,
+            billingRate: 'monthly',
+            marketingName: 'Pro',
+            quantity: 39,
+            value: 'users-pr-inappm',
+          },
+          subscriptionDetail: {
+            cancelAtPeriodEnd: true,
+            currentPeriodEnd: 1722631954,
+          },
+        } as z.infer<typeof AccountDetailsSchema>,
+      })
+
+      render(<CurrentOrgPlan />, { wrapper })
+      expect(
+        screen.getByText('Subscription Pending Cancellation')
+      ).toBeInTheDocument()
     })
   })
 

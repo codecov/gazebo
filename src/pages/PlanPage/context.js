@@ -18,9 +18,9 @@ const PlanBreadcrumbSettersContext = createContext({
 })
 PlanBreadcrumbContext.displayName = 'PlanBreadcrumbContext'
 
-const PlanUpdatedPlanNotificationContext = createContext({
+export const PlanUpdatedPlanNotificationContext = createContext({
   setUpdatedNotification: noop,
-  updatedNotification: { variant: undefined },
+  updatedNotification: { alertOption: '' },
 })
 
 export function PlanProvider({ children }) {
@@ -41,7 +41,7 @@ export function PlanProvider({ children }) {
   const breadcrumbSetters = useMemo(() => ({ addBreadcrumb }), [addBreadcrumb])
 
   const [updatedNotification, setUpdatedNotification] = useState({
-    variant: undefined,
+    alertOption: '',
   })
   const updatedContextValue = { updatedNotification, setUpdatedNotification }
 
