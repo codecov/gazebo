@@ -13,7 +13,8 @@ const baseClass = `
 `
 const variantClasses = {
   default: `text-ds-blue`,
-  header: `font-semibold text-ds-gray-secondary`,
+  header: `font-semibold`,
+  headerDeprecated: `font-semibold text-ds-gray-secondary`,
   guestHeader: `font-semibold text-ds-gray-senary`,
   link: `text-ds-blue-darker`,
   semibold: 'text-ds-blue-darker font-semibold',
@@ -104,6 +105,7 @@ A.propTypes = {
   variant: PropTypes.oneOf([
     'default',
     'header',
+    'headerDeprecated',
     'guestHeader',
     'link',
     'code',
