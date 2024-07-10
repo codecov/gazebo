@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
 import { useAccountDetails, useInvoice } from 'services/account'
@@ -115,11 +115,8 @@ describe('InvoiceDetail', () => {
   }
 
   describe('when rendering', () => {
-    beforeEach(() => {
-      setup()
-    })
-
     it('renders the Codecov address', () => {
+      setup()
       expect(
         screen.getByText(/Functional Software, dba Sentry/i)
       ).toBeInTheDocument()
@@ -130,6 +127,7 @@ describe('InvoiceDetail', () => {
     })
 
     it('renders the items', () => {
+      setup()
       expect(
         screen.getByText(
           /unused time on 19 × users-pr-inappm after 30 dec 2020/i
@@ -137,18 +135,28 @@ describe('InvoiceDetail', () => {
       ).toBeInTheDocument()
     })
 
-    it('renders the default payment method', () => {
+    it('renders the default payment method if exists', () => {
+      setup()
       expect(screen.getByText(/Payment Method/i)).toBeInTheDocument()
       expect(screen.getByText(/Ending in: 4242/i)).toBeInTheDocument()
       expect(screen.getByText(/Expiring on: 12\/2021/i)).toBeInTheDocument()
     })
 
+    it('does not render the default payment method if does not exist', async () => {
+      setup({ defaultPaymentMethod: null })
+      await waitFor(() => {
+        expect(screen.queryByText(/Payment method/)).not.toBeInTheDocument()
+      })
+    })
+
     it('renders the subtotal', () => {
+      setup()
       expect(screen.getByText(/subtotal/i)).toBeInTheDocument()
       expect(screen.getAllByText(/\$625\.51/i)[0]).toBeInTheDocument()
     })
 
     it('renders the address of the customer', () => {
+      setup()
       expect(screen.getByText(/Bill to/i)).toBeInTheDocument()
       expect(screen.getByText(/checo perez/i)).toBeInTheDocument()
       expect(screen.getByText(/12 cours st-louis/i)).toBeInTheDocument()
@@ -159,11 +167,21 @@ describe('InvoiceDetail', () => {
     })
 
     it('renders the tax information for customer if exists', () => {
+      setup()
       expect(screen.getByText(/Tax information/i)).toBeInTheDocument()
       expect(screen.getByText(/CA BN 123456789/i)).toBeInTheDocument()
     })
 
+    it('does not render the tax information for customer if does not exist', async () => {
+      setup({ taxId: [] })
+
+      await waitFor(() => {
+        expect(screen.queryByText(/Tax information/)).not.toBeInTheDocument()
+      })
+    })
+
     it('renders the total', () => {
+      setup()
       expect(screen.getAllByText(/\$625\.51/i)[1]).toBeInTheDocument()
     })
   })
