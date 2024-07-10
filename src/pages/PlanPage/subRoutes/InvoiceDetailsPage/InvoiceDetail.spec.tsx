@@ -21,7 +21,14 @@ const invoice = {
   amountRemaining: 0,
   total: 62551,
   subtotal: 62551,
-  defaultPaymentMethod: 'Master Card',
+  defaultPaymentMethod: {
+    card: {
+      brand: 'visa',
+      expMonth: 12,
+      expYear: 2021,
+      last4: '4242',
+    },
+  },
   invoicePdf:
     'https://pay.stripe.com/invoice/acct_14SJTOGlVGuVgOrk/invst_IfFo7ZObDS0WosDNKdA6ZlcEzZ4fDkS/pdf',
   lineItems: [
@@ -50,6 +57,7 @@ const invoice = {
       quantity: 1,
     },
   ],
+  taxIds: [{ value: 'CA BN 123456789' }],
 }
 
 const subscriptionDetail = {
@@ -80,15 +88,18 @@ const subscriptionDetail = {
   customer: 'cus_IVd2T7puVJe1Ur',
 }
 
+const mockedUseInvoice = useInvoice as jest.Mock
+const mockedUseAccountDetails = useAccountDetails as jest.Mock
+
 describe('InvoiceDetail', () => {
   function setup(invoiceOver = {}, url = '', subscriptionOver = {}) {
-    useInvoice.mockReturnValue({
+    mockedUseInvoice.mockReturnValue({
       data: {
         ...invoice,
         ...invoiceOver,
       },
     })
-    useAccountDetails.mockReturnValue({
+    mockedUseAccountDetails.mockReturnValue({
       data: {
         subscriptionDetail: {
           ...subscriptionOver,
@@ -98,7 +109,7 @@ describe('InvoiceDetail', () => {
     })
     render(
       <MemoryRouter initialEntries={[url]}>
-        <InvoiceDetail owner="codecov" provider="codecov" />
+        <InvoiceDetail />
       </MemoryRouter>
     )
   }
@@ -110,10 +121,12 @@ describe('InvoiceDetail', () => {
 
     it('renders the Codecov address', () => {
       expect(
-        screen.getByText(
-          /codecov llc9450 sw gemini drive#32076beaverton, or 97008-7105united states/i
-        )
+        screen.getByText(/Functional Software, dba Sentry/i)
       ).toBeInTheDocument()
+      expect(screen.getByText(/45 Fremont St./i)).toBeInTheDocument()
+      expect(screen.getByText(/San Francisco, CA 94105/i)).toBeInTheDocument()
+      expect(screen.getByText(/United States/i)).toBeInTheDocument()
+      expect(screen.getByText(/support@codecov.io/i)).toBeInTheDocument()
     })
 
     it('renders the items', () => {
@@ -125,7 +138,9 @@ describe('InvoiceDetail', () => {
     })
 
     it('renders the default payment method', () => {
-      expect(screen.getByText(/Master Card/i)).toBeInTheDocument()
+      expect(screen.getByText(/Payment Method/i)).toBeInTheDocument()
+      expect(screen.getByText(/Ending in: 4242/i)).toBeInTheDocument()
+      expect(screen.getByText(/Expiring on: 12\/2021/i)).toBeInTheDocument()
     })
 
     it('renders the subtotal', () => {
@@ -134,12 +149,18 @@ describe('InvoiceDetail', () => {
     })
 
     it('renders the address of the customer', () => {
+      expect(screen.getByText(/Bill to/i)).toBeInTheDocument()
       expect(screen.getByText(/checo perez/i)).toBeInTheDocument()
       expect(screen.getByText(/12 cours st-louis/i)).toBeInTheDocument()
       expect(screen.getByText(/apt-31/i)).toBeInTheDocument()
       expect(
         screen.getByText(/bordeaux gironde 33000 france/i)
       ).toBeInTheDocument()
+    })
+
+    it('renders the tax information for customer if exists', () => {
+      expect(screen.getByText(/Tax information/i)).toBeInTheDocument()
+      expect(screen.getByText(/CA BN 123456789/i)).toBeInTheDocument()
     })
 
     it('renders the total', () => {
@@ -173,8 +194,8 @@ describe('InvoiceDetail', () => {
   describe('when the invoice has a discount', () => {
     beforeEach(() => {
       setup({
-        amountDue: 10000, // 100$
-        subtotal: 9000, // 190$
+        amountDue: 10000, // $100
+        subtotal: 9000, // $90
         total: 9000,
       })
     })
