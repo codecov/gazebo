@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import { Alert } from './Alert'
+import { Alert, AlertOptions } from './Alert'
 
 type AlertStory = React.ComponentProps<typeof Alert>
 
@@ -10,8 +10,13 @@ const meta = {
   argTypes: {
     variant: {
       description: 'Controls the styling of the Alert component',
-      options: ['error', 'info', 'success', 'warning'],
-      defaultValue: 'info',
+      options: [
+        AlertOptions.ERROR,
+        AlertOptions.INFO,
+        AlertOptions.SUCCESS,
+        AlertOptions.WARNING,
+      ],
+      defaultValue: AlertOptions.INFO,
     },
   },
 } as Meta
@@ -31,7 +36,7 @@ export const NoHeader: Story = {
 
 export const AlertInfo: Story = {
   args: {
-    variant: 'info',
+    variant: AlertOptions.INFO,
   },
   render: (args) => (
     <Alert variant={args.variant}>
@@ -45,7 +50,7 @@ export const AlertInfo: Story = {
 
 export const AlertError: Story = {
   args: {
-    variant: 'error',
+    variant: AlertOptions.ERROR,
   },
   render: (args) => (
     <Alert variant={args.variant}>
@@ -59,7 +64,7 @@ export const AlertError: Story = {
 
 export const AlertSuccess: Story = {
   args: {
-    variant: 'success',
+    variant: AlertOptions.SUCCESS,
   },
   render: (args) => (
     <Alert variant={args.variant}>
@@ -73,7 +78,7 @@ export const AlertSuccess: Story = {
 
 export const AlertWarning: Story = {
   args: {
-    variant: 'warning',
+    variant: AlertOptions.WARNING,
   },
   render: (args) => (
     <Alert variant={args.variant}>
