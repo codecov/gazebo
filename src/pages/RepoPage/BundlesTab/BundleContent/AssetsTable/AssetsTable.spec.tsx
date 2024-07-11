@@ -5,12 +5,38 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { AssetsTable, genSizeColumn, sortSizeColumn } from './AssetsTable'
+import { AssetsTable, ChangeOverTime } from './AssetsTable'
 
 jest.mock('./EmptyTable', () => () => <div>EmptyTable</div>)
 
+interface Asset {
+  name: string
+  extension: string
+  bundleData: {
+    loadTime: {
+      threeG: number
+      highSpeed: number
+    }
+    size: {
+      uncompress: number
+      gzip: number
+    }
+  }
+  measurements: {
+    change: {
+      size: {
+        uncompress: number
+      }
+    }
+    measurements: Array<{
+      timestamp: string
+      avg: number | null
+    }>
+  } | null
+}
+
 const mockAssets = (multipleAssets = true) => {
-  const assets = [
+  const assets: Array<Asset> = [
     {
       name: 'asset-1',
       extension: 'js',
@@ -30,7 +56,10 @@ const mockAssets = (multipleAssets = true) => {
             uncompress: 5,
           },
         },
-        measurements: [{ timestamp: '2022-10-10T11:59:59', avg: 6 }],
+        measurements: [
+          { timestamp: '2022-10-10T11:59:59', avg: 6 },
+          { timestamp: '2022-10-11T11:59:59', avg: null },
+        ],
       },
     },
   ]
@@ -51,15 +80,35 @@ const mockAssets = (multipleAssets = true) => {
     measurements: {
       change: {
         size: {
-          uncompress: 5,
+          uncompress: -5,
         },
       },
-      measurements: [{ timestamp: '2022-10-10T11:59:59', avg: 6 }],
+      measurements: [
+        { timestamp: '2022-10-10T11:59:59', avg: 6 },
+        { timestamp: '2022-10-11T11:59:59', avg: null },
+      ],
     },
+  }
+
+  const asset3 = {
+    name: 'asset-3',
+    extension: 'js',
+    bundleData: {
+      loadTime: {
+        threeG: 2000,
+        highSpeed: 2000,
+      },
+      size: {
+        uncompress: 2000,
+        gzip: 200,
+      },
+    },
+    measurements: null,
   }
 
   if (multipleAssets) {
     assets.push(asset2)
+    assets.push(asset3)
   }
 
   return {
@@ -254,6 +303,14 @@ describe('AssetsTable', () => {
         expect(type).toBeInTheDocument()
       })
 
+      it('renders load time column', async () => {
+        setup({})
+        render(<AssetsTable />, { wrapper })
+
+        const loadTime = await screen.findByText('Estimated load time (3G)')
+        expect(loadTime).toBeInTheDocument()
+      })
+
       it('renders size column', async () => {
         setup({})
         render(<AssetsTable />, { wrapper })
@@ -262,12 +319,12 @@ describe('AssetsTable', () => {
         expect(size).toBeInTheDocument()
       })
 
-      it('renders load time column', async () => {
+      it('renders change over time column', async () => {
         setup({})
         render(<AssetsTable />, { wrapper })
 
-        const loadTime = await screen.findByText('Estimated load time (3G)')
-        expect(loadTime).toBeInTheDocument()
+        const changeOverTime = await screen.findByText('Change over time')
+        expect(changeOverTime).toBeInTheDocument()
       })
     })
 
@@ -288,6 +345,14 @@ describe('AssetsTable', () => {
         expect(type).toBeInTheDocument()
       })
 
+      it('renders load time column', async () => {
+        setup({})
+        render(<AssetsTable />, { wrapper })
+
+        const [loadTime] = await screen.findAllByText('2s')
+        expect(loadTime).toBeInTheDocument()
+      })
+
       it('renders size column', async () => {
         setup({})
         render(<AssetsTable />, { wrapper })
@@ -296,12 +361,12 @@ describe('AssetsTable', () => {
         expect(size).toBeInTheDocument()
       })
 
-      it('renders load time column', async () => {
+      it('renders change over time column', async () => {
         setup({})
         render(<AssetsTable />, { wrapper })
 
-        const [loadTime] = await screen.findAllByText('2s')
-        expect(loadTime).toBeInTheDocument()
+        const [changeOverTime] = await screen.findAllByText('+5B 🔼')
+        expect(changeOverTime).toBeInTheDocument()
       })
 
       describe('user is able to expand row', () => {
@@ -333,60 +398,60 @@ describe('AssetsTable', () => {
           expect(asset).toBeInTheDocument()
         })
       })
-    })
-  })
-})
 
-describe('genSizeColumn', () => {
-  describe('totalBundleSize is undefined', () => {
-    it('returns just the size', () => {
-      const val = genSizeColumn({ size: 4000, totalBundleSize: undefined })
-      expect(val).toBe('4kB')
-    })
-  })
+      describe('sorting on change over time column', () => {
+        it('sorts the table by change value', async () => {
+          const { user } = setup({})
+          render(<AssetsTable />, { wrapper })
 
-  describe('totalBundleSize is null', () => {
-    it('returns just the size', () => {
-      const val = genSizeColumn({ size: 4000, totalBundleSize: undefined })
-      expect(val).toBe('4kB')
-    })
-  })
+          const changeColumn = await screen.findByText('Change over time')
+          await user.click(changeColumn)
+          await user.click(changeColumn)
 
-  describe('totalBundleSize is defined', () => {
-    it('returns the size and percentage', () => {
-      const val = genSizeColumn({ size: 4000, totalBundleSize: 4000 })
-      expect(val).toBe('100% (4kB)')
-    })
-  })
-})
-
-describe('sortSizeColumn', () => {
-  describe('totalBundleSize is undefined', () => {
-    const val = sortSizeColumn({
-      rowA: 4000,
-      rowB: 2000,
-      totalBundleSize: undefined,
-    })
-    expect(val).toBe(2000)
-  })
-
-  describe('totalBundleSize is null', () => {
-    const val = sortSizeColumn({
-      rowA: 4000,
-      rowB: 2000,
-      totalBundleSize: null,
-    })
-    expect(val).toBe(2000)
-  })
-
-  describe('totalBundleSize is defined', () => {
-    it('returns the difference between the percentages', () => {
-      const val = sortSizeColumn({
-        rowA: 4000,
-        rowB: 2000,
-        totalBundleSize: 4000,
+          const [asset] = await screen.findAllByText('asset-1')
+          expect(asset).toBeInTheDocument()
+        })
       })
-      expect(val).toBe(0.5)
+    })
+  })
+})
+
+describe('ChangeOverTime', () => {
+  it('renders the change change', () => {
+    render(<ChangeOverTime change={5} hasMeasurements={true} />)
+
+    const change = screen.getByText('+5B 🔼')
+    expect(change).toBeInTheDocument()
+  })
+
+  it('renders the change change when it is negative', () => {
+    render(<ChangeOverTime change={-5} hasMeasurements={true} />)
+
+    const change = screen.getByText('-5B 🔽')
+    expect(change).toBeInTheDocument()
+  })
+
+  it('renders the change change when it is zero', () => {
+    render(<ChangeOverTime change={0} hasMeasurements={true} />)
+
+    const change = screen.getByText('-')
+    expect(change).toBeInTheDocument()
+  })
+
+  it('renders the change change when it is null', () => {
+    render(<ChangeOverTime change={null} hasMeasurements={true} />)
+
+    const change = screen.getByText('-')
+    expect(change).toBeInTheDocument()
+  })
+
+  describe('hasMeasurements is false', () => {
+    it('renders nothing', () => {
+      const { container } = render(
+        <ChangeOverTime change={null} hasMeasurements={false} />
+      )
+
+      expect(container).toBeEmptyDOMElement()
     })
   })
 })
