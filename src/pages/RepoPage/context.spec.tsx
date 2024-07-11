@@ -21,9 +21,7 @@ const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/test-repo']}>
       <Route path="/:provider/:owner/:repo">
-        <Suspense fallback={null}>
-          <RepoBreadcrumbProvider>{children}</RepoBreadcrumbProvider>
-        </Suspense>
+        <Suspense fallback={null}>{children}</Suspense>
       </Route>
     </MemoryRouter>
   </QueryClientProvider>
@@ -98,10 +96,33 @@ describe('Repo breadcrumb context', () => {
 
     return { user }
   }
-  describe('when called', () => {
+
+  describe('when called outside of provider', () => {
+    it('uses default values', async () => {
+      const { user } = setup()
+      render(<TestComponent />, { wrapper })
+
+      const button = await screen.findByRole('button', { name: 'set crumb' })
+      expect(button).toBeInTheDocument()
+      let owner = screen.queryByText('codecov')
+      expect(owner).not.toBeInTheDocument()
+
+      await user.click(button)
+
+      owner = screen.queryByText('codecov')
+      expect(owner).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when called inside provider', () => {
     it('crumbs return the owner and repo value', async () => {
       setup()
-      render(<TestComponent />, { wrapper })
+      render(
+        <RepoBreadcrumbProvider>
+          <TestComponent />
+        </RepoBreadcrumbProvider>,
+        { wrapper }
+      )
 
       expect(await screen.findByText('codecov')).toBeTruthy()
       const codecov = screen.getByText('codecov')
@@ -114,7 +135,12 @@ describe('Repo breadcrumb context', () => {
 
     it('setCrumb can update the context', async () => {
       const { user } = setup()
-      render(<TestComponent />, { wrapper })
+      render(
+        <RepoBreadcrumbProvider>
+          <TestComponent />
+        </RepoBreadcrumbProvider>,
+        { wrapper }
+      )
 
       expect(
         await screen.findByRole('button', { name: 'set crumb' })
