@@ -15,6 +15,7 @@ import { AlertOptionsType } from 'ui/Alert'
 
 interface Breadcrumb {
   pageName: string
+  text?: string
 }
 interface BreadcrumbSetters {
   addBreadcrumb: (crumbs?: Breadcrumb[]) => void
