@@ -6,6 +6,7 @@ import A from 'ui/A'
 
 function Header() {
   const { isImpersonating } = useImpersonate()
+
   return (
     <header
       className={cs('text-white', {
