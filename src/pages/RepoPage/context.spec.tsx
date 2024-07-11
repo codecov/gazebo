@@ -3,10 +3,10 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { Suspense } from 'react'
-import { MemoryRouter, Route } from 'react-router-dom'
+import { Suspense, useLayoutEffect } from 'react'
+import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
-import { RepoBreadcrumbProvider, useCrumbs, useSetCrumbs } from './context'
+import { RepoBreadcrumbProvider, useCrumbs } from './context'
 
 const server = setupServer()
 const queryClient = new QueryClient({
@@ -17,7 +17,7 @@ const queryClient = new QueryClient({
   },
 })
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/test-repo']}>
       <Route path="/:provider/:owner/:repo">
@@ -29,20 +29,32 @@ const wrapper = ({ children }) => (
   </QueryClientProvider>
 )
 
+interface URLParams {
+  owner: string
+  repo: string
+}
+
 const TestComponent = () => {
-  const crumbs = useCrumbs()
-  const setCrumb = useSetCrumbs()
+  const { owner, repo } = useParams<URLParams>()
+  const { setBaseCrumbs, breadcrumbs, setBreadcrumbs } = useCrumbs()
+
+  useLayoutEffect(() => {
+    setBaseCrumbs([
+      { pageName: 'owner', text: owner },
+      { pageName: 'repo', text: repo },
+    ])
+  }, [owner, repo, setBaseCrumbs])
 
   return (
     <div>
       <ul>
-        {crumbs.map(({ text, children }, i) => (
+        {breadcrumbs.map(({ text, children }, i) => (
           <li key={i}>{text || children}</li>
         ))}
       </ul>
       <button
         onClick={() => {
-          setCrumb([{ pageName: 'added', text: 'added' }])
+          setBreadcrumbs([{ pageName: 'added', text: 'added' }])
         }}
       >
         set crumb

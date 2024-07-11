@@ -10,6 +10,7 @@ import { User } from 'services/user'
 
 import Header from './Header'
 
+jest.mock('src/layouts/Header/components/Navigator', () => () => 'Navigator')
 jest.mock(
   'src/layouts/Header/components/UserDropdown',
   () => () => 'User Dropdown'
@@ -108,7 +109,7 @@ describe('Header', () => {
       setup({})
       render(<Header />, { wrapper })
 
-      const text = await screen.findByText('Navigation')
+      const text = await screen.findByText('Navigator')
       expect(text).toBeInTheDocument()
     })
   })
