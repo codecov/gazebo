@@ -18,6 +18,7 @@ import {
   formatTimeToString,
 } from 'shared/utils/bundleAnalysis'
 import Icon from 'ui/Icon'
+import Sparkline from 'ui/Sparkline'
 import Spinner from 'ui/Spinner'
 
 import EmptyTable from './EmptyTable'
@@ -26,11 +27,37 @@ import ModulesTable from './ModulesTable'
 const isNumericValue = (value: string) =>
   value === 'size' || value === 'loadTime'
 
+interface ChangeOverTimeProps {
+  change: number | null
+  hasMeasurements: boolean
+}
+
+export function ChangeOverTime({
+  change,
+  hasMeasurements,
+}: ChangeOverTimeProps) {
+  if (change) {
+    const formattedChange = formatSizeToString(change)
+    if (change > 0) {
+      return <span className="inline">+{formattedChange} &#x1F53C;</span>
+    } else if (change < 0) {
+      return <span className="inline">{formattedChange} &#x1F53D;</span>
+    }
+  }
+
+  if (hasMeasurements) {
+    return <span>-</span>
+  }
+
+  return null
+}
+
 interface Column {
   name: string
   extension: string
   size: number
   loadTime: number
+  changeOverTime: any
 }
 
 export const genSizeColumn = ({
@@ -118,6 +145,48 @@ const createColumns = (totalBundleSize: number | null) => [
     header: 'Estimated load time (3G)',
     cell: ({ getValue }) => formatTimeToString(getValue()),
   }),
+  columnHelper.accessor('changeOverTime', {
+    header: 'Change over time',
+    cell: ({ getValue, row }) => {
+      const value = getValue()
+      let prevSize = 0
+      let maxSize = -Infinity
+      value?.measurements?.forEach(({ avg }: { avg: number | null }) => {
+        if (avg && avg > maxSize) {
+          maxSize = avg * 1.05
+        }
+      })
+
+      const sizes =
+        value?.measurements?.map(({ avg }: { avg: number | null }) => {
+          if (avg) {
+            const percentage = avg / maxSize
+            prevSize = percentage
+            return percentage
+          }
+          return prevSize
+        }) ?? []
+
+      return (
+        <>
+          <Sparkline
+            datum={sizes}
+            select={(d) => d}
+            dataTemplate={(d) =>
+              d ? `${formatSizeToString(d * maxSize)}` : 'No Data Available'
+            }
+            description={`Bundle ${row.getValue('name')} trend sparkline`}
+            lineFallBack={0}
+            taperEndPoint={false}
+          />{' '}
+          <ChangeOverTime
+            change={value?.change?.size?.uncompress}
+            hasMeasurements={value?.measurements?.length > 0}
+          />
+        </>
+      )
+    },
+  }),
 ]
 
 interface URLParams {
@@ -154,16 +223,20 @@ export const AssetsTable: React.FC = () => {
   })
 
   const tableData: Array<Column> = useMemo(() => {
+    let formattedData = []
     if (data?.assets?.length) {
-      return data.assets.map((asset) => ({
-        name: asset.name,
-        extension: asset.extension,
-        size: asset.bundleData.size.uncompress,
-        loadTime: asset.bundleData.loadTime.threeG,
-      }))
+      for (const asset of data.assets) {
+        formattedData.push({
+          name: asset.name,
+          extension: asset.extension,
+          size: asset.bundleData.size.uncompress,
+          loadTime: asset.bundleData.loadTime.threeG,
+          changeOverTime: asset.measurements,
+        })
+      }
     }
 
-    return []
+    return formattedData
   }, [data])
 
   const columns = useMemo(
@@ -201,10 +274,11 @@ export const AssetsTable: React.FC = () => {
                   data-sortable="true"
                   onClick={header.column.getToggleSortingHandler()}
                   className={cs({
-                    'w-full @4xl/filelist:w-8/12': header.column.id === 'name',
+                    'w-full @4xl/filelist:w-6/12': header.column.id === 'name',
                     'w-2/12 hidden @4xl/filelist:block text-right':
-                      header.column.id === 'loadTime' ||
-                      header.column.id === 'size',
+                      header.column.id === 'loadTime',
+                    'w-2/12 hidden @4xl/filelist:flex grow justify-end':
+                      header.column.id === 'changeOverTime',
                     'w-1/12 hidden @4xl/filelist:block text-right':
                       header.column.id !== 'name' &&
                       header.column.id !== 'loadTime',
@@ -259,11 +333,12 @@ export const AssetsTable: React.FC = () => {
                             }
                           : {})}
                         className={cs({
-                          'w-full @4xl/filelist:w-8/12':
+                          'w-full @4xl/filelist:w-6/12':
                             cell.column.id === 'name',
                           'w-2/12 hidden @4xl/filelist:block text-right':
-                            cell.column.id === 'loadTime' ||
-                            cell.column.id === 'size',
+                            cell.column.id === 'loadTime',
+                          'w-2/12 hidden @4xl/filelist:flex grow justify-end gap-2':
+                            cell.column.id === 'changeOverTime',
                           'w-1/12 hidden @4xl/filelist:block text-right':
                             cell.column.id !== 'name' &&
                             cell.column.id !== 'loadTime',
