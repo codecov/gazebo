@@ -14,7 +14,7 @@ import {
   stateNames,
 } from './enums'
 
-import { useSetCrumbs } from '../context'
+import { useCrumbs } from '../context'
 
 const PullsTable = lazy(() => import('./PullsTable'))
 
@@ -59,11 +59,11 @@ function useControlParams() {
 }
 
 function PullsTab() {
-  const setCrumbs = useSetCrumbs()
+  const { setBreadcrumbs } = useCrumbs()
 
   useLayoutEffect(() => {
-    setCrumbs()
-  }, [setCrumbs])
+    setBreadcrumbs([])
+  }, [setBreadcrumbs])
 
   const {
     updateParams,

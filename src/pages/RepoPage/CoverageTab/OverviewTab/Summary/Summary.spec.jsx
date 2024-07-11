@@ -7,6 +7,8 @@ import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 import useIntersection from 'react-use/lib/useIntersection'
 
+import { RepoBreadcrumbProvider } from 'pages/RepoPage/context'
+
 import Summary from './Summary'
 
 import { useCoverageRedirect } from '../summaryHooks'
@@ -126,7 +128,9 @@ const wrapper =
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={[initialEntries]}>
           <Route path="/:provider/:owner/:repo">
-            <Suspense fallback={<div>loading</div>}>{children}</Suspense>
+            <RepoBreadcrumbProvider>
+              <Suspense fallback={<div>loading</div>}>{children}</Suspense>
+            </RepoBreadcrumbProvider>
           </Route>
           <Route path="*" render={({ location }) => location.pathname} />
         </MemoryRouter>
