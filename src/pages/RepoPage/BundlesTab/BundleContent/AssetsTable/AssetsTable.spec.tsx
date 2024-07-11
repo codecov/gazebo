@@ -5,56 +5,85 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import AssetsTable from './AssetsTable'
+import { AssetsTable, genSizeColumn, sortSizeColumn } from './AssetsTable'
 
 jest.mock('./EmptyTable', () => () => <div>EmptyTable</div>)
 
-const mockAssets = {
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      branch: {
-        head: {
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-            bundle: {
-              bundleData: {
-                size: {
-                  uncompress: 12,
+const mockAssets = (multipleAssets = true) => {
+  const assets = [
+    {
+      name: 'asset-1',
+      extension: 'js',
+      bundleData: {
+        loadTime: {
+          threeG: 2000,
+          highSpeed: 2000,
+        },
+        size: {
+          uncompress: 4000,
+          gzip: 400,
+        },
+      },
+      measurements: {
+        change: {
+          size: {
+            uncompress: 5,
+          },
+        },
+        measurements: [{ timestamp: '2022-10-10T11:59:59', avg: 6 }],
+      },
+    },
+  ]
+
+  const asset2 = {
+    name: 'asset-2',
+    extension: 'js',
+    bundleData: {
+      loadTime: {
+        threeG: 2000,
+        highSpeed: 2000,
+      },
+      size: {
+        uncompress: 2000,
+        gzip: 200,
+      },
+    },
+    measurements: {
+      change: {
+        size: {
+          uncompress: 5,
+        },
+      },
+      measurements: [{ timestamp: '2022-10-10T11:59:59', avg: 6 }],
+    },
+  }
+
+  if (multipleAssets) {
+    assets.push(asset2)
+  }
+
+  return {
+    owner: {
+      repository: {
+        __typename: 'Repository',
+        branch: {
+          head: {
+            bundleAnalysisReport: {
+              __typename: 'BundleAnalysisReport',
+              bundle: {
+                bundleData: {
+                  size: {
+                    uncompress: 6000,
+                  },
                 },
+                assets,
               },
-              assets: [
-                {
-                  name: 'asset-1',
-                  extension: 'js',
-                  bundleData: {
-                    loadTime: {
-                      threeG: 2000,
-                      highSpeed: 2000,
-                    },
-                    size: {
-                      uncompress: 3000,
-                      gzip: 4000,
-                    },
-                  },
-                  measurements: {
-                    change: {
-                      size: {
-                        uncompress: 5,
-                      },
-                    },
-                    measurements: [
-                      { timestamp: '2022-10-10T11:59:59', avg: 6 },
-                    ],
-                  },
-                },
-              ],
             },
           },
         },
       },
     },
-  },
+  }
 }
 
 const mockBundleAssetModules = {
@@ -158,12 +187,14 @@ afterAll(() => {
 interface SetupArgs {
   isEmptyBundles?: boolean
   isMissingHeadReport?: boolean
+  multipleAssets?: boolean
 }
 
 describe('AssetsTable', () => {
   function setup({
     isEmptyBundles = false,
     isMissingHeadReport = false,
+    multipleAssets = true,
   }: SetupArgs) {
     const user = userEvent.setup()
 
@@ -175,7 +206,7 @@ describe('AssetsTable', () => {
           return res(ctx.status(200), ctx.data(mockMissingHeadReport))
         }
 
-        return res(ctx.status(200), ctx.data(mockAssets))
+        return res(ctx.status(200), ctx.data(mockAssets(multipleAssets)))
       }),
       graphql.query('BundleAssetModules', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockBundleAssetModules))
@@ -261,7 +292,7 @@ describe('AssetsTable', () => {
         setup({})
         render(<AssetsTable />, { wrapper })
 
-        const [size] = await screen.findAllByText('3kB')
+        const [size] = await screen.findAllByText('66.67% (4kB)')
         expect(size).toBeInTheDocument()
       })
 
@@ -275,7 +306,7 @@ describe('AssetsTable', () => {
 
       describe('user is able to expand row', () => {
         it('displays modules table', async () => {
-          const { user } = setup({})
+          const { user } = setup({ multipleAssets: false })
           render(<AssetsTable />, { wrapper })
 
           const expandButton = await screen.findByTestId('modules-expand')
@@ -287,6 +318,75 @@ describe('AssetsTable', () => {
           expect(modulesTable).toBeInTheDocument()
         })
       })
+    })
+
+    describe('sorting table', () => {
+      describe('sorting on size column', () => {
+        it('sorts the table by size', async () => {
+          const { user } = setup({})
+          render(<AssetsTable />, { wrapper })
+
+          const sizeColumn = await screen.findByText('Size')
+          await user.click(sizeColumn)
+
+          const [asset] = await screen.findAllByText('asset-1')
+          expect(asset).toBeInTheDocument()
+        })
+      })
+    })
+  })
+})
+
+describe('genSizeColumn', () => {
+  describe('totalBundleSize is undefined', () => {
+    it('returns just the size', () => {
+      const val = genSizeColumn({ size: 4000, totalBundleSize: undefined })
+      expect(val).toBe('4kB')
+    })
+  })
+
+  describe('totalBundleSize is null', () => {
+    it('returns just the size', () => {
+      const val = genSizeColumn({ size: 4000, totalBundleSize: undefined })
+      expect(val).toBe('4kB')
+    })
+  })
+
+  describe('totalBundleSize is defined', () => {
+    it('returns the size and percentage', () => {
+      const val = genSizeColumn({ size: 4000, totalBundleSize: 4000 })
+      expect(val).toBe('100% (4kB)')
+    })
+  })
+})
+
+describe('sortSizeColumn', () => {
+  describe('totalBundleSize is undefined', () => {
+    const val = sortSizeColumn({
+      rowA: 4000,
+      rowB: 2000,
+      totalBundleSize: undefined,
+    })
+    expect(val).toBe(2000)
+  })
+
+  describe('totalBundleSize is null', () => {
+    const val = sortSizeColumn({
+      rowA: 4000,
+      rowB: 2000,
+      totalBundleSize: null,
+    })
+    expect(val).toBe(2000)
+  })
+
+  describe('totalBundleSize is defined', () => {
+    it('returns the difference between the percentages', () => {
+      const val = sortSizeColumn({
+        rowA: 4000,
+        rowB: 2000,
+        totalBundleSize: 4000,
+      })
+      expect(val).toBe(0.5)
     })
   })
 })
