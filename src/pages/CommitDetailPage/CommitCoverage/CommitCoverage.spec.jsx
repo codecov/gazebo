@@ -440,7 +440,7 @@ describe('CommitCoverage', () => {
       graphql.query('GetRepoRateLimitStatus', (req, res, ctx) => {
         return res(
           ctx.status(200),
-          ctx.data(mockRepoRateLimitStatus(isGithubRateLimited))
+          ctx.data(mockRepoRateLimitStatus({ isGithubRateLimited }))
         )
       })
     )
@@ -714,32 +714,31 @@ describe('CommitCoverage', () => {
         )
       })
     })
-
-    describe('github rate limit messaging', () => {
-      it('renders banner when github is rate limited', async () => {
-        const { queryClient } = setup({
-          coverageEnabled: true,
-          bundleAnalysisEnabled: true,
-          isGithubRateLimited: true,
-        })
-        render(<CommitCoverage />, { wrapper: wrapper({ queryClient }) })
-
-        const rateLimitText = await screen.findByText(
-          /Unable to calculate coverage/
-        )
-        expect(rateLimitText).toBeInTheDocument()
+  })
+  describe('github rate limit messaging', () => {
+    it('renders banner when github is rate limited', async () => {
+      const { queryClient } = setup({
+        coverageEnabled: true,
+        bundleAnalysisEnabled: true,
+        isGithubRateLimited: true,
       })
+      render(<CommitCoverage />, { wrapper: wrapper({ queryClient }) })
 
-      it.only('does not render banner when github is not rate limited', async () => {
-        const { queryClient } = setup({
-          coverageEnabled: true,
-          bundleAnalysisEnabled: true,
-        })
-        render(<CommitCoverage />, { wrapper: wrapper({ queryClient }) })
+      const rateLimitText = await screen.findByText(
+        /Unable to calculate coverage/
+      )
+      expect(rateLimitText).toBeInTheDocument()
+    })
 
-        const rateLimitText = screen.queryByText(/Unable to calculate coverage/)
-        expect(rateLimitText).not.toBeInTheDocument()
+    it('does not render banner when github is not rate limited', async () => {
+      const { queryClient } = setup({
+        coverageEnabled: true,
+        bundleAnalysisEnabled: true,
       })
+      render(<CommitCoverage />, { wrapper: wrapper({ queryClient }) })
+
+      const rateLimitText = screen.queryByText(/Unable to calculate coverage/)
+      expect(rateLimitText).not.toBeInTheDocument()
     })
   })
 })

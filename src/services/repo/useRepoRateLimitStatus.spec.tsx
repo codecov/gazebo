@@ -111,7 +111,11 @@ describe('useRepoRateLimitStatus', () => {
           { wrapper }
         )
 
-        await waitFor(() => expect(result.current.data).toBe(false))
+        await waitFor(() =>
+          expect(result.current.data).toStrictEqual({
+            isGithubRateLimited: false,
+          })
+        )
       })
 
       describe('there is a null owner', () => {

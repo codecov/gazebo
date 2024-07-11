@@ -230,7 +230,7 @@ describe('PullRequestPageContent', () => {
       graphql.query('GetRepoRateLimitStatus', (req, res, ctx) => {
         return res(
           ctx.status(200),
-          ctx.data(mockRepoRateLimitStatus(isGithubRateLimited))
+          ctx.data(mockRepoRateLimitStatus({ isGithubRateLimited }))
         )
       })
     )
@@ -458,17 +458,14 @@ describe('PullRequestPageContent', () => {
     })
 
     it('does not render banner when github is not rate limited', async () => {
-      setup({
-        coverageEnabled: true,
-        bundleAnalysisEnabled: false,
-        isGithubRateLimited: false,
-      })
+      setup({ isGithubRateLimited: false })
 
-      render(<PullRequestPageContent>hello</PullRequestPageContent>, {
+      render(<PullRequestPageContent />, {
         wrapper: wrapper(),
       })
-      const change = screen.getByText('Change')
-      expect(change).toBeInTheDocument()
+
+      const filesChangedTab = await screen.findByText('FilesChangedTab')
+      expect(filesChangedTab).toBeInTheDocument()
 
       const rateLimitText = screen.queryByText(/Unable to calculate coverage/)
       expect(rateLimitText).not.toBeInTheDocument()

@@ -139,8 +139,7 @@ function PullCoverage() {
     multipleTiers: false,
   })
   const { data: tierData } = useTier({ provider, owner })
-  const isGithubRateLimited = useRepoRateLimitStatus({ provider, owner, repo })
-  console.log(isGithubRateLimited)
+  const { data: rateLimit } = useRepoRateLimitStatus({ provider, owner, repo })
   useEffect(() => {
     if (overview?.bundleAnalysisEnabled && overview?.coverageEnabled) {
       metrics.increment('pull_request_page.coverage_dropdown.opened', 1)
@@ -170,7 +169,7 @@ function PullCoverage() {
       </Suspense>
       <div className="grid grid-cols-1 gap-4 space-y-2 lg:grid-cols-2">
         <article className="col-span-2 flex flex-col gap-3 md:gap-0">
-          {isGithubRateLimited && <GitHubRateLimitExceededBanner />}
+          {rateLimit?.isGithubRateLimited && <GitHubRateLimitExceededBanner />}
           <PullCoverageTabs />
           <PullCoverageContent />
         </article>

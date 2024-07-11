@@ -46,22 +46,13 @@ interface UseRepoOverviewArgs {
   provider: string
   owner: string
   repo: string
-  opts?: {
-    enabled?: boolean
-  }
 }
 
 export function useRepoRateLimitStatus({
   provider,
   owner,
   repo,
-  opts = {},
 }: UseRepoOverviewArgs) {
-  let enabled = true
-  if (opts?.enabled !== undefined) {
-    enabled = opts.enabled
-  }
-
   return useQuery({
     queryKey: ['GetRepoRateLimitStatus', provider, owner, repo],
     queryFn: ({ signal }) => {
@@ -75,7 +66,6 @@ export function useRepoRateLimitStatus({
         },
       }).then((res) => {
         const parsedData = RequestSchema.safeParse(res?.data)
-
         if (!parsedData.success) {
           return Promise.reject({
             status: 404,
@@ -100,9 +90,10 @@ export function useRepoRateLimitStatus({
           return null
         }
 
-        return data.owner.repository.isGithubRateLimited
+        return {
+          isGithubRateLimited: data.owner.repository.isGithubRateLimited,
+        }
       })
     },
-    enabled,
   })
 }
