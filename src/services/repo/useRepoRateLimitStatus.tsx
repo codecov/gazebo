@@ -75,11 +75,8 @@ export function useRepoRateLimitStatus({
         },
       }).then((res) => {
         const parsedData = RequestSchema.safeParse(res?.data)
-        console.log('here 2')
 
         if (!parsedData.success) {
-          console.log('here 2')
-
           return Promise.reject({
             status: 404,
             data: {},
@@ -89,7 +86,6 @@ export function useRepoRateLimitStatus({
         const data = parsedData.data
 
         if (data?.owner?.repository?.__typename === 'NotFoundError') {
-          console.log('here')
           return Promise.reject({
             status: 404,
             data: {},

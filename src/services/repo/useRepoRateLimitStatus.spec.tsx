@@ -99,7 +99,7 @@ describe('useRepoRateLimitStatus', () => {
 
   describe('returns repository typename of Repository', () => {
     describe('there is valid data', () => {
-      it('fetches the repo overview', async () => {
+      it('fetches the repo rate limit status', async () => {
         setup({ isGithubRateLimited: false })
         const { result } = renderHook(
           () =>
@@ -111,19 +111,7 @@ describe('useRepoRateLimitStatus', () => {
           { wrapper }
         )
 
-        await waitFor(() =>
-          expect(result.current.data).toStrictEqual({
-            __typename: 'Repository',
-            private: false,
-            defaultBranch: 'main',
-            oldestCommitAt: '2022-10-10T11:59:59',
-            coverageEnabled: true,
-            bundleAnalysisEnabled: true,
-            languages: [],
-            jsOrTsPresent: false,
-            testAnalyticsEnabled: true,
-          })
-        )
+        await waitFor(() => expect(result.current.data).toBe(false))
       })
 
       describe('there is a null owner', () => {
