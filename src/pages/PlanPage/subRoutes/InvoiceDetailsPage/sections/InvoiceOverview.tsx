@@ -1,10 +1,21 @@
 import { fromUnixTime } from 'date-fns'
 import { format, utcToZonedTime } from 'date-fns-tz'
-import PropType from 'prop-types'
+import { z } from 'zod'
 
-import { invoicePropType } from 'services/account'
+import { InvoiceSchema } from 'services/account'
 
-const InvoiceOverview = ({ isPaid, invoice, dueDate }) => {
+interface InvoiceOverviewProps {
+  isPaid: boolean
+  invoice: z.infer<typeof InvoiceSchema>
+  dueDate: number | null
+}
+
+const InvoiceOverview = ({
+  isPaid,
+  invoice,
+  dueDate,
+}: InvoiceOverviewProps) => {
+  const card = invoice.defaultPaymentMethod?.card
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-xl font-semibold text-gray-800">
@@ -28,30 +39,30 @@ const InvoiceOverview = ({ isPaid, invoice, dueDate }) => {
           </tr>
           <tr>
             <td className="pr-2">Date due</td>
-            <td>
-              {format(
-                utcToZonedTime(fromUnixTime(dueDate), 'UTC'),
-                'MMMM do, yyyy',
-                { timeZone: 'UTC' }
-              )}
-            </td>
+            {dueDate ? (
+              <td>
+                {format(
+                  utcToZonedTime(fromUnixTime(dueDate), 'UTC'),
+                  'MMMM do, yyyy',
+                  { timeZone: 'UTC' }
+                )}
+              </td>
+            ) : null}
           </tr>
-          {invoice.defaultPaymentMethod && (
+          {card ? (
             <tr>
               <td className="pr-2">Payment method</td>
-              <td>{invoice.defaultPaymentMethod}</td>
+              <td>Ending in: {`${card.last4}`}</td>
+              <td>
+                Expiring on:
+                {` ${card.expMonth}/${card.expYear}`}
+              </td>
             </tr>
-          )}
+          ) : null}
         </tbody>
       </table>
     </div>
   )
-}
-
-InvoiceOverview.propTypes = {
-  invoice: invoicePropType,
-  isPaid: PropType.bool.isRequired,
-  dueDate: PropType.number.isRequired,
 }
 
 export default InvoiceOverview

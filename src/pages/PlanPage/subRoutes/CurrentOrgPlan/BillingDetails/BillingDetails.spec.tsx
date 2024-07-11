@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
@@ -64,7 +64,13 @@ describe('BillingDetails', () => {
             ctx.status(200),
             ctx.json({
               subscriptionDetail: hasTax
-                ? { ...mockSubscription, taxIds: ['lol', 'nice'] }
+                ? {
+                    ...mockSubscription,
+                    taxIds: [
+                      { type: 'k', value: 'lol' },
+                      { type: 'nah', value: 'nice' },
+                    ],
+                  }
                 : mockSubscription,
             })
           )
@@ -108,13 +114,11 @@ describe('BillingDetails', () => {
       expect(taxSection).toBeInTheDocument()
     })
 
-    it('does not render tax info if does not exist', async () => {
+    it('does not render tax info if does not exist', () => {
       setup({ hasSubscription: true, hasTax: false })
       render(<BillingDetails />, { wrapper })
 
-      await waitFor(() => {
-        expect(screen.queryByText(/Tax ID/)).not.toBeInTheDocument()
-      })
+      expect(screen.queryByText(/Tax ID/)).not.toBeInTheDocument()
     })
   })
 
