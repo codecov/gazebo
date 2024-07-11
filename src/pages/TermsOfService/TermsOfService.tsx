@@ -237,7 +237,15 @@ export default function TermsOfService() {
             .
           </p>
         )}
-        <div className="mt-3 flex justify-end">
+        <div className="mt-3 flex justify-end gap-2">
+          <Button
+            to={{ pageName: 'login' }}
+            variant="plain"
+            disabled={false}
+            hook="tos-back-button"
+          >
+            Back
+          </Button>
           <Button
             disabled={isDisabled({
               isValid: formState.isValid,

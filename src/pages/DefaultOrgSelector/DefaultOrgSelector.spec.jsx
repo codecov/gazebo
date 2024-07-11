@@ -219,12 +219,12 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       let selectLabel = screen.queryByText(
-        /Which organization are you using today?/
+        /Which organization are you working with today?/
       )
       expect(selectLabel).not.toBeInTheDocument()
 
       selectLabel = await screen.findByText(
-        /Which organization are you using today?/
+        /Which organization are you working with today?/
       )
       expect(selectLabel).toBeInTheDocument()
     })
@@ -391,6 +391,43 @@ describe('DefaultOrgSelector', () => {
     })
   })
 
+  describe('on cancel', () => {
+    it('sends user back to the login page', async () => {
+      setup({
+        useUserData: mockUserData,
+        myOrganizationsData: {
+          me: {
+            myOrganizations: {
+              edges: [
+                {
+                  node: {
+                    avatarUrl:
+                      'https://avatars0.githubusercontent.com/u/8226205?v=3&s=55',
+                    username: 'criticalRole',
+                    ownerid: 1,
+                  },
+                },
+              ],
+              pageInfo: { hasNextPage: false, endCursor: 'MTI=' },
+            },
+          },
+        },
+      })
+
+      render(<DefaultOrgSelector />, { wrapper: wrapper() })
+
+      const header = await screen.findByText(
+        /Which organization are you working with today?/
+      )
+      expect(header).toBeInTheDocument()
+
+      const cancel = await screen.findByRole('link', { name: /Cancel/ })
+      await userEvent.click(cancel)
+
+      expect(testLocation.pathname).toBe('/login')
+    })
+  })
+
   describe('on submit', () => {
     beforeEach(() => jest.resetAllMocks())
     it('fires update default org mutation', async () => {
@@ -418,7 +455,7 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       const selectLabel = await screen.findByText(
-        /Which organization are you using today?/
+        /Which organization are you working with today?/
       )
       expect(selectLabel).toBeInTheDocument()
 
@@ -474,7 +511,7 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       const selectLabel = await screen.findByText(
-        /Which organization are you using today?/
+        /Which organization are you working with today?/
       )
       expect(selectLabel).toBeInTheDocument()
 
@@ -612,7 +649,7 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       const selectLabel = await screen.findByText(
-        /Which organization are you using today?/
+        /Which organization are you working with today?/
       )
       expect(selectLabel).toBeInTheDocument()
 
@@ -671,7 +708,7 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       const selectLabel = await screen.findByText(
-        /Which organization are you using today?/
+        /Which organization are you working with today?/
       )
       expect(selectLabel).toBeInTheDocument()
 
@@ -887,7 +924,7 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       const selectLabel = await screen.findByText(
-        /Which organization are you using today?/
+        /Which organization are you working with today?/
       )
       expect(selectLabel).toBeInTheDocument()
 
@@ -951,7 +988,7 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       const selectLabel = await screen.findByText(
-        /Which organization are you using today?/
+        /Which organization are you working with today?/
       )
       expect(selectLabel).toBeInTheDocument()
 
@@ -1054,7 +1091,7 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       const selectLabel = await screen.findByText(
-        /Which organization are you using today?/
+        /Which organization are you working with today?/
       )
       expect(selectLabel).toBeInTheDocument()
 
@@ -1168,7 +1205,7 @@ describe('DefaultOrgSelector', () => {
       render(<DefaultOrgSelector />, { wrapper: wrapper() })
 
       const selectLabel = await screen.findByText(
-        /Which organization are you using today?/
+        /Which organization are you working with today?/
       )
       expect(selectLabel).toBeInTheDocument()
 
