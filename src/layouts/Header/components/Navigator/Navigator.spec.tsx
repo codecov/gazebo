@@ -1,6 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { RepoBreadcrumbProvider } from 'pages/RepoPage/context'
+
 import Navigator from './Navigator'
 
 jest.mock('ui/Breadcrumb', () => () => 'Breadcrumb')
@@ -10,12 +12,14 @@ const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
   ({ children }) =>
     (
       <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path="/:provider/:owner" exact>
-          {children}
-        </Route>
-        <Route path="/:provider/:owner/:repo" exact>
-          {children}
-        </Route>
+        <RepoBreadcrumbProvider>
+          <Route path="/:provider/:owner" exact>
+            {children}
+          </Route>
+          <Route path="/:provider/:owner/:repo" exact>
+            {children}
+          </Route>
+        </RepoBreadcrumbProvider>
       </MemoryRouter>
     )
 

@@ -8,17 +8,15 @@ type Breadcrumb = {
   readOnly?: boolean
 }
 
-const RepoBreadcrumbContext = createContext<{
+type RepoBreadcrumbContextValue = {
   setBaseCrumbs: (crumbs: Breadcrumb[]) => void
   breadcrumbs: Breadcrumb[]
   setBreadcrumbs: (crumbs: Breadcrumb[]) => void
-}>({
-  setBaseCrumbs: () => {},
-  breadcrumbs: [],
-  setBreadcrumbs: () => {},
-})
+}
 
-RepoBreadcrumbContext.displayName = 'RepoBreadcrumbContext'
+const RepoBreadcrumbContext = createContext<RepoBreadcrumbContextValue | null>(
+  null
+)
 
 export const RepoBreadcrumbProvider: React.FC<React.PropsWithChildren> = ({
   children,
@@ -47,7 +45,16 @@ export const RepoBreadcrumbProvider: React.FC<React.PropsWithChildren> = ({
     </RepoBreadcrumbContext.Provider>
   )
 }
+RepoBreadcrumbContext.displayName = 'RepoBreadcrumbContext'
 
 export function useCrumbs() {
-  return useContext(RepoBreadcrumbContext)
+  const rawContext = useContext(RepoBreadcrumbContext)
+
+  if (rawContext === null) {
+    throw new Error(
+      'useCrumbs has to be used within `<RepoBreadCrumbProvider>`'
+    )
+  }
+
+  return rawContext
 }

@@ -98,19 +98,11 @@ describe('Repo breadcrumb context', () => {
   }
 
   describe('when called outside of provider', () => {
-    it('uses default values', async () => {
-      const { user } = setup()
-      render(<TestComponent />, { wrapper })
-
-      const button = await screen.findByRole('button', { name: 'set crumb' })
-      expect(button).toBeInTheDocument()
-      let owner = screen.queryByText('codecov')
-      expect(owner).not.toBeInTheDocument()
-
-      await user.click(button)
-
-      owner = screen.queryByText('codecov')
-      expect(owner).not.toBeInTheDocument()
+    it('throws error', async () => {
+      console.error = () => {}
+      expect(() => render(<TestComponent />, { wrapper })).toThrow(
+        'useCrumbs has to be used within `<RepoBreadCrumbProvider>`'
+      )
     })
   })
 
