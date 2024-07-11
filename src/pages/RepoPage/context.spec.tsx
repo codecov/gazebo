@@ -3,10 +3,10 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { Suspense } from 'react'
-import { MemoryRouter, Route } from 'react-router-dom'
+import { Suspense, useLayoutEffect } from 'react'
+import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
-import { RepoBreadcrumbProvider, useCrumbs, useSetCrumbs } from './context'
+import { RepoBreadcrumbProvider, useCrumbs } from './context'
 
 const server = setupServer()
 const queryClient = new QueryClient({
@@ -17,32 +17,42 @@ const queryClient = new QueryClient({
   },
 })
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/test-repo']}>
       <Route path="/:provider/:owner/:repo">
-        <Suspense fallback={null}>
-          <RepoBreadcrumbProvider>{children}</RepoBreadcrumbProvider>
-        </Suspense>
+        <Suspense fallback={null}>{children}</Suspense>
       </Route>
     </MemoryRouter>
   </QueryClientProvider>
 )
 
+interface URLParams {
+  owner: string
+  repo: string
+}
+
 const TestComponent = () => {
-  const crumbs = useCrumbs()
-  const setCrumb = useSetCrumbs()
+  const { owner, repo } = useParams<URLParams>()
+  const { setBaseCrumbs, breadcrumbs, setBreadcrumbs } = useCrumbs()
+
+  useLayoutEffect(() => {
+    setBaseCrumbs([
+      { pageName: 'owner', text: owner },
+      { pageName: 'repo', text: repo },
+    ])
+  }, [owner, repo, setBaseCrumbs])
 
   return (
     <div>
       <ul>
-        {crumbs.map(({ text, children }, i) => (
+        {breadcrumbs.map(({ text, children }, i) => (
           <li key={i}>{text || children}</li>
         ))}
       </ul>
       <button
         onClick={() => {
-          setCrumb([{ pageName: 'added', text: 'added' }])
+          setBreadcrumbs([{ pageName: 'added', text: 'added' }])
         }}
       >
         set crumb
@@ -86,10 +96,25 @@ describe('Repo breadcrumb context', () => {
 
     return { user }
   }
-  describe('when called', () => {
+
+  describe('when called outside of provider', () => {
+    it('throws error', async () => {
+      console.error = () => {}
+      expect(() => render(<TestComponent />, { wrapper })).toThrow(
+        'useCrumbs has to be used within `<RepoBreadCrumbProvider>`'
+      )
+    })
+  })
+
+  describe('when called inside provider', () => {
     it('crumbs return the owner and repo value', async () => {
       setup()
-      render(<TestComponent />, { wrapper })
+      render(
+        <RepoBreadcrumbProvider>
+          <TestComponent />
+        </RepoBreadcrumbProvider>,
+        { wrapper }
+      )
 
       expect(await screen.findByText('codecov')).toBeTruthy()
       const codecov = screen.getByText('codecov')
@@ -102,7 +127,12 @@ describe('Repo breadcrumb context', () => {
 
     it('setCrumb can update the context', async () => {
       const { user } = setup()
-      render(<TestComponent />, { wrapper })
+      render(
+        <RepoBreadcrumbProvider>
+          <TestComponent />
+        </RepoBreadcrumbProvider>,
+        { wrapper }
+      )
 
       expect(
         await screen.findByRole('button', { name: 'set crumb' })
