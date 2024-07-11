@@ -13,7 +13,7 @@ const GitHubRateLimitExceededBanner = () => {
   if (!isGh) return null
 
   return (
-    <div>
+    <div className="mb-2">
       <Banner variant="warning">
         <BannerHeading>
           <h2 className="flex justify-center gap-2 font-semibold">
