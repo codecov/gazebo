@@ -95,8 +95,8 @@ export function useMyContexts({ provider, opts = {} }: UseMyContextsArgs) {
       )
 
       return {
-        pages: pages,
-        pageParams: pageParams,
+        pages,
+        pageParams,
         currentUser: me?.owner ?? null,
         myOrganizations: flatOrganizations,
         pageInfo: myOrganizations[myOrganizations.length - 1]?.pageInfo,
