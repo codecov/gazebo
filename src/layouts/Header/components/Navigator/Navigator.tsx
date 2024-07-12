@@ -19,7 +19,7 @@ function Navigator({ currentUser }: NavigatorProps) {
     return <Breadcrumb paths={breadcrumbs} largeFont />
   }
 
-  // Selfhosted admin settings
+  // Self-hosted admin settings
   if (path.startsWith('/admin/:provider')) {
     const defaultOrg =
       currentUser?.owner?.defaultOrgUsername ?? currentUser?.user?.username
@@ -33,6 +33,7 @@ function Navigator({ currentUser }: NavigatorProps) {
           },
           { pageName: '', readOnly: true, text: 'Admin' },
         ]}
+        largeFont
       />
     )
   }
