@@ -205,7 +205,7 @@ ContextSwitcher.propTypes = {
     PropTypes.shape({
       owner: PropTypes.shape({
         avatarUrl: PropTypes.string.isRequired,
-        username: PropTypes.string.isRequired,
+        username: PropTypes.string,
       }),
       pageName: PropTypes.string.isRequired,
     })
