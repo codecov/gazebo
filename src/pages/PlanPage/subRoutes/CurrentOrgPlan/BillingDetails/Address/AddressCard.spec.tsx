@@ -172,6 +172,46 @@ describe('AddressCard', () => {
       expect(screen.getByText(/San Francisco, CA 12345/)).toBeInTheDocument()
     })
 
+    it('can render partial information too', () => {
+      render(
+        <AddressCard
+          // @ts-expect-error weird param funkiness
+          subscriptionDetail={{
+            ...subscriptionDetail,
+            defaultPaymentMethod: {
+              card: {
+                brand: 'visa',
+                expMonth: 12,
+                expYear: 2021,
+                last4: '1234',
+              },
+              billingDetails: {
+                name: null,
+                email: null,
+                phone: null,
+                address: {
+                  line1: null,
+                  line2: null,
+                  city: null,
+                  country: null,
+                  state: null,
+                  postalCode: '12345',
+                },
+              },
+            },
+          }}
+          provider="gh"
+          owner="codecov"
+        />
+      )
+
+      expect(screen.getByText('Cardholder name')).toBeInTheDocument()
+      expect(screen.getByText('N/A')).toBeInTheDocument()
+      expect(screen.getByText('Billing address')).toBeInTheDocument()
+      expect(screen.queryByText(/null/)).not.toBeInTheDocument()
+      expect(screen.getByText('12345')).toBeInTheDocument()
+    })
+
     it('renders the card holder information', () => {
       render(
         <AddressCard
