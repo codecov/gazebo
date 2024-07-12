@@ -68,7 +68,7 @@ const MeSchema = z.object({
   }),
 })
 
-type Me = z.infer<typeof MeSchema>
+export type Me = z.infer<typeof MeSchema>
 
 const UserSchema = z.object({
   me: MeSchema.nullable(),

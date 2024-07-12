@@ -1,13 +1,13 @@
 import { useRouteMatch } from 'react-router-dom'
 
 import { useCrumbs } from 'pages/RepoPage/context'
-import { useUser } from 'services/user'
+import { Me } from 'services/user'
 import Breadcrumb from 'ui/Breadcrumb'
 
 import MyContextSwitcher from './MyContextSwitcher'
 
 interface NavigatorProps {
-  currentUser: ReturnType<typeof useUser>
+  currentUser: Me
 }
 
 function Navigator({ currentUser }: NavigatorProps) {
@@ -22,8 +22,7 @@ function Navigator({ currentUser }: NavigatorProps) {
   // Selfhosted admin settings
   if (path.startsWith('/admin/:provider')) {
     const defaultOrg =
-      currentUser.data?.owner?.defaultOrgUsername ??
-      currentUser.data?.user?.username
+      currentUser?.owner?.defaultOrgUsername ?? currentUser?.user?.username
     return (
       <Breadcrumb
         paths={[

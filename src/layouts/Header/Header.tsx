@@ -11,9 +11,9 @@ import SeatDetails from './components/SeatDetails'
 import UserDropdown from './components/UserDropdown'
 
 function Header() {
-  const currentUser = useUser()
+  const { data: currentUser } = useUser()
 
-  if (!currentUser.data) {
+  if (!currentUser) {
     return <h1>Guest header</h1>
   }
 
