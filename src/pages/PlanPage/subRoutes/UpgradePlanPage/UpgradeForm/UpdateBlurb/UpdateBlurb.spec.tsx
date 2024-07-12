@@ -41,6 +41,16 @@ const teamPlanMonth = {
   quantity: 10,
 }
 
+const freePlan = {
+  baseUnitPrice: 5,
+  benefits: ['Up to 10 users'],
+  billingRate: 'monthly',
+  marketingName: 'Users Team',
+  monthlyUploadLimit: 2500,
+  value: Plans.USERS_BASIC,
+  quantity: 2,
+}
+
 type WrapperClosure = (
   initialEntries?: string[]
 ) => React.FC<React.PropsWithChildren>
@@ -76,6 +86,40 @@ describe('UpdateBlurb', () => {
     })
   })
   describe('upgrades', () => {
+    describe('when user has free plan', () => {
+      it('renders immediate update blurb', async () => {
+        render(
+          <UpdateBlurb
+            currentPlan={freePlan}
+            selectedPlan={teamPlanYear}
+            newPlanName={teamPlanYear.value}
+            nextBillingDate={'July 12th, 2024'}
+            seats={10}
+          />,
+          {
+            wrapper: wrapper(),
+          }
+        )
+
+        const planBlurb = await screen.findByText(
+          'You are changing from the Developer plan to the [Team plan]'
+        )
+        const seatsBlurb = await screen.findByText(
+          'You are changing seats from 2 to [10]'
+        )
+        const billingBlurb = await screen.findByText(
+          'You are changing your billing cycle from Monthly to [Annual]'
+        )
+        const immediateUpdate = await screen.findByText(
+          /Your changes will take effect immediately./
+        )
+        expect(planBlurb).toBeInTheDocument()
+        expect(seatsBlurb).toBeInTheDocument()
+        expect(billingBlurb).toBeInTheDocument()
+        expect(immediateUpdate).toBeInTheDocument()
+      })
+    })
+
     describe('when user has monthly -> yearly plan', () => {
       it('renders immediate update blurb', async () => {
         render(

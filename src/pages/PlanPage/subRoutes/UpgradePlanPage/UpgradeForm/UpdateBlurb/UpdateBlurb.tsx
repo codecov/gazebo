@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 import { PlanSchema } from 'services/account'
-import { isAnnualPlan, isTeamPlan } from 'shared/utils/billing'
+import { isAnnualPlan, isFreePlan, isTeamPlan } from 'shared/utils/billing'
 
 import { NewPlanType } from '../constants'
 
@@ -18,6 +18,7 @@ const UpdateBlurb = ({
   seats: number
   nextBillingDate: string
 }) => {
+  const currentIsFree = isFreePlan(currentPlan?.value)
   const currentIsTeam = isTeamPlan(currentPlan?.value)
   const selectedIsTeam = isTeamPlan(selectedPlan?.value)
   const diffPlanType = currentIsTeam !== selectedIsTeam
@@ -31,11 +32,12 @@ const UpdateBlurb = ({
   const hasDiff = diffPlanType || diffBillingType || diffSeats
 
   // A plan is considered an upgrade if we increase the number of seats,
-  // go from team -> pro, or from monthly -> annual billing
+  // go from team -> pro, from monthly -> annual billing, or the current plan is a free plan
   const isUpgrade =
     seats > Number(currentPlan?.quantity) ||
     (currentIsTeam && !selectedIsTeam) ||
-    (!currentIsAnnual && selectedIsAnnual)
+    (!currentIsAnnual && selectedIsAnnual) ||
+    currentIsFree
 
   if (!hasDiff) {
     return null
@@ -46,7 +48,7 @@ const UpdateBlurb = ({
       <h3 className="pb-2 font-semibold">Review your plan changes</h3>
       {diffPlanType && (
         <li className="pl-2">{`You are changing from the ${
-          currentIsTeam ? 'Team' : 'Pro'
+          currentIsFree ? 'Developer' : currentIsTeam ? 'Team' : 'Pro'
         } plan to the [${selectedIsTeam ? 'Team' : 'Pro'} plan]`}</li>
       )}
       {diffSeats && (
