@@ -174,7 +174,7 @@ function DefaultOrgSelector() {
             Cancel
           </Button>
           <Button hook="user selects org, continues to app" type="submit">
-            Continue to app
+            Continue to Codecov
           </Button>
         </div>
       </form>
