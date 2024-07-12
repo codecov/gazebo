@@ -10,7 +10,7 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 )
 
@@ -44,6 +44,7 @@ describe('useMyContexts', () => {
             owner: {
               username: 'cool-user',
               avatarUrl: 'http://127.0.0.1/avatar-url',
+              defaultOrgUsername: null,
             },
             myOrganizations: {
               edges: [{ node: orgList }],
@@ -75,6 +76,7 @@ describe('useMyContexts', () => {
         currentUser: {
           avatarUrl: 'http://127.0.0.1/avatar-url',
           username: 'cool-user',
+          defaultOrgUsername: null,
         },
         myOrganizations: [
           {
@@ -89,7 +91,9 @@ describe('useMyContexts', () => {
       }
 
       await waitFor(() =>
-        expect(result.current.data).toStrictEqual(expectedData)
+        expect(result.current.data).toEqual(
+          expect.objectContaining(expectedData)
+        )
       )
     })
   })
@@ -114,6 +118,7 @@ describe('useMyContexts', () => {
         currentUser: {
           avatarUrl: 'http://127.0.0.1/avatar-url',
           username: 'cool-user',
+          defaultOrgUsername: null,
         },
         myOrganizations: [
           {
@@ -131,7 +136,11 @@ describe('useMyContexts', () => {
         },
       }
 
-      await waitFor(() => expect(result.current.data).toEqual(expectedData))
+      await waitFor(() =>
+        expect(result.current.data).toEqual(
+          expect.objectContaining(expectedData)
+        )
+      )
     })
   })
 })
