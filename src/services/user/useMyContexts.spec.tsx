@@ -31,10 +31,18 @@ afterAll(() => {
   server.close()
 })
 
+interface SetupArgs {
+  badResponse?: boolean
+}
+
 describe('useMyContexts', () => {
-  function setup() {
+  function setup({ badResponse = false }: SetupArgs) {
     server.use(
       graphql.query('MyContexts', (req, res, ctx) => {
+        if (badResponse) {
+          return res(ctx.status(200), ctx.data({}))
+        }
+
         const orgList = !!req.variables?.after ? orgList2 : orgList1
         const hasNextPage = req.variables?.after ? false : true
         const endCursor = req.variables?.after ? 'second' : 'first'
@@ -62,9 +70,8 @@ describe('useMyContexts', () => {
   }
 
   describe('when calling hook', () => {
-    beforeEach(() => setup())
-
     it('loads initial dataset', async () => {
+      setup({})
       const { result } = renderHook(() => useMyContexts({ provider: 'gh' }), {
         wrapper,
       })
@@ -96,10 +103,30 @@ describe('useMyContexts', () => {
         )
       )
     })
+
+    describe('and response is bad', () => {
+      it('throws 404 failed to parse', async () => {
+        console.error = () => {}
+        setup({ badResponse: true })
+        const { result } = renderHook(() => useMyContexts({ provider: 'gh' }), {
+          wrapper,
+        })
+
+        await waitFor(() => result.current.isFetching)
+        await waitFor(() => !result.current.isFetching)
+
+        expect(result.current.failureReason).toEqual(
+          expect.objectContaining({
+            dev: 'useMyContexts - 404 Failed to parse data',
+            status: 404,
+          })
+        )
+      })
+    })
   })
 
   describe('when fetchNextPage is called', () => {
-    beforeEach(() => setup())
+    beforeEach(() => setup({}))
 
     it('returns combined data set', async () => {
       const { result } = renderHook(() => useMyContexts({ provider: 'gh' }), {
