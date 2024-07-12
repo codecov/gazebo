@@ -6,7 +6,7 @@ import { setupServer } from 'msw/node'
 import { useLayoutEffect } from 'react'
 import { MemoryRouter, Route, useParams } from 'react-router-dom'
 
-import { RepoBreadcrumbProvider , useCrumbs } from 'pages/RepoPage/context'
+import { RepoBreadcrumbProvider, useCrumbs } from 'pages/RepoPage/context'
 
 import Navigator from './Navigator'
 
