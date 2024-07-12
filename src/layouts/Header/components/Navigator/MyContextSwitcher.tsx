@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import { useParams } from 'react-router-dom'
 
 import { useMyContexts, useOwner } from 'services/user'
@@ -39,7 +38,7 @@ function MyContextSwitcher({ pageName }: MyContextSwitcherProps) {
   ]
 
   return (
-    <div className="max-w-[350px]">
+    <div className="max-w-[500px]">
       <ContextSwitcher
         activeContext={activeContext}
         contexts={contexts}
@@ -49,10 +48,6 @@ function MyContextSwitcher({ pageName }: MyContextSwitcherProps) {
       />
     </div>
   )
-}
-
-MyContextSwitcher.propTypes = {
-  pageName: PropTypes.string.isRequired,
 }
 
 export default MyContextSwitcher
