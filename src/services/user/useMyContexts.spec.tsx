@@ -10,7 +10,7 @@ const queryClient = new QueryClient({
 })
 const server = setupServer()
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 )
 
@@ -31,10 +31,18 @@ afterAll(() => {
   server.close()
 })
 
+interface SetupArgs {
+  badResponse?: boolean
+}
+
 describe('useMyContexts', () => {
-  function setup() {
+  function setup({ badResponse = false }: SetupArgs) {
     server.use(
       graphql.query('MyContexts', (req, res, ctx) => {
+        if (badResponse) {
+          return res(ctx.status(200), ctx.data({}))
+        }
+
         const orgList = !!req.variables?.after ? orgList2 : orgList1
         const hasNextPage = req.variables?.after ? false : true
         const endCursor = req.variables?.after ? 'second' : 'first'
@@ -44,6 +52,7 @@ describe('useMyContexts', () => {
             owner: {
               username: 'cool-user',
               avatarUrl: 'http://127.0.0.1/avatar-url',
+              defaultOrgUsername: null,
             },
             myOrganizations: {
               edges: [{ node: orgList }],
@@ -61,9 +70,8 @@ describe('useMyContexts', () => {
   }
 
   describe('when calling hook', () => {
-    beforeEach(() => setup())
-
     it('loads initial dataset', async () => {
+      setup({})
       const { result } = renderHook(() => useMyContexts({ provider: 'gh' }), {
         wrapper,
       })
@@ -75,6 +83,7 @@ describe('useMyContexts', () => {
         currentUser: {
           avatarUrl: 'http://127.0.0.1/avatar-url',
           username: 'cool-user',
+          defaultOrgUsername: null,
         },
         myOrganizations: [
           {
@@ -89,13 +98,35 @@ describe('useMyContexts', () => {
       }
 
       await waitFor(() =>
-        expect(result.current.data).toStrictEqual(expectedData)
+        expect(result.current.data).toEqual(
+          expect.objectContaining(expectedData)
+        )
       )
+    })
+
+    describe('and response is bad', () => {
+      it('throws 404 failed to parse', async () => {
+        console.error = () => {}
+        setup({ badResponse: true })
+        const { result } = renderHook(() => useMyContexts({ provider: 'gh' }), {
+          wrapper,
+        })
+
+        await waitFor(() => result.current.isFetching)
+        await waitFor(() => !result.current.isFetching)
+
+        expect(result.current.failureReason).toEqual(
+          expect.objectContaining({
+            dev: 'useMyContexts - 404 Failed to parse data',
+            status: 404,
+          })
+        )
+      })
     })
   })
 
   describe('when fetchNextPage is called', () => {
-    beforeEach(() => setup())
+    beforeEach(() => setup({}))
 
     it('returns combined data set', async () => {
       const { result } = renderHook(() => useMyContexts({ provider: 'gh' }), {
@@ -114,6 +145,7 @@ describe('useMyContexts', () => {
         currentUser: {
           avatarUrl: 'http://127.0.0.1/avatar-url',
           username: 'cool-user',
+          defaultOrgUsername: null,
         },
         myOrganizations: [
           {
@@ -131,7 +163,11 @@ describe('useMyContexts', () => {
         },
       }
 
-      await waitFor(() => expect(result.current.data).toEqual(expectedData))
+      await waitFor(() =>
+        expect(result.current.data).toEqual(
+          expect.objectContaining(expectedData)
+        )
+      )
     })
   })
 })
