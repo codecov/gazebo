@@ -2,6 +2,7 @@ import {
   useInfiniteQuery,
   UseInfiniteQueryOptions,
 } from '@tanstack/react-query'
+import { useMemo } from 'react'
 import { z } from 'zod'
 
 import Api from 'shared/api'
@@ -66,7 +67,7 @@ export function useMyContexts({ provider, opts = {} }: UseMyContextsArgs) {
     }
   `
 
-  return useInfiniteQuery({
+  const { data, ...rest } = useInfiniteQuery({
     queryKey: ['MyContexts', provider, query],
     queryFn: ({ pageParam, signal }) =>
       Api.graphql({
@@ -87,21 +88,6 @@ export function useMyContexts({ provider, opts = {} }: UseMyContextsArgs) {
 
         return parsedRes?.data
       }),
-    select: ({ pages, pageParams }) => {
-      const me = pages[0]?.me ?? null
-      const myOrganizations = pages.map((page) => page?.me?.myOrganizations)
-      const flatOrganizations = myOrganizations.flatMap((page) =>
-        mapEdges(page)
-      )
-
-      return {
-        pages,
-        pageParams,
-        currentUser: me?.owner ?? null,
-        myOrganizations: flatOrganizations,
-        pageInfo: myOrganizations[myOrganizations.length - 1]?.pageInfo,
-      }
-    },
     getNextPageParam: (data) => {
       const myOrganizations = data?.me?.myOrganizations
       return myOrganizations?.pageInfo?.hasNextPage
@@ -110,4 +96,22 @@ export function useMyContexts({ provider, opts = {} }: UseMyContextsArgs) {
     },
     ...opts,
   })
+
+  return {
+    data: useMemo(() => {
+      const me = data?.pages[0]?.me ?? null
+      const myOrganizations =
+        data?.pages.map((page) => page?.me?.myOrganizations) ?? []
+      const flatOrganizations = myOrganizations.flatMap((page) =>
+        mapEdges(page)
+      )
+
+      return {
+        currentUser: me?.owner ?? null,
+        myOrganizations: flatOrganizations,
+        pageInfo: myOrganizations[myOrganizations.length - 1]?.pageInfo,
+      }
+    }, [data]),
+    ...rest,
+  }
 }
