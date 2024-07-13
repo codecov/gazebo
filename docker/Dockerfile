@@ -1,10 +1,12 @@
 # syntax = docker/dockerfile:1.3
-FROM node:20-alpine3.17 as npm
+FROM node:20-alpine3.17 as base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
 RUN apk -U add git
 RUN mkdir /home/workspace
 COPY package.json /home/workspace
 WORKDIR /home/workspace
-RUN npm install pnpm
 RUN pnpm install
 
 FROM            alpine:3.17 as uploader
@@ -50,7 +52,7 @@ ENV REACT_APP_ENV=$REACT_APP_ENV_ARG
 ENV REACT_APP_CODECOV_VERSION=$REACT_APP_CODECOV_VERSION
 ENV GENERATE_SOURCEMAP=false
 RUN mkdir /home/workspace
-COPY --from=pnpm /home/workspace/node_modules /home/workspace/node_modules
+COPY --from=base /home/workspace/node_modules /home/workspace/node_modules
 WORKDIR /home/workspace
 RUN apk -U add git
 COPY . /home/workspace
