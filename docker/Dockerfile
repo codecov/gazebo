@@ -1,7 +1,5 @@
 # syntax = docker/dockerfile:1.3
 FROM node:20-alpine3.17 as npm
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 RUN npm install -g pnpm
 RUN apk -U add git
