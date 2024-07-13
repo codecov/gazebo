@@ -2,4 +2,4 @@
   ignore = "git log -1 --pretty=%B | grep dependabot"
 
 [context.deploy-preview]
-  command = "npm run build && rm -f build/mockServiceWorker.js && cp custom-headers/_preview_headers  build/_headers"
+  command = "pnpm run build && rm -f build/mockServiceWorker.js && cp custom-headers/_preview_headers  build/_headers"
