@@ -26,11 +26,11 @@ In order to use the Makefile to build a Docker image, you'll need to set an envi
 To run the project in development mode
 
 ```bash
-> npm install
-> npm run start
+> pnpm install
+> pnpm run start
 ```
 
-Note: The first run of `npm run start` may take 5-10 minutes to finish building.
+Note: The first run of `pnpm run start` may take 5-10 minutes to finish building.
 
 The page will reload when you make edits. There is a local proxy to the staging API so you can develop against it. You can overwrite it by creating a `.env.local` file with it with the following:
 
@@ -43,7 +43,7 @@ PROXY_TO=http://localhost:5100
 You can run the tests with
 
 ```bash
-> npm run test
+> pnpm run test
 ```
 
 This script is using Jest, so any valid Jest options can be added to the command.
@@ -88,7 +88,7 @@ Killed is **good**, survived is **bad**, timeouts are **fine** (because the test
 ## Linting
 
 ```bash
-> npm run lint
+> pnpm run lint
 ```
 
 will lint the whole project.
@@ -103,7 +103,7 @@ We have some extra rules to keep the code more maintainable:
 ## Build the application for production
 
 ```bash
-> npm run build
+> pnpm run build
 ```
 
 will build the application in the `build` folder. We currently use Netlify for deployment, which will be subject to change.

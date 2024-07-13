@@ -4,6 +4,7 @@ RUN apk -U add git
 RUN mkdir /home/workspace
 COPY package.json /home/workspace
 WORKDIR /home/workspace
+RUN npm install pnpm
 RUN pnpm install
 
 FROM            alpine:3.17 as uploader
