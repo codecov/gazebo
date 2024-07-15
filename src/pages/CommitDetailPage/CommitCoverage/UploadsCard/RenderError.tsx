@@ -9,9 +9,7 @@ type ErrorCodeType =
   | 'UNKNOWN_ERROR'
 
 interface UseDuplicatedErrorsProps {
-  errors: Array<{
-    errorCode: ErrorCodeType
-  }>
+  errors: Array<{ errorCode: ErrorCodeType }>
 }
 
 const useDuplicatedErrors = ({ errors }: UseDuplicatedErrorsProps) =>
@@ -36,25 +34,20 @@ const useDuplicatedErrors = ({ errors }: UseDuplicatedErrorsProps) =>
   }, [errors])
 
 interface ErrorMessageProps {
-  key: string
   errorCode: ErrorCodeType
   count: number
 }
 
-const ErrorMessage = ({ key, errorCode, count }: ErrorMessageProps) => {
+const ErrorMessage = ({ errorCode, count }: ErrorMessageProps) => {
   const renderCount = count > 1 ? `(${count})` : ''
+  const icon = (
+    <Icon size="sm" name="exclamation" variant="solid" className="mt-[2px]" />
+  )
+
   if (errorCode === ErrorCodeEnum.reportEmpty) {
     return (
-      <span
-        key={key}
-        className="mt-3 flex items-start gap-1 text-ds-primary-red"
-      >
-        <Icon
-          size="sm"
-          name="exclamation"
-          variant="solid"
-          className="mt-[2px]"
-        />
+      <span className="mt-3 flex items-start gap-1 text-ds-primary-red">
+        {icon}
         <p className="w-11/12">
           Unusable report due to issues such as source code unavailability, path
           mismatch, empty report, or incorrect data format. Please visit our{' '}
@@ -65,7 +58,7 @@ const ErrorMessage = ({ key, errorCode, count }: ErrorMessageProps) => {
           >
             troubleshooting document
           </A>{' '}
-          for assistance.
+          for assistance. {renderCount}
         </p>
       </span>
     )
@@ -73,16 +66,8 @@ const ErrorMessage = ({ key, errorCode, count }: ErrorMessageProps) => {
 
   if (errorCode === ErrorCodeEnum.fileNotFoundInStorage) {
     return (
-      <span
-        key={key}
-        className="mt-3 flex items-start gap-1 text-ds-primary-red"
-      >
-        <Icon
-          size="sm"
-          name="exclamation"
-          variant="solid"
-          className="mt-[2px]"
-        />
+      <span className="mt-3 flex items-start gap-1 text-ds-primary-red">
+        {icon}
         <p className="w-11/12">
           Upload failed. Please rerun the upload. {renderCount}
         </p>
@@ -92,16 +77,8 @@ const ErrorMessage = ({ key, errorCode, count }: ErrorMessageProps) => {
 
   if (errorCode === ErrorCodeEnum.reportExpired) {
     return (
-      <span
-        key={key}
-        className="mt-3 flex items-start gap-1 text-ds-primary-red"
-      >
-        <Icon
-          size="sm"
-          name="exclamation"
-          variant="solid"
-          className="mt-[2px]"
-        />
+      <span className="mt-3 flex items-start gap-1 text-ds-primary-red">
+        {icon}
         <p className="w-11/12">
           Upload exceeds the max age of 12h. Please download and review your
           report or turn off the age check by visiting{' '}
@@ -112,24 +89,22 @@ const ErrorMessage = ({ key, errorCode, count }: ErrorMessageProps) => {
           >
             expired reports
           </A>
-          .
+          . {renderCount}
         </p>
       </span>
     )
   }
 
   return (
-    <span key={key} className="mt-3 flex items-start gap-1 text-ds-primary-red">
-      <Icon size="sm" name="exclamation" variant="solid" className="mt-[2px]" />
+    <span className="mt-3 flex items-start gap-1 text-ds-primary-red">
+      {icon}
       Unknown error {renderCount}
     </span>
   )
 }
 
 interface RenderErrorProps {
-  errors: Array<{
-    errorCode: ErrorCodeType
-  }>
+  errors: Array<{ errorCode: ErrorCodeType }>
   state?: (typeof UploadStateEnum)[keyof typeof UploadStateEnum]
 }
 
