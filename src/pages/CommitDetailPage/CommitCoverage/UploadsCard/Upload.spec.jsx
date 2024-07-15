@@ -244,7 +244,7 @@ describe('UploadsCard', () => {
     it('handles new errors the front end does not know how to handle', () => {
       render(<Upload errors={[{ errorCode: 'SOME_NEW_ERROR' }]} />, { wrapper })
 
-      const unknownError = screen.getByText(/unknown error/)
+      const unknownError = screen.getByText(/Unknown error/)
       expect(unknownError).toBeInTheDocument()
     })
 
@@ -256,28 +256,28 @@ describe('UploadsCard', () => {
         { wrapper }
       )
 
-      const unknownError = screen.getByText(/unknown error/)
+      const unknownError = screen.getByText(/Unknown error/)
       expect(unknownError).toBeInTheDocument()
     })
 
     it('handles upload state error but no error code resolved as an known error', () => {
       render(<Upload state="ERROR" />, { wrapper })
 
-      const unknownError = screen.getByText(/unknown error/)
+      const unknownError = screen.getByText(/Unknown error/)
       expect(unknownError).toBeInTheDocument()
     })
 
     it('handles upload state error but no errors returned', () => {
       render(<Upload errors={[]} state="ERROR" />, { wrapper })
 
-      const unknownError = screen.getByText(/unknown error/)
+      const unknownError = screen.getByText(/Unknown error/)
       expect(unknownError).toBeInTheDocument()
     })
 
     it('If no state is provided and no errors received do not show an error', () => {
       render(<Upload errors={[]} />, { wrapper })
 
-      const unknownError = screen.queryByText(/unknown error/)
+      const unknownError = screen.queryByText(/Unknown error/)
       expect(unknownError).not.toBeInTheDocument()
     })
 
@@ -299,7 +299,7 @@ describe('UploadsCard', () => {
       const erroredUpload = screen.getByText(/Unusable report due to issues/)
       expect(erroredUpload).toBeInTheDocument()
 
-      const unknownError = screen.getByText(/unknown error \(4\)/)
+      const unknownError = screen.getByText(/Unknown error \(4\)/)
       expect(unknownError).toBeInTheDocument()
     })
   })
