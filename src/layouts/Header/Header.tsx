@@ -18,7 +18,7 @@ function Header() {
   }
 
   return (
-    <div className="container flex h-14 w-full items-center">
+    <div className="container flex h-14 min-h-14 w-full items-center">
       <div className="flex-1">
         <Navigator currentUser={currentUser} />
       </div>

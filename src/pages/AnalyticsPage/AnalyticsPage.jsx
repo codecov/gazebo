@@ -7,6 +7,7 @@ import { orderingOptions } from 'services/repos'
 import { useOwner } from 'services/user'
 import { useFlags } from 'shared/featureFlags'
 import ReposTable from 'shared/ListRepo/ReposTable'
+import { cn } from 'shared/utils/cn'
 import LoadingLogo from 'ui/LoadingLogo'
 
 import ChartSelectors from './ChartSelectors'
@@ -56,23 +57,25 @@ function AnalyticsPage() {
   }
 
   return (
-    <div className="mt-2 flex flex-col gap-4">
+    <div className={cn({ 'mt-2': !newHeader })}>
       {newHeader ? null : <Header />}
-      <div>{ownerData?.isCurrentUserPartOfOrg && <Tabs />}</div>
-      <ChartSelectors
-        params={params}
-        updateParams={updateParams}
-        active={true}
-        sortItem={sortItem}
-      />
-      <Suspense fallback={<SuspenseFallback />}>
-        <Chart params={params} />
-      </Suspense>
-      <ReposTable
-        owner={owner}
-        searchValue={params?.search}
-        filterValues={params?.repositories}
-      />
+      <div className="flex flex-col gap-4">
+        <div>{ownerData?.isCurrentUserPartOfOrg && <Tabs />}</div>
+        <ChartSelectors
+          params={params}
+          updateParams={updateParams}
+          active={true}
+          sortItem={sortItem}
+        />
+        <Suspense fallback={<SuspenseFallback />}>
+          <Chart params={params} />
+        </Suspense>
+        <ReposTable
+          owner={owner}
+          searchValue={params?.search}
+          filterValues={params?.repositories}
+        />
+      </div>
     </div>
   )
 }
