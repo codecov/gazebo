@@ -53,7 +53,9 @@ RUN mkdir /home/workspace
 COPY --from=npm /home/workspace/node_modules /home/workspace/node_modules
 WORKDIR /home/workspace
 RUN apk -U add git
+RUN apk add --no-cache yarn
 COPY . /home/workspace
+RUN yarn install
 RUN yarn build && rm -f build/mockServiceWorker.js
 
 
