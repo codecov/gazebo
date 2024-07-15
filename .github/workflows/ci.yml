@@ -71,6 +71,7 @@ jobs:
 
       - name: Run linter
         run: |
+          yarn install
           yarn lint
 
   type-check:
@@ -100,6 +101,7 @@ jobs:
 
       - name: Run TSC
         run: |
+          yarn install
           yarn type-check
 
   format-check:
@@ -129,6 +131,7 @@ jobs:
 
       - name: Run Prettier
         run: |
+          yarn install
           yarn format-check
 
   codecovstartup:
@@ -194,6 +197,7 @@ jobs:
 
       - name: Run tests
         run: |
+          yarn install
           TESTS=$(echo $TEST_LIST | jq -cr 'join(" ")')
           yarn test:ci -- --maxWorkers=2 $TESTS
         env:
@@ -284,6 +288,7 @@ jobs:
 
       - name: Build and upload stats
         run: |
+          yarn install
           yarn build:stats
         env:
           CODECOV_API_URL: ${{ secrets.CODECOV_API_URL }}
@@ -320,6 +325,7 @@ jobs:
 
       - name: Build and upload stats
         run: |
+          yarn install
           yarn build:stats
         env:
           CODECOV_API_URL: ${{ secrets.CODECOV_STAGING_API_URL }}
@@ -356,6 +362,7 @@ jobs:
 
       - name: Deploy to Chromatic
         run: |
+          yarn install
           yarn chromatic
         env:
           CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
@@ -406,6 +413,7 @@ jobs:
 
       - name: Build React App
         run: |
+          yarn install
           yarn build
 
   build-self-hosted:

@@ -1,6 +1,7 @@
 # syntax = docker/dockerfile:1.3
 FROM node:20-alpine3.17 as npm
-RUN apk -U add git && add --no-cache yarn
+RUN apk -U add git 
+RUN apk add --no-cache yarn
 RUN mkdir /home/workspace
 COPY package.json /home/workspace
 WORKDIR /home/workspace
