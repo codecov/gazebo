@@ -2,31 +2,20 @@ import { CodecovIcon } from 'assets/svg/codecov'
 import A from 'ui/A'
 import Button from 'ui/Button'
 
-const LogoButton = ({
-  defaultOrg,
-  fillColor,
-}: {
-  defaultOrg?: string
-  fillColor?: string
-}) => {
-  let pageName = 'root'
-  if (defaultOrg) {
-    pageName = 'owner'
-  }
-
+const LogoButton = () => {
   return (
     <A
       to={{
-        pageName: pageName,
-        options: { owner: defaultOrg },
+        pageName: 'root',
+        options: { owner: '' },
       }}
-      variant="headerDeprecated"
+      variant="header"
       data-testid="homepage-link"
-      isExternal={pageName === 'root' ? true : false}
+      isExternal={true}
       hook="desktop-menu-homepage-link"
     >
       <span className="sr-only">Link to Homepage</span>
-      <CodecovIcon fillColor={fillColor} />
+      <CodecovIcon fillColor="#F01F7A" />
     </A>
   )
 }
@@ -35,7 +24,7 @@ function GuestHeader() {
   return (
     <div className="container mx-auto flex flex-wrap items-center justify-between gap-2 border-b px-3 py-4 sm:px-0">
       <div data-testid="guest-header" className="flex items-center gap-4">
-        <LogoButton defaultOrg={''} fillColor="#F01F7A" />
+        <LogoButton />
         <A
           to={{ pageName: 'whyTestCode' }}
           variant="guestHeader"
