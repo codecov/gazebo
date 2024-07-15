@@ -813,6 +813,24 @@ describe('useUserAccessGate', () => {
           })
         )
       })
+
+      it('does not fire if current owner already has a default org', async () => {
+        const { mockMutationVariables } = setup({
+          user: userHasDefaultOrg,
+          internalUser: internalUserHasSyncedProviders,
+        })
+
+        const { result } = renderHook(() => useUserAccessGate(), {
+          wrapper: wrapper(['/gh']),
+        })
+
+        await waitFor(() => result.current.isLoading)
+        await waitFor(() => !result.current.isLoading)
+
+        await waitFor(() =>
+          expect(mockMutationVariables).not.toHaveBeenCalled()
+        )
+      })
     })
 
     describe('when customer intent is set to BUSINESS', () => {

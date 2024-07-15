@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import { Alert } from './Alert'
+import { Alert, AlertOptions } from './Alert'
 
 describe('Alert', () => {
   it('renders arbitrary child', async () => {
@@ -63,22 +63,22 @@ describe('Alert', () => {
       expect(icon).toBeInTheDocument()
     })
     it('renders warning', async () => {
-      render(<Alert variant={'warning'}>Blah</Alert>)
+      render(<Alert variant={AlertOptions.WARNING}>Blah</Alert>)
       const icon = screen.getByText('exclamation-triangle.svg')
       expect(icon).toBeInTheDocument()
     })
     it('renders info', async () => {
-      render(<Alert variant={'info'}>Blah</Alert>)
+      render(<Alert variant={AlertOptions.INFO}>Blah</Alert>)
       const icon = screen.getByText('information-circle.svg')
       expect(icon).toBeInTheDocument()
     })
     it('renders error', async () => {
-      render(<Alert variant={'error'}>Blah</Alert>)
+      render(<Alert variant={AlertOptions.ERROR}>Blah</Alert>)
       const icon = screen.getByText('x-circle.svg')
       expect(icon).toBeInTheDocument()
     })
     it('renders success', async () => {
-      render(<Alert variant={'success'}>Blah</Alert>)
+      render(<Alert variant={AlertOptions.SUCCESS}>Blah</Alert>)
       const icon = screen.getByText('check-circle.svg')
       expect(icon).toBeInTheDocument()
     })

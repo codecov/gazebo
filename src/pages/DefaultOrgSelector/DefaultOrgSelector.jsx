@@ -125,7 +125,7 @@ function DefaultOrgSelector() {
   return (
     <div className="mx-auto w-full max-w-[38rem]">
       <h1 className="pb-3 pt-20 text-2xl font-semibold">
-        Which organization are you using today?
+        Which organization are you working with today?
       </h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="my-4 flex flex-col gap-4 border-y border-ds-gray-tertiary py-6">
@@ -164,9 +164,17 @@ function DefaultOrgSelector() {
           />
           <GitHubHelpBanner />
         </div>
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-2">
+          <Button
+            to={{ pageName: 'login' }}
+            variant="plain"
+            disabled={false}
+            hook="org-select-cancel-button"
+          >
+            Cancel
+          </Button>
           <Button hook="user selects org, continues to app" type="submit">
-            Continue
+            Continue to Codecov
           </Button>
         </div>
       </form>

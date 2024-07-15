@@ -70,13 +70,20 @@ function BillingInner({ billingDetails, setIsFormOpen }: BillingInnerProps) {
   if (billingDetails) {
     return (
       <div>
-        <p>{`${billingDetails.name}`}</p>
+        <p>{`${billingDetails.name ?? 'N/A'}`}</p>
         <br />
         <h4 className="mb-2 font-semibold">Billing address</h4>
-        <p>{`${billingDetails.address?.line1} ${
+        <p>{`${billingDetails.address?.line1 ?? ''} ${
           billingDetails.address?.line2 ?? ''
         }`}</p>
-        <p>{`${billingDetails.address?.city}, ${billingDetails.address?.state} ${billingDetails.address?.postalCode}`}</p>
+        <p>
+          {billingDetails.address?.city
+            ? `${billingDetails.address?.city}, `
+            : ''}
+          {`${billingDetails.address?.state ?? ''} ${
+            billingDetails.address?.postalCode ?? ''
+          }`}
+        </p>
       </div>
     )
   }

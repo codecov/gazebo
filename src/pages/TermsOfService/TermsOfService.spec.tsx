@@ -261,6 +261,20 @@ describe('TermsOfService', () => {
     })
   })
 
+  describe('on back', () => {
+    it('sends user back to the login page', async () => {
+      render(<TermsOfService />, { wrapper })
+
+      const welcome = await screen.findByText(/Welcome to Codecov/i)
+      expect(welcome).toBeInTheDocument()
+
+      const back = await screen.findByRole('link', { name: /Back/ })
+      await userEvent.click(back)
+
+      expect(testLocation.pathname).toBe('/login')
+    })
+  })
+
   /*
    * This is to test the various form validation edge cases case with different data.
    * The describe.each function takes an array of arrays, each array is a test case.

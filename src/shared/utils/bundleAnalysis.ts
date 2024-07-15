@@ -59,6 +59,13 @@ export const formatTimeToString = (milliseconds: number) => {
   }).format(milliseconds)
 }
 
+export const formatBundlePercentage = (percentage: number) => {
+  return Intl.NumberFormat('en-US', {
+    style: 'percent',
+    maximumFractionDigits: 2,
+  }).format(percentage)
+}
+
 export const findBundleMultiplier = (bytes: number) => {
   const positiveBytes = Math.abs(bytes)
 

@@ -4,24 +4,37 @@ import * as React from 'react'
 import { cn } from 'shared/utils/cn'
 import Icon from 'ui/Icon'
 
+export const AlertOptions = {
+  ERROR: 'error',
+  INFO: 'info',
+  SUCCESS: 'success',
+  WARNING: 'warning',
+} as const
+
+export type AlertOptionsType =
+  | typeof AlertOptions.ERROR
+  | typeof AlertOptions.INFO
+  | typeof AlertOptions.SUCCESS
+  | typeof AlertOptions.WARNING
+
 const alertVariants = cva('relative w-full border-l-4 p-4', {
   variants: {
     variant: {
-      error: 'border-ds-primary-red bg-error-100',
-      info: 'border-ds-blue-darker bg-ds-blue-nonary',
-      success: 'border-green-500 bg-green-100',
-      warning: 'border-orange-500 bg-orange-100',
+      [AlertOptions.ERROR]: 'border-ds-primary-red bg-error-100',
+      [AlertOptions.INFO]: 'border-ds-blue-darker bg-ds-blue-nonary',
+      [AlertOptions.SUCCESS]: 'border-green-500 bg-green-100',
+      [AlertOptions.WARNING]: 'border-orange-500 bg-orange-100',
     },
   },
   defaultVariants: {
-    variant: 'info',
+    variant: AlertOptions.INFO,
   },
 })
 
 export function variantToIcon(variant?: string | null) {
   let classname = 'float-left -mt-1 mr-2 align-middle'
   switch (variant) {
-    case 'error':
+    case AlertOptions.ERROR:
       return (
         <Icon
           variant="outline"
@@ -31,7 +44,7 @@ export function variantToIcon(variant?: string | null) {
           className={`stroke-ds-primary-red ${classname}`}
         />
       )
-    case 'info':
+    case AlertOptions.INFO:
       return (
         <Icon
           variant="outline"
@@ -41,7 +54,7 @@ export function variantToIcon(variant?: string | null) {
           className={`stroke-ds-blue-darker ${classname}`}
         />
       )
-    case 'success':
+    case AlertOptions.SUCCESS:
       return (
         <Icon
           variant="outline"
@@ -51,7 +64,7 @@ export function variantToIcon(variant?: string | null) {
           className={`stroke-green-500 ${classname}`}
         />
       )
-    case 'warning':
+    case AlertOptions.WARNING:
       return (
         <Icon
           variant="outline"
