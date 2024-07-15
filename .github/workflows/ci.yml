@@ -44,7 +44,7 @@ jobs:
       - name: Install packages
         if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
         run: |
-          npm install
+          yarn install
   lint:
     name: Run Lint
     runs-on: ubuntu-latest
@@ -72,7 +72,7 @@ jobs:
 
       - name: Run linter
         run: |
-          npm run lint
+          yarn lint
 
   type-check:
     name: Run Type Checker
@@ -101,7 +101,7 @@ jobs:
 
       - name: Run TSC
         run: |
-          npm run type-check
+          yarn type-check
 
   format-check:
     name: Run Prettier Check
@@ -130,7 +130,7 @@ jobs:
 
       - name: Run Prettier
         run: |
-          npm run format-check
+          yarn format-check
 
   codecovstartup:
     name: Codecov Startup
@@ -196,7 +196,7 @@ jobs:
       - name: Run tests
         run: |
           TESTS=$(echo $TEST_LIST | jq -cr 'join(" ")')
-          npm run test:ci -- --maxWorkers=2 $TESTS
+          yarn test:ci -- --maxWorkers=2 $TESTS
         env:
           JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
           TEST_LIST: ${{ tojson(fromjson(needs.runner-indexes.outputs.test_list_array)[matrix.runner-index]) }}
@@ -285,7 +285,7 @@ jobs:
 
       - name: Build and upload stats
         run: |
-          npm run build:stats
+          yarn build:stats
         env:
           CODECOV_API_URL: ${{ secrets.CODECOV_API_URL }}
           CODECOV_ORG_TOKEN: ${{ secrets.CODECOV_ORG_TOKEN }}
@@ -321,7 +321,7 @@ jobs:
 
       - name: Build and upload stats
         run: |
-          npm run build:stats
+          yarn build:stats
         env:
           CODECOV_API_URL: ${{ secrets.CODECOV_STAGING_API_URL }}
           CODECOV_ORG_TOKEN: ${{ secrets.CODECOV_ORG_TOKEN_STAGING }}
@@ -357,7 +357,7 @@ jobs:
 
       - name: Deploy to Chromatic
         run: |
-          npm run chromatic
+          yarn chromatic
         env:
           CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
 
@@ -407,7 +407,7 @@ jobs:
 
       - name: Build React App
         run: |
-          npm run build
+          yarn build
 
   build-self-hosted:
     name: Build Self Hosted Image
