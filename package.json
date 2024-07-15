@@ -158,7 +158,7 @@
     "webpackbar": "^6.0.1"
   },
   "engines": {
-    "node": "20.11.0"
+    "node": ">=20.10.0"
   },
   "jest": {
     "transformIgnorePatterns": [
