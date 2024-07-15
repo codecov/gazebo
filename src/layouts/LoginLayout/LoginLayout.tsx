@@ -2,10 +2,8 @@ import { Suspense } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import Footer from 'layouts/Footer'
-import Header from 'layouts/Header'
-import OldHeader from 'layouts/OldHeader'
+import GuestHeader from 'layouts/Header/components/GuestHeader'
 import SessionExpiredBanner from 'pages/LoginPage/SessionExpiredBanner'
-import { useFlags } from 'shared/featureFlags'
 import LoadingLogo from 'ui/LoadingLogo'
 
 const FullPageLoader = () => (
@@ -17,14 +15,10 @@ const FullPageLoader = () => (
 const LoginLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
   const location = useLocation()
 
-  const { newHeader } = useFlags({
-    newHeader: false,
-  })
-
   return (
     <>
       {location.search.includes('expired') && <SessionExpiredBanner />}
-      {newHeader ? <Header /> : <OldHeader />}
+      <GuestHeader />
       <Suspense fallback={<FullPageLoader />}>
         <main className="container mb-8 mt-2 flex grow flex-col gap-2 md:p-0">
           {children}

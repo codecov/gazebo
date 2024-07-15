@@ -112,25 +112,4 @@ describe('LoginLayout', () => {
       })
     })
   })
-
-  describe('header feature flagging', () => {
-    it('renders old header when feature flag is false', async () => {
-      setup()
-
-      render(<LoginLayout>child content</LoginLayout>, { wrapper: wrapper() })
-
-      const blogLink = await screen.findByText('Why Test Code?')
-      expect(blogLink).toBeInTheDocument()
-    })
-
-    it('renders new header when feature flag is true', async () => {
-      setup()
-      mockedUseFlags.mockReturnValue({ newHeader: true })
-
-      render(<LoginLayout>child content</LoginLayout>, { wrapper: wrapper() })
-
-      const newHeader = await screen.findByText('Guest header')
-      expect(newHeader).toBeInTheDocument()
-    })
-  })
 })

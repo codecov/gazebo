@@ -109,8 +109,26 @@ describe('Header', () => {
       setup({ user: mockNullUser })
       render(<Header />, { wrapper })
 
-      const guestHeader = await screen.findByText('Guest header')
+      const guestHeader = await screen.findByText('Why Test Code?')
       expect(guestHeader).toBeInTheDocument()
+    })
+
+    it('shows navigator', async () => {
+      setup({})
+      render(<Header />, { wrapper })
+
+      const navigator = await screen.findByText('Navigator')
+      expect(navigator).toBeInTheDocument()
+    })
+
+    it('does not show user/help dropdowns', async () => {
+      setup({})
+      render(<Header />, { wrapper })
+
+      const userDropdown = screen.queryByText('User Dropdown')
+      expect(userDropdown).not.toBeInTheDocument()
+      const helpDropdown = screen.queryByText('Help Dropdown')
+      expect(helpDropdown).not.toBeInTheDocument()
     })
   })
 
@@ -144,11 +162,29 @@ describe('Header', () => {
     describe('and are not logged in', () => {
       it('shows guest header', async () => {
         config.IS_SELF_HOSTED = true
+        setup({ user: mockNullUser })
+        render(<Header />, { wrapper })
+
+        const guestHeader = await screen.findByText('Why Test Code?')
+        expect(guestHeader).toBeInTheDocument()
+      })
+
+      it('shows navigator', async () => {
         setup({})
         render(<Header />, { wrapper })
 
-        const guestHeader = await screen.findByText('Guest header')
-        expect(guestHeader).toBeInTheDocument()
+        const navigator = await screen.findByText('Navigator')
+        expect(navigator).toBeInTheDocument()
+      })
+
+      it('does not show user/help dropdowns', async () => {
+        setup({})
+        render(<Header />, { wrapper })
+
+        const userDropdown = screen.queryByText('User Dropdown')
+        expect(userDropdown).not.toBeInTheDocument()
+        const helpDropdown = screen.queryByText('Help Dropdown')
+        expect(helpDropdown).not.toBeInTheDocument()
       })
     })
 

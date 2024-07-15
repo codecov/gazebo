@@ -27,7 +27,6 @@ function Navigator({ currentUser }: NavigatorProps) {
   if (path.startsWith('/admin/:provider')) {
     const defaultOrg =
       currentUser?.owner?.defaultOrgUsername ?? currentUser?.user?.username
-    console.log(defaultOrg)
     return (
       <Breadcrumb
         paths={[
@@ -43,7 +42,7 @@ function Navigator({ currentUser }: NavigatorProps) {
     )
   }
 
-  if (!ownerData?.isCurrentUserPartOfOrg) {
+  if (ownerData && !ownerData.isCurrentUserPartOfOrg) {
     return (
       <div className="flex items-center">
         <Avatar user={ownerData} border="light" />
