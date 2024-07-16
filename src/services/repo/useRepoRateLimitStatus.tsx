@@ -42,7 +42,7 @@ const query = `query GetRepoRateLimitStatus($owner: String!, $repo: String!) {
   }
 }`
 
-interface UseRepoOverviewArgs {
+interface UseRepoRateLimitStatusArgs {
   provider: string
   owner: string
   repo: string
@@ -52,7 +52,7 @@ export function useRepoRateLimitStatus({
   provider,
   owner,
   repo,
-}: UseRepoOverviewArgs) {
+}: UseRepoRateLimitStatusArgs) {
   return useQuery({
     queryKey: ['GetRepoRateLimitStatus', provider, owner, repo],
     queryFn: ({ signal }) => {
