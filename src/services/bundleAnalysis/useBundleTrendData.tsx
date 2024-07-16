@@ -134,7 +134,7 @@ interface UseBundleTrendDataArgs {
   bundle: string
   interval: (typeof BUNDLE_TREND_INTERVALS)[number]
   before: Date
-  after: Date
+  after: Date | null
   filters: {
     assetTypes: Array<(typeof BUNDLE_TREND_REPORT_TYPES)[number]>
   }

@@ -31,7 +31,7 @@ export function useBundleChartData({
   const queryVars = useMemo(() => {
     const oldestCommit = overview?.oldestCommitAt
       ? new Date(overview.oldestCommitAt)
-      : new Date('2024-01-01')
+      : null
     const vars = createTimeSeriesQueryVars({
       today,
       trend,
