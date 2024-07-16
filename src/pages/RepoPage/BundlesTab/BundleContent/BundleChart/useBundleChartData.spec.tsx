@@ -6,9 +6,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import qs from 'querystring'
 
-import { Trend } from 'shared/utils/timeseriesCharts'
-
-import { createQueryVars, useBundleChartData } from './useBundleChartData'
+import { useBundleChartData } from './useBundleChartData'
 
 const mockRepoOverview = {
   owner: {
@@ -236,115 +234,6 @@ describe('useBundleChartData', () => {
         interval: 'INTERVAL_30_DAY',
         owner: 'codecov',
         repo: 'test-repo',
-      })
-    })
-  })
-})
-
-describe('createQueryVars', () => {
-  describe('trend is SEVEN_DAYS', () => {
-    it('should return the correct interval and after date', () => {
-      const today = new Date('2021-09-01')
-      const oldestCommitAt = '2019-07-01'
-      const trend = Trend.SEVEN_DAYS
-
-      const queryVars = createQueryVars({ today, trend, oldestCommitAt })
-
-      expect(queryVars).toEqual({
-        interval: 'INTERVAL_1_DAY',
-        after: new Date('2021-08-25'),
-      })
-    })
-  })
-
-  describe('trend is THIRTY_DAYS', () => {
-    it('should return the correct interval and after date', () => {
-      const today = new Date('2021-09-01')
-      const oldestCommitAt = '2019-07-01'
-      const trend = Trend.THIRTY_DAYS
-
-      const queryVars = createQueryVars({ today, trend, oldestCommitAt })
-
-      expect(queryVars).toEqual({
-        interval: 'INTERVAL_1_DAY',
-        after: new Date('2021-08-02'),
-      })
-    })
-  })
-
-  describe('trend is THREE_MONTHS', () => {
-    it('should return the correct interval and after date', () => {
-      const today = new Date('2021-09-01')
-      const oldestCommitAt = '2019-07-01'
-      const trend = Trend.THREE_MONTHS
-
-      const queryVars = createQueryVars({ today, trend, oldestCommitAt })
-
-      expect(queryVars).toEqual({
-        interval: 'INTERVAL_7_DAY',
-        after: new Date('2021-06-01'),
-      })
-    })
-  })
-
-  describe('trend is SIX_MONTHS', () => {
-    it('should return the correct interval and after date', () => {
-      const today = new Date('2021-09-01')
-      const oldestCommitAt = '2019-07-01'
-      const trend = Trend.SIX_MONTHS
-
-      const queryVars = createQueryVars({ today, trend, oldestCommitAt })
-
-      expect(queryVars).toEqual({
-        interval: 'INTERVAL_30_DAY',
-        after: new Date('2021-03-01'),
-      })
-    })
-  })
-
-  describe('trend is TWELVE_MONTHS', () => {
-    it('should return the correct interval and after date', () => {
-      const today = new Date('2021-09-01')
-      const oldestCommitAt = '2019-07-01'
-      const trend = Trend.TWELVE_MONTHS
-
-      const queryVars = createQueryVars({ today, trend, oldestCommitAt })
-
-      expect(queryVars).toEqual({
-        interval: 'INTERVAL_30_DAY',
-        after: new Date('2020-09-01'),
-      })
-    })
-  })
-
-  describe('trend is ALL_TIME', () => {
-    describe('oldestCommitAt is provided', () => {
-      it('should return the correct interval and after date', () => {
-        const today = new Date('2021-09-01')
-        const oldestCommitAt = '2019-07-01'
-        const trend = Trend.ALL_TIME
-
-        const queryVars = createQueryVars({ today, trend, oldestCommitAt })
-
-        expect(queryVars).toEqual({
-          interval: 'INTERVAL_30_DAY',
-          after: new Date('2019-07-01'),
-        })
-      })
-    })
-
-    describe('oldestCommitAt is not provided', () => {
-      it('should return the correct interval and after date', () => {
-        const today = new Date('2021-09-01')
-        const oldestCommitAt = null
-        const trend = Trend.ALL_TIME
-
-        const queryVars = createQueryVars({ today, trend, oldestCommitAt })
-
-        expect(queryVars).toEqual({
-          interval: 'INTERVAL_30_DAY',
-          after: new Date('1970-01-01'),
-        })
       })
     })
   })
