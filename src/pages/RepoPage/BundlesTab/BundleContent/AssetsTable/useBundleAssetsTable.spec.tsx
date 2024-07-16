@@ -132,6 +132,52 @@ describe('useBundleAssetsTable', () => {
 
   it('returns the bundle assets', async () => {
     setup()
+
+    const { result } = renderHook(
+      () =>
+        useBundleAssetsTable({
+          provider: 'gh',
+          owner: 'codecov',
+          repo: 'test-repo',
+          branch: 'test-branch',
+          bundle: 'test-bundle',
+        }),
+      { wrapper: wrapper() }
+    )
+
+    const expectedResult = {
+      assets: [
+        {
+          bundleData: {
+            loadTime: {
+              highSpeed: 2,
+              threeG: 1,
+            },
+            size: {
+              gzip: 4,
+              uncompress: 3,
+            },
+          },
+          extension: 'js',
+          measurements: {
+            change: {
+              size: {
+                uncompress: 5,
+              },
+            },
+            measurements: [
+              {
+                avg: 6,
+                timestamp: '2022-10-10T11:59:59',
+              },
+            ],
+          },
+          name: 'asset-1',
+        },
+      ],
+      bundleUncompressSize: 12,
+    }
+    await waitFor(() => expect(result.current.data).toEqual(expectedResult))
   })
 
   describe('no search params are set', () => {
