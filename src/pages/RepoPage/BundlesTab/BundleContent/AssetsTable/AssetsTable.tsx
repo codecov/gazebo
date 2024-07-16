@@ -12,13 +12,18 @@ import { Fragment, Suspense, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import {
-  formatBundlePercentage,
   formatSizeToString,
   formatTimeToString,
 } from 'shared/utils/bundleAnalysis'
 import Icon from 'ui/Icon'
+import Sparkline from 'ui/Sparkline'
 import Spinner from 'ui/Spinner'
 
+import {
+  genSizeColumn,
+  sortChangeOverTimeColumn,
+  sortSizeColumn,
+} from './assetTableHelpers'
 import EmptyTable from './EmptyTable'
 import ModulesTable from './ModulesTable'
 import { useBundleAssetsTable } from './useBundleAssetsTable'
@@ -26,45 +31,52 @@ import { useBundleAssetsTable } from './useBundleAssetsTable'
 const isNumericValue = (value: string) =>
   value === 'size' || value === 'loadTime'
 
+interface ChangeOverTimeProps {
+  change?: number | null
+  hasMeasurements: boolean
+}
+
+export function ChangeOverTime({
+  change,
+  hasMeasurements,
+}: ChangeOverTimeProps) {
+  if (change) {
+    const formattedChange = formatSizeToString(change)
+    if (change > 0) {
+      return <span className="inline">+{formattedChange} &#x1F53C;</span>
+    } else if (change < 0) {
+      return <span className="inline">{formattedChange} &#x1F53D;</span>
+    }
+  }
+
+  if (hasMeasurements) {
+    return <span>-</span>
+  }
+
+  return null
+}
+
 interface Column {
   name: string
   extension: string
   size: number
   loadTime: number
-}
-
-export const genSizeColumn = ({
-  size,
-  totalBundleSize,
-}: {
-  size: number
-  totalBundleSize: number | null | undefined
-}) => {
-  const formattedSize = formatSizeToString(size)
-  if (!totalBundleSize || totalBundleSize === null) {
-    return formattedSize
-  }
-
-  const percentage = formatBundlePercentage(size / totalBundleSize)
-  return `${percentage} (${formattedSize})`
-}
-
-export const sortSizeColumn = ({
-  rowA,
-  rowB,
-  totalBundleSize,
-}: {
-  rowA: number
-  rowB: number
-  totalBundleSize: number | null | undefined
-}) => {
-  if (!totalBundleSize || totalBundleSize === null) {
-    return rowA - rowB
-  }
-
-  const percentageA = rowA / totalBundleSize
-  const percentageB = rowB / totalBundleSize
-  return percentageA - percentageB
+  changeOverTime:
+    | {
+        change: {
+          size: {
+            uncompress: number
+          }
+        } | null
+        measurements:
+          | {
+              avg: number | null
+              timestamp: string
+            }[]
+          | null
+      }
+    | null
+    | undefined
 }
 
 const columnHelper = createColumnHelper<Column>()
@@ -74,12 +86,12 @@ const createColumns = (totalBundleSize: number | null) => [
     header: 'Asset',
     cell: ({ getValue, row }) => {
       return (
-        <p className="flex flex-row break-all">
+        <p className="flex flex-row items-center break-all">
           <span
             data-action="clickable"
             data-testid="modules-expand"
             className={cs(
-              'inline-flex items-center gap-1 font-sans hover:underline focus:ring-2',
+              'inline-flex items-center justify-items-center gap-1 font-sans hover:underline focus:ring-2',
               {
                 'text-ds-blue': row.getIsExpanded(),
               }
@@ -101,6 +113,10 @@ const createColumns = (totalBundleSize: number | null) => [
     header: 'Type',
     cell: (info) => info.renderValue(),
   }),
+  columnHelper.accessor('loadTime', {
+    header: 'Estimated load time (3G)',
+    cell: ({ getValue }) => formatTimeToString(getValue()),
+  }),
   columnHelper.accessor('size', {
     header: 'Size',
     cell: ({ getValue }) => {
@@ -114,9 +130,59 @@ const createColumns = (totalBundleSize: number | null) => [
       })
     },
   }),
-  columnHelper.accessor('loadTime', {
-    header: 'Estimated load time (3G)',
-    cell: ({ getValue }) => formatTimeToString(getValue()),
+  columnHelper.accessor('changeOverTime', {
+    header: 'Change over time',
+    sortUndefined: -1,
+    sortingFn: (rowA, rowB) => {
+      return sortChangeOverTimeColumn({
+        rowA: rowA.original.changeOverTime?.change?.size.uncompress,
+        rowB: rowB.original.changeOverTime?.change?.size.uncompress,
+      })
+    },
+    cell: ({ getValue, row }) => {
+      const value = getValue()
+      let prevSize = 0
+      let maxSize = -Infinity
+      if (value && value?.measurements) {
+        // find the maxSize to scale the sparkline
+        value.measurements.forEach(({ avg }: { avg: number | null }) => {
+          if (avg && avg > maxSize) {
+            maxSize = avg * 1.05
+          }
+        })
+
+        // convert sizes to percentages of the maxSize
+        const sizes = value.measurements.map(({ avg }) => {
+          if (avg) {
+            const percentage = avg / maxSize
+            prevSize = percentage
+            return percentage
+          }
+          return prevSize
+        })
+
+        return (
+          <>
+            <Sparkline
+              datum={sizes}
+              select={(d) => d}
+              dataTemplate={(d) =>
+                d ? `${formatSizeToString(d * maxSize)}` : 'No Data Available'
+              }
+              description={`Bundle ${row.getValue('name')} trend sparkline`}
+              lineFallBack={0}
+              taperEndPoint={false}
+            />{' '}
+            <ChangeOverTime
+              change={value?.change?.size.uncompress}
+              hasMeasurements={value.measurements.length > 0 ?? false}
+            />
+          </>
+        )
+      }
+
+      return undefined
+    },
   }),
 ]
 
@@ -153,12 +219,13 @@ export const AssetsTable: React.FC = () => {
   })
 
   const tableData: Array<Column> = useMemo(() => {
-    if (data?.assets?.length) {
+    if (data?.assets) {
       return data.assets.map((asset) => ({
         name: asset.name,
         extension: asset.extension,
         size: asset.bundleData.size.uncompress,
         loadTime: asset.bundleData.loadTime.threeG,
+        changeOverTime: asset.measurements ?? undefined,
       }))
     }
 
@@ -200,13 +267,14 @@ export const AssetsTable: React.FC = () => {
                   data-sortable="true"
                   onClick={header.column.getToggleSortingHandler()}
                   className={cs({
-                    'w-full @4xl/filelist:w-8/12': header.column.id === 'name',
+                    'w-full @4xl/filelist:w-5/12': header.column.id === 'name',
                     'w-2/12 hidden @4xl/filelist:block text-right':
                       header.column.id === 'loadTime' ||
                       header.column.id === 'size',
+                    'w-1/12 hidden @4xl/filelist:flex grow justify-end':
+                      header.column.id === 'changeOverTime',
                     'w-1/12 hidden @4xl/filelist:block text-right':
-                      header.column.id !== 'name' &&
-                      header.column.id !== 'loadTime',
+                      header.column.id === 'extension',
                   })}
                   {...(isNumericValue(header.id)
                     ? {
@@ -249,49 +317,64 @@ export const AssetsTable: React.FC = () => {
                       'bg-ds-gray-primary sticky': isExpanded,
                     })}
                   >
-                    {row.getVisibleCells().map((cell) => (
-                      <div
-                        key={cell.id}
-                        {...(isNumericValue(cell.column.id)
-                          ? {
-                              'data-type': 'numeric',
-                            }
-                          : {})}
-                        className={cs({
-                          'w-full @4xl/filelist:w-8/12':
-                            cell.column.id === 'name',
-                          'w-2/12 hidden @4xl/filelist:block text-right':
-                            cell.column.id === 'loadTime' ||
-                            cell.column.id === 'size',
-                          'w-1/12 hidden @4xl/filelist:block text-right':
-                            cell.column.id !== 'name' &&
-                            cell.column.id !== 'loadTime',
-                        })}
-                      >
-                        <div className="mb-6 flex justify-between gap-8 @md/filelist:justify-start @4xl/filelist:hidden">
-                          <div>Type: {row.original.extension}</div>
-                          <div>
-                            Size:{' '}
-                            <span className="font-mono">
-                              {genSizeColumn({
-                                size: row.original.size,
-                                totalBundleSize: data?.bundleUncompressSize,
-                              })}
-                            </span>
+                    {row.getVisibleCells().map((cell) => {
+                      let changeOverTime = '-'
+                      if (
+                        row.original.changeOverTime &&
+                        'change' in row.original.changeOverTime &&
+                        row.original.changeOverTime.change
+                      ) {
+                        changeOverTime = formatSizeToString(
+                          row.original.changeOverTime.change.size.uncompress
+                        )
+                      }
+
+                      return (
+                        <div
+                          key={cell.id}
+                          {...(isNumericValue(cell.column.id)
+                            ? {
+                                'data-type': 'numeric',
+                              }
+                            : {})}
+                          className={cs({
+                            'w-full @4xl/filelist:w-5/12':
+                              cell.column.id === 'name',
+                            'w-2/12 hidden @4xl/filelist:block text-right':
+                              cell.column.id === 'loadTime' ||
+                              cell.column.id === 'size',
+                            'w-1/12 hidden @4xl/filelist:flex grow justify-end gap-2':
+                              cell.column.id === 'changeOverTime',
+                            'w-1/12 hidden @4xl/filelist:block text-right':
+                              cell.column.id === 'extension',
+                          })}
+                        >
+                          <div className="mb-6 flex justify-between gap-8 @md/filelist:justify-start @4xl/filelist:hidden">
+                            <div>Type: {row.original.extension}</div>
+                            <div>
+                              Estimated load time (3G):{' '}
+                              <span className="font-mono">
+                                {formatTimeToString(row.original.loadTime)}
+                              </span>
+                            </div>
+                            <div>
+                              Size:{' '}
+                              <span className="font-mono">
+                                {genSizeColumn({
+                                  size: row.original.size,
+                                  totalBundleSize: data?.bundleUncompressSize,
+                                })}
+                              </span>
+                            </div>
+                            <div>Change over time: {changeOverTime}</div>
                           </div>
-                          <div>
-                            Estimated load time (3G):{' '}
-                            <span className="font-mono">
-                              {formatTimeToString(row.original.loadTime)}
-                            </span>
-                          </div>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
                         </div>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </div>
-                    ))}
+                      )
+                    })}
                   </div>
                   <div data-expanded={row.getIsExpanded()}>
                     {row.getIsExpanded() ? (

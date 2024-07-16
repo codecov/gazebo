@@ -127,7 +127,7 @@ describe('ModulesTable', () => {
       setup({})
       render(<ModulesTable asset="file.js" />, { wrapper })
 
-      const name = await screen.findByText('module1')
+      const [name] = await screen.findAllByText('module1')
       expect(name).toBeInTheDocument()
     })
 
@@ -135,7 +135,7 @@ describe('ModulesTable', () => {
       setup({})
       render(<ModulesTable asset="file.js" />, { wrapper })
 
-      const type = await screen.findByText('js')
+      const [type] = await screen.findAllByText('js')
       expect(type).toBeInTheDocument()
     })
 
@@ -143,7 +143,7 @@ describe('ModulesTable', () => {
       setup({})
       render(<ModulesTable asset="file.js" />, { wrapper })
 
-      const size = await screen.findByText('100B')
+      const [size] = await screen.findAllByText('100B')
       expect(size).toBeInTheDocument()
     })
 
@@ -151,7 +151,7 @@ describe('ModulesTable', () => {
       setup({})
       render(<ModulesTable asset="file.js" />, { wrapper })
 
-      const loadTime = await screen.findByText('100ms')
+      const [loadTime] = await screen.findAllByText('100ms')
       expect(loadTime).toBeInTheDocument()
     })
   })
