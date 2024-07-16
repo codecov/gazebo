@@ -12,6 +12,7 @@ import { BundleChart } from './BundleChart'
 import BundleSummary from './BundleSummary'
 import InfoBanner from './InfoBanner'
 import { ToggleElement } from './ToggleElement'
+import { TrendDropdown } from './TrendDropdown'
 
 const AssetEmptyTable = lazy(() => import('./AssetsTable/EmptyTable'))
 const ErrorBanner = lazy(() => import('./ErrorBanner'))
@@ -52,6 +53,7 @@ const BundleContent: React.FC = () => {
                 showElement="Show chart"
                 hideElement="Hide chart"
                 localStorageKey="is-bundle-chart-hidden"
+                toggleRowElement={<TrendDropdown />}
               >
                 <BundleChart />
               </ToggleElement>
