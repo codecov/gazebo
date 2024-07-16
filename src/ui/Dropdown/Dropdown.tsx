@@ -9,27 +9,12 @@ import Icon from 'ui/Icon'
 // Check out https://www.radix-ui.com/primitives/docs/components/dropdown-menu to see what other functionality
 // can be incorporated if needed.
 
-// const root = cva(['flex gap-2'])
-
-// interface DropdownProps
-//   extends React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Root>, VariantProps<typeof root> {}
 interface DropdownProps
   extends React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Root> {}
 
-// Todo: remove React.forwardRef
-const Root = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Root>,
-  DropdownProps
->(({ ...props }, ref) => {
-  return (
-    <DropdownMenuPrimitive.Root
-      // it doesn't look like this component excepts className or ref as props
-      // className={cn(root({ className }))}
-      {...props}
-      // ref={ref}
-    />
-  )
-})
+const Root = ({ ...props }: DropdownProps) => (
+  <DropdownMenuPrimitive.Root {...props} />
+)
 Root.displayName = 'Dropdown'
 
 const trigger = cva('flex items-center gap-1')
