@@ -42,8 +42,6 @@
     ]
   },
   "dependencies": {
-    "@babel/preset-env": "^7.24.8",
-    "@babel/preset-react": "^7.24.7",
     "@hookform/resolvers": "^2.8.5",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-collapsible": "^1.0.3",
