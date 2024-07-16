@@ -33,7 +33,7 @@ jobs:
         with:
           path: |
             node_modules
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}-
 
@@ -65,13 +65,12 @@ jobs:
         with:
           path: |
             node_modules
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}-
 
       - name: Run linter
         run: |
-          yarn install
           yarn lint
 
   type-check:
@@ -95,13 +94,12 @@ jobs:
         with:
           path: |
             node_modules
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}-
 
       - name: Run TSC
         run: |
-          yarn install
           yarn type-check
 
   format-check:
@@ -125,13 +123,12 @@ jobs:
         with:
           path: |
             node_modules
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}-
 
       - name: Run Prettier
         run: |
-          yarn install
           yarn format-check
 
   codecovstartup:
@@ -191,7 +188,7 @@ jobs:
         with:
           path: |
             node_modules
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}-
 
@@ -282,7 +279,7 @@ jobs:
         with:
           path: |
             node_modules
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}-
 
@@ -319,7 +316,7 @@ jobs:
         with:
           path: |
             node_modules
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}-
 
@@ -356,7 +353,7 @@ jobs:
         with:
           path: |
             node_modules
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}-
 
@@ -407,7 +404,7 @@ jobs:
         with:
           path: |
             node_modules
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}-
 

@@ -4,8 +4,13 @@
 /node_modules
 /.pnp
 .pnp.js
-.yarn/cache
-.yarn/install-state.gz
+.yarn/*
+!.yarn/cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
 
 # testing
 /coverage
