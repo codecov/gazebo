@@ -42,6 +42,8 @@
     ]
   },
   "dependencies": {
+    "@babel/preset-env": "^7.24.8",
+    "@babel/preset-react": "^7.24.7",
     "@hookform/resolvers": "^2.8.5",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-collapsible": "^1.0.3",
@@ -118,6 +120,7 @@
     "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.5.2",
     "@total-typescript/ts-reset": "^0.4.2",
+    "@types/babel__preset-env": "^7",
     "@types/d3": "7.4.3",
     "@types/d3-array": "3.2.1",
     "@types/d3-scale": "4.0.8",
@@ -176,7 +179,7 @@
     "workerDirectory": "public"
   },
   "volta": {
-    "node": "20.15.0",
+    "node": "20.15.1",
     "yarn": "4.3.1"
   },
   "overrides": {
