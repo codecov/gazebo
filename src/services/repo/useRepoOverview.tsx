@@ -122,6 +122,7 @@ export function useRepoOverview({
         }
 
         const coverageEnabled = data.owner.repository.coverageEnabled ?? false
+        const isPrivate = data.owner.repository.private ?? false
         const bundleAnalysisEnabled =
           data.owner.repository.bundleAnalysisEnabled ?? false
         const testAnalyticsEnabled =
@@ -130,6 +131,7 @@ export function useRepoOverview({
         return {
           ...data.owner.repository,
           coverageEnabled,
+          private: isPrivate,
           bundleAnalysisEnabled,
           jsOrTsPresent,
           testAnalyticsEnabled,

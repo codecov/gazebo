@@ -1,11 +1,13 @@
 import { useQueryClient } from '@tanstack/react-query'
 import qs from 'qs'
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useLayoutEffect } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
+import { useCrumbs } from 'pages/RepoPage/context'
 import { useFlags } from 'shared/featureFlags'
 import Breadcrumb from 'ui/Breadcrumb'
+import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 import SummaryDropdown from 'ui/SummaryDropdown'
 
@@ -57,6 +59,44 @@ const CommitDetailPage: React.FC = () => {
     repo,
     commitId: commitSha,
   })
+
+  const { setBreadcrumbs, setBaseCrumbs } = useCrumbs()
+  useLayoutEffect(() => {
+    setBaseCrumbs([
+      { pageName: 'owner', text: owner },
+      {
+        pageName: 'repo',
+        children: (
+          <div
+            className="inline-flex items-center gap-1"
+            data-testid="breadcrumb-repo"
+          >
+            {commitPageData?.private && (
+              <Icon name="lockClosed" variant="solid" size="sm" />
+            )}
+            {repo}
+          </div>
+        ),
+      },
+    ])
+    setBreadcrumbs([
+      { pageName: 'commits', text: 'commits' },
+      {
+        pageName: 'commit',
+        options: { commitSha },
+        readOnly: true,
+        text: shortSHA,
+      },
+    ])
+  }, [
+    setBreadcrumbs,
+    commitSha,
+    shortSHA,
+    setBaseCrumbs,
+    owner,
+    repo,
+    commitPageData,
+  ])
 
   if (
     !isLoading &&

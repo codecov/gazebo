@@ -5,6 +5,7 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { RepoBreadcrumbProvider } from 'pages/RepoPage/context'
 import { useFlags } from 'shared/featureFlags'
 
 import CommitPage from './CommitDetailPage'
@@ -25,6 +26,7 @@ const mockNotFoundCommit = {
     isCurrentUserPartOfOrg: false,
     repository: {
       __typename: 'Repository',
+      private: null,
       bundleAnalysisEnabled: null,
       coverageEnabled: null,
       commit: null,
@@ -43,6 +45,7 @@ const mockCommitPageData = ({
     isCurrentUserPartOfOrg: true,
     repository: {
       __typename: 'Repository',
+      private: false,
       bundleAnalysisEnabled,
       coverageEnabled,
       commit: {
@@ -110,7 +113,9 @@ const wrapper =
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={[initialEntries]}>
           <Route path="/:provider/:owner/:repo/commit/:commit">
-            <Suspense fallback={null}>{children}</Suspense>
+            <RepoBreadcrumbProvider>
+              <Suspense fallback={null}>{children}</Suspense>
+            </RepoBreadcrumbProvider>
           </Route>
         </MemoryRouter>
       </QueryClientProvider>

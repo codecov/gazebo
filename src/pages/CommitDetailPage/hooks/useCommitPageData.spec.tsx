@@ -10,6 +10,7 @@ const mockCommitData = {
     isCurrentUserPartOfOrg: true,
     repository: {
       __typename: 'Repository',
+      private: false,
       bundleAnalysisEnabled: true,
       coverageEnabled: true,
       commit: {
@@ -126,6 +127,7 @@ describe('useCommitPageData', () => {
 
           const expectedResult = {
             isCurrentUserPartOfOrg: true,
+            private: false,
             bundleAnalysisEnabled: true,
             coverageEnabled: true,
             commit: {
@@ -164,6 +166,7 @@ describe('useCommitPageData', () => {
 
           const expectedResult = {
             isCurrentUserPartOfOrg: null,
+            private: null,
             bundleAnalysisEnabled: null,
             coverageEnabled: null,
             commit: null,

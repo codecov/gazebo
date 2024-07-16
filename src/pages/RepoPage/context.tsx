@@ -6,6 +6,7 @@ type Breadcrumb = {
   text?: string
   children?: JSX.Element
   readOnly?: boolean
+  options?: any
 }
 
 type RepoBreadcrumbContextValue = {
