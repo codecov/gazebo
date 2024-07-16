@@ -20,9 +20,9 @@ function Header() {
   return (
     <div className="container flex h-14 w-full items-center">
       <div className="flex-1">
-        <Navigator />
+        <Navigator currentUser={currentUser} />
       </div>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center justify-end gap-4">
         {config.IS_SELF_HOSTED ? (
           <Suspense fallback={null}>
             <SeatDetails />
