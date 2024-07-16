@@ -3,7 +3,7 @@
 
 import { feedbackIntegration } from '@sentry/react'
 import { useSelect } from 'downshift'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect } from 'react'
 
 import { cn } from 'shared/utils/cn'
 import Button from 'ui/Button'
@@ -25,28 +25,14 @@ type Item = {
   children: string
 }
 
-function HelpDropdown() {
-  const sentryFeedback = useMemo(
-    () =>
-      feedbackIntegration({
-        colorScheme: 'light',
-        showBranding: false,
-        formTitle: 'Give Feedback',
-        buttonLabel: 'Give Feedback',
-        submitButtonLabel: 'Send Feedback',
-        nameLabel: 'Username',
-        isEmailRequired: true,
-        autoInject: false,
-        id: 'help-dropdown-widget',
-      }),
-    []
-  )
+const removeSentryForm = () => {
+  console.log('hi')
+  document.body.style.overflow = ''
+  document.querySelector('#help-dropdown-widget')?.remove()
+}
 
-  // Remove the Sentry form from the DOM on unmount.
-  const [removeSentryForm, setRemoveSentryForm] = useState<() => void>(
-    () => () => {}
-  )
-  useEffect(() => removeSentryForm, [removeSentryForm])
+function HelpDropdown() {
+  useEffect(() => removeSentryForm, [])
 
   const items: Item[] = [
     {
@@ -60,10 +46,21 @@ function HelpDropdown() {
     {
       props: {
         onClick: async () => {
+          const sentryFeedback = feedbackIntegration({
+            showBranding: false,
+            colorScheme: 'light',
+            formTitle: 'Give Feedback',
+            buttonLabel: 'Give Feedback',
+            submitButtonLabel: 'Send Feedback',
+            nameLabel: 'Username',
+            isEmailRequired: true,
+            autoInject: false,
+            id: 'help-dropdown-widget',
+            onFormClose: removeSentryForm,
+          })
           const form = await sentryFeedback.createForm()
           form.appendToDom()
           form.open()
-          setRemoveSentryForm(() => form.removeFromDom)
         },
         hook: 'open-modal',
       },
