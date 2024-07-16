@@ -45,7 +45,7 @@ function Navigator({ currentUser }: NavigatorProps) {
   if (ownerData && !ownerData.isCurrentUserPartOfOrg) {
     return (
       <div className="flex items-center">
-        <Avatar user={ownerData} border="light" />
+        <Avatar user={ownerData} />
         <h2 className="mx-2 text-xl font-semibold">{ownerData?.username}</h2>
       </div>
     )
