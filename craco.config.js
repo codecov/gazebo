@@ -46,10 +46,6 @@ module.exports = {
     ],
   },
   jest: {
-    babel: {
-      addPresets: true,
-      addPlugins: true,
-    },
     configure: {
       moduleNameMapper: {
         '^layouts/(.*)$': '<rootDir>/src/layouts/$1',
