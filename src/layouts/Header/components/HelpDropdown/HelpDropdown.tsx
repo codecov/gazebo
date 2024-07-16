@@ -26,7 +26,6 @@ type Item = {
 }
 
 const removeSentryForm = () => {
-  console.log('hi')
   document.body.style.overflow = ''
   document.querySelector('#help-dropdown-widget')?.remove()
 }

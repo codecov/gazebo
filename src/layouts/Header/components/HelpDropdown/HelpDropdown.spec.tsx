@@ -111,16 +111,14 @@ describe('HelpDropdown', () => {
 
   describe('if Sentry form has been loaded', () => {
     describe('and component unmounts', () => {
-      it('removes the form from the DOM', async () => {
+      it('calls removeSentryForm cleanup function', async () => {
         console.error = () => {}
         const { user } = setup()
         const open = jest.fn()
         const appendToDom = jest.fn()
-        const removeFromDom = jest.fn()
         const createForm = jest.fn().mockReturnValue({
           open,
           appendToDom,
-          removeFromDom,
         })
 
         const mockedFeedbackIntegration = jest
@@ -144,6 +142,7 @@ describe('HelpDropdown', () => {
         expect(feedback).toBeInTheDocument()
 
         await user.click(feedback)
+        document.body.style.overflow = 'hidden'
 
         expect(mockedFeedbackIntegration).toHaveBeenCalled()
         expect(createForm).toHaveBeenCalled()
@@ -152,7 +151,7 @@ describe('HelpDropdown', () => {
 
         unmount()
 
-        expect(removeFromDom).toHaveBeenCalled()
+        expect(document.body.style.overflow).toEqual('')
       })
     })
   })
