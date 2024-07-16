@@ -164,6 +164,9 @@
     "node": ">=20.10.0"
   },
   "jest": {
+    "transform": {
+      "\\.[jt]sx?$": "babel-jest"
+    },
     "transformIgnorePatterns": [
       "<rootDir>/node_modules/(?!d3)/"
     ],

@@ -51,9 +51,6 @@ module.exports = {
       addPlugins: true,
     },
     configure: {
-      transform: {
-        '\\.[jt]sx?$': 'babel-jest',
-      },
       moduleNameMapper: {
         '^layouts/(.*)$': '<rootDir>/src/layouts/$1',
         '^ui/(.*)$': '<rootDir>/src/ui/$1',
