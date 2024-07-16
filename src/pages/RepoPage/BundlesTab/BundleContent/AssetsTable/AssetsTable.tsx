@@ -145,23 +145,21 @@ const createColumns = (totalBundleSize: number | null) => [
       let maxSize = -Infinity
       if (value && value?.measurements) {
         // find the maxSize to scale the sparkline
-        value?.measurements?.forEach(({ avg }: { avg: number | null }) => {
+        value.measurements.forEach(({ avg }: { avg: number | null }) => {
           if (avg && avg > maxSize) {
             maxSize = avg * 1.05
           }
         })
 
         // convert sizes to percentages of the maxSize
-        const sizes = value?.measurements?.map(
-          ({ avg }: { avg: number | null }) => {
-            if (avg) {
-              const percentage = avg / maxSize
-              prevSize = percentage
-              return percentage
-            }
-            return prevSize
+        const sizes = value.measurements.map(({ avg }) => {
+          if (avg) {
+            const percentage = avg / maxSize
+            prevSize = percentage
+            return percentage
           }
-        )
+          return prevSize
+        })
 
         return (
           <>
@@ -176,8 +174,8 @@ const createColumns = (totalBundleSize: number | null) => [
               taperEndPoint={false}
             />{' '}
             <ChangeOverTime
-              change={value?.change?.size?.uncompress}
-              hasMeasurements={value?.measurements?.length > 0 ?? false}
+              change={value?.change?.size.uncompress}
+              hasMeasurements={value.measurements.length > 0 ?? false}
             />
           </>
         )
