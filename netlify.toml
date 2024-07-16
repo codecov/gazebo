@@ -1,5 +1,0 @@
-[build]
-  ignore = "git log -1 --pretty=%B | grep dependabot"
-
-[context.deploy-preview]
-  command = "yarn build && rm -f build/mockServiceWorker.js && cp custom-headers/_preview_headers  build/_headers"
