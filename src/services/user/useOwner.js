@@ -9,16 +9,16 @@ export function useOwner({
 }) {
   const { provider } = useParams()
   const query = `
-      query DetailOwner($username: String!) {
-        owner(username: $username) {
-          ownerid
-          username
-          avatarUrl
-          isCurrentUserPartOfOrg
-          isAdmin
-        }
+    query DetailOwner($username: String!) {
+      owner(username: $username) {
+        ownerid
+        username
+        avatarUrl
+        isCurrentUserPartOfOrg
+        isAdmin
       }
-    `
+    }
+  `
 
   const variables = {
     username,

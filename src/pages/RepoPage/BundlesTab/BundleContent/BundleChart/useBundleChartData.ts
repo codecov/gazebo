@@ -1,67 +1,10 @@
-import { differenceInCalendarDays, sub } from 'date-fns'
 import { useMemo } from 'react'
 
 import { useBundleTrendData } from 'services/bundleAnalysis'
 import { useLocationParams } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import { findBundleMultiplier } from 'shared/utils/bundleAnalysis'
-import { TimeseriesInterval, Trend } from 'shared/utils/timeseriesCharts'
-
-const DAY_THRESHOLD = 90
-const MONTH_THRESHOLD = 180
-
-type TimeseriesIntervals =
-  (typeof TimeseriesInterval)[keyof typeof TimeseriesInterval]
-
-type Trends = (typeof Trend)[keyof typeof Trend]
-
-interface CreateQueryVarsArgs {
-  today: Date
-  trend: Trends
-  oldestCommitAt: string | null
-}
-
-// only exporting for testing purposes
-export function createQueryVars({
-  today,
-  trend,
-  oldestCommitAt,
-}: CreateQueryVarsArgs) {
-  let after = today
-  let dayDiff = -Infinity
-
-  if (trend === Trend.SEVEN_DAYS) {
-    after = sub(today, { days: 7 })
-    dayDiff = differenceInCalendarDays(today, after)
-  } else if (trend === Trend.THIRTY_DAYS) {
-    after = sub(today, { days: 30 })
-    dayDiff = differenceInCalendarDays(today, after)
-  } else if (trend === Trend.THREE_MONTHS) {
-    after = sub(today, { months: 3 })
-    dayDiff = differenceInCalendarDays(today, after)
-  } else if (trend === Trend.SIX_MONTHS) {
-    after = sub(today, { months: 6 })
-    dayDiff = differenceInCalendarDays(today, after)
-  } else if (trend === Trend.TWELVE_MONTHS) {
-    after = sub(today, { months: 12 })
-    dayDiff = differenceInCalendarDays(today, after)
-  } else if (trend === Trend.ALL_TIME) {
-    after = oldestCommitAt ? new Date(oldestCommitAt) : new Date('1970-01-01')
-    dayDiff = differenceInCalendarDays(today, after)
-  }
-
-  let interval: TimeseriesIntervals = TimeseriesInterval.INTERVAL_7_DAY
-  if (dayDiff < DAY_THRESHOLD) {
-    interval = TimeseriesInterval.INTERVAL_1_DAY
-  } else if (dayDiff > MONTH_THRESHOLD) {
-    interval = TimeseriesInterval.INTERVAL_30_DAY
-  }
-
-  return {
-    interval,
-    after: after,
-  }
-}
+import { createTimeSeriesQueryVars, Trend } from 'shared/utils/timeseriesCharts'
 
 interface UseBundleChartArgs {
   provider: string
@@ -85,15 +28,21 @@ export function useBundleChartData({
   const trend = params?.trend ?? Trend.THREE_MONTHS
   const today = useMemo(() => new Date(), [])
 
-  const queryVars = useMemo(
-    () =>
-      createQueryVars({
-        today,
-        trend,
-        oldestCommitAt: overview?.oldestCommitAt ?? null,
-      }),
-    [overview?.oldestCommitAt, today, trend]
-  )
+  const queryVars = useMemo(() => {
+    const oldestCommit = overview?.oldestCommitAt
+      ? new Date(overview.oldestCommitAt)
+      : new Date('2024-01-01')
+    const vars = createTimeSeriesQueryVars({
+      today,
+      trend,
+      oldestCommit,
+    })
+
+    return {
+      ...vars,
+      after: vars.after ?? oldestCommit,
+    }
+  }, [overview?.oldestCommitAt, today, trend])
 
   const { data: trendData, isLoading } = useBundleTrendData({
     provider,
@@ -103,7 +52,7 @@ export function useBundleChartData({
     bundle,
     interval: queryVars.interval,
     after: queryVars.after,
-    before: today,
+    before: queryVars.before,
     // this will be replaced once we have filtering by types implemented
     filters: {
       assetTypes: ['REPORT_SIZE'],

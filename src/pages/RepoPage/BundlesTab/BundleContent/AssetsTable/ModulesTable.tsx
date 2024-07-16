@@ -31,6 +31,7 @@ interface Column {
   extension: string
   size: number
   loadTime: number
+  changeOverTime: null
 }
 
 const columnHelper = createColumnHelper<Column>()
@@ -44,7 +45,11 @@ const columns = [
   }),
   columnHelper.accessor('extension', {
     header: 'Type',
-    cell: ({ renderValue }) => <p className="pr-2">{renderValue()}</p>,
+    cell: ({ renderValue }) => renderValue(),
+  }),
+  columnHelper.accessor('loadTime', {
+    header: 'Estimated load time (3G)',
+    cell: ({ getValue }) => formatTimeToString(getValue()),
   }),
   columnHelper.accessor('size', {
     header: 'Size',
@@ -52,9 +57,9 @@ const columns = [
       <p className="pr-1">{formatSizeToString(getValue())}</p>
     ),
   }),
-  columnHelper.accessor('loadTime', {
-    header: 'Estimated load time (3G)',
-    cell: ({ getValue }) => formatTimeToString(getValue()),
+  columnHelper.accessor('changeOverTime', {
+    header: 'Change over time',
+    cell: () => null,
   }),
 ]
 
@@ -83,6 +88,7 @@ const ModulesTable: React.FC<ModulesTableProps> = ({ asset }) => {
         extension: module.extension,
         size: module.bundleData.size.uncompress,
         loadTime: module.bundleData.loadTime.threeG,
+        changeOverTime: null,
       }))
     }
 
@@ -109,36 +115,49 @@ const ModulesTable: React.FC<ModulesTableProps> = ({ asset }) => {
   }
 
   return (
-    <div className="tableui bg-ds-gray-primary">
-      <table>
-        <colgroup>
-          <col className="w-8/12" />
-          <col className="w-1/12" />
-          <col className="w-1/12" />
-          <col className="w-2/12" />
-        </colgroup>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="hover:bg-ds-gray-tertiary">
-              {row.getVisibleCells().map((cell) => (
-                <td
-                  key={cell.id}
-                  {...(isNumericValue(cell.column.id)
-                    ? {
-                        'data-type': 'numeric',
-                      }
-                    : {})}
-                  className={cs({
-                    'text-right': cell.column.id !== 'name',
-                  })}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="filelistui bg-ds-gray-primary" data-highlight-row="onHover">
+      <div>
+        {table.getRowModel().rows.map((row) => (
+          <div key={row.id} className="filelistui-row">
+            {row.getVisibleCells().map((cell) => (
+              <div
+                key={cell.id}
+                {...(isNumericValue(cell.column.id)
+                  ? {
+                      'data-type': 'numeric',
+                    }
+                  : {})}
+                className={cs({
+                  'w-full @4xl/filelist:w-5/12': cell.column.id === 'name',
+                  'w-2/12 hidden @4xl/filelist:block text-right':
+                    cell.column.id === 'loadTime' || cell.column.id === 'size',
+                  'w-1/12 hidden @4xl/filelist:flex grow justify-end gap-2':
+                    cell.column.id === 'changeOverTime',
+                  'w-1/12 hidden @4xl/filelist:block text-right':
+                    cell.column.id === 'extension',
+                })}
+              >
+                <div className="mb-6 flex justify-between gap-8 @md/filelist:justify-start @4xl/filelist:hidden">
+                  <div>Type: {row.original.extension}</div>
+                  <div>
+                    Size:{' '}
+                    <span className="font-mono">
+                      {formatSizeToString(row.original.size)}
+                    </span>
+                  </div>
+                  <div>
+                    Estimated load time (3G):{' '}
+                    <span className="font-mono">
+                      {formatTimeToString(row.original.loadTime)}
+                    </span>
+                  </div>
+                </div>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

@@ -46,9 +46,9 @@ const ErrorMessage = ({ errorCode, count }: ErrorMessageProps) => {
 
   if (errorCode === ErrorCodeEnum.reportEmpty) {
     return (
-      <span className="mt-3 flex items-start gap-1 text-ds-primary-red">
+      <span className="mt-3 flex items-start gap-1 text-balance text-ds-primary-red">
         {icon}
-        <p className="w-11/12">
+        <p className="w-full">
           Unusable report due to issues such as source code unavailability, path
           mismatch, empty report, or incorrect data format. Please visit our{' '}
           <A

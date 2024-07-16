@@ -3,12 +3,18 @@ import PropTypes from 'prop-types'
 import { Fragment } from 'react'
 
 import AppLink from 'shared/AppLink'
+import { cn } from 'shared/utils/cn'
 import A from 'ui/A'
 
-function Breadcrumb({ paths = [] }) {
+function Breadcrumb({ paths = [], largeFont = false }) {
   return (
     // space-x-1 doesn't work when text is rendered rtl, using margins
-    <nav className="flex flex-1 items-center truncate text-ds-gray-octonary [&>*]:mr-1">
+    <nav
+      className={cn(
+        'flex flex-1 items-center truncate text-ds-gray-octonary [&>*]:mr-1',
+        { 'text-lg': largeFont }
+      )}
+    >
       {paths.map((to, i) => {
         return (
           <Fragment key={i}>
@@ -32,4 +38,5 @@ export default Breadcrumb
 
 Breadcrumb.propTypes = {
   paths: PropTypes.arrayOf(PropTypes.shape(AppLink.propTypes)),
+  largeFont: PropTypes.bool,
 }
