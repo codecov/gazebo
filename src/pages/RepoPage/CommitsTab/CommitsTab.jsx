@@ -20,7 +20,7 @@ import Spinner from 'ui/Spinner'
 import { filterItems, statusEnum } from './enums'
 import { useCommitsTabBranchSelector } from './hooks'
 
-import { useSetCrumbs } from '../context'
+import { useCrumbs } from '../context'
 
 const ALL_BRANCHES = 'All branches'
 const CommitsTable = lazy(() => import('./CommitsTable'))
@@ -86,7 +86,7 @@ const useControlParams = ({ defaultBranch }) => {
 }
 
 function CommitsTab() {
-  const setCrumbs = useSetCrumbs()
+  const { setBreadcrumbs } = useCrumbs()
   const { provider, owner, repo } = useParams()
 
   const { data: overview } = useRepoOverview({
@@ -121,7 +121,7 @@ function CommitsTab() {
   })
 
   useLayoutEffect(() => {
-    setCrumbs([
+    setBreadcrumbs([
       {
         pageName: '',
         readOnly: true,
@@ -133,7 +133,7 @@ function CommitsTab() {
         ),
       },
     ])
-  }, [currentBranchSelected, setCrumbs])
+  }, [currentBranchSelected, setBreadcrumbs])
 
   const newBranches = [...(isSearching ? [] : [ALL_BRANCHES]), ...branchList]
 

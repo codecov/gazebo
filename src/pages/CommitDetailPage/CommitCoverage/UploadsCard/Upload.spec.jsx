@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import { formatTimeToNow } from 'shared/utils/dates'
 
@@ -9,7 +10,15 @@ import Upload from './Upload'
 const queryClient = new QueryClient()
 
 const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  <QueryClientProvider client={queryClient}>
+    <MemoryRouter
+      initialEntries={[
+        '/gh/codecov/codecov-api/commit/a758cb364d190e9677ae2a3dd3b2af7690971624',
+      ]}
+    >
+      <Route path="/gh/:owner/:repo/commit/:commit">{children}</Route>
+    </MemoryRouter>
+  </QueryClientProvider>
 )
 
 afterEach(() => {
@@ -153,22 +162,58 @@ describe('UploadsCard', () => {
         wrapper,
       })
 
-      const processingFailed = screen.getByText(/processing failed/)
+      const processingFailed = screen.getByText(
+        /Upload failed. Please rerun the upload./
+      )
       expect(processingFailed).toBeInTheDocument()
     })
 
-    it('reportExpired error', () => {
-      render(<Upload errors={[{ errorCode: 'REPORT_EXPIRED' }]} />, { wrapper })
+    describe('reportExpired error', () => {
+      it('renders error message', () => {
+        render(<Upload errors={[{ errorCode: 'REPORT_EXPIRED' }]} />, {
+          wrapper,
+        })
 
-      const uploadExpired = screen.getByText(/upload expired/)
-      expect(uploadExpired).toBeInTheDocument()
+        const uploadExpired = screen.getByText(
+          /Upload exceeds the max age of 12h./
+        )
+        expect(uploadExpired).toBeInTheDocument()
+      })
+
+      it('renders link to expired reports page', () => {
+        render(<Upload errors={[{ errorCode: 'REPORT_EXPIRED' }]} />, {
+          wrapper,
+        })
+
+        const expiredReports = screen.getByRole('link', {
+          name: /expired reports/,
+        })
+        expect(expiredReports).toHaveAttribute(
+          'href',
+          'https://docs.codecov.com/docs/codecov-yaml#section-expired-reports'
+        )
+      })
     })
 
-    it('reportEmpty error', () => {
-      render(<Upload errors={[{ errorCode: 'REPORT_EMPTY' }]} />, { wrapper })
+    describe('reportEmpty error', () => {
+      it('renders error message', () => {
+        render(<Upload errors={[{ errorCode: 'REPORT_EMPTY' }]} />, { wrapper })
 
-      const uploadIsEmpty = screen.getByText(/unusable report/)
-      expect(uploadIsEmpty).toBeInTheDocument()
+        const uploadIsEmpty = screen.getByText(/Unusable report due to issues/)
+        expect(uploadIsEmpty).toBeInTheDocument()
+      })
+
+      it('renders link to troubleshooting document', () => {
+        render(<Upload errors={[{ errorCode: 'REPORT_EMPTY' }]} />, { wrapper })
+
+        const troubleshooting = screen.getByRole('link', {
+          name: /troubleshooting document/,
+        })
+        expect(troubleshooting).toHaveAttribute(
+          'href',
+          'https://docs.codecov.com/docs/error-reference#unusable-reports'
+        )
+      })
     })
 
     it('all errors', () => {
@@ -184,20 +229,22 @@ describe('UploadsCard', () => {
         { wrapper }
       )
 
-      const processingFailed = screen.getByText(/processing failed/)
+      const processingFailed = screen.getByText(/Upload failed/)
       expect(processingFailed).toBeInTheDocument()
 
-      const uploadExpired = screen.getByText(/upload expired/)
+      const uploadExpired = screen.getByText(
+        /Upload exceeds the max age of 12h./
+      )
       expect(uploadExpired).toBeInTheDocument()
 
-      const emptyUpload = screen.getByText(/unusable report/)
+      const emptyUpload = screen.getByText(/Unusable report due to issues/)
       expect(emptyUpload).toBeInTheDocument()
     })
 
     it('handles new errors the front end does not know how to handle', () => {
       render(<Upload errors={[{ errorCode: 'SOME_NEW_ERROR' }]} />, { wrapper })
 
-      const unknownError = screen.getByText(/unknown error/)
+      const unknownError = screen.getByText(/Unknown error/)
       expect(unknownError).toBeInTheDocument()
     })
 
@@ -209,28 +256,28 @@ describe('UploadsCard', () => {
         { wrapper }
       )
 
-      const unknownError = screen.getByText(/unknown error/)
+      const unknownError = screen.getByText(/Unknown error/)
       expect(unknownError).toBeInTheDocument()
     })
 
     it('handles upload state error but no error code resolved as an known error', () => {
       render(<Upload state="ERROR" />, { wrapper })
 
-      const unknownError = screen.getByText(/unknown error/)
+      const unknownError = screen.getByText(/Unknown error/)
       expect(unknownError).toBeInTheDocument()
     })
 
     it('handles upload state error but no errors returned', () => {
       render(<Upload errors={[]} state="ERROR" />, { wrapper })
 
-      const unknownError = screen.getByText(/unknown error/)
+      const unknownError = screen.getByText(/Unknown error/)
       expect(unknownError).toBeInTheDocument()
     })
 
     it('If no state is provided and no errors received do not show an error', () => {
       render(<Upload errors={[]} />, { wrapper })
 
-      const unknownError = screen.queryByText(/unknown error/)
+      const unknownError = screen.queryByText(/Unknown error/)
       expect(unknownError).not.toBeInTheDocument()
     })
 
@@ -249,10 +296,10 @@ describe('UploadsCard', () => {
         { wrapper }
       )
 
-      const erroredUpload = screen.getByText(/unusable report \(2\)/)
+      const erroredUpload = screen.getByText(/Unusable report due to issues/)
       expect(erroredUpload).toBeInTheDocument()
 
-      const unknownError = screen.getByText(/unknown error \(4\)/)
+      const unknownError = screen.getByText(/Unknown error \(4\)/)
       expect(unknownError).toBeInTheDocument()
     })
   })

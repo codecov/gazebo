@@ -199,6 +199,21 @@ const mockMissingHeadReport = {
   },
 }
 
+const mockRepoOverview = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      private: false,
+      defaultBranch: 'main',
+      oldestCommitAt: '2022-10-10T11:59:59',
+      coverageEnabled: false,
+      bundleAnalysisEnabled: false,
+      languages: ['javascript'],
+      testAnalyticsEnabled: true,
+    },
+  },
+}
+
 const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -259,6 +274,9 @@ describe('AssetsTable', () => {
       }),
       graphql.query('BundleAssetModules', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockBundleAssetModules))
+      }),
+      graphql.query('GetRepoOverview', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockRepoOverview))
       })
     )
 

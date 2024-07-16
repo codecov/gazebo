@@ -11,7 +11,6 @@ import cs from 'classnames'
 import { Fragment, Suspense, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { useBundleAssets } from 'services/bundleAnalysis'
 import {
   formatSizeToString,
   formatTimeToString,
@@ -27,6 +26,7 @@ import {
 } from './assetTableHelpers'
 import EmptyTable from './EmptyTable'
 import ModulesTable from './ModulesTable'
+import { useBundleAssetsTable } from './useBundleAssetsTable'
 
 const isNumericValue = (value: string) =>
   value === 'size' || value === 'loadTime'
@@ -210,13 +210,12 @@ export const AssetsTable: React.FC = () => {
   const [sorting, setSorting] = useState([{ id: 'size', desc: true }])
   const { provider, owner, repo, branch, bundle } = useParams<URLParams>()
 
-  const { data, isLoading } = useBundleAssets({
+  const { data, isLoading } = useBundleAssetsTable({
     provider,
     owner,
     repo,
     branch,
     bundle,
-    opts: { enabled: bundle !== '' },
   })
 
   const tableData: Array<Column> = useMemo(() => {

@@ -2,7 +2,13 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Link, MemoryRouter, Route } from 'react-router-dom'
 
-import { PlanBreadcrumbProvider, useCrumbs, useSetCrumbs } from './context'
+import {
+  PlanProvider,
+  useCrumbs,
+  usePlanUpdatedNotification,
+  useSetCrumbs,
+  useSetPlanUpdatedNotification,
+} from './context'
 
 const wrapper =
   (initialEntries = '/plan/gh/codecov', path = '/plan/:provider/:owner') =>
@@ -16,6 +22,8 @@ const wrapper =
 const TestComponent = () => {
   const crumbs = useCrumbs()
   const setCrumbs = useSetCrumbs()
+  const planUpdatedNotification = usePlanUpdatedNotification()
+  const setPlanUpdatedNotification = useSetPlanUpdatedNotification()
 
   return (
     <div>
@@ -33,6 +41,15 @@ const TestComponent = () => {
       </button>
       <button onClick={() => setCrumbs()}>clear crumbs</button>
       <Link to="/plan/gh/codecov">base path</Link>
+      <Link to=".">refresh</Link>
+      {planUpdatedNotification?.alertOption ? (
+        <div>Alert option is {planUpdatedNotification.alertOption}</div>
+      ) : null}
+      <button
+        onClick={() => setPlanUpdatedNotification({ alertOption: 'success' })}
+      >
+        set plan updated notification
+      </button>
     </div>
   )
 }
@@ -49,9 +66,9 @@ describe('Plan breadcrumb context', () => {
       const { user } = setup()
 
       render(
-        <PlanBreadcrumbProvider>
+        <PlanProvider>
           <TestComponent />
-        </PlanBreadcrumbProvider>,
+        </PlanProvider>,
         {
           wrapper: wrapper(
             '/plan/gh/codecov/upgrade',
@@ -72,9 +89,9 @@ describe('Plan breadcrumb context', () => {
         const { user } = setup()
 
         render(
-          <PlanBreadcrumbProvider>
+          <PlanProvider>
             <TestComponent />
-          </PlanBreadcrumbProvider>,
+          </PlanProvider>,
           {
             wrapper: wrapper('/plan/gh/codecov', '/plan/:provider/:owner'),
           }
@@ -83,7 +100,7 @@ describe('Plan breadcrumb context', () => {
         const button = screen.getByRole('button', { name: 'set crumb' })
         await user.click(button)
 
-        const link = screen.getByRole('link')
+        const link = screen.getByRole('link', { name: 'base path' })
         await user.click(link)
 
         const temp = screen.queryByText('New Crumb')
@@ -96,9 +113,9 @@ describe('Plan breadcrumb context', () => {
         const { user } = setup()
 
         render(
-          <PlanBreadcrumbProvider>
+          <PlanProvider>
             <TestComponent />
-          </PlanBreadcrumbProvider>,
+          </PlanProvider>,
           {
             wrapper: wrapper(
               '/plan/gh/codecov/upgrade',
@@ -119,6 +136,57 @@ describe('Plan breadcrumb context', () => {
         const temp = screen.queryByText('New Crumb')
         expect(temp).not.toBeInTheDocument()
       })
+    })
+  })
+
+  describe('when calling set plan updated notification', () => {
+    it('adds new notification to context', async () => {
+      const { user } = setup()
+
+      render(
+        <PlanProvider>
+          <TestComponent />
+        </PlanProvider>,
+        {
+          wrapper: wrapper(
+            '/plan/gh/codecov/upgrade',
+            '/plan/:provider/:owner/upgrade'
+          ),
+        }
+      )
+
+      const button = screen.getByRole('button', {
+        name: 'set plan updated notification',
+      })
+      await user.click(button)
+
+      const newNotificationTitle = screen.getByText('Alert option is success')
+      expect(newNotificationTitle).toBeInTheDocument()
+    })
+    it('clears out notification on page refresh', async () => {
+      const { user } = setup()
+
+      render(
+        <PlanProvider>
+          <TestComponent />
+        </PlanProvider>,
+        {
+          wrapper: wrapper('/plan/gh/codecov', '/plan/:provider/:owner'),
+        }
+      )
+
+      const button = screen.getByRole('button', {
+        name: 'set plan updated notification',
+      })
+      await user.click(button)
+
+      const link = screen.getByRole('link', { name: 'refresh' })
+      await user.click(link)
+
+      const newNotificationDescription = screen.queryByText(
+        'Alert option is success'
+      )
+      expect(newNotificationDescription).not.toBeInTheDocument()
     })
   })
 })
