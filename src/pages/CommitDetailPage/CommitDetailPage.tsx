@@ -71,9 +71,14 @@ const CommitDetailPage: React.FC = () => {
             className="inline-flex items-center gap-1"
             data-testid="breadcrumb-repo"
           >
-            {commitPageData?.private && (
-              <Icon name="lockClosed" variant="solid" size="sm" />
-            )}
+            {commitPageData?.private ? (
+              <Icon
+                name="lockClosed"
+                variant="solid"
+                size="sm"
+                data-testid="asdf"
+              />
+            ) : null}
             {repo}
           </div>
         ),
