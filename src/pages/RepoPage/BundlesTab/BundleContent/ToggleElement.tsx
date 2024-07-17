@@ -4,16 +4,16 @@ import { cn } from 'shared/utils/cn'
 import Icon from 'ui/Icon'
 
 interface ToggleElementProps {
-  showElement: string
-  hideElement: string
+  showButtonContent: React.ReactNode
+  hideButtonContent: React.ReactNode
   localStorageKey: string
   toggleRowElement?: React.ReactNode
   children: React.ReactNode
 }
 
 export function ToggleElement({
-  showElement,
-  hideElement,
+  showButtonContent,
+  hideButtonContent,
   localStorageKey,
   toggleRowElement,
   children,
@@ -38,13 +38,14 @@ export function ToggleElement({
           <span className="transition-transform duration-200">
             <Icon size="md" variant="solid" name="chevronRight" />
           </span>
-          {isHidden ? showElement : hideElement}
+          {/* When the element is hidden we want to show the show button content and the inverse when it is shown */}
+          {isHidden ? showButtonContent : hideButtonContent}
         </button>
         {toggleRowElement}
       </div>
       <div
         data-testid="toggle-element-contents"
-        className={cn('', { hidden: isHidden })}
+        className={cn({ hidden: isHidden })}
       >
         {children}
       </div>

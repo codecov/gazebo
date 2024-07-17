@@ -50,8 +50,8 @@ const BundleContent: React.FC = () => {
           <Switch>
             <SentryRoute path="/:provider/:owner/:repo/bundles/:branch/:bundle">
               <ToggleElement
-                showElement="Show chart"
-                hideElement="Hide chart"
+                showButtonContent="Show chart"
+                hideButtonContent="Hide chart"
                 localStorageKey="is-bundle-chart-hidden"
                 toggleRowElement={<TrendDropdown />}
               >
