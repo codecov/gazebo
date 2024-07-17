@@ -10,6 +10,7 @@ const mockOwner = {
   username: 'TerrySmithDC',
   isCurrentUserPartOfOrg: true,
   numberOfUploads: 30,
+  avatarUrl: 'cool-image-url',
 }
 
 const queryClient = new QueryClient({

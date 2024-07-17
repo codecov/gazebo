@@ -46,12 +46,13 @@ const GetBranchCoverageMeasurementsSchema = z.object({
     .nullable(),
 })
 
-const query = `query GetBranchCoverageMeasurements(
+const query = `
+query GetBranchCoverageMeasurements(
   $owner: String!
   $repo: String!
   $branch: String
-  $after: DateTime!
-  $before: DateTime!
+  $after: DateTime
+  $before: DateTime
   $interval: MeasurementInterval!
 ) {
   owner(username: $owner) {

@@ -136,6 +136,15 @@ const mockRepoOverview = ({
   },
 })
 
+const mockRepoRateLimitStatus = ({ isGithubRateLimited = false }) => ({
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      isGithubRateLimited,
+    },
+  },
+})
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
@@ -179,11 +188,13 @@ describe('PullRequestPageContent', () => {
       tierValue = TierNames.BASIC,
       bundleAnalysisEnabled = false,
       coverageEnabled = false,
+      isGithubRateLimited = false,
     } = {
       resultType: ComparisonReturnType.SUCCESSFUL_COMPARISON,
       tierValue: TierNames.BASIC,
       bundleAnalysisEnabled: false,
       coverageEnabled: false,
+      isGithubRateLimited: false,
     }
   ) {
     useFlags.mockReturnValue({
@@ -200,7 +211,12 @@ describe('PullRequestPageContent', () => {
       graphql.query('GetRepoOverview', (req, res, ctx) => {
         return res(
           ctx.status(200),
-          ctx.data(mockRepoOverview({ bundleAnalysisEnabled, coverageEnabled }))
+          ctx.data(
+            mockRepoOverview({
+              bundleAnalysisEnabled,
+              coverageEnabled,
+            })
+          )
         )
       }),
       graphql.query('OwnerTier', (req, res, ctx) => {
@@ -209,6 +225,12 @@ describe('PullRequestPageContent', () => {
           ctx.data({
             owner: { plan: { tierName: tierValue } },
           })
+        )
+      }),
+      graphql.query('GetRepoRateLimitStatus', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data(mockRepoRateLimitStatus({ isGithubRateLimited }))
         )
       })
     )
@@ -414,6 +436,39 @@ describe('PullRequestPageContent', () => {
           )
         )
       })
+    })
+  })
+
+  describe('github rate limit messaging', () => {
+    it('renders banner when github is rate limited', async () => {
+      setup({
+        coverageEnabled: true,
+        bundleAnalysisEnabled: false,
+        isGithubRateLimited: true,
+      })
+
+      render(<PullRequestPageContent />, {
+        wrapper: wrapper(),
+      })
+
+      const rateLimitText = await screen.findByText(
+        /Unable to calculate coverage/
+      )
+      expect(rateLimitText).toBeInTheDocument()
+    })
+
+    it('does not render banner when github is not rate limited', async () => {
+      setup({ isGithubRateLimited: false })
+
+      render(<PullRequestPageContent />, {
+        wrapper: wrapper(),
+      })
+
+      const filesChangedTab = await screen.findByText('FilesChangedTab')
+      expect(filesChangedTab).toBeInTheDocument()
+
+      const rateLimitText = screen.queryByText(/Unable to calculate coverage/)
+      expect(rateLimitText).not.toBeInTheDocument()
     })
   })
 })

@@ -4,6 +4,7 @@ import config from 'config'
 
 import { useOwner } from 'services/user'
 import { useFlags } from 'shared/featureFlags'
+import { cn } from 'shared/utils/cn'
 
 import Header from './Header'
 import MemberActivation from './MembersActivation'
@@ -24,7 +25,7 @@ function MembersPage() {
   }
 
   return (
-    <div className="mt-2 flex flex-col gap-4">
+    <div className={cn('flex flex-col gap-4', { 'mt-2': !newHeader })}>
       {newHeader ? null : <Header />}
       {ownerData?.isCurrentUserPartOfOrg && <Tabs />}
       <h2 className="mx-4 text-lg font-semibold sm:mx-0">Manage members</h2>
