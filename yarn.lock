@@ -5761,13 +5761,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/babel__preset-env@npm:^7":
-  version: 7.9.7
-  resolution: "@types/babel__preset-env@npm:7.9.7"
-  checksum: 10c0/e1da078fee75841af512c7084e66f8a2b9136d72185d72c85c6fb41697358d330d195896d7d22834fca92fad1f16a8c0fb6269e890f9e6842c9a9972313b7baa
-  languageName: node
-  linkType: hard
-
 "@types/babel__template@npm:*":
   version: 7.4.4
   resolution: "@types/babel__template@npm:7.4.4"
@@ -11688,7 +11681,6 @@ __metadata:
     "@testing-library/react": "npm:^16.0.0"
     "@testing-library/user-event": "npm:^14.5.2"
     "@total-typescript/ts-reset": "npm:^0.4.2"
-    "@types/babel__preset-env": "npm:^7"
     "@types/d3": "npm:7.4.3"
     "@types/d3-array": "npm:3.2.1"
     "@types/d3-scale": "npm:4.0.8"
