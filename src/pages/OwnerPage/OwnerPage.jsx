@@ -9,6 +9,7 @@ import { renderToast } from 'services/toast'
 import { ActiveContext } from 'shared/context'
 import { useFlags } from 'shared/featureFlags'
 import ListRepo from 'shared/ListRepo'
+import { cn } from 'shared/utils/cn'
 
 import Header from './Header'
 import Tabs from './Tabs'
@@ -71,8 +72,7 @@ function OwnerPage() {
   }
 
   return (
-    // mt-2 temporary till we stick this header
-    <div className="mt-2 flex flex-col gap-4">
+    <div className={cn({ 'mt-2': !newHeader })}>
       {newHeader ? null : <Header />}
       <div>
         {ownerData?.isCurrentUserPartOfOrg && (

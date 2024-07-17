@@ -10,13 +10,7 @@ import {
 
 const RepositorySchema = z.object({
   __typename: z.literal('Repository'),
-  private: z.boolean(),
-  defaultBranch: z.string().nullable(),
-  oldestCommitAt: z.string().nullable(),
-  coverageEnabled: z.boolean().nullable(),
-  bundleAnalysisEnabled: z.boolean().nullable(),
-  testAnalyticsEnabled: z.boolean().nullable(),
-  languages: z.array(z.string()).nullable(),
+  isGithubRateLimited: z.boolean(),
 })
 
 const RequestSchema = z.object({
@@ -31,18 +25,12 @@ const RequestSchema = z.object({
     .nullable(),
 })
 
-const query = `query GetRepoOverview($owner: String!, $repo: String!) {
+const query = `query GetRepoRateLimitStatus($owner: String!, $repo: String!) {
   owner(username: $owner) {
     repository(name: $repo) {
       __typename
       ... on Repository {
-        private
-        defaultBranch
-        oldestCommitAt
-        coverageEnabled
-        bundleAnalysisEnabled
-        testAnalyticsEnabled
-        languages
+        isGithubRateLimited
       }
       ... on NotFoundError {
         message
@@ -54,28 +42,19 @@ const query = `query GetRepoOverview($owner: String!, $repo: String!) {
   }
 }`
 
-interface UseRepoOverviewArgs {
+interface UseRepoRateLimitStatusArgs {
   provider: string
   owner: string
   repo: string
-  opts?: {
-    enabled?: boolean
-  }
 }
 
-export function useRepoOverview({
+export function useRepoRateLimitStatus({
   provider,
   owner,
   repo,
-  opts = {},
-}: UseRepoOverviewArgs) {
-  let enabled = true
-  if (opts?.enabled !== undefined) {
-    enabled = opts.enabled
-  }
-
+}: UseRepoRateLimitStatusArgs) {
   return useQuery({
-    queryKey: ['GetRepoOverview', provider, owner, repo],
+    queryKey: ['GetRepoRateLimitStatus', provider, owner, repo],
     queryFn: ({ signal }) => {
       return Api.graphql({
         provider,
@@ -87,7 +66,6 @@ export function useRepoOverview({
         },
       }).then((res) => {
         const parsedData = RequestSchema.safeParse(res?.data)
-
         if (!parsedData.success) {
           return Promise.reject({
             status: 404,
@@ -112,32 +90,10 @@ export function useRepoOverview({
           return null
         }
 
-        let jsOrTsPresent = false
-        if (data.owner.repository.languages) {
-          jsOrTsPresent = data.owner.repository.languages.some(
-            (lang) =>
-              lang.toLowerCase() === 'javascript' ||
-              lang.toLowerCase() === 'typescript'
-          )
-        }
-
-        const coverageEnabled = data.owner.repository.coverageEnabled ?? false
-        const isPrivate = data.owner.repository.private ?? true
-        const bundleAnalysisEnabled =
-          data.owner.repository.bundleAnalysisEnabled ?? false
-        const testAnalyticsEnabled =
-          data.owner.repository.testAnalyticsEnabled ?? false
-
         return {
-          ...data.owner.repository,
-          coverageEnabled,
-          private: isPrivate,
-          bundleAnalysisEnabled,
-          jsOrTsPresent,
-          testAnalyticsEnabled,
+          isGithubRateLimited: data.owner.repository.isGithubRateLimited,
         }
       })
     },
-    enabled,
   })
 }

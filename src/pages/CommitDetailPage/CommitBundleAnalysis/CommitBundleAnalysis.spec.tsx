@@ -29,6 +29,7 @@ const mockCommitPageData = ({
     isCurrentUserPartOfOrg: true,
     repository: {
       __typename: 'Repository',
+      private: false,
       bundleAnalysisEnabled,
       coverageEnabled,
       commit: {

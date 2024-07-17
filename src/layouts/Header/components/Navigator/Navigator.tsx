@@ -1,16 +1,20 @@
-import { useRouteMatch } from 'react-router-dom'
+import { useParams, useRouteMatch } from 'react-router-dom'
 
+import { useOwnerPageData } from 'pages/OwnerPage/hooks'
 import { useCrumbs } from 'pages/RepoPage/context'
 import { Me } from 'services/user'
+import Avatar from 'ui/Avatar'
 import Breadcrumb from 'ui/Breadcrumb'
 
 import MyContextSwitcher from './MyContextSwitcher'
 
 interface NavigatorProps {
-  currentUser: Me
+  currentUser?: Me
 }
 
 function Navigator({ currentUser }: NavigatorProps) {
+  const { owner } = useParams<{ owner: string }>()
+  const { data: ownerData } = useOwnerPageData({ enabled: !!owner })
   const { path } = useRouteMatch()
   const { breadcrumbs } = useCrumbs()
 
@@ -35,6 +39,15 @@ function Navigator({ currentUser }: NavigatorProps) {
         ]}
         largeFont
       />
+    )
+  }
+
+  if (ownerData && !ownerData.isCurrentUserPartOfOrg) {
+    return (
+      <div className="flex items-center">
+        <Avatar user={ownerData} />
+        <h2 className="mx-2 text-xl font-semibold">{ownerData.username}</h2>
+      </div>
     )
   }
 

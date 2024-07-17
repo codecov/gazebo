@@ -25,7 +25,7 @@ function RepoBaseCrumbSetter() {
 }
 
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false } },
+  defaultOptions: { queries: { retry: false, suspense: false } },
 })
 const server = setupServer()
 
@@ -134,6 +134,23 @@ const mockDetailOwner = {
   },
 }
 
+const mockOwnerPageData = {
+  owner: {
+    username: 'codecov',
+    isCurrentUserPartOfOrg: true,
+    numberOfUploads: 345,
+    avatarUrl: 'codecov-avatar-url',
+  },
+}
+const mockOwnerPageDataNotInOrg = {
+  owner: {
+    username: 'not-codecov',
+    isCurrentUserPartOfOrg: false,
+    numberOfUploads: 123,
+    avatarUrl: 'not-codecov-avatar-url',
+  },
+}
+
 beforeAll(() => {
   server.listen()
 })
@@ -147,25 +164,37 @@ afterAll(() => {
   server.close()
 })
 
+interface SetupArgs {
+  isMyOrg?: boolean
+}
+
 describe('Header Navigator', () => {
-  function setup() {
+  function setup({ isMyOrg = true }: SetupArgs) {
     server.use(
       graphql.query('MyContexts', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockMyContexts))
       ),
       graphql.query('DetailOwner', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(mockDetailOwner))
+      ),
+      graphql.query('OwnerPageData', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          isMyOrg
+            ? ctx.data(mockOwnerPageData)
+            : ctx.data(mockOwnerPageDataNotInOrg)
+        )
       )
     )
 
     return {
-      user: userEvent.setup(),
+      user: userEvent.setup({}),
     }
   }
 
   describe('when on repo page', () => {
     it('should render repo breadcrumb', async () => {
-      setup()
+      setup({})
       render(<Navigator currentUser={mockUser} />, {
         wrapper: wrapper('/gh/codecov/test-repo'),
       })
@@ -180,7 +209,7 @@ describe('Header Navigator', () => {
 
   describe('when on self-hosted admin settings page', () => {
     it('should render admin breadcrumb', async () => {
-      setup()
+      setup({})
       render(<Navigator currentUser={mockUser} />, {
         wrapper: wrapper('/admin/gh/access'),
       })
@@ -193,9 +222,28 @@ describe('Header Navigator', () => {
     })
   })
 
+  describe('when viewing owner page', () => {
+    describe('and user is not part of the org', () => {
+      it('should render non-ContextSwitcher owner page variant', async () => {
+        const { user } = setup({ isMyOrg: false })
+        render(<Navigator currentUser={mockUser} />, {
+          wrapper: wrapper('/gh/not-codecov'),
+        })
+
+        const org = await screen.findByText('not-codecov')
+        expect(org).toBeInTheDocument()
+
+        await user.click(org)
+
+        const sentryOrg = screen.queryByRole('link', { name: 'sentry' })
+        expect(sentryOrg).not.toBeInTheDocument()
+      })
+    })
+  })
+
   describe('when on owner analytics page', () => {
     it('should render MyContextSwitcher with analytics link', async () => {
-      const { user } = setup()
+      const { user } = setup({})
       render(<Navigator currentUser={mockUser} />, {
         wrapper: wrapper('/analytics/gh/codecov'),
       })
@@ -213,7 +261,7 @@ describe('Header Navigator', () => {
 
   describe('when on members page', () => {
     it('should render MyContextSwitcher with members link', async () => {
-      const { user } = setup()
+      const { user } = setup({})
       render(<Navigator currentUser={mockUser} />, {
         wrapper: wrapper('/members/gh/codecov'),
       })
@@ -231,7 +279,7 @@ describe('Header Navigator', () => {
 
   describe('when on plan page', () => {
     it('should render MyContextSwitcher with plan link', async () => {
-      const { user } = setup()
+      const { user } = setup({})
       render(<Navigator currentUser={mockUser} />, {
         wrapper: wrapper('/plan/gh/codecov'),
       })
@@ -249,7 +297,7 @@ describe('Header Navigator', () => {
 
   describe('when on account page', () => {
     it('should render MyContextSwitcher with account link', async () => {
-      const { user } = setup()
+      const { user } = setup({})
       render(<Navigator currentUser={mockUser} />, {
         wrapper: wrapper('/account/gh/codecov'),
       })
@@ -267,7 +315,7 @@ describe('Header Navigator', () => {
 
   describe('when on owner page', () => {
     it('should render MyContextSwitcher with owner page link', async () => {
-      const { user } = setup()
+      const { user } = setup({})
       render(<Navigator currentUser={mockUser} />, {
         wrapper: wrapper('/gh/codecov'),
       })
