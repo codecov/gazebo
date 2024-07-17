@@ -12,13 +12,30 @@ describe('ToggleElement', () => {
     return { user }
   }
 
+  it('renders passed toggleRowElement', () => {
+    setup()
+    render(
+      <ToggleElement
+        localStorageKey="c2"
+        showButtonContent="Show Chart"
+        hideButtonContent="Hide Chart"
+        toggleRowElement={<p>Toggle Row Element</p>}
+      >
+        Cool contents
+      </ToggleElement>
+    )
+
+    const toggleRowElement = screen.getByText('Toggle Row Element')
+    expect(toggleRowElement).toBeInTheDocument()
+  })
+
   describe('renders open toggle', () => {
     it('toggle controls', () => {
       render(
         <ToggleElement
           localStorageKey="c2"
-          showElement="Show Chart"
-          hideElement="Hide Chart"
+          showButtonContent="Show Chart"
+          hideButtonContent="Hide Chart"
         >
           Cool contents
         </ToggleElement>
@@ -32,8 +49,8 @@ describe('ToggleElement', () => {
       render(
         <ToggleElement
           localStorageKey="c2"
-          showElement="Show Chart"
-          hideElement="Hide Chart"
+          showButtonContent="Show Chart"
+          hideButtonContent="Hide Chart"
         >
           Cool contents
         </ToggleElement>
@@ -50,8 +67,8 @@ describe('ToggleElement', () => {
       render(
         <ToggleElement
           localStorageKey="c2"
-          showElement="Show Chart"
-          hideElement="Hide Chart"
+          showButtonContent="Show Chart"
+          hideButtonContent="Hide Chart"
         >
           Cool contents
         </ToggleElement>
@@ -75,8 +92,8 @@ describe('ToggleElement', () => {
       render(
         <ToggleElement
           localStorageKey="c2"
-          showElement="Show Chart"
-          hideElement="Hide Chart"
+          showButtonContent="Show Chart"
+          hideButtonContent="Hide Chart"
         >
           Cool contents
         </ToggleElement>
@@ -100,8 +117,8 @@ describe('ToggleElement', () => {
         render(
           <ToggleElement
             localStorageKey="c2"
-            showElement="Show Chart"
-            hideElement="Hide Chart"
+            showButtonContent="Show Chart"
+            hideButtonContent="Hide Chart"
           >
             Cool contents
           </ToggleElement>
@@ -120,8 +137,8 @@ describe('ToggleElement', () => {
         render(
           <ToggleElement
             localStorageKey="c2"
-            showElement="Show Chart"
-            hideElement="Hide Chart"
+            showButtonContent="Show Chart"
+            hideButtonContent="Hide Chart"
           >
             Cool contents
           </ToggleElement>

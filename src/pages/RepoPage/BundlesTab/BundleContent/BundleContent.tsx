@@ -12,6 +12,7 @@ import { BundleChart } from './BundleChart'
 import BundleSummary from './BundleSummary'
 import InfoBanner from './InfoBanner'
 import { ToggleElement } from './ToggleElement'
+import { TrendDropdown } from './TrendDropdown'
 
 const AssetEmptyTable = lazy(() => import('./AssetsTable/EmptyTable'))
 const ErrorBanner = lazy(() => import('./ErrorBanner'))
@@ -49,9 +50,10 @@ const BundleContent: React.FC = () => {
           <Switch>
             <SentryRoute path="/:provider/:owner/:repo/bundles/:branch/:bundle">
               <ToggleElement
-                showElement="Show chart"
-                hideElement="Hide chart"
+                showButtonContent="Show chart"
+                hideButtonContent="Hide chart"
                 localStorageKey="is-bundle-chart-hidden"
+                toggleRowElement={<TrendDropdown />}
               >
                 <BundleChart />
               </ToggleElement>
