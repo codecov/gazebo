@@ -24,7 +24,7 @@ afterAll(() => {
   server.close()
 })
 
-const wrapper = ({ children }) => {
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={['/gh/codecov']}>
@@ -37,7 +37,7 @@ const wrapper = ({ children }) => {
 }
 
 describe('RepoOrgNotFound', () => {
-  function setup() {
+  function setup({ isGithubRateLimited = false }) {
     const triggerResync = jest.fn()
 
     server.use(
@@ -49,6 +49,12 @@ describe('RepoOrgNotFound', () => {
               isSyncing: false,
             },
           })
+        )
+      }),
+      graphql.query('GetOwnerRateLimitStatus', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.data({ owner: { isGithubRateLimited } })
         )
       }),
       graphql.mutation('SyncData', (req, res, ctx) => {
@@ -72,7 +78,7 @@ describe('RepoOrgNotFound', () => {
 
   describe('when  sync is not in progress', () => {
     it("renders can't find your repo", async () => {
-      setup()
+      setup({})
       render(<RepoOrgNotFound />, { wrapper })
 
       const copy = await screen.findByText(/Can't find your repo/i)
@@ -80,18 +86,21 @@ describe('RepoOrgNotFound', () => {
     })
 
     it('renders the button to resync', () => {
-      setup()
+      setup({})
       render(<RepoOrgNotFound />, { wrapper })
 
       const resyncButton = screen.getByRole('button', {
         name: /resync/i,
       })
       expect(resyncButton).toBeInTheDocument()
+
+      const rateLimitText = screen.queryByText(/rate limits/)
+      expect(rateLimitText).not.toBeInTheDocument()
     })
 
     describe('when the user clicks on the button', () => {
       it('calls the triggerResync mutation', async () => {
-        const { triggerResync, user } = setup()
+        const { triggerResync, user } = setup({})
         render(<RepoOrgNotFound />, { wrapper })
 
         const resyncButton = screen.getByRole('button', {
@@ -103,7 +112,7 @@ describe('RepoOrgNotFound', () => {
       })
 
       it('renders a loading message', async () => {
-        const { user } = setup()
+        const { user } = setup({})
         render(<RepoOrgNotFound />, { wrapper })
 
         const resyncButton = screen.getByRole('button', {
@@ -113,6 +122,16 @@ describe('RepoOrgNotFound', () => {
 
         const loadingMessage = await screen.findByText(/Syncing\.\.\./i)
         expect(loadingMessage).toBeInTheDocument()
+      })
+    })
+
+    describe('when the user is rate limited', () => {
+      it('shows rate limit messaging', async () => {
+        setup({ isGithubRateLimited: true })
+        render(<RepoOrgNotFound />, { wrapper })
+
+        const rateLimitText = await screen.findByText(/rate limits/)
+        expect(rateLimitText).toBeInTheDocument()
       })
     })
   })
