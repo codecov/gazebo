@@ -2,7 +2,6 @@ import { useParams } from 'react-router-dom'
 
 import { BundleTrendChart } from 'ui/BundleTrendChart'
 
-import { TrendDropdown } from './TrendDropdown'
 import { useBundleChartData } from './useBundleChartData'
 
 const Placeholder = () => (
@@ -32,7 +31,6 @@ export function BundleChart() {
 
   return (
     <div className="mx-auto w-[98%] pb-4 pt-1">
-      <TrendDropdown />
       {isLoading ? (
         <Placeholder />
       ) : (
