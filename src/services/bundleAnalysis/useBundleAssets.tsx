@@ -178,7 +178,7 @@ interface UseBundleAssetsArgs {
   bundle: string
   interval?: 'INTERVAL_1_DAY' | 'INTERVAL_7_DAY' | 'INTERVAL_30_DAY'
   before?: Date
-  after?: Date
+  after?: Date | null
   opts?: {
     enabled?: boolean
     suspense?: boolean
