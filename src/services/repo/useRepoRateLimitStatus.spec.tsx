@@ -3,42 +3,30 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 
-import { useCommitPageData } from './useCommitPageData'
+import { useRepoRateLimitStatus } from './useRepoRateLimitStatus'
 
-const mockCommitData = {
-  owner: {
-    isCurrentUserPartOfOrg: true,
-    repository: {
-      __typename: 'Repository',
-      private: false,
-      bundleAnalysisEnabled: true,
-      coverageEnabled: true,
-      commit: {
-        commitid: 'id-1',
-        compareWithParent: {
-          __typename: 'Comparison',
-        },
-        bundleAnalysisCompareWithParent: {
-          __typename: 'BundleAnalysisComparison',
-        },
+const mockRateLimitStatus = (isGithubRateLimited: boolean) => {
+  return {
+    owner: {
+      repository: {
+        __typename: 'Repository',
+        isGithubRateLimited,
       },
     },
-  },
+  }
 }
 
 const mockNotFoundError = {
   owner: {
-    isCurrentUserPartOfOrg: false,
     repository: {
       __typename: 'NotFoundError',
-      message: 'commit not found',
+      message: 'repo not found',
     },
   },
 }
 
 const mockOwnerNotActivatedError = {
   owner: {
-    isCurrentUserPartOfOrg: false,
     repository: {
       __typename: 'OwnerNotActivatedError',
       message: 'owner not activated',
@@ -52,10 +40,10 @@ const mockNullOwner = {
 
 const mockUnsuccessfulParseError = {}
 
+const server = setupServer()
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 })
-const server = setupServer()
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -79,17 +67,19 @@ interface SetupArgs {
   isOwnerNotActivatedError?: boolean
   isUnsuccessfulParseError?: boolean
   isNullOwner?: boolean
+  isGithubRateLimited: boolean
 }
 
-describe('useCommitPageData', () => {
+describe('useRepoRateLimitStatus', () => {
   function setup({
+    isGithubRateLimited = false,
     isNotFoundError = false,
     isOwnerNotActivatedError = false,
     isUnsuccessfulParseError = false,
     isNullOwner = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('CommitPageData', (req, res, ctx) => {
+      graphql.query('GetRepoRateLimitStatus', (req, res, ctx) => {
         if (isNotFoundError) {
           return res(ctx.status(200), ctx.data(mockNotFoundError))
         } else if (isOwnerNotActivatedError) {
@@ -98,83 +88,50 @@ describe('useCommitPageData', () => {
           return res(ctx.status(200), ctx.data(mockUnsuccessfulParseError))
         } else if (isNullOwner) {
           return res(ctx.status(200), ctx.data(mockNullOwner))
-        } else {
-          return res(ctx.status(200), ctx.data(mockCommitData))
         }
+        return res(
+          ctx.status(200),
+          ctx.data(mockRateLimitStatus(isGithubRateLimited))
+        )
       })
     )
   }
 
-  describe('when executed', () => {
-    describe('returns Repository __typename', () => {
-      describe('there is data', () => {
-        it('fetches the correct data', async () => {
-          setup({})
+  describe('returns repository typename of Repository', () => {
+    describe('there is valid data', () => {
+      it('fetches the repo rate limit status', async () => {
+        setup({ isGithubRateLimited: false })
+        const { result } = renderHook(
+          () =>
+            useRepoRateLimitStatus({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'cool-repo',
+            }),
+          { wrapper }
+        )
 
-          const { result } = renderHook(
-            () =>
-              useCommitPageData({
-                provider: 'gh',
-                owner: 'codecov',
-                repo: 'cool-repo',
-                commitId: 'id-1',
-              }),
-            { wrapper }
-          )
-
-          await waitFor(() => result.current.isLoading)
-          await waitFor(() => !result.current.isLoading)
-
-          const expectedResult = {
-            isCurrentUserPartOfOrg: true,
-            private: false,
-            bundleAnalysisEnabled: true,
-            coverageEnabled: true,
-            commit: {
-              commitid: 'id-1',
-              compareWithParent: {
-                __typename: 'Comparison',
-              },
-              bundleAnalysisCompareWithParent: {
-                __typename: 'BundleAnalysisComparison',
-              },
-            },
-          }
-
-          await waitFor(() =>
-            expect(result.current.data).toStrictEqual(expectedResult)
-          )
-        })
+        await waitFor(() =>
+          expect(result.current.data).toStrictEqual({
+            isGithubRateLimited: false,
+          })
+        )
       })
-      describe('there is a null owner', () => {
-        it('returns null value', async () => {
-          setup({ isNullOwner: true })
 
+      describe('there is a null owner', () => {
+        it('returns a null value', async () => {
+          setup({ isNullOwner: true, isGithubRateLimited: false })
           const { result } = renderHook(
             () =>
-              useCommitPageData({
+              useRepoRateLimitStatus({
                 provider: 'gh',
                 owner: 'codecov',
                 repo: 'cool-repo',
-                commitId: 'id-1',
               }),
             { wrapper }
           )
 
-          await waitFor(() => result.current.isLoading)
-          await waitFor(() => !result.current.isLoading)
-
-          const expectedResult = {
-            isCurrentUserPartOfOrg: null,
-            private: null,
-            bundleAnalysisEnabled: null,
-            coverageEnabled: null,
-            commit: null,
-          }
-
-          await waitFor(() =>
-            expect(result.current.data).toStrictEqual(expectedResult)
-          )
+          await waitFor(() => expect(result.current.data).toBeNull())
         })
       })
     })
@@ -190,16 +147,14 @@ describe('useCommitPageData', () => {
         console.error = oldConsoleError
       })
 
-      it('throws an error', async () => {
-        setup({ isNotFoundError: true })
-
+      it('throws a 404', async () => {
+        setup({ isNotFoundError: true, isGithubRateLimited: false })
         const { result } = renderHook(
           () =>
-            useCommitPageData({
+            useRepoRateLimitStatus({
               provider: 'gh',
               owner: 'codecov',
               repo: 'cool-repo',
-              commitId: 'id-1',
             }),
           { wrapper }
         )
@@ -226,28 +181,19 @@ describe('useCommitPageData', () => {
         console.error = oldConsoleError
       })
 
-      it('throws an error', async () => {
-        setup({ isOwnerNotActivatedError: true })
-
+      it('returns null', async () => {
+        setup({ isOwnerNotActivatedError: true, isGithubRateLimited: false })
         const { result } = renderHook(
           () =>
-            useCommitPageData({
+            useRepoRateLimitStatus({
               provider: 'gh',
               owner: 'codecov',
               repo: 'cool-repo',
-              commitId: 'id-1',
             }),
           { wrapper }
         )
 
-        await waitFor(() => expect(result.current.isError).toBeTruthy())
-        await waitFor(() =>
-          expect(result.current.error).toEqual(
-            expect.objectContaining({
-              status: 403,
-            })
-          )
-        )
+        await waitFor(() => expect(result.current.data).toEqual(null))
       })
     })
 
@@ -262,16 +208,14 @@ describe('useCommitPageData', () => {
         console.error = oldConsoleError
       })
 
-      it('throws an error', async () => {
-        setup({ isUnsuccessfulParseError: true })
-
+      it('throws a 404', async () => {
+        setup({ isUnsuccessfulParseError: true, isGithubRateLimited: false })
         const { result } = renderHook(
           () =>
-            useCommitPageData({
+            useRepoRateLimitStatus({
               provider: 'gh',
               owner: 'codecov',
               repo: 'cool-repo',
-              commitId: 'id-1',
             }),
           { wrapper }
         )

@@ -5,6 +5,7 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { RepoBreadcrumbProvider } from 'pages/RepoPage/context'
 import { TierNames, TTierNames } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
 
@@ -155,7 +156,9 @@ const wrapper =
     (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
+          <Route path="/:provider/:owner/:repo/pull/:pullId">
+            <RepoBreadcrumbProvider>{children}</RepoBreadcrumbProvider>
+          </Route>
         </MemoryRouter>
       </QueryClientProvider>
     )

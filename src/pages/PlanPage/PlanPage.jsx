@@ -9,6 +9,7 @@ import { SentryRoute } from 'sentry'
 
 import { usePlanPageData } from 'pages/PlanPage/hooks'
 import { useFlags } from 'shared/featureFlags'
+import { cn } from 'shared/utils/cn'
 import LoadingLogo from 'ui/LoadingLogo'
 
 import { PlanProvider } from './context'
@@ -46,7 +47,7 @@ function PlanPage() {
   }
 
   return (
-    <div className="mt-2 flex flex-col gap-4">
+    <div className={cn('flex flex-col gap-4', { 'mt-2': !newHeader })}>
       {newHeader ? null : <Header />}
       <Tabs />
       <Elements stripe={stripePromise}>

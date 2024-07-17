@@ -88,7 +88,7 @@ function BaseLayout({ children }) {
           )}
           <ErrorBoundary sentryScopes={[['layout', 'base']]}>
             <NetworkErrorBoundary>
-              <main className="container mb-8 mt-2 flex grow flex-col gap-2 md:p-0">
+              <main className="container mb-8 flex grow flex-col gap-2 md:p-0">
                 <GlobalBanners />
                 <OnboardingOrChildren>{children}</OnboardingOrChildren>
               </main>
