@@ -46,7 +46,7 @@ function Navigator({ currentUser }: NavigatorProps) {
     return (
       <div className="flex items-center">
         <Avatar user={ownerData} />
-        <h2 className="mx-2 text-xl font-semibold">{ownerData?.username}</h2>
+        <h2 className="mx-2 text-xl font-semibold">{ownerData.username}</h2>
       </div>
     )
   }

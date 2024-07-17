@@ -60,7 +60,7 @@ function AnalyticsPage() {
     <div className={cn({ 'mt-2': !newHeader })}>
       {newHeader ? null : <Header />}
       <div className="flex flex-col gap-4">
-        <div>{ownerData?.isCurrentUserPartOfOrg && <Tabs />}</div>
+        {ownerData?.isCurrentUserPartOfOrg ? <Tabs /> : null}
         <ChartSelectors
           params={params}
           updateParams={updateParams}

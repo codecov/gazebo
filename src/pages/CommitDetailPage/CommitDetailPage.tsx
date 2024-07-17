@@ -72,12 +72,7 @@ const CommitDetailPage: React.FC = () => {
             data-testid="breadcrumb-repo"
           >
             {commitPageData?.private ? (
-              <Icon
-                name="lockClosed"
-                variant="solid"
-                size="sm"
-                data-testid="asdf"
-              />
+              <Icon name="lockClosed" variant="solid" size="sm" />
             ) : null}
             {repo}
           </div>
