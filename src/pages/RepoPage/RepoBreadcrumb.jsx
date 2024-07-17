@@ -15,7 +15,7 @@ export default function RepoBreadcrumb() {
   }
 
   return (
-    <div className="sticky top-0 z-10 flex flex-row bg-white px-6 py-2 sm:px-0">
+    <div className="z-10 flex flex-row bg-white px-6 py-2 sm:px-0">
       <Breadcrumb paths={breadcrumbs} />
     </div>
   )

@@ -11,6 +11,7 @@ export function useOwnerPageData(opts = {}) {
           username
           isCurrentUserPartOfOrg
           numberOfUploads
+          avatarUrl
         }
       }
     `

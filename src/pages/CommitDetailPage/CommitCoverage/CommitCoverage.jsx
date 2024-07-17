@@ -6,9 +6,10 @@ import { SentryRoute } from 'sentry'
 
 import { useCommit } from 'services/commit'
 import { useCommitErrors } from 'services/commitErrors'
-import { useRepoOverview } from 'services/repo'
+import { useRepoOverview, useRepoRateLimitStatus } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { useOwner } from 'services/user'
+import GitHubRateLimitExceededBanner from 'shared/GlobalBanners/GitHubRateLimitExceeded/GitHubRateLimitExceededBanner'
 import { extractUploads } from 'shared/utils/extractUploads'
 import { metrics } from 'shared/utils/metrics'
 import Spinner from 'ui/Spinner'
@@ -153,6 +154,7 @@ function CommitCoverage() {
   const { provider, owner, repo, commit: commitSha } = useParams()
   const { data: tierName } = useTier({ owner, provider })
   const { data: overview } = useRepoOverview({ provider, owner, repo })
+  const { data: rateLimit } = useRepoRateLimitStatus({ provider, owner, repo })
   const { data: commitPageData } = useCommitPageData({
     provider,
     owner,
@@ -171,7 +173,6 @@ function CommitCoverage() {
   const showCommitSummary = !(overview.private && tierName === TierNames.TEAM)
   const showFirstPullBanner =
     commitPageData?.commit?.compareWithParent?.__typename === 'FirstPullRequest'
-
   return (
     <div className="flex flex-col gap-4 px-3 sm:px-0">
       {showCommitSummary ? (
@@ -182,6 +183,7 @@ function CommitCoverage() {
       {showFirstPullBanner ? <FirstPullBanner /> : null}
       {/**we are currently capturing a single error*/}
       <CommitErrorBanners />
+      {rateLimit?.isGithubRateLimited && <GitHubRateLimitExceededBanner />}
       <div className="flex flex-col gap-8 md:flex-row-reverse">
         <aside className="flex flex-1 flex-col gap-6 self-start md:sticky md:top-1.5 md:max-w-sm">
           <Suspense fallback={<Loader />}>

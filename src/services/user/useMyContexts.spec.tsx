@@ -115,11 +115,13 @@ describe('useMyContexts', () => {
         await waitFor(() => result.current.isFetching)
         await waitFor(() => !result.current.isFetching)
 
-        expect(result.current.failureReason).toEqual(
-          expect.objectContaining({
-            dev: 'useMyContexts - 404 Failed to parse data',
-            status: 404,
-          })
+        await waitFor(() =>
+          expect(result.current.failureReason).toEqual(
+            expect.objectContaining({
+              dev: 'useMyContexts - 404 Failed to parse data',
+              status: 404,
+            })
+          )
         )
       })
     })

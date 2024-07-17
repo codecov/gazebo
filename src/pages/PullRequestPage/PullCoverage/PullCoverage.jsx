@@ -4,9 +4,10 @@ import { Redirect, Switch, useParams } from 'react-router-dom'
 import { SentryRoute } from 'sentry'
 
 import SilentNetworkErrorWrapper from 'layouts/shared/SilentNetworkErrorWrapper'
-import { useRepoOverview } from 'services/repo'
+import { useRepoOverview, useRepoRateLimitStatus } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
+import GitHubRateLimitExceededBanner from 'shared/GlobalBanners/GitHubRateLimitExceeded/GitHubRateLimitExceededBanner'
 import { ComparisonReturnType } from 'shared/utils/comparison'
 import { metrics } from 'shared/utils/metrics'
 import Spinner from 'ui/Spinner'
@@ -138,7 +139,7 @@ function PullCoverage() {
     multipleTiers: false,
   })
   const { data: tierData } = useTier({ provider, owner })
-
+  const { data: rateLimit } = useRepoRateLimitStatus({ provider, owner, repo })
   useEffect(() => {
     if (overview?.bundleAnalysisEnabled && overview?.coverageEnabled) {
       metrics.increment('pull_request_page.coverage_dropdown.opened', 1)
@@ -168,6 +169,7 @@ function PullCoverage() {
       </Suspense>
       <div className="grid grid-cols-1 gap-4 space-y-2 lg:grid-cols-2">
         <article className="col-span-2 flex flex-col gap-3 md:gap-0">
+          {rateLimit?.isGithubRateLimited && <GitHubRateLimitExceededBanner />}
           <PullCoverageTabs />
           <PullCoverageContent />
         </article>
