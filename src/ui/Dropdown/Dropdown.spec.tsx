@@ -23,11 +23,11 @@ describe('Dropdown', () => {
         </Dropdown>
       )
 
-      const firstTitle = screen.getByText('My Dropdown')
-      expect(firstTitle).toBeInTheDocument()
+      const dropdownTrigger = screen.getByText('My Dropdown')
+      expect(dropdownTrigger).toBeInTheDocument()
 
-      const secondTitle = screen.queryByText('First item')
-      expect(secondTitle).not.toBeInTheDocument()
+      const firstItem = screen.queryByText('First item')
+      expect(firstItem).not.toBeInTheDocument()
     })
 
     describe('opening a dropdown', () => {
@@ -68,9 +68,6 @@ describe('Dropdown', () => {
         const dropdownTrigger = screen.getByText('My Dropdown')
         expect(dropdownTrigger).toBeInTheDocument()
         await user.click(dropdownTrigger)
-
-        // const firstItem = screen.getByText('First item')
-        // expect(firstItem).toBeInTheDocument()
 
         const label = screen.getByText('The Label')
         expect(label).toBeInTheDocument()
