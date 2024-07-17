@@ -76,7 +76,7 @@ describe('RepoOrgNotFound', () => {
     return { triggerResync, user: userEvent.setup() }
   }
 
-  describe('when  sync is not in progress', () => {
+  describe('when sync is not in progress', () => {
     it("renders can't find your repo", async () => {
       setup({})
       render(<RepoOrgNotFound />, { wrapper })
@@ -132,6 +132,18 @@ describe('RepoOrgNotFound', () => {
 
         const rateLimitText = await screen.findByText(/rate limits/)
         expect(rateLimitText).toBeInTheDocument()
+      })
+
+      it('calls the triggerResync mutation', async () => {
+        const { triggerResync, user } = setup({ isGithubRateLimited: true })
+        render(<RepoOrgNotFound />, { wrapper })
+
+        const resyncButton = screen.getByRole('button', {
+          name: /resyncing/i,
+        })
+        await user.click(resyncButton)
+
+        await waitFor(() => expect(triggerResync).toHaveBeenCalledTimes(1))
       })
     })
   })
