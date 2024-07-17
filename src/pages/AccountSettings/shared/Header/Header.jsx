@@ -2,6 +2,7 @@ import config from 'config'
 
 import MyContextSwitcher from 'layouts/MyContextSwitcher'
 import { useFlags } from 'shared/featureFlags'
+import { cn } from 'shared/utils/cn'
 import TabNavigation from 'ui/TabNavigation'
 
 function Header() {
@@ -10,7 +11,7 @@ function Header() {
   })
 
   return (
-    <>
+    <div className={cn({ 'mt-2': !newHeader })}>
       {newHeader ? null : <MyContextSwitcher pageName="accountAdmin" />}
       <TabNavigation
         tabs={[
@@ -25,7 +26,7 @@ function Header() {
           },
         ]}
       />
-    </>
+    </div>
   )
 }
 
