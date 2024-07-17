@@ -36,8 +36,7 @@ function ResyncButton() {
         </button>
         <span className="inline"> otherwise it may be due to </span>
         <A
-          data-testid="codecovGithubApp-link"
-          to={{ pageName: 'privacy' }}
+          to={{ pageName: 'githubRateLimitExceeded' }}
           hook={undefined}
           isExternal={true}
           className="inline underline"
