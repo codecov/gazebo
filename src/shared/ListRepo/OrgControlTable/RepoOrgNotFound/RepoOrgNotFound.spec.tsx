@@ -127,22 +127,16 @@ describe('RepoOrgNotFound', () => {
 
     describe('when the user is rate limited', () => {
       it('shows rate limit messaging', async () => {
-        setup({ isGithubRateLimited: true })
+        const { user, triggerResync } = setup({ isGithubRateLimited: true })
         render(<RepoOrgNotFound />, { wrapper })
 
         const rateLimitText = await screen.findByText(/rate limits/)
         expect(rateLimitText).toBeInTheDocument()
-      })
-
-      it('calls the triggerResync mutation', async () => {
-        const { triggerResync, user } = setup({ isGithubRateLimited: true })
-        render(<RepoOrgNotFound />, { wrapper })
 
         const resyncButton = screen.getByRole('button', {
           name: /resyncing/i,
         })
         await user.click(resyncButton)
-
         await waitFor(() => expect(triggerResync).toHaveBeenCalledTimes(1))
       })
     })
