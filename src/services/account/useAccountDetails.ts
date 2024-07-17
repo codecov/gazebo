@@ -67,12 +67,14 @@ export const BillingDetailsSchema = z
 
 export const PaymentMethodSchema = z
   .object({
-    card: z.object({
-      brand: z.string(),
-      expMonth: z.number(),
-      expYear: z.number(),
-      last4: z.string(),
-    }),
+    card: z
+      .object({
+        brand: z.string(),
+        expMonth: z.number(),
+        expYear: z.number(),
+        last4: z.string(),
+      })
+      .nullish(),
     billingDetails: BillingDetailsSchema.nullable(),
   })
   .nullable()
@@ -98,7 +100,15 @@ export const SubscriptionDetailSchema = z
       .nullable(),
     defaultPaymentMethod: PaymentMethodSchema.nullable(),
     latestInvoice: InvoiceSchema,
-    trialEnd: z.number().nullish(),
+    taxIds: z.array(
+      z
+        .object({
+          type: z.string(),
+          value: z.string(),
+        })
+        .nullish()
+    ),
+    trialEnd: z.number().nullable(),
   })
   .nullable()
 

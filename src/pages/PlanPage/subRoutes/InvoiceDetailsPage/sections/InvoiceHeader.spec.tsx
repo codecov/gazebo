@@ -1,26 +1,44 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
+import { z } from 'zod'
+
+import { InvoiceSchema } from 'services/account'
 
 import InvoiceHeader from './InvoiceHeader'
 
 const mockInvoice = ({ status = 'paid' } = {}) => {
   return {
-    id: 'in_1I3vJAGlVGuVgOrk5h77hHRa',
-    number: 'CE3CEF02-0008',
-    status,
-    created: 1609298708,
-    periodStart: 1609298708,
-    periodEnd: 1609298708,
-    dueDate: 1611890708,
-    currency: 'usd',
-    amountPaid: 8900,
     amountDue: 10000,
-    amountRemaining: 0,
-    total: 90000,
-    subtotal: 9000,
-    defaultPaymentMethod: 'Master Card',
-    invoicePdf:
-      'https://pay.stripe.com/invoice/acct_14SJTOGlVGuVgOrk/invst_IfFo7ZObDS0WosDNKdA6ZlcEzZ4fDkS/pdf',
+    amountPaid: 8900,
+    created: 1609298708,
+    currency: 'usd',
+    customerAddress: null,
+    customerEmail: null,
+    customerName: null,
+    defaultPaymentMethod: {
+      card: {
+        brand: 'visa',
+        expMonth: 12,
+        expYear: 2021,
+        last4: '4242',
+      },
+      billingDetails: {
+        address: {
+          city: 'Bordeaux',
+          country: 'France',
+          line1: '12 cours st-louis',
+          line2: 'apt-31',
+          postalCode: '33000',
+          state: 'Gironde',
+        },
+        email: null,
+        name: 'Checo perez',
+        phone: null,
+      },
+    },
+    dueDate: 1611890708,
+    id: 'in_1I3vJAGlVGuVgOrk5h77hHRa',
+    footer: null,
     lineItems: [
       {
         description: 'Unused time on 19 × users-pr-inappm after 30 Dec 2020',
@@ -42,12 +60,20 @@ const mockInvoice = ({ status = 'paid' } = {}) => {
         description: null,
         amount: 72000,
         currency: 'usd',
+        // @ts-expect-error
         period: { end: null, start: null },
         value: 'same period doesnt render date',
         quantity: 1,
       },
     ],
-  }
+    number: 'CE3CEF02-0008',
+    periodEnd: 1609298708,
+    periodStart: 1609298708,
+    status,
+    subtotal: 9000,
+    taxIds: [{ value: 'CA BN 123456789' }],
+    total: 90000,
+  } as z.infer<typeof InvoiceSchema>
 }
 
 const accountDetails = ({ collectionMethod = '' } = {}) => {
@@ -78,13 +104,13 @@ const accountDetails = ({ collectionMethod = '' } = {}) => {
       },
       cancelAtPeriodEnd: false,
       currentPeriodEnd: 1640834708,
-      customer: 'cus_IVd2T7puVJe1Ur',
+      customer: { id: 'cus_IVd2T7puVJe1Ur', email: '' },
     },
     activatedUserCount: 100,
   }
 }
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <MemoryRouter initialEntries={['/plan/gh/invoices/9']}>
     <Switch>
       <Route path="/plan/:provider/invoices/:id" exact>
@@ -100,6 +126,7 @@ describe('Invoice Header', () => {
       render(
         <InvoiceHeader
           invoice={mockInvoice()}
+          // @ts-expect-error
           accountDetails={accountDetails()}
         />,
         {
@@ -119,14 +146,17 @@ describe('Invoice Header', () => {
       const dateDue = screen.getByText(/Date due/)
       expect(dateDue).toBeInTheDocument()
 
-      const paymentMethod = screen.getByText(/Master Card/)
+      const paymentMethod = screen.getByText(/Payment method/)
       expect(paymentMethod).toBeInTheDocument()
 
-      const address = screen.getByText(/Beaverton, OR 97008-7105/)
+      const address = screen.getByText(/San Francisco, CA 94105/)
       expect(address).toBeInTheDocument()
 
       const paidOn = screen.getByText(/December 30th 2020/)
       expect(paidOn).toBeInTheDocument()
+
+      const tax = screen.getByText(/CA BN 123456789/)
+      expect(tax).toBeInTheDocument()
     })
   })
 
@@ -135,6 +165,7 @@ describe('Invoice Header', () => {
       render(
         <InvoiceHeader
           invoice={mockInvoice({ status: 'draft' })}
+          // @ts-expect-error
           accountDetails={accountDetails()}
         />,
         {
@@ -152,6 +183,7 @@ describe('Invoice Header', () => {
       render(
         <InvoiceHeader
           invoice={mockInvoice()}
+          // @ts-expect-error
           accountDetails={accountDetails({ collectionMethod: 'send_invoice' })}
         />,
         {

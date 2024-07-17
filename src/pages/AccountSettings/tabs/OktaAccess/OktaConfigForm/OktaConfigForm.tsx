@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
+import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import Banner from 'ui/Banner'
@@ -11,6 +12,8 @@ import Icon from 'ui/Icon'
 import TextInput from 'ui/TextInput'
 import Toggle from 'ui/Toggle'
 
+import { useOktaConfig, useUpdateOktaConfig } from '../hooks'
+
 const FormSchema = z.object({
   clientId: z.string().min(1, 'Client ID is required'),
   clientSecret: z.string().min(1, 'Client Secret is required'),
@@ -18,19 +21,46 @@ const FormSchema = z.object({
 })
 
 type FormValues = z.infer<typeof FormSchema>
+interface URLParams {
+  provider: string
+  owner: string
+}
 
 export function OktaConfigForm() {
-  const { register, handleSubmit, formState } = useForm<FormValues>({
+  const { register, handleSubmit, formState, reset } = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     mode: 'onChange',
   })
 
-  const [oktaEnabled, setOktaEnabled] = useState(false)
-  const [oktaLoginEnforce, setOktaLoginEnforce] = useState(false)
+  const { provider, owner } = useParams<URLParams>()
+
+  const { data } = useOktaConfig({
+    provider,
+    username: owner,
+  })
+  const oktaConfig = data?.owner?.account?.oktaConfig
+  const { mutate } = useUpdateOktaConfig({ provider, owner })
+
+  const [oktaEnabled, setOktaEnabled] = useState(oktaConfig?.enabled)
+  const [oktaLoginEnforce, setOktaLoginEnforce] = useState(oktaConfig?.enforced)
   const [showPassword, setShowPassword] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log('Form Data: ', data)
+    setIsSubmitting(true)
+    mutate(
+      {
+        clientId: data.clientId,
+        clientSecret: data.clientSecret,
+        url: data.redirectUri,
+      },
+      {
+        onSettled: () => {
+          setIsSubmitting(false)
+          reset(data)
+        },
+      }
+    )
   }
 
   return (
@@ -56,6 +86,7 @@ export function OktaConfigForm() {
                 Client ID
               </label>
               <TextInput
+                defaultValue={oktaConfig?.clientId}
                 {...register('clientId', {
                   required: true,
                 })}
@@ -75,6 +106,7 @@ export function OktaConfigForm() {
               </label>
               <div className="relative">
                 <TextInput
+                  defaultValue={oktaConfig?.clientSecret}
                   {...register('clientSecret', { required: true })}
                   type={showPassword ? 'text' : 'password'}
                   id="clientSecret"
@@ -103,6 +135,7 @@ export function OktaConfigForm() {
                 Redirect URI
               </label>
               <TextInput
+                defaultValue={oktaConfig?.url}
                 {...register('redirectUri', { required: true })}
                 type="text"
                 id="redirectUri"
@@ -117,11 +150,13 @@ export function OktaConfigForm() {
             <div>
               <Button
                 type="submit"
-                disabled={!formState.isValid}
+                disabled={
+                  !formState.isValid || !formState.isDirty || isSubmitting
+                }
                 to={undefined}
                 hook="save okta form changes"
               >
-                Save
+                {isSubmitting ? 'Saving...' : 'Save'}
               </Button>
             </div>
           </div>
@@ -143,6 +178,11 @@ export function OktaConfigForm() {
                     if (oktaLoginEnforce) {
                       setOktaLoginEnforce(false)
                     }
+
+                    mutate({
+                      enabled: !oktaEnabled,
+                      enforced: false,
+                    })
                   }}
                   value={oktaEnabled}
                   label="Okta Sync Enabled"
@@ -173,6 +213,11 @@ export function OktaConfigForm() {
                     if (!oktaLoginEnforce) {
                       setOktaEnabled(true)
                     }
+
+                    mutate({
+                      enforced: !oktaLoginEnforce,
+                      enabled: !oktaLoginEnforce ? true : oktaEnabled,
+                    })
                   }}
                   value={oktaLoginEnforce}
                   label="Okta Login Enforced"

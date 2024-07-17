@@ -11,7 +11,7 @@ function AdminLink() {
 
   return (
     <A
-      variant="header"
+      variant="headerDeprecated"
       to={{ pageName: 'access' }}
       isExternal={false}
       hook="header-admin-link"

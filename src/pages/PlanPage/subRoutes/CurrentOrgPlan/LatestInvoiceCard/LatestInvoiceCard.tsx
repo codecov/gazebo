@@ -23,7 +23,18 @@ function LatestInvoiceCard() {
 
   return (
     <div className="flex flex-col border">
-      <h3 className="p-4 font-semibold">Invoices</h3>
+      <h3 className="flex justify-between p-4 font-semibold">
+        Invoices
+        <A
+          to={{ pageName: 'invoicesPage' }}
+          hook="all-invoice-page"
+          variant="semibold"
+          isExternal={false}
+        >
+          View
+          <Icon name="chevronRight" size="sm" variant="solid" />
+        </A>
+      </h3>
       <hr />
       <div className="flex items-center gap-4 p-4">
         <img src={invoiceImg} alt="invoice icon" />
@@ -51,17 +62,6 @@ function LatestInvoiceCard() {
             </A>
           </div>
         </div>
-      </div>
-      <div className="flex self-start p-4">
-        <A
-          to={{ pageName: 'invoicesPage' }}
-          hook="all-invoice-page"
-          variant="semibold"
-          isExternal={false}
-        >
-          See all invoices{' '}
-          <Icon name="chevronRight" size="sm" variant="solid" />
-        </A>
       </div>
     </div>
   )

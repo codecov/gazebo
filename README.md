@@ -118,9 +118,9 @@ The config are centralized in one place in the file `config.js`. The file merges
 
 ### process.env
 
-Gazebo supports [env files](https://create-react-app.dev/docs/adding-custom-environment-variables) by default which become enviornment variables at build-time.
+Gazebo supports [env files](https://create-react-app.dev/docs/adding-custom-environment-variables) by default which become environment variables at build-time.
 
-To override enviornment variables when working locally create a `.env.local` file, this file is ignored by git.
+To override environment variables when working locally create a `.env.local` file, this file is ignored by git.
 
 You must prepend env variables with `REACT_APP_`.
 

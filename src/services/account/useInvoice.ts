@@ -30,6 +30,9 @@ query Invoice($owner: String!, $id: String!) {
       periodStart
       status
       subtotal
+      taxIds {
+        value
+      }
       total
       defaultPaymentMethod {
         card {

@@ -71,6 +71,7 @@ describe('MyContextSwitcher', () => {
             owner: {
               username: 'cool-user',
               avatarUrl: 'http://127.0.0.1/avatar-url',
+              defaultOrgUsername: null,
             },
             myOrganizations: {
               edges: [{ node: orgList }],

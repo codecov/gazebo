@@ -18,6 +18,7 @@ jest.mock('shared/GlobalTopBanners', () => () => 'GlobalTopBanners')
 jest.mock('./InstallationHelpBanner', () => () => 'InstallationHelpBanner')
 jest.mock('pages/TermsOfService', () => () => 'TermsOfService')
 jest.mock('pages/DefaultOrgSelector', () => () => 'DefaultOrgSelector')
+jest.mock('layouts/Header', () => () => 'New header')
 
 jest.mock('shared/featureFlags')
 
@@ -402,7 +403,7 @@ describe('BaseLayout', () => {
         wrapper: wrapper(),
       })
 
-      const newHeader = await screen.findByText('Navigation')
+      const newHeader = await screen.findByText(/New header/)
       expect(newHeader).toBeInTheDocument()
     })
   })

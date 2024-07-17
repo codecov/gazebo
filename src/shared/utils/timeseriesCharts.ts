@@ -5,22 +5,27 @@ import {
   subMonths,
 } from 'date-fns'
 
-export const TimeseriesInterval = Object.freeze({
+type TimeseriesIntervals =
+  (typeof TimeseriesInterval)[keyof typeof TimeseriesInterval]
+
+export const TimeseriesInterval = {
   INTERVAL_30_DAY: 'INTERVAL_30_DAY',
   INTERVAL_7_DAY: 'INTERVAL_7_DAY',
   INTERVAL_1_DAY: 'INTERVAL_1_DAY',
-})
+} as const
 
-export const Trend = Object.freeze({
+type TrendKeys = keyof typeof Trend
+type Trends = (typeof Trend)[TrendKeys]
+export const Trend = {
   SEVEN_DAYS: '7 days',
   THIRTY_DAYS: '30 days',
   THREE_MONTHS: '3 months',
   SIX_MONTHS: '6 months',
   TWELVE_MONTHS: '12 months',
   ALL_TIME: 'all time',
-})
+} as const
 
-export const GroupingUnit = Object.freeze({
+export const GroupingUnit = {
   COMMIT: 'commit',
   HOUR: 'hour',
   DAY: 'day',
@@ -28,10 +33,10 @@ export const GroupingUnit = Object.freeze({
   MONTH: 'month',
   QUARTER: 'quarter',
   YEAR: 'year',
-})
+} as const
 
-export function getTrendEnum(trend) {
-  for (let key in Trend) {
+export function getTrendEnum(trend: Trends) {
+  for (const key of Object.keys(Trend) as Array<TrendKeys>) {
     if (Trend[key] === trend?.toLowerCase()) {
       return Trend[key]
     }
@@ -39,7 +44,14 @@ export function getTrendEnum(trend) {
   return Trend.THREE_MONTHS
 }
 
-const calculateTrendDate = ({ today, trend }) => {
+const calculateTrendDate = ({
+  today,
+  trend,
+}: {
+  today: Date | null
+  trend: Trends
+}) => {
+  if (today === null) return null
   if (trend === Trend.SEVEN_DAYS) return subDays(today, 7)
   if (trend === Trend.THIRTY_DAYS) return subDays(today, 30)
   if (trend === Trend.THREE_MONTHS) return subMonths(today, 3)
@@ -48,7 +60,13 @@ const calculateTrendDate = ({ today, trend }) => {
   return null
 }
 
-export const calculateDayDifference = ({ end, start }) => {
+export const calculateDayDifference = ({
+  end,
+  start,
+}: {
+  end?: string | Date | null
+  start?: string | Date | null
+}) => {
   if (end && start) {
     const _end = typeof end === 'string' ? parseISO(end) : end
     const _start = typeof start === 'string' ? parseISO(start) : start
@@ -58,7 +76,7 @@ export const calculateDayDifference = ({ end, start }) => {
   return 0
 }
 
-function analyticsGroupingUnit({ dayDifference }) {
+function analyticsGroupingUnit({ dayDifference }: { dayDifference: number }) {
   const dayThreshold = 180
   const monthThreshold = 360
 
@@ -74,7 +92,15 @@ function analyticsGroupingUnit({ dayDifference }) {
   return GroupingUnit.WEEK
 }
 
-export function analyticsQuery({ endDate, startDate, repositories }) {
+export function analyticsQuery({
+  endDate,
+  startDate,
+  repositories,
+}: {
+  endDate?: Date | null
+  startDate?: Date | null
+  repositories?: string[]
+}) {
   const dayDifference = calculateDayDifference({
     end: endDate,
     start: startDate,
@@ -83,10 +109,11 @@ export function analyticsQuery({ endDate, startDate, repositories }) {
   // Conditional returned keys
   const _startDate = startDate ? { startDate } : {}
   const _endDate = endDate ? { endDate } : {}
-  const _repositories = repositories?.length > 0 ? { repositories } : {}
+  const _repositories =
+    repositories && repositories?.length > 0 ? { repositories } : {}
 
   const groupingUnit = analyticsGroupingUnit({ dayDifference })
-  let interval = TimeseriesInterval.INTERVAL_30_DAY
+  let interval: TimeseriesIntervals = TimeseriesInterval.INTERVAL_30_DAY
   if (groupingUnit === GroupingUnit.DAY) {
     interval = TimeseriesInterval.INTERVAL_1_DAY
   } else if (groupingUnit === GroupingUnit.WEEK) {
@@ -101,7 +128,7 @@ export function analyticsQuery({ endDate, startDate, repositories }) {
   }
 }
 
-function sparklineGroupingUnit({ dayDifference }) {
+function getGroupingUnit({ dayDifference }: { dayDifference: number }) {
   const A_YEAR = 360
   const TWO_MONTHS = 61
   const TWO_WEEKS = 14
@@ -118,20 +145,27 @@ function sparklineGroupingUnit({ dayDifference }) {
   return GroupingUnit.MONTH
 }
 
-export function timeseriesRepoCoverageQuery({ trend, today, oldestCommit }) {
-  let startDate = calculateTrendDate({ today, trend })
-  const dayDifference = calculateDayDifference({
-    end: today,
-    start: startDate,
-  })
-
-  if (startDate === null) {
-    startDate = oldestCommit
+export function createTimeSeriesQueryVars({
+  trend,
+  today,
+  oldestCommit,
+}: {
+  trend: Trends
+  today: Date
+  oldestCommit: Date | null
+}) {
+  let after = calculateTrendDate({ today, trend })
+  if (after === null) {
+    after = oldestCommit
   }
 
-  const groupingUnit = sparklineGroupingUnit({ dayDifference })
+  const dayDifference = calculateDayDifference({
+    end: today,
+    start: after,
+  })
 
-  let interval = TimeseriesInterval.INTERVAL_1_DAY
+  const groupingUnit = getGroupingUnit({ dayDifference })
+  let interval: TimeseriesIntervals = TimeseriesInterval.INTERVAL_1_DAY
   if (groupingUnit === GroupingUnit.WEEK) {
     interval = TimeseriesInterval.INTERVAL_7_DAY
   } else if (groupingUnit === GroupingUnit.MONTH) {
@@ -139,7 +173,8 @@ export function timeseriesRepoCoverageQuery({ trend, today, oldestCommit }) {
   }
 
   return {
-    startDate,
+    after,
     interval,
+    before: today,
   }
 }

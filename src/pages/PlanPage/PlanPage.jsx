@@ -11,7 +11,7 @@ import { usePlanPageData } from 'pages/PlanPage/hooks'
 import { useFlags } from 'shared/featureFlags'
 import LoadingLogo from 'ui/LoadingLogo'
 
-import { PlanBreadcrumbProvider } from './context'
+import { PlanProvider } from './context'
 import Header from './Header'
 import PlanBreadcrumb from './PlanBreadcrumb'
 import Tabs from './Tabs'
@@ -50,7 +50,7 @@ function PlanPage() {
       {newHeader ? null : <Header />}
       <Tabs />
       <Elements stripe={stripePromise}>
-        <PlanBreadcrumbProvider>
+        <PlanProvider>
           <PlanBreadcrumb />
           <Suspense fallback={<Loader />}>
             <Switch>
@@ -75,7 +75,7 @@ function PlanPage() {
               />
             </Switch>
           </Suspense>
-        </PlanBreadcrumbProvider>
+        </PlanProvider>
       </Elements>
     </div>
   )

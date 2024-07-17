@@ -7,6 +7,7 @@ import OldHeader from 'layouts/OldHeader'
 import ErrorBoundary from 'layouts/shared/ErrorBoundary'
 import NetworkErrorBoundary from 'layouts/shared/NetworkErrorBoundary'
 import ToastNotifications from 'layouts/ToastNotifications'
+import { RepoBreadcrumbProvider } from 'pages/RepoPage/context'
 import { useImpersonate } from 'services/impersonate'
 import { useTracking } from 'services/tracking'
 import { useFlags } from 'shared/featureFlags'
@@ -73,25 +74,27 @@ function BaseLayout({ children }) {
 
   return (
     <>
-      {isFullExperience ? (
-        <>
-          {newHeader ? <Header /> : <OldHeader />}
-          <GlobalTopBanners />
-        </>
-      ) : (
-        <Suspense fallback={null}>
-          {showDefaultOrgSelector && <InstallationHelpBanner />}
-        </Suspense>
-      )}
       <Suspense fallback={<FullPageLoader />}>
-        <ErrorBoundary sentryScopes={[['layout', 'base']]}>
-          <NetworkErrorBoundary>
-            <main className="container mb-8 mt-2 flex grow flex-col gap-2 md:p-0">
-              <GlobalBanners />
-              <OnboardingOrChildren>{children}</OnboardingOrChildren>
-            </main>
-          </NetworkErrorBoundary>
-        </ErrorBoundary>
+        <RepoBreadcrumbProvider>
+          {isFullExperience ? (
+            <>
+              <GlobalTopBanners />
+              {newHeader ? <Header /> : <OldHeader />}
+            </>
+          ) : (
+            <Suspense fallback={null}>
+              {showDefaultOrgSelector && <InstallationHelpBanner />}
+            </Suspense>
+          )}
+          <ErrorBoundary sentryScopes={[['layout', 'base']]}>
+            <NetworkErrorBoundary>
+              <main className="container mb-8 mt-2 flex grow flex-col gap-2 md:p-0">
+                <GlobalBanners />
+                <OnboardingOrChildren>{children}</OnboardingOrChildren>
+              </main>
+            </NetworkErrorBoundary>
+          </ErrorBoundary>
+        </RepoBreadcrumbProvider>
       </Suspense>
       {isFullExperience && (
         <>

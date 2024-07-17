@@ -44,6 +44,12 @@ PlainButton.args = {
   variant: 'plain',
 }
 
+export const ListboxButton = Template.bind({})
+ListboxButton.args = {
+  children: 'Listbox button',
+  variant: 'listbox',
+}
+
 export const GitHubButton = Template.bind({})
 GitHubButton.args = {
   children: 'GitHub Button',

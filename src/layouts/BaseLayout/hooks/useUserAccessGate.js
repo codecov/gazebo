@@ -61,12 +61,16 @@ const useUserAccessGate = () => {
   })
 
   useEffect(() => {
-    if (userData?.user?.customerIntent === CustomerIntent.PERSONAL) {
+    if (
+      userData?.user?.customerIntent === CustomerIntent.PERSONAL &&
+      !userData?.owner?.defaultOrgUsername
+    ) {
       updateDefaultOrg({ username: userData?.user?.username })
     }
   }, [
     userData?.user?.customerIntent,
     userData?.user?.username,
+    userData?.owner?.defaultOrgUsername,
     updateDefaultOrg,
   ])
 

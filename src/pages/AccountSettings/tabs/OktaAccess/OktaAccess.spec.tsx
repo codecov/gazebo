@@ -43,6 +43,24 @@ describe('OktaAccess', () => {
           ctx.status(200),
           ctx.data({ owner: { username: 'codecov', isAdmin } })
         )
+      ),
+      graphql.query('GetOktaConfig', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.data({
+            owner: {
+              account: {
+                oktaConfig: {
+                  enabled: true,
+                  enforced: true,
+                  url: 'https://okta.com',
+                  clientId: 'clientId',
+                  clientSecret: 'clientSecret',
+                },
+              },
+            },
+          })
+        )
       )
     )
   }

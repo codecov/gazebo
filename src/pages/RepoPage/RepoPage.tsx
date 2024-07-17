@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from 'react'
+import { lazy, Suspense, useLayoutEffect, useState } from 'react'
 import { Redirect, Switch, useParams } from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
@@ -6,10 +6,11 @@ import { SentryRoute } from 'sentry'
 import NotFound from 'pages/NotFound'
 import { useRepo, useRepoOverview } from 'services/repo'
 import { useFlags } from 'shared/featureFlags'
+import Icon from 'ui/Icon'
 import LoadingLogo from 'ui/LoadingLogo'
 
 import ActivationAlert from './ActivationAlert'
-import { RepoBreadcrumbProvider } from './context'
+import { useCrumbs } from './context'
 import DeactivatedRepo from './DeactivatedRepo'
 import RepoBreadcrumb from './RepoBreadcrumb'
 import RepoPageTabs from './RepoPageTabs'
@@ -245,6 +246,27 @@ function RepoPage() {
       refetchOnWindowFocus: refetchEnabled,
     },
   })
+  const { setBaseCrumbs } = useCrumbs()
+
+  useLayoutEffect(() => {
+    setBaseCrumbs([
+      { pageName: 'owner', text: owner },
+      {
+        pageName: 'repo',
+        children: (
+          <div
+            className="inline-flex items-center gap-1"
+            data-testid="breadcrumb-repo"
+          >
+            {repoData?.repository?.private && (
+              <Icon name="lockClosed" variant="solid" size="sm" />
+            )}
+            {repo}
+          </div>
+        ),
+      },
+    ])
+  }, [owner, repo, repoData, setBaseCrumbs])
 
   const coverageEnabled =
     repoOverview?.coverageEnabled ?? repoData?.isCoverageEnabled
@@ -262,24 +284,22 @@ function RepoPage() {
   if (!repoData) return <NotFound />
 
   return (
-    <RepoBreadcrumbProvider>
-      <div>
-        <RepoBreadcrumb />
-        <RepoPageTabs refetchEnabled={refetchEnabled} />
-        <Suspense fallback={<Loader />}>
-          <Routes
-            isRepoActive={isRepoActive || false}
-            isRepoActivated={isRepoActivated || false}
-            coverageEnabled={coverageEnabled}
-            bundleAnalysisEnabled={bundleAnalysisEnabled}
-            jsOrTsPresent={jsOrTsPresent}
-            isRepoPrivate={isRepoPrivate}
-            isCurrentUserActivated={isCurrentUserActivated}
-            testAnalyticsEnabled={repoOverview?.testAnalyticsEnabled}
-          />
-        </Suspense>
-      </div>
-    </RepoBreadcrumbProvider>
+    <div>
+      <RepoBreadcrumb />
+      <RepoPageTabs refetchEnabled={refetchEnabled} />
+      <Suspense fallback={<Loader />}>
+        <Routes
+          isRepoActive={isRepoActive || false}
+          isRepoActivated={isRepoActivated || false}
+          coverageEnabled={coverageEnabled}
+          bundleAnalysisEnabled={bundleAnalysisEnabled}
+          jsOrTsPresent={jsOrTsPresent}
+          isRepoPrivate={isRepoPrivate}
+          isCurrentUserActivated={isCurrentUserActivated}
+          testAnalyticsEnabled={repoOverview?.testAnalyticsEnabled}
+        />
+      </Suspense>
+    </div>
   )
 }
 

@@ -56,7 +56,6 @@ const Upload = ({
           />
 
           <UploadReference ciUrl={ciUrl} name={name} buildCode={buildCode} />
-          <RenderError errors={errors} state={state} />
         </div>
         {createdAt && (
           <span className="text-xs text-ds-gray-quinary">
@@ -82,6 +81,7 @@ const Upload = ({
           </A>
         )}
       </div>
+      <RenderError errors={errors} state={state} />
     </div>
   )
 }

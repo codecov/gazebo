@@ -298,7 +298,7 @@ describe('BundleContent', () => {
             wrapper: wrapper('/gh/codecov/test-repo/bundles/main/test-bundle'),
           })
 
-          const bundleName = await screen.findByText(/asset-1/)
+          const bundleName = await screen.findByText('asset-1')
           expect(bundleName).toBeInTheDocument()
 
           const [type] = await screen.findAllByText('js')

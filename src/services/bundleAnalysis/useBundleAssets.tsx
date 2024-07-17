@@ -1,7 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { sub } from 'date-fns'
 import isNull from 'lodash/isNull'
-import { useMemo } from 'react'
 import { z } from 'zod'
 
 import { MissingHeadReportSchema } from 'services/comparison'
@@ -179,8 +177,8 @@ interface UseBundleAssetsArgs {
   branch?: string
   bundle: string
   interval?: 'INTERVAL_1_DAY' | 'INTERVAL_7_DAY' | 'INTERVAL_30_DAY'
-  before?: string
-  after?: string
+  before?: Date
+  after?: Date | null
   opts?: {
     enabled?: boolean
     suspense?: boolean
@@ -193,9 +191,9 @@ export const useBundleAssets = ({
   repo,
   branch: branchArg,
   bundle,
-  interval = 'INTERVAL_7_DAY',
-  before: beforeArg,
-  after: afterArg,
+  interval,
+  before,
+  after,
   opts,
 }: UseBundleAssetsArgs) => {
   const { data: repoOverview, isSuccess } = useRepoOverview({
@@ -217,17 +215,6 @@ export const useBundleAssets = ({
   }
 
   const branch = branchArg ?? repoOverview?.defaultBranch
-
-  const { before, after } = useMemo(() => {
-    const today = new Date()
-    const before = today.toISOString()
-    const after = sub(today, { days: 30 }).toISOString()
-
-    return {
-      before,
-      after,
-    }
-  }, [])
 
   return useQuery({
     queryKey: [

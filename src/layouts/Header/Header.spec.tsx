@@ -4,13 +4,25 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import config from 'config'
+
 import { User } from 'services/user'
 
 import Header from './Header'
 
+jest.mock('src/layouts/Header/components/Navigator', () => () => 'Navigator')
 jest.mock(
   'src/layouts/Header/components/UserDropdown',
   () => () => 'User Dropdown'
+)
+jest.mock(
+  'src/layouts/Header/components/HelpDropdown',
+  () => () => 'Help Dropdown'
+)
+jest.mock('src/layouts/Header/components/AdminLink', () => () => 'Admin Link')
+jest.mock(
+  'src/layouts/Header/components/SeatDetails',
+  () => () => 'Seat Details'
 )
 
 const mockUser = {
@@ -92,23 +104,72 @@ describe('Header', () => {
     )
   }
 
-  describe('placeholder new header', () => {
-    it('shows when currentUser is defined', async () => {
-      setup({})
-      render(<Header />, { wrapper })
-
-      const text = await screen.findByText('Navigation')
-      expect(text).toBeInTheDocument()
-    })
-  })
-
-  describe('guest header', () => {
-    it('shows when currentUser is null', async () => {
+  describe('when are not logged in', () => {
+    it('shows guest header', async () => {
       setup({ user: mockNullUser })
       render(<Header />, { wrapper })
 
-      const link = await screen.findByText('Guest header')
-      expect(link).toBeInTheDocument()
+      const guestHeader = await screen.findByText('Guest header')
+      expect(guestHeader).toBeInTheDocument()
+    })
+  })
+
+  describe('when logged in', () => {
+    it('shows navigator', async () => {
+      setup({})
+      render(<Header />, { wrapper })
+
+      const navigator = await screen.findByText('Navigator')
+      expect(navigator).toBeInTheDocument()
+    })
+
+    it('shows help dropdown', async () => {
+      setup({})
+      render(<Header />, { wrapper })
+
+      const helpDropdown = await screen.findByText(/Help Dropdown/)
+      expect(helpDropdown).toBeInTheDocument()
+    })
+
+    it('shows user dropdown', async () => {
+      setup({})
+      render(<Header />, { wrapper })
+
+      const userDropdown = await screen.findByText(/User Dropdown/)
+      expect(userDropdown).toBeInTheDocument()
+    })
+  })
+
+  describe('when on self-hosted', () => {
+    describe('and are not logged in', () => {
+      it('shows guest header', async () => {
+        config.IS_SELF_HOSTED = true
+        setup({})
+        render(<Header />, { wrapper })
+
+        const guestHeader = await screen.findByText('Guest header')
+        expect(guestHeader).toBeInTheDocument()
+      })
+    })
+
+    describe('and are logged in', () => {
+      it('shows seat details', async () => {
+        config.IS_SELF_HOSTED = true
+        setup({})
+        render(<Header />, { wrapper })
+
+        const text = await screen.findByText(/Seat Details/)
+        expect(text).toBeInTheDocument()
+      })
+
+      it('shows Admin link', async () => {
+        config.IS_SELF_HOSTED = true
+        setup({})
+        render(<Header />, { wrapper })
+
+        const text = await screen.findByText(/Admin Link/)
+        expect(text).toBeInTheDocument()
+      })
     })
   })
 })
