@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import Api from 'shared/api'
+import { NetworkErrorObject } from 'shared/api/helpers'
 
 export const RequestSchema = z
   .object({
@@ -9,9 +10,9 @@ export const RequestSchema = z
       .object({
         isGithubRateLimited: z.boolean(),
       })
-      .nullish(),
+      .nullable(),
   })
-  .nullish()
+  .nullable()
 
 const query = `query GetOwnerRateLimitStatus {
   me {
@@ -41,13 +42,16 @@ export function useOwnerRateLimitStatus({
           return Promise.reject({
             status: 404,
             data: {},
-          })
+            dev: 'useOwnerRateLimitStatus - 404 NotFoundError',
+          } satisfies NetworkErrorObject)
         }
 
         const data = parsedData.data
-
+        const isGithubRateLimited = data?.owner?.isGithubRateLimited
+          ? true
+          : false
         return {
-          isGithubRateLimited: data?.owner?.isGithubRateLimited,
+          isGithubRateLimited,
         }
       })
     },
