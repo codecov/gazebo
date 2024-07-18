@@ -27,14 +27,7 @@ function ResyncButton() {
   if (rateLimit?.isGithubRateLimited) {
     return (
       <div className="inline">
-        Try
-        <button
-          className="m-0 inline cursor-pointer border-none bg-none p-0 text-ds-blue hover:underline"
-          onClick={() => triggerResync()}
-        >
-          resyncing
-        </button>
-        <span className="inline"> otherwise it may be due to </span>
+        <span className="inline"> It may be due to </span>
         <A
           to={{ pageName: 'githubRateLimitExceeded' }}
           hook={undefined}

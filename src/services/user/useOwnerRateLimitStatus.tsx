@@ -6,9 +6,13 @@ import { NetworkErrorObject } from 'shared/api/helpers'
 
 export const RequestSchema = z
   .object({
-    owner: z
+    me: z
       .object({
-        isGithubRateLimited: z.boolean(),
+        owner: z
+          .object({
+            isGithubRateLimited: z.boolean(),
+          })
+          .nullable(),
       })
       .nullable(),
   })
@@ -38,6 +42,7 @@ export function useOwnerRateLimitStatus({
         query,
       }).then((res) => {
         const parsedData = RequestSchema.safeParse(res?.data)
+        console.log(res)
         if (!parsedData.success) {
           return Promise.reject({
             status: 404,
@@ -47,7 +52,7 @@ export function useOwnerRateLimitStatus({
         }
 
         const data = parsedData.data
-        const isGithubRateLimited = data?.owner?.isGithubRateLimited
+        const isGithubRateLimited = data?.me?.owner?.isGithubRateLimited
           ? true
           : false
         return {
