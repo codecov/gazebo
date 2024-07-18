@@ -45,7 +45,7 @@ const mockBackfillResponse = {
 const queryClient = new QueryClient()
 const server = setupServer()
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/cool-repo']}>
       <Route path="/:provider/:owner/:repo">{children}</Route>
@@ -132,26 +132,21 @@ describe('ToggleHeader', () => {
         const hitIcon = screen.getByText('n')
         expect(hitIcon).toBeInTheDocument()
 
-        const legendText = screen.getByText('upload #')
+        const legendText = screen.getByText('No. reports with line')
         expect(legendText).toBeInTheDocument()
       })
     })
 
     describe('prop is set to false', () => {
       it('does not render legend', () => {
-        render(
-          <ToggleHeader
-            title={'sample title'}
-            coverageIsLoading={false}
-            showHitCount={false}
-          />,
-          { wrapper }
-        )
+        render(<ToggleHeader title={'sample title'} showHitCount={false} />, {
+          wrapper,
+        })
 
         const hitIcon = screen.queryByText('n')
         expect(hitIcon).not.toBeInTheDocument()
 
-        const legendText = screen.queryByText('upload #')
+        const legendText = screen.queryByText('No. reports with line')
         expect(legendText).not.toBeInTheDocument()
       })
     })
