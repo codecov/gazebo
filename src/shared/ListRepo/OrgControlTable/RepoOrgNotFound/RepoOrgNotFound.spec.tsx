@@ -54,7 +54,7 @@ describe('RepoOrgNotFound', () => {
       graphql.query('GetOwnerRateLimitStatus', (req, res, ctx) => {
         return res(
           ctx.status(200),
-          ctx.data({ owner: { isGithubRateLimited } })
+          ctx.data({ me: { owner: { isGithubRateLimited } } })
         )
       }),
       graphql.mutation('SyncData', (req, res, ctx) => {
@@ -130,7 +130,7 @@ describe('RepoOrgNotFound', () => {
         setup({ isGithubRateLimited: true })
         render(<RepoOrgNotFound />, { wrapper })
 
-        const rateLimitText = await screen.findByText(/rate limits/)
+        const rateLimitText = await screen.findByText(/rate limit/)
         expect(rateLimitText).toBeInTheDocument()
       })
     })
