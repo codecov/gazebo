@@ -3,13 +3,14 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
-import { MemoryRouter, Route } from 'react-router-dom'
+import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 import useIntersection from 'react-use/lib/useIntersection'
 
 import Title, { TitleFlags, TitleHitCount } from './Title'
 
 jest.mock('shared/featureFlags')
 jest.mock('react-use/lib/useIntersection')
+const mockedUseIntersection = useIntersection as jest.Mock
 
 const mockFirstResponse = {
   owner: {
@@ -109,11 +110,11 @@ const mockBackfillFlagMeasureNotActive = {
   },
 }
 
-let testLocation
+let testLocation: ReturnType<typeof useLocation>
 const queryClient = new QueryClient()
 const server = setupServer()
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <MemoryRouter initialEntries={['/gh/codecov/cool-repo/blob/main/file.ts']}>
       <Route path="/:provider/:owner/:repo/blob/:ref/:path+">{children}</Route>
@@ -178,22 +179,27 @@ describe('Title', () => {
 })
 
 describe('TitleFlags', () => {
+  interface SetupArgs {
+    isIntersecting?: boolean
+    noNextPage?: boolean
+    backfillData?: {}
+  }
+
   function setup(
     {
       isIntersecting = false,
       noNextPage = false,
       backfillData = mockBackfillHasFlagsAndActive,
-    } = {
-      flagValue: false,
+    }: SetupArgs = {
       isIntersecting: false,
       noNextPage: false,
-      mockBackfillHasFlagsAndActive: mockBackfillHasFlagsAndActive,
+      backfillData: mockBackfillHasFlagsAndActive,
     }
   ) {
     const user = userEvent.setup()
     const mockApiVars = jest.fn()
 
-    useIntersection.mockReturnValue({ isIntersecting: isIntersecting })
+    mockedUseIntersection.mockReturnValue({ isIntersecting: isIntersecting })
 
     server.use(
       graphql.query('FlagsSelect', (req, res, ctx) => {
@@ -212,10 +218,31 @@ describe('TitleFlags', () => {
 
     return { user, mockApiVars }
   }
-  describe('feature flag is turned on', () => {
-    describe('when selecting a flag', () => {
-      it('updates the location params', async () => {
-        const { user } = setup({ flagValue: true })
+
+  describe('when selecting a flag', () => {
+    it('updates the location params', async () => {
+      const { user } = setup()
+
+      render(<TitleFlags />, { wrapper })
+
+      const select = await screen.findByText('All flags')
+      expect(select).toBeInTheDocument()
+      await user.click(select)
+
+      const flag1 = await screen.findByText('flag-1')
+      expect(flag1).toBeInTheDocument()
+      await user.click(flag1)
+
+      expect(testLocation?.state).toStrictEqual({
+        flags: ['flag-1'],
+      })
+    })
+  })
+
+  describe('when onLoadMore is trigged', () => {
+    describe('when there is a next page', () => {
+      it('calls fetchNextPage', async () => {
+        const { user } = setup({ isIntersecting: true })
 
         render(<TitleFlags />, { wrapper })
 
@@ -225,56 +252,18 @@ describe('TitleFlags', () => {
 
         const flag1 = await screen.findByText('flag-1')
         expect(flag1).toBeInTheDocument()
-        await user.click(flag1)
 
-        expect(testLocation?.state).toStrictEqual({
-          flags: ['flag-1'],
-        })
+        const flag2 = await screen.findByText('flag-2')
+        expect(flag2).toBeInTheDocument()
       })
     })
 
-    describe('when onLoadMore is trigged', () => {
-      describe('when there is a next page', () => {
-        it('calls fetchNextPage', async () => {
-          const { user } = setup({ flagValue: true, isIntersecting: true })
-
-          render(<TitleFlags />, { wrapper })
-
-          const select = await screen.findByText('All flags')
-          expect(select).toBeInTheDocument()
-          await user.click(select)
-
-          const flag1 = await screen.findByText('flag-1')
-          expect(flag1).toBeInTheDocument()
-
-          const flag2 = await screen.findByText('flag-2')
-          expect(flag2).toBeInTheDocument()
+    describe('when there is not a next page', () => {
+      it('does not call fetchNextPage', async () => {
+        const { user } = setup({
+          isIntersecting: true,
+          noNextPage: true,
         })
-      })
-
-      describe('when there is not a next page', () => {
-        it('does not call fetchNextPage', async () => {
-          const { user } = setup({
-            flagValue: true,
-            isIntersecting: true,
-            noNextPage: true,
-          })
-
-          render(<TitleFlags />, { wrapper })
-
-          const select = await screen.findByText('All flags')
-          expect(select).toBeInTheDocument()
-          await user.click(select)
-
-          const flag2 = await screen.findByText('flag-2')
-          expect(flag2).toBeInTheDocument()
-        })
-      })
-    })
-
-    describe('when searching for a flag', () => {
-      it('updates the text box', async () => {
-        const { user } = setup({ flagValue: true })
 
         render(<TitleFlags />, { wrapper })
 
@@ -282,76 +271,90 @@ describe('TitleFlags', () => {
         expect(select).toBeInTheDocument()
         await user.click(select)
 
-        const searchBox = screen.getByPlaceholderText('Search for Flags')
-        await user.type(searchBox, 'flag2')
-
-        const searchBoxUpdated = screen.getByPlaceholderText('Search for Flags')
-        expect(searchBoxUpdated).toHaveAttribute('value', 'flag2')
-      })
-
-      it('calls the api with the search term', async () => {
-        const { user, mockApiVars } = setup({ flagValue: true })
-
-        render(<TitleFlags />, { wrapper })
-
-        const select = await screen.findByText('All flags')
-        expect(select).toBeInTheDocument()
-        await user.click(select)
-
-        const searchBox = screen.getByPlaceholderText('Search for Flags')
-        await user.type(searchBox, 'flag2')
-
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
-
-        await waitFor(() =>
-          expect(mockApiVars).toHaveBeenCalledWith({
-            owner: 'codecov',
-            repo: 'cool-repo',
-            filters: { term: 'flag2' },
-          })
-        )
+        const flag2 = await screen.findByText('flag-2')
+        expect(flag2).toBeInTheDocument()
       })
     })
+  })
 
-    describe('when flag count is zero', () => {
-      it('does not show multi select', async () => {
-        setup({ flagValue: true, backfillData: mockBackfillNoFlagsPresent })
+  describe('when searching for a flag', () => {
+    it('updates the text box', async () => {
+      const { user } = setup()
 
-        const { container } = render(<TitleFlags />, { wrapper })
+      render(<TitleFlags />, { wrapper })
 
-        await waitFor(() => queryClient.isFetching)
-        await waitFor(() => !queryClient.isFetching)
+      const select = await screen.findByText('All flags')
+      expect(select).toBeInTheDocument()
+      await user.click(select)
 
-        await waitFor(() => expect(container).toBeEmptyDOMElement())
-      })
+      const searchBox = screen.getByPlaceholderText('Search for Flags')
+      await user.type(searchBox, 'flag2')
+
+      const searchBoxUpdated = screen.getByPlaceholderText('Search for Flags')
+      expect(searchBoxUpdated).toHaveAttribute('value', 'flag2')
     })
 
-    describe('when timescale is disabled', () => {
-      it('renders a disabled multi select', async () => {
-        setup({ flagValue: true, backfillData: mockBackfillTimeScaleDisabled })
+    it('calls the api with the search term', async () => {
+      const { user, mockApiVars } = setup()
 
-        render(<TitleFlags />, { wrapper })
+      render(<TitleFlags />, { wrapper })
 
-        const select = await screen.findByRole('button')
-        expect(select).toBeInTheDocument()
-        expect(select).toBeDisabled()
-      })
-    })
+      const select = await screen.findByText('All flags')
+      expect(select).toBeInTheDocument()
+      await user.click(select)
 
-    describe('when flag measurement are not active', () => {
-      it('renders disabled multi select', async () => {
-        setup({
-          flagValue: true,
-          backfillData: mockBackfillFlagMeasureNotActive,
+      const searchBox = screen.getByPlaceholderText('Search for Flags')
+      await user.type(searchBox, 'flag2')
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+
+      await waitFor(() =>
+        expect(mockApiVars).toHaveBeenCalledWith({
+          owner: 'codecov',
+          repo: 'cool-repo',
+          filters: { term: 'flag2' },
         })
+      )
+    })
+  })
 
-        render(<TitleFlags />, { wrapper })
+  describe('when flag count is zero', () => {
+    it('does not show multi select', async () => {
+      setup({ backfillData: mockBackfillNoFlagsPresent })
 
-        const select = await screen.findByRole('button')
-        expect(select).toBeInTheDocument()
-        expect(select).toBeDisabled()
+      const { container } = render(<TitleFlags />, { wrapper })
+
+      await waitFor(() => queryClient.isFetching)
+      await waitFor(() => !queryClient.isFetching)
+
+      await waitFor(() => expect(container).toBeEmptyDOMElement())
+    })
+  })
+
+  describe('when timescale is disabled', () => {
+    it('renders a disabled multi select', async () => {
+      setup({ backfillData: mockBackfillTimeScaleDisabled })
+
+      render(<TitleFlags />, { wrapper })
+
+      const select = await screen.findByRole('button')
+      expect(select).toBeInTheDocument()
+      expect(select).toBeDisabled()
+    })
+  })
+
+  describe('when flag measurement are not active', () => {
+    it('renders disabled multi select', async () => {
+      setup({
+        backfillData: mockBackfillFlagMeasureNotActive,
       })
+
+      render(<TitleFlags />, { wrapper })
+
+      const select = await screen.findByRole('button')
+      expect(select).toBeInTheDocument()
+      expect(select).toBeDisabled()
     })
   })
 })
@@ -361,7 +364,7 @@ describe('TitleHitCount', () => {
     it('displays hit count', () => {
       render(<TitleHitCount showHitCount={true} />)
 
-      const hitCount = screen.getByText(/upload #/)
+      const hitCount = screen.getByText(/No. reports with line/)
       expect(hitCount).toBeInTheDocument()
     })
   })
