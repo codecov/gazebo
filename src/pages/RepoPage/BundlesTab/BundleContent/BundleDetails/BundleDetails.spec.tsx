@@ -22,7 +22,7 @@ const mockRepoOverview = {
   },
 }
 
-const mockBundleSelection = {
+const mockBundleSummary = {
   owner: {
     repository: {
       __typename: 'Repository',
@@ -92,11 +92,11 @@ interface SetupArgs {
 describe('BundleDetails', () => {
   function setup({ noSummary = false }: SetupArgs) {
     server.use(
-      graphql.query('BundleSelection', (req, res, ctx) => {
+      graphql.query('BundleSummary', (req, res, ctx) => {
         if (noSummary) {
           return res(ctx.status(200), ctx.data(mockNoSummary))
         }
-        return res(ctx.status(200), ctx.data(mockBundleSelection))
+        return res(ctx.status(200), ctx.data(mockBundleSummary))
       }),
       graphql.query('GetRepoOverview', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockRepoOverview))
