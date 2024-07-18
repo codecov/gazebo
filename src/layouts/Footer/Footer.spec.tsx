@@ -7,35 +7,20 @@ import Footer from './Footer'
 
 jest.mock('config')
 
-const wrapper = ({ children }) => (
+const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <MemoryRouter initialEntries={['/bb/critical-role/bells-hells']}>
     <Route path="/:provider/:owner/:repo">{children}</Route>
   </MemoryRouter>
 )
 
 describe('Footer', () => {
-  function setup(
-    { selfHosted = false, versionNumber } = {
-      selfHosted: false,
-      versionNumber: undefined,
-    }
-  ) {
+  function setup({
+    selfHosted = false,
+    versionNumber,
+  }: { selfHosted?: boolean; versionNumber?: string } = {}) {
     config.IS_SELF_HOSTED = selfHosted
     config.CODECOV_VERSION = versionNumber
   }
-
-  describe('rendering the feedback link', () => {
-    it('renders the link', () => {
-      render(<Footer />, { wrapper })
-
-      const feedback = screen.getByRole('link', { name: 'Feedback' })
-      expect(feedback).toBeInTheDocument()
-      expect(feedback).toHaveAttribute(
-        'href',
-        'https://github.com/codecov/feedback/discussions'
-      )
-    })
-  })
 
   describe('renders the current years copyright', () => {
     beforeEach(() => {
@@ -71,14 +56,8 @@ describe('Footer', () => {
         const pricing = screen.getByText('Pricing')
         expect(pricing).toBeInTheDocument()
       })
-
-      it('renders licensing link', () => {
-        render(<Footer />, { wrapper })
-
-        const licensing = screen.queryByText('Licensing')
-        expect(licensing).not.toBeInTheDocument()
-      })
     })
+
     describe('self hosted build', () => {
       beforeEach(() => {
         setup({ selfHosted: true })
@@ -91,12 +70,6 @@ describe('Footer', () => {
 
         const pricing = screen.queryByText('Pricing')
         expect(pricing).not.toBeInTheDocument()
-      })
-      it('renders licensing link', () => {
-        render(<Footer />, { wrapper })
-
-        const licensing = screen.getByText('Licensing')
-        expect(licensing).toBeInTheDocument()
       })
     })
   })

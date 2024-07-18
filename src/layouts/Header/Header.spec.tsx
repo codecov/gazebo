@@ -6,6 +6,7 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
+import { useImpersonate } from 'services/impersonate'
 import { User } from 'services/user'
 
 import Header from './Header'
@@ -24,6 +25,9 @@ jest.mock(
   'src/layouts/Header/components/SeatDetails',
   () => () => 'Seat Details'
 )
+
+jest.mock('services/impersonate')
+const mockedUseImpersonate = useImpersonate as jest.Mock
 
 const mockUser = {
   me: {
@@ -97,6 +101,7 @@ type SetupArgs = {
 
 describe('Header', () => {
   function setup({ user = mockUser }: SetupArgs) {
+    mockedUseImpersonate.mockReturnValue({ isImpersonating: false })
     server.use(
       graphql.query('CurrentUser', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(user))
@@ -104,6 +109,16 @@ describe('Header', () => {
     )
   }
 
+  describe('when impersonating', () => {
+    it('shows impersonating banner', async () => {
+      setup({})
+      mockedUseImpersonate.mockReturnValue({ isImpersonating: true })
+      render(<Header />, { wrapper })
+
+      const impersonatingBanner = await screen.findByText('Impersonating')
+      expect(impersonatingBanner).toBeInTheDocument()
+    })
+  })
   describe('when are not logged in', () => {
     it('shows guest header', async () => {
       setup({ user: mockNullUser })

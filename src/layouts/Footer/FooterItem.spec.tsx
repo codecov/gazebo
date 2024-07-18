@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import { FooterItem } from './FooterItem'
+import { FooterItem, FooterItemProps } from './FooterItem'
 
 describe('FooterItem', () => {
-  function setup(props) {
+  function setup(props: FooterItemProps) {
     render(
       <MemoryRouter initialEntries={['/bb/critical-role/bells-hells']}>
         <Route path="/:provider/:owner/:repo">
@@ -28,9 +28,14 @@ describe('FooterItem', () => {
       const a = screen.getByRole('link')
       expect(a).toBeInTheDocument()
     })
+
+    it('is the right color', () => {
+      const layout = screen.getByText(text)
+      expect(layout).toHaveClass('text-ds-gray-quinary')
+    })
   })
 
-  describe('only pass a "lable" prop', () => {
+  describe('only pass a "label" prop', () => {
     const text = 'Fear Noodle 🐍'
 
     beforeEach(() => {
@@ -40,6 +45,11 @@ describe('FooterItem', () => {
     it('does not render a link', () => {
       const layout = screen.getByText(text)
       expect(layout).toBeInTheDocument()
+    })
+
+    it('is the right color', () => {
+      const layout = screen.getByText(text)
+      expect(layout).toHaveClass('text-ds-gray-quinary')
     })
   })
 })

@@ -42,10 +42,10 @@ function ToggleHeader({ showHitCount = true, noBottomBorder = false }) {
   return (
     <div className={containerClasses}>
       <div className="flex gap-2 pt-2">
+        <TitleHitCount showHitCount={showHitCount} />
         <TitleCoverage coverage={LINE_STATE.UNCOVERED} />
         <TitleCoverage coverage={LINE_STATE.PARTIAL} />
         <TitleCoverage coverage={LINE_STATE.COVERED} />
-        <TitleHitCount showHitCount={showHitCount} />
       </div>
       <div className="ml-auto flex w-full flex-wrap items-center justify-end gap-2 md:mt-2 md:w-auto">
         {!isTeamPlan && (

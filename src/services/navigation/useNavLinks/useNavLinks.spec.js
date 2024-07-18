@@ -136,6 +136,15 @@ describe('useNavLinks', () => {
       })
       expect(path).toBe('/bb/test-owner')
     })
+
+    it('can handle when owner is absent', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl'),
+      })
+
+      const path = result.current.owner.path()
+      expect(path).toBe('/')
+    })
   })
 
   describe('owner internal link', () => {
