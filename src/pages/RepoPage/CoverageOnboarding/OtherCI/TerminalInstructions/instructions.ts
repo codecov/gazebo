@@ -46,7 +46,7 @@ sudo chmod +x codecov
 ./codecov --help
 `
 
-export const aplineLinuxSystemInstructions = `# download Codecov CLI
+export const alpineLinuxSystemInstructions = `# download Codecov CLI
 curl -Os https://cli.codecov.io/latest/alpine/codecov
 
 # integrity check

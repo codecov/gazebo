@@ -34,9 +34,10 @@ function OtherCI() {
   const uploadToken = orgUploadToken ?? data?.repository?.uploadToken ?? ''
   const tokenCopy = orgUploadToken ? 'global' : 'repository'
 
-  const uploadCommand = `./codecov -u ${
-    config.API_URL
-  } upload-process -t ${uploadToken}${orgUploadToken ? `-r ${repo}` : ''}`
+  const apiUrlCopy = config.IS_SELF_HOSTED ? ` ${config.API_URL}` : ''
+  const uploadCommand = `./codecov -u${apiUrlCopy} upload-process -t ${uploadToken}${
+    orgUploadToken ? `-r ${repo}` : ''
+  }`
 
   return (
     <div className="flex flex-col gap-6">
@@ -111,7 +112,8 @@ function Step3({ uploadCommand }: Step3Props) {
     <Card>
       <Card.Header>
         <Card.Title size="base">
-          Step 3: upload coverage to Codecov via CLI after your tests have run
+          Step 3: upload coverage to Codecov via the CLI after your tests have
+          run
         </Card.Title>
       </Card.Header>
       <Card.Content className="flex flex-col gap-4">
@@ -133,7 +135,7 @@ function Step4() {
       <Card.Content className="flex flex-col gap-4">
         <p>
           Once merged to your default branch, subsequent pull requests will have
-          Codecov checks and comments. Additionally, you’ll find your repo
+          Codecov checks and comments. Additionally, you&apos;ll find your repo
           coverage dashboard here. If you have merged, try reloading the page.
         </p>
       </Card.Content>
