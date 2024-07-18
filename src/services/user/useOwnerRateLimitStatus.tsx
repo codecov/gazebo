@@ -42,7 +42,6 @@ export function useOwnerRateLimitStatus({
         query,
       }).then((res) => {
         const parsedData = RequestSchema.safeParse(res?.data)
-        console.log(res)
         if (!parsedData.success) {
           return Promise.reject({
             status: 404,

@@ -6,8 +6,10 @@ import { setupServer } from 'msw/node'
 import { useOwnerRateLimitStatus } from './useOwnerRateLimitStatus'
 
 const mockRateLimitStatus = {
-  owner: {
-    isGithubRateLimited: true,
+  me: {
+    owner: {
+      isGithubRateLimited: true,
+    },
   },
 }
 
