@@ -192,7 +192,7 @@ const mockBundleTrendData = {
   },
 }
 
-const mockBundleSelection = {
+const mockBundleSummary = {
   owner: {
     repository: {
       __typename: 'Repository',
@@ -271,7 +271,7 @@ describe('BundleContent', () => {
     isEmptyBundleSelection = false,
   }: SetupArgs) {
     server.use(
-      graphql.query('BranchBundleSelectionData', (req, res, ctx) => {
+      graphql.query('BranchBundleSummaryData', (req, res, ctx) => {
         if (isBundleError) {
           return res(ctx.status(200), ctx.data(mockBranchBundlesError))
         } else if (isEmptyBundleSelection) {
@@ -292,8 +292,8 @@ describe('BundleContent', () => {
       graphql.query('GetBundleTrend', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockBundleTrendData))
       }),
-      graphql.query('BundleSelection', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockBundleSelection))
+      graphql.query('BundleSummary', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.data(mockBundleSummary))
       })
     )
   }
