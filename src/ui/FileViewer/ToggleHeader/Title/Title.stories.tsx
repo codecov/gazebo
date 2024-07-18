@@ -1,8 +1,9 @@
 import { Meta, StoryObj } from '@storybook/react'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import { LINE_STATE } from 'shared/utils/fileviewer'
 
-import Title, { TitleCoverage, TitleFlags, TitleHitCount } from './Title'
+import Title, { TitleCoverage, TitleHitCount } from './Title'
 
 type TitleStory = React.ComponentProps<typeof Title>
 
@@ -35,13 +36,16 @@ export const Default: Story = {
   },
   render: (args) => {
     return (
-      <Title {...args}>
-        <TitleHitCount showHitCount={true} />
-        <TitleCoverage coverage={LINE_STATE.COVERED} />
-        <TitleCoverage coverage={LINE_STATE.PARTIAL} />
-        <TitleCoverage coverage={LINE_STATE.UNCOVERED} />
-        <TitleFlags />
-      </Title>
+      <MemoryRouter initialEntries={['/']}>
+        <Route path="/">
+          <Title {...args}>
+            <TitleHitCount showHitCount={true} />
+            <TitleCoverage coverage={LINE_STATE.COVERED} />
+            <TitleCoverage coverage={LINE_STATE.PARTIAL} />
+            <TitleCoverage coverage={LINE_STATE.UNCOVERED} />
+          </Title>
+        </Route>
+      </MemoryRouter>
     )
   },
 }

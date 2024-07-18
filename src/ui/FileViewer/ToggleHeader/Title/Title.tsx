@@ -16,7 +16,7 @@ interface TitleProps {
   sticky?: boolean
 }
 
-export default function Title({ title, children, sticky = false }: TitleProps) {
+function Title({ title, children, sticky = false }: TitleProps) {
   return (
     <div
       data-testid="title-wrapper-div"
@@ -36,6 +36,8 @@ export default function Title({ title, children, sticky = false }: TitleProps) {
     </div>
   )
 }
+
+export default Title
 
 export const TitleCoverage = CoverageSelect
 
