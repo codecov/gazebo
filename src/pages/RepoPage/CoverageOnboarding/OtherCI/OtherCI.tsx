@@ -34,9 +34,9 @@ function OtherCI() {
   const uploadToken = orgUploadToken ?? data?.repository?.uploadToken ?? ''
   const tokenCopy = orgUploadToken ? 'global' : 'repository'
 
-  const apiUrlCopy = config.IS_SELF_HOSTED ? ` ${config.API_URL}` : ''
-  const uploadCommand = `./codecov -u${apiUrlCopy} upload-process -t ${uploadToken}${
-    orgUploadToken ? `-r ${repo}` : ''
+  const apiUrlCopy = config.IS_SELF_HOSTED ? ` -u ${config.API_URL}` : ''
+  const uploadCommand = `./codecov${apiUrlCopy} upload-process -t ${uploadToken}${
+    orgUploadToken ? ` -r ${repo}` : ''
   }`
 
   return (
