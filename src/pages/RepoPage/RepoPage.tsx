@@ -132,9 +132,13 @@ function Routes({
             <BundleOnboarding />
           </SentryRoute>
         ) : null}
-        {onboardingFailedTests && !testAnalyticsEnabled ? (
+        {onboardingFailedTests || testAnalyticsEnabled ? (
           <SentryRoute
-            path={[`${path}/tests/new`, `${path}/tests/new/codecov-cli`]}
+            path={[
+              `${path}/tests`,
+              `${path}/tests/new`,
+              `${path}/tests/new/codecov-cli`,
+            ]}
             exact
           >
             <FailedTestsTab />
@@ -165,6 +169,9 @@ function Routes({
         ) : null}
         {onboardingFailedTests && !testAnalyticsEnabled ? (
           <Redirect from={`${path}/tests`} to={`${path}/tests/new`} />
+        ) : null}
+        {onboardingFailedTests && !testAnalyticsEnabled ? (
+          <Redirect from={`${path}/tests/*`} to={`${path}/tests/new`} />
         ) : null}
         {!coverageEnabled ? <Redirect from={path} to={`${path}/new`} /> : null}
         {!coverageEnabled ? (
@@ -202,7 +209,11 @@ function Routes({
       </SentryRoute>
       {onboardingFailedTests && !testAnalyticsEnabled ? (
         <SentryRoute
-          path={[`${path}/tests/new`, `${path}/tests/new/codecov-cli`]}
+          path={[
+            `${path}/tests`,
+            `${path}/tests/new`,
+            `${path}/tests/new/codecov-cli`,
+          ]}
           exact
         >
           <FailedTestsTab />

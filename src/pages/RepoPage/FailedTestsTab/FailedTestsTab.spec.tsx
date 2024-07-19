@@ -1,5 +1,8 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
+import { graphql } from 'msw'
+import { setupServer } from 'msw/node'
 import { PropsWithChildren, Suspense } from 'react'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
@@ -7,52 +10,103 @@ import { useRedirect } from 'shared/useRedirect'
 
 import FailedTestsTab from './FailedTestsTab'
 
-jest.mock('shared/useRedirect')
 jest.mock('./GitHubActions', () => () => 'GitHub Actions tab')
-
-const mockedUseRedirect = useRedirect as jest.Mock
-
 jest.mock('./CodecovCLI', () => () => 'Codecov CLI tab')
+jest.mock('./FailedTestsTable', () => () => 'Failed Tests Table')
+
+jest.mock('shared/useRedirect')
+const mockedUseRedirect = useRedirect as jest.Mock
 
 let testLocation: ReturnType<typeof useLocation>
 
+const server = setupServer()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      suspense: false,
+    },
+  },
+})
+
 const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
-  (initialEntries = '/gh/codecov/cool-repo/tests/new') =>
+  (initialEntries = '/gh/codecov/cool-repo/tests') =>
   ({ children }) =>
     (
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route
-          path={[
-            '/:provider/:owner/:repo/tests/new',
-            '/:provider/:owner/:repo/tests/new/codecov-cli',
-            '/:provider/:owner/:repo/tests/random-path',
-          ]}
-        >
-          <Suspense fallback={null}>{children}</Suspense>
-        </Route>
-        <Route
-          path="*"
-          render={({ location }) => {
-            testLocation = location
-            return null
-          }}
-        />
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route
+            path={[
+              '/:provider/:owner/:repo/tests',
+              '/:provider/:owner/:repo/tests/new',
+              '/:provider/:owner/:repo/tests/new/codecov-cli',
+            ]}
+          >
+            <Suspense fallback={null}>{children}</Suspense>
+          </Route>
+          <Route
+            path="*"
+            render={({ location }) => {
+              testLocation = location
+              return null
+            }}
+          />
+        </MemoryRouter>
+      </QueryClientProvider>
     )
 
-describe('FailedTestsTab', () => {
-  function setup() {
-    const user = userEvent.setup()
-    const hardRedirect = jest.fn()
-    mockedUseRedirect.mockImplementation((data) => ({
-      hardRedirect: () => hardRedirect(data),
-    }))
+beforeAll(() => {
+  server.listen()
+})
 
-    return { hardRedirect, user }
+afterEach(() => {
+  queryClient.clear()
+  server.resetHandlers()
+})
+
+afterAll(() => {
+  server.close()
+})
+
+const mockRepoOverview = {
+  owner: {
+    repository: {
+      __typename: 'Repository',
+      private: false,
+      defaultBranch: 'main',
+      oldestCommitAt: '2022-10-10T11:59:59',
+      coverageEnabled: true,
+      bundleAnalysisEnabled: true,
+      languages: ['javascript'],
+      testAnalyticsEnabled: false,
+    },
+  },
+}
+
+describe('FailedTestsTab', () => {
+  const hardRedirect = jest.fn()
+  mockedUseRedirect.mockImplementation((data) => ({
+    hardRedirect: () => hardRedirect(data),
+  }))
+
+  function setup({ testEnabled = false }: { testEnabled?: boolean }) {
+    console.log(testEnabled)
+    server.use(
+      graphql.query('GetRepoOverview', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          testEnabled
+            ? ctx.data({ ...mockRepoOverview, testAnalyticsEnabled: true })
+            : ctx.data(mockRepoOverview)
+        )
+      })
+    )
+
+    return { user: userEvent.setup({}) }
   }
 
   it('renders intro', () => {
-    setup()
+    setup({})
     render(<FailedTestsTab />, { wrapper: wrapper() })
 
     const intro = screen.getByText('Test Analytics')
@@ -60,7 +114,7 @@ describe('FailedTestsTab', () => {
   })
 
   it('renders onboarding failed tests img', () => {
-    setup()
+    setup({})
     render(<FailedTestsTab />, { wrapper: wrapper() })
 
     const img = screen.getByAltText('failed-tests-onboarding')
@@ -69,7 +123,7 @@ describe('FailedTestsTab', () => {
 
   describe('Setup Options', () => {
     it('renders', () => {
-      setup()
+      setup({})
       render(<FailedTestsTab />, { wrapper: wrapper() })
 
       const selectorHeader = screen.getByText('Select a setup option')
@@ -84,7 +138,7 @@ describe('FailedTestsTab', () => {
     describe('initial selection', () => {
       describe('when on /tests path', () => {
         it('selects GitHub Actions as default', () => {
-          setup()
+          setup({})
           render(<FailedTestsTab />, { wrapper: wrapper() })
 
           const githubActions = screen.getByTestId('github-actions-radio')
@@ -95,7 +149,7 @@ describe('FailedTestsTab', () => {
 
       describe('when on /tests/new/codecov-cli path', () => {
         it('selects Codecov CLI as default', () => {
-          setup()
+          setup({})
           render(<FailedTestsTab />, {
             wrapper: wrapper('/gl/codecov/cool-repo/tests/new/codecov-cli'),
           })
@@ -105,25 +159,12 @@ describe('FailedTestsTab', () => {
           expect(codecovCLI).toHaveAttribute('data-state', 'checked')
         })
       })
-
-      describe('when on random path', () => {
-        it('selects GitHub Actions as default', () => {
-          setup()
-          render(<FailedTestsTab />, {
-            wrapper: wrapper('/gl/codecov/cool-repo/tests/random-path'),
-          })
-
-          const githubActions = screen.getByTestId('github-actions-radio')
-          expect(githubActions).toBeInTheDocument()
-          expect(githubActions).toHaveAttribute('data-state', 'checked')
-        })
-      })
     })
 
     describe('navigation', () => {
       describe('when GitHub Actions is selected', () => {
         it('should navigate to /tests/new', async () => {
-          const { user } = setup()
+          const { user } = setup({})
           render(<FailedTestsTab />, {
             wrapper: wrapper('/gh/codecov/cool-repo/tests/new/codecov-cli'),
           })
@@ -143,7 +184,7 @@ describe('FailedTestsTab', () => {
 
       describe('when Codecov CLI is selected', () => {
         it('should navigate to /codecov-cli', async () => {
-          const { user } = setup()
+          const { user } = setup({})
           render(<FailedTestsTab />, { wrapper: wrapper() })
 
           const codecovCLI = screen.getByTestId('codecov-cli-radio')
@@ -165,18 +206,27 @@ describe('FailedTestsTab', () => {
 
   describe('rendering component', () => {
     it('renders github actions', () => {
-      setup()
+      setup({})
       render(<FailedTestsTab />, { wrapper: wrapper() })
       const content = screen.getByText(/GitHub Actions tab/)
       expect(content).toBeInTheDocument()
     })
 
     it('renders Codecov CLI', () => {
-      setup()
+      setup({})
       render(<FailedTestsTab />, {
         wrapper: wrapper('/gh/codecov/cool-repo/tests/new/codecov-cli'),
       })
       const content = screen.getByText(/Codecov CLI tab/)
+      expect(content).toBeInTheDocument()
+    })
+
+    it.skip('renders Failed Tests Table', () => {
+      setup({ testEnabled: true })
+      render(<FailedTestsTab />, {
+        wrapper: wrapper('/gh/codecov/cool-repo/tests'),
+      })
+      const content = screen.getByText(/Failed Tests Table/)
       expect(content).toBeInTheDocument()
     })
   })

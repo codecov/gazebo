@@ -401,19 +401,35 @@ describe('RepoPageTabs', () => {
   })
 
   describe('Failed tests tab', () => {
-    it('renders the failed tests copy', async () => {
+    it('renders the failed tests copy when onboarding failed tests', async () => {
       setup({
         coverageEnabled: false,
         onboardingFailedTests: true,
       })
       render(<RepoPageTabs refetchEnabled={false} />, {
-        wrapper: wrapper('/gh/codecov/test-repo/tests/new'),
+        wrapper: wrapper('/gh/codecov/test-repo/tests'),
       })
 
       const tab = await screen.findByText('Tests')
       expect(tab).toBeInTheDocument()
       expect(tab).toHaveAttribute('aria-current', 'page')
-      expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/tests/new')
+      expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/tests')
+    })
+
+    it('renders the failed tests copy when test analytics enabled', async () => {
+      setup({
+        coverageEnabled: false,
+        onboardingFailedTests: false,
+        testAnalyticsEnabled: true,
+      })
+      render(<RepoPageTabs refetchEnabled={false} />, {
+        wrapper: wrapper('/gh/codecov/test-repo/tests'),
+      })
+
+      const tab = await screen.findByText('Tests')
+      expect(tab).toBeInTheDocument()
+      expect(tab).toHaveAttribute('aria-current', 'page')
+      expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/tests')
     })
 
     it('renders beta badge', async () => {
@@ -436,7 +452,7 @@ describe('RepoPageTabs', () => {
         testAnalyticsEnabled: false,
       })
       render(<RepoPageTabs refetchEnabled={false} />, {
-        wrapper: wrapper('/gh/codecov/test-repo/tests/new'),
+        wrapper: wrapper('/gh/codecov/test-repo/tests'),
       })
 
       await waitFor(() => queryClient.isFetching)
