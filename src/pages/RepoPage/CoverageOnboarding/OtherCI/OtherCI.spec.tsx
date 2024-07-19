@@ -155,7 +155,7 @@ describe('OtherCI', () => {
       expect(header).toBeInTheDocument()
 
       const headerLink = await screen.findByRole('link', {
-        name: /uploader to your/,
+        name: /Codecov CLI/,
       })
       expect(headerLink).toBeInTheDocument()
       expect(headerLink).toHaveAttribute(
@@ -193,7 +193,7 @@ describe('OtherCI', () => {
       setup({})
       render(<OtherCI />, { wrapper })
 
-      const box = await screen.findByText(/codecovcli upload-process/)
+      const box = await screen.findByText(/upload-process/)
       expect(box).toBeInTheDocument()
     })
 
