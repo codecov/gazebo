@@ -5,9 +5,11 @@ import { SentryRoute } from 'sentry'
 
 import SidebarLayout from 'layouts/SidebarLayout'
 import { useOwner } from 'services/user'
+import { useFlags } from 'shared/featureFlags'
 import LoadingLogo from 'ui/LoadingLogo'
+import Sidemenu from 'ui/Sidemenu'
 
-import SideMenuSettings from './SideMenuSettings'
+import ConfigurationManager from './tabs/ConfigurationManager'
 
 const NotFound = lazy(() => import('../../NotFound'))
 const GeneralTab = lazy(() => import('./tabs/GeneralTab'))
@@ -20,20 +22,45 @@ const tabLoading = (
   </div>
 )
 
+interface URLParams {
+  owner: string
+}
+
 function SettingsTab() {
-  const { owner } = useParams()
+  const { owner } = useParams<URLParams>()
   const { data: currentOwner } = useOwner({ username: owner })
+  const { inAppMarketingTab } = useFlags({
+    inAppMarketingTab: false,
+  })
 
   if (!currentOwner?.isCurrentUserPartOfOrg) return <NotFound />
 
+  const inAppMarketingLink = inAppMarketingTab
+    ? [{ pageName: 'settingsConfiguration' }]
+    : []
+  const sideMenuLinks = [
+    {
+      pageName: 'settingsGeneral',
+      exact: true,
+    },
+    ...inAppMarketingLink,
+    { pageName: 'settingsYaml' },
+    { pageName: 'settingsBadge' },
+  ]
+
   return (
     <div className="mt-2">
-      <SidebarLayout sidebar={<SideMenuSettings />}>
+      <SidebarLayout sidebar={<Sidemenu links={sideMenuLinks} />}>
         <Suspense fallback={tabLoading}>
           <Switch>
             <SentryRoute path="/:provider/:owner/:repo/settings" exact>
               <GeneralTab />
             </SentryRoute>
+            {inAppMarketingTab ? (
+              <SentryRoute path="/:provider/:owner/:repo/settings/config" exact>
+                <ConfigurationManager />
+              </SentryRoute>
+            ) : null}
             <SentryRoute path="/:provider/:owner/:repo/settings/yaml" exact>
               <YamlTab />
             </SentryRoute>

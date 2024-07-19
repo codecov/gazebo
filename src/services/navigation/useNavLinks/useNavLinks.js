@@ -455,6 +455,16 @@ export function useNavLinks() {
       ) => `/${provider}/${owner}/${repo}/settings`,
       text: 'General',
     },
+    settingsConfiguration: {
+      path: (
+        { provider = p, owner = o, repo = r } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => `/${provider}/${owner}/${repo}/settings/config`,
+      text: 'Configuration Manager',
+    },
     settingsYaml: {
       path: (
         { provider = p, owner = o, repo = r } = {
