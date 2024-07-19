@@ -31,10 +31,12 @@ function Header() {
         {!currentUser ? null : (
           <div className="flex items-center justify-end gap-4">
             {config.IS_SELF_HOSTED ? (
-              <Suspense fallback={null}>
-                <SeatDetails />
-                <AdminLink />
-              </Suspense>
+              <div className="hidden items-center justify-end gap-4 md:flex">
+                <Suspense fallback={null}>
+                  <SeatDetails />
+                  <AdminLink />
+                </Suspense>
+              </div>
             ) : null}
             <HelpDropdown />
             <UserDropdown />
