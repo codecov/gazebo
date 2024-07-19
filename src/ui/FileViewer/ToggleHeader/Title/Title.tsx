@@ -1,30 +1,35 @@
-import cs from 'classnames'
 import eq from 'lodash/eq'
 import isUndefined from 'lodash/isUndefined'
-import PropTypes from 'prop-types'
 import { useState } from 'react'
 
 import { useLocationParams } from 'services/navigation'
 import { useRepoBackfilled, useRepoFlagsSelect } from 'services/repo'
+import { cn } from 'shared/utils/cn'
 import Icon from 'ui/Icon'
 import MultiSelect from 'ui/MultiSelect'
 
-import CoverageSelect from './CoverageSelect'
+import { CoverageSelect } from './CoverageSelect'
 
-export default function Title({ title, children, sticky = false }) {
+interface TitleProps {
+  title?: React.ReactNode
+  children?: React.ReactNode
+  sticky?: boolean
+}
+
+function Title({ title, children, sticky = false }: TitleProps) {
   return (
     <div
       data-testid="title-wrapper-div"
-      className={cs(
-        { 'z-10 sticky top-[4.5rem]': sticky },
-        'flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 flex-wrap bg-white px-0 w-full lg:w-auto flex-1 lg:flex-none md:mb-1'
+      className={cn(
+        'flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 flex-wrap bg-white px-0 w-full lg:w-auto flex-1 lg:flex-none md:mb-1',
+        { 'z-10 sticky top-[4.5rem]': sticky }
       )}
     >
-      {title && (
+      {title ? (
         <span className="text-base font-semibold text-ds-gray-senary">
           {title}
         </span>
-      )}
+      ) : null}
       <div className="flex w-full flex-wrap items-center justify-between gap-2 md:w-auto">
         {children}
       </div>
@@ -32,11 +37,7 @@ export default function Title({ title, children, sticky = false }) {
   )
 }
 
-Title.propTypes = {
-  title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
-  Flags: PropTypes.func,
-  sticky: PropTypes.bool,
-}
+export default Title
 
 export const TitleCoverage = CoverageSelect
 
@@ -44,10 +45,20 @@ const defaultQueryParams = {
   flags: [],
 }
 
-export const TitleFlags = ({ commitDetailView = false }) => {
-  const { params, updateParams } = useLocationParams(defaultQueryParams)
+interface TitleFlagsProps {
+  commitDetailView?: boolean
+}
+
+type LocationParams = {
+  params: { flags?: string[] }
+  updateParams: (params: Record<string, string[]>) => void
+}
+
+export const TitleFlags = ({ commitDetailView = false }: TitleFlagsProps) => {
+  const { params, updateParams }: LocationParams =
+    useLocationParams(defaultQueryParams)
   const [selectedFlags, setSelectedFlags] = useState(params?.flags)
-  const [flagSearch, setFlagSearch] = useState(null)
+  const [flagSearch, setFlagSearch] = useState<string | null>(null)
 
   const { data: repoBackfilledData } = useRepoBackfilled()
 
@@ -81,7 +92,7 @@ export const TitleFlags = ({ commitDetailView = false }) => {
     return null
   }
 
-  const selectorClasses = cs('w-full', {
+  const selectorClasses = cn('w-full', {
     'sm:w-52': commitDetailView,
     'sm:w-60': !commitDetailView,
   })
@@ -89,6 +100,7 @@ export const TitleFlags = ({ commitDetailView = false }) => {
   return (
     <div className={selectorClasses}>
       <MultiSelect
+        // @ts-expect-error - some type errors with the multi-select
         disabled={!flagsMeasurementsActive || !isTimescaleEnabled}
         dataMarketing="fileviwer-filter-by-flags"
         ariaName="Filter by flags"
@@ -97,12 +109,12 @@ export const TitleFlags = ({ commitDetailView = false }) => {
         isLoading={flagsIsLoading}
         selectedItemsOverride={selectedFlags}
         onLoadMore={() => flagsHasNextPage && flagsFetchNextPage()}
-        onChange={(flags) => {
+        onChange={(flags: string[]) => {
           setSelectedFlags(flags)
           updateParams({ flags })
         }}
-        onSearch={(term) => setFlagSearch(term)}
-        renderSelected={(selectedItems) => (
+        onSearch={(term: string) => setFlagSearch(term)}
+        renderSelected={(selectedItems: any[]) => (
           <span className="flex items-center gap-2">
             <Icon variant="solid" name="flag" />
             {selectedItems.length === 0 ? (
@@ -117,25 +129,21 @@ export const TitleFlags = ({ commitDetailView = false }) => {
   )
 }
 
-TitleFlags.propTypes = {
-  commitDetailView: PropTypes.bool,
+interface TitleHitCountProps {
+  showHitCount?: boolean
 }
 
-export const TitleHitCount = ({ showHitCount = false }) => {
+export const TitleHitCount = ({ showHitCount = false }: TitleHitCountProps) => {
   if (!showHitCount) {
     return null
   }
 
   return (
-    <div className="flex items-center gap-2 bg-ds-gray-primary px-1 font-mono">
-      <span className="flex items-center justify-center justify-items-center rounded-full bg-ds-gray-senary px-1.5 text-center text-white">
+    <div className="flex items-center gap-2 px-1">
+      <span className="flex items-center justify-center justify-items-center rounded-full bg-ds-primary-green px-1.5 text-center text-white">
         n
       </span>
-      <span className="text-xs">upload #</span>
+      <span className="text-sm">No. reports with line</span>
     </div>
   )
-}
-
-TitleHitCount.propTypes = {
-  showHitCount: PropTypes.bool,
 }
