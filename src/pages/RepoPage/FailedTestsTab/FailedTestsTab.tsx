@@ -20,7 +20,6 @@ import CodecovCLI from './CodecovCLI'
 import FailedTestsTable from './FailedTestsTable/FailedTestsTable'
 import GitHubActions from './GitHubActions'
 
-
 const SETUP_OPTIONS = {
   GitHubActions: 'GitHubActions',
   CodecovCLI: 'CodecovCLI',
