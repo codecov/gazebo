@@ -8,12 +8,8 @@ interface URLParams {
   owner?: string
 }
 
-const OktaEnabledBanner = lazy(
-  () => import('../OktaEnabledBanner/OktaEnforcedBanner')
-)
-const OktaEnforcedBanner = lazy(
-  () => import('../OktaEnforcedBanner/OktaEnforcedBanner')
-)
+const OktaEnabledBanner = lazy(() => import('../OktaEnabledBanner'))
+const OktaEnforcedBanner = lazy(() => import('../OktaEnforcedBanner'))
 
 function OktaBanners() {
   const { provider, owner } = useParams<URLParams>()

@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import OktaBanners from './OktaBanners'
@@ -15,7 +16,9 @@ const wrapper =
     (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={initialEntries}>
-          <Route path="/:provider/:owner">{children}</Route>
+          <Route path="/:provider/:owner">
+            <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+          </Route>
         </MemoryRouter>
       </QueryClientProvider>
     )
