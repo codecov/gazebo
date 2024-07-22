@@ -46,7 +46,7 @@ sudo chmod +x codecov
 ./codecov --help
 `
 
-export const aplineLinuxSystemInstructions = `# download Codecov CLI
+export const alpineLinuxSystemInstructions = `# download Codecov CLI
 curl -Os https://cli.codecov.io/latest/alpine/codecov
 
 # integrity check
@@ -60,12 +60,3 @@ shasum -a 256 -c codecov.SHA256SUM
 sudo chmod +x codecov
 ./codecov --help
 `
-
-export const selfHostedSystemInstructions = `# here we'll upload the test report called  coverage-service.xml, we are passing 
-# in the flag called "service" and a dyncamic name  to specify a specifc test run
-# we are using some options params like --verbose and --fail-on-error
-# the most important that you must pass in this case is the actual upload token
-# NOTE: we're adding a parameter for the self-hosted URL
-
-./codecov --verbose --enterprise-url https://<your-codecov-self-hosted-url> upload-process --fail-on-error -t \${{ secrets.CODECOV_TOKEN }}
--n 'service'-\${{ github.run_id }} -F service -f coverage-service.xml`

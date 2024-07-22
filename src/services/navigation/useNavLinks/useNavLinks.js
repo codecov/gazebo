@@ -55,8 +55,12 @@ export function useNavLinks() {
       isExternalLink: true,
     },
     owner: {
-      path: ({ provider = p, owner = o } = { provider: p, owner: o }) =>
-        `/${provider}/${owner}`,
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) => {
+        if (provider && owner) {
+          return `/${provider}/${owner}`
+        }
+        return '/'
+      },
       isExternalLink: false,
     },
     analytics: {

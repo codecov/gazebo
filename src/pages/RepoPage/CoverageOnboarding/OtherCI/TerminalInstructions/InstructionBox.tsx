@@ -1,15 +1,12 @@
 import cs from 'classnames'
 import { type MouseEvent, useState } from 'react'
 
-import config from 'config'
-
 import { CopyClipboard } from 'ui/CopyClipboard'
 
 import {
-  aplineLinuxSystemInstructions,
+  alpineLinuxSystemInstructions,
   linuxSystemInstructions,
   macOSSystemInstructions,
-  selfHostedSystemInstructions,
   windowsSystemInstructions,
 } from './instructions'
 
@@ -22,7 +19,7 @@ const systemsEnum = Object.freeze({
 
 const systemsMapper = Object.freeze({
   Linux: linuxSystemInstructions,
-  'Alpine Linux': aplineLinuxSystemInstructions,
+  'Alpine Linux': alpineLinuxSystemInstructions,
   macOS: macOSSystemInstructions,
   Windows: windowsSystemInstructions,
 })
@@ -43,9 +40,7 @@ export function InstructionBox() {
     setCurSystem(name)
   }
 
-  const systemContent = config.IS_SELF_HOSTED
-    ? selfHostedSystemInstructions
-    : systemsMapper[curSystem as keyof typeof systemsMapper]
+  const systemContent = systemsMapper[curSystem as keyof typeof systemsMapper]
 
   return (
     <div

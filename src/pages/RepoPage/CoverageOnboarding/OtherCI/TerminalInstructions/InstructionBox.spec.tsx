@@ -101,17 +101,4 @@ describe('InstructionBox', () => {
       expect(instruction).toBeInTheDocument()
     })
   })
-
-  describe('when user is a self hosted user', () => {
-    it('renders windows specific instruction', async () => {
-      const { user } = setup({ isSelfHosted: true })
-      render(<InstructionBox />)
-
-      const WindowsButton = screen.getByRole('button', { name: 'Windows' })
-      await user.click(WindowsButton)
-
-      const instruction = screen.getByText(/--verbose --enterprise-url/)
-      expect(instruction).toBeInTheDocument()
-    })
-  })
 })
