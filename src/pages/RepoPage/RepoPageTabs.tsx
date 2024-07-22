@@ -91,9 +91,11 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
     })
   }
 
-  if (onboardingFailedTests || repoOverview?.testAnalyticsEnabled) {
+  if (onboardingFailedTests) {
     tabs.push({
-      pageName: 'failedTests',
+      pageName: repoOverview?.testAnalyticsEnabled
+        ? 'failedTests'
+        : 'failedTestsOnboarding',
       children: (
         <>
           Tests <Badge>beta</Badge>{' '}

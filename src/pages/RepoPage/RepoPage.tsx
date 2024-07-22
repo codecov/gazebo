@@ -132,10 +132,11 @@ function Routes({
             <BundleOnboarding />
           </SentryRoute>
         ) : null}
-        {onboardingFailedTests || testAnalyticsEnabled ? (
+        {onboardingFailedTests ? (
           <SentryRoute
             path={[
               `${path}/tests`,
+              `${path}/tests/:branch`,
               `${path}/tests/new`,
               `${path}/tests/new/codecov-cli`,
             ]}
@@ -207,10 +208,11 @@ function Routes({
       >
         <NewRepoTab />
       </SentryRoute>
-      {onboardingFailedTests && !testAnalyticsEnabled ? (
+      {onboardingFailedTests ? (
         <SentryRoute
           path={[
             `${path}/tests`,
+            `${path}/tests/:branch`,
             `${path}/tests/new`,
             `${path}/tests/new/codecov-cli`,
           ]}

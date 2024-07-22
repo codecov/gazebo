@@ -12,7 +12,10 @@ import FailedTestsTab from './FailedTestsTab'
 
 jest.mock('./GitHubActions', () => () => 'GitHub Actions tab')
 jest.mock('./CodecovCLI', () => () => 'Codecov CLI tab')
-jest.mock('./FailedTestsTable', () => () => 'Failed Tests Table')
+jest.mock(
+  './FailedTestsTable/FailedTestsTable.tsx',
+  () => () => 'Failed Tests Table'
+)
 
 jest.mock('shared/useRedirect')
 const mockedUseRedirect = useRedirect as jest.Mock
@@ -41,6 +44,7 @@ const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
               '/:provider/:owner/:repo/tests/new',
               '/:provider/:owner/:repo/tests/new/codecov-cli',
             ]}
+            exact
           >
             <Suspense fallback={null}>{children}</Suspense>
           </Route>
@@ -68,19 +72,21 @@ afterAll(() => {
   server.close()
 })
 
-const mockRepoOverview = {
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      private: false,
-      defaultBranch: 'main',
-      oldestCommitAt: '2022-10-10T11:59:59',
-      coverageEnabled: true,
-      bundleAnalysisEnabled: true,
-      languages: ['javascript'],
-      testAnalyticsEnabled: false,
+const mockRepoOverview = ({ testAnalyticsEnabled = false }) => {
+  return {
+    owner: {
+      repository: {
+        __typename: 'Repository',
+        private: false,
+        defaultBranch: 'main',
+        oldestCommitAt: '2022-10-10T11:59:59',
+        coverageEnabled: true,
+        bundleAnalysisEnabled: true,
+        languages: ['javascript'],
+        testAnalyticsEnabled,
+      },
     },
-  },
+  }
 }
 
 describe('FailedTestsTab', () => {
@@ -90,15 +96,15 @@ describe('FailedTestsTab', () => {
   }))
 
   function setup({ testEnabled = false }: { testEnabled?: boolean }) {
-    console.log(testEnabled)
     server.use(
       graphql.query('GetRepoOverview', (req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          testEnabled
-            ? ctx.data({ ...mockRepoOverview, testAnalyticsEnabled: true })
-            : ctx.data(mockRepoOverview)
-        )
+        if (testEnabled) {
+          return res(
+            ctx.status(200),
+            ctx.data(mockRepoOverview({ testAnalyticsEnabled: true }))
+          )
+        }
+        return res(ctx.status(200), ctx.data(mockRepoOverview({})))
       })
     )
 
@@ -221,12 +227,12 @@ describe('FailedTestsTab', () => {
       expect(content).toBeInTheDocument()
     })
 
-    it.skip('renders Failed Tests Table', () => {
+    it.skip('renders Failed Tests Table', async () => {
       setup({ testEnabled: true })
       render(<FailedTestsTab />, {
         wrapper: wrapper('/gh/codecov/cool-repo/tests'),
       })
-      const content = screen.getByText(/Failed Tests Table/)
+      const content = await screen.findByText(/Failed Tests Table/)
       expect(content).toBeInTheDocument()
     })
   })

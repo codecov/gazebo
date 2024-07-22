@@ -127,8 +127,6 @@ function FailedTestsTab() {
   const { provider, owner, repo } = useParams<URLParams>()
   const { data: repoOverview } = useRepoOverview({ provider, owner, repo })
 
-  console.log(repoOverview)
-
   if (repoOverview?.testAnalyticsEnabled) {
     return (
       <SentryRoute path="/:provider/:owner/:repo/tests" exact>
