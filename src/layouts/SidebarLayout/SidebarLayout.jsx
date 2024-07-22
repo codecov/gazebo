@@ -4,7 +4,7 @@ import PropType from 'prop-types'
 import ErrorBoundary from '../shared/ErrorBoundary'
 import NetworkErrorBoundary from '../shared/NetworkErrorBoundary'
 
-function SidebarLayout({ sidebar, children, className }) {
+function SidebarLayout({ sidebar, children, className = '' }) {
   return (
     <div className="container flex flex-col lg:flex-row">
       <ErrorBoundary sentryScopes={[['layout', 'sidebar']]}>
