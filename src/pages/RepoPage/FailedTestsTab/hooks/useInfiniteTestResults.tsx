@@ -109,7 +109,7 @@ export const useInfiniteTestResults = ({
   owner,
   repo,
   filters,
-  first = 4,
+  first = 20,
   after,
   last,
   before,
