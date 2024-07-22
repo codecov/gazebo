@@ -10,6 +10,7 @@ import {
 } from 'services/repo'
 import Api from 'shared/api'
 import { type NetworkErrorObject } from 'shared/api/helpers'
+import { mapEdges } from 'shared/utils/graphql'
 import A from 'ui/A'
 
 const TestResultSchema = z.object({
@@ -61,7 +62,13 @@ query GetTestResults(
     repository: repository(name: $repo) {
       __typename
       ... on Repository {
-        testResults(filters: $filters, first: $first, after: $after, last: $last, before: $before) {
+        testResults(
+          filters: $filters
+          first: $first
+          after: $after
+          last: $last
+          before: $before
+        ) {
           edges {
             node {
               updatedAt
@@ -85,7 +92,8 @@ query GetTestResults(
       }
     }
   }
-}`
+}
+`
 
 interface UseTestResultsArgs {
   provider: string
@@ -181,10 +189,9 @@ export const useInfiniteTestResults = ({
         }
 
         return {
-          testResults:
-            data?.owner?.repository?.testResults?.edges?.map(
-              (edge) => edge.node
-            ) ?? [],
+          testResults: mapEdges(data?.owner?.repository?.testResults).filter(
+            (item): item is TestResult => item !== null
+          ),
           pageInfo: data?.owner?.repository?.testResults?.pageInfo ?? {
             hasNextPage: false,
             endCursor: null,
