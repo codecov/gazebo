@@ -43,6 +43,7 @@ const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
               '/:provider/:owner/:repo/tests',
               '/:provider/:owner/:repo/tests/new',
               '/:provider/:owner/:repo/tests/new/codecov-cli',
+              '/:provider/:owner/:repo/tests/:branch',
             ]}
             exact
           >
@@ -227,7 +228,7 @@ describe('FailedTestsTab', () => {
       expect(content).toBeInTheDocument()
     })
 
-    it.skip('renders Failed Tests Table', async () => {
+    it('renders Failed Tests Table', async () => {
       setup({ testEnabled: true })
       render(<FailedTestsTab />, {
         wrapper: wrapper('/gh/codecov/cool-repo/tests'),

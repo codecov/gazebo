@@ -129,7 +129,13 @@ function FailedTestsTab() {
 
   if (repoOverview?.testAnalyticsEnabled) {
     return (
-      <SentryRoute path="/:provider/:owner/:repo/tests" exact>
+      <SentryRoute
+        path={[
+          '/:provider/:owner/:repo/tests',
+          '/:provider/:owner/:repo/tests/:branch',
+        ]}
+        exact
+      >
         <Suspense fallback={<Loader />}>
           <div className="flex flex-1 flex-col gap-4">
             <FailedTestsTable />
@@ -141,17 +147,20 @@ function FailedTestsTab() {
 
   return (
     <Switch>
-      <Redirect
-        exact
-        from="/:provider/:owner/:repo/tests"
-        to="/:provider/:owner/:repo/tests/new"
-      />
       <SentryRoute path="/:provider/:owner/:repo/tests/new" exact>
         <OnboardingWrapper usesCli={false} />
       </SentryRoute>
       <SentryRoute path="/:provider/:owner/:repo/tests/new/codecov-cli" exact>
         <OnboardingWrapper usesCli />
       </SentryRoute>
+      <Redirect
+        from={`/:provider/:owner/:repo/tests`}
+        to={`/:provider/:owner/:repo/tests/new`}
+      />
+      <Redirect
+        from={`/:provider/:owner/:repo/tests/*`}
+        to={`/:provider/:owner/:repo/tests/new`}
+      />
     </Switch>
   )
 }

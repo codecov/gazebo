@@ -46,7 +46,6 @@ interface RoutesProps {
   jsOrTsPresent?: boolean
   isRepoPrivate: boolean
   isCurrentUserActivated?: boolean | null
-  testAnalyticsEnabled?: boolean
 }
 
 function Routes({
@@ -57,7 +56,6 @@ function Routes({
   jsOrTsPresent,
   isRepoPrivate,
   isCurrentUserActivated,
-  testAnalyticsEnabled,
 }: RoutesProps) {
   const { onboardingFailedTests } = useFlags({
     bundleAnalysisPrAndCommitPages: false,
@@ -136,9 +134,9 @@ function Routes({
           <SentryRoute
             path={[
               `${path}/tests`,
-              `${path}/tests/:branch`,
               `${path}/tests/new`,
               `${path}/tests/new/codecov-cli`,
+              `${path}/tests/:branch`,
             ]}
             exact
           >
@@ -167,12 +165,6 @@ function Routes({
         ) : null}
         {!bundleAnalysisEnabled && jsOrTsPresent ? (
           <Redirect from={`${path}/bundles/*`} to={`${path}/bundles/new`} />
-        ) : null}
-        {onboardingFailedTests && !testAnalyticsEnabled ? (
-          <Redirect from={`${path}/tests`} to={`${path}/tests/new`} />
-        ) : null}
-        {onboardingFailedTests && !testAnalyticsEnabled ? (
-          <Redirect from={`${path}/tests/*`} to={`${path}/tests/new`} />
         ) : null}
         {!coverageEnabled ? <Redirect from={path} to={`${path}/new`} /> : null}
         {!coverageEnabled ? (
@@ -212,9 +204,9 @@ function Routes({
         <SentryRoute
           path={[
             `${path}/tests`,
-            `${path}/tests/:branch`,
             `${path}/tests/new`,
             `${path}/tests/new/codecov-cli`,
+            `${path}/tests/:branch`,
           ]}
           exact
         >
@@ -238,9 +230,6 @@ function Routes({
       </SentryRoute>
       <Redirect from={`${path}/bundles`} to={`${path}/bundles/new`} />
       <Redirect from={`${path}/bundles/*`} to={`${path}/bundles/new`} />
-      {onboardingFailedTests && !testAnalyticsEnabled ? (
-        <Redirect from={`${path}/tests`} to={`${path}/tests/new`} />
-      ) : null}
       <Redirect from={path} to={`${path}/new`} />
       <Redirect from={`${path}/*`} to={`${path}/new`} />
     </Switch>
@@ -309,7 +298,6 @@ function RepoPage() {
           jsOrTsPresent={jsOrTsPresent}
           isRepoPrivate={isRepoPrivate}
           isCurrentUserActivated={isCurrentUserActivated}
-          testAnalyticsEnabled={repoOverview?.testAnalyticsEnabled}
         />
       </Suspense>
     </div>
