@@ -6,6 +6,7 @@ import {
   useAccountDetails,
   useAvailablePlans,
 } from 'services/account'
+import { TierNames } from 'services/tier'
 import {
   canApplySentryUpgrade,
   findProPlans,
@@ -19,6 +20,7 @@ import { TEAM_PLAN_MAX_ACTIVE_USERS } from 'shared/utils/upgradeForm'
 import OptionButton from 'ui/OptionButton'
 
 import { TierName } from '../constants'
+import { usePlanParams } from '../hooks/usePlanParams'
 import { UpgradeFormFields } from '../UpgradeForm'
 
 interface PlanTypeOptionsProps {
@@ -38,6 +40,7 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
   const { data: plans } = useAvailablePlans({ provider, owner })
   const { data: accountDetails } = useAccountDetails({ provider, owner })
   const { proPlanYear, proPlanMonth } = findProPlans({ plans })
+  const planParam = usePlanParams()
 
   const { sentryPlanYear, sentryPlanMonth } = findSentryPlans({ plans })
   const { teamPlanYear, teamPlanMonth } = findTeamPlans({
@@ -53,7 +56,10 @@ const PlanTypeOptions: React.FC<PlanTypeOptionsProps> = ({
 
   const currentFormValue = newPlan
   let planOption = null
-  if (isTeamPlan(currentFormValue)) {
+  if (
+    (hasTeamPlans && planParam === TierNames.TEAM) ||
+    isTeamPlan(currentFormValue)
+  ) {
     planOption = TierName.TEAM
   } else {
     planOption = TierName.PRO

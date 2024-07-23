@@ -21,7 +21,7 @@ const UpdateBlurb = ({
   const currentIsFree = isFreePlan(currentPlan?.value)
   const currentIsTeam = isTeamPlan(currentPlan?.value)
   const selectedIsTeam = isTeamPlan(selectedPlan?.value)
-  const diffPlanType = currentIsTeam !== selectedIsTeam
+  const diffPlanType = currentIsFree || currentIsTeam !== selectedIsTeam
 
   const currentIsAnnual = isAnnualPlan(currentPlan?.value)
   const selectedIsAnnual = isAnnualPlan(newPlanName)
