@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom'
 
 import { useBundleSummary } from 'services/bundleAnalysis/useBundleSummary'
+import { useLocationParams } from 'services/navigation'
 import {
   formatSizeToString,
   formatTimeToString,
@@ -65,8 +66,12 @@ export const BundleDetails: React.FC = () => {
     branch,
     bundle: bundleParam,
   } = useParams<URLParams>()
+  const { params } = useLocationParams()
 
   const bundle = bundleParam ?? ''
+
+  // @ts-expect-error - useLocationParams needs fixing
+  const types = params?.types ?? []
 
   const { data: summaryData } = useBundleSummary({
     provider,
@@ -74,6 +79,9 @@ export const BundleDetails: React.FC = () => {
     repo,
     branch,
     bundle,
+    filters: {
+      reportGroups: types,
+    },
     opts: { enabled: bundle !== '' },
   })
 
