@@ -6,15 +6,7 @@ import { useLocationParams } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import MultiSelect from 'ui/MultiSelect'
 
-const BundleReportGroups = {
-  JavaScript: 'JAVASCRIPT',
-  CSS: 'STYLESHEET',
-  Fonts: 'FONT',
-  Images: 'IMAGE',
-  Other: 'UNKNOWN',
-} as const
-
-type BundleReportTypes = keyof typeof BundleReportGroups
+import { BundleReportGroups, type BundleReportTypes } from '../constants'
 
 interface URLParams {
   provider: string
