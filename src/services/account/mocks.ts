@@ -154,6 +154,7 @@ export const accountDetailsObject = {
   student_count: 1,
   uses_invoice: true,
   schedule_detail: null,
+  delinquent: null,
 }
 
 export const accountDetailsParsedObj = {
@@ -267,4 +268,5 @@ export const accountDetailsParsedObj = {
   studentCount: 1,
   usesInvoice: true,
   scheduleDetail: null,
+  delinquent: null,
 }

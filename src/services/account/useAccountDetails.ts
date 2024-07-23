@@ -129,6 +129,7 @@ export const AccountDetailsSchema = z.object({
   activatedStudentCount: z.number(),
   activatedUserCount: z.number(),
   checkoutSessionId: z.string().nullable(),
+  delinquent: z.boolean().nullable(),
   email: z.string().nullable(),
   inactiveUserCount: z.number(),
   integrationId: z.number().nullable(),

@@ -269,4 +269,25 @@ describe('CurrentOrgPlan', () => {
       expect(screen.queryByText(/BillingDetails/i)).not.toBeInTheDocument()
     })
   })
+
+  describe('when user is a delinquent', () => {
+    it('renders the delinquent banner', () => {
+      setup({
+        accountDetails: {
+          ...mockedAccountDetails,
+          delinquent: true,
+        } as z.infer<typeof AccountDetailsSchema>,
+      })
+
+      render(<CurrentOrgPlan />, { wrapper })
+      expect(
+        screen.getByText('Your most recent payment failed')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          'Please try a different card or contact support at support@codecov.io'
+        )
+      ).toBeInTheDocument()
+    })
+  })
 })

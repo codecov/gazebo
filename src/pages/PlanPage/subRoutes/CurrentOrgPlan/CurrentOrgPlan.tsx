@@ -24,6 +24,7 @@ function CurrentOrgPlan() {
   })
 
   const scheduledPhase = accountDetails?.scheduleDetail?.scheduledPhase
+  const isDelinquent = accountDetails?.delinquent
   const scheduleStart = scheduledPhase
     ? getScheduleStart(scheduledPhase)
     : undefined
@@ -43,6 +44,7 @@ function CurrentOrgPlan() {
         />
       ) : null}
       <InfoMessageStripeCallback />
+      {isDelinquent ? <DelinquentAlert /> : null}
       {accountDetails?.plan ? (
         <div className="flex flex-col gap-4 sm:mr-4 sm:flex-initial md:w-2/3 lg:w-3/4">
           {planUpdatedNotification.alertOption ? (
@@ -72,6 +74,20 @@ function CurrentOrgPlan() {
         </div>
       ) : null}
     </div>
+  )
+}
+
+const DelinquentAlert = () => {
+  return (
+    <>
+      <Alert variant={'error'}>
+        <Alert.Title>Your most recent payment failed</Alert.Title>
+        <Alert.Description>
+          Please try a different card or contact support at support@codecov.io
+        </Alert.Description>
+      </Alert>
+      <br />
+    </>
   )
 }
 
