@@ -64,7 +64,7 @@ const mockBranchBundles = {
         head: {
           bundleAnalysisReport: {
             __typename: 'BundleAnalysisReport',
-            bundles: [{ name: 'bundle1' }],
+            bundles: [{ name: 'bundle1' }, { name: 'bundle2' }],
           },
         },
       },
@@ -171,9 +171,19 @@ describe('BundleSelection', () => {
     expect(bundleSelector).toBeInTheDocument()
   })
 
+  it('renders type selector', async () => {
+    setup()
+    render(<BundleSelection />, { wrapper: wrapper() })
+
+    const typeSelector = await screen.findByRole('button', {
+      name: 'bundle tab types selector',
+    })
+    expect(typeSelector).toBeInTheDocument()
+  })
+
   describe('user interacts with branch and bundle selectors', () => {
     describe('user selects a branch', () => {
-      it('resets the bundle selector', async () => {
+      it('resets the bundle selector to the first available bundle', async () => {
         const { user } = setup()
         render(<BundleSelection />, {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/main/bundle1'),
@@ -189,11 +199,45 @@ describe('BundleSelection', () => {
         })
         await user.click(branchSelector)
 
-        const newBranch = await screen.findByText('branch-1')
-        await user.click(newBranch)
+        const branch1 = await screen.findByRole('option', {
+          name: 'branch-1',
+        })
+        await user.click(branch1)
 
+        await waitFor(() => expect(bundleSelector).toHaveTextContent(/bundle1/))
+      })
+
+      it('resets the type selector', async () => {
+        const { user } = setup()
+        render(<BundleSelection />, {
+          wrapper: wrapper('/gh/codecov/test-repo/bundles/main/bundle1'),
+        })
+
+        const typeSelector = await screen.findByRole('button', {
+          name: 'bundle tab types selector',
+        })
+        await user.click(typeSelector)
+
+        const type = await screen.findByRole('option', {
+          name: 'JavaScript',
+        })
+        await user.click(type)
+
+        const bundleSelector = await screen.findByRole('button', {
+          name: 'bundle tab bundle selector',
+        })
+        await user.click(bundleSelector)
+
+        const bundle2 = await screen.findByRole('option', {
+          name: 'bundle2',
+        })
+        await user.click(bundle2)
+
+        const updatedTypeSelector = await screen.findByRole('button', {
+          name: 'bundle tab types selector',
+        })
         await waitFor(() =>
-          expect(bundleSelector).toHaveTextContent(/Select bundle/)
+          expect(updatedTypeSelector).toHaveTextContent('All types')
         )
       })
     })
