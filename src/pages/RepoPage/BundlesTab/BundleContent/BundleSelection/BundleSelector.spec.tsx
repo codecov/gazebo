@@ -115,6 +115,7 @@ describe('BundleSelector', () => {
     nullOverview = false,
   }: SetupArgs) {
     const user = userEvent.setup()
+    const mockFilterReset = jest.fn()
 
     server.use(
       graphql.query('GetRepoOverview', (req, res, ctx) => {
@@ -134,13 +135,15 @@ describe('BundleSelector', () => {
       })
     )
 
-    return { user }
+    return { user, mockFilterReset }
   }
 
   describe('when there are no bundles', () => {
     it('disables the select', async () => {
-      setup({ missingHeadReport: true })
-      render(<BundleSelector />, { wrapper: wrapper() })
+      const { mockFilterReset } = setup({ missingHeadReport: true })
+      render(<BundleSelector resetFilterSelects={mockFilterReset} />, {
+        wrapper: wrapper(),
+      })
 
       const select = await screen.findByRole('button', {
         name: 'bundle tab bundle selector',
@@ -152,8 +155,10 @@ describe('BundleSelector', () => {
 
   describe('when there is bundle data', () => {
     it('enables the select', async () => {
-      setup({})
-      render(<BundleSelector />, { wrapper: wrapper() })
+      const { mockFilterReset } = setup({})
+      render(<BundleSelector resetFilterSelects={mockFilterReset} />, {
+        wrapper: wrapper(),
+      })
 
       const select = await screen.findByRole('button', {
         name: 'bundle tab bundle selector',
@@ -164,8 +169,10 @@ describe('BundleSelector', () => {
 
     describe('selector loads first bundle', () => {
       it('renders selected bundle in button', async () => {
-        setup({})
-        render(<BundleSelector />, { wrapper: wrapper() })
+        const { mockFilterReset } = setup({})
+        render(<BundleSelector resetFilterSelects={mockFilterReset} />, {
+          wrapper: wrapper(),
+        })
 
         const select = await screen.findByRole('button', {
           name: 'bundle tab bundle selector',
@@ -175,8 +182,10 @@ describe('BundleSelector', () => {
       })
 
       it('puts the bundle in the url', async () => {
-        setup({})
-        render(<BundleSelector />, { wrapper: wrapper() })
+        const { mockFilterReset } = setup({})
+        render(<BundleSelector resetFilterSelects={mockFilterReset} />, {
+          wrapper: wrapper(),
+        })
 
         await waitFor(() => {
           expect(testLocation.pathname).toBe(
@@ -188,8 +197,8 @@ describe('BundleSelector', () => {
 
     describe('bundle is set in the url', () => {
       it('sets the button to that bundle', async () => {
-        setup({})
-        render(<BundleSelector />, {
+        const { mockFilterReset } = setup({})
+        render(<BundleSelector resetFilterSelects={mockFilterReset} />, {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/test-branch/bundle2'),
         })
 
@@ -205,8 +214,10 @@ describe('BundleSelector', () => {
     describe('navigating to a different bundle', () => {
       describe('user selects a bundle', () => {
         it('navigates to the selected bundle', async () => {
-          const { user } = setup({})
-          render(<BundleSelector />, { wrapper: wrapper() })
+          const { user, mockFilterReset } = setup({})
+          render(<BundleSelector resetFilterSelects={mockFilterReset} />, {
+            wrapper: wrapper(),
+          })
 
           const select = await screen.findByRole('button', {
             name: 'bundle tab bundle selector',
@@ -222,14 +233,31 @@ describe('BundleSelector', () => {
             )
           })
         })
+
+        it('calls to reset the filter selects', async () => {
+          const { user, mockFilterReset } = setup({})
+          render(<BundleSelector resetFilterSelects={mockFilterReset} />, {
+            wrapper: wrapper(),
+          })
+
+          const select = await screen.findByRole('button', {
+            name: 'bundle tab bundle selector',
+          })
+          await user.click(select)
+
+          const bundle = await screen.findByText('bundle2')
+          await user.click(bundle)
+
+          await waitFor(() => expect(mockFilterReset).toHaveBeenCalled())
+        })
       })
     })
 
     describe('user searches for bundle', () => {
       describe('bundle is found', () => {
         it('renders the found bundle', async () => {
-          const { user } = setup({})
-          render(<BundleSelector />, {
+          const { user, mockFilterReset } = setup({})
+          render(<BundleSelector resetFilterSelects={mockFilterReset} />, {
             wrapper: wrapper(),
           })
 
@@ -248,8 +276,8 @@ describe('BundleSelector', () => {
 
       describe('bundle is not found', () => {
         it('displays no results found', async () => {
-          const { user } = setup({})
-          render(<BundleSelector />, {
+          const { user, mockFilterReset } = setup({})
+          render(<BundleSelector resetFilterSelects={mockFilterReset} />, {
             wrapper: wrapper(),
           })
 
@@ -268,8 +296,8 @@ describe('BundleSelector', () => {
 
       describe('user clears search', () => {
         it('resets the select', async () => {
-          const { user } = setup({})
-          render(<BundleSelector />, {
+          const { user, mockFilterReset } = setup({})
+          render(<BundleSelector resetFilterSelects={mockFilterReset} />, {
             wrapper: wrapper(),
           })
 
@@ -284,7 +312,8 @@ describe('BundleSelector', () => {
           const notFound = await screen.findByText('No results found')
           expect(notFound).toBeInTheDocument()
 
-          await user.type(input, '{backspace}{backspace}{backspace}{backspace}')
+          await user.clear(input)
+          await waitFor(() => expect(input).toHaveValue(''))
 
           const bundles = await screen.findByText('bundle1')
           expect(bundles).toBeInTheDocument()
