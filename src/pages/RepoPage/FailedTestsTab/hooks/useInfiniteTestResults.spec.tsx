@@ -35,6 +35,7 @@ const mockTestResults = {
           hasNextPage: true,
         },
       },
+      testResultsCount: 2,
     },
   },
 }

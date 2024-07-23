@@ -40,6 +40,7 @@ const GetTestResultsSchema = z.object({
               hasNextPage: z.boolean(),
             }),
           }),
+          testResultsCount: z.number(),
         }),
         RepoNotFoundErrorSchema,
         RepoOwnerNotActivatedErrorSchema,
@@ -83,6 +84,7 @@ query GetTestResults(
             hasNextPage
           }
         }
+        testResultsCount
       }
       ... on NotFoundError {
         message
