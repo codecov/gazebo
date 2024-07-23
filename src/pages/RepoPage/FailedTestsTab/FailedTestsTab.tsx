@@ -129,19 +129,25 @@ function FailedTestsTab() {
 
   if (repoOverview?.testAnalyticsEnabled) {
     return (
-      <SentryRoute
-        path={[
-          '/:provider/:owner/:repo/tests',
-          '/:provider/:owner/:repo/tests/:branch',
-        ]}
-        exact
-      >
-        <Suspense fallback={<Loader />}>
-          <div className="flex flex-1 flex-col gap-4">
-            <FailedTestsTable />
-          </div>
-        </Suspense>
-      </SentryRoute>
+      <Switch>
+        <SentryRoute
+          path={[
+            '/:provider/:owner/:repo/tests',
+            '/:provider/:owner/:repo/tests/:branch',
+          ]}
+          exact
+        >
+          <Suspense fallback={<Loader />}>
+            <div className="flex flex-1 flex-col gap-4">
+              <FailedTestsTable />
+            </div>
+          </Suspense>
+        </SentryRoute>
+        <Redirect
+          from={`/:provider/:owner/:repo/tests/:branch/*`}
+          to={`/:provider/:owner/:repo/tests/:branch`}
+        />
+      </Switch>
     )
   }
 

@@ -166,6 +166,9 @@ function Routes({
         {!bundleAnalysisEnabled && jsOrTsPresent ? (
           <Redirect from={`${path}/bundles/*`} to={`${path}/bundles/new`} />
         ) : null}
+        {onboardingFailedTests ? (
+          <Redirect from={`${path}/tests/new/*`} to={`${path}/tests/new`} />
+        ) : null}
         {!coverageEnabled ? <Redirect from={path} to={`${path}/new`} /> : null}
         {!coverageEnabled ? (
           <Redirect from={`${path}/*`} to={`${path}/new`} />
@@ -230,6 +233,7 @@ function Routes({
       </SentryRoute>
       <Redirect from={`${path}/bundles`} to={`${path}/bundles/new`} />
       <Redirect from={`${path}/bundles/*`} to={`${path}/bundles/new`} />
+      <Redirect from={`${path}/tests/new/*`} to={`${path}/tests/new`} />
       <Redirect from={path} to={`${path}/new`} />
       <Redirect from={`${path}/*`} to={`${path}/new`} />
     </Switch>

@@ -63,7 +63,7 @@ export function getSortingOption(
       ordering = 'COMMITS FAILED'
     }
 
-    if (state.id === 'lastRun') {
+    if (state.id === 'updatedAt') {
       ordering = 'LAST RUN'
     }
 
@@ -74,22 +74,22 @@ export function getSortingOption(
 }
 
 interface FailedTestsColumns {
-  testName: string
-  lastDuration: number
+  name: string
+  avgDuration: number
   failureRate: number
   commitsFailed: number
-  lastRun: string
+  updatedAt: string
 }
 
 const columnHelper = createColumnHelper<FailedTestsColumns>()
 
 const columns = [
-  columnHelper.accessor('testName', {
+  columnHelper.accessor('name', {
     header: 'Test name',
     cell: (info) => info.renderValue(),
   }),
-  columnHelper.accessor('lastDuration', {
-    header: 'Last duration',
+  columnHelper.accessor('avgDuration', {
+    header: 'Average duration',
     cell: (info) => info.renderValue(),
   }),
   columnHelper.accessor('failureRate', {
@@ -100,7 +100,7 @@ const columns = [
     header: 'Commits failed',
     cell: (info) => info.renderValue(),
   }),
-  columnHelper.accessor('lastRun', {
+  columnHelper.accessor('updatedAt', {
     header: 'Last run',
     cell: (info) => info.renderValue(),
   }),
@@ -110,7 +110,7 @@ const FailedTestsTable = () => {
   // const { ref, inView } = useInView()
   const [sorting, setSorting] = useState<SortingState>([
     {
-      id: 'failureRate',
+      id: 'commitsFailed',
       desc: true,
     },
   ])
@@ -137,32 +137,32 @@ const FailedTestsTable = () => {
     columns,
     data: [
       {
-        testName: 'blah',
-        lastDuration: 123,
+        name: 'blah',
+        avgDuration: 123,
         failureRate: 1,
         commitsFailed: 4,
-        lastRun: '2021-01-01',
+        updatedAt: '2021-01-01',
       },
       {
-        testName: 'cool',
-        lastDuration: 123,
+        name: 'cool',
+        avgDuration: 123,
         failureRate: 2,
         commitsFailed: 3,
-        lastRun: '2022-01-01',
+        updatedAt: '2022-01-01',
       },
       {
-        testName: 'rad guy',
-        lastDuration: 123,
+        name: 'rad guy',
+        avgDuration: 123,
         failureRate: 3,
         commitsFailed: 2,
-        lastRun: '2023-01-01',
+        updatedAt: '2023-01-01',
       },
       {
-        testName: 'awww ok',
-        lastDuration: 123,
+        name: 'awww ok',
+        avgDuration: 123,
         failureRate: 4,
         commitsFailed: 1,
-        lastRun: '2024-01-01',
+        updatedAt: '2024-01-01',
       },
     ],
     state: {
@@ -208,7 +208,7 @@ const FailedTestsTable = () => {
                       header.getContext()
                     )}
                     <span
-                      className="text-ds-blue-darker group-hover/columnheader:opacity-100"
+                      className="text-right text-ds-blue-darker group-hover/columnheader:opacity-100"
                       data-sort-direction={header.column.getIsSorted()}
                     >
                       <Icon name="arrowUp" size="sm" />
@@ -233,7 +233,7 @@ const FailedTestsTable = () => {
                   <td
                     key={cell.id}
                     className={cs({
-                      'text-right': cell.column.id !== 'testName',
+                      'text-right': cell.column.id !== 'name',
                     })}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
