@@ -53,12 +53,18 @@ function CommitRoutes() {
   })
 
   const compareTypeName = commitPageData?.commit?.compareWithParent?.__typename
+  const ErrorBannerComponent = <ErrorBanner errorType={compareTypeName} />
   if (
     compareTypeName !== 'Comparison' &&
-    compareTypeName !== 'FirstPullRequest'
+    compareTypeName !== 'FirstPullRequest' &&
+    compareTypeName !== 'MissingBaseCommit'
   ) {
-    return <ErrorBanner errorType={compareTypeName} />
+    return ErrorBannerComponent
   }
+
+  // we still want to show file explorer when missing base commit since the file structure
+  // is still useful info to the user
+  const isMissingBaseCommit = compareTypeName === 'MissingBaseCommit'
 
   const showIndirectChanges = !(overview.private && tierName === TierNames.TEAM)
 
@@ -74,17 +80,25 @@ function CommitRoutes() {
           <CommitDetailFileExplorer />
         </SentryRoute>
         <SentryRoute path="/:provider/:owner/:repo/commit/:commit/blob/:path+">
-          <CommitDetailFileViewer />
+          {isMissingBaseCommit ? (
+            ErrorBannerComponent
+          ) : (
+            <CommitDetailFileViewer />
+          )}
         </SentryRoute>
         <SentryRoute path="/:provider/:owner/:repo/commit/:commit" exact>
-          <FilesChangedTab />
+          {isMissingBaseCommit ? ErrorBannerComponent : <FilesChangedTab />}
         </SentryRoute>
         {showIndirectChanges && (
           <SentryRoute
             path="/:provider/:owner/:repo/commit/:commit/indirect-changes"
             exact
           >
-            <IndirectChangesTab />
+            {isMissingBaseCommit ? (
+              ErrorBannerComponent
+            ) : (
+              <IndirectChangesTab />
+            )}
           </SentryRoute>
         )}
         <Redirect
