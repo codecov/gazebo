@@ -105,6 +105,7 @@ query BundleAssets(
   $interval: MeasurementInterval!
   $before: DateTime!
   $after: DateTime
+  $filters: BundleAnalysisReportFilters
 ) {
   owner(username: $owner) {
     repository(name: $repo) {
@@ -115,7 +116,7 @@ query BundleAssets(
             bundleAnalysisReport {
               __typename
               ... on BundleAnalysisReport {
-                bundle(name: $bundle) {
+                bundle(name: $bundle, filters: $filters) {
                   bundleData {
                     size {
                       uncompress
@@ -145,7 +146,7 @@ query BundleAssets(
                           uncompress
                         }
                       }
-                     	measurements {
+                      measurements {
                         timestamp
                         avg
                       }
@@ -179,6 +180,10 @@ interface UseBundleAssetsArgs {
   interval?: 'INTERVAL_1_DAY' | 'INTERVAL_7_DAY' | 'INTERVAL_30_DAY'
   before?: Date
   after?: Date | null
+  filters?: {
+    reportGroups?: string[]
+    loadTypes?: string[]
+  }
   opts?: {
     enabled?: boolean
     suspense?: boolean
@@ -194,6 +199,7 @@ export const useBundleAssets = ({
   interval,
   before,
   after,
+  filters = {},
   opts,
 }: UseBundleAssetsArgs) => {
   const { data: repoOverview, isSuccess } = useRepoOverview({
@@ -227,6 +233,7 @@ export const useBundleAssets = ({
       interval,
       before,
       after,
+      filters,
     ],
     queryFn: ({ signal }) =>
       Api.graphql({
@@ -241,6 +248,7 @@ export const useBundleAssets = ({
           interval,
           before,
           after,
+          filters,
         },
       }).then((res) => {
         const parsedData = RequestSchema.safeParse(res?.data)
