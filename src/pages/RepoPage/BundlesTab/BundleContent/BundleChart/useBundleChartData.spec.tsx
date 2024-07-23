@@ -2,9 +2,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { renderHook, waitFor } from '@testing-library/react'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import qs from 'qs'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import qs from 'querystring'
 
 import { useBundleChartData } from './useBundleChartData'
 
@@ -217,7 +216,7 @@ describe('useBundleChartData', () => {
           }),
         {
           wrapper: wrapper(
-            `${initialEntries}?${qs.encode({ trend: '12 months' })}`
+            `${initialEntries}?${qs.stringify({ trend: '12 months' })}`
           ),
         }
       )
@@ -234,6 +233,84 @@ describe('useBundleChartData', () => {
         interval: 'INTERVAL_30_DAY',
         owner: 'codecov',
         repo: 'test-repo',
+      })
+    })
+  })
+
+  describe('types param', () => {
+    beforeEach(() => {
+      jest.useFakeTimers().setSystemTime(new Date('2024-07-01'))
+    })
+
+    describe('no param set', () => {
+      it('defaults to report size', async () => {
+        const { queryVarMock } = setup()
+
+        renderHook(
+          () =>
+            useBundleChartData({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'test-repo',
+              branch: 'main',
+              bundle: 'test-bundle',
+            }),
+          {
+            wrapper: wrapper(
+              `${initialEntries}?${qs.stringify({ types: [] })}`
+            ),
+          }
+        )
+
+        await waitFor(() => expect(queryVarMock).toHaveBeenCalledTimes(1))
+        expect(queryVarMock).toHaveBeenCalledWith({
+          after: '2024-04-01T00:00:00.000Z',
+          before: '2024-07-01T00:00:00.000Z',
+          branch: 'main',
+          bundle: 'test-bundle',
+          filters: {
+            assetTypes: ['REPORT_SIZE'],
+          },
+          interval: 'INTERVAL_7_DAY',
+          owner: 'codecov',
+          repo: 'test-repo',
+        })
+      })
+    })
+
+    describe('param set', () => {
+      it('should use the types param to set the query args', async () => {
+        const { queryVarMock } = setup()
+
+        renderHook(
+          () =>
+            useBundleChartData({
+              provider: 'gh',
+              owner: 'codecov',
+              repo: 'test-repo',
+              branch: 'main',
+              bundle: 'test-bundle',
+            }),
+          {
+            wrapper: wrapper(
+              `${initialEntries}?${qs.stringify({ types: ['JAVASCRIPT'] })}`
+            ),
+          }
+        )
+
+        await waitFor(() => expect(queryVarMock).toHaveBeenCalledTimes(1))
+        expect(queryVarMock).toHaveBeenCalledWith({
+          after: '2024-04-01T00:00:00.000Z',
+          before: '2024-07-01T00:00:00.000Z',
+          branch: 'main',
+          bundle: 'test-bundle',
+          filters: {
+            assetTypes: ['JAVASCRIPT_SIZE'],
+          },
+          interval: 'INTERVAL_7_DAY',
+          owner: 'codecov',
+          repo: 'test-repo',
+        })
       })
     })
   })
