@@ -199,16 +199,23 @@ const FailedTestsTable = () => {
                   key={header.id}
                   colSpan={header.colSpan}
                   scope="col"
+                  className="text-right"
                   data-sortable={header.column.getCanSort()}
                   {...{ onClick: header.column.getToggleSortingHandler() }}
                 >
-                  <div className={'flex gap-1'}>
+                  <div
+                    className={cs('flex gap-1', {
+                      'flex-row-reverse': !['name', 'updatedAt'].includes(
+                        header.id
+                      ),
+                    })}
+                  >
                     {flexRender(
                       header.column.columnDef.header,
                       header.getContext()
                     )}
                     <span
-                      className="text-right text-ds-blue-darker group-hover/columnheader:opacity-100"
+                      className="text-ds-blue-darker group-hover/columnheader:opacity-100"
                       data-sort-direction={header.column.getIsSorted()}
                     >
                       <Icon name="arrowUp" size="sm" />
@@ -233,7 +240,9 @@ const FailedTestsTable = () => {
                   <td
                     key={cell.id}
                     className={cs({
-                      'text-right': cell.column.id !== 'name',
+                      'text-right': !['name', 'updatedAt'].includes(
+                        cell.column.id
+                      ),
                     })}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
