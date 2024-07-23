@@ -26,6 +26,7 @@ const enabledIcons = [
   'arrow-down',
   'folder',
   'document',
+  'document-text',
   'branch',
   'exclamation-circle',
   'exclamation-triangle',
@@ -44,6 +45,8 @@ const enabledIcons = [
   'check-circle',
   'question-mark-circle',
   'plus-circle',
+  'eye',
+  'eye-off',
 ]
 
 console.log('Generating Icons import')
