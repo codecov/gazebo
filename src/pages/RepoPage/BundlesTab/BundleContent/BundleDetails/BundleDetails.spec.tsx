@@ -5,7 +5,7 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import BundleDetails from './BundleDetails'
+import { BundleDetails } from './BundleDetails'
 
 const mockRepoOverview = {
   owner: {
