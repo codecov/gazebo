@@ -285,7 +285,7 @@ describe('CurrentOrgPlan', () => {
       ).toBeInTheDocument()
       expect(
         screen.getByText(
-          'Please try a different card or contact support at support@codecov.io'
+          'Please try a different card or contact support at support@codecov.io.'
         )
       ).toBeInTheDocument()
     })

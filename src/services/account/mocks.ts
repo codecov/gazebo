@@ -1,15 +1,4 @@
 /* eslint-disable camelcase */
-import { rest } from 'msw'
-
-const accountDetailsUri = '/internal/:provider/:owner/account-details/'
-
-export const randomAccountDetailsHandler = rest.get(
-  accountDetailsUri,
-  (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(accountDetailsObject))
-  }
-)
-
 export const invoiceObject = {
   amountDue: 1407.0,
   amountPaid: 1407.0,
