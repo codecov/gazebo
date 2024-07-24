@@ -1,6 +1,5 @@
 import { graphql } from 'msw'
 
-import { randomAccountDetailsHandler } from 'services/account/mocks'
 import { repoCoverageHandler } from 'services/charts/mocks'
 import { commitErrored } from 'services/commit/mocks'
 import {
@@ -12,7 +11,6 @@ import { randomUsersHandler } from 'services/users/mocks'
 
 export const handlers = [
   repoCoverageHandler,
-  randomAccountDetailsHandler,
   randomUsersHandler,
   commitErrored,
   flagsSelectHandler,
