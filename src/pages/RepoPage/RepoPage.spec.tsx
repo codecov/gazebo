@@ -767,7 +767,7 @@ describe('RepoPage', () => {
           expect(coverageOnboarding).toBeInTheDocument()
         })
 
-        it('does not render tab when feature flag is on and test analytics is already enabled', async () => {
+        it('Renders tab when feature flag is on and test analytics is already enabled', async () => {
           const { queryClient } = setup({
             isRepoActive: true,
             hasRepoData: true,
@@ -781,11 +781,8 @@ describe('RepoPage', () => {
             }),
           })
 
-          const failedTests = screen.queryByText('FailedTestsTab')
-          expect(failedTests).not.toBeInTheDocument()
-
-          const coverage = await screen.findByText('CoverageTab')
-          expect(coverage).toBeInTheDocument()
+          const failedTests = await screen.findByText('FailedTestsTab')
+          expect(failedTests).toBeInTheDocument()
         })
       })
 

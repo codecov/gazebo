@@ -1,13 +1,23 @@
-import { Switch, useHistory, useLocation } from 'react-router-dom'
+import { Suspense } from 'react'
+import {
+  Redirect,
+  Switch,
+  useHistory,
+  useLocation,
+  useParams,
+} from 'react-router-dom'
 
 import { SentryRoute } from 'sentry'
 
 import testsFailedOnboarding from 'assets/svg/onboardingTests/testsFailedOnboarding.svg'
 import { useNavLinks } from 'services/navigation'
+import { useRepoOverview } from 'services/repo'
 import { Card } from 'ui/Card'
 import { RadioTileGroup } from 'ui/RadioTileGroup'
+import Spinner from 'ui/Spinner'
 
 import CodecovCLI from './CodecovCLI'
+import FailedTestsTable from './FailedTestsTable/FailedTestsTable'
 import GitHubActions from './GitHubActions'
 
 const SETUP_OPTIONS = {
@@ -78,20 +88,7 @@ function SetupOptionSelector() {
   )
 }
 
-function Content() {
-  return (
-    <Switch>
-      <SentryRoute path="/:provider/:owner/:repo/tests/new" exact>
-        <GitHubActions />
-      </SentryRoute>
-      <SentryRoute path="/:provider/:owner/:repo/tests/new/codecov-cli" exact>
-        <CodecovCLI />
-      </SentryRoute>
-    </Switch>
-  )
-}
-
-export default function FailedTestsTab() {
+function OnboardingWrapper({ usesCli }: { usesCli: boolean }) {
   return (
     <div className="flex flex-col gap-6 pt-4 lg:w-3/5">
       <img
@@ -109,7 +106,69 @@ export default function FailedTestsTab() {
         </p>
       </div>
       <SetupOptionSelector />
-      <Content />
+      {usesCli ? <CodecovCLI /> : <GitHubActions />}
     </div>
   )
 }
+
+const Loader = () => (
+  <div className="flex justify-center py-8">
+    <Spinner />
+  </div>
+)
+
+interface URLParams {
+  provider: string
+  owner: string
+  repo: string
+}
+
+function FailedTestsTab() {
+  const { provider, owner, repo } = useParams<URLParams>()
+  const { data: repoOverview } = useRepoOverview({ provider, owner, repo })
+
+  if (repoOverview?.testAnalyticsEnabled) {
+    return (
+      <Switch>
+        <SentryRoute
+          path={[
+            '/:provider/:owner/:repo/tests',
+            '/:provider/:owner/:repo/tests/:branch',
+          ]}
+          exact
+        >
+          <Suspense fallback={<Loader />}>
+            <div className="flex flex-1 flex-col gap-4">
+              <FailedTestsTable />
+            </div>
+          </Suspense>
+        </SentryRoute>
+        <Redirect
+          from={`/:provider/:owner/:repo/tests/:branch/*`}
+          to={`/:provider/:owner/:repo/tests/:branch`}
+        />
+      </Switch>
+    )
+  }
+
+  return (
+    <Switch>
+      <SentryRoute path="/:provider/:owner/:repo/tests/new" exact>
+        <OnboardingWrapper usesCli={false} />
+      </SentryRoute>
+      <SentryRoute path="/:provider/:owner/:repo/tests/new/codecov-cli" exact>
+        <OnboardingWrapper usesCli />
+      </SentryRoute>
+      <Redirect
+        from={`/:provider/:owner/:repo/tests`}
+        to={`/:provider/:owner/:repo/tests/new`}
+      />
+      <Redirect
+        from={`/:provider/:owner/:repo/tests/*`}
+        to={`/:provider/:owner/:repo/tests/new`}
+      />
+    </Switch>
+  )
+}
+
+export default FailedTestsTab
