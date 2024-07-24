@@ -1968,6 +1968,42 @@ describe('useNavLinks', () => {
       })
       expect(path).toBe('/bb/test-owner/test-repo/tests/new')
     })
+
+    it('can return the failed test table', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/codecov/cool-repo'),
+      })
+
+      const path = result.current.failedTests.path()
+      expect(path).toBe('/gl/codecov/cool-repo/tests')
+    })
+
+    it('can override the failed test table params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/codecov/cool-repo'),
+      })
+
+      const path = result.current.failedTests.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo/tests')
+    })
+
+    it('can also accept a branch', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gl/codecov/cool-repo'),
+      })
+
+      const path = result.current.failedTests.path({
+        provider: 'bb',
+        owner: 'test-owner',
+        repo: 'test-repo',
+        branch: 'cool',
+      })
+      expect(path).toBe('/bb/test-owner/test-repo/tests/cool')
+    })
   })
 
   describe('Failed tests tab Codecov CLI view', () => {
