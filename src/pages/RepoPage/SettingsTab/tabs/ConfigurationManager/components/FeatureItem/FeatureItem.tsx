@@ -3,7 +3,7 @@ import Icon from 'ui/Icon'
 
 interface FeatureItemProps extends React.PropsWithChildren {
   name: string
-  configured: boolean
+  configured?: boolean
   docsLink?: string // navLink key
   getStartedLink: string // navLink key
   hiddenStatus?: boolean
@@ -56,7 +56,7 @@ function FeatureItem({
 }
 
 interface ConfiguredStatusProps {
-  configured: boolean
+  configured?: boolean
   getStartedLink: string
 }
 
@@ -78,6 +78,7 @@ const ConfiguredStatus = ({
         to={{ pageName: getStartedLink }}
         hook="configuration-get-started"
         isExternal={false}
+        showExternalIcon={false}
       >
         <p className="text-xs leading-4">get started</p>
       </A>

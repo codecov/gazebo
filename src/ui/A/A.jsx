@@ -113,6 +113,7 @@ A.propTypes = {
     'cardLink',
     'fileViewHeader',
     'semibold',
+    'medium',
     'grayQuinary',
     'greyOctinary',
     'headerHighlight',

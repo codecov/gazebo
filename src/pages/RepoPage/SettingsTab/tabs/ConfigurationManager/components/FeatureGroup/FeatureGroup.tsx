@@ -4,23 +4,32 @@ import { Card } from 'ui/Card'
 
 interface FeatureGroupProps extends React.PropsWithChildren {
   title: string
+  getStartedLink: string // navLink key
+  showGetStartedLink?: boolean
 }
 
-function FeatureGroup({ title, children }: FeatureGroupProps) {
+function FeatureGroup({
+  title,
+  getStartedLink,
+  showGetStartedLink,
+  children,
+}: FeatureGroupProps) {
   return (
     <Card className="pb-5">
       <Card.Header className="flex">
         <Card.Title size="xl" className="flex-1">
           {title}
         </Card.Title>
-        <Button
-          to={undefined}
-          disabled={false}
-          variant="primary"
-          hook="FeatureGroup"
-        >
-          Get Started
-        </Button>
+        {showGetStartedLink ? (
+          <Button
+            to={{ pageName: getStartedLink }}
+            disabled={false}
+            variant="primary"
+            hook="configuration-get-started"
+          >
+            Get Started
+          </Button>
+        ) : null}
       </Card.Header>
       {children}
     </Card>
@@ -34,11 +43,11 @@ function UniversalItems({ children }: React.PropsWithChildren) {
 }
 
 interface ProItemsProps extends React.PropsWithChildren {
-  isProPlan?: boolean
+  isTeamPlan?: boolean
 }
 
-function ProItems({ isProPlan, children }: ProItemsProps) {
-  if (isProPlan) {
+function ProItems({ isTeamPlan, children }: ProItemsProps) {
+  if (isTeamPlan) {
     return (
       <Card.Footer className="mt-5 flex flex-col gap-2 pb-0">
         <span className="flex items-baseline gap-1">

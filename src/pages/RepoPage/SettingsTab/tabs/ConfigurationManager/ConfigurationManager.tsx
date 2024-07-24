@@ -1,119 +1,104 @@
+import { useParams } from 'react-router'
+
+import { TierNames } from 'services/tier'
+
 import FeatureGroup from './components/FeatureGroup'
 import FeatureItem from './components/FeatureItem/FeatureItem'
+import {
+  RepositoryContifuration,
+  useRepoConfigurationStatus,
+} from './hooks/useRepoConfigurationStatus/useRepoConfigurationStatus'
+
+interface URLParams {
+  provider: string
+  owner: string
+  repo: string
+}
 
 function ConfigurationManager() {
+  const { provider, owner, repo } = useParams<URLParams>()
+  const { data: repoConfiguration } = useRepoConfigurationStatus({
+    provider,
+    owner,
+    repo,
+  })
+
+  console.log('repoconfig', repoConfiguration)
+
   return (
     <div className="flex flex-col gap-6 lg:w-3/4">
-      <CoverageConfiguration />
-      <TestCoverageConfiguration />
+      <CoverageConfiguration repoConfiguration={repoConfiguration} />
     </div>
   )
 }
 
 export default ConfigurationManager
 
-function CoverageConfiguration() {
-  const isTeamPlan = true
-
-  return (
-    <FeatureGroup title="Coverage">
-      <FeatureGroup.UniversalItems>
-        <FeatureItem
-          name="Coverage reports"
-          configured={true}
-          docsLink="quickStart"
-          getStartedLink="repo"
-        >
-          Uploading coverage reports and reporting in PR comment
-        </FeatureItem>
-        <FeatureItem
-          name="YAML"
-          configured={false}
-          docsLink="codecovYaml"
-          getStartedLink="repo"
-        >
-          Customize your reporting preferences
-        </FeatureItem>
-      </FeatureGroup.UniversalItems>
-      <FeatureGroup.ProItems isProPlan={!isTeamPlan}>
-        <FeatureItem
-          name="Project coverage"
-          configured={false}
-          hiddenStatus={!isTeamPlan}
-          getStartedLink="repo"
-        >
-          Include project coverage reporting in PR comment
-        </FeatureItem>
-        <FeatureItem
-          name="Flags"
-          configured={false}
-          hiddenStatus={!isTeamPlan}
-          docsLink="flags"
-          getStartedLink="repo"
-        >
-          Organize your coverage data into custom groups
-        </FeatureItem>
-        <FeatureItem
-          name="Components"
-          configured={false}
-          hiddenStatus={!isTeamPlan}
-          docsLink="components"
-          getStartedLink="repo"
-        >
-          Organize your coverage data into custom groups
-        </FeatureItem>
-      </FeatureGroup.ProItems>
-    </FeatureGroup>
-  )
+interface CoverageConfigurationProps {
+  repoConfiguration: RepositoryContifuration
 }
 
-function TestCoverageConfiguration() {
-  const isTeamPlan = false
+function CoverageConfiguration({
+  repoConfiguration,
+}: CoverageConfigurationProps) {
+  const coverageEnabled = !!repoConfiguration?.repository?.coverageEnabled
+  const isTeamPlan = repoConfiguration?.plan?.tierName === TierNames.TEAM
+  const yaml = repoConfiguration?.repository?.yaml
+  const hasProjectStatus = !!yaml && yaml.includes('project:')
+  const hasFlags = !!repoConfiguration?.repository?.flagsCount
+  const hasComponents = !!repoConfiguration?.repository?.componentsCount
 
   return (
-    <FeatureGroup title="Coverage">
+    <FeatureGroup
+      title="Coverage"
+      getStartedLink="repo"
+      showGetStartedLink={!coverageEnabled}
+    >
       <FeatureGroup.UniversalItems>
         <FeatureItem
           name="Coverage reports"
-          configured={true}
+          configured={coverageEnabled}
           docsLink="quickStart"
           getStartedLink="repo"
+          hiddenStatus={!coverageEnabled}
         >
           Uploading coverage reports and reporting in PR comment
         </FeatureItem>
         <FeatureItem
           name="YAML"
-          configured={false}
+          configured={!!yaml}
           docsLink="codecovYaml"
-          getStartedLink="repo"
+          getStartedLink="codecovYaml"
+          hiddenStatus={!coverageEnabled}
         >
           Customize your reporting preferences
         </FeatureItem>
       </FeatureGroup.UniversalItems>
-      <FeatureGroup.ProItems isProPlan={!isTeamPlan}>
+      <FeatureGroup.ProItems isTeamPlan={isTeamPlan}>
         <FeatureItem
           name="Project coverage"
-          configured={false}
-          hiddenStatus={!isTeamPlan}
-          getStartedLink="repo"
+          configured={hasProjectStatus}
+          docsLink="statusChecks"
+          hiddenStatus={!coverageEnabled || isTeamPlan}
+          getStartedLink="statusChecks"
         >
           Include project coverage reporting in PR comment
         </FeatureItem>
         <FeatureItem
           name="Flags"
-          configured={false}
-          hiddenStatus={!isTeamPlan}
+          configured={hasFlags}
+          hiddenStatus={!coverageEnabled || isTeamPlan}
           docsLink="flags"
-          getStartedLink="repo"
+          getStartedLink="flags"
         >
           Organize your coverage data into custom groups
         </FeatureItem>
         <FeatureItem
           name="Components"
-          configured={false}
-          hiddenStatus={!isTeamPlan}
+          configured={hasComponents}
+          hiddenStatus={!coverageEnabled || isTeamPlan}
           docsLink="components"
-          getStartedLink="repo"
+          getStartedLink="components"
         >
           Organize your coverage data into custom groups
         </FeatureItem>

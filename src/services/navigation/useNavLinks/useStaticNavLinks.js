@@ -252,6 +252,12 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    statusChecks: {
+      text: 'Status Checks',
+      path: () => 'https://docs.codecov.com/docs/commit-status',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     ciProviderWorkflow: {
       text: 'CI provider workflow',
       path: () => 'https://circleci.com/blog/what-is-continuous-integration',
