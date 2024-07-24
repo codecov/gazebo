@@ -271,7 +271,8 @@ const mockCommitComponentData = {
 }
 
 const mockCommitPageData = (
-  hasCommitPageDataError = false,
+  hasCommitPageMissingCommitDataError = false,
+  hasCommitPageOtherDataError = false,
   hasFirstPR = false
 ) => ({
   owner: {
@@ -284,8 +285,10 @@ const mockCommitPageData = (
       commit: {
         commitid: 'id-1',
         compareWithParent: {
-          __typename: hasCommitPageDataError
+          __typename: hasCommitPageMissingCommitDataError
             ? 'MissingBaseCommit'
+            : hasCommitPageOtherDataError
+            ? 'MissingBaseReport'
             : hasFirstPR
               ? 'FirstPullRequest'
               : 'Comparison',
@@ -363,7 +366,8 @@ describe('CommitCoverage', () => {
       tierName = TierNames.PRO,
       hasCommitErrors = false,
       hasErroredUploads = false,
-      hasCommitPageDataError = false,
+      hasCommitPageMissingCommitDataError = false,
+      hasCommitPageOtherDataError = false,
       hasFirstPR = false,
       coverageEnabled = true,
       bundleAnalysisEnabled = true,
@@ -373,7 +377,8 @@ describe('CommitCoverage', () => {
       tierName: TierNames.PRO,
       hasCommitErrors: false,
       hasErroredUploads: false,
-      hasCommitPageDataError: false,
+      hasCommitPageMissingCommitDataError: false,
+      hasCommitPageOtherDataError: false,
       hasFirstPR: false,
       isGithubRateLimited: false,
     }
@@ -434,7 +439,13 @@ describe('CommitCoverage', () => {
       graphql.query('CommitPageData', (req, res, ctx) => {
         return res(
           ctx.status(200),
-          ctx.data(mockCommitPageData(hasCommitPageDataError, hasFirstPR))
+          ctx.data(
+            mockCommitPageData(
+              hasCommitPageMissingCommitDataError,
+              hasCommitPageOtherDataError,
+              hasFirstPR
+            )
+          )
         )
       }),
       graphql.query('GetRepoRateLimitStatus', (req, res, ctx) => {
@@ -667,11 +678,20 @@ describe('CommitCoverage', () => {
   })
 
   describe('commit has errors', () => {
-    it('renders error banner', async () => {
-      const { queryClient } = setup({ hasCommitPageDataError: true })
+    it('renders error banner for missing base commit', async () => {
+      const { queryClient } = setup({
+        hasCommitPageMissingCommitDataError: true,
+      })
       render(<CommitCoverage />, { wrapper: wrapper({ queryClient }) })
 
       const missingBaseCommit = await screen.findByText(/Missing Base Commit/)
+      expect(missingBaseCommit).toBeInTheDocument()
+    })
+    it('renders error banner', async () => {
+      const { queryClient } = setup({ hasCommitPageOtherDataError: true })
+      render(<CommitCoverage />, { wrapper: wrapper({ queryClient }) })
+
+      const missingBaseCommit = await screen.findByText(/Missing Base Report/)
       expect(missingBaseCommit).toBeInTheDocument()
     })
   })
