@@ -113,12 +113,7 @@ describe('FeatureItem', () => {
 
   it('renders unconfigured status', async () => {
     render(
-      <FeatureItem
-        name="Name"
-        configured={false}
-        getStartedLink="flags"
-        hiddenStatus={false}
-      />,
+      <FeatureItem name="Name" getStartedLink="flags" hiddenStatus={false} />,
       { wrapper }
     )
 
