@@ -18,39 +18,37 @@ function FeatureItem({
   children,
 }: FeatureItemProps) {
   return (
-    <div>
-      <div className="flex items-center">
-        <div className="flex-1">
-          <h5 className="font-semibold">{name}</h5>
-          <span className="flex items-end gap-1">
-            {children}
-            {docsLink ? (
-              <A
-                to={{ pageName: docsLink }}
-                hook="configuration-docs"
-                isExternal={false}
-                showExternalIcon={false}
-                variant="medium"
-              >
-                <span className="flex items-center text-xs leading-[18px]">
-                  docs
-                  <Icon
-                    className="left-0 [&_path]:stroke-[3px]"
-                    name="documentText"
-                    size="sm"
-                  />
-                </span>
-              </A>
-            ) : null}
-          </span>
+    <div className="flex items-center">
+      <div className="flex-1">
+        <h4 className="font-semibold">{name}</h4>
+        <div className="flex items-end gap-1">
+          {children}
+          {docsLink ? (
+            <A
+              to={{ pageName: docsLink }}
+              hook="configuration-docs"
+              isExternal={false}
+              showExternalIcon={false}
+              variant="medium"
+            >
+              <span className="flex items-center text-xs leading-[18px]">
+                docs
+                <Icon
+                  className="left-0 [&_path]:stroke-[3px]"
+                  name="documentText"
+                  size="sm"
+                />
+              </span>
+            </A>
+          ) : null}
         </div>
-        {hiddenStatus ? null : (
-          <ConfiguredStatus
-            configured={configured}
-            getStartedLink={getStartedLink}
-          />
-        )}
       </div>
+      {hiddenStatus ? null : (
+        <ConfiguredStatus
+          configured={configured}
+          getStartedLink={getStartedLink}
+        />
+      )}
     </div>
   )
 }
@@ -72,17 +70,17 @@ const ConfiguredStatus = ({
     )
   }
   return (
-    <span className="flex items-baseline gap-1 font-medium">
-      <p className="text-ds-gray-quinary">not enabled</p>
+    <p className="flex items-baseline gap-1 font-medium">
+      <span className="text-ds-gray-quinary">not enabled</span>
       <A
         to={{ pageName: getStartedLink }}
         hook="configuration-get-started"
         isExternal={false}
         showExternalIcon={false}
       >
-        <p className="text-xs leading-4">get started</p>
+        <span className="text-xs leading-4">get started</span>
       </A>
-    </span>
+    </p>
   )
 }
 

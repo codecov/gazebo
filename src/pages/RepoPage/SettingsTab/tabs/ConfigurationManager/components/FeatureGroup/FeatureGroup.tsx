@@ -50,10 +50,10 @@ function ProItems({ isTeamPlan, children }: ProItemsProps) {
   if (isTeamPlan) {
     return (
       <Card.Footer className="mt-5 flex flex-col gap-2 pb-0">
-        <span className="flex items-baseline gap-1">
-          <h4 className="font-medium text-ds-gray-quinary">
+        <p className="flex items-baseline gap-1">
+          <span className="font-medium text-ds-gray-quinary">
             Available with Pro Plan
-          </h4>
+          </span>
           <span className="h-min text-xs">
             <A
               to={{ pageName: 'upgradeOrgPlan' }}
@@ -64,7 +64,7 @@ function ProItems({ isTeamPlan, children }: ProItemsProps) {
               upgrade
             </A>
           </span>
-        </span>
+        </p>
         {children}
       </Card.Footer>
     )
