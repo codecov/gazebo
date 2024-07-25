@@ -10731,7 +10731,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-tailwindcss@npm:^3.17.3":
+"eslint-plugin-tailwindcss@npm:^3.17.4":
   version: 3.17.4
   resolution: "eslint-plugin-tailwindcss@npm:3.17.4"
   dependencies:
@@ -11778,7 +11778,7 @@ __metadata:
     eslint-import-resolver-alias: "npm:^1.1.2"
     eslint-plugin-import: "npm:^2.25.4"
     eslint-plugin-storybook: "npm:^0.6.13"
-    eslint-plugin-tailwindcss: "npm:^3.17.3"
+    eslint-plugin-tailwindcss: "npm:^3.17.4"
     faker: "npm:^5.5.3"
     http-proxy-middleware: "npm:^2.0.6"
     husky: "npm:^7.0.4"
