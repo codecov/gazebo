@@ -2,14 +2,18 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
   render,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { mockIsIntersecting } from 'react-intersection-observer/test-utils'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import FailedTestsTable from './FailedTestsTable'
+
+import { OrderingDirection, OrderingParameter } from '../hooks'
 
 const node1 = {
   updatedAt: '2023-01-01T00:00:00Z',
@@ -83,8 +87,12 @@ describe('FailedTestsTable', () => {
   function setup({ noEntries = false }: SetupArgs) {
     const queryClient = new QueryClient()
 
+    const user = userEvent.setup()
+    const mockSort = jest.fn()
+
     server.use(
       graphql.query('GetTestResults', (req, res, ctx) => {
+        mockSort(req.variables)
         if (noEntries) {
           return res(
             ctx.status(200),
@@ -138,7 +146,7 @@ describe('FailedTestsTable', () => {
       })
     )
 
-    return { queryClient }
+    return { queryClient, user, mockSort }
   }
 
   describe('renders table headers', () => {
@@ -201,6 +209,144 @@ describe('FailedTestsTable', () => {
 
       expect(consoleError).not.toHaveBeenCalled()
       expect(consoleWarn).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('ability to sort', () => {
+    it('can sort on duration column', async () => {
+      const { queryClient, user, mockSort } = setup({ noEntries: true })
+      render(<FailedTestsTable />, {
+        wrapper: wrapper(queryClient),
+      })
+
+      const durationColumn = await screen.findByText('Average duration')
+      await user.click(durationColumn)
+
+      await waitFor(() => {
+        expect(mockSort).toHaveBeenCalledWith(
+          expect.objectContaining({
+            ordering: {
+              direction: OrderingDirection.DESC,
+              parameter: OrderingParameter.AVG_DURATION,
+            },
+          })
+        )
+      })
+
+      await user.click(durationColumn)
+
+      await waitFor(() => {
+        expect(mockSort).toHaveBeenCalledWith(
+          expect.objectContaining({
+            ordering: {
+              direction: OrderingDirection.ASC,
+              parameter: OrderingParameter.AVG_DURATION,
+            },
+          })
+        )
+      })
+    })
+
+    it('can sort on failure rate column', async () => {
+      const { queryClient, user, mockSort } = setup({ noEntries: true })
+      render(<FailedTestsTable />, {
+        wrapper: wrapper(queryClient),
+      })
+
+      const failureRateColumn = await screen.findByText('Failure rate')
+      await user.click(failureRateColumn)
+
+      await waitFor(() => {
+        expect(mockSort).toHaveBeenCalledWith(
+          expect.objectContaining({
+            ordering: {
+              direction: OrderingDirection.DESC,
+              parameter: OrderingParameter.FAILURE_RATE,
+            },
+          })
+        )
+      })
+
+      await user.click(failureRateColumn)
+
+      await waitFor(() => {
+        expect(mockSort).toHaveBeenCalledWith(
+          expect.objectContaining({
+            ordering: {
+              direction: OrderingDirection.ASC,
+              parameter: OrderingParameter.FAILURE_RATE,
+            },
+          })
+        )
+      })
+    })
+
+    it('can sort on commits failed column', async () => {
+      const { queryClient, user, mockSort } = setup({ noEntries: true })
+      render(<FailedTestsTable />, {
+        wrapper: wrapper(queryClient),
+      })
+
+      const commitsFailedColumn = await screen.findByText('Commits failed')
+      await user.click(commitsFailedColumn)
+
+      await waitFor(() => {
+        expect(mockSort).toHaveBeenCalledWith(
+          expect.objectContaining({
+            ordering: {
+              direction: OrderingDirection.DESC,
+              parameter: OrderingParameter.COMMITS_WHERE_FAIL,
+            },
+          })
+        )
+      })
+
+      await user.click(commitsFailedColumn)
+
+      await waitFor(() => {
+        expect(mockSort).toHaveBeenCalledWith(
+          expect.objectContaining({
+            ordering: {
+              direction: OrderingDirection.ASC,
+              parameter: OrderingParameter.COMMITS_WHERE_FAIL,
+            },
+          })
+        )
+      })
+    })
+
+    it('can sort on last run column', async () => {
+      const { queryClient, user, mockSort } = setup({ noEntries: true })
+      render(<FailedTestsTable />, {
+        wrapper: wrapper(queryClient),
+      })
+
+      const lastRunColumn = await screen.findByText('Last run')
+      await user.click(lastRunColumn)
+
+      await waitFor(() => {
+        expect(mockSort).toHaveBeenCalledWith(
+          expect.objectContaining({
+            ordering: {
+              direction: OrderingDirection.DESC,
+              parameter: OrderingParameter.UPDATED_AT,
+            },
+          })
+        )
+      })
+
+      await user.click(lastRunColumn)
+
+      await waitFor(() => {
+        expect(mockSort).toHaveBeenCalledWith(
+          expect.objectContaining({
+            ordering: {
+              direction: OrderingDirection.ASC,
+              parameter: OrderingParameter.UPDATED_AT,
+            },
+          })
+        )
+      })
     })
   })
 
