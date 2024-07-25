@@ -134,13 +134,7 @@
       {
         "callees": ["classnames", "clsx", "ctl"],
         "config": "tailwind.config.js",
-        "cssFiles": [
-          "**/*.css",
-          "!**/node_modules",
-          "!**/.*",
-          "!**/dist",
-          "!**/build"
-        ],
+        "cssFiles": ["src/**/*.css"],
         "cssFilesRefreshRate": 5000,
         "skipClassAttribute": false,
         "tags": [],
