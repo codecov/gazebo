@@ -128,7 +128,7 @@ describe('GuestHeader', () => {
 
       const login = screen.queryByText('Login')
       expect(login).toBeInTheDocument()
-      expect(login).toHaveAttribute('href', '/login')
+      expect(login).toHaveAttribute('href', '/')
     })
   })
 })

@@ -68,6 +68,8 @@ function GuestHeader() {
             <Button
               to={{ pageName: 'login' }}
               variant="primary"
+              activeClassName="hidden"
+              exact={true}
               disabled={false}
               showExternalIcon={false}
               data-testid="login-link"
@@ -83,6 +85,7 @@ function GuestHeader() {
               <A
                 to={{ pageName: 'login' }}
                 variant="guestHeader"
+                activeClassName="hidden"
                 isExternal={false}
                 data-testid="login-link"
                 hook="guest-header-login-link"
