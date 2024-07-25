@@ -14,7 +14,13 @@ function YAML({ yaml }) {
         </p>
       </div>
       <hr />
-      <YamlEditor value={yaml} readOnly placeholder="Repo YAML Configuration" />
+      {/* eslint-disable-next-line tailwindcss/no-custom-classname */}
+      <YamlEditor
+        className="useReadOnlyCursor"
+        value={yaml}
+        readOnly
+        placeholder="Repo YAML Configuration"
+      />
     </div>
   )
 }

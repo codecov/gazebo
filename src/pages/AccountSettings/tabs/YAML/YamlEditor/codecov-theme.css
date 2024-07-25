@@ -33,3 +33,8 @@
 .ace_scroller[style] {
   left: 4rem !important;
 }
+
+/* this is to better indicate that the user cannot edit and is read-only */
+.useReadOnlyCursor .ace_cursor {
+  opacity: 0.2;
+}
