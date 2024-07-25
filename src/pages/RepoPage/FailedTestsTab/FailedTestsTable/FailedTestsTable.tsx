@@ -74,10 +74,7 @@ export function getSortingOption(
     return { direction, parameter }
   }
 
-  return {
-    direction: OrderingDirection.DESC,
-    parameter: OrderingParameter.COMMITS_WHERE_FAIL,
-  }
+  return undefined
 }
 
 interface FailedTestsColumns {
@@ -97,11 +94,15 @@ const columns = [
   }),
   columnHelper.accessor('avgDuration', {
     header: 'Average duration',
-    cell: (info) => info.renderValue(),
+    cell: (info) => `${(info.renderValue() ?? 0).toFixed(3)}s`,
   }),
   columnHelper.accessor('failureRate', {
     header: 'Failure rate',
-    cell: (info) => info.renderValue(),
+    cell: (info) => {
+      const value = (info.renderValue() ?? 0) * 100
+      const isInt = Number.isInteger(info.renderValue())
+      return isInt ? `${value}%` : `${value.toFixed(2)}%`
+    },
   }),
   columnHelper.accessor('commitsFailed', {
     header: 'Commits failed',
@@ -214,7 +215,7 @@ const FailedTestsTable = () => {
         <tbody>
           {isLoading ? (
             <tr>
-              <td>
+              <td colSpan={table.getAllColumns().length}>
                 <Loader />
               </td>
             </tr>
