@@ -117,17 +117,18 @@ describe('GuestHeader', () => {
       const pricing = screen.queryByText('Pricing')
       expect(pricing).not.toBeInTheDocument()
     })
-    it('does not render login link', () => {
-      render(<GuestHeader />, { wrapper })
-
-      const login = screen.queryByText('Login')
-      expect(login).not.toBeInTheDocument()
-    })
     it('does not render start free trial link', () => {
       render(<GuestHeader />, { wrapper })
 
       const startFreeTrial = screen.queryByText('Start Free Trial')
       expect(startFreeTrial).not.toBeInTheDocument()
+    })
+    it('renders a login button', () => {
+      render(<GuestHeader />, { wrapper })
+
+      const login = screen.queryByText('Login')
+      expect(login).toBeInTheDocument()
+      expect(login).toHaveAttribute('href', '/login')
     })
   })
 })
