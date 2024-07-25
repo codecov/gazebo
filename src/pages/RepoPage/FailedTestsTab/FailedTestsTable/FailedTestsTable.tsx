@@ -134,21 +134,24 @@ const FailedTestsTable = () => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    isLoading,
   } = useInfiniteTestResults({
     provider,
     owner,
     repo,
     ordering: getSortingOption(sorting),
+    opts: {
+      suspense: false,
+    },
   })
 
   const tableData = useMemo(() => {
-    const data = testData.testResults
-    return data ?? []
+    return testData?.testResults
   }, [testData])
 
   const table = useReactTable({
     columns,
-    data: tableData,
+    data: tableData ?? [],
     state: {
       sorting,
     },
@@ -162,8 +165,6 @@ const FailedTestsTable = () => {
       fetchNextPage()
     }
   }, [fetchNextPage, inView, hasNextPage])
-
-  const isLoading = false
 
   return (
     <div className="tableui">

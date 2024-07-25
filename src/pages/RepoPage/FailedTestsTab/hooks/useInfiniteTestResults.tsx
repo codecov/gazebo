@@ -231,7 +231,7 @@ export const useInfiniteTestResults = ({
 
   return {
     data: {
-      testResults: data?.pages?.flatMap((page) => page.testResults) ?? [],
+      testResults: data?.pages?.flatMap((page) => page.testResults),
     },
     ...rest,
   }
