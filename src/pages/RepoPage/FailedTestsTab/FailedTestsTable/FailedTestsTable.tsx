@@ -7,13 +7,15 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
-import { useState } from 'react'
-// import { useInView } from 'react-intersection-observer'
-// import { useParams } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { useInView } from 'react-intersection-observer'
+import { useParams } from 'react-router-dom'
 
 import { OrderingDirection } from 'services/repos'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
+
+import { useInfiniteTestResults } from '../hooks'
 
 const Loader = () => (
   <div className="mt-16 flex flex-1 items-center justify-center">
@@ -21,20 +23,20 @@ const Loader = () => (
   </div>
 )
 
-// function LoadMoreTrigger({
-//   intersectionRef,
-// }: {
-//   intersectionRef: React.Ref<HTMLSpanElement>
-// }) {
-//   return (
-//     <span
-//       ref={intersectionRef}
-//       className="invisible relative top-[-65px] block leading-[0]"
-//     >
-//       Loading
-//     </span>
-//   )
-// }
+function LoadMoreTrigger({
+  intersectionRef,
+}: {
+  intersectionRef: React.Ref<HTMLSpanElement>
+}) {
+  return (
+    <span
+      ref={intersectionRef}
+      className="invisible relative top-[-65px] block leading-[0]"
+    >
+      Loading
+    </span>
+  )
+}
 
 export function getSortingOption(
   sorting: Array<{ id: string; desc: boolean }>
@@ -75,9 +77,9 @@ export function getSortingOption(
 
 interface FailedTestsColumns {
   name: string
-  avgDuration: number
-  failureRate: number
-  commitsFailed: number
+  avgDuration: number | null
+  failureRate: number | null
+  commitsFailed: number | null
   updatedAt: string
 }
 
@@ -106,65 +108,41 @@ const columns = [
   }),
 ]
 
+interface URLParams {
+  provider: string
+  owner: string
+  repo: string
+}
+
 const FailedTestsTable = () => {
-  // const { ref, inView } = useInView()
+  const { ref, inView } = useInView()
   const [sorting, setSorting] = useState<SortingState>([
     {
       id: 'commitsFailed',
       desc: true,
     },
   ])
-  // const { owner } = useParams<{ owner: string }>()
+  const { provider, owner, repo } = useParams<URLParams>()
 
-  // const {
-  //   data: reposData,
-  //   fetchNextPage,
-  //   hasNextPage,
-  //   isFetching,
-  //   isFetchingNextPage,
-  // } = useReposTeam({
-  //   activated: false,
-  //   sortItem: getSortingOption(sorting),
-  //   owner,
-  // })
+  const {
+    data: testData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteTestResults({
+    provider,
+    owner,
+    repo,
+  })
 
-  // const tableData = useMemo(() => {
-  //   const data = reposData?.pages?.map((page) => page?.repos).flat()
-  //   return data ?? []
-  // }, [reposData?.pages])
+  const tableData = useMemo(() => {
+    const data = testData.testResults
+    return data ?? []
+  }, [testData])
 
   const table = useReactTable({
     columns,
-    data: [
-      {
-        name: 'blah',
-        avgDuration: 123,
-        failureRate: 1,
-        commitsFailed: 4,
-        updatedAt: '2021-01-01',
-      },
-      {
-        name: 'cool',
-        avgDuration: 123,
-        failureRate: 2,
-        commitsFailed: 3,
-        updatedAt: '2022-01-01',
-      },
-      {
-        name: 'rad guy',
-        avgDuration: 123,
-        failureRate: 3,
-        commitsFailed: 2,
-        updatedAt: '2023-01-01',
-      },
-      {
-        name: 'awww ok',
-        avgDuration: 123,
-        failureRate: 4,
-        commitsFailed: 1,
-        updatedAt: '2024-01-01',
-      },
-    ],
+    data: tableData,
     state: {
       sorting,
     },
@@ -173,11 +151,11 @@ const FailedTestsTable = () => {
     getSortedRowModel: getSortedRowModel(),
   })
 
-  // useEffect(() => {
-  //   if (inView && hasNextPage) {
-  //     fetchNextPage()
-  //   }
-  // }, [fetchNextPage, inView, hasNextPage])
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage()
+    }
+  }, [fetchNextPage, inView, hasNextPage])
 
   const isLoading = false
 
@@ -253,8 +231,8 @@ const FailedTestsTable = () => {
           )}
         </tbody>
       </table>
-      {/* {isFetching ? <Loader /> : null}
-      {hasNextPage ? <LoadMoreTrigger intersectionRef={ref} /> : null} */}
+      {isFetchingNextPage ? <Loader /> : null}
+      {hasNextPage ? <LoadMoreTrigger intersectionRef={ref} /> : null}
     </div>
   )
 }
