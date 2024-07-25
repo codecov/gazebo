@@ -11,11 +11,15 @@ import { useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
 
-import { OrderingDirection } from 'services/repos'
+import { formatTimeToNow } from 'shared/utils/dates'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 
-import { useInfiniteTestResults } from '../hooks'
+import {
+  OrderingDirection,
+  OrderingParameter,
+  useInfiniteTestResults,
+} from '../hooks'
 
 const Loader = () => (
   <div className="mt-16 flex flex-1 items-center justify-center">
@@ -48,31 +52,32 @@ export function getSortingOption(
       ? OrderingDirection.DESC
       : OrderingDirection.ASC
 
-    let ordering
-    if (state.id === 'testName') {
-      ordering = 'NAME'
-    }
+    let parameter: keyof typeof OrderingParameter =
+      OrderingParameter.COMMITS_WHERE_FAIL
 
-    if (state.id === 'lastDuration') {
-      ordering = 'LAST DURATION'
+    if (state.id === 'avgDuration') {
+      parameter = OrderingParameter.AVG_DURATION
     }
 
     if (state.id === 'failureRate') {
-      ordering = 'FAILURE RATE'
+      parameter = OrderingParameter.FAILURE_RATE
     }
 
     if (state.id === 'commitsFailed') {
-      ordering = 'COMMITS FAILED'
+      parameter = OrderingParameter.COMMITS_WHERE_FAIL
     }
 
     if (state.id === 'updatedAt') {
-      ordering = 'LAST RUN'
+      parameter = OrderingParameter.UPDATED_AT
     }
 
-    return { direction, ordering }
+    return { direction, parameter }
   }
 
-  return undefined
+  return {
+    direction: OrderingDirection.DESC,
+    parameter: OrderingParameter.COMMITS_WHERE_FAIL,
+  }
 }
 
 interface FailedTestsColumns {
@@ -100,11 +105,11 @@ const columns = [
   }),
   columnHelper.accessor('commitsFailed', {
     header: 'Commits failed',
-    cell: (info) => info.renderValue(),
+    cell: (info) => (info.renderValue() ? info.renderValue() : 0),
   }),
   columnHelper.accessor('updatedAt', {
     header: 'Last run',
-    cell: (info) => info.renderValue(),
+    cell: (info) => formatTimeToNow(info.renderValue()),
   }),
 ]
 
@@ -133,6 +138,7 @@ const FailedTestsTable = () => {
     provider,
     owner,
     repo,
+    ordering: getSortingOption(sorting),
   })
 
   const tableData = useMemo(() => {
@@ -179,7 +185,7 @@ const FailedTestsTable = () => {
                   scope="col"
                   className="text-right"
                   data-sortable={header.column.getCanSort()}
-                  {...{ onClick: header.column.getToggleSortingHandler() }}
+                  onClick={header.column.getToggleSortingHandler()}
                 >
                   <div
                     className={cs('flex gap-1', {
@@ -221,6 +227,7 @@ const FailedTestsTable = () => {
                       'text-right': !['name', 'updatedAt'].includes(
                         cell.column.id
                       ),
+                      'max-w-1 break-words': cell.column.id === 'name',
                     })}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
