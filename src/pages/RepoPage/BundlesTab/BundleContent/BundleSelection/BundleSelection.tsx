@@ -1,12 +1,9 @@
-import { lazy, Suspense, useCallback, useRef } from 'react'
+import { lazy, useCallback, useRef } from 'react'
 
 import BranchSelector from './BranchSelector'
-import { NoDetails } from './BundleDetails'
-
-const BundleDetails = lazy(() => import('./BundleDetails'))
 const BundleSelector = lazy(() => import('./BundleSelector'))
 
-const BundleSummary: React.FC = () => {
+const BundleSelection: React.FC = () => {
   const bundleSelectRef = useRef<{ resetSelected: () => void }>(null)
 
   const resetBundleSelect = useCallback(() => {
@@ -19,11 +16,8 @@ const BundleSummary: React.FC = () => {
         <BranchSelector resetBundleSelect={resetBundleSelect} />
         <BundleSelector ref={bundleSelectRef} />
       </div>
-      <Suspense fallback={<NoDetails />}>
-        <BundleDetails />
-      </Suspense>
     </div>
   )
 }
 
-export default BundleSummary
+export default BundleSelection

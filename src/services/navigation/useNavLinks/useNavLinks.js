@@ -791,6 +791,22 @@ export function useNavLinks() {
       text: 'Team plan feedback survey',
       isExternalLink: true,
     },
+    failedTests: {
+      path: (
+        { provider = p, owner = o, repo = r, branch = undefined } = {
+          provider: p,
+          owner: o,
+          repo: r,
+        }
+      ) => {
+        if (branch) {
+          return `/${provider}/${owner}/${repo}/tests/${branch}`
+        }
+
+        return `/${provider}/${owner}/${repo}/tests`
+      },
+      text: 'Failed Tests',
+    },
     failedTestsOnboarding: {
       path: (
         { provider = p, owner = o, repo = r } = {

@@ -9,7 +9,8 @@ import Spinner from 'ui/Spinner'
 
 import AssetsTable from './AssetsTable'
 import { BundleChart } from './BundleChart'
-import BundleSummary from './BundleSummary'
+import { BundleDetails, NoDetails } from './BundleDetails'
+import BundleSelection from './BundleSelection'
 import InfoBanner from './InfoBanner'
 import { ToggleElement } from './ToggleElement'
 import { TrendDropdown } from './TrendDropdown'
@@ -44,7 +45,10 @@ const BundleContent: React.FC = () => {
 
   return (
     <div>
-      <BundleSummary />
+      <BundleSelection />
+      <Suspense fallback={<NoDetails />}>
+        <BundleDetails />
+      </Suspense>
       <Suspense fallback={<Loader />}>
         {bundleType === 'BundleAnalysisReport' ? (
           <Switch>

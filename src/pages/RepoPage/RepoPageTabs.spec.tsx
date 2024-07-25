@@ -401,10 +401,11 @@ describe('RepoPageTabs', () => {
   })
 
   describe('Failed tests tab', () => {
-    it('renders the failed tests copy', async () => {
+    it('renders the failed tests onboarding when flag enabled and onboarding failed tests', async () => {
       setup({
         coverageEnabled: false,
         onboardingFailedTests: true,
+        testAnalyticsEnabled: false,
       })
       render(<RepoPageTabs refetchEnabled={false} />, {
         wrapper: wrapper('/gh/codecov/test-repo/tests/new'),
@@ -414,6 +415,22 @@ describe('RepoPageTabs', () => {
       expect(tab).toBeInTheDocument()
       expect(tab).toHaveAttribute('aria-current', 'page')
       expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/tests/new')
+    })
+
+    it('renders the failed tests page when flag enabled and test analytics enabled', async () => {
+      setup({
+        coverageEnabled: false,
+        onboardingFailedTests: true,
+        testAnalyticsEnabled: true,
+      })
+      render(<RepoPageTabs refetchEnabled={false} />, {
+        wrapper: wrapper('/gh/codecov/test-repo/tests'),
+      })
+
+      const tab = await screen.findByText('Tests')
+      expect(tab).toBeInTheDocument()
+      expect(tab).toHaveAttribute('aria-current', 'page')
+      expect(tab).toHaveAttribute('href', '/gh/codecov/test-repo/tests')
     })
 
     it('renders beta badge', async () => {
@@ -429,14 +446,14 @@ describe('RepoPageTabs', () => {
       expect(betaBadge).toBeInTheDocument()
     })
 
-    it('does not render failed tests tab if test analytics is disabled', async () => {
+    it('does not render failed tests tab if feature flag off', async () => {
       setup({
         coverageEnabled: false,
         onboardingFailedTests: false,
-        testAnalyticsEnabled: false,
+        testAnalyticsEnabled: true,
       })
       render(<RepoPageTabs refetchEnabled={false} />, {
-        wrapper: wrapper('/gh/codecov/test-repo/tests/new'),
+        wrapper: wrapper('/gh/codecov/test-repo/tests'),
       })
 
       await waitFor(() => queryClient.isFetching)

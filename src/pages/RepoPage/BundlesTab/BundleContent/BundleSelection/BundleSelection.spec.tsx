@@ -6,7 +6,7 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
-import BundleSummary from './BundleSummary'
+import BundleSelection from './BundleSelection'
 
 const mockRepoOverview = {
   __typename: 'Repository',
@@ -17,35 +17,6 @@ const mockRepoOverview = {
   bundleAnalysisEnabled: true,
   languages: [],
   testAnalyticsEnabled: true,
-}
-
-const mockBundleSummary = {
-  owner: {
-    repository: {
-      __typename: 'Repository',
-      branch: {
-        head: {
-          bundleAnalysisReport: {
-            __typename: 'BundleAnalysisReport',
-            bundle: {
-              name: 'bundle1',
-              moduleCount: 10,
-              bundleData: {
-                loadTime: {
-                  threeG: 1000,
-                  highSpeed: 500,
-                },
-                size: {
-                  gzip: 1000,
-                  uncompress: 2000,
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  },
 }
 
 const mockBranch = {
@@ -145,7 +116,7 @@ afterAll(() => {
   server.close()
 })
 
-describe('BundleSummary', () => {
+describe('BundleSelection', () => {
   function setup() {
     const user = userEvent.setup()
 
@@ -174,9 +145,6 @@ describe('BundleSummary', () => {
       }),
       graphql.query('BranchBundlesNames', (req, res, ctx) => {
         return res(ctx.status(200), ctx.data(mockBranchBundles))
-      }),
-      graphql.query('BundleSummary', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockBundleSummary))
       })
     )
 
@@ -185,7 +153,7 @@ describe('BundleSummary', () => {
 
   it('renders branch selector', async () => {
     setup()
-    render(<BundleSummary />, { wrapper: wrapper() })
+    render(<BundleSelection />, { wrapper: wrapper() })
 
     const branchSelector = await screen.findByRole('button', {
       name: 'bundle branch selector',
@@ -195,7 +163,7 @@ describe('BundleSummary', () => {
 
   it('renders bundle selector', async () => {
     setup()
-    render(<BundleSummary />, { wrapper: wrapper() })
+    render(<BundleSelection />, { wrapper: wrapper() })
 
     const bundleSelector = await screen.findByRole('button', {
       name: 'bundle tab bundle selector',
@@ -203,43 +171,11 @@ describe('BundleSummary', () => {
     expect(bundleSelector).toBeInTheDocument()
   })
 
-  it('renders total size', async () => {
-    setup()
-    render(<BundleSummary />, { wrapper: wrapper() })
-
-    const totalSize = await screen.findByText(/Total size/)
-    expect(totalSize).toBeInTheDocument()
-  })
-
-  it('renders gzip', async () => {
-    setup()
-    render(<BundleSummary />, { wrapper: wrapper() })
-
-    const gzipSize = await screen.findByText(/gzip size/)
-    expect(gzipSize).toBeInTheDocument()
-  })
-
-  it('renders download time', async () => {
-    setup()
-    render(<BundleSummary />, { wrapper: wrapper() })
-
-    const downloadTime = await screen.findByText(/Download time/)
-    expect(downloadTime).toBeInTheDocument()
-  })
-
-  it('renders modules', async () => {
-    setup()
-    render(<BundleSummary />, { wrapper: wrapper() })
-
-    const modules = await screen.findByText(/Modules/)
-    expect(modules).toBeInTheDocument()
-  })
-
   describe('user interacts with branch and bundle selectors', () => {
     describe('user selects a branch', () => {
       it('resets the bundle selector', async () => {
         const { user } = setup()
-        render(<BundleSummary />, {
+        render(<BundleSelection />, {
           wrapper: wrapper('/gh/codecov/test-repo/bundles/main/bundle1'),
         })
 
