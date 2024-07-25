@@ -25,9 +25,15 @@ const mockOwnerNotActivated = {
   },
 }
 
+const mockNullOwner = {
+  owner: null,
+}
+
 const mockGoodResponse = {
   owner: {
-    plan: null,
+    plan: {
+      tierName: 'pro',
+    },
     repository: {
       __typename: 'Repository',
       flagsCount: 2,
@@ -64,6 +70,7 @@ interface SetupArgs {
   badResponse?: boolean
   repoNotFound?: boolean
   ownerNotActivated?: boolean
+  nullOwner?: boolean
 }
 
 describe('useRepoConfigurationStatus', () => {
@@ -71,6 +78,7 @@ describe('useRepoConfigurationStatus', () => {
     badResponse = false,
     repoNotFound = false,
     ownerNotActivated = false,
+    nullOwner: nullResponse = false,
   }: SetupArgs) {
     server.use(
       graphql.query('GetRepoConfigurationStatus', (req, res, ctx) => {
@@ -80,6 +88,8 @@ describe('useRepoConfigurationStatus', () => {
           return res(ctx.status(200), ctx.data(mockRepoNotFound))
         } else if (ownerNotActivated) {
           return res(ctx.status(200), ctx.data(mockOwnerNotActivated))
+        } else if (nullResponse) {
+          return res(ctx.status(200), ctx.data(mockNullOwner))
         }
         return res(ctx.status(200), ctx.data(mockGoodResponse))
       })
@@ -158,6 +168,28 @@ describe('useRepoConfigurationStatus', () => {
     )
   })
 
+  it('returns nulls on null owner', async () => {
+    setup({ nullOwner: true })
+    const { result } = renderHook(
+      () =>
+        useRepoConfigurationStatus({
+          provider: 'gh',
+          owner: 'codecov',
+          repo: 'cool-repo',
+        }),
+      { wrapper }
+    )
+
+    await waitFor(() => expect(result.current.status).toBe('success'))
+
+    await waitFor(() =>
+      expect(result.current.data).toMatchObject({
+        plan: null,
+        repository: null,
+      })
+    )
+  })
+
   it('returns data on good response', async () => {
     setup({})
     const { result } = renderHook(
@@ -174,7 +206,9 @@ describe('useRepoConfigurationStatus', () => {
 
     await waitFor(() =>
       expect(result.current.data).toMatchObject({
-        plan: null,
+        plan: {
+          tierName: 'pro',
+        },
         repository: {
           __typename: 'Repository',
           flagsCount: 2,

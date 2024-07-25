@@ -28,7 +28,7 @@ const PlanSchema = z
 
 export type RepositoryConfiguration =
   | {
-      plan?: z.infer<typeof PlanSchema> | null
+      plan?: z.infer<typeof PlanSchema>
       repository?: z.infer<typeof RepositorySchema>
     }
   | null
@@ -133,8 +133,8 @@ export function useRepoConfigurationStatus({
         }
 
         return {
-          plan: data?.owner?.plan,
-          repository: data?.owner?.repository,
+          plan: data?.owner?.plan ?? null,
+          repository: data?.owner?.repository ?? null,
         }
       })
     },
