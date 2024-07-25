@@ -3,7 +3,11 @@ import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import config from 'config'
+
 import GuestHeader from './GuestHeader'
+
+jest.mock('config')
 
 // silence console errors
 console.error = () => {}
@@ -99,6 +103,31 @@ describe('GuestHeader', () => {
           'https://about.codecov.io/codecov-free-trial'
         )
       })
+    })
+  })
+
+  describe('self hosted build', () => {
+    beforeEach(() => {
+      config.IS_SELF_HOSTED = true
+    })
+
+    it('does not render pricing link', () => {
+      render(<GuestHeader />, { wrapper })
+
+      const pricing = screen.queryByText('Pricing')
+      expect(pricing).not.toBeInTheDocument()
+    })
+    it('does not render login link', () => {
+      render(<GuestHeader />, { wrapper })
+
+      const login = screen.queryByText('Login')
+      expect(login).not.toBeInTheDocument()
+    })
+    it('does not render start free trial link', () => {
+      render(<GuestHeader />, { wrapper })
+
+      const startFreeTrial = screen.queryByText('Start Free Trial')
+      expect(startFreeTrial).not.toBeInTheDocument()
     })
   })
 })
