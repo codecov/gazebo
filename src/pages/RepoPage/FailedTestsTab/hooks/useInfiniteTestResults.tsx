@@ -2,6 +2,7 @@ import {
   useInfiniteQuery,
   type UseInfiniteQueryOptions,
 } from '@tanstack/react-query'
+import { useMemo } from 'react'
 import { z } from 'zod'
 
 import {
@@ -229,9 +230,14 @@ export const useInfiniteTestResults = ({
     ...opts,
   })
 
+  const memoedData = useMemo(
+    () => data?.pages?.flatMap((page) => page.testResults) ?? [],
+    [data]
+  )
+
   return {
     data: {
-      testResults: data?.pages?.flatMap((page) => page.testResults),
+      testResults: memoedData,
     },
     ...rest,
   }

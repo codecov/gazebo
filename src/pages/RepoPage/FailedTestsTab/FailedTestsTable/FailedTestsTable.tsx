@@ -1,9 +1,9 @@
-import type { SortingState } from '@tanstack/react-table'
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
+  SortingState,
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
@@ -89,15 +89,15 @@ const columnHelper = createColumnHelper<FailedTestsColumns>()
 
 const columns = [
   columnHelper.accessor('name', {
-    header: 'Test name',
+    header: () => 'Test name',
     cell: (info) => info.renderValue(),
   }),
   columnHelper.accessor('avgDuration', {
-    header: 'Average duration',
+    header: () => 'Average duration',
     cell: (info) => `${(info.renderValue() ?? 0).toFixed(3)}s`,
   }),
   columnHelper.accessor('failureRate', {
-    header: 'Failure rate',
+    header: () => 'Failure rate',
     cell: (info) => {
       const value = (info.renderValue() ?? 0) * 100
       const isInt = Number.isInteger(info.renderValue())
@@ -105,11 +105,11 @@ const columns = [
     },
   }),
   columnHelper.accessor('commitsFailed', {
-    header: 'Commits failed',
+    header: () => 'Commits failed',
     cell: (info) => (info.renderValue() ? info.renderValue() : 0),
   }),
   columnHelper.accessor('updatedAt', {
-    header: 'Last run',
+    header: () => 'Last run',
     cell: (info) => formatTimeToNow(info.renderValue()),
   }),
 ]
@@ -159,6 +159,7 @@ const FailedTestsTable = () => {
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    // debugAll: true,
   })
 
   useEffect(() => {
@@ -168,81 +169,83 @@ const FailedTestsTable = () => {
   }, [fetchNextPage, inView, hasNextPage])
 
   return (
-    <div className="tableui">
-      <table>
-        <colgroup>
-          <col className="w-full @sm/table:w-5/12" />
-          <col className="@sm/table:w-1/12" />
-          <col className="@sm/table:w-1/12" />
-          <col className="@sm/table:w-1/12" />
-          <col className="@sm/table:w-1/12" />
-        </colgroup>
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th
-                  key={header.id}
-                  colSpan={header.colSpan}
-                  scope="col"
-                  className="text-right"
-                  data-sortable={header.column.getCanSort()}
-                  onClick={header.column.getToggleSortingHandler()}
-                >
-                  <div
-                    className={cs('flex gap-1', {
-                      'flex-row-reverse': !['name', 'updatedAt'].includes(
-                        header.id
-                      ),
-                    })}
+    <>
+      <div className="tableui">
+        <table>
+          <colgroup>
+            <col className="w-full @sm/table:w-5/12" />
+            <col className="@sm/table:w-1/12" />
+            <col className="@sm/table:w-1/12" />
+            <col className="@sm/table:w-1/12" />
+            <col className="@sm/table:w-1/12" />
+          </colgroup>
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th
+                    key={header.id}
+                    data-sortable={header.column.getCanSort()}
+                    onClick={header.column.getToggleSortingHandler()}
                   >
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                    <span
-                      className="text-ds-blue-darker group-hover/columnheader:opacity-100"
-                      data-sort-direction={header.column.getIsSorted()}
+                    <div
+                      className={cs('flex gap-1', {
+                        'flex-row-reverse': !['name', 'updatedAt'].includes(
+                          header.id
+                        ),
+                      })}
                     >
-                      <Icon name="arrowUp" size="sm" />
-                    </span>
-                  </div>
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {isLoading ? (
-            <tr>
-              <td colSpan={table.getAllColumns().length}>
-                <Loader />
-              </td>
-            </tr>
-          ) : (
-            table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <td
-                    key={cell.id}
-                    className={cs({
-                      'text-right': !['name', 'updatedAt'].includes(
-                        cell.column.id
-                      ),
-                      'max-w-1 break-words': cell.column.id === 'name',
-                    })}
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                      <span
+                        className="text-ds-blue-darker group-hover/columnheader:opacity-100"
+                        data-sort-direction={header.column.getIsSorted()}
+                      >
+                        <Icon name="arrowUp" size="sm" />
+                      </span>
+                    </div>
+                  </th>
                 ))}
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ))}
+          </thead>
+          <tbody>
+            {isLoading ? (
+              <tr>
+                <td colSpan={table.getAllColumns().length}>
+                  <Loader />
+                </td>
+              </tr>
+            ) : (
+              table.getRowModel().rows.map((row) => (
+                <tr key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <td
+                      key={cell.id}
+                      className={cs({
+                        'text-right': !['name', 'updatedAt'].includes(
+                          cell.column.id
+                        ),
+                        'max-w-1 break-words': cell.column.id === 'name',
+                      })}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
       {isFetchingNextPage ? <Loader /> : null}
       {hasNextPage ? <LoadMoreTrigger intersectionRef={ref} /> : null}
-    </div>
+    </>
   )
 }
 
