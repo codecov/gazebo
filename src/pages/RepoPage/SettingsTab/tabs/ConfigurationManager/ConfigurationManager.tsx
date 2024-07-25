@@ -5,7 +5,7 @@ import { TierNames } from 'services/tier'
 import FeatureGroup from './components/FeatureGroup'
 import FeatureItem from './components/FeatureItem/FeatureItem'
 import {
-  RepositoryContifuration,
+  RepositoryConfiguration,
   useRepoConfigurationStatus,
 } from './hooks/useRepoConfigurationStatus/useRepoConfigurationStatus'
 
@@ -23,8 +23,6 @@ function ConfigurationManager() {
     repo,
   })
 
-  console.log('repoconfig', repoConfiguration)
-
   return (
     <div className="flex flex-col gap-6 lg:w-3/4">
       <CoverageConfiguration repoConfiguration={repoConfiguration} />
@@ -35,7 +33,7 @@ function ConfigurationManager() {
 export default ConfigurationManager
 
 interface CoverageConfigurationProps {
-  repoConfiguration: RepositoryContifuration
+  repoConfiguration: RepositoryConfiguration
 }
 
 function CoverageConfiguration({

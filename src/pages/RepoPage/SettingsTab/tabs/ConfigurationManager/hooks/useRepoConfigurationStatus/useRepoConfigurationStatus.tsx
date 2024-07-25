@@ -26,7 +26,7 @@ const PlanSchema = z
   })
   .nullable()
 
-export type RepositoryContifuration =
+export type RepositoryConfiguration =
   | {
       plan?: z.infer<typeof PlanSchema> | null
       repository?: z.infer<typeof RepositorySchema>
