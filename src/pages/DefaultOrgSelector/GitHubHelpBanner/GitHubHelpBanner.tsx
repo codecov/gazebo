@@ -49,7 +49,7 @@ function GitHubHelpBanner() {
           <h2 className="font-semibold">Don&apos;t see your organization? </h2>
           <A
             hook="help finding an org"
-            to={{ pageName: 'codecovGithubApp' }}
+            to={{ pageName: 'codecovGithubAppSelectTarget' }}
             isExternal={true}
           >
             GitHub App is required

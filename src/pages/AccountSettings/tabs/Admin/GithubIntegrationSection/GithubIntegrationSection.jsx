@@ -21,7 +21,7 @@ function GithubIntegrationCopy({ integrationId }) {
       <br />
       This will replace the team bot account and post pull request comments on
       behalf of Codecov.{' '}
-      <A to={{ pageName: 'codecovGithubApp' }}>
+      <A to={{ pageName: 'codecovGithubAppSelectTarget' }}>
         View the Codecov App on GitHub
       </A>
     </p>
