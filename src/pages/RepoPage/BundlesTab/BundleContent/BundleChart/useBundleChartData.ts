@@ -1,10 +1,13 @@
 import { useMemo } from 'react'
 
 import { useBundleTrendData } from 'services/bundleAnalysis'
+import { BUNDLE_TREND_REPORT_TYPES } from 'services/bundleAnalysis/useBundleTrendData'
 import { useLocationParams } from 'services/navigation'
 import { useRepoOverview } from 'services/repo'
 import { findBundleMultiplier } from 'shared/utils/bundleAnalysis'
 import { createTimeSeriesQueryVars, Trend } from 'shared/utils/timeseriesCharts'
+
+import { BundleReportTypeEnums, findBundleReportAssetEnum } from '../constants'
 
 interface UseBundleChartArgs {
   provider: string
@@ -44,6 +47,13 @@ export function useBundleChartData({
     }
   }, [overview?.oldestCommitAt, today, trend])
 
+  // @ts-expect-error - useLocationParams needs fixing
+  const types: BundleReportTypeEnums[] = params?.types ?? []
+  const assetTypes: Array<(typeof BUNDLE_TREND_REPORT_TYPES)[number]> =
+    types.length > 0
+      ? types.map((type) => findBundleReportAssetEnum(type))
+      : ['REPORT_SIZE']
+
   const { data: trendData, isLoading } = useBundleTrendData({
     provider,
     owner,
@@ -55,7 +65,7 @@ export function useBundleChartData({
     before: queryVars.before,
     // this will be replaced once we have filtering by types implemented
     filters: {
-      assetTypes: ['REPORT_SIZE'],
+      assetTypes: assetTypes,
     },
     enabled: !!overview?.oldestCommitAt,
     suspense: false,
