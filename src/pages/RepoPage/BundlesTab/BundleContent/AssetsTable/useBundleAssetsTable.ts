@@ -24,6 +24,9 @@ export function useBundleAssetsTable({
   const { data: overview } = useRepoOverview({ provider, owner, repo })
 
   // @ts-expect-error - useLocationParams needs fixing
+  const typeFilters = params?.types ?? []
+
+  // @ts-expect-error - useLocationParams needs fixing
   const trend = params?.trend ?? Trend.THREE_MONTHS
   const today = useMemo(() => new Date(), [])
 
@@ -52,6 +55,9 @@ export function useBundleAssetsTable({
     after: queryVars.after,
     before: queryVars.before,
     interval: queryVars.interval,
+    filters: {
+      reportGroups: typeFilters,
+    },
     opts: { enabled: branch !== '' && bundle !== '' },
   })
 }
