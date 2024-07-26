@@ -109,7 +109,7 @@ function HelpDropdown() {
       </button>
       <ul
         className={cn(
-          'z-50 w-[15.5rem] border border-gray-ds-tertiary overflow-hidden rounded bg-white text-gray-900 border-ds-gray-tertiary absolute right-0 top-8 min-w-fit',
+          'absolute right-0 top-8 z-50 w-[15.5rem] min-w-fit overflow-hidden rounded border border-ds-gray-tertiary bg-white text-gray-900',
           { hidden: !isOpen }
         )}
         aria-label="help menu items"

@@ -17,6 +17,7 @@ const AccountSchema = z.object({
 })
 
 const OwnerSchema = z.object({
+  isUserOktaAuthenticated: z.boolean(),
   account: AccountSchema.nullable(),
 })
 
@@ -27,6 +28,7 @@ const OktaConfigRequestSchema = z.object({
 const oktaConfigQuery = `
   query GetOktaConfig($username: String!) {
     owner(username: $username) {
+      isUserOktaAuthenticated
       account {
         oktaConfig {
           enabled

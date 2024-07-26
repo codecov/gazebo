@@ -1,12 +1,10 @@
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 import Icon from './Icon'
 
 describe('Icon', () => {
-  let wrapper
-
   function setup(props) {
-    wrapper = render(<Icon {...props} />)
+    render(<Icon {...props} />)
   }
 
   describe('when rendered with a SVG we have', () => {
@@ -15,17 +13,19 @@ describe('Icon', () => {
     })
 
     it('renders a svg', () => {
-      expect(wrapper.container.querySelector('svg')).not.toBeNull()
+      const icon = screen.queryByText('check.svg')
+      expect(icon).toBeInTheDocument()
     })
   })
 
   describe('when rendered with a SVG we dont have', () => {
     beforeEach(() => {
-      setup({ name: 'icon-we-dont-have ' })
+      setup({ name: 'icon-we-dont-have' })
     })
 
-    it('renders a svg', () => {
-      expect(wrapper.container.querySelector('svg')).toBeNull()
+    it('renders a svg', async () => {
+      const icon = screen.queryByText('icon-we-dont-have.svg')
+      expect(icon).not.toBeInTheDocument()
     })
   })
 
@@ -33,10 +33,10 @@ describe('Icon', () => {
     beforeEach(() => {
       setup({ name: 'check', size: 'sm' })
     })
-    it('renders small icon', () => {
-      const svg = wrapper.container.querySelector('svg')
-      expect(svg.classList.contains('w-3')).toBe(true)
-      expect(svg.classList.contains('h-3')).toBe(true)
+    it('renders small icon', async () => {
+      const icon = await screen.findByText('check.svg')
+      expect(icon).toHaveClass('w-3')
+      expect(icon).toHaveClass('h-3')
     })
   })
 
@@ -44,10 +44,10 @@ describe('Icon', () => {
     beforeEach(() => {
       setup({ name: 'check' })
     })
-    it('renders small icon', () => {
-      const svg = wrapper.container.querySelector('svg')
-      expect(svg.classList.contains('w-6')).toBe(true)
-      expect(svg.classList.contains('h-6')).toBe(true)
+    it('renders small icon', async () => {
+      const icon = await screen.findByText('check.svg')
+      expect(icon).toHaveClass('w-6')
+      expect(icon).toHaveClass('h-6')
     })
   })
 
@@ -55,21 +55,21 @@ describe('Icon', () => {
     beforeEach(() => {
       setup({ name: 'check', size: 'lg' })
     })
-    it('renders small icon', () => {
-      const svg = wrapper.container.querySelector('svg')
-      expect(svg.classList.contains('w-16')).toBe(true)
-      expect(svg.classList.contains('h-16')).toBe(true)
+    it('renders small icon', async () => {
+      const icon = await screen.findByText('check.svg')
+      expect(icon).toHaveClass('w-16')
+      expect(icon).toHaveClass('h-16')
     })
   })
 
-  describe('renders cusotm size icon', () => {
+  describe('renders custom size icon', () => {
     beforeEach(() => {
       setup({ name: 'check', size: 'lg', iconClass: 'w-1 h-1' })
     })
-    it('renders small icon', () => {
-      const svg = wrapper.container.querySelector('svg')
-      expect(svg.classList.contains('w-1')).toBe(true)
-      expect(svg.classList.contains('h-1')).toBe(true)
+    it('renders small icon', async () => {
+      const icon = await screen.findByText('check.svg')
+      expect(icon).toHaveClass('w-1')
+      expect(icon).toHaveClass('h-1')
     })
   })
 })

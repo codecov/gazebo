@@ -1,5 +1,5 @@
 import { fromUnixTime } from 'date-fns'
-import { format, utcToZonedTime } from 'date-fns-tz'
+import { format, toZonedTime } from 'date-fns-tz'
 import { z } from 'zod'
 
 import { InvoiceSchema } from 'services/account'
@@ -31,7 +31,7 @@ const InvoiceOverview = ({
             <td className="pr-2">Date of issue</td>
             <td>
               {format(
-                utcToZonedTime(fromUnixTime(invoice.created), 'UTC'),
+                toZonedTime(fromUnixTime(invoice.created), 'UTC'),
                 'MMMM do, yyyy',
                 { timeZone: 'UTC' }
               )}
@@ -42,7 +42,7 @@ const InvoiceOverview = ({
             {dueDate ? (
               <td>
                 {format(
-                  utcToZonedTime(fromUnixTime(dueDate), 'UTC'),
+                  toZonedTime(fromUnixTime(dueDate), 'UTC'),
                   'MMMM do, yyyy',
                   { timeZone: 'UTC' }
                 )}

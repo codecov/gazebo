@@ -120,7 +120,10 @@ describe('GithubIntegrationSection', () => {
         name: /View the Codecov App on GitHub/i,
       })
       expect(link).toBeInTheDocument()
-      expect(link).toHaveAttribute('href', 'https://github.com/apps/codecov')
+      expect(link).toHaveAttribute(
+        'href',
+        'https://github.com/apps/codecov/installations/select_target'
+      )
     })
   })
 

@@ -32,7 +32,7 @@ export function FrameworkTabs() {
           <button
             key={framework}
             className={cn(
-              'px-4 py-2 border-b-2 border-transparent',
+              'border-b-2 border-transparent px-4 py-2',
               selectedFramework === framework && 'border-ds-gray-octonary'
             )}
             onClick={() => setSelectedFramework(framework)}
