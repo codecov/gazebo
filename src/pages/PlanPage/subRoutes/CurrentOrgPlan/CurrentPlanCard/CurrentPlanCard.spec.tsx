@@ -164,9 +164,8 @@ describe('CurrentPlanCard', () => {
         wrapper,
       })
 
-      const usesInvoiceEnterprise = await screen.findByText(
-        /Enterprise plan card/
-      )
+      const usesInvoiceEnterprise =
+        await screen.findByText(/Enterprise plan card/)
       expect(usesInvoiceEnterprise).toBeInTheDocument()
     })
   })

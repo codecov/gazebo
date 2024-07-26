@@ -37,23 +37,22 @@ const queryClient = new QueryClient({
 let testLocation
 const wrapper =
   (initialEntries = '') =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/plan/:provider/:owner">
-            <Suspense fallback={null}>{children}</Suspense>
-          </Route>
-          <Route
-            path="*"
-            render={({ location }) => {
-              testLocation = location
-              return null
-            }}
-          />
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route path="/plan/:provider/:owner">
+          <Suspense fallback={null}>{children}</Suspense>
+        </Route>
+        <Route
+          path="*"
+          render={({ location }) => {
+            testLocation = location
+            return null
+          }}
+        />
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()
@@ -195,9 +194,8 @@ describe('PlanPage', () => {
           wrapper: wrapper('/plan/gh/codecov/invoices/1'),
         })
 
-        const invoicesDetailsPage = await screen.findByText(
-          /InvoiceDetailsPage/
-        )
+        const invoicesDetailsPage =
+          await screen.findByText(/InvoiceDetailsPage/)
         expect(invoicesDetailsPage).toBeInTheDocument()
       })
     })

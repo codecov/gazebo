@@ -47,8 +47,8 @@ function FileEntry({
             tree: displayAsList
               ? path
               : !!urlPath
-              ? `${urlPath}/${name}`
-              : name,
+                ? `${urlPath}/${name}`
+                : name,
             queryParams,
           },
         }}

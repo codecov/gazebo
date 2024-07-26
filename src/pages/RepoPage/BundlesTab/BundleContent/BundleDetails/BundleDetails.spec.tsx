@@ -63,16 +63,15 @@ const wrapper =
   (
     initialEntries = '/gh/codecov/test-repo/bundles/test-branch/test-bundle'
   ): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/:provider/:owner/:repo/bundles/:branch/:bundle">
-            <Suspense fallback={null}>{children}</Suspense>
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route path="/:provider/:owner/:repo/bundles/:branch/:bundle">
+          <Suspense fallback={null}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()
@@ -173,9 +172,8 @@ describe('BundleDetails', () => {
         const downloadTime = await screen.findByText(/1,000ms | 500ms/)
         expect(downloadTime).toBeInTheDocument()
 
-        const downloadTimeBreakdown = await screen.findByText(
-          /(3G | high speed)/
-        )
+        const downloadTimeBreakdown =
+          await screen.findByText(/(3G | high speed)/)
         expect(downloadTimeBreakdown).toBeInTheDocument()
       })
 

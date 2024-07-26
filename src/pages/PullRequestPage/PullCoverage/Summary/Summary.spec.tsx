@@ -26,16 +26,15 @@ type WrapperClosure = (
 
 const wrapper: WrapperClosure =
   (initialEntries = ['/gh/codecov/test-repo/pull/1']) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route path={['/:provider/:owner/:repo/pull/:pullId']}>
-            <Suspense fallback={'loading'}>{children}</Suspense>
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route path={['/:provider/:owner/:repo/pull/:pullId']}>
+          <Suspense fallback={'loading'}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()

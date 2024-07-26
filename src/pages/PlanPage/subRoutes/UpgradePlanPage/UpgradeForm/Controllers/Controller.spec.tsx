@@ -123,9 +123,8 @@ describe('Controller', () => {
         }
         render(<Controller {...props} />)
 
-        const teamPlanController = await screen.findByText(
-          /Team Plan Controller/
-        )
+        const teamPlanController =
+          await screen.findByText(/Team Plan Controller/)
         expect(teamPlanController).toBeInTheDocument()
 
         const proPlanController = screen.queryByText(/Pro Plan Controller/)
@@ -149,9 +148,8 @@ describe('Controller', () => {
         }
         render(<Controller {...props} />)
 
-        const teamPlanController = await screen.findByText(
-          /Team Plan Controller/
-        )
+        const teamPlanController =
+          await screen.findByText(/Team Plan Controller/)
         expect(teamPlanController).toBeInTheDocument()
 
         const proPlanController = screen.queryByText(/Pro Plan Controller/)

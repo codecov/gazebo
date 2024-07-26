@@ -9521,14 +9521,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-prettier@npm:^8.8.0":
-  version: 8.10.0
-  resolution: "eslint-config-prettier@npm:8.10.0"
+"eslint-config-prettier@npm:^9.1.0":
+  version: 9.1.0
+  resolution: "eslint-config-prettier@npm:9.1.0"
   peerDependencies:
     eslint: ">=7.0.0"
   bin:
     eslint-config-prettier: bin/cli.js
-  checksum: 10c0/19f8c497d9bdc111a17a61b25ded97217be3755bbc4714477dfe535ed539dddcaf42ef5cf8bb97908b058260cf89a3d7c565cb0be31096cbcd39f4c2fa5fe43c
+  checksum: 10c0/6d332694b36bc9ac6fdb18d3ca2f6ac42afa2ad61f0493e89226950a7091e38981b66bac2b47ba39d15b73fff2cd32c78b850a9cf9eed9ca9a96bfb2f3a2f10d
   languageName: node
   linkType: hard
 
@@ -10688,7 +10688,7 @@ __metadata:
     dompurify: "npm:^2.3.8"
     downshift: "npm:^7.6.0"
     eslint: "npm:^8.39.0"
-    eslint-config-prettier: "npm:^8.8.0"
+    eslint-config-prettier: "npm:^9.1.0"
     eslint-import-resolver-alias: "npm:^1.1.2"
     eslint-plugin-import: "npm:^2.25.4"
     eslint-plugin-storybook: "npm:^0.8.0"
@@ -10704,7 +10704,7 @@ __metadata:
     msw: "npm:^1.2.1"
     pluralize: "npm:^8.0.0"
     postcss: "npm:^8.4.31"
-    prettier: "npm:^2.8.8"
+    prettier: "npm:^3.3.3"
     prism-react-renderer: "npm:^1.3.1"
     prop-types: "npm:^15.8.1"
     qs: "npm:^6.11.1"
@@ -15793,16 +15793,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^2.8.8":
-  version: 2.8.8
-  resolution: "prettier@npm:2.8.8"
-  bin:
-    prettier: bin-prettier.js
-  checksum: 10c0/463ea8f9a0946cd5b828d8cf27bd8b567345cf02f56562d5ecde198b91f47a76b7ac9eae0facd247ace70e927143af6135e8cf411986b8cb8478784a4d6d724a
-  languageName: node
-  linkType: hard
-
-"prettier@npm:^3.1.1":
+"prettier@npm:^3.1.1, prettier@npm:^3.3.3":
   version: 3.3.3
   resolution: "prettier@npm:3.3.3"
   bin:

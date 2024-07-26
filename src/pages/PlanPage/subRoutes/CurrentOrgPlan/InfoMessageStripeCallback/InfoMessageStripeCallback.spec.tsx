@@ -6,8 +6,9 @@ import InfoMessageStripeCallback from './InfoMessageStripeCallback'
 
 const wrapper =
   (initialEntries = '/gh/codecov'): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
+  ({ children }) => (
     <MemoryRouter initialEntries={[initialEntries]}>{children}</MemoryRouter>
+  )
 
 describe('InfoMessageStripeCallback', () => {
   describe('when rendering without success or cancel in the url', () => {

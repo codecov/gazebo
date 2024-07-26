@@ -123,19 +123,18 @@ const server = setupServer()
 
 const wrapper =
   (initialEntries = '/gh/test/critical-role') =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/:provider/:owner/:repo">
-            <RepoBreadcrumbProvider>
-              <Suspense fallback={<div>loading</div>}>{children}</Suspense>
-            </RepoBreadcrumbProvider>
-          </Route>
-          <Route path="*" render={({ location }) => location.pathname} />
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route path="/:provider/:owner/:repo">
+          <RepoBreadcrumbProvider>
+            <Suspense fallback={<div>loading</div>}>{children}</Suspense>
+          </RepoBreadcrumbProvider>
+        </Route>
+        <Route path="*" render={({ location }) => location.pathname} />
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()
@@ -254,9 +253,8 @@ describe('Summary', () => {
     it('renders the yaml configuration for default yaml prompt', async () => {
       render(<Summary />, { wrapper: wrapper() })
 
-      const yamlConfigurationTitle = await screen.findByText(
-        /YAML Configuration/
-      )
+      const yamlConfigurationTitle =
+        await screen.findByText(/YAML Configuration/)
       expect(yamlConfigurationTitle).toBeInTheDocument()
 
       const yamlConfigurationLink = await screen.findByRole('link', {

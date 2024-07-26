@@ -95,14 +95,13 @@ describe('MembersTable', () => {
 
   const wrapper =
     (initialEntries = ['/gh/codecov']) =>
-    ({ children }) =>
-      (
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={initialEntries}>
-            <Route path="/:provider/:owner">{children}</Route>
-          </MemoryRouter>
-        </QueryClientProvider>
-      )
+    ({ children }) => (
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Route path="/:provider/:owner">{children}</Route>
+        </MemoryRouter>
+      </QueryClientProvider>
+    )
 
   function setup(
     {

@@ -97,45 +97,44 @@ const wrapper =
     queryClient: QueryClient
     initialEntries?: string
   }): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <NetworkErrorBoundary>
-            <Route
-              path={[
-                '/:provider/:owner/:repo/blob/:ref/:path+',
-                '/:provider/:owner/:repo/commits',
-                '/:provider/:owner/:repo/bundles/:branch/:bundle',
-                '/:provider/:owner/:repo/bundles/:branch',
-                '/:provider/:owner/:repo/bundles',
-                '/:provider/:owner/:repo/flags',
-                '/:provider/:owner/:repo/components',
-                '/:provider/:owner/:repo/new',
-                '/:provider/:owner/:repo/pulls',
-                '/:provider/:owner/:repo/settings',
-                '/:provider/:owner/:repo/tree/:branch',
-                '/:provider/:owner/:repo/tree/:branch/:path+',
-                '/:provider/:owner/:repo',
-                '/:provider/:owner/:repo/tests/new',
-                '/:provider/:owner/:repo/tests/new/codecov-cli',
-              ]}
-            >
-              <Suspense fallback={null}>
-                <RepoBreadcrumbProvider>{children}</RepoBreadcrumbProvider>
-              </Suspense>
-            </Route>
-            <Route
-              path="*"
-              render={({ location }) => {
-                testLocation = location
-                return null
-              }}
-            />
-          </NetworkErrorBoundary>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <NetworkErrorBoundary>
+          <Route
+            path={[
+              '/:provider/:owner/:repo/blob/:ref/:path+',
+              '/:provider/:owner/:repo/commits',
+              '/:provider/:owner/:repo/bundles/:branch/:bundle',
+              '/:provider/:owner/:repo/bundles/:branch',
+              '/:provider/:owner/:repo/bundles',
+              '/:provider/:owner/:repo/flags',
+              '/:provider/:owner/:repo/components',
+              '/:provider/:owner/:repo/new',
+              '/:provider/:owner/:repo/pulls',
+              '/:provider/:owner/:repo/settings',
+              '/:provider/:owner/:repo/tree/:branch',
+              '/:provider/:owner/:repo/tree/:branch/:path+',
+              '/:provider/:owner/:repo',
+              '/:provider/:owner/:repo/tests/new',
+              '/:provider/:owner/:repo/tests/new/codecov-cli',
+            ]}
+          >
+            <Suspense fallback={null}>
+              <RepoBreadcrumbProvider>{children}</RepoBreadcrumbProvider>
+            </Suspense>
+          </Route>
+          <Route
+            path="*"
+            render={({ location }) => {
+              testLocation = location
+              return null
+            }}
+          />
+        </NetworkErrorBoundary>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   console.error = () => {}
@@ -291,9 +290,8 @@ describe('RepoPage', () => {
               }),
             })
 
-            const coverageOnboarding = await screen.findByText(
-              'CoverageOnboarding'
-            )
+            const coverageOnboarding =
+              await screen.findByText('CoverageOnboarding')
             expect(coverageOnboarding).toBeInTheDocument()
           })
         })
@@ -666,9 +664,8 @@ describe('RepoPage', () => {
           })
           render(<RepoPage />, { wrapper: wrapper({ queryClient }) })
 
-          const coverageOnboarding = await screen.findByText(
-            'CoverageOnboarding'
-          )
+          const coverageOnboarding =
+            await screen.findByText('CoverageOnboarding')
           expect(coverageOnboarding).toBeInTheDocument()
         })
       })
@@ -761,9 +758,8 @@ describe('RepoPage', () => {
             }),
           })
 
-          const coverageOnboarding = await screen.findByText(
-            'CoverageOnboarding'
-          )
+          const coverageOnboarding =
+            await screen.findByText('CoverageOnboarding')
           expect(coverageOnboarding).toBeInTheDocument()
         })
 

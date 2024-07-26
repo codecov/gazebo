@@ -32,14 +32,13 @@ afterAll(() => {
 
 const wrapper =
   (initialEntries = ['/gh/test-org/test-repo/pull/12']) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 describe('MissingDesignatedAdmins', () => {
   function setup(overrideData) {

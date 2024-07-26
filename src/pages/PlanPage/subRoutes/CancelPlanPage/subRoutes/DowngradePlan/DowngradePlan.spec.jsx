@@ -29,16 +29,15 @@ const server = setupServer()
 
 const wrapper =
   (initialEntries = '/plan/gh/codecov/cancel/downgrade') =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/plan/:provider/:owner/cancel/downgrade">
-            <Suspense fallback={null}>{children}</Suspense>
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route path="/plan/:provider/:owner/cancel/downgrade">
+          <Suspense fallback={null}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()
