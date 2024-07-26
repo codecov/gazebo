@@ -55,6 +55,7 @@ describe('OktaConfigForm', () => {
           ctx.status(200),
           ctx.data({
             owner: {
+              isUserOktaAuthenticated: true,
               account: {
                 oktaConfig: oktaConfigMock,
               },
