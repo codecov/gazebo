@@ -14,7 +14,6 @@ function YAML({ yaml }) {
         </p>
       </div>
       <hr />
-      {/* eslint-disable-next-line tailwindcss/no-custom-classname */}
       <YamlEditor
         className="useReadOnlyCursor"
         value={yaml}

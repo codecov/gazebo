@@ -1,3 +1,4 @@
+/* eslint tailwindcss/no-custom-classname: 0 */
 import { cn } from './cn'
 
 describe('cn utility', () => {
@@ -13,7 +14,7 @@ describe('cn utility', () => {
 
     it('should handle many arguments', () => {
       const className = cn(
-        'text-white text-base',
+        'text-base text-white',
         {
           'bg-ds-primary-base': false,
           'bg-ds-pink-tertiary': true,
@@ -37,8 +38,8 @@ describe('cn utility', () => {
   describe('tailwind-merge functionality', () => {
     it('should merge tailwind classes', () => {
       const className = cn(
-        'px-2 py-1 bg-red hover:bg-dark-red',
-        'p-3 bg-[#B91C1C]'
+        'bg-red hover:bg-dark-red px-2 py-1',
+        'bg-[#B91C1C] p-3'
       )
 
       expect(className).toEqual('hover:bg-dark-red p-3 bg-[#B91C1C]')

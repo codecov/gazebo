@@ -7,7 +7,8 @@
     "plugin:react/recommended",
     "plugin:import/recommended",
     "prettier",
-    "plugin:storybook/recommended"
+    "plugin:storybook/recommended",
+    "plugin:tailwindcss/recommended"
   ],
   "rules": {
     "react/react-in-jsx-scope": "off",
@@ -127,18 +128,6 @@
           "caseInsensitive": true
         },
         "newlines-between": "always"
-      }
-    ],
-    "tailwindcss/no-custom-classname": [
-      "warn",
-      {
-        "callees": ["classnames", "clsx", "ctl"],
-        "config": "tailwind.config.js",
-        "cssFiles": ["src/**/*.css"],
-        "cssFilesRefreshRate": 5000,
-        "skipClassAttribute": false,
-        "tags": [],
-        "whitelist": []
       }
     ]
   },
@@ -292,6 +281,14 @@
         ],
         "extensions": [".js", ".jsx", ".ts", ".tsx", ".json"]
       }
+    },
+    "tailwindcss": {
+      "callees": ["classnames", "clsx", "ctl", "cn"],
+      "config": "tailwind.config.js",
+      "cssFiles": ["src/**/*.css"],
+      "cssFilesRefreshRate": 5000,
+      "removeDuplicates": true,
+      "skipClassAttribute": false
     }
   }
 }
