@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom'
 import Message from 'old_ui/Message'
 
 // Stripe redirects to this page with ?success or ?cancel in the URL
-// this component takes care of rendering a message if those message are present
+// this component takes care of rendering a message if it is successful
 function InfoMessageStripeCallback() {
   const urlParams = qs.parse(useLocation().search, {
     ignoreQueryPrefix: true,
