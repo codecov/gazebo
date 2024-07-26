@@ -10,6 +10,7 @@ import {
   ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
+  getPayloadConfigFromPayload,
 } from './Chart'
 
 declare global {
@@ -233,6 +234,60 @@ describe('Chart', () => {
       expect(error.message).toBe(
         'useChart must be used within a <ChartContainer />'
       )
+    })
+  })
+
+  describe('getPayloadConfigFromPayload', () => {
+    describe('payload is not an object', () => {
+      it('returns undefined', () => {
+        const response = getPayloadConfigFromPayload({}, 'coverage', 'key')
+        expect(response).toBeUndefined()
+      })
+    })
+
+    describe('payload is null', () => {
+      it('returns undefined', () => {
+        const response = getPayloadConfigFromPayload({}, null, 'key')
+        expect(response).toBeUndefined()
+      })
+    })
+
+    describe('payload not in payload', () => {
+      it('returns something', () => {
+        const response = getPayloadConfigFromPayload(chartConfig, {}, 'key')
+
+        expect(response).toBeUndefined()
+      })
+    })
+
+    describe('key in payload', () => {
+      it('returns something', () => {
+        const response = getPayloadConfigFromPayload(
+          chartConfig,
+          { customKey: 'coverage' },
+          'customKey'
+        )
+
+        expect(response).toEqual({
+          color: 'hsl(var(--chart-area-bundle-tab))',
+          label: 'Coverage',
+        })
+      })
+    })
+
+    describe('payload is in payload', () => {
+      it('returns something', () => {
+        const response = getPayloadConfigFromPayload(
+          chartConfig,
+          { payload: { customKey: 'coverage' } },
+          'customKey'
+        )
+
+        expect(response).toEqual({
+          color: 'hsl(var(--chart-area-bundle-tab))',
+          label: 'Coverage',
+        })
+      })
     })
   })
 })
