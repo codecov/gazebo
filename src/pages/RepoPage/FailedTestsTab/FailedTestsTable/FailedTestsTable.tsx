@@ -1,19 +1,25 @@
-import type { SortingState } from '@tanstack/react-table'
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
+  SortingState,
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
-import { useState } from 'react'
-// import { useInView } from 'react-intersection-observer'
-// import { useParams } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { useInView } from 'react-intersection-observer'
+import { useParams } from 'react-router-dom'
 
-import { OrderingDirection } from 'services/repos'
+import { formatTimeToNow } from 'shared/utils/dates'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
+
+import {
+  OrderingDirection,
+  OrderingParameter,
+  useInfiniteTestResults,
+} from '../hooks'
 
 const Loader = () => (
   <div className="mt-16 flex flex-1 items-center justify-center">
@@ -21,20 +27,20 @@ const Loader = () => (
   </div>
 )
 
-// function LoadMoreTrigger({
-//   intersectionRef,
-// }: {
-//   intersectionRef: React.Ref<HTMLSpanElement>
-// }) {
-//   return (
-//     <span
-//       ref={intersectionRef}
-//       className="invisible relative top-[-65px] block leading-[0]"
-//     >
-//       Loading
-//     </span>
-//   )
-// }
+function LoadMoreTrigger({
+  intersectionRef,
+}: {
+  intersectionRef: React.Ref<HTMLSpanElement>
+}) {
+  return (
+    <span
+      ref={intersectionRef}
+      className="invisible relative top-[-65px] block leading-[0]"
+    >
+      Loading
+    </span>
+  )
+}
 
 export function getSortingOption(
   sorting: Array<{ id: string; desc: boolean }>
@@ -46,28 +52,26 @@ export function getSortingOption(
       ? OrderingDirection.DESC
       : OrderingDirection.ASC
 
-    let ordering
-    if (state.id === 'testName') {
-      ordering = 'NAME'
-    }
+    let parameter: keyof typeof OrderingParameter =
+      OrderingParameter.COMMITS_WHERE_FAIL
 
-    if (state.id === 'lastDuration') {
-      ordering = 'LAST DURATION'
+    if (state.id === 'avgDuration') {
+      parameter = OrderingParameter.AVG_DURATION
     }
 
     if (state.id === 'failureRate') {
-      ordering = 'FAILURE RATE'
+      parameter = OrderingParameter.FAILURE_RATE
     }
 
     if (state.id === 'commitsFailed') {
-      ordering = 'COMMITS FAILED'
+      parameter = OrderingParameter.COMMITS_WHERE_FAIL
     }
 
     if (state.id === 'updatedAt') {
-      ordering = 'LAST RUN'
+      parameter = OrderingParameter.UPDATED_AT
     }
 
-    return { direction, ordering }
+    return { direction, parameter }
   }
 
   return undefined
@@ -75,9 +79,9 @@ export function getSortingOption(
 
 interface FailedTestsColumns {
   name: string
-  avgDuration: number
-  failureRate: number
-  commitsFailed: number
+  avgDuration: number | null
+  failureRate: number | null
+  commitsFailed: number | null
   updatedAt: string
 }
 
@@ -85,177 +89,163 @@ const columnHelper = createColumnHelper<FailedTestsColumns>()
 
 const columns = [
   columnHelper.accessor('name', {
-    header: 'Test name',
+    header: () => 'Test name',
     cell: (info) => info.renderValue(),
   }),
   columnHelper.accessor('avgDuration', {
-    header: 'Average duration',
-    cell: (info) => info.renderValue(),
+    header: () => 'Average duration',
+    cell: (info) => `${(info.renderValue() ?? 0).toFixed(3)}s`,
   }),
   columnHelper.accessor('failureRate', {
-    header: 'Failure rate',
-    cell: (info) => info.renderValue(),
+    header: () => 'Failure rate',
+    cell: (info) => {
+      const value = (info.renderValue() ?? 0) * 100
+      const isInt = Number.isInteger(info.renderValue())
+      return isInt ? `${value}%` : `${value.toFixed(2)}%`
+    },
   }),
   columnHelper.accessor('commitsFailed', {
-    header: 'Commits failed',
-    cell: (info) => info.renderValue(),
+    header: () => 'Commits failed',
+    cell: (info) => (info.renderValue() ? info.renderValue() : 0),
   }),
   columnHelper.accessor('updatedAt', {
-    header: 'Last run',
-    cell: (info) => info.renderValue(),
+    header: () => 'Last run',
+    cell: (info) => formatTimeToNow(info.renderValue()),
   }),
 ]
 
+interface URLParams {
+  provider: string
+  owner: string
+  repo: string
+}
+
 const FailedTestsTable = () => {
-  // const { ref, inView } = useInView()
+  const { ref, inView } = useInView()
   const [sorting, setSorting] = useState<SortingState>([
     {
       id: 'commitsFailed',
       desc: true,
     },
   ])
-  // const { owner } = useParams<{ owner: string }>()
+  const { provider, owner, repo } = useParams<URLParams>()
 
-  // const {
-  //   data: reposData,
-  //   fetchNextPage,
-  //   hasNextPage,
-  //   isFetching,
-  //   isFetchingNextPage,
-  // } = useReposTeam({
-  //   activated: false,
-  //   sortItem: getSortingOption(sorting),
-  //   owner,
-  // })
+  const {
+    data: testData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+  } = useInfiniteTestResults({
+    provider,
+    owner,
+    repo,
+    ordering: getSortingOption(sorting),
+    opts: {
+      suspense: false,
+    },
+  })
 
-  // const tableData = useMemo(() => {
-  //   const data = reposData?.pages?.map((page) => page?.repos).flat()
-  //   return data ?? []
-  // }, [reposData?.pages])
+  const tableData = useMemo(() => {
+    return testData?.testResults
+  }, [testData])
 
   const table = useReactTable({
     columns,
-    data: [
-      {
-        name: 'blah',
-        avgDuration: 123,
-        failureRate: 1,
-        commitsFailed: 4,
-        updatedAt: '2021-01-01',
-      },
-      {
-        name: 'cool',
-        avgDuration: 123,
-        failureRate: 2,
-        commitsFailed: 3,
-        updatedAt: '2022-01-01',
-      },
-      {
-        name: 'rad guy',
-        avgDuration: 123,
-        failureRate: 3,
-        commitsFailed: 2,
-        updatedAt: '2023-01-01',
-      },
-      {
-        name: 'awww ok',
-        avgDuration: 123,
-        failureRate: 4,
-        commitsFailed: 1,
-        updatedAt: '2024-01-01',
-      },
-    ],
+    data: tableData ?? [],
     state: {
       sorting,
     },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    // debugAll: true,
   })
 
-  // useEffect(() => {
-  //   if (inView && hasNextPage) {
-  //     fetchNextPage()
-  //   }
-  // }, [fetchNextPage, inView, hasNextPage])
-
-  const isLoading = false
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage()
+    }
+  }, [fetchNextPage, inView, hasNextPage])
 
   return (
-    <div className="tableui">
-      <table>
-        <colgroup>
-          <col className="w-full @sm/table:w-5/12" />
-          <col className="@sm/table:w-1/12" />
-          <col className="@sm/table:w-1/12" />
-          <col className="@sm/table:w-1/12" />
-          <col className="@sm/table:w-1/12" />
-        </colgroup>
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th
-                  key={header.id}
-                  colSpan={header.colSpan}
-                  scope="col"
-                  className="text-right"
-                  data-sortable={header.column.getCanSort()}
-                  {...{ onClick: header.column.getToggleSortingHandler() }}
-                >
-                  <div
-                    className={cs('flex gap-1', {
-                      'flex-row-reverse': !['name', 'updatedAt'].includes(
-                        header.id
-                      ),
-                    })}
+    <>
+      <div className="tableui">
+        <table>
+          <colgroup>
+            <col className="w-full @sm/table:w-5/12" />
+            <col className="@sm/table:w-1/12" />
+            <col className="@sm/table:w-1/12" />
+            <col className="@sm/table:w-1/12" />
+            <col className="@sm/table:w-1/12" />
+          </colgroup>
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th
+                    key={header.id}
+                    data-sortable={header.column.getCanSort()}
+                    onClick={header.column.getToggleSortingHandler()}
                   >
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                    <span
-                      className="text-ds-blue-darker group-hover/columnheader:opacity-100"
-                      data-sort-direction={header.column.getIsSorted()}
+                    <div
+                      className={cs('flex gap-1', {
+                        'flex-row-reverse': !['name', 'updatedAt'].includes(
+                          header.id
+                        ),
+                      })}
                     >
-                      <Icon name="arrowUp" size="sm" />
-                    </span>
-                  </div>
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {isLoading ? (
-            <tr>
-              <td>
-                <Loader />
-              </td>
-            </tr>
-          ) : (
-            table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <td
-                    key={cell.id}
-                    className={cs({
-                      'text-right': !['name', 'updatedAt'].includes(
-                        cell.column.id
-                      ),
-                    })}
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                      <span
+                        className="text-ds-blue-darker group-hover/columnheader:opacity-100"
+                        data-sort-direction={header.column.getIsSorted()}
+                      >
+                        <Icon name="arrowUp" size="sm" />
+                      </span>
+                    </div>
+                  </th>
                 ))}
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-      {/* {isFetching ? <Loader /> : null}
-      {hasNextPage ? <LoadMoreTrigger intersectionRef={ref} /> : null} */}
-    </div>
+            ))}
+          </thead>
+          <tbody>
+            {isLoading ? (
+              <tr>
+                <td colSpan={table.getAllColumns().length}>
+                  <Loader />
+                </td>
+              </tr>
+            ) : (
+              table.getRowModel().rows.map((row) => (
+                <tr key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <td
+                      key={cell.id}
+                      className={cs({
+                        'text-right': !['name', 'updatedAt'].includes(
+                          cell.column.id
+                        ),
+                        'max-w-1 break-words': cell.column.id === 'name',
+                      })}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+      {isFetchingNextPage ? <Loader /> : null}
+      {hasNextPage ? <LoadMoreTrigger intersectionRef={ref} /> : null}
+    </>
   )
 }
 
