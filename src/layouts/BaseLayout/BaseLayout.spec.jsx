@@ -131,21 +131,20 @@ const server = setupServer()
 let testLocation
 const wrapper =
   (initialEntries = ['/bb/batman/batcave']) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route path="/:provider/:owner/:repo">{children}</Route>
-          <Route
-            path="*"
-            render={({ location }) => {
-              testLocation = location
-              return null
-            }}
-          />
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route path="/:provider/:owner/:repo">{children}</Route>
+        <Route
+          path="*"
+          render={({ location }) => {
+            testLocation = location
+            return null
+          }}
+        />
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })

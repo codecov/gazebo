@@ -287,8 +287,8 @@ const mockCommitPageData = (
           __typename: hasCommitPageDataError
             ? 'MissingBaseCommit'
             : hasFirstPR
-            ? 'FirstPullRequest'
-            : 'Comparison',
+              ? 'FirstPullRequest'
+              : 'Comparison',
         },
         bundleAnalysisCompareWithParent: {
           __typename: 'BundleAnalysisComparison',
@@ -334,16 +334,15 @@ const wrapper =
     initialEntries = '/gh/test-org/test-repo/commit/1234567890abcdef',
     path = '/:provider/:owner/:repo/commit/:commit',
   }) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path={path}>
-            <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route path={path}>
+          <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()

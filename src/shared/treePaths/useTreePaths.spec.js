@@ -18,28 +18,27 @@ const queryClient = new QueryClient({
 
 const wrapper =
   (initialEntries = '/gh/owner/coolrepo/tree/main/src%2Ftests') =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/:provider/:owner/:repo">
-            <div>{children}</div>
-          </Route>
-          <Route path="/:provider/:owner/:repo/tree/:branch/:path+">
-            <div>{children}</div>
-          </Route>
-          <Route path="/:provider/:owner/:repo/tree/:branch/:path+">
-            <div>{children}</div>
-          </Route>
-          <Route path="/:provider/:owner/:repo/tree/:branch">
-            <div>{children}</div>
-          </Route>
-          <Route path="/:provider/:owner/:repo/tree/:ref/:path+">
-            <div>{children}</div>
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route path="/:provider/:owner/:repo">
+          <div>{children}</div>
+        </Route>
+        <Route path="/:provider/:owner/:repo/tree/:branch/:path+">
+          <div>{children}</div>
+        </Route>
+        <Route path="/:provider/:owner/:repo/tree/:branch/:path+">
+          <div>{children}</div>
+        </Route>
+        <Route path="/:provider/:owner/:repo/tree/:branch">
+          <div>{children}</div>
+        </Route>
+        <Route path="/:provider/:owner/:repo/tree/:ref/:path+">
+          <div>{children}</div>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })

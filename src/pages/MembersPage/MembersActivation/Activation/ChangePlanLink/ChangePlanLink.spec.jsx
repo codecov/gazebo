@@ -8,12 +8,11 @@ import ChangePlanLink from './ChangePlanLink'
 
 const wrapper =
   (initialEntries = ['/members/gh/critical-role']) =>
-  ({ children }) =>
-    (
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route path="/:provider/:owner/:repo">{children}</Route>
-      </MemoryRouter>
-    )
+  ({ children }) => (
+    <MemoryRouter initialEntries={initialEntries}>
+      <Route path="/:provider/:owner/:repo">{children}</Route>
+    </MemoryRouter>
+  )
 
 describe('Members ChangePlanLink', () => {
   describe('When user is non enterprise', () => {

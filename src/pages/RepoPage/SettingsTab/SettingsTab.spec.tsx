@@ -15,12 +15,11 @@ jest.mock('./tabs/GeneralTab', () => () => 'General Tab')
 
 const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
   (initialEntries = '/gh/codecov/codecov-client/settings') =>
-  ({ children }) =>
-    (
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path="/:provider/:owner/:repo/settings">{children}</Route>
-      </MemoryRouter>
-    )
+  ({ children }) => (
+    <MemoryRouter initialEntries={[initialEntries]}>
+      <Route path="/:provider/:owner/:repo/settings">{children}</Route>
+    </MemoryRouter>
+  )
 
 interface SetupArgs {
   isCurrentUserPartOfOrg?: boolean

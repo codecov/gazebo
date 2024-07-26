@@ -73,24 +73,23 @@ const server = setupServer()
 
 const wrapper =
   (initialEntries = ['/gh/codecov/cool-repo/commit/sha256']) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route
-            path={[
-              '/:provider/:owner/:repo/commit/:commit',
-              '/:provider/:owner/:repo/commit/:commit/indirect-changes',
-              '/:provider/:owner/:repo/commit/:commit/tree',
-              '/:provider/:owner/:repo/commit/:commit/tree/:path+',
-              '/:provider/:owner/:repo/commit/:commit/blob/:path+',
-            ]}
-          >
-            <Suspense fallback={null}>{children}</Suspense>
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route
+          path={[
+            '/:provider/:owner/:repo/commit/:commit',
+            '/:provider/:owner/:repo/commit/:commit/indirect-changes',
+            '/:provider/:owner/:repo/commit/:commit/tree',
+            '/:provider/:owner/:repo/commit/:commit/tree/:path+',
+            '/:provider/:owner/:repo/commit/:commit/blob/:path+',
+          ]}
+        >
+          <Suspense fallback={null}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()

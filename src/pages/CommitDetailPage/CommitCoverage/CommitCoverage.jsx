@@ -24,11 +24,11 @@ import YamlErrorBanner from './YamlErrorBanner'
 
 import { useCommitPageData } from '../hooks'
 
-const CommitDetailFileExplorer = lazy(() =>
-  import('./routes/CommitDetailFileExplorer')
+const CommitDetailFileExplorer = lazy(
+  () => import('./routes/CommitDetailFileExplorer')
 )
-const CommitDetailFileViewer = lazy(() =>
-  import('./routes/CommitDetailFileViewer')
+const CommitDetailFileViewer = lazy(
+  () => import('./routes/CommitDetailFileViewer')
 )
 const FilesChangedTab = lazy(() => import('./routes/FilesChangedTab'))
 const IndirectChangesTab = lazy(() => import('./routes/IndirectChangesTab'))

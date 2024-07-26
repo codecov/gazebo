@@ -28,12 +28,11 @@ console.error = () => {}
 
 const wrapper =
   (initialEntries = ''): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path="/:provider/:owner">{children}</Route>
-      </MemoryRouter>
-    )
+  ({ children }) => (
+    <MemoryRouter initialEntries={[initialEntries]}>
+      <Route path="/:provider/:owner">{children}</Route>
+    </MemoryRouter>
+  )
 
 type SetupArgs = {
   setUpAction?: string

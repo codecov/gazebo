@@ -83,30 +83,29 @@ const wrapper =
   (
     initialEntries = '/gh/codecov/cool-repo'
   ): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route
-            path={[
-              '/:provider/:owner/:repo/blob/:ref/:path+',
-              '/:provider/:owner/:repo/commits',
-              '/:provider/:owner/:repo/compare',
-              '/:provider/:owner/:repo/flags',
-              '/:provider/:owner/:repo/components',
-              '/:provider/:owner/:repo/new',
-              '/:provider/:owner/:repo/pulls',
-              '/:provider/:owner/:repo/settings',
-              '/:provider/:owner/:repo/tree/:branch',
-              '/:provider/:owner/:repo/tree/:branch/:path+',
-              '/:provider/:owner/:repo',
-            ]}
-          >
-            <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route
+          path={[
+            '/:provider/:owner/:repo/blob/:ref/:path+',
+            '/:provider/:owner/:repo/commits',
+            '/:provider/:owner/:repo/compare',
+            '/:provider/:owner/:repo/flags',
+            '/:provider/:owner/:repo/components',
+            '/:provider/:owner/:repo/new',
+            '/:provider/:owner/:repo/pulls',
+            '/:provider/:owner/:repo/settings',
+            '/:provider/:owner/:repo/tree/:branch',
+            '/:provider/:owner/:repo/tree/:branch/:path+',
+            '/:provider/:owner/:repo',
+          ]}
+        >
+          <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()

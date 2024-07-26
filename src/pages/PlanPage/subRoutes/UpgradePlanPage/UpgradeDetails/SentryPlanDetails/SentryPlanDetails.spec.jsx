@@ -135,16 +135,15 @@ const queryClient = new QueryClient({
 
 const wrapper =
   (initialEntries = '/plan/gh/codecov/upgrade') =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/plan/:provider/:owner/upgrade">
-            <Suspense fallback={<p>Loading...</p>}>{children}</Suspense>
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route path="/plan/:provider/:owner/upgrade">
+          <Suspense fallback={<p>Loading...</p>}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()
@@ -187,8 +186,8 @@ describe('SentryPlanDetails', () => {
                 value: isOngoingTrial
                   ? Plans.USERS_TRIAL
                   : isProPlan
-                  ? Plans.USERS_PR_INAPPM
-                  : Plans.USERS_BASIC,
+                    ? Plans.USERS_PR_INAPPM
+                    : Plans.USERS_BASIC,
               },
             },
           })

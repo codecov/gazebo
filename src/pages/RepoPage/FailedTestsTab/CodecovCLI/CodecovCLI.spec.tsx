@@ -7,14 +7,13 @@ import CodecovCLI from './CodecovCLI'
 
 const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
   (initialEntries = '/gh/codecov/cool-repo/tests/codecov-cli') =>
-  ({ children }) =>
-    (
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path={['/:provider/:owner/:repo/tests/codecov-cli']}>
-          {children}
-        </Route>
-      </MemoryRouter>
-    )
+  ({ children }) => (
+    <MemoryRouter initialEntries={[initialEntries]}>
+      <Route path={['/:provider/:owner/:repo/tests/codecov-cli']}>
+        {children}
+      </Route>
+    </MemoryRouter>
+  )
 
 describe('CodecovCLI', () => {
   function setup() {

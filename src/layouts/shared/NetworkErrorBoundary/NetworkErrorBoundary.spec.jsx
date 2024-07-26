@@ -100,12 +100,11 @@ function App({ status, detail, typename }) {
 
 const wrapper =
   (initialEntries = ['/gh/codecov', '/gh']) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
+    </QueryClientProvider>
+  )
 
 describe('NetworkErrorBoundary', () => {
   function setup({ isSelfHosted = false } = { isSelfHosted: false }) {

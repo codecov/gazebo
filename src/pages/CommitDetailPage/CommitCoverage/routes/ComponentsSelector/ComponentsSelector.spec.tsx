@@ -132,15 +132,13 @@ describe('ComponentsSelector', () => {
       expect(select).toBeInTheDocument()
       await user.click(select)
 
-      let component1: HTMLElement | null = await screen.findByText(
-        'component-1'
-      )
+      let component1: HTMLElement | null =
+        await screen.findByText('component-1')
       expect(component1).toBeInTheDocument()
       let component2 = await screen.findByText('component-2')
       expect(component2).toBeInTheDocument()
-      let component3: HTMLElement | null = await screen.findByText(
-        'component-3'
-      )
+      let component3: HTMLElement | null =
+        await screen.findByText('component-3')
       expect(component3).toBeInTheDocument()
 
       const searchBox = screen.getByPlaceholderText('Search for components')

@@ -64,21 +64,20 @@ const wrapper =
     queryClient: QueryClient,
     initialEntries: string = '/gh/vax/keyleth/commit/123'
   ): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route
-            path={[
-              '/:provider/:owner/:repo/commit/:commit',
-              '/:provider/:owner/:repo/commit/:commit/blob/:path+',
-            ]}
-          >
-            <Suspense fallback="Loading...">{children}</Suspense>
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route
+          path={[
+            '/:provider/:owner/:repo/commit/:commit',
+            '/:provider/:owner/:repo/commit/:commit/blob/:path+',
+          ]}
+        >
+          <Suspense fallback="Loading...">{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 type SetupArgs = {
   __typename: string

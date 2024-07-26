@@ -152,16 +152,15 @@ type WrapperClosure = (
 ) => React.FC<React.PropsWithChildren>
 const wrapper: WrapperClosure =
   (initialEntries = ['/gh/codecov']) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route path="/:provider/:owner">
-            <Suspense fallback={null}>{children}</Suspense>
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route path="/:provider/:owner">
+          <Suspense fallback={null}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 interface SetupArgs {
   planValue: string

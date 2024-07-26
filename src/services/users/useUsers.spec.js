@@ -46,14 +46,13 @@ const queryClient = new QueryClient({
 })
 const wrapper =
   (initialEntries = '/gh') =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/gh">{children}</Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route path="/gh">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 const server = setupServer()
 

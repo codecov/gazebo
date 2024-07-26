@@ -28,14 +28,13 @@ type WrapperClosure = (
 
 const pullWrapper: WrapperClosure =
   (initialEntries = ['/gh/codecov/gazebo/pull/123']) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 const server = setupServer()
 

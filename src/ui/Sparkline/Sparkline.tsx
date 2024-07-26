@@ -64,8 +64,8 @@ const Sparkline: React.FC<SparklineProps> = ({
             end: nextEntry
               ? select(nextEntry)
               : taperEndPoint
-              ? nextEntry
-              : previousPoint?.end,
+                ? nextEntry
+                : previousPoint?.end,
             /* 
               Sets the rendering mode of the line.
             */

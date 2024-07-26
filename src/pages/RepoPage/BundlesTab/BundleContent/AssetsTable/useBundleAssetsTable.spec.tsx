@@ -84,18 +84,17 @@ const queryClient = new QueryClient({
 })
 const wrapper =
   (initialEntries = initialEntry): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <Suspense>
-          <MemoryRouter initialEntries={[initialEntries]}>
-            <Route path={'/:provider/:owner/:repo/bundles/:branch/:bundle'}>
-              {children}
-            </Route>
-          </MemoryRouter>
-        </Suspense>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <Suspense>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path={'/:provider/:owner/:repo/bundles/:branch/:bundle'}>
+            {children}
+          </Route>
+        </MemoryRouter>
+      </Suspense>
+    </QueryClientProvider>
+  )
 
 const server = setupServer()
 

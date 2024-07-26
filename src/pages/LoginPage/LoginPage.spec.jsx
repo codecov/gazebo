@@ -5,15 +5,14 @@ import LoginPage from './LoginPage'
 
 const wrapper =
   (initialEntries) =>
-  ({ children }) =>
-    (
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Switch>
-          <Route path="/login/:provider">{children}</Route>
-          <Route path="/login/"> {children}</Route>
-        </Switch>
-      </MemoryRouter>
-    )
+  ({ children }) => (
+    <MemoryRouter initialEntries={[initialEntries]}>
+      <Switch>
+        <Route path="/login/:provider">{children}</Route>
+        <Route path="/login/"> {children}</Route>
+      </Switch>
+    </MemoryRouter>
+  )
 
 describe('LoginPage', () => {
   function setup() {

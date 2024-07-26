@@ -8,37 +8,36 @@ import { useNavLinks } from './useNavLinks'
 
 const wrapper =
   (location) =>
-  ({ children }) =>
-    (
-      <MemoryRouter initialEntries={[location]} initialIndex={0}>
-        <Route path="/:provider">{children}</Route>
-        <Route path="/:provider/:owner">{children}</Route>
-        <Route path="/:provider/:owner/:repo">{children}</Route>
-        <Route path="/:provider/:owner/:repo/:id">{children}</Route>
-        <Route path="/:provider/:owner/:repo/commit/:commit">{children}</Route>
-        <Route path="/:provider/:owner/:repo/commit/:commit/file/:path">
-          {children}
-        </Route>
-        <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
-        <Route path="/:provider/:owner/:repo/pull/:pullId/commits">
-          {children}
-        </Route>
-        <Route path="/:provider/:owner/:repo/pull/:pullId/blob/:path+">
-          {children}
-        </Route>
-        <Route path="/:provider/:owner/:repo/pull/:pullId/tree/:path+">
-          {children}
-        </Route>
-        <Route path="/admin/:provider/access">{children}</Route>
-        <Route path="/admin/:provider/users">{children}</Route>
-        <Route path="/admin/:provider/:owner/access">{children}</Route>
-        <Route path="/admin/:provider/:owner/users">{children}</Route>
-        <Route path="/account/:provider/:owner">{children}</Route>
-        <Route path="/account/:provider/:owner/billing">{children}</Route>
-        <Route path="/:provider/:owner/:repo/bundles/:branch">{children}</Route>
-        <Route path="/:provider/:owner/:repo/bundles">{children}</Route>
-      </MemoryRouter>
-    )
+  ({ children }) => (
+    <MemoryRouter initialEntries={[location]} initialIndex={0}>
+      <Route path="/:provider">{children}</Route>
+      <Route path="/:provider/:owner">{children}</Route>
+      <Route path="/:provider/:owner/:repo">{children}</Route>
+      <Route path="/:provider/:owner/:repo/:id">{children}</Route>
+      <Route path="/:provider/:owner/:repo/commit/:commit">{children}</Route>
+      <Route path="/:provider/:owner/:repo/commit/:commit/file/:path">
+        {children}
+      </Route>
+      <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
+      <Route path="/:provider/:owner/:repo/pull/:pullId/commits">
+        {children}
+      </Route>
+      <Route path="/:provider/:owner/:repo/pull/:pullId/blob/:path+">
+        {children}
+      </Route>
+      <Route path="/:provider/:owner/:repo/pull/:pullId/tree/:path+">
+        {children}
+      </Route>
+      <Route path="/admin/:provider/access">{children}</Route>
+      <Route path="/admin/:provider/users">{children}</Route>
+      <Route path="/admin/:provider/:owner/access">{children}</Route>
+      <Route path="/admin/:provider/:owner/users">{children}</Route>
+      <Route path="/account/:provider/:owner">{children}</Route>
+      <Route path="/account/:provider/:owner/billing">{children}</Route>
+      <Route path="/:provider/:owner/:repo/bundles/:branch">{children}</Route>
+      <Route path="/:provider/:owner/:repo/bundles">{children}</Route>
+    </MemoryRouter>
+  )
 
 describe('useNavLinks', () => {
   describe('Sign Out', () => {

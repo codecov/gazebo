@@ -12,16 +12,15 @@ jest.mock('../OktaEnforcedBanner', () => () => 'OktaEnforcedBanner')
 
 const wrapper =
   (initialEntries = ['/gh/owner']): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route path="/:provider/:owner">
-            <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route path="/:provider/:owner">
+          <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
