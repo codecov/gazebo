@@ -8,7 +8,13 @@ export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },
 }
 
+const localStorageResetDecorator = (Story) => {
+  window.localStorage.clear()
+  return <Story />
+}
+
 export const decorators = [
+  localStorageResetDecorator,
   (Story) => (
     <Layout>
       <Story />
@@ -22,6 +28,8 @@ const preview: Preview = {
       theme: themes.light,
     },
   },
+
+  tags: ['autodocs'],
 }
 
 export default preview
