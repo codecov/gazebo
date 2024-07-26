@@ -88,7 +88,7 @@ let testLocation: ReturnType<typeof useLocation>
 const wrapper =
   (
     queryClient: QueryClient,
-    initialEntries = '/gh/codecov/test-repo/bundles'
+    initialEntries = '/gh/codecov/test-repo/tests'
   ): React.FC<React.PropsWithChildren> =>
   ({ children }) =>
     (
@@ -96,8 +96,8 @@ const wrapper =
         <MemoryRouter initialEntries={[initialEntries]}>
           <Route
             path={[
-              '/:provider/:owner/:repo/bundles/:branch',
-              '/:provider/:owner/:repo/bundles',
+              '/:provider/:owner/:repo/tests/:branch',
+              '/:provider/:owner/:repo/tests',
             ]}
           >
             <Suspense fallback={<p>loading</p>}>{children}</Suspense>
@@ -238,16 +238,6 @@ describe('BranchSelector', () => {
       const dropDownBtn = await screen.findByText('main')
       expect(dropDownBtn).toBeInTheDocument()
     })
-
-    it('renders the source commit short sha', async () => {
-      const { queryClient } = setup()
-      render(<BranchSelector />, {
-        wrapper: wrapper(queryClient),
-      })
-
-      const shortSha = await screen.findByText(/321fdsa/)
-      expect(shortSha).toBeInTheDocument()
-    })
   })
 
   describe('navigating branches', () => {
@@ -259,9 +249,7 @@ describe('BranchSelector', () => {
         })
 
         await waitFor(() =>
-          expect(testLocation.pathname).toBe(
-            '/gh/codecov/test-repo/bundles/main'
-          )
+          expect(testLocation.pathname).toBe('/gh/codecov/test-repo/tests/main')
         )
       })
 
@@ -274,7 +262,7 @@ describe('BranchSelector', () => {
         })
 
         await waitFor(() =>
-          expect(testLocation.pathname).toBe('/gh/codecov/test-repo/bundles')
+          expect(testLocation.pathname).toBe('/gh/codecov/test-repo/tests')
         )
       })
     })
@@ -287,7 +275,7 @@ describe('BranchSelector', () => {
         })
 
         const select = await screen.findByRole('button', {
-          name: 'bundle branch selector',
+          name: 'test results branch selector',
         })
         await user.click(select)
 
@@ -296,7 +284,7 @@ describe('BranchSelector', () => {
 
         await waitFor(() =>
           expect(testLocation.pathname).toBe(
-            '/gh/codecov/test-repo/bundles/branch-1'
+            '/gh/codecov/test-repo/tests/branch-1'
           )
         )
       })
@@ -319,7 +307,7 @@ describe('BranchSelector', () => {
         })
 
         const select = await screen.findByRole('button', {
-          name: 'bundle branch selector',
+          name: 'test results branch selector',
         })
         await user.click(select)
 
@@ -342,7 +330,7 @@ describe('BranchSelector', () => {
         })
 
         const select = await screen.findByRole('button', {
-          name: 'bundle branch selector',
+          name: 'test results branch selector',
         })
         await user.click(select)
 
@@ -380,7 +368,7 @@ describe('BranchSelector', () => {
       })
 
       const select = await screen.findByRole('button', {
-        name: 'bundle branch selector',
+        name: 'test results branch selector',
       })
 
       expect(select).toHaveTextContent('Select branch')
