@@ -92,7 +92,6 @@
     "semver": "7.5.2",
     "tailwind-merge": "^2.3.0",
     "victory": "^37.0.2",
-    "yup": "^0.32.11",
     "zod": "^3.21.4"
   },
   "devDependencies": {
