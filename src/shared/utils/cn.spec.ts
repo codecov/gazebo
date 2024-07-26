@@ -24,7 +24,7 @@ describe('cn utility', () => {
         null
       )
 
-      expect(className).toEqual('text-white text-base bg-ds-pink-tertiary asdf')
+      expect(className).toEqual('text-base text-white bg-ds-pink-tertiary asdf')
     })
 
     it('should flatten arrays', () => {
@@ -42,7 +42,7 @@ describe('cn utility', () => {
         'bg-[#B91C1C] p-3'
       )
 
-      expect(className).toEqual('hover:bg-dark-red p-3 bg-[#B91C1C]')
+      expect(className).toEqual('hover:bg-dark-red bg-[#B91C1C] p-3')
     })
   })
 })
