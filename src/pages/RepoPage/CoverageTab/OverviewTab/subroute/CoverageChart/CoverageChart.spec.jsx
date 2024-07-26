@@ -17,14 +17,13 @@ const server = setupServer()
 
 const wrapper =
   (initialEntries = ['/gh/codecov/bells-hells/tree/main']) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route path="/:provider/:owner/:repo">{children}</Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route path="/:provider/:owner/:repo">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })

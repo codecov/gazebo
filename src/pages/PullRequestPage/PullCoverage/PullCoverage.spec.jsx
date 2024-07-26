@@ -152,23 +152,22 @@ const server = setupServer()
 
 const wrapper =
   (initialEntries = '/gh/codecov/test-repo/pull/1') =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route
-            path={[
-              '/:provider/:owner/:repo/pull/:pullId/blob/:path+',
-              '/:provider/:owner/:repo/pull/:pullId/tree/:path+',
-              '/:provider/:owner/:repo/pull/:pullId/tree/',
-              '/:provider/:owner/:repo/pull/:pullId',
-            ]}
-          >
-            {children}
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route
+          path={[
+            '/:provider/:owner/:repo/pull/:pullId/blob/:path+',
+            '/:provider/:owner/:repo/pull/:pullId/tree/:path+',
+            '/:provider/:owner/:repo/pull/:pullId/tree/',
+            '/:provider/:owner/:repo/pull/:pullId',
+          ]}
+        >
+          {children}
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()

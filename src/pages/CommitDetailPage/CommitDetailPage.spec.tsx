@@ -108,18 +108,17 @@ const wrapper =
   (
     initialEntries = '/gh/test-org/test-repo/commit/e736f78b3cb5c8abb1d6b2ec5e5102de455f98ed'
   ): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/:provider/:owner/:repo/commit/:commit">
-            <RepoBreadcrumbProvider>
-              <Suspense fallback={null}>{children}</Suspense>
-            </RepoBreadcrumbProvider>
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route path="/:provider/:owner/:repo/commit/:commit">
+          <RepoBreadcrumbProvider>
+            <Suspense fallback={null}>{children}</Suspense>
+          </RepoBreadcrumbProvider>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()
@@ -251,9 +250,8 @@ describe('CommitDetailPage', () => {
         setup({ bundleAnalysisEnabled: true, coverageEnabled: false })
         render(<CommitPage />, { wrapper: wrapper() })
 
-        const CommitBundleAnalysis = await screen.findByText(
-          /CommitBundleAnalysis/
-        )
+        const CommitBundleAnalysis =
+          await screen.findByText(/CommitBundleAnalysis/)
         expect(CommitBundleAnalysis).toBeInTheDocument()
       })
     })
@@ -306,9 +304,8 @@ describe('CommitDetailPage', () => {
           ),
         })
 
-        const CommitBundleAnalysis = await screen.findByText(
-          /CommitBundleAnalysis/
-        )
+        const CommitBundleAnalysis =
+          await screen.findByText(/CommitBundleAnalysis/)
         expect(CommitBundleAnalysis).toBeInTheDocument()
       })
     })

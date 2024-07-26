@@ -134,16 +134,15 @@ const wrapper =
       '/gh/criticalrole/mightynein/blob/branchName/folder/file.js',
     ]
   ) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route path="/:provider/:owner/:repo/blob/:ref/:path+">
-            {children}
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route path="/:provider/:owner/:repo/blob/:ref/:path+">
+          {children}
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   jest.spyOn(console, 'error').mockImplementation(() => {})

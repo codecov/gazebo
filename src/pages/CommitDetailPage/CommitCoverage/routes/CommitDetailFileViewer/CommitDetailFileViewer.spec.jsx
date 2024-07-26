@@ -53,16 +53,15 @@ const wrapper =
       '/gh/codecov/cool-repo/commit/sha256/blob/directory/file.js',
     ]
   ) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route path="/:provider/:owner/:repo/commit/:commit/blob/:path+">
-            {children}
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route path="/:provider/:owner/:repo/commit/:commit/blob/:path+">
+          {children}
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()

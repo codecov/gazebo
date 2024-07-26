@@ -27,14 +27,13 @@ const wrapper =
       path: '/login',
     }
   ): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path={path}>{children}</Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route path={path}>{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()

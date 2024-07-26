@@ -32,19 +32,18 @@ afterAll(() => {
 
 const wrapper =
   (initialEntries = '/gh') =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Switch>
-            <Route path="/:provider" exact>
-              <div>Click away</div>
-              {children}
-            </Route>
-          </Switch>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Switch>
+          <Route path="/:provider" exact>
+            <div>Click away</div>
+            {children}
+          </Route>
+        </Switch>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 describe('ContextSwitcher', () => {
   function setup() {

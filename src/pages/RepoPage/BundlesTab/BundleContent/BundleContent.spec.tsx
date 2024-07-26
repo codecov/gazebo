@@ -230,22 +230,21 @@ const wrapper =
   (
     initialEntries = '/gh/codecov/test-repo/bundles'
   ): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route
-            path={[
-              '/:provider/:owner/:repo/bundles/:branch/:bundle',
-              '/:provider/:owner/:repo/bundles/:branch',
-              '/:provider/:owner/:repo/bundles',
-            ]}
-          >
-            <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route
+          path={[
+            '/:provider/:owner/:repo/bundles/:branch/:bundle',
+            '/:provider/:owner/:repo/bundles/:branch',
+            '/:provider/:owner/:repo/bundles',
+          ]}
+        >
+          <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()

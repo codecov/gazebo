@@ -89,16 +89,15 @@ const wrapper =
       initialEntries: '/account/gh/codecov',
     }
   ) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/account/:provider/:owner">
-            <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route path="/account/:provider/:owner">
+          <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()

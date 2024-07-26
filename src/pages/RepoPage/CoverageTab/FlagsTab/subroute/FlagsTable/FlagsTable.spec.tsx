@@ -159,23 +159,22 @@ const wrapper =
   (
     initialEntries = '/gh/codecov/gazebo/flags'
   ): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/:provider/:owner/:repo/flags">
-            <Suspense fallback={null}>{children}</Suspense>
-          </Route>
-          <Route
-            path="*"
-            render={({ location }) => {
-              testLocation = location
-              return null
-            }}
-          />
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route path="/:provider/:owner/:repo/flags">
+          <Suspense fallback={null}>{children}</Suspense>
+        </Route>
+        <Route
+          path="*"
+          render={({ location }) => {
+            testLocation = location
+            return null
+          }}
+        />
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => server.listen())
 afterEach(() => {

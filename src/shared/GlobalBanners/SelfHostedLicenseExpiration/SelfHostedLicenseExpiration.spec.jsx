@@ -30,16 +30,15 @@ afterAll(() => {
 
 const wrapper =
   (initialEntries = ['/gh/test-org']) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Suspense fallback={<p>Loading</p>}>
-            <Route path="/:provider/:owner">{children}</Route>
-          </Suspense>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={initialEntries}>
+        <Suspense fallback={<p>Loading</p>}>
+          <Route path="/:provider/:owner">{children}</Route>
+        </Suspense>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 describe('SelfHostedLicenseExpiration', () => {
   function setup({
@@ -238,9 +237,8 @@ describe('SelfHostedLicenseExpiration', () => {
 
           await user.click(resolveIssueButton)
 
-          const seatsLimitReachedTitle = await screen.findByText(
-            /Seat limit reached/
-          )
+          const seatsLimitReachedTitle =
+            await screen.findByText(/Seat limit reached/)
           expect(seatsLimitReachedTitle).toBeInTheDocument()
 
           const seatsLimitReachedText = await screen.findByText(
@@ -398,9 +396,8 @@ describe('SelfHostedLicenseExpiration', () => {
 
           await user.click(resolveIssueButton)
 
-          const seatsLimitReachedText = await screen.findByText(
-            /Seat limit reached/
-          )
+          const seatsLimitReachedText =
+            await screen.findByText(/Seat limit reached/)
           expect(seatsLimitReachedText).toBeInTheDocument()
         })
 

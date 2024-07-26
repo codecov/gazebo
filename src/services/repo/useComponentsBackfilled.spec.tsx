@@ -16,16 +16,15 @@ const wrapper =
   (
     initialEntries = '/gh/test-org/test-repo'
   ): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path="/:provider/:owner/:repo">
-          <QueryClientProvider client={queryClient}>
-            {children}
-          </QueryClientProvider>
-        </Route>
-      </MemoryRouter>
-    )
+  ({ children }) => (
+    <MemoryRouter initialEntries={[initialEntries]}>
+      <Route path="/:provider/:owner/:repo">
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      </Route>
+    </MemoryRouter>
+  )
 
 const server = setupServer()
 

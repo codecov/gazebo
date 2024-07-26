@@ -83,19 +83,16 @@ const wrapper =
   (
     initialEntries = '/gh/test-org/test-repo/tree/main'
   ): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path={'/:provider/:owner/:repo/tree/:branch'}>
-            {children}
-          </Route>
-          <Route path={'/:provider/:owner/:repo/tree/:branch/:path+'}>
-            {children}
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route path={'/:provider/:owner/:repo/tree/:branch'}>{children}</Route>
+        <Route path={'/:provider/:owner/:repo/tree/:branch/:path+'}>
+          {children}
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()

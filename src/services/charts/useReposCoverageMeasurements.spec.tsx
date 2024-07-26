@@ -35,8 +35,9 @@ const server = setupServer()
 
 const wrapper =
   (): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
+  ({ children }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  )
 
 beforeAll(() => server.listen())
 afterEach(() => {

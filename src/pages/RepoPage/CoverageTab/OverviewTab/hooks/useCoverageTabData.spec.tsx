@@ -71,21 +71,20 @@ const wrapper =
   (
     initialEntries = '/gh/codecov/cool-repo'
   ): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route
-            path={[
-              '/:provider/:owner/:repo/tree/:branch',
-              '/:provider/:owner/:repo',
-            ]}
-          >
-            {children}
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route
+          path={[
+            '/:provider/:owner/:repo/tree/:branch',
+            '/:provider/:owner/:repo',
+          ]}
+        >
+          {children}
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()

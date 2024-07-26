@@ -60,14 +60,13 @@ afterAll(() => {
 
 const wrapper =
   (initialEntries = ['/members/gh/critical-role']) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route path="/members/:provider/:owner">{children}</Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route path="/members/:provider/:owner">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 describe('Activation', () => {
   function setup(

@@ -101,16 +101,15 @@ const queryClient = new QueryClient({
 
 const wrapper =
   (initialEntries = '/plan/gh/codecov/upgrade') =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/plan/:provider/:owner/upgrade">
-            <Suspense fallback={<p>Loading...</p>}>{children}</Suspense>
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route path="/plan/:provider/:owner/upgrade">
+          <Suspense fallback={<p>Loading...</p>}>{children}</Suspense>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()

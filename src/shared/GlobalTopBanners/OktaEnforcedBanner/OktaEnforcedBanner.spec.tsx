@@ -8,12 +8,11 @@ const wrapper =
     initialEntries = ['/gh/codecov'],
     path = '/:provider/:owner'
   ): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route path={path}>{children}</Route>
-      </MemoryRouter>
-    )
+  ({ children }) => (
+    <MemoryRouter initialEntries={initialEntries}>
+      <Route path={path}>{children}</Route>
+    </MemoryRouter>
+  )
 
 describe('OktaEnforcedBanner', () => {
   it('should return null if owner is not provided', () => {

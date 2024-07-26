@@ -304,22 +304,21 @@ const wrapper: (
   initialEnties?: string[]
 ) => React.FC<React.PropsWithChildren> =
   (initialEntries = ['/gh/codecov/cool-repo/tree/main']) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route
-            path={[
-              '/:provider/:owner/:repo/blob/:ref/:path+',
-              '/:provider/:owner/:repo',
-            ]}
-            exact={true}
-          >
-            {children}
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route
+          path={[
+            '/:provider/:owner/:repo/blob/:ref/:path+',
+            '/:provider/:owner/:repo',
+          ]}
+          exact={true}
+        >
+          {children}
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen({ onUnhandledRequest: 'warn' })

@@ -113,14 +113,13 @@ const wrapper =
   (
     initialEntries = '/gh/test-org/test-repo/pull/5?flags=a,b'
   ): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route path="/:provider/:owner/:repo/pull/:pullId">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()

@@ -12,12 +12,11 @@ const wrapper =
     initialEntries = '/gh/test-owner/test-repo',
     path = '/:provider/:owner/:repo'
   ): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Route path={path}>{children}</Route>
-      </MemoryRouter>
-    )
+  ({ children }) => (
+    <MemoryRouter initialEntries={[initialEntries]}>
+      <Route path={path}>{children}</Route>
+    </MemoryRouter>
+  )
 
 describe('useMatchBlobsPath', () => {
   it('returns false when not on a blob path', () => {
