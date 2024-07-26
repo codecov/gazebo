@@ -43,6 +43,7 @@ describe('useOktaConfig', () => {
           ctx.status(200),
           ctx.data({
             owner: {
+              isUserOktaAuthenticated: true,
               account: { oktaConfig: oktaConfigData },
             },
           })
@@ -68,6 +69,7 @@ describe('useOktaConfig', () => {
         await waitFor(() =>
           expect(result.current.data).toStrictEqual({
             owner: {
+              isUserOktaAuthenticated: true,
               account: {
                 oktaConfig: oktaConfigMock,
               },

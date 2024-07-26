@@ -2,6 +2,7 @@ import {
   useInfiniteQuery,
   type UseInfiniteQueryOptions,
 } from '@tanstack/react-query'
+import { useMemo } from 'react'
 import { z } from 'zod'
 
 import {
@@ -19,6 +20,23 @@ const TestResultSchema = z.object({
   commitsFailed: z.number().nullable(),
   failureRate: z.number().nullable(),
   avgDuration: z.number().nullable(),
+})
+
+export const OrderingDirection = {
+  DESC: 'DESC',
+  ASC: 'ASC',
+} as const
+
+export const OrderingParameter = {
+  AVG_DURATION: 'AVG_DURATION',
+  FAILURE_RATE: 'FAILURE_RATE',
+  COMMITS_WHERE_FAIL: 'COMMITS_WHERE_FAIL',
+  UPDATED_AT: 'UPDATED_AT',
+} as const
+
+export const TestResultsOrdering = z.object({
+  direction: z.nativeEnum(OrderingDirection),
+  parameter: z.nativeEnum(OrderingParameter),
 })
 
 type TestResult = z.infer<typeof TestResultSchema>
@@ -53,6 +71,7 @@ query GetTestResults(
   $owner: String!
   $repo: String!
   $filters: TestResultsFilters
+  $ordering: TestResultsOrdering
   $first: Int
   $after: String
   $last: Int
@@ -64,6 +83,7 @@ query GetTestResults(
       ... on Repository {
         testResults(
           filters: $filters
+          ordering: $ordering
           first: $first
           after: $after
           last: $last
@@ -102,6 +122,7 @@ interface UseTestResultsArgs {
   filters?: {
     branch?: string
   }
+  ordering?: z.infer<typeof TestResultsOrdering>
   first?: number
   after?: string
   last?: number
@@ -121,6 +142,7 @@ export const useInfiniteTestResults = ({
   after,
   last,
   before,
+  ordering,
   opts = {},
 }: UseTestResultsArgs) => {
   const { data, ...rest } = useInfiniteQuery({
@@ -134,6 +156,7 @@ export const useInfiniteTestResults = ({
       after,
       last,
       before,
+      ordering,
     ],
     queryFn: ({ pageParam = after, signal }) =>
       Api.graphql({
@@ -145,6 +168,7 @@ export const useInfiniteTestResults = ({
           owner,
           repo,
           filters,
+          ordering,
           first,
           after: pageParam,
           last,
@@ -206,9 +230,14 @@ export const useInfiniteTestResults = ({
     ...opts,
   })
 
+  const memoedData = useMemo(
+    () => data?.pages?.flatMap((page) => page.testResults) ?? [],
+    [data]
+  )
+
   return {
     data: {
-      testResults: data?.pages?.flatMap((page) => page.testResults) ?? [],
+      testResults: memoedData,
     },
     ...rest,
   }
