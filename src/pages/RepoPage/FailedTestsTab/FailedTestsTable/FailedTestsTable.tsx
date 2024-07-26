@@ -118,6 +118,7 @@ interface URLParams {
   provider: string
   owner: string
   repo: string
+  branch?: string
 }
 
 const FailedTestsTable = () => {
@@ -128,7 +129,7 @@ const FailedTestsTable = () => {
       desc: true,
     },
   ])
-  const { provider, owner, repo } = useParams<URLParams>()
+  const { provider, owner, repo, branch } = useParams<URLParams>()
 
   const {
     data: testData,
@@ -141,6 +142,9 @@ const FailedTestsTable = () => {
     owner,
     repo,
     ordering: getSortingOption(sorting),
+    filters: {
+      branch,
+    },
     opts: {
       suspense: false,
     },

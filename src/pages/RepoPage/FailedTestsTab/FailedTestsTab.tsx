@@ -17,6 +17,7 @@ import { RadioTileGroup } from 'ui/RadioTileGroup'
 import Spinner from 'ui/Spinner'
 
 import CodecovCLI from './CodecovCLI'
+import BranchSelector from './FailedTestsTable/BranchSelector'
 import FailedTestsTable from './FailedTestsTable/FailedTestsTable'
 import GitHubActions from './GitHubActions'
 
@@ -139,6 +140,7 @@ function FailedTestsTab() {
         >
           <Suspense fallback={<Loader />}>
             <div className="flex flex-1 flex-col gap-4">
+              <BranchSelector />
               <FailedTestsTable />
             </div>
           </Suspense>
