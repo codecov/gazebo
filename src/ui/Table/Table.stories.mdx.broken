@@ -1,6 +1,6 @@
 {/* Table.mdx */}
 import { Meta } from '@storybook/blocks';
-import * as TableStories from './Table.stories'
+import \* as TableStories from './Table.stories'
 
 {/* Attach this MDX file to the Button component */}
 
@@ -13,7 +13,6 @@ Table UI is a styles only "component" that provides the design system aspect of 
 ### Usage
 
 Nest your table with a `div`, this lets the table start scrolling rather then breaking page layouts when a screen becomes too small for the content and there has been no custom responsiveness added.
-
 
 ```html
 <div className="tableui">
@@ -105,21 +104,18 @@ From the responsive example, two columns are hidden on small screens and their d
 
 ```jsx
 <tr key={headerGroup.id}>
-    {headerGroup.headers.map((header) => (
+  {headerGroup.headers.map((header) => (
     <th
-        key={header.id}
-        scope="col"
-        className={cs({
+      key={header.id}
+      scope="col"
+      className={cs({
         'hidden @lg/table:table-cell':
-            header.id === 'title' || header.id === 'email',
-        })}
+          header.id === 'title' || header.id === 'email',
+      })}
     >
-        {flexRender(
-            header.column.columnDef.header,
-            header.getContext()
-        )}
+      {flexRender(header.column.columnDef.header, header.getContext())}
     </th>
-    ))}
+  ))}
 </tr>
 ```
 
