@@ -16,6 +16,7 @@ jest.mock(
   './FailedTestsTable/FailedTestsTable.tsx',
   () => () => 'Failed Tests Table'
 )
+jest.mock('./FailedTestsTable/BranchSelector', () => () => 'Branch Selector')
 
 jest.mock('shared/useRedirect')
 const mockedUseRedirect = useRedirect as jest.Mock
@@ -234,6 +235,15 @@ describe('FailedTestsTab', () => {
         wrapper: wrapper('/gh/codecov/cool-repo/tests'),
       })
       const content = await screen.findByText(/Failed Tests Table/)
+      expect(content).toBeInTheDocument()
+    })
+
+    it('renders Branch Selector', async () => {
+      setup({ testEnabled: true })
+      render(<FailedTestsTab />, {
+        wrapper: wrapper('/gh/codecov/cool-repo/tests'),
+      })
+      const content = await screen.findByText(/Branch Selector/)
       expect(content).toBeInTheDocument()
     })
   })

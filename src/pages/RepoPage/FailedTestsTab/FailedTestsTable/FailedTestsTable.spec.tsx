@@ -391,5 +391,17 @@ describe('FailedTestsTable', () => {
         )
       })
     })
+
+    it('renders no data if no entries are returned', async () => {
+      const { queryClient } = setup({ noEntries: true })
+      render(<FailedTestsTable />, {
+        wrapper: wrapper(queryClient, ['/gh/codecov/repo/tests/main']),
+      })
+
+      const content = await screen.findByText(
+        'No test results found for this branch'
+      )
+      expect(content).toBeInTheDocument()
+    })
   })
 })
