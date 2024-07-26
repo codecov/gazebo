@@ -22,6 +22,9 @@ import {
   useInfiniteTestResults,
 } from '../hooks'
 
+const getDecodedBranch = (branch?: string) =>
+  !!branch ? decodeURIComponent(branch) : undefined
+
 const Loader = () => (
   <div className="mt-16 flex flex-1 items-center justify-center">
     <Spinner />
@@ -144,7 +147,7 @@ const FailedTestsTable = () => {
     repo,
     ordering: getSortingOption(sorting),
     filters: {
-      branch,
+      branch: branch ? getDecodedBranch(branch) : undefined,
     },
     opts: {
       suspense: false,
