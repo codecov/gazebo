@@ -3,10 +3,11 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
+import qs from 'qs'
 import { Suspense } from 'react'
-import { MemoryRouter, Route } from 'react-router-dom'
+import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
-import BundleSelection from './BundleSelection'
+import { TypeSelector } from './TypeSelector'
 
 const mockRepoOverview = {
   __typename: 'Repository',
@@ -56,7 +57,7 @@ const mockBranches = {
   },
 }
 
-const mockBranchBundles = {
+const mockBranchBundles = (noBundles = false) => ({
   owner: {
     repository: {
       __typename: 'Repository',
@@ -64,13 +65,13 @@ const mockBranchBundles = {
         head: {
           bundleAnalysisReport: {
             __typename: 'BundleAnalysisReport',
-            bundles: [{ name: 'bundle1' }, { name: 'bundle2' }],
+            bundles: noBundles ? [] : [{ name: 'bundle1' }],
           },
         },
       },
     },
   },
-}
+})
 
 const server = setupServer()
 const queryClient = new QueryClient({
@@ -82,6 +83,7 @@ const queryClient = new QueryClient({
   },
 })
 
+let testLocation: ReturnType<typeof useLocation>
 const wrapper =
   (
     initialEntries = '/gh/codecov/test-repo/bundles/test-branch'
@@ -99,6 +101,13 @@ const wrapper =
           >
             <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
           </Route>
+          <Route
+            path="*"
+            render={({ location }) => {
+              testLocation = location
+              return null
+            }}
+          />
         </MemoryRouter>
       </QueryClientProvider>
     )
@@ -116,8 +125,12 @@ afterAll(() => {
   server.close()
 })
 
-describe('BundleSelection', () => {
-  function setup() {
+interface SetupArgs {
+  noBundles?: boolean
+}
+
+describe('TypeSelector', () => {
+  function setup({ noBundles = false }: SetupArgs) {
     const user = userEvent.setup()
 
     server.use(
@@ -144,73 +157,31 @@ describe('BundleSelection', () => {
         )
       }),
       graphql.query('BranchBundlesNames', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.data(mockBranchBundles))
+        return res(ctx.status(200), ctx.data(mockBranchBundles(noBundles)))
       })
     )
 
     return { user }
   }
 
-  it('renders branch selector', async () => {
-    setup()
-    render(<BundleSelection />, { wrapper: wrapper() })
-
-    const branchSelector = await screen.findByRole('button', {
-      name: 'bundle branch selector',
-    })
-    expect(branchSelector).toBeInTheDocument()
-  })
-
-  it('renders bundle selector', async () => {
-    setup()
-    render(<BundleSelection />, { wrapper: wrapper() })
-
-    const bundleSelector = await screen.findByRole('button', {
-      name: 'bundle tab bundle selector',
-    })
-    expect(bundleSelector).toBeInTheDocument()
-  })
-
-  it('renders type selector', async () => {
-    setup()
-    render(<BundleSelection />, { wrapper: wrapper() })
-
-    const typeSelector = await screen.findByRole('button', {
-      name: 'bundle tab types selector',
-    })
-    expect(typeSelector).toBeInTheDocument()
-  })
-
-  describe('user interacts with branch and bundle selectors', () => {
-    describe('user selects a branch', () => {
-      it('resets the bundle selector to the first available bundle', async () => {
-        const { user } = setup()
-        render(<BundleSelection />, {
-          wrapper: wrapper('/gh/codecov/test-repo/bundles/main/bundle1'),
-        })
-
-        const bundleSelector = await screen.findByRole('button', {
-          name: 'bundle tab bundle selector',
-        })
-        expect(bundleSelector).toHaveTextContent(/bundle1/)
-
-        const branchSelector = await screen.findByRole('button', {
-          name: 'bundle branch selector',
-        })
-        await user.click(branchSelector)
-
-        const branch1 = await screen.findByRole('option', {
-          name: 'branch-1',
-        })
-        await user.click(branch1)
-
-        await waitFor(() => expect(bundleSelector).toHaveTextContent(/bundle1/))
+  describe('there are bundles present', () => {
+    it('does not disable the button', async () => {
+      setup({ noBundles: false })
+      render(<TypeSelector />, {
+        wrapper: wrapper(),
       })
 
-      it('resets the type selector', async () => {
-        const { user } = setup()
-        render(<BundleSelection />, {
-          wrapper: wrapper('/gh/codecov/test-repo/bundles/main/bundle1'),
+      const typeSelector = await screen.findByRole('button', {
+        name: 'bundle tab types selector',
+      })
+      expect(typeSelector).not.toBeDisabled()
+    })
+
+    describe('when a type is selected', () => {
+      it('sets the selected type', async () => {
+        const { user } = setup({ noBundles: false })
+        render(<TypeSelector />, {
+          wrapper: wrapper(),
         })
 
         const typeSelector = await screen.findByRole('button', {
@@ -223,23 +194,50 @@ describe('BundleSelection', () => {
         })
         await user.click(type)
 
-        const bundleSelector = await screen.findByRole('button', {
-          name: 'bundle tab bundle selector',
-        })
-        await user.click(bundleSelector)
-
-        const bundle2 = await screen.findByRole('option', {
-          name: 'bundle2',
-        })
-        await user.click(bundle2)
-
-        const updatedTypeSelector = await screen.findByRole('button', {
+        const updatedSelector = await screen.findByRole('button', {
           name: 'bundle tab types selector',
         })
         await waitFor(() =>
-          expect(updatedTypeSelector).toHaveTextContent('All types')
+          expect(updatedSelector).toHaveTextContent('1 type selected')
         )
       })
+
+      it('updates the search params', async () => {
+        const { user } = setup({ noBundles: false })
+        render(<TypeSelector />, {
+          wrapper: wrapper(),
+        })
+
+        const typeSelector = await screen.findByRole('button', {
+          name: 'bundle tab types selector',
+        })
+        await user.click(typeSelector)
+
+        const type = await screen.findByRole('option', {
+          name: 'JavaScript',
+        })
+        await user.click(type)
+
+        await waitFor(() =>
+          expect(testLocation.search).toStrictEqual(
+            qs.stringify({ types: ['JAVASCRIPT'] }, { addQueryPrefix: true })
+          )
+        )
+      })
+    })
+  })
+
+  describe('there are no bundles present', () => {
+    it('disables the select', async () => {
+      setup({ noBundles: true })
+      render(<TypeSelector />, {
+        wrapper: wrapper(),
+      })
+
+      const typeSelector = await screen.findByRole('button', {
+        name: 'bundle tab types selector',
+      })
+      expect(typeSelector).toBeDisabled()
     })
   })
 })

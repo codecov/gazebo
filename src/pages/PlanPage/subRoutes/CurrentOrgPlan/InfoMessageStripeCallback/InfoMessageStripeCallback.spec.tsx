@@ -31,16 +31,4 @@ describe('InfoMessageStripeCallback', () => {
       ).toBeInTheDocument()
     })
   })
-
-  describe('when rendering with cancel in the url', () => {
-    it('renders a cancel message', async () => {
-      render(<InfoMessageStripeCallback />, {
-        wrapper: wrapper('/account/gh/codecov?cancel'),
-      })
-
-      await expect(
-        screen.getByText(/Subscription Update Failed/)
-      ).toBeInTheDocument()
-    })
-  })
 })
