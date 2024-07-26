@@ -41,12 +41,20 @@ const node3 = {
 
 const server = setupServer()
 const wrapper =
-  (queryClient: QueryClient): React.FC<React.PropsWithChildren> =>
+  (
+    queryClient: QueryClient,
+    initialEntries: string[] = ['/gh/codecov/repo/tests']
+  ): React.FC<React.PropsWithChildren> =>
   ({ children }) =>
     (
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={['/gh/codecov/cool-repo/tests']}>
-          <Route path="/:provider/:owner/:repo/tests">{children}</Route>
+        <MemoryRouter initialEntries={initialEntries}>
+          <Route path="/:provider/:owner/:repo/tests" exact>
+            {children}
+          </Route>
+          <Route path="/:provider/:owner/:repo/tests/:branch" exact>
+            {children}
+          </Route>
         </MemoryRouter>
       </QueryClientProvider>
     )
@@ -88,11 +96,11 @@ describe('FailedTestsTable', () => {
     const queryClient = new QueryClient()
 
     const user = userEvent.setup()
-    const mockSort = jest.fn()
+    const mockVariables = jest.fn()
 
     server.use(
       graphql.query('GetTestResults', (req, res, ctx) => {
-        mockSort(req.variables)
+        mockVariables(req.variables)
         if (noEntries) {
           return res(
             ctx.status(200),
@@ -146,7 +154,7 @@ describe('FailedTestsTable', () => {
       })
     )
 
-    return { queryClient, user, mockSort }
+    return { queryClient, user, mockVariables }
   }
 
   describe('renders table headers', () => {
@@ -214,7 +222,7 @@ describe('FailedTestsTable', () => {
 
   describe('ability to sort', () => {
     it('can sort on duration column', async () => {
-      const { queryClient, user, mockSort } = setup({ noEntries: true })
+      const { queryClient, user, mockVariables } = setup({ noEntries: true })
       render(<FailedTestsTable />, {
         wrapper: wrapper(queryClient),
       })
@@ -223,7 +231,7 @@ describe('FailedTestsTable', () => {
       await user.click(durationColumn)
 
       await waitFor(() => {
-        expect(mockSort).toHaveBeenCalledWith(
+        expect(mockVariables).toHaveBeenCalledWith(
           expect.objectContaining({
             ordering: {
               direction: OrderingDirection.DESC,
@@ -236,7 +244,7 @@ describe('FailedTestsTable', () => {
       await user.click(durationColumn)
 
       await waitFor(() => {
-        expect(mockSort).toHaveBeenCalledWith(
+        expect(mockVariables).toHaveBeenCalledWith(
           expect.objectContaining({
             ordering: {
               direction: OrderingDirection.ASC,
@@ -248,7 +256,7 @@ describe('FailedTestsTable', () => {
     })
 
     it('can sort on failure rate column', async () => {
-      const { queryClient, user, mockSort } = setup({ noEntries: true })
+      const { queryClient, user, mockVariables } = setup({ noEntries: true })
       render(<FailedTestsTable />, {
         wrapper: wrapper(queryClient),
       })
@@ -257,7 +265,7 @@ describe('FailedTestsTable', () => {
       await user.click(failureRateColumn)
 
       await waitFor(() => {
-        expect(mockSort).toHaveBeenCalledWith(
+        expect(mockVariables).toHaveBeenCalledWith(
           expect.objectContaining({
             ordering: {
               direction: OrderingDirection.DESC,
@@ -270,7 +278,7 @@ describe('FailedTestsTable', () => {
       await user.click(failureRateColumn)
 
       await waitFor(() => {
-        expect(mockSort).toHaveBeenCalledWith(
+        expect(mockVariables).toHaveBeenCalledWith(
           expect.objectContaining({
             ordering: {
               direction: OrderingDirection.ASC,
@@ -282,7 +290,7 @@ describe('FailedTestsTable', () => {
     })
 
     it('can sort on commits failed column', async () => {
-      const { queryClient, user, mockSort } = setup({ noEntries: true })
+      const { queryClient, user, mockVariables } = setup({ noEntries: true })
       render(<FailedTestsTable />, {
         wrapper: wrapper(queryClient),
       })
@@ -291,7 +299,7 @@ describe('FailedTestsTable', () => {
       await user.click(commitsFailedColumn)
 
       await waitFor(() => {
-        expect(mockSort).toHaveBeenCalledWith(
+        expect(mockVariables).toHaveBeenCalledWith(
           expect.objectContaining({
             ordering: {
               direction: OrderingDirection.DESC,
@@ -304,7 +312,7 @@ describe('FailedTestsTable', () => {
       await user.click(commitsFailedColumn)
 
       await waitFor(() => {
-        expect(mockSort).toHaveBeenCalledWith(
+        expect(mockVariables).toHaveBeenCalledWith(
           expect.objectContaining({
             ordering: {
               direction: OrderingDirection.ASC,
@@ -316,7 +324,7 @@ describe('FailedTestsTable', () => {
     })
 
     it('can sort on last run column', async () => {
-      const { queryClient, user, mockSort } = setup({ noEntries: true })
+      const { queryClient, user, mockVariables } = setup({ noEntries: true })
       render(<FailedTestsTable />, {
         wrapper: wrapper(queryClient),
       })
@@ -325,7 +333,7 @@ describe('FailedTestsTable', () => {
       await user.click(lastRunColumn)
 
       await waitFor(() => {
-        expect(mockSort).toHaveBeenCalledWith(
+        expect(mockVariables).toHaveBeenCalledWith(
           expect.objectContaining({
             ordering: {
               direction: OrderingDirection.DESC,
@@ -338,7 +346,7 @@ describe('FailedTestsTable', () => {
       await user.click(lastRunColumn)
 
       await waitFor(() => {
-        expect(mockSort).toHaveBeenCalledWith(
+        expect(mockVariables).toHaveBeenCalledWith(
           expect.objectContaining({
             ordering: {
               direction: OrderingDirection.ASC,
@@ -363,6 +371,25 @@ describe('FailedTestsTable', () => {
 
       const thirdCommit = await screen.findByText('test-3')
       expect(thirdCommit).toBeInTheDocument()
+    })
+  })
+
+  describe('when landing on a branch page', () => {
+    it('filters data by the expected branch', async () => {
+      const { queryClient, mockVariables } = setup({})
+      render(<FailedTestsTable />, {
+        wrapper: wrapper(queryClient, ['/gh/codecov/repo/tests/main']),
+      })
+
+      await waitFor(() => {
+        expect(mockVariables).toHaveBeenCalledWith(
+          expect.objectContaining({
+            filters: {
+              branch: 'main',
+            },
+          })
+        )
+      })
     })
   })
 })

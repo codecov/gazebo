@@ -7,6 +7,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
+import isEmpty from 'lodash/isEmpty'
 import { useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
@@ -171,6 +172,10 @@ const FailedTestsTable = () => {
       fetchNextPage()
     }
   }, [fetchNextPage, inView, hasNextPage])
+
+  if (isEmpty(testData?.testResults) && !isLoading && !!branch) {
+    return <div>No test results found for this branch</div>
+  }
 
   return (
     <>
