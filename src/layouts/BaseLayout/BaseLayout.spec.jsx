@@ -8,7 +8,6 @@ import config from 'config'
 
 import { useImage } from 'services/image'
 import { useImpersonate } from 'services/impersonate'
-import { useFlags } from 'shared/featureFlags'
 
 import BaseLayout from './BaseLayout'
 
@@ -19,8 +18,6 @@ jest.mock('./InstallationHelpBanner', () => () => 'InstallationHelpBanner')
 jest.mock('pages/TermsOfService', () => () => 'TermsOfService')
 jest.mock('pages/DefaultOrgSelector', () => () => 'DefaultOrgSelector')
 jest.mock('layouts/Header', () => () => 'New header')
-
-jest.mock('shared/featureFlags')
 
 const mockOwner = {
   owner: {
@@ -170,9 +167,6 @@ describe('BaseLayout', () => {
       currentUser: loggedInUser,
     }
   ) {
-    useFlags.mockReturnValue({
-      newHeader: false,
-    })
     useImage.mockReturnValue({
       src: 'http://photo.com/codecov.png',
       isLoading: false,
@@ -394,9 +388,6 @@ describe('BaseLayout', () => {
 
     it('renders new header when feature flag is true', async () => {
       setup({ currentUser: userHasDefaultOrg })
-      useFlags.mockReturnValue({
-        newHeader: true,
-      })
 
       render(<BaseLayout>hello</BaseLayout>, {
         wrapper: wrapper(),
