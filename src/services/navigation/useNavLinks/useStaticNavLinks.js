@@ -405,6 +405,18 @@ export function useStaticNavLinks() {
       isExternalLink: true,
       openNewTab: true,
     },
+    codecovBrowserExtension: {
+      text: 'Codecov Browser Extension',
+      path: () => 'https://docs.codecov.com/docs/the-codecov-browser-extension',
+      isExternalLink: true,
+      openNewTab: true,
+    },
+    codecovSlackApp: {
+      text: 'Codecov Slack App',
+      path: () => 'https://notifications.codecov.io/slack/install',
+      isExternalLink: true,
+      openNewTab: true,
+    },
     installSelfHosted: {
       text: 'Codecov Self-Hosted Installation Guide',
       path: () =>
