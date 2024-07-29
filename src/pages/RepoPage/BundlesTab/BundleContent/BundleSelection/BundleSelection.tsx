@@ -1,15 +1,18 @@
 import { lazy, useCallback, useRef } from 'react'
 
 import BranchSelector from './BranchSelector'
+import { LoadSelector } from './LoadSelector'
 import { TypeSelector } from './TypeSelector'
 const BundleSelector = lazy(() => import('./BundleSelector'))
 
 const BundleSelection: React.FC = () => {
   const bundleSelectRef = useRef<{ resetSelected: () => void }>(null)
   const typesSelectRef = useRef<{ resetSelected: () => void }>(null)
+  const loadingSelectRef = useRef<{ resetSelected: () => void }>(null)
 
   const resetFilterSelects = useCallback(() => {
     typesSelectRef.current?.resetSelected()
+    loadingSelectRef?.current?.resetSelected()
   }, [])
 
   const resetBundleSelect = useCallback(() => {
@@ -26,6 +29,7 @@ const BundleSelection: React.FC = () => {
           resetFilterSelects={resetFilterSelects}
         />
         <TypeSelector ref={typesSelectRef} />
+        <LoadSelector ref={loadingSelectRef} />
       </div>
     </div>
   )
