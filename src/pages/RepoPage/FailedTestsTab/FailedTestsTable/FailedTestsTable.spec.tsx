@@ -45,19 +45,18 @@ const wrapper =
     queryClient: QueryClient,
     initialEntries: string[] = ['/gh/codecov/repo/tests']
   ): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={initialEntries}>
-          <Route path="/:provider/:owner/:repo/tests" exact>
-            {children}
-          </Route>
-          <Route path="/:provider/:owner/:repo/tests/:branch" exact>
-            {children}
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={initialEntries}>
+        <Route path="/:provider/:owner/:repo/tests" exact>
+          {children}
+        </Route>
+        <Route path="/:provider/:owner/:repo/tests/:branch" exact>
+          {children}
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()
