@@ -18,6 +18,7 @@ const RepositorySchema = z.object({
   bundleAnalysisEnabled: z.boolean().nullable(),
   testAnalyticsEnabled: z.boolean().nullable(),
   yaml: z.string().nullable(),
+  languages: z.array(z.string()).nullable(),
 })
 
 const PlanSchema = z
@@ -60,6 +61,7 @@ const query = `query GetRepoConfigurationStatus($owner: String!, $repo: String!)
         bundleAnalysisEnabled
         testAnalyticsEnabled
         yaml
+        languages
       }
       ... on NotFoundError {
         message

@@ -42,6 +42,7 @@ const mockGoodResponse = {
       bundleAnalysisEnabled: true,
       testAnalyticsEnabled: true,
       yaml: 'yaml',
+      languages: ['typescript'],
     },
   },
 }
@@ -217,6 +218,7 @@ describe('useRepoConfigurationStatus', () => {
           bundleAnalysisEnabled: true,
           testAnalyticsEnabled: true,
           yaml: 'yaml',
+          languages: ['typescript'],
         },
       })
     )

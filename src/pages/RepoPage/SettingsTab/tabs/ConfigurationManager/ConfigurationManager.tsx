@@ -108,8 +108,18 @@ function CoverageConfiguration({ repoConfiguration }: ConfigurationGroupProps) {
 function BundleAnalysisConfiguration({
   repoConfiguration,
 }: ConfigurationGroupProps) {
+  const jsOrTsPresent = !!repoConfiguration?.repository?.languages?.some(
+    (lang) =>
+      lang.toLowerCase() === 'javascript' || lang.toLowerCase() === 'typescript'
+  )
+
+  if (!jsOrTsPresent) {
+    return null
+  }
+
   const bundleAnalysisEnabled =
     !!repoConfiguration?.repository?.bundleAnalysisEnabled
+
   return (
     <FeatureGroup
       title="Bundle analysis"

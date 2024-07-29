@@ -17,6 +17,7 @@ interface mockRepoConfigArgs {
   yaml?: string | null
   bundleAnalysis?: boolean
   testAnalytics?: boolean
+  languages?: string[] | null
 }
 
 const yamlWithProjectStatus = 'coverage:\n  status:\n    project: true\n'
@@ -29,6 +30,7 @@ function mockRepoConfig({
   yaml = null,
   bundleAnalysis = false,
   testAnalytics = false,
+  languages = null,
 }: mockRepoConfigArgs): RepositoryConfiguration {
   return {
     plan: {
@@ -42,6 +44,7 @@ function mockRepoConfig({
       bundleAnalysisEnabled: bundleAnalysis,
       testAnalyticsEnabled: testAnalytics,
       yaml,
+      languages,
     },
   }
 }
@@ -283,8 +286,26 @@ describe('Configuration Manager', () => {
   })
 
   describe('BundleAnalysisConfiguration', () => {
+    describe('when repo does not contain JS or TS', () => {
+      it('does not render Bundle analysis feature block', async () => {
+        setup({})
+        render(<ConfigurationManager />, { wrapper })
+
+        await waitFor(() => screen.findByRole('heading', { name: 'Coverage' }))
+
+        const header = screen.queryByRole('heading', {
+          name: 'Bundle analysis',
+        })
+        expect(header).not.toBeInTheDocument()
+      })
+    })
+
     it('renders feature block', async () => {
-      setup({})
+      setup({
+        repoConfig: mockRepoConfig({
+          languages: ['javascript'],
+        }),
+      })
       render(<ConfigurationManager />, { wrapper })
 
       const heading = await screen.findByRole('heading', {
@@ -294,7 +315,11 @@ describe('Configuration Manager', () => {
     })
 
     it('renders features', async () => {
-      setup({})
+      setup({
+        repoConfig: mockRepoConfig({
+          languages: ['javascript'],
+        }),
+      })
       render(<ConfigurationManager />, { wrapper })
 
       const bundleReports = await screen.findByText('Bundle reports')
@@ -308,10 +333,14 @@ describe('Configuration Manager', () => {
             coverage: true,
             bundleAnalysis: false,
             testAnalytics: true,
+            languages: ['typescript'],
           }),
         })
         render(<ConfigurationManager />, { wrapper })
 
+        await waitFor(() =>
+          screen.findByRole('heading', { name: 'Bundle analysis' })
+        )
         const button = await screen.findByRole('link', { name: 'Get Started' })
         expect(button).toBeInTheDocument()
         expect(button).toHaveAttribute(
@@ -326,6 +355,7 @@ describe('Configuration Manager', () => {
             coverage: false,
             bundleAnalysis: false,
             testAnalytics: false,
+            languages: ['typescript'],
           }),
         })
         render(<ConfigurationManager />, { wrapper })
@@ -344,7 +374,12 @@ describe('Configuration Manager', () => {
 
     describe('when bundle analysis is configured', () => {
       it('renders Configured status', async () => {
-        setup({ repoConfig: mockRepoConfig({ bundleAnalysis: true }) })
+        setup({
+          repoConfig: mockRepoConfig({
+            bundleAnalysis: true,
+            languages: ['typescript'],
+          }),
+        })
         render(<ConfigurationManager />, { wrapper })
 
         const configuredStatus = await screen.findByText('Configured')
