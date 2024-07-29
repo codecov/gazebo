@@ -6,6 +6,8 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { RepoBreadcrumbProvider } from 'pages/RepoPage/context'
+
 import BundleContent from './BundleContent'
 
 jest.mock('./BundleSelection', () => () => <div>BundleSelection</div>)
@@ -240,7 +242,9 @@ const wrapper =
             '/:provider/:owner/:repo/bundles',
           ]}
         >
-          <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+          <RepoBreadcrumbProvider>
+            <Suspense fallback={<p>Loading</p>}>{children}</Suspense>
+          </RepoBreadcrumbProvider>
         </Route>
       </MemoryRouter>
     </QueryClientProvider>
