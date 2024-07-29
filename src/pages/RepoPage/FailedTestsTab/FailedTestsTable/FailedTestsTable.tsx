@@ -81,6 +81,11 @@ export function getSortingOption(
   return undefined
 }
 
+const isNumericValue = (value: string) =>
+  value === 'avgDuration' ||
+  value === 'failureRate' ||
+  value === 'commitsFailed'
+
 interface FailedTestsColumns {
   name: string
   avgDuration: number | null
@@ -236,6 +241,11 @@ const FailedTestsTable = () => {
                   {row.getVisibleCells().map((cell) => (
                     <td
                       key={cell.id}
+                      {...(isNumericValue(cell.column.id)
+                        ? {
+                            'data-type': 'numeric',
+                          }
+                        : {})}
                       className={cs({
                         'text-right': !['name', 'updatedAt'].includes(
                           cell.column.id
