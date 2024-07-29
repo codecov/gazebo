@@ -17,7 +17,7 @@ jest.mock('shared/GlobalTopBanners', () => () => 'GlobalTopBanners')
 jest.mock('./InstallationHelpBanner', () => () => 'InstallationHelpBanner')
 jest.mock('pages/TermsOfService', () => () => 'TermsOfService')
 jest.mock('pages/DefaultOrgSelector', () => () => 'DefaultOrgSelector')
-jest.mock('layouts/Header', () => () => 'New header')
+jest.mock('layouts/Header', () => () => 'Header')
 
 const mockOwner = {
   owner: {
@@ -291,6 +291,17 @@ describe('BaseLayout', () => {
       })
     })
 
+    it('renders the header', async () => {
+      setup({ currentUser: loggedInUser })
+
+      render(<BaseLayout>hello</BaseLayout>, {
+        wrapper: wrapper(),
+      })
+
+      const newHeader = await screen.findByText(/Header/)
+      expect(newHeader).toBeInTheDocument()
+    })
+
     it(`renders the ${expectedPage}`, async () => {
       setup({ currentUser: loggedInUser })
 
@@ -371,30 +382,6 @@ describe('BaseLayout', () => {
       expect(await screen.findByText(/InstallationHelpBanner/)).toBeTruthy()
       const selectInput = screen.getByText(/InstallationHelpBanner/)
       expect(selectInput).toBeInTheDocument()
-    })
-  })
-
-  describe('header feature flagging', () => {
-    it('renders old header when feature flag is false', async () => {
-      setup({ currentUser: userHasDefaultOrg })
-
-      render(<BaseLayout>hello</BaseLayout>, {
-        wrapper: wrapper(),
-      })
-
-      const blogLink = await screen.findByText('Blog')
-      expect(blogLink).toBeInTheDocument()
-    })
-
-    it('renders new header when feature flag is true', async () => {
-      setup({ currentUser: userHasDefaultOrg })
-
-      render(<BaseLayout>hello</BaseLayout>, {
-        wrapper: wrapper(),
-      })
-
-      const newHeader = await screen.findByText(/New header/)
-      expect(newHeader).toBeInTheDocument()
     })
   })
 })
