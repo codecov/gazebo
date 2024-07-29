@@ -26,6 +26,7 @@ function ConfigurationManager() {
   return (
     <div className="flex flex-col gap-6 lg:w-3/4">
       <CoverageConfiguration repoConfiguration={repoConfiguration} />
+      <BundleAnalysisConfiguration repoConfiguration={repoConfiguration} />
       <IntegrationsList />
     </div>
   )
@@ -33,13 +34,11 @@ function ConfigurationManager() {
 
 export default ConfigurationManager
 
-interface CoverageConfigurationProps {
+interface ConfigurationGroupProps {
   repoConfiguration: RepositoryConfiguration
 }
 
-function CoverageConfiguration({
-  repoConfiguration,
-}: CoverageConfigurationProps) {
+function CoverageConfiguration({ repoConfiguration }: ConfigurationGroupProps) {
   const coverageEnabled = !!repoConfiguration?.repository?.coverageEnabled
   const isTeamPlan = repoConfiguration?.plan?.tierName === TierNames.TEAM
   const yaml = repoConfiguration?.repository?.yaml
@@ -102,6 +101,42 @@ function CoverageConfiguration({
           Organize your coverage data into custom groups
         </FeatureItem>
       </FeatureGroup.ProItems>
+    </FeatureGroup>
+  )
+}
+
+function BundleAnalysisConfiguration({
+  repoConfiguration,
+}: ConfigurationGroupProps) {
+  const jsOrTsPresent = !!repoConfiguration?.repository?.languages?.some(
+    (lang) =>
+      lang.toLowerCase() === 'javascript' || lang.toLowerCase() === 'typescript'
+  )
+
+  if (!jsOrTsPresent) {
+    return null
+  }
+
+  const bundleAnalysisEnabled =
+    !!repoConfiguration?.repository?.bundleAnalysisEnabled
+
+  return (
+    <FeatureGroup
+      title="Bundle analysis"
+      getStartedLink="bundleOnboarding"
+      showGetStartedLink={!bundleAnalysisEnabled}
+    >
+      <FeatureGroup.UniversalItems>
+        <FeatureItem
+          name="Bundle reports"
+          configured={bundleAnalysisEnabled}
+          docsLink="bundleAnalysisDocs"
+          getStartedLink="bundleOnboarding"
+          hiddenStatus={!bundleAnalysisEnabled}
+        >
+          Track, monitor, and manage your bundle
+        </FeatureItem>
+      </FeatureGroup.UniversalItems>
     </FeatureGroup>
   )
 }
