@@ -136,12 +136,17 @@ export const BarChartStory: StoryObj = {
           dataKey="month"
           tickLine={false}
           tickMargin={10}
-          axisLine={true}
+          axisLine={false}
           tickFormatter={(date: string) =>
             format(new Date(date), 'MMM d, yyyy')
           }
         />
-        <YAxis tickLine={false} tickMargin={8} orientation="right" />
+        <YAxis
+          tickLine={false}
+          tickMargin={8}
+          axisLine={false}
+          orientation="right"
+        />
         <ChartTooltip
           content={
             <ChartTooltipContent
@@ -162,6 +167,139 @@ export const BarChartStory: StoryObj = {
           dataKey="flaky"
           stackId="a"
           fill="var(--color-flaky)"
+          radius={[4, 4, 0, 0]}
+        />
+      </BarChart>
+    </ChartContainer>
+  ),
+}
+
+const doubleBarChartData = [
+  {
+    month: new Date('01/01/2024').toISOString(),
+    'failed-jest': 186,
+    'failed-pytest': 20,
+    'flaky-jest': 80,
+    'flaky-pytest': 20,
+  },
+  {
+    month: new Date('02/01/2024').toISOString(),
+    'failed-jest': 305,
+    'failed-pytest': 46,
+    'flaky-jest': 200,
+    'flaky-pytest': 20,
+  },
+  {
+    month: new Date('03/01/2024').toISOString(),
+    'failed-jest': 237,
+    'failed-pytest': 124,
+    'flaky-jest': 120,
+    'flaky-pytest': 20,
+  },
+  {
+    month: new Date('04/01/2024').toISOString(),
+    'failed-jest': 73,
+    'failed-pytest': 205,
+    'flaky-jest': 190,
+    'flaky-pytest': 20,
+  },
+  {
+    month: new Date('05/01/2024').toISOString(),
+    'failed-jest': 209,
+    'failed-pytest': 56,
+    'flaky-jest': 130,
+    'flaky-pytest': 20,
+  },
+  {
+    month: new Date('06/01/2024').toISOString(),
+    'failed-jest': 214,
+    'failed-pytest': 124,
+    'flaky-jest': 140,
+    'flaky-pytest': 20,
+  },
+]
+
+const doubleBarChartConfig = {
+  'failed-jest': {
+    label: 'Failed Jest',
+    color: 'hsl(var(--chart-1))',
+  },
+  'flaky-jest': {
+    label: 'Flaky Jest',
+    color: 'hsl(var(--chart-1))',
+  },
+  'failed-pytest': {
+    label: 'Failed PyTest',
+    color: 'hsl(var(--chart-3))',
+  },
+  'flaky-pytest': {
+    label: 'Flaky PyTest',
+    color: 'hsl(var(--chart-3))',
+  },
+} satisfies ChartConfig
+
+export const DoubleBarChartStory: StoryObj = {
+  render: () => (
+    <ChartContainer
+      config={doubleBarChartConfig}
+      className="max-h-[500px] min-h-[200px] w-full"
+    >
+      <BarChart
+        accessibilityLayer
+        data={doubleBarChartData}
+        margin={{
+          left: 12,
+          right: 12,
+        }}
+      >
+        <CartesianGrid vertical={false} />
+        <XAxis
+          dataKey="month"
+          tickLine={false}
+          tickMargin={10}
+          axisLine={false}
+          tickFormatter={(date: string) =>
+            format(new Date(date), 'MMM d, yyyy')
+          }
+        />
+        <YAxis
+          tickLine={false}
+          axisLine={false}
+          tickMargin={8}
+          orientation="right"
+        />
+        <ChartTooltip
+          content={
+            <ChartTooltipContent
+              labelFormatter={(date: string) =>
+                format(new Date(date), 'MMM d, yyyy')
+              }
+            />
+          }
+        />
+        <ChartLegend content={<ChartLegendContent />} />
+        <Bar
+          dataKey="failed-jest"
+          stackId="failed"
+          fill="var(--color-failed-jest)"
+          radius={[0, 0, 4, 4]}
+        />
+        <Bar
+          dataKey="failed-pytest"
+          stackId="failed"
+          fill="var(--color-failed-pytest)"
+          radius={[4, 4, 0, 0]}
+        />
+        <Bar
+          dataKey="flaky-jest"
+          stackId="flaky"
+          fill="var(--color-flaky-jest)"
+          radius={[0, 0, 4, 4]}
+        />
+        <Bar
+          dataKey="flaky-pytest"
+          stackId="flaky"
+          fill="var(--color-flaky-pytest)"
           radius={[4, 4, 0, 0]}
         />
       </BarChart>
