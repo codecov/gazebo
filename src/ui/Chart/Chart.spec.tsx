@@ -425,6 +425,69 @@ describe('Chart', () => {
         expect(icon).toBeInTheDocument()
       })
     })
+
+    describe('hideIndicator', () => {
+      describe('not set', () => {
+        it('renders the indicator', () => {
+          render(
+            <ChartContainer config={chartConfig} className="size-[400px]">
+              <ChartTooltipContent
+                indicator="dot"
+                labelFormatter={(date: string) => `Formatted ${date}`}
+                valueFormatter={(value: number) => `${value}%`}
+                active={true}
+                payload={[
+                  {
+                    stroke: 'var(--color-coverage)',
+                    dataKey: 'coverage',
+                    name: 'coverage',
+                    color: 'var(--color-coverage)',
+                    value: 45,
+                    payload: {
+                      month: '2024-03-01T04:00:00.000Z',
+                      coverage: 45,
+                    },
+                    hide: false,
+                  },
+                ]}
+              />
+            </ChartContainer>
+          )
+
+          const indicator = screen.getByTestId('chart-tooltip-indicator')
+          expect(indicator).toBeInTheDocument()
+        })
+      })
+
+      describe('set to true', () => {
+        it('does not render the indicator', () => {
+          render(
+            <ChartContainer config={chartConfig} className="size-[400px]">
+              <ChartTooltipContent
+                hideIndicator={true}
+                payload={[
+                  {
+                    stroke: 'var(--color-coverage)',
+                    dataKey: 'coverage',
+                    name: 'coverage',
+                    color: 'var(--color-coverage)',
+                    value: 45,
+                    payload: {
+                      month: '2024-03-01T04:00:00.000Z',
+                      coverage: 45,
+                    },
+                    hide: false,
+                  },
+                ]}
+              />
+            </ChartContainer>
+          )
+
+          const indicator = screen.queryByTestId('chart-tooltip-indicator')
+          expect(indicator).not.toBeInTheDocument()
+        })
+      })
+    })
   })
 
   describe('chart is not wrapped in a container', () => {

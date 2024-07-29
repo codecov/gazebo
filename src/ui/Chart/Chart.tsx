@@ -215,6 +215,7 @@ const ChartTooltipContent = React.forwardRef<
                       <itemConfig.icon />
                     ) : !hideIndicator ? (
                       <div
+                        data-testid="chart-tooltip-indicator"
                         className={cn(
                           'shrink-0 rounded-[2px] border-[--color-border] bg-[--color-bg]',
                           {
