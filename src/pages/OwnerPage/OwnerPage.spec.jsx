@@ -9,7 +9,7 @@ import { useFlags } from 'shared/featureFlags'
 
 import OwnerPage from './OwnerPage'
 
-jest.mock('./Header', () => () => 'Header')
+jest.mock('./HeaderBanners', () => () => 'HeaderBanners')
 jest.mock('./Tabs', () => () => 'Tabs')
 jest.mock('shared/ListRepo', () => () => 'ListRepo')
 jest.mock('services/toast')
@@ -234,37 +234,6 @@ describe('OwnerPage', () => {
 
       render(<OwnerPage />, { wrapper })
       await waitFor(() => expect(mockRemoveItem).toHaveBeenCalled())
-    })
-  })
-
-  describe('header feature flagging', () => {
-    it('renders header when flag is false', async () => {
-      setup({
-        owner: {
-          username: 'codecov',
-          isCurrentUserPartOfOrg: true,
-        },
-      })
-      render(<OwnerPage />, { wrapper })
-
-      const header = await screen.findByText(/Header/)
-      expect(header).toBeInTheDocument()
-    })
-
-    it('does not render header when flag is true', async () => {
-      setup({
-        owner: {
-          username: 'codecov',
-          isCurrentUserPartOfOrg: true,
-        },
-      })
-      useFlags.mockReturnValue({
-        newHeader: true,
-      })
-      render(<OwnerPage />, { wrapper })
-
-      const header = screen.queryByText(/Header/)
-      expect(header).not.toBeInTheDocument()
     })
   })
 })

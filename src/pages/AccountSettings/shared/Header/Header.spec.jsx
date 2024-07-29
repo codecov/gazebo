@@ -130,25 +130,4 @@ describe('Header', () => {
       ).not.toBeInTheDocument()
     })
   })
-
-  describe('header feature flagging', () => {
-    it('renders header when flag is false', async () => {
-      setup()
-      render(<Header />, { wrapper })
-
-      const header = await screen.findByText('MyContextSwitcher')
-      expect(header).toBeInTheDocument()
-    })
-
-    it('does not render header when flag is true', async () => {
-      setup()
-      useFlags.mockReturnValue({
-        newHeader: true,
-      })
-      render(<Header />, { wrapper })
-
-      const header = screen.queryByText('MyContextSwitcher')
-      expect(header).not.toBeInTheDocument()
-    })
-  })
 })

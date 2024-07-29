@@ -13,7 +13,6 @@ import PlanPage from './PlanPage'
 
 jest.mock('config')
 
-jest.mock('./Header', () => () => 'Header')
 jest.mock('./Tabs', () => () => 'Tabs')
 jest.mock('./subRoutes/CancelPlanPage', () => () => 'CancelPlanPage')
 jest.mock('./subRoutes/CurrentOrgPlan', () => () => 'CurrentOrgPlan')
@@ -135,13 +134,6 @@ describe('PlanPage', () => {
       })
     })
 
-    it('renders header component', async () => {
-      render(<PlanPage />, { wrapper: wrapper('/plan/gh/codecov') })
-
-      const header = await screen.findByText(/Header/)
-      expect(header).toBeInTheDocument()
-    })
-
     it('renders tabs component', async () => {
       render(<PlanPage />, { wrapper: wrapper('/plan/gh/codecov') })
 
@@ -217,40 +209,6 @@ describe('PlanPage', () => {
           expect(testLocation.pathname).toBe('/plan/gh/codecov')
         )
       })
-    })
-  })
-
-  describe('header feature flagging', () => {
-    it('renders header when flag is false', async () => {
-      setup({
-        owner: {
-          username: 'codecov',
-          isCurrentUserPartOfOrg: true,
-          numberOfUploads: 30,
-        },
-      })
-      render(<PlanPage />, { wrapper: wrapper('/plan/gh/codecov') })
-
-      const header = await screen.findByText(/Header/)
-      expect(header).toBeInTheDocument()
-    })
-
-    it('does not render header when flag is true', async () => {
-      setup({
-        owner: {
-          username: 'codecov',
-          isCurrentUserPartOfOrg: true,
-          numberOfUploads: 30,
-        },
-      })
-
-      render(<PlanPage />, { wrapper: wrapper('/plan/gh/codecov') })
-      useFlags.mockReturnValue({
-        newHeader: true,
-      })
-
-      const header = screen.queryByText(/Header/)
-      expect(header).not.toBeInTheDocument()
     })
   })
 })

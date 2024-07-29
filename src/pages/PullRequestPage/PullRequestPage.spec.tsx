@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from 'custom-testing-library'
+import { render, screen } from 'custom-testing-library'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { graphql } from 'msw'
@@ -378,37 +378,6 @@ describe('PullRequestPage', () => {
         const PullBundleAnalysis = await screen.findByText(/PullBundleAnalysis/)
         expect(PullBundleAnalysis).toBeInTheDocument()
       })
-    })
-  })
-
-  describe('header feature flagging', () => {
-    it('renders breadcrumb when flag is false', async () => {
-      setup({})
-      render(<PullRequestPage />, { wrapper: wrapper() })
-
-      const breadcrumb = await screen.findByText(/test-repo/)
-      expect(breadcrumb).toBeInTheDocument()
-    })
-
-    it('does not render breadcrumb when flag is true', async () => {
-      setup({})
-      mockedUseFlags.mockReturnValue({
-        multipleTiers: false,
-        newHeader: true,
-      })
-      render(<PullRequestPage />, { wrapper: wrapper() })
-
-      await waitFor(() =>
-        expect(mockedUseFlags).toHaveReturnedWith(
-          expect.objectContaining({ newHeader: true })
-        )
-      )
-
-      const PullCoverage = await screen.findByText(/PullCoverage/)
-      expect(PullCoverage).toBeInTheDocument()
-
-      const breadcrumb = screen.queryByText(/test-repo/)
-      expect(breadcrumb).not.toBeInTheDocument()
     })
   })
 })
