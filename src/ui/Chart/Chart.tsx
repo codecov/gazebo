@@ -51,8 +51,8 @@ const ChartContainer = React.forwardRef<
         ref={ref}
         className={cn(
           `flex aspect-video justify-center text-xs lg:text-sm
-          [&_.recharts-cartesian-axis-tick_text]:fill-ds-gray-senary
-          [&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-ds-gray-quinary/50
+          [&_.recharts-cartesian-axis-tick_text]:fill-ds-gray-quaternary
+          [&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-ds-gray-secondary
           [&_.recharts-curve.recharts-tooltip-cursor]:stroke-ds-gray-quaternary
           [&_.recharts-dot[stroke='#fff']]:stroke-transparent
           [&_.recharts-layer]:outline-none
@@ -304,7 +304,12 @@ const ChartLegendContent = React.forwardRef<
             <div
               key={item.value}
               className={cn(
-                'flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-ds-gray-quinary'
+                `flex 
+                items-center 
+                gap-1.5 
+                [&>svg]:h-3 
+                [&>svg]:w-3 
+                [&>svg]:text-ds-gray-quaternary`
               )}
             >
               {itemConfig?.icon && !hideIcon ? (
