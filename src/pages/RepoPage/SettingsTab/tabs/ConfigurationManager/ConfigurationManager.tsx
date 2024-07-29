@@ -80,7 +80,7 @@ function CoverageConfiguration({
           hiddenStatus={!coverageEnabled || isTeamPlan}
           getStartedLink="statusChecks"
         >
-          Include project coverage reporting in PR comment
+          Include project coverage reporting
         </FeatureItem>
         <FeatureItem
           name="Flags"
