@@ -12,7 +12,6 @@ import EnterpriseLoginLayout from 'layouts/EnterpriseLoginLayout'
 import LoginLayout from 'layouts/LoginLayout'
 import { useLocationParams } from 'services/navigation'
 import { ToastNotificationProvider } from 'services/toastNotification'
-import { useUTM } from 'services/tracking/utm'
 import { useInternalUser, useUser } from 'services/user'
 import { isProvider } from 'shared/api/helpers'
 
@@ -176,8 +175,6 @@ const MainAppRoutes = () => (
 )
 
 function App() {
-  useUTM()
-
   return (
     <>
       <ToastNotificationProvider>

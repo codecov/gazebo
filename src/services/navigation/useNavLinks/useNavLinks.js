@@ -1,4 +1,3 @@
-import Cookie from 'js-cookie'
 import qs from 'qs'
 import { useParams } from 'react-router-dom'
 
@@ -17,11 +16,6 @@ export function useNavLinks() {
     path: pa,
   } = useParams()
 
-  const utmCookie = Cookie.get('utmParams')
-  const utmCookieObj = qs.parse(utmCookie, {
-    ignoreQueryPrefix: true,
-  })
-
   return {
     signOut: {
       text: 'Sign Out',
@@ -33,25 +27,14 @@ export function useNavLinks() {
     signIn: {
       text: 'Log in',
       path: ({ provider = p, to } = { provider: p }) => {
-        const query = qs.stringify(
-          {
-            to,
-            ...utmCookieObj,
-          },
-          { addQueryPrefix: true }
-        )
+        const query = qs.stringify({ to }, { addQueryPrefix: true })
         return `${config.API_URL}/login/${provider}${query}`
       },
       isExternalLink: true,
     },
     signUp: {
       text: 'Sign Up',
-      path: () => {
-        const params = qs.stringify(utmCookieObj, {
-          addQueryPrefix: true,
-        })
-        return `${config.MARKETING_BASE_URL}/sign-up/${params}`
-      },
+      path: () => `${config.MARKETING_BASE_URL}/sign-up/`,
       isExternalLink: true,
     },
     oktaLogin: {
