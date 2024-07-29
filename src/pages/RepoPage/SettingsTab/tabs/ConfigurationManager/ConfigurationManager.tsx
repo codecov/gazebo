@@ -26,6 +26,7 @@ function ConfigurationManager() {
   return (
     <div className="flex flex-col gap-6 lg:w-3/4">
       <CoverageConfiguration repoConfiguration={repoConfiguration} />
+      <TestAnalyticsConfiguration repoConfiguration={repoConfiguration} />
       <BundleAnalysisConfiguration repoConfiguration={repoConfiguration} />
       <IntegrationsList />
     </div>
@@ -101,6 +102,33 @@ function CoverageConfiguration({ repoConfiguration }: ConfigurationGroupProps) {
           Organize your coverage data into custom groups
         </FeatureItem>
       </FeatureGroup.ProItems>
+    </FeatureGroup>
+  )
+}
+
+function TestAnalyticsConfiguration({
+  repoConfiguration,
+}: ConfigurationGroupProps) {
+  const testAnalyticsEnabled =
+    !!repoConfiguration?.repository?.testAnalyticsEnabled
+
+  return (
+    <FeatureGroup
+      title="Test analytics"
+      getStartedLink="failedTestsOnboarding"
+      showGetStartedLink={!testAnalyticsEnabled}
+    >
+      <FeatureGroup.UniversalItems>
+        <FeatureItem
+          name="Failed tests"
+          configured={testAnalyticsEnabled}
+          docsLink="testsAnalytics"
+          getStartedLink="tests"
+          hiddenStatus={!testAnalyticsEnabled}
+        >
+          Identify and fix consistently failing tests
+        </FeatureItem>
+      </FeatureGroup.UniversalItems>
     </FeatureGroup>
   )
 }
