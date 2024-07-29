@@ -120,4 +120,27 @@ describe('FeatureItem', () => {
     const unconfigured = await screen.findByText('not enabled')
     expect(unconfigured).toBeInTheDocument()
   })
+
+  it('renders name link', async () => {
+    render(<FeatureItem name="Name" hiddenStatus={false} nameLink="flags" />, {
+      wrapper,
+    })
+
+    const name = await screen.findByText('Name')
+    expect(name).toBeInTheDocument()
+    const link = await screen.findByRole('link')
+    expect(link).toBeInTheDocument()
+    expect(link).toHaveAttribute('href', 'https://docs.codecov.com/docs/flags')
+  })
+
+  it('does not render name link when prop is undefined', async () => {
+    render(<FeatureItem name="Name" hiddenStatus={false} />, {
+      wrapper,
+    })
+
+    const name = await screen.findByText('Name')
+    expect(name).toBeInTheDocument()
+    const link = screen.queryByRole('link')
+    expect(link).not.toBeInTheDocument()
+  })
 })
