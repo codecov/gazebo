@@ -5,7 +5,6 @@ import { setupServer } from 'msw/node'
 import { MemoryRouter, Route } from 'react-router-dom'
 
 import { renderToast } from 'services/toast'
-import { useFlags } from 'shared/featureFlags'
 
 import OwnerPage from './OwnerPage'
 
@@ -13,9 +12,6 @@ jest.mock('./HeaderBanners', () => () => 'HeaderBanners')
 jest.mock('./Tabs', () => () => 'Tabs')
 jest.mock('shared/ListRepo', () => () => 'ListRepo')
 jest.mock('services/toast')
-
-// temp, for new header work
-jest.mock('shared/featureFlags')
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
@@ -56,9 +52,6 @@ describe('OwnerPage', () => {
       successfulMutation: true,
     }
   ) {
-    useFlags.mockReturnValue({
-      newHeader: false,
-    })
     server.use(
       graphql.query('OwnerPageData', (req, res, ctx) =>
         res(ctx.status(200), ctx.data({ owner }))

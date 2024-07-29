@@ -7,8 +7,6 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { useFlags } from 'shared/featureFlags'
-
 import PlanPage from './PlanPage'
 
 jest.mock('config')
@@ -19,9 +17,6 @@ jest.mock('./subRoutes/CurrentOrgPlan', () => () => 'CurrentOrgPlan')
 jest.mock('./subRoutes/InvoicesPage', () => () => 'InvoicesPage')
 jest.mock('./subRoutes/InvoiceDetailsPage', () => () => 'InvoiceDetailsPage')
 jest.mock('./subRoutes/UpgradePlanPage', () => () => 'UpgradePlanPage')
-
-// temp, for new header work
-jest.mock('shared/featureFlags')
 
 const server = setupServer()
 const queryClient = new QueryClient({
@@ -82,9 +77,6 @@ describe('PlanPage', () => {
         res(ctx.status(200), ctx.data({ owner }))
       )
     )
-    useFlags.mockReturnValue({
-      newHeader: false,
-    })
   }
 
   describe('when user is not part of the org', () => {

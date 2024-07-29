@@ -5,14 +5,10 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import config from 'config'
 
-import { useFlags } from 'shared/featureFlags'
-
 import Header from './Header'
 
 jest.mock('config')
 
-// temp, for new header work
-jest.mock('shared/featureFlags')
 jest.mock('layouts/MyContextSwitcher', () => () => 'MyContextSwitcher')
 
 const queryClient = new QueryClient()
@@ -44,9 +40,6 @@ describe('Header', () => {
       isSelfHosted: false,
     }
   ) {
-    useFlags.mockReturnValue({
-      newHeader: false,
-    })
     config.IS_SELF_HOSTED = isSelfHosted
   }
 

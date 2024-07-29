@@ -14,7 +14,6 @@ import PullRequestPage from './PullRequestPage'
 jest.mock('shared/featureFlags')
 const mockedUseFlags = useFlags as jest.Mock<{
   multipleTiers: boolean
-  newHeader: boolean
 }>
 
 jest.mock('./Header', () => () => 'Header')
@@ -191,7 +190,6 @@ describe('PullRequestPage', () => {
   }: SetupArgs) {
     mockedUseFlags.mockReturnValue({
       multipleTiers: true,
-      newHeader: false,
     })
 
     server.use(
@@ -250,34 +248,6 @@ describe('PullRequestPage', () => {
   }
 
   describe('when pull data is available', () => {
-    it('renders breadcrumb', async () => {
-      setup({})
-      render(<PullRequestPage />, { wrapper: wrapper() })
-
-      const org = await screen.findByRole('link', { name: 'test-org' })
-      expect(org).toBeInTheDocument()
-      expect(org).toHaveAttribute('href', '/gh/test-org')
-
-      const repo = await screen.findByRole('link', { name: 'test-repo' })
-      expect(repo).toBeInTheDocument()
-      expect(repo).toHaveAttribute('href', '/gh/test-org/test-repo')
-
-      const pulls = await screen.findByRole('link', { name: 'Pulls' })
-      expect(pulls).toBeInTheDocument()
-      expect(pulls).toHaveAttribute('href', '/gh/test-org/test-repo/pulls')
-
-      const pullId = await screen.findByText('12')
-      expect(pullId).toBeInTheDocument()
-    })
-
-    it('renders header', async () => {
-      setup({})
-      render(<PullRequestPage />, { wrapper: wrapper() })
-
-      const header = await screen.findByText(/Header/)
-      expect(header).toBeInTheDocument()
-    })
-
     describe('repo has coverage enabled', () => {
       it('renders pull coverage', async () => {
         setup({ coverageEnabled: false })
@@ -314,34 +284,6 @@ describe('PullRequestPage', () => {
         const pullBundleAnalysis = await screen.findByText(/Bundle report/)
         expect(pullBundleAnalysis).toBeInTheDocument()
       })
-    })
-  })
-
-  describe('when user is on team plan', () => {
-    it('renders the page for team tier', async () => {
-      setup({
-        tierValue: TierNames.TEAM,
-        privateRepo: true,
-      })
-      render(<PullRequestPage />, { wrapper: wrapper() })
-
-      const header = await screen.findByText(/Header/)
-      expect(header).toBeInTheDocument()
-
-      const org = await screen.findByRole('link', { name: 'test-org' })
-      expect(org).toBeInTheDocument()
-      expect(org).toHaveAttribute('href', '/gh/test-org')
-
-      const repo = await screen.findByRole('link', { name: 'test-repo' })
-      expect(repo).toBeInTheDocument()
-      expect(repo).toHaveAttribute('href', '/gh/test-org/test-repo')
-
-      const pulls = await screen.findByRole('link', { name: 'Pulls' })
-      expect(pulls).toBeInTheDocument()
-      expect(pulls).toHaveAttribute('href', '/gh/test-org/test-repo/pulls')
-
-      const pullId = await screen.findByText('12')
-      expect(pullId).toBeInTheDocument()
     })
   })
 
