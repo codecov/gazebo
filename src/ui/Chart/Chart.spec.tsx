@@ -37,6 +37,10 @@ const chartData = [
   { month: new Date('06/01/2024').toISOString(), coverage: 900 },
 ]
 
+function IconComponent() {
+  return <p>TestIcon</p>
+}
+
 const chartConfig = {
   coverage: {
     label: 'Coverage',
@@ -106,6 +110,44 @@ describe('Chart', () => {
         const coverage = within(legend).getByText('Coverage')
 
         expect(coverage).toBeInTheDocument()
+      })
+
+      describe('there is an icon', () => {
+        it('renders the icon', () => {
+          render(
+            <ChartContainer
+              config={{
+                coverage: {
+                  label: 'Coverage',
+                  color: 'hsl(var(--chart-area-bundle-tab))',
+                  icon: IconComponent,
+                },
+              }}
+              className="size-[200px]"
+            >
+              <AreaChart
+                data={chartData}
+                accessibilityLayer
+                width={100}
+                height={100}
+              >
+                <ChartLegend
+                  content={<ChartLegendContent nameKey="coverage" />}
+                />
+                <Area
+                  dataKey="coverage"
+                  type="linear"
+                  fillOpacity={0.4}
+                  fill="var(--color-coverage)"
+                  stroke="var(--color-coverage)"
+                />
+              </AreaChart>
+            </ChartContainer>
+          )
+
+          const icon = screen.getByText('TestIcon')
+          expect(icon).toBeInTheDocument()
+        })
       })
     })
 
@@ -342,6 +384,45 @@ describe('Chart', () => {
 
         const formattedValue = screen.getByText('45%')
         expect(formattedValue).toBeInTheDocument()
+      })
+    })
+
+    describe('icon is set in the config', () => {
+      it('renders the icon', () => {
+        render(
+          <ChartContainer
+            config={{
+              coverage: {
+                label: 'Coverage',
+                color: 'hsl(var(--chart-area-bundle-tab))',
+                icon: IconComponent,
+              },
+            }}
+            className="size-[400px]"
+          >
+            <ChartTooltipContent
+              indicator="dot"
+              active={true}
+              payload={[
+                {
+                  stroke: 'var(--color-coverage)',
+                  dataKey: 'coverage',
+                  name: 'coverage',
+                  color: 'var(--color-coverage)',
+                  value: 45,
+                  payload: {
+                    month: '2024-03-01T04:00:00.000Z',
+                    coverage: 45,
+                  },
+                  hide: false,
+                },
+              ]}
+            />
+          </ChartContainer>
+        )
+
+        const icon = screen.getByText('TestIcon')
+        expect(icon).toBeInTheDocument()
       })
     })
   })

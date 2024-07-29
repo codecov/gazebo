@@ -311,7 +311,7 @@ const ChartLegendContent = React.forwardRef<
               )}
             >
               {itemConfig?.icon && !hideIcon ? (
-                <itemConfig.icon data-testid="chart-legend-content-icon" />
+                <itemConfig.icon />
               ) : (
                 <div
                   className="size-2 shrink-0 rounded-[2px]"
