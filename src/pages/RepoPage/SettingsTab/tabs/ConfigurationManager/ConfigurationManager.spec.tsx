@@ -130,7 +130,9 @@ describe('Configuration Manager', () => {
         setup({})
         render(<ConfigurationManager />, { wrapper })
 
-        await waitFor(() => screen.findByRole('link', { name: 'Get Started' }))
+        await waitFor(() =>
+          screen.findAllByRole('link', { name: 'Get Started' })
+        )
 
         const configuredStatus = screen.queryByText('Configured')
         expect(configuredStatus).not.toBeInTheDocument()
@@ -210,7 +212,9 @@ describe('Configuration Manager', () => {
         setup({ repoConfig: mockRepoConfig({ tierName: 'pro' }) })
         render(<ConfigurationManager />, { wrapper })
 
-        await waitFor(() => screen.findByRole('link', { name: 'Get Started' }))
+        await waitFor(() =>
+          screen.findAllByRole('link', { name: 'Get Started' })
+        )
 
         const upgrade = screen.queryByText('Available with Pro Plan')
         expect(upgrade).not.toBeInTheDocument()
@@ -275,6 +279,77 @@ describe('Configuration Manager', () => {
       expect(browserExtension).toBeInTheDocument()
       const slackApp = await screen.findByText('Slack app')
       expect(slackApp).toBeInTheDocument()
+    })
+  })
+
+  describe('BundleAnalysisConfiguration', () => {
+    it('renders feature block', async () => {
+      setup({})
+      render(<ConfigurationManager />, { wrapper })
+
+      const heading = await screen.findByRole('heading', {
+        name: 'Bundle analysis',
+      })
+      expect(heading).toBeInTheDocument()
+    })
+
+    it('renders features', async () => {
+      setup({})
+      render(<ConfigurationManager />, { wrapper })
+
+      const bundleReports = await screen.findByText('Bundle reports')
+      expect(bundleReports).toBeInTheDocument()
+    })
+
+    describe('when bundle analysis is not configured', () => {
+      it('renders Get Started button', async () => {
+        setup({
+          repoConfig: mockRepoConfig({
+            coverage: true,
+            bundleAnalysis: false,
+            testAnalytics: true,
+          }),
+        })
+        render(<ConfigurationManager />, { wrapper })
+
+        const button = await screen.findByRole('link', { name: 'Get Started' })
+        expect(button).toBeInTheDocument()
+        expect(button).toHaveAttribute(
+          'href',
+          '/gh/codecov/cool-repo/bundles/new'
+        )
+      })
+
+      it('does not render configuration statuses', async () => {
+        setup({
+          repoConfig: mockRepoConfig({
+            coverage: false,
+            bundleAnalysis: false,
+            testAnalytics: false,
+          }),
+        })
+        render(<ConfigurationManager />, { wrapper })
+
+        await waitFor(() =>
+          screen.findAllByRole('link', { name: 'Get Started' })
+        )
+
+        const configuredStatus = screen.queryByText('Configured')
+        expect(configuredStatus).not.toBeInTheDocument()
+
+        const unconfiguredStatus = screen.queryByText('not enabled')
+        expect(unconfiguredStatus).not.toBeInTheDocument()
+      })
+    })
+
+    describe('when bundle analysis is configured', () => {
+      it('renders Configured status', async () => {
+        setup({ repoConfig: mockRepoConfig({ bundleAnalysis: true }) })
+        render(<ConfigurationManager />, { wrapper })
+
+        const configuredStatus = await screen.findByText('Configured')
+        expect(configuredStatus).toBeInTheDocument()
+      })
     })
   })
 })
