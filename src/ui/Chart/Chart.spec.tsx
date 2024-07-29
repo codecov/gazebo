@@ -312,6 +312,38 @@ describe('Chart', () => {
         })
       })
     })
+
+    describe('value formatter', () => {
+      it('uses the formatter to render the value', () => {
+        render(
+          <ChartContainer config={chartConfig} className="size-[400px]">
+            <ChartTooltipContent
+              indicator="dot"
+              labelFormatter={(date: string) => `Formatted ${date}`}
+              valueFormatter={(value: number) => `${value}%`}
+              active={true}
+              payload={[
+                {
+                  stroke: 'var(--color-coverage)',
+                  dataKey: 'coverage',
+                  name: 'coverage',
+                  color: 'var(--color-coverage)',
+                  value: 45,
+                  payload: {
+                    month: '2024-03-01T04:00:00.000Z',
+                    coverage: 45,
+                  },
+                  hide: false,
+                },
+              ]}
+            />
+          </ChartContainer>
+        )
+
+        const formattedValue = screen.getByText('45%')
+        expect(formattedValue).toBeInTheDocument()
+      })
+    })
   })
 
   describe('chart is not wrapped in a container', () => {
