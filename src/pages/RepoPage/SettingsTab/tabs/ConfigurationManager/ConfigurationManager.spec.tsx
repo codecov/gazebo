@@ -261,13 +261,13 @@ describe('Configuration Manager', () => {
     })
   })
 
-  describe('IntegrationsList', () => {
+  describe('TestAnalyticsConfiguration', () => {
     it('renders feature block', async () => {
       setup({})
       render(<ConfigurationManager />, { wrapper })
 
       const heading = await screen.findByRole('heading', {
-        name: 'Codecov integrations',
+        name: 'Test analytics',
       })
       expect(heading).toBeInTheDocument()
     })
@@ -276,12 +276,65 @@ describe('Configuration Manager', () => {
       setup({})
       render(<ConfigurationManager />, { wrapper })
 
-      const vscode = await screen.findByText('VSCode extension')
-      expect(vscode).toBeInTheDocument()
-      const browserExtension = await screen.findByText('Browser extension')
-      expect(browserExtension).toBeInTheDocument()
-      const slackApp = await screen.findByText('Slack app')
-      expect(slackApp).toBeInTheDocument()
+      const failedTests = await screen.findByText('Failed tests')
+      expect(failedTests).toBeInTheDocument()
+    })
+
+    describe('when test analytics is not configured', () => {
+      it('renders Get Started button', async () => {
+        setup({
+          repoConfig: mockRepoConfig({
+            coverage: true,
+            testAnalytics: false,
+            bundleAnalysis: true,
+          }),
+        })
+        render(<ConfigurationManager />, { wrapper })
+
+        const button = await screen.findByRole('link', { name: 'Get Started' })
+        expect(button).toBeInTheDocument()
+        expect(button).toHaveAttribute(
+          'href',
+          '/gh/codecov/cool-repo/tests/new'
+        )
+      })
+
+      it('does not render configuration statuses', async () => {
+        setup({
+          repoConfig: mockRepoConfig({
+            coverage: false,
+            testAnalytics: false,
+            bundleAnalysis: false,
+          }),
+        })
+        render(<ConfigurationManager />, { wrapper })
+
+        await waitFor(() =>
+          screen.findAllByRole('link', { name: 'Get Started' })
+        )
+
+        const configuredStatus = screen.queryByText('Configured')
+        expect(configuredStatus).not.toBeInTheDocument()
+
+        const unconfiguredStatus = screen.queryByText('not enabled')
+        expect(unconfiguredStatus).not.toBeInTheDocument()
+      })
+    })
+
+    describe('when test analytics is configured', () => {
+      it('renders Configured status', async () => {
+        setup({
+          repoConfig: mockRepoConfig({
+            coverage: false,
+            bundleAnalysis: false,
+            testAnalytics: true,
+          }),
+        })
+        render(<ConfigurationManager />, { wrapper })
+
+        const configuredStatus = await screen.findByText('Configured')
+        expect(configuredStatus).toBeInTheDocument()
+      })
     })
   })
 
@@ -385,6 +438,30 @@ describe('Configuration Manager', () => {
         const configuredStatus = await screen.findByText('Configured')
         expect(configuredStatus).toBeInTheDocument()
       })
+    })
+  })
+
+  describe('IntegrationsList', () => {
+    it('renders feature block', async () => {
+      setup({})
+      render(<ConfigurationManager />, { wrapper })
+
+      const heading = await screen.findByRole('heading', {
+        name: 'Codecov integrations',
+      })
+      expect(heading).toBeInTheDocument()
+    })
+
+    it('renders features', async () => {
+      setup({})
+      render(<ConfigurationManager />, { wrapper })
+
+      const vscode = await screen.findByText('VSCode extension')
+      expect(vscode).toBeInTheDocument()
+      const browserExtension = await screen.findByText('Browser extension')
+      expect(browserExtension).toBeInTheDocument()
+      const slackApp = await screen.findByText('Slack app')
+      expect(slackApp).toBeInTheDocument()
     })
   })
 })
