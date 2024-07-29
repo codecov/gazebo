@@ -58,17 +58,19 @@ export const AreaChartStory: StoryObj = {
         <CartesianGrid vertical={false} />
         <XAxis
           dataKey="month"
-          tickLine={false}
           tickMargin={8}
+          tickLine={false}
+          axisLine={false}
           tickFormatter={(date: string) =>
             format(new Date(date), 'MMM d, yyyy')
           }
         />
         <YAxis
           max={100}
-          tickLine={false}
           tickMargin={8}
-          orientation="right"
+          tickLine={false}
+          axisLine={false}
+          orientation="left"
           tickFormatter={(tick) => `${tick}%`}
         />
         <ChartTooltip
@@ -86,7 +88,7 @@ export const AreaChartStory: StoryObj = {
         <Area
           dataKey="coverage"
           type="linear"
-          fillOpacity={0.4}
+          fillOpacity={0.1}
           fill="var(--color-coverage)"
           stroke="var(--color-coverage)"
         />
