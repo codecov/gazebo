@@ -7,6 +7,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import cs from 'classnames'
+import isEmpty from 'lodash/isEmpty'
 import { useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
@@ -20,6 +21,9 @@ import {
   OrderingParameter,
   useInfiniteTestResults,
 } from '../hooks'
+
+const getDecodedBranch = (branch?: string) =>
+  !!branch ? decodeURIComponent(branch) : undefined
 
 const Loader = () => (
   <div className="mt-16 flex flex-1 items-center justify-center">
@@ -118,6 +122,7 @@ interface URLParams {
   provider: string
   owner: string
   repo: string
+  branch?: string
 }
 
 const FailedTestsTable = () => {
@@ -128,7 +133,7 @@ const FailedTestsTable = () => {
       desc: true,
     },
   ])
-  const { provider, owner, repo } = useParams<URLParams>()
+  const { provider, owner, repo, branch } = useParams<URLParams>()
 
   const {
     data: testData,
@@ -141,6 +146,9 @@ const FailedTestsTable = () => {
     owner,
     repo,
     ordering: getSortingOption(sorting),
+    filters: {
+      branch: branch ? getDecodedBranch(branch) : undefined,
+    },
     opts: {
       suspense: false,
     },
@@ -167,6 +175,10 @@ const FailedTestsTable = () => {
       fetchNextPage()
     }
   }, [fetchNextPage, inView, hasNextPage])
+
+  if (isEmpty(testData?.testResults) && !isLoading && !!branch) {
+    return <div>No test results found for this branch</div>
+  }
 
   return (
     <>
