@@ -2,6 +2,7 @@ import { lazy } from 'react'
 import { useParams } from 'react-router'
 
 import { useOktaConfig } from 'pages/AccountSettings/tabs/OktaAccess/hooks'
+import { useFlags } from 'shared/featureFlags'
 
 interface URLParams {
   provider: string
@@ -13,6 +14,9 @@ const OktaEnforcedBanner = lazy(() => import('../OktaEnforcedBanner'))
 
 function OktaBanners() {
   const { provider, owner } = useParams<URLParams>()
+  const { oktaSettings } = useFlags({
+    oktaSettings: false,
+  })
 
   const { data } = useOktaConfig({
     provider,
@@ -22,7 +26,12 @@ function OktaBanners() {
 
   const oktaConfig = data?.owner?.account?.oktaConfig
 
-  if (!owner || !oktaConfig?.enabled || !data?.owner?.isUserOktaAuthenticated)
+  if (
+    !oktaSettings ||
+    !owner ||
+    !oktaConfig?.enabled ||
+    data?.owner?.isUserOktaAuthenticated
+  )
     return null
 
   return oktaConfig?.enforced ? <OktaEnforcedBanner /> : <OktaEnabledBanner />

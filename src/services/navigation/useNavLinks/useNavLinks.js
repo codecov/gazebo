@@ -54,6 +54,13 @@ export function useNavLinks() {
       },
       isExternalLink: true,
     },
+    oktaLogin: {
+      text: 'Authenticate with Okta',
+      path: ({ provider = p, owner = o } = { provider: p, owner: o }) => {
+        return `${config.API_URL}/login/okta/${provider}/${owner}`
+      },
+      isExternalLink: true,
+    },
     owner: {
       path: ({ provider = p, owner = o } = { provider: p, owner: o }) => {
         if (provider && owner) {
