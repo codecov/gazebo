@@ -28,10 +28,9 @@ const PlanSchema = z
 
 export type RepositoryConfiguration =
   | {
-      plan?: z.infer<typeof PlanSchema>
-      repository?: z.infer<typeof RepositorySchema>
+      plan: z.infer<typeof PlanSchema>
+      repository: z.infer<typeof RepositorySchema> | null
     }
-  | null
   | undefined
 
 const RequestSchema = z.object({
