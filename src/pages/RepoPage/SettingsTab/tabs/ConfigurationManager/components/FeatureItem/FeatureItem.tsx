@@ -5,22 +5,35 @@ interface FeatureItemProps extends React.PropsWithChildren {
   name: string
   configured?: boolean
   docsLink?: string // navLink key
-  getStartedLink: string // navLink key
+  getStartedLink?: string // navLink key
   hiddenStatus?: boolean
+  nameLink?: string // navLink key
 }
 
 function FeatureItem({
   name,
   configured,
   docsLink,
-  hiddenStatus,
   getStartedLink,
+  hiddenStatus,
+  nameLink,
   children,
 }: FeatureItemProps) {
   return (
     <div className="flex items-center">
       <div className="flex-1">
-        <h4 className="font-semibold">{name}</h4>
+        {nameLink ? (
+          <A
+            to={{ pageName: nameLink }}
+            hook="configuration-name-link"
+            isExternal={true}
+            variant="medium"
+          >
+            {name}
+          </A>
+        ) : (
+          <h4 className="font-semibold">{name}</h4>
+        )}
         <div className="flex items-end gap-1">
           {children}
           {docsLink ? (
@@ -55,7 +68,7 @@ function FeatureItem({
 
 interface ConfiguredStatusProps {
   configured?: boolean
-  getStartedLink: string
+  getStartedLink?: string
 }
 
 const ConfiguredStatus = ({
@@ -72,14 +85,16 @@ const ConfiguredStatus = ({
   return (
     <p className="flex items-baseline gap-1 font-medium">
       <span className="text-ds-gray-quinary">not enabled</span>
-      <A
-        to={{ pageName: getStartedLink }}
-        hook="configuration-get-started"
-        isExternal={false}
-        showExternalIcon={false}
-      >
-        <span className="text-xs leading-4">get started</span>
-      </A>
+      {getStartedLink ? (
+        <A
+          to={{ pageName: getStartedLink }}
+          hook="configuration-get-started"
+          isExternal={false}
+          showExternalIcon={false}
+        >
+          <span className="text-xs leading-4">get started</span>
+        </A>
+      ) : null}
     </p>
   )
 }

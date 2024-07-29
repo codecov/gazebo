@@ -4,7 +4,7 @@ import { Card } from 'ui/Card'
 
 interface FeatureGroupProps extends React.PropsWithChildren {
   title: string
-  getStartedLink: string // navLink key
+  getStartedLink?: string // navLink key
   showGetStartedLink?: boolean
 }
 
@@ -20,7 +20,7 @@ function FeatureGroup({
         <Card.Title size="xl" className="flex-1">
           {title}
         </Card.Title>
-        {showGetStartedLink ? (
+        {showGetStartedLink && getStartedLink ? (
           <Button
             to={{ pageName: getStartedLink }}
             disabled={false}

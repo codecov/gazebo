@@ -26,6 +26,7 @@ function ConfigurationManager() {
   return (
     <div className="flex flex-col gap-6 lg:w-3/4">
       <CoverageConfiguration repoConfiguration={repoConfiguration} />
+      <IntegrationsList />
     </div>
   )
 }
@@ -101,6 +102,38 @@ function CoverageConfiguration({
           Organize your coverage data into custom groups
         </FeatureItem>
       </FeatureGroup.ProItems>
+    </FeatureGroup>
+  )
+}
+
+function IntegrationsList() {
+  return (
+    <FeatureGroup title="Codecov integrations">
+      <FeatureGroup.UniversalItems>
+        <FeatureItem
+          name="VSCode extension"
+          hiddenStatus={true}
+          nameLink="codecovYamlValidator"
+        >
+          Enhance your development workflow with Codecov integration directly in
+          Visual Studio Code
+        </FeatureItem>
+        <FeatureItem
+          name="Browser extension"
+          hiddenStatus={true}
+          nameLink="codecovBrowserExtension"
+        >
+          Access Codecov coverage reports directly in your browser while
+          reviewing pull requests
+        </FeatureItem>
+        <FeatureItem
+          name="Slack app"
+          hiddenStatus={true}
+          nameLink="codecovSlackApp"
+        >
+          Stay up to date with updates directly in Slack
+        </FeatureItem>
+      </FeatureGroup.UniversalItems>
     </FeatureGroup>
   )
 }
