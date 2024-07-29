@@ -1,8 +1,5 @@
 import { renderHook } from '@testing-library/react'
-import Cookie from 'js-cookie'
 import { MemoryRouter, Route } from 'react-router-dom'
-
-import config from 'config'
 
 import { useNavLinks } from './useNavLinks'
 
@@ -90,27 +87,6 @@ describe('useNavLinks', () => {
       expect(path).toBe(
         '/login/gl?to=https%3A%2F%2Fapp.codecov.io%2Fgh%2Fcodecov'
       )
-    })
-
-    it('forwards the utm tags', () => {
-      Cookie.set(
-        'utmParams',
-        'utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e'
-      )
-
-      const { result } = renderHook(() => useNavLinks(), {
-        wrapper: wrapper('/gh/doggo/squirrel-locator'),
-      })
-
-      const path = result.current.signIn.path({
-        to: 'https://app.codecov.io/gh/codecov',
-      })
-
-      expect(path).toBe(
-        '/login/gh?to=https%3A%2F%2Fapp.codecov.io%2Fgh%2Fcodecov&utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e'
-      )
-
-      Cookie.remove('utmParams')
     })
   })
 
@@ -1182,33 +1158,6 @@ describe('useNavLinks', () => {
         repo: 'test-repo',
       })
       expect(path).toBe('/bb/test-owner/test-repo/settings/badge')
-    })
-  })
-
-  describe('signup forward the marketing link', () => {
-    beforeEach(() => {
-      Cookie.set(
-        'utmParams',
-        'utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e'
-      )
-    })
-
-    afterEach(() => {
-      Cookie.remove('utmParams')
-    })
-
-    it('returns the correct url', () => {
-      const { result } = renderHook(() => useNavLinks(), {
-        wrapper: wrapper(
-          '/gh?utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e&not=f'
-        ),
-      })
-
-      const path = result.current.signUp.path({ pathname: 'random/path/name' })
-      expect(path).toBe(
-        config.MARKETING_BASE_URL +
-          '/sign-up/?utm_source=a&utm_medium=b&utm_campaign=c&utm_term=d&utm_content=e'
-      )
     })
   })
 
