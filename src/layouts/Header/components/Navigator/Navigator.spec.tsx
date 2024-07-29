@@ -31,35 +31,34 @@ const server = setupServer()
 
 const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
   (initialEntries = '/gh/codecov') =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <RepoBreadcrumbProvider>
-            <Route path="/:provider/:owner/:repo" exact>
-              <RepoBaseCrumbSetter />
-              {children}
-            </Route>
-            <Route path="/admin/:provider">{children}</Route>
-            <Route path="/analytics/:provider/:owner" exact>
-              {children}
-            </Route>
-            <Route path="/members/:provider/:owner" exact>
-              {children}
-            </Route>
-            <Route path="/plan/:provider/:owner" exact>
-              {children}
-            </Route>
-            <Route path="/account/:provider/:owner" exact>
-              {children}
-            </Route>
-            <Route path="/:provider/:owner" exact>
-              {children}
-            </Route>
-          </RepoBreadcrumbProvider>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <RepoBreadcrumbProvider>
+          <Route path="/:provider/:owner/:repo" exact>
+            <RepoBaseCrumbSetter />
+            {children}
+          </Route>
+          <Route path="/admin/:provider">{children}</Route>
+          <Route path="/analytics/:provider/:owner" exact>
+            {children}
+          </Route>
+          <Route path="/members/:provider/:owner" exact>
+            {children}
+          </Route>
+          <Route path="/plan/:provider/:owner" exact>
+            {children}
+          </Route>
+          <Route path="/account/:provider/:owner" exact>
+            {children}
+          </Route>
+          <Route path="/:provider/:owner" exact>
+            {children}
+          </Route>
+        </RepoBreadcrumbProvider>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 const mockUser = {
   owner: {

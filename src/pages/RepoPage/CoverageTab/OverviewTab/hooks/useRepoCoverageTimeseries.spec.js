@@ -73,14 +73,13 @@ const queryClient = new QueryClient({
 })
 const wrapper =
   (searchParams = '') =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[`/gh/caleb/mighty-nein${searchParams}`]}>
-          <Route path="/:provider/:owner/:repo">{children}</Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[`/gh/caleb/mighty-nein${searchParams}`]}>
+        <Route path="/:provider/:owner/:repo">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => server.listen())
 afterEach(() => {

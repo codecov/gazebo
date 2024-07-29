@@ -16,16 +16,15 @@ const loggedInUser = {
 
 const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
   (initialEntries = '/gh') =>
-  ({ children }) =>
-    (
-      <MemoryRouter initialEntries={[initialEntries]}>
-        <Switch>
-          <Route path="/:provider" exact>
-            {children}
-          </Route>
-        </Switch>
-      </MemoryRouter>
-    )
+  ({ children }) => (
+    <MemoryRouter initialEntries={[initialEntries]}>
+      <Switch>
+        <Route path="/:provider" exact>
+          {children}
+        </Route>
+      </Switch>
+    </MemoryRouter>
+  )
 
 describe('Header', () => {
   function setup(isLoggedIn = false) {

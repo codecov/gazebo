@@ -103,16 +103,15 @@ const initialEntries = '/gh/codecov/test-repo/bundles/main/test-bundle'
 const queryClient = new QueryClient()
 const wrapper =
   (entries = initialEntries): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[entries]}>
-          <Route path="/:provider/:owner/:repo/bundles/:branch/:bundle">
-            {children}
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[entries]}>
+        <Route path="/:provider/:owner/:repo/bundles/:branch/:bundle">
+          {children}
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 const server = setupServer()
 

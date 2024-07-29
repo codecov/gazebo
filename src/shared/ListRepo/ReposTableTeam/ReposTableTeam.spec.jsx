@@ -27,18 +27,17 @@ afterAll(() => server.close)
 
 const wrapper =
   (repoDisplay) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={['/gl']}>
-          <Route path="/:provider">
-            <ActiveContext.Provider value={repoDisplay}>
-              {children}
-            </ActiveContext.Provider>
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/gl']}>
+        <Route path="/:provider">
+          <ActiveContext.Provider value={repoDisplay}>
+            {children}
+          </ActiveContext.Provider>
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 describe('ReposTableTeam', () => {
   function setup({ edges = [], isCurrentUserPartOfOrg = true }) {

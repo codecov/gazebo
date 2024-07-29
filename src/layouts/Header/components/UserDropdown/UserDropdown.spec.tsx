@@ -67,25 +67,24 @@ let testLocation: ReturnType<typeof useLocation>
 
 const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
   (initialEntries = '/gh') =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Switch>
-            <Route path="/:provider" exact>
-              {children}
-              <Route
-                path="*"
-                render={({ location }) => {
-                  testLocation = location
-                  return null
-                }}
-              />
-            </Route>
-          </Switch>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Switch>
+          <Route path="/:provider" exact>
+            {children}
+            <Route
+              path="*"
+              render={({ location }) => {
+                testLocation = location
+                return null
+              }}
+            />
+          </Route>
+        </Switch>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()

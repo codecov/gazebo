@@ -97,23 +97,22 @@ const server = setupServer()
 let testLocation: { pathname: string }
 const wrapper =
   (initialEntries = ''): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <Suspense fallback={null}>
-          <MemoryRouter initialEntries={[initialEntries]}>
-            <Route path="/plan/:provider/:owner">{children}</Route>
-            <Route
-              path="*"
-              render={({ location }) => {
-                testLocation = location
-                return null
-              }}
-            />
-          </MemoryRouter>
-        </Suspense>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <Suspense fallback={null}>
+        <MemoryRouter initialEntries={[initialEntries]}>
+          <Route path="/plan/:provider/:owner">{children}</Route>
+          <Route
+            path="*"
+            render={({ location }) => {
+              testLocation = location
+              return null
+            }}
+          />
+        </MemoryRouter>
+      </Suspense>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()

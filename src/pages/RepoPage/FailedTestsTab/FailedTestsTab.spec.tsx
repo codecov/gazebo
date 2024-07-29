@@ -35,31 +35,30 @@ const queryClient = new QueryClient({
 
 const wrapper: (initialEntries?: string) => React.FC<PropsWithChildren> =
   (initialEntries = '/gh/codecov/cool-repo/tests') =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route
-            path={[
-              '/:provider/:owner/:repo/tests',
-              '/:provider/:owner/:repo/tests/new',
-              '/:provider/:owner/:repo/tests/new/codecov-cli',
-              '/:provider/:owner/:repo/tests/:branch',
-            ]}
-            exact
-          >
-            <Suspense fallback={null}>{children}</Suspense>
-          </Route>
-          <Route
-            path="*"
-            render={({ location }) => {
-              testLocation = location
-              return null
-            }}
-          />
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route
+          path={[
+            '/:provider/:owner/:repo/tests',
+            '/:provider/:owner/:repo/tests/new',
+            '/:provider/:owner/:repo/tests/new/codecov-cli',
+            '/:provider/:owner/:repo/tests/:branch',
+          ]}
+          exact
+        >
+          <Suspense fallback={null}>{children}</Suspense>
+        </Route>
+        <Route
+          path="*"
+          render={({ location }) => {
+            testLocation = location
+            return null
+          }}
+        />
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 beforeAll(() => {
   server.listen()

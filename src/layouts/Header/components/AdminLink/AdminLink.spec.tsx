@@ -12,16 +12,15 @@ const wrapper: ({
   initialEntries?: string
 }) => React.FC<React.PropsWithChildren> =
   ({ initialEntries = '/gh' }) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/:provider" exact>
-            {children}
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route path="/:provider" exact>
+          {children}
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },

@@ -6,12 +6,11 @@ import NoReposBlock from './NoReposBlock'
 
 const wrapper =
   (initialEntries = ['/gl/codecov']) =>
-  ({ children }) =>
-    (
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route path="/:provider/:owner">{children}</Route>
-      </MemoryRouter>
-    )
+  ({ children }) => (
+    <MemoryRouter initialEntries={initialEntries}>
+      <Route path="/:provider/:owner">{children}</Route>
+    </MemoryRouter>
+  )
 
 describe('NoReposBlock', () => {
   describe('when rendered without private access', () => {

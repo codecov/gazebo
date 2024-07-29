@@ -1,3 +1,5 @@
+import config from 'config'
+
 import { CodecovIcon } from 'assets/svg/codecov'
 import A from 'ui/A'
 import Button from 'ui/Button'
@@ -21,6 +23,8 @@ const LogoButton = () => {
 }
 
 function GuestHeader() {
+  const isSelfHosted = config.IS_SELF_HOSTED
+
   return (
     <div className="border-b">
       <div className="container mx-auto flex flex-wrap items-center justify-between gap-2 border-b px-3 py-4 sm:px-0">
@@ -46,42 +50,60 @@ function GuestHeader() {
           >
             Get a Demo
           </A>
-          <A
-            to={{ pageName: 'pricing' }}
-            variant="guestHeader"
-            isExternal={false}
-            showExternalIcon={false}
-            data-testid="pricing-link"
-            hook="guest-header-pricing-link"
-          >
-            Pricing
-          </A>
-        </div>
-        <div className="flex items-center gap-4 md:mx-4">
-          <div
-            data-testid="login-prompt"
-            className="mx-2 flex items-center justify-between gap-4 md:mx-0"
-          >
+          {!isSelfHosted && (
             <A
-              to={{ pageName: 'login' }}
+              to={{ pageName: 'pricing' }}
               variant="guestHeader"
               isExternal={false}
+              showExternalIcon={false}
+              data-testid="pricing-link"
+              hook="guest-header-pricing-link"
+            >
+              Pricing
+            </A>
+          )}
+        </div>
+        <div className="flex items-center gap-4 md:mx-4">
+          {isSelfHosted ? (
+            <Button
+              to={{ pageName: 'login' }}
+              variant="primary"
+              activeClassName="hidden"
+              exact={true}
+              disabled={false}
+              showExternalIcon={false}
               data-testid="login-link"
               hook="guest-header-login-link"
             >
               Login
-            </A>
-            <Button
-              to={{ pageName: 'freeTrial' }}
-              variant="primary"
-              disabled={false}
-              showExternalIcon={false}
-              data-testid="start-trial-link"
-              hook="guest-header-start-trial-link"
-            >
-              Start Free Trial
             </Button>
-          </div>
+          ) : (
+            <div
+              data-testid="login-prompt"
+              className="mx-2 flex items-center justify-between gap-4 md:mx-0"
+            >
+              <A
+                to={{ pageName: 'login' }}
+                variant="guestHeader"
+                activeClassName="hidden"
+                isExternal={false}
+                data-testid="login-link"
+                hook="guest-header-login-link"
+              >
+                Login
+              </A>
+              <Button
+                to={{ pageName: 'freeTrial' }}
+                variant="primary"
+                disabled={false}
+                showExternalIcon={false}
+                data-testid="start-trial-link"
+                hook="guest-header-start-trial-link"
+              >
+                Start Free Trial
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>

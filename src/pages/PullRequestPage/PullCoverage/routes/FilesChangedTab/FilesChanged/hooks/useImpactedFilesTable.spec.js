@@ -148,16 +148,15 @@ afterAll(() => {
 
 const wrapper =
   (initialEntries = ['/gh/frumpkin/another-test/pull/14']) =>
-  ({ children }) =>
-    (
-      <MemoryRouter initialEntries={initialEntries}>
-        <Route path="/:provider/:owner/:repo/pull/:pullid">
-          <QueryClientProvider client={queryClient}>
-            {children}
-          </QueryClientProvider>
-        </Route>
-      </MemoryRouter>
-    )
+  ({ children }) => (
+    <MemoryRouter initialEntries={initialEntries}>
+      <Route path="/:provider/:owner/:repo/pull/:pullid">
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      </Route>
+    </MemoryRouter>
+  )
 
 describe('useImpactedFilesTable', () => {
   function setup({ overrideComparison } = {}) {

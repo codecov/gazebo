@@ -12,14 +12,13 @@ const queryClient = new QueryClient({
 
 const wrapper =
   (initialEntries = '/gh'): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/:provider">{children}</Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route path="/:provider">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 const server = setupServer()
 

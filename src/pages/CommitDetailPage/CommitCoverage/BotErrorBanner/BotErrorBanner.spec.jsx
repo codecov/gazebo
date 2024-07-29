@@ -19,14 +19,13 @@ const server = setupServer()
 
 const wrapper =
   ({ provider }) =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[`/${provider}/codecov`]}>
-          <Route path="/:provider/:owner">{children}</Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[`/${provider}/codecov`]}>
+        <Route path="/:provider/:owner">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 const defaultProps = { botErrorsCount: 2 }
 

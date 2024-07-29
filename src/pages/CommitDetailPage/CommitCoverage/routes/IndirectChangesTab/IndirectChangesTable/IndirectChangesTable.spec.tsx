@@ -29,21 +29,20 @@ const wrapper =
     queryClient: QueryClient,
     initialEntries = '/gh/codecov/cool-repo/commit/123/indirect-changes'
   ): React.FC<React.PropsWithChildren> =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route
-            path={[
-              '/:provider/:owner/:repo/commit/:commit/indirect-changes',
-              '/:provider/:owner/:repo/commit/:commit/blob/:path+',
-            ]}
-          >
-            {children}
-          </Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route
+          path={[
+            '/:provider/:owner/:repo/commit/:commit/indirect-changes',
+            '/:provider/:owner/:repo/commit/:commit/blob/:path+',
+          ]}
+        >
+          {children}
+        </Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 describe('IndirectChangesTable', () => {
   function setup(data = {}, state = 'processed') {

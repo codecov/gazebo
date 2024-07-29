@@ -45,14 +45,13 @@ const queryClient = new QueryClient({
 })
 const wrapper: (initialEntries?: string) => React.FC<React.PropsWithChildren> =
   (initialEntries = '/admin/gh/access') =>
-  ({ children }) =>
-    (
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialEntries]}>
-          <Route path="/admin/:provider/access">{children}</Route>
-        </MemoryRouter>
-      </QueryClientProvider>
-    )
+  ({ children }) => (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntries]}>
+        <Route path="/admin/:provider/access">{children}</Route>
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
 
 const server = setupServer()
 beforeAll(() => {
