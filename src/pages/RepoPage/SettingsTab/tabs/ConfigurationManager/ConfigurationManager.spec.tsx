@@ -253,4 +253,28 @@ describe('Configuration Manager', () => {
       })
     })
   })
+
+  describe('IntegrationsList', () => {
+    it('renders feature block', async () => {
+      setup({})
+      render(<ConfigurationManager />, { wrapper })
+
+      const heading = await screen.findByRole('heading', {
+        name: 'Codecov integrations',
+      })
+      expect(heading).toBeInTheDocument()
+    })
+
+    it('renders features', async () => {
+      setup({})
+      render(<ConfigurationManager />, { wrapper })
+
+      const vscode = await screen.findByText('VSCode extension')
+      expect(vscode).toBeInTheDocument()
+      const browserExtension = await screen.findByText('Browser extension')
+      expect(browserExtension).toBeInTheDocument()
+      const slackApp = await screen.findByText('Slack app')
+      expect(slackApp).toBeInTheDocument()
+    })
+  })
 })
