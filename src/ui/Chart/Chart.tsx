@@ -47,8 +47,8 @@ const ChartContainer = React.forwardRef<
   return (
     <ChartContext.Provider value={{ config }}>
       <div
-        data-chart={chartId}
         ref={ref}
+        data-chart={chartId}
         className={cn(
           `flex aspect-video justify-center text-xs lg:text-sm
           [&_.recharts-cartesian-axis-tick_text]:fill-ds-gray-quaternary
@@ -65,6 +65,7 @@ const ChartContainer = React.forwardRef<
           [&_.recharts-surface]:outline-none`,
           className
         )}
+        data-testid="chart-container"
         {...props}
       >
         <ChartStyle id={chartId} config={config} />
@@ -176,8 +177,6 @@ const ChartTooltipContent = React.forwardRef<
       labelClassName,
     ])
 
-    console.debug(active, payload, !active || !payload?.length)
-
     if (!active || !payload?.length) {
       return null
     }
@@ -189,12 +188,12 @@ const ChartTooltipContent = React.forwardRef<
         data-testid="chart-tooltip-content"
         ref={ref}
         className={cn(
-          'grid min-w-[8rem] items-start gap-1.5 rounded-lg border border-ds-gray-quinary/50 bg-white px-2.5 py-1.5 text-xs lg:text-sm shadow-xl',
+          'grid min-w-32 items-start gap-1.5 rounded-lg border border-ds-gray-quinary/50 bg-white px-2.5 py-1.5 text-xs shadow-xl lg:text-sm',
           className
         )}
       >
         {!nestLabel ? tooltipLabel : null}
-        <div className="grid gap-1.5">
+        <div className="grid gap-1.5" data-testid="chart-tooltip-datalist">
           {payload.map((item, index) => {
             const key = `${nameKey || item.name || item.dataKey || 'value'}`
             const itemConfig = getPayloadConfigFromPayload(config, item, key)
@@ -204,7 +203,7 @@ const ChartTooltipContent = React.forwardRef<
               <div
                 key={item.dataKey}
                 className={cn(
-                  'flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5 [&>svg]:text-ds-gray-quinary',
+                  'flex w-full flex-wrap items-stretch gap-2 [&>svg]:size-2.5 [&>svg]:text-ds-gray-quinary',
                   indicator === 'dot' && 'items-center'
                 )}
               >
@@ -307,8 +306,7 @@ const ChartLegendContent = React.forwardRef<
                 `flex 
                 items-center 
                 gap-1.5 
-                [&>svg]:h-3 
-                [&>svg]:w-3 
+                [&>svg]:size-3 
                 [&>svg]:text-ds-gray-quaternary`
               )}
             >
