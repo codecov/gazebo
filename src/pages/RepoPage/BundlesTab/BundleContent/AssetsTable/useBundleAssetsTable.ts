@@ -25,6 +25,8 @@ export function useBundleAssetsTable({
 
   // @ts-expect-error - useLocationParams needs fixing
   const typeFilters = params?.types ?? []
+  // @ts-expect-error - useLocationParams needs fixing
+  const loadTypes = params?.loading ?? []
 
   // @ts-expect-error - useLocationParams needs fixing
   const trend = params?.trend ?? Trend.THREE_MONTHS
@@ -57,6 +59,7 @@ export function useBundleAssetsTable({
     interval: queryVars.interval,
     filters: {
       reportGroups: typeFilters,
+      loadTypes: loadTypes,
     },
     opts: { enabled: branch !== '' && bundle !== '' },
   })
