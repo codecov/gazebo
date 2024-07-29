@@ -384,4 +384,31 @@ describe('BaseLayout', () => {
       expect(selectInput).toBeInTheDocument()
     })
   })
+
+  describe('header feature flagging', () => {
+    it('renders old header when feature flag is false', async () => {
+      setup({ currentUser: userHasDefaultOrg })
+
+      render(<BaseLayout>hello</BaseLayout>, {
+        wrapper: wrapper(),
+      })
+
+      const blogLink = await screen.findByText('Blog')
+      expect(blogLink).toBeInTheDocument()
+    })
+
+    it('renders new header when feature flag is true', async () => {
+      setup({ currentUser: userHasDefaultOrg })
+      useFlags.mockReturnValue({
+        newHeader: true,
+      })
+
+      render(<BaseLayout>hello</BaseLayout>, {
+        wrapper: wrapper(),
+      })
+
+      const newHeader = await screen.findByText(/New header/)
+      expect(newHeader).toBeInTheDocument()
+    })
+  })
 })
