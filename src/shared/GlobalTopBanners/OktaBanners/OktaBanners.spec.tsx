@@ -5,10 +5,17 @@ import { setupServer } from 'msw/node'
 import { Suspense } from 'react'
 import { MemoryRouter, Route } from 'react-router-dom'
 
+import { useFlags } from 'shared/featureFlags'
+
 import OktaBanners from './OktaBanners'
 
 jest.mock('../OktaEnabledBanner', () => () => 'OktaEnabledBanner')
 jest.mock('../OktaEnforcedBanner', () => () => 'OktaEnforcedBanner')
+
+jest.mock('shared/featureFlags')
+const mockedUseFlags = useFlags as jest.Mock<{
+  oktaSettings: boolean
+}>
 
 const wrapper =
   (initialEntries = ['/gh/owner']): React.FC<React.PropsWithChildren> =>
@@ -36,6 +43,10 @@ afterAll(() => server.close())
 
 describe('OktaBanners', () => {
   function setup(data = {}) {
+    mockedUseFlags.mockReturnValue({
+      oktaSettings: true,
+    })
+
     server.use(
       graphql.query('GetOktaConfig', (req, res, ctx) =>
         res(ctx.status(200), ctx.data(data))
@@ -83,10 +94,32 @@ describe('OktaBanners', () => {
       it('should render null', async () => {
         setup({
           owner: {
-            isUserOktaAuthenticated: true,
+            isUserOktaAuthenticated: false,
             account: {
               oktaConfig: {
                 enabled: false,
+                enforced: false,
+                url: 'https://okta.com',
+                clientId: 'clientId',
+                clientSecret: 'clientSecret',
+              },
+            },
+          },
+        })
+
+        const { container } = render(<OktaBanners />, { wrapper: wrapper() })
+        expect(container).toBeEmptyDOMElement()
+      })
+    })
+
+    describe('when user is already Okta authenticated', () => {
+      it('should render null', async () => {
+        setup({
+          owner: {
+            isUserOktaAuthenticated: true,
+            account: {
+              oktaConfig: {
+                enabled: true,
                 enforced: false,
                 url: 'https://okta.com',
                 clientId: 'clientId',
@@ -106,7 +139,7 @@ describe('OktaBanners', () => {
         it('should render OktaEnabledBanner', async () => {
           setup({
             owner: {
-              isUserOktaAuthenticated: true,
+              isUserOktaAuthenticated: false,
               account: {
                 oktaConfig: {
                   enabled: true,
@@ -129,7 +162,7 @@ describe('OktaBanners', () => {
         it('should render OktaEnforcedBanner', async () => {
           setup({
             owner: {
-              isUserOktaAuthenticated: true,
+              isUserOktaAuthenticated: false,
               account: {
                 oktaConfig: {
                   enabled: true,

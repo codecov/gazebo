@@ -2028,4 +2028,27 @@ describe('useNavLinks', () => {
       expect(path).toBe('/bb/test-owner/test-repo/tests/new/codecov-cli')
     })
   })
+
+  describe('okta login', () => {
+    it('returns the correct link with nothing passed', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/gh/test-owner'),
+      })
+
+      const path = result.current.oktaLogin.path()
+      expect(path).toBe('/login/okta/gh/test-owner')
+    })
+
+    it('can override the params', () => {
+      const { result } = renderHook(() => useNavLinks(), {
+        wrapper: wrapper('/bb/test-owner'),
+      })
+
+      const path = result.current.oktaLogin.path({
+        provider: 'bb',
+        owner: 'test-owner',
+      })
+      expect(path).toBe('/login/okta/bb/test-owner')
+    })
+  })
 })
