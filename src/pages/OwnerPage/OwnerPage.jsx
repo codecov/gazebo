@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect } from 'react'
+import { Suspense, useEffect, useLayoutEffect } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
@@ -7,11 +7,9 @@ import { useSentryToken } from 'services/account'
 import { useLocationParams } from 'services/navigation'
 import { renderToast } from 'services/toast'
 import { ActiveContext } from 'shared/context'
-import { useFlags } from 'shared/featureFlags'
 import ListRepo from 'shared/ListRepo'
-import { cn } from 'shared/utils/cn'
 
-import Header from './Header'
+import HeaderBanners from './HeaderBanners'
 import Tabs from './Tabs'
 
 export const LOCAL_STORAGE_USER_STARTED_TRIAL_KEY = 'user-started-trial'
@@ -43,10 +41,6 @@ function OwnerPage() {
     repoDisplay: 'All',
   })
 
-  const { newHeader } = useFlags({
-    newHeader: false,
-  })
-
   useSentryTokenRedirect({ ownerData })
   const userStartedTrial = localStorage.getItem(
     LOCAL_STORAGE_USER_STARTED_TRIAL_KEY
@@ -72,8 +66,10 @@ function OwnerPage() {
   }
 
   return (
-    <div className={cn({ 'mt-2': !newHeader })}>
-      {newHeader ? null : <Header />}
+    <div>
+      <Suspense fallback={null}>
+        <HeaderBanners />
+      </Suspense>
       <div>
         {ownerData?.isCurrentUserPartOfOrg && (
           <Tabs owner={ownerData} provider={provider} />

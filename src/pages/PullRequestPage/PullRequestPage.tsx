@@ -7,7 +7,6 @@ import { useCrumbs } from 'pages/RepoPage/context'
 import { useRepoOverview } from 'services/repo'
 import { TierNames, useTier } from 'services/tier'
 import { useFlags } from 'shared/featureFlags'
-import Breadcrumb from 'ui/Breadcrumb'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 import SummaryDropdown from 'ui/SummaryDropdown'
@@ -44,9 +43,8 @@ const Loader = () => (
 function PullRequestPage() {
   const location = useLocation()
   const { provider, owner, repo, pullId } = useParams<URLParams>()
-  const { multipleTiers, newHeader } = useFlags({
+  const { multipleTiers } = useFlags({
     multipleTiers: false,
-    newHeader: false,
   })
 
   const { data: overview } = useRepoOverview({ provider, owner, repo })
@@ -119,21 +117,6 @@ function PullRequestPage() {
 
   return (
     <div className="mx-4 flex flex-col gap-4 md:mx-0">
-      {newHeader ? null : (
-        <Breadcrumb
-          paths={[
-            { pageName: 'owner', text: owner },
-            { pageName: 'repo', text: repo },
-            { pageName: 'pulls', text: 'Pulls' },
-            {
-              pageName: 'pullDetail',
-              options: { pullId },
-              readOnly: true,
-              text: pullId,
-            },
-          ]}
-        />
-      )}
       <Header />
       {displayMode === DISPLAY_MODE.BOTH ? (
         <SummaryDropdown type="multiple" defaultValue={defaultDropdown}>

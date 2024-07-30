@@ -4,18 +4,14 @@ import { graphql } from 'msw'
 import { setupServer } from 'msw/node'
 import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
-import { useFlags } from 'shared/featureFlags'
-
 import LoginLayout from './LoginLayout'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useLocation: jest.fn(),
 }))
-jest.mock('shared/featureFlags')
 
 const mockedUseLocation = useLocation as jest.Mock
-const mockedUseFlags = useFlags as jest.Mock
 
 const server = setupServer()
 const queryClient = new QueryClient()
@@ -58,7 +54,6 @@ describe('LoginLayout', () => {
       )
     )
     mockedUseLocation.mockReturnValue({ search: [] })
-    mockedUseFlags.mockReturnValue({ newHeader: false })
   }
 
   describe('rendering component', () => {

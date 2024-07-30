@@ -5,8 +5,6 @@ import { useLocation, useParams } from 'react-router-dom'
 
 import NotFound from 'pages/NotFound'
 import { useCrumbs } from 'pages/RepoPage/context'
-import { useFlags } from 'shared/featureFlags'
-import Breadcrumb from 'ui/Breadcrumb'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
 import SummaryDropdown from 'ui/SummaryDropdown'
@@ -44,10 +42,6 @@ const CommitDetailPage: React.FC = () => {
   const location = useLocation()
   const { provider, owner, repo, commit: commitSha } = useParams<URLParams>()
   const shortSHA = commitSha?.slice(0, 7)
-
-  const { newHeader } = useFlags({
-    newHeader: false,
-  })
 
   // reset cache when user navigates to the commit detail page
   const queryClient = useQueryClient()
@@ -131,21 +125,6 @@ const CommitDetailPage: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-4 px-3 sm:px-0">
-      {newHeader ? null : (
-        <Breadcrumb
-          paths={[
-            { pageName: 'owner', text: owner },
-            { pageName: 'repo', text: repo },
-            { pageName: 'commits', text: 'commits' },
-            {
-              pageName: 'commit',
-              options: { commitSha },
-              readOnly: true,
-              text: shortSHA,
-            },
-          ]}
-        />
-      )}
       <Header />
       {displayMode === DISPLAY_MODE.BOTH ? (
         <SummaryDropdown type="multiple" defaultValue={defaultDropdown}>
