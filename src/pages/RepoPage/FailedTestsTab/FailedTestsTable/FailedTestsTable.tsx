@@ -169,7 +169,7 @@ const FailedTestsTable = () => {
         children: (
           <span className="inline-flex items-center gap-1">
             <Icon name="branch" variant="developer" size="sm" />
-            {decodeURIComponent(branch ?? '')}
+            {branch ? getDecodedBranch(branch) : undefined}
           </span>
         ),
       },
