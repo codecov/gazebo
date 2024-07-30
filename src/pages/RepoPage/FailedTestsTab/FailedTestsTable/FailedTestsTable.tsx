@@ -8,10 +8,11 @@ import {
 } from '@tanstack/react-table'
 import cs from 'classnames'
 import isEmpty from 'lodash/isEmpty'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useParams } from 'react-router-dom'
 
+import { useCrumbs } from 'pages/RepoPage/context'
 import { formatTimeToNow } from 'shared/utils/dates'
 import Icon from 'ui/Icon'
 import Spinner from 'ui/Spinner'
@@ -139,6 +140,7 @@ const FailedTestsTable = () => {
     },
   ])
   const { provider, owner, repo, branch } = useParams<URLParams>()
+  const { setBreadcrumbs } = useCrumbs()
 
   const {
     data: testData,
@@ -158,6 +160,21 @@ const FailedTestsTable = () => {
       suspense: false,
     },
   })
+
+  useLayoutEffect(() => {
+    setBreadcrumbs([
+      {
+        pageName: '',
+        readOnly: true,
+        children: (
+          <span className="inline-flex items-center gap-1">
+            <Icon name="branch" variant="developer" size="sm" />
+            {decodeURIComponent(branch ?? '')}
+          </span>
+        ),
+      },
+    ])
+  }, [branch, setBreadcrumbs])
 
   const tableData = useMemo(() => {
     return testData?.testResults
