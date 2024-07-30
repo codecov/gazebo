@@ -19,7 +19,7 @@ jest.mock('./CommitsTab', () => () => 'CommitsTab')
 jest.mock('./CoverageTab', () => () => 'CoverageTab')
 jest.mock('./CoverageOnboarding', () => () => 'CoverageOnboarding')
 jest.mock('./PullsTab', () => () => 'PullsTab')
-jest.mock('./SettingsTab', () => () => 'SettingsTab')
+jest.mock('./SettingsTab', () => () => 'ConfigurationTab')
 jest.mock('shared/featureFlags')
 jest.mock('./ActivationAlert', () => () => 'ActivationAlert')
 jest.mock('./FailedTestsTab', () => () => 'FailedTestsTab')
@@ -111,7 +111,7 @@ const wrapper =
               '/:provider/:owner/:repo/components',
               '/:provider/:owner/:repo/new',
               '/:provider/:owner/:repo/pulls',
-              '/:provider/:owner/:repo/settings',
+              '/:provider/:owner/:repo/config',
               '/:provider/:owner/:repo/tree/:branch',
               '/:provider/:owner/:repo/tree/:branch/:path+',
               '/:provider/:owner/:repo',
@@ -617,18 +617,18 @@ describe('RepoPage', () => {
         })
       })
 
-      describe('testing settings path', () => {
-        it('renders settings tab', async () => {
+      describe('testing config path', () => {
+        it('renders config tab', async () => {
           const { queryClient } = setup()
           render(<RepoPage />, {
             wrapper: wrapper({
               queryClient,
-              initialEntries: '/gh/codecov/cool-repo/settings',
+              initialEntries: '/gh/codecov/cool-repo/config',
             }),
           })
 
-          const settings = await screen.findByText('SettingsTab')
-          expect(settings).toBeInTheDocument()
+          const config = await screen.findByText('ConfigurationTab')
+          expect(config).toBeInTheDocument()
         })
       })
 
@@ -780,8 +780,8 @@ describe('RepoPage', () => {
         })
       })
 
-      describe('testing settings path', () => {
-        it('renders settings tab', async () => {
+      describe('testing config path', () => {
+        it('renders config tab', async () => {
           const { queryClient } = setup({
             isRepoActive: false,
             hasRepoData: true,
@@ -790,12 +790,12 @@ describe('RepoPage', () => {
           render(<RepoPage />, {
             wrapper: wrapper({
               queryClient,
-              initialEntries: '/gh/codecov/cool-repo/settings',
+              initialEntries: '/gh/codecov/cool-repo/config',
             }),
           })
 
-          const settingsTab = await screen.findByText('SettingsTab')
-          expect(settingsTab).toBeInTheDocument()
+          const config = await screen.findByText('ConfigurationTab')
+          expect(config).toBeInTheDocument()
         })
       })
     })

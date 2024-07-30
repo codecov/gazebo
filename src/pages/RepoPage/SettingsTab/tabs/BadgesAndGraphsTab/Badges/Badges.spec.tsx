@@ -68,10 +68,8 @@ const mockBranches = (hasNextPage = false) => ({
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
-    <MemoryRouter
-      initialEntries={['/gh/codecov/codecov-client/settings/badge']}
-    >
-      <Route path="/:provider/:owner/:repo/settings/badge">{children}</Route>
+    <MemoryRouter initialEntries={['/gh/codecov/codecov-client/config/badge']}>
+      <Route path="/:provider/:owner/:repo/config/badge">{children}</Route>
     </MemoryRouter>
   </QueryClientProvider>
 )

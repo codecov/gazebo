@@ -59,8 +59,8 @@ const queryClient = new QueryClient({
 const server = setupServer()
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/codecov/cool-repo/settings/config']}>
-      <Route path="/:provider/:owner/:repo/settings/config">{children}</Route>
+    <MemoryRouter initialEntries={['/gh/codecov/cool-repo/config']}>
+      <Route path="/:provider/:owner/:repo/config">{children}</Route>
     </MemoryRouter>
   </QueryClientProvider>
 )

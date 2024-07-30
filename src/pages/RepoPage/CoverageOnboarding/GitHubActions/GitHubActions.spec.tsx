@@ -118,7 +118,7 @@ describe('GitHubActions', () => {
       expect(repositorySecretLink).toBeInTheDocument()
       expect(repositorySecretLink).toHaveAttribute(
         'href',
-        'https://github.com/codecov/cool-repo/settings/secrets/actions/new'
+        'https://github.com/codecov/cool-repo/config/secrets/actions/new'
       )
     })
 
@@ -127,7 +127,7 @@ describe('GitHubActions', () => {
       render(<GitHubActions />, { wrapper })
 
       const body = await screen.findByText(
-        /Admin required to access repo settings > secrets and variable > actions/
+        /Admin required to access repo configuration > secrets and variable > actions/
       )
       expect(body).toBeInTheDocument()
     })

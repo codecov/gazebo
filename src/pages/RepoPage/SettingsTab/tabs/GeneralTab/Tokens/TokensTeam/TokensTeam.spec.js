@@ -13,8 +13,8 @@ const server = setupServer()
 
 const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>
-    <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings']}>
-      <Route path="/:provider/:owner/:repo/settings">{children}</Route>
+    <MemoryRouter initialEntries={['/gh/codecov/codecov-client/config']}>
+      <Route path="/:provider/:owner/:repo/config">{children}</Route>
     </MemoryRouter>
   </QueryClientProvider>
 )

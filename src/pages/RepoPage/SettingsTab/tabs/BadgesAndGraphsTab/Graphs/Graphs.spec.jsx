@@ -4,8 +4,8 @@ import { MemoryRouter, Route } from 'react-router-dom'
 import Graphs from './Graphs'
 
 const wrapper = ({ children }) => (
-  <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings/badge']}>
-    <Route path="/:provider/:owner/:repo/settings/badge">{children}</Route>
+  <MemoryRouter initialEntries={['/gh/codecov/codecov-client/config/badge']}>
+    <Route path="/:provider/:owner/:repo/config/badge">{children}</Route>
   </MemoryRouter>
 )
 

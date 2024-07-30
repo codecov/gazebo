@@ -4,8 +4,8 @@ import { MemoryRouter, Route } from 'react-router'
 import FeatureGroup from './FeatureGroup'
 
 const wrapper: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <MemoryRouter initialEntries={['/gh/codecov/cool-repo/settings/config']}>
-    <Route path="/:provider/:owner/:repo/settings/config">{children}</Route>
+  <MemoryRouter initialEntries={['/gh/codecov/cool-repo/config']}>
+    <Route path="/:provider/:owner/:repo/config">{children}</Route>
   </MemoryRouter>
 )
 

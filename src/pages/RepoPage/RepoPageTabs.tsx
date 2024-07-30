@@ -115,7 +115,7 @@ export const useRepoTabs = ({ refetchEnabled }: UseRepoTabsArgs) => {
   }
 
   if (isCurrentUserPartOfOrg) {
-    tabs.push({ pageName: 'settings' })
+    tabs.push({ pageName: 'configuration' })
   }
 
   return tabs

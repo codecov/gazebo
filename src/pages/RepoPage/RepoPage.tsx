@@ -155,7 +155,7 @@ function Routes({
         {productEnabled && userAuthorizedtoViewRepo ? (
           <Redirect from={`${path}/compare`} to={`${path}/pulls`} />
         ) : null}
-        <SentryRoute path={`${path}/settings`}>
+        <SentryRoute path={`${path}/config`}>
           <SettingsTab />
         </SentryRoute>
         {/* need to do these individual returns as the redirects won't work with a react fragment */}
@@ -184,7 +184,7 @@ function Routes({
   if (isRepoActive) {
     return (
       <Switch>
-        <SentryRoute path={`${path}/settings`}>
+        <SentryRoute path={`${path}/config`}>
           <SettingsTab />
         </SentryRoute>
         <SentryRoute path={[path, `${path}/bundles`]}>
@@ -227,7 +227,7 @@ function Routes({
           <BundleOnboarding />
         </SentryRoute>
       ) : null}
-      <SentryRoute path={`${path}/settings`}>
+      <SentryRoute path={`${path}/config`}>
         <SettingsTab />
       </SentryRoute>
       <Redirect from={`${path}/bundles`} to={`${path}/bundles/new`} />

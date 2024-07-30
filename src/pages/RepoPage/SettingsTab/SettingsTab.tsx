@@ -5,7 +5,6 @@ import { SentryRoute } from 'sentry'
 
 import SidebarLayout from 'layouts/SidebarLayout'
 import { useOwner } from 'services/user'
-import { useFlags } from 'shared/featureFlags'
 import LoadingLogo from 'ui/LoadingLogo'
 import Sidemenu from 'ui/Sidemenu'
 
@@ -29,23 +28,20 @@ interface URLParams {
 function SettingsTab() {
   const { owner } = useParams<URLParams>()
   const { data: currentOwner } = useOwner({ username: owner })
-  const { inAppMarketingTab } = useFlags({
-    inAppMarketingTab: false,
-  })
 
   if (!currentOwner?.isCurrentUserPartOfOrg) return <NotFound />
 
-  const inAppMarketingLink = inAppMarketingTab
-    ? [{ pageName: 'settingsConfiguration' }]
-    : []
   const sideMenuLinks = [
     {
-      pageName: 'settingsGeneral',
+      pageName: 'configuration',
       exact: true,
+      children: 'Configuration Manager',
     },
-    ...inAppMarketingLink,
-    { pageName: 'settingsYaml' },
-    { pageName: 'settingsBadge' },
+    {
+      pageName: 'configGeneral',
+    },
+    { pageName: 'configYaml' },
+    { pageName: 'configBadge' },
   ]
 
   return (
@@ -53,21 +49,19 @@ function SettingsTab() {
       <SidebarLayout sidebar={<Sidemenu links={sideMenuLinks} />}>
         <Suspense fallback={tabLoading}>
           <Switch>
-            <SentryRoute path="/:provider/:owner/:repo/settings" exact>
+            <SentryRoute path="/:provider/:owner/:repo/config" exact>
+              <ConfigurationManager />
+            </SentryRoute>
+            <SentryRoute path="/:provider/:owner/:repo/config/general" exact>
               <GeneralTab />
             </SentryRoute>
-            {inAppMarketingTab ? (
-              <SentryRoute path="/:provider/:owner/:repo/settings/config" exact>
-                <ConfigurationManager />
-              </SentryRoute>
-            ) : null}
-            <SentryRoute path="/:provider/:owner/:repo/settings/yaml" exact>
+            <SentryRoute path="/:provider/:owner/:repo/config/yaml" exact>
               <YamlTab />
             </SentryRoute>
-            <SentryRoute path="/:provider/:owner/:repo/settings/badge" exact>
+            <SentryRoute path="/:provider/:owner/:repo/config/badge" exact>
               <BadgesAndGraphsTab />
             </SentryRoute>
-            <SentryRoute path="/:provider/:owner/:repo/settings/*">
+            <SentryRoute path="/:provider/:owner/:repo/config/*">
               <NotFound />
             </SentryRoute>
           </Switch>

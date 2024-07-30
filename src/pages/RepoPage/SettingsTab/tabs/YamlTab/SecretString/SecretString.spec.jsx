@@ -23,9 +23,9 @@ const queryClient = new QueryClient({
 })
 
 const wrapper = ({ children }) => (
-  <MemoryRouter initialEntries={['/gh/codecov/codecov-client/settings/yaml']}>
+  <MemoryRouter initialEntries={['/gh/codecov/codecov-client/config/yaml']}>
     <QueryClientProvider client={queryClient}>
-      <Route path="/:provider/:owner/:repo/settings/yaml">{children}</Route>
+      <Route path="/:provider/:owner/:repo/config/yaml">{children}</Route>
     </QueryClientProvider>
   </MemoryRouter>
 )
