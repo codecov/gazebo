@@ -12,7 +12,6 @@ import LoadingLogo from 'ui/LoadingLogo'
 import ActivationAlert from './ActivationAlert'
 import { useCrumbs } from './context'
 import DeactivatedRepo from './DeactivatedRepo'
-import RepoBreadcrumb from './RepoBreadcrumb'
 import RepoPageTabs from './RepoPageTabs'
 
 const BundlesTab = lazy(() => import('./BundlesTab'))
@@ -291,7 +290,6 @@ function RepoPage() {
 
   return (
     <div>
-      <RepoBreadcrumb />
       <RepoPageTabs refetchEnabled={refetchEnabled} />
       <Suspense fallback={<Loader />}>
         <Routes

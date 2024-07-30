@@ -5,11 +5,9 @@ import { MemoryRouter, Route } from 'react-router-dom'
 
 import { useLocationParams } from 'services/navigation'
 import { useOwner } from 'services/user'
-import { useFlags } from 'shared/featureFlags'
 
 import AnalyticsPage from './AnalyticsPage'
 
-jest.mock('./Header', () => () => 'Header')
 jest.mock('services/user')
 jest.mock('services/account')
 jest.mock('services/navigation')
@@ -17,9 +15,6 @@ jest.mock('./Tabs', () => () => 'Tabs')
 jest.mock('./ChartSelectors', () => () => 'Chart Selectors')
 jest.mock('./Chart', () => () => 'Line Chart')
 jest.mock('../../shared/ListRepo/ReposTable', () => () => 'ReposTable')
-
-// temp, for new header work
-jest.mock('shared/featureFlags')
 
 const queryClient = new QueryClient()
 const server = setupServer()
@@ -55,9 +50,6 @@ describe('AnalyticsPage', () => {
         direction: params?.direction,
       },
     })
-    useFlags.mockReturnValue({
-      newHeader: false,
-    })
   }
 
   describe('when the owner exists', () => {
@@ -72,11 +64,6 @@ describe('AnalyticsPage', () => {
           direction: 'ASC',
         },
       })
-    })
-
-    it('renders the header', () => {
-      render(<AnalyticsPage />, { wrapper })
-      expect(screen.getByText(/Header/)).toBeInTheDocument()
     })
 
     it('renders tabs associated with the page', () => {
@@ -157,38 +144,6 @@ describe('AnalyticsPage', () => {
     it('does not render Tabs', () => {
       render(<AnalyticsPage />, { wrapper })
       expect(screen.queryByText(/Tabs/)).not.toBeInTheDocument()
-    })
-  })
-
-  describe('header feature flagging', () => {
-    beforeEach(() => {
-      setup({
-        owner: {
-          username: 'codecov',
-          isCurrentUserPartOfOrg: true,
-        },
-        params: {
-          ordering: 'NAME',
-          direction: 'ASC',
-        },
-      })
-    })
-
-    it('renders header when flag is false', async () => {
-      render(<AnalyticsPage />, { wrapper })
-
-      const header = await screen.findByText(/Header/)
-      expect(header).toBeInTheDocument()
-    })
-
-    it('does not render header when flag is true', async () => {
-      useFlags.mockReturnValue({
-        newHeader: true,
-      })
-      render(<AnalyticsPage />, { wrapper })
-
-      const header = screen.queryByText(/Header/)
-      expect(header).not.toBeInTheDocument()
     })
   })
 })
